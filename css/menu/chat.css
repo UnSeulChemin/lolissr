@@ -1,0 +1,268 @@
+
+
+/* CHAT BACKGROUND */
+
+
+#chat_background
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 50px 0;
+}
+
+#chat_section_background
+{
+	text-align: center;	
+    font-family: var(--font_family);
+	background-color: var(--background_section);
+
+    border: 2px solid #000;
+    border-radius: 10px;
+    padding: 0 20px 20px;
+
+    width: 85%;    
+}
+
+
+/* CHAT SECTION */
+
+
+#chat_section_background #chat_form_avatar_name
+{
+	padding-top: 25px;
+}
+
+#chat_section_background #chat_form_avatar_name #chat_form_img
+{
+    width: 150px;
+    height: 150px;
+
+    border-radius: 50%;
+    margin: auto;
+}
+
+#chat_section_background #chat_form_avatar_name p
+{
+    font-size: 1.1em;
+    text-align: center;
+    font-weight: bold;
+
+    padding: 25px 0 25px 0;
+    margin: 0;
+}
+
+#chat_section_background #messages
+{
+    height: 146px;
+    overflow-y: scroll;
+
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+#chat_section_background #messages .smiley
+{
+    position: relative;
+    top: 3px;
+}
+
+#chat_section_background #messages .message
+{
+    display: flex;
+    justify-content: left;
+    align-items: center;
+
+    border-top: 2px solid #000000;
+    border-right: 2px solid #000000;
+    border-left: 2px solid #000000;
+    padding: 10px 0;    
+}
+
+#chat_section_background #messages .message:first-of-type
+{
+    border-bottom: 2px solid #000000;
+}
+
+#chat_section_background #messages .message #message_div_img_header
+{
+    margin: 0 15px;
+}
+
+#chat_section_background #messages .message #message_div_img_header #img_header
+{
+    display: flex;
+    width: 50px;
+    height: 50px;
+
+    border-radius: 50%;    
+}
+
+#chat_section_background #messages .message #message_div_h_p
+{
+   text-align: left;
+}
+
+#chat_section_background #messages .message #message_div_h_p #message_ban_all
+{
+    display: flex;
+    justify-content: flex-end;
+}
+
+#chat_section_background #messages .message #message_div_h_p #message_ban_all a
+{
+    cursor: pointer;
+    border: 2px solid #FF0000;
+    display: flex;
+    align-items: center;    
+}
+
+#chat_section_background #messages .message #message_div_h_p #message_ban_all a img
+{
+    display: flex;
+    width: 25px;    
+}
+
+#chat_section_background #messages .message #message_div_h_p h4
+{
+    font-size: 0.9em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+
+    margin: 0;
+}
+
+#chat_section_background #messages .message #message_div_h_p div h4 a
+{
+    cursor: pointer;
+
+    display: inline-flex;
+    border: 2px solid #FFFF00; 
+
+    position: relative;
+    right: 5px;
+    bottom: 0;   
+}
+
+#chat_section_background #messages .message #message_div_h_p div h4 a img
+{
+    width: 25px;
+}
+
+#chat_section_background #messages .message #message_div_h_p p
+{
+    font-size: 1.1em;
+
+    margin: 0;        
+}
+
+#chat_section_background #messages .message #message_div_h_p div p a
+{
+    cursor: pointer;
+
+    display: inline-flex;
+    border: 2px solid #FF0000;   
+}
+
+#chat_section_background #messages .message #message_div_h_p div p a img
+{
+    width: 20px;    
+}
+
+#chat_section_background #chat_form_send
+{
+    padding-top: 20px;
+}
+
+#chat_section_background #chat_form_send textarea
+{
+    min-width: 50%; 
+    max-width: 50%;
+    min-height: 21px;
+    max-height: 21px;
+
+    margin-bottom: 10px;
+}
+
+#chat_section_background #chat_form_send #chat_send
+{
+    cursor: pointer;
+    display: block;
+    font-size: 16px;
+    font-weight: bold;
+    color: #aaaaaa;
+    background-color: var(--background_header);
+
+    width: 80px;
+    border: 2px solid #000;
+    border-radius: 10px;
+    padding: 5px;
+    margin: auto;
+}
+
+#chat_section_background #chat_form_send #chat_send:hover
+{
+    color: #fff; /* DARK BLUE */
+    opacity: 0.9;
+}
+
+
+@media only screen and (min-width: 960px)
+{
+
+
+    /* CHAT BACKGROUND */
+
+
+    #chat_background
+    {
+        padding: 112px 0 50px 0;
+    }
+
+
+    /* CHAT SECTION */
+
+
+    #chat_section_background #chat_form_avatar_name p
+    {
+        font-size: 1.2em;
+    }
+
+  	#chat_section_background #chat_form_send textarea
+	{
+		min-width: 50%;	
+		max-width: 50%;
+		min-height: 42px;
+		max-height: 42px;
+	}
+
+	#chat_section_background #chat_form_send #chat_send
+	{
+		width: 100px;
+        font-size: 18px;
+	}
+
+    #chat_section_background #messages
+    {
+        height: 290px;
+    }
+
+    #chat_section_background #messages .message #message_div_h_p #message_ban_all a img
+    {
+        width: 28px;
+    }
+
+    #chat_section_background #messages .message #message_div_h_p h4
+    {
+        font-size: 1em;
+    }
+
+    #chat_section_background #messages .message #message_div_h_p p
+    {
+        font-size: 1.2em;
+    }
+
+};

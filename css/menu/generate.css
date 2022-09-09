@@ -1,0 +1,208 @@
+
+
+/* GENERATE BACKGROUND */
+
+
+#generate_background
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 50px 0;
+}
+
+#generate_section_background
+{
+    text-align: center; 
+    font-family: var(--font_family);
+    background-color: var(--background_section);
+
+    border: 2px solid #000;
+    border-radius: 10px;
+    padding: 0 20px 20px;
+
+    width: 85%;       
+}
+
+
+/* GENERATE SECTION */
+
+
+#generate_section_background #generate_section_top #div_generate_section_name p
+{
+    font-size: 1.1em;
+    text-align: center;
+    font-weight: bold;
+
+    margin: 0;
+}
+
+#generate_section_background #generate_form
+{
+    padding-top: 20px;
+}
+
+#generate_section_background #generate_form #input_un
+{
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+    color: #aaaaaa;
+    background-color: var(--background_header);
+    width: 120px;
+    border: 2px solid #000;
+    border-radius: 10px;
+    padding: 10px;
+
+    display: block;
+    margin: auto;
+}
+
+#generate_section_background #generate_form #input_un:hover
+{
+    color: #fff; /* DARK BLUE */
+    opacity: 0.9;
+}
+
+#generate_section_background #generate_form #input_deux
+{
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+    color: #aaaaaa;
+    background-color: var(--background_header);
+    width: 120px;
+    border: 2px solid #000;
+    border-radius: 10px;
+    padding: 10px;
+    display: block;
+    margin: auto;
+    margin-top: 20px;
+}
+
+#generate_section_background #generate_form #input_deux:hover
+{
+    color: #fff; /* DARK BLUE */
+    opacity: 0.9;
+}
+
+#generate_section_background #generate_form #generate_show
+{
+    border-top: 2px solid #000;
+    border-bottom: 2px solid #000;
+    border-right: 2px solid #000;
+    border-left: 2px solid #000;
+
+    padding-top: 15px;
+    margin-top: 50px;
+}
+
+#generate_section_background #generate_form #generate_show #generate_show_all
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding-bottom: 20px;
+}
+
+#generate_section_background #generate_form #generate_show #generate_show_all #generate_show_both
+{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 80%;
+}
+
+#generate_section_background #generate_form #generate_show #generate_show_all #generate_show_both #div_un
+{
+    text-align: left;
+
+    width: 40%;    
+}
+
+#generate_section_background #generate_form #generate_show #generate_show_all #generate_show_both #div_un p
+{
+    margin: 0;
+    font-size: 1.1em;
+}
+
+#generate_section_background #generate_form #generate_show #generate_show_all #generate_show_both #div_deux
+{
+    display: flex;
+    justify-content: end;
+
+    width: 60%;    
+}
+
+#generate_section_background #generate_form #generate_show #generate_show_all #generate_show_both #div_deux p
+{
+    margin: 0;
+    font-size: 1.1em;
+
+    display: flex;
+    align-items: center;
+
+    padding-right: 10px;
+}
+
+#generate_section_background #generate_form #generate_show #generate_show_all #generate_show_both #div_deux a
+{
+    display: flex;
+    align-items: center;
+}
+
+#generate_section_background #generate_form #generate_show #generate_show_all #generate_show_both #div_deux a img
+{
+    width: 25px;
+
+    cursor: pointer;
+
+    border: 2px solid #FF0000;    
+}
+
+
+@media only screen and (min-width: 960px)
+{
+
+    /* GENERATE BACKGROUND */
+
+
+    #generate_background
+    {
+        padding: 112px 0 50px 0;
+    }
+
+
+    /* GENERATE SECTION */    
+
+
+    #generate_section_background #generate_section_top #div_generate_section_name p
+    {
+        font-size: 1.2em;
+    }
+
+    #generate_section_background #generate_form #input_un
+    {
+        width: 150px;
+        font-size: 17px;   
+    }
+
+    #generate_section_background #generate_form #input_deux
+    {
+        width: 150px;
+        font-size: 17px;   
+    }
+
+    #generate_section_background #generate_form #generate_show #generate_show_all #generate_show_both #div_un p
+    {
+        font-size: 1.2em;
+    }
+
+    #generate_section_background #generate_form #generate_show #generate_show_all #generate_show_both #div_deux p
+    {
+        font-size: 1.2em;
+    }
+
+}

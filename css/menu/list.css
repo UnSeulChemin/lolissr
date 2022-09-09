@@ -1,0 +1,225 @@
+
+
+/* LIST BACKGROUND */
+
+
+#list_background
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 50px 0;
+}
+
+#list_section_background
+{
+    text-align: center; 
+    font-family: var(--font_family);
+    background-color: var(--background_section); /* LITTLE WHITE */
+
+    border: 2px solid #000;
+    border-radius: 10px;
+    padding: 0 20px 20px;  
+
+    width: 85%;
+}
+
+
+/* LIST SECTION */
+
+
+#list_section_background #list_section #picture_by_type ul
+{
+	list-style-type: none;
+
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+
+	padding-left: 0;
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+#list_section_background #list_section #picture_by_type ul li
+{
+	display: inline-block;
+
+	padding: 10px 0 10px 0;
+	margin-right: 10px;
+}
+
+#list_section_background #list_section #picture_by_type ul li:last-child
+{
+	margin-right: 0;
+}
+
+#list_section_background #list_section #picture_by_type ul li a
+{
+	text-decoration: none;
+	font-size: 1.1em;
+	font-weight: bold;
+	color: #aaaaaa;
+	background-color: var(--background_header);
+
+	border: 2px solid #000;
+	border-radius: 10px;
+	padding: 10px;	
+}
+
+#list_section_background #list_section #picture_by_type ul li a:hover
+{
+	color: #fff; /* DARK BLUE */
+	opacity: 0.9;
+}
+
+#list_section_background #list_section #picture_by_type #list_type_div_un
+{
+	display: flex;
+	justify-content: center;
+}
+
+#list_section_background #list_section #picture_by_type #list_type_div_deux
+{
+	display: flex;
+	justify-content: center;
+
+	margin-top: 10px;
+}
+
+#list_section_background #list_section #picture_by_gender ul
+{
+	list-style-type: none;
+
+	padding-left: 0;
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+#list_section_background #list_section #picture_by_gender ul li
+{
+	display: inline-block;
+
+	padding: 10px 0 10px 0;
+	margin-right: 5px;
+}
+
+#list_section_background #list_section #picture_by_gender ul li:last-child
+{
+	margin-right: 0;
+}
+
+#list_section_background #list_section #picture_by_gender ul li a
+{
+	text-decoration: none;
+	font-size: 1.1em;
+	font-weight: bold;
+	color: #aaaaaa;
+	background-color: var(--background_header);
+
+	border: 2px solid #000;
+	border-radius: 10px;
+	padding: 10px;	
+}
+
+#list_section_background #list_section #picture_by_gender ul li a:hover
+{
+	color: #fff; /* DARK BLUE */
+	opacity: 0.9;
+}
+
+#list_section_background #list_section #other_picture ul
+{
+	list-style-type: none;
+
+	padding-left: 0;
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+#list_section_background #list_section #other_picture ul li
+{
+	display: inline-block;
+
+	padding: 10px 0 10px 0;
+	margin-right: 5px;
+}
+
+#list_section_background #list_section #other_picture ul li:last-child
+{
+	margin-right: 0;
+}
+
+#list_section_background #list_section #other_picture ul li a
+{
+	text-decoration: none;
+	font-size: 1.1em;
+	font-weight: bold;
+	color: #aaaaaa;
+	background-color: var(--background_header);
+
+	border: 2px solid #000;
+	border-radius: 10px;
+	padding: 10px;	
+}
+
+#list_section_background #list_section #other_picture ul li a:hover
+{
+	color: #fff; /* DARK BLUE */
+	opacity: 0.9;
+}
+
+
+/* MEDIA QUERIES */
+
+
+@media only screen and (min-width: 960px)
+{
+
+
+	/* LIST BACKGROUND */
+
+
+	#list_background
+   	{
+   		padding: 112px 0 50px 0;
+  	}
+
+
+	/* LIST SECTION */
+
+
+	#list_section_background #list_section #picture_by_type ul
+	{
+        display: flex;
+
+        flex-direction: unset;
+	}
+
+	#list_section_background #list_section #picture_by_type ul li a
+	{
+		font-size: 1.2em;
+	}
+
+	#list_section_background #list_section #picture_by_type #list_type_div_deux
+	{
+		margin-top: 0;
+	}
+
+	#list_section_background #list_section #picture_by_type #list_type_div_deux li
+	{
+		margin-left: 10px;
+	}
+
+	#list_section_background #list_section #picture_by_gender ul li a
+	{
+		font-size: 1.2em;
+	}
+
+	#list_section_background #list_section #other_picture ul li a
+	{
+		font-size: 1.2em;
+	}
+
+};

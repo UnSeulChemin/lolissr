@@ -1,0 +1,396 @@
+
+
+/* ADMIN BACKGROUND */
+
+
+#admin_background
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 50px 0;
+}
+
+#admin_section_background
+{
+    text-align: center; 
+    font-family: var(--font_family);
+    background-color: var(--background_section);
+
+    border: 2px solid #000;
+    border-radius: 10px;
+    padding: 0 20px 20px;   
+
+    width: 85%;
+}
+
+
+/* ADMIN SECTION */
+
+
+#admin_section_background #admin_section #admin_section_top #div_admin_section_name
+{
+    padding: 0 0 20px 0;    
+}
+
+#admin_section_background #admin_section #admin_section_top #div_admin_section_name p
+{
+    font-size: 1.1em;
+    text-align: center;
+    font-weight: bold;
+
+    margin: 0;
+}
+
+#admin_section_background #admin_section #search_form
+{
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+#admin_section_background #admin_section #search_form #search_form_div
+{
+    display: flex;
+    align-items: center;
+
+    padding: 0 0 20px 0;    
+}
+
+#admin_section_background #admin_section #search_form #search_form_div #search_form_search
+{
+    width: 80%;
+    height: 100%;
+    font-size: 1em;
+    font-weight: bold;
+    color: #000000;
+    background-color: var(--background_section);
+
+    border: 2px solid #000000;
+    padding: 0;
+    margin-right: 20px;
+}
+
+#admin_section_background #admin_section #search_form #search_form_div #search_form_submit
+{
+    cursor: pointer;
+    display: block;
+    font-size: 16px;
+    font-weight: bold;
+    color: #aaaaaa;
+    background-color: var(--background_header);
+
+    width: 80px;
+    border: 2px solid #000;
+    border-radius: 10px;
+    padding: 5px;    
+}
+
+#admin_section_background #admin_section #search_form #search_form_div #search_form_submit:hover
+{
+    color: #fff; /* DARK BLUE */
+    opacity: 0.9;
+}
+
+#admin_section_background #admin_section #add_form
+{
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+#admin_section_background #admin_section #add_form #add_form_div
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    padding: 0 0 20px 0;    
+}
+
+#admin_section_background #admin_section #add_form #add_form_div #add_form_username
+{
+    font-size: 1em;
+    font-weight: bold;
+    color: #000000;
+    background-color: var(--background_section);
+
+    border: 2px solid #000000;
+    padding: 0;
+
+    margin-bottom: 20px;
+}
+
+#admin_section_background #admin_section #add_form #add_form_div #add_form_email
+{
+    font-size: 1em;
+    font-weight: bold;
+    color: #000000;
+    background-color: var(--background_section);
+
+    border: 2px solid #000000;
+    padding: 0;
+
+    margin-bottom: 20px;    
+}
+
+#admin_section_background #admin_section #add_form #add_form_div #add_form_password
+{
+    font-size: 1em;
+    font-weight: bold;
+    color: #000000;
+    background-color: var(--background_section);
+
+    border: 2px solid #000000;
+    padding: 0;
+
+    margin-bottom: 20px;    
+}
+
+#admin_section_background #admin_section #add_form #add_form_div #add_form_submit
+{
+    cursor: pointer;
+    display: block;
+    font-size: 16px;
+    font-weight: bold;
+    color: #aaaaaa;
+    background-color: var(--background_header);
+
+    width: 80px;
+    border: 2px solid #000;
+    border-radius: 10px;
+    padding: 5px;
+}
+
+#admin_section_background #admin_section #add_form #add_form_div #add_form_submit:hover
+{
+    color: #fff; /* DARK BLUE */
+    opacity: 0.9;    
+}
+
+#admin_section_background #admin_section .review_right
+{
+    font-size: 1.1em;    
+    font-weight: bold;       
+    color: #32CD32; /* limegreen */
+
+    padding-bottom: 20px;    
+    margin: 0;    
+}
+
+#admin_section_background #admin_section .review_wrong
+{
+    font-size: 1.1em;    
+    font-weight: bold;
+    color: #DC143C; /*  crimson */    
+
+    padding-bottom: 20px;    
+    margin: 0;
+}
+
+#admin_section_background #admin_section #total_users
+{
+    padding-bottom: 20px;
+}
+
+#admin_section_background #admin_section #total_users p
+{
+    font-size: 1em;
+    font-weight: bold;
+    text-align: center;
+
+    margin: 0;
+}
+
+#admin_section_background #admin_section #show_n_react
+{
+    border-top: 2px solid #000;
+    border-bottom: 2px solid #000;
+    border-right: 2px solid #000;
+    border-left: 2px solid #000;
+
+    padding-bottom: 15px;
+}
+
+#admin_section_background #admin_section #show_n_react .show_n_react_div
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#admin_section_background #admin_section #show_n_react .show_n_react_div:last-child
+{
+    padding-bottom: 0;
+}
+
+#admin_section_background #admin_section #show_n_react .show_n_react_div .show_n_react_div_un #show_n_react_div_un_img
+{
+    margin : 15px 15px 15px 15px;
+}
+
+#admin_section_background #admin_section #show_n_react .show_n_react_div .show_n_react_div_un #show_n_react_div_un_img img
+{
+    width: 100px;
+    height: 100px;
+    border-radius: 50%; 
+}
+
+#admin_section_background #admin_section #show_n_react .show_n_react_div .show_n_react_div_un p
+{
+    font-size: 1.1em;
+
+    margin: 0;
+}
+
+#admin_section_background #admin_section #show_n_react .show_n_react_div .show_n_react_div_un
+{
+    width: 41%;
+}
+
+#admin_section_background #admin_section #show_n_react .show_n_react_div .show_n_react_div_deux
+{
+    width: 20%;    
+}
+
+#admin_section_background #admin_section #show_n_react .show_n_react_div .show_n_react_div_deux a
+{
+    cursor: pointer;
+}
+
+#admin_section_background #admin_section #show_n_react .show_n_react_div .show_n_react_div_deux a img 
+{
+    width: 50px;
+
+    border: 2px solid #FF0000;    
+}
+
+#admin_section_background #admin_section #show_n_react .show_n_react_div .show_n_react_div_trois
+{
+    width: 30%;
+}
+
+#admin_section_background #admin_section #show_n_react .show_n_react_div .show_n_react_div_trois a
+{
+    font-size: 1.1em;    
+    color: blue;
+    text-decoration: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#admin_section_background #admin_section #show_n_react .show_n_react_div .show_n_react_div_trois a img
+{
+    width: 50px;
+}
+
+
+@media only screen and (min-width: 960px)
+{
+
+    /* ADMIN BACKGROUND */
+
+
+    #admin_background
+    {
+        padding: 112px 0 50px 0;
+    }
+
+
+    /* ADMIN SECTION */
+
+
+    #admin_section_background #admin_section #admin_section_top #div_admin_section_name p
+    {
+        font-size: 1.2em;
+    }    
+
+    #admin_section_background #admin_section #search_form #search_form_div #search_form_search
+    {
+        font-size: 1.1em;
+    }
+
+    #admin_section_background #admin_section #search_form #search_form_div #search_form_submit
+    {
+        font-size: 18px;
+    }
+
+    #admin_section_background #admin_section #add_form #add_form_div
+    {
+        display: flex;
+        flex-direction: unset;
+    }
+
+    #admin_section_background #admin_section #add_form #add_form_div #add_form_username
+    {
+        font-size: 1.1em;
+
+        width: 80%;
+        height: 100%;
+        margin-right: 20px;
+        margin-bottom: 0;
+    }
+
+    #admin_section_background #admin_section #add_form #add_form_div #add_form_email
+    {
+        font-size: 1.1em;
+        width: 80%;
+        height: 100%;
+        margin-right: 20px;
+        margin-bottom: 0;  
+    }    
+
+    #admin_section_background #admin_section #add_form #add_form_div #add_form_password
+    {
+        font-size: 1.1em;
+        width: 80%;
+        height: 100%;
+        margin-right: 20px;
+        margin-bottom: 0;        
+    }
+
+    #admin_section_background #admin_section #add_form #add_form_div #add_form_submit
+    {
+        font-size: 18px;
+    }
+
+    #admin_section_background #admin_section #total_users p
+    {
+        font-size: 1.1em;
+    }
+
+    #admin_section_background #admin_section #show_n_react
+    {
+        padding-bottom: 0;
+    }
+
+    #admin_section_background #admin_section #show_n_react .show_n_react_div .show_n_react_div_un
+    {
+        width: 52%;
+
+        display: flex;
+        align-items: center;
+    }
+
+    #admin_section_background #admin_section #show_n_react .show_n_react_div .show_n_react_div_deux
+    {
+        width: 25%;    
+    }
+
+    #admin_section_background #admin_section #show_n_react .show_n_react_div .show_n_react_div_trois
+    {
+        width: 20%;
+    }    
+
+    #admin_section_background #admin_section #show_n_react .show_n_react_div .show_n_react_div_un p
+    {
+        font-size: 1.2em;
+    }
+
+    #admin_section_background #admin_section #show_n_react .show_n_react_div .show_n_react_div_trois a
+    {
+        font-size: 1.2em;
+    }    
+
+};

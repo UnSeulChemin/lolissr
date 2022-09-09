@@ -1,0 +1,359 @@
+
+
+/* CONTACT BACKGROUND */
+
+
+#contact_background
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    padding: 50px 0;
+}
+
+#contact_section_background
+{
+    text-align: center; 
+    font-family: var(--font_family);
+    background-color: var(--background_section);
+
+    border: 2px solid #000;
+    border-radius: 10px;
+    padding: 0 20px 20px;
+
+    width: 85%;    
+}
+
+#contact_section_admin
+{
+    text-align: center; 
+    font-family: var(--font_family);
+    background-color: var(--background_section);
+
+    border: 2px solid #000;
+    border-radius: 10px;
+    padding: 0 20px 0 20px;    
+    margin-top: 50px;  
+
+    width: 85%;    
+}
+
+
+/* SECTION TOP */
+
+
+#contact_section_background .h_div
+{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#contact_section_background .h_div .element
+{
+    display: flex;
+
+    cursor: pointer;
+    background-color: #aaaaaa;
+    border-radius: 10px;
+
+    position: relative;
+    margin-left: 11px; 
+}
+
+#contact_section_background .h_div .element:hover > .infobulle
+{
+    transform: scale(1) rotateX(0deg);
+}
+
+#contact_section_background .h_div .element img
+{
+    width: 30px;
+}
+
+#contact_section_background .h_div .element .infobulle
+{
+    width: 190px;
+    height: 124px;
+    font-size: 0.8em;
+    transform: scale(0) rotateX(-180deg);
+
+    color: white;
+    background-color: #2e3D48;
+    border-radius: 5px;
+    transition: 1s;
+
+    border-bottom: 3px solid rgba(255, 255, 255, 0.3);
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;    
+    box-shadow: 1px 1px 0 0.5px rgba(0, 0, 0, 0.3);
+    padding: 0 5px 0 5px;
+
+    position: absolute;
+    right: 2px;
+    bottom: -136px;   
+}
+
+#contact_section_background .h_div .element .infobulle::before
+{
+    content: '';
+
+    border-bottom: 8px solid #2e3D48;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    margin-top: -8px;
+    margin-left: 74px;
+
+    position: absolute;
+}
+
+
+/* CONTACT SECTION */
+
+
+#contact_section_background #contact_section
+{
+	font-size: 1.1em;
+}
+
+#contact_section_background #contact_section label
+{
+	display: block;
+	font-size: 1.1em;
+
+	padding: 10px 0;
+}
+
+#contact_section_background #contact_section label:first-of-type
+{
+	padding: 0 0 10px 0;
+}
+
+#contact_section_background #contact_section input
+{
+	width: 65%;	
+	max-width: 100%;
+}
+
+#contact_section_background #contact_section textarea
+{
+	min-width: 65%;	
+	max-width: 65%;
+	min-height: 100px;
+	max-height: 100px;
+}
+
+#contact_section_background #contact_section .review_right
+{
+	color: #32CD32; /* limegreen */
+	font-weight: bold;
+	
+	margin-top: 16px;
+	margin-bottom: 0;
+}
+
+#contact_section_background #contact_section .review_wrong
+{
+	color: #DC143C; /* 	crimson */
+	font-weight: bold;
+	
+	margin-top: 16px;
+	margin-bottom: 0;
+}
+
+#contact_section_background #contact_section #form_submit
+{
+	display: block;
+	font-size: 15px;
+	font-weight: bold;
+  color: #aaaaaa; /* WHITE */
+  background-color: var(--background_header);
+
+	width: 120px;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 0;
+  margin: auto;
+  margin-top: 20px;
+}
+
+#contact_section_background #contact_section #form_submit:hover
+{
+	cursor: pointer;
+	color: #fff; /* DARK BLUE */
+	opacity: 0.9;
+}
+
+
+/* IF ADMIN */
+
+#contact_section_admin #message_n_dump_all
+{
+font-size: 1.2em;
+    font-weight: bold;
+    color: #aaaaaa;
+    text-align: left;
+    display: flex;
+    justify-content: flex-end;
+    margin: 0;
+    padding: 20px 0 10px 10px;
+}
+
+#contact_section_admin #message_n_dump_all a
+{
+	cursor: pointer;
+    border: 2px solid #FF0000;
+    display: flex;
+    align-items: center;
+}
+
+#contact_section_admin #message_n_dump_all a img
+{
+    width: 30px;
+}
+
+#contact_section_admin #contact_section_admin_text
+{
+	text-align: justify;
+}
+
+#contact_section_admin #contact_section_admin_text p
+{
+	padding: 10px 0;
+	margin: 0;
+	font-size: 1.1em;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;	
+}
+
+#contact_section_admin #contact_section_admin_text p:first-of-type
+{
+	padding-top: 20px;
+	font-weight: bold;
+}
+
+#contact_section_admin #contact_section_admin_text p a
+{
+    cursor: pointer;
+    border: 2px solid #FFFF00;
+    position: relative;
+    left: 10px;
+    bottom: 0;	
+}
+
+#contact_section_admin #contact_section_admin_text p a img
+{
+	display: flex;
+	width: 25px;
+}
+
+#contact_section_admin #contact_section_admin_text #message_n_dump
+{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;	
+
+    margin-bottom: 10px;
+
+    border: 2px solid #FFFF00;
+}
+
+#contact_section_admin #contact_section_admin_text #message_n_dump p
+{
+	padding: 0;
+	margin: 0;
+	font-size: 1.1em;	
+	font-weight: 400;
+}
+
+#contact_section_admin #contact_section_admin_text a
+{
+	display: flex;
+
+    cursor: pointer;
+}
+
+#contact_section_admin #contact_section_admin_text a img
+{
+    width: 31px;
+}
+
+/* IF ADMIN */
+
+
+/* MEDIA QUERIES */
+
+
+@media only screen and (min-width: 960px)
+{
+
+
+	/* CONTACT BACKGROUND */
+
+
+	#contact_background
+   	{
+   		padding: 112px 0 50px 0;
+  	}
+
+
+	/* CONTACT SECTION */
+
+
+	#contact_section_background #contact_section
+	{
+		font-size: 1.1em;
+		text-align: center;
+	}
+
+	#contact_section_background #contact_section input
+	{
+		width: 40%;	
+		max-width:40%;
+	}
+
+	#contact_section_background #contact_section textarea
+	{
+		min-width: 40%;	
+		max-width:40%;
+	}
+
+	#contact_section_background #contact_section #form_submit
+	{
+		width: 150px;
+		font-size: 17px;
+
+	  padding: 12px 0;
+	}
+
+	/* IF ADMIN */
+
+	#contact_section_admin #message_n_dump_all a img
+	{
+	    width: 45px;
+	}
+
+	/* IF ADMIN */
+
+	#contact_section_admin #contact_section_admin_text p
+	{
+		font-size: 1.2em;
+	}
+
+	#contact_section_admin #contact_section_admin_text #message_n_dump p
+	{
+		font-size: 1.2em;
+	}
+
+	#contact_section_admin #contact_section_admin_text p a img
+	{
+		width: 28px;
+	}
+
+
+
+};

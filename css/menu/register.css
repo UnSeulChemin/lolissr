@@ -1,0 +1,279 @@
+
+
+/* REGISTER BACKGROUND */
+
+
+#register_background
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 50px 0;
+}
+
+#register_section_background
+{
+	text-align: center;	
+    font-family: var(--font_family);
+	background-color: var(--background_section);
+
+	width: 300px;
+
+  	border: 2px solid #000;
+  	border-radius: 10px;
+	padding: 0 20px 20px 20px;
+
+    width: 85%;	
+}
+
+
+/* SECTION TOP */
+
+
+#register_section_background #register_section_top .h_div
+{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#register_section_background #register_section_top .h_div .element
+{
+    display: flex;
+
+    cursor: pointer;
+    background-color: #aaaaaa;
+    border-radius: 10px;
+
+    margin-left: 11px;
+
+    position: relative;
+    z-index: 999;
+}
+
+#register_section_background #register_section_top .h_div .element:hover > .infobulle
+{
+    transform: scale(1) rotateX(0deg);
+}
+
+#register_section_background #register_section_top .h_div .element img
+{
+    width: 30px;
+}
+
+#register_section_background #register_section_top .h_div .element .infobulle
+{
+    width: 275px;
+    height: 176px;
+    font-size: 0.8em;
+    transform: scale(0) rotateX(-180deg);
+
+    color: white;
+    background-color: #2e3D48;
+    border-radius: 5px;
+    transition: 1s;
+
+    border-bottom: 3px solid rgba(255, 255, 255, 0.3);
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;    
+    box-shadow: 1px 1px 0 0.5px rgba(0, 0, 0, 0.3);
+    padding: 0 5px 0 5px;
+
+    position: absolute;
+    right: 1px;
+    bottom: -187px;        
+}
+
+#register_section_background #register_section_top .h_div .element .infobulle::before
+{
+    content: '';
+
+    border-bottom: 8px solid #2e3D48;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    margin-top: -8px;
+    margin-left: 115px;
+
+    position: absolute;    
+}
+
+
+/* REGISTER SECTION */
+
+
+#register_section_background #register_section p
+{
+	font-size: 1.1em;
+
+	margin: 0 0 15px 0;
+}
+
+#register_section_background #register_section input
+{
+	margin: auto;
+	width: 65%;
+	max-width: 100%;
+}
+
+#register_section_background #register_section #register_section_username_div
+{
+	position: relative;
+	top: 0;
+	right: 12px;
+
+	margin-bottom: 15px;	
+}
+
+#register_section_background #register_section #register_section_email_div
+{
+	position: relative;
+	top: 0;
+	right: 12px;
+
+	margin-bottom: 15px;
+}
+
+#register_section_background #register_section #register_section_password_div
+{
+	margin-bottom: 15px;
+}
+
+#register_section_background #register_section #register_section_password_div #eye
+{
+	height: 20px;
+	cursor: pointer;
+	vertical-align: middle;
+}
+
+#register_section_background #register_section #register_section_password_x_div #eye_x
+{
+	height: 20px;
+	cursor: pointer;
+	vertical-align: middle;	
+}
+
+#register_section_background #register_section #register_section_footer #img_captcha
+{
+	position: relative;
+	top: 7px;
+	left: 0;
+
+	margin-top: 10px;	
+}
+
+#register_section_background #register_section #register_section_footer #input_captcha
+{
+	width: 50px;
+	display: inline-block;
+
+	padding: 3px;
+	margin-bottom: 0;
+}
+
+#register_section_background #register_section #register_section_footer .review_right
+{
+	color: #32CD32; /* limegreen */
+	font-weight: bold;
+
+	margin-top: 20px;
+}
+
+#register_section_background #register_section #register_section_footer .review_right .review_right_a
+{
+	display: block;
+
+    font-size: 15px;
+    font-weight: bold;
+    text-decoration: none;    
+    color: #aaaaaa;
+    background-color: var(--background_header);
+    width: 120px;
+
+    border: none;
+    border-radius: 10px;
+    padding: 10px 0;
+    margin: auto;
+    margin-top: 20px;
+}
+
+#register_section_background #register_section #register_section_footer .review_right .review_right_a:hover
+{
+	color: #fff; /* DARK BLUE */
+	opacity: 0.9;	
+}
+
+#register_section_background #register_section #register_section_footer .review_wrong
+{
+	color: #DC143C; /* 	crimson */
+	font-weight: bold;
+	
+	margin-top: 20px;
+}
+
+#register_section_background #register_section #register_section_footer #register_submit
+{
+	display: block;
+	font-size: 15px;
+	font-weight: bold;
+  color: #aaaaaa; /* WHITE */
+  background-color: var(--background_header);
+
+	width: 120px;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 0;
+  margin: auto;
+  margin-top: 20px;	
+}
+
+#register_section_background #register_section #register_section_footer #register_submit:hover
+{
+	cursor: pointer;
+	color: #fff; /* DARK BLUE */
+	opacity: 0.9;
+}
+
+
+@media only screen and (min-width: 960px)
+{
+
+
+	/* REGISTER BACKGROUND */
+
+
+   #register_background
+   {
+        padding: 112px 0 50px 0;
+   }
+
+
+	/* REGISTER FORM */
+
+
+	#register_section_background #register_section p
+	{
+		font-size: 1.2em;
+	}
+
+	#register_section_background #register_section input
+	{
+		width: 40%;	
+		max-width:40%;
+	}
+
+	#register_section_background #register_section #register_section_footer .review_right .review_right_a
+	{
+		width: 150px;
+	    font-size: 17px;
+	    padding: 12px 0;
+	}
+
+	#register_section_background #register_section #register_section_footer #register_submit
+	{
+		width: 150px;
+		font-size: 17px;
+
+		padding: 12px 0;
+	}
+};

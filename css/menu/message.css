@@ -1,0 +1,177 @@
+
+
+/* MESSAGE BACKGROUND */
+
+#message_background
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 50px 0;
+}
+
+#message_section_background
+{
+	display: flex;
+
+	text-align: center;	
+    font-family: var(--font_family);
+	background-color: var(--background_section);
+
+    border: 2px solid #000;
+    border-radius: 10px;
+
+    width: 85%;
+}
+
+
+/* MESSAGE SECTION */
+
+
+#message_section_background #message_section_un
+{
+	width: 50%;
+
+    border-right: 2px solid #000000;
+}
+
+#message_section_background #message_section_un #s_un_main .s_un_main_pun img
+{
+    width: 100px;
+    height: 100px;    
+    border-radius: 50%;
+}
+
+#message_section_background #message_section_un #s_un_main .s_un_main_pun p
+{
+    font-size: 1.1em;
+    text-align: center;
+    font-weight: bold;
+    padding: 10px 0;
+    margin: 0;
+}
+
+#message_section_background #message_section_un #s_un_main .s_un_main_pdeux
+{
+    padding: 0 0 20px 0;
+
+    display: flex;
+    justify-content: space-around;    
+}
+
+#message_section_background #message_section_un #s_un_main .s_un_main_pdeux a
+{
+    text-decoration: none;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: blue;
+    display: flex;
+}
+
+#message_section_background #message_section_un #s_un_main .s_un_main_pdeux #s_un_main_admin_delete
+{
+    cursor: pointer;
+}
+
+#message_section_background #message_section_un #s_un_main .s_un_main_pdeux a img
+{
+    width: 50px;
+}
+
+#message_section_background #message_section_un #s_un_main .s_un_main_pdeux a #delete
+{
+    border: 2px solid #FF0000;
+}
+
+#message_section_background #message_section_deux
+{
+	width: 50%;
+}
+
+#message_section_background #message_section_deux #s_deux_main .s_un_main_pun img
+{
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+}
+
+#message_section_background #message_section_deux #s_deux_main .s_un_main_pun p
+{
+    font-size: 1.1em;
+    text-align: center;
+    font-weight: bold;
+    padding: 10px 0;
+    margin: 0;
+}
+
+#message_section_background #message_section_deux #s_deux_main .s_un_main_pdeux
+{
+    padding: 0 0 20px 0;
+    display: flex;
+    justify-content: center;    
+}
+
+#message_section_background #message_section_deux #s_deux_main .s_un_main_pdeux a
+{
+    text-decoration: none;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: blue;
+    display: flex;
+}
+
+
+/* MEDIA QUERIES */
+
+
+@media only screen and (min-width: 960px)
+{
+
+
+    /* MESSAGE BACKGROUND */
+
+
+    #message_background
+    {
+        padding: 112px 0 50px 0;
+    }
+
+
+    /* MESSAGE SECTION */
+
+
+    #message_section_background #message_section_un #s_un_main .s_un_main_pun img
+    {
+        width: 150px;
+        height: 150px;
+    }
+
+    #message_section_background #message_section_un #s_un_main .s_un_main_pun p
+    {
+        font-size: 1.2em;
+    }
+
+    #message_section_background #message_section_un #s_un_main .s_un_main_pdeux
+    {
+        display: flex;
+        justify-content: center;
+    }
+
+    #message_section_background #message_section_un #s_un_main .s_un_main_pdeux #s_un_main_admin_delete
+    {
+        margin-left: 25px;
+    }    
+
+    #message_section_background #message_section_deux #s_deux_main .s_un_main_pun img
+    {
+        width: 150px;
+        height: 150px;        
+    }
+
+    #message_section_background #message_section_deux #s_deux_main .s_un_main_pun p
+    {
+        font-size: 1.2em;
+    }
+
+}

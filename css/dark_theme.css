@@ -1,0 +1,718 @@
+
+/*
+
+INDEX
+..
+MEMBERS
+
+*/
+
+
+/* SCROLL BAR */
+
+
+::-webkit-scrollbar
+{
+    width: 12px;
+}
+
+::-webkit-scrollbar-track
+{
+    background-color: #aaaaaa;
+}
+
+::-webkit-scrollbar-thumb
+{
+    background-color: #000000;
+}
+
+
+@supports (scrollbar-color: #000000 #aaaaaa)
+{
+    *
+    {
+        scrollbar-color: #000000 #aaaaaa;
+        scrollbar-width: auto;
+    }
+}
+
+
+/* DEFAULT */
+
+
+body
+{
+    background-color: #1c1e21;
+}
+
+
+/* INDEX */
+
+
+#index_background
+{
+	color: #fff;
+	background-color: #1c1e21;
+}
+
+.div_img
+{
+	background-color: #000000;
+
+	border: 2px solid #333333;	
+}
+
+.div_img .img_text .img_text_date
+{
+	background-color: #000000;
+
+    border-top: 2px solid #333333;	
+    border-bottom: 2px solid #333333;
+}
+
+.div_img .img_text .sub
+{
+    border-bottom: 2px solid #333333;	
+}
+
+header
+{
+	background-color: #000000;
+}
+
+header #header_first_part h1
+{
+	border-top: 2px solid #333;	
+	border-left: 2px solid #333;	
+	border-right: 2px solid #333;
+	border-bottom: 2px solid #333;		
+}
+
+header .accordion
+{
+	border-right: 2px solid #333;	
+	border-left: 2px solid #333;	
+}
+
+header .accordion-item nav ul li
+{
+	border-top: 2px solid #333;	
+	border-left: 2px solid #333;	
+	border-right: 2px solid #333;    
+}
+
+header .accordion-item nav ul li:last-of-type
+{
+    border: 2px solid #333;
+}
+
+header .accordion-item nav #header_online p
+{
+    border-left: 2px solid #333;
+    border-right: 2px solid #333;
+}
+
+header #header_last_part h2
+{
+    border-left: 2px solid #333;
+    border-right: 2px solid #333;
+    border-bottom: 2px solid #333;	
+}
+
+header #header_last_part h2:first-of-type
+{
+    border-top: 2px solid #333;	
+}
+
+.list_nav a
+{
+	background-color: #000000;
+
+	border: 2px solid #333333;
+}
+
+.section_top #section_top_div_dark .section_top_div_dark_container .icon_dark
+{
+	background-color: #000000;
+}
+
+.section_top #section_top_div_dark .section_top_div_dark_container .icon_dark:hover
+{
+	background-color: #333333;	
+}
+
+.index_footer_pages .index_footer_numbers a
+{
+	background-color: #000000;
+
+	border: 2px solid #333333;
+}
+
+
+/* LIST */
+
+
+#list_background
+{
+	background-color: #1c1e21;
+}
+
+#list_section_background
+{
+	background-color: #aaaaaa;
+
+	border: 2px solid #333333;
+}
+
+#list_section_background #list_section #picture_by_type ul li a
+{
+	background-color: #000000;
+
+	border: 2px solid #333333;
+}
+
+#list_section_background #list_section #picture_by_gender ul li a
+{
+	background-color: #000000;
+
+	border: 2px solid #333333;
+}
+
+#list_section_background #list_section #other_picture ul li a
+{
+	background-color: #000000;
+
+	border: 2px solid #333333;	
+}
+
+#list_section_background #list_section #exclusive_picture ul li a
+{
+	background-color: #000000;
+
+	border: 2px solid #333333;	
+}
+
+
+/* CONTACT */
+
+
+#contact_background
+{
+	background-color: #1c1e21;
+}
+
+#contact_section_background
+{
+	background-color: #aaaaaa;
+
+	border: 2px solid #333333;	
+}
+
+#contact_section_background #contact_section input
+{
+	background-color: #e6e6e6;	
+
+	border:  1px solid #000000;
+}
+
+#contact_section_background #contact_section textarea
+{
+	background-color: #e6e6e6;
+
+	border:  1px solid #000000;	
+}
+
+#contact_section_background #contact_section #form_submit
+{
+	background-color: #000000;
+}
+
+#contact_section_admin
+{
+	background-color: #aaaaaa;
+    border: 2px solid #333333;	
+}
+
+
+/* UPLOAD */
+
+
+#upload_background
+{
+	background-color: #1c1e21;
+}
+
+#upload_section_background
+{
+	background-color: #aaaaaa;
+
+	border: 2px solid #333333;
+}
+
+#upload_background #upload_img label
+{
+	background-color: #000000;
+
+	border: 2px solid #333333;
+}
+
+#upload_background #upload_img #upload_submit
+{
+	background-color: #000000;
+
+	border: 2px solid #333333;
+}
+
+#upload_section_background #show_img #show_img_div #img_text #img_text_date
+{
+	background-color: #000000;
+    border-top: 2px solid #333333;
+    border-bottom: 2px solid #333333;
+}
+
+#upload_section_background #show_img #show_img_div #img_text #img_text_size
+{
+    background-color: #000000;
+    border-bottom: 2px solid #333333;	
+}
+
+#upload_section_background #show_img #show_img_div #img_text #img_text_type
+{
+	background-color: #000000;
+    border-bottom: 2px solid #333333;
+}
+
+#upload_section_background #show_img #show_img_div #delete_img_div
+{
+    border-bottom: 2px solid #333333;	
+}
+
+#upload_section_admin
+{
+	background-color: #aaaaaa;
+    border: 2px solid #333333;	
+}
+
+
+/* REGISTER */
+
+
+#register_background
+{
+	background-color: #1c1e21;
+}
+
+#register_section_background
+{
+	background-color: #aaaaaa;
+
+	border: 2px solid #333333;
+}
+
+#register_section_background #register_section #register_section_footer #register_submit
+{
+	background-color: #000000;
+}
+
+
+/* LOGIN */
+
+
+#login_background
+{
+	background-color: #1c1e21;	
+}
+
+#login_section_background
+{
+	background-color: #aaaaaa;
+
+	border: 2px solid #333333;	
+}
+
+#login_section_background #login_section #login_section_footer #login_submit
+{
+	background-color: #000000;
+}
+
+#login_section_background #login_section #login_section_footer #forgot_password
+{
+	background-color: #000000;	
+}
+
+
+/* KEAI */
+
+
+#keai_background
+{
+	color: #fff;	
+	background-color: #1c1e21;	
+}
+
+
+/* LUOLI */
+
+
+#luoli_background
+{
+	color: #fff;	
+	background-color: #1c1e21;	
+}
+
+
+/* YUJIE */
+
+
+#yujie_background
+{
+	color: #fff;	
+	background-color: #1c1e21;	
+}
+
+
+/* NV BACKGROUND */
+
+
+#nv_background
+{
+	color: #fff;	
+	background-color: #1c1e21;
+}
+
+
+/* MEMBERS */
+
+/* HEADER */
+
+
+#header_last_part #header_member #header_member_div_img
+{
+    border-top: 2px solid #333;
+    border-right: 2px solid #333;
+    border-left: 2px solid #333;	
+}
+
+#header_last_part #header_member #header_member_div #header_member_name
+{
+    border-bottom: 2px solid #333;
+	border-right: 2px solid #333;
+    border-left: 2px solid #333;
+}
+
+#header_last_part #header_member #header_member_div #header_member_logout
+{
+    border-bottom: 2px solid #333;
+	border-right: 2px solid #333;
+    border-left: 2px solid #333;    
+}
+
+
+/* CHAT BACKGROUND  */
+
+
+#chat_background
+{
+	background-color: #1c1e21;	
+}
+
+#chat_section_background
+{
+	background-color: #aaaaaa;
+
+	border: 2px solid #333333;	
+}
+
+#chat_section_background #chat_form_send textarea
+{
+	background-color: #e6e6e6;	
+	
+	border:  1px solid #000000;
+}
+
+#chat_section_background #chat_form_send #chat_send
+{
+	background-color: #000000;
+
+	border: 2px solid #333333;	
+}
+
+
+/* MESSAGE BACKGROUND */
+
+
+#message_background
+{
+	background-color: #1c1e21;
+}
+
+#message_section_background
+{
+	background-color: #aaaaaa;
+
+	border: 2px solid #333333;
+}
+
+
+/* PRIVATE BACKGROUND */
+
+
+#private_background
+{
+	background-color: #1c1e21;	
+}
+
+#private_section_background
+{
+	background-color: #aaaaaa;
+
+	border: 2px solid #333333;	
+}
+
+#private_section_background #private_section #private_form textarea
+{
+	background-color: #e6e6e6;
+	
+	border:  1px solid #000000;
+}
+
+
+/* ADMIN BACKGROUND */
+
+
+#admin_background
+{
+	background-color: #1c1e21;
+}
+
+#admin_section_background
+{
+	background-color: #aaaaaa;
+
+	border: 2px solid #333333;	
+}
+
+#admin_section_background #admin_section #search_form #search_form_div #search_form_search
+{
+    background-color: #e6e6e6;
+
+    border: 1px solid #000000;	
+}
+
+#admin_section_background #admin_section #search_form #search_form_div #search_form_submit
+{
+    background-color: #000000;
+    
+    border: 2px solid #333333;
+}
+
+#admin_section_background #admin_section #add_form #add_form_div #add_form_username
+{
+    background-color: #e6e6e6;
+
+    border: 1px solid #000000;		
+}
+
+#admin_section_background #admin_section #add_form #add_form_div #add_form_email
+{
+    background-color: #e6e6e6;
+
+    border: 1px solid #000000;		
+}
+
+#admin_section_background #admin_section #add_form #add_form_div #add_form_password
+{
+    background-color: #e6e6e6;
+
+    border: 1px solid #000000;		
+}
+
+#admin_section_background #admin_section #add_form #add_form_div #add_form_submit
+{
+    background-color: #000000;
+
+    border: 2px solid #333333;	
+}
+
+
+/* GENERATE BACKGROUND */
+
+
+#generate_background
+{
+	background-color: #1c1e21;
+}
+
+#generate_section_background
+{
+	background-color: #aaaaaa;
+
+	border: 2px solid #333333;	
+}
+
+#generate_section_background #generate_form #input_un
+{
+    background-color: #000000;
+    border: 2px solid #333333;	
+}
+
+#generate_section_background #generate_form #input_deux
+{
+    background-color: #000000;
+    border: 2px solid #333333;	
+}
+
+
+/* SETTINGS BACKGROUND  */
+
+
+#settings_background
+{
+	background-color: #1c1e21;	
+}
+
+#settings_section_background
+{
+	background-color: #aaaaaa;
+
+	border: 2px solid #333333;	
+}
+
+#settings_section_background #settings_things #settings_things_avatar form #avatar_send_div label
+{
+	background-color: #000000;
+
+	border: 2px solid #333333;
+}
+
+#settings_section_background #settings_things #settings_things_avatar form #avatar_send_div #submit_header
+{
+	background-color: #000000;
+
+	border: 2px solid #333333;	
+}
+
+#settings_section_background #settings_things #settings_things_name form #name_change_div #submit_text
+{
+	background-color: #e6e6e6;	
+	
+	border:  1px solid #000000;
+}
+
+#settings_section_background #settings_things #settings_things_name form #name_change_div #submit_name
+{
+	background-color: #000000;
+
+	border: 2px solid #333333;
+}
+
+#settings_section_background #settings_things #settings_things_password form #password_change_div #submit_text_password
+{
+	background-color: #e6e6e6;	
+	
+	border:  1px solid #000000;
+}
+
+#settings_section_background #settings_things #settings_things_password form #password_change_div #submit_name_password
+{
+	background-color: #000000;
+
+	border: 2px solid #333333;	
+}
+
+#settings_section_background #settings_things #settings_things_delete a
+{
+	background-color: #000000;
+    border: 2px solid #333333;	
+}
+
+
+/* ADMIN */
+
+/* HEADER */
+
+
+#header_last_part #header_admin #header_admin_div #header_admin_name
+{
+    border-bottom: 2px solid #333;	
+}
+
+#header_last_part #header_admin #header_admin_div #header_admin_logout
+{
+    border-bottom: 2px solid #333;
+}
+
+
+@media only screen and (min-width: 960px)
+{
+
+
+    /* HEADER */
+
+
+	#header_last_part #header_member #header_member_div_img
+	{
+	    border: none;
+	}
+
+    header #header_first_part h1
+    {
+    	border: none;
+    }
+
+    header .accordion-item nav ul li
+    {
+    	border: none;
+    }
+
+    header .accordion-item nav ul li:last-of-type
+    {
+    	border: none;
+    }
+
+    header .accordion-item nav #header_online p
+    {
+    	border: none;
+    }
+
+    header #header_last_part h2
+    {
+    	border: none;
+    }
+
+	header #header_last_part h2:first-of-type
+	{
+	    border: none;	
+	}
+
+	#header_last_part #header_member #header_member_div #header_member_name
+	{
+		border: none;	
+	}
+
+	#header_last_part #header_member #header_member_div #header_member_logout
+	{
+		border: none;
+	}
+
+
+	/* ADMIN */
+
+	/* HEADER */
+
+	header .accordion-item nav #header_online p
+	{
+	    border-bottom: none;
+	}
+
+	#header_last_part #header_admin #header_admin_div #header_admin_name
+	{
+	    border-bottom: none;	
+	}
+
+	#header_last_part #header_admin #header_admin_div #header_admin_logout
+	{
+	    border-bottom: none;
+	}
+
+}

@@ -1,0 +1,450 @@
+
+
+/* UPLOAD BACKGROUND */
+
+
+#upload_background
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    padding: 50px 0;
+}
+
+#upload_section_background
+{
+    text-align: center; 
+    font-family: var(--font_family);
+    background-color: var(--background_section);
+
+    border: 2px solid #000;
+    border-radius: 10px;
+    padding: 0 20px 20px;  
+
+    width: 85%;    
+}
+
+#upload_section_admin
+{
+    text-align: center; 
+    font-family: var(--font_family);
+    background-color: var(--background_section);
+
+
+    border: 2px solid #000;
+    border-radius: 10px;
+    padding: 0 20px 10px 20px;    
+    margin-top: 50px;  
+
+    width: 85%;    
+}
+
+
+/* SECTION TOP */
+
+
+#upload_section_background #upload_section_top .h_div
+{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#upload_section_background #upload_section_top .h_div .element
+{
+    display: flex;
+
+    cursor: pointer;
+    background-color: #aaaaaa;
+    border-radius: 10px;
+
+    position: relative;
+    margin-left: 11px;
+}
+
+#upload_section_background #upload_section_top .h_div .element:hover > .infobulle
+{
+    transform: scale(1) rotateX(0deg);
+}
+
+#upload_section_background #upload_section_top .h_div .element img
+{
+    width: 30px;
+}
+
+#upload_section_background #upload_section_top .h_div .element .infobulle
+{
+    width: 125px;
+    height: 69px;
+    font-size: 0.8em;
+    transform: scale(0) rotateX(-180deg);
+
+    color: white;
+    background-color: #2e3D48;
+    border-radius: 5px;
+    transition: 1s;
+
+    border-bottom: 3px solid rgba(255, 255, 255, 0.3);
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;    
+    box-shadow: 1px 1px 0 0.5px rgba(0, 0, 0, 0.3);
+    padding: 0 5px 0 5px;
+
+    position: absolute;
+    right: 2px;
+    bottom: -81px;   
+}
+
+#upload_section_background #upload_section_top .h_div .element .infobulle::before
+{
+    content: '';
+
+    border-bottom: 8px solid #2e3D48;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    margin-top: -8px;
+    margin-left: 41px;
+
+    position: absolute;    
+}
+
+#upload_section_background #upload_section_top #upload_text
+{
+    text-align: justify;
+    margin: auto;  
+}
+
+#upload_section_background #upload_section_top #upload_text p
+{
+    font-size: 1.1em;
+
+    padding-bottom: 20px;
+    margin: 0;
+}
+
+
+/* UPLOAD SECTION */
+
+
+#upload_section_background #upload_section .review_right
+{
+    color: #32CD32; /* limegreen */
+
+    font-weight: bold;
+    font-size: 1.1em;
+
+    margin: 0 0 20px 0;    
+}
+
+#upload_section_background #upload_section .review_wrong
+{
+    color: #DC143C; /*  crimson */
+
+    font-weight: bold;
+    font-size: 1.1em;
+
+    margin: 0 0 20px 0;
+}
+
+#upload_background #upload_img label
+{
+    cursor: pointer;
+    display: block;
+    font-size: 15px;
+    font-weight: bold;
+    color: #aaaaaa;
+    background-color: var(--background_header);
+
+    width: 120px;
+    border: 2px solid #000;
+    border-radius: 10px;
+    padding: 10px;
+    margin: auto;
+}
+
+#upload_background #upload_img label:hover
+{
+    color: #fff; /* DARK BLUE */
+    opacity: 0.9;
+}
+
+#upload_background #upload_img #upload_file
+{
+    display: none;
+}
+
+#upload_background #upload_img #upload_submit
+{
+    cursor: pointer;
+    display: block;
+    font-size: 15px;
+    font-weight: bold;
+    color: #aaaaaa;
+    background-color: var(--background_header);
+
+    width: 120px;
+    border: 2px solid #000;
+    border-radius: 10px;
+    padding: 10px;
+    margin: auto;
+    margin-top: 20px;
+}
+
+#upload_background #upload_img #upload_submit:hover
+{
+    color: #fff; /* DARK BLUE */
+    opacity: 0.9;
+}
+
+
+/* IF ADMIN */
+
+#upload_section_admin #delete_all_img_div
+{
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #aaaaaa;
+    text-align: left;
+
+    display: flex;
+    justify-content: flex-end;
+
+    margin: 0;
+    padding: 20px 0 10px 10px;    
+      
+}
+
+#upload_section_admin #delete_all_img_div a
+{
+    cursor: pointer;
+    border: 2px solid #FF0000;  
+
+    display: flex;
+    align-items: center;
+}
+
+#upload_section_admin #delete_all_img_div a img
+{
+    width: 30px;
+}
+
+#upload_section_admin #show_img
+{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    padding: 10px 0;
+}
+
+#upload_section_admin #show_img #show_img_div
+{
+    background-color: var(--background_header);
+
+    border: 2px solid #000;
+    border-radius: 10px;
+    margin: 10px;
+    overflow: hidden;
+
+    width: 240px;
+}
+
+#upload_section_admin #show_img #show_img_div #img_container
+{
+    display: flex;
+    justify-content: center;
+}
+
+#upload_section_admin #show_img #show_img_div #img_container img
+{
+    width: 240px;
+    height: 240px;
+}
+
+#upload_section_admin #show_img #show_img_div #img_text
+{
+    font-size: 0.7em;
+    text-align: center;
+    font-family: 'Open Sans', sans-serif;
+}
+
+#upload_section_admin #show_img #show_img_div #img_text #img_text_date
+{
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #aaaaaa;
+    border-top: 2px solid #000;
+    border-bottom: 2px solid #000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0;
+    padding: 10px 20px;
+}
+
+#upload_section_admin #show_img #show_img_div #img_text #img_text_date #img_delete
+{
+    cursor: pointer;    
+    border: 2px solid #FFFF00;
+
+    position: relative;
+    left: 18px;
+    bottom: 0;
+}
+
+#upload_section_admin #show_img #show_img_div #img_text #img_text_date #img_delete img
+{
+    display: flex;
+
+    width: 25px;
+}
+
+#upload_section_admin #show_img #show_img_div #img_text #img_text_size
+{
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #aaaaaa;
+    border-bottom: 2px solid #000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0;
+    padding: 10px 20px;
+}
+
+#upload_section_admin #show_img #show_img_div #img_text #img_text_size #img_download
+{
+    cursor: pointer;    
+    border: 2px solid #0000FF;
+
+    position: relative;
+    left: 10px;
+    bottom: 0;    
+}
+
+#upload_section_admin #show_img #show_img_div #img_text #img_text_size #img_download img
+{
+    display: flex;
+
+    width: 25px;    
+}
+
+#upload_section_admin #show_img #show_img_div #img_text #img_text_type
+{
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #aaaaaa;
+
+    margin: 0;
+    padding: 10px 20px;    
+}
+
+/* IF ADMIN */
+
+
+
+/* MEDIA QUERIES */
+
+
+@media only screen and (min-width: 960px)
+{
+
+
+    /* UPLOAD BACKGROUND */
+
+
+    #upload_background
+    {
+        padding: 112px 0 50px 0;
+    }
+
+
+    /* SECTION TOP */
+
+
+    #upload_section_background #upload_section_top #upload_text
+    {
+        width: 400px;
+    }
+
+    #upload_section_background #upload_section_top #upload_text p
+    {
+        font-size: 1.2em;
+    }
+
+
+    /* UPLOAD SECTION */
+
+
+    #upload_background #upload_img label
+    {
+        width: 150px;
+        font-size: 17px;
+    }
+
+    #upload_background #upload_img #upload_submit
+    {
+        width: 150px;
+        font-size: 17px;
+    }    
+
+
+    /* IF ADMIN */
+
+    #upload_section_admin #delete_all_img_div a img
+    {
+        width: 45px;
+    }
+
+    #upload_section_admin #show_img
+    {
+        display: flex;
+        flex-wrap: nowrap;
+    }
+
+    #upload_section_admin #show_img #show_img_div #img_text
+    {
+        font-size: 1.1em;
+        text-align: left;        
+    }
+
+    #upload_section_admin #show_img #show_img_div #img_text #img_text_date
+    {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    #upload_section_admin #show_img #show_img_div #img_text #img_text_date #img_delete
+    {
+        position: relative;
+        left: 10px;
+        bottom: 0;
+    }
+
+    #upload_section_admin #show_img #show_img_div #img_text #img_text_date #img_delete img
+    {
+        width: 28px;
+    }
+
+    #upload_section_admin #show_img #show_img_div #img_text #img_text_size
+    {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;        
+    }
+
+    #upload_section_admin #show_img #show_img_div #img_text #img_text_size #img_download img
+    {
+        width: 28px;
+    }    
+
+    /* IF ADMIN */    
+
+};

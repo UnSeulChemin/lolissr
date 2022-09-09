@@ -1,0 +1,270 @@
+
+/* PRIVATE BACKGROUND */
+
+
+#private_background
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 50px 0;
+}
+
+#private_section_background
+{
+    text-align: center; 
+    font-family: var(--font_family);
+    background-color: var(--background_section); 
+
+    border: 2px solid #000;
+    border-radius: 10px;
+    padding: 0 20px 20px;   
+
+    width: 85%;       
+}
+
+
+/* PRIVATE SECTION */
+
+
+#private_section_background #private_section #private_section_user
+{
+    padding-top: 25px;
+}
+
+#private_section_background #private_section #private_section_user img
+{
+    width: 150px;
+    border-radius: 50%;
+}
+
+#private_section_background #private_section #private_section_user p
+{
+    font-size: 1.1em;
+    text-align: center;
+    font-weight: bold;
+    padding: 25px 0;
+    margin: 0;
+}
+
+#private_section_background #private_section #private_log #show_msg
+{
+    height: 146px;
+    overflow-y: scroll;
+
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+#private_section_background #private_section #private_log #show_msg #show_msg_div_un
+{
+    display: flex;
+    justify-content: left;
+    align-items: center;
+
+    border-top: 2px solid #000000;
+    border-right: 2px solid #000000;
+    border-left: 2px solid #000000;
+
+    padding: 10px 0;
+}
+
+#private_section_background #private_section #private_log #show_msg #show_msg_div_un:first-of-type
+{
+    border-bottom: 2px solid #000000;
+}
+
+#private_section_background #private_section #private_log #show_msg #show_msg_div_un .show_msg_img_div
+{
+    margin: 0 15px;
+}
+
+#private_section_background #private_section #private_log #show_msg #show_msg_div_un .show_msg_img_div img
+{
+    display: flex;
+
+    border-radius: 50%;
+}
+
+#private_section_background #private_section #private_log #show_msg #show_msg_div_un .show_msg_text
+{
+    display: flex;
+    align-items: center;
+}
+
+#private_section_background #private_section #private_log #show_msg #show_msg_div_un .show_msg_text #show_msg_div_pun
+{
+    font-size: 1.1em;
+    font-weight: bold;
+    text-align: center;    
+    color: red; 
+
+    padding: 0;
+    margin: 0 20px 0 0;
+}
+
+#private_section_background #private_section #private_log #show_msg #show_msg_div_un .show_msg_text #show_msg_div_pdeux
+{
+    font-size: 1.1em;
+    font-weight: bold;
+    text-align: center;
+
+    padding: 0;   
+    margin: 0;
+}
+
+#private_section_background #private_section #private_log #show_msg #show_msg_div_deux
+{
+    display: flex;
+    justify-content: left;
+    align-items: center;
+
+    border-top: 2px solid #000000;
+    border-right: 2px solid #000000;
+    border-left: 2px solid #000000;
+
+    padding: 10px 0;
+}
+
+#private_section_background #private_section #private_log #show_msg #show_msg_div_deux:first-of-type
+{
+    border-bottom: 2px solid #000000;
+}
+
+#private_section_background #private_section #private_log #show_msg #show_msg_div_deux .show_msg_img_div
+{
+    margin: 0 15px;
+}
+
+#private_section_background #private_section #private_log #show_msg #show_msg_div_deux .show_msg_img_div img
+{
+    display: flex;
+
+    border-radius: 50%;
+}
+
+#private_section_background #private_section #private_log #show_msg #show_msg_div_deux .show_msg_text
+{
+    display: flex;
+    align-items: center;
+}
+
+#private_section_background #private_section #private_log #show_msg #show_msg_div_deux .show_msg_text #show_msg_div_pun
+{
+    font-size: 1.1em;
+    font-weight: bold;
+    text-align: center;    
+    color: green; 
+
+    padding: 0;
+    margin: 0 20px 0 0;
+}
+
+#private_section_background #private_section #private_log #show_msg #show_msg_div_deux .show_msg_text #show_msg_div_pdeux
+{
+    font-size: 1.1em;
+    font-weight: bold;
+    text-align: center;
+
+    padding: 0;   
+    margin: 0;
+}
+
+#private_section_background #private_section #private_form
+{
+    padding-top: 20px;
+}
+
+#private_section_background #private_section #private_form textarea
+{
+    min-width: 50%;
+    max-width: 50%;
+    min-height: 21px;
+    max-height: 21px;
+
+    margin-bottom: 10px;
+}
+
+#private_section_background #private_section #private_form input
+{
+    cursor: pointer;
+    display: block;
+    font-size: 16px;
+    font-weight: bold;
+    color: #aaaaaa;
+    background-color: var(--background_header);
+
+    width: 80px;
+    border: 2px solid #000;
+    border-radius: 10px;
+    padding: 5px;
+    margin: auto;
+}
+
+#private_section_background #private_section #private_form input:hover
+{
+    color: #fff; /* DARK BLUE */
+    opacity: 0.9;    
+}
+
+
+/* MEDIA QUERIES */
+
+
+@media only screen and (min-width: 960px)
+{
+
+
+    /* PRIVATE BACKGROUND */
+
+
+    #private_background
+    {
+        padding: 112px 0 50px 0;
+    }
+
+
+    /* PRIVATE SECTION */
+
+
+    #private_section_background #private_section #private_section_user p
+    {
+        font-size: 1.2em;
+    }
+
+    #private_section_background #private_section #private_log #show_msg
+    {
+        height: 290px;
+    }    
+
+    #private_section_background #private_section #private_log #show_msg p
+    {
+        font-size: 1.2em;
+    }
+
+    #private_section_background #private_section #private_form textarea
+    {
+        min-width: 50%;
+        max-width: 50%;
+        min-height: 42px;
+        max-height: 42px;
+    }
+
+    #private_section_background #private_section #private_form input
+    {
+        width: 100px;
+        font-size: 18px;
+    }
+
+    #private_section_background #private_section #private_log #show_msg #show_msg_div_un p
+    {
+        font-size: 1.2em;
+    }
+
+    #private_section_background #private_section #private_log #show_msg #show_msg_div_deux p
+    {
+        font-size: 1.2em;
+    }
+
+}

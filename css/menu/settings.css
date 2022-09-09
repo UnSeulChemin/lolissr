@@ -1,0 +1,450 @@
+
+
+/* SETTINGS BACKGROUND */
+
+
+#settings_background
+{
+    background-color: #d9d9d9;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 50px 0;
+}
+
+#settings_section_background
+{
+	text-align: center;	
+    font-family: var(--font_family);
+	background-color: var(--background_section);
+
+    width: 300px;
+
+    border: 2px solid #000;
+    border-radius: 10px;
+    padding: 0 20px 20px;
+
+    width: 85%;    
+}
+
+
+/* SECTION TOP */
+
+
+#settings_section_background #settings_section_top .h_div
+{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#settings_section_background #settings_section_top .h_div .element
+{
+    display: flex;
+
+    cursor: pointer;
+    background-color: #aaaaaa;
+    border-radius: 10px;
+
+    margin-left: 11px;
+
+    position: relative;
+    z-index: 999;
+}
+
+#settings_section_background #settings_section_top .h_div .element:hover > .infobulle
+{
+    transform: scale(1) rotateX(0deg);
+}
+
+#settings_section_background #settings_section_top .h_div .element img
+{
+    width: 30px;
+}
+
+#settings_section_background #settings_section_top .h_div .element .infobulle
+{
+    width: 275px;
+    height: 137px;
+    font-size: 0.8em;
+    transform: scale(0) rotateX(-180deg);
+
+    color: white;
+    background-color: #2e3D48;
+    border-radius: 5px;
+    transition: 1s;
+
+    border-bottom: 3px solid rgba(255, 255, 255, 0.3);
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;    
+    box-shadow: 1px 1px 0 0.5px rgba(0, 0, 0, 0.3);
+    padding: 0 5px 0 5px;
+
+    position: absolute;
+    right: 1px;
+    bottom: -149px;      
+}
+
+#settings_section_background #settings_section_top .h_div .element .infobulle::before
+{
+    content: '';
+
+    border-bottom: 8px solid #2e3D48;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    margin-top: -8px;
+    margin-left: 115px;
+
+    position: absolute;    
+}
+
+#settings_section_background #settings_section_top #div_settings_s_name
+{
+    padding: 0 0 20px 0;
+}
+
+#settings_section_background #settings_section_top #div_settings_s_name p
+{
+    font-size: 1.1em;
+    text-align: center;
+    font-weight: bold;
+
+    margin: 0;
+}
+
+
+/* SETTINGS SECTION */
+
+
+#settings_section_background #settings_things #settings_things_avatar form
+{
+	display: flex;
+	align-items: center;
+	justify-content: space-evenly;
+
+	padding-bottom: 20px;
+}
+
+#settings_section_background #settings_things #settings_things_avatar form #settings_div_img #settings_img
+{
+	width: 100px;
+    height: 100px;
+
+	border-radius: 50%;	
+}
+
+#settings_section_background #settings_things #settings_things_avatar form .review_wrong
+{
+    color: #DC143C; /*  crimson */
+
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+#settings_section_background #settings_things #settings_things_avatar form #avatar_send_div #upload_header
+{
+    display: none;
+}
+
+#settings_section_background #settings_things #settings_things_avatar form #avatar_send_div label
+{
+    cursor: pointer;
+    display: block;
+    font-size: 16px;
+    font-weight: bold;
+    color: #aaaaaa;
+    background-color: var(--background_header);
+
+    width: 80px;
+    border: 2px solid #000;
+    border-radius: 10px;
+    padding: 5px;
+    margin-bottom: 15px;    
+}
+
+#settings_section_background #settings_things #settings_things_avatar form #avatar_send_div label:hover
+{
+    color: #fff; /* DARK BLUE */
+    opacity: 0.9;
+}	
+
+#settings_section_background #settings_things #settings_things_avatar form #avatar_send_div #submit_header
+{
+    cursor: pointer;
+    display: block;
+    font-size: 16px;
+    font-weight: bold;
+    color: #aaaaaa;
+    background-color: var(--background_header);
+
+    width: 80px;
+    border: 2px solid #000;
+    border-radius: 10px;
+    padding: 5px;
+}
+
+#settings_section_background #settings_things #settings_things_avatar form #avatar_send_div #submit_header:hover
+{
+    color: #fff; /* DARK BLUE */
+    opacity: 0.9;
+}
+
+#settings_section_background #settings_things #settings_things_name form
+{
+	display: flex;
+	align-items: center;
+	justify-content: space-evenly;
+
+    margin-bottom: 15px;
+}
+
+#settings_section_background #settings_things #settings_things_name form #name_change_div
+{
+	display: flex;
+	align-items: center;
+}
+
+#settings_section_background #settings_things #settings_things_name form #name_change_div #submit_text
+{
+	width: 59%;
+	height: 100%;
+	font-size: 1em;
+	font-weight: bold;
+	color: #000000;
+
+	padding: 0;
+	margin-right: 27px;
+}
+
+#settings_section_background #settings_things #settings_things_name form #name_change_div #submit_name
+{
+    cursor: pointer;
+    display: block;
+    font-size: 16px;
+    font-weight: bold;
+    color: #aaaaaa;
+    background-color: var(--background_header);
+
+    width: 80px;
+    border: 2px solid #000;
+    border-radius: 10px;
+    padding: 5px;
+}
+
+#settings_section_background #settings_things #settings_things_name form #name_change_div #submit_name:hover
+{
+    color: #fff; /* DARK BLUE */
+    opacity: 0.9;
+}
+
+#settings_section_background #settings_things #settings_things_name .review_right
+{
+    color: #32CD32; /* limegreen */
+    font-weight: bold;
+}
+
+#settings_section_background #settings_things #settings_things_name .review_wrong
+{
+    color: #DC143C; /*  crimson */
+    font-weight: bold;
+}
+
+#settings_section_background #settings_things #settings_things_password form
+{
+	display: flex;
+	align-items: center;
+	justify-content: space-evenly;
+}
+
+#settings_section_background #settings_things #settings_things_password form #password_change_div
+{
+	display: flex;
+	align-items: center;
+
+    position: relative;
+}
+
+#settings_section_background #settings_things #settings_things_password form #password_change_div #submit_text_password
+{
+	width: 59%;
+	height: 100%;
+	font-size: 1em;
+	font-weight: bold;
+	color: #000000;
+
+	padding: 0;
+    margin-right: 27px;
+}
+
+
+#settings_section_background #settings_things #settings_things_password form #password_change_div #eye_settings
+{
+    height: 20px;
+    cursor: pointer;
+    vertical-align: middle;   
+
+    position: absolute;
+    left: 194px;
+}
+
+#settings_section_background #settings_things #settings_things_password form #password_change_div #submit_name_password
+{
+    cursor: pointer;
+    display: block;
+    font-size: 16px;
+    font-weight: bold;
+    color: #aaaaaa;
+    background-color: var(--background_header);
+
+    width: 80px;
+    border: 2px solid #000;
+    border-radius: 10px;
+    padding: 5px;
+}
+
+#settings_section_background #settings_things #settings_things_password form #password_change_div #submit_name_password:hover
+{
+    color: #fff; /* DARK BLUE */
+    opacity: 0.9;
+}
+
+#settings_section_background #settings_things #settings_things_password .review_right
+{
+    color: #32CD32; /* limegreen */
+    font-weight: bold;
+
+    margin-bottom: 0;
+}
+
+#settings_section_background #settings_things #settings_things_password .review_wrong
+{
+    color: #DC143C; /*  crimson */
+    font-weight: bold;
+
+    margin-bottom: 0;    
+}
+
+#settings_section_background #settings_things #settings_things_delete
+{
+	padding: 20px 0 0 0;
+
+    display: flex;
+    justify-content: center;
+}
+
+#settings_section_background #settings_things #settings_things_delete a
+{
+    cursor: pointer;
+	text-decoration: none;
+	color: #aaaaaa;
+	font-size: 1.2em;
+	font-weight: bold;
+
+    background-color: var(--background_header);
+    border: 2px solid #000;
+    border-radius: 10px;
+    padding: 5px;
+}
+
+#settings_section_background #settings_things #settings_things_delete a:hover
+{
+    color: #fff; /* DARK BLUE */
+    opacity: 0.9;
+}
+
+
+/* MEDIA QUERIES */
+
+
+@media only screen and (min-width: 960px)
+{
+
+
+    /* SETTINGS BACKGROUND */
+
+
+    #settings_background
+    {
+        padding: 112px 0 50px 0;
+    }
+
+
+    /* SETTINGS SECTION */
+
+
+    #settings_section_background #settings_section_top #div_settings_s_name p
+    {
+    	font-size: 1.2em;
+    }
+
+    #settings_section_background #settings_things #settings_things_avatar form #settings_div_img #settings_img
+    {
+        width: 150px;
+        height: 150px;
+    }
+
+    #settings_section_background #settings_things #settings_things_avatar form #avatar_send_div
+	{
+		display: flex;
+	}
+
+	#settings_section_background #settings_things #settings_things_avatar form #avatar_send_div label
+	{
+        width: 100%;
+        font-size: 18px;
+
+		margin-bottom: 0;
+		margin-right: 15px;
+	}
+
+    #settings_section_background #settings_things #settings_things_avatar form #avatar_send_div #submit_header
+    {
+        width: 100%;
+        font-size: 18px;        
+    }
+
+    #settings_section_background #settings_things #settings_things_name form #name_change_div #submit_text
+    {
+        font-size: 1.1em;
+
+        width: 60%;    
+        margin-right: 32px;
+    }
+
+    #settings_section_background #settings_things #settings_things_name form #name_change_div #submit_name
+    {
+        font-size: 18px;          
+    }
+
+    #settings_section_background #settings_things #settings_things_password form #password_change_div #submit_text_password
+    {
+        font-size: 1.1em;
+        width: 60%;
+        margin-right: 32px;
+    }
+
+    #settings_section_background #settings_things #settings_things_password form #password_change_div #submit_name_password
+    {
+        font-size: 18px;          
+    }
+
+    #settings_section_background #settings_things #settings_things_password form #password_change_div #eye_settings
+    {
+        position: absolute;
+        left: 216px;
+    }
+
+    #settings_section_background #settings_things #settings_things_delete
+    {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    #settings_section_background #settings_things #settings_things_delete a
+    {
+        font-size: 1.3em;
+    }
+
+}
