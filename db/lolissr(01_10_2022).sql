@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le : ven. 02 sep. 2022 à 21:20
+-- Généré le : sam. 01 oct. 2022 à 04:44
 -- Version du serveur : 8.0.27
 -- Version de PHP : 8.0.13
 
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `chat` (
   `message` text NOT NULL,
   `avatar` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=183 DEFAULT CHARSET=utf8mb3;
+) ENGINE=MyISAM AUTO_INCREMENT=184 DEFAULT CHARSET=utf8mb3;
 
 -- --------------------------------------------------------
 
@@ -218,7 +218,7 @@ CREATE TABLE IF NOT EXISTS `members` (
   `ban` enum('Y','N') NOT NULL DEFAULT 'N',
   `createdAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=169 DEFAULT CHARSET=utf8mb3;
+) ENGINE=MyISAM AUTO_INCREMENT=171 DEFAULT CHARSET=utf8mb3;
 
 --
 -- Déchargement des données de la table `members`
@@ -226,7 +226,8 @@ CREATE TABLE IF NOT EXISTS `members` (
 
 INSERT INTO `members` (`id`, `name`, `password`, `sha1`, `email`, `avatar`, `role`, `ban`, `createdAt`) VALUES
 (110, 'chemin', '$2y$10$nX8I.2yF9qzVn2ourniQEeCm90g8V7EOYIno4Ej4kOBS7/Qn2hmXO', NULL, 'bendev4977@gmail.com', '110.jpeg', 'admin', 'N', '2022-07-23 22:07:02'),
-(108, 'azerty1', '$2y$10$PWvvL1nPzotA76.Cq92yZe0U/Z7c89X1mcfpOwCIPuBhCxhYUd2Ee', NULL, 'snowd3w4977@gmail.com', '108.jpeg', 'admin', 'N', '2022-07-23 21:59:23');
+(108, 'azerty1', '$2y$10$PWvvL1nPzotA76.Cq92yZe0U/Z7c89X1mcfpOwCIPuBhCxhYUd2Ee', NULL, 'snowd3w4977@gmail.com', '108.jpeg', 'admin', 'N', '2022-07-23 21:59:23'),
+(170, 'compte1', '$2y$10$ys6HIag7h.YVfOKfV.utMeE2muXB9WpH7hcfEXJ/LCPZ4c.O1xIiS', NULL, 'foot12345@gmail.com', 'default.jpg', 'member', 'N', '2022-09-08 18:09:59');
 
 -- --------------------------------------------------------
 
