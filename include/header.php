@@ -39,7 +39,6 @@
 						?>
 
 						<li><a href="admin">Admin</a></li>
-						<li><a href="generate">Generate</a></li>
 
 						<?php
 					}
