@@ -6,6 +6,7 @@
             <li><a class="<?= $activeGoddess ?>link-menu" href="<?= $pathRedirect; ?>goddess">Goddess</a></li>
             <li><a class="<?= $activeChinese ?>link-menu" href="<?= $pathRedirect; ?>chinese">Chinese</a></li>
             <li><a class="<?= $activeFrench ?>link-menu" href="<?= $pathRedirect; ?>french">French</a></li>
+            <li><a class="<?= $activeEnglish ?>link-menu" href="<?= $pathRedirect; ?>english">English</a></li>
         </ul>
 
     </nav>
