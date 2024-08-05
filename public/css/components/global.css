@@ -48,3 +48,24 @@ img
 
     display: flex;
 }
+
+form div
+{
+    margin-bottom: 30px;
+}
+
+form div input
+{
+    width: 250px;
+    background-color: var(--background-color-form-input);
+    box-sizing: border-box;
+
+    padding: 5px;
+    border: 1px solid var(--border-form);
+    border-radius: 5px;
+}
+
+form div input:focus
+{
+    background-color: var(--background-color-form-focus);
+}

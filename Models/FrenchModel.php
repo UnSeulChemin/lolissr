@@ -11,8 +11,8 @@ class FrenchModel extends Model
     /* key primary id */
     protected int $id;
 
-    /* column vocabulary */
-    protected string $vocabulary;
+    /* column word */
+    protected string $word;
 
     /* magic method __construct */
     public function __construct()
@@ -41,22 +41,22 @@ class FrenchModel extends Model
     }
 
     /**
-     * getter vocabulary
+     * getter word
      * @return string
      */
-    public function getVocabulary(): string
+    public function getWord(): string
     {
-        return $this->vocabulary;
+        return $this->word;
     }
 
     /**
-     * setter vocabulary
-     * @param string $vocabulary
+     * setter word
+     * @param string $word
      * @return self
      */
-    public function setVocabulary(string $vocabulary): self
+    public function setWord(string $word): self
     {
-        $this->vocabulary = $vocabulary;
+        $this->word = $word;
         return $this;
     }
 }

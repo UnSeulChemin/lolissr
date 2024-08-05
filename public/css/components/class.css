@@ -41,3 +41,23 @@
     color: var(--background-color-section);
     background-color: var(--color-link);
 }
+
+.link-submit
+{
+    width: 250px;
+    font-size: 1.1em;
+    font-family: var(--font-family);
+    cursor: pointer;
+    color: var(--color-link);
+    background-color: var(--background-color-header);
+
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+}
+
+.link-submit:hover
+{
+    color: var(--background-color-section);
+    background-color: var(--color-link);
+}
