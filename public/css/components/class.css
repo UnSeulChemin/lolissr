@@ -1,0 +1,43 @@
+/* Section */
+.section-content
+{
+    background-color: var(--background-color-section);
+
+    margin: 30px 0;
+    padding: 40px 0;
+}
+
+/* Link */
+.link-menu
+{
+    color: var(--color-link);
+
+    padding: 8px;
+    border-radius: 5px;
+}
+
+.link-menu:hover
+{
+    color: var(--background-color-section);
+    background-color: var(--color-link);
+}
+
+.link-section
+{
+    width: 175px;
+    letter-spacing: 2px;
+    word-spacing: 1px;
+    font-weight: bold;
+    color: var(--color-link);
+    background-color: var(--background-color-header);
+    box-sizing: border-box;
+
+    padding: 8px;
+    border-radius: 5px;    
+}
+
+.link-section:hover
+{
+    color: var(--background-color-section);
+    background-color: var(--color-link);
+}

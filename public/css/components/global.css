@@ -1,0 +1,50 @@
+body
+{
+    font-family: var(--font-family);
+    text-align: center;
+    background-color: var(--background-color-body);
+    box-sizing: border-box;
+
+    line-height: 1.5;
+}
+
+header
+{
+    background-color: var(--background-color-header);
+
+    padding: 20px 30px;
+}
+
+h2
+{
+    font-size: 1.1em;   
+    font-weight: bold;
+    letter-spacing: 1px;
+    word-spacing: 3px;
+    color: var(--color-link);
+
+    margin-bottom: 30px;
+}
+
+p
+{
+    font-size: 1.1em;
+
+    margin-bottom: 10px;
+}
+
+a
+{
+    font-size: 1.1em;
+    text-decoration: none;
+
+    display: inline-block;
+}
+
+img
+{
+    width: 100%;
+    height: auto;
+
+    display: flex;
+}

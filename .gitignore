@@ -1,0 +1,14 @@
+### COMMANDS ###
+# git add .
+# git commit -m 'update'
+# git push origin master
+
+### CACHE ###
+# clear cache
+# git rm -r --cached .
+# git add .
+
+### HIDE ###
+Core/Database.php
+Core/Save/
+notes.txt

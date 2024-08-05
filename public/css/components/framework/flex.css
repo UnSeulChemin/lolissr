@@ -1,0 +1,39 @@
+.flex
+{
+    display: flex;
+}
+
+.flex-gap-50
+{
+    display: flex;
+    gap: 50px;
+}
+
+.flex-center-center
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.flex-between-center
+{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.flex-around-center
+{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.flex-center-center-gap-50
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+}
