@@ -26,11 +26,19 @@ h2
     margin-bottom: 30px;
 }
 
+h3
+{
+    font-size: 1.1em;   
+    font-weight: bold;
+    text-decoration: underline;
+
+    letter-spacing: 1px;
+    word-spacing: 3px;
+}
+
 p
 {
     font-size: 1.1em;
-
-    margin-bottom: 10px;
 }
 
 a

@@ -43,7 +43,7 @@ class ChineseController extends Controller
         $chineses = $chineseModel->findAll();
 
         // view
-        $this->title = 'LoliSSR | Chinese | Vocabulary';
+        $this->title = 'LoliSSR | Chinese Vocabulary';
         $this->render('chinese/vocabulary', ['chineseForm' => $form->create(), 'chineses' => $chineses]);
     }
 
