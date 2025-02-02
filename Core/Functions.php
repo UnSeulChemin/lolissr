@@ -15,7 +15,7 @@ class Functions
 
             if ($getP == 1) { return "../"; }
             else if ($getP == 2) { return "../../"; }
-            else { http_response_code(404); self::pathRedirect(); }
+            else { http_response_code(404); }
         }
         return null;
     }
