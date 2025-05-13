@@ -1,0 +1,22 @@
+:root
+{
+    /* Font */
+    --font-family: "Montserrat", "Open Sans", sans-serif;
+
+    /* Main Blocs */
+    --background-color-body: #ebebeb;
+    --background-color-header: #CA33FF;
+    --background-color-section: #71afcd;
+
+    /* Police */
+    --color-link: #ebebeb;
+    --color-title: #ffffff;
+
+    /* Form */
+    --background-color-form-input: #f5f5ef;
+    --border-form: #333333;
+    --background-color-form-focus: #ffffff;
+
+    /* Flash */
+    --flash-active: #71afcd;
+}
