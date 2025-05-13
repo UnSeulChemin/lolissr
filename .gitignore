@@ -11,5 +11,6 @@
 ### HIDE ###
 Core/Database.php
 Core/Save/
-public/images/
+public/images/goddess
+public/images/nendoroids
 notes.txt
