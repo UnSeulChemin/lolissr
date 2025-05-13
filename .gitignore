@@ -11,4 +11,5 @@
 ### HIDE ###
 Core/Database.php
 Core/Save/
+public/images
 notes.txt
