@@ -30,19 +30,6 @@
     padding: 5px 10px;
 }
 
-.card-figure-span-2
-{
-    color: var(--color-link);
-    background-color: var(--background-color-header);
-    width: 75px;
-
-    position: absolute;
-    top: 42px;
-    right: 3px;
-
-    padding: 5px 10px;
-}
-
 .card-banner
 {
     letter-spacing: 1px;

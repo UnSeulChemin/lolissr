@@ -14,8 +14,6 @@
             <p class="card-banner"><?= $goddess->serie ?></p>
             <p class="card-banner table-colonne">Rareté</p>
             <p class="card-banner"><?= $goddess->rarity ?></p>
-            <p class="card-banner table-colonne">Note</p>
-            <p class="card-banner"><?= $goddess->note ?> / 5</p>
             <p class="card-banner table-colonne">Setbox</p>
             <p class="card-banner"><?= $goddess->set ?></p>
             <p class="card-banner table-colonne">Setbox Date</p>

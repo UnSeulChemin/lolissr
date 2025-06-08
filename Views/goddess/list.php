@@ -8,7 +8,6 @@
                     <a class="flex" href="<?= $pathRedirect; ?>goddess/character/<?= $goddess->id ?>">
                         <img alt="<?= $goddess->character ?>" src="<?= $pathRedirect; ?>public/images/goddess/thumbnail/<?= $goddess->thumbnail.".".$goddess->extension ?>">
                         <span class="card-figure-span-1 flex-center-center"><?= $goddess->rarity ?></span>
-                        <span class="card-figure-span-2 flex-center-center"><?= $goddess->note ?> / 5</span>
                     </a>
                 </figure>
                 <div>

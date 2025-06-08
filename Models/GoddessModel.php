@@ -26,9 +26,6 @@ class GoddessModel extends Model
     /* column rarity */
     protected string $rarity;
 
-    /* column note */
-    protected string $note;
-
     /* column set */
     protected string $set;
 
@@ -158,26 +155,6 @@ class GoddessModel extends Model
     public function setRarity(string $rarity): self
     {
         $this->rarity = $rarity;
-        return $this;
-    }
-
-    /**
-     * getter note
-     * @return string
-     */
-    public function getNote(): string
-    {
-        return $this->note;
-    }
-
-    /**
-     * setter note
-     * @param string $note
-     * @return self
-     */
-    public function setNote(string $note): self
-    {
-        $this->note = $note;
         return $this;
     }
 
