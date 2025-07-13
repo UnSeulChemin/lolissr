@@ -19,12 +19,6 @@
             <a class="link-section" href="https://www.amiami.com/eng/search/list/?s_keywords=Nendoroid" target="_blank">Lien</a>
         </div>
 
-        <div class="link-div">
-            <p class="table-colonne m-b-20">Solaris Japan</p>
-            <p class="link-p">Site d'achat</p>
-            <a class="link-section" href="https://solarisjapan.com/fr-fr/collections/nendoroid" target="_blank">Lien</a>
-        </div>
-
     </section>
 
     <div class="m-t-30">
