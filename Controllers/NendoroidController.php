@@ -25,8 +25,8 @@ class NendoroidController extends Controller
     {
         // class instance
         $nendoroidModel = new NendoroidModel;
-        $nendoroids = $nendoroidModel->findAllPaginateIsObtained('id DESC', 8, 1);
-        $count = $nendoroidModel->countPaginateIsObtained(8);
+        $nendoroids = $nendoroidModel->findAllPaginate('id DESC', 8, 1);
+        $count = $nendoroidModel->countPaginate(8);
 
         // functions static
         $pathRedirect = Functions::getPathRedirect();
@@ -45,8 +45,8 @@ class NendoroidController extends Controller
     {
         // class instance
         $nendoroidModel = new NendoroidModel;
-        $nendoroids = $nendoroidModel->findAllPaginateIsObtained('id DESC', 8, $id);
-        $count = $nendoroidModel->countPaginateIsObtained(8);
+        $nendoroids = $nendoroidModel->findAllPaginate('id DESC', 8, $id);
+        $count = $nendoroidModel->countPaginate(8);
 
         // functions static
         $pathRedirect = Functions::getPathRedirect();
@@ -54,24 +54,6 @@ class NendoroidController extends Controller
         // view
         $this->title = 'LoliSSR | Nendoroid List '.$id;
         $this->render('nendoroid/list', ['nendoroids' => $nendoroids, 'count' => $count, 'pathRedirect' => $pathRedirect]);
-    }
-
-    /**
-     * route /nendoroid/wish
-     * @return void
-     */
-    public function wish(): void
-    {
-        // class instance
-        $nendoroidModel = new NendoroidModel;
-        $nendoroids = $nendoroidModel->findBy(['obtained' => 'N']);
-
-        // functions static
-        $pathRedirect = Functions::getPathRedirect();
-
-        // view
-        $this->title = 'LoliSSR | Nendoroid Wish';
-        $this->render('nendoroid/wish', ['nendoroids' => $nendoroids, 'pathRedirect' => $pathRedirect]);
     }
 
     /**

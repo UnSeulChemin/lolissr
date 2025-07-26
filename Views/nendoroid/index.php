@@ -4,7 +4,6 @@
 
     <section class="flex-center-center-gap-50">
         <a class="link-section" href="nendoroid/list">List</a>
-        <a class="link-section" href="nendoroid/wish">Wish</a>
         <a class="link-section" href="nendoroid/link">Link</a>
     </section>
 
