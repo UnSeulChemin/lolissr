@@ -25,8 +25,8 @@ class FigurineController extends Controller
     {
         // class instance
         $figurineModel = new FigurineModel;
-        $figurines = $figurineModel->findAllPaginateIsObtained('id DESC', 8, 1);
-        $count = $figurineModel->countPaginateIsObtained(8);
+        $figurines = $figurineModel->findAllPaginate('id DESC', 8, 1);
+        $count = $figurineModel->countPaginate(8);
 
         // functions static
         $pathRedirect = Functions::getPathRedirect();
@@ -45,8 +45,8 @@ class FigurineController extends Controller
     {
         // class instance
         $figurineModel = new FigurineModel;
-        $figurines = $figurineModel->findAllPaginateIsObtained('id DESC', 8, $id);
-        $count = $figurineModel->countPaginateIsObtained(8);
+        $figurines = $figurineModel->findAllPaginate('id DESC', 8, $id);
+        $count = $figurineModel->countPaginate(8);
 
         // functions static
         $pathRedirect = Functions::getPathRedirect();
@@ -54,24 +54,6 @@ class FigurineController extends Controller
         // view
         $this->title = 'LoliSSR | Figurine List '.$id;
         $this->render('figurine/list', ['figurines' => $figurines, 'count' => $count, 'pathRedirect' => $pathRedirect]);
-    }
-
-    /**
-     * route /figurine/wish
-     * @return void
-     */
-    public function wish(): void
-    {
-        // class instance
-        $figurineModel = new FigurineModel;
-        $figurines = $figurineModel->findBy(['obtained' => 'N']);
-
-        // functions static
-        $pathRedirect = Functions::getPathRedirect();
-
-        // view
-        $this->title = 'LoliSSR | Figurine Wish';
-        $this->render('figurine/wish', ['figurines' => $figurines, 'pathRedirect' => $pathRedirect]);
     }
 
     /**

@@ -4,7 +4,6 @@
 
     <section class="flex-center-center-gap-50">
         <a class="link-section" href="figurine/list">List</a>
-        <a class="link-section" href="figurine/wish">Wish</a>
         <a class="link-section" href="figurine/link">Link</a>
     </section>
 

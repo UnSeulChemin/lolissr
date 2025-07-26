@@ -29,12 +29,6 @@ class FigurineModel extends Model
     /* column date */
     protected string $date;
 
-    /* column obtained */
-    protected string $obtained;
-
-    /* column estimated 'delivery' */
-    protected string $estimated;
-
     /* column link */
     protected string $link;
 
@@ -42,36 +36,6 @@ class FigurineModel extends Model
     public function __construct()
     {
         $this->table = 'figurine';
-    }
-
-    /**
-     * model->findAllPaginateIsObtained('id DESC', 8, 1);
-     * @param string $orderBy
-     * @param integer $eachPerPage
-     * @param integer $getId
-     * @return array
-     */
-    public function findAllPaginateIsObtained(string $orderBy, int $eachPerPage, int $getId): array
-    {
-        $start = ($getId -1) * $eachPerPage;
-    
-        $query = $this->requete("SELECT * FROM {$this->table} WHERE obtained = 'Y' ORDER BY $orderBy LIMIT " . $start . ", " . $eachPerPage);
-        return $query->fetchAll();
-    }
-
-    /**
-     * model->countPaginate(8)
-     * @param integer $eachPerPage
-     * @return integer
-     */
-    public function countPaginateIsObtained(int $eachPerPage): int
-    {
-        $query = $this->requete("SELECT COUNT(*) AS `count` FROM {$this->table} WHERE obtained = 'Y'");
-
-        if ($query->rowCount() > 0) { $countTotal = $query->fetch(); }
-
-        $counts = ceil($countTotal->count / $eachPerPage);
-        return $counts;
     }
 
     /**
@@ -211,46 +175,6 @@ class FigurineModel extends Model
     public function setDate(string $date): self
     {
         $this->date = $date;
-        return $this;
-    }
-
-    /**
-     * getter obtained
-     * @return string
-     */
-    public function getObtained(): string
-    {
-        return $this->obtained;
-    }
-
-    /**
-     * setter obtained
-     * @param string $obtained
-     * @return self
-     */
-    public function setObtained(string $obtained): self
-    {
-        $this->obtained = $obtained;
-        return $this;
-    }
-
-    /**
-     * getter estimated
-     * @return string
-     */
-    public function getEstimated(): string
-    {
-        return $this->estimated;
-    }
-
-    /**
-     * setter estimated
-     * @param string $estimated
-     * @return self
-     */
-    public function setEstimated(string $estimated): self
-    {
-        $this->estimated = $estimated;
         return $this;
     }
 
