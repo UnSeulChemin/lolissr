@@ -6,6 +6,7 @@
             <li><a class="<?= $activeGoddess ?>link-menu" href="<?= $pathRedirect; ?>goddess">Goddess</a></li>
             <li><a class="<?= $activeFigurine ?>link-menu" href="<?= $pathRedirect; ?>figurine">Figurine</a></li>
             <li><a class="<?= $activeNendoroid ?>link-menu" href="<?= $pathRedirect; ?>nendoroid">Nendoroid</a></li>
+            <li><a class="<?= $activePlush ?>link-menu" href="<?= $pathRedirect; ?>plush">Plush</a></li>
             <li><a class="<?= $activeAnime ?>link-menu" href="<?= $pathRedirect; ?>anime">Anime</a></li>
             <li><a class="<?= $activeManga ?>link-menu" href="<?= $pathRedirect; ?>manga">Manga</a></li>
             <li><a class="<?= $activeChinese ?>link-menu" href="<?= $pathRedirect; ?>chinese">Chinese</a></li>

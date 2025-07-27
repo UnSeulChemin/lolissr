@@ -7,10 +7,8 @@
         <div class="link-div">
             <p class="table-colonne m-b-20">AmiAmi</p>
             <p class="link-p">Site d'achat</p>
-            <p class="link-p">+ 26€ Frais de port (x2)</p>
-            <p class="link-p">+ 20€ TVA (x2)</p>
-            <p class="link-p">+ 20€ Dédouanement (x2)</p>
-            <a class="link-section" href="https://www.amiami.com/eng/search/list/?s_keywords=Nendoroid" target="_blank">Lien</a>
+            <a class="link-section" href="https://www.amiami.com/eng/search/list/?s_st_list_preorder_available=1&s_st_list_backorder_available=1&s_st_list_newitem_available=1&s_st_condition_flg=1&s_keywords=complete+figure"
+                target="_blank">Lien</a>
         </div>
 
         <div class="link-div">
