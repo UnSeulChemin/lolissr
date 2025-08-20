@@ -17,20 +17,20 @@ class PlushModel extends Model
     /* image extension */
     protected string $extension;
 
-    /* column serie */
-    protected string $serie;
+    /* column origin */
+    protected string $origin;
 
-    /* column brand */
-    protected string $brand;
+    /* column character */
+    protected string $character;
+
+    /* column company */
+    protected string $company;
+
+    /* column release */
+    protected string $release;
 
     /* column price */
     protected int $price;
-
-    /* column date */
-    protected string $date;
-
-    /* column stock */
-    protected string $stock;
 
     /* column link */
     protected string $link;
@@ -102,62 +102,82 @@ class PlushModel extends Model
     }
 
     /**
-     * getter serie
+     * getter origin
      * @return string
      */
-    public function getSerie(): string
+    public function getOrigin(): string
     {
-        return $this->serie;
+        return $this->origin;
     }
 
     /**
-     * setter serie
-     * @param string $serie
+     * setter origin
+     * @param string $origin
      * @return self
      */
-    public function setSerie(string $serie): self
+    public function setOrigin(string $origin): self
     {
-        $this->serie = $serie;
+        $this->origin = $origin;
         return $this;
     }
 
     /**
-     * getter brand
+     * getter character
      * @return string
      */
-    public function getBrand(): string
+    public function getCharacter(): string
     {
-        return $this->brand;
+        return $this->character;
     }
 
     /**
-     * setter brand
-     * @param string $brand
+     * setter character
+     * @param string $character
      * @return self
      */
-    public function setBrand(string $brand): self
+    public function setCharacter(string $character): self
     {
-        $this->brand = $brand;
+        $this->character = $character;
         return $this;
     }
 
     /**
-     * getter price
-     * @return int
+     * getter company
+     * @return string
      */
-    public function getPrice(): int
+    public function getCompany(): string
     {
-        return $this->price;
+        return $this->company;
     }
 
     /**
-     * setter price
-     * @param int $price
+     * setter company
+     * @param string $company
      * @return self
      */
-    public function setPrice(int $price): self
+    public function setCompany(string $company): self
     {
-        $this->price = $price;
+        $this->company = $company;
+        return $this;
+    }
+
+    /**
+     * getter release
+     * @return string
+     */
+    public function getRelease(): string
+    {
+        return $this->release;
+    }
+
+    /**
+     * setter release
+     * @param string $release
+     * @return self
+     */
+    public function setRelease(string $release): self
+    {
+        $this->release = $release;
         return $this;
     }
 
@@ -178,26 +198,6 @@ class PlushModel extends Model
     public function setDate(string $date): self
     {
         $this->date = $date;
-        return $this;
-    }
-
-    /**
-     * getter stock
-     * @return string
-     */
-    public function getStock(): string
-    {
-        return $this->stock;
-    }
-
-    /**
-     * setter stock
-     * @param string $stock
-     * @return self
-     */
-    public function setStock(string $stock): self
-    {
-        $this->stock = $stock;
         return $this;
     }
 

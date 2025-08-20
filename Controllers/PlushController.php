@@ -71,7 +71,7 @@ class PlushController extends Controller
         $pathRedirect = Functions::getPathRedirect();
 
         // view
-        $this->title = 'LoliSSR | '.$plush->serie;
+        $this->title = 'LoliSSR | '.$plush->character;
         $this->render('plush/character', ['plush' => $plush, 'pathRedirect' => $pathRedirect]);
     }
 
