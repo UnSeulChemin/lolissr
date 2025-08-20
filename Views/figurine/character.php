@@ -3,19 +3,21 @@
     <section class="card-character flex-gap-50">
 
         <figure class="card-character-img">
-            <img alt="<?= $figurine->serie ?>"
+            <img alt="<?= $figurine->origin ?>"
             src="<?= $pathRedirect; ?>public/images/figurines/thumbnail/<?= $figurine->thumbnail.".".$figurine->extension ?>">
         </figure>
 
         <article class="card-character-value">
-            <p class="card-banner table-colonne">Série</p>
-            <p class="card-banner"><?= $figurine->serie ?></p>
-            <p class="card-banner table-colonne">Marque</p>
-            <p class="card-banner"><?= $figurine->brand ?></p>
+            <p class="card-banner table-colonne">Origine</p>
+            <p class="card-banner"><?= $figurine->origin ?></p>
+            <p class="card-banner table-colonne">Personnage</p>
+            <p class="card-banner"><?= $figurine->character ?></p>
+            <p class="card-banner table-colonne">Entreprise</p>
+            <p class="card-banner"><?= $figurine->company ?></p>
+            <p class="card-banner table-colonne">Date de sortie</p>
+            <p class="card-banner"><?= $figurine->release ?></p>
             <p class="card-banner table-colonne">Prix</p>
             <p class="card-banner"><?= $figurine->price ?>€</p>
-            <p class="card-banner table-colonne">Date</p>
-            <p class="card-banner"><?= $figurine->date ?></p>
             <a class="card-banner table-colonne" href="<?= $figurine->link ?>" target="_blank">Lien</a>
         </article>
 

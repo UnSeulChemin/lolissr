@@ -71,7 +71,7 @@ class FigurineController extends Controller
         $pathRedirect = Functions::getPathRedirect();
 
         // view
-        $this->title = 'LoliSSR | '.$figurine->serie;
+        $this->title = 'LoliSSR | '.$figurine->character;
         $this->render('figurine/character', ['figurine' => $figurine, 'pathRedirect' => $pathRedirect]);
     }
 

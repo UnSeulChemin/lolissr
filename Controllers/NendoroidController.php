@@ -71,7 +71,7 @@ class NendoroidController extends Controller
         $pathRedirect = Functions::getPathRedirect();
 
         // view
-        $this->title = 'LoliSSR | '.$nendoroid->serie;
+        $this->title = 'LoliSSR | '.$nendoroid->character;
         $this->render('nendoroid/character', ['nendoroid' => $nendoroid, 'pathRedirect' => $pathRedirect]);
     }
 

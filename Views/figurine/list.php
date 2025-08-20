@@ -6,14 +6,14 @@
             <article class="card-content">
                 <figure class="card-figure">
                     <a class="flex" href="<?= $pathRedirect; ?>figurine/character/<?= $image->id ?>">
-                        <img alt="<?= $image->serie ?>" src="<?= $pathRedirect; ?>public/images/figurines/thumbnail/<?= $image->thumbnail.".".$image->extension ?>">
+                        <img alt="<?= $image->character ?>" src="<?= $pathRedirect; ?>public/images/figurines/thumbnail/<?= $image->thumbnail.".".$image->extension ?>">
                     </a>
                 </figure>
                 <div>
-                    <p class="card-banner"><?= $image->serie ?></p>
+                    <p class="card-banner"><?= $image->character ?></p>
                 </div>
                 <div>
-                    <p class="card-banner"><?= $image->brand ?></p>
+                    <p class="card-banner"><?= $image->origin ?></p>
                 </div>
            </article>
         <?php endforeach; ?>

@@ -17,17 +17,20 @@ class FigurineModel extends Model
     /* image extension */
     protected string $extension;
 
-    /* column serie */
-    protected string $serie;
+    /* column origin */
+    protected string $origin;
 
-    /* column brand */
-    protected string $brand;
+    /* column character */
+    protected string $character;
+
+    /* column company */
+    protected string $company;
 
     /* column price */
     protected int $price;
 
-    /* column date */
-    protected string $date;
+    /* column release */
+    protected string $release;
 
     /* column link */
     protected string $link;
@@ -99,42 +102,62 @@ class FigurineModel extends Model
     }
 
     /**
-     * getter serie
+     * getter origin
      * @return string
      */
-    public function getSerie(): string
+    public function getOrigin(): string
     {
-        return $this->serie;
+        return $this->origin;
     }
 
     /**
-     * setter serie
-     * @param string $serie
+     * setter origin
+     * @param string $origin
      * @return self
      */
-    public function setSerie(string $serie): self
+    public function setOrigin(string $origin): self
     {
-        $this->serie = $serie;
+        $this->origin = $origin;
         return $this;
     }
 
     /**
-     * getter brand
+     * getter character
      * @return string
      */
-    public function getBrand(): string
+    public function getCharacter(): string
     {
-        return $this->brand;
+        return $this->character;
     }
 
     /**
-     * setter brand
-     * @param string $brand
+     * setter character
+     * @param string $character
      * @return self
      */
-    public function setBrand(string $brand): self
+    public function setCharacter(string $character): self
     {
-        $this->brand = $brand;
+        $this->character = $character;
+        return $this;
+    }
+
+    /**
+     * getter company
+     * @return string
+     */
+    public function getCompany(): string
+    {
+        return $this->company;
+    }
+
+    /**
+     * setter company
+     * @param string $company
+     * @return self
+     */
+    public function setCompany(string $company): self
+    {
+        $this->company = $company;
         return $this;
     }
 
@@ -159,22 +182,22 @@ class FigurineModel extends Model
     }
 
     /**
-     * getter date
+     * getter release
      * @return string
      */
-    public function getDate(): string
+    public function getRelease(): string
     {
-        return $this->date;
+        return $this->release;
     }
 
     /**
-     * setter date
-     * @param string $date
+     * setter release
+     * @param string $release
      * @return self
      */
-    public function setDate(string $date): self
+    public function setRelease(string $release): self
     {
-        $this->date = $date;
+        $this->release = $release;
         return $this;
     }
 
