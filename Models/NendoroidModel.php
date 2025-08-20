@@ -17,26 +17,20 @@ class NendoroidModel extends Model
     /* image extension */
     protected string $extension;
 
-    /* column serie */
-    protected string $serie;
+    /* column origin */
+    protected string $origin;
 
-    /* column brand */
-    protected string $brand;
+    /* column character */
+    protected string $character;
+
+    /* column company */
+    protected string $company;
+
+    /* column release */
+    protected string $release;
 
     /* column price */
     protected int $price;
-
-    /* column date */
-    protected string $date;
-
-    /* column stock */
-    protected string $stock;
-
-    /* column love */
-    protected string $love;
-
-    /* column hololive */
-    protected string $hololive;
 
     /* column link */
     protected string $link;
@@ -108,42 +102,82 @@ class NendoroidModel extends Model
     }
 
     /**
-     * getter serie
+     * getter origin
      * @return string
      */
-    public function getSerie(): string
+    public function getOrigin(): string
     {
-        return $this->serie;
+        return $this->origin;
     }
 
     /**
-     * setter serie
-     * @param string $serie
+     * setter origin
+     * @param string $origin
      * @return self
      */
-    public function setSerie(string $serie): self
+    public function setOrigin(string $origin): self
     {
-        $this->serie = $serie;
+        $this->origin = $origin;
         return $this;
     }
 
     /**
-     * getter brand
+     * getter character
      * @return string
      */
-    public function getBrand(): string
+    public function getCharacter(): string
     {
-        return $this->brand;
+        return $this->character;
     }
 
     /**
-     * setter brand
-     * @param string $brand
+     * setter character
+     * @param string $character
      * @return self
      */
-    public function setBrand(string $brand): self
+    public function setCharacter(string $character): self
     {
-        $this->brand = $brand;
+        $this->character = $character;
+        return $this;
+    }
+
+    /**
+     * getter company
+     * @return string
+     */
+    public function getCompany(): string
+    {
+        return $this->company;
+    }
+
+    /**
+     * setter company
+     * @param string $company
+     * @return self
+     */
+    public function setCompany(string $company): self
+    {
+        $this->company = $company;
+        return $this;
+    }
+
+    /**
+     * getter release
+     * @return string
+     */
+    public function getRelease(): string
+    {
+        return $this->release;
+    }
+
+    /**
+     * setter release
+     * @param string $release
+     * @return self
+     */
+    public function setRelease(string $release): self
+    {
+        $this->release = $release;
         return $this;
     }
 
@@ -164,86 +198,6 @@ class NendoroidModel extends Model
     public function setPrice(int $price): self
     {
         $this->price = $price;
-        return $this;
-    }
-
-    /**
-     * getter date
-     * @return string
-     */
-    public function getDate(): string
-    {
-        return $this->date;
-    }
-
-    /**
-     * setter date
-     * @param string $date
-     * @return self
-     */
-    public function setDate(string $date): self
-    {
-        $this->date = $date;
-        return $this;
-    }
-
-    /**
-     * getter stock
-     * @return string
-     */
-    public function getStock(): string
-    {
-        return $this->stock;
-    }
-
-    /**
-     * setter stock
-     * @param string $stock
-     * @return self
-     */
-    public function setStock(string $stock): self
-    {
-        $this->stock = $stock;
-        return $this;
-    }
-
-    /**
-     * getter love
-     * @return string
-     */
-    public function getLove(): string
-    {
-        return $this->love;
-    }
-
-    /**
-     * setter love
-     * @param string $love
-     * @return self
-     */
-    public function setLove(string $love): self
-    {
-        $this->love = $love;
-        return $this;
-    }
-
-    /**
-     * getter hololive
-     * @return string
-     */
-    public function getHololive(): string
-    {
-        return $this->hololive;
-    }
-
-    /**
-     * setter hololive
-     * @param string $hololive
-     * @return self
-     */
-    public function setHololive(string $hololive): self
-    {
-        $this->hololive = $hololive;
         return $this;
     }
 

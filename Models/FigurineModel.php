@@ -26,11 +26,11 @@ class FigurineModel extends Model
     /* column company */
     protected string $company;
 
-    /* column price */
-    protected int $price;
-
     /* column release */
     protected string $release;
+
+    /* column price */
+    protected int $price;
 
     /* column link */
     protected string $link;
@@ -162,26 +162,6 @@ class FigurineModel extends Model
     }
 
     /**
-     * getter price
-     * @return int
-     */
-    public function getPrice(): int
-    {
-        return $this->price;
-    }
-
-    /**
-     * setter price
-     * @param int $price
-     * @return self
-     */
-    public function setPrice(int $price): self
-    {
-        $this->price = $price;
-        return $this;
-    }
-
-    /**
      * getter release
      * @return string
      */
@@ -198,6 +178,26 @@ class FigurineModel extends Model
     public function setRelease(string $release): self
     {
         $this->release = $release;
+        return $this;
+    }
+
+    /**
+     * getter price
+     * @return int
+     */
+    public function getPrice(): int
+    {
+        return $this->price;
+    }
+
+    /**
+     * setter price
+     * @param int $price
+     * @return self
+     */
+    public function setPrice(int $price): self
+    {
+        $this->price = $price;
         return $this;
     }
 

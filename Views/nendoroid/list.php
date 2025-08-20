@@ -6,20 +6,14 @@
             <article class="card-content">
                 <figure class="card-figure">
                     <a class="flex" href="<?= $pathRedirect; ?>nendoroid/character/<?= $image->id ?>">
-                        <img alt="<?= $image->serie ?>" src="<?= $pathRedirect; ?>public/images/nendoroids/thumbnail/<?= $image->thumbnail.".".$image->extension ?>">
-                        <?php if ($image->hololive == 'Y'): ?>
-                            <span class="card-figure-span-1 flex-center-center">hololive</span>
-                        <?php endif; ?>
-                        <?php if ($image->love == 'Y'): ?>
-                            <span class="card-figure-span-1 flex-center-center">love</span>
-                        <?php endif; ?>
+                        <img alt="<?= $image->character ?>" src="<?= $pathRedirect; ?>public/images/nendoroids/thumbnail/<?= $image->thumbnail.".".$image->extension ?>">
                     </a>
                 </figure>
                 <div>
-                    <p class="card-banner"><?= $image->serie ?></p>
+                    <p class="card-banner"><?= $image->character ?></p>
                 </div>
                 <div>
-                    <p class="card-banner"><?= $image->brand ?></p>
+                    <p class="card-banner"><?= $image->origin ?></p>
                 </div>
            </article>
         <?php endforeach; ?>

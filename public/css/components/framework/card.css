@@ -17,19 +17,6 @@
     border: 3px solid var(--background-color-header);
 }
 
-.card-figure-span-1
-{
-    color: var(--color-link);
-    background-color: var(--background-color-header);
-    width: 75px;
-
-    position: absolute;
-    top: 3px;
-    right: 3px;
-
-    padding: 5px 10px;
-}
-
 .card-banner
 {
     letter-spacing: 1px;
@@ -51,7 +38,7 @@
 .card-character
 {
     width: 95%;
-    margin: auto;
+    margin: auto;card-figure-span-1
 }
 
 .card-character-img
