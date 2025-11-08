@@ -7,7 +7,7 @@
         <div class="link-div">
             <p class="table-colonne m-b-20">Anime-Sama</p>
             <p class="link-p">Site de streaming</p>
-            <a class="link-section" href="https://anime-sama.fr/" target="_blank">Lien</a>
+            <a class="link-section" href="https://anime-sama.org/" target="_blank">Lien</a>
         </div>
 
     </section>
