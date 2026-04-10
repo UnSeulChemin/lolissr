@@ -9,8 +9,9 @@ class MangaModel extends Model
 
     protected int $id;
     protected string $thumbnail;
-    protected string $numero;
     protected string $extension;
+    protected string $slug;
+    protected string $numero;
     protected string $livre;
 
     public function __construct()
@@ -34,14 +35,26 @@ class MangaModel extends Model
         ])->fetchAll();
     }
 
-    public function findOneBySlugAndNumero(string $slug, string $numero): object|false
+    public function findBySlug(string $slug): array
+    {
+        $sql = "SELECT * 
+                FROM {$this->table}
+                WHERE slug = :slug
+                ORDER BY numero DESC";
+
+        return $this->requete($sql, [
+            'slug' => strtolower(trim($slug))
+        ])->fetchAll();
+    }
+
+    public function findOneBySlugAndNumero(string $slug, string $numero)
     {
         $numero = str_pad($numero, 2, '0', STR_PAD_LEFT);
 
         $query = $this->requete(
             "SELECT * FROM {$this->table}
-             WHERE LOWER(REPLACE(TRIM(livre), ' ', '-')) = ?
-             AND numero = ?",
+            WHERE slug = ?
+            AND numero = ?",
             [
                 strtolower(trim($slug)),
                 $numero
@@ -49,18 +62,6 @@ class MangaModel extends Model
         );
 
         return $query->fetch();
-    }
-
-    public function findBySlug(string $slug): array
-    {
-        $sql = "SELECT * 
-                FROM {$this->table}
-                WHERE LOWER(REPLACE(TRIM(livre), ' ', '-')) = :slug
-                ORDER BY numero ASC";
-
-        return $this->requete($sql, [
-            'slug' => strtolower(trim($slug))
-        ])->fetchAll();
     }
 
     public function getId(): int
@@ -82,6 +83,17 @@ class MangaModel extends Model
     public function setThumbnail(string $thumbnail): self
     {
         $this->thumbnail = $thumbnail;
+        return $this;
+    }
+
+    public function getSlug(): string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): self
+    {
+        $this->slug = $slug;
         return $this;
     }
 

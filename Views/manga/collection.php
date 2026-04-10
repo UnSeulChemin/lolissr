@@ -6,14 +6,12 @@
 
         <?php foreach ($mangas as $manga): ?>
 
-            <?php $slug = strtolower(preg_replace('/\s+/', '-', trim($manga->livre))); ?>
-
             <article class="card-content">
 
                 <figure class="card-figure">
 
                     <a class="flex"
-                       href="<?= htmlspecialchars($basePath . 'manga/collection/' . $slug . ($isCollection ? '/' . $manga->numero : '')) ?>">
+                       href="<?= $basePath; ?>manga/collection/<?= $manga->slug ?><?= $isCollection ? '/' . $manga->numero : '' ?>">
 
                         <img
                             alt="<?= htmlspecialchars($manga->livre) ?>"
@@ -24,7 +22,9 @@
                 </figure>
 
                 <div>
-                    <p class="card-banner"><?= htmlspecialchars($manga->livre) ?></p>
+                    <p class="card-banner">
+                        <?= htmlspecialchars($manga->livre) ?>
+                    </p>
                 </div>
 
             </article>
@@ -56,7 +56,9 @@
     <?php endif; ?>
 
     <div class="m-t-30">
-        <a class="link-section" href="<?= $basePath; ?>manga/collection">Back</a>
+        <a class="link-section" href="<?= $basePath; ?>manga/collection">
+            Back
+        </a>
     </div>
 
 </section>
