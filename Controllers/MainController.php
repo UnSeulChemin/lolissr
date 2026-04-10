@@ -10,6 +10,6 @@ class MainController extends Controller
     public function index(): void
     {
         // view
-        $this->render('main/index');
+        $this->render('layouts/index');
     }
 }
