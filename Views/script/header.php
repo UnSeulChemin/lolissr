@@ -1,8 +1,12 @@
 <?php 
-$activeHome = (empty($_GET['p'])) ? 'active ' : null;
-$activeFigurine = (str_contains($_GET['p'], 'figurine')) ? 'active ' : null;
-$activeNendoroid = (str_contains($_GET['p'], 'nendoroid')) ? 'active ' : null;
-$activePlush = (str_contains($_GET['p'], 'plush')) ? 'active ' : null;
-$activeManga = (str_contains($_GET['p'], 'manga')) ? 'active ' : null;
-$activeChinese = (str_contains($_GET['p'], 'chinese')) ? 'active ' : null;
+
+$currentPage = $_GET['p'] ?? '';
+
+$activeHome = empty($currentPage) ? 'active ' : null;
+$activeFigurine = str_contains($currentPage, 'figurine') ? 'active ' : null;
+$activeNendoroid = str_contains($currentPage, 'nendoroid') ? 'active ' : null;
+$activePlush = str_contains($currentPage, 'plush') ? 'active ' : null;
+$activeManga = str_contains($currentPage, 'manga') ? 'active ' : null;
+$activeChinese = str_contains($currentPage, 'chinese') ? 'active ' : null;
+
 ?>

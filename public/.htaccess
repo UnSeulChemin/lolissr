@@ -1,4 +1,9 @@
 RewriteEngine On
-RewriteRule ^([a-zA-Z0-9\-\_\/]*)$ index.php?p=$1
 
-ErrorDocument 404 http://localhost/lolissr/
+RewriteBase /lolissr/
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?p=$1 [L,QSA]
+
+ErrorDocument 404 /lolissr/

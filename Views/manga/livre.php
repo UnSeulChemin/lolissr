@@ -4,7 +4,7 @@
 
         <figure class="card-character-img">
             <img alt="<?= $manga->livre ?>"
-            src="<?= $routeRedirection; ?>public/images/mangas/thumbnail/<?= $manga->thumbnail.".".$manga->extension ?>">
+            src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= $manga->thumbnail.".".$manga->extension ?>">
         </figure>
 
         <article class="card-character-value">

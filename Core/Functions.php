@@ -3,20 +3,14 @@ namespace App\Core;
 
 class Functions
 {
-    /**
-     * `../` OR `../../`
-     * @return string|null
-     */
-    public static function getPathRedirect(): string|null
+    public static function basePath(): string
     {
-        if (str_contains($_GET["p"], "/"))
-        {
-            $getP = substr_count($_GET["p"], "/");
+        static $config = null;
 
-            if ($getP == 1) { return "../"; }
-            else if ($getP == 2) { return "../../"; }
-            else { http_response_code(404); }
+        if ($config === null) {
+            $config = require __DIR__ . '/../Config/config.php';
         }
-        return null;
+
+        return $config['basename'];
     }
 }

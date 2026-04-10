@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $title; ?></title>
-	<link rel="shortcut icon" type="image/png" href="<?= $pathRedirect; ?>public/images/favicon/favicon.png">
-	<link rel="stylesheet" type="text/css" href="<?= $pathRedirect; ?>public/css/reset.css">
-	<link rel="stylesheet" type="text/css" href="<?= $pathRedirect; ?>public/css/app.css">
+    <link rel="shortcut icon" type="image/png" href="<?= $basePath; ?>public/images/favicon/favicon.png">
+    <link rel="stylesheet" type="text/css" href="<?= $basePath; ?>public/css/reset.css">
+    <link rel="stylesheet" type="text/css" href="<?= $basePath; ?>public/css/app.css">
     <script src="https://kit.fontawesome.com/118716b668.js" crossorigin="anonymous"></script>
 </head>
 <body>

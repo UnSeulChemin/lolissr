@@ -2,7 +2,6 @@
 namespace App\Controllers;
 
 use App\Models\MangaModel;
-use App\Core\Functions;
 
 class MangaController extends Controller
 {
@@ -21,20 +20,47 @@ class MangaController extends Controller
      * route /manga/collection
      * @return void
      */
-    public function collection(): void
-    {
-        // class instance
-        $mangaModel = new MangaModel;
-        $mangas = $mangaModel->findAllPaginate('id DESC', 8, 1);
-        $compteur = $mangaModel->countPaginate(8);
+public function collection(?string $slug = null, ?int $id = null): void
+{
+    $mangaModel = new MangaModel;
 
-        // functions static
-        $routeRedirection = Functions::getPathRedirect();
+    // CAS 1 : tout
+    if (!$slug) {
+        $mangas = $mangaModel->findAllPaginateSearch('id DESC', 8, 1, '01');
 
-        // view
-        $this->title = 'Manga | Collection';
-        $this->render('manga/collection', ['mangas' => $mangas, 'compteur' => $compteur, 'routeRedirection' => $routeRedirection]);
+        $this->render('manga/collection', [
+            'mangas' => $mangas,
+            'titleFilter' => null
+        ]);
+        return;
     }
+
+    $slug = str_replace('-', ' ', $slug);
+
+    // CAS 2 : ID + SLUG (VALIDATION OBLIGATOIRE)
+    if ($id) {
+        $manga = $mangaModel->find($id);
+
+        // 🔥 IMPORTANT : vérifie que le manga correspond au slug
+        if (strtolower($manga->livre) !== strtolower($slug)) {
+            header("Location: /manga/collection/" . strtolower(str_replace(' ', '-', $manga->livre)) . "/$id");
+            exit;
+        }
+
+        $this->render('manga/livre', [
+            'manga' => $manga
+        ]);
+        return;
+    }
+
+    // CAS 3 : collection manga
+    $mangas = $mangaModel->findByLivre($slug);
+
+    $this->render('manga/collection', [
+        'mangas' => $mangas,
+        'titleFilter' => $slug
+    ]);
+}
 
     /**
      * route /manga/page/{id}
@@ -45,34 +71,12 @@ class MangaController extends Controller
     {
         // class instance
         $mangaModel = new MangaModel;
-        $mangas = $mangaModel->findAllPaginate('id DESC', 8, $id);
+        $mangas = $mangaModel->findAllPaginateSearch('id DESC', 8, $id, '01');
         $compteur = $mangaModel->countPaginate(8);
-
-        // functions static
-        $routeRedirection = Functions::getPathRedirect();
 
         // view
         $this->title = 'Manga | Collection Page '.$id;
-        $this->render('plush/list', ['mangas' => $mangas, 'compteur' => $compteur, 'routeRedirection' => $routeRedirection]);
-    }
-
-    /**
-     * route /manga/livre/{id}
-     * @param int $id
-     * @return void
-     */
-    public function livre(int $id): void
-    {
-        // class instance
-        $mangaModel = new MangaModel;
-        $manga = $mangaModel->find($id);
-
-        // functions static
-        $routeRedirection = Functions::getPathRedirect();
-
-        // view
-        $this->title = 'Manga | '.$manga->livre;
-        $this->render('manga/livre', ['manga' => $manga, 'routeRedirection' => $routeRedirection]);
+        $this->render('plush/list', ['mangas' => $mangas, 'compteur' => $compteur]);
     }
 
     /**

@@ -26,6 +26,18 @@ class MangaModel extends Model
         $this->table = 'manga';
     }
 
+public function findByLivre(string $livre, string $orderBy = 'id DESC'): array
+{
+    return $this->requete("
+        SELECT * 
+        FROM {$this->table}
+        WHERE livre = :livre
+        ORDER BY $orderBy
+    ", [
+        'livre' => $livre
+    ])->fetchAll();
+}
+
     /**
      * getter id
      * @return integer
