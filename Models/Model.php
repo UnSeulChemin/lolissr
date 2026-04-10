@@ -103,24 +103,6 @@ class Model extends Database
         return $query->fetchAll();
     }
 
-    public function findAllPaginateSearch(string $orderBy, int $eachPerPage, int $page, ?string $search = null): array
-    {
-        $start = ($page - 1) * $eachPerPage;
-
-        $sql = "SELECT * FROM {$this->table}";
-
-        $params = [];
-
-        if ($search) {
-            $sql .= " WHERE thumbnail LIKE :search";
-            $params['search'] = "%$search%";
-        }
-
-        $sql .= " ORDER BY $orderBy LIMIT $start, $eachPerPage";
-
-        return $this->requete($sql, $params)->fetchAll();
-    }
-
     /**
      * model->countPaginate(8)
      * @param integer $eachPerPage

@@ -11,7 +11,6 @@ class MangaController extends Controller
      */
     public function index(): void
     {
-        // view
         $this->title = 'Manga';
         $this->render('manga/index');
     }
@@ -20,30 +19,36 @@ class MangaController extends Controller
      * route /manga/collection
      * @return void
      */
-public function collection(?string $slug = null, ?int $id = null): void
+public function collection(?string $slug = null, ?string $numero = null): void
 {
     $mangaModel = new MangaModel;
 
-    // CAS 1 : tout
-    if (!$slug) {
-        $mangas = $mangaModel->findAllPaginateSearch('id DESC', 8, 1, '01');
+    if ($slug === null || $slug === '') {
+        $page = 1;
+
+        $mangas = $mangaModel->findAllFirstTomes('id DESC', 8, $page);
+        $compteur = $mangaModel->countPaginate(8);
 
         $this->render('manga/collection', [
             'mangas' => $mangas,
+            'compteur' => $compteur,
             'titleFilter' => null
         ]);
         return;
     }
 
-    $slug = str_replace('-', ' ', $slug);
+    if ($numero !== null && $numero !== '') {
+        $manga = $mangaModel->findOneBySlugAndNumero($slug, $numero);
 
-    // CAS 2 : ID + SLUG (VALIDATION OBLIGATOIRE)
-    if ($id) {
-        $manga = $mangaModel->find($id);
+        if (!$manga) {
+            http_response_code(404);
+            exit('Manga introuvable');
+        }
 
-        // 🔥 IMPORTANT : vérifie que le manga correspond au slug
-        if (strtolower($manga->livre) !== strtolower($slug)) {
-            header("Location: /manga/collection/" . strtolower(str_replace(' ', '-', $manga->livre)) . "/$id");
+        $goodSlug = strtolower(str_replace(' ', '-', trim($manga->livre)));
+
+        if ($goodSlug !== strtolower(trim($slug))) {
+            header("Location: /lolissr/manga/collection/" . $goodSlug . "/" . $manga->numero);
             exit;
         }
 
@@ -53,8 +58,7 @@ public function collection(?string $slug = null, ?int $id = null): void
         return;
     }
 
-    // CAS 3 : collection manga
-    $mangas = $mangaModel->findByLivre($slug);
+    $mangas = $mangaModel->findBySlug($slug);
 
     $this->render('manga/collection', [
         'mangas' => $mangas,
@@ -69,14 +73,16 @@ public function collection(?string $slug = null, ?int $id = null): void
      */
     public function page(int $id): void
     {
-        // class instance
         $mangaModel = new MangaModel;
-        $mangas = $mangaModel->findAllPaginateSearch('id DESC', 8, $id, '01');
+        $mangas = $mangaModel->findAllFirstTomes('id DESC', 8, $id);
         $compteur = $mangaModel->countPaginate(8);
 
-        // view
-        $this->title = 'Manga | Collection Page '.$id;
-        $this->render('plush/list', ['mangas' => $mangas, 'compteur' => $compteur]);
+        $this->title = 'Manga | Collection Page ' . $id;
+        $this->render('manga/collection', [
+            'mangas' => $mangas,
+            'compteur' => $compteur,
+            'titleFilter' => null
+        ]);
     }
 
     /**
@@ -85,7 +91,6 @@ public function collection(?string $slug = null, ?int $id = null): void
      */
     public function lien(): void
     {
-        // view
         $this->title = 'Manga | Lien';
         $this->render('manga/lien');
     }

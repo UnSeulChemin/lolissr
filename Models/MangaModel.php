@@ -5,113 +5,113 @@ use App\Models\Trait\CreatedAtTrait;
 
 class MangaModel extends Model
 {
-    /* containt created_at */
     use CreatedAtTrait;
 
-    /* key primary id */
     protected int $id;
-
-    /* image thumbnail */
     protected string $thumbnail;
-
-    /* image extension */
+    protected string $numero;
     protected string $extension;
-
-    /* column livre */
     protected string $livre;
 
-    /* magic method __construct */
     public function __construct()
     {
         $this->table = 'manga';
     }
 
-public function findByLivre(string $livre, string $orderBy = 'id DESC'): array
-{
-    return $this->requete("
-        SELECT * 
-        FROM {$this->table}
-        WHERE livre = :livre
-        ORDER BY $orderBy
-    ", [
-        'livre' => $livre
-    ])->fetchAll();
-}
+    public function findAllFirstTomes(string $orderBy, int $eachPerPage, int $page): array
+    {
+        $start = ($page - 1) * $eachPerPage;
+        $orderBy = in_array($orderBy, ['id DESC', 'id ASC']) ? $orderBy : 'id DESC';
 
-    /**
-     * getter id
-     * @return integer
-     */
+        $sql = "SELECT * 
+                FROM {$this->table}
+                WHERE numero = :numero
+                ORDER BY $orderBy
+                LIMIT $start, $eachPerPage";
+
+        return $this->requete($sql, [
+            'numero' => '01'
+        ])->fetchAll();
+    }
+
+    public function findOneBySlugAndNumero(string $slug, string $numero): object|false
+    {
+        $numero = str_pad($numero, 2, '0', STR_PAD_LEFT);
+
+        $query = $this->requete(
+            "SELECT * FROM {$this->table}
+             WHERE LOWER(REPLACE(TRIM(livre), ' ', '-')) = ?
+             AND numero = ?",
+            [
+                strtolower(trim($slug)),
+                $numero
+            ]
+        );
+
+        return $query->fetch();
+    }
+
+    public function findBySlug(string $slug): array
+    {
+        $sql = "SELECT * 
+                FROM {$this->table}
+                WHERE LOWER(REPLACE(TRIM(livre), ' ', '-')) = :slug
+                ORDER BY numero ASC";
+
+        return $this->requete($sql, [
+            'slug' => strtolower(trim($slug))
+        ])->fetchAll();
+    }
+
     public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * setter id
-     * @param integer $id
-     * @return self
-     */
     public function setId(int $id): self
     {
         $this->id = $id;
         return $this;
     }
 
-    /**
-     * getter thumbnail
-     * @return string
-     */
     public function getThumbnail(): string
     {
         return $this->thumbnail;
     }
 
-    /**
-     * setter thumbnail
-     * @param string $thumbnail
-     * @return self
-     */
     public function setThumbnail(string $thumbnail): self
     {
         $this->thumbnail = $thumbnail;
         return $this;
     }
 
-    /**
-     * getter extension
-     * @return string
-     */
+    public function getNumero(): string
+    {
+        return $this->numero;
+    }
+
+    public function setNumero(string $numero): self
+    {
+        $this->numero = $numero;
+        return $this;
+    }
+
     public function getExtension(): string
     {
         return $this->extension;
     }
 
-    /**
-     * setter extension
-     * @param string $extension
-     * @return self
-     */
     public function setExtension(string $extension): self
     {
         $this->extension = $extension;
         return $this;
     }
 
-    /**
-     * getter livre
-     * @return string
-     */
     public function getLivre(): string
     {
         return $this->livre;
     }
 
-    /**
-     * setter livre
-     * @param string $livre
-     * @return self
-     */
     public function setLivre(string $livre): self
     {
         $this->livre = $livre;
