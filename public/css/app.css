@@ -1,21 +1,22 @@
-/* Framekwork */
-@import "framework/variables.css";
-@import "framework/global.css";
-@import "framework/class.css";
-@import "framework/default.css";
-@import "framework/margin.css";
-@import "framework/flex.css";
-@import "framework/card.css";
-@import "framework/table.css";
-@import "framework/link.css";
-@import "framework/flash.css";
+/* BASE */
+@import url('./base/reset.css');
+@import url('./base/variables.css');
+@import url('./base/global.css');
+@import url('./base/scrollbars.css');
 
-/* UI */
-@import "ui/webkit.css";
-@import "ui/scroll-bar.css";
+/* UTILITIES */
+@import url('./utilities/helpers.css');
+@import url('./utilities/layout.css');
+@import url('./utilities/spacing.css');
 
-/* Print */
-@import "print/print.css";
+/* COMPONENTS */
+@import url('./components/cards.css');
+@import url('./components/tables.css');
+@import url('./components/links.css');
+@import url('./components/alerts.css');
 
-/* Font */
+/* PRINT */
+@import url('./print/print.css');
+
+/* FONT */
 @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");

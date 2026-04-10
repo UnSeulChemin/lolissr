@@ -104,3 +104,13 @@
     color: var(--background-color-section);
     background-color: var(--color-link);
 }
+
+.none
+{
+    display: none;
+}
+
+.bold
+{
+    font-weight: bold;
+}
