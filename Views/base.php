@@ -1,4 +1,3 @@
-<?php include_once 'script/header.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,3 +8,10 @@
     <link rel="stylesheet" href="<?= $basePath; ?>public/css/app.css">
     <script src="https://kit.fontawesome.com/118716b668.js" crossorigin="anonymous"></script>
 </head>
+<body>
+
+<?php require_once 'partials/header.php'; ?>
+<main><?= $content ?></main>
+
+</body>
+</html>
