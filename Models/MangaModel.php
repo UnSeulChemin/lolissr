@@ -11,20 +11,14 @@ class MangaModel extends Model
     /* key primary id */
     protected int $id;
 
-    /* column manga */
-    protected string $manga;
+    /* image thumbnail */
+    protected string $thumbnail;
 
-    /* column 'publishing' house */
-    protected string $house;
+    /* image extension */
+    protected string $extension;
 
-    /* column tome */
-    protected string $tome;
-
-    /* column 'in future' next */
-    protected string $next;
-
-    /* column end */
-    protected string $end;
+    /* column livre */
+    protected string $livre;
 
     /* magic method __construct */
     public function __construct()
@@ -53,102 +47,62 @@ class MangaModel extends Model
     }
 
     /**
-     * getter manga
+     * getter thumbnail
      * @return string
      */
-    public function getManga(): string
+    public function getThumbnail(): string
     {
-        return $this->manga;
+        return $this->thumbnail;
     }
 
     /**
-     * setter manga
-     * @param string $manga
+     * setter thumbnail
+     * @param string $thumbnail
      * @return self
      */
-    public function setManga(string $manga): self
+    public function setThumbnail(string $thumbnail): self
     {
-        $this->manga = $manga;
+        $this->thumbnail = $thumbnail;
         return $this;
     }
 
     /**
-     * getter house
+     * getter extension
      * @return string
      */
-    public function getHouse(): string
+    public function getExtension(): string
     {
-        return $this->house;
+        return $this->extension;
     }
 
     /**
-     * setter house
-     * @param string $house
+     * setter extension
+     * @param string $extension
      * @return self
      */
-    public function setHouse(string $house): self
+    public function setExtension(string $extension): self
     {
-        $this->house = $house;
+        $this->extension = $extension;
         return $this;
     }
 
     /**
-     * getter tome
+     * getter livre
      * @return string
      */
-    public function getTome(): string
+    public function getLivre(): string
     {
-        return $this->tome;
+        return $this->livre;
     }
 
     /**
-     * setter tome
-     * @param string $tome
+     * setter livre
+     * @param string $livre
      * @return self
      */
-    public function setTome(string $tome): self
+    public function setLivre(string $livre): self
     {
-        $this->tome = $tome;
-        return $this;
-    }
-
-    /**
-     * getter next
-     * @return string
-     */
-    public function getNext(): string
-    {
-        return $this->next;
-    }
-
-    /**
-     * setter next
-     * @param string $next
-     * @return self
-     */
-    public function setNext(string $next): self
-    {
-        $this->next = $next;
-        return $this;
-    }
-
-    /**
-     * getter end
-     * @return string
-     */
-    public function getEnd(): string
-    {
-        return $this->end;
-    }
-
-    /**
-     * setter end
-     * @param string $end
-     * @return self
-     */
-    public function setEnd(string $end): self
-    {
-        $this->end = $end;
+        $this->livre = $livre;
         return $this;
     }
 }

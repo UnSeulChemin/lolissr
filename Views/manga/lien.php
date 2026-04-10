@@ -1,6 +1,6 @@
 <section class="section-content">
 
-    <h2>Manga Link</h2>
+    <h2>Liste de lien utile</h2>
 
     <section class="flex-column-gap-30">
 
