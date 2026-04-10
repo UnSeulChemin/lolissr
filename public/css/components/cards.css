@@ -14,7 +14,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: grey;
+    background: --background-color-body;
 }
 
 .card-figure:hover

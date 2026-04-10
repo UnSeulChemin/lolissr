@@ -10,7 +10,12 @@ body
 
 header
 {
-    background-color: var(--background-color-header);
+
+    background: linear-gradient(
+        90deg,
+        #3b82f6,
+        #06b6d4
+    );
 
     padding: 20px 30px;
 }

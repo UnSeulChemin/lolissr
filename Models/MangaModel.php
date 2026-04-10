@@ -46,11 +46,9 @@ class MangaModel extends Model
             'slug' => strtolower(trim($slug))
         ])->fetchAll();
     }
-
-    public function findOneBySlugAndNumero(string $slug, string $numero)
+    
+    public function findOneBySlugAndNumero(string $slug, int $numero)
     {
-        $numero = str_pad($numero, 2, '0', STR_PAD_LEFT);
-
         $query = $this->requete(
             "SELECT * FROM {$this->table}
             WHERE slug = ?
