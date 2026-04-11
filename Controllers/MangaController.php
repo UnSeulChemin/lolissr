@@ -94,4 +94,82 @@ public function collection(?string $slug = null, ?string $numero = null): void
         $this->title = 'Manga | Lien';
         $this->render('manga/lien');
     }
+
+
+public function ajouter(): void
+{
+    $this->title = 'Manga | Ajouter';
+    $this->render('manga/ajouter');
+}
+
+public function ajouterTraitement(): void
+{
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        header('Location: ' . $this->basePath . 'manga/ajouter');
+        exit;
+    }
+
+    $livre = trim($_POST['livre'] ?? '');
+    $slug = trim($_POST['slug'] ?? '');
+    $numero = (int) ($_POST['numero'] ?? 0);
+
+    if ($livre === '' || $slug === '' || $numero <= 0 || empty($_FILES['image']['name'])) {
+        exit('Formulaire incomplet');
+    }
+
+    if (!isset($_FILES['image']) || $_FILES['image']['error'] !== UPLOAD_ERR_OK) {
+        exit('Erreur fichier');
+    }
+
+    $extension = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
+
+    if ($extension === 'jpeg') {
+        $extension = 'jpg';
+    }
+
+    $extensionsAutorisees = ['jpg', 'png', 'webp'];
+
+    if (!in_array($extension, $extensionsAutorisees, true)) {
+        exit('Format image non autorisé');
+    }
+
+    $thumbnail = preg_replace('/[^A-Za-z0-9\- ]/', '', strtoupper($livre));
+    $thumbnail .= ' ' . str_pad((string) $numero, 2, '0', STR_PAD_LEFT);
+    $thumbnail = preg_replace('/\s+/', ' ', $thumbnail);
+    $thumbnail = trim($thumbnail);
+
+    $nomFichier = $thumbnail . '.' . $extension;
+
+    $dossier = dirname(__DIR__) . '/public/images/mangas/thumbnail/';
+
+    if (!is_dir($dossier)) {
+        exit('Dossier image introuvable : ' . $dossier);
+    }
+
+    $destination = $dossier . $nomFichier;
+
+    if (file_exists($destination)) {
+        exit('Une image avec ce nom existe déjà');
+    }
+
+    if (!move_uploaded_file($_FILES['image']['tmp_name'], $destination)) {
+        exit('Erreur lors de l\'upload');
+    }
+
+    $mangaModel = new MangaModel();
+
+    $mangaModel->insert([
+        'thumbnail' => $thumbnail,
+        'extension' => $extension,
+        'slug' => strtolower($slug),
+        'livre' => $livre,
+        'numero' => $numero
+    ]);
+
+    $_SESSION['success'] = 'Manga ajouté avec succès';
+
+    header('Location: /lolissr/index.php?p=manga/ajouter');
+    exit;
+}
+
 }

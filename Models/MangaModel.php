@@ -62,6 +62,21 @@ class MangaModel extends Model
         return $query->fetch();
     }
 
+public function insert(array $data)
+{
+    return $this->requete(
+        "INSERT INTO {$this->table} (thumbnail, extension, slug, livre, numero, created_at)
+         VALUES (:thumbnail, :extension, :slug, :livre, :numero, NOW())",
+        [
+            'thumbnail' => $data['thumbnail'],
+            'extension' => $data['extension'],
+            'slug' => $data['slug'],
+            'livre' => $data['livre'],
+            'numero' => $data['numero']
+        ]
+    );
+}
+
     public function getId(): int
     {
         return $this->id;
