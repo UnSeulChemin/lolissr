@@ -27,7 +27,7 @@ public function collection(?string $slug = null, ?string $numero = null): void
         $page = 1;
 
         $mangas = $mangaModel->findAllFirstTomes('id DESC', 8, $page);
-        $compteur = $mangaModel->countPaginate(8);
+        $compteur = $mangaModel->countFirstTomesPaginate(8);
 
         $this->render('manga/collection', [
             'mangas' => $mangas,
@@ -77,7 +77,7 @@ public function collection(?string $slug = null, ?string $numero = null): void
 
         $mangaModel = new MangaModel;
         $mangas = $mangaModel->findAllFirstTomes('id DESC', 8, $id);
-        $compteur = $mangaModel->countPaginate(8);
+        $compteur = $mangaModel->countFirstTomesPaginate(8);
 
         $this->title = 'Manga | Collection Page ' . $id;
         $this->render('manga/collection', [

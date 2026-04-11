@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use App\Models\Trait\CreatedAtTrait;
@@ -6,6 +7,8 @@ use App\Models\Trait\CreatedAtTrait;
 class MangaModel extends Model
 {
     use CreatedAtTrait;
+
+    protected string $table = 'manga';
 
     protected int $id;
     protected string $thumbnail;
@@ -15,31 +18,44 @@ class MangaModel extends Model
     protected ?int $note = null;
     protected string $livre;
 
-    public function __construct()
-    {
-        $this->table = 'manga';
-    }
-
-public function findAllFirstTomes(string $orderBy, int $eachPerPage, int $page): array
+public function countFirstTomesPaginate(int $eachPerPage): int
 {
-    $start = ($page - 1) * $eachPerPage;
-    $orderBy = in_array($orderBy, ['id DESC', 'id ASC']) ? $orderBy : 'id DESC';
+    $eachPerPage = max(1, $eachPerPage);
 
-    $sql = "SELECT m.*,
-                   (
-                       SELECT COUNT(*)
-                       FROM {$this->table}
-                       WHERE slug = m.slug
-                   ) AS total
-            FROM {$this->table} m
-            WHERE m.numero = :numero
-            ORDER BY $orderBy
-            LIMIT $start, $eachPerPage";
+    $query = $this->requete(
+        "SELECT COUNT(*) AS total
+         FROM {$this->table}
+         WHERE numero = ?",
+        [1]
+    );
 
-    return $this->requete($sql, [
-        'numero' => '1'
-    ])->fetchAll();
+    $result = $query->fetch();
+
+    return (int) ceil(($result->total ?? 0) / $eachPerPage);
 }
+
+    public function findAllFirstTomes(string $orderBy, int $eachPerPage, int $page): array
+    {
+        $page = max(1, $page);
+        $eachPerPage = max(1, $eachPerPage);
+        $start = ($page - 1) * $eachPerPage;
+        $orderBy = in_array($orderBy, ['id DESC', 'id ASC'], true) ? $orderBy : 'id DESC';
+
+        $sql = "SELECT m.*,
+                       (
+                           SELECT COUNT(*)
+                           FROM {$this->table}
+                           WHERE slug = m.slug
+                       ) AS total
+                FROM {$this->table} m
+                WHERE m.numero = :numero
+                ORDER BY {$orderBy}
+                LIMIT {$start}, {$eachPerPage}";
+
+        return $this->requete($sql, [
+            'numero' => 1
+        ])->fetchAll();
+    }
 
     public function findBySlug(string $slug): array
     {
@@ -52,51 +68,50 @@ public function findAllFirstTomes(string $orderBy, int $eachPerPage, int $page):
             'slug' => strtolower(trim($slug))
         ])->fetchAll();
     }
-    
+
     public function findOneBySlugAndNumero(string $slug, int $numero)
     {
-        $query = $this->requete(
-            "SELECT * FROM {$this->table}
-            WHERE slug = ?
-            AND numero = ?",
+        return $this->requete(
+            "SELECT * 
+             FROM {$this->table}
+             WHERE slug = ?
+             AND numero = ?",
             [
                 strtolower(trim($slug)),
                 $numero
             ]
-        );
-
-        return $query->fetch();
+        )->fetch();
     }
 
-public function insert(array $data)
-{
-    return $this->requete(
-        "INSERT INTO {$this->table} (thumbnail, extension, slug, livre, numero, created_at)
-         VALUES (:thumbnail, :extension, :slug, :livre, :numero, NOW())",
-        [
-            'thumbnail' => $data['thumbnail'],
-            'extension' => $data['extension'],
-            'slug' => $data['slug'],
-            'livre' => $data['livre'],
-            'numero' => $data['numero']
-        ]
-    );
-}
+    public function insert(array $datas): bool
+    {
+        return $this->requete(
+            "INSERT INTO {$this->table} (thumbnail, extension, slug, livre, numero, created_at)
+             VALUES (:thumbnail, :extension, :slug, :livre, :numero, NOW())",
+            [
+                'thumbnail' => $datas['thumbnail'],
+                'extension' => $datas['extension'],
+                'slug' => $datas['slug'],
+                'livre' => $datas['livre'],
+                'numero' => $datas['numero']
+            ]
+        ) !== false;
+    }
 
-public function updateNote(string $slug, int $numero, ?int $note): void
-{
-    $this->requete(
-        "UPDATE {$this->table}
-         SET note = :note
-         WHERE slug = :slug
-         AND numero = :numero",
-        [
-            'note' => $note,
-            'slug' => strtolower(trim($slug)),
-            'numero' => $numero
-        ]
-    );
-}
+    public function updateNote(string $slug, int $numero, ?int $note): bool
+    {
+        return $this->requete(
+            "UPDATE {$this->table}
+             SET note = :note
+             WHERE slug = :slug
+             AND numero = :numero",
+            [
+                'note' => $note,
+                'slug' => strtolower(trim($slug)),
+                'numero' => $numero
+            ]
+        ) !== false;
+    }
 
     public function getId(): int
     {

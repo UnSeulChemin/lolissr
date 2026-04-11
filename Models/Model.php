@@ -1,225 +1,165 @@
 <?php
+
 namespace App\Models;
 
 use App\Core\Database;
+use PDOStatement;
 
-class Model extends Database
+class Model
 {
-    /* instance db */
-    private $db;
+    protected string $table;
+    protected $db;
 
-    /* table db */
-    protected $table;
-
-    /**
-     * model->find($id)
-     * @param integer $id
-     * @return void
-     */
-    public function find(int $id)
+    public function __construct()
     {
-        $query = $this->requete("SELECT * FROM {$this->table} WHERE id = $id");
-        return $query->fetch();
+        $this->db = Database::getInstance();
     }
 
-    /**
-     * model->findName($name)
-     * @param string $name
-     * @return void
-     */
-    public function findName(string $name)
+    public function find(int $id): object|false
     {
-        $query = $this->requete("SELECT * FROM {$this->table} WHERE name = '$name'");
-        return $query->fetch();
+        return $this->requete(
+            "SELECT * FROM {$this->table} WHERE id = ?",
+            [$id]
+        )->fetch();
     }
 
-    /**
-     * model->findBy(['key' => $value])
-     * @param array $targets
-     * @return array
-     */
+    public function findName(string $name): object|false
+    {
+        return $this->requete(
+            "SELECT * FROM {$this->table} WHERE name = ?",
+            [trim($name)]
+        )->fetch();
+    }
+
     public function findBy(array $targets): array
     {
+        if (empty($targets)) {
+            return [];
+        }
+
         $fields = [];
         $values = [];
 
-        foreach ($targets as $field => $value)
-        {
-            $fields[] = "$field = ?";
+        foreach ($targets as $field => $value) {
+            $fields[] = "{$field} = ?";
             $values[] = $value;
         }
 
-        $list_fields = implode(' AND ', $fields);
+        $sql = "SELECT * FROM {$this->table} WHERE " . implode(' AND ', $fields);
 
-        $query = $this->requete("SELECT * FROM {$this->table} WHERE $list_fields", $values);
-        return $query->fetchAll();
+        return $this->requete($sql, $values)->fetchAll();
     }
 
-    /**
-     * model->findAll();
-     * @return array
-     */
-    public function findAll(): array
+    public function findAll(string $orderBy = 'id DESC'): array
     {
-        $query = $this->requete("SELECT * FROM " . $this->table);
-        return $query->fetchAll();
+        $orderBy = $this->sanitizeOrderBy($orderBy);
+
+        return $this->requete(
+            "SELECT * FROM {$this->table} ORDER BY {$orderBy}"
+        )->fetchAll();
     }
 
-    /**
-     * model->findAllOrderBy('id DESC')
-     * @param string $orderBy
-     * @return array
-     */
     public function findAllOrderBy(string $orderBy): array
     {
-        $query = $this->requete("SELECT * FROM {$this->table} ORDER BY $orderBy");
-        return $query->fetchAll();
+        return $this->findAll($orderBy);
     }
 
-    /**
-     * model->findAllOrderByLimit('id DESC', 6);
-     * @param string $orderBy
-     * @param integer $limit
-     * @return array
-     */
     public function findAllOrderByLimit(string $orderBy, int $limit): array
     {
-        $query = $this->requete("SELECT * FROM {$this->table} ORDER BY $orderBy LIMIT $limit");
-        return $query->fetchAll();
+        $orderBy = $this->sanitizeOrderBy($orderBy);
+        $limit = max(1, $limit);
+
+        return $this->requete(
+            "SELECT * FROM {$this->table} ORDER BY {$orderBy} LIMIT {$limit}"
+        )->fetchAll();
     }
 
-    /**
-     * model->findAllPaginate('id DESC', 8, 1);
-     * @param string $orderBy
-     * @param integer $eachPerPage
-     * @param integer $getId
-     * @return array
-     */
-    public function findAllPaginate(string $orderBy, int $eachPerPage, int $getId): array
+    public function findAllPaginate(string $orderBy, int $eachPerPage, int $page): array
     {
-        $start = ($getId -1) * $eachPerPage;
-    
-        $query = $this->requete("SELECT * FROM {$this->table} ORDER BY $orderBy LIMIT " . $start . ", " . $eachPerPage);
-        return $query->fetchAll();
+        $orderBy = $this->sanitizeOrderBy($orderBy);
+        $eachPerPage = max(1, $eachPerPage);
+        $page = max(1, $page);
+
+        $start = ($page - 1) * $eachPerPage;
+
+        return $this->requete(
+            "SELECT * FROM {$this->table} ORDER BY {$orderBy} LIMIT {$start}, {$eachPerPage}"
+        )->fetchAll();
     }
 
-    /**
-     * model->countPaginate(8)
-     * @param integer $eachPerPage
-     * @return integer
-     */
     public function countPaginate(int $eachPerPage): int
     {
-        $query = $this->requete("SELECT COUNT(*) AS `count` FROM {$this->table}");
+        $eachPerPage = max(1, $eachPerPage);
 
-        if ($query->rowCount() > 0) { $countTotal = $query->fetch(); }
+        $query = $this->requete(
+            "SELECT COUNT(*) AS total FROM {$this->table}"
+        );
 
-        $counts = ceil($countTotal->count / $eachPerPage);
-        return $counts;
+        $result = $query->fetch();
+
+        return (int) ceil(($result->total ?? 0) / $eachPerPage);
     }
 
-    /**
-     * crud : create
-     * @return void
-     */
-    public function create()
+    public function insert(array $datas): bool
     {
-        $fields = [];
-        $inter = [];
-        $values = [];
-
-        foreach ($this as $field => $value)
-        {
-            if ($value !== null && $field != 'db' && $field != 'table')
-            {
-                $fields[] = $field;
-                $inter[] = "?";
-                $values[] = $value;
-            }
+        if (empty($datas)) {
+            return false;
         }
 
-        $list_fields = implode(', ', $fields);
-        $list_inter = implode(', ', $inter);
+        $fields = array_keys($datas);
+        $placeholders = array_fill(0, count($datas), '?');
+        $values = array_values($datas);
 
-        $query = $this->requete('INSERT INTO '.$this->table.' ('. $list_fields.')VALUES('.$list_inter.')', $values);
-        return $query;
+        $sql = "INSERT INTO {$this->table} (" . implode(', ', $fields) . ")
+                VALUES (" . implode(', ', $placeholders) . ")";
+
+        return $this->requete($sql, $values) !== false;
     }
 
-    /**
-     * crud : update
-     * @return void
-     */
-    public function update()
+    public function delete(int $id): bool
     {
-        $fields = [];
-        $values = [];
-
-        foreach ($this as $field => $value)
-        {
-            if ($value !== null && $field != 'db' && $field != 'table')
-            {
-                $fields[] = "$field = ?";
-                $values[] = $value;
-            }
-        }
-        $values[] = $this->id;
-
-        $list_fields = implode(', ', $fields);
-
-        $query = $this->requete('UPDATE '.$this->table.' SET '. $list_fields.' WHERE id = ?', $values);
-        return $query;
+        return $this->requete(
+            "DELETE FROM {$this->table} WHERE id = ?",
+            [$id]
+        ) !== false;
     }
 
-    /**
-     * crud : delete
-     * @param integer $id
-     * @return void
-     */
-    public function delete(int $id)
+    public function hydrate(array $datas): static
     {
-        $query = $this->requete("DELETE FROM {$this->table} WHERE id = ?", [$id]);
-        return $query;
-    }
+        foreach ($datas as $key => $value) {
+            $method = 'set' . ucfirst($key);
 
-    /**
-     * hydrate datas
-     * @param $datas
-     * @return void
-     */
-    public function hydrate($datas)
-    {
-        foreach ($datas as $key => $value)
-        {
-            $method = 'set'.ucfirst($key);
-            
-            if (method_exists($this, $method))
-            {
+            if (method_exists($this, $method)) {
                 $this->$method($value);
             }
         }
+
         return $this;
     }
 
-    /**
-     * requete
-     * @param string $sql
-     * @param array|null $attributes
-     * @return void
-     */
-    protected function requete(string $sql, array $attributes = null)
+    protected function requete(string $sql, ?array $attributes = null): PDOStatement|false
     {
-        $this->db = Database::getInstance();
+        if ($this->db === null) {
+            $this->db = Database::getInstance();
+        }
 
-        if ($attributes !== null)
-        {
+        if ($attributes !== null) {
             $query = $this->db->prepare($sql);
             $query->execute($attributes);
             return $query;
         }
 
-        else
-        {
-            return $this->db->query($sql);
+        return $this->db->query($sql);
+    }
+
+    protected function sanitizeOrderBy(string $orderBy): string
+    {
+        $orderBy = trim($orderBy);
+
+        if (preg_match('/^[a-zA-Z0-9_]+(\s+(ASC|DESC))?$/i', $orderBy)) {
+            return $orderBy;
         }
+
+        return 'id DESC';
     }
 }
