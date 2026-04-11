@@ -11,8 +11,8 @@ class MangaModel extends Model
     protected string $thumbnail;
     protected string $extension;
     protected string $slug;
-    protected string $numero;
-    protected string $note;
+    protected int $numero;
+    protected ?int $note = null;
     protected string $livre;
 
     public function __construct()
@@ -37,7 +37,7 @@ public function findAllFirstTomes(string $orderBy, int $eachPerPage, int $page):
             LIMIT $start, $eachPerPage";
 
     return $this->requete($sql, [
-        'numero' => '01'
+        'numero' => '1'
     ])->fetchAll();
 }
 
@@ -83,6 +83,21 @@ public function insert(array $data)
     );
 }
 
+public function updateNote(string $slug, int $numero, ?int $note): void
+{
+    $this->requete(
+        "UPDATE {$this->table}
+         SET note = :note
+         WHERE slug = :slug
+         AND numero = :numero",
+        [
+            'note' => $note,
+            'slug' => strtolower(trim($slug)),
+            'numero' => $numero
+        ]
+    );
+}
+
     public function getId(): int
     {
         return $this->id;
@@ -116,23 +131,23 @@ public function insert(array $data)
         return $this;
     }
 
-    public function getNumero(): string
+    public function getNumero(): int
     {
         return $this->numero;
     }
 
-    public function setNumero(string $numero): self
+    public function setNumero(int $numero): self
     {
         $this->numero = $numero;
         return $this;
     }
 
-    public function getNote(): string
+    public function getNote(): ?int
     {
         return $this->note;
     }
 
-    public function setNote(string $note): self
+    public function setNote(?int $note): self
     {
         $this->note = $note;
         return $this;

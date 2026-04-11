@@ -71,8 +71,10 @@ public function collection(?string $slug = null, ?string $numero = null): void
      * @param int $id
      * @return void
      */
-    public function page(int $id): void
+    public function page(string $id): void
     {
+        $id = (int) $id;
+
         $mangaModel = new MangaModel;
         $mangas = $mangaModel->findAllFirstTomes('id DESC', 8, $id);
         $compteur = $mangaModel->countPaginate(8);
@@ -168,7 +170,54 @@ public function ajouterTraitement(): void
 
     $_SESSION['success'] = 'Manga ajouté avec succès';
 
-    header('Location: /lolissr/index.php?p=manga/ajouter');
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        header('Location: /lolissr/manga/ajouter');
+        exit;
+}
+}
+
+public function edit(string $slug, string $numero): void
+{
+    $numero = (int) $numero;
+
+    $mangaModel = new MangaModel;
+    $manga = $mangaModel->findOneBySlugAndNumero($slug, $numero);
+
+    if (!$manga) {
+        http_response_code(404);
+        exit('Manga introuvable');
+    }
+
+    $this->render('manga/edit', [
+        'manga' => $manga
+    ]);
+}
+
+public function update(string $slug, string $numero): void
+{
+    $numero = (int) $numero;
+
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        header('Location: /lolissr/manga/collection/' . $slug . '/' . $numero);
+        exit;
+    }
+
+    $note = $_POST['note'] ?? null;
+
+    if ($note === '') {
+        $note = null;
+    } else {
+        $note = (int) $note;
+
+        if ($note < 1 || $note > 5) {
+            exit('Note invalide');
+        }
+    }
+
+    $mangaModel = new MangaModel;
+    $mangaModel->updateNote($slug, $numero, $note);
+
+    header('Location: /lolissr/manga/collection/' . $slug . '/' . $numero);
     exit;
 }
 

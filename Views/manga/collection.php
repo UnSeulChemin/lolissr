@@ -1,4 +1,4 @@
-<?php $isCollection = !empty($titleFilter); ?>
+<?php $isCollection = isset($titleFilter) && !empty($titleFilter); ?>
 
 <section class="section-content">
 
@@ -11,7 +11,7 @@
                 <figure class="card-figure">
 
                     <a class="flex"
-                    href="<?= $basePath; ?>manga/collection/<?= $manga->slug ?><?= $isCollection ? '/' . $manga->numero : '' ?>">
+                       href="<?= $basePath; ?>manga/collection/<?= htmlspecialchars($manga->slug) ?><?= $isCollection ? '/' . (int) $manga->numero : '' ?>">
 
                         <img
                             alt="<?= htmlspecialchars($manga->livre) ?>"
@@ -19,14 +19,12 @@
 
                     </a>
 
-                    <!-- Badge nombre de tomes (page collection principale) -->
                     <?php if (!$isCollection): ?>
                         <span class="badge-count">
                             <?= htmlspecialchars($manga->total) ?>
                         </span>
                     <?php endif; ?>
 
-                    <!-- Badge note (page collection/berserk) -->
                     <?php if ($isCollection && $manga->note !== null): ?>
                         <span class="badge-note note-<?= (int) $manga->note ?>">
                             <?= (int) $manga->note ?>
@@ -52,8 +50,12 @@
         <nav class="flex-center-center-gap-25 m-t-30">
 
             <?php
-            $currentPage = basename($_GET['p'] ?? 1);
-            if (!is_numeric($currentPage)) $currentPage = 1;
+            $currentPage = $_GET['p'] ?? '1';
+            $currentPage = basename($currentPage);
+
+            if (!is_numeric($currentPage)) {
+                $currentPage = 1;
+            }
 
             for ($getId = 1; $getId <= $compteur; $getId++):
             ?>
