@@ -11,13 +11,27 @@
                 <figure class="card-figure">
 
                     <a class="flex"
-                       href="<?= $basePath; ?>manga/collection/<?= $manga->slug ?><?= $isCollection ? '/' . $manga->numero : '' ?>">
+                    href="<?= $basePath; ?>manga/collection/<?= $manga->slug ?><?= $isCollection ? '/' . $manga->numero : '' ?>">
 
                         <img
                             alt="<?= htmlspecialchars($manga->livre) ?>"
                             src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($manga->thumbnail . '.' . $manga->extension) ?>">
 
                     </a>
+
+                    <!-- Badge nombre de tomes (page collection principale) -->
+                    <?php if (!$isCollection): ?>
+                        <span class="badge-count">
+                            <?= htmlspecialchars($manga->total) ?>
+                        </span>
+                    <?php endif; ?>
+
+                    <!-- Badge note (page collection/berserk) -->
+                    <?php if ($isCollection && $manga->note !== null): ?>
+                        <span class="badge-note note-<?= (int) $manga->note ?>">
+                            <?= (int) $manga->note ?>
+                        </span>
+                    <?php endif; ?>
 
                 </figure>
 

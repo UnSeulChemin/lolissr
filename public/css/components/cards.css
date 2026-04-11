@@ -14,12 +14,139 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: --background-color-body;
+    background: var(--background-color-body);
+
+    position: relative;
 }
 
 .card-figure:hover
 {
     border: 3px solid var(--background-color-header);
+}
+
+.badge-count {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+
+    min-width: 32px;
+    height: 32px;
+    padding: 0 6px;
+
+    background: linear-gradient(
+        135deg,
+        #7b2cff,
+        #c44cff
+    );
+
+    color: white;
+
+    font-size: 13px;
+    font-weight: bold;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50px;
+
+    border: 2px solid white;
+
+    box-shadow:
+        0 4px 10px rgba(0,0,0,0.4);
+}
+
+.badge-note {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+
+    min-width: 32px;
+    height: 32px;
+    padding: 0 6px;
+
+    color: white;
+
+    font-size: 13px;
+    font-weight: bold;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50px;
+
+    border: 2px solid white;
+
+    box-shadow:
+        0 4px 10px rgba(0,0,0,0.4);
+}
+
+/* ⭐ 1 */
+.note-1 {
+    background: linear-gradient(
+        135deg,
+        #666,
+        #999
+    );
+}
+
+/* ⭐⭐ 2 */
+.note-2 {
+    background: linear-gradient(
+        135deg,
+        #2c7bff,
+        #4cc9ff
+    );
+}
+
+/* ⭐⭐⭐ 3 */
+.note-3 {
+    background: linear-gradient(
+        135deg,
+        #7b2cff,
+        #c44cff
+    );
+}
+
+/* ⭐⭐⭐⭐ 4 */
+.note-4 {
+    background: linear-gradient(
+        135deg,
+        #ff7b2c,
+        #ffb84c
+    );
+}
+
+/* ⭐⭐⭐⭐⭐ 5 🔥 FLASHY */
+.note-5 {
+    background: linear-gradient(
+        135deg,
+        #ff0000,
+        #ff4c4c
+    );
+
+    box-shadow:
+        0 0 10px rgba(255,0,0,0.8),
+        0 4px 12px rgba(0,0,0,0.5);
+}
+
+.note-5 {
+    animation: glow-red 1.2s infinite alternate;
+}
+
+@keyframes glow-red {
+    from {
+        box-shadow:
+            0 0 6px rgba(255,0,0,0.6),
+            0 4px 10px rgba(0,0,0,0.4);
+    }
+
+    to {
+        box-shadow:
+            0 0 14px rgba(255,0,0,1),
+            0 4px 14px rgba(0,0,0,0.5);
+    }
 }
 
 .card-banner
@@ -43,7 +170,7 @@
 .card-character
 {
     width: 95%;
-    margin: auto;card-figure-span-1
+    margin: auto;
 }
 
 .card-character-img

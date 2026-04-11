@@ -12,6 +12,7 @@ class MangaModel extends Model
     protected string $extension;
     protected string $slug;
     protected string $numero;
+    protected string $note;
     protected string $livre;
 
     public function __construct()
@@ -19,21 +20,26 @@ class MangaModel extends Model
         $this->table = 'manga';
     }
 
-    public function findAllFirstTomes(string $orderBy, int $eachPerPage, int $page): array
-    {
-        $start = ($page - 1) * $eachPerPage;
-        $orderBy = in_array($orderBy, ['id DESC', 'id ASC']) ? $orderBy : 'id DESC';
+public function findAllFirstTomes(string $orderBy, int $eachPerPage, int $page): array
+{
+    $start = ($page - 1) * $eachPerPage;
+    $orderBy = in_array($orderBy, ['id DESC', 'id ASC']) ? $orderBy : 'id DESC';
 
-        $sql = "SELECT * 
-                FROM {$this->table}
-                WHERE numero = :numero
-                ORDER BY $orderBy
-                LIMIT $start, $eachPerPage";
+    $sql = "SELECT m.*,
+                   (
+                       SELECT COUNT(*)
+                       FROM {$this->table}
+                       WHERE slug = m.slug
+                   ) AS total
+            FROM {$this->table} m
+            WHERE m.numero = :numero
+            ORDER BY $orderBy
+            LIMIT $start, $eachPerPage";
 
-        return $this->requete($sql, [
-            'numero' => '01'
-        ])->fetchAll();
-    }
+    return $this->requete($sql, [
+        'numero' => '01'
+    ])->fetchAll();
+}
 
     public function findBySlug(string $slug): array
     {
@@ -118,6 +124,17 @@ public function insert(array $data)
     public function setNumero(string $numero): self
     {
         $this->numero = $numero;
+        return $this;
+    }
+
+    public function getNote(): string
+    {
+        return $this->note;
+    }
+
+    public function setNote(string $note): self
+    {
+        $this->note = $note;
         return $this;
     }
 
