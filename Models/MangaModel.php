@@ -18,35 +18,50 @@ class MangaModel extends Model
     protected ?int $note = null;
     protected string $livre;
 
-public function countFirstTomesPaginate(int $eachPerPage): int
-{
-    $eachPerPage = max(1, $eachPerPage);
 
-    $query = $this->requete(
-        "SELECT COUNT(*) AS total
-         FROM {$this->table}
-         WHERE numero = ?",
-        [1]
-    );
+    /**
+     * nb total de pages pour les tomes 1
+     */
+    public function countFirstTomesPaginate(int $eachPerPage): int
+    {
+        $eachPerPage = max(1, $eachPerPage);
 
-    $result = $query->fetch();
+        $query = $this->requete(
+            "SELECT COUNT(*) AS total
+            FROM {$this->table}
+            WHERE numero = ?",
+            [1]
+        );
 
-    return (int) ceil(($result->total ?? 0) / $eachPerPage);
-}
+        $result = $query->fetch();
 
+        return (int) ceil(($result->total ?? 0) / $eachPerPage);
+    }
+
+
+    /**
+     * récup tous les tomes 1 paginés
+     * + total de tomes par série
+     */
     public function findAllFirstTomes(string $orderBy, int $eachPerPage, int $page): array
     {
         $page = max(1, $page);
         $eachPerPage = max(1, $eachPerPage);
         $start = ($page - 1) * $eachPerPage;
-        $orderBy = in_array($orderBy, ['id DESC', 'id ASC'], true) ? $orderBy : 'id DESC';
+
+        $orderByAutorises = ['id DESC', 'id ASC'];
+
+        if (!in_array($orderBy, $orderByAutorises, true))
+        {
+            $orderBy = 'id DESC';
+        }
 
         $sql = "SELECT m.*,
-                       (
-                           SELECT COUNT(*)
-                           FROM {$this->table}
-                           WHERE slug = m.slug
-                       ) AS total
+                    (
+                        SELECT COUNT(*)
+                        FROM {$this->table}
+                        WHERE slug = m.slug
+                    ) AS total
                 FROM {$this->table} m
                 WHERE m.numero = :numero
                 ORDER BY {$orderBy}
@@ -57,9 +72,13 @@ public function countFirstTomesPaginate(int $eachPerPage): int
         ])->fetchAll();
     }
 
+
+    /**
+     * récup tous les tomes d'un slug
+     */
     public function findBySlug(string $slug): array
     {
-        $sql = "SELECT * 
+        $sql = "SELECT *
                 FROM {$this->table}
                 WHERE slug = :slug
                 ORDER BY numero DESC";
@@ -69,13 +88,17 @@ public function countFirstTomesPaginate(int $eachPerPage): int
         ])->fetchAll();
     }
 
-    public function findOneBySlugAndNumero(string $slug, int $numero)
+
+    /**
+     * récup un manga précis via slug + numero
+     */
+    public function findOneBySlugAndNumero(string $slug, int $numero): object|bool
     {
         return $this->requete(
-            "SELECT * 
-             FROM {$this->table}
-             WHERE slug = ?
-             AND numero = ?",
+            "SELECT *
+            FROM {$this->table}
+            WHERE slug = ?
+            AND numero = ?",
             [
                 strtolower(trim($slug)),
                 $numero
@@ -83,11 +106,29 @@ public function countFirstTomesPaginate(int $eachPerPage): int
         )->fetch();
     }
 
+
+    /**
+     * insert manga
+     */
     public function insert(array $datas): bool
     {
         return $this->requete(
-            "INSERT INTO {$this->table} (thumbnail, extension, slug, livre, numero, created_at)
-             VALUES (:thumbnail, :extension, :slug, :livre, :numero, NOW())",
+            "INSERT INTO {$this->table} (
+                thumbnail,
+                extension,
+                slug,
+                livre,
+                numero,
+                created_at
+            )
+            VALUES (
+                :thumbnail,
+                :extension,
+                :slug,
+                :livre,
+                :numero,
+                NOW()
+            )",
             [
                 'thumbnail' => $datas['thumbnail'],
                 'extension' => $datas['extension'],
@@ -98,20 +139,23 @@ public function countFirstTomesPaginate(int $eachPerPage): int
         ) !== false;
     }
 
+
+    /**
+     * update note
+     */
     public function updateNote(string $slug, int $numero, ?int $note): bool
     {
-        return $this->requete(
-            "UPDATE {$this->table}
-             SET note = :note
-             WHERE slug = :slug
-             AND numero = :numero",
+        return $this->update(
             [
-                'note' => $note,
+                'note' => $note
+            ],
+            [
                 'slug' => strtolower(trim($slug)),
                 'numero' => $numero
             ]
-        ) !== false;
+        );
     }
+
 
     public function getId(): int
     {
@@ -124,6 +168,7 @@ public function countFirstTomesPaginate(int $eachPerPage): int
         return $this;
     }
 
+
     public function getThumbnail(): string
     {
         return $this->thumbnail;
@@ -134,6 +179,19 @@ public function countFirstTomesPaginate(int $eachPerPage): int
         $this->thumbnail = $thumbnail;
         return $this;
     }
+
+
+    public function getExtension(): string
+    {
+        return $this->extension;
+    }
+
+    public function setExtension(string $extension): self
+    {
+        $this->extension = $extension;
+        return $this;
+    }
+
 
     public function getSlug(): string
     {
@@ -146,6 +204,7 @@ public function countFirstTomesPaginate(int $eachPerPage): int
         return $this;
     }
 
+
     public function getNumero(): int
     {
         return $this->numero;
@@ -156,6 +215,7 @@ public function countFirstTomesPaginate(int $eachPerPage): int
         $this->numero = $numero;
         return $this;
     }
+
 
     public function getNote(): ?int
     {
@@ -168,16 +228,6 @@ public function countFirstTomesPaginate(int $eachPerPage): int
         return $this;
     }
 
-    public function getExtension(): string
-    {
-        return $this->extension;
-    }
-
-    public function setExtension(string $extension): self
-    {
-        $this->extension = $extension;
-        return $this;
-    }
 
     public function getLivre(): string
     {

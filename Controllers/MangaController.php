@@ -6,8 +6,8 @@ use App\Models\MangaModel;
 class MangaController extends Controller
 {
     /**
-     * route /manga
-     * @return void
+     * /manga
+     * accueil manga
      */
     public function index(): void
     {
@@ -16,60 +16,72 @@ class MangaController extends Controller
     }
 
     /**
-     * route /manga/collection
-     * @return void
+     * /manga/collection
+     *
+     * 1. sans slug => collection générale
+     * 2. slug + numero => détail tome
+     * 3. slug seul => collection d'un manga
      */
-public function collection(?string $slug = null, ?string $numero = null): void
-{
-    $mangaModel = new MangaModel;
+    public function collection(?string $slug = null, ?string $numero = null): void
+    {
+        $mangaModel = new MangaModel;
 
-    if ($slug === null || $slug === '') {
-        $page = 1;
+        /* collection générale */
+        if ($slug === null || $slug === '')
+        {
+            $page = 1;
 
-        $mangas = $mangaModel->findAllFirstTomes('id DESC', 8, $page);
-        $compteur = $mangaModel->countFirstTomesPaginate(8);
+            $mangas = $mangaModel->findAllFirstTomes('id DESC', 8, $page);
+            $compteur = $mangaModel->countFirstTomesPaginate(8);
+
+            $this->render('manga/collection', [
+                'mangas' => $mangas,
+                'compteur' => $compteur,
+                'titleFilter' => null
+            ]);
+
+            return;
+        }
+
+        /* page détail */
+        if ($numero !== null && $numero !== '')
+        {
+            $manga = $mangaModel->findOneBySlugAndNumero($slug, $numero);
+
+            if (!$manga)
+            {
+                http_response_code(404);
+                exit('Manga introuvable');
+            }
+
+            /* slug propre depuis la db */
+            $goodSlug = strtolower(str_replace(' ', '-', trim($manga->livre)));
+
+            if ($goodSlug !== strtolower(trim($slug)))
+            {
+                header('Location: ' . $this->basePath . 'manga/collection/' . $goodSlug . '/' . $manga->numero);
+                exit;
+            }
+
+            $this->render('manga/livre', [
+                'manga' => $manga
+            ]);
+
+            return;
+        }
+
+        /* collection d'un manga */
+        $mangas = $mangaModel->findBySlug($slug);
 
         $this->render('manga/collection', [
             'mangas' => $mangas,
-            'compteur' => $compteur,
-            'titleFilter' => null
+            'titleFilter' => $slug
         ]);
-        return;
     }
-
-    if ($numero !== null && $numero !== '') {
-        $manga = $mangaModel->findOneBySlugAndNumero($slug, $numero);
-
-        if (!$manga) {
-            http_response_code(404);
-            exit('Manga introuvable');
-        }
-
-        $goodSlug = strtolower(str_replace(' ', '-', trim($manga->livre)));
-
-        if ($goodSlug !== strtolower(trim($slug))) {
-            header("Location: /lolissr/manga/collection/" . $goodSlug . "/" . $manga->numero);
-            exit;
-        }
-
-        $this->render('manga/livre', [
-            'manga' => $manga
-        ]);
-        return;
-    }
-
-    $mangas = $mangaModel->findBySlug($slug);
-
-    $this->render('manga/collection', [
-        'mangas' => $mangas,
-        'titleFilter' => $slug
-    ]);
-}
 
     /**
-     * route /manga/page/{id}
-     * @param int $id
-     * @return void
+     * /manga/page/{id}
+     * pagination collection générale
      */
     public function page(string $id): void
     {
@@ -80,6 +92,7 @@ public function collection(?string $slug = null, ?string $numero = null): void
         $compteur = $mangaModel->countFirstTomesPaginate(8);
 
         $this->title = 'Manga | Collection Page ' . $id;
+
         $this->render('manga/collection', [
             'mangas' => $mangas,
             'compteur' => $compteur,
@@ -88,8 +101,7 @@ public function collection(?string $slug = null, ?string $numero = null): void
     }
 
     /**
-     * route /manga/lien
-     * @return void
+     * /manga/lien
      */
     public function lien(): void
     {
@@ -97,128 +109,167 @@ public function collection(?string $slug = null, ?string $numero = null): void
         $this->render('manga/lien');
     }
 
+    /**
+     * /manga/ajouter
+     * affiche le formulaire
+     */
+    public function ajouter(): void
+    {
+        $this->title = 'Manga | Ajouter';
+        $this->render('manga/ajouter');
+    }
 
-public function ajouter(): void
-{
-    $this->title = 'Manga | Ajouter';
-    $this->render('manga/ajouter');
-}
+    /**
+     * traitement ajout manga
+     */
+    public function ajouterTraitement(): void
+    {
+        /* refuse accès direct */
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+        {
+            header('Location: ' . $this->basePath . 'manga/ajouter');
+            exit;
+        }
 
-public function ajouterTraitement(): void
-{
-    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        /* récup données */
+        $livre = trim($_POST['livre'] ?? '');
+        $slug = trim($_POST['slug'] ?? '');
+        $numero = (int) ($_POST['numero'] ?? 0);
+
+        /* validation form */
+        if (
+            $livre === ''
+            || $slug === ''
+            || $numero <= 0
+            || empty($_FILES['image']['name'])
+        )
+        {
+            exit('Formulaire incomplet');
+        }
+
+        /* vérif upload */
+        if (!isset($_FILES['image']) || $_FILES['image']['error'] !== UPLOAD_ERR_OK)
+        {
+            exit('Erreur fichier');
+        }
+
+        /* extension */
+        $extension = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
+
+        if ($extension === 'jpeg')
+        {
+            $extension = 'jpg';
+        }
+
+        $extensionsAutorisees = ['jpg', 'png', 'webp'];
+
+        if (!in_array($extension, $extensionsAutorisees, true))
+        {
+            exit('Format image non autorisé');
+        }
+
+        /* nom du thumbnail */
+        $thumbnail = preg_replace('/[^A-Za-z0-9\- ]/', '', strtoupper($livre));
+        $thumbnail .= ' ' . str_pad((string) $numero, 2, '0', STR_PAD_LEFT);
+        $thumbnail = preg_replace('/\s+/', ' ', $thumbnail);
+        $thumbnail = trim($thumbnail);
+
+        $nomFichier = $thumbnail . '.' . $extension;
+
+        /* dossier image */
+        $dossier = dirname(__DIR__) . '/public/images/mangas/thumbnail/';
+
+        if (!is_dir($dossier))
+        {
+            exit('Dossier image introuvable : ' . $dossier);
+        }
+
+        $destination = $dossier . $nomFichier;
+
+        /* évite doublon */
+        if (file_exists($destination))
+        {
+            exit('Une image avec ce nom existe déjà');
+        }
+
+        /* déplacement image */
+        if (!move_uploaded_file($_FILES['image']['tmp_name'], $destination))
+        {
+            exit('Erreur lors de l\'upload');
+        }
+
+        /* insert db */
+        $mangaModel = new MangaModel;
+
+        $mangaModel->insert([
+            'thumbnail' => $thumbnail,
+            'extension' => $extension,
+            'slug' => strtolower($slug),
+            'livre' => $livre,
+            'numero' => $numero
+        ]);
+
+        $_SESSION['success'] = 'Manga ajouté avec succès';
+
         header('Location: ' . $this->basePath . 'manga/ajouter');
         exit;
     }
 
-    $livre = trim($_POST['livre'] ?? '');
-    $slug = trim($_POST['slug'] ?? '');
-    $numero = (int) ($_POST['numero'] ?? 0);
+    /**
+     * /manga/edit/{slug}/{numero}
+     * page édition
+     */
+    public function edit(string $slug, string $numero): void
+    {
+        $numero = (int) $numero;
 
-    if ($livre === '' || $slug === '' || $numero <= 0 || empty($_FILES['image']['name'])) {
-        exit('Formulaire incomplet');
-    }
+        $mangaModel = new MangaModel;
+        $manga = $mangaModel->findOneBySlugAndNumero($slug, $numero);
 
-    if (!isset($_FILES['image']) || $_FILES['image']['error'] !== UPLOAD_ERR_OK) {
-        exit('Erreur fichier');
-    }
-
-    $extension = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
-
-    if ($extension === 'jpeg') {
-        $extension = 'jpg';
-    }
-
-    $extensionsAutorisees = ['jpg', 'png', 'webp'];
-
-    if (!in_array($extension, $extensionsAutorisees, true)) {
-        exit('Format image non autorisé');
-    }
-
-    $thumbnail = preg_replace('/[^A-Za-z0-9\- ]/', '', strtoupper($livre));
-    $thumbnail .= ' ' . str_pad((string) $numero, 2, '0', STR_PAD_LEFT);
-    $thumbnail = preg_replace('/\s+/', ' ', $thumbnail);
-    $thumbnail = trim($thumbnail);
-
-    $nomFichier = $thumbnail . '.' . $extension;
-
-    $dossier = dirname(__DIR__) . '/public/images/mangas/thumbnail/';
-
-    if (!is_dir($dossier)) {
-        exit('Dossier image introuvable : ' . $dossier);
-    }
-
-    $destination = $dossier . $nomFichier;
-
-    if (file_exists($destination)) {
-        exit('Une image avec ce nom existe déjà');
-    }
-
-    if (!move_uploaded_file($_FILES['image']['tmp_name'], $destination)) {
-        exit('Erreur lors de l\'upload');
-    }
-
-    $mangaModel = new MangaModel();
-
-    $mangaModel->insert([
-        'thumbnail' => $thumbnail,
-        'extension' => $extension,
-        'slug' => strtolower($slug),
-        'livre' => $livre,
-        'numero' => $numero
-    ]);
-
-    $_SESSION['success'] = 'Manga ajouté avec succès';
-
-    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        header('Location: /lolissr/manga/ajouter');
-        exit;
-}
-}
-
-public function edit(string $slug, string $numero): void
-{
-    $numero = (int) $numero;
-
-    $mangaModel = new MangaModel;
-    $manga = $mangaModel->findOneBySlugAndNumero($slug, $numero);
-
-    if (!$manga) {
-        http_response_code(404);
-        exit('Manga introuvable');
-    }
-
-    $this->render('manga/edit', [
-        'manga' => $manga
-    ]);
-}
-
-public function update(string $slug, string $numero): void
-{
-    $numero = (int) $numero;
-
-    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        header('Location: /lolissr/manga/collection/' . $slug . '/' . $numero);
-        exit;
-    }
-
-    $note = $_POST['note'] ?? null;
-
-    if ($note === '') {
-        $note = null;
-    } else {
-        $note = (int) $note;
-
-        if ($note < 1 || $note > 5) {
-            exit('Note invalide');
+        if (!$manga)
+        {
+            http_response_code(404);
+            exit('Manga introuvable');
         }
+
+        $this->render('manga/edit', [
+            'manga' => $manga
+        ]);
     }
 
-    $mangaModel = new MangaModel;
-    $mangaModel->updateNote($slug, $numero, $note);
+    /**
+     * update note
+     */
+    public function update(string $slug, string $numero): void
+    {
+        $numero = (int) $numero;
 
-    header('Location: /lolissr/manga/collection/' . $slug . '/' . $numero);
-    exit;
-}
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+        {
+            header('Location: ' . $this->basePath . 'manga/collection/' . $slug . '/' . $numero);
+            exit;
+        }
 
+        $note = $_POST['note'] ?? null;
+
+        if ($note === '')
+        {
+            $note = null;
+        }
+        else
+        {
+            $note = (int) $note;
+
+            if ($note < 1 || $note > 5)
+            {
+                exit('Note invalide');
+            }
+        }
+
+        $mangaModel = new MangaModel;
+        $mangaModel->updateNote($slug, $numero, $note);
+
+        header('Location: ' . $this->basePath . 'manga/collection/' . $slug . '/' . $numero);
+        exit;
+    }
 }
