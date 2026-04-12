@@ -4,7 +4,7 @@
         Accueil
     </h1>
 
-    <section class="home-top">
+    <section class="home-grid home-grid-top">
 
         <article class="home-card home-card-small">
             <p class="home-card-title">
@@ -27,59 +27,77 @@
         </article>
 
         <?php if (!empty($lastTome)): ?>
-            <article class="home-card home-card-small">
+            <a
+                class="home-card-link"
+                href="<?= $basePath; ?>manga/collection/<?= rawurlencode($lastTome->slug) ?>/<?= (int) $lastTome->numero ?>">
 
-                <p class="home-card-title">
-                    🆕 Dernier tome ajouté
-                </p>
+                <article class="home-card home-card-small">
 
-                <img
-                    class="home-card-image"
-                    alt="<?= htmlspecialchars($lastTome->livre) ?>"
-                    src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($lastTome->thumbnail . '.' . $lastTome->extension) ?>">
+                    <p class="home-card-title">
+                        🆕 Dernier tome ajouté
+                    </p>
 
-                <p class="home-card-text">
-                    <?= htmlspecialchars($lastTome->livre) ?>
-                    — Tome <?= str_pad((string) $lastTome->numero, 2, '0', STR_PAD_LEFT) ?>
-                </p>
+                    <img
+                        class="home-card-image"
+                        alt="<?= htmlspecialchars($lastTome->livre) ?>"
+                        src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($lastTome->thumbnail . '.' . $lastTome->extension) ?>">
 
-            </article>
+                    <p class="home-card-text">
+                        <?= htmlspecialchars($lastTome->livre) ?>
+                        — Tome <?= str_pad((string) $lastTome->numero, 2, '0', STR_PAD_LEFT) ?>
+                    </p>
+
+                </article>
+            </a>
         <?php endif; ?>
 
     </section>
 
-    <section class="home-middle">
+    <section class="home-grid home-grid-middle">
 
-        <article class="home-card home-card-wide">
-            <p class="home-card-title">
-                📚 Série la plus longue
-            </p>
+        <?php if (!empty($longestSeries)): ?>
+            <a
+                class="home-card-link"
+                href="<?= $basePath; ?>manga/collection/<?= rawurlencode($longestSeries->slug) ?>">
 
-            <?php if (!empty($longestSeries)): ?>
-                <div class="home-longest-content">
+                <article class="home-card home-card-wide">
 
-                    <img
-                        class="home-longest-image"
-                        src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($longestSeries->thumbnail . '.' . $longestSeries->extension) ?>"
-                        alt="<?= htmlspecialchars($longestSeries->livre) ?>">
+                    <p class="home-card-title">
+                        📚 Série la plus longue
+                    </p>
 
-                    <div class="home-longest-info">
-                        <p class="home-longest-name">
-                            <?= htmlspecialchars($longestSeries->livre) ?>
-                        </p>
+                    <div class="home-longest-content">
 
-                        <p class="home-longest-count">
-                            <?= (int) $longestSeries->total ?> tomes
-                        </p>
+                        <img
+                            class="home-longest-image"
+                            src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($longestSeries->thumbnail . '.' . $longestSeries->extension) ?>"
+                            alt="<?= htmlspecialchars($longestSeries->livre) ?>">
+
+                        <div class="home-longest-info">
+                            <p class="home-longest-name">
+                                <?= htmlspecialchars($longestSeries->livre) ?>
+                            </p>
+
+                            <p class="home-longest-count">
+                                <?= (int) $longestSeries->total ?> tomes
+                            </p>
+                        </div>
+
                     </div>
 
-                </div>
-            <?php else: ?>
+                </article>
+            </a>
+        <?php else: ?>
+            <article class="home-card home-card-wide">
+                <p class="home-card-title">
+                    📚 Série la plus longue
+                </p>
+
                 <p class="home-empty">
                     Aucune donnée
                 </p>
-            <?php endif; ?>
-        </article>
+            </article>
+        <?php endif; ?>
 
         <article class="home-card home-card-medium">
             <p class="home-card-title">
@@ -96,29 +114,41 @@
     <?php if (!empty($bestRatedMangas)): ?>
 
         <h2 class="card-banner home-subtitle">
-            ⭐ Mangas avec la meilleure note (10/10)
+            ⭐ Mangas notés 10/10
         </h2>
 
         <section class="home-best-list">
 
             <?php foreach ($bestRatedMangas as $manga): ?>
-                <article class="home-card home-best-card">
+                <a
+                    class="home-best-link"
+                    href="<?= $basePath; ?>manga/collection/<?= rawurlencode($manga->slug) ?>/<?= (int) $manga->numero ?>">
 
-                    <img
-                        class="home-card-image"
-                        alt="<?= htmlspecialchars($manga->livre) ?>"
-                        src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($manga->thumbnail . '.' . $manga->extension) ?>">
+                    <article class="home-card home-best-card">
 
-                    <p class="home-card-text">
-                        <?= htmlspecialchars($manga->livre) ?>
-                        — Tome <?= str_pad((string) $manga->numero, 2, '0', STR_PAD_LEFT) ?>
-                    </p>
+                        <span class="home-note-badge">
+                            ⭐ <?= (int) $manga->note ?>/10
+                        </span>
 
-                    <span class="home-note-badge">
-                        <?= (int) $manga->note ?>/10
-                    </span>
+                        <img
+                            class="home-best-image"
+                            alt="<?= htmlspecialchars($manga->livre) ?>"
+                            src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($manga->thumbnail . '.' . $manga->extension) ?>">
 
-                </article>
+                        <p class="home-best-title">
+                            <?= htmlspecialchars($manga->livre) ?>
+                        </p>
+
+                        <p class="home-best-volume">
+                            Tome <?= str_pad((string) $manga->numero, 2, '0', STR_PAD_LEFT) ?>
+                        </p>
+
+                        <p class="home-best-label">
+                            Coup de cœur collection
+                        </p>
+
+                    </article>
+                </a>
             <?php endforeach; ?>
 
         </section>
@@ -134,26 +164,31 @@
         <section class="home-series-top">
 
             <?php foreach ($topLongestSeries as $index => $serie): ?>
-                <article class="home-card home-series-card">
+                <a
+                    class="home-card-link"
+                    href="<?= $basePath; ?>manga/collection/<?= rawurlencode($serie->slug) ?>">
 
-                    <p class="home-series-rank">
-                        #<?= $index + 1 ?>
-                    </p>
+                    <article class="home-card home-series-card">
 
-                    <img
-                        class="home-series-image"
-                        src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($serie->thumbnail . '.' . $serie->extension) ?>"
-                        alt="<?= htmlspecialchars($serie->livre) ?>">
+                        <p class="home-series-rank">
+                            #<?= $index + 1 ?>
+                        </p>
 
-                    <p class="home-series-name">
-                        <?= htmlspecialchars($serie->livre) ?>
-                    </p>
+                        <img
+                            class="home-series-image"
+                            src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($serie->thumbnail . '.' . $serie->extension) ?>"
+                            alt="<?= htmlspecialchars($serie->livre) ?>">
 
-                    <p class="home-series-count">
-                        <?= (int) $serie->total ?> tomes
-                    </p>
+                        <p class="home-series-name">
+                            <?= htmlspecialchars($serie->livre) ?>
+                        </p>
 
-                </article>
+                        <p class="home-series-count">
+                            <?= (int) $serie->total ?> tomes
+                        </p>
+
+                    </article>
+                </a>
             <?php endforeach; ?>
 
         </section>

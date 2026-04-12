@@ -115,19 +115,22 @@ class MangaModel extends Model
     /**
      * récupère la série la plus longue
      */
-    public function longestSeries(): object|false
-    {
-        return $this->requete(
-            "SELECT livre,
-                    COUNT(*) AS total,
-                    MIN(thumbnail) AS thumbnail,
-                    MIN(extension) AS extension
-            FROM {$this->getTable()}
-            GROUP BY livre
-            ORDER BY total DESC, livre ASC
-            LIMIT 1"
-        )->fetch();
-    }
+public function findLongestSeries(): object|false
+{
+    return $this->requete(
+        "SELECT m1.slug, m1.livre, m1.thumbnail, m1.extension, counts.total
+         FROM {$this->table} m1
+         INNER JOIN (
+             SELECT slug, COUNT(*) AS total
+             FROM {$this->table}
+             GROUP BY slug
+             ORDER BY total DESC
+             LIMIT 1
+         ) counts ON counts.slug = m1.slug
+         WHERE m1.numero = 1
+         LIMIT 1"
+    )->fetch();
+}
 
     /**
      * récupère tous les mangas notés 10/10
@@ -171,14 +174,17 @@ class MangaModel extends Model
         $limit = max(1, (int) $limit);
 
         return $this->requete(
-            "SELECT livre,
-                    COUNT(*) AS total,
-                    MIN(thumbnail) AS thumbnail,
-                    MIN(extension) AS extension
-            FROM {$this->getTable()}
-            GROUP BY livre
-            ORDER BY total DESC, livre ASC
-            LIMIT {$limit}"
+            "SELECT m1.slug, m1.livre, m1.thumbnail, m1.extension, counts.total
+            FROM {$this->getTable()} m1
+            INNER JOIN (
+                SELECT slug, COUNT(*) AS total
+                FROM {$this->getTable()}
+                GROUP BY slug
+                ORDER BY total DESC
+                LIMIT {$limit}
+            ) counts ON counts.slug = m1.slug
+            WHERE m1.numero = 1
+            ORDER BY counts.total DESC, m1.livre ASC"
         )->fetchAll();
     }
 

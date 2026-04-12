@@ -19,7 +19,7 @@ class MainController extends Controller
         $totalTomes = $mangaModel->countAllTomes();
         $totalSeries = $mangaModel->countSeries();
         $lastTome = $mangaModel->findLastAdded();
-        $longestSeries = $mangaModel->longestSeries();
+        $longestSeries = $mangaModel->findLongestSeries();
         $bestRatedMangas = $mangaModel->findBestRatedMangas();
         $averageNote = $mangaModel->averageNote();
         $topLongestSeries = $mangaModel->topLongestSeries(5);
