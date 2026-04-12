@@ -1,47 +1,47 @@
+:root
+{
+    --violet-main: linear-gradient(135deg, #7b2cff, #c44cff);
+    --violet-shadow: rgba(123, 44, 255, 0.35);
+    --violet-shadow-hover: rgba(123, 44, 255, 0.45);
+}
+
+/* =========================
+   CARD LIST
+========================= */
+
 .card-content
 {
     width: 20%;
     display: flex;
     flex-direction: column;
-    gap: 0;
-
-    border-radius: 6px;
+    border-radius: 12px;
     overflow: hidden;
-
-    transition: outline 0.15s ease, transform 0.15s ease;
-}
-
-.card-commentaire
-{
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    white-space: pre-wrap;
-    overflow: visible;
-    text-overflow: unset;
-    overflow-wrap: break-word;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .card-content:hover
 {
-    outline: 6px solid var(--background-color-header);
-    outline-offset: 0;
+    transform: translateY(-4px);
+    box-shadow: 0 0 0 4px #7b2cff;
 }
 
 .card-figure
 {
     width: 100%;
     height: 480px;
-
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-
     background: var(--background-color-body);
-    position: relative;
-    box-sizing: border-box;
+}
 
-    border-radius: 6px 6px 0 0;
+.card-figure img
+{
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .card-content:hover .badge-note
@@ -49,34 +49,42 @@
     transform: scale(1.08);
 }
 
+.card-title
+{
+    width: 100%;
+    margin: 0;
+    padding: 12px 14px;
+    box-sizing: border-box;
+    display: block;
+    color: white;
+    background: var(--violet-main);
+    text-align: center;
+    letter-spacing: 0.5px;
+    word-spacing: 1px;
+}
+
+/* =========================
+   BADGES
+========================= */
+
 .badge-count
 {
     position: absolute;
     bottom: 8px;
     left: 8px;
-
     min-width: 32px;
     height: 32px;
     padding: 0 6px;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
-    background: linear-gradient(
-        135deg,
-        #7b2cff,
-        #c44cff
-    );
-
     color: white;
+    background: var(--violet-main);
     font-size: 13px;
     font-weight: bold;
-
-    border-radius: 50px;
     border: 2px solid white;
-
-    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    border-radius: 50px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
 }
 
 .badge-note
@@ -84,116 +92,63 @@
     position: absolute;
     top: 12px;
     right: 12px;
-
+    z-index: 2;
     width: 48px;
     height: 48px;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
+    color: white;
     font-size: 16px;
     font-weight: 800;
-    color: white;
-
+    border: 2px solid rgba(255, 255, 255, 0.85);
     border-radius: 50%;
-    border: 2px solid rgba(255,255,255,0.85);
-
-    box-shadow:
-        0 8px 18px rgba(0,0,0,0.55),
-        0 2px 6px rgba(0,0,0,0.4);
-
-    backdrop-filter: blur(4px);
-
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45);
     transform-origin: center;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
-    z-index: 2;
 }
 
-/* note basse → orange */
 .note-low
 {
-    background: linear-gradient(
-        135deg,
-        #ff7b2c,
-        #ffb84c
-    );
+    background: linear-gradient(135deg, #ff7b2c, #ffb84c);
 }
 
-/* note moyenne → violet */
 .note-mid
 {
-    background: linear-gradient(
-        135deg,
-        #7b2cff,
-        #c44cff
-    );
+    background: var(--violet-main);
 }
 
-/* note haute → rouge premium */
 .note-good
 {
-    background: linear-gradient(
-        135deg,
-        #ff0000,
-        #ff4c4c
-    );
-
+    background: linear-gradient(135deg, #ff0000, #ff4c4c);
     box-shadow:
-        0 0 12px rgba(255,0,0,0.7),
-        0 8px 18px rgba(0,0,0,0.6);
-
-    animation: glow-red 1.3s infinite alternate;
+        0 0 12px rgba(255, 0, 0, 0.6),
+        0 8px 18px rgba(0, 0, 0, 0.5);
 }
 
-@keyframes glow-red
-{
-    from
-    {
-        box-shadow:
-            0 0 6px rgba(255,0,0,0.5),
-            0 8px 18px rgba(0,0,0,0.55);
-    }
-
-    to
-    {
-        box-shadow:
-            0 0 16px rgba(255,0,0,1),
-            0 8px 22px rgba(0,0,0,0.65);
-    }
-}
-
-.card-banner
-{
-    margin: 0;
-    letter-spacing: 1px;
-    word-spacing: 1px;
-    color: var(--color-link);
-    background-color: var(--background-color-header);
-    box-sizing: border-box;
-
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-
-    padding: 10px;
-    border-radius: 0;
-}
-
-/* Character */
+/* =========================
+   OLD DETAIL CARD
+   (si tu l'utilises encore ailleurs)
+========================= */
 
 .card-character
 {
     width: 95%;
-    margin: auto;
-
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 30px;
     display: flex;
-    gap: 20px;
+    align-items: flex-start;
+    gap: 30px;
+    background: #f5f5f5;
+    border-radius: 18px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
 }
 
 .card-character-img
 {
-    width: 40%;
+    width: 38%;
+    margin: 0;
     display: flex;
     justify-content: center;
 }
@@ -201,34 +156,404 @@
 .card-character-img-inner
 {
     position: relative;
-    max-width: 100%;
+    width: 100%;
+    max-width: 360px;
 }
 
 .card-character-img-inner img
 {
     display: block;
-    max-width: 100%;
+    width: 100%;
+    height: auto;
+    border-radius: 14px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
 }
 
 .card-character-value
 {
-    width: 55%;
-
+    width: 62%;
     display: flex;
     flex-direction: column;
-    gap: 2px;
-
-    padding-left: 20px;
+    gap: 10px;
 }
 
-.card-character-value a.link-edit
+.card-banner
+{
+    width: 100%;
+    margin: 0;
+    padding: 12px 14px;
+    box-sizing: border-box;
+    color: white;
+    background: var(--violet-main);
+    border-radius: 8px;
+    text-align: center;
+    letter-spacing: 0.5px;
+    word-spacing: 1px;
+}
+
+.table-colonne
+{
+    font-weight: 700;
+}
+
+.card-commentaire
+{
+    min-height: 80px;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    line-height: 1.5;
+}
+
+/* =========================
+   NEW DETAIL CARD
+========================= */
+
+.manga-detail-card
+{
+    width: 98%;
+    max-width: 1400px;
+    margin: 40px auto;
+    padding: 40px;
+    display: flex;
+    align-items: flex-start;
+    gap: 40px;
+    background: #f5f5f5;
+    border-radius: 22px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+}
+
+.manga-detail-image
+{
+    width: 45%;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+}
+
+.manga-detail-image-inner
+{
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+}
+
+.manga-detail-image-inner img
+{
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 14px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+}
+
+.manga-detail-content
+{
+    width: 55%;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.detail-row
+{
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 14px;
+    align-items: stretch;
+    width: 100%;
+}
+
+.detail-label,
+.detail-value
+{
+    padding: 10px 14px;
+    min-height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    border-radius: 10px;
+    color: white;
+    background: var(--violet-main);
+    font-size: 18px;
+}
+
+.detail-label
+{
+    font-weight: 700;
+    text-align: center;
+}
+
+.detail-value
+{
+    font-weight: 500;
+    text-align: center;
+}
+
+.detail-row-comment
+{
+    align-items: stretch;
+}
+
+.detail-row-comment .detail-label
+{
+    min-height: 120px;
+}
+
+.detail-comment
+{
+    min-height: 120px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    line-height: 1.5;
+}
+
+.detail-actions
+{
+    margin-top: 10px;
+}
+
+.detail-actions .link-edit
 {
     width: 100%;
     box-sizing: border-box;
 }
 
-.card-character-value p,
-.card-character-value a
+/* =========================
+   LINKS
+========================= */
+
+.link-edit,
+.link-section
+{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-decoration: none;
+    font-weight: 700;
+    background: var(--violet-main);
+    box-shadow: 0 8px 18px var(--violet-shadow);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.link-edit
 {
     width: 100%;
+    box-sizing: border-box;
+    margin-top: 10px;
+    padding: 14px 20px;
+    border-radius: 12px;
+    font-size: 18px;
+}
+
+.link-section
+{
+    min-width: 160px;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+.link-edit:hover,
+.link-section:hover
+{
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px var(--violet-shadow-hover);
+}
+
+/* =========================
+   HELPERS
+========================= */
+
+.m-t-30
+{
+    margin-top: 30px;
+    text-align: center;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media screen and (max-width: 1200px)
+{
+    .card-content
+    {
+        width: 30%;
+    }
+
+    .manga-detail-image
+    {
+        width: 40%;
+    }
+
+    .manga-detail-content
+    {
+        width: 60%;
+    }
+
+    .detail-row
+    {
+        grid-template-columns: 240px 1fr;
+    }
+}
+
+@media screen and (max-width: 900px)
+{
+    .card-content
+    {
+        width: 45%;
+    }
+
+    .card-character,
+    .manga-detail-card
+    {
+        flex-direction: column;
+        padding: 20px;
+    }
+
+    .card-character-img,
+    .card-character-value,
+    .manga-detail-image,
+    .manga-detail-content
+    {
+        width: 100%;
+    }
+
+    .card-character-img-inner,
+    .manga-detail-image-inner
+    {
+        max-width: 300px;
+        margin: 0 auto;
+    }
+
+    .detail-row
+    {
+        grid-template-columns: 1fr;
+    }
+
+    .detail-row-comment .detail-label,
+    .detail-comment
+    {
+        min-height: 90px;
+    }
+}
+
+@media screen and (max-width: 600px)
+{
+    .card-content
+    {
+        width: 100%;
+    }
+
+    .detail-label,
+    .detail-value
+    {
+        font-size: 16px;
+    }
+
+    .link-edit
+    {
+        font-size: 16px;
+    }
+}
+
+
+
+.form-row
+{
+    width: 100%;
+    max-width: 420px;
+
+    margin: 22px auto;
+
+    display: grid;
+    grid-template-columns: 1fr 160px;
+    gap: 14px;
+
+    align-items: center;
+}
+
+.form-row label
+{
+    font-weight: 600;
+    font-size: 16px;
+    text-align: right;
+}
+
+.form-select
+{
+    width: 100%;
+    height: 42px;
+
+    padding: 0 10px;
+
+    border-radius: 8px;
+    border: 1px solid #ccc;
+
+    font-size: 15px;
+}
+
+.form-column
+{
+    width: 100%;
+    max-width: 520px;
+
+    margin: 26px auto;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-column label
+{
+    font-weight: 600;
+    text-align: center;
+}
+
+.form-textarea
+{
+    width: 100%;
+    min-height: 120px;
+
+    padding: 12px;
+
+    border-radius: 10px;
+    border: 1px solid #ccc;
+
+    font-size: 15px;
+    resize: vertical;
+}
+
+.form-actions
+{
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+}
+
+.form-actions-secondary
+{
+    margin-top: 14px;
+    display: flex;
+    justify-content: center;
+}
+
+.full-width
+{
+    width: 100%;
+}
+
+.note-info
+{
+    margin-top: 20px;
+    text-align: center;
+    font-size: 18px;
 }

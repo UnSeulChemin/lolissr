@@ -12,6 +12,12 @@
     --color-link: #ebebeb;
     --color-title: #ffffff;
 
+    --violet-main: linear-gradient(
+        135deg,
+        #7b2cff,
+        #c44cff
+    );
+
     /* Form */
     --background-color-form-input: #f5f5ef;
     --border-form: #333333;

@@ -1,10 +1,10 @@
 <section class="section-content">
 
-    <section class="card-character flex-gap-25">
+    <section class="manga-detail-card">
 
-        <figure class="card-character-img">
+        <figure class="manga-detail-image">
 
-            <div class="card-character-img-inner">
+            <div class="manga-detail-image-inner">
 
                 <img
                     alt="<?= htmlspecialchars($manga->livre) ?>"
@@ -32,56 +32,56 @@
 
         </figure>
 
-        <article class="card-character-value">
+        <article class="manga-detail-content">
 
-            <p class="card-banner table-colonne">
-                Livre
-            </p>
-            <p class="card-banner">
-                <?= htmlspecialchars($manga->livre) ?>
-            </p>
+            <div class="detail-row">
+                <div class="detail-label">Livre</div>
+                <div class="detail-value"><?= htmlspecialchars($manga->livre) ?></div>
+            </div>
 
-            <p class="card-banner table-colonne">
-                Tome
-            </p>
-            <p class="card-banner">
-                <?= str_pad((string) ((int) $manga->numero), 2, '0', STR_PAD_LEFT) ?>
-            </p>
+            <div class="detail-row">
+                <div class="detail-label">Tome</div>
+                <div class="detail-value">
+                    <?= str_pad((string) ((int) $manga->numero), 2, '0', STR_PAD_LEFT) ?>
+                </div>
+            </div>
 
-            <p class="card-banner table-colonne">
-                Jacquette
-            </p>
-            <p class="card-banner">
-                <?= $manga->jacquette !== null ? (int) $manga->jacquette . '/5' : 'Non noté' ?>
-            </p>
+            <div class="detail-row">
+                <div class="detail-label">Jacquette</div>
+                <div class="detail-value">
+                    <?= $manga->jacquette !== null ? (int) $manga->jacquette . '/5' : 'Non noté' ?>
+                </div>
+            </div>
 
-            <p class="card-banner table-colonne">
-                État du livre
-            </p>
-            <p class="card-banner">
-                <?= $manga->livre_note !== null ? (int) $manga->livre_note . '/5' : 'Non noté' ?>
-            </p>
+            <div class="detail-row">
+                <div class="detail-label">État du livre</div>
+                <div class="detail-value">
+                    <?= $manga->livre_note !== null ? (int) $manga->livre_note . '/5' : 'Non noté' ?>
+                </div>
+            </div>
 
-            <p class="card-banner table-colonne">
-                Note totale
-            </p>
-            <p class="card-banner">
-                <?= $manga->note !== null ? (int) $manga->note . '/10' : 'Non calculée' ?>
-            </p>
+            <div class="detail-row">
+                <div class="detail-label">Note totale</div>
+                <div class="detail-value">
+                    <?= $manga->note !== null ? (int) $manga->note . '/10' : 'Non calculée' ?>
+                </div>
+            </div>
 
-            <p class="card-banner table-colonne">
-                Commentaire
-            </p>
-            <p class="card-banner card-commentaire">
-                <?= !empty($manga->commentaire)
-                    ? nl2br(htmlspecialchars($manga->commentaire))
-                    : 'Aucun commentaire' ?>
-            </p>
+            <div class="detail-row detail-row-comment">
+                <div class="detail-label">Commentaire</div>
+                <div class="detail-value detail-comment">
+                    <?= !empty($manga->commentaire)
+                        ? nl2br(htmlspecialchars($manga->commentaire))
+                        : 'Aucun commentaire' ?>
+                </div>
+            </div>
 
-            <a class="link-edit"
-               href="<?= $basePath; ?>manga/edit/<?= rawurlencode($manga->slug) ?>/<?= (int) $manga->numero ?>">
-                Modifier
-            </a>
+            <div class="detail-actions">
+                <a class="link-edit"
+                   href="<?= $basePath; ?>manga/edit/<?= rawurlencode($manga->slug) ?>/<?= (int) $manga->numero ?>">
+                    Modifier
+                </a>
+            </div>
 
         </article>
 

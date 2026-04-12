@@ -41,18 +41,16 @@ $currentPage = $currentPage ?? 1;
                             $noteClass = 'note-low';
                         }
                         ?>
-                        <span class="badge-note <?= $noteClass; ?>">
+                        <span class="badge-note <?= htmlspecialchars($noteClass) ?>">
                             <?= (int) $manga->note ?>
                         </span>
                     <?php endif; ?>
 
                 </figure>
 
-                <div>
-                    <p class="card-banner">
-                        <?= htmlspecialchars($manga->livre) ?>
-                    </p>
-                </div>
+                <p class="card-title">
+                    <?= htmlspecialchars($manga->livre) ?>
+                </p>
 
             </article>
 
@@ -67,7 +65,7 @@ $currentPage = $currentPage ?? 1;
             <?php for ($getId = 1; $getId <= $compteur; $getId++): ?>
 
                 <a class="link-paginate <?= ($currentPage === $getId) ? 'active' : '' ?>"
-                href="<?= $basePath; ?>manga/collection/page/<?= $getId; ?>">
+                   href="<?= $basePath; ?>manga/collection/page/<?= $getId; ?>">
                     <?= $getId; ?>
                 </a>
 

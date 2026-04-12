@@ -31,8 +31,10 @@ echo $form
         'post'
     )
 
-    ->startDiv(['class' => 'm-t-30'])
-    ->addLabelFor('jacquette', 'Note jacquette :')
+    /* NOTE JACQUETTE */
+
+    ->startDiv(['class' => 'form-row'])
+    ->addLabelFor('jacquette', 'Note jacquette')
     ->addSelect(
         'jacquette',
         [
@@ -43,13 +45,15 @@ echo $form
             4 => '4',
             5 => '5'
         ],
-        ['id' => 'jacquette'],
+        ['id' => 'jacquette', 'class' => 'form-select'],
         $manga->jacquette
     )
     ->endDiv()
 
-    ->startDiv(['class' => 'm-t-30'])
-    ->addLabelFor('livre_note', 'Note livre :')
+    /* NOTE LIVRE */
+
+    ->startDiv(['class' => 'form-row'])
+    ->addLabelFor('livre_note', 'Note livre')
     ->addSelect(
         'livre_note',
         [
@@ -60,33 +64,41 @@ echo $form
             4 => '4',
             5 => '5'
         ],
-        ['id' => 'livre_note'],
+        ['id' => 'livre_note', 'class' => 'form-select'],
         $manga->livre_note
     )
     ->endDiv()
 
-    ->startDiv(['class' => 'm-t-30'])
-    ->addLabelFor('commentaire', 'Commentaire :')
+    /* COMMENTAIRE */
+
+    ->startDiv(['class' => 'form-column'])
+    ->addLabelFor('commentaire', 'Commentaire')
     ->addTextarea(
         'commentaire',
         $manga->commentaire ?? '',
         [
             'id' => 'commentaire',
-            'rows' => 3,
+            'rows' => 5,
             'maxlength' => 255,
+            'class' => 'form-textarea',
             'placeholder' => 'Ex : défaut en haut de la jacquette'
         ]
     )
     ->endDiv()
 
-    ->startDiv(['class' => 'm-t-30'])
+    /* BOUTONS */
+
+    ->startDiv(['class' => 'form-actions'])
     ->addButton(
         'Enregistrer',
         [
             'type' => 'submit',
-            'class' => 'link-edit'
+            'class' => 'link-edit full-width'
         ]
     )
+    ->endDiv()
+
+    ->startDiv(['class' => 'form-actions-secondary'])
     ->addButton(
         'Annuler',
         [
@@ -102,14 +114,14 @@ echo $form
 
 ?>
 
-    <p>
+    <p class="note-info">
         Note totale actuelle :
         <span id="note-total">
             <?= $manga->note !== null ? (int) $manga->note . '/10' : 'Non calculée' ?>
         </span>
     </p>
 
-    <div class="m-t-30">
+    <div class="form-actions-secondary">
         <a class="link-section"
            href="<?= $basePath; ?>manga/collection/<?= rawurlencode($manga->slug) ?>/<?= (int) $manga->numero ?>">
             Retour
