@@ -36,7 +36,7 @@ class MangaModel extends Model
 
         $result = $query->fetch();
 
-        return (int) ceil(($result->total ?? 0) / $eachPerPage);
+        return (int) ceil((($result->total) ?? 0) / $eachPerPage);
     }
 
     /**
@@ -51,7 +51,8 @@ class MangaModel extends Model
 
         $orderByAutorises = ['id DESC', 'id ASC'];
 
-        if (!in_array($orderBy, $orderByAutorises, true)) {
+        if (!in_array($orderBy, $orderByAutorises, true))
+        {
             $orderBy = 'id DESC';
         }
 
@@ -76,14 +77,15 @@ class MangaModel extends Model
      */
     public function findBySlug(string $slug): array
     {
-        $sql = "SELECT *
-                FROM {$this->table}
-                WHERE slug = :slug
-                ORDER BY numero DESC";
-
-        return $this->requete($sql, [
-            'slug' => strtolower(trim($slug))
-        ])->fetchAll();
+        return $this->requete(
+            "SELECT *
+            FROM {$this->table}
+            WHERE slug = :slug
+            ORDER BY numero DESC",
+            [
+                'slug' => strtolower(trim($slug))
+            ]
+        )->fetchAll();
     }
 
     /**
@@ -94,11 +96,11 @@ class MangaModel extends Model
         return $this->requete(
             "SELECT *
             FROM {$this->table}
-            WHERE slug = ?
-            AND numero = ?",
+            WHERE slug = :slug
+            AND numero = :numero",
             [
-                strtolower(trim($slug)),
-                $numero
+                'slug' => strtolower(trim($slug)),
+                'numero' => $numero
             ]
         )->fetch();
     }
@@ -108,14 +110,13 @@ class MangaModel extends Model
      */
     public function insert(array $datas): bool
     {
+        $jacquette = isset($datas['jacquette']) ? (is_null($datas['jacquette']) ? null : (int) $datas['jacquette']) : null;
+        $livreNote = isset($datas['livre_note']) ? (is_null($datas['livre_note']) ? null : (int) $datas['livre_note']) : null;
         $note = null;
 
-        if (
-            isset($datas['jacquette'], $datas['livre_note'])
-            && $datas['jacquette'] !== null
-            && $datas['livre_note'] !== null
-        ) {
-            $note = (int) $datas['jacquette'] + (int) $datas['livre_note'];
+        if ($jacquette !== null && $livreNote !== null)
+        {
+            $note = $jacquette + $livreNote;
         }
 
         return $this->requete(
@@ -142,13 +143,13 @@ class MangaModel extends Model
                 NOW()
             )",
             [
-                'thumbnail' => $datas['thumbnail'],
-                'extension' => $datas['extension'],
+                'thumbnail' => trim($datas['thumbnail']),
+                'extension' => strtolower(trim($datas['extension'])),
                 'slug' => strtolower(trim($datas['slug'])),
                 'livre' => trim($datas['livre']),
                 'numero' => (int) $datas['numero'],
-                'jacquette' => $datas['jacquette'] ?? null,
-                'livre_note' => $datas['livre_note'] ?? null,
+                'jacquette' => $jacquette,
+                'livre_note' => $livreNote,
                 'note' => $note
             ]
         ) !== false;
@@ -159,9 +160,22 @@ class MangaModel extends Model
      */
     public function updateNotes(string $slug, int $numero, ?int $jacquette, ?int $livre_note): bool
     {
+        $slug = strtolower(trim($slug));
+        $numero = (int) $numero;
         $note = null;
 
-        if ($jacquette !== null && $livre_note !== null) {
+        if ($jacquette !== null)
+        {
+            $jacquette = (int) $jacquette;
+        }
+
+        if ($livre_note !== null)
+        {
+            $livre_note = (int) $livre_note;
+        }
+
+        if ($jacquette !== null && $livre_note !== null)
+        {
             $note = $jacquette + $livre_note;
         }
 
@@ -172,7 +186,7 @@ class MangaModel extends Model
                 'note' => $note
             ],
             [
-                'slug' => strtolower(trim($slug)),
+                'slug' => $slug,
                 'numero' => $numero
             ]
         );
@@ -218,7 +232,7 @@ class MangaModel extends Model
 
     public function setSlug(string $slug): self
     {
-        $this->slug = $slug;
+        $this->slug = strtolower(trim($slug));
         return $this;
     }
 
@@ -273,7 +287,7 @@ class MangaModel extends Model
 
     public function setLivre(string $livre): self
     {
-        $this->livre = $livre;
+        $this->livre = trim($livre);
         return $this;
     }
 }

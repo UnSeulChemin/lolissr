@@ -8,11 +8,11 @@ class Main
         session_start();
 
         $config = require __DIR__ . '/../Config/config.php';
-        $basename = $config['basename'];
+        $basePath = $config['base_path'];
 
         $uri = $_SERVER['REQUEST_URI'];
 
-        if (!empty($uri) && $uri !== '/' && substr($uri, -1) === '/' && $uri !== $basename) {
+        if (!empty($uri) && $uri !== '/' && substr($uri, -1) === '/' && $uri !== $basePath) {
             $uri = substr($uri, 0, -1);
 
             http_response_code(301);

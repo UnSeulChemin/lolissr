@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'basename' => '/lolissr/'
+    'base_path' => '/lolissr/',
 ];

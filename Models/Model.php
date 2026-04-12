@@ -11,12 +11,10 @@ class Model
     protected string $table;
     protected ?PDO $db = null;
 
-
     public function __construct()
     {
         $this->db = Database::getInstance();
     }
-
 
     /**
      * récup 1 ligne par id
@@ -30,21 +28,6 @@ class Model
             [$id]
         )->fetch();
     }
-
-
-    /**
-     * récup 1 ligne par name
-     */
-    public function findName(string $name): object|false
-    {
-        return $this->requete(
-            "SELECT *
-            FROM {$this->table}
-            WHERE name = ?",
-            [trim($name)]
-        )->fetch();
-    }
-
 
     /**
      * récup plusieurs lignes selon conditions
@@ -72,7 +55,6 @@ class Model
         return $this->requete($sql, $values)->fetchAll();
     }
 
-
     /**
      * récup tout
      */
@@ -87,7 +69,6 @@ class Model
         )->fetchAll();
     }
 
-
     /**
      * alias findAll avec order by
      */
@@ -95,7 +76,6 @@ class Model
     {
         return $this->findAll($orderBy);
     }
-
 
     /**
      * récup tout avec limite
@@ -112,7 +92,6 @@ class Model
             LIMIT {$limit}"
         )->fetchAll();
     }
-
 
     /**
      * pagination simple
@@ -133,7 +112,6 @@ class Model
         )->fetchAll();
     }
 
-
     /**
      * nb total de pages
      */
@@ -150,7 +128,6 @@ class Model
 
         return (int) ceil(($result->total ?? 0) / $eachPerPage);
     }
-
 
     /**
      * insert générique
@@ -209,7 +186,6 @@ class Model
         return $this->requete($sql, $values) !== false;
     }
 
-
     /**
      * delete par id
      */
@@ -223,7 +199,6 @@ class Model
         ) !== false;
     }
 
-
     /**
      * hydrate objet
      */
@@ -231,7 +206,7 @@ class Model
     {
         foreach ($datas as $key => $value)
         {
-            $method = 'set' . ucfirst($key);
+            $method = 'set' . str_replace(' ', '', ucwords(str_replace('_', ' ', $key)));
 
             if (method_exists($this, $method))
             {
@@ -241,7 +216,6 @@ class Model
 
         return $this;
     }
-
 
     /**
      * requête sql
@@ -256,14 +230,22 @@ class Model
         if ($attributes !== null)
         {
             $query = $this->db->prepare($sql);
-            $query->execute($attributes);
+
+            if (!$query)
+            {
+                return false;
+            }
+
+            if (!$query->execute($attributes))
+            {
+                return false;
+            }
 
             return $query;
         }
 
         return $this->db->query($sql);
     }
-
 
     /**
      * sécurise order by

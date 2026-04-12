@@ -34,12 +34,8 @@ class MangaController extends Controller
             $mangas = $mangaModel->findAllFirstTomes('id DESC', 8, $page);
             $compteur = $mangaModel->countFirstTomesPaginate(8);
 
-            $this->render('manga/collection', [
-                'mangas' => $mangas,
-                'compteur' => $compteur,
-                'titleFilter' => null
-            ]);
-
+            $this->title = 'Manga | Collection';
+            $this->render('manga/collection', ['mangas' => $mangas, 'compteur' => $compteur, 'titleFilter' => null]);
             return;
         }
 
@@ -56,7 +52,7 @@ class MangaController extends Controller
             }
 
             /* slug propre depuis la db */
-            $goodSlug = strtolower(str_replace(' ', '-', trim($manga->livre)));
+            $goodSlug = strtolower(trim($manga->slug));
 
             if ($goodSlug !== strtolower(trim($slug)))
             {
@@ -64,20 +60,23 @@ class MangaController extends Controller
                 exit;
             }
 
-            $this->render('manga/livre', [
-                'manga' => $manga
-            ]);
-
+            $this->title = 'Manga | ' . $manga->livre . ' ' . str_pad((string) $manga->numero, 2, '0', STR_PAD_LEFT);
+            $this->render('manga/livre', ['manga' => $manga]);
             return;
         }
 
         /* collection d'un manga */
+        $slug = strtolower(trim($slug));
         $mangas = $mangaModel->findBySlug($slug);
 
-        $this->render('manga/collection', [
-            'mangas' => $mangas,
-            'titleFilter' => $slug
-        ]);
+        if (!$mangas)
+        {
+            http_response_code(404);
+            exit('Manga introuvable');
+        }
+
+        $this->title = 'Manga | ' . $mangas[0]->livre;
+        $this->render('manga/collection', ['mangas' => $mangas, 'titleFilter' => $slug]);
     }
 
     /**
@@ -98,12 +97,7 @@ class MangaController extends Controller
         $compteur = $mangaModel->countFirstTomesPaginate(8);
 
         $this->title = 'Manga | Collection Page ' . $id;
-
-        $this->render('manga/collection', [
-            'mangas' => $mangas,
-            'compteur' => $compteur,
-            'titleFilter' => null
-        ]);
+        $this->render('manga/collection', ['mangas' => $mangas, 'compteur' => $compteur, 'titleFilter' => null]);
     }
 
     /**
@@ -139,22 +133,17 @@ class MangaController extends Controller
 
         /* récup données */
         $livre = trim($_POST['livre'] ?? '');
-        $slug = trim($_POST['slug'] ?? '');
+        $slug = strtolower(trim($_POST['slug'] ?? ''));
         $numero = (int) ($_POST['numero'] ?? 0);
 
         /* validation form */
-        if (
-            $livre === ''
-            || $slug === ''
-            || $numero <= 0
-            || empty($_FILES['image']['name'])
-        )
+        if ($livre === '' || $slug === '' || $numero <= 0 || !isset($_FILES['image']))
         {
             exit('Formulaire incomplet');
         }
 
         /* vérif upload */
-        if (!isset($_FILES['image']) || $_FILES['image']['error'] !== UPLOAD_ERR_OK)
+        if ($_FILES['image']['error'] !== UPLOAD_ERR_OK || empty($_FILES['image']['name']))
         {
             exit('Erreur fichier');
         }
@@ -180,10 +169,15 @@ class MangaController extends Controller
         $thumbnail = preg_replace('/\s+/', ' ', $thumbnail);
         $thumbnail = trim($thumbnail);
 
+        if ($thumbnail === '')
+        {
+            exit('Nom de fichier invalide');
+        }
+
         $nomFichier = $thumbnail . '.' . $extension;
 
         /* dossier image */
-        $dossier = dirname(__DIR__) . '/public/images/mangas/thumbnail/';
+        $dossier = dirname(__DIR__) . '/../public/images/mangas/thumbnail/';
 
         if (!is_dir($dossier))
         {
@@ -192,10 +186,18 @@ class MangaController extends Controller
 
         $destination = $dossier . $nomFichier;
 
-        /* évite doublon */
+        /* évite doublon image */
         if (file_exists($destination))
         {
             exit('Une image avec ce nom existe déjà');
+        }
+
+        $mangaModel = new MangaModel;
+
+        /* évite doublon manga */
+        if ($mangaModel->findOneBySlugAndNumero($slug, $numero))
+        {
+            exit('Ce manga existe déjà');
         }
 
         /* déplacement image */
@@ -205,12 +207,10 @@ class MangaController extends Controller
         }
 
         /* insert db */
-        $mangaModel = new MangaModel;
-
         $mangaModel->insert([
             'thumbnail' => $thumbnail,
             'extension' => $extension,
-            'slug' => strtolower(trim($slug)),
+            'slug' => $slug,
             'livre' => $livre,
             'numero' => $numero,
             'jacquette' => null,
@@ -230,6 +230,7 @@ class MangaController extends Controller
      */
     public function edit(string $slug, string $numero): void
     {
+        $slug = strtolower(trim($slug));
         $numero = (int) $numero;
 
         $mangaModel = new MangaModel;
@@ -241,9 +242,16 @@ class MangaController extends Controller
             exit('Manga introuvable');
         }
 
-        $this->render('manga/edit', [
-            'manga' => $manga
-        ]);
+        $goodSlug = strtolower(trim($manga->slug));
+
+        if ($goodSlug !== $slug)
+        {
+            header('Location: ' . $this->basePath . 'manga/edit/' . $goodSlug . '/' . $manga->numero);
+            exit;
+        }
+
+        $this->title = 'Manga | Modifier';
+        $this->render('manga/edit', ['manga' => $manga]);
     }
 
     /**
@@ -252,6 +260,7 @@ class MangaController extends Controller
      */
     public function update(string $slug, string $numero): void
     {
+        $slug = strtolower(trim($slug));
         $numero = (int) $numero;
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST')
@@ -263,7 +272,7 @@ class MangaController extends Controller
         $jacquette = $_POST['jacquette'] ?? null;
         $livreNote = $_POST['livre_note'] ?? null;
 
-        if ($jacquette === '' || $livreNote === '')
+        if ($jacquette === null || $livreNote === null || $jacquette === '' || $livreNote === '')
         {
             exit('Formulaire incomplet');
         }
@@ -277,6 +286,14 @@ class MangaController extends Controller
         }
 
         $mangaModel = new MangaModel;
+        $manga = $mangaModel->findOneBySlugAndNumero($slug, $numero);
+
+        if (!$manga)
+        {
+            http_response_code(404);
+            exit('Manga introuvable');
+        }
+
         $mangaModel->updateNotes($slug, $numero, $jacquette, $livreNote);
 
         header('Location: ' . $this->basePath . 'manga/collection/' . $slug . '/' . $numero);

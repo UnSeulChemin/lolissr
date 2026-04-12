@@ -11,6 +11,6 @@ class Functions
             $config = require __DIR__ . '/../Config/config.php';
         }
 
-        return $config['basename'];
+        return $config['base_path'] ?? '/';
     }
 }

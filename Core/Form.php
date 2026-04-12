@@ -1,14 +1,14 @@
 <?php
+
 namespace App\Core;
 
 class Form
 {
-    /* form code */
-    private $formCode = "";
+    /* html du formulaire */
+    private string $formCode = '';
 
     /**
-     * form create
-     * @return string
+     * retourne le html généré
      */
     public function create(): string
     {
@@ -16,85 +16,87 @@ class Form
     }
 
     /**
-     * form validate
-     * @param array|null $form
-     * @param array|null $fields
-     * @return boolean
+     * valide que des champs existent et ne sont pas vides
      */
-    public static function validate(array $form = null, array $fields = null): bool
+    public static function validate(?array $form = null, ?array $fields = null): bool
     {
-        self::checkerArray($form, $fields);
+        if (!self::checkerArray($form, $fields))
+        {
+            return false;
+        }
 
         foreach ($fields as $field)
         {
-            if (!isset($form[$field]) || empty($form[$field]))
+            if (!isset($form[$field]) || trim((string) $form[$field]) === '')
             {
                 return false;
             }
         }
+
         return true;
     }
 
     /**
-     * form validate email
-     * @param array|null $form
-     * @param array|null $emails
-     * @return boolean
+     * valide email
      */
-    public static function validateEmail(array $form = null, array $emails = null): bool
+    public static function validateEmail(?array $form = null, ?array $emails = null): bool
     {
-        self::checkerArray($form, $emails);
+        if (!self::checkerArray($form, $emails))
+        {
+            return false;
+        }
 
         foreach ($emails as $email)
         {
-            if (!filter_var($form[$email], FILTER_VALIDATE_EMAIL))
+            if (!isset($form[$email]) || !filter_var($form[$email], FILTER_VALIDATE_EMAIL))
             {
                 return false;
             }
         }
+
         return true;
     }
 
     /**
-     * form validate password
-     * @param array|null $form
-     * @param array|null $passwords
-     * @return boolean
+     * valide mot de passe
      */
-    public static function validatePassword(array $form = null, array $passwords = null): bool
+    public static function validatePassword(?array $form = null, ?array $passwords = null): bool
     {
-        self::checkerArray($form, $passwords);
+        if (!self::checkerArray($form, $passwords))
+        {
+            return false;
+        }
 
         foreach ($passwords as $password)
         {
-            // at least 5 characters, at least 1 numeric character, at least 1 lowercase letter,
-            // at least 1 uppercase letter, at least 1 special character.
             $passwordPattern = "/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?([^\w\s]|[_])).{5,}$/";
-            if (!preg_match($passwordPattern, $form[$password]))
+
+            if (!isset($form[$password]) || !preg_match($passwordPattern, $form[$password]))
             {
                 return false;
             }
         }
+
         return true;
     }
 
     /**
-     * form start form
-     * @param string $method
-     * @param string $action
-     * @param array $attributes
-     * @return self
+     * ouvre le form
      */
-    public function startForm(string $method = 'post', string $action = '#', array $attributes = []): self
+    public function startForm(string $action = '#', string $method = 'post', array $attributes = []): self
     {
-        $this->formCode .= "<form action='$action' method='$method'";
-        $this->formCode .= $attributes ? $this->addAttributes($attributes).'>' : '>';
+        $action = htmlspecialchars($action, ENT_QUOTES, 'UTF-8');
+        $method = strtolower($method);
+
+        $this->formCode .= "<form action=\"{$action}\" method=\"{$method}\"";
+        $this->formCode .= $attributes ? $this->addAttributes($attributes) : '';
+        $this->formCode .= '>';
+
         return $this;
     }
 
     /**
-     * form end form
-     * @return self
+     * ferme le form
      */
     public function endForm(): self
     {
@@ -103,20 +105,19 @@ class Form
     }
 
     /**
-     * form start div
-     * @param array $attributes
-     * @return self
+     * ouvre une div
      */
     public function startDiv(array $attributes = []): self
     {
         $this->formCode .= '<div';
-        $this->formCode .= $attributes ? $this->addAttributes($attributes).'>' : '>';
+        $this->formCode .= $attributes ? $this->addAttributes($attributes) : '';
+        $this->formCode .= '>';
+
         return $this;
     }
 
     /**
-     * form end div
-     * @return self
+     * ferme une div
      */
     public function endDiv(): self
     {
@@ -125,118 +126,123 @@ class Form
     }
 
     /**
-     * form add input
-     * @param string $type
-     * @param string $name
-     * @param array $attributes
-     * @return self
+     * ajoute un input
      */
     public function addInput(string $type, string $name, array $attributes = []): self
     {
-        $this->formCode .= "<input type='$type' name='$name'";
-        $this->formCode .= $attributes ? $this->addAttributes($attributes).'>' : '>';
+        $type = htmlspecialchars($type, ENT_QUOTES, 'UTF-8');
+        $name = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
+
+        $this->formCode .= "<input type=\"{$type}\" name=\"{$name}\"";
+        $this->formCode .= $attributes ? $this->addAttributes($attributes) : '';
+        $this->formCode .= '>';
+
         return $this;
     }
 
     /**
-     * form add label for
-     * @param string $for
-     * @param string $text
-     * @param array $attributes
-     * @return self
+     * ajoute un label
      */
     public function addLabelFor(string $for, string $text, array $attributes = []): self
     {
-        $this->formCode .= "<label for='$for'";
+        $for = htmlspecialchars($for, ENT_QUOTES, 'UTF-8');
+        $text = htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
+
+        $this->formCode .= "<label for=\"{$for}\"";
         $this->formCode .= $attributes ? $this->addAttributes($attributes) : '';
-        $this->formCode .= ">$text</label>";
+        $this->formCode .= ">{$text}</label>";
+
         return $this;
     }
 
     /**
-     * form add textarea
-     * @param string $name
-     * @param string $value
-     * @param array $attributes
-     * @return self
+     * ajoute un textarea
      */
     public function addTextarea(string $name, string $value = '', array $attributes = []): self
     {
-        $this->formCode .= "<textarea name='$name'";
+        $name = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
+        $value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+
+        $this->formCode .= "<textarea name=\"{$name}\"";
         $this->formCode .= $attributes ? $this->addAttributes($attributes) : '';
-        $this->formCode .= ">$value</textarea>";
+        $this->formCode .= ">{$value}</textarea>";
+
         return $this;
     }
 
     /**
-     * form add select
-     * @param string $name
-     * @param array $options
-     * @param array $attributes
-     * @return self
+     * ajoute un select
      */
-    public function addSelect(string $name, array $options, array $attributes = []): self
+    public function addSelect(string $name, array $options, array $attributes = [], mixed $selected = null): self
     {
-        $this->formCode .= "<select name='$name'";
-        $this->formCode .= $attributes ? $this->addAttributes($attributes).'>' : '>';
+        $name = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
+
+        $this->formCode .= "<select name=\"{$name}\"";
+        $this->formCode .= $attributes ? $this->addAttributes($attributes) : '';
+        $this->formCode .= '>';
 
         foreach ($options as $value => $text)
         {
-            $this->formCode .= "<option value=\"$value\">$text</option>";
+            $valueEscaped = htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+            $textEscaped = htmlspecialchars((string) $text, ENT_QUOTES, 'UTF-8');
+            $isSelected = ((string) $selected === (string) $value) ? ' selected' : '';
+
+            $this->formCode .= "<option value=\"{$valueEscaped}\"{$isSelected}>{$textEscaped}</option>";
         }
 
         $this->formCode .= '</select>';
+
         return $this;
     }
 
     /**
-     * form add button
-     * @param string $text
-     * @param array $attributes
-     * @return self
+     * ajoute un bouton
      */
     public function addButton(string $text, array $attributes = []): self
     {
-        $this->formCode .= '<button ';
+        $text = htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
+
+        $this->formCode .= '<button';
         $this->formCode .= $attributes ? $this->addAttributes($attributes) : '';
-        $this->formCode .= ">$text</button>";
+        $this->formCode .= ">{$text}</button>";
+
         return $this;
     }
 
     /**
-     * self addAttributes
-     * @param array $attributes
-     * @return string
+     * transforme les attributs en html
      */
     private function addAttributes(array $attributes): string
     {
         $string = '';
-        $shorts = ['checked', 'disabled', 'readonly', 'multiple', 'required', 'autofocus', 'novalidate', 'formnovalidate'];
+        $shorts = ['checked', 'disabled', 'readonly', 'multiple', 'required', 'autofocus', 'novalidate', 'formnovalidate', 'selected'];
 
         foreach ($attributes as $attribute => $value)
         {
-            if (in_array($attribute, $shorts) && $value == true)
+            $attribute = htmlspecialchars((string) $attribute, ENT_QUOTES, 'UTF-8');
+
+            if (in_array($attribute, $shorts, true))
             {
-                $string .= " $attribute";
+                if ($value)
+                {
+                    $string .= " {$attribute}";
+                }
+
+                continue;
             }
-            
-            else
-            {
-                $string .= " $attribute=\"$value\"";
-            }
+
+            $value = htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+            $string .= " {$attribute}=\"{$value}\"";
         }
+
         return $string;
     }
 
     /**
-     * self checkerArray
-     * @param $form
-     * @param $fields
-     * @return boolean
+     * vérifie que form et fields sont bien des tableaux
      */
-    private static function checkerArray($form, $fields): bool
+    private static function checkerArray(?array $form, ?array $fields): bool
     {
-        if (!is_array($form) || !is_array($fields)) { return false; }
-        return true;
+        return is_array($form) && is_array($fields);
     }
 }
