@@ -29,10 +29,15 @@ class MangaModel extends Model
 
         $query = $this->requete(
             "SELECT COUNT(*) AS total
-            FROM {$this->table}
+            FROM {$this->getTable()}
             WHERE numero = ?",
             [1]
         );
+
+        if ($query === false)
+        {
+            return 0;
+        }
 
         $result = $query->fetch();
 
@@ -59,17 +64,19 @@ class MangaModel extends Model
         $sql = "SELECT m.*,
                     (
                         SELECT COUNT(*)
-                        FROM {$this->table}
+                        FROM {$this->getTable()}
                         WHERE slug = m.slug
                     ) AS total
-                FROM {$this->table} m
+                FROM {$this->getTable()} m
                 WHERE m.numero = :numero
                 ORDER BY {$orderBy}
                 LIMIT {$start}, {$eachPerPage}";
 
-        return $this->requete($sql, [
+        $query = $this->requete($sql, [
             'numero' => 1
-        ])->fetchAll();
+        ]);
+
+        return $query ? $query->fetchAll() : [];
     }
 
     /**
@@ -77,15 +84,17 @@ class MangaModel extends Model
      */
     public function findBySlug(string $slug): array
     {
-        return $this->requete(
+        $query = $this->requete(
             "SELECT *
-            FROM {$this->table}
+            FROM {$this->getTable()}
             WHERE slug = :slug
             ORDER BY numero DESC",
             [
                 'slug' => strtolower(trim($slug))
             ]
-        )->fetchAll();
+        );
+
+        return $query ? $query->fetchAll() : [];
     }
 
     /**
@@ -93,16 +102,18 @@ class MangaModel extends Model
      */
     public function findOneBySlugAndNumero(string $slug, int $numero): object|false
     {
-        return $this->requete(
+        $query = $this->requete(
             "SELECT *
-            FROM {$this->table}
+            FROM {$this->getTable()}
             WHERE slug = :slug
             AND numero = :numero",
             [
                 'slug' => strtolower(trim($slug)),
                 'numero' => $numero
             ]
-        )->fetch();
+        );
+
+        return $query ? $query->fetch() : false;
     }
 
     /**
@@ -120,7 +131,7 @@ class MangaModel extends Model
         }
 
         return $this->requete(
-            "INSERT INTO {$this->table} (
+            "INSERT INTO {$this->getTable()} (
                 thumbnail,
                 extension,
                 slug,
