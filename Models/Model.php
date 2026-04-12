@@ -8,12 +8,27 @@ use PDOStatement;
 
 class Model
 {
+    /**
+     * nom de la table
+     */
     protected string $table;
+
+    /**
+     * connexion PDO
+     */
     protected ?PDO $db = null;
 
     public function __construct()
     {
         $this->db = Database::getInstance();
+    }
+
+    /**
+     * sécurise le nom de table
+     */
+    protected function getTable(): string
+    {
+        return preg_replace('/[^a-zA-Z0-9_]/', '', $this->table);
     }
 
     /**
@@ -23,8 +38,8 @@ class Model
     {
         return $this->requete(
             "SELECT *
-            FROM {$this->table}
-            WHERE id = ?",
+             FROM {$this->getTable()}
+             WHERE id = ?",
             [$id]
         )->fetch();
     }
@@ -49,84 +64,10 @@ class Model
         }
 
         $sql = "SELECT *
-                FROM {$this->table}
+                FROM {$this->getTable()}
                 WHERE " . implode(' AND ', $fields);
 
         return $this->requete($sql, $values)->fetchAll();
-    }
-
-    /**
-     * récup tout
-     */
-    public function findAll(string $orderBy = 'id DESC'): array
-    {
-        $orderBy = $this->sanitizeOrderBy($orderBy);
-
-        return $this->requete(
-            "SELECT *
-            FROM {$this->table}
-            ORDER BY {$orderBy}"
-        )->fetchAll();
-    }
-
-    /**
-     * alias findAll avec order by
-     */
-    public function findAllOrderBy(string $orderBy): array
-    {
-        return $this->findAll($orderBy);
-    }
-
-    /**
-     * récup tout avec limite
-     */
-    public function findAllOrderByLimit(string $orderBy, int $limit): array
-    {
-        $orderBy = $this->sanitizeOrderBy($orderBy);
-        $limit = max(1, $limit);
-
-        return $this->requete(
-            "SELECT *
-            FROM {$this->table}
-            ORDER BY {$orderBy}
-            LIMIT {$limit}"
-        )->fetchAll();
-    }
-
-    /**
-     * pagination simple
-     */
-    public function findAllPaginate(string $orderBy, int $eachPerPage, int $page): array
-    {
-        $orderBy = $this->sanitizeOrderBy($orderBy);
-        $eachPerPage = max(1, $eachPerPage);
-        $page = max(1, $page);
-
-        $start = ($page - 1) * $eachPerPage;
-
-        return $this->requete(
-            "SELECT *
-            FROM {$this->table}
-            ORDER BY {$orderBy}
-            LIMIT {$start}, {$eachPerPage}"
-        )->fetchAll();
-    }
-
-    /**
-     * nb total de pages
-     */
-    public function countPaginate(int $eachPerPage): int
-    {
-        $eachPerPage = max(1, $eachPerPage);
-
-        $query = $this->requete(
-            "SELECT COUNT(*) AS total
-            FROM {$this->table}"
-        );
-
-        $result = $query->fetch();
-
-        return (int) ceil(($result->total ?? 0) / $eachPerPage);
     }
 
     /**
@@ -143,7 +84,7 @@ class Model
         $placeholders = array_fill(0, count($datas), '?');
         $values = array_values($datas);
 
-        $sql = "INSERT INTO {$this->table} (
+        $sql = "INSERT INTO {$this->getTable()} (
                     " . implode(', ', $fields) . "
                 )
                 VALUES (
@@ -179,7 +120,7 @@ class Model
             $values[] = $value;
         }
 
-        $sql = "UPDATE {$this->table}
+        $sql = "UPDATE {$this->getTable()}
                 SET " . implode(', ', $fields) . "
                 WHERE " . implode(' AND ', $conditions);
 
@@ -193,32 +134,14 @@ class Model
     {
         return $this->requete(
             "DELETE
-            FROM {$this->table}
-            WHERE id = ?",
+             FROM {$this->getTable()}
+             WHERE id = ?",
             [$id]
         ) !== false;
     }
 
     /**
-     * hydrate objet
-     */
-    public function hydrate(array $datas): static
-    {
-        foreach ($datas as $key => $value)
-        {
-            $method = 'set' . str_replace(' ', '', ucwords(str_replace('_', ' ', $key)));
-
-            if (method_exists($this, $method))
-            {
-                $this->$method($value);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * requête sql
+     * requête SQL
      */
     protected function requete(string $sql, ?array $attributes = null): PDOStatement|false
     {
@@ -231,7 +154,7 @@ class Model
         {
             $query = $this->db->prepare($sql);
 
-            if (!$query)
+            if ($query === false)
             {
                 return false;
             }
@@ -245,20 +168,5 @@ class Model
         }
 
         return $this->db->query($sql);
-    }
-
-    /**
-     * sécurise order by
-     */
-    protected function sanitizeOrderBy(string $orderBy): string
-    {
-        $orderBy = trim($orderBy);
-
-        if (preg_match('/^[a-zA-Z0-9_]+(\s+(ASC|DESC))?$/i', $orderBy))
-        {
-            return $orderBy;
-        }
-
-        return 'id DESC';
     }
 }
