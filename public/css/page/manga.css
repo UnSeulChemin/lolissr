@@ -1,0 +1,220 @@
+/* =========================================
+   PAGE : MANGA
+   Détail, formulaires et helpers manga
+========================================= */
+
+.manga-detail-card
+{
+    width: 98%;
+    max-width: 1400px;
+    margin: 40px auto;
+    padding: 40px;
+    display: flex;
+    align-items: flex-start;
+    gap: 40px;
+    background: #f5f5f5;
+    border-radius: 22px;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+}
+
+.manga-detail-image
+{
+    width: 45%;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+}
+
+.manga-detail-image-inner
+{
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+}
+
+.manga-detail-image-inner img
+{
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 14px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+}
+
+.manga-detail-content
+{
+    width: 55%;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.detail-row
+{
+    width: 100%;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 14px;
+    align-items: stretch;
+}
+
+.detail-label,
+.detail-value
+{
+    min-height: 46px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    border-radius: 10px;
+    color: white;
+    background: var(--violet-main);
+    font-size: 18px;
+    text-align: center;
+}
+
+.detail-label
+{
+    font-weight: 700;
+}
+
+.detail-value
+{
+    font-weight: 500;
+}
+
+.detail-row-comment .detail-label,
+.detail-comment
+{
+    min-height: 120px;
+}
+
+.detail-comment
+{
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    line-height: 1.5;
+}
+
+.detail-actions
+{
+    margin-top: 10px;
+}
+
+.detail-actions .link-edit
+{
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-box
+{
+    width: 95%;
+    max-width: 600px;
+    margin: 40px auto;
+}
+
+.form-row
+{
+    width: 100%;
+    max-width: 420px;
+    margin: 22px auto;
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 12px;
+    align-items: center;
+}
+
+.form-row label
+{
+    text-align: right;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.form-select
+{
+    width: 100%;
+    height: 42px;
+    padding: 0 10px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+    text-align: center;
+    text-align-last: center;
+}
+
+.form-column
+{
+    width: 100%;
+    max-width: 520px;
+    margin: 26px auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-column label
+{
+    text-align: center;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.form-textarea
+{
+    width: 100%;
+    min-height: 120px;
+    padding: 12px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 15px;
+    resize: vertical;
+}
+
+.form-actions,
+.form-actions-secondary
+{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.form-actions
+{
+    margin-top: 30px;
+}
+
+.form-actions-secondary
+{
+    margin-top: 14px;
+}
+
+.full-width
+{
+    width: 100%;
+}
+
+.note-info
+{
+    margin-top: 20px;
+    text-align: center;
+    font-size: 18px;
+}
+
+.m-t-30
+{
+    margin-top: 30px;
+    text-align: center;
+}
+
+.card-commentaire
+{
+    min-height: 80px;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    line-height: 1.5;
+}

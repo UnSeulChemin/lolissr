@@ -39,12 +39,15 @@
 
                     <img
                         class="home-card-image"
-                        alt="<?= htmlspecialchars($lastTome->livre) ?>"
-                        src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($lastTome->thumbnail . '.' . $lastTome->extension) ?>">
+                        src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($lastTome->thumbnail . '.' . $lastTome->extension) ?>"
+                        alt="<?= htmlspecialchars($lastTome->livre) ?>">
 
                     <p class="home-card-text">
                         <?= htmlspecialchars($lastTome->livre) ?>
-                        — Tome <?= str_pad((string) $lastTome->numero, 2, '0', STR_PAD_LEFT) ?>
+                    </p>
+
+                    <p class="home-card-subtext">
+                        Tome <?= str_pad((string) $lastTome->numero, 2, '0', STR_PAD_LEFT) ?>
                     </p>
 
                 </article>
@@ -112,7 +115,6 @@
     </section>
 
     <?php if (!empty($bestRatedMangas)): ?>
-
         <h2 class="card-banner home-subtitle">
             ⭐ Mangas notés 10/10
         </h2>
@@ -127,13 +129,13 @@
                     <article class="home-card home-best-card">
 
                         <span class="home-note-badge">
-                            ⭐ <?= (int) $manga->note ?>/10
+                            <?= (int) $manga->note ?>/10
                         </span>
 
                         <img
                             class="home-best-image"
-                            alt="<?= htmlspecialchars($manga->livre) ?>"
-                            src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($manga->thumbnail . '.' . $manga->extension) ?>">
+                            src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($manga->thumbnail . '.' . $manga->extension) ?>"
+                            alt="<?= htmlspecialchars($manga->livre) ?>">
 
                         <p class="home-best-title">
                             <?= htmlspecialchars($manga->livre) ?>
@@ -144,7 +146,7 @@
                         </p>
 
                         <p class="home-best-label">
-                            Coup de cœur collection
+                            Coup de cœur
                         </p>
 
                     </article>
@@ -152,11 +154,9 @@
             <?php endforeach; ?>
 
         </section>
-
     <?php endif; ?>
 
     <?php if (!empty($topLongestSeries)): ?>
-
         <h2 class="card-banner home-subtitle">
             📊 Top 5 séries les plus longues
         </h2>
@@ -192,7 +192,6 @@
             <?php endforeach; ?>
 
         </section>
-
     <?php endif; ?>
 
 </section>

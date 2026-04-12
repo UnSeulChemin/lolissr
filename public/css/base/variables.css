@@ -25,4 +25,10 @@
 
     /* Flash */
     --flash-active: #71afcd;
+
+
+
+    --violet-main: linear-gradient(135deg, #7b2cff, #c44cff);
+    --violet-shadow: rgba(123, 44, 255, 0.35);
+    --violet-shadow-hover: rgba(123, 44, 255, 0.45);
 }

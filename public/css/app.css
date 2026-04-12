@@ -1,19 +1,19 @@
 /* BASE */
-@import url('./base/reset.css');
-@import url('./base/variables.css');
 @import url('./base/global.css');
+@import url('./base/reset.css');
 @import url('./base/scrollbars.css');
-
-/* UTILITIES */
-@import url('./utilities/helpers.css');
-@import url('./utilities/layout.css');
-@import url('./utilities/spacing.css');
+@import url('./base/variables.css');
 
 /* COMPONENTS */
-@import url('./components/cards.css');
-@import url('./components/tables.css');
-@import url('./components/links.css');
 @import url('./components/alerts.css');
+@import url('./components/buttons.css');
+@import url('./components/cards.css');
+@import url('./components/links.css');
+@import url('./components/tables.css');
+
+/* PAGE */
+@import url('./page/home.css');
+@import url('./page/manga.css');
 
 /* FONT */
 @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
