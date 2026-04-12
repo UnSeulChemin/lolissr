@@ -4,7 +4,7 @@ namespace App\Core;
 class Functions
 {
     /**
-     * retourne toute la config
+     * retourne toute la configuration
      */
     public static function config(): array
     {
@@ -19,11 +19,13 @@ class Functions
     }
 
     /**
-     * retourne le base path
+     * retourne le chemin de base du projet
      */
     public static function basePath(): string
     {
-        return self::config()['base_path'] ?? '/';
+        $config = self::config();
+
+        return $config['base_path'] ?? '/';
     }
 
     /**
@@ -31,14 +33,18 @@ class Functions
      */
     public static function siteName(): string
     {
-        return self::config()['site_name'] ?? 'Site';
+        $config = self::config();
+
+        return $config['site_name'] ?? 'Site';
     }
 
     /**
-     * retourne la pagination
+     * retourne le nombre d'éléments par page
      */
     public static function pagination(): int
     {
-        return (int) (self::config()['pagination'] ?? 8);
+        $config = self::config();
+
+        return (int) ($config['pagination'] ?? 8);
     }
 }
