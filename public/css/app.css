@@ -8,12 +8,13 @@
 @import url('./components/alerts.css');
 @import url('./components/buttons.css');
 @import url('./components/cards.css');
-@import url('./components/links.css');
-@import url('./components/tables.css');
 
 /* PAGE */
 @import url('./page/home.css');
 @import url('./page/manga.css');
+
+/* PARTIALS */
+@import url('./partials/header.css');
 
 /* FONT */
 @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");

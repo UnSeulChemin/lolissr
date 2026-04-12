@@ -1,0 +1,103 @@
+/* =========================================
+   HEADER
+   Barre du haut + navigation principale
+========================================= */
+
+/* conteneur principal du header */
+header
+{
+    width: 100%;
+
+    /* dégradé bleu → violet */
+    background: linear-gradient(90deg, #3a7bd5, #00d2ff);
+
+    /* petite ombre douce */
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+/* navigation interne */
+header nav
+{
+    width: 100%;
+    max-width: 1400px;
+
+    margin: 0 auto;
+    padding: 14px 0;
+
+    /* flex centré */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* liste principale */
+header ul
+{
+    list-style: none;
+
+    /* flex horizontal */
+    display: flex;
+
+    /* espace entre les liens */
+    gap: 50px;
+
+    margin: 0;
+    padding: 0;
+}
+
+/* chaque lien menu */
+.link-menu
+{
+    position: relative;
+
+    /* texte */
+    font-family: var(--font-family);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: white;
+
+    text-decoration: none;
+
+    padding: 8px 18px;
+
+    border-radius: 999px;
+
+    transition:
+        background 0.2s ease,
+        transform 0.15s ease,
+        box-shadow 0.2s ease;
+}
+
+/* effet hover */
+.link-menu:hover
+{
+    background: rgba(255, 255, 255, 0.12);
+
+    transform: translateY(-1px);
+}
+
+/* lien actif (page actuelle) */
+.active
+{
+    color: white;
+
+    /* dégradé violet flashy */
+    background: linear-gradient(135deg, #7b2cff, #c44cff);
+
+    font-weight: 700;
+
+    /* glow violet */
+    box-shadow:
+        0 0 10px rgba(123, 44, 255, 0.45),
+        0 0 20px rgba(196, 76, 255, 0.25);
+}
+
+/* petit effet hover sur actif */
+.active:hover
+{
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 0 14px rgba(123, 44, 255, 0.55),
+        0 0 26px rgba(196, 76, 255, 0.35);
+}

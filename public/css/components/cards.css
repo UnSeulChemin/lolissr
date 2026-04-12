@@ -70,7 +70,7 @@
     color: white;
     background: var(--violet-main);
     font-size: 13px;
-    font-weight: bold;
+    font-weight: 700;
     border: 2px solid white;
     border-radius: 50px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);

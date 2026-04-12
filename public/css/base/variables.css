@@ -1,16 +1,31 @@
+/* =========================================
+   BASE : VARIABLES
+   Variables réellement utilisées
+========================================= */
+
 :root
 {
-    /* Font */
+    /* =========================
+       TYPOGRAPHIE
+    ========================= */
+
     --font-family: "Montserrat", "Open Sans", sans-serif;
 
-    /* Main Blocs */
-    --background-color-body: #ebebeb;
-    --background-color-header: #CA33FF;
-    --background-color-section: #71afcd;
-
-    /* Police */
-    --color-link: #ebebeb;
     --color-title: #ffffff;
+    --color-link: #ebebeb;
+
+
+    /* =========================
+       COULEURS PRINCIPALES
+    ========================= */
+
+    --background-color-body: #ebebeb;
+    --background-color-header: #ca33ff;
+
+
+    /* =========================
+       THEME VIOLET
+    ========================= */
 
     --violet-main: linear-gradient(
         135deg,
@@ -18,17 +33,22 @@
         #c44cff
     );
 
-    /* Form */
-    --background-color-form-input: #f5f5ef;
-    --border-form: #333333;
-    --background-color-form-focus: #ffffff;
-
-    /* Flash */
-    --flash-active: #71afcd;
-
-
-
-    --violet-main: linear-gradient(135deg, #7b2cff, #c44cff);
     --violet-shadow: rgba(123, 44, 255, 0.35);
     --violet-shadow-hover: rgba(123, 44, 255, 0.45);
+
+
+    /* =========================
+       FORMULAIRES
+    ========================= */
+
+    --background-color-form-input: #f5f5ef;
+    --background-color-form-focus: #ffffff;
+    --border-form: #333333;
+
+
+    /* =========================
+       FLASH / ALERTES
+    ========================= */
+
+    --flash-active: #71afcd;
 }

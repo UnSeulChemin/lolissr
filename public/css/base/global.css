@@ -1,67 +1,68 @@
+/* =========================================
+   GLOBAL
+   Styles de base du site
+   (après reset + variables)
+========================================= */
+
+/* corps du site */
 body
 {
+    /* police globale */
     font-family: var(--font-family);
-    text-align: center;
-    background-color: var(--background-color-body);
-    box-sizing: border-box;
 
+    /* fond global */
+    background-color: var(--background-color-body);
+
+    /* lisibilité du texte */
+    line-height: 1.5;
+
+    /* couleur texte par défaut */
+    color: var(--color-text);
+}
+
+/* titres principaux */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6
+{
+    font-family: var(--font-family);
+    font-weight: 700;
+    color: var(--color-title);
+}
+
+/* paragraphes */
+p
+{
+    font-size: 1rem;
     line-height: 1.5;
 }
 
-header
-{
-
-    background: linear-gradient(
-        90deg,
-        #3b82f6,
-        #06b6d4
-    );
-
-    padding: 20px 30px;
-}
-
-h2
-{
-    font-size: 1.1em;   
-    font-weight: bold;
-    letter-spacing: 1px;
-    word-spacing: 3px;
-    color: var(--color-title);
-
-    margin-bottom: 30px;
-}
-
-p
-{
-    font-size: 1.1em;
-}
-
+/* liens */
 a
 {
-    font-size: 1.1em;
     text-decoration: none;
-
-    display: inline-block;
+    color: inherit;
 }
 
+/* images */
 img
 {
+    display: block;
     max-width: 100%;
-    max-height: 100%;
+    height: auto;
 }
 
-form div input
+/* conteneur principal des pages */
+main
 {
-    width: 250px;
-    background-color: var(--background-color-form-input);
-    box-sizing: border-box;
-
-    padding: 5px;
-    border: 1px solid var(--border-form);
-    border-radius: 5px;
+    min-height: calc(100vh - 80px);
 }
 
-form div input:focus
+/* sélection texte (petit bonus visuel) */
+::selection
 {
-    background-color: var(--background-color-form-focus);
+    background: rgba(123, 44, 255, 0.25);
 }
