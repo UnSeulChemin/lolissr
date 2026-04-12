@@ -116,12 +116,28 @@ class MangaController extends Controller
     }
 
     /**
+     * /manga/ajouter
+     * affiche le formulaire
+     */
+    public function ajouter(): void
+    {
+        $this->title = 'Manga | Ajouter';
+        $this->render('manga/ajouter');
+    }
+
+    /**
      * Page technique "data"
      */
     public function data(): void
     {
+        $mangaModel = $this->mangaModel();
+
+        /* récup nombre total de tomes */
+        $totalTomes = $mangaModel->countAllTomes();
+
         $this->title = 'Manga | Data';
-        $this->render('manga/data');
+
+        $this->render('manga/data', ['totalTomes' => $totalTomes]);
     }
 
     /**
@@ -131,16 +147,6 @@ class MangaController extends Controller
     {
         $this->title = 'Manga | Lien';
         $this->render('manga/lien');
-    }
-
-    /**
-     * /manga/ajouter
-     * affiche le formulaire
-     */
-    public function ajouter(): void
-    {
-        $this->title = 'Manga | Ajouter';
-        $this->render('manga/ajouter');
     }
 
     /**

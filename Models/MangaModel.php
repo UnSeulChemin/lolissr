@@ -21,6 +21,21 @@ class MangaModel extends Model
     protected string $livre;
 
     /**
+     * compte le nombre total de tomes
+     */
+    public function countAllTomes(): int
+    {
+        $query = $this->requete(
+            "SELECT COUNT(*) AS total 
+            FROM {$this->table}"
+        );
+
+        $result = $query->fetch();
+
+        return (int) ($result->total ?? 0);
+    }
+
+    /**
      * nb total de pages pour les tomes 1
      */
     public function countFirstTomesPaginate(int $eachPerPage): int
