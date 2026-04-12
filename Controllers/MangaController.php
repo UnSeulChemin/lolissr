@@ -1,21 +1,25 @@
 <?php
 namespace App\Controllers;
 
+use App\Core\Functions;
 use App\Models\MangaModel;
 
 class MangaController extends Controller
 {
-    /**
-     * nombre d'éléments par page
-     */
-    private int $pagination = 8;
-
     /**
      * retourne une instance du model manga
      */
     private function mangaModel(): MangaModel
     {
         return new MangaModel();
+    }
+
+    /**
+     * normalise un slug
+     */
+    private function normalizeSlug(string $slug): string
+    {
+        return strtolower(trim($slug));
     }
 
     /**
@@ -38,24 +42,27 @@ class MangaController extends Controller
     public function collection(?string $slug = null, ?string $numero = null): void
     {
         $mangaModel = $this->mangaModel();
+        $pagination = Functions::pagination();
 
         /* collection générale */
-        if ($slug === null || $slug === '')
+        if (empty($slug))
         {
             $page = 1;
 
-            $mangas = $mangaModel->findAllFirstTomes('id DESC', $this->pagination, $page);
-            $compteur = $mangaModel->countFirstTomesPaginate($this->pagination);
+            $mangas = $mangaModel->findAllFirstTomes('id DESC', $pagination, $page);
+            $compteur = $mangaModel->countFirstTomesPaginate($pagination);
 
             $this->title = 'Manga | Collection';
             $this->render('manga/collection', ['mangas' => $mangas, 'compteur' => $compteur, 'titleFilter' => null]);
             return;
         }
 
-        /* page détail */
+        /* détail tome */
         if ($numero !== null && $numero !== '')
         {
+            $slug = $this->normalizeSlug($slug);
             $numero = (int) $numero;
+
             $manga = $mangaModel->findOneBySlugAndNumero($slug, $numero);
 
             if (!$manga)
@@ -64,9 +71,9 @@ class MangaController extends Controller
                 exit('Manga introuvable');
             }
 
-            $goodSlug = strtolower(trim($manga->slug));
+            $goodSlug = $this->normalizeSlug($manga->slug);
 
-            if ($goodSlug !== strtolower(trim($slug)))
+            if ($goodSlug !== $slug)
             {
                 header('Location: ' . $this->basePath . 'manga/collection/' . $goodSlug . '/' . $manga->numero);
                 exit;
@@ -78,7 +85,7 @@ class MangaController extends Controller
         }
 
         /* collection d'un manga */
-        $slug = strtolower(trim($slug));
+        $slug = $this->normalizeSlug($slug);
         $mangas = $mangaModel->findBySlug($slug);
 
         if (!$mangas)
@@ -98,10 +105,11 @@ class MangaController extends Controller
     public function page(string $id): void
     {
         $id = max(1, (int) $id);
+        $pagination = Functions::pagination();
 
         $mangaModel = $this->mangaModel();
-        $mangas = $mangaModel->findAllFirstTomes('id DESC', $this->pagination, $id);
-        $compteur = $mangaModel->countFirstTomesPaginate($this->pagination);
+        $mangas = $mangaModel->findAllFirstTomes('id DESC', $pagination, $id);
+        $compteur = $mangaModel->countFirstTomesPaginate($pagination);
 
         $this->title = 'Manga | Collection Page ' . $id;
         $this->render('manga/collection', ['mangas' => $mangas, 'compteur' => $compteur, 'titleFilter' => null]);
@@ -138,7 +146,7 @@ class MangaController extends Controller
         }
 
         $livre = trim($_POST['livre'] ?? '');
-        $slug = strtolower(trim($_POST['slug'] ?? ''));
+        $slug = $this->normalizeSlug($_POST['slug'] ?? '');
         $numero = (int) ($_POST['numero'] ?? 0);
 
         if ($livre === '' || $slug === '' || $numero <= 0 || !isset($_FILES['image']))
@@ -224,7 +232,7 @@ class MangaController extends Controller
      */
     public function edit(string $slug, string $numero): void
     {
-        $slug = strtolower(trim($slug));
+        $slug = $this->normalizeSlug($slug);
         $numero = (int) $numero;
 
         $mangaModel = $this->mangaModel();
@@ -236,7 +244,7 @@ class MangaController extends Controller
             exit('Manga introuvable');
         }
 
-        $goodSlug = strtolower(trim($manga->slug));
+        $goodSlug = $this->normalizeSlug($manga->slug);
 
         if ($goodSlug !== $slug)
         {
@@ -254,7 +262,7 @@ class MangaController extends Controller
      */
     public function update(string $slug, string $numero): void
     {
-        $slug = strtolower(trim($slug));
+        $slug = $this->normalizeSlug($slug);
         $numero = (int) $numero;
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST')
