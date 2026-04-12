@@ -9,8 +9,8 @@
 # git add .
 
 ### HIDE ###
-config/config.php
-Core/Database.php
 Core/Save/
 public/images
 notes.txt
+
+.env

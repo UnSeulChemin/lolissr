@@ -1,20 +1,37 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App;
 
 class Autoloader
 {
-    static function register()
+    /**
+     * enregistre l'autoloader
+     */
+    public static function register(): void
     {
-        spl_autoload_register([__CLASS__, 'autoload']);
+        spl_autoload_register([self::class, 'autoload']);
     }
 
-    static function autoload($class)
+    /**
+     * charge automatiquement les classes du namespace App
+     */
+    public static function autoload(string $class): void
     {
-        $class = str_replace(__NAMESPACE__."\\", "", $class);
-        $class = str_replace("\\", "/", $class);
+        if (!str_starts_with($class, 'App\\'))
+        {
+            return;
+        }
 
-        $file = __DIR__."/".$class.".php";
+        $relativeClass = substr($class, 4);
+        $relativeClass = str_replace('\\', DIRECTORY_SEPARATOR, $relativeClass);
 
-        if (file_exists($file)) { require_once $file; }
+        $file = ROOT . DIRECTORY_SEPARATOR . $relativeClass . '.php';
+
+        if (is_file($file))
+        {
+            require_once $file;
+        }
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Core;
 
 class Functions
@@ -19,12 +20,34 @@ class Functions
     }
 
     /**
+     * retourne une valeur de config imbriquée
+     * ex: app.base_path / database.host
+     */
+    public static function getConfig(string $key, mixed $default = null): mixed
+    {
+        $config = self::config();
+        $segments = explode('.', $key);
+        $value = $config;
+
+        foreach ($segments as $segment)
+        {
+            if (!is_array($value) || !array_key_exists($segment, $value))
+            {
+                return $default;
+            }
+
+            $value = $value[$segment];
+        }
+
+        return $value;
+    }
+
+    /**
      * retourne le chemin de base du projet
      */
     public static function basePath(): string
     {
-        $config = self::config();
-        return $config['base_path'] ?? '/';
+        return (string) self::getConfig('app.base_path', '/');
     }
 
     /**
@@ -32,8 +55,7 @@ class Functions
      */
     public static function siteName(): string
     {
-        $config = self::config();
-        return $config['site_name'] ?? 'Site';
+        return (string) self::getConfig('app.site_name', 'Site');
     }
 
     /**
@@ -41,8 +63,23 @@ class Functions
      */
     public static function pagination(): int
     {
-        $config = self::config();
-        return (int) ($config['pagination'] ?? 8);
+        return (int) self::getConfig('app.pagination', 8);
+    }
+
+    /**
+     * retourne l'environnement de l'application
+     */
+    public static function appEnv(): string
+    {
+        return (string) self::getConfig('app.env', 'local');
+    }
+
+    /**
+     * retourne si le debug est activé
+     */
+    public static function appDebug(): bool
+    {
+        return (bool) self::getConfig('app.debug', false);
     }
 
     /**
@@ -50,8 +87,7 @@ class Functions
      */
     public static function dbHost(): string
     {
-        $config = self::config();
-        return $config['db_host'] ?? 'localhost';
+        return (string) self::getConfig('database.host', 'localhost');
     }
 
     /**
@@ -59,8 +95,7 @@ class Functions
      */
     public static function dbName(): string
     {
-        $config = self::config();
-        return $config['db_name'] ?? '';
+        return (string) self::getConfig('database.name', '');
     }
 
     /**
@@ -68,8 +103,7 @@ class Functions
      */
     public static function dbUser(): string
     {
-        $config = self::config();
-        return $config['db_user'] ?? '';
+        return (string) self::getConfig('database.user', '');
     }
 
     /**
@@ -77,7 +111,35 @@ class Functions
      */
     public static function dbPass(): string
     {
-        $config = self::config();
-        return $config['db_pass'] ?? '';
+        return (string) self::getConfig('database.pass', '');
+    }
+
+    /**
+     * retourne le charset mysql
+     */
+    public static function dbCharset(): string
+    {
+        return (string) self::getConfig('database.charset', 'utf8mb4');
+    }
+
+    /**
+     * récupère une variable d'environnement
+     */
+    public static function env(string $key, mixed $default = null): mixed
+    {
+        $value = $_ENV[$key] ?? $default;
+
+        if (is_string($value))
+        {
+            return match (strtolower($value))
+            {
+                'true' => true,
+                'false' => false,
+                'null' => null,
+                default => $value
+            };
+        }
+
+        return $value;
     }
 }

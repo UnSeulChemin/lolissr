@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Core;
 
 class Main
@@ -9,38 +10,51 @@ class Main
      */
     public function start(): void
     {
-        /* démarre la session */
-        session_start();
+        if (session_status() === PHP_SESSION_NONE)
+        {
+            session_start();
+        }
 
-        /* récup chemin base depuis config */
         $basePath = Functions::basePath();
-
-        /* récup URL actuelle */
         $uri = $_SERVER['REQUEST_URI'] ?? '';
 
-        /**
-         * supprime le slash final
-         * ex: /manga/ → /manga
-         */
-        if ($uri !== '' && $uri !== '/' && $uri !== $basePath && str_ends_with($uri, '/'))
+        /*
+        |--------------------------------------------------------------------------
+        | Redirection si slash final
+        |--------------------------------------------------------------------------
+        */
+        if (
+            $uri !== ''
+            && $uri !== '/'
+            && $uri !== $basePath
+            && str_ends_with($uri, '/')
+        )
         {
-            $uri = rtrim($uri, '/');
+            $cleanUri = rtrim($uri, '/');
 
-            http_response_code(301);
-            header('Location: ' . $uri);
+            header('Location: ' . $cleanUri, true, 301);
             exit;
         }
 
-        /**
-         * récup paramètres de l'URL
-         * ex: manga/collection/1
-         */
-        $params = explode('/', $_GET['p'] ?? '');
+        /*
+        |--------------------------------------------------------------------------
+        | Récupération et nettoyage de la route
+        |--------------------------------------------------------------------------
+        */
+        $route = $_GET['p'] ?? '';
+        $route = trim($route);
+        $route = trim($route, '/');
+        $route = filter_var($route, FILTER_SANITIZE_URL);
 
-        /**
-         * si aucune page demandée
-         * → accueil
-         */
+        $params = ($route === '')
+            ? ['']
+            : explode('/', $route);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Page d'accueil
+        |--------------------------------------------------------------------------
+        */
         if ($params[0] === '')
         {
             $controller = new \App\Controllers\MainController();
@@ -48,44 +62,49 @@ class Main
             return;
         }
 
-        /**
-         * construit le nom du controller
-         * ex: manga → MangaController
-         */
-        $controller = '\\App\\Controllers\\' . ucfirst(array_shift($params)) . 'Controller';
+        /*
+        |--------------------------------------------------------------------------
+        | Construction du controller
+        |--------------------------------------------------------------------------
+        */
+        $controllerName = ucfirst(array_shift($params)) . 'Controller';
+        $controller = '\\App\\Controllers\\' . $controllerName;
 
-        /**
-         * récup méthode à appeler
-         * sinon index par défaut
-         */
-        $action = isset($params[0]) && $params[0] !== '' ? array_shift($params) : 'index';
+        /*
+        |--------------------------------------------------------------------------
+        | Action à appeler
+        |--------------------------------------------------------------------------
+        */
+        $action = (isset($params[0]) && $params[0] !== '')
+            ? array_shift($params)
+            : 'index';
 
-        /**
-         * vérifie que controller + méthode existent
-         */
+        /*
+        |--------------------------------------------------------------------------
+        | Vérifie controller + méthode
+        |--------------------------------------------------------------------------
+        */
         if (class_exists($controller) && method_exists($controller, $action))
         {
-            $controller = new $controller();
+            $controllerInstance = new $controller();
 
-            /**
-             * appelle méthode avec paramètres
-             * ex: manga/edit/rave/01
-             */
             if (!empty($params))
             {
-                call_user_func_array([$controller, $action], $params);
+                call_user_func_array([$controllerInstance, $action], $params);
             }
             else
             {
-                $controller->$action();
+                $controllerInstance->$action();
             }
 
             return;
         }
 
-        /**
-         * page introuvable
-         */
+        /*
+        |--------------------------------------------------------------------------
+        | Page introuvable
+        |--------------------------------------------------------------------------
+        */
         http_response_code(404);
         exit('Page introuvable');
     }
