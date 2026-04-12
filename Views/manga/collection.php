@@ -87,10 +87,12 @@ if (!$isCollection)
 
     <?php endif; ?>
 
-    <div class="m-t-30">
-        <a class="link-section" href="<?= $basePath; ?>manga/collection">
-            Retour
-        </a>
-    </div>
+    <?php if ($isCollection): ?>
+        <div class="m-t-30">
+            <a class="link-section" href="<?= $basePath; ?>manga/collection">
+                Retour
+            </a>
+        </div>
+    <?php endif; ?>
 
 </section>
