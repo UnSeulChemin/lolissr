@@ -1,37 +1,21 @@
 <?php
+
 namespace App\Controllers;
 
 use App\Core\Functions;
 
 abstract class Controller
 {
-    /**
-     * template principal utilisé pour le rendu
-     */
-    protected string $template = 'base';
-
-    /**
-     * titre de la page
-     */
+    protected string $template = 'layouts/base';
     protected string $title;
-
-    /**
-     * chemin de base du projet
-     */
     protected string $basePath;
 
-    /**
-     * initialise les données communes aux controllers
-     */
     public function __construct()
     {
         $this->title = Functions::siteName();
         $this->basePath = Functions::basePath();
     }
 
-    /**
-     * affiche une vue dans le template principal
-     */
     public function render(string $file, array $data = []): void
     {
         extract($data, EXTR_SKIP);
@@ -48,7 +32,7 @@ abstract class Controller
         }
 
         ob_start();
-        require_once $viewPath;
+        require $viewPath;
         $content = ob_get_clean();
 
         $templatePath = ROOT . '/Views/' . $this->template . '.php';
@@ -59,6 +43,6 @@ abstract class Controller
             exit('Template introuvable : ' . $this->template);
         }
 
-        require_once $templatePath;
+        require $templatePath;
     }
 }

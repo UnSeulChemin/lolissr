@@ -24,7 +24,7 @@ class MainController extends Controller
         $averageNote = $mangaModel->averageNote();
         $topLongestSeries = $mangaModel->topLongestSeries(5);
 
-        $this->render('layout/index', [
+        $this->render('main/index', [
             'totalTomes' => $totalTomes,
             'totalSeries' => $totalSeries,
             'lastTome' => $lastTome,
