@@ -1,30 +1,30 @@
 <?php
+
 namespace App\Models\Trait;
 
 use DateTimeImmutable;
 
-Trait CreatedAtTrait
+trait CreatedAtTrait
 {
-    /* column created_at */
-    protected $created_at;
+    /**
+     * date de création
+     */
+    protected ?DateTimeImmutable $created_at = null;
 
     /**
-     * getter created_at
-     * @return DateTimeImmutable
+     * retourne created_at
      */
-    public function getCreated_at(): DateTimeImmutable
+    public function getCreatedAt(): ?DateTimeImmutable
     {
         return $this->created_at;
     }
 
     /**
-     * setter created_at
-     * @param string $created_at
-     * @return self
+     * définit created_at
      */
-    public function setCreated_at(string $created_at): self
+    public function setCreatedAt(string $created_at): self
     {
-        $this->created_at = $created_at;
+        $this->created_at = new DateTimeImmutable($created_at);
         return $this;
     }
 }
