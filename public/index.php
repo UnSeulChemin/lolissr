@@ -8,6 +8,11 @@ require_once ROOT . '/Autoloader.php';
 
 \App\Autoloader::register();
 
+/*
+|--------------------------------------------------------------------------
+| Chargement du fichier .env
+|--------------------------------------------------------------------------
+*/
 $envFile = ROOT . '/.env';
 
 if (is_file($envFile))
@@ -34,6 +39,11 @@ if (is_file($envFile))
     }
 }
 
+/*
+|--------------------------------------------------------------------------
+| Gestion du debug
+|--------------------------------------------------------------------------
+*/
 $debug = \App\Core\Functions::env('APP_DEBUG', false);
 
 if ($debug)
@@ -70,6 +80,11 @@ set_error_handler(function (
     return true;
 });
 
+/*
+|--------------------------------------------------------------------------
+| Gestion globale des exceptions
+|--------------------------------------------------------------------------
+*/
 set_exception_handler(function (\Throwable $exception): void {
     \App\Core\Logger::error(
         'Uncaught Exception: '
@@ -94,29 +109,49 @@ set_exception_handler(function (\Throwable $exception): void {
         );
     }
 
-    exit('Une erreur interne est survenue.');
+    $controller = new \App\Controllers\MainController();
+    $controller->renderError('500', 500);
 });
 
+/*
+|--------------------------------------------------------------------------
+| Gestion des erreurs fatales
+|--------------------------------------------------------------------------
+*/
 register_shutdown_function(function (): void {
     $error = error_get_last();
 
-    if ($error !== null)
+    if ($error === null)
     {
-        \App\Core\Logger::error(
-            "Fatal Error [{$error['type']}] {$error['message']} dans {$error['file']} à la ligne {$error['line']}"
-        );
-
-        if (\App\Core\Functions::appDebug())
-        {
-            echo 'Fatal Error : '
-                . $error['message']
-                . ' dans '
-                . $error['file']
-                . ' à la ligne '
-                . $error['line'];
-        }
+        return;
     }
+
+    \App\Core\Logger::error(
+        "Fatal Error [{$error['type']}] {$error['message']} dans {$error['file']} à la ligne {$error['line']}"
+    );
+
+    http_response_code(500);
+
+    if (\App\Core\Functions::appDebug())
+    {
+        echo 'Fatal Error : '
+            . $error['message']
+            . ' dans '
+            . $error['file']
+            . ' à la ligne '
+            . $error['line'];
+
+        return;
+    }
+
+    $controller = new \App\Controllers\MainController();
+    $controller->renderError('500', 500);
 });
 
+/*
+|--------------------------------------------------------------------------
+| Lancement de l'application
+|--------------------------------------------------------------------------
+*/
 $app = new \App\Core\Main();
 $app->start();

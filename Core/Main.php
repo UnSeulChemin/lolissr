@@ -105,7 +105,7 @@ class Main
         | Page introuvable
         |--------------------------------------------------------------------------
         */
-        http_response_code(404);
-        exit('Page introuvable');
+        $controller = new \App\Controllers\MainController();
+        $controller->renderError('404', 404);
     }
 }

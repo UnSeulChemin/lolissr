@@ -25,7 +25,7 @@ abstract class Controller
 
         $viewPath = ROOT . '/Views/' . $file . '.php';
 
-        if (!file_exists($viewPath))
+        if (!is_file($viewPath))
         {
             http_response_code(404);
             exit('Vue introuvable : ' . $file);
@@ -37,9 +37,39 @@ abstract class Controller
 
         $templatePath = ROOT . '/Views/' . $this->template . '.php';
 
-        if (!file_exists($templatePath))
+        if (!is_file($templatePath))
         {
             http_response_code(500);
+            exit('Template introuvable : ' . $this->template);
+        }
+
+        require $templatePath;
+    }
+
+    public function renderError(string $file, int $statusCode, array $data = []): void
+    {
+        http_response_code($statusCode);
+
+        extract($data, EXTR_SKIP);
+
+        $title = $this->title;
+        $basePath = $this->basePath;
+
+        $viewPath = ROOT . '/Views/errors/' . $file . '.php';
+
+        if (!is_file($viewPath))
+        {
+            exit('Vue erreur introuvable : ' . $file);
+        }
+
+        ob_start();
+        require $viewPath;
+        $content = ob_get_clean();
+
+        $templatePath = ROOT . '/Views/' . $this->template . '.php';
+
+        if (!is_file($templatePath))
+        {
             exit('Template introuvable : ' . $this->template);
         }
 
