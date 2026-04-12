@@ -4,12 +4,11 @@ namespace App\Controllers;
 class MainController extends Controller
 {
     /**
-     * route ./
-     * @return void
+     * page d'accueil
+     * route : /
      */
     public function index(): void
     {
-        // view
         $this->render('layouts/index');
     }
 }
