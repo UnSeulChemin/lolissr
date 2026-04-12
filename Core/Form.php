@@ -4,7 +4,9 @@ namespace App\Core;
 
 class Form
 {
-    /* html du formulaire */
+    /**
+     * html du formulaire
+     */
     private string $formCode = '';
 
     /**
@@ -20,7 +22,7 @@ class Form
      */
     public static function validate(?array $form = null, ?array $fields = null): bool
     {
-        if (!self::checkerArray($form, $fields))
+        if (!is_array($form) || !is_array($fields))
         {
             return false;
         }
@@ -37,56 +39,12 @@ class Form
     }
 
     /**
-     * valide email
-     */
-    public static function validateEmail(?array $form = null, ?array $emails = null): bool
-    {
-        if (!self::checkerArray($form, $emails))
-        {
-            return false;
-        }
-
-        foreach ($emails as $email)
-        {
-            if (!isset($form[$email]) || !filter_var($form[$email], FILTER_VALIDATE_EMAIL))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * valide mot de passe
-     */
-    public static function validatePassword(?array $form = null, ?array $passwords = null): bool
-    {
-        if (!self::checkerArray($form, $passwords))
-        {
-            return false;
-        }
-
-        foreach ($passwords as $password)
-        {
-            $passwordPattern = "/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?([^\w\s]|[_])).{5,}$/";
-
-            if (!isset($form[$password]) || !preg_match($passwordPattern, $form[$password]))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
      * ouvre le form
      */
     public function startForm(string $action = '#', string $method = 'post', array $attributes = []): self
     {
         $action = htmlspecialchars($action, ENT_QUOTES, 'UTF-8');
-        $method = strtolower($method);
+        $method = strtolower(trim($method));
 
         $this->formCode .= "<form action=\"{$action}\" method=\"{$method}\"";
         $this->formCode .= $attributes ? $this->addAttributes($attributes) : '';
@@ -236,13 +194,5 @@ class Form
         }
 
         return $string;
-    }
-
-    /**
-     * vérifie que form et fields sont bien des tableaux
-     */
-    private static function checkerArray(?array $form, ?array $fields): bool
-    {
-        return is_array($form) && is_array($fields);
     }
 }
