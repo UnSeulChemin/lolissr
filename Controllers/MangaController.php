@@ -6,6 +6,19 @@ use App\Models\MangaModel;
 class MangaController extends Controller
 {
     /**
+     * nombre d'éléments par page
+     */
+    private int $pagination = 8;
+
+    /**
+     * retourne une instance du model manga
+     */
+    private function mangaModel(): MangaModel
+    {
+        return new MangaModel();
+    }
+
+    /**
      * /manga
      * accueil manga
      */
@@ -24,15 +37,15 @@ class MangaController extends Controller
      */
     public function collection(?string $slug = null, ?string $numero = null): void
     {
-        $mangaModel = new MangaModel;
+        $mangaModel = $this->mangaModel();
 
         /* collection générale */
         if ($slug === null || $slug === '')
         {
             $page = 1;
 
-            $mangas = $mangaModel->findAllFirstTomes('id DESC', 8, $page);
-            $compteur = $mangaModel->countFirstTomesPaginate(8);
+            $mangas = $mangaModel->findAllFirstTomes('id DESC', $this->pagination, $page);
+            $compteur = $mangaModel->countFirstTomesPaginate($this->pagination);
 
             $this->title = 'Manga | Collection';
             $this->render('manga/collection', ['mangas' => $mangas, 'compteur' => $compteur, 'titleFilter' => null]);
@@ -51,7 +64,6 @@ class MangaController extends Controller
                 exit('Manga introuvable');
             }
 
-            /* slug propre depuis la db */
             $goodSlug = strtolower(trim($manga->slug));
 
             if ($goodSlug !== strtolower(trim($slug)))
@@ -85,16 +97,11 @@ class MangaController extends Controller
      */
     public function page(string $id): void
     {
-        $id = (int) $id;
+        $id = max(1, (int) $id);
 
-        if ($id < 1)
-        {
-            $id = 1;
-        }
-
-        $mangaModel = new MangaModel;
-        $mangas = $mangaModel->findAllFirstTomes('id DESC', 8, $id);
-        $compteur = $mangaModel->countFirstTomesPaginate(8);
+        $mangaModel = $this->mangaModel();
+        $mangas = $mangaModel->findAllFirstTomes('id DESC', $this->pagination, $id);
+        $compteur = $mangaModel->countFirstTomesPaginate($this->pagination);
 
         $this->title = 'Manga | Collection Page ' . $id;
         $this->render('manga/collection', ['mangas' => $mangas, 'compteur' => $compteur, 'titleFilter' => null]);
@@ -124,31 +131,26 @@ class MangaController extends Controller
      */
     public function ajouterTraitement(): void
     {
-        /* refuse accès direct */
         if ($_SERVER['REQUEST_METHOD'] !== 'POST')
         {
             header('Location: ' . $this->basePath . 'manga/ajouter');
             exit;
         }
 
-        /* récup données */
         $livre = trim($_POST['livre'] ?? '');
         $slug = strtolower(trim($_POST['slug'] ?? ''));
         $numero = (int) ($_POST['numero'] ?? 0);
 
-        /* validation form */
         if ($livre === '' || $slug === '' || $numero <= 0 || !isset($_FILES['image']))
         {
             exit('Formulaire incomplet');
         }
 
-        /* vérif upload */
         if ($_FILES['image']['error'] !== UPLOAD_ERR_OK || empty($_FILES['image']['name']))
         {
             exit('Erreur fichier');
         }
 
-        /* extension */
         $extension = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
 
         if ($extension === 'jpeg')
@@ -163,7 +165,6 @@ class MangaController extends Controller
             exit('Format image non autorisé');
         }
 
-        /* nom du thumbnail */
         $thumbnail = preg_replace('/[^A-Za-z0-9\- ]/', '', strtoupper($livre));
         $thumbnail .= ' ' . str_pad((string) $numero, 2, '0', STR_PAD_LEFT);
         $thumbnail = preg_replace('/\s+/', ' ', $thumbnail);
@@ -175,8 +176,6 @@ class MangaController extends Controller
         }
 
         $nomFichier = $thumbnail . '.' . $extension;
-
-        /* dossier image */
         $dossier = dirname(__DIR__) . '/../public/images/mangas/thumbnail/';
 
         if (!is_dir($dossier))
@@ -185,28 +184,23 @@ class MangaController extends Controller
         }
 
         $destination = $dossier . $nomFichier;
+        $mangaModel = $this->mangaModel();
 
-        /* évite doublon image */
         if (file_exists($destination))
         {
             exit('Une image avec ce nom existe déjà');
         }
 
-        $mangaModel = new MangaModel;
-
-        /* évite doublon manga */
         if ($mangaModel->findOneBySlugAndNumero($slug, $numero))
         {
             exit('Ce manga existe déjà');
         }
 
-        /* déplacement image */
         if (!move_uploaded_file($_FILES['image']['tmp_name'], $destination))
         {
             exit('Erreur lors de l\'upload');
         }
 
-        /* insert db */
         $mangaModel->insert([
             'thumbnail' => $thumbnail,
             'extension' => $extension,
@@ -233,7 +227,7 @@ class MangaController extends Controller
         $slug = strtolower(trim($slug));
         $numero = (int) $numero;
 
-        $mangaModel = new MangaModel;
+        $mangaModel = $this->mangaModel();
         $manga = $mangaModel->findOneBySlugAndNumero($slug, $numero);
 
         if (!$manga)
@@ -285,7 +279,7 @@ class MangaController extends Controller
             exit('Note invalide');
         }
 
-        $mangaModel = new MangaModel;
+        $mangaModel = $this->mangaModel();
         $manga = $mangaModel->findOneBySlugAndNumero($slug, $numero);
 
         if (!$manga)
