@@ -24,7 +24,6 @@ class Functions
     public static function basePath(): string
     {
         $config = self::config();
-
         return $config['base_path'] ?? '/';
     }
 
@@ -34,7 +33,6 @@ class Functions
     public static function siteName(): string
     {
         $config = self::config();
-
         return $config['site_name'] ?? 'Site';
     }
 
@@ -44,7 +42,42 @@ class Functions
     public static function pagination(): int
     {
         $config = self::config();
-
         return (int) ($config['pagination'] ?? 8);
+    }
+
+    /**
+     * retourne l'hôte mysql
+     */
+    public static function dbHost(): string
+    {
+        $config = self::config();
+        return $config['db_host'] ?? 'localhost';
+    }
+
+    /**
+     * retourne le nom de la base
+     */
+    public static function dbName(): string
+    {
+        $config = self::config();
+        return $config['db_name'] ?? '';
+    }
+
+    /**
+     * retourne l'utilisateur mysql
+     */
+    public static function dbUser(): string
+    {
+        $config = self::config();
+        return $config['db_user'] ?? '';
+    }
+
+    /**
+     * retourne le mot de passe mysql
+     */
+    public static function dbPass(): string
+    {
+        $config = self::config();
+        return $config['db_pass'] ?? '';
     }
 }

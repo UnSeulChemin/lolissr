@@ -9,6 +9,7 @@
 # git add .
 
 ### HIDE ###
+config.php
 Core/Database.php
 Core/Save/
 public/images

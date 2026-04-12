@@ -21,4 +21,12 @@ return [
      */
     'pagination' => 8,
 
+    /**
+     * configuration base de données
+     */
+    'db_host' => 'localhost',
+    'db_name' => 'lolissr',
+    'db_user' => 'UnSeulChemin',
+    'db_pass' => 'N0zenith1___',
+
 ];
