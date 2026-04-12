@@ -121,13 +121,6 @@ echo $form
         </span>
     </p>
 
-    <div class="form-actions-secondary">
-        <a class="link-section"
-           href="<?= $basePath; ?>manga/collection/<?= rawurlencode($manga->slug) ?>/<?= (int) $manga->numero ?>">
-            Retour
-        </a>
-    </div>
-
 </section>
 
 <script>
