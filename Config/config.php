@@ -8,12 +8,11 @@ return [
 
     /**
      * chemin de base du projet
-     * utile pour générer les URLs
      */
     'base_path' => '/lolissr/',
 
     /**
-     * nom global du site
+     * nom du site
      */
     'site_name' => 'LoliSSR',
 

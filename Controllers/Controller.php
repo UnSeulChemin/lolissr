@@ -6,29 +6,32 @@ use App\Core\Functions;
 abstract class Controller
 {
     /**
-     * template principal utilisé (base.php)
+     * template principal utilisé pour le rendu
      */
     protected string $template = 'base';
 
     /**
-     * titre par défaut
+     * titre de la page
      */
-    protected string $title = 'LoliSSR';
+    protected string $title;
 
     /**
-     * chemin de base du site (/lolissr/)
+     * chemin de base du projet
      */
     protected string $basePath;
 
     /**
-     * constructeur
-     * initialise le basePath depuis la config
+     * initialise les données communes aux controllers
      */
     public function __construct()
     {
         $this->basePath = Functions::basePath();
+        $this->title = Functions::siteName();
     }
 
+    /**
+     * affiche une vue dans le template principal
+     */
     public function render(string $file, array $data = []): void
     {
         extract($data, EXTR_SKIP);
@@ -36,7 +39,6 @@ abstract class Controller
         $title = $this->title;
         $basePath = $this->basePath;
 
-        /* chemin vue */
         $viewPath = ROOT . '/Views/' . $file . '.php';
 
         if (!file_exists($viewPath))
@@ -46,12 +48,9 @@ abstract class Controller
         }
 
         ob_start();
-
         require_once $viewPath;
-
         $content = ob_get_clean();
 
-        /* chemin template */
         $templatePath = ROOT . '/Views/' . $this->template . '.php';
 
         if (!file_exists($templatePath))
