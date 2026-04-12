@@ -46,6 +46,7 @@ class MangaController extends Controller
         /* page détail */
         if ($numero !== null && $numero !== '')
         {
+            $numero = (int) $numero;
             $manga = $mangaModel->findOneBySlugAndNumero($slug, $numero);
 
             if (!$manga)
@@ -86,6 +87,11 @@ class MangaController extends Controller
     public function page(string $id): void
     {
         $id = (int) $id;
+
+        if ($id < 1)
+        {
+            $id = 1;
+        }
 
         $mangaModel = new MangaModel;
         $mangas = $mangaModel->findAllFirstTomes('id DESC', 8, $id);
@@ -204,9 +210,12 @@ class MangaController extends Controller
         $mangaModel->insert([
             'thumbnail' => $thumbnail,
             'extension' => $extension,
-            'slug' => strtolower($slug),
+            'slug' => strtolower(trim($slug)),
             'livre' => $livre,
-            'numero' => $numero
+            'numero' => $numero,
+            'jacquette' => null,
+            'livre_note' => null,
+            'note' => null
         ]);
 
         $_SESSION['success'] = 'Manga ajouté avec succès';
@@ -238,7 +247,8 @@ class MangaController extends Controller
     }
 
     /**
-     * update note
+     * update jacquette + livre_note
+     * note = calcul automatique
      */
     public function update(string $slug, string $numero): void
     {
@@ -250,24 +260,24 @@ class MangaController extends Controller
             exit;
         }
 
-        $note = $_POST['note'] ?? null;
+        $jacquette = $_POST['jacquette'] ?? null;
+        $livreNote = $_POST['livre_note'] ?? null;
 
-        if ($note === '')
+        if ($jacquette === '' || $livreNote === '')
         {
-            $note = null;
+            exit('Formulaire incomplet');
         }
-        else
-        {
-            $note = (int) $note;
 
-            if ($note < 1 || $note > 5)
-            {
-                exit('Note invalide');
-            }
+        $jacquette = (int) $jacquette;
+        $livreNote = (int) $livreNote;
+
+        if ($jacquette < 1 || $jacquette > 5 || $livreNote < 1 || $livreNote > 5)
+        {
+            exit('Note invalide');
         }
 
         $mangaModel = new MangaModel;
-        $mangaModel->updateNote($slug, $numero, $note);
+        $mangaModel->updateNotes($slug, $numero, $jacquette, $livreNote);
 
         header('Location: ' . $this->basePath . 'manga/collection/' . $slug . '/' . $numero);
         exit;

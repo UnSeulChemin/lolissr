@@ -1,30 +1,45 @@
 .card-content
 {
     width: 20%;
-
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 0;
+
+    border-radius: 6px;
+    overflow: hidden;
+
+    transition: outline 0.15s ease, transform 0.15s ease;
+}
+
+.card-content:hover
+{
+    outline: 6px solid var(--background-color-header);
+    outline-offset: 0;
 }
 
 .card-figure
 {
     width: 100%;
     height: 480px;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     background: var(--background-color-body);
-
     position: relative;
+    box-sizing: border-box;
+
+    border-radius: 6px 6px 0 0;
 }
 
-.card-figure:hover
+.card-content:hover .badge-note
 {
-    border: 3px solid var(--background-color-header);
+    transform: scale(1.08);
 }
 
-.badge-count {
+.badge-count
+{
     position: absolute;
     bottom: 8px;
     left: 8px;
@@ -33,6 +48,10 @@
     height: 32px;
     padding: 0 6px;
 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     background: linear-gradient(
         135deg,
         #7b2cff,
@@ -40,77 +59,49 @@
     );
 
     color: white;
-
     font-size: 13px;
     font-weight: bold;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
     border-radius: 50px;
-
     border: 2px solid white;
 
-    box-shadow:
-        0 4px 10px rgba(0,0,0,0.4);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
 }
 
-.badge-note {
+.badge-note
+{
     position: absolute;
-    top: 8px;
-    right: 8px;
+    top: 12px;
+    right: 12px;
 
-    min-width: 32px;
-    height: 32px;
-    padding: 0 6px;
-
-    color: white;
-
-    font-size: 13px;
-    font-weight: bold;
+    width: 48px;
+    height: 48px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 800;
+    color: white;
 
-    border: 2px solid white;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.85);
 
     box-shadow:
-        0 4px 10px rgba(0,0,0,0.4);
+        0 8px 18px rgba(0,0,0,0.55),
+        0 2px 6px rgba(0,0,0,0.4);
+
+    backdrop-filter: blur(4px);
+
+    transform-origin: center;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    z-index: 2;
 }
 
-/* ⭐ 1 */
-.note-1 {
-    background: linear-gradient(
-        135deg,
-        #666,
-        #999
-    );
-}
-
-/* ⭐⭐ 2 */
-.note-2 {
-    background: linear-gradient(
-        135deg,
-        #2c7bff,
-        #4cc9ff
-    );
-}
-
-/* ⭐⭐⭐ 3 */
-.note-3 {
-    background: linear-gradient(
-        135deg,
-        #7b2cff,
-        #c44cff
-    );
-}
-
-/* ⭐⭐⭐⭐ 4 */
-.note-4 {
+/* note basse → orange */
+.note-low
+{
     background: linear-gradient(
         135deg,
         #ff7b2c,
@@ -118,8 +109,19 @@
     );
 }
 
-/* ⭐⭐⭐⭐⭐ 5 🔥 FLASHY */
-.note-5 {
+/* note moyenne → violet */
+.note-mid
+{
+    background: linear-gradient(
+        135deg,
+        #7b2cff,
+        #c44cff
+    );
+}
+
+/* note haute → rouge premium */
+.note-good
+{
     background: linear-gradient(
         135deg,
         #ff0000,
@@ -127,30 +129,32 @@
     );
 
     box-shadow:
-        0 0 10px rgba(255,0,0,0.8),
-        0 4px 12px rgba(0,0,0,0.5);
+        0 0 12px rgba(255,0,0,0.7),
+        0 8px 18px rgba(0,0,0,0.6);
+
+    animation: glow-red 1.3s infinite alternate;
 }
 
-.note-5 {
-    animation: glow-red 1.2s infinite alternate;
-}
-
-@keyframes glow-red {
-    from {
+@keyframes glow-red
+{
+    from
+    {
         box-shadow:
-            0 0 6px rgba(255,0,0,0.6),
-            0 4px 10px rgba(0,0,0,0.4);
+            0 0 6px rgba(255,0,0,0.5),
+            0 8px 18px rgba(0,0,0,0.55);
     }
 
-    to {
+    to
+    {
         box-shadow:
-            0 0 14px rgba(255,0,0,1),
-            0 4px 14px rgba(0,0,0,0.5);
+            0 0 16px rgba(255,0,0,1),
+            0 8px 22px rgba(0,0,0,0.65);
     }
 }
 
 .card-banner
 {
+    margin: 0;
     letter-spacing: 1px;
     word-spacing: 1px;
     color: var(--color-link);
@@ -162,7 +166,7 @@
     text-overflow: ellipsis;
 
     padding: 10px;
-    border-radius: 0 0 5px 5px;
+    border-radius: 0;
 }
 
 /* Character */
@@ -179,9 +183,8 @@
 .card-character-img
 {
     width: 40%;
-
     display: flex;
-    justify-content: center; /* centre horizontal */
+    justify-content: center;
 }
 
 .card-character-img-inner
@@ -213,7 +216,6 @@
     box-sizing: border-box;
 }
 
-/* blocs larges */
 .card-character-value p,
 .card-character-value a
 {

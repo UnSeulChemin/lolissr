@@ -6,12 +6,21 @@
 
             <div class="card-character-img-inner">
 
-                <img 
+                <img
                     alt="<?= htmlspecialchars($manga->livre) ?>"
-                    src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($manga->thumbnail . "." . $manga->extension) ?>">
+                    src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($manga->thumbnail . '.' . $manga->extension) ?>">
 
                 <?php if ($manga->note !== null): ?>
-                    <span class="badge-note note-<?= (int) $manga->note ?>">
+                    <?php
+                        $noteClass = 'note-mid';
+
+                        if ((int) $manga->note >= 8) {
+                            $noteClass = 'note-good';
+                        } elseif ((int) $manga->note <= 4) {
+                            $noteClass = 'note-low';
+                        }
+                    ?>
+                    <span class="badge-note <?= $noteClass; ?>">
                         <?= (int) $manga->note ?>
                     </span>
                 <?php endif; ?>
@@ -25,9 +34,36 @@
             <p class="card-banner table-colonne">
                 Livre
             </p>
-
             <p class="card-banner">
                 <?= htmlspecialchars($manga->livre) ?>
+            </p>
+
+            <p class="card-banner table-colonne">
+                Tome
+            </p>
+            <p class="card-banner">
+                <?= (int) $manga->numero ?>
+            </p>
+
+            <p class="card-banner table-colonne">
+                Jacquette
+            </p>
+            <p class="card-banner">
+                <?= $manga->jacquette !== null ? (int) $manga->jacquette . '/5' : 'Non noté' ?>
+            </p>
+
+            <p class="card-banner table-colonne">
+                Livre
+            </p>
+            <p class="card-banner">
+                <?= $manga->livre_note !== null ? (int) $manga->livre_note . '/5' : 'Non noté' ?>
+            </p>
+
+            <p class="card-banner table-colonne">
+                Note totale
+            </p>
+            <p class="card-banner">
+                <?= $manga->note !== null ? (int) $manga->note : 'Non calculée' ?>
             </p>
 
             <a class="link-edit"

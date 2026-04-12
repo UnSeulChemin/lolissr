@@ -176,7 +176,6 @@ class Model
         return $this->requete($sql, $values) !== false;
     }
 
-
     /**
      * update générique
      */

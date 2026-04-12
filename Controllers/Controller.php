@@ -5,23 +5,27 @@ use App\Core\Functions;
 
 abstract class Controller
 {
-    protected $template = 'base';
-    protected $title = 'LoliSSR';
+    protected string $template = 'base';
+    protected string $title = 'LoliSSR';
+    protected string $basePath;
+
+    public function __construct()
+    {
+        $this->basePath = Functions::basePath();
+    }
 
     public function render(string $file, array $data = []): void
     {
         extract($data);
 
         $title = $this->title;
-
-        // base path global
-        $basePath = Functions::basePath();
+        $basePath = $this->basePath;
 
         ob_start();
-        require_once(ROOT.'/Views/'.$file.'.php');
+        require_once(ROOT . '/Views/' . $file . '.php');
 
         $content = ob_get_clean();
 
-        require_once(ROOT.'/Views/'.$this->template.'.php');
+        require_once(ROOT . '/Views/' . $this->template . '.php');
     }
 }

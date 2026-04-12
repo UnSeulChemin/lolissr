@@ -26,7 +26,16 @@
                     <?php endif; ?>
 
                     <?php if ($isCollection && $manga->note !== null): ?>
-                        <span class="badge-note note-<?= (int) $manga->note ?>">
+                        <?php
+                            $noteClass = 'note-mid';
+
+                            if ((int) $manga->note >= 8) {
+                                $noteClass = 'note-good';
+                            } elseif ((int) $manga->note <= 4) {
+                                $noteClass = 'note-low';
+                            }
+                        ?>
+                        <span class="badge-note <?= $noteClass; ?>">
                             <?= (int) $manga->note ?>
                         </span>
                     <?php endif; ?>

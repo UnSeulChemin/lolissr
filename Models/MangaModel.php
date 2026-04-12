@@ -15,9 +15,10 @@ class MangaModel extends Model
     protected string $extension;
     protected string $slug;
     protected int $numero;
+    protected ?int $jacquette = null;
+    protected ?int $livre_note = null;
     protected ?int $note = null;
     protected string $livre;
-
 
     /**
      * nb total de pages pour les tomes 1
@@ -38,7 +39,6 @@ class MangaModel extends Model
         return (int) ceil(($result->total ?? 0) / $eachPerPage);
     }
 
-
     /**
      * récup tous les tomes 1 paginés
      * + total de tomes par série
@@ -51,8 +51,7 @@ class MangaModel extends Model
 
         $orderByAutorises = ['id DESC', 'id ASC'];
 
-        if (!in_array($orderBy, $orderByAutorises, true))
-        {
+        if (!in_array($orderBy, $orderByAutorises, true)) {
             $orderBy = 'id DESC';
         }
 
@@ -72,7 +71,6 @@ class MangaModel extends Model
         ])->fetchAll();
     }
 
-
     /**
      * récup tous les tomes d'un slug
      */
@@ -88,11 +86,10 @@ class MangaModel extends Model
         ])->fetchAll();
     }
 
-
     /**
      * récup un manga précis via slug + numero
      */
-    public function findOneBySlugAndNumero(string $slug, int $numero): object|bool
+    public function findOneBySlugAndNumero(string $slug, int $numero): object|false
     {
         return $this->requete(
             "SELECT *
@@ -106,12 +103,21 @@ class MangaModel extends Model
         )->fetch();
     }
 
-
     /**
      * insert manga
      */
     public function insert(array $datas): bool
     {
+        $note = null;
+
+        if (
+            isset($datas['jacquette'], $datas['livre_note'])
+            && $datas['jacquette'] !== null
+            && $datas['livre_note'] !== null
+        ) {
+            $note = (int) $datas['jacquette'] + (int) $datas['livre_note'];
+        }
+
         return $this->requete(
             "INSERT INTO {$this->table} (
                 thumbnail,
@@ -119,6 +125,9 @@ class MangaModel extends Model
                 slug,
                 livre,
                 numero,
+                jacquette,
+                livre_note,
+                note,
                 created_at
             )
             VALUES (
@@ -127,26 +136,39 @@ class MangaModel extends Model
                 :slug,
                 :livre,
                 :numero,
+                :jacquette,
+                :livre_note,
+                :note,
                 NOW()
             )",
             [
                 'thumbnail' => $datas['thumbnail'],
                 'extension' => $datas['extension'],
-                'slug' => $datas['slug'],
-                'livre' => $datas['livre'],
-                'numero' => $datas['numero']
+                'slug' => strtolower(trim($datas['slug'])),
+                'livre' => trim($datas['livre']),
+                'numero' => (int) $datas['numero'],
+                'jacquette' => $datas['jacquette'] ?? null,
+                'livre_note' => $datas['livre_note'] ?? null,
+                'note' => $note
             ]
         ) !== false;
     }
 
-
     /**
-     * update note
+     * update jacquette + livre_note + note auto
      */
-    public function updateNote(string $slug, int $numero, ?int $note): bool
+    public function updateNotes(string $slug, int $numero, ?int $jacquette, ?int $livre_note): bool
     {
+        $note = null;
+
+        if ($jacquette !== null && $livre_note !== null) {
+            $note = $jacquette + $livre_note;
+        }
+
         return $this->update(
             [
+                'jacquette' => $jacquette,
+                'livre_note' => $livre_note,
                 'note' => $note
             ],
             [
@@ -155,7 +177,6 @@ class MangaModel extends Model
             ]
         );
     }
-
 
     public function getId(): int
     {
@@ -168,7 +189,6 @@ class MangaModel extends Model
         return $this;
     }
 
-
     public function getThumbnail(): string
     {
         return $this->thumbnail;
@@ -179,7 +199,6 @@ class MangaModel extends Model
         $this->thumbnail = $thumbnail;
         return $this;
     }
-
 
     public function getExtension(): string
     {
@@ -192,7 +211,6 @@ class MangaModel extends Model
         return $this;
     }
 
-
     public function getSlug(): string
     {
         return $this->slug;
@@ -203,7 +221,6 @@ class MangaModel extends Model
         $this->slug = $slug;
         return $this;
     }
-
 
     public function getNumero(): int
     {
@@ -216,6 +233,27 @@ class MangaModel extends Model
         return $this;
     }
 
+    public function getJacquette(): ?int
+    {
+        return $this->jacquette;
+    }
+
+    public function setJacquette(?int $jacquette): self
+    {
+        $this->jacquette = $jacquette;
+        return $this;
+    }
+
+    public function getLivreNote(): ?int
+    {
+        return $this->livre_note;
+    }
+
+    public function setLivreNote(?int $livre_note): self
+    {
+        $this->livre_note = $livre_note;
+        return $this;
+    }
 
     public function getNote(): ?int
     {
@@ -227,7 +265,6 @@ class MangaModel extends Model
         $this->note = $note;
         return $this;
     }
-
 
     public function getLivre(): string
     {
