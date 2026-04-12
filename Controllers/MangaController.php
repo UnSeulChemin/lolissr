@@ -53,7 +53,7 @@ class MangaController extends Controller
             $compteur = $mangaModel->countFirstTomesPaginate($pagination);
 
             $this->title = 'Manga | Collection';
-            $this->render('manga/collection', ['mangas' => $mangas, 'compteur' => $compteur, 'titleFilter' => null]);
+            $this->render('manga/collection', ['mangas' => $mangas, 'compteur' => $compteur, 'slugFilter' => null]);
             return;
         }
 
@@ -95,7 +95,7 @@ class MangaController extends Controller
         }
 
         $this->title = 'Manga | ' . $mangas[0]->livre;
-        $this->render('manga/collection', ['mangas' => $mangas, 'titleFilter' => $slug]);
+        $this->render('manga/collection', ['mangas' => $mangas, 'slugFilter' => $slug]);
     }
 
     /**
@@ -112,7 +112,7 @@ class MangaController extends Controller
         $compteur = $mangaModel->countFirstTomesPaginate($pagination);
 
         $this->title = 'Manga | Collection Page ' . $id;
-        $this->render('manga/collection', ['mangas' => $mangas, 'compteur' => $compteur, 'titleFilter' => null]);
+        $this->render('manga/collection', ['mangas' => $mangas, 'compteur' => $compteur, 'slugFilter' => null]);
     }
 
     /**

@@ -17,5 +17,7 @@
     <?= $content ?>
 </main>
 
+<script src="<?= $basePath; ?>public/js/app.js"></script>
+
 </body>
 </html>

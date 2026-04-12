@@ -12,13 +12,16 @@
 
                 <?php if ($manga->note !== null): ?>
                     <?php
-                        $noteClass = 'note-mid';
+                    $noteClass = 'note-mid';
 
-                        if ((int) $manga->note >= 8) {
-                            $noteClass = 'note-good';
-                        } elseif ((int) $manga->note <= 4) {
-                            $noteClass = 'note-low';
-                        }
+                    if ((int) $manga->note >= 8)
+                    {
+                        $noteClass = 'note-good';
+                    }
+                    elseif ((int) $manga->note <= 4)
+                    {
+                        $noteClass = 'note-low';
+                    }
                     ?>
                     <span class="badge-note <?= $noteClass; ?>">
                         <?= (int) $manga->note ?>
@@ -42,7 +45,7 @@
                 Tome
             </p>
             <p class="card-banner">
-                <?= (int) $manga->numero ?>
+                <?= str_pad((string) ((int) $manga->numero), 2, '0', STR_PAD_LEFT) ?>
             </p>
 
             <p class="card-banner table-colonne">
@@ -53,7 +56,7 @@
             </p>
 
             <p class="card-banner table-colonne">
-                Livre
+                État du livre
             </p>
             <p class="card-banner">
                 <?= $manga->livre_note !== null ? (int) $manga->livre_note . '/5' : 'Non noté' ?>
@@ -63,7 +66,7 @@
                 Note totale
             </p>
             <p class="card-banner">
-                <?= $manga->note !== null ? (int) $manga->note : 'Non calculée' ?>
+                <?= $manga->note !== null ? (int) $manga->note . '/10' : 'Non calculée' ?>
             </p>
 
             <a class="link-edit"
@@ -78,7 +81,7 @@
     <div class="m-t-30">
         <a class="link-section"
            href="<?= $basePath; ?>manga/collection/<?= htmlspecialchars($manga->slug) ?>">
-            Back
+            Retour
         </a>
     </div>
 

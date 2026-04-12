@@ -12,7 +12,7 @@ trait CreatedAtTrait
     protected ?DateTimeImmutable $created_at = null;
 
     /**
-     * retourne created_at
+     * retourne la date de création
      */
     public function getCreatedAt(): ?DateTimeImmutable
     {
@@ -20,7 +20,7 @@ trait CreatedAtTrait
     }
 
     /**
-     * définit created_at
+     * définit la date de création
      */
     public function setCreatedAt(string $created_at): self
     {

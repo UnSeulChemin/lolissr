@@ -1,4 +1,17 @@
-<?php $isCollection = isset($titleFilter) && !empty($titleFilter); ?>
+<?php
+$isCollection = isset($slugFilter) && !empty($slugFilter);
+$currentPage = 1;
+
+if (!$isCollection)
+{
+    $currentPage = (int) basename($_GET['p'] ?? '1');
+
+    if ($currentPage < 1)
+    {
+        $currentPage = 1;
+    }
+}
+?>
 
 <section class="section-content">
 
@@ -21,19 +34,22 @@
 
                     <?php if (!$isCollection): ?>
                         <span class="badge-count">
-                            <?= htmlspecialchars($manga->total) ?>
+                            <?= (int) $manga->total ?>
                         </span>
                     <?php endif; ?>
 
                     <?php if ($isCollection && $manga->note !== null): ?>
                         <?php
-                            $noteClass = 'note-mid';
+                        $noteClass = 'note-mid';
 
-                            if ((int) $manga->note >= 8) {
-                                $noteClass = 'note-good';
-                            } elseif ((int) $manga->note <= 4) {
-                                $noteClass = 'note-low';
-                            }
+                        if ((int) $manga->note >= 8)
+                        {
+                            $noteClass = 'note-good';
+                        }
+                        elseif ((int) $manga->note <= 4)
+                        {
+                            $noteClass = 'note-low';
+                        }
                         ?>
                         <span class="badge-note <?= $noteClass; ?>">
                             <?= (int) $manga->note ?>
@@ -54,22 +70,13 @@
 
     </section>
 
-    <?php if (!$isCollection && isset($compteur)) : ?>
+    <?php if (!$isCollection && isset($compteur)): ?>
 
         <nav class="flex-center-center-gap-25 m-t-30">
 
-            <?php
-            $currentPage = $_GET['p'] ?? '1';
-            $currentPage = basename($currentPage);
+            <?php for ($getId = 1; $getId <= $compteur; $getId++): ?>
 
-            if (!is_numeric($currentPage)) {
-                $currentPage = 1;
-            }
-
-            for ($getId = 1; $getId <= $compteur; $getId++):
-            ?>
-
-                <a class="link-paginate <?= ($currentPage == $getId) ? 'active' : '' ?>"
+                <a class="link-paginate <?= ($currentPage === $getId) ? 'active' : '' ?>"
                    href="<?= $basePath; ?>manga/page/<?= $getId; ?>">
                     <?= $getId; ?>
                 </a>
@@ -82,7 +89,7 @@
 
     <div class="m-t-30">
         <a class="link-section" href="<?= $basePath; ?>manga/collection">
-            Back
+            Retour
         </a>
     </div>
 

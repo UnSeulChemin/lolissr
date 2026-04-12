@@ -2,3 +2,16 @@
 {
     color: var(--flash-active);
 }
+
+.alert-success
+{
+    background: #1e7e34;
+    color: white;
+
+    padding: 12px 16px;
+    border-radius: 6px;
+
+    margin-bottom: 20px;
+
+    font-weight: 500;
+}

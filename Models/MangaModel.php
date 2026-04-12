@@ -121,8 +121,14 @@ class MangaModel extends Model
      */
     public function insert(array $datas): bool
     {
-        $jacquette = isset($datas['jacquette']) ? (is_null($datas['jacquette']) ? null : (int) $datas['jacquette']) : null;
-        $livreNote = isset($datas['livre_note']) ? (is_null($datas['livre_note']) ? null : (int) $datas['livre_note']) : null;
+        $jacquette = isset($datas['jacquette'])
+            ? (is_null($datas['jacquette']) ? null : (int) $datas['jacquette'])
+            : null;
+
+        $livreNote = isset($datas['livre_note'])
+            ? (is_null($datas['livre_note']) ? null : (int) $datas['livre_note'])
+            : null;
+
         $note = null;
 
         if ($jacquette !== null && $livreNote !== null)
@@ -203,99 +209,153 @@ class MangaModel extends Model
         );
     }
 
+    /**
+     * getter id
+     */
     public function getId(): int
     {
         return $this->id;
     }
 
+    /**
+     * setter id
+     */
     public function setId(int $id): self
     {
         $this->id = $id;
         return $this;
     }
 
+    /**
+     * getter thumbnail
+     */
     public function getThumbnail(): string
     {
         return $this->thumbnail;
     }
 
+    /**
+     * setter thumbnail
+     */
     public function setThumbnail(string $thumbnail): self
     {
-        $this->thumbnail = $thumbnail;
+        $this->thumbnail = trim($thumbnail);
         return $this;
     }
 
+    /**
+     * getter extension
+     */
     public function getExtension(): string
     {
         return $this->extension;
     }
 
+    /**
+     * setter extension
+     */
     public function setExtension(string $extension): self
     {
-        $this->extension = $extension;
+        $this->extension = strtolower(trim($extension));
         return $this;
     }
 
+    /**
+     * getter slug
+     */
     public function getSlug(): string
     {
         return $this->slug;
     }
 
+    /**
+     * setter slug
+     */
     public function setSlug(string $slug): self
     {
         $this->slug = strtolower(trim($slug));
         return $this;
     }
 
+    /**
+     * getter numero
+     */
     public function getNumero(): int
     {
         return $this->numero;
     }
 
+    /**
+     * setter numero
+     */
     public function setNumero(int $numero): self
     {
         $this->numero = $numero;
         return $this;
     }
 
+    /**
+     * getter jacquette
+     */
     public function getJacquette(): ?int
     {
         return $this->jacquette;
     }
 
+    /**
+     * setter jacquette
+     */
     public function setJacquette(?int $jacquette): self
     {
         $this->jacquette = $jacquette;
         return $this;
     }
 
+    /**
+     * getter livre_note
+     */
     public function getLivreNote(): ?int
     {
         return $this->livre_note;
     }
 
+    /**
+     * setter livre_note
+     */
     public function setLivreNote(?int $livre_note): self
     {
         $this->livre_note = $livre_note;
         return $this;
     }
 
+    /**
+     * getter note
+     */
     public function getNote(): ?int
     {
         return $this->note;
     }
 
+    /**
+     * setter note
+     */
     public function setNote(?int $note): self
     {
         $this->note = $note;
         return $this;
     }
 
+    /**
+     * getter livre
+     */
     public function getLivre(): string
     {
         return $this->livre;
     }
 
+    /**
+     * setter livre
+     */
     public function setLivre(string $livre): self
     {
         $this->livre = trim($livre);
