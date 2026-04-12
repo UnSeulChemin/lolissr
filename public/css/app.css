@@ -15,8 +15,5 @@
 @import url('./components/links.css');
 @import url('./components/alerts.css');
 
-/* PRINT */
-@import url('./print/print.css');
-
 /* FONT */
 @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");

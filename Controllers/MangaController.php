@@ -202,22 +202,6 @@ class MangaController extends Controller
     }
 
     /**
-     * /manga/data
-     * affiche une page technique liée aux mangas
-     */
-    public function data(): void
-    {
-        $mangaModel = $this->mangaModel();
-        $totalTomes = $mangaModel->countAllTomes();
-
-        $this->title = 'Manga | Data';
-
-        $this->render('manga/data', [
-            'totalTomes' => $totalTomes
-        ]);
-    }
-
-    /**
      * /manga/lien
      */
     public function lien(): void

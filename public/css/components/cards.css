@@ -177,18 +177,18 @@
 
 .detail-row
 {
+    width: 100%;
     display: grid;
     grid-template-columns: 280px 1fr;
     gap: 14px;
     align-items: stretch;
-    width: 100%;
 }
 
 .detail-label,
 .detail-value
 {
-    padding: 10px 14px;
     min-height: 46px;
+    padding: 10px 14px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -268,10 +268,12 @@
     width: 100%;
     height: 42px;
     padding: 0 10px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 15px;
     box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+    text-align: center;
+    text-align-last: center;
 }
 
 .form-column
@@ -296,11 +298,11 @@
     width: 100%;
     min-height: 120px;
     padding: 12px;
-    border-radius: 10px;
+    box-sizing: border-box;
     border: 1px solid #ccc;
+    border-radius: 10px;
     font-size: 15px;
     resize: vertical;
-    box-sizing: border-box;
 }
 
 .form-actions,
@@ -354,12 +356,12 @@
 .link-edit
 {
     width: 100%;
-    box-sizing: border-box;
     margin-top: 10px;
     padding: 14px 20px;
+    box-sizing: border-box;
+    border: 0;
     border-radius: 12px;
     font-size: 18px;
-    border: 0;
     cursor: pointer;
 }
 
@@ -411,106 +413,298 @@
 }
 
 /* =========================
+   HOME LAYOUT
+========================= */
+
+.section-content
+{
+    width: 95%;
+    max-width: 1500px;
+    margin: 30px auto 0;
+}
+
+.card-banner
+{
+    width: 100%;
+    margin: 0 0 30px 0;
+    padding: 12px 14px;
+    box-sizing: border-box;
+    color: white;
+    background: var(--violet-main);
+    border-radius: 8px;
+    text-align: center;
+    letter-spacing: 0.5px;
+    word-spacing: 1px;
+}
+
+.home-top
+{
+    margin-top: 0;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.home-middle
+{
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+/* =========================
+   CARDS
+========================= */
+
+.home-card
+{
+    background: #fafafa;
+    border-radius: 18px;
+    padding: 22px 20px;
+    box-sizing: border-box;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.home-card:hover
+{
+    transform: translateY(-3px);
+    box-shadow: 0 0 0 3px #7b2cff;
+}
+
+/* =========================
+   TAILLES
+========================= */
+
+.home-card-small
+{
+    width: 320px;
+    min-height: 260px;
+    justify-content: center;
+}
+
+.home-card-medium
+{
+    width: 320px;
+    min-height: 220px;
+    justify-content: center;
+}
+
+.home-card-wide
+{
+    width: 520px;
+    min-height: 220px;
+    justify-content: center;
+}
+
+/* =========================
+   TEXT
+========================= */
+
+.home-card-title
+{
+    margin: 0 0 18px 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.home-card-value
+{
+    margin: 0;
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.home-card-text
+{
+    margin: 8px 0 0 0;
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.4;
+    text-align: center;
+}
+
+/* =========================
+   IMAGE
+========================= */
+
+.home-card-image
+{
+    width: 120px;
+    height: auto;
+    display: block;
+    margin: 12px 0 10px 0;
+    border-radius: 10px;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+}
+
+/* =========================
+   LONGEST SERIES
+========================= */
+
+.home-longest-content
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 18px;
+}
+
+.home-longest-image
+{
+    width: 80px;
+    border-radius: 10px;
+}
+
+.home-longest-info
+{
+    text-align: left;
+}
+
+.home-longest-name
+{
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 0 0 6px 0;
+}
+
+.home-longest-count
+{
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.home-subtitle
+{
+    margin-top: 45px;
+    margin-bottom: 0;
+}
+
+.home-empty
+{
+    margin-top: 30px;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.home-best-list
+{
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.home-best-card
+{
+    position: relative;
+    width: 240px;
+    min-height: 390px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.home-note-badge
+{
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    background: linear-gradient(135deg, #7b2cff, #c44cff);
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 700;
+    padding: 8px 12px;
+    border-radius: 999px;
+    box-shadow: 0 8px 18px rgba(123, 44, 255, 0.25);
+}
+
+.home-series-top
+{
+    margin-top: 30px;
+    margin-bottom: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.home-series-card
+{
+    width: 220px;
+    min-height: 340px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.home-series-rank
+{
+    position: absolute;
+    top: 16px;
+    left: 18px;
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.home-series-image
+{
+    width: 140px;
+    height: auto;
+    margin: 18px 0 20px 0;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.home-series-name
+{
+    margin: 0 0 12px 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.home-series-count
+{
+    margin: 0;
+    font-size: 1rem;
+    text-align: center;
+}
+
+/* =========================
    RESPONSIVE
 ========================= */
 
-@media screen and (max-width: 1200px)
-{
-    .card-content
-    {
-        width: 30%;
-    }
-
-    .manga-detail-image
-    {
-        width: 40%;
-    }
-
-    .manga-detail-content
-    {
-        width: 60%;
-    }
-
-    .detail-row
-    {
-        grid-template-columns: 240px 1fr;
-    }
-}
-
 @media screen and (max-width: 900px)
 {
-    .card-content
-    {
-        width: 45%;
-    }
-
-    .manga-detail-card
-    {
-        flex-direction: column;
-        padding: 20px;
-    }
-
-    .manga-detail-image,
-    .manga-detail-content
+    .home-card-small,
+    .home-card-medium,
+    .home-card-wide
     {
         width: 100%;
+        max-width: 420px;
     }
 
-    .manga-detail-image-inner
+    .home-best-card
     {
+        width: 100%;
         max-width: 300px;
-        margin: 0 auto;
     }
-
-    .detail-row
-    {
-        grid-template-columns: 1fr;
-    }
-
-    .detail-row-comment .detail-label,
-    .detail-comment
-    {
-        min-height: 90px;
-    }
-}
-
-@media screen and (max-width: 600px)
-{
-    .card-content
-    {
-        width: 100%;
-    }
-
-    .detail-label,
-    .detail-value,
-    .link-edit
-    {
-        font-size: 16px;
-    }
-
-    .form-row
-    {
-        grid-template-columns: 1fr;
-    }
-
-    .form-row label
-    {
-        text-align: center;
-    }
-}
-
-.form-select
-{
-    width: 100%;
-    height: 42px;
-
-    padding: 0 10px;
-
-    border-radius: 8px;
-    border: 1px solid #ccc;
-
-    font-size: 15px;
-
-    text-align: center;      /* ← centre le chiffre */
-    text-align-last: center; /* ← important pour select */
 }

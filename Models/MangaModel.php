@@ -85,6 +85,136 @@ class MangaModel extends Model
     }
 
     /**
+     * compte le nombre total de séries
+     */
+    public function countSeries(): int
+    {
+        $query = $this->requete(
+            "SELECT COUNT(DISTINCT livre) AS total
+            FROM {$this->getTable()}"
+        );
+
+        $result = $query->fetch();
+
+        return (int) ($result->total ?? 0);
+    }
+
+    /**
+     * récupère le dernier tome ajouté
+     */
+    public function findLastAdded(): object|false
+    {
+        return $this->requete(
+            "SELECT *
+            FROM {$this->getTable()}
+            ORDER BY id DESC
+            LIMIT 1"
+        )->fetch();
+    }
+
+    /**
+     * récupère la série la plus longue
+     */
+    public function longestSeries(): object|false
+    {
+        return $this->requete(
+            "SELECT livre,
+                    COUNT(*) AS total,
+                    MIN(thumbnail) AS thumbnail,
+                    MIN(extension) AS extension
+            FROM {$this->getTable()}
+            GROUP BY livre
+            ORDER BY total DESC, livre ASC
+            LIMIT 1"
+        )->fetch();
+    }
+
+    /**
+     * récupère tous les mangas notés 10/10
+     */
+    public function findBestRatedMangas(): array
+    {
+        return $this->requete(
+            "SELECT *
+            FROM {$this->getTable()}
+            WHERE note = 10
+            ORDER BY livre ASC, numero ASC"
+        )->fetchAll();
+    }
+
+    /**
+     * récupère la moyenne des notes
+     */
+    public function averageNote(): ?float
+    {
+        $query = $this->requete(
+            "SELECT AVG(note) AS moyenne
+            FROM {$this->getTable()}
+            WHERE note IS NOT NULL"
+        );
+
+        $result = $query->fetch();
+
+        if (!isset($result->moyenne))
+        {
+            return null;
+        }
+
+        return (float) $result->moyenne;
+    }
+
+    /**
+     * top des séries les plus longues
+     */
+    public function topLongestSeries(int $limit = 5): array
+    {
+        $limit = max(1, (int) $limit);
+
+        return $this->requete(
+            "SELECT livre,
+                    COUNT(*) AS total,
+                    MIN(thumbnail) AS thumbnail,
+                    MIN(extension) AS extension
+            FROM {$this->getTable()}
+            GROUP BY livre
+            ORDER BY total DESC, livre ASC
+            LIMIT {$limit}"
+        )->fetchAll();
+    }
+
+    /**
+     * récupère tous les mangas ayant la meilleure note existante
+     */
+    public function findAllBestRated(): array
+    {
+        return $this->requete(
+            "SELECT *
+            FROM {$this->getTable()}
+            WHERE note IS NOT NULL
+            AND note = (
+                SELECT MAX(note)
+                FROM {$this->getTable()}
+                WHERE note IS NOT NULL
+            )
+            ORDER BY livre ASC, numero ASC"
+        )->fetchAll();
+    }
+
+    /**
+     * récupère un seul manga avec la meilleure note
+     */
+    public function findBestRated(): object|false
+    {
+        return $this->requete(
+            "SELECT *
+            FROM {$this->getTable()}
+            WHERE note IS NOT NULL
+            ORDER BY note DESC, id DESC
+            LIMIT 1"
+        )->fetch();
+    }
+
+    /**
      * compte le nombre total de pages
      * pour la collection générale des tomes 1
      */
