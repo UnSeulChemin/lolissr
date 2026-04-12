@@ -116,6 +116,15 @@ class MangaController extends Controller
     }
 
     /**
+     * Page technique "data"
+     */
+    public function data(): void
+    {
+        $this->title = 'Manga | Data';
+        $this->render('manga/data');
+    }
+
+    /**
      * /manga/lien
      */
     public function lien(): void

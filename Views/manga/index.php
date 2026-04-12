@@ -5,6 +5,7 @@
     <section class="flex-center-center-gap-50">
         <a class="link-section" href="manga/collection">Collection</a>
         <a class="link-section" href="manga/ajouter">Ajouter</a>
+        <a class="link-section" href="manga/data">Données</a>
         <a class="link-section" href="manga/lien">Lien</a>
     </section>
 
