@@ -10,7 +10,7 @@
 
 ### HIDE ###
 Core/Save/
+.env
+/logs/
 public/images
 notes.txt
-
-.env

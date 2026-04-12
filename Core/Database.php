@@ -23,11 +23,20 @@ class Database extends PDO
                 Functions::dbPass()
             );
 
-            $this->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
-            $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->setAttribute(
+                PDO::ATTR_DEFAULT_FETCH_MODE,
+                PDO::FETCH_OBJ
+            );
+
+            $this->setAttribute(
+                PDO::ATTR_ERRMODE,
+                PDO::ERRMODE_EXCEPTION
+            );
         }
         catch (PDOException $exception)
         {
+            Logger::error($exception->getMessage());
+
             if (Functions::appDebug())
             {
                 exit('Erreur PDO : ' . $exception->getMessage());
@@ -47,7 +56,6 @@ class Database extends PDO
         return self::$instance;
     }
 
-    private function __clone(): void
-    {
-    }
+    private function __clone(): void {}
+    private function __wakeup(): void {}
 }
