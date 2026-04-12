@@ -44,19 +44,15 @@ class MangaModel extends Model
 
         $query = $this->requete(
             "SELECT COUNT(*) AS total
-            FROM {$this->getTable()}
+            FROM {$this->table}
             WHERE numero = ?",
             [1]
         );
 
-        if ($query === false)
-        {
-            return 0;
-        }
-
         $result = $query->fetch();
+        $total = (int) ($result->total ?? 0);
 
-        return (int) ceil((($result->total) ?? 0) / $eachPerPage);
+        return max(1, (int) ceil($total / $eachPerPage));
     }
 
     /**

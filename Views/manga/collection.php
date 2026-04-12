@@ -1,16 +1,6 @@
 <?php
 $isCollection = isset($slugFilter) && !empty($slugFilter);
-$currentPage = 1;
-
-if (!$isCollection)
-{
-    $currentPage = (int) basename($_GET['p'] ?? '1');
-
-    if ($currentPage < 1)
-    {
-        $currentPage = 1;
-    }
-}
+$currentPage = $currentPage ?? 1;
 ?>
 
 <section class="section-content">
@@ -77,7 +67,7 @@ if (!$isCollection)
             <?php for ($getId = 1; $getId <= $compteur; $getId++): ?>
 
                 <a class="link-paginate <?= ($currentPage === $getId) ? 'active' : '' ?>"
-                   href="<?= $basePath; ?>manga/page/<?= $getId; ?>">
+                href="<?= $basePath; ?>manga/collection/page/<?= $getId; ?>">
                     <?= $getId; ?>
                 </a>
 

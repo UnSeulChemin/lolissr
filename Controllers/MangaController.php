@@ -35,17 +35,33 @@ class MangaController extends Controller
     /**
      * /manga/collection
      *
-     * 1. sans slug => collection générale
-     * 2. slug + numero => détail tome
-     * 3. slug seul => collection d'un manga
+     * Gère l'affichage de la collection manga selon l'URL :
+     *
+     * 1. sans paramètre
+     *    → collection générale, page 1
+     *
+     * 2. page/{numero}
+     *    → pagination de la collection générale
+     *
+     * 3. {slug}/{numero}
+     *    → détail d'un tome précis
+     *
+     * 4. {slug}
+     *    → collection d'un manga
      */
     public function collection(?string $slug = null, ?string $numero = null): void
     {
         $mangaModel = $this->mangaModel();
         $pagination = Functions::pagination();
 
-        /* collection générale */
-        if (empty($slug))
+        /**
+         * cas 1 :
+         * /manga/collection
+         *
+         * affiche la collection générale
+         * sur la première page
+         */
+        if ($slug === null || trim($slug) === '')
         {
             $page = 1;
 
@@ -53,12 +69,53 @@ class MangaController extends Controller
             $compteur = $mangaModel->countFirstTomesPaginate($pagination);
 
             $this->title = 'Manga | Collection';
-            $this->render('manga/collection', ['mangas' => $mangas, 'compteur' => $compteur, 'slugFilter' => null]);
+
+            $this->render('manga/collection', [
+                'mangas' => $mangas,
+                'compteur' => $compteur,
+                'slugFilter' => null,
+                'currentPage' => $page
+            ]);
             return;
         }
 
-        /* détail tome */
-        if ($numero !== null && $numero !== '')
+        /**
+         * cas 2 :
+         * /manga/collection/page/{numero}
+         *
+         * affiche une page précise
+         * de la collection générale
+         */
+        if ($slug === 'page')
+        {
+            $page = (int) ($numero ?? 1);
+
+            if ($page < 1)
+            {
+                $page = 1;
+            }
+
+            $mangas = $mangaModel->findAllFirstTomes('id DESC', $pagination, $page);
+            $compteur = $mangaModel->countFirstTomesPaginate($pagination);
+
+            $this->title = 'Manga | Collection - Page ' . $page;
+
+            $this->render('manga/collection', [
+                'mangas' => $mangas,
+                'compteur' => $compteur,
+                'slugFilter' => null,
+                'currentPage' => $page
+            ]);
+            return;
+        }
+
+        /**
+         * cas 3 :
+         * /manga/collection/{slug}/{numero}
+         *
+         * affiche le détail d'un tome
+         */
+        if ($numero !== null && trim($numero) !== '')
         {
             $slug = $this->normalizeSlug($slug);
             $numero = (int) $numero;
@@ -80,11 +137,20 @@ class MangaController extends Controller
             }
 
             $this->title = 'Manga | ' . $manga->livre . ' ' . str_pad((string) $manga->numero, 2, '0', STR_PAD_LEFT);
-            $this->render('manga/livre', ['manga' => $manga]);
+
+            $this->render('manga/livre', [
+                'manga' => $manga
+            ]);
             return;
         }
 
-        /* collection d'un manga */
+        /**
+         * cas 4 :
+         * /manga/collection/{slug}
+         *
+         * affiche tous les tomes
+         * d'un manga donné
+         */
         $slug = $this->normalizeSlug($slug);
         $mangas = $mangaModel->findBySlug($slug);
 
@@ -95,24 +161,11 @@ class MangaController extends Controller
         }
 
         $this->title = 'Manga | ' . $mangas[0]->livre;
-        $this->render('manga/collection', ['mangas' => $mangas, 'slugFilter' => $slug]);
-    }
 
-    /**
-     * /manga/page/{id}
-     * pagination collection générale
-     */
-    public function page(string $id): void
-    {
-        $id = max(1, (int) $id);
-        $pagination = Functions::pagination();
-
-        $mangaModel = $this->mangaModel();
-        $mangas = $mangaModel->findAllFirstTomes('id DESC', $pagination, $id);
-        $compteur = $mangaModel->countFirstTomesPaginate($pagination);
-
-        $this->title = 'Manga | Collection Page ' . $id;
-        $this->render('manga/collection', ['mangas' => $mangas, 'compteur' => $compteur, 'slugFilter' => null]);
+        $this->render('manga/collection', [
+            'mangas' => $mangas,
+            'slugFilter' => $slug
+        ]);
     }
 
     /**
