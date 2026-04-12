@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controllers;
 
 use App\Core\Functions;
@@ -23,6 +24,41 @@ class MangaController extends Controller
     }
 
     /**
+     * convertit une note postée en int ou null
+     */
+    private function normalizePostedNote(?string $value): ?int
+    {
+        if ($value === null || trim($value) === '')
+        {
+            return null;
+        }
+
+        $value = (int) $value;
+
+        if ($value < 1 || $value > 5)
+        {
+            return null;
+        }
+
+        return $value;
+    }
+
+    /**
+     * nettoie un commentaire
+     */
+    private function normalizeCommentaire(?string $commentaire): ?string
+    {
+        if ($commentaire === null)
+        {
+            return null;
+        }
+
+        $commentaire = trim($commentaire);
+
+        return $commentaire === '' ? null : $commentaire;
+    }
+
+    /**
      * /manga
      * accueil manga
      */
@@ -34,8 +70,6 @@ class MangaController extends Controller
 
     /**
      * /manga/collection
-     *
-     * Gère l'affichage de la collection manga selon l'URL :
      *
      * 1. sans paramètre
      *    → collection générale, page 1
@@ -57,9 +91,6 @@ class MangaController extends Controller
         /**
          * cas 1 :
          * /manga/collection
-         *
-         * affiche la collection générale
-         * sur la première page
          */
         if ($slug === null || trim($slug) === '')
         {
@@ -82,9 +113,6 @@ class MangaController extends Controller
         /**
          * cas 2 :
          * /manga/collection/page/{numero}
-         *
-         * affiche une page précise
-         * de la collection générale
          */
         if ($slug === 'page')
         {
@@ -112,8 +140,6 @@ class MangaController extends Controller
         /**
          * cas 3 :
          * /manga/collection/{slug}/{numero}
-         *
-         * affiche le détail d'un tome
          */
         if ($numero !== null && trim($numero) !== '')
         {
@@ -147,9 +173,6 @@ class MangaController extends Controller
         /**
          * cas 4 :
          * /manga/collection/{slug}
-         *
-         * affiche tous les tomes
-         * d'un manga donné
          */
         $slug = $this->normalizeSlug($slug);
         $mangas = $mangaModel->findBySlug($slug);
@@ -170,7 +193,7 @@ class MangaController extends Controller
 
     /**
      * /manga/ajouter
-     * affiche le formulaire
+     * affiche le formulaire d'ajout
      */
     public function ajouter(): void
     {
@@ -179,18 +202,19 @@ class MangaController extends Controller
     }
 
     /**
-     * Page technique "data"
+     * /manga/data
+     * affiche une page technique liée aux mangas
      */
     public function data(): void
     {
         $mangaModel = $this->mangaModel();
-
-        /* récup nombre total de tomes */
         $totalTomes = $mangaModel->countAllTomes();
 
         $this->title = 'Manga | Data';
 
-        $this->render('manga/data', ['totalTomes' => $totalTomes]);
+        $this->render('manga/data', [
+            'totalTomes' => $totalTomes
+        ]);
     }
 
     /**
@@ -203,7 +227,8 @@ class MangaController extends Controller
     }
 
     /**
-     * traitement ajout manga
+     * /manga/ajouterTraitement
+     * traite l'ajout d'un manga
      */
     public function ajouterTraitement(): void
     {
@@ -213,18 +238,32 @@ class MangaController extends Controller
             exit;
         }
 
+        $mangaModel = $this->mangaModel();
+
         $livre = trim($_POST['livre'] ?? '');
         $slug = $this->normalizeSlug($_POST['slug'] ?? '');
         $numero = (int) ($_POST['numero'] ?? 0);
+        $commentaire = $this->normalizeCommentaire($_POST['commentaire'] ?? null);
 
-        if ($livre === '' || $slug === '' || $numero <= 0 || !isset($_FILES['image']))
+        if ($livre === '' || $slug === '' || $numero <= 0)
         {
-            exit('Formulaire incomplet');
+            $_SESSION['error'] = 'Formulaire incomplet';
+            header('Location: ' . $this->basePath . 'manga/ajouter');
+            exit;
         }
 
-        if ($_FILES['image']['error'] !== UPLOAD_ERR_OK || empty($_FILES['image']['name']))
+        if (!isset($_FILES['image']) || empty($_FILES['image']['name']))
         {
-            exit('Erreur fichier');
+            $_SESSION['error'] = 'Aucune image envoyée';
+            header('Location: ' . $this->basePath . 'manga/ajouter');
+            exit;
+        }
+
+        if ($_FILES['image']['error'] !== UPLOAD_ERR_OK)
+        {
+            $_SESSION['error'] = 'Erreur lors de l’envoi du fichier';
+            header('Location: ' . $this->basePath . 'manga/ajouter');
+            exit;
         }
 
         $extension = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
@@ -238,46 +277,56 @@ class MangaController extends Controller
 
         if (!in_array($extension, $extensionsAutorisees, true))
         {
-            exit('Format image non autorisé');
-        }
-
-        $thumbnail = preg_replace('/[^A-Za-z0-9\- ]/', '', strtoupper($livre));
-        $thumbnail .= ' ' . str_pad((string) $numero, 2, '0', STR_PAD_LEFT);
-        $thumbnail = preg_replace('/\s+/', ' ', $thumbnail);
-        $thumbnail = trim($thumbnail);
-
-        if ($thumbnail === '')
-        {
-            exit('Nom de fichier invalide');
-        }
-
-        $nomFichier = $thumbnail . '.' . $extension;
-        $dossier = dirname(__DIR__) . '/../public/images/mangas/thumbnail/';
-
-        if (!is_dir($dossier))
-        {
-            exit('Dossier image introuvable : ' . $dossier);
-        }
-
-        $destination = $dossier . $nomFichier;
-        $mangaModel = $this->mangaModel();
-
-        if (file_exists($destination))
-        {
-            exit('Une image avec ce nom existe déjà');
+            $_SESSION['error'] = 'Format image non autorisé';
+            header('Location: ' . $this->basePath . 'manga/ajouter');
+            exit;
         }
 
         if ($mangaModel->findOneBySlugAndNumero($slug, $numero))
         {
-            exit('Ce manga existe déjà');
+            $_SESSION['error'] = 'Ce manga existe déjà';
+            header('Location: ' . $this->basePath . 'manga/ajouter');
+            exit;
+        }
+
+        $thumbnail = preg_replace('/[^A-Za-z0-9\- ]/', '', strtoupper($livre));
+        $thumbnail = preg_replace('/\s+/', ' ', trim($thumbnail));
+        $thumbnail .= ' ' . str_pad((string) $numero, 2, '0', STR_PAD_LEFT);
+
+        if ($thumbnail === '')
+        {
+            $_SESSION['error'] = 'Nom de fichier invalide';
+            header('Location: ' . $this->basePath . 'manga/ajouter');
+            exit;
+        }
+
+        $nomFichier = $thumbnail . '.' . $extension;
+        $dossier = ROOT . '/public/images/mangas/thumbnail/';
+
+        if (!is_dir($dossier))
+        {
+            $_SESSION['error'] = 'Dossier image introuvable';
+            header('Location: ' . $this->basePath . 'manga/ajouter');
+            exit;
+        }
+
+        $destination = $dossier . $nomFichier;
+
+        if (file_exists($destination))
+        {
+            $_SESSION['error'] = 'Une image avec ce nom existe déjà';
+            header('Location: ' . $this->basePath . 'manga/ajouter');
+            exit;
         }
 
         if (!move_uploaded_file($_FILES['image']['tmp_name'], $destination))
         {
-            exit('Erreur lors de l\'upload');
+            $_SESSION['error'] = 'Erreur lors de l’upload de l’image';
+            header('Location: ' . $this->basePath . 'manga/ajouter');
+            exit;
         }
 
-        $mangaModel->insert([
+        $insert = $mangaModel->insert([
             'thumbnail' => $thumbnail,
             'extension' => $extension,
             'slug' => $slug,
@@ -285,18 +334,29 @@ class MangaController extends Controller
             'numero' => $numero,
             'jacquette' => null,
             'livre_note' => null,
-            'note' => null
+            'commentaire' => $commentaire
         ]);
 
-        $_SESSION['success'] = 'Manga ajouté avec succès';
+        if (!$insert)
+        {
+            if (file_exists($destination))
+            {
+                unlink($destination);
+            }
 
+            $_SESSION['error'] = 'Erreur lors de l’enregistrement du manga';
+            header('Location: ' . $this->basePath . 'manga/ajouter');
+            exit;
+        }
+
+        $_SESSION['success'] = 'Manga ajouté avec succès';
         header('Location: ' . $this->basePath . 'manga/ajouter');
         exit;
     }
 
     /**
      * /manga/edit/{slug}/{numero}
-     * page édition
+     * affiche la page d'édition d'un tome
      */
     public function edit(string $slug, string $numero): void
     {
@@ -321,12 +381,14 @@ class MangaController extends Controller
         }
 
         $this->title = 'Manga | Modifier';
-        $this->render('manga/edit', ['manga' => $manga]);
+        $this->render('manga/edit', [
+            'manga' => $manga
+        ]);
     }
 
     /**
-     * update jacquette + livre_note
-     * note = calcul automatique
+     * /manga/update/{slug}/{numero}
+     * met à jour jacquette, livre_note, note et commentaire
      */
     public function update(string $slug, string $numero): void
     {
@@ -335,24 +397,8 @@ class MangaController extends Controller
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST')
         {
-            header('Location: ' . $this->basePath . 'manga/collection/' . $slug . '/' . $numero);
+            header('Location: ' . $this->basePath . 'manga/collection/' . rawurlencode($slug) . '/' . $numero);
             exit;
-        }
-
-        $jacquette = $_POST['jacquette'] ?? null;
-        $livreNote = $_POST['livre_note'] ?? null;
-
-        if ($jacquette === null || $livreNote === null || $jacquette === '' || $livreNote === '')
-        {
-            exit('Formulaire incomplet');
-        }
-
-        $jacquette = (int) $jacquette;
-        $livreNote = (int) $livreNote;
-
-        if ($jacquette < 1 || $jacquette > 5 || $livreNote < 1 || $livreNote > 5)
-        {
-            exit('Note invalide');
         }
 
         $mangaModel = $this->mangaModel();
@@ -364,9 +410,38 @@ class MangaController extends Controller
             exit('Manga introuvable');
         }
 
-        $mangaModel->updateNotes($slug, $numero, $jacquette, $livreNote);
+        $jacquetteRaw = $_POST['jacquette'] ?? null;
+        $livreNoteRaw = $_POST['livre_note'] ?? null;
 
-        header('Location: ' . $this->basePath . 'manga/collection/' . $slug . '/' . $numero);
+        $jacquette = $this->normalizePostedNote($jacquetteRaw);
+        $livreNote = $this->normalizePostedNote($livreNoteRaw);
+        $commentaire = $this->normalizeCommentaire($_POST['commentaire'] ?? null);
+
+        if (($jacquetteRaw !== null && trim((string) $jacquetteRaw) !== '' && $jacquette === null) ||
+            ($livreNoteRaw !== null && trim((string) $livreNoteRaw) !== '' && $livreNote === null))
+        {
+            $_SESSION['error'] = 'Les notes doivent être comprises entre 1 et 5';
+            header('Location: ' . $this->basePath . 'manga/edit/' . rawurlencode($slug) . '/' . $numero);
+            exit;
+        }
+
+        $update = $mangaModel->updateManga(
+            $slug,
+            $numero,
+            $jacquette,
+            $livreNote,
+            $commentaire
+        );
+
+        if (!$update)
+        {
+            $_SESSION['error'] = 'Erreur lors de la mise à jour';
+            header('Location: ' . $this->basePath . 'manga/edit/' . rawurlencode($slug) . '/' . $numero);
+            exit;
+        }
+
+        $_SESSION['success'] = 'Manga mis à jour avec succès';
+        header('Location: ' . $this->basePath . 'manga/collection/' . rawurlencode($slug) . '/' . $numero);
         exit;
     }
 }

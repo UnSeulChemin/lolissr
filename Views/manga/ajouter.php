@@ -6,6 +6,13 @@
             Ajouter un manga
         </h1>
 
+        <?php if (!empty($_SESSION['error'])): ?>
+            <div class="alert-error">
+                <?= htmlspecialchars($_SESSION['error']) ?>
+            </div>
+            <?php unset($_SESSION['error']); ?>
+        <?php endif; ?>
+
         <?php if (!empty($_SESSION['success'])): ?>
             <div class="alert-success">
                 <?= htmlspecialchars($_SESSION['success']) ?>
@@ -29,6 +36,7 @@
                     name="livre"
                     id="livre"
                     placeholder="Ex : To Love Ru"
+                    value="<?= htmlspecialchars($_POST['livre'] ?? '') ?>"
                     required>
 
             </div>
@@ -44,6 +52,7 @@
                     name="slug"
                     id="slug"
                     placeholder="Ex : to-love-ru"
+                    value="<?= htmlspecialchars($_POST['slug'] ?? '') ?>"
                     required>
 
             </div>
@@ -60,6 +69,7 @@
                     id="numero"
                     min="1"
                     placeholder="Ex : 1"
+                    value="<?= htmlspecialchars($_POST['numero'] ?? '') ?>"
                     required>
 
             </div>
@@ -79,6 +89,21 @@
 
             </div>
 
+            <div class="form-row">
+
+                <label for="commentaire">
+                    Commentaire
+                </label>
+
+                <textarea
+                    name="commentaire"
+                    id="commentaire"
+                    rows="3"
+                    maxlength="255"
+                    placeholder="Ex : défaut en haut de la jacquette"><?= htmlspecialchars($_POST['commentaire'] ?? '') ?></textarea>
+
+            </div>
+
             <div class="form-actions">
 
                 <button
@@ -94,3 +119,16 @@
     </section>
 
 </section>
+
+<script>
+document.getElementById('livre').addEventListener('input', function () {
+    let slug = this.value
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-');
+
+    document.getElementById('slug').value = slug;
+});
+</script>

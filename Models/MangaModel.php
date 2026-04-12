@@ -18,7 +18,56 @@ class MangaModel extends Model
     protected ?int $jacquette = null;
     protected ?int $livre_note = null;
     protected ?int $note = null;
+    protected ?string $commentaire = null;
     protected string $livre;
+
+    /**
+     * convertit une note en int ou null
+     */
+    private function normalizeNoteValue(mixed $value): ?int
+    {
+        if ($value === null || $value === '')
+        {
+            return null;
+        }
+
+        $value = (int) $value;
+
+        if ($value < 1 || $value > 5)
+        {
+            return null;
+        }
+
+        return $value;
+    }
+
+    /**
+     * nettoie un commentaire
+     */
+    private function normalizeCommentaire(?string $commentaire): ?string
+    {
+        if ($commentaire === null)
+        {
+            return null;
+        }
+
+        $commentaire = trim($commentaire);
+
+        return $commentaire === '' ? null : $commentaire;
+    }
+
+    /**
+     * calcule la note finale
+     */
+    private function calculateNote(?int $jacquette, ?int $livreNote): ?int
+    {
+        if ($jacquette === null || $livreNote === null)
+        {
+            return null;
+        }
+
+        return $jacquette + $livreNote;
+    }
 
     /**
      * compte le nombre total de tomes
@@ -26,8 +75,8 @@ class MangaModel extends Model
     public function countAllTomes(): int
     {
         $query = $this->requete(
-            "SELECT COUNT(*) AS total 
-            FROM {$this->table}"
+            "SELECT COUNT(*) AS total
+            FROM {$this->getTable()}"
         );
 
         $result = $query->fetch();
@@ -36,7 +85,8 @@ class MangaModel extends Model
     }
 
     /**
-     * nb total de pages pour les tomes 1
+     * compte le nombre total de pages
+     * pour la collection générale des tomes 1
      */
     public function countFirstTomesPaginate(int $eachPerPage): int
     {
@@ -44,7 +94,7 @@ class MangaModel extends Model
 
         $query = $this->requete(
             "SELECT COUNT(*) AS total
-            FROM {$this->table}
+            FROM {$this->getTable()}
             WHERE numero = ?",
             [1]
         );
@@ -56,8 +106,8 @@ class MangaModel extends Model
     }
 
     /**
-     * récup tous les tomes 1 paginés
-     * + total de tomes par série
+     * récupère les tomes 1 paginés
+     * avec le total de tomes par série
      */
     public function findAllFirstTomes(string $orderBy, int $eachPerPage, int $page): array
     {
@@ -91,7 +141,8 @@ class MangaModel extends Model
     }
 
     /**
-     * récup tous les tomes d'un slug
+     * récupère tous les tomes d'un manga
+     * à partir de son slug
      */
     public function findBySlug(string $slug): array
     {
@@ -109,7 +160,8 @@ class MangaModel extends Model
     }
 
     /**
-     * récup un manga précis via slug + numero
+     * récupère un tome précis
+     * via son slug et son numéro
      */
     public function findOneBySlugAndNumero(string $slug, int $numero): object|false
     {
@@ -128,24 +180,14 @@ class MangaModel extends Model
     }
 
     /**
-     * insert manga
+     * insère un manga en base
      */
     public function insert(array $datas): bool
     {
-        $jacquette = isset($datas['jacquette'])
-            ? (is_null($datas['jacquette']) ? null : (int) $datas['jacquette'])
-            : null;
-
-        $livreNote = isset($datas['livre_note'])
-            ? (is_null($datas['livre_note']) ? null : (int) $datas['livre_note'])
-            : null;
-
-        $note = null;
-
-        if ($jacquette !== null && $livreNote !== null)
-        {
-            $note = $jacquette + $livreNote;
-        }
+        $jacquette = $this->normalizeNoteValue($datas['jacquette'] ?? null);
+        $livreNote = $this->normalizeNoteValue($datas['livre_note'] ?? null);
+        $commentaire = $this->normalizeCommentaire($datas['commentaire'] ?? null);
+        $note = $this->calculateNote($jacquette, $livreNote);
 
         return $this->requete(
             "INSERT INTO {$this->getTable()} (
@@ -157,6 +199,7 @@ class MangaModel extends Model
                 jacquette,
                 livre_note,
                 note,
+                commentaire,
                 created_at
             )
             VALUES (
@@ -168,50 +211,49 @@ class MangaModel extends Model
                 :jacquette,
                 :livre_note,
                 :note,
+                :commentaire,
                 NOW()
             )",
             [
-                'thumbnail' => trim($datas['thumbnail']),
-                'extension' => strtolower(trim($datas['extension'])),
-                'slug' => strtolower(trim($datas['slug'])),
-                'livre' => trim($datas['livre']),
-                'numero' => (int) $datas['numero'],
+                'thumbnail' => trim($datas['thumbnail'] ?? ''),
+                'extension' => strtolower(trim($datas['extension'] ?? '')),
+                'slug' => strtolower(trim($datas['slug'] ?? '')),
+                'livre' => trim($datas['livre'] ?? ''),
+                'numero' => (int) ($datas['numero'] ?? 0),
                 'jacquette' => $jacquette,
                 'livre_note' => $livreNote,
-                'note' => $note
+                'note' => $note,
+                'commentaire' => $commentaire
             ]
         ) !== false;
     }
 
     /**
-     * update jacquette + livre_note + note auto
+     * met à jour un manga
+     * jacquette, livre_note, note et commentaire
      */
-    public function updateNotes(string $slug, int $numero, ?int $jacquette, ?int $livre_note): bool
+    public function updateManga(
+        string $slug,
+        int $numero,
+        ?int $jacquette,
+        ?int $livreNote,
+        ?string $commentaire
+    ): bool
     {
         $slug = strtolower(trim($slug));
         $numero = (int) $numero;
-        $note = null;
 
-        if ($jacquette !== null)
-        {
-            $jacquette = (int) $jacquette;
-        }
-
-        if ($livre_note !== null)
-        {
-            $livre_note = (int) $livre_note;
-        }
-
-        if ($jacquette !== null && $livre_note !== null)
-        {
-            $note = $jacquette + $livre_note;
-        }
+        $jacquette = $this->normalizeNoteValue($jacquette);
+        $livreNote = $this->normalizeNoteValue($livreNote);
+        $commentaire = $this->normalizeCommentaire($commentaire);
+        $note = $this->calculateNote($jacquette, $livreNote);
 
         return $this->update(
             [
                 'jacquette' => $jacquette,
-                'livre_note' => $livre_note,
-                'note' => $note
+                'livre_note' => $livreNote,
+                'note' => $note,
+                'commentaire' => $commentaire
             ],
             [
                 'slug' => $slug,
@@ -289,6 +331,23 @@ class MangaModel extends Model
     }
 
     /**
+     * getter livre
+     */
+    public function getLivre(): string
+    {
+        return $this->livre;
+    }
+
+    /**
+     * setter livre
+     */
+    public function setLivre(string $livre): self
+    {
+        $this->livre = trim($livre);
+        return $this;
+    }
+
+    /**
      * getter numero
      */
     public function getNumero(): int
@@ -318,7 +377,7 @@ class MangaModel extends Model
      */
     public function setJacquette(?int $jacquette): self
     {
-        $this->jacquette = $jacquette;
+        $this->jacquette = $this->normalizeNoteValue($jacquette);
         return $this;
     }
 
@@ -335,7 +394,7 @@ class MangaModel extends Model
      */
     public function setLivreNote(?int $livre_note): self
     {
-        $this->livre_note = $livre_note;
+        $this->livre_note = $this->normalizeNoteValue($livre_note);
         return $this;
     }
 
@@ -357,19 +416,19 @@ class MangaModel extends Model
     }
 
     /**
-     * getter livre
+     * getter commentaire
      */
-    public function getLivre(): string
+    public function getCommentaire(): ?string
     {
-        return $this->livre;
+        return $this->commentaire;
     }
 
     /**
-     * setter livre
+     * setter commentaire
      */
-    public function setLivre(string $livre): self
+    public function setCommentaire(?string $commentaire): self
     {
-        $this->livre = trim($livre);
+        $this->commentaire = $this->normalizeCommentaire($commentaire);
         return $this;
     }
 }

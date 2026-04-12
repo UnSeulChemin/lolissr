@@ -4,22 +4,13 @@ namespace App\Core;
 
 class Form
 {
-    /**
-     * html du formulaire
-     */
     private string $formCode = '';
 
-    /**
-     * retourne le html généré
-     */
     public function create(): string
     {
         return $this->formCode;
     }
 
-    /**
-     * valide que des champs existent et ne sont pas vides
-     */
     public static function validate(?array $form = null, ?array $fields = null): bool
     {
         if (!is_array($form) || !is_array($fields))
@@ -38,9 +29,6 @@ class Form
         return true;
     }
 
-    /**
-     * ouvre le form
-     */
     public function startForm(string $action = '#', string $method = 'post', array $attributes = []): self
     {
         $action = htmlspecialchars($action, ENT_QUOTES, 'UTF-8');
@@ -53,18 +41,12 @@ class Form
         return $this;
     }
 
-    /**
-     * ferme le form
-     */
     public function endForm(): self
     {
         $this->formCode .= '</form>';
         return $this;
     }
 
-    /**
-     * ouvre une div
-     */
     public function startDiv(array $attributes = []): self
     {
         $this->formCode .= '<div';
@@ -74,18 +56,12 @@ class Form
         return $this;
     }
 
-    /**
-     * ferme une div
-     */
     public function endDiv(): self
     {
         $this->formCode .= '</div>';
         return $this;
     }
 
-    /**
-     * ajoute un input
-     */
     public function addInput(string $type, string $name, array $attributes = []): self
     {
         $type = htmlspecialchars($type, ENT_QUOTES, 'UTF-8');
@@ -98,9 +74,6 @@ class Form
         return $this;
     }
 
-    /**
-     * ajoute un label
-     */
     public function addLabelFor(string $for, string $text, array $attributes = []): self
     {
         $for = htmlspecialchars($for, ENT_QUOTES, 'UTF-8');
@@ -113,9 +86,6 @@ class Form
         return $this;
     }
 
-    /**
-     * ajoute un textarea
-     */
     public function addTextarea(string $name, string $value = '', array $attributes = []): self
     {
         $name = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
@@ -128,9 +98,6 @@ class Form
         return $this;
     }
 
-    /**
-     * ajoute un select
-     */
     public function addSelect(string $name, array $options, array $attributes = [], mixed $selected = null): self
     {
         $name = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
@@ -153,9 +120,6 @@ class Form
         return $this;
     }
 
-    /**
-     * ajoute un bouton
-     */
     public function addButton(string $text, array $attributes = []): self
     {
         $text = htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
@@ -167,13 +131,20 @@ class Form
         return $this;
     }
 
-    /**
-     * transforme les attributs en html
-     */
     private function addAttributes(array $attributes): string
     {
         $string = '';
-        $shorts = ['checked', 'disabled', 'readonly', 'multiple', 'required', 'autofocus', 'novalidate', 'formnovalidate', 'selected'];
+        $shorts = [
+            'checked',
+            'disabled',
+            'readonly',
+            'multiple',
+            'required',
+            'autofocus',
+            'novalidate',
+            'formnovalidate',
+            'selected'
+        ];
 
         foreach ($attributes as $attribute => $value)
         {

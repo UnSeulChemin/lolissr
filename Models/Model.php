@@ -32,6 +32,14 @@ class Model
     }
 
     /**
+     * sécurise le nom d'une colonne
+     */
+    protected function cleanField(string $field): string
+    {
+        return preg_replace('/[^a-zA-Z0-9_]/', '', $field);
+    }
+
+    /**
      * récup 1 ligne par id
      */
     public function find(int $id): object|false
@@ -59,6 +67,7 @@ class Model
 
         foreach ($targets as $field => $value)
         {
+            $field = $this->cleanField($field);
             $fields[] = "{$field} = ?";
             $values[] = $value;
         }
@@ -67,7 +76,9 @@ class Model
                 FROM {$this->getTable()}
                 WHERE " . implode(' AND ', $fields);
 
-        return $this->requete($sql, $values)->fetchAll();
+        $query = $this->requete($sql, $values);
+
+        return $query ? $query->fetchAll() : [];
     }
 
     /**
@@ -80,9 +91,16 @@ class Model
             return false;
         }
 
-        $fields = array_keys($datas);
-        $placeholders = array_fill(0, count($datas), '?');
-        $values = array_values($datas);
+        $fields = [];
+        $placeholders = [];
+        $values = [];
+
+        foreach ($datas as $field => $value)
+        {
+            $fields[] = $this->cleanField($field);
+            $placeholders[] = '?';
+            $values[] = $value;
+        }
 
         $sql = "INSERT INTO {$this->getTable()} (
                     " . implode(', ', $fields) . "
@@ -110,12 +128,14 @@ class Model
 
         foreach ($datas as $field => $value)
         {
+            $field = $this->cleanField($field);
             $fields[] = "{$field} = ?";
             $values[] = $value;
         }
 
         foreach ($where as $field => $value)
         {
+            $field = $this->cleanField($field);
             $conditions[] = "{$field} = ?";
             $values[] = $value;
         }

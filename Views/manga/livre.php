@@ -23,7 +23,7 @@
                         $noteClass = 'note-low';
                     }
                     ?>
-                    <span class="badge-note <?= $noteClass; ?>">
+                    <span class="badge-note <?= htmlspecialchars($noteClass) ?>">
                         <?= (int) $manga->note ?>
                     </span>
                 <?php endif; ?>
@@ -69,8 +69,17 @@
                 <?= $manga->note !== null ? (int) $manga->note . '/10' : 'Non calculée' ?>
             </p>
 
+            <p class="card-banner table-colonne">
+                Commentaire
+            </p>
+            <p class="card-banner card-commentaire">
+                <?= !empty($manga->commentaire)
+                    ? nl2br(htmlspecialchars($manga->commentaire))
+                    : 'Aucun commentaire' ?>
+            </p>
+
             <a class="link-edit"
-               href="<?= $basePath; ?>manga/edit/<?= htmlspecialchars($manga->slug) ?>/<?= (int) $manga->numero ?>">
+               href="<?= $basePath; ?>manga/edit/<?= rawurlencode($manga->slug) ?>/<?= (int) $manga->numero ?>">
                 Modifier
             </a>
 
@@ -80,7 +89,7 @@
 
     <div class="m-t-30">
         <a class="link-section"
-           href="<?= $basePath; ?>manga/collection/<?= htmlspecialchars($manga->slug) ?>">
+           href="<?= $basePath; ?>manga/collection/<?= rawurlencode($manga->slug) ?>">
             Retour
         </a>
     </div>

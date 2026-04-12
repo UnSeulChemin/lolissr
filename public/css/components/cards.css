@@ -11,6 +11,17 @@
     transition: outline 0.15s ease, transform 0.15s ease;
 }
 
+.card-commentaire
+{
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    white-space: pre-wrap;
+    overflow: visible;
+    text-overflow: unset;
+    overflow-wrap: break-word;
+}
+
 .card-content:hover
 {
     outline: 6px solid var(--background-color-header);
