@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Core\Functions;
 use App\Models\Trait\CreatedAtTrait;
 
 class MangaModel extends Model
@@ -14,15 +15,15 @@ class MangaModel extends Model
     protected string $thumbnail;
     protected string $extension;
     protected string $slug;
+    protected string $livre;
     protected int $numero;
     protected ?int $jacquette = null;
     protected ?int $livre_note = null;
     protected ?int $note = null;
     protected ?string $commentaire = null;
-    protected string $livre;
 
     /**
-     * convertit une note en int ou null
+     * Convertit une note en int ou null.
      */
     private function normalizeNoteValue(mixed $value): ?int
     {
@@ -42,22 +43,7 @@ class MangaModel extends Model
     }
 
     /**
-     * nettoie un commentaire
-     */
-    private function normalizeCommentaire(?string $commentaire): ?string
-    {
-        if ($commentaire === null)
-        {
-            return null;
-        }
-
-        $commentaire = trim($commentaire);
-
-        return $commentaire === '' ? null : $commentaire;
-    }
-
-    /**
-     * calcule la note finale
+     * Calcule la note finale.
      */
     private function calculateNote(?int $jacquette, ?int $livreNote): ?int
     {
@@ -70,7 +56,7 @@ class MangaModel extends Model
     }
 
     /**
-     * compte le nombre total de tomes
+     * Compte le nombre total de tomes.
      */
     public function countAllTomes(): int
     {
@@ -85,7 +71,7 @@ class MangaModel extends Model
     }
 
     /**
-     * compte le nombre total de séries
+     * Compte le nombre total de séries.
      */
     public function countSeries(): int
     {
@@ -100,7 +86,7 @@ class MangaModel extends Model
     }
 
     /**
-     * récupère le dernier tome ajouté
+     * Récupère le dernier tome ajouté.
      */
     public function findLastAdded(): object|false
     {
@@ -113,27 +99,27 @@ class MangaModel extends Model
     }
 
     /**
-     * récupère la série la plus longue
+     * Récupère la série la plus longue.
      */
-public function findLongestSeries(): object|false
-{
-    return $this->requete(
-        "SELECT m1.slug, m1.livre, m1.thumbnail, m1.extension, counts.total
-         FROM {$this->table} m1
-         INNER JOIN (
-             SELECT slug, COUNT(*) AS total
-             FROM {$this->table}
-             GROUP BY slug
-             ORDER BY total DESC
-             LIMIT 1
-         ) counts ON counts.slug = m1.slug
-         WHERE m1.numero = 1
-         LIMIT 1"
-    )->fetch();
-}
+    public function findLongestSeries(): object|false
+    {
+        return $this->requete(
+            "SELECT m1.slug, m1.livre, m1.thumbnail, m1.extension, counts.total
+            FROM {$this->getTable()} m1
+            INNER JOIN (
+                SELECT slug, COUNT(*) AS total
+                FROM {$this->getTable()}
+                GROUP BY slug
+                ORDER BY total DESC
+                LIMIT 1
+            ) counts ON counts.slug = m1.slug
+            WHERE m1.numero = 1
+            LIMIT 1"
+        )->fetch();
+    }
 
     /**
-     * récupère tous les mangas notés 10/10
+     * Récupère tous les mangas notés 10/10.
      */
     public function findBestRatedMangas(): array
     {
@@ -146,7 +132,7 @@ public function findLongestSeries(): object|false
     }
 
     /**
-     * récupère la moyenne des notes
+     * Récupère la moyenne des notes.
      */
     public function averageNote(): ?float
     {
@@ -167,7 +153,7 @@ public function findLongestSeries(): object|false
     }
 
     /**
-     * top des séries les plus longues
+     * Retourne le top des séries les plus longues.
      */
     public function topLongestSeries(int $limit = 5): array
     {
@@ -189,7 +175,7 @@ public function findLongestSeries(): object|false
     }
 
     /**
-     * récupère tous les mangas ayant la meilleure note existante
+     * Récupère tous les mangas ayant la meilleure note existante.
      */
     public function findAllBestRated(): array
     {
@@ -207,7 +193,7 @@ public function findLongestSeries(): object|false
     }
 
     /**
-     * récupère un seul manga avec la meilleure note
+     * Récupère un seul manga avec la meilleure note.
      */
     public function findBestRated(): object|false
     {
@@ -221,8 +207,8 @@ public function findLongestSeries(): object|false
     }
 
     /**
-     * compte le nombre total de pages
-     * pour la collection générale des tomes 1
+     * Compte le nombre total de pages
+     * pour la collection générale des tomes 1.
      */
     public function countFirstTomesPaginate(int $eachPerPage): int
     {
@@ -242,8 +228,8 @@ public function findLongestSeries(): object|false
     }
 
     /**
-     * récupère les tomes 1 paginés
-     * avec le total de tomes par série
+     * Récupère les tomes 1 paginés
+     * avec le total de tomes par série.
      */
     public function findAllFirstTomes(string $orderBy, int $eachPerPage, int $page): array
     {
@@ -277,8 +263,7 @@ public function findLongestSeries(): object|false
     }
 
     /**
-     * récupère tous les tomes d'un manga
-     * à partir de son slug
+     * Récupère tous les tomes d'un manga à partir de son slug.
      */
     public function findBySlug(string $slug): array
     {
@@ -288,7 +273,7 @@ public function findLongestSeries(): object|false
             WHERE slug = :slug
             ORDER BY numero DESC",
             [
-                'slug' => strtolower(trim($slug))
+                'slug' => Functions::normalizeSlug($slug)
             ]
         );
 
@@ -296,8 +281,7 @@ public function findLongestSeries(): object|false
     }
 
     /**
-     * récupère un tome précis
-     * via son slug et son numéro
+     * Récupère un tome précis via son slug et son numéro.
      */
     public function findOneBySlugAndNumero(string $slug, int $numero): object|false
     {
@@ -307,7 +291,7 @@ public function findLongestSeries(): object|false
             WHERE slug = :slug
             AND numero = :numero",
             [
-                'slug' => strtolower(trim($slug)),
+                'slug' => Functions::normalizeSlug($slug),
                 'numero' => $numero
             ]
         );
@@ -316,13 +300,13 @@ public function findLongestSeries(): object|false
     }
 
     /**
-     * insère un manga en base
+     * Insère un manga en base.
      */
     public function insert(array $datas): bool
     {
         $jacquette = $this->normalizeNoteValue($datas['jacquette'] ?? null);
         $livreNote = $this->normalizeNoteValue($datas['livre_note'] ?? null);
-        $commentaire = $this->normalizeCommentaire($datas['commentaire'] ?? null);
+        $commentaire = Functions::normalizeCommentaire($datas['commentaire'] ?? null);
         $note = $this->calculateNote($jacquette, $livreNote);
 
         return $this->requete(
@@ -353,9 +337,9 @@ public function findLongestSeries(): object|false
             [
                 'thumbnail' => trim($datas['thumbnail'] ?? ''),
                 'extension' => strtolower(trim($datas['extension'] ?? '')),
-                'slug' => strtolower(trim($datas['slug'] ?? '')),
+                'slug' => Functions::normalizeSlug($datas['slug'] ?? ''),
                 'livre' => trim($datas['livre'] ?? ''),
-                'numero' => (int) ($datas['numero'] ?? 0),
+                'numero' => max(0, (int) ($datas['numero'] ?? 0)),
                 'jacquette' => $jacquette,
                 'livre_note' => $livreNote,
                 'note' => $note,
@@ -365,8 +349,8 @@ public function findLongestSeries(): object|false
     }
 
     /**
-     * met à jour un manga
-     * jacquette, livre_note, note et commentaire
+     * Met à jour un manga :
+     * jacquette, livre_note, note et commentaire.
      */
     public function updateManga(
         string $slug,
@@ -376,12 +360,12 @@ public function findLongestSeries(): object|false
         ?string $commentaire
     ): bool
     {
-        $slug = strtolower(trim($slug));
+        $slug = Functions::normalizeSlug($slug);
         $numero = (int) $numero;
 
         $jacquette = $this->normalizeNoteValue($jacquette);
         $livreNote = $this->normalizeNoteValue($livreNote);
-        $commentaire = $this->normalizeCommentaire($commentaire);
+        $commentaire = Functions::normalizeCommentaire($commentaire);
         $note = $this->calculateNote($jacquette, $livreNote);
 
         return $this->update(
@@ -399,7 +383,7 @@ public function findLongestSeries(): object|false
     }
 
     /**
-     * getter id
+     * Retourne l'id.
      */
     public function getId(): int
     {
@@ -407,7 +391,7 @@ public function findLongestSeries(): object|false
     }
 
     /**
-     * setter id
+     * Définit l'id.
      */
     public function setId(int $id): self
     {
@@ -416,7 +400,7 @@ public function findLongestSeries(): object|false
     }
 
     /**
-     * getter thumbnail
+     * Retourne le thumbnail.
      */
     public function getThumbnail(): string
     {
@@ -424,7 +408,7 @@ public function findLongestSeries(): object|false
     }
 
     /**
-     * setter thumbnail
+     * Définit le thumbnail.
      */
     public function setThumbnail(string $thumbnail): self
     {
@@ -433,7 +417,7 @@ public function findLongestSeries(): object|false
     }
 
     /**
-     * getter extension
+     * Retourne l'extension.
      */
     public function getExtension(): string
     {
@@ -441,7 +425,7 @@ public function findLongestSeries(): object|false
     }
 
     /**
-     * setter extension
+     * Définit l'extension.
      */
     public function setExtension(string $extension): self
     {
@@ -450,7 +434,7 @@ public function findLongestSeries(): object|false
     }
 
     /**
-     * getter slug
+     * Retourne le slug.
      */
     public function getSlug(): string
     {
@@ -458,16 +442,16 @@ public function findLongestSeries(): object|false
     }
 
     /**
-     * setter slug
+     * Définit le slug.
      */
     public function setSlug(string $slug): self
     {
-        $this->slug = strtolower(trim($slug));
+        $this->slug = Functions::normalizeSlug($slug);
         return $this;
     }
 
     /**
-     * getter livre
+     * Retourne le livre.
      */
     public function getLivre(): string
     {
@@ -475,7 +459,7 @@ public function findLongestSeries(): object|false
     }
 
     /**
-     * setter livre
+     * Définit le livre.
      */
     public function setLivre(string $livre): self
     {
@@ -484,7 +468,7 @@ public function findLongestSeries(): object|false
     }
 
     /**
-     * getter numero
+     * Retourne le numéro.
      */
     public function getNumero(): int
     {
@@ -492,16 +476,16 @@ public function findLongestSeries(): object|false
     }
 
     /**
-     * setter numero
+     * Définit le numéro.
      */
     public function setNumero(int $numero): self
     {
-        $this->numero = $numero;
+        $this->numero = max(0, $numero);
         return $this;
     }
 
     /**
-     * getter jacquette
+     * Retourne la note jacquette.
      */
     public function getJacquette(): ?int
     {
@@ -509,7 +493,7 @@ public function findLongestSeries(): object|false
     }
 
     /**
-     * setter jacquette
+     * Définit la note jacquette.
      */
     public function setJacquette(?int $jacquette): self
     {
@@ -518,7 +502,7 @@ public function findLongestSeries(): object|false
     }
 
     /**
-     * getter livre_note
+     * Retourne la note du livre.
      */
     public function getLivreNote(): ?int
     {
@@ -526,7 +510,7 @@ public function findLongestSeries(): object|false
     }
 
     /**
-     * setter livre_note
+     * Définit la note du livre.
      */
     public function setLivreNote(?int $livre_note): self
     {
@@ -535,7 +519,7 @@ public function findLongestSeries(): object|false
     }
 
     /**
-     * getter note
+     * Retourne la note totale.
      */
     public function getNote(): ?int
     {
@@ -543,7 +527,7 @@ public function findLongestSeries(): object|false
     }
 
     /**
-     * setter note
+     * Définit la note totale.
      */
     public function setNote(?int $note): self
     {
@@ -552,7 +536,7 @@ public function findLongestSeries(): object|false
     }
 
     /**
-     * getter commentaire
+     * Retourne le commentaire.
      */
     public function getCommentaire(): ?string
     {
@@ -560,11 +544,11 @@ public function findLongestSeries(): object|false
     }
 
     /**
-     * setter commentaire
+     * Définit le commentaire.
      */
     public function setCommentaire(?string $commentaire): self
     {
-        $this->commentaire = $this->normalizeCommentaire($commentaire);
+        $this->commentaire = Functions::normalizeCommentaire($commentaire);
         return $this;
     }
 }

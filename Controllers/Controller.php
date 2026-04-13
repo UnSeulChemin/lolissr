@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Core\Functions;
+use App\Core\Session;
 
 abstract class Controller
 {
@@ -79,6 +80,42 @@ abstract class Controller
         }
 
         require $templatePath;
+    }
+
+    /* Redirection simple */
+    protected function redirect(string $url): void
+    {
+        header('Location: ' . $this->basePath . ltrim($url, '/'));
+        exit;
+    }
+
+    /* Redirection avec erreur simple */
+    protected function redirectWithError(string $url, string $message, bool $withOld = true): void
+    {
+        if ($withOld)
+        {
+            Session::set('old', $_POST);
+        }
+
+        Session::set('error', $message);
+        $this->redirect($url);
+    }
+
+    /* Redirection avec erreurs de validation */
+    protected function redirectWithValidationErrors(string $url, array $errors, string $message = 'Le formulaire contient des erreurs.'): void
+    {
+        Session::set('errors', $errors);
+        Session::set('old', $_POST);
+        Session::set('error', $message);
+
+        $this->redirect($url);
+    }
+
+    /* Redirection avec succès */
+    protected function redirectWithSuccess(string $url, string $message): void
+    {
+        Session::set('success', $message);
+        $this->redirect($url);
     }
 
     /* Page 404 */

@@ -78,7 +78,12 @@ class MangaController extends Controller
             $this->title .= ' - Page ' . $currentPage;
         }
 
-        $this->render('manga/collection', ['mangas' => $mangas, 'compteur' => $compteur, 'slugFilter' => null, 'currentPage' => $currentPage]);
+        $this->render('manga/collection', [
+            'mangas' => $mangas,
+            'compteur' => $compteur,
+            'slugFilter' => null,
+            'currentPage' => $currentPage
+        ]);
     }
 
     /**
@@ -97,7 +102,13 @@ class MangaController extends Controller
         }
 
         $this->title = 'Manga | ' . $mangas[0]->livre;
-        $this->render('manga/collection', ['mangas' => $mangas, 'slugFilter' => $slug, 'currentPage' => 1, 'compteur' => 1]);
+
+        $this->render('manga/collection', [
+            'mangas' => $mangas,
+            'slugFilter' => $slug,
+            'currentPage' => 1,
+            'compteur' => 1
+        ]);
     }
 
     /**
@@ -121,8 +132,7 @@ class MangaController extends Controller
 
         if ($goodSlug !== $slug)
         {
-            header('Location: ' . $this->basePath . 'manga/' . rawurlencode($goodSlug) . '/' . $manga->numero);
-            exit;
+            $this->redirect('manga/' . rawurlencode($goodSlug) . '/' . $manga->numero);
         }
 
         $this->title = 'Manga | ' . $manga->livre . ' ' . str_pad((string) $manga->numero, 2, '0', STR_PAD_LEFT);
@@ -160,8 +170,7 @@ class MangaController extends Controller
 
         if ($goodSlug !== $slug)
         {
-            header('Location: ' . $this->basePath . 'manga/update/' . rawurlencode($goodSlug) . '/' . $manga->numero);
-            exit;
+            $this->redirect('manga/update/' . rawurlencode($goodSlug) . '/' . $manga->numero);
         }
 
         $this->title = 'Manga | Modifier';
@@ -202,15 +211,10 @@ class MangaController extends Controller
 
         if ($validator->fails())
         {
-            Session::set('errors', $validator->errors());
-            Session::set('old', $_POST);
-            Session::set('error', 'Le formulaire contient des erreurs.');
-            header('Location: ' . $this->basePath . 'manga/ajouter');
-            exit;
+            $this->redirectWithValidationErrors('manga/ajouter', $validator->errors());
         }
 
         $mangaModel = $this->mangaModel();
-
         $livre = Functions::postString('livre');
         $slug = Functions::normalizeSlug(Functions::postString('slug'));
         $numero = Functions::postInt('numero');
@@ -218,10 +222,7 @@ class MangaController extends Controller
 
         if ($mangaModel->findOneBySlugAndNumero($slug, $numero))
         {
-            Session::set('old', $_POST);
-            Session::set('error', 'Ce manga existe déjà');
-            header('Location: ' . $this->basePath . 'manga/ajouter');
-            exit;
+            $this->redirectWithError('manga/ajouter', 'Ce manga existe déjà');
         }
 
         $thumbnail = preg_replace('/[^A-Za-z0-9\- ]/', '', strtoupper($livre));
@@ -230,10 +231,7 @@ class MangaController extends Controller
 
         if ($thumbnail === '')
         {
-            Session::set('old', $_POST);
-            Session::set('error', 'Nom de fichier invalide');
-            header('Location: ' . $this->basePath . 'manga/ajouter');
-            exit;
+            $this->redirectWithError('manga/ajouter', 'Nom de fichier invalide');
         }
 
         $extension = Functions::fileExtension('image');
@@ -245,10 +243,7 @@ class MangaController extends Controller
 
         if ($extension === null)
         {
-            Session::set('old', $_POST);
-            Session::set('error', 'Extension image introuvable');
-            header('Location: ' . $this->basePath . 'manga/ajouter');
-            exit;
+            $this->redirectWithError('manga/ajouter', 'Extension image introuvable');
         }
 
         $nomFichier = $thumbnail . '.' . $extension;
@@ -258,34 +253,22 @@ class MangaController extends Controller
 
         if (!is_dir($dossier))
         {
-            Session::set('old', $_POST);
-            Session::set('error', 'Dossier image introuvable');
-            header('Location: ' . $this->basePath . 'manga/ajouter');
-            exit;
+            $this->redirectWithError('manga/ajouter', 'Dossier image introuvable');
         }
 
         if ($tmpName === null)
         {
-            Session::set('old', $_POST);
-            Session::set('error', 'Fichier temporaire introuvable');
-            header('Location: ' . $this->basePath . 'manga/ajouter');
-            exit;
+            $this->redirectWithError('manga/ajouter', 'Fichier temporaire introuvable');
         }
 
         if (file_exists($destination))
         {
-            Session::set('old', $_POST);
-            Session::set('error', 'Une image avec ce nom existe déjà');
-            header('Location: ' . $this->basePath . 'manga/ajouter');
-            exit;
+            $this->redirectWithError('manga/ajouter', 'Une image avec ce nom existe déjà');
         }
 
         if (!move_uploaded_file($tmpName, $destination))
         {
-            Session::set('old', $_POST);
-            Session::set('error', 'Erreur lors de l’upload de l’image');
-            header('Location: ' . $this->basePath . 'manga/ajouter');
-            exit;
+            $this->redirectWithError('manga/ajouter', 'Erreur lors de l’upload de l’image');
         }
 
         $insert = $mangaModel->insert([
@@ -306,16 +289,11 @@ class MangaController extends Controller
                 unlink($destination);
             }
 
-            Session::set('old', $_POST);
-            Session::set('error', 'Erreur lors de l’enregistrement du manga');
-            header('Location: ' . $this->basePath . 'manga/ajouter');
-            exit;
+            $this->redirectWithError('manga/ajouter', 'Erreur lors de l’enregistrement du manga');
         }
 
         Session::forget(['errors', 'old']);
-        Session::set('success', 'Manga ajouté avec succès');
-        header('Location: ' . $this->basePath . 'manga/ajouter');
-        exit;
+        $this->redirectWithSuccess('manga/ajouter', 'Manga ajouté avec succès');
     }
 
     /**
@@ -357,11 +335,7 @@ class MangaController extends Controller
 
         if ($validator->fails())
         {
-            Session::set('errors', $validator->errors());
-            Session::set('old', $_POST);
-            Session::set('error', 'Le formulaire contient des erreurs.');
-            header('Location: ' . $this->basePath . 'manga/update/' . rawurlencode($slug) . '/' . $numero);
-            exit;
+            $this->redirectWithValidationErrors('manga/update/' . rawurlencode($slug) . '/' . $numero, $validator->errors());
         }
 
         $jacquette = $this->normalizePostedNote($_POST['jacquette'] ?? null);
@@ -372,15 +346,10 @@ class MangaController extends Controller
 
         if (!$update)
         {
-            Session::set('old', $_POST);
-            Session::set('error', 'Erreur lors de la mise à jour');
-            header('Location: ' . $this->basePath . 'manga/update/' . rawurlencode($slug) . '/' . $numero);
-            exit;
+            $this->redirectWithError('manga/update/' . rawurlencode($slug) . '/' . $numero, 'Erreur lors de la mise à jour');
         }
 
         Session::forget(['errors', 'old']);
-        Session::set('success', 'Manga mis à jour avec succès');
-        header('Location: ' . $this->basePath . 'manga/' . rawurlencode($slug) . '/' . $numero);
-        exit;
+        $this->redirectWithSuccess('manga/' . rawurlencode($slug) . '/' . $numero, 'Manga mis à jour avec succès');
     }
 }

@@ -2,15 +2,17 @@
 
 namespace App\Core;
 
+use App\Controllers\ErrorController;
+
 class Router
 {
     /**
-     * Liste des routes enregistrées
+     * Liste des routes enregistrées.
      */
     private array $routes = [];
 
     /**
-     * Enregistre une route GET
+     * Enregistre une route GET.
      */
     public function get(string $path, string $action): void
     {
@@ -18,7 +20,7 @@ class Router
     }
 
     /**
-     * Enregistre une route POST
+     * Enregistre une route POST.
      */
     public function post(string $path, string $action): void
     {
@@ -26,7 +28,7 @@ class Router
     }
 
     /**
-     * Enregistre une route
+     * Enregistre une route.
      */
     private function addRoute(string $method, string $path, string $action): void
     {
@@ -58,33 +60,29 @@ class Router
     }
 
     /**
-     * Lance le dispatch
+     * Lance le dispatch de la requête.
      */
     public function dispatch(string $uri, string $method): void
     {
         $path = parse_url($uri, PHP_URL_PATH) ?? '/';
         $basePath = rtrim(Functions::basePath(), '/');
 
-        if ($basePath !== '' && $basePath !== '/')
+        if ($basePath !== '' && $basePath !== '/' && str_starts_with($path, $basePath))
         {
-            if (str_starts_with($path, $basePath))
-            {
-                $path = substr($path, strlen($basePath));
-            }
+            $path = substr($path, strlen($basePath));
         }
 
         $path = $path === '' ? '/' : $path;
         $method = strtoupper($method);
 
-        $routes = $this->routes[$method] ?? [];
-
-        foreach ($routes as $route)
+        foreach ($this->routes[$method] ?? [] as $route)
         {
             if (preg_match($route['pattern'], $path, $matches))
             {
                 array_shift($matches);
 
                 $params = [];
+
                 foreach ($route['params'] as $index => $name)
                 {
                     $params[$name] = $matches[$index] ?? null;
@@ -95,6 +93,26 @@ class Router
             }
         }
 
+        $allowedMethods = $this->findAllowedMethods($path);
+
+        if (!empty($allowedMethods))
+        {
+            header('Allow: ' . implode(', ', $allowedMethods));
+
+            $controller = new ErrorController();
+            $controller->methodNotAllowed('Méthode non autorisée');
+            return;
+        }
+
+        $controller = new ErrorController();
+        $controller->notFound('Page introuvable');
+    }
+
+    /**
+     * Retourne les méthodes autorisées pour une route trouvée.
+     */
+    private function findAllowedMethods(string $path): array
+    {
         $allowedMethods = [];
 
         foreach ($this->routes as $registeredMethod => $registeredRoutes)
@@ -108,26 +126,11 @@ class Router
             }
         }
 
-        if (!empty($allowedMethods))
-        {
-            $allowedMethods = array_unique($allowedMethods);
-
-            header('Allow: ' . implode(', ', $allowedMethods));
-            http_response_code(405);
-
-            $controller = new \App\Controllers\MainController();
-            $controller->renderError('405', 405);
-            return;
-        }
-
-        http_response_code(404);
-
-        $controller = new \App\Controllers\MainController();
-        $controller->renderError('404', 404);
+        return array_values(array_unique($allowedMethods));
     }
 
     /**
-     * Appelle le controller et la méthode
+     * Appelle le controller et la méthode.
      */
     private function callAction(string $action, array $params = []): void
     {

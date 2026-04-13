@@ -116,12 +116,7 @@ class Form
     /**
      * Ajoute un select avec options.
      */
-    public function addSelect(
-        string $name,
-        array $options,
-        array $attributes = [],
-        mixed $selected = null
-    ): self
+    public function addSelect(string $name, array $options, array $attributes = [], mixed $selected = null): self
     {
         $name = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
 
@@ -133,10 +128,7 @@ class Form
         {
             $valueEscaped = htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
             $textEscaped = htmlspecialchars((string) $text, ENT_QUOTES, 'UTF-8');
-
-            $isSelected = (string) $selected === (string) $value
-                ? ' selected'
-                : '';
+            $isSelected = (string) $selected === (string) $value ? ' selected' : '';
 
             $this->formCode .= "<option value=\"{$valueEscaped}\"{$isSelected}>{$textEscaped}</option>";
         }
@@ -177,8 +169,7 @@ class Form
             'required',
             'autofocus',
             'novalidate',
-            'formnovalidate',
-            'selected'
+            'formnovalidate'
         ];
 
         foreach ($attributes as $attribute => $value)
@@ -196,7 +187,6 @@ class Form
             }
 
             $value = htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
-
             $string .= " {$attribute}=\"{$value}\"";
         }
 

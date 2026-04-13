@@ -9,12 +9,12 @@ use PDOStatement;
 class Model
 {
     /**
-     * nom de la table
+     * Nom de la table.
      */
     protected string $table;
 
     /**
-     * connexion PDO
+     * Connexion PDO.
      */
     protected ?PDO $db = null;
 
@@ -24,36 +24,38 @@ class Model
     }
 
     /**
-     * sécurise le nom de table
+     * Retourne le nom de table sécurisé.
      */
     protected function getTable(): string
     {
-        return preg_replace('/[^a-zA-Z0-9_]/', '', $this->table);
+        return preg_replace('/[^a-zA-Z0-9_]/', '', $this->table) ?? '';
     }
 
     /**
-     * sécurise le nom d'une colonne
+     * Retourne un nom de colonne sécurisé.
      */
     protected function cleanField(string $field): string
     {
-        return preg_replace('/[^a-zA-Z0-9_]/', '', $field);
+        return preg_replace('/[^a-zA-Z0-9_]/', '', $field) ?? '';
     }
 
     /**
-     * récup 1 ligne par id
+     * Récupère une ligne par id.
      */
     public function find(int $id): object|false
     {
-        return $this->requete(
+        $query = $this->requete(
             "SELECT *
-             FROM {$this->getTable()}
-             WHERE id = ?",
+            FROM {$this->getTable()}
+            WHERE id = ?",
             [$id]
-        )->fetch();
+        );
+
+        return $query ? $query->fetch() : false;
     }
 
     /**
-     * récup plusieurs lignes selon conditions
+     * Récupère plusieurs lignes selon des conditions.
      */
     public function findBy(array $targets): array
     {
@@ -68,8 +70,19 @@ class Model
         foreach ($targets as $field => $value)
         {
             $field = $this->cleanField($field);
+
+            if ($field === '')
+            {
+                continue;
+            }
+
             $fields[] = "{$field} = ?";
             $values[] = $value;
+        }
+
+        if (empty($fields))
+        {
+            return [];
         }
 
         $sql = "SELECT *
@@ -82,7 +95,7 @@ class Model
     }
 
     /**
-     * insert générique
+     * Insert générique.
      */
     public function insert(array $datas): bool
     {
@@ -97,9 +110,21 @@ class Model
 
         foreach ($datas as $field => $value)
         {
-            $fields[] = $this->cleanField($field);
+            $field = $this->cleanField($field);
+
+            if ($field === '')
+            {
+                continue;
+            }
+
+            $fields[] = $field;
             $placeholders[] = '?';
             $values[] = $value;
+        }
+
+        if (empty($fields))
+        {
+            return false;
         }
 
         $sql = "INSERT INTO {$this->getTable()} (
@@ -113,7 +138,7 @@ class Model
     }
 
     /**
-     * update générique
+     * Update générique.
      */
     public function update(array $datas, array $where): bool
     {
@@ -129,6 +154,12 @@ class Model
         foreach ($datas as $field => $value)
         {
             $field = $this->cleanField($field);
+
+            if ($field === '')
+            {
+                continue;
+            }
+
             $fields[] = "{$field} = ?";
             $values[] = $value;
         }
@@ -136,8 +167,19 @@ class Model
         foreach ($where as $field => $value)
         {
             $field = $this->cleanField($field);
+
+            if ($field === '')
+            {
+                continue;
+            }
+
             $conditions[] = "{$field} = ?";
             $values[] = $value;
+        }
+
+        if (empty($fields) || empty($conditions))
+        {
+            return false;
         }
 
         $sql = "UPDATE {$this->getTable()}
@@ -148,20 +190,20 @@ class Model
     }
 
     /**
-     * delete par id
+     * Supprime une ligne par id.
      */
     public function delete(int $id): bool
     {
         return $this->requete(
             "DELETE
-             FROM {$this->getTable()}
-             WHERE id = ?",
+            FROM {$this->getTable()}
+            WHERE id = ?",
             [$id]
         ) !== false;
     }
 
     /**
-     * requête SQL
+     * Exécute une requête SQL.
      */
     protected function requete(string $sql, ?array $attributes = null): PDOStatement|false
     {
@@ -179,12 +221,7 @@ class Model
                 return false;
             }
 
-            if (!$query->execute($attributes))
-            {
-                return false;
-            }
-
-            return $query;
+            return $query->execute($attributes) ? $query : false;
         }
 
         return $this->db->query($sql);

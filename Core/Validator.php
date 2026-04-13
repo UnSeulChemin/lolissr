@@ -54,6 +54,14 @@ class Validator
     }
 
     /**
+     * Vérifie si une validation doit être ignorée.
+     */
+    private function shouldSkip(string $field): bool
+    {
+        return $this->hasError($field) || $this->isNullableAndEmpty($field);
+    }
+
+    /**
      * Autorise un champ vide.
      */
     public function nullable(string $field): self
@@ -87,11 +95,11 @@ class Validator
     }
 
     /**
-     * Vérifie que c'est une string.
+     * Vérifie que c'est une chaîne.
      */
     public function string(string $field, ?string $message = null): self
     {
-        if ($this->hasError($field) || $this->isNullableAndEmpty($field))
+        if ($this->shouldSkip($field))
         {
             return $this;
         }
@@ -111,7 +119,7 @@ class Validator
      */
     public function integer(string $field, ?string $message = null): self
     {
-        if ($this->hasError($field) || $this->isNullableAndEmpty($field))
+        if ($this->shouldSkip($field))
         {
             return $this;
         }
@@ -131,7 +139,7 @@ class Validator
      */
     public function min(string $field, int $min, ?string $message = null): self
     {
-        if ($this->hasError($field) || $this->isNullableAndEmpty($field))
+        if ($this->shouldSkip($field))
         {
             return $this;
         }
@@ -151,7 +159,7 @@ class Validator
      */
     public function max(string $field, int $max, ?string $message = null): self
     {
-        if ($this->hasError($field) || $this->isNullableAndEmpty($field))
+        if ($this->shouldSkip($field))
         {
             return $this;
         }
@@ -171,7 +179,7 @@ class Validator
      */
     public function maxLength(string $field, int $max, ?string $message = null): self
     {
-        if ($this->hasError($field) || $this->isNullableAndEmpty($field))
+        if ($this->shouldSkip($field))
         {
             return $this;
         }
@@ -191,7 +199,7 @@ class Validator
      */
     public function in(string $field, array $allowedValues, ?string $message = null): self
     {
-        if ($this->hasError($field) || $this->isNullableAndEmpty($field))
+        if ($this->shouldSkip($field))
         {
             return $this;
         }
@@ -220,7 +228,8 @@ class Validator
             !isset($this->files[$field]) ||
             !isset($this->files[$field]['error']) ||
             $this->files[$field]['error'] === UPLOAD_ERR_NO_FILE
-        ) {
+        )
+        {
             $this->errors[$field] = $message ?? "Le fichier {$field} est obligatoire.";
         }
 

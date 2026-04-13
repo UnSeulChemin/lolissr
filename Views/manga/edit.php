@@ -11,6 +11,8 @@ $success = Session::pull('success');
 $jacquetteValue = $old['jacquette'] ?? ($manga->jacquette ?? '');
 $livreNoteValue = $old['livre_note'] ?? ($manga->livre_note ?? '');
 $commentaireValue = $old['commentaire'] ?? ($manga->commentaire ?? '');
+
+$cancelUrl = $basePath . 'manga/' . rawurlencode($manga->slug) . '/' . (int) $manga->numero;
 ?>
 
 <section class="form-box">
@@ -33,14 +35,10 @@ $commentaireValue = $old['commentaire'] ?? ($manga->commentaire ?? '');
     <?php endif; ?>
 
     <?php
-
     $form = new Form();
 
     echo $form
-        ->startForm(
-            $basePath . 'manga/update/' . rawurlencode($manga->slug) . '/' . (int) $manga->numero,
-            'post'
-        )
+        ->startForm($basePath . 'manga/update/' . rawurlencode($manga->slug) . '/' . (int) $manga->numero, 'post')
 
         ->startDiv(['class' => 'form-row'])
         ->addLabelFor('jacquette', 'Note jacquette')
@@ -92,29 +90,15 @@ $commentaireValue = $old['commentaire'] ?? ($manga->commentaire ?? '');
         ->endDiv()
 
         ->startDiv(['class' => 'form-actions'])
-        ->addButton(
-            'Enregistrer',
-            [
-                'type' => 'submit',
-                'class' => 'link-edit full-width'
-            ]
-        )
+        ->addButton('Enregistrer', ['type' => 'submit', 'class' => 'link-edit full-width'])
         ->endDiv()
 
         ->startDiv(['class' => 'form-actions-secondary'])
-        ->addButton(
-            'Annuler',
-            [
-                'type' => 'button',
-                'class' => 'link-section',
-                'onclick' => "window.location.href='{$basePath}manga/" . rawurlencode($manga->slug) . "/" . (int) $manga->numero . "'"
-            ]
-        )
+        ->addButton('Annuler', ['type' => 'button', 'class' => 'link-section', 'onclick' => "window.location.href='{$cancelUrl}'"])
         ->endDiv()
 
         ->endForm()
-        ->create();
-
+        ->render();
     ?>
 
     <?php if (!empty($errors['jacquette'])): ?>

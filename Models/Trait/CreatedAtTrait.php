@@ -3,16 +3,17 @@
 namespace App\Models\Trait;
 
 use DateTimeImmutable;
+use Exception;
 
 trait CreatedAtTrait
 {
     /**
-     * date de création
+     * Date de création.
      */
     protected ?DateTimeImmutable $created_at = null;
 
     /**
-     * retourne la date de création
+     * Retourne la date de création brute.
      */
     public function getCreatedAt(): ?DateTimeImmutable
     {
@@ -20,11 +21,35 @@ trait CreatedAtTrait
     }
 
     /**
-     * définit la date de création
+     * Retourne la date formatée.
+     * Format par défaut : d/m/Y H:i
      */
-    public function setCreatedAt(string $created_at): self
+    public function getCreatedAtFormatted(string $format = 'd/m/Y H:i'): ?string
     {
-        $this->created_at = new DateTimeImmutable($created_at);
+        return $this->created_at?->format($format);
+    }
+
+    /**
+     * Définit la date de création.
+     */
+    public function setCreatedAt(?string $created_at): self
+    {
+        if ($created_at === null || $created_at === '')
+        {
+            $this->created_at = null;
+            return $this;
+        }
+
+        try
+        {
+            $this->created_at = new DateTimeImmutable($created_at);
+        }
+
+        catch (Exception)
+        {
+            $this->created_at = null;
+        }
+
         return $this;
     }
 }
