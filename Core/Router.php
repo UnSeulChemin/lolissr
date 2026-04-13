@@ -95,6 +95,31 @@ class Router
             }
         }
 
+        $allowedMethods = [];
+
+        foreach ($this->routes as $registeredMethod => $registeredRoutes)
+        {
+            foreach ($registeredRoutes as $route)
+            {
+                if (preg_match($route['pattern'], $path))
+                {
+                    $allowedMethods[] = $registeredMethod;
+                }
+            }
+        }
+
+        if (!empty($allowedMethods))
+        {
+            $allowedMethods = array_unique($allowedMethods);
+
+            header('Allow: ' . implode(', ', $allowedMethods));
+            http_response_code(405);
+
+            $controller = new \App\Controllers\MainController();
+            $controller->renderError('405', 405);
+            return;
+        }
+
         http_response_code(404);
 
         $controller = new \App\Controllers\MainController();
