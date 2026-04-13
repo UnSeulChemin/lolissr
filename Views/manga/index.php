@@ -2,13 +2,17 @@
 
     <section class="dashboard-header">
 
-        <h1 class="dashboard-title-main">
-            Manga
-        </h1>
+        <div class="dashboard-title-box">
 
-        <p class="dashboard-subtitle">
-            Gère ta collection, ajoute des mangas et accède à tes liens utiles.
-        </p>
+            <h1 class="dashboard-title-main">
+                📚 Manga
+            </h1>
+
+            <p class="dashboard-subtitle">
+                Gère ta collection, ajoute des mangas et accède à tes liens utiles.
+            </p>
+
+        </div>
 
     </section>
 
