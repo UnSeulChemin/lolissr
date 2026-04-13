@@ -1,6 +1,5 @@
 /* =========================================
    HEADER
-   Barre du haut + navigation principale
 ========================================= */
 
 header
@@ -18,7 +17,6 @@ header nav
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: var(--color-violet);
 }
 
 header ul
@@ -33,54 +31,88 @@ header ul
 
 .link-menu
 {
-    display: inline-flex;
+    position: relative;
+
+    display: flex;
     align-items: center;
     justify-content: center;
-    padding: 10px 22px;
+
+    width: 52px;
+    height: 52px;
+
+    font-size: 26px;
+
     border-radius: 999px;
-    font-family: var(--font-family-base);
-    font-size: 1.08rem;
-    font-weight: 600;
-    color: #ffffff;
+
+    background: rgba(255, 255, 255, 0.06);
+
+    backdrop-filter: blur(6px);
+
     text-decoration: none;
-    transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
-}
 
-.link-menu:hover
-{
-    background: rgba(255, 255, 255, 0.14);
-    transform: translateY(-1px);
-}
-
-.link-menu.active
-{
-    background: rgba(255, 255, 255, 0.16);
-    box-shadow: 0 8px 22px var(--shadow-violet);
-    font-weight: 700;
-}
-
-.link-menu.active:hover
-{
-    background: rgba(255, 255, 255, 0.20);
-    box-shadow: 0 10px 24px var(--shadow-violet-hover);
-}
-
-.link-menu
-{
     transition:
-        background-color 0.2s ease,
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
+        transform 0.25s ease,
+        background-color 0.25s ease,
+        box-shadow 0.25s ease,
+        filter 0.25s ease;
 }
+
+/* effet glass highlight */
+
+.link-menu::before
+{
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    border-radius: inherit;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,0.35),
+            transparent 45%
+        );
+
+    opacity: 0.4;
+
+    pointer-events: none;
+}
+
+/* Hover */
 
 .link-menu:hover
 {
     transform: translateY(-2px);
-    background-color: rgba(255, 255, 255, 0.10);
+
+    background: rgba(255,255,255,0.12);
+
+    box-shadow:
+        0 0 0 2px rgba(255,255,255,0.22),
+        0 8px 18px rgba(123,44,255,0.24);
 }
+
+/* Actif premium */
 
 .link-menu.active
 {
-    background-color: rgba(255, 255, 255, 0.14);
-    box-shadow: 0 8px 20px rgba(255, 255, 255, 0.08);
+    transform: scale(1.10);
+
+    background: rgba(255,255,255,0.18);
+
+    box-shadow:
+        0 0 0 3px rgba(255,255,255,0.35),
+        0 0 20px rgba(123,44,255,0.65),
+        0 10px 26px rgba(123,44,255,0.30);
+
+    filter:
+        drop-shadow(0 0 8px rgba(255,255,255,0.22));
+}
+
+/* Hover actif */
+
+.link-menu.active:hover
+{
+    background: rgba(255,255,255,0.22);
 }

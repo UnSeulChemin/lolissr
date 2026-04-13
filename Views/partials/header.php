@@ -1,41 +1,41 @@
 <?php
-$currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '/';
+
+/*
+|--------------------------------------------------------------------------
+| Détection de la page active
+|--------------------------------------------------------------------------
+*/
+
+$currentPath   = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '/';
 $cleanBasePath = rtrim($basePath, '/');
 
-$relativePath = $currentPath;
+/* Retire le basePath si présent */
 
-if (
-    $cleanBasePath !== ''
-    && $cleanBasePath !== '/'
-    && str_starts_with($currentPath, $cleanBasePath)
-) {
-    $relativePath = substr($currentPath, strlen($cleanBasePath));
+if ($cleanBasePath !== '' && $cleanBasePath !== '/' && str_starts_with($currentPath, $cleanBasePath))
+{
+    $currentPath = substr($currentPath, strlen($cleanBasePath));
 }
 
-$relativePath = $relativePath === '' ? '/' : $relativePath;
+/* Normalise */
 
-$activeHome = $relativePath === '/' ? 'active' : '';
-$activeManga = str_starts_with($relativePath, '/manga') ? 'active' : '';
+$currentPath = $currentPath === '' ? '/' : $currentPath;
+
+/* États actifs */
+
+$activeHome  = $currentPath === '/' ? 'active' : '';
+$activeManga = ($currentPath === '/manga' || str_starts_with($currentPath, '/manga/')) ? 'active' : '';
+
 ?>
 
 <header>
-    <nav class="flex-center-center">
-
-        <ul class="flex-gap-50">
+    <nav>
+        <ul>
             <li>
-                <a class="link-menu <?= $activeHome; ?>"
-                   href="<?= $basePath; ?>">
-                   Accueil
-                </a>
+                <a class="link-menu <?= $activeHome ?>" href="<?= $basePath ?>" title="Accueil">🏠</a>
             </li>
-
             <li>
-                <a class="link-menu <?= $activeManga; ?>"
-                   href="<?= $basePath; ?>manga">
-                   Manga
-                </a>
+                <a class="link-menu <?= $activeManga ?>" href="<?= $basePath ?>manga" title="Manga">📚</a>
             </li>
         </ul>
-
     </nav>
 </header>

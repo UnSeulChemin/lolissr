@@ -12,8 +12,8 @@
     color: white;
     text-decoration: none;
     font-weight: 700;
-    background: var(--violet-main);
-    box-shadow: 0 8px 18px var(--violet-shadow);
+    background: var(--gradient-violet);
+    box-shadow: 0 8px 18px var(--shadow-violet);
     transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
@@ -41,5 +41,5 @@
 .link-section:hover
 {
     transform: translateY(-2px);
-    box-shadow: 0 12px 24px var(--violet-shadow-hover);
+    box-shadow: 0 12px 24px var(--shadow-violet-hover);
 }
