@@ -1,3 +1,18 @@
+<?php
+
+use App\Core\Form;
+use App\Core\Session;
+
+$errors = Session::get('errors', []);
+$old = Session::get('old', []);
+$error = Session::pull('error');
+$success = Session::pull('success');
+
+$jacquetteValue = $old['jacquette'] ?? ($manga->jacquette ?? '');
+$livreNoteValue = $old['livre_note'] ?? ($manga->livre_note ?? '');
+$commentaireValue = $old['commentaire'] ?? ($manga->commentaire ?? '');
+?>
+
 <section class="form-box">
 
     <h1 class="card-banner">
@@ -5,114 +20,120 @@
         - Tome <?= str_pad((string) ((int) $manga->numero), 2, '0', STR_PAD_LEFT) ?>
     </h1>
 
-    <?php if (!empty($_SESSION['error'])): ?>
+    <?php if (!empty($error)): ?>
         <div class="alert-error">
-            <?= htmlspecialchars($_SESSION['error']) ?>
+            <?= htmlspecialchars($error) ?>
         </div>
-        <?php unset($_SESSION['error']); ?>
     <?php endif; ?>
 
-    <?php if (!empty($_SESSION['success'])): ?>
+    <?php if (!empty($success)): ?>
         <div class="alert-success">
-            <?= htmlspecialchars($_SESSION['success']) ?>
+            <?= htmlspecialchars($success) ?>
         </div>
-        <?php unset($_SESSION['success']); ?>
     <?php endif; ?>
 
-<?php
+    <?php
 
-use App\Core\Form;
+    $form = new Form();
 
-$form = new Form();
+    echo $form
+        ->startForm(
+            $basePath . 'manga/update/' . rawurlencode($manga->slug) . '/' . (int) $manga->numero,
+            'post'
+        )
 
-echo $form
-    ->startForm(
-        $basePath . 'manga/update/' . rawurlencode($manga->slug) . '/' . (int) $manga->numero,
-        'post'
-    )
+        ->startDiv(['class' => 'form-row'])
+        ->addLabelFor('jacquette', 'Note jacquette')
+        ->addSelect(
+            'jacquette',
+            [
+                '' => 'Choisir',
+                1 => '1',
+                2 => '2',
+                3 => '3',
+                4 => '4',
+                5 => '5'
+            ],
+            ['id' => 'jacquette', 'class' => 'form-select'],
+            $jacquetteValue
+        )
+        ->endDiv()
 
-    /* NOTE JACQUETTE */
+        ->startDiv(['class' => 'form-row'])
+        ->addLabelFor('livre_note', 'Note livre')
+        ->addSelect(
+            'livre_note',
+            [
+                '' => 'Choisir',
+                1 => '1',
+                2 => '2',
+                3 => '3',
+                4 => '4',
+                5 => '5'
+            ],
+            ['id' => 'livre_note', 'class' => 'form-select'],
+            $livreNoteValue
+        )
+        ->endDiv()
 
-    ->startDiv(['class' => 'form-row'])
-    ->addLabelFor('jacquette', 'Note jacquette')
-    ->addSelect(
-        'jacquette',
-        [
-            '' => 'Choisir',
-            1 => '1',
-            2 => '2',
-            3 => '3',
-            4 => '4',
-            5 => '5'
-        ],
-        ['id' => 'jacquette', 'class' => 'form-select'],
-        $manga->jacquette
-    )
-    ->endDiv()
+        ->startDiv(['class' => 'form-column'])
+        ->addLabelFor('commentaire', 'Commentaire')
+        ->addTextarea(
+            'commentaire',
+            $commentaireValue,
+            [
+                'id' => 'commentaire',
+                'rows' => 5,
+                'maxlength' => 1000,
+                'class' => 'form-textarea',
+                'placeholder' => 'Ex : défaut en haut de la jacquette'
+            ]
+        )
+        ->endDiv()
 
-    /* NOTE LIVRE */
+        ->startDiv(['class' => 'form-actions'])
+        ->addButton(
+            'Enregistrer',
+            [
+                'type' => 'submit',
+                'class' => 'link-edit full-width'
+            ]
+        )
+        ->endDiv()
 
-    ->startDiv(['class' => 'form-row'])
-    ->addLabelFor('livre_note', 'Note livre')
-    ->addSelect(
-        'livre_note',
-        [
-            '' => 'Choisir',
-            1 => '1',
-            2 => '2',
-            3 => '3',
-            4 => '4',
-            5 => '5'
-        ],
-        ['id' => 'livre_note', 'class' => 'form-select'],
-        $manga->livre_note
-    )
-    ->endDiv()
+        ->startDiv(['class' => 'form-actions-secondary'])
+        ->addButton(
+            'Annuler',
+            [
+                'type' => 'button',
+                'class' => 'link-section',
+                'onclick' => "window.location.href='{$basePath}manga/" . rawurlencode($manga->slug) . "/" . (int) $manga->numero . "'"
+            ]
+        )
+        ->endDiv()
 
-    /* COMMENTAIRE */
+        ->endForm()
+        ->create();
 
-    ->startDiv(['class' => 'form-column'])
-    ->addLabelFor('commentaire', 'Commentaire')
-    ->addTextarea(
-        'commentaire',
-        $manga->commentaire ?? '',
-        [
-            'id' => 'commentaire',
-            'rows' => 5,
-            'maxlength' => 255,
-            'class' => 'form-textarea',
-            'placeholder' => 'Ex : défaut en haut de la jacquette'
-        ]
-    )
-    ->endDiv()
+    ?>
 
-    /* BOUTONS */
+    <?php if (!empty($errors['jacquette'])): ?>
+        <p class="form-error">
+            <?= htmlspecialchars($errors['jacquette']) ?>
+        </p>
+    <?php endif; ?>
 
-    ->startDiv(['class' => 'form-actions'])
-    ->addButton(
-        'Enregistrer',
-        [
-            'type' => 'submit',
-            'class' => 'link-edit full-width'
-        ]
-    )
-    ->endDiv()
+    <?php if (!empty($errors['livre_note'])): ?>
+        <p class="form-error">
+            <?= htmlspecialchars($errors['livre_note']) ?>
+        </p>
+    <?php endif; ?>
 
-    ->startDiv(['class' => 'form-actions-secondary'])
-    ->addButton(
-        'Annuler',
-        [
-            'type' => 'button',
-            'class' => 'link-section',
-            'onclick' => "window.location.href='{$basePath}manga/collection/" . rawurlencode($manga->slug) . "/" . (int) $manga->numero . "'"
-        ]
-    )
-    ->endDiv()
-
-    ->endForm()
-    ->create();
-
-?>
+    <?php if (!empty($errors['commentaire'])): ?>
+        <p class="form-error">
+            <?= htmlspecialchars($errors['commentaire']) ?>
+        </p>
+    <?php endif; ?>
 
     <p class="note-info">
         Note totale actuelle :
@@ -122,6 +143,8 @@ echo $form
     </p>
 
 </section>
+
+<?php Session::forget(['errors', 'old']); ?>
 
 <script>
 function updateNoteTotal() {
@@ -143,6 +166,5 @@ function updateNoteTotal() {
 document.getElementById('jacquette').addEventListener('change', updateNoteTotal);
 document.getElementById('livre_note').addEventListener('change', updateNoteTotal);
 
-/* ✅ recalcul au chargement */
 updateNoteTotal();
 </script>

@@ -1,3 +1,13 @@
+<?php
+
+use App\Core\Session;
+
+$errors = Session::get('errors', []);
+$old = Session::get('old', []);
+$error = Session::pull('error');
+$success = Session::pull('success');
+?>
+
 <section class="section-content">
 
     <section class="form-box">
@@ -6,22 +16,20 @@
             Ajouter un manga
         </h1>
 
-        <?php if (!empty($_SESSION['error'])): ?>
+        <?php if (!empty($error)): ?>
             <div class="alert-error">
-                <?= htmlspecialchars($_SESSION['error']) ?>
+                <?= htmlspecialchars($error) ?>
             </div>
-            <?php unset($_SESSION['error']); ?>
         <?php endif; ?>
 
-        <?php if (!empty($_SESSION['success'])): ?>
+        <?php if (!empty($success)): ?>
             <div class="alert-success">
-                <?= htmlspecialchars($_SESSION['success']) ?>
+                <?= htmlspecialchars($success) ?>
             </div>
-            <?php unset($_SESSION['success']); ?>
         <?php endif; ?>
 
         <form class="form-add"
-              action="<?= $basePath; ?>manga/ajouterTraitement"
+              action="<?= $basePath; ?>manga/ajouter"
               method="post"
               enctype="multipart/form-data">
 
@@ -36,8 +44,14 @@
                     name="livre"
                     id="livre"
                     placeholder="Ex : To Love Ru"
-                    value="<?= htmlspecialchars($_POST['livre'] ?? '') ?>"
+                    value="<?= htmlspecialchars($old['livre'] ?? '') ?>"
                     required>
+
+                <?php if (!empty($errors['livre'])): ?>
+                    <p class="form-error">
+                        <?= htmlspecialchars($errors['livre']) ?>
+                    </p>
+                <?php endif; ?>
 
             </div>
 
@@ -52,8 +66,14 @@
                     name="slug"
                     id="slug"
                     placeholder="Ex : to-love-ru"
-                    value="<?= htmlspecialchars($_POST['slug'] ?? '') ?>"
+                    value="<?= htmlspecialchars($old['slug'] ?? '') ?>"
                     required>
+
+                <?php if (!empty($errors['slug'])): ?>
+                    <p class="form-error">
+                        <?= htmlspecialchars($errors['slug']) ?>
+                    </p>
+                <?php endif; ?>
 
             </div>
 
@@ -69,8 +89,14 @@
                     id="numero"
                     min="1"
                     placeholder="Ex : 1"
-                    value="<?= htmlspecialchars($_POST['numero'] ?? '') ?>"
+                    value="<?= htmlspecialchars($old['numero'] ?? '') ?>"
                     required>
+
+                <?php if (!empty($errors['numero'])): ?>
+                    <p class="form-error">
+                        <?= htmlspecialchars($errors['numero']) ?>
+                    </p>
+                <?php endif; ?>
 
             </div>
 
@@ -99,8 +125,14 @@
                     name="commentaire"
                     id="commentaire"
                     rows="3"
-                    maxlength="255"
-                    placeholder="Ex : défaut en haut de la jacquette"><?= htmlspecialchars($_POST['commentaire'] ?? '') ?></textarea>
+                    maxlength="1000"
+                    placeholder="Ex : défaut en haut de la jacquette"><?= htmlspecialchars($old['commentaire'] ?? '') ?></textarea>
+
+                <?php if (!empty($errors['commentaire'])): ?>
+                    <p class="form-error">
+                        <?= htmlspecialchars($errors['commentaire']) ?>
+                    </p>
+                <?php endif; ?>
 
             </div>
 
@@ -119,6 +151,8 @@
     </section>
 
 </section>
+
+<?php Session::forget(['errors', 'old']); ?>
 
 <script>
 document.getElementById('livre').addEventListener('input', function () {
