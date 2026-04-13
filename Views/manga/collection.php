@@ -61,11 +61,11 @@ $currentPage = $currentPage ?? 1;
     </section>
 
     <?php if (!$isCollection && isset($compteur)): ?>
-        <nav class="flex-center-center-gap-25 m-t-30">
+        <nav class="manga-pagination">
 
             <?php for ($getId = 1; $getId <= $compteur; $getId++): ?>
-                <a class="link-paginate <?= ($currentPage === $getId) ? 'active' : '' ?>"
-                   href="<?= $basePath; ?>manga/collection/page/<?= $getId; ?>">
+                <a class="manga-pagination-link <?= ($currentPage === $getId) ? 'active' : '' ?>"
+                href="<?= $basePath; ?>manga/collection/page/<?= $getId; ?>">
                     <?= $getId; ?>
                 </a>
             <?php endfor; ?>
@@ -74,8 +74,9 @@ $currentPage = $currentPage ?? 1;
     <?php endif; ?>
 
     <?php if ($isCollection): ?>
-        <div class="m-t-30">
-            <a class="link-section" href="<?= $basePath; ?>manga/collection">
+        <div class="manga-back-wrapper">
+            <a href="<?= $basePath; ?>manga/collection"
+            class="manga-form-submit manga-back-button">
                 Retour
             </a>
         </div>

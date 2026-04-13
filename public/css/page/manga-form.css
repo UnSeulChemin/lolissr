@@ -1,152 +1,252 @@
 /* =========================================
    PAGE : MANGA FORM
-   Style dark / violet
 ========================================= */
 
-.form-box
+.manga-form-page
 {
-    width: 95%;
-    max-width: 600px;
-
-    margin: 40px auto;
+    max-width: 900px;
+    margin: 30px auto 0;
+    padding: 0 20px;
 }
 
 /* =========================
-   ROWS
+   CARD
 ========================= */
 
-.form-row
+.manga-form-card
 {
-    display: flex;
-    flex-direction: column;
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 30px;
 
-    gap: 8px;
+    border-radius: 22px;
 
-    margin-bottom: 20px;
-}
-
-.form-column
-{
-    display: flex;
-    flex-direction: column;
-
-    gap: 8px;
-
-    margin-bottom: 20px;
+    background-color: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 /* =========================
-   LABELS
+   FORM
 ========================= */
 
-.form-row label,
-.form-column label
+.manga-form
 {
-    font-size: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.manga-form-group
+{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* =========================
+   LABEL
+========================= */
+
+.manga-form-label
+{
+    margin-left: 2px;
+
+    text-align: center;
+    color: var(--color-title);
+    font-size: 0.9rem;
     font-weight: 700;
-
-    color: #ffffff;
 }
 
 /* =========================
    INPUTS
 ========================= */
 
-.form-row input,
-.form-select,
-.form-textarea
+.manga-form-input,
+.manga-form-textarea
 {
     width: 100%;
+    padding: 13px 16px;
 
-    padding: 12px 14px;
+    color: var(--color-text);
+    font-size: 0.95rem;
+    text-align: center;
 
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 14px;
 
-    background: rgba(255, 255, 255, 0.04);
-    color: #ffffff;
-
-    font-size: 15px;
+    background-color: #f7f7fb;
 
     transition:
         border-color 0.15s ease,
-        box-shadow 0.15s ease,
-        background 0.15s ease;
+        background-color 0.15s ease,
+        box-shadow 0.15s ease;
 }
 
-.form-row input::placeholder,
-.form-textarea::placeholder
+.manga-form-input::placeholder,
+.manga-form-textarea::placeholder
 {
-    color: rgba(255, 255, 255, 0.45);
+    color: rgba(0, 0, 0, 0.35);
+    text-align: center;
 }
 
-/* Focus */
-
-.form-row input:focus,
-.form-select:focus,
-.form-textarea:focus
+.manga-form-input:focus,
+.manga-form-textarea:focus
 {
     outline: none;
 
-    border-color: var(--color-violet);
+    border-color: rgba(123, 44, 255, 0.40);
+    background-color: #ffffff;
 
     box-shadow:
-        0 0 0 4px rgba(123, 44, 255, 0.18);
-
-    background: rgba(255, 255, 255, 0.06);
+        0 0 0 3px rgba(123, 44, 255, 0.12);
 }
 
 /* =========================
    TEXTAREA
 ========================= */
 
-.form-textarea
+.manga-form-textarea
 {
-    min-height: 110px;
-
+    min-height: 115px;
     resize: vertical;
+}
+
+/* =========================
+   CUSTOM FILE UPLOAD
+========================= */
+
+.manga-form-upload
+{
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 52px;
+    padding: 12px 16px;
+
+    border: 1px dashed rgba(123, 44, 255, 0.35);
+    border-radius: 14px;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(123, 44, 255, 0.06),
+            rgba(123, 44, 255, 0.02)
+        );
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.15s ease,
+        background 0.15s ease;
+}
+
+.manga-form-upload:hover
+{
+    border-color: rgba(123, 44, 255, 0.55);
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(123, 44, 255, 0.08),
+            rgba(123, 44, 255, 0.04)
+        );
+}
+
+.manga-upload-text
+{
+    color: var(--color-violet);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.manga-form-file
+{
+    position: absolute;
+    inset: 0;
+
+    opacity: 0;
+    cursor: pointer;
 }
 
 /* =========================
    ACTIONS
 ========================= */
 
-.form-actions
+.manga-form-actions
 {
-    margin-top: 30px;
-
     display: flex;
     justify-content: center;
+    margin-top: 12px;
 }
 
-.form-actions-secondary
+.manga-form-submit
 {
-    margin-top: 14px;
-
-    display: flex;
+    display: inline-flex;
+    align-items: center;
     justify-content: center;
+
+    min-width: 170px;
+    padding: 13px 28px;
+
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 600;
+
+    border: none;
+    border-radius: 14px;
+
+    background: var(--gradient-violet);
+
+    cursor: pointer;
+
+    transition:
+        transform 0.15s ease,
+        filter 0.15s ease;
+}
+
+.manga-form-submit:hover
+{
+    transform: translateY(-1px);
+    filter: brightness(1.05);
 }
 
 /* =========================
-   NOTE INFO
+   ERRORS
 ========================= */
 
-.note-info
+.form-error
 {
-    margin-top: 22px;
+    margin: 0;
 
-    text-align: center;
-
-    font-size: 15px;
+    color: #d92d20;
+    font-size: 0.82rem;
     font-weight: 600;
-
-    color: rgba(255, 255, 255, 0.88);
+    line-height: 1.4;
 }
 
-#note-total
-{
-    margin-left: 6px;
+/* =========================
+   RESPONSIVE
+========================= */
 
-    font-weight: 800;
-    color: #ffffff;
+@media (max-width: 700px)
+{
+    .manga-form-page
+    {
+        padding: 20px 16px 0;
+    }
+
+    .manga-form-title-box,
+    .manga-form-card
+    {
+        padding: 22px 18px;
+    }
+
+    .manga-form-title
+    {
+        font-size: 1.5rem;
+    }
 }

@@ -27,7 +27,12 @@
        GRADIENTS
        À garder si utilisés ailleurs
     ========================= */
-    --gradient-violet: linear-gradient(135deg, #7b2cff, #c44cff);
+    --gradient-violet:
+        linear-gradient(
+            135deg,
+            #6b3fd6,
+            #a06af3
+        );
 
     /* =========================
        OMBRES
