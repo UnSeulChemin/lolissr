@@ -1,6 +1,5 @@
 /* =========================================
-   BASE : VARIABLES
-   Variables réellement utilisées
+   VARIABLES GLOBALES
 ========================================= */
 
 :root
@@ -8,33 +7,43 @@
     /* =========================
        TYPOGRAPHIE
     ========================= */
-
     --font-family-base: "Montserrat", "Open Sans", sans-serif;
 
     /* =========================
-       COULEURS PRINCIPALES
+       COULEURS DE BASE
     ========================= */
+    --color-background: #ebebeb;
+    --color-text: #1a1a1a;
+    --color-title: #222222;
 
-   --color-background: #ebebeb;
-   --color-violet: #7b2cff;
+    /* =========================
+       COULEURS PRINCIPALES
+       À garder si utilisées ailleurs
+    ========================= */
+    --color-violet: #7b2cff;
+    --color-flash-active: #71afcd;
 
     /* =========================
        GRADIENTS
+       À garder si utilisés ailleurs
     ========================= */
---color-text: #1a1a1a;
---color-title: #222222;
     --gradient-violet: linear-gradient(135deg, #7b2cff, #c44cff);
 
     /* =========================
        OMBRES
+       À garder si utilisées ailleurs
     ========================= */
-
     --shadow-violet: rgba(123, 44, 255, 0.35);
     --shadow-violet-hover: rgba(123, 44, 255, 0.45);
 
-    /* =========================
-       ALERTES
-    ========================= */
+   /* =========================
+      ALERTES
+   ========================= */
 
-    --color-flash-active: #71afcd;
+   --color-success: #1e7e34;
+   --color-error: #c82333;
+   --color-warning: #e0a800;
+   --color-info: #17a2b8;
+
+   --color-alert-text: #ffffff;
 }

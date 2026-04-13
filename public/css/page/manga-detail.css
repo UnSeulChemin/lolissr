@@ -1,0 +1,116 @@
+/* =========================================
+   PAGE : MANGA DETAIL
+========================================= */
+
+.manga-detail-card
+{
+    width: 98%;
+    max-width: 1400px;
+    margin: 40px auto;
+    padding: 40px;
+
+    display: flex;
+    align-items: flex-start;
+    gap: 40px;
+
+    background-color: #f5f5f5;
+    border-radius: 22px;
+
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+}
+
+.manga-detail-image
+{
+    width: 45%;
+
+    display: flex;
+    justify-content: center;
+}
+
+.manga-detail-image-inner
+{
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+}
+
+.manga-detail-image-inner img
+{
+    width: 100%;
+    height: auto;
+
+    border-radius: 14px;
+
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+}
+
+.manga-detail-content
+{
+    width: 55%;
+
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.detail-row
+{
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 14px;
+}
+
+.detail-label,
+.detail-value
+{
+    min-height: 46px;
+    padding: 10px 14px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    color: #ffffff;
+    background: var(--gradient-violet);
+
+    font-size: 18px;
+    text-align: center;
+}
+
+.detail-label
+{
+    font-weight: 700;
+}
+
+.detail-value
+{
+    font-weight: 500;
+}
+
+.detail-row-comment .detail-label,
+.detail-comment
+{
+    min-height: 120px;
+}
+
+.detail-comment
+{
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    line-height: 1.5;
+}
+
+.detail-actions
+{
+    margin-top: 10px;
+}
+
+.manga-detail-comment
+{
+    min-height: 80px;
+
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+}

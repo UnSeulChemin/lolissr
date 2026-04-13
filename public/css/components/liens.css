@@ -1,0 +1,65 @@
+/* =========================================
+   COMPONENT : LINKS
+   Liens stylisés réutilisables
+========================================= */
+
+/* Base lien stylisé */
+
+.link
+{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    font-weight: 700;
+    color: #ffffff;
+    text-decoration: none;
+
+    background: var(--gradient-violet);
+    box-shadow: 0 8px 18px var(--shadow-violet);
+
+    border-radius: 12px;
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+/* Hover commun */
+
+.link:hover
+{
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px var(--shadow-violet-hover);
+}
+
+.link:focus-visible
+{
+    outline: 3px solid var(--color-violet);
+    outline-offset: 2px;
+}
+
+/* Lien plein largeur */
+
+.link-edit
+{
+    width: 100%;
+    margin-top: 10px;
+
+    padding: 14px 20px;
+
+    font-size: 18px;
+}
+
+/* Lien section */
+
+.link-section
+{
+    min-width: 160px;
+
+    padding: 12px 24px;
+
+    font-size: 16px;
+
+    border-radius: 10px;
+}

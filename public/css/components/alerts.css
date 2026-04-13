@@ -1,12 +1,27 @@
-.alert-success
-{
-    background: #1e7e34;
-    color: white;
+/* =========================================
+   ALERTS
+========================================= */
 
+.alert
+{
     padding: 12px 16px;
-    border-radius: 6px;
+    border-radius: 8px;
 
     margin-bottom: 20px;
 
     font-weight: 500;
+
+    color: var(--color-alert-text);
+
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.alert-success
+{
+    background-color: var(--color-success);
+}
+
+.alert-error
+{
+    background-color: var(--color-error);
 }

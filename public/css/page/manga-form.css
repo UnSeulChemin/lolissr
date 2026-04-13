@@ -1,0 +1,152 @@
+/* =========================================
+   PAGE : MANGA FORM
+   Style dark / violet
+========================================= */
+
+.form-box
+{
+    width: 95%;
+    max-width: 600px;
+
+    margin: 40px auto;
+}
+
+/* =========================
+   ROWS
+========================= */
+
+.form-row
+{
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+
+    margin-bottom: 20px;
+}
+
+.form-column
+{
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+
+    margin-bottom: 20px;
+}
+
+/* =========================
+   LABELS
+========================= */
+
+.form-row label,
+.form-column label
+{
+    font-size: 15px;
+    font-weight: 700;
+
+    color: #ffffff;
+}
+
+/* =========================
+   INPUTS
+========================= */
+
+.form-row input,
+.form-select,
+.form-textarea
+{
+    width: 100%;
+
+    padding: 12px 14px;
+
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+
+    background: rgba(255, 255, 255, 0.04);
+    color: #ffffff;
+
+    font-size: 15px;
+
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease,
+        background 0.15s ease;
+}
+
+.form-row input::placeholder,
+.form-textarea::placeholder
+{
+    color: rgba(255, 255, 255, 0.45);
+}
+
+/* Focus */
+
+.form-row input:focus,
+.form-select:focus,
+.form-textarea:focus
+{
+    outline: none;
+
+    border-color: var(--color-violet);
+
+    box-shadow:
+        0 0 0 4px rgba(123, 44, 255, 0.18);
+
+    background: rgba(255, 255, 255, 0.06);
+}
+
+/* =========================
+   TEXTAREA
+========================= */
+
+.form-textarea
+{
+    min-height: 110px;
+
+    resize: vertical;
+}
+
+/* =========================
+   ACTIONS
+========================= */
+
+.form-actions
+{
+    margin-top: 30px;
+
+    display: flex;
+    justify-content: center;
+}
+
+.form-actions-secondary
+{
+    margin-top: 14px;
+
+    display: flex;
+    justify-content: center;
+}
+
+/* =========================
+   NOTE INFO
+========================= */
+
+.note-info
+{
+    margin-top: 22px;
+
+    text-align: center;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    color: rgba(255, 255, 255, 0.88);
+}
+
+#note-total
+{
+    margin-left: 6px;
+
+    font-weight: 800;
+    color: #ffffff;
+}

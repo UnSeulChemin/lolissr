@@ -6,96 +6,157 @@
 .card-content
 {
     width: 20%;
+
     display: flex;
     flex-direction: column;
+
     border-radius: 12px;
     overflow: hidden;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+    background-color: #ffffff;
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
 }
+
+/* Hover identique au home */
 
 .card-content:hover
 {
     transform: translateY(-4px);
-    box-shadow: 0 0 0 4px #7b2cff;
+
+    box-shadow:
+        0 10px 24px rgba(0, 0, 0, 0.12),
+        0 0 0 3px var(--color-violet);
 }
+
+/* =========================
+   IMAGE
+========================= */
 
 .card-figure
 {
+    position: relative;
+
     width: 100%;
     height: 480px;
-    position: relative;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--background-color-body);
+
+    background-color: var(--color-background);
 }
 
 .card-figure img
 {
-    display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
+/* Badge animé avec hover */
+
 .card-content:hover .badge-note
 {
-    transform: scale(1.08);
+    transform: scale(1.10);
 }
+
+/* =========================
+   TITRE
+========================= */
 
 .card-title
 {
     width: 100%;
     margin: 0;
+
     padding: 12px 14px;
-    box-sizing: border-box;
-    color: white;
-    background: var(--violet-main);
+
+    color: #ffffff;
+
+    background: var(--gradient-violet);
+
     text-align: center;
+
     letter-spacing: 0.5px;
     word-spacing: 1px;
 }
 
+/* =========================
+   BADGE COUNT
+========================= */
+
 .badge-count
 {
     position: absolute;
+
     bottom: 8px;
     left: 8px;
-    min-width: 32px;
-    height: 32px;
-    padding: 0 6px;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
-    background: var(--violet-main);
+
+    min-width: 32px;
+    height: 32px;
+
+    padding: 0 6px;
+
     font-size: 13px;
     font-weight: 700;
-    border: 2px solid white;
-    border-radius: 50px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+
+    color: #ffffff;
+
+    background: var(--gradient-violet);
+
+    border: 2px solid #ffffff;
+    border-radius: 999px;
+
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
 }
+
+/* =========================
+   BADGE NOTE
+========================= */
 
 .badge-note
 {
     position: absolute;
+
     top: 12px;
     right: 12px;
+
     z-index: 2;
+
     width: 48px;
     height: 48px;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+
     font-size: 16px;
     font-weight: 800;
+
+    color: #ffffff;
+
     border: 2px solid rgba(255, 255, 255, 0.85);
     border-radius: 50%;
+
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45);
+
     transform-origin: center;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+    transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease;
 }
+
+/* =========================
+   NOTES COLORS
+========================= */
 
 .note-low
 {
@@ -104,12 +165,13 @@
 
 .note-mid
 {
-    background: var(--violet-main);
+    background: var(--gradient-violet);
 }
 
 .note-good
 {
     background: linear-gradient(135deg, #ff0000, #ff4c4c);
+
     box-shadow:
         0 0 12px rgba(255, 0, 0, 0.6),
         0 8px 18px rgba(0, 0, 0, 0.5);

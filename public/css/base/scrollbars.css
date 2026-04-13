@@ -1,12 +1,12 @@
+/* =========================================
+   SCROLLBAR
+   Personnalisation des barres de défilement
+========================================= */
+
+/* Chrome, Edge, Safari */
 ::-webkit-scrollbar
 {
-    width: 12px;
-}
-
-::-webkit-scrollbar-thumb
-{
-    background-color: var(--color-violet);
-    border-radius: 10px;
+    width: 10px;
 }
 
 ::-webkit-scrollbar-track
@@ -14,12 +14,18 @@
     background-color: var(--color-background);
 }
 
+::-webkit-scrollbar-thumb
+{
+    background-color: var(--color-violet);
+    border-radius: 8px;
+}
+
+/* Firefox */
 @supports (scrollbar-color: red blue)
 {
     *
     {
         scrollbar-color: var(--color-violet) var(--color-background);
-        scrollbar-width: auto;
+        scrollbar-width: thin;
     }
 }
-

@@ -2,11 +2,9 @@
    RESET CSS
    Base neutre pour repartir proprement
    Inspiré du reset Meyerweb
-   Source : https://meyerweb.com/eric/tools/css/reset/
 ========================================= */
 
-/* remise à zéro des marges, paddings, bordures
-   et héritage neutre pour la majorité des balises */
+/* Remise à zéro des espacements et styles natifs */
 html,
 body,
 div,
@@ -97,25 +95,7 @@ video
     vertical-align: baseline;
 }
 
-/* force les balises HTML5 à se comporter en block
-   pour les anciens navigateurs */
-article,
-aside,
-details,
-figcaption,
-figure,
-footer,
-header,
-hgroup,
-menu,
-nav,
-section
-{
-    display: block;
-}
-
-/* modèle de calcul plus propre pour toutes les balises
-   largeur = contenu + padding + bordure */
+/* Modèle de boîte cohérent */
 *,
 *::before,
 *::after
@@ -123,20 +103,14 @@ section
     box-sizing: border-box;
 }
 
-/* base du document */
-body
-{
-    line-height: 1;
-}
-
-/* suppression des puces et numéros par défaut */
+/* Suppression des styles de liste */
 ol,
 ul
 {
     list-style: none;
 }
 
-/* suppression des guillemets automatiques sur citations */
+/* Suppression des guillemets automatiques */
 blockquote,
 q
 {
@@ -148,11 +122,10 @@ blockquote::after,
 q::before,
 q::after
 {
-    content: '';
     content: none;
 }
 
-/* fusion des bordures de tableau */
+/* Tableaux propres */
 table
 {
     border-collapse: collapse;

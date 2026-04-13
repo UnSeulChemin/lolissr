@@ -8,13 +8,15 @@
 @import url('./base/scrollbars.css');
 
 /* COMPONENTS */
-@import url('./components/buttons.css');
 @import url('./components/cards.css');
 @import url('./components/alerts.css');
+@import url('./components/liens.css');
 
 /* PARTIALS */
 @import url('./partials/header.css');
 
 /* PAGES */
 @import url('./page/home.css');
-@import url('./page/manga.css');
+@import url('./page/manga-dashboard.css');
+@import url('./page/manga-detail.css');
+@import url('./page/manga-form.css');

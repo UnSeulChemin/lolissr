@@ -1,12 +1,70 @@
 <section class="section-content">
 
-    <h2>Manga</h2>
+    <section class="dashboard-header">
 
-    <section class="flex-center-center-gap-50">
-        <a class="link-section" href="manga/collection">Collection</a>
-        <a class="link-section" href="manga/ajouter">Ajouter</a>
-        <a class="link-section" href="manga/data">Données</a>
-        <a class="link-section" href="manga/lien">Lien</a>
+        <h1 class="dashboard-title-main">
+            Manga
+        </h1>
+
+        <p class="dashboard-subtitle">
+            Gère ta collection, ajoute des mangas et accède à tes liens utiles.
+        </p>
+
+    </section>
+
+    <section class="dashboard-grid">
+
+        <a class="dashboard-link-card"
+           href="<?= $basePath ?>manga/collection">
+
+            <span class="dashboard-link-icon">
+                📚
+            </span>
+
+            <span class="dashboard-link-title">
+                Collection
+            </span>
+
+            <span class="dashboard-link-text">
+                Voir tous les mangas enregistrés.
+            </span>
+
+        </a>
+
+        <a class="dashboard-link-card"
+           href="<?= $basePath ?>manga/ajouter">
+
+            <span class="dashboard-link-icon">
+                ➕
+            </span>
+
+            <span class="dashboard-link-title">
+                Ajouter
+            </span>
+
+            <span class="dashboard-link-text">
+                Ajouter un nouveau manga à la collection.
+            </span>
+
+        </a>
+
+        <a class="dashboard-link-card"
+           href="<?= $basePath ?>manga/lien">
+
+            <span class="dashboard-link-icon">
+                🔗
+            </span>
+
+            <span class="dashboard-link-title">
+                Lien
+            </span>
+
+            <span class="dashboard-link-text">
+                Accéder aux liens utiles liés à la collection.
+            </span>
+
+        </a>
+
     </section>
 
 </section>
