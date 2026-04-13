@@ -7,30 +7,38 @@ use App\Models\MangaModel;
 class MainController extends Controller
 {
     /**
-     * page d'accueil
-     * route : /
+     * Retourne le modèle manga.
+     */
+    private function mangaModel(): MangaModel
+    {
+        return new MangaModel();
+    }
+
+    /**
+     * Page d'accueil.
+     * Route : /
      */
     public function index(): void
     {
         $this->title = 'Accueil';
 
-        $mangaModel = new MangaModel();
+        $mangaModel = $this->mangaModel();
 
         $totalTomes = $mangaModel->countAllTomes();
         $totalSeries = $mangaModel->countSeries();
+        $averageNote = $mangaModel->averageNote();
         $lastTome = $mangaModel->findLastAdded();
         $longestSeries = $mangaModel->findLongestSeries();
         $bestRatedMangas = $mangaModel->findBestRatedMangas();
-        $averageNote = $mangaModel->averageNote();
         $topLongestSeries = $mangaModel->topLongestSeries(5);
 
         $this->render('main/index', [
             'totalTomes' => $totalTomes,
             'totalSeries' => $totalSeries,
+            'averageNote' => $averageNote,
             'lastTome' => $lastTome,
             'longestSeries' => $longestSeries,
             'bestRatedMangas' => $bestRatedMangas,
-            'averageNote' => $averageNote,
             'topLongestSeries' => $topLongestSeries
         ]);
     }

@@ -6,8 +6,13 @@ use App\Core\Functions;
 
 abstract class Controller
 {
+    /* Template principal */
     protected string $template = 'layouts/base';
+
+    /* Titre de la page */
     protected string $title;
+
+    /* Chemin de base */
     protected string $basePath;
 
     public function __construct()
@@ -16,20 +21,20 @@ abstract class Controller
         $this->basePath = Functions::basePath();
     }
 
+    /* Affiche une vue standard */
     public function render(string $file, array $data = []): void
     {
-        extract($data, EXTR_SKIP);
-
-        $title = $this->title;
-        $basePath = $this->basePath;
-
         $viewPath = ROOT . '/Views/' . $file . '.php';
 
         if (!is_file($viewPath))
         {
-            http_response_code(404);
-            exit('Vue introuvable : ' . $file);
+            $this->notFound('Vue introuvable : ' . $file);
         }
+
+        extract($data, EXTR_SKIP);
+
+        $title = $this->title;
+        $basePath = $this->basePath;
 
         ob_start();
         require $viewPath;
@@ -39,21 +44,16 @@ abstract class Controller
 
         if (!is_file($templatePath))
         {
-            http_response_code(500);
-            exit('Template introuvable : ' . $this->template);
+            $this->serverError('Template introuvable : ' . $this->template);
         }
 
         require $templatePath;
     }
 
-    public function renderError(string $file, int $statusCode, array $data = []): void
+    /* Affiche une vue d'erreur */
+    protected function renderError(string $file, int $statusCode, array $data = []): void
     {
         http_response_code($statusCode);
-
-        extract($data, EXTR_SKIP);
-
-        $title = $this->title;
-        $basePath = $this->basePath;
 
         $viewPath = ROOT . '/Views/errors/' . $file . '.php';
 
@@ -62,6 +62,11 @@ abstract class Controller
             exit('Vue erreur introuvable : ' . $file);
         }
 
+        extract($data, EXTR_SKIP);
+
+        $title = $this->title;
+        $basePath = $this->basePath;
+
         ob_start();
         require $viewPath;
         $content = ob_get_clean();
@@ -74,5 +79,29 @@ abstract class Controller
         }
 
         require $templatePath;
+    }
+
+    /* Page 404 */
+    protected function notFound(string $message = 'Page introuvable'): void
+    {
+        $this->title = '404 | Page introuvable';
+        $this->renderError('404', 404, ['message' => $message]);
+        exit;
+    }
+
+    /* Page 405 */
+    protected function methodNotAllowed(string $message = 'Méthode non autorisée'): void
+    {
+        $this->title = '405 | Méthode non autorisée';
+        $this->renderError('405', 405, ['message' => $message]);
+        exit;
+    }
+
+    /* Page 500 */
+    protected function serverError(string $message = 'Erreur interne du serveur'): void
+    {
+        $this->title = '500 | Erreur serveur';
+        $this->renderError('500', 500, ['message' => $message]);
+        exit;
     }
 }

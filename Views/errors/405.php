@@ -4,12 +4,14 @@
         405 — Méthode non autorisée
     </h1>
 
-    <p class="m-t-30">
-        La méthode utilisée n'est pas autorisée pour cette page.
+    <p class="m-t-20">
+        <?= htmlspecialchars($message ?? 'La méthode utilisée n’est pas autorisée.') ?>
     </p>
 
-    <a href="<?= $basePath ?>" class="btn-primary m-t-30">
-        Retour à l'accueil
-    </a>
+    <p class="m-t-20">
+        <a href="<?= $basePath; ?>">
+            Retour à l’accueil
+        </a>
+    </p>
 
 </section>

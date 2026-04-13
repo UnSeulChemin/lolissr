@@ -4,35 +4,32 @@ namespace App\Core;
 
 class Form
 {
+    /**
+     * Contient le HTML généré du formulaire.
+     */
     private string $formCode = '';
 
-    public function create(): string
+    /**
+     * Retourne le code HTML final du formulaire.
+     */
+    public function render(): string
     {
         return $this->formCode;
     }
 
-    public static function validate(?array $form = null, ?array $fields = null): bool
-    {
-        if (!is_array($form) || !is_array($fields))
-        {
-            return false;
-        }
-
-        foreach ($fields as $field)
-        {
-            if (!isset($form[$field]) || trim((string) $form[$field]) === '')
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
+    /**
+     * Ouvre un formulaire HTML.
+     */
     public function startForm(string $action = '#', string $method = 'post', array $attributes = []): self
     {
         $action = htmlspecialchars($action, ENT_QUOTES, 'UTF-8');
         $method = strtolower(trim($method));
+
+        /* Sécurité : autorise seulement GET ou POST */
+        if (!in_array($method, ['get', 'post'], true))
+        {
+            $method = 'post';
+        }
 
         $this->formCode .= "<form action=\"{$action}\" method=\"{$method}\"";
         $this->formCode .= $attributes ? $this->addAttributes($attributes) : '';
@@ -41,12 +38,18 @@ class Form
         return $this;
     }
 
+    /**
+     * Ferme le formulaire.
+     */
     public function endForm(): self
     {
         $this->formCode .= '</form>';
         return $this;
     }
 
+    /**
+     * Ouvre une div.
+     */
     public function startDiv(array $attributes = []): self
     {
         $this->formCode .= '<div';
@@ -56,24 +59,18 @@ class Form
         return $this;
     }
 
+    /**
+     * Ferme une div.
+     */
     public function endDiv(): self
     {
         $this->formCode .= '</div>';
         return $this;
     }
 
-    public function addInput(string $type, string $name, array $attributes = []): self
-    {
-        $type = htmlspecialchars($type, ENT_QUOTES, 'UTF-8');
-        $name = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
-
-        $this->formCode .= "<input type=\"{$type}\" name=\"{$name}\"";
-        $this->formCode .= $attributes ? $this->addAttributes($attributes) : '';
-        $this->formCode .= '>';
-
-        return $this;
-    }
-
+    /**
+     * Ajoute un label.
+     */
     public function addLabelFor(string $for, string $text, array $attributes = []): self
     {
         $for = htmlspecialchars($for, ENT_QUOTES, 'UTF-8');
@@ -86,6 +83,24 @@ class Form
         return $this;
     }
 
+    /**
+     * Ajoute un champ input.
+     */
+    public function addInput(string $type, string $name, array $attributes = []): self
+    {
+        $type = htmlspecialchars($type, ENT_QUOTES, 'UTF-8');
+        $name = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
+
+        $this->formCode .= "<input type=\"{$type}\" name=\"{$name}\"";
+        $this->formCode .= $attributes ? $this->addAttributes($attributes) : '';
+        $this->formCode .= '>';
+
+        return $this;
+    }
+
+    /**
+     * Ajoute un textarea.
+     */
     public function addTextarea(string $name, string $value = '', array $attributes = []): self
     {
         $name = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
@@ -98,7 +113,15 @@ class Form
         return $this;
     }
 
-    public function addSelect(string $name, array $options, array $attributes = [], mixed $selected = null): self
+    /**
+     * Ajoute un select avec options.
+     */
+    public function addSelect(
+        string $name,
+        array $options,
+        array $attributes = [],
+        mixed $selected = null
+    ): self
     {
         $name = htmlspecialchars($name, ENT_QUOTES, 'UTF-8');
 
@@ -110,7 +133,10 @@ class Form
         {
             $valueEscaped = htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
             $textEscaped = htmlspecialchars((string) $text, ENT_QUOTES, 'UTF-8');
-            $isSelected = ((string) $selected === (string) $value) ? ' selected' : '';
+
+            $isSelected = (string) $selected === (string) $value
+                ? ' selected'
+                : '';
 
             $this->formCode .= "<option value=\"{$valueEscaped}\"{$isSelected}>{$textEscaped}</option>";
         }
@@ -120,6 +146,9 @@ class Form
         return $this;
     }
 
+    /**
+     * Ajoute un bouton.
+     */
     public function addButton(string $text, array $attributes = []): self
     {
         $text = htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
@@ -131,9 +160,15 @@ class Form
         return $this;
     }
 
+    /**
+     * Génère les attributs HTML.
+     * Gère aussi les attributs courts :
+     * required, checked, disabled, etc.
+     */
     private function addAttributes(array $attributes): string
     {
         $string = '';
+
         $shorts = [
             'checked',
             'disabled',
@@ -161,6 +196,7 @@ class Form
             }
 
             $value = htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+
             $string .= " {$attribute}=\"{$value}\"";
         }
 
