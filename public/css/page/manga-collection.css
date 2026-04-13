@@ -1,11 +1,25 @@
 /* =========================================
-   COMPONENT : CARDS
-   Cartes manga génériques + badges
+   PAGE : MANGA COLLECTION
+   Grille + cartes mangas
 ========================================= */
 
-.card-content
+.manga-grid
 {
-    width: 20%;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 40px;
+    justify-items: center;
+    margin-top: 20px;
+}
+
+/* =========================
+   CARD
+========================= */
+
+.manga-card
+{
+    width: 100%;
+    max-width: 260px;
 
     display: flex;
     flex-direction: column;
@@ -20,12 +34,9 @@
         box-shadow 0.15s ease;
 }
 
-/* Hover identique au home */
-
-.card-content:hover
+.manga-card:hover
 {
     transform: translateY(-4px);
-
     box-shadow:
         0 10px 24px rgba(0, 0, 0, 0.12),
         0 0 0 3px var(--color-violet);
@@ -35,7 +46,7 @@
    IMAGE
 ========================= */
 
-.card-figure
+.manga-card-figure
 {
     position: relative;
 
@@ -49,33 +60,31 @@
     background-color: var(--color-background);
 }
 
-.card-figure img
+.manga-card-link
+{
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+.manga-card-figure img
 {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-/* Badge animé avec hover */
-
-.card-content:hover .badge-note
-{
-    transform: scale(1.10);
-}
-
 /* =========================
-   TITRE
+   TITLE
 ========================= */
 
-.card-title
+.manga-card-title
 {
     width: 100%;
     margin: 0;
-
     padding: 12px 14px;
 
     color: #ffffff;
-
     background: var(--gradient-violet);
 
     text-align: center;
@@ -88,10 +97,9 @@
    BADGE COUNT
 ========================= */
 
-.badge-count
+.manga-card-badge-count
 {
     position: absolute;
-
     bottom: 8px;
     left: 8px;
 
@@ -101,12 +109,10 @@
 
     min-width: 32px;
     height: 32px;
-
     padding: 0 6px;
 
     font-size: 13px;
     font-weight: 700;
-
     color: #ffffff;
 
     background: var(--gradient-violet);
@@ -121,13 +127,11 @@
    BADGE NOTE
 ========================= */
 
-.badge-note
+.manga-card-badge-note
 {
     position: absolute;
-
     top: 12px;
     right: 12px;
-
     z-index: 2;
 
     width: 48px;
@@ -139,7 +143,6 @@
 
     font-size: 16px;
     font-weight: 800;
-
     color: #ffffff;
 
     border: 2px solid rgba(255, 255, 255, 0.85);
@@ -154,25 +157,66 @@
         box-shadow 0.18s ease;
 }
 
+.manga-card:hover .manga-card-badge-note
+{
+    transform: scale(1.10);
+}
+
 /* =========================
    NOTES COLORS
 ========================= */
 
-.note-low
+.manga-note-low
 {
     background: linear-gradient(135deg, #ff7b2c, #ffb84c);
 }
 
-.note-mid
+.manga-note-mid
 {
     background: var(--gradient-violet);
 }
 
-.note-good
+.manga-note-good
 {
     background: linear-gradient(135deg, #ff0000, #ff4c4c);
 
     box-shadow:
         0 0 12px rgba(255, 0, 0, 0.6),
         0 8px 18px rgba(0, 0, 0, 0.5);
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1400px)
+{
+    .manga-grid
+    {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 1100px)
+{
+    .manga-grid
+    {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 800px)
+{
+    .manga-grid
+    {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 560px)
+{
+    .manga-grid
+    {
+        grid-template-columns: 1fr;
+    }
 }

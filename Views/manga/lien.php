@@ -1,43 +1,103 @@
-<section class="section-content">
+<section class="layout-container">
 
-    <h2>Liste de lien utile</h2>
+    <section class="dashboard-header">
 
-    <section class="flex-column-gap-30">
+        <div class="dashboard-title-box">
 
-        <div class="link-div">
-            <p class="table-colonne m-b-20">Glénat</p>
-            <p class="link-p">Maison d'édition</p>
-            <a class="link-section" href="https://www.glenat.com/manga" target="_blank">Lien</a>
-        </div>
+            <h1 class="dashboard-title-main">
+                🔗 Liens utiles
+            </h1>
 
-        <div class="link-div">
-            <p class="table-colonne m-b-20">Kana</p>
-            <p class="link-p">Maison d'édition</p>
-            <a class="link-section" href="https://www.kana.fr/mangas/" target="_blank">Lien</a>
-        </div>
+            <p class="dashboard-subtitle">
+                Accès rapide aux sites utiles pour mangas et outils.
+            </p>
 
-        <div class="link-div">
-            <p class="table-colonne m-b-20">Nautiljon</p>
-            <p class="link-p">Nudité + Violence</p>
-            <a class="link-section" href="https://www.nautiljon.com/mangas/?q=&public_averti=7" target="_blank">Lien</a>
-        </div>
-
-        <div class="link-div">
-            <p class="table-colonne m-b-20">Nautiljon</p>
-            <p class="link-p">Nudité</p>
-            <a class="link-section" href="https://www.nautiljon.com/mangas/?q=&public_averti=3" target="_blank">Lien</a>
-        </div>
-
-        <div class="link-div">
-            <p class="table-colonne m-b-20">xnconvert</p>
-            <p class="link-p">PNG, JPG = webp</p>
-            <a class="link-section" href="https://www.xnview.com/fr/xnconvert/#downloads" target="_blank">Lien</a>
         </div>
 
     </section>
 
-    <div class="m-t-30">
-        <a class="link-section" href="javascript:history.go(-1)">Back</a>
-    </div>
+    <section class="dashboard-grid links-grid">
+
+        <a class="dashboard-link-card"
+           href="https://www.glenat.com/manga"
+           target="_blank">
+
+            <span class="dashboard-link-icon">📚</span>
+
+            <span class="dashboard-link-title">
+                Glénat
+            </span>
+
+            <span class="dashboard-link-text">
+                Maison d'édition officielle.
+            </span>
+
+        </a>
+
+        <a class="dashboard-link-card"
+           href="https://www.kana.fr/mangas/"
+           target="_blank">
+
+            <span class="dashboard-link-icon">📖</span>
+
+            <span class="dashboard-link-title">
+                Kana
+            </span>
+
+            <span class="dashboard-link-text">
+                Catalogue manga Kana.
+            </span>
+
+        </a>
+
+        <a class="dashboard-link-card"
+           href="https://www.nautiljon.com/mangas/?q=&public_averti=7"
+           target="_blank">
+
+            <span class="dashboard-link-icon">⚠️</span>
+
+            <span class="dashboard-link-title">
+                Nautiljon +
+            </span>
+
+            <span class="dashboard-link-text">
+                Mangas avec nudité et violence.
+            </span>
+
+        </a>
+
+        <a class="dashboard-link-card"
+           href="https://www.nautiljon.com/mangas/?q=&public_averti=3"
+           target="_blank">
+
+            <span class="dashboard-link-icon">🔞</span>
+
+            <span class="dashboard-link-title">
+                Nautiljon
+            </span>
+
+            <span class="dashboard-link-text">
+                Mangas avec nudité.
+            </span>
+
+        </a>
+
+        <a class="dashboard-link-card"
+           href="https://www.xnview.com/fr/xnconvert/#downloads"
+           target="_blank">
+
+            <span class="dashboard-link-icon">🖼️</span>
+
+            <span class="dashboard-link-title">
+                XnConvert
+            </span>
+
+            <span class="dashboard-link-text">
+                Conversion PNG / JPG → WEBP.
+            </span>
+
+        </a>
+
+    </section>
 
 </section>
