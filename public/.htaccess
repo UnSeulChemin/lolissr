@@ -1,6 +1,9 @@
 RewriteEngine On
 RewriteBase /lolissr/public/
 
+# Si fichier ou dossier existe → on laisse passer
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ index.php?p=$1 [L,QSA]
+
+# Sinon → index.php
+RewriteRule ^ index.php [L,QSA]

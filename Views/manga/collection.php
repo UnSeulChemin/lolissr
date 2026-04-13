@@ -14,7 +14,9 @@ $currentPage = $currentPage ?? 1;
                 <figure class="card-figure">
 
                     <a class="flex"
-                       href="<?= $basePath; ?>manga/collection/<?= htmlspecialchars($manga->slug) ?><?= $isCollection ? '/' . (int) $manga->numero : '' ?>">
+                       href="<?= $isCollection
+                            ? $basePath . 'manga/' . rawurlencode($manga->slug) . '/' . (int) $manga->numero
+                            : $basePath . 'manga/serie/' . rawurlencode($manga->slug) ?>">
 
                         <img
                             alt="<?= htmlspecialchars($manga->livre) ?>"

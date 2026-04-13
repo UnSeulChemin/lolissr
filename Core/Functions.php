@@ -5,7 +5,7 @@ namespace App\Core;
 class Functions
 {
     /**
-     * retourne toute la configuration
+     * Retourne toute la configuration.
      */
     public static function config(): array
     {
@@ -13,21 +13,20 @@ class Functions
 
         if ($config === null)
         {
-            $config = require __DIR__ . '/../Config/config.php';
+            $config = require ROOT . '/Config/config.php';
         }
 
         return $config;
     }
 
     /**
-     * retourne une valeur de config imbriquée
-     * ex: app.base_path / database.host
+     * Retourne une valeur de config imbriquée.
+     * Exemple : app.base_path / database.host
      */
     public static function getConfig(string $key, mixed $default = null): mixed
     {
-        $config = self::config();
         $segments = explode('.', $key);
-        $value = $config;
+        $value = self::config();
 
         foreach ($segments as $segment)
         {
@@ -43,7 +42,7 @@ class Functions
     }
 
     /**
-     * retourne le chemin de base du projet
+     * Retourne le chemin de base du projet.
      */
     public static function basePath(): string
     {
@@ -51,7 +50,7 @@ class Functions
     }
 
     /**
-     * retourne le nom du site
+     * Retourne le nom du site.
      */
     public static function siteName(): string
     {
@@ -59,15 +58,15 @@ class Functions
     }
 
     /**
-     * retourne le nombre d'éléments par page
+     * Retourne le nombre d'éléments par page.
      */
     public static function pagination(): int
     {
-        return (int) self::getConfig('app.pagination', 8);
+        return max(1, (int) self::getConfig('app.pagination', 8));
     }
 
     /**
-     * retourne l'environnement de l'application
+     * Retourne l'environnement de l'application.
      */
     public static function appEnv(): string
     {
@@ -75,7 +74,7 @@ class Functions
     }
 
     /**
-     * retourne si le debug est activé
+     * Retourne si le debug est activé.
      */
     public static function appDebug(): bool
     {
@@ -83,7 +82,7 @@ class Functions
     }
 
     /**
-     * retourne l'hôte mysql
+     * Retourne l'hôte MySQL.
      */
     public static function dbHost(): string
     {
@@ -91,7 +90,7 @@ class Functions
     }
 
     /**
-     * retourne le nom de la base
+     * Retourne le nom de la base.
      */
     public static function dbName(): string
     {
@@ -99,7 +98,7 @@ class Functions
     }
 
     /**
-     * retourne l'utilisateur mysql
+     * Retourne l'utilisateur MySQL.
      */
     public static function dbUser(): string
     {
@@ -107,7 +106,7 @@ class Functions
     }
 
     /**
-     * retourne le mot de passe mysql
+     * Retourne le mot de passe MySQL.
      */
     public static function dbPass(): string
     {
@@ -115,7 +114,7 @@ class Functions
     }
 
     /**
-     * retourne le charset mysql
+     * Retourne le charset MySQL.
      */
     public static function dbCharset(): string
     {
@@ -123,19 +122,25 @@ class Functions
     }
 
     /**
-     * récupère une variable d'environnement
+     * Récupère une variable d'environnement.
      */
     public static function env(string $key, mixed $default = null): mixed
     {
-        $value = $_ENV[$key] ?? $default;
+        $value = $_ENV[$key] ?? $_SERVER[$key] ?? getenv($key);
+
+        if ($value === false || $value === null)
+        {
+            return $default;
+        }
 
         if (is_string($value))
         {
-            return match (strtolower($value))
+            return match (strtolower(trim($value)))
             {
-                'true' => true,
-                'false' => false,
-                'null' => null,
+                'true', '(true)' => true,
+                'false', '(false)' => false,
+                'null', '(null)' => null,
+                'empty', '(empty)' => '',
                 default => $value
             };
         }

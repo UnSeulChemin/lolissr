@@ -8,7 +8,7 @@ use App\Models\MangaModel;
 class MangaController extends Controller
 {
     /**
-     * retourne une instance du model manga
+     * Retourne une instance du model manga.
      */
     private function mangaModel(): MangaModel
     {
@@ -16,7 +16,7 @@ class MangaController extends Controller
     }
 
     /**
-     * normalise un slug
+     * Normalise un slug.
      */
     private function normalizeSlug(string $slug): string
     {
@@ -24,7 +24,7 @@ class MangaController extends Controller
     }
 
     /**
-     * convertit une note postée en int ou null
+     * Convertit une note postée en int ou null.
      */
     private function normalizePostedNote(?string $value): ?int
     {
@@ -44,7 +44,7 @@ class MangaController extends Controller
     }
 
     /**
-     * nettoie un commentaire
+     * Nettoie un commentaire.
      */
     private function normalizeCommentaire(?string $commentaire): ?string
     {
@@ -60,7 +60,7 @@ class MangaController extends Controller
 
     /**
      * /manga
-     * accueil manga
+     * Accueil manga.
      */
     public function index(): void
     {
@@ -70,111 +70,43 @@ class MangaController extends Controller
 
     /**
      * /manga/collection
-     *
-     * 1. sans paramètre
-     *    → collection générale, page 1
-     *
-     * 2. page/{numero}
-     *    → pagination de la collection générale
-     *
-     * 3. {slug}/{numero}
-     *    → détail d'un tome précis
-     *
-     * 4. {slug}
-     *    → collection d'un manga
+     * /manga/collection/page/{page}
+     * Affiche la collection générale paginée.
      */
-    public function collection(?string $slug = null, ?string $numero = null): void
+    public function collection(string $page = '1'): void
     {
         $mangaModel = $this->mangaModel();
         $pagination = Functions::pagination();
 
-        /**
-         * cas 1 :
-         * /manga/collection
-         */
-        if ($slug === null || trim($slug) === '')
+        $currentPage = max(1, (int) $page);
+
+        $mangas = $mangaModel->findAllFirstTomes('id DESC', $pagination, $currentPage);
+        $compteur = $mangaModel->countFirstTomesPaginate($pagination);
+
+        $this->title = 'Manga | Collection';
+
+        if ($currentPage > 1)
         {
-            $page = 1;
-
-            $mangas = $mangaModel->findAllFirstTomes('id DESC', $pagination, $page);
-            $compteur = $mangaModel->countFirstTomesPaginate($pagination);
-
-            $this->title = 'Manga | Collection';
-
-            $this->render('manga/collection', [
-                'mangas' => $mangas,
-                'compteur' => $compteur,
-                'slugFilter' => null,
-                'currentPage' => $page
-            ]);
-            return;
+            $this->title .= ' - Page ' . $currentPage;
         }
 
-        /**
-         * cas 2 :
-         * /manga/collection/page/{numero}
-         */
-        if ($slug === 'page')
-        {
-            $page = (int) ($numero ?? 1);
+        $this->render('manga/collection', [
+            'mangas' => $mangas,
+            'compteur' => $compteur,
+            'slugFilter' => null,
+            'currentPage' => $currentPage
+        ]);
+    }
 
-            if ($page < 1)
-            {
-                $page = 1;
-            }
-
-            $mangas = $mangaModel->findAllFirstTomes('id DESC', $pagination, $page);
-            $compteur = $mangaModel->countFirstTomesPaginate($pagination);
-
-            $this->title = 'Manga | Collection - Page ' . $page;
-
-            $this->render('manga/collection', [
-                'mangas' => $mangas,
-                'compteur' => $compteur,
-                'slugFilter' => null,
-                'currentPage' => $page
-            ]);
-            return;
-        }
-
-        /**
-         * cas 3 :
-         * /manga/collection/{slug}/{numero}
-         */
-        if ($numero !== null && trim($numero) !== '')
-        {
-            $slug = $this->normalizeSlug($slug);
-            $numero = (int) $numero;
-
-            $manga = $mangaModel->findOneBySlugAndNumero($slug, $numero);
-
-            if (!$manga)
-            {
-                http_response_code(404);
-                exit('Manga introuvable');
-            }
-
-            $goodSlug = $this->normalizeSlug($manga->slug);
-
-            if ($goodSlug !== $slug)
-            {
-                header('Location: ' . $this->basePath . 'manga/collection/' . $goodSlug . '/' . $manga->numero);
-                exit;
-            }
-
-            $this->title = 'Manga | ' . $manga->livre . ' ' . str_pad((string) $manga->numero, 2, '0', STR_PAD_LEFT);
-
-            $this->render('manga/livre', [
-                'manga' => $manga
-            ]);
-            return;
-        }
-
-        /**
-         * cas 4 :
-         * /manga/collection/{slug}
-         */
+    /**
+     * /manga/serie/{slug}
+     * Affiche tous les tomes d'une série.
+     */
+    public function serie(string $slug): void
+    {
         $slug = $this->normalizeSlug($slug);
+
+        $mangaModel = $this->mangaModel();
         $mangas = $mangaModel->findBySlug($slug);
 
         if (!$mangas)
@@ -187,13 +119,48 @@ class MangaController extends Controller
 
         $this->render('manga/collection', [
             'mangas' => $mangas,
-            'slugFilter' => $slug
+            'slugFilter' => $slug,
+            'currentPage' => 1,
+            'compteur' => 1
+        ]);
+    }
+
+    /**
+     * /manga/{slug}/{numero}
+     * Affiche le détail d'un tome.
+     */
+    public function show(string $slug, string $numero): void
+    {
+        $slug = $this->normalizeSlug($slug);
+        $numero = (int) $numero;
+
+        $mangaModel = $this->mangaModel();
+        $manga = $mangaModel->findOneBySlugAndNumero($slug, $numero);
+
+        if (!$manga)
+        {
+            http_response_code(404);
+            exit('Manga introuvable');
+        }
+
+        $goodSlug = $this->normalizeSlug($manga->slug);
+
+        if ($goodSlug !== $slug)
+        {
+            header('Location: ' . $this->basePath . 'manga/' . rawurlencode($goodSlug) . '/' . $manga->numero);
+            exit;
+        }
+
+        $this->title = 'Manga | ' . $manga->livre . ' ' . str_pad((string) $manga->numero, 2, '0', STR_PAD_LEFT);
+
+        $this->render('manga/livre', [
+            'manga' => $manga
         ]);
     }
 
     /**
      * /manga/ajouter
-     * affiche le formulaire d'ajout
+     * Affiche le formulaire d'ajout.
      */
     public function ajouter(): void
     {
@@ -211,8 +178,8 @@ class MangaController extends Controller
     }
 
     /**
-     * /manga/ajouterTraitement
-     * traite l'ajout d'un manga
+     * /manga/ajouter
+     * Traite l'ajout d'un manga.
      */
     public function ajouterTraitement(): void
     {
@@ -339,10 +306,10 @@ class MangaController extends Controller
     }
 
     /**
-     * /manga/edit/{slug}/{numero}
-     * affiche la page d'édition d'un tome
+     * /manga/update/{slug}/{numero}
+     * Affiche la page d'édition d'un tome.
      */
-    public function edit(string $slug, string $numero): void
+    public function modifier(string $slug, string $numero): void
     {
         $slug = $this->normalizeSlug($slug);
         $numero = (int) $numero;
@@ -360,7 +327,7 @@ class MangaController extends Controller
 
         if ($goodSlug !== $slug)
         {
-            header('Location: ' . $this->basePath . 'manga/edit/' . $goodSlug . '/' . $manga->numero);
+            header('Location: ' . $this->basePath . 'manga/update/' . rawurlencode($goodSlug) . '/' . $manga->numero);
             exit;
         }
 
@@ -372,7 +339,7 @@ class MangaController extends Controller
 
     /**
      * /manga/update/{slug}/{numero}
-     * met à jour jacquette, livre_note, note et commentaire
+     * Met à jour jacquette, livre_note, note et commentaire.
      */
     public function update(string $slug, string $numero): void
     {
@@ -381,7 +348,7 @@ class MangaController extends Controller
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST')
         {
-            header('Location: ' . $this->basePath . 'manga/collection/' . rawurlencode($slug) . '/' . $numero);
+            header('Location: ' . $this->basePath . 'manga/' . rawurlencode($slug) . '/' . $numero);
             exit;
         }
 
@@ -401,11 +368,12 @@ class MangaController extends Controller
         $livreNote = $this->normalizePostedNote($livreNoteRaw);
         $commentaire = $this->normalizeCommentaire($_POST['commentaire'] ?? null);
 
-        if (($jacquetteRaw !== null && trim((string) $jacquetteRaw) !== '' && $jacquette === null) ||
-            ($livreNoteRaw !== null && trim((string) $livreNoteRaw) !== '' && $livreNote === null))
-        {
+        if (
+            ($jacquetteRaw !== null && trim((string) $jacquetteRaw) !== '' && $jacquette === null) ||
+            ($livreNoteRaw !== null && trim((string) $livreNoteRaw) !== '' && $livreNote === null)
+        ) {
             $_SESSION['error'] = 'Les notes doivent être comprises entre 1 et 5';
-            header('Location: ' . $this->basePath . 'manga/edit/' . rawurlencode($slug) . '/' . $numero);
+            header('Location: ' . $this->basePath . 'manga/update/' . rawurlencode($slug) . '/' . $numero);
             exit;
         }
 
@@ -420,12 +388,12 @@ class MangaController extends Controller
         if (!$update)
         {
             $_SESSION['error'] = 'Erreur lors de la mise à jour';
-            header('Location: ' . $this->basePath . 'manga/edit/' . rawurlencode($slug) . '/' . $numero);
+            header('Location: ' . $this->basePath . 'manga/update/' . rawurlencode($slug) . '/' . $numero);
             exit;
         }
 
         $_SESSION['success'] = 'Manga mis à jour avec succès';
-        header('Location: ' . $this->basePath . 'manga/collection/' . rawurlencode($slug) . '/' . $numero);
+        header('Location: ' . $this->basePath . 'manga/' . rawurlencode($slug) . '/' . $numero);
         exit;
     }
 }
