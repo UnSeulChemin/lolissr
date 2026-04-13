@@ -1,7 +1,21 @@
 <?php
-$currentPage = $_GET['p'] ?? '';
-$activeHome = empty($currentPage) ? 'active' : '';
-$activeManga = str_contains($currentPage, 'manga') ? 'active' : '';
+$currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '/';
+$cleanBasePath = rtrim($basePath, '/');
+
+$relativePath = $currentPath;
+
+if (
+    $cleanBasePath !== ''
+    && $cleanBasePath !== '/'
+    && str_starts_with($currentPath, $cleanBasePath)
+) {
+    $relativePath = substr($currentPath, strlen($cleanBasePath));
+}
+
+$relativePath = $relativePath === '' ? '/' : $relativePath;
+
+$activeHome = $relativePath === '/' ? 'active' : '';
+$activeManga = str_starts_with($relativePath, '/manga') ? 'active' : '';
 ?>
 
 <header>
@@ -9,14 +23,14 @@ $activeManga = str_contains($currentPage, 'manga') ? 'active' : '';
 
         <ul class="flex-gap-50">
             <li>
-                <a class="<?= $activeHome ?> link-menu"
+                <a class="link-menu <?= $activeHome; ?>"
                    href="<?= $basePath; ?>">
                    Accueil
                 </a>
             </li>
 
             <li>
-                <a class="<?= $activeManga ?> link-menu"
+                <a class="link-menu <?= $activeManga; ?>"
                    href="<?= $basePath; ?>manga">
                    Manga
                 </a>

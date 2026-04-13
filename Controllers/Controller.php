@@ -7,13 +7,19 @@ use App\Core\Session;
 
 abstract class Controller
 {
-    /* Template principal */
+    /**
+     * Template principal.
+     */
     protected string $template = 'layouts/base';
 
-    /* Titre de la page */
+    /**
+     * Titre de la page.
+     */
     protected string $title;
 
-    /* Chemin de base */
+    /**
+     * Chemin de base.
+     */
     protected string $basePath;
 
     public function __construct()
@@ -22,10 +28,36 @@ abstract class Controller
         $this->basePath = Functions::basePath();
     }
 
-    /* Affiche une vue standard */
+    /**
+     * Retourne le chemin complet d'une vue standard.
+     */
+    private function viewPath(string $file): string
+    {
+        return ROOT . '/Views/' . $file . '.php';
+    }
+
+    /**
+     * Retourne le chemin complet d'une vue d'erreur.
+     */
+    private function errorViewPath(string $file): string
+    {
+        return ROOT . '/Views/errors/' . $file . '.php';
+    }
+
+    /**
+     * Retourne le chemin complet du template.
+     */
+    private function templatePath(): string
+    {
+        return ROOT . '/Views/' . $this->template . '.php';
+    }
+
+    /**
+     * Affiche une vue standard.
+     */
     public function render(string $file, array $data = []): void
     {
-        $viewPath = ROOT . '/Views/' . $file . '.php';
+        $viewPath = $this->viewPath($file);
 
         if (!is_file($viewPath))
         {
@@ -39,9 +71,9 @@ abstract class Controller
 
         ob_start();
         require $viewPath;
-        $content = ob_get_clean();
+        $content = ob_get_clean() ?: '';
 
-        $templatePath = ROOT . '/Views/' . $this->template . '.php';
+        $templatePath = $this->templatePath();
 
         if (!is_file($templatePath))
         {
@@ -51,12 +83,14 @@ abstract class Controller
         require $templatePath;
     }
 
-    /* Affiche une vue d'erreur */
+    /**
+     * Affiche une vue d'erreur.
+     */
     protected function renderError(string $file, int $statusCode, array $data = []): void
     {
         http_response_code($statusCode);
 
-        $viewPath = ROOT . '/Views/errors/' . $file . '.php';
+        $viewPath = $this->errorViewPath($file);
 
         if (!is_file($viewPath))
         {
@@ -70,9 +104,9 @@ abstract class Controller
 
         ob_start();
         require $viewPath;
-        $content = ob_get_clean();
+        $content = ob_get_clean() ?: '';
 
-        $templatePath = ROOT . '/Views/' . $this->template . '.php';
+        $templatePath = $this->templatePath();
 
         if (!is_file($templatePath))
         {
@@ -82,14 +116,18 @@ abstract class Controller
         require $templatePath;
     }
 
-    /* Redirection simple */
+    /**
+     * Redirection simple.
+     */
     protected function redirect(string $url): void
     {
         header('Location: ' . $this->basePath . ltrim($url, '/'));
         exit;
     }
 
-    /* Redirection avec erreur simple */
+    /**
+     * Redirection avec erreur simple.
+     */
     protected function redirectWithError(string $url, string $message, bool $withOld = true): void
     {
         if ($withOld)
@@ -101,8 +139,14 @@ abstract class Controller
         $this->redirect($url);
     }
 
-    /* Redirection avec erreurs de validation */
-    protected function redirectWithValidationErrors(string $url, array $errors, string $message = 'Le formulaire contient des erreurs.'): void
+    /**
+     * Redirection avec erreurs de validation.
+     */
+    protected function redirectWithValidationErrors(
+        string $url,
+        array $errors,
+        string $message = 'Le formulaire contient des erreurs.'
+    ): void
     {
         Session::set('errors', $errors);
         Session::set('old', $_POST);
@@ -111,14 +155,18 @@ abstract class Controller
         $this->redirect($url);
     }
 
-    /* Redirection avec succès */
+    /**
+     * Redirection avec succès.
+     */
     protected function redirectWithSuccess(string $url, string $message): void
     {
         Session::set('success', $message);
         $this->redirect($url);
     }
 
-    /* Page 404 */
+    /**
+     * Page 404.
+     */
     protected function notFound(string $message = 'Page introuvable'): void
     {
         $this->title = '404 | Page introuvable';
@@ -126,7 +174,9 @@ abstract class Controller
         exit;
     }
 
-    /* Page 405 */
+    /**
+     * Page 405.
+     */
     protected function methodNotAllowed(string $message = 'Méthode non autorisée'): void
     {
         $this->title = '405 | Méthode non autorisée';
@@ -134,7 +184,9 @@ abstract class Controller
         exit;
     }
 
-    /* Page 500 */
+    /**
+     * Page 500.
+     */
     protected function serverError(string $message = 'Erreur interne du serveur'): void
     {
         $this->title = '500 | Erreur serveur';

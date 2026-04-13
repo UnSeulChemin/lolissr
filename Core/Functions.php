@@ -1,52 +1,65 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core;
 
 class Functions
 {
     /**
-     * Retourne toute la configuration.
+     * Cache mémoire des variables d'environnement déjà lues.
      */
-    public static function config(): array
-    {
-        static $config = null;
-
-        if ($config === null)
-        {
-            $config = require ROOT . '/Config/config.php';
-        }
-
-        return $config;
-    }
+    private static array $envCache = [];
 
     /**
-     * Retourne une valeur de configuration imbriquée.
-     * Exemple : app.base_path / database.host
+     * Récupère une variable d'environnement.
      */
-    public static function getConfig(string $key, mixed $default = null): mixed
+    public static function env(string $key, mixed $default = null): mixed
     {
-        $segments = explode('.', $key);
-        $value = self::config();
-
-        foreach ($segments as $segment)
+        if (array_key_exists($key, self::$envCache))
         {
-            if (!is_array($value) || !array_key_exists($segment, $value))
-            {
-                return $default;
-            }
-
-            $value = $value[$segment];
+            return self::$envCache[$key];
         }
+
+        $value = $_ENV[$key] ?? $_SERVER[$key] ?? getenv($key);
+
+        if ($value === false || $value === null)
+        {
+            self::$envCache[$key] = $default;
+            return $default;
+        }
+
+        if (is_string($value))
+        {
+            $value = trim($value);
+
+            $value = match (strtolower($value))
+            {
+                'true', '(true)' => true,
+                'false', '(false)' => false,
+                'null', '(null)' => null,
+                'empty', '(empty)' => '',
+                default => $value
+            };
+        }
+
+        self::$envCache[$key] = $value;
 
         return $value;
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Configuration application
+    |--------------------------------------------------------------------------
+    */
 
     /**
      * Retourne le chemin de base du projet.
      */
     public static function basePath(): string
     {
-        return (string) self::getConfig('app.base_path', '/');
+        return (string) self::env('APP_BASE_PATH', '/');
     }
 
     /**
@@ -54,7 +67,7 @@ class Functions
      */
     public static function siteName(): string
     {
-        return (string) self::getConfig('app.site_name', 'Site');
+        return (string) self::env('APP_NAME', 'Site');
     }
 
     /**
@@ -62,7 +75,7 @@ class Functions
      */
     public static function pagination(): int
     {
-        return max(1, (int) self::getConfig('app.pagination', 8));
+        return max(1, (int) self::env('APP_PAGINATION', 8));
     }
 
     /**
@@ -70,7 +83,7 @@ class Functions
      */
     public static function appEnv(): string
     {
-        return (string) self::getConfig('app.env', 'local');
+        return (string) self::env('APP_ENV', 'local');
     }
 
     /**
@@ -78,15 +91,21 @@ class Functions
      */
     public static function appDebug(): bool
     {
-        return (bool) self::getConfig('app.debug', false);
+        return (bool) self::env('APP_DEBUG', false);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Configuration base de données
+    |--------------------------------------------------------------------------
+    */
 
     /**
      * Retourne l'hôte MySQL.
      */
     public static function dbHost(): string
     {
-        return (string) self::getConfig('database.host', 'localhost');
+        return (string) self::env('DB_HOST', 'localhost');
     }
 
     /**
@@ -94,7 +113,7 @@ class Functions
      */
     public static function dbName(): string
     {
-        return (string) self::getConfig('database.name', '');
+        return (string) self::env('DB_NAME', '');
     }
 
     /**
@@ -102,7 +121,7 @@ class Functions
      */
     public static function dbUser(): string
     {
-        return (string) self::getConfig('database.user', '');
+        return (string) self::env('DB_USER', '');
     }
 
     /**
@@ -110,7 +129,7 @@ class Functions
      */
     public static function dbPass(): string
     {
-        return (string) self::getConfig('database.pass', '');
+        return (string) self::env('DB_PASS', '');
     }
 
     /**
@@ -118,15 +137,35 @@ class Functions
      */
     public static function dbCharset(): string
     {
-        return (string) self::getConfig('database.charset', 'utf8mb4');
+        return (string) self::env('DB_CHARSET', 'utf8mb4');
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Requête HTTP
+    |--------------------------------------------------------------------------
+    */
+
     /**
-     * Récupère une string depuis POST et la nettoie.
+     * Vérifie si la requête courante est en POST.
+     */
+    public static function isPost(): bool
+    {
+        return ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST';
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Récupération données POST
+    |--------------------------------------------------------------------------
+    */
+
+    /**
+     * Récupère une chaîne depuis POST.
      */
     public static function postString(string $key): string
     {
-        return trim($_POST[$key] ?? '');
+        return trim((string) ($_POST[$key] ?? ''));
     }
 
     /**
@@ -138,24 +177,37 @@ class Functions
     }
 
     /**
-     * Récupère une string nullable depuis POST.
+     * Récupère une chaîne nullable depuis POST.
      * Retourne null si la valeur est vide.
      */
     public static function postNullableString(string $key): ?string
     {
-        $value = trim($_POST[$key] ?? '');
+        $value = trim((string) ($_POST[$key] ?? ''));
 
         return $value === '' ? null : $value;
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Gestion des uploads
+    |--------------------------------------------------------------------------
+    */
+
     /**
-     * Vérifie si un fichier uploadé existe.
+     * Vérifie si un fichier a été envoyé.
+     */
+    public static function hasUploadedFile(string $key): bool
+    {
+        return isset($_FILES[$key], $_FILES[$key]['error'])
+            && (int) $_FILES[$key]['error'] !== UPLOAD_ERR_NO_FILE;
+    }
+
+    /**
+     * Alias de compatibilité.
      */
     public static function fileExists(string $key): bool
     {
-        return isset($_FILES[$key])
-            && isset($_FILES[$key]['error'])
-            && $_FILES[$key]['error'] !== UPLOAD_ERR_NO_FILE;
+        return self::hasUploadedFile($key);
     }
 
     /**
@@ -163,12 +215,14 @@ class Functions
      */
     public static function fileName(string $key): ?string
     {
-        if (!self::fileExists($key))
+        if (!self::hasUploadedFile($key))
         {
             return null;
         }
 
-        return $_FILES[$key]['name'] ?? null;
+        $name = $_FILES[$key]['name'] ?? null;
+
+        return is_string($name) && $name !== '' ? $name : null;
     }
 
     /**
@@ -176,12 +230,14 @@ class Functions
      */
     public static function fileTmp(string $key): ?string
     {
-        if (!self::fileExists($key))
+        if (!self::hasUploadedFile($key))
         {
             return null;
         }
 
-        return $_FILES[$key]['tmp_name'] ?? null;
+        $tmp = $_FILES[$key]['tmp_name'] ?? null;
+
+        return is_string($tmp) && $tmp !== '' ? $tmp : null;
     }
 
     /**
@@ -189,12 +245,12 @@ class Functions
      */
     public static function fileError(string $key): ?int
     {
-        if (!isset($_FILES[$key]))
+        if (!isset($_FILES[$key]['error']))
         {
             return null;
         }
 
-        return $_FILES[$key]['error'] ?? null;
+        return (int) $_FILES[$key]['error'];
     }
 
     /**
@@ -202,16 +258,28 @@ class Functions
      */
     public static function fileSize(string $key): ?int
     {
-        if (!self::fileExists($key))
+        if (!self::hasUploadedFile($key))
         {
             return null;
         }
 
-        return isset($_FILES[$key]['size']) ? (int) $_FILES[$key]['size'] : null;
+        $size = $_FILES[$key]['size'] ?? null;
+
+        if (is_int($size))
+        {
+            return $size;
+        }
+
+        if (is_string($size) && ctype_digit($size))
+        {
+            return (int) $size;
+        }
+
+        return null;
     }
 
     /**
-     * Retourne l'extension du fichier uploadé.
+     * Retourne l'extension du fichier uploadé en minuscules.
      */
     public static function fileExtension(string $key): ?string
     {
@@ -222,19 +290,104 @@ class Functions
             return null;
         }
 
-        return strtolower(pathinfo($name, PATHINFO_EXTENSION));
+        $extension = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+
+        return $extension !== '' ? $extension : null;
     }
+
+    /**
+     * Retourne le type MIME réel d'un fichier uploadé.
+     */
+    public static function fileMimeType(string $key): ?string
+    {
+        $tmpName = self::fileTmp($key);
+
+        if ($tmpName === null || !is_file($tmpName))
+        {
+            return null;
+        }
+
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+
+        if ($finfo === false)
+        {
+            return null;
+        }
+
+        $mimeType = finfo_file($finfo, $tmpName);
+        finfo_close($finfo);
+
+        return is_string($mimeType) && $mimeType !== '' ? strtolower($mimeType) : null;
+    }
+
+    /**
+     * Retourne la taille maximale autorisée pour un upload.
+     */
+    public static function uploadMaxSize(): int
+    {
+        return max(1, (int) self::env('UPLOAD_MAX_SIZE', 5242880));
+    }
+
+    /**
+     * Retourne la liste des extensions autorisées.
+     *
+     * @return string[]
+     */
+    public static function uploadAllowedExtensions(): array
+    {
+        $extensions = (string) self::env('UPLOAD_ALLOWED_EXT', 'jpg,jpeg,png,webp');
+
+        $extensions = explode(',', strtolower($extensions));
+        $extensions = array_map('trim', $extensions);
+        $extensions = array_filter($extensions);
+
+        return array_values(array_unique($extensions));
+    }
+
+    /**
+     * Retourne la liste des types MIME autorisés.
+     *
+     * @return string[]
+     */
+    public static function uploadAllowedMimeTypes(): array
+    {
+        $mimeTypes = (string) self::env(
+            'UPLOAD_ALLOWED_MIME',
+            'image/jpeg,image/png,image/webp'
+        );
+
+        $mimeTypes = explode(',', strtolower($mimeTypes));
+        $mimeTypes = array_map('trim', $mimeTypes);
+        $mimeTypes = array_filter($mimeTypes);
+
+        return array_values(array_unique($mimeTypes));
+    }
+
+    /**
+     * Retourne le dossier des thumbnails manga.
+     */
+    public static function mangaThumbnailDirectory(): string
+    {
+        return ROOT . '/public/images/mangas/thumbnail/';
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Normalisation
+    |--------------------------------------------------------------------------
+    */
 
     /**
      * Normalise un slug.
      */
     public static function normalizeSlug(string $slug): string
     {
-        $slug = strtolower(trim($slug));
-        $slug = preg_replace('/[^a-z0-9]+/', '-', $slug);
-        $slug = preg_replace('/-+/', '-', $slug);
+        $slug = mb_strtolower(trim($slug), 'UTF-8');
+        $slug = preg_replace('/[^\p{L}\p{N}\s-]/u', '', $slug) ?? '';
+        $slug = preg_replace('/[\s-]+/u', '-', $slug) ?? '';
+        $slug = trim($slug, '-');
 
-        return trim($slug, '-');
+        return $slug;
     }
 
     /**
@@ -254,29 +407,17 @@ class Functions
     }
 
     /**
-     * Récupère une variable d'environnement.
+     * Génère un nom de thumbnail propre.
      */
-    public static function env(string $key, mixed $default = null): mixed
+    public static function buildThumbnailName(string $livre, int $numero): string
     {
-        $value = $_ENV[$key] ?? $_SERVER[$key] ?? getenv($key);
+        $thumbnail = self::normalizeSlug($livre);
 
-        if ($value === false || $value === null)
+        if ($thumbnail === '' || $numero <= 0)
         {
-            return $default;
+            return '';
         }
 
-        if (is_string($value))
-        {
-            return match (strtolower(trim($value)))
-            {
-                'true', '(true)' => true,
-                'false', '(false)' => false,
-                'null', '(null)' => null,
-                'empty', '(empty)' => '',
-                default => $value
-            };
-        }
-
-        return $value;
+        return $thumbnail . '-' . str_pad((string) $numero, 2, '0', STR_PAD_LEFT);
     }
 }

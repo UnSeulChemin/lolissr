@@ -1,26 +1,21 @@
 /* =========================================
    GLOBAL
    Styles de base du site
-   (après reset + variables)
 ========================================= */
 
-/* corps du site */
 body
 {
-    /* police globale */
-    font-family: var(--font-family);
-
-    /* fond global */
-    background-color: var(--background-color-body);
-
-    /* lisibilité du texte */
-    line-height: 1.5;
-
-    /* couleur texte par défaut */
+    font-family: var(--font-family-base);
+    background-color: var(--color-background);
     color: var(--color-text);
+    line-height: 1.5;
 }
 
-/* titres principaux */
+main
+{
+    min-height: calc(100vh - 80px);
+}
+
 h1,
 h2,
 h3,
@@ -28,26 +23,23 @@ h4,
 h5,
 h6
 {
-    font-family: var(--font-family);
+    font-family: var(--font-family-base);
     font-weight: 700;
     color: var(--color-title);
 }
 
-/* paragraphes */
 p
 {
     font-size: 1rem;
     line-height: 1.5;
 }
 
-/* liens */
 a
 {
-    text-decoration: none;
     color: inherit;
+    text-decoration: none;
 }
 
-/* images */
 img
 {
     display: block;
@@ -55,14 +47,21 @@ img
     height: auto;
 }
 
-/* conteneur principal des pages */
-main
-{
-    min-height: calc(100vh - 80px);
-}
-
-/* sélection texte (petit bonus visuel) */
 ::selection
 {
     background: rgba(123, 44, 255, 0.25);
+}
+
+input::placeholder,
+textarea::placeholder
+{
+    font-family: var(--font-family-base);
+    text-align: center;
+}
+
+.layout-container
+{
+    width: 95%;
+    max-width: 1500px;
+    margin: 30px auto 0;
 }

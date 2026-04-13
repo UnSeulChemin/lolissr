@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Core\Functions;
+use App\Core\Logger;
 use App\Core\Session;
 use App\Core\Validator;
 use App\Models\MangaModel;
@@ -183,7 +184,7 @@ class MangaController extends Controller
      */
     public function ajouterTraitement(): void
     {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+        if (!Functions::isPost())
         {
             $this->methodNotAllowed('Méthode non autorisée pour l’ajout d’un manga');
         }
@@ -206,8 +207,9 @@ class MangaController extends Controller
             ->maxLength('commentaire', 1000, 'Le commentaire ne doit pas dépasser 1000 caractères.')
             ->fileRequired('image', 'Aucune image envoyée.')
             ->fileOk('image', 'Erreur lors de l’envoi du fichier.')
-            ->imageExtension('image', ['jpg', 'png', 'webp'], 'Format image non autorisé.')
-            ->maxFileSize('image', 5 * 1024 * 1024, 'L’image ne doit pas dépasser 5 Mo.');
+            ->imageExtension('image', Functions::uploadAllowedExtensions(), 'Format image non autorisé.')
+            ->imageMime('image', Functions::uploadAllowedMimeTypes(), 'Type MIME image non autorisé.')
+            ->maxFileSize('image', Functions::uploadMaxSize(), 'L’image ne doit pas dépasser la taille autorisée.');
 
         if ($validator->fails())
         {
@@ -215,65 +217,24 @@ class MangaController extends Controller
         }
 
         $mangaModel = $this->mangaModel();
+
         $livre = Functions::postString('livre');
         $slug = Functions::normalizeSlug(Functions::postString('slug'));
         $numero = Functions::postInt('numero');
-        $commentaire = Functions::postNullableString('commentaire');
+        $commentaire = Functions::normalizeCommentaire(
+            Functions::postNullableString('commentaire')
+        );
 
         if ($mangaModel->findOneBySlugAndNumero($slug, $numero))
         {
             $this->redirectWithError('manga/ajouter', 'Ce manga existe déjà');
         }
 
-        $thumbnail = preg_replace('/[^A-Za-z0-9\- ]/', '', strtoupper($livre));
-        $thumbnail = preg_replace('/\s+/', ' ', trim($thumbnail));
-        $thumbnail .= ' ' . str_pad((string) $numero, 2, '0', STR_PAD_LEFT);
-
-        if ($thumbnail === '')
-        {
-            $this->redirectWithError('manga/ajouter', 'Nom de fichier invalide');
-        }
-
-        $extension = Functions::fileExtension('image');
-
-        if ($extension === 'jpeg')
-        {
-            $extension = 'jpg';
-        }
-
-        if ($extension === null)
-        {
-            $this->redirectWithError('manga/ajouter', 'Extension image introuvable');
-        }
-
-        $nomFichier = $thumbnail . '.' . $extension;
-        $dossier = ROOT . '/public/images/mangas/thumbnail/';
-        $destination = $dossier . $nomFichier;
-        $tmpName = Functions::fileTmp('image');
-
-        if (!is_dir($dossier))
-        {
-            $this->redirectWithError('manga/ajouter', 'Dossier image introuvable');
-        }
-
-        if ($tmpName === null)
-        {
-            $this->redirectWithError('manga/ajouter', 'Fichier temporaire introuvable');
-        }
-
-        if (file_exists($destination))
-        {
-            $this->redirectWithError('manga/ajouter', 'Une image avec ce nom existe déjà');
-        }
-
-        if (!move_uploaded_file($tmpName, $destination))
-        {
-            $this->redirectWithError('manga/ajouter', 'Erreur lors de l’upload de l’image');
-        }
+        $upload = $this->uploadThumbnail($livre, $numero);
 
         $insert = $mangaModel->insert([
-            'thumbnail' => $thumbnail,
-            'extension' => $extension,
+            'thumbnail' => $upload['thumbnail'],
+            'extension' => $upload['extension'],
             'slug' => $slug,
             'livre' => $livre,
             'numero' => $numero,
@@ -284,16 +245,115 @@ class MangaController extends Controller
 
         if (!$insert)
         {
-            if (file_exists($destination))
-            {
-                unlink($destination);
-            }
+            $this->removeFileIfExists($upload['destination']);
+
+            Logger::error(
+                'Insertion manga échouée après upload. slug='
+                . $slug
+                . ', numero='
+                . $numero
+            );
 
             $this->redirectWithError('manga/ajouter', 'Erreur lors de l’enregistrement du manga');
         }
 
         Session::forget(['errors', 'old']);
         $this->redirectWithSuccess('manga/ajouter', 'Manga ajouté avec succès');
+    }
+
+    /**
+     * Valide et déplace l'image uploadée.
+     * Retourne les infos utiles pour l'insertion.
+     *
+     * @return array{
+     *     thumbnail: string,
+     *     extension: string,
+     *     destination: string
+     * }
+     */
+    private function uploadThumbnail(string $livre, int $numero): array
+    {
+        $extension = Functions::fileExtension('image');
+
+        if ($extension === 'jpeg')
+        {
+            $extension = 'jpg';
+        }
+
+        if ($extension === null)
+        {
+            Logger::error('Upload manga: extension introuvable.');
+            $this->redirectWithError('manga/ajouter', 'Extension image introuvable');
+        }
+
+        $mimeType = Functions::fileMimeType('image');
+
+        if (
+            $mimeType === null
+            || !in_array($mimeType, Functions::uploadAllowedMimeTypes(), true)
+        ) {
+            Logger::error(
+                'Upload manga refusé: type MIME invalide. MIME reçu: '
+                . ($mimeType ?? 'null')
+            );
+
+            $this->redirectWithError('manga/ajouter', 'Type MIME image non autorisé');
+        }
+
+        $tmpName = Functions::fileTmp('image');
+
+        if ($tmpName === null || !is_uploaded_file($tmpName))
+        {
+            Logger::error('Upload manga: fichier temporaire invalide ou absent.');
+            $this->redirectWithError('manga/ajouter', 'Fichier temporaire introuvable');
+        }
+
+        $thumbnail = Functions::buildThumbnailName($livre, $numero);
+
+        if ($thumbnail === '')
+        {
+            Logger::error('Upload manga: nom de thumbnail invalide.');
+            $this->redirectWithError('manga/ajouter', 'Nom de fichier invalide');
+        }
+
+        $dossier = Functions::mangaThumbnailDirectory();
+
+        if (!is_dir($dossier))
+        {
+            Logger::error('Upload manga: dossier image introuvable : ' . $dossier);
+            $this->redirectWithError('manga/ajouter', 'Dossier image introuvable');
+        }
+
+        $destination = $dossier . $thumbnail . '.' . $extension;
+
+        if (file_exists($destination))
+        {
+            Logger::error('Upload manga: fichier déjà existant : ' . $destination);
+            $this->redirectWithError('manga/ajouter', 'Une image avec ce nom existe déjà');
+        }
+
+        if (!move_uploaded_file($tmpName, $destination))
+        {
+            Logger::error('Upload manga: échec move_uploaded_file vers : ' . $destination);
+            $this->redirectWithError('manga/ajouter', 'Erreur lors de l’upload de l’image');
+        }
+
+        return [
+            'thumbnail' => $thumbnail,
+            'extension' => $extension,
+            'destination' => $destination
+        ];
+    }
+
+    /**
+     * Supprime un fichier si présent.
+     */
+    private function removeFileIfExists(string $path): void
+    {
+        if (is_file($path))
+        {
+            unlink($path);
+        }
     }
 
     /**
@@ -305,7 +365,7 @@ class MangaController extends Controller
         $slug = Functions::normalizeSlug($slug);
         $numero = (int) $numero;
 
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+        if (!Functions::isPost())
         {
             $this->methodNotAllowed('Méthode non autorisée pour la modification d’un manga');
         }
@@ -335,21 +395,51 @@ class MangaController extends Controller
 
         if ($validator->fails())
         {
-            $this->redirectWithValidationErrors('manga/update/' . rawurlencode($slug) . '/' . $numero, $validator->errors());
+            $this->redirectWithValidationErrors(
+                'manga/update/' . rawurlencode($slug) . '/' . $numero,
+                $validator->errors()
+            );
         }
 
-        $jacquette = $this->normalizePostedNote($_POST['jacquette'] ?? null);
-        $livreNote = $this->normalizePostedNote($_POST['livre_note'] ?? null);
-        $commentaire = Functions::postNullableString('commentaire');
+        $jacquette = $this->normalizePostedNote(
+            Functions::postNullableString('jacquette')
+        );
 
-        $update = $mangaModel->updateManga($slug, $numero, $jacquette, $livreNote, $commentaire);
+        $livreNote = $this->normalizePostedNote(
+            Functions::postNullableString('livre_note')
+        );
+
+        $commentaire = Functions::normalizeCommentaire(
+            Functions::postNullableString('commentaire')
+        );
+
+        $update = $mangaModel->updateManga(
+            $slug,
+            $numero,
+            $jacquette,
+            $livreNote,
+            $commentaire
+        );
 
         if (!$update)
         {
-            $this->redirectWithError('manga/update/' . rawurlencode($slug) . '/' . $numero, 'Erreur lors de la mise à jour');
+            Logger::error(
+                'Échec update manga. slug='
+                . $slug
+                . ', numero='
+                . $numero
+            );
+
+            $this->redirectWithError(
+                'manga/update/' . rawurlencode($slug) . '/' . $numero,
+                'Erreur lors de la mise à jour'
+            );
         }
 
         Session::forget(['errors', 'old']);
-        $this->redirectWithSuccess('manga/' . rawurlencode($slug) . '/' . $numero, 'Manga mis à jour avec succès');
+        $this->redirectWithSuccess(
+            'manga/' . rawurlencode($slug) . '/' . $numero,
+            'Manga mis à jour avec succès'
+        );
     }
 }

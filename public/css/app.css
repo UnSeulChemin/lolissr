@@ -1,20 +1,20 @@
+/* FONT (toujours en premier) */
+@import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+
 /* BASE */
-@import url('./base/global.css');
 @import url('./base/reset.css');
-@import url('./base/scrollbars.css');
 @import url('./base/variables.css');
+@import url('./base/global.css');
+@import url('./base/scrollbars.css');
 
 /* COMPONENTS */
-@import url('./components/alerts.css');
 @import url('./components/buttons.css');
 @import url('./components/cards.css');
-
-/* PAGE */
-@import url('./page/home.css');
-@import url('./page/manga.css');
+@import url('./components/alerts.css');
 
 /* PARTIALS */
 @import url('./partials/header.css');
 
-/* FONT */
-@import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+/* PAGES */
+@import url('./page/home.css');
+@import url('./page/manga.css');

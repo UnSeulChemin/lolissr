@@ -4,6 +4,7 @@ namespace App\Core;
 
 use PDO;
 use PDOException;
+use Exception;
 
 class Database extends PDO
 {
@@ -30,42 +31,19 @@ class Database extends PDO
                 Functions::dbPass()
             );
 
-            /**
-             * Définit le mode de récupération par défaut.
-             * Les résultats seront retournés en objet.
-             */
-            $this->setAttribute(
-                PDO::ATTR_DEFAULT_FETCH_MODE,
-                PDO::FETCH_OBJ
-            );
-
-            /**
-             * Active le mode exception pour les erreurs PDO.
-             */
-            $this->setAttribute(
-                PDO::ATTR_ERRMODE,
-                PDO::ERRMODE_EXCEPTION
-            );
+            $this->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
+            $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
         }
-
         catch (PDOException $exception)
         {
-            /**
-             * Enregistre l'erreur dans le logger.
-             */
-            Logger::error($exception->getMessage());
+            Logger::error('Erreur connexion BDD : ' . $exception->getMessage());
 
-            /**
-             * Affiche l'erreur complète en mode debug.
-             */
             if (Functions::appDebug())
             {
                 exit('Erreur PDO : ' . $exception->getMessage());
             }
 
-            /**
-             * Message générique en production.
-             */
             exit('Erreur de connexion à la base de données.');
         }
     }
@@ -86,13 +64,15 @@ class Database extends PDO
     /**
      * Empêche le clonage de l'instance.
      */
-    private function __clone(): void {}
+    private function __clone(): void
+    {
+    }
 
     /**
      * Empêche la désérialisation de l'instance.
      */
     public function __wakeup(): void
     {
-        throw new \Exception('Cannot unserialize singleton');
+        throw new Exception('Cannot unserialize singleton');
     }
 }

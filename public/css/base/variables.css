@@ -9,46 +9,32 @@
        TYPOGRAPHIE
     ========================= */
 
-    --font-family: "Montserrat", "Open Sans", sans-serif;
-
-    --color-title: #ffffff;
-    --color-link: #ebebeb;
-
+    --font-family-base: "Montserrat", "Open Sans", sans-serif;
 
     /* =========================
        COULEURS PRINCIPALES
     ========================= */
 
-    --background-color-body: #ebebeb;
-    --background-color-header: #ca33ff;
-
-
-    /* =========================
-       THEME VIOLET
-    ========================= */
-
-    --violet-main: linear-gradient(
-        135deg,
-        #7b2cff,
-        #c44cff
-    );
-
-    --violet-shadow: rgba(123, 44, 255, 0.35);
-    --violet-shadow-hover: rgba(123, 44, 255, 0.45);
-
+   --color-background: #ebebeb;
+   --color-violet: #7b2cff;
 
     /* =========================
-       FORMULAIRES
+       GRADIENTS
     ========================= */
-
-    --background-color-form-input: #f5f5ef;
-    --background-color-form-focus: #ffffff;
-    --border-form: #333333;
-
+--color-text: #1a1a1a;
+--color-title: #222222;
+    --gradient-violet: linear-gradient(135deg, #7b2cff, #c44cff);
 
     /* =========================
-       FLASH / ALERTES
+       OMBRES
     ========================= */
 
-    --flash-active: #71afcd;
+    --shadow-violet: rgba(123, 44, 255, 0.35);
+    --shadow-violet-hover: rgba(123, 44, 255, 0.45);
+
+    /* =========================
+       ALERTES
+    ========================= */
+
+    --color-flash-active: #71afcd;
 }

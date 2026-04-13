@@ -5,61 +5,21 @@
 
 ::-webkit-scrollbar-thumb
 {
-    background-color: var(--background-color-header);
+    background-color: var(--color-violet);
+    border-radius: 10px;
 }
 
 ::-webkit-scrollbar-track
 {
-    background-color: var(--background-color-body);
+    background-color: var(--color-background);
 }
 
-@supports (scrollbar-color: var(--background-color-header) var(--background-color-body))
+@supports (scrollbar-color: red blue)
 {
     *
     {
-        scrollbar-color: var(--background-color-header) var(--background-color-body);
+        scrollbar-color: var(--color-violet) var(--color-background);
         scrollbar-width: auto;
     }
 }
 
-input::-webkit-input-placeholder
-{
-    font-size: 1.1em;
-    font-family: var(--font-family);
-    text-align: center;
-}
-
-textarea::-webkit-input-placeholder
-{
-    font-size: 1.1em;
-    font-family: var(--font-family);
-    text-align: center;
-}
-
-input::-moz-placeholder
-{
-    font-size: 1.1em;
-    font-family: var(--font-family);
-    text-align: center;
-}
-
-textarea::-moz-placeholder
-{
-    font-size: 1.1em;
-    font-family: var(--font-family);
-    text-align: center;
-}
-
-input:-ms-input-placeholder
-{
-    font-size: 1.1em;
-    font-family: var(--font-family);
-    text-align: center;
-}
-
-textarea:-ms-input-placeholder
-{
-    font-size: 1.1em;
-    font-family: var(--font-family);
-    text-align: center;
-}

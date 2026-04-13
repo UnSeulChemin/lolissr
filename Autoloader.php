@@ -7,7 +7,7 @@ namespace App;
 class Autoloader
 {
     /**
-     * enregistre l'autoloader
+     * Enregistre l'autoloader.
      */
     public static function register(): void
     {
@@ -15,23 +15,29 @@ class Autoloader
     }
 
     /**
-     * charge automatiquement les classes du namespace App
+     * Charge automatiquement les classes du namespace App.
      */
     public static function autoload(string $class): void
     {
+        /* Ignore les classes hors namespace App */
         if (!str_starts_with($class, 'App\\'))
         {
             return;
         }
 
+        /* Supprime "App\" du début */
         $relativeClass = substr($class, 4);
+
+        /* Convertit namespace en chemin */
         $relativeClass = str_replace('\\', DIRECTORY_SEPARATOR, $relativeClass);
 
+        /* Construit le chemin du fichier */
         $file = ROOT . DIRECTORY_SEPARATOR . $relativeClass . '.php';
 
+        /* Charge le fichier si existant */
         if (is_file($file))
         {
-            require_once $file;
+            require $file;
         }
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core;
 
 class Validator
@@ -54,11 +56,28 @@ class Validator
     }
 
     /**
-     * Vérifie si une validation doit être ignorée.
+     * Vérifie si une validation texte doit être ignorée.
      */
     private function shouldSkip(string $field): bool
     {
         return $this->hasError($field) || $this->isNullableAndEmpty($field);
+    }
+
+    /**
+     * Vérifie si un fichier a été envoyé.
+     */
+    private function hasUploadedFile(string $field): bool
+    {
+        return isset($this->files[$field]['error'])
+            && $this->files[$field]['error'] !== UPLOAD_ERR_NO_FILE;
+    }
+
+    /**
+     * Vérifie si une validation fichier doit être ignorée.
+     */
+    private function shouldSkipFile(string $field): bool
+    {
+        return $this->hasError($field) || !$this->hasUploadedFile($field);
     }
 
     /**
@@ -224,11 +243,7 @@ class Validator
             return $this;
         }
 
-        if (
-            !isset($this->files[$field]) ||
-            !isset($this->files[$field]['error']) ||
-            $this->files[$field]['error'] === UPLOAD_ERR_NO_FILE
-        )
+        if (!$this->hasUploadedFile($field))
         {
             $this->errors[$field] = $message ?? "Le fichier {$field} est obligatoire.";
         }
@@ -246,9 +261,8 @@ class Validator
             return $this;
         }
 
-        if (!isset($this->files[$field]) || !isset($this->files[$field]['error']))
+        if (!$this->hasUploadedFile($field))
         {
-            $this->errors[$field] = $message ?? "Fichier {$field} introuvable.";
             return $this;
         }
 
@@ -265,7 +279,7 @@ class Validator
      */
     public function imageExtension(string $field, array $allowedExtensions, ?string $message = null): self
     {
-        if ($this->hasError($field))
+        if ($this->shouldSkipFile($field))
         {
             return $this;
         }
@@ -294,11 +308,48 @@ class Validator
     }
 
     /**
+     * Vérifie le vrai type MIME de l'image.
+     */
+    public function imageMime(string $field, array $allowedMimeTypes, ?string $message = null): self
+    {
+        if ($this->shouldSkipFile($field))
+        {
+            return $this;
+        }
+
+        $tmpName = $this->files[$field]['tmp_name'] ?? null;
+
+        if (!is_string($tmpName) || $tmpName === '' || !is_file($tmpName))
+        {
+            $this->errors[$field] = $message ?? "Fichier temporaire invalide pour {$field}.";
+            return $this;
+        }
+
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+
+        if ($finfo === false)
+        {
+            $this->errors[$field] = $message ?? "Impossible de vérifier le type MIME de {$field}.";
+            return $this;
+        }
+
+        $mimeType = finfo_file($finfo, $tmpName);
+        finfo_close($finfo);
+
+        if ($mimeType === false || !in_array($mimeType, $allowedMimeTypes, true))
+        {
+            $this->errors[$field] = $message ?? "Type MIME non autorisé pour {$field}.";
+        }
+
+        return $this;
+    }
+
+    /**
      * Vérifie la taille maximale d'un fichier.
      */
     public function maxFileSize(string $field, int $maxBytes, ?string $message = null): self
     {
-        if ($this->hasError($field))
+        if ($this->shouldSkipFile($field))
         {
             return $this;
         }

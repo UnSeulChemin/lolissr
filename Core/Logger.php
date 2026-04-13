@@ -5,46 +5,52 @@ namespace App\Core;
 class Logger
 {
     /**
+     * Retourne le dossier des logs.
+     */
+    private static function logDirectory(): string
+    {
+        return (string) Functions::env('LOG_DIR', ROOT . '/Storage/logs');
+    }
+
+    /**
+     * Retourne le fichier de log principal.
+     */
+    private static function logFile(): string
+    {
+        return self::logDirectory() . '/app.log';
+    }
+
+    /**
      * Écrit un message dans le fichier de log.
      */
     private static function write(string $level, string $message): void
     {
-        /**
-         * Chemin du dossier logs.
-         */
-        $logDir = ROOT . '/logs';
+        $logDir = self::logDirectory();
+        $logFile = self::logFile();
 
-        /**
-         * Chemin du fichier log.
-         */
-        $logFile = $logDir . '/app.log';
-
-        /**
-         * Crée le dossier logs si inexistant.
-         */
         if (!is_dir($logDir))
         {
-            mkdir($logDir, 0755, true);
+            $created = mkdir($logDir, 0755, true);
+
+            if (!$created && !is_dir($logDir))
+            {
+                return;
+            }
         }
 
-        /**
-         * Date du log.
-         */
         $date = date('Y-m-d H:i:s');
+        $formatted = "[{$date}] [{$level}] {$message}" . PHP_EOL;
 
-        /**
-         * Format du message.
-         */
-        $formatted = "[{$date}] {$level}: {$message}" . PHP_EOL;
-
-        /**
-         * Écriture sécurisée dans le fichier.
-         */
-        file_put_contents(
+        $result = @file_put_contents(
             $logFile,
             $formatted,
             FILE_APPEND | LOCK_EX
         );
+
+        if ($result === false)
+        {
+            return;
+        }
     }
 
     /**

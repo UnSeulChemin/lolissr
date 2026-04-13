@@ -9,6 +9,7 @@ define('ROOT', dirname(__DIR__));
 require_once ROOT . '/Autoloader.php';
 
 \App\Autoloader::register();
+\App\Core\ErrorHandler::register();
 
 /*
 |--------------------------------------------------------------------------
@@ -25,12 +26,7 @@ if (is_file($envFile))
     {
         $line = trim($line);
 
-        if ($line === '' || str_starts_with($line, '#'))
-        {
-            continue;
-        }
-
-        if (!str_contains($line, '='))
+        if ($line === '' || str_starts_with($line, '#') || !str_contains($line, '='))
         {
             continue;
         }
@@ -46,7 +42,7 @@ if (is_file($envFile))
 | Gestion du debug
 |--------------------------------------------------------------------------
 */
-$debug = \App\Core\Functions::env('APP_DEBUG', false);
+$debug = \App\Core\Functions::appDebug();
 
 if ($debug)
 {
@@ -111,8 +107,8 @@ set_exception_handler(function (\Throwable $exception): void {
         );
     }
 
-    $controller = new \App\Controllers\MainController();
-    $controller->renderError('500', 500);
+    $controller = new \App\Controllers\ErrorController();
+    $controller->serverError('Une erreur interne est survenue.');
 });
 
 /*
@@ -146,8 +142,8 @@ register_shutdown_function(function (): void {
         return;
     }
 
-    $controller = new \App\Controllers\MainController();
-    $controller->renderError('500', 500);
+    $controller = new \App\Controllers\ErrorController();
+    $controller->serverError('Une erreur fatale est survenue.');
 });
 
 /*
@@ -163,7 +159,6 @@ $router = new \App\Core\Router();
 |--------------------------------------------------------------------------
 */
 $routes = require ROOT . '/Config/routes.php';
-
 $routes($router);
 
 /*
