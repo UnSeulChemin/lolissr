@@ -17,10 +17,10 @@ $currentPage = $currentPage ?? 1;
 
                 <article class="card collection-card">
 
-                    <div class="collection-card-image-box">
+                    <div class="card-image-box-portrait">
 
                         <img
-                            class="collection-card-image card-image"
+                            class="card-image-portrait card-image"
                             src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($manga->thumbnail . '.' . $manga->extension) ?>"
                             alt="<?= htmlspecialchars($manga->livre) ?>">
 

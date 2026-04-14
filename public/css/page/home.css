@@ -18,7 +18,7 @@
     text-align: center;
 
     border: 1px solid var(--color-violet-soft);
-    border-radius: 14px;
+    border-radius: var(--radius-input);
 
     background: linear-gradient(180deg, var(--color-violet-soft), rgba(123, 44, 255, 0.05));
     box-shadow: 0 6px 18px rgba(123, 44, 255, 0.06);
@@ -208,31 +208,6 @@
    BOTTOM CARD CONTENT
 ========================================= */
 
-.card-image-box-portrait
-{
-    width: 160px;
-    height: 250px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    margin: 8px 0 14px;
-}
-
-.card-image-portrait
-{
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
-
-    object-fit: contain;
-
-    border-radius: 10px;
-    box-shadow: var(--shadow-image);
-}
-
 .home-bottom-title
 {
     position: relative;
@@ -302,13 +277,13 @@
     height: 30px;
     padding: 0 12px;
 
-    color: var(--color-badge-gold-text);
+    color: var(--color-gold-text);
     font-size: 0.8rem;
     font-weight: 800;
     line-height: 1;
 
     border: 1px solid var(--color-gold-border);
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
 
     background: linear-gradient(135deg, var(--color-gold-soft), var(--color-gold-soft-2));
     box-shadow: 0 3px 8px var(--color-gold-shadow);

@@ -2,8 +2,6 @@
    GLOBAL ANIMATIONS
 ========================================= */
 
-/* Fade + slide vers le haut */
-
 @keyframes fadeUpSoft
 {
     from
@@ -19,8 +17,6 @@
     }
 }
 
-/* Fade simple */
-
 @keyframes fadeInSoft
 {
     from
@@ -33,8 +29,6 @@
         opacity: 1;
     }
 }
-
-/* Scale léger */
 
 @keyframes scaleSoft
 {
@@ -56,7 +50,7 @@
    UTILITIES
 ========================================= */
 
-.animate-fade-up > *
+.animate-fade-up
 {
     animation: fadeUpSoft 0.5s ease both;
 }
