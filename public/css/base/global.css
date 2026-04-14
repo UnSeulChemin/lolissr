@@ -53,13 +53,6 @@ select
     font: inherit;
 }
 
-input::placeholder,
-textarea::placeholder
-{
-    font-family: var(--font-family-base);
-    text-align: center;
-}
-
 ::selection
 {
     background-color: rgba(123, 44, 255, 0.25);
@@ -71,4 +64,49 @@ textarea::placeholder
     max-width: 1500px;
     margin: 30px auto 0;
     padding-bottom: 80px;
+}
+
+/* =========================================
+   INPUTS
+========================================= */
+
+.form-input,
+.form-textarea
+{
+    width: 100%;
+    padding: 13px 16px;
+
+    color: var(--color-text);
+    font-size: 0.95rem;
+    text-align: center;
+
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 14px;
+
+    background-color: #f7f7fb;
+
+    transition:
+        border-color 0.15s ease,
+        background-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder
+{
+    font-family: var(--font-family-base);
+    text-align: center;
+    color: rgba(0, 0, 0, 0.35);
+}
+
+.form-input:focus,
+.form-textarea:focus
+{
+    outline: none;
+
+    border-color: rgba(123, 44, 255, 0.40);
+    background-color: #ffffff;
+
+    box-shadow:
+        0 0 0 3px rgba(123, 44, 255, 0.12);
 }
