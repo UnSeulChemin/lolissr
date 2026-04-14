@@ -18,22 +18,46 @@
 
     <section class="dashboard-grid card-grid-3">
 
-        <a class="card card-small dashboard-link-card" href="<?= $basePath ?>manga/collection">
-            <span class="dashboard-link-icon">📚</span>
-            <span class="dashboard-link-title">Collection</span>
-            <span class="dashboard-link-text">Voir tous les mangas enregistrés.</span>
+        <a class="card card-small dashboard-panel" href="<?= $basePath ?>manga/collection">
+
+            <span class="dashboard-panel-icon">📚</span>
+
+            <span class="dashboard-panel-title">
+                Collection
+            </span>
+
+            <span class="dashboard-panel-text">
+                Voir tous les mangas enregistrés.
+            </span>
+
         </a>
 
-        <a class="card card-small dashboard-link-card" href="<?= $basePath ?>manga/ajouter">
-            <span class="dashboard-link-icon">➕</span>
-            <span class="dashboard-link-title">Ajouter</span>
-            <span class="dashboard-link-text">Ajouter un nouveau manga à la collection.</span>
+        <a class="card card-small dashboard-panel" href="<?= $basePath ?>manga/ajouter">
+
+            <span class="dashboard-panel-icon">➕</span>
+
+            <span class="dashboard-panel-title">
+                Ajouter
+            </span>
+
+            <span class="dashboard-panel-text">
+                Ajouter un nouveau manga à la collection.
+            </span>
+
         </a>
 
-        <a class="card card-small dashboard-link-card" href="<?= $basePath ?>manga/lien">
-            <span class="dashboard-link-icon">🔗</span>
-            <span class="dashboard-link-title">Lien</span>
-            <span class="dashboard-link-text">Accéder aux liens utiles liés à la collection.</span>
+        <a class="card card-small dashboard-panel" href="<?= $basePath ?>manga/lien">
+
+            <span class="dashboard-panel-icon">🔗</span>
+
+            <span class="dashboard-panel-title">
+                Lien
+            </span>
+
+            <span class="dashboard-panel-text">
+                Accéder aux liens utiles liés à la collection.
+            </span>
+
         </a>
 
     </section>

@@ -1,5 +1,5 @@
 /* =========================================
-   PAGE : MANGA DASHBOARD
+   DASHBOARD : HEADER
 ========================================= */
 
 .dashboard-header
@@ -9,8 +9,6 @@
     text-align: center;
 }
 
-/* Header */
-
 .dashboard-title-box
 {
     max-width: 760px;
@@ -18,87 +16,137 @@
     padding: 38px 32px;
     border-radius: 24px;
     text-align: center;
+
     background:
         linear-gradient(
             180deg,
-            rgba(255, 255, 255, 0.88),
-            rgba(123, 44, 255, 0.06)
+            rgba(255,255,255,0.88),
+            rgba(123,44,255,0.06)
         );
-    border: 1px solid rgba(123, 44, 255, 0.18);
+
+    border: 1px solid rgba(123,44,255,0.18);
+
     box-shadow:
-        0 18px 44px rgba(0, 0, 0, 0.07),
-        0 0 0 1px rgba(123, 44, 255, 0.10);
+        0 18px 44px rgba(0,0,0,0.07),
+        0 0 0 1px rgba(123,44,255,0.10);
 }
 
 .dashboard-title-main
 {
     margin-bottom: 6px;
+
     font-size: 2rem;
     font-weight: 700;
+
     color: var(--color-violet);
+
     letter-spacing: 0.3px;
 }
 
 .dashboard-subtitle
 {
     margin: 0 auto;
+
     max-width: 520px;
+
     font-size: 1rem;
     line-height: 1.6;
+
     color: var(--color-text);
+
     opacity: 0.75;
 }
 
-/* Grid wrapper */
+
+
+/* =========================================
+   DASHBOARD : GRID
+========================================= */
 
 .dashboard-grid
 {
     margin: 0 auto;
+    margin-bottom: 50px;
 }
 
-/* Card content spécifique dashboard */
 
-.dashboard-link-card
+
+/* =========================================
+   DASHBOARD : PANEL
+========================================= */
+
+.dashboard-panel
 {
     align-items: flex-start;
     justify-content: flex-start;
+
+    text-align: left;
+
     text-decoration: none;
+
     color: var(--color-text);
 }
 
-.dashboard-link-icon
+
+
+/* Icon */
+
+.dashboard-panel-icon
 {
     width: 58px;
     height: 58px;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     margin-bottom: 18px;
+
     font-size: 1.7rem;
+
     border-radius: 16px;
-    background-color: rgba(123, 44, 255, 0.10);
+
+    background-color: rgba(123,44,255,0.10);
+
     transition:
         transform 0.18s ease,
         background 0.18s ease;
 }
 
-.dashboard-link-card:hover .dashboard-link-icon
+.dashboard-panel:hover .dashboard-panel-icon
 {
     transform: scale(1.08);
-    background-color: rgba(123, 44, 255, 0.18);
+
+    background-color: rgba(123,44,255,0.18);
 }
 
-.dashboard-link-title
+
+
+/* Title */
+
+.dashboard-panel-title
 {
+    width: 100%;
+
     margin-bottom: 10px;
+
     font-size: 1.2rem;
     font-weight: 700;
+
     color: var(--color-title);
 }
 
-.dashboard-link-text
+
+
+/* Text */
+
+.dashboard-panel-text
 {
+    width: 100%;
+
     font-size: 0.96rem;
+
     line-height: 1.6;
+
     opacity: 0.85;
 }

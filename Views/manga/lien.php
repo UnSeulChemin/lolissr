@@ -3,10 +3,7 @@
     <section class="dashboard-header">
 
         <div class="dashboard-title-box">
-
-            <h1 class="dashboard-title-main">
-                🔗 Liens utiles
-            </h1>
+            <h1 class="dashboard-title-main">🔗 Liens utiles</h1>
 
             <p class="dashboard-subtitle">
                 Accès rapide aux sites utiles pour mangas et outils.
@@ -16,85 +13,60 @@
 
     </section>
 
-    <section class="dashboard-grid links-grid">
+    <section class="dashboard-grid card-grid-3">
 
-        <a class="dashboard-link-card"
+        <a class="card card-small dashboard-panel"
            href="https://www.glenat.com/manga"
-           target="_blank">
+           target="_blank"
+           rel="noopener noreferrer">
 
-            <span class="dashboard-link-icon">📚</span>
-
-            <span class="dashboard-link-title">
-                Glénat
-            </span>
-
-            <span class="dashboard-link-text">
-                Maison d'édition officielle.
-            </span>
+            <span class="dashboard-panel-icon">📚</span>
+            <span class="dashboard-panel-title">Glénat</span>
+            <span class="dashboard-panel-text">Maison d'édition officielle.</span>
 
         </a>
 
-        <a class="dashboard-link-card"
+        <a class="card card-small dashboard-panel"
            href="https://www.kana.fr/mangas/"
-           target="_blank">
+           target="_blank"
+           rel="noopener noreferrer">
 
-            <span class="dashboard-link-icon">📖</span>
-
-            <span class="dashboard-link-title">
-                Kana
-            </span>
-
-            <span class="dashboard-link-text">
-                Catalogue manga Kana.
-            </span>
+            <span class="dashboard-panel-icon">📖</span>
+            <span class="dashboard-panel-title">Kana</span>
+            <span class="dashboard-panel-text">Catalogue manga Kana.</span>
 
         </a>
 
-        <a class="dashboard-link-card"
+        <a class="card card-small dashboard-panel"
            href="https://www.nautiljon.com/mangas/?q=&public_averti=7"
-           target="_blank">
+           target="_blank"
+           rel="noopener noreferrer">
 
-            <span class="dashboard-link-icon">⚠️</span>
-
-            <span class="dashboard-link-title">
-                Nautiljon +
-            </span>
-
-            <span class="dashboard-link-text">
-                Mangas avec nudité et violence.
-            </span>
+            <span class="dashboard-panel-icon">⚠️</span>
+            <span class="dashboard-panel-title">Nautiljon +</span>
+            <span class="dashboard-panel-text">Mangas avec nudité et violence.</span>
 
         </a>
 
-        <a class="dashboard-link-card"
+        <a class="card card-small dashboard-panel"
            href="https://www.nautiljon.com/mangas/?q=&public_averti=3"
-           target="_blank">
+           target="_blank"
+           rel="noopener noreferrer">
 
-            <span class="dashboard-link-icon">🔞</span>
-
-            <span class="dashboard-link-title">
-                Nautiljon
-            </span>
-
-            <span class="dashboard-link-text">
-                Mangas avec nudité.
-            </span>
+            <span class="dashboard-panel-icon">🔞</span>
+            <span class="dashboard-panel-title">Nautiljon</span>
+            <span class="dashboard-panel-text">Mangas avec nudité.</span>
 
         </a>
 
-        <a class="dashboard-link-card"
+        <a class="card card-small dashboard-panel"
            href="https://www.xnview.com/fr/xnconvert/#downloads"
-           target="_blank">
+           target="_blank"
+           rel="noopener noreferrer">
 
-            <span class="dashboard-link-icon">🖼️</span>
-
-            <span class="dashboard-link-title">
-                XnConvert
-            </span>
-
-            <span class="dashboard-link-text">
-                Conversion PNG / JPG → WEBP.
-            </span>
+            <span class="dashboard-panel-icon">🖼️</span>
+            <span class="dashboard-panel-title">XnConvert</span>
+            <span class="dashboard-panel-text">Conversion PNG / JPG → WEBP.</span>
 
         </a>
 
