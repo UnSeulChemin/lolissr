@@ -50,13 +50,7 @@
 
     border-radius: 22px;
 
-    background:
-        linear-gradient(
-            180deg,
-            #ffffff 0%,
-            #f8f8fb 100%
-        );
-
+    background: linear-gradient(180deg, #ffffff 0%, #f8f8fb 100%);
     border: 1px solid rgba(255, 255, 255, 0.7);
 
     box-shadow:
@@ -77,12 +71,7 @@
     position: absolute;
     inset: 0;
 
-    background:
-        linear-gradient(
-            135deg,
-            rgba(255, 255, 255, 0.35),
-            transparent 45%
-        );
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.35), transparent 45%);
 
     pointer-events: none;
 }
@@ -113,8 +102,6 @@
     align-items: center;
     justify-content: center;
 
-    position: relative;
-
     margin: 8px 0 14px;
 }
 
@@ -142,28 +129,26 @@
 {
     margin: 0 0 6px;
 
+    color: var(--color-title);
     font-size: 1rem;
     font-weight: 700;
     line-height: 1.3;
     text-align: center;
-
-    color: var(--color-title);
 }
 
 .collection-card-subtitle
 {
     margin: 0;
 
+    color: var(--color-text);
     font-size: 0.95rem;
     text-align: center;
-
-    color: var(--color-text);
     opacity: 0.9;
 }
 
 
 /* =========================
-   BADGE COUNT — bas gauche collé image
+   BADGE COUNT
 ========================= */
 
 .collection-card-badge-count
@@ -204,36 +189,38 @@
 .collection-card-badge-note
 {
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: 5px;
+    right: 5px;
     z-index: 3;
 
-    width: 48px;
-    height: 48px;
+    min-width: 58px;
+    height: 34px;
+    padding: 0 10px;
 
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 5px;
 
     color: #ffffff;
-    font-size: 16px;
-    font-weight: 800;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
 
-    border: 2px solid rgba(255, 255, 255, 0.90);
-    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.92);
+    border-radius: 999px;
 
     box-shadow:
-        0 8px 18px rgba(0, 0, 0, 0.20),
-        0 2px 8px rgba(123, 44, 255, 0.14);
+        0 8px 18px rgba(0, 0, 0, 0.18),
+        0 2px 8px rgba(0, 0, 0, 0.16);
 
     transition: transform 0.15s ease;
 }
 
 .collection-card:hover .collection-card-badge-note
 {
-    transform: scale(1.08);
+    transform: scale(1.05);
 }
-
 
 /* =========================
    NOTE COLORS
@@ -288,7 +275,6 @@
     font-weight: 600;
 
     background-color: #ffffff;
-
     border: 1px solid rgba(0, 0, 0, 0.06);
     border-radius: 12px;
 
@@ -321,7 +307,6 @@
 {
     display: flex;
     justify-content: center;
-
     margin-top: 40px;
 }
 

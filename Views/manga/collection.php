@@ -17,35 +17,37 @@ $currentPage = $currentPage ?? 1;
 
                 <article class="collection-card">
 
-                    <?php if (!$isCollection): ?>
-                        <span class="collection-card-badge-count">
-                            📖 <?= (int) $manga->total ?>
-                        </span>
-                    <?php endif; ?>
-
-                    <?php if ($isCollection && $manga->note !== null): ?>
-                        <?php
-                        $noteClass = 'collection-note-mid';
-
-                        if ((int) $manga->note >= 8)
-                        {
-                            $noteClass = 'collection-note-good';
-                        }
-                        elseif ((int) $manga->note <= 4)
-                        {
-                            $noteClass = 'collection-note-low';
-                        }
-                        ?>
-                        <span class="collection-card-badge-note <?= htmlspecialchars($noteClass) ?>">
-                            <?= (int) $manga->note ?>
-                        </span>
-                    <?php endif; ?>
-
                     <div class="collection-card-image-box">
+
                         <img
                             class="collection-card-image card-image"
                             src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($manga->thumbnail . '.' . $manga->extension) ?>"
                             alt="<?= htmlspecialchars($manga->livre) ?>">
+
+                        <?php if (!$isCollection): ?>
+                            <span class="collection-card-badge-count">
+                                📚 <?= (int) $manga->total ?>
+                            </span>
+                        <?php endif; ?>
+
+                        <?php if ($isCollection && $manga->note !== null): ?>
+                            <?php
+                            $noteClass = 'collection-note-mid';
+
+                            if ((int) $manga->note >= 8)
+                            {
+                                $noteClass = 'collection-note-good';
+                            }
+                            elseif ((int) $manga->note <= 4)
+                            {
+                                $noteClass = 'collection-note-low';
+                            }
+                            ?>
+                            <span class="collection-card-badge-note <?= htmlspecialchars($noteClass) ?>">
+                                ✨ <?= (int) $manga->note ?>
+                            </span>
+                        <?php endif; ?>
+
                     </div>
 
                     <p class="collection-card-title">
