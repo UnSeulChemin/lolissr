@@ -77,4 +77,58 @@
     --color-warning: #e0a800;
     --color-info: #17a2b8;
     --color-alert-text: #ffffff;
+
+   /* =========================
+      BORDER RADIUS
+   ========================= */
+
+   --radius-image: 10px;
+   --radius-card: 22px;
+   --radius-pill: 999px;
+
+
+   /* =========================
+      SHADOWS
+   ========================= */
+
+   --shadow-image-soft:
+      0 6px 14px rgba(0, 0, 0, 0.08);
+
+   --shadow-image:
+      0 8px 18px rgba(0, 0, 0, 0.12);
+
+   --shadow-card-soft:
+      0 10px 30px rgba(0,0,0,0.06),
+      0 2px 10px rgba(0,0,0,0.03);
+
+   --shadow-card-hover:
+      0 18px 34px rgba(0,0,0,0.10),
+      0 0 0 3px var(--color-violet),
+      0 10px 26px rgba(123,44,255,0.18);
+
+
+   /* =========================
+      GOLD BADGE COLORS
+   ========================= */
+
+   --color-gold-text: #9a4f00;
+
+   --color-gold-soft:
+      rgba(255, 170, 40, 0.45);
+
+   --color-gold-soft-2:
+      rgba(255, 130, 0, 0.35);
+
+   --color-gold-border:
+      rgba(255, 130, 0, 0.45);
+
+   --color-gold-shadow:
+      rgba(255, 130, 0, 0.18);
+
+
+   /* =========================
+      TEXT ACCENT
+   ========================= */
+
+   --color-text-accent: #5e4b75;
 }

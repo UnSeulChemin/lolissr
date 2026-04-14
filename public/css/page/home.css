@@ -2,7 +2,6 @@
    PAGE : HOME
 ========================================= */
 
-
 /* =========================================
    SECTION TITLE
 ========================================= */
@@ -12,13 +11,16 @@
     width: 100%;
     margin: 40px 0;
     padding: 12px 18px;
-    border-radius: 14px;
-    text-align: center;
+
+    color: var(--color-violet);
     font-size: 1rem;
     font-weight: 700;
-    color: var(--color-violet);
-    background: linear-gradient(180deg, rgba(123, 44, 255, 0.10), rgba(123, 44, 255, 0.05));
-    border: 1px solid rgba(123, 44, 255, 0.10);
+    text-align: center;
+
+    border: 1px solid var(--color-violet-soft);
+    border-radius: 14px;
+
+    background: linear-gradient(180deg, var(--color-violet-soft), rgba(123, 44, 255, 0.05));
     box-shadow: 0 6px 18px rgba(123, 44, 255, 0.06);
 }
 
@@ -46,8 +48,6 @@
     align-items: stretch;
 }
 
-
-/* Large card spans 2 columns */
 .home-grid-top > .card-wide
 {
     grid-column: span 2;
@@ -55,20 +55,7 @@
 
 
 /* =========================================
-   ANIMATION
-========================================= */
-
-.home-grid > *,
-.home-best-list > *,
-.home-series-top > *
-{
-    animation: fadeUpSoft 0.5s ease both;
-}
-
-/* =========================================
    TOP CARDS
-   Les cartes du haut n'ont pas exactement
-   le même comportement que les stats
 ========================================= */
 
 .home-grid-top .card
@@ -85,7 +72,6 @@
 
 /* =========================================
    STATS CARDS
-   On remet l'impact visuel du dashboard home
 ========================================= */
 
 .home-grid-stats .card
@@ -118,7 +104,9 @@
 {
     position: relative;
     z-index: 1;
+
     margin: 0 0 8px;
+
     font-size: 1rem;
     font-weight: 700;
 }
@@ -127,7 +115,9 @@
 {
     position: relative;
     z-index: 1;
+
     margin: 0;
+
     font-size: 2.1rem;
     font-weight: 700;
     line-height: 1.1;
@@ -137,96 +127,68 @@
 {
     position: relative;
     z-index: 1;
+
     margin: 0;
+
     font-size: 1rem;
 }
 
 
 /* =========================================
-   LONGEST SERIES
+   LONGEST / LAST
 ========================================= */
 
-.home-longest-content
-{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 18px;
-    flex: 1;
-    width: 100%;
-    position: relative;
-    z-index: 1;
-}
-
-.home-longest-image
-{
-    width: 130px;
-    height: auto;
-    border-radius: 10px;
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
-}
-
-.home-longest-info
-{
-    text-align: left;
-}
-
-.home-longest-name
-{
-    margin: 0 0 6px;
-    font-size: 1.1rem;
-    font-weight: 700;
-}
-
-.home-longest-count
-{
-    margin: 0;
-    font-size: 1rem;
-}
-
-
-/* =========================================
-   LAST VOLUME
-========================================= */
-
+.home-longest-content,
 .home-last-content
 {
+    position: relative;
+    z-index: 1;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 18px;
-    flex: 1;
+
     width: 100%;
-    position: relative;
-    z-index: 1;
+    flex: 1;
+    gap: 18px;
 }
 
+.home-longest-image,
 .home-last-image
 {
     width: 130px;
     height: auto;
-    border-radius: 10px;
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+
+    border-radius: var(--radius-image);
+    box-shadow: var(--shadow-image-soft);
 }
 
+.home-longest-info,
 .home-last-info
 {
     text-align: left;
 }
 
+.home-longest-name,
 .home-last-name
 {
     margin: 0 0 6px;
+
     font-size: 1.1rem;
     font-weight: 700;
 }
 
+.home-longest-count,
 .home-last-volume
 {
     margin: 0;
     font-size: 1rem;
+}
+
+.home-last-volume
+{
+    color: var(--color-text-accent);
     font-weight: 600;
-    color: #5e4b75;
 }
 
 
@@ -246,32 +208,38 @@
    BOTTOM CARD CONTENT
 ========================================= */
 
-.home-bottom-image-box
+.card-image-box-portrait
 {
     width: 160px;
     height: 250px;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     margin: 8px 0 14px;
 }
 
-.home-bottom-image
+.card-image-portrait
 {
     max-width: 100%;
     max-height: 100%;
     width: auto;
     height: auto;
+
     object-fit: contain;
+
     border-radius: 10px;
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+    box-shadow: var(--shadow-image);
 }
 
 .home-bottom-title
 {
     position: relative;
     z-index: 1;
+
     margin: 0 0 6px;
+
     font-size: 1rem;
     font-weight: 700;
     text-align: center;
@@ -281,9 +249,18 @@
 {
     position: relative;
     z-index: 1;
+
     margin: 0;
+
     font-size: 0.95rem;
     text-align: center;
+}
+
+.home-bottom-subtitle-strong
+{
+    margin-top: 4px;
+    color: var(--color-text-accent);
+    font-weight: 600;
 }
 
 
@@ -296,23 +273,13 @@
     position: absolute;
     top: 16px;
     left: 16px;
+    z-index: 2;
+
     margin: 0;
+
+    color: var(--color-violet);
     font-size: 1rem;
     font-weight: 800;
-    color: var(--color-violet);
-    z-index: 2;
-}
-
-
-/* =========================================
-   BEST RATED VARIANT
-========================================= */
-
-.home-best-link .home-bottom-subtitle
-{
-    margin-top: 4px;
-    font-weight: 600;
-    color: #5e4b75;
 }
 
 
@@ -325,22 +292,24 @@
     position: absolute;
     top: 12px;
     right: 12px;
-    height: 30px;
-    padding: 0 12px;
+    z-index: 2;
+
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
+
+    height: 30px;
+    padding: 0 12px;
+
+    color: var(--color-badge-gold-text);
     font-size: 0.8rem;
     font-weight: 800;
-    color: #9a4f00;
-    background: linear-gradient(
-        135deg,
-        rgba(255, 170, 40, 0.45),
-        rgba(255, 130, 0, 0.35)
-    );
-    border: 1px solid rgba(255, 130, 0, 0.45);
+    line-height: 1;
+
+    border: 1px solid var(--color-gold-border);
     border-radius: 999px;
-    box-shadow: 0 3px 8px rgba(255, 130, 0, 0.18);
-    z-index: 2;
+
+    background: linear-gradient(135deg, var(--color-gold-soft), var(--color-gold-soft-2));
+    box-shadow: 0 3px 8px var(--color-gold-shadow);
 }

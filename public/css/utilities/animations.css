@@ -2,7 +2,6 @@
    GLOBAL ANIMATIONS
 ========================================= */
 
-
 /* Fade + slide vers le haut */
 
 @keyframes fadeUpSoft
@@ -20,7 +19,6 @@
     }
 }
 
-
 /* Fade simple */
 
 @keyframes fadeInSoft
@@ -35,7 +33,6 @@
         opacity: 1;
     }
 }
-
 
 /* Scale léger */
 
@@ -56,38 +53,13 @@
 
 
 /* =========================================
-   KEYFRAMES
-========================================= */
-
-@keyframes fadeUpSoft
-{
-    from
-    {
-        opacity: 0;
-        transform: translateY(18px);
-    }
-
-    to
-    {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-
-/* =========================================
    UTILITIES
 ========================================= */
-
-/* Animation simple */
 
 .animate-fade-up > *
 {
     animation: fadeUpSoft 0.5s ease both;
 }
-
-
-/* Animation avec cascade premium */
 
 .animate-fade-up-stagger > *
 {

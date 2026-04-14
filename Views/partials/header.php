@@ -31,10 +31,10 @@ $activeManga = ($currentPath === '/manga' || str_starts_with($currentPath, '/man
     <nav>
         <ul>
             <li>
-                <a class="link-menu <?= $activeHome ?>" href="<?= $basePath ?>" title="Accueil">🏠</a>
+                <a class="nav-link-icon <?= $activeHome ?>" href="<?= $basePath ?>" title="Accueil">🏠</a>
             </li>
             <li>
-                <a class="link-menu <?= $activeManga ?>" href="<?= $basePath ?>manga" title="Manga">📚</a>
+                <a class="nav-link-icon <?= $activeManga ?>" href="<?= $basePath ?>manga" title="Manga">📚</a>
             </li>
         </ul>
     </nav>

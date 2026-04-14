@@ -74,7 +74,7 @@
 
     </section>
 
-    <section class="home-grid home-grid-stats card-grid-3">
+    <section class="home-grid home-grid-stats animate-fade-up-stagger card-grid-3">
 
         <article class="card card-small">
             <h2 class="home-card-title">
@@ -125,9 +125,9 @@
                             #<?= $index + 1 ?>
                         </p>
 
-                        <div class="home-bottom-image-box">
+                        <div class="card-image-box-portrait">
                             <img
-                                class="home-bottom-image card-image"
+                                class="card-image-portrait card-image"
                                 src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($serie->thumbnail . '.' . $serie->extension) ?>"
                                 alt="<?= htmlspecialchars($serie->livre) ?>">
                         </div>
@@ -163,9 +163,9 @@
                             ⭐ <?= (int) $manga->note ?>/10
                         </span>
 
-                        <div class="home-bottom-image-box">
+                        <div class="card-image-box-portrait">
                             <img
-                                class="home-bottom-image card-image"
+                                class="card-image-portrait card-image"
                                 src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($manga->thumbnail . '.' . $manga->extension) ?>"
                                 alt="<?= htmlspecialchars($manga->livre) ?>">
                         </div>

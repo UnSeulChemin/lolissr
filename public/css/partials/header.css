@@ -14,9 +14,10 @@ header nav
     max-width: 1400px;
     margin: 0 auto;
     padding: 16px 0;
+
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
 }
 
 header ul
@@ -24,12 +25,19 @@ header ul
     display: flex;
     align-items: center;
     gap: 56px;
+
     margin: 0;
     padding: 0;
+
     list-style: none;
 }
 
-.link-menu
+
+/* =========================================
+   NAV ICON LINK
+========================================= */
+
+.nav-link-icon
 {
     position: relative;
 
@@ -42,7 +50,7 @@ header ul
 
     font-size: 26px;
 
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
 
     background: rgba(255, 255, 255, 0.06);
 
@@ -57,9 +65,10 @@ header ul
         filter 0.25s ease;
 }
 
-/* effet glass highlight */
 
-.link-menu::before
+/* Glass highlight */
+
+.nav-link-icon::before
 {
     content: "";
 
@@ -71,7 +80,7 @@ header ul
     background:
         linear-gradient(
             135deg,
-            rgba(255,255,255,0.35),
+            rgba(255, 255, 255, 0.35),
             transparent 45%
         );
 
@@ -80,39 +89,42 @@ header ul
     pointer-events: none;
 }
 
+
 /* Hover */
 
-.link-menu:hover
+.nav-link-icon:hover
 {
     transform: translateY(-2px);
 
-    background: rgba(255,255,255,0.12);
+    background: rgba(255, 255, 255, 0.12);
 
     box-shadow:
-        0 0 0 2px rgba(255,255,255,0.22),
-        0 8px 18px rgba(123,44,255,0.24);
+        0 0 0 2px rgba(255, 255, 255, 0.22),
+        0 8px 18px rgba(123, 44, 255, 0.24);
 }
 
-/* Actif premium */
 
-.link-menu.active
+/* Active */
+
+.nav-link-icon.active
 {
     transform: scale(1.10);
 
-    background: rgba(255,255,255,0.18);
+    background: rgba(255, 255, 255, 0.18);
 
     box-shadow:
-        0 0 0 3px rgba(255,255,255,0.35),
-        0 0 20px rgba(123,44,255,0.65),
-        0 10px 26px rgba(123,44,255,0.30);
+        0 0 0 3px rgba(255, 255, 255, 0.35),
+        0 0 20px rgba(123, 44, 255, 0.65),
+        0 10px 26px rgba(123, 44, 255, 0.30);
 
     filter:
-        drop-shadow(0 0 8px rgba(255,255,255,0.22));
+        drop-shadow(0 0 8px rgba(255, 255, 255, 0.22));
 }
 
-/* Hover actif */
 
-.link-menu.active:hover
+/* Active hover */
+
+.nav-link-icon.active:hover
 {
-    background: rgba(255,255,255,0.22);
+    background: rgba(255, 255, 255, 0.22);
 }
