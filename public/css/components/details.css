@@ -16,17 +16,16 @@
 
     background-color: #f5f5f5;
 
-    border-radius: 22px;
+    border-radius: var(--radius-card);
 
     box-shadow:
         0 10px 24px rgba(0, 0, 0, 0.08);
 }
 
 
-
-/* =========================
+/* =========================================
    IMAGE
-========================= */
+========================================= */
 
 .detail-image
 {
@@ -56,10 +55,9 @@
 }
 
 
-
-/* =========================
+/* =========================================
    CONTENT
-========================= */
+========================================= */
 
 .detail-content
 {
@@ -71,46 +69,38 @@
 }
 
 
-
-/* =========================
+/* =========================================
    ROWS
-========================= */
+========================================= */
 
 .detail-row
 {
     display: grid;
-
     grid-template-columns: 280px 1fr;
-
     gap: 14px;
 }
 
 
-
-/* =========================
+/* =========================================
    LABEL / VALUE
-========================= */
+========================================= */
 
 .detail-label,
 .detail-value
 {
     min-height: 46px;
-
     padding: 10px 14px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    border-radius: 10px;
-
-    color: #ffffff;
+    color: var(--color-surface);
+    font-size: 18px;
+    text-align: center;
 
     background: var(--gradient-violet);
-
-    font-size: 18px;
-
-    text-align: center;
+    border-radius: var(--radius-image);
 }
 
 .detail-label
@@ -124,10 +114,9 @@
 }
 
 
-
-/* =========================
+/* =========================================
    COMMENT
-========================= */
+========================================= */
 
 .detail-row-comment .detail-label,
 .detail-comment
@@ -137,18 +126,15 @@
 
 .detail-comment
 {
-    white-space: pre-wrap;
-
-    overflow-wrap: break-word;
-
     line-height: 1.5;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
 }
 
 
-
-/* =========================
+/* =========================================
    ACTIONS
-========================= */
+========================================= */
 
 .detail-actions
 {

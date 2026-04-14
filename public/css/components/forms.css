@@ -9,9 +9,10 @@
     padding: 0 20px;
 }
 
-/* =========================
+
+/* =========================================
    CARD
-========================= */
+========================================= */
 
 .form-card
 {
@@ -19,15 +20,15 @@
     margin: 0 auto;
     padding: 30px;
 
-    border-radius: 22px;
-
-    background-color: #ffffff;
+    background-color: var(--color-surface);
     border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: var(--radius-card);
 }
 
-/* =========================
+
+/* =========================================
    FORM LAYOUT
-========================= */
+========================================= */
 
 .form-layout
 {
@@ -43,23 +44,25 @@
     gap: 10px;
 }
 
-/* =========================
+
+/* =========================================
    LABEL
-========================= */
+========================================= */
 
 .form-label
 {
     margin-left: 2px;
 
-    text-align: center;
     color: var(--color-title);
     font-size: 0.9rem;
     font-weight: 700;
+    text-align: center;
 }
 
-/* =========================
+
+/* =========================================
    INPUTS
-========================= */
+========================================= */
 
 .form-input,
 .form-textarea
@@ -71,10 +74,9 @@
     font-size: 0.95rem;
     text-align: center;
 
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    background-color: var(--color-surface-muted);
+    border: 1px solid var(--color-border-soft);
     border-radius: 14px;
-
-    background-color: #f7f7fb;
 
     transition:
         border-color 0.15s ease,
@@ -85,7 +87,8 @@
 .form-input::placeholder,
 .form-textarea::placeholder
 {
-    color: rgba(0, 0, 0, 0.35);
+    color: var(--color-text-muted);
+    font-family: var(--font-family-base);
     text-align: center;
 }
 
@@ -94,16 +97,17 @@
 {
     outline: none;
 
-    border-color: rgba(123, 44, 255, 0.40);
-    background-color: #ffffff;
+    background-color: var(--color-surface);
+    border-color: var(--color-violet-border);
 
     box-shadow:
-        0 0 0 3px rgba(123, 44, 255, 0.12);
+        0 0 0 3px var(--color-violet-ring);
 }
 
-/* =========================
+
+/* =========================================
    TEXTAREA
-========================= */
+========================================= */
 
 .form-textarea
 {
@@ -111,9 +115,10 @@
     resize: vertical;
 }
 
-/* =========================
+
+/* =========================================
    CUSTOM FILE UPLOAD
-========================= */
+========================================= */
 
 .form-upload
 {
@@ -126,15 +131,15 @@
     min-height: 52px;
     padding: 12px 16px;
 
-    border: 1px dashed rgba(123, 44, 255, 0.35);
-    border-radius: 14px;
-
     background:
         linear-gradient(
             180deg,
             rgba(123, 44, 255, 0.06),
             rgba(123, 44, 255, 0.02)
         );
+
+    border: 1px dashed var(--color-violet-border);
+    border-radius: 14px;
 
     cursor: pointer;
 
@@ -172,9 +177,10 @@
     cursor: pointer;
 }
 
-/* =========================
+
+/* =========================================
    ACTIONS
-========================= */
+========================================= */
 
 .form-actions
 {
@@ -184,35 +190,27 @@
     gap: 20px;
 }
 
-/* =========================================
-   PLACEHOLDERS
-========================================= */
-
-.form-input::placeholder,
-.form-textarea::placeholder
-{
-    font-family: var(--font-family-base);
-    text-align: center;
-    color: rgba(0, 0, 0, 0.35);
-}
-
 .form-submit
 {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+
     min-width: 170px;
     padding: 13px 28px;
-    color: #ffffff;
+
+    color: var(--color-surface);
     font-size: 0.95rem;
     font-weight: 600;
+    line-height: 1;
+    text-decoration: none;
+
+    background: var(--gradient-violet);
     border: none;
     border-radius: 14px;
-    background: var(--gradient-violet);
+
     cursor: pointer;
-    text-decoration: none;
-    font-family: inherit;
-    line-height: 1;
+
     transition:
         transform 0.15s ease,
         filter 0.15s ease;
@@ -224,49 +222,43 @@
     filter: brightness(1.05);
 }
 
-.form-submit:hover
-{
-    transform: translateY(-1px);
-    filter: brightness(1.05);
-}
 
-/* =========================
+/* =========================================
    BUTTON VARIANTS
-========================= */
+========================================= */
 
 .form-submit-secondary
 {
-    background: transparent;
-
     color: var(--color-violet);
-
-    border: 1px solid rgba(123, 44, 255, 0.35);
+    background: transparent;
+    border: 1px solid var(--color-violet-border);
 }
 
 .form-submit-secondary:hover
 {
-    background: rgba(123, 44, 255, 0.08);
-
     transform: translateY(-1px);
+    background: rgba(123, 44, 255, 0.08);
 }
 
-/* =========================
+
+/* =========================================
    ERRORS
-========================= */
+========================================= */
 
 .form-error
 {
     margin: 0;
 
-    color: #d92d20;
+    color: var(--color-error);
     font-size: 0.82rem;
     font-weight: 600;
     line-height: 1.4;
 }
 
-/* =========================
+
+/* =========================================
    RESPONSIVE
-========================= */
+========================================= */
 
 @media (max-width: 700px)
 {
