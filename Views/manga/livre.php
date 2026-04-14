@@ -90,8 +90,8 @@
 
     <div class="collection-back-wrapper">
         <a
-            class="form-submit form-submit-secondary collection-back-button"
-            href="<?= $basePath; ?>manga/collection/<?= rawurlencode($manga->slug) ?>">
+            class="form-submit collection-back-button"
+            href="<?= $basePath; ?>manga/serie/<?= rawurlencode($manga->slug) ?>">
             Retour
         </a>
     </div>
