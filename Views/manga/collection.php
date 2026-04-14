@@ -35,7 +35,7 @@ $currentPage = $currentPage ?? 1;
                             <?= (int) $manga->total ?> tomes
                         </p>
 
-                        <span class="collection-card-badge-count">
+                        <span class="collection-card-badge collection-card-badge-count">
                             📚 <?= (int) $manga->total ?>
                         </span>
                     <?php endif; ?>
@@ -53,7 +53,7 @@ $currentPage = $currentPage ?? 1;
                             $noteClass = 'collection-note-low';
                         }
                         ?>
-                        <span class="collection-card-badge-note <?= htmlspecialchars($noteClass) ?>">
+                        <span class="collection-card-badge collection-card-badge-note <?= htmlspecialchars($noteClass) ?>">
                             ✨ <?= (int) $manga->note ?>
                         </span>
                     <?php endif; ?>

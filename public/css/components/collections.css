@@ -60,72 +60,67 @@
     opacity: 0.9;
 }
 
-.collection-card-badge-count
+/* =========================
+   BADGES BASE
+========================= */
+
+.collection-card-badge
 {
     position: absolute;
-    bottom: 8px;
-    left: 8px;
     z-index: 3;
-
-    min-width: 58px;
-    height: 34px;
-    padding: 0 10px;
 
     display: inline-flex;
     align-items: center;
     justify-content: center;
+
+    min-width: 58px;
+    height: 34px;
+    padding: 0 10px;
     gap: 5px;
 
     color: var(--color-surface);
-    font-size: 13px;
-    font-weight: 700;
+    font-size: 14px;
+    font-weight: 800;
     line-height: 1;
 
     background: var(--gradient-violet);
-    border: 2px solid var(--color-border-white-strong);
+
+    border: 1px solid var(--color-badge-border);
     border-radius: var(--radius-pill);
-    box-shadow: var(--shadow-badge);
+
+    box-shadow: var(--ring-badge);
+
+    text-shadow: var(--shadow-text-badge);
+
+    transition:
+        transform var(--transition-fast),
+        box-shadow var(--transition-fast);
+}
+
+.collection-card-badge-count
+{
+    bottom: 8px;
+    left: 8px;
 }
 
 .collection-card-badge-note
 {
-    position: absolute;
     top: 8px;
     right: 8px;
-    z-index: 3;
-
-    min-width: 58px;
-    height: 34px;
-    padding: 0 10px;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-
-    color: var(--color-surface);
-    font-size: 13px;
-    font-weight: 700;
-    line-height: 1;
-
-    border: 2px solid var(--color-border-white-strong);
-    border-radius: var(--radius-pill);
-
-    box-shadow:
-        0 8px 18px rgba(0, 0, 0, 0.18),
-        0 2px 8px rgba(0, 0, 0, 0.16);
-
-    transition: transform var(--transition-fast);
 }
 
-.collection-card:hover .collection-card-badge-note
+.collection-card-link:hover .collection-card-badge-count,
+.collection-card-link:hover .collection-card-badge-note
 {
-    transform: scale(1.05);
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 0 0 3px var(--color-violet-soft-hover);
 }
 
 .collection-note-low
 {
-    background: linear-gradient(135deg, #ff7b2c, #ffb84c);
+    background: linear-gradient(135deg, #ff8a3d, #ffb357);
 }
 
 .collection-note-mid
@@ -135,11 +130,7 @@
 
 .collection-note-good
 {
-    background: linear-gradient(135deg, #ff0000, #ff4c4c);
-
-    box-shadow:
-        0 0 12px rgba(255, 0, 0, 0.45),
-        0 8px 18px rgba(0, 0, 0, 0.35);
+    background: linear-gradient(135deg, #ff3b3b, #ff6a6a);
 }
 
 .collection-pagination
