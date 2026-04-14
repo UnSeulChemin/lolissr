@@ -11,6 +11,9 @@
 @import url('./components/alerts.css');
 @import url('./components/liens.css');
 @import url('./components/dashboard.css');
+@import url('./components/forms.css');
+@import url('./components/details.css');
+
 
 /* PARTIALS */
 @import url('./partials/header.css');
@@ -18,6 +21,4 @@
 /* PAGES */
 @import url('./page/home.css');
 @import url('./page/manga-collection.css');
-@import url('./page/manga-detail.css');
-@import url('./page/manga-form.css');
 @import url('./components/cards.css');

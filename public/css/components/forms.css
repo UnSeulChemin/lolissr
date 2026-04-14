@@ -1,8 +1,8 @@
 /* =========================================
-   PAGE : MANGA FORM
+   PAGE : FORM
 ========================================= */
 
-.manga-form-page
+.form-page
 {
     max-width: 900px;
     margin: 30px auto 0;
@@ -13,7 +13,7 @@
    CARD
 ========================= */
 
-.manga-form-card
+.form-card
 {
     max-width: 640px;
     margin: 0 auto;
@@ -26,17 +26,17 @@
 }
 
 /* =========================
-   FORM
+   FORM LAYOUT
 ========================= */
 
-.manga-form
+.form-layout
 {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-.manga-form-group
+.form-group
 {
     display: flex;
     flex-direction: column;
@@ -47,7 +47,7 @@
    LABEL
 ========================= */
 
-.manga-form-label
+.form-label
 {
     margin-left: 2px;
 
@@ -61,8 +61,8 @@
    INPUTS
 ========================= */
 
-.manga-form-input,
-.manga-form-textarea
+.form-input,
+.form-textarea
 {
     width: 100%;
     padding: 13px 16px;
@@ -82,15 +82,15 @@
         box-shadow 0.15s ease;
 }
 
-.manga-form-input::placeholder,
-.manga-form-textarea::placeholder
+.form-input::placeholder,
+.form-textarea::placeholder
 {
     color: rgba(0, 0, 0, 0.35);
     text-align: center;
 }
 
-.manga-form-input:focus,
-.manga-form-textarea:focus
+.form-input:focus,
+.form-textarea:focus
 {
     outline: none;
 
@@ -105,7 +105,7 @@
    TEXTAREA
 ========================= */
 
-.manga-form-textarea
+.form-textarea
 {
     min-height: 115px;
     resize: vertical;
@@ -115,7 +115,7 @@
    CUSTOM FILE UPLOAD
 ========================= */
 
-.manga-form-upload
+.form-upload
 {
     position: relative;
 
@@ -143,7 +143,7 @@
         background 0.15s ease;
 }
 
-.manga-form-upload:hover
+.form-upload:hover
 {
     border-color: rgba(123, 44, 255, 0.55);
 
@@ -155,7 +155,7 @@
         );
 }
 
-.manga-upload-text
+.form-upload-text
 {
     color: var(--color-violet);
     font-size: 0.9rem;
@@ -163,7 +163,7 @@
     text-align: center;
 }
 
-.manga-form-file
+.form-file
 {
     position: absolute;
     inset: 0;
@@ -176,42 +176,66 @@
    ACTIONS
 ========================= */
 
-.manga-form-actions
+.form-actions
 {
     display: flex;
-    justify-content: center;
-    margin-top: 12px;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
 }
 
-.manga-form-submit
+.form-submit
 {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-
     min-width: 170px;
     padding: 13px 28px;
-
     color: #ffffff;
     font-size: 0.95rem;
     font-weight: 600;
-
     border: none;
     border-radius: 14px;
-
     background: var(--gradient-violet);
-
     cursor: pointer;
-
+    text-decoration: none;
+    font-family: inherit;
+    line-height: 1;
     transition:
         transform 0.15s ease,
         filter 0.15s ease;
 }
 
-.manga-form-submit:hover
+.form-submit:hover
 {
     transform: translateY(-1px);
     filter: brightness(1.05);
+}
+
+.form-submit:hover
+{
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+}
+
+/* =========================
+   BUTTON VARIANTS
+========================= */
+
+.form-submit-secondary
+{
+    background: transparent;
+
+    color: var(--color-violet);
+
+    border: 1px solid rgba(123, 44, 255, 0.35);
+}
+
+.form-submit-secondary:hover
+{
+    background: rgba(123, 44, 255, 0.08);
+
+    transform: translateY(-1px);
 }
 
 /* =========================
@@ -234,19 +258,13 @@
 
 @media (max-width: 700px)
 {
-    .manga-form-page
+    .form-page
     {
         padding: 20px 16px 0;
     }
 
-    .manga-form-title-box,
-    .manga-form-card
+    .form-card
     {
         padding: 22px 18px;
-    }
-
-    .manga-form-title
-    {
-        font-size: 1.5rem;
     }
 }

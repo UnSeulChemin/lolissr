@@ -1,10 +1,10 @@
 <section class="section-content">
 
-    <section class="manga-detail-card">
+    <section class="detail-card">
 
-        <figure class="manga-detail-image">
+        <figure class="detail-image">
 
-            <div class="manga-detail-image-inner">
+            <div class="detail-image-inner">
 
                 <img
                     alt="<?= htmlspecialchars($manga->livre) ?>"
@@ -32,7 +32,7 @@
 
         </figure>
 
-        <article class="manga-detail-content">
+        <article class="detail-content">
 
             <div class="detail-row">
                 <div class="detail-label">Livre</div>
@@ -77,8 +77,9 @@
             </div>
 
             <div class="detail-actions">
-                <a class="manga-form-submit manga-back-button"
-                   href="<?= $basePath; ?>manga/update/<?= rawurlencode($manga->slug) ?>/<?= (int) $manga->numero ?>">
+                <a
+                    class="form-submit"
+                    href="<?= $basePath; ?>manga/update/<?= rawurlencode($manga->slug) ?>/<?= (int) $manga->numero ?>">
                     Modifier
                 </a>
             </div>
@@ -87,9 +88,10 @@
 
     </section>
 
-    <div class="m-t-30">
-        <a class="link-section"
-           href="<?= $basePath; ?>manga/collection/<?= rawurlencode($manga->slug) ?>">
+    <div class="manga-back-wrapper">
+        <a
+            class="form-submit manga-back-button"
+            href="<?= $basePath; ?>manga/collection/<?= rawurlencode($manga->slug) ?>">
             Retour
         </a>
     </div>

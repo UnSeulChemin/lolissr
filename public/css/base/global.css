@@ -66,3 +66,8 @@ textarea::placeholder
 
     padding-bottom: 80px; /* ← ajoute ça */
 }
+
+button
+{
+    font-family: inherit;
+}
