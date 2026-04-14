@@ -9,7 +9,7 @@ $success = Session::pull('success');
 ?>
 
 <section class="layout-container">
-    <section class="form-page">
+    <section class="form-page animate-fade-up-stagger">
 
         <section class="form-card">
             <?php if (!empty($error)): ?>

@@ -16,7 +16,7 @@
 
     </section>
 
-    <section class="dashboard-grid card-grid-3">
+    <section class="dashboard-grid animate-fade-up-stagger card-grid-3">
 
         <a class="card card-small dashboard-panel" href="<?= $basePath ?>manga/collection">
 

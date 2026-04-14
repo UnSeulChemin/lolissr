@@ -22,3 +22,5 @@
 
 /* PAGES */
 @import url('./page/home.css');
+
+@import url('utilities/animations.css');

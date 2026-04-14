@@ -5,7 +5,7 @@ $currentPage = $currentPage ?? 1;
 
 <section class="layout-container">
 
-    <section class="collection-grid">
+    <section class="collection-grid grid animate-fade-up-stagger">
 
         <?php foreach ($mangas as $manga): ?>
 

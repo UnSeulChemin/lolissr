@@ -1,6 +1,6 @@
 <section class="layout-container">
 
-    <section class="home-grid home-grid-top card-grid-3">
+    <section class="home-grid home-grid animate-fade-up-stagger home-grid-top card-grid-3">
 
         <?php if (!empty($longestSeries)): ?>
             <a
