@@ -5,67 +5,74 @@ $currentPage = $currentPage ?? 1;
 
 <section class="layout-container">
 
-    <section class="manga-grid">
+    <section class="collection-grid">
 
         <?php foreach ($mangas as $manga): ?>
 
-            <article class="manga-card">
+            <a
+                class="collection-card-link"
+                href="<?= $isCollection
+                    ? $basePath . 'manga/' . rawurlencode($manga->slug) . '/' . (int) $manga->numero
+                    : $basePath . 'manga/serie/' . rawurlencode($manga->slug) ?>">
 
-                <figure class="manga-card-figure">
-
-                    <a
-                        class="manga-card-link"
-                        href="<?= $isCollection
-                            ? $basePath . 'manga/' . rawurlencode($manga->slug) . '/' . (int) $manga->numero
-                            : $basePath . 'manga/serie/' . rawurlencode($manga->slug) ?>">
-
-                        <img
-                            src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($manga->thumbnail . '.' . $manga->extension) ?>"
-                            alt="<?= htmlspecialchars($manga->livre) ?>">
-                    </a>
+                <article class="collection-card">
 
                     <?php if (!$isCollection): ?>
-                        <span class="manga-card-badge-count">
-                            <?= (int) $manga->total ?>
+                        <span class="collection-card-badge-count">
+                            📖 <?= (int) $manga->total ?>
                         </span>
                     <?php endif; ?>
 
                     <?php if ($isCollection && $manga->note !== null): ?>
                         <?php
-                        $noteClass = 'manga-note-mid';
+                        $noteClass = 'collection-note-mid';
 
                         if ((int) $manga->note >= 8)
                         {
-                            $noteClass = 'manga-note-good';
+                            $noteClass = 'collection-note-good';
                         }
                         elseif ((int) $manga->note <= 4)
                         {
-                            $noteClass = 'manga-note-low';
+                            $noteClass = 'collection-note-low';
                         }
                         ?>
-                        <span class="manga-card-badge-note <?= htmlspecialchars($noteClass) ?>">
+                        <span class="collection-card-badge-note <?= htmlspecialchars($noteClass) ?>">
                             <?= (int) $manga->note ?>
                         </span>
                     <?php endif; ?>
 
-                </figure>
+                    <div class="collection-card-image-box">
+                        <img
+                            class="collection-card-image card-image"
+                            src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($manga->thumbnail . '.' . $manga->extension) ?>"
+                            alt="<?= htmlspecialchars($manga->livre) ?>">
+                    </div>
 
-                <p class="manga-card-title">
-                    <?= htmlspecialchars($manga->livre) ?>
-                </p>
+                    <p class="collection-card-title">
+                        <?= htmlspecialchars($manga->livre) ?>
+                    </p>
 
-            </article>
+                    <?php if (!$isCollection): ?>
+                        <p class="collection-card-subtitle">
+                            <?= (int) $manga->total ?> tomes
+                        </p>
+                    <?php endif; ?>
+
+                </article>
+
+            </a>
 
         <?php endforeach; ?>
 
     </section>
 
     <?php if (!$isCollection && isset($compteur)): ?>
-        <nav class="manga-pagination">
+        <nav class="collection-pagination">
 
             <?php for ($getId = 1; $getId <= $compteur; $getId++): ?>
-                <a class="manga-pagination-link <?= ($currentPage === $getId) ? 'active' : '' ?>"
-                href="<?= $basePath; ?>manga/collection/page/<?= $getId; ?>">
+                <a
+                    class="collection-pagination-link <?= ($currentPage === $getId) ? 'active' : '' ?>"
+                    href="<?= $basePath; ?>manga/collection/page/<?= $getId; ?>">
                     <?= $getId; ?>
                 </a>
             <?php endfor; ?>
@@ -74,9 +81,10 @@ $currentPage = $currentPage ?? 1;
     <?php endif; ?>
 
     <?php if ($isCollection): ?>
-        <div class="manga-back-wrapper">
-            <a href="<?= $basePath; ?>manga/collection"
-            class="manga-form-submit manga-back-button">
+        <div class="collection-back-wrapper">
+            <a
+                class="form-submit collection-back-button"
+                href="<?= $basePath; ?>manga/collection">
                 Retour
             </a>
         </div>
