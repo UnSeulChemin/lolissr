@@ -38,7 +38,12 @@
     --color-violet-soft-hover: rgba(123, 44, 255, 0.18);
     --color-violet-border: rgba(123, 44, 255, 0.35);
     --color-violet-border-soft: rgba(123, 44, 255, 0.10);
+    --color-violet-border-strong: rgba(123, 44, 255, 0.55);
     --color-violet-ring: rgba(123, 44, 255, 0.12);
+    --color-violet-softest: rgba(123, 44, 255, 0.02);
+    --color-violet-soft-light: rgba(123, 44, 255, 0.04);
+    --color-violet-soft-medium: rgba(123, 44, 255, 0.06);
+    --color-violet-soft-strong: rgba(123, 44, 255, 0.08);
 
 
     /* =========================
@@ -75,10 +80,52 @@
        BORDER RADIUS
     ========================= */
     --radius-image: 10px;
+    --radius-input: 14px;
     --radius-card: 22px;
+    --radius-card-lg: 24px;
     --radius-pill: 999px;
 
-    --radius-input: 14px;
+
+    /* =========================
+       SPACING
+    ========================= */
+    --space-xs: 6px;
+    --space-sm: 10px;
+    --space-md: 14px;
+    --space-lg: 20px;
+    --space-xl: 30px;
+    --space-xxl: 40px;
+    --space-container: 50px;
+
+
+    /* =========================
+       WIDTHS
+    ========================= */
+    --width-card: 320px;
+    --width-form: 640px;
+    --width-page: 900px;
+    --width-container: 1400px;
+    --width-image-portrait: 160px;
+    --height-image-portrait: 250px;
+
+
+    /* =========================
+       FONT SIZES
+    ========================= */
+    --font-size-xs: 0.82rem;
+    --font-size-sm: 0.9rem;
+    --font-size-md: 0.95rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.2rem;
+    --font-size-xl: 2rem;
+
+
+    /* =========================
+       TRANSITIONS
+    ========================= */
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.22s ease;
+    --transition-slow: 0.30s ease;
 
 
     /* =========================
@@ -118,4 +165,13 @@
     --color-warning: #e0a800;
     --color-info: #17a2b8;
     --color-alert-text: #ffffff;
+
+
+    /* =========================
+       Z-INDEX
+    ========================= */
+    --z-base: 1;
+    --z-overlay: 10;
+    --z-dropdown: 50;
+    --z-modal: 100;
 }
