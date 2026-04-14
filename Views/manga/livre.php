@@ -10,24 +10,6 @@
                     src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($manga->thumbnail . '.' . $manga->extension) ?>"
                     alt="<?= htmlspecialchars($manga->livre) ?>">
 
-                <?php if ($manga->note !== null): ?>
-                    <?php
-                    $noteClass = 'collection-note-mid';
-
-                    if ((int) $manga->note >= 8)
-                    {
-                        $noteClass = 'collection-note-good';
-                    }
-                    elseif ((int) $manga->note <= 4)
-                    {
-                        $noteClass = 'collection-note-low';
-                    }
-                    ?>
-                    <span class="collection-card-badge-note <?= htmlspecialchars($noteClass) ?>">
-                        ✨ <?= (int) $manga->note ?>
-                    </span>
-                <?php endif; ?>
-
             </div>
 
         </figure>
@@ -69,7 +51,8 @@
 
             <div class="detail-row detail-row-comment">
                 <div class="detail-label">Commentaire</div>
-                <div class="detail-value detail-comment">
+
+                <div class="detail-value detail-comment-box <?= empty($manga->commentaire) ? 'is-empty' : '' ?>">
                     <?= !empty($manga->commentaire)
                         ? nl2br(htmlspecialchars($manga->commentaire))
                         : 'Aucun commentaire' ?>
