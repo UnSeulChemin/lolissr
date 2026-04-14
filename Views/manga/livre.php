@@ -1,30 +1,30 @@
-<section class="section-content">
+<section class="layout-container">
 
-    <section class="detail-card">
+    <section class="detail-card animate-fade-up">
 
         <figure class="detail-image">
 
             <div class="detail-image-inner">
 
                 <img
-                    alt="<?= htmlspecialchars($manga->livre) ?>"
-                    src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($manga->thumbnail . '.' . $manga->extension) ?>">
+                    src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($manga->thumbnail . '.' . $manga->extension) ?>"
+                    alt="<?= htmlspecialchars($manga->livre) ?>">
 
                 <?php if ($manga->note !== null): ?>
                     <?php
-                    $noteClass = 'note-mid';
+                    $noteClass = 'collection-note-mid';
 
                     if ((int) $manga->note >= 8)
                     {
-                        $noteClass = 'note-good';
+                        $noteClass = 'collection-note-good';
                     }
                     elseif ((int) $manga->note <= 4)
                     {
-                        $noteClass = 'note-low';
+                        $noteClass = 'collection-note-low';
                     }
                     ?>
-                    <span class="badge-note <?= htmlspecialchars($noteClass) ?>">
-                        <?= (int) $manga->note ?>
+                    <span class="collection-card-badge-note <?= htmlspecialchars($noteClass) ?>">
+                        ✨ <?= (int) $manga->note ?>
                     </span>
                 <?php endif; ?>
 
@@ -88,9 +88,9 @@
 
     </section>
 
-    <div class="manga-back-wrapper">
+    <div class="collection-back-wrapper">
         <a
-            class="form-submit manga-back-button"
+            class="form-submit form-submit-secondary collection-back-button"
             href="<?= $basePath; ?>manga/collection/<?= rawurlencode($manga->slug) ?>">
             Retour
         </a>

@@ -2,8 +2,11 @@
 
     <section class="dashboard-header">
 
-        <div class="dashboard-title-box">
-            <h1 class="dashboard-title-main">🔗 Liens utiles</h1>
+        <div class="dashboard-title-box animate-fade-up">
+
+            <h1 class="dashboard-title-main">
+                🔗 Liens utiles
+            </h1>
 
             <p class="dashboard-subtitle">
                 Accès rapide aux sites utiles pour mangas et outils.
@@ -13,12 +16,13 @@
 
     </section>
 
-    <section class="dashboard-grid card-grid-3">
+    <section class="dashboard-grid card-grid-3 animate-fade-up-stagger">
 
-        <a class="card card-small dashboard-panel"
-           href="https://www.glenat.com/manga"
-           target="_blank"
-           rel="noopener noreferrer">
+        <a
+            class="card card-small dashboard-panel"
+            href="https://www.glenat.com/manga"
+            target="_blank"
+            rel="noopener noreferrer">
 
             <span class="dashboard-panel-icon">📚</span>
             <span class="dashboard-panel-title">Glénat</span>
@@ -26,10 +30,11 @@
 
         </a>
 
-        <a class="card card-small dashboard-panel"
-           href="https://www.kana.fr/mangas/"
-           target="_blank"
-           rel="noopener noreferrer">
+        <a
+            class="card card-small dashboard-panel"
+            href="https://www.kana.fr/mangas/"
+            target="_blank"
+            rel="noopener noreferrer">
 
             <span class="dashboard-panel-icon">📖</span>
             <span class="dashboard-panel-title">Kana</span>
@@ -37,10 +42,11 @@
 
         </a>
 
-        <a class="card card-small dashboard-panel"
-           href="https://www.nautiljon.com/mangas/?q=&public_averti=7"
-           target="_blank"
-           rel="noopener noreferrer">
+        <a
+            class="card card-small dashboard-panel"
+            href="https://www.nautiljon.com/mangas/?q=&public_averti=7"
+            target="_blank"
+            rel="noopener noreferrer">
 
             <span class="dashboard-panel-icon">⚠️</span>
             <span class="dashboard-panel-title">Nautiljon +</span>
@@ -48,10 +54,11 @@
 
         </a>
 
-        <a class="card card-small dashboard-panel"
-           href="https://www.nautiljon.com/mangas/?q=&public_averti=3"
-           target="_blank"
-           rel="noopener noreferrer">
+        <a
+            class="card card-small dashboard-panel"
+            href="https://www.nautiljon.com/mangas/?q=&public_averti=3"
+            target="_blank"
+            rel="noopener noreferrer">
 
             <span class="dashboard-panel-icon">🔞</span>
             <span class="dashboard-panel-title">Nautiljon</span>
@@ -59,10 +66,11 @@
 
         </a>
 
-        <a class="card card-small dashboard-panel"
-           href="https://www.xnview.com/fr/xnconvert/#downloads"
-           target="_blank"
-           rel="noopener noreferrer">
+        <a
+            class="card card-small dashboard-panel"
+            href="https://www.xnview.com/fr/xnconvert/#downloads"
+            target="_blank"
+            rel="noopener noreferrer">
 
             <span class="dashboard-panel-icon">🖼️</span>
             <span class="dashboard-panel-title">XnConvert</span>

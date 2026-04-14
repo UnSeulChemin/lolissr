@@ -1,8 +1,8 @@
-<section class="section-content">
+<section class="layout-container">
 
     <section class="dashboard-header">
 
-        <div class="dashboard-title-box">
+        <div class="dashboard-title-box animate-fade-up">
 
             <h1 class="dashboard-title-main">
                 📚 Manga
@@ -16,9 +16,11 @@
 
     </section>
 
-    <section class="dashboard-grid animate-fade-up-stagger card-grid-3">
+    <section class="dashboard-grid card-grid-3 animate-fade-up-stagger">
 
-        <a class="card card-small dashboard-panel" href="<?= $basePath ?>manga/collection">
+        <a
+            class="card card-small dashboard-panel"
+            href="<?= $basePath ?>manga/collection">
 
             <span class="dashboard-panel-icon">📚</span>
 
@@ -32,7 +34,9 @@
 
         </a>
 
-        <a class="card card-small dashboard-panel" href="<?= $basePath ?>manga/ajouter">
+        <a
+            class="card card-small dashboard-panel"
+            href="<?= $basePath ?>manga/ajouter">
 
             <span class="dashboard-panel-icon">➕</span>
 
@@ -46,12 +50,14 @@
 
         </a>
 
-        <a class="card card-small dashboard-panel" href="<?= $basePath ?>manga/lien">
+        <a
+            class="card card-small dashboard-panel"
+            href="<?= $basePath ?>manga/lien">
 
             <span class="dashboard-panel-icon">🔗</span>
 
             <span class="dashboard-panel-title">
-                Lien
+                Liens utiles
             </span>
 
             <span class="dashboard-panel-text">

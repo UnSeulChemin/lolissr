@@ -1,6 +1,6 @@
 <section class="layout-container">
 
-    <section class="home-grid home-grid animate-fade-up-stagger home-grid-top card-grid-3">
+    <section class="home-grid home-grid-top card-grid-3 animate-fade-up-stagger">
 
         <?php if (!empty($longestSeries)): ?>
             <a
@@ -74,7 +74,7 @@
 
     </section>
 
-    <section class="home-grid home-grid-stats animate-fade-up-stagger card-grid-3">
+    <section class="home-grid home-grid-stats card-grid-3 animate-fade-up-stagger">
 
         <article class="card card-small">
             <h2 class="home-card-title">
@@ -113,7 +113,7 @@
             📊 Top 5 séries les plus longues
         </h2>
 
-        <section class="home-series-top card-list">
+        <section class="home-series-top card-list animate-fade-up-stagger">
 
             <?php foreach ($topLongestSeries as $index => $serie): ?>
                 <a
@@ -151,7 +151,7 @@
             ⭐ Mangas notés 10/10
         </h2>
 
-        <section class="home-best-list card-list">
+        <section class="home-best-list card-list animate-fade-up-stagger">
 
             <?php foreach ($bestRatedMangas as $manga): ?>
                 <a
