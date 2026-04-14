@@ -274,8 +274,7 @@
 /* Hover images */
 .home-card:hover .home-longest-image,
 .home-card:hover .home-last-image,
-.home-card:hover .home-best-image,
-.home-card:hover .home-series-image
+.home-card:hover .home-bottom-image
 {
     transform: scale(1.06);
     box-shadow: 0 12px 26px rgba(0, 0, 0, 0.14);
@@ -305,7 +304,49 @@
     padding: 42px 16px 18px;
 }
 
-/* Top séries */
+/* Base commune contenu du bas */
+.home-bottom-image-box
+{
+    width: 160px;
+    height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 8px 0 14px;
+}
+
+.home-bottom-image
+{
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 10px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.home-bottom-title
+{
+    margin: 0 0 6px;
+    font-size: 1rem;
+    font-weight: 700;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+.home-bottom-subtitle
+{
+    margin: 0;
+    font-size: 0.95rem;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+/* Variante top séries */
 .home-series-rank
 {
     position: absolute;
@@ -318,52 +359,8 @@
     z-index: 2;
 }
 
-.home-series-image-box,
-.home-best-image-box
-{
-    width: 160px;
-    height: 250px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 8px 0 14px;
-}
-
-.home-series-image,
-.home-best-image
-{
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
-    object-fit: contain;
-    border-radius: 10px;
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
-    transition: transform 0.22s ease, box-shadow 0.22s ease;
-}
-
-.home-series-name,
-.home-best-title
-{
-    margin: 0 0 6px;
-    font-size: 1rem;
-    font-weight: 700;
-    text-align: center;
-    position: relative;
-    z-index: 1;
-}
-
-.home-series-count,
-.home-best-volume
-{
-    margin: 0;
-    font-size: 0.95rem;
-    text-align: center;
-    position: relative;
-    z-index: 1;
-}
-
-.home-best-volume
+/* Variante 10/10 */
+.home-best-link .home-bottom-subtitle
 {
     margin-top: 4px;
     font-weight: 600;
@@ -376,17 +373,36 @@
     position: absolute;
     top: 12px;
     right: 12px;
-    min-width: 60px;
+
     height: 30px;
-    padding: 0 10px;
+    padding: 0 12px;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #ffffff;
+    gap: 6px;
+
     font-size: 0.8rem;
     font-weight: 800;
-    background: linear-gradient(135deg, #ffb300, #ff7a00);
+
+    /* Texte plus lisible */
+    color: #9a4f00;
+
+    /* Fond orange premium avec vrai contraste */
+    background: linear-gradient(
+        135deg,
+        rgba(255, 170, 40, 0.45),
+        rgba(255, 130, 0, 0.35)
+    );
+
+    /* Bordure nette (important pour le contraste) */
+    border: 1px solid rgba(255, 130, 0, 0.45);
+
     border-radius: 999px;
-    box-shadow: 0 6px 14px rgba(255, 140, 0, 0.22);
+
+    /* Ombre très subtile mais utile */
+    box-shadow:
+        0 3px 8px rgba(255, 130, 0, 0.18);
+
     z-index: 2;
 }

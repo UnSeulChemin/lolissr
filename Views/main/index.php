@@ -121,22 +121,20 @@
                     href="<?= $basePath; ?>manga/serie/<?= rawurlencode($serie->slug) ?>">
 
                     <article class="home-card home-series-card">
-                        <p class="home-series-rank">
-                            #<?= $index + 1 ?>
-                        </p>
+                        <p class="home-series-rank">#<?= $index + 1 ?></p>
 
-                        <div class="home-series-image-box">
+                        <div class="home-bottom-image-box">
                             <img
-                                class="home-series-image"
+                                class="home-bottom-image"
                                 src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($serie->thumbnail . '.' . $serie->extension) ?>"
                                 alt="<?= htmlspecialchars($serie->livre) ?>">
                         </div>
 
-                        <p class="home-series-name">
+                        <p class="home-bottom-title">
                             <?= htmlspecialchars($serie->livre) ?>
                         </p>
 
-                        <p class="home-series-count">
+                        <p class="home-bottom-subtitle">
                             <?= (int) $serie->total ?> tomes
                         </p>
                     </article>
@@ -160,21 +158,21 @@
 
                     <article class="home-card home-best-card">
                         <span class="home-note-badge">
-                            <?= (int) $manga->note ?>/10
+                            ⭐ <?= (int) $manga->note ?>/10
                         </span>
 
-                        <div class="home-best-image-box">
+                        <div class="home-bottom-image-box">
                             <img
-                                class="home-best-image"
+                                class="home-bottom-image"
                                 src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($manga->thumbnail . '.' . $manga->extension) ?>"
                                 alt="<?= htmlspecialchars($manga->livre) ?>">
                         </div>
 
-                        <p class="home-best-title">
+                        <p class="home-bottom-title">
                             <?= htmlspecialchars($manga->livre) ?>
                         </p>
 
-                        <p class="home-best-volume">
+                        <p class="home-bottom-subtitle">
                             Tome <?= str_pad((string) $manga->numero, 2, '0', STR_PAD_LEFT) ?>
                         </p>
                     </article>
