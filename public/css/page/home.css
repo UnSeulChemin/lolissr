@@ -6,7 +6,7 @@
 .home-section-title
 {
     width: 100%;
-    margin: 45px 0 20px;
+    margin: 40px 0;
     padding: 12px 18px;
     border-radius: 14px;
     text-align: center;
@@ -26,9 +26,6 @@
     gap: 30px;
 }
 
-/* Ligne du haut : 3 colonnes
-   -> série la plus longue prend 2 colonnes
-   -> dernier tome prend 1 colonne */
 .home-grid-top
 {
     grid-template-columns: repeat(3, 320px);
@@ -36,7 +33,6 @@
     align-items: stretch;
 }
 
-/* Ligne des stats */
 .home-grid-stats
 {
     grid-template-columns: repeat(3, 320px);
@@ -52,19 +48,17 @@
     text-decoration: none;
 }
 
-/* Le lien du bloc large prend 2 colonnes */
 .home-card-link-wide
 {
     grid-column: span 2;
 }
 
-/* Si le bloc large n'a pas de lien */
 .home-grid-top > .home-card-wide
 {
     grid-column: span 2;
 }
 
-/* Cards */
+/* Cards globales */
 .home-card
 {
     position: relative;
@@ -99,12 +93,12 @@
 
 .home-card:hover
 {
-    transform: translateY(-4px);
-    border-color: rgba(123, 44, 255, 0.25);
+    transform: translateY(-6px);
+    border-color: rgba(123, 44, 255, 0.35);
     box-shadow:
-        0 14px 28px rgba(0, 0, 0, 0.08),
+        0 18px 34px rgba(0, 0, 0, 0.10),
         0 0 0 3px var(--color-violet),
-        0 8px 20px rgba(123, 44, 255, 0.15);
+        0 10px 26px rgba(123, 44, 255, 0.18);
 }
 
 /* Apparition */
@@ -122,7 +116,6 @@
     }
 }
 
-/* Animation sur les items grid/flex utiles */
 .home-grid-top > *,
 .home-grid-stats > *,
 .home-best-list > *,
@@ -149,7 +142,7 @@
     animation-delay: 0.19s;
 }
 
-/* Dimensions cards */
+/* Dimensions cards haut */
 .home-card-small
 {
     width: 320px;
@@ -198,7 +191,7 @@
     z-index: 1;
 }
 
-/* Bloc série la plus longue */
+/* Série la plus longue */
 .home-longest-content
 {
     display: flex;
@@ -216,9 +209,7 @@
     height: auto;
     border-radius: 10px;
     box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
-    transition:
-        transform 0.22s ease,
-        box-shadow 0.22s ease;
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
 }
 
 .home-longest-info
@@ -239,7 +230,7 @@
     font-size: 1rem;
 }
 
-/* Bloc dernier tome */
+/* Dernier tome */
 .home-last-content
 {
     display: flex;
@@ -257,9 +248,7 @@
     height: auto;
     border-radius: 10px;
     box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
-    transition:
-        transform 0.22s ease,
-        box-shadow 0.22s ease;
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
 }
 
 .home-last-info
@@ -282,13 +271,13 @@
     color: #5e4b75;
 }
 
-/* Hover images sur cards */
+/* Hover images */
 .home-card:hover .home-longest-image,
 .home-card:hover .home-last-image,
 .home-card:hover .home-best-image,
 .home-card:hover .home-series-image
 {
-    transform: scale(1.04);
+    transform: scale(1.06);
     box-shadow: 0 12px 26px rgba(0, 0, 0, 0.14);
 }
 
@@ -296,43 +285,79 @@
 .home-best-list,
 .home-series-top
 {
-    margin-top: 30px;
+    margin-top: 40px;
+    margin-bottom: 50px;
     display: flex;
     justify-content: center;
     align-items: stretch;
     flex-wrap: wrap;
-    gap: 22px;
+    gap: 36px;
 }
 
-/* Cards 10/10 */
-.home-best-card
+/* Base commune cartes du bas */
+.home-best-card,
+.home-series-card
 {
     position: relative;
-    width: 200px;
+    width: 220px;
     min-height: 300px;
-    padding: 18px 14px 16px;
     justify-content: flex-start;
-    overflow: hidden;
+    padding: 42px 16px 18px;
 }
 
-.home-best-image
+/* Top séries */
+.home-series-rank
 {
-    width: 120px;
-    height: auto;
-    margin: 16px 0 12px;
-    border-radius: 10px;
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
-    transition:
-        transform 0.22s ease,
-        box-shadow 0.22s ease;
-}
-
-.home-best-title
-{
+    position: absolute;
+    top: 16px;
+    left: 16px;
     margin: 0;
     font-size: 1rem;
+    font-weight: 800;
+    color: var(--color-violet);
+    z-index: 2;
+}
+
+.home-series-image-box,
+.home-best-image-box
+{
+    width: 160px;
+    height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 8px 0 14px;
+}
+
+.home-series-image,
+.home-best-image
+{
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 10px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.home-series-name,
+.home-best-title
+{
+    margin: 0 0 6px;
+    font-size: 1rem;
     font-weight: 700;
-    line-height: 1.3;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+.home-series-count,
+.home-best-volume
+{
+    margin: 0;
+    font-size: 0.95rem;
     text-align: center;
     position: relative;
     z-index: 1;
@@ -340,29 +365,12 @@
 
 .home-best-volume
 {
-    margin: 4px 0 0;
-    font-size: 0.95rem;
+    margin-top: 4px;
     font-weight: 600;
     color: #5e4b75;
-    text-align: center;
-    position: relative;
-    z-index: 1;
 }
 
-.home-best-label
-{
-    margin: 10px 0 0;
-    padding: 6px 10px;
-    border-radius: 999px;
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: var(--color-violet);
-    background: rgba(123, 44, 255, 0.08);
-    text-align: center;
-    position: relative;
-    z-index: 1;
-}
-
+/* Badge note */
 .home-note-badge
 {
     position: absolute;
@@ -381,68 +389,4 @@
     border-radius: 999px;
     box-shadow: 0 6px 14px rgba(255, 140, 0, 0.22);
     z-index: 2;
-}
-
-/* Cards top séries */
-.home-series-card
-{
-    position: relative;
-    width: 200px;
-    min-height: 280px;
-    justify-content: flex-start;
-    padding-top: 42px;
-}
-
-.home-series-rank
-{
-    position: absolute;
-    top: 14px;
-    left: 14px;
-    margin: 0;
-    font-size: 0.95rem;
-    font-weight: 700;
-    z-index: 2;
-}
-
-.home-series-image-box
-{
-    width: 140px;
-    height: 230px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 8px 0 14px;
-}
-
-.home-series-image
-{
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
-    object-fit: contain;
-    border-radius: 10px;
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
-    transition:
-        transform 0.22s ease,
-        box-shadow 0.22s ease;
-}
-
-.home-series-name
-{
-    margin: 0 0 6px;
-    font-size: 1rem;
-    font-weight: 700;
-    text-align: center;
-    position: relative;
-    z-index: 1;
-}
-
-.home-series-count
-{
-    margin: 0;
-    font-size: 0.95rem;
-    text-align: center;
-    position: relative;
-    z-index: 1;
 }

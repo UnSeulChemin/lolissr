@@ -77,8 +77,8 @@
             </div>
 
             <div class="detail-actions">
-                <a class="link-edit"
-                   href="<?= $basePath; ?>manga/edit/<?= rawurlencode($manga->slug) ?>/<?= (int) $manga->numero ?>">
+                <a class="manga-form-submit manga-back-button"
+                   href="<?= $basePath; ?>manga/update/<?= rawurlencode($manga->slug) ?>/<?= (int) $manga->numero ?>">
                     Modifier
                 </a>
             </div>

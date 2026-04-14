@@ -163,10 +163,12 @@
                             <?= (int) $manga->note ?>/10
                         </span>
 
-                        <img
-                            class="home-best-image"
-                            src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($manga->thumbnail . '.' . $manga->extension) ?>"
-                            alt="<?= htmlspecialchars($manga->livre) ?>">
+                        <div class="home-best-image-box">
+                            <img
+                                class="home-best-image"
+                                src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($manga->thumbnail . '.' . $manga->extension) ?>"
+                                alt="<?= htmlspecialchars($manga->livre) ?>">
+                        </div>
 
                         <p class="home-best-title">
                             <?= htmlspecialchars($manga->livre) ?>
@@ -174,10 +176,6 @@
 
                         <p class="home-best-volume">
                             Tome <?= str_pad((string) $manga->numero, 2, '0', STR_PAD_LEFT) ?>
-                        </p>
-
-                        <p class="home-best-label">
-                            Coup de cœur
                         </p>
                     </article>
                 </a>
