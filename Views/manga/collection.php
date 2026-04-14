@@ -30,6 +30,12 @@ $currentPage = $currentPage ?? 1;
                         <?= htmlspecialchars($manga->livre) ?>
                     </p>
 
+                    <?php if ($isCollection): ?>
+                        <p class="collection-card-subtitle">
+                            Tome <?= (int) $manga->numero ?>
+                        </p>
+                    <?php endif; ?>
+
                     <?php if (!$isCollection): ?>
                         <p class="collection-card-subtitle">
                             <?= (int) $manga->total ?> tomes
