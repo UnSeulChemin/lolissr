@@ -7,15 +7,14 @@
     width: 98%;
     max-width: 1400px;
 
-    margin: 40px auto;
-    padding: 40px;
+    margin: var(--space-xxl) auto;
+    padding: var(--space-xxl);
 
     display: flex;
     align-items: flex-start;
-    gap: 40px;
+    gap: var(--space-xxl);
 
     background-color: var(--color-surface-detail);
-
     border-radius: var(--radius-card);
 
     box-shadow: var(--shadow-detail-card);
@@ -47,7 +46,7 @@
     width: 100%;
     height: auto;
 
-    border-radius: 14px;
+    border-radius: var(--radius-input);
     box-shadow: var(--shadow-detail-image);
 }
 
@@ -62,7 +61,7 @@
 
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: var(--space-md);
 }
 
 
@@ -74,7 +73,7 @@
 {
     display: grid;
     grid-template-columns: 280px 1fr;
-    gap: 14px;
+    gap: var(--space-md);
 }
 
 
@@ -135,5 +134,5 @@
 
 .detail-actions
 {
-    margin-top: 10px;
+    margin-top: var(--space-sm);
 }
