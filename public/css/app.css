@@ -7,20 +7,19 @@
 @import url('./base/global.css');
 @import url('./base/scrollbars.css');
 
+/* UTILITIES */
+@import url('./utilities/animations.css');
+
 /* COMPONENTS */
 @import url('./components/alerts.css');
-@import url('./components/liens.css');
-@import url('./components/dashboard.css');
+@import url('./components/cards.css');
 @import url('./components/forms.css');
+@import url('./components/dashboard.css');
 @import url('./components/details.css');
 @import url('./components/collections.css');
-@import url('./components/cards.css');
-
 
 /* PARTIALS */
 @import url('./partials/header.css');
 
 /* PAGES */
 @import url('./page/home.css');
-
-@import url('utilities/animations.css');

@@ -23,8 +23,8 @@ h4,
 h5,
 h6
 {
-    font-weight: 700;
     color: var(--color-title);
+    font-weight: 700;
 }
 
 p
@@ -45,9 +45,12 @@ img
     height: auto;
 }
 
-::selection
+button,
+input,
+textarea,
+select
 {
-    background-color: rgba(123, 44, 255, 0.25);
+    font: inherit;
 }
 
 input::placeholder,
@@ -57,17 +60,15 @@ textarea::placeholder
     text-align: center;
 }
 
+::selection
+{
+    background-color: rgba(123, 44, 255, 0.25);
+}
+
 .layout-container
 {
     width: 95%;
     max-width: 1500px;
-
     margin: 30px auto 0;
-
-    padding-bottom: 80px; /* ← ajoute ça */
-}
-
-button
-{
-    font-family: inherit;
+    padding-bottom: 80px;
 }

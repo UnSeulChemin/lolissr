@@ -4,16 +4,16 @@
 
 .alert
 {
-    padding: 12px 16px;
-    border-radius: 8px;
-
     margin-bottom: 20px;
-
-    font-weight: 500;
+    padding: 12px 16px;
 
     color: var(--color-alert-text);
+    font-weight: 500;
 
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+
+    box-shadow:
+        0 4px 10px rgba(0, 0, 0, 0.08);
 }
 
 .alert-success
@@ -24,4 +24,14 @@
 .alert-error
 {
     background-color: var(--color-error);
+}
+
+.alert-warning
+{
+    background-color: var(--color-warning);
+}
+
+.alert-info
+{
+    background-color: var(--color-info);
 }

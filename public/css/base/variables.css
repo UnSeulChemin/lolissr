@@ -1,31 +1,28 @@
 /* =========================================
-   VARIABLES GLOBALES
+   GLOBAL VARIABLES
 ========================================= */
 
 :root
 {
     /* =========================
-       TYPOGRAPHIE
+       TYPOGRAPHY
     ========================= */
     --font-family-base: "Montserrat", "Open Sans", sans-serif;
 
     /* =========================
-       COULEURS DE BASE
+       BASE COLORS
     ========================= */
     --color-background: #ebebeb;
     --color-text: #1a1a1a;
     --color-title: #222222;
 
     /* =========================
-       COULEURS PRINCIPALES
-       À garder si utilisées ailleurs
+       PRIMARY COLORS
     ========================= */
     --color-violet: #7b2cff;
-    --color-flash-active: #71afcd;
 
     /* =========================
        GRADIENTS
-       À garder si utilisés ailleurs
     ========================= */
     --gradient-violet:
         linear-gradient(
@@ -35,20 +32,12 @@
         );
 
     /* =========================
-       OMBRES
-       À garder si utilisées ailleurs
+       ALERTS
     ========================= */
-    --shadow-violet: rgba(123, 44, 255, 0.35);
-    --shadow-violet-hover: rgba(123, 44, 255, 0.45);
+    --color-success: #1e7e34;
+    --color-error: #c82333;
+    --color-warning: #e0a800;
+    --color-info: #17a2b8;
 
-   /* =========================
-      ALERTES
-   ========================= */
-
-   --color-success: #1e7e34;
-   --color-error: #c82333;
-   --color-warning: #e0a800;
-   --color-info: #17a2b8;
-
-   --color-alert-text: #ffffff;
+    --color-alert-text: #ffffff;
 }
