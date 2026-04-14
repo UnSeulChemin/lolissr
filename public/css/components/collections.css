@@ -200,6 +200,7 @@
 .collection-back-button
 {
     text-decoration: none;
+    font-family: inherit;
 }
 
 @media (max-width: 1100px)
