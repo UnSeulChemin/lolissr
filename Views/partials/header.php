@@ -24,12 +24,16 @@ $currentPath = $currentPath === '' ? '/' : $currentPath;
 
 /* États actifs */
 $activeHome = $currentPath === '/' ? 'active' : '';
+
 $activeManga = (
     $currentPath === '/manga'
     || str_starts_with($currentPath, '/manga/')
 )
     ? 'active'
     : '';
+
+/* Garde la recherche si présente */
+$currentSearch = $_GET['q'] ?? '';
 
 ?>
 
@@ -70,16 +74,17 @@ $activeManga = (
             </li>
         </ul>
 
-        <!-- RECHERCHE (NOUVEAU) -->
+        <!-- RECHERCHE -->
         <form
             class="header-search"
-            action="<?= $basePath ?>manga/collection"
+            action="<?= $basePath ?>manga/recherche"
             method="get">
 
             <input
                 type="search"
                 name="q"
                 placeholder="Rechercher un manga..."
+                value="<?= htmlspecialchars($currentSearch) ?>"
                 aria-label="Rechercher un manga">
 
             <button

@@ -88,6 +88,36 @@ class MangaController extends Controller
     }
 
     /**
+     * Recherche manga.
+     * Route : /manga/recherche
+     */
+    public function recherche(): void
+    {
+        $search = trim((string) ($_GET['q'] ?? ''));
+
+        $this->title = 'Manga | Recherche';
+
+        if ($search === '')
+        {
+            $this->render('manga/search', [
+                'mangas' => [],
+                'search' => ''
+            ]);
+
+            return;
+        }
+
+        $mangas = $this->mangaModel()->searchMangas($search);
+
+        $this->title = 'Manga | Recherche : ' . $search;
+
+        $this->render('manga/search', [
+            'mangas' => $mangas,
+            'search' => $search
+        ]);
+    }
+
+    /**
      * Affiche une série.
      * Route : /manga/serie/{slug}
      */

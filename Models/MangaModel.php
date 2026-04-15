@@ -43,6 +43,35 @@ class MangaModel extends Model
     }
 
     /**
+     * Recherche tous les mangas par titre ou slug.
+     */
+    public function searchMangas(string $search): array
+    {
+        $search = trim($search);
+
+        if ($search === '')
+        {
+            return [];
+        }
+
+        $search = preg_replace('/\s+/', ' ', $search);
+
+        $query = $this->requete(
+            "SELECT *
+            FROM {$this->getTable()}
+            WHERE livre COLLATE utf8mb4_unicode_ci LIKE :search_livre
+            OR slug COLLATE utf8mb4_unicode_ci LIKE :search_slug
+            ORDER BY livre ASC, numero ASC",
+            [
+                'search_livre' => '%' . $search . '%',
+                'search_slug' => '%' . Functions::normalizeSlug($search) . '%'
+            ]
+        );
+
+        return $query ? $query->fetchAll() : [];
+    }
+
+    /**
      * Calcule la note finale sur 10.
      */
     private function calculateNote(?int $jacquette, ?int $livreNote): ?int

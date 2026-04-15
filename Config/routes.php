@@ -26,6 +26,9 @@ return function ($router)
     /* Pagination collection */
     $router->get('/manga/collection/page/{page}', 'MangaController@collection');
 
+    /* Recherche */
+    $router->get('/manga/recherche', 'MangaController@recherche');
+
     /* Série */
     $router->get('/manga/serie/{slug}', 'MangaController@serie');
 
