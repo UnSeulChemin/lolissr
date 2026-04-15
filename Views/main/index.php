@@ -98,7 +98,7 @@
 
         <article class="card card-small">
             <h2 class="home-card-title">
-                ✨ Note moyenne globale
+                ⭐ Note moyenne globale
             </h2>
 
             <p class="home-card-value">

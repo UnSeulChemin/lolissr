@@ -60,7 +60,7 @@ $currentPage = $currentPage ?? 1;
                         }
                         ?>
                         <span class="collection-card-badge collection-card-badge-note <?= htmlspecialchars($noteClass) ?>">
-                            ✨ <?= (int) $manga->note ?>
+                            ⭐ <?= (int) $manga->note ?>
                         </span>
                     <?php endif; ?>
 
