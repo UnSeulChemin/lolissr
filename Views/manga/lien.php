@@ -20,25 +20,25 @@
 
         <a
             class="card card-small dashboard-panel"
-            href="https://www.glenat.com/manga"
+            href="http://chasse-aux-livres.fr/"
             target="_blank"
             rel="noopener noreferrer">
 
-            <span class="dashboard-panel-icon">📚</span>
-            <span class="dashboard-panel-title">Glénat</span>
-            <span class="dashboard-panel-text">Maison d'édition officielle.</span>
+            <span class="dashboard-panel-icon">🔎</span>
+            <span class="dashboard-panel-title">Chasse au livre</span>
+            <span class="dashboard-panel-text">Recherche de tomes disponibles.</span>
 
         </a>
 
         <a
             class="card card-small dashboard-panel"
-            href="https://www.kana.fr/mangas/"
+            href="https://www.mangacollec.com/"
             target="_blank"
             rel="noopener noreferrer">
 
-            <span class="dashboard-panel-icon">📖</span>
-            <span class="dashboard-panel-title">Kana</span>
-            <span class="dashboard-panel-text">Catalogue manga Kana.</span>
+            <span class="dashboard-panel-icon">🗂️</span>
+            <span class="dashboard-panel-title">Mangacollec</span>
+            <span class="dashboard-panel-text">Gestion de collection manga.</span>
 
         </a>
 
@@ -63,6 +63,30 @@
             <span class="dashboard-panel-icon">🔞</span>
             <span class="dashboard-panel-title">Nautiljon</span>
             <span class="dashboard-panel-text">Mangas avec nudité.</span>
+
+        </a>
+
+        <a
+            class="card card-small dashboard-panel"
+            href="https://www.glenat.com/manga"
+            target="_blank"
+            rel="noopener noreferrer">
+
+            <span class="dashboard-panel-icon">📚</span>
+            <span class="dashboard-panel-title">Glénat</span>
+            <span class="dashboard-panel-text">Maison d'édition officielle.</span>
+
+        </a>
+
+        <a
+            class="card card-small dashboard-panel"
+            href="https://www.kana.fr/mangas/"
+            target="_blank"
+            rel="noopener noreferrer">
+
+            <span class="dashboard-panel-icon">📖</span>
+            <span class="dashboard-panel-title">Kana</span>
+            <span class="dashboard-panel-text">Catalogue manga Kana.</span>
 
         </a>
 
