@@ -65,3 +65,62 @@ select
     margin: var(--space-xl) auto 0;
     padding-bottom: 80px;
 }
+
+
+/* =========================================
+   GLOBAL FOCUS PREMIUM
+========================================= */
+
+:focus
+{
+    outline: none;
+}
+
+:focus-visible
+{
+    outline: none;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+.form-submit:focus-visible
+{
+    box-shadow:
+        0 0 0 3px rgba(123, 44, 255, 0.16),
+        0 8px 22px rgba(123, 44, 255, 0.12);
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible
+{
+    border-radius: 12px;
+}
+
+
+/* =========================================
+   FOCUS ANIMATION
+========================================= */
+
+:focus-visible
+{
+    animation: focusPulse 0.25s ease;
+}
+
+@keyframes focusPulse
+{
+    from
+    {
+        box-shadow: 0 0 0 0 rgba(123, 44, 255, 0);
+    }
+
+    to
+    {
+        box-shadow:
+            0 0 0 3px rgba(123, 44, 255, 0.16),
+            0 8px 22px rgba(123, 44, 255, 0.12);
+    }
+}

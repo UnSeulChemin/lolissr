@@ -24,7 +24,7 @@ $currentPage = $currentPage ?? 1;
             <?php foreach ($mangas as $manga): ?>
 
                 <a
-                    class="collection-card-link"
+                    class="collection-card-link" tabindex="0"
                     href="<?= $isCollection
                         ? $basePath . 'manga/' . rawurlencode($manga->slug) . '/' . (int) $manga->numero
                         : $basePath . 'manga/serie/' . rawurlencode($manga->slug) ?>">

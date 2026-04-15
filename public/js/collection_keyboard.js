@@ -1,3 +1,5 @@
+import { preloadUrl, preloadImage } from './prefetch.js';
+
 export function initCollectionKeyboardNavigation()
 {
     const container = document.querySelector('.collection-grid');
@@ -40,10 +42,7 @@ export function initCollectionKeyboardNavigation()
 
         cards.forEach((card, index) =>
         {
-            card.classList.toggle(
-                'is-active',
-                index === activeIndex
-            );
+            card.classList.toggle('is-active', index === activeIndex);
         });
 
         if (activeIndex >= 0 && cards[activeIndex])
@@ -51,6 +50,22 @@ export function initCollectionKeyboardNavigation()
             cards[activeIndex].scrollIntoView({
                 block: 'nearest'
             });
+
+            const activeCard = cards[activeIndex];
+            const activeLink = activeCard.closest('.collection-card-link')
+                || activeCard.parentElement;
+
+            if (activeLink && activeLink.classList.contains('collection-card-link'))
+            {
+                preloadUrl(activeLink.href);
+
+                const image = activeLink.querySelector('.card-image');
+
+                if (image)
+                {
+                    preloadImage(image.src);
+                }
+            }
         }
     }
 
@@ -63,10 +78,11 @@ export function initCollectionKeyboardNavigation()
             return;
         }
 
-        const link =
-            cards[activeIndex].querySelector('a');
+        const activeCard = cards[activeIndex];
+        const link = activeCard.closest('.collection-card-link')
+            || activeCard.parentElement;
 
-        if (link)
+        if (link && link.classList.contains('collection-card-link'))
         {
             window.location.href = link.href;
         }
@@ -104,10 +120,9 @@ export function initCollectionKeyboardNavigation()
         {
             event.preventDefault();
 
-            activeIndex =
-                activeIndex < cards.length - 1
-                    ? activeIndex + 1
-                    : 0;
+            activeIndex = activeIndex < cards.length - 1
+                ? activeIndex + 1
+                : 0;
 
             updateActive();
         }
@@ -116,10 +131,9 @@ export function initCollectionKeyboardNavigation()
         {
             event.preventDefault();
 
-            activeIndex =
-                activeIndex > 0
-                    ? activeIndex - 1
-                    : cards.length - 1;
+            activeIndex = activeIndex > 0
+                ? activeIndex - 1
+                : cards.length - 1;
 
             updateActive();
         }
@@ -128,10 +142,9 @@ export function initCollectionKeyboardNavigation()
         {
             event.preventDefault();
 
-            activeIndex =
-                activeIndex + columns < cards.length
-                    ? activeIndex + columns
-                    : activeIndex % columns;
+            activeIndex = activeIndex + columns < cards.length
+                ? activeIndex + columns
+                : activeIndex % columns;
 
             updateActive();
         }
@@ -140,11 +153,14 @@ export function initCollectionKeyboardNavigation()
         {
             event.preventDefault();
 
-            activeIndex =
-                activeIndex - columns >= 0
-                    ? activeIndex - columns
-                    : cards.length -
-                      (columns - activeIndex % columns);
+            activeIndex = activeIndex - columns >= 0
+                ? activeIndex - columns
+                : cards.length - (columns - (activeIndex % columns));
+
+            if (activeIndex >= cards.length)
+            {
+                activeIndex = cards.length - 1;
+            }
 
             updateActive();
         }

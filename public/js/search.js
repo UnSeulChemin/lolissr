@@ -105,6 +105,20 @@ export function initLiveSearch()
         }
     }
 
+    function activateFirstItem()
+    {
+        const items = getItems();
+
+        if (items.length === 0)
+        {
+            activeIndex = -1;
+            return;
+        }
+
+        activeIndex = 0;
+        updateActiveItem();
+    }
+
     function openDropdown()
     {
         dropdown.classList.add('has-results');
@@ -227,6 +241,7 @@ export function initLiveSearch()
             });
 
             openDropdown();
+            activateFirstItem();
         }
         catch (error)
         {

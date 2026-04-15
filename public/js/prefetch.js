@@ -1,7 +1,7 @@
 const detailPageCache = new Set();
 const imageCache = new Set();
 
-function preloadUrl(url)
+export function preloadUrl(url)
 {
     if (!url || detailPageCache.has(url))
     {
@@ -21,7 +21,7 @@ function preloadUrl(url)
     });
 }
 
-function preloadImage(url)
+export function preloadImage(url)
 {
     if (!url || imageCache.has(url))
     {
