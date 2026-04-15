@@ -1,4 +1,5 @@
 const detailPageCache = new Set();
+const imageCache = new Set();
 
 function preloadUrl(url)
 {
@@ -22,10 +23,12 @@ function preloadUrl(url)
 
 function preloadImage(url)
 {
-    if (!url)
+    if (!url || imageCache.has(url))
     {
         return;
     }
+
+    imageCache.add(url);
 
     const img = new Image();
     img.src = url;
