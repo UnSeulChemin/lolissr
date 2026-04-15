@@ -43,7 +43,8 @@ class MangaModel extends Model
     }
 
     /**
-     * Recherche tous les mangas par titre ou slug.
+     * Recherche mangas par titre, slug
+     * et numéro de tome (tome, t, vol, volume, n°, no, #, etc.)
      */
     public function searchMangas(string $search): array
     {
@@ -54,8 +55,83 @@ class MangaModel extends Model
             return [];
         }
 
+        /* Nettoyage espaces */
         $search = preg_replace('/\s+/', ' ', $search);
+        $search = trim($search);
 
+        /*
+        |-------------------------------------------------------
+        | Détecte un numéro de tome à la fin
+        | Exemples :
+        | - rave 1
+        | - rave 01
+        | - rave tome 1
+        | - rave t1
+        | - rave t01
+        | - rave vol 1
+        | - rave vol.1
+        | - rave volume 1
+        | - rave n°1
+        | - rave no 1
+        | - rave #1
+        |-------------------------------------------------------
+        */
+        $pattern = '/^(.*?)(?:\s+(?:t|tome|vol|vol\.|volume|n°|no|#)?\s*0*([1-9][0-9]*))$/iu';
+
+        if (preg_match($pattern, $search, $matches))
+        {
+            $titlePart = trim($matches[1]);
+            $numero = (int) $matches[2];
+
+            if ($titlePart !== '')
+            {
+                $query = $this->requete(
+                    "SELECT *
+                    FROM {$this->getTable()}
+                    WHERE (
+                        livre COLLATE utf8mb4_unicode_ci LIKE :search_livre
+                        OR slug COLLATE utf8mb4_unicode_ci LIKE :search_slug
+                    )
+                    AND numero = :numero
+                    ORDER BY livre ASC, numero ASC",
+                    [
+                        'search_livre' => '%' . $titlePart . '%',
+                        'search_slug' => '%' . Functions::normalizeSlug($titlePart) . '%',
+                        'numero' => $numero
+                    ]
+                );
+
+                return $query ? $query->fetchAll() : [];
+            }
+        }
+
+        /*
+        |-------------------------------------------------------
+        | Nettoie un suffixe tome sans numéro
+        | Exemples :
+        | - rave tome
+        | - rave t
+        | - rave vol
+        | - rave vol.
+        | - rave volume
+        | - rave n°
+        | - rave no
+        | - rave #
+        |-------------------------------------------------------
+        */
+        $search = preg_replace('/\s+(t|tome|vol|vol\.|volume|n°|no|#)$/iu', '', $search);
+        $search = trim($search);
+
+        if ($search === '')
+        {
+            return [];
+        }
+
+        /*
+        |-------------------------------------------------------
+        | Recherche simple (sans numéro)
+        |-------------------------------------------------------
+        */
         $query = $this->requete(
             "SELECT *
             FROM {$this->getTable()}
