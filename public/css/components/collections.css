@@ -40,13 +40,6 @@
     outline: none;
 }
 
-.collection-card-link.is-active
-{
-    transform: translateY(-6px);
-    border-color: var(--color-violet-border);
-    box-shadow: var(--shadow-card-hover);
-}
-
 
 /* =========================================
    TEXT
