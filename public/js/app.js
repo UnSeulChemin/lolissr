@@ -1,23 +1,10 @@
-document.addEventListener('DOMContentLoaded', function ()
+import { initPaginationAjax } from './pagination.js';
+import { initAjaxNotes } from './notes.js';
+import { initAutoSlug } from './slug.js';
+
+document.addEventListener('DOMContentLoaded', () =>
 {
-
-    const livreInput = document.getElementById('livre');
-    const slugInput = document.getElementById('slug');
-
-    if (livreInput && slugInput) {
-
-        livreInput.addEventListener('input', function () {
-
-            let slugValue = this.value
-                .toLowerCase()
-                .trim()
-                .replace(/[^a-z0-9\s-]/g, '')
-                .replace(/\s+/g, '-');
-
-            slugInput.value = slugValue;
-
-        });
-
-    }
-
+    initPaginationAjax();
+    initAjaxNotes();
+    initAutoSlug();
 });

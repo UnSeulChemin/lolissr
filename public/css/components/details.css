@@ -73,7 +73,7 @@
 .detail-row
 {
     display: grid;
-    grid-template-columns: 240px 1fr;
+    grid-template-columns: 220px 1fr;
     gap: 14px;
 }
 
@@ -124,7 +124,11 @@
 .detail-value-notes
 {
     min-height: 52px;
-    padding: 8px 14px;
+    padding: 6px 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .ajax-note-group
@@ -133,27 +137,31 @@
     align-items: center;
     justify-content: center;
     flex-wrap: nowrap;
-    gap: 8px;
+    gap: 12px;
 
     width: 100%;
 }
 
 .ajax-note-button
 {
-    width: 42px;
-    min-width: 42px;
-    height: 42px;
+    width: 34px;
+    min-width: 34px;
+    height: 34px;
     padding: 0;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
     color: var(--color-title);
     font-family: inherit;
-    font-size: 0.95rem;
+    font-size: 0.85rem;
     font-weight: 700;
     line-height: 1;
 
     background: var(--color-surface);
     border: 1px solid var(--color-border-light);
-    border-radius: 14px;
+    border-radius: 10px;
 
     cursor: pointer;
 
@@ -168,7 +176,10 @@
 .ajax-note-button:hover
 {
     transform: translateY(-1px);
-    border-color: rgba(123, 44, 255, 0.24);
+
+    border-color: rgba(123, 44, 255, 0.35);
+    box-shadow:
+        0 6px 14px rgba(123, 44, 255, 0.12);
 }
 
 .ajax-note-button.active
@@ -176,7 +187,9 @@
     color: var(--color-surface);
     background: var(--gradient-violet);
     border-color: transparent;
-    box-shadow: 0 8px 18px rgba(123, 44, 255, 0.18);
+    box-shadow:
+        0 8px 18px rgba(123, 44, 255, 0.18),
+        inset 0 1px 2px rgba(255,255,255,0.25);
 }
 
 
@@ -215,5 +228,64 @@
 
 .detail-actions
 {
-    margin-top: 24px;
+    margin-top: 32px;
+
+    display: flex;
+    justify-content: center;
+}
+
+.detail-actions .form-submit
+{
+    min-width: 160px;
+}
+
+#ajax-note-total
+{
+    font-size: 20px;
+    font-weight: 700;
+}
+
+/* =========================================
+   TOAST
+========================================= */
+
+/* =========================================
+   TOAST
+========================================= */
+
+.toast
+{
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+
+    padding: 12px 18px;
+
+    color: white;
+    font-weight: 700;
+    font-size: 14px;
+
+    background: var(--gradient-violet);
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 10px 24px rgba(123, 44, 255, 0.35);
+
+    opacity: 0;
+    transform: translateY(10px);
+
+    transition:
+        opacity 0.25s ease,
+        transform 0.25s ease;
+
+    z-index: 9999;
+
+    pointer-events: none;
+}
+
+.toast.show
+{
+    opacity: 1;
+    transform: translateY(0);
 }

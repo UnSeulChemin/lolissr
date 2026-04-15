@@ -74,7 +74,7 @@
        BORDER RADIUS
     ========================= */
     --radius-image: 10px;
-    --radius-input: 14px;
+    --radius-input: 16px;
     --radius-card: 22px;
     --radius-card-lg: 24px;
     --radius-pill: 999px;
@@ -144,7 +144,8 @@
       0 10px 24px rgba(0, 0, 0, 0.08);
 
    --shadow-detail-image:
-      0 8px 20px rgba(0, 0, 0, 0.18);
+        0 18px 36px rgba(0, 0, 0, 0.10),
+        0 6px 12px rgba(0, 0, 0, 0.06);
 
    --shadow-text-badge: 0 1px 2px rgba(0, 0, 0, 0.30);
 
