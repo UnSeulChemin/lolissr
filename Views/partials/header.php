@@ -102,6 +102,8 @@ if (str_starts_with($currentPath, '/manga/recherche/'))
 
         </form>
 
+        <div class="header-search-results"></div>
+
     </nav>
 </header>
 
@@ -142,4 +144,73 @@ function redirectSearch(event)
 
     return false;
 }
+</script>
+
+<script>
+const basePath = "<?= $basePath ?>";
+
+const input = document.querySelector('.header-search input');
+const resultsBox = document.querySelector('.header-search-results');
+
+let debounceTimer;
+
+input.addEventListener('input', function()
+{
+    clearTimeout(debounceTimer);
+
+    debounceTimer = setTimeout(() =>
+    {
+        let value = input.value.trim();
+
+        if (value.length < 2)
+        {
+            resultsBox.innerHTML = '';
+            return;
+        }
+
+        value = value
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-z0-9\s\-]/g, '')
+            .replace(/\s+/g, '-');
+
+        fetch(basePath + 'manga/search-ajax/' + value)
+            .then(response => response.json())
+            .then(data =>
+            {
+                resultsBox.innerHTML = '';
+
+                if (data.length === 0)
+                {
+                    return;
+                }
+
+                data.forEach(manga =>
+                {
+                    const link = document.createElement('a');
+
+                    link.href =
+                        basePath +
+                        'manga/' +
+                        encodeURIComponent(manga.slug) +
+                        '/' +
+                        manga.numero;
+
+                    link.className = 'search-result-item';
+
+                    link.innerHTML = `
+                        <img src="${basePath}public/images/mangas/thumbnail/${manga.thumbnail}.${manga.extension}">
+                        <span>
+                            ${manga.livre}
+                            <small>Tome ${manga.numero}</small>
+                        </span>
+                    `;
+
+                    resultsBox.appendChild(link);
+                });
+            });
+
+    }, 250);
+});
 </script>

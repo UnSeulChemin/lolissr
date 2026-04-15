@@ -66,6 +66,9 @@ return function ($router)
     |------------------------------------------------------------------
     */
 
+    /* Recherche AJAX */
+    $router->get('/manga/search-ajax/{query}', 'MangaController@searchAjax');
+
     /* Fiche manga */
     $router->get('/manga/{slug}/{numero}', 'MangaController@show');
 };

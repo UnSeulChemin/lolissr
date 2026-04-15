@@ -118,6 +118,39 @@ class MangaController extends Controller
     }
 
     /**
+     * Recherche AJAX (live search).
+     * Route : /manga/search-ajax/{query}
+     */
+    public function searchAjax(string $query = ''): void
+    {
+        $search = trim(str_replace('-', ' ', urldecode($query)));
+
+        if ($search === '')
+        {
+            echo json_encode([]);
+            return;
+        }
+
+        $mangas = $this->mangaModel()->searchMangas($search);
+
+        $results = [];
+
+        foreach (array_slice($mangas, 0, 6) as $manga)
+        {
+            $results[] = [
+                'slug' => $manga->slug,
+                'numero' => $manga->numero,
+                'livre' => $manga->livre,
+                'thumbnail' => $manga->thumbnail,
+                'extension' => $manga->extension
+            ];
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode($results);
+    }
+
+    /**
      * Affiche une série.
      * Route : /manga/serie/{slug}
      */

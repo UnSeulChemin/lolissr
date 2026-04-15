@@ -333,3 +333,45 @@ header ul
 {
     transform: scale(0.95);
 }
+
+.header-search-results
+{
+    position: absolute;
+    top: 100%;
+    right: 24px;
+
+    width: 320px;
+
+    background: white;
+    border-radius: 14px;
+
+    box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+
+    overflow: hidden;
+    z-index: 999;
+}
+
+.search-result-item
+{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 10px 12px;
+
+    text-decoration: none;
+    color: inherit;
+}
+
+.search-result-item img
+{
+    width: 42px;
+    height: 60px;
+
+    border-radius: 6px;
+}
+
+.search-result-item:hover
+{
+    background: rgba(123,44,255,0.08);
+}
