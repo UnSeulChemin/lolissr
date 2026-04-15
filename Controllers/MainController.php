@@ -29,7 +29,7 @@ class MainController extends Controller
         $averageNote = $mangaModel->averageNote();
         $lastTome = $mangaModel->findLastAdded();
         $longestSeries = $mangaModel->findLongestSeries();
-        $bestRatedMangas = $mangaModel->findBestRatedMangas();
+        $worstRatedMangas = $mangaModel->findWorstRatedMangas();
         $topLongestSeries = $mangaModel->topLongestSeries(5);
 
         $this->render('main/index', [
@@ -38,7 +38,7 @@ class MainController extends Controller
             'averageNote' => $averageNote,
             'lastTome' => $lastTome,
             'longestSeries' => $longestSeries,
-            'bestRatedMangas' => $bestRatedMangas,
+            'worstRatedMangas' => $worstRatedMangas,
             'topLongestSeries' => $topLongestSeries
         ]);
     }

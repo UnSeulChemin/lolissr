@@ -119,19 +119,6 @@ class MangaModel extends Model
     }
 
     /**
-     * Récupère tous les mangas notés 10/10.
-     */
-    public function findBestRatedMangas(): array
-    {
-        return $this->requete(
-            "SELECT *
-            FROM {$this->getTable()}
-            WHERE note = 10
-            ORDER BY livre ASC, numero ASC"
-        )->fetchAll();
-    }
-
-    /**
      * Récupère la moyenne des notes.
      */
     public function averageNote(): ?float
@@ -175,33 +162,36 @@ class MangaModel extends Model
     }
 
     /**
-     * Récupère tous les mangas ayant la meilleure note existante.
+     * Récupère les mangas ayant une note
+     * strictement inférieure à 8,
+     * triés du pire au meilleur,
+     * avec une limite maximale.
      */
-    public function findAllBestRated(): array
+    public function findWorstRatedMangas(int $limit = 10): array
     {
+        $limit = max(1, (int) $limit);
+
         return $this->requete(
             "SELECT *
             FROM {$this->getTable()}
             WHERE note IS NOT NULL
-            AND note = (
-                SELECT MAX(note)
-                FROM {$this->getTable()}
-                WHERE note IS NOT NULL
-            )
-            ORDER BY livre ASC, numero ASC"
+            AND note < 8
+            ORDER BY note ASC, livre ASC, numero ASC
+            LIMIT {$limit}"
         )->fetchAll();
     }
 
     /**
-     * Récupère un seul manga avec la meilleure note.
+     * Récupère un seul manga parmi ceux ayant une note inférieure à 8.
      */
-    public function findBestRated(): object|false
+    public function findWorstRated(): object|false
     {
         return $this->requete(
             "SELECT *
             FROM {$this->getTable()}
             WHERE note IS NOT NULL
-            ORDER BY note DESC, id DESC
+            AND note < 8
+            ORDER BY note ASC, id DESC
             LIMIT 1"
         )->fetch();
     }
@@ -255,9 +245,12 @@ class MangaModel extends Model
                 ORDER BY {$orderBy}
                 LIMIT {$start}, {$eachPerPage}";
 
-        $query = $this->requete($sql, [
-            'numero' => 1
-        ]);
+        $query = $this->requete(
+            $sql,
+            [
+                'numero' => 1
+            ]
+        );
 
         return $query ? $query->fetchAll() : [];
     }

@@ -146,14 +146,14 @@
         </section>
     <?php endif; ?>
 
-    <?php if (!empty($bestRatedMangas)): ?>
-        <h2 class="home-section-title">
-            ⭐ Mangas notés 10/10
-        </h2>
+    <h2 class="home-section-title">
+        📉 Mangas les moins bien notés
+    </h2>
 
+    <?php if (!empty($worstRatedMangas)): ?>
         <section class="home-best-list card-list animate-fade-up-stagger">
 
-            <?php foreach ($bestRatedMangas as $manga): ?>
+            <?php foreach ($worstRatedMangas as $manga): ?>
                 <a
                     class="card-link"
                     href="<?= $basePath; ?>manga/<?= rawurlencode($manga->slug) ?>/<?= (int) $manga->numero ?>">
@@ -182,6 +182,10 @@
             <?php endforeach; ?>
 
         </section>
+    <?php else: ?>
+        <p class="home-empty">
+            Aucun manga avec une note inférieure à 8.
+        </p>
     <?php endif; ?>
 
 </section>
