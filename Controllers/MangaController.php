@@ -88,6 +88,27 @@ class MangaController extends Controller
     }
 
     /**
+     * Collection AJAX.
+     * Route : /manga/collection-ajax/page/{page}
+     */
+    public function collectionAjax(string $page = '1'): void
+    {
+        $mangaModel = $this->mangaModel();
+        $pagination = Functions::pagination();
+        $currentPage = max(1, (int) $page);
+
+        $mangas = $mangaModel->findAllFirstTomes('id DESC', $pagination, $currentPage);
+        $compteur = $mangaModel->countFirstTomesPaginate($pagination);
+
+        $this->renderPartial('manga/partials/collection_ajax', [
+            'mangas' => $mangas,
+            'compteur' => $compteur,
+            'currentPage' => $currentPage,
+            'slugFilter' => null
+        ]);
+    }
+
+    /**
      * Recherche manga.
      * Route : /manga/recherche/{query}
      */
@@ -123,6 +144,8 @@ class MangaController extends Controller
      */
     public function searchAjax(string $query = ''): void
     {
+        header('Content-Type: application/json; charset=utf-8');
+
         $search = trim(str_replace('-', ' ', urldecode($query)));
 
         if ($search === '')
@@ -132,21 +155,20 @@ class MangaController extends Controller
         }
 
         $mangas = $this->mangaModel()->searchMangas($search);
-
         $results = [];
 
         foreach (array_slice($mangas, 0, 6) as $manga)
         {
             $results[] = [
                 'slug' => $manga->slug,
-                'numero' => $manga->numero,
+                'numero' => (int) $manga->numero,
                 'livre' => $manga->livre,
                 'thumbnail' => $manga->thumbnail,
-                'extension' => $manga->extension
+                'extension' => $manga->extension,
+                'note' => $manga->note
             ];
         }
 
-        header('Content-Type: application/json');
         echo json_encode($results);
     }
 
@@ -354,7 +376,8 @@ class MangaController extends Controller
         if (
             $mimeType === null
             || !in_array($mimeType, Functions::uploadAllowedMimeTypes(), true)
-        ) {
+        )
+        {
             Logger::error(
                 'Upload manga refusé: type MIME invalide. MIME reçu: '
                 . ($mimeType ?? 'null')
@@ -504,5 +527,79 @@ class MangaController extends Controller
             'manga/' . rawurlencode($slug) . '/' . $numero,
             'Manga mis à jour avec succès'
         );
+    }
+
+    /**
+     * Mise à jour AJAX des notes.
+     * Route : POST /manga/ajax/update-note/{slug}/{numero}
+     */
+    public function ajaxUpdateNote(string $slug, string $numero): void
+    {
+        $slug = Functions::normalizeSlug($slug);
+        $numero = (int) $numero;
+
+        header('Content-Type: application/json; charset=utf-8');
+
+        if (!Functions::isPost())
+        {
+            http_response_code(405);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Méthode non autorisée'
+            ]);
+            return;
+        }
+
+        $manga = $this->mangaModel()->findOneBySlugAndNumero($slug, $numero);
+
+        if (!$manga)
+        {
+            http_response_code(404);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Manga introuvable'
+            ]);
+            return;
+        }
+
+        $jacquette = $this->normalizePostedNote(
+            Functions::postNullableString('jacquette')
+        );
+
+        $livreNote = $this->normalizePostedNote(
+            Functions::postNullableString('livre_note')
+        );
+
+        $commentaire = Functions::normalizeCommentaire(
+            Functions::postNullableString('commentaire')
+        );
+
+        $updated = $this->mangaModel()->updateManga(
+            $slug,
+            $numero,
+            $jacquette,
+            $livreNote,
+            $commentaire
+        );
+
+        if (!$updated)
+        {
+            http_response_code(500);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Erreur lors de la mise à jour'
+            ]);
+            return;
+        }
+
+        $fresh = $this->mangaModel()->findOneBySlugAndNumero($slug, $numero);
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'Notes mises à jour',
+            'jacquette' => $fresh->jacquette,
+            'livre_note' => $fresh->livre_note,
+            'note' => $fresh->note
+        ]);
     }
 }

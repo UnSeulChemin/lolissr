@@ -84,6 +84,26 @@ abstract class Controller
     }
 
     /**
+     * Affiche une vue partielle sans template.
+     */
+    protected function renderPartial(string $file, array $data = []): void
+    {
+        $viewPath = $this->viewPath($file);
+
+        if (!is_file($viewPath))
+        {
+            $this->notFound('Vue partielle introuvable : ' . $file);
+        }
+
+        extract($data, EXTR_SKIP);
+
+        $title = $this->title;
+        $basePath = $this->basePath;
+
+        require $viewPath;
+    }
+
+    /**
      * Affiche une vue d'erreur.
      */
     protected function renderError(string $file, int $statusCode, array $data = []): void

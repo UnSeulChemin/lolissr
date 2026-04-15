@@ -26,9 +26,15 @@ return function ($router)
     /* Pagination collection */
     $router->get('/manga/collection/page/{page}', 'MangaController@collection');
 
+    /* Collection AJAX */
+    $router->get('/manga/collection-ajax/page/{page}', 'MangaController@collectionAjax');
+
     /* Recherche */
     $router->get('/manga/recherche', 'MangaController@recherche');
     $router->get('/manga/recherche/{query}', 'MangaController@recherche');
+
+    /* Recherche AJAX */
+    $router->get('/manga/search-ajax/{query}', 'MangaController@searchAjax');
 
     /* Série */
     $router->get('/manga/serie/{slug}', 'MangaController@serie');
@@ -59,15 +65,15 @@ return function ($router)
     $router->post('/manga/ajouter', 'MangaController@ajouterTraitement');
     $router->post('/manga/update/{slug}/{numero}', 'MangaController@update');
 
+    /* Update note AJAX */
+    $router->post('/manga/ajax/update-note/{slug}/{numero}', 'MangaController@ajaxUpdateNote');
+
 
     /*
     |------------------------------------------------------------------
     | MANGA — DYNAMIQUE (TOUJOURS EN DERNIER)
     |------------------------------------------------------------------
     */
-
-    /* Recherche AJAX */
-    $router->get('/manga/search-ajax/{query}', 'MangaController@searchAjax');
 
     /* Fiche manga */
     $router->get('/manga/{slug}/{numero}', 'MangaController@show');
