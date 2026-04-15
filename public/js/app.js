@@ -4,6 +4,7 @@ import { initAutoSlug } from './slug.js';
 import { showToast } from './toast.js';
 import { initCardPrefetch } from './prefetch.js';
 import { initLiveSearch } from './search.js';
+import { initCollectionKeyboardNavigation } from './collection_keyboard.js';
 
 document.addEventListener('DOMContentLoaded', () =>
 {
@@ -12,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () =>
     initAutoSlug();
     initCardPrefetch();
     initLiveSearch();
+    initCollectionKeyboardNavigation();
 
     // Rend showToast accessible globalement
     window.showToast = showToast;

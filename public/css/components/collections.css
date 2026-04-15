@@ -426,3 +426,15 @@
         margin: 0 auto;
     }
 }
+
+.collection-card.is-active
+{
+    outline: 4px solid var(--color-violet);
+    outline-offset: 0;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 0 0 4px rgba(123,44,255,0.18),
+        0 12px 28px rgba(123,44,255,0.22);
+}

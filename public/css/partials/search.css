@@ -222,24 +222,6 @@
 
 
 /* =========================================
-   SEARCH HINT
-========================================= */
-
-.search-result-hint
-{
-    padding: 10px 14px;
-
-    color: var(--color-text-muted);
-    font-size: 0.78rem;
-    font-weight: 600;
-    text-align: center;
-
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
-    background: rgba(123, 44, 255, 0.03);
-}
-
-
-/* =========================================
    LIVE SEARCH SKELETON
 ========================================= */
 
