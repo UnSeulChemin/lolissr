@@ -5,19 +5,26 @@
 header
 {
     width: 100%;
-    background-color: var(--color-violet);
+    background: var(--gradient-violet);
+    box-shadow: 0 4px 18px rgba(123, 44, 255, 0.18);
 }
 
 header nav
 {
+    position: relative;
+
     width: 100%;
     max-width: 1400px;
+    min-height: 84px;
+
     margin: 0 auto;
-    padding: 16px 0;
+    padding: 16px 24px;
 
     display: flex;
     align-items: center;
     justify-content: center;
+
+    box-sizing: border-box;
 }
 
 header ul
@@ -30,6 +37,128 @@ header ul
     padding: 0;
 
     list-style: none;
+}
+
+
+/* =========================================
+   LOGO
+========================================= */
+
+.site-logo
+{
+    position: absolute;
+    left: 24px;
+    top: 50%;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+
+    padding: 7px 12px 8px 12px;
+
+    border-radius: 16px;
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.20),
+            rgba(255, 255, 255, 0.08)
+        );
+
+    border: 1px solid rgba(255, 255, 255, 0.22);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.20);
+
+    backdrop-filter: blur(6px);
+
+    text-decoration: none;
+    line-height: 1;
+    user-select: none;
+
+    transform:
+        translateY(-50%)
+        skewX(-8deg)
+        rotate(-1.5deg);
+
+    transition:
+        transform 0.25s ease,
+        background-color 0.25s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease;
+}
+
+.site-logo:hover
+{
+    border-color: rgba(255, 255, 255, 0.28);
+
+    box-shadow:
+        0 0 0 2px rgba(255, 255, 255, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.20);
+}
+
+.site-logo:active
+{
+    transform:
+        translateY(-50%)
+        skewX(-8deg)
+        rotate(-1.5deg)
+        scale(0.98);
+}
+
+.site-logo-loli,
+.site-logo-ssr
+{
+    position: relative;
+    z-index: 1;
+
+    display: inline-block;
+
+    font-family: var(--font-family-base);
+    font-size: 26px;
+    font-weight: 900;
+    letter-spacing: -1px;
+    line-height: 1;
+
+    transform: skewX(10deg);
+}
+
+/* Partie Loli */
+
+.site-logo-loli
+{
+    color: #ffffff;
+
+    text-shadow:
+        0 2px 0 rgba(120, 60, 255, 0.28),
+        0 4px 10px rgba(255, 255, 255, 0.12);
+}
+
+/* Partie SSR */
+
+.site-logo-ssr
+{
+    padding: 2px 8px 4px 8px;
+
+    border-radius: 12px;
+
+    background: linear-gradient(
+        135deg,
+        #ffd6ff 0%,
+        #ffffff 35%,
+        #d9c2ff 70%,
+        #ffdcff 100%
+    );
+
+    color: #6d2cff;
+
+    box-shadow:
+        0 3px 10px rgba(255, 255, 255, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.55);
+
+    text-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
 
@@ -53,7 +182,6 @@ header ul
     border-radius: var(--radius-pill);
 
     background: rgba(255, 255, 255, 0.06);
-
     backdrop-filter: blur(6px);
 
     text-decoration: none;
@@ -117,8 +245,7 @@ header ul
         0 0 20px rgba(123, 44, 255, 0.65),
         0 10px 26px rgba(123, 44, 255, 0.30);
 
-    filter:
-        drop-shadow(0 0 8px rgba(255, 255, 255, 0.22));
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.22));
 }
 
 
