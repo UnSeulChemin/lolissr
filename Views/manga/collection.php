@@ -7,6 +7,18 @@ $currentPage = $currentPage ?? 1;
 
     <div class="collection-ajax-container">
 
+        <div class="collection-skeleton" aria-hidden="true">
+
+            <?php for ($i = 1; $i <= 8; $i++): ?>
+                <article class="collection-skeleton-card">
+                    <div class="collection-skeleton-image"></div>
+                    <div class="collection-skeleton-line collection-skeleton-line-title"></div>
+                    <div class="collection-skeleton-line collection-skeleton-line-subtitle"></div>
+                </article>
+            <?php endfor; ?>
+
+        </div>
+
         <section class="collection-grid animate-fade-up-stagger">
 
             <?php foreach ($mangas as $manga): ?>
@@ -20,12 +32,10 @@ $currentPage = $currentPage ?? 1;
                     <article class="card collection-card">
 
                         <div class="card-image-box-portrait">
-
                             <img
                                 class="card-image-portrait card-image"
                                 src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($manga->thumbnail . '.' . $manga->extension) ?>"
                                 alt="<?= htmlspecialchars($manga->livre) ?>">
-
                         </div>
 
                         <p class="collection-card-title">

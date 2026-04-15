@@ -27,7 +27,7 @@ export function initPaginationAjax()
                 '/manga/collection-ajax/page/'
             );
 
-            container.style.opacity = '0.45';
+            container.classList.add('is-loading');
 
             const response = await fetch(ajaxUrl, {
                 headers: {
@@ -44,8 +44,6 @@ export function initPaginationAjax()
 
             container.innerHTML = html;
 
-            container.style.opacity = '1';
-
             history.pushState({}, '', link.href);
 
             window.scrollTo({
@@ -55,15 +53,12 @@ export function initPaginationAjax()
         }
         catch (error)
         {
-            container.style.opacity = '1';
-
-            showToast(
-                'Erreur chargement page',
-                'error'
-            );
-
-            // fallback normal
+            showToast('Erreur chargement page', 'error');
             window.location.href = link.href;
+        }
+        finally
+        {
+            container.classList.remove('is-loading');
         }
     });
 }
