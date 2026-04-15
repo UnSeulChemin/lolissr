@@ -20,6 +20,7 @@
 
 /* PARTIALS */
 @import url('./partials/header.css');
+@import url('./partials/search.css');
 
 /* PAGES */
 @import url('./page/home.css');

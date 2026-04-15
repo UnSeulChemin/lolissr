@@ -118,6 +118,10 @@ if (str_starts_with($currentPath, '/manga/recherche/'))
                     class="header-search-results"
                     id="header-search-results"></div>
 
+                <div class="search-result-hint">
+                    Entrée pour ouvrir • ↑ ↓ pour naviguer
+                </div>
+
             </div>
 
         </div>
