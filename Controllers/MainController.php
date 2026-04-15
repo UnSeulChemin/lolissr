@@ -29,8 +29,11 @@ class MainController extends Controller
         $averageNote = $mangaModel->averageNote();
         $lastTome = $mangaModel->findLastAdded();
         $longestSeries = $mangaModel->findLongestSeries();
-        $worstRatedMangas = $mangaModel->findWorstRatedMangas();
-        $topLongestSeries = $mangaModel->topLongestSeries(5);
+        $topLongestSeries = $mangaModel->topLongestSeries();
+
+        $lowRatedMangas = $mangaModel->findLowRatedMangas();
+        $lowJacquetteMangas = $mangaModel->findLowJacquetteMangas();
+        $lowLivreStateMangas = $mangaModel->findLowLivreStateMangas();
 
         $this->render('main/index', [
             'totalTomes' => $totalTomes,
@@ -38,8 +41,10 @@ class MainController extends Controller
             'averageNote' => $averageNote,
             'lastTome' => $lastTome,
             'longestSeries' => $longestSeries,
-            'worstRatedMangas' => $worstRatedMangas,
-            'topLongestSeries' => $topLongestSeries
+            'topLongestSeries' => $topLongestSeries,
+            'lowRatedMangas' => $lowRatedMangas,
+            'lowJacquetteMangas' => $lowJacquetteMangas,
+            'lowLivreStateMangas' => $lowLivreStateMangas
         ]);
     }
 }

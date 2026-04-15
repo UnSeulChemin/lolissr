@@ -70,6 +70,16 @@
                     </div>
                 </article>
             </a>
+        <?php else: ?>
+            <article class="card card-medium">
+                <h2 class="home-card-title">
+                    🆕 Dernier tome ajouté
+                </h2>
+
+                <p class="home-empty">
+                    Aucune donnée
+                </p>
+            </article>
         <?php endif; ?>
 
     </section>
@@ -147,13 +157,157 @@
     <?php endif; ?>
 
     <h2 class="home-section-title">
+        ⚠️ Mangas à surveiller
+    </h2>
+
+    <section class="home-grid home-grid-stats card-grid-3 animate-fade-up-stagger">
+
+        <?php $lowGlobal = $lowRatedMangas[0] ?? null; ?>
+        <?php $lowJacquette = $lowJacquetteMangas[0] ?? null; ?>
+        <?php $lowLivre = $lowLivreStateMangas[0] ?? null; ?>
+
+        <?php if ($lowGlobal): ?>
+            <a
+                class="card-link"
+                href="<?= $basePath; ?>manga/<?= rawurlencode($lowGlobal->slug) ?>/<?= (int) $lowGlobal->numero ?>">
+
+                <article class="card card-medium">
+                    <h2 class="home-card-title">
+                        📉 À remplacer
+                    </h2>
+
+                    <div class="home-last-content">
+                        <img
+                            class="home-last-image card-image"
+                            src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($lowGlobal->thumbnail . '.' . $lowGlobal->extension) ?>"
+                            alt="<?= htmlspecialchars($lowGlobal->livre) ?>">
+
+                        <div class="home-last-info">
+                            <p class="home-last-name">
+                                <?= htmlspecialchars($lowGlobal->livre) ?>
+                            </p>
+
+                            <p class="home-last-volume">
+                                Tome <?= str_pad((string) $lowGlobal->numero, 2, '0', STR_PAD_LEFT) ?>
+                            </p>
+
+                            <p class="home-last-volume">
+                                ⭐ <?= (int) $lowGlobal->note ?>/10
+                            </p>
+                        </div>
+                    </div>
+                </article>
+            </a>
+        <?php else: ?>
+            <article class="card card-medium">
+                <h2 class="home-card-title">
+                    📉 À remplacer
+                </h2>
+
+                <p class="home-empty">
+                    Aucun manga sous 8/10
+                </p>
+            </article>
+        <?php endif; ?>
+
+        <?php if ($lowJacquette): ?>
+            <a
+                class="card-link"
+                href="<?= $basePath; ?>manga/<?= rawurlencode($lowJacquette->slug) ?>/<?= (int) $lowJacquette->numero ?>">
+
+                <article class="card card-medium">
+                    <h2 class="home-card-title">
+                        🧥 Jacquette faible
+                    </h2>
+
+                    <div class="home-last-content">
+                        <img
+                            class="home-last-image card-image"
+                            src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($lowJacquette->thumbnail . '.' . $lowJacquette->extension) ?>"
+                            alt="<?= htmlspecialchars($lowJacquette->livre) ?>">
+
+                        <div class="home-last-info">
+                            <p class="home-last-name">
+                                <?= htmlspecialchars($lowJacquette->livre) ?>
+                            </p>
+
+                            <p class="home-last-volume">
+                                Tome <?= str_pad((string) $lowJacquette->numero, 2, '0', STR_PAD_LEFT) ?>
+                            </p>
+
+                            <p class="home-last-volume">
+                                ⭐ <?= (int) $lowJacquette->jacquette ?>/5
+                            </p>
+                        </div>
+                    </div>
+                </article>
+            </a>
+        <?php else: ?>
+            <article class="card card-medium">
+                <h2 class="home-card-title">
+                    🧥 Jacquette faible
+                </h2>
+
+                <p class="home-empty">
+                    Aucune jacquette sous 4/5
+                </p>
+            </article>
+        <?php endif; ?>
+
+        <?php if ($lowLivre): ?>
+            <a
+                class="card-link"
+                href="<?= $basePath; ?>manga/<?= rawurlencode($lowLivre->slug) ?>/<?= (int) $lowLivre->numero ?>">
+
+                <article class="card card-medium">
+                    <h2 class="home-card-title">
+                        📘 Livre abîmé
+                    </h2>
+
+                    <div class="home-last-content">
+                        <img
+                            class="home-last-image card-image"
+                            src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($lowLivre->thumbnail . '.' . $lowLivre->extension) ?>"
+                            alt="<?= htmlspecialchars($lowLivre->livre) ?>">
+
+                        <div class="home-last-info">
+                            <p class="home-last-name">
+                                <?= htmlspecialchars($lowLivre->livre) ?>
+                            </p>
+
+                            <p class="home-last-volume">
+                                Tome <?= str_pad((string) $lowLivre->numero, 2, '0', STR_PAD_LEFT) ?>
+                            </p>
+
+                            <p class="home-last-volume">
+                                ⭐ <?= (int) $lowLivre->livre_note ?>/5
+                            </p>
+                        </div>
+                    </div>
+                </article>
+            </a>
+        <?php else: ?>
+            <article class="card card-medium">
+                <h2 class="home-card-title">
+                    📘 Livre abîmé
+                </h2>
+
+                <p class="home-empty">
+                    Aucun livre sous 4/5
+                </p>
+            </article>
+        <?php endif; ?>
+
+    </section>
+
+    <h2 class="home-section-title">
         📉 Mangas les moins bien notés
     </h2>
 
-    <?php if (!empty($worstRatedMangas)): ?>
+    <?php if (!empty($lowRatedMangas)): ?>
         <section class="home-best-list card-list animate-fade-up-stagger">
 
-            <?php foreach ($worstRatedMangas as $manga): ?>
+            <?php foreach ($lowRatedMangas as $manga): ?>
                 <a
                     class="card-link"
                     href="<?= $basePath; ?>manga/<?= rawurlencode($manga->slug) ?>/<?= (int) $manga->numero ?>">

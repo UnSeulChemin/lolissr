@@ -43,7 +43,7 @@ class MangaModel extends Model
     }
 
     /**
-     * Calcule la note finale.
+     * Calcule la note finale sur 10.
      */
     private function calculateNote(?int $jacquette, ?int $livreNote): ?int
     {
@@ -162,12 +162,10 @@ class MangaModel extends Model
     }
 
     /**
-     * Récupère les mangas ayant une note
-     * strictement inférieure à 8,
-     * triés du pire au meilleur,
-     * avec une limite maximale.
+     * Récupère les mangas faiblement notés.
+     * Règle : note strictement inférieure à 8/10.
      */
-    public function findWorstRatedMangas(int $limit = 10): array
+    public function findLowRatedMangas(int $limit = 10): array
     {
         $limit = max(1, (int) $limit);
 
@@ -182,18 +180,39 @@ class MangaModel extends Model
     }
 
     /**
-     * Récupère un seul manga parmi ceux ayant une note inférieure à 8.
+     * Récupère les mangas avec jacquette faible.
+     * Règle : jacquette strictement inférieure à 4/5.
      */
-    public function findWorstRated(): object|false
+    public function findLowJacquetteMangas(int $limit = 10): array
     {
+        $limit = max(1, (int) $limit);
+
         return $this->requete(
             "SELECT *
             FROM {$this->getTable()}
-            WHERE note IS NOT NULL
-            AND note < 8
-            ORDER BY note ASC, id DESC
-            LIMIT 1"
-        )->fetch();
+            WHERE jacquette IS NOT NULL
+            AND jacquette < 4
+            ORDER BY jacquette ASC, livre ASC, numero ASC
+            LIMIT {$limit}"
+        )->fetchAll();
+    }
+
+    /**
+     * Récupère les mangas avec état livre faible.
+     * Règle : livre_note strictement inférieure à 4/5.
+     */
+    public function findLowLivreStateMangas(int $limit = 10): array
+    {
+        $limit = max(1, (int) $limit);
+
+        return $this->requete(
+            "SELECT *
+            FROM {$this->getTable()}
+            WHERE livre_note IS NOT NULL
+            AND livre_note < 4
+            ORDER BY livre_note ASC, livre ASC, numero ASC
+            LIMIT {$limit}"
+        )->fetchAll();
     }
 
     /**
