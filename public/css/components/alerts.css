@@ -76,3 +76,29 @@
     opacity: 1;
     transform: translateY(0);
 }
+
+/* =========================================
+   SUCCESS
+========================================= */
+
+.toast-success
+{
+    color: var(--color-surface);
+
+    background: var(--gradient-violet);
+}
+
+/* =========================================
+   ERROR
+========================================= */
+
+.toast-error
+{
+    color: white;
+
+    background: linear-gradient(
+        135deg,
+        #ff4d4d,
+        #d90429
+    );
+}

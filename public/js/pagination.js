@@ -1,3 +1,5 @@
+import { showToast } from './toast.js';
+
 export function initPaginationAjax()
 {
     document.addEventListener('click', async (event) =>
@@ -54,6 +56,11 @@ export function initPaginationAjax()
         catch (error)
         {
             container.style.opacity = '1';
+
+            showToast(
+                'Erreur chargement page',
+                'error'
+            );
 
             // fallback normal
             window.location.href = link.href;

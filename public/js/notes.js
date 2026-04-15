@@ -74,7 +74,10 @@ export function initAjaxNotes()
 
             if (!data.success)
             {
-                throw new Error(data.message || 'Erreur lors de la mise à jour');
+                showToast(
+                    '✓ Sauvegardé',
+                    'success'
+                );
             }
 
             state.jacquette = data.jacquette !== null
@@ -96,7 +99,10 @@ export function initAjaxNotes()
         }
         catch (error)
         {
-            alert(error.message || 'Erreur lors de la mise à jour');
+            showToast(
+                error.message || 'Erreur lors de la mise à jour',
+                'error'
+            );
         }
         finally
         {

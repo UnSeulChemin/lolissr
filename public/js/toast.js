@@ -1,4 +1,7 @@
-export function showToast(message = '✓ Sauvegardé')
+export function showToast(
+    message = 'Sauvegardé',
+    type = 'success'
+)
 {
     const toast = document.getElementById('toast');
 
@@ -7,7 +10,21 @@ export function showToast(message = '✓ Sauvegardé')
         return;
     }
 
+    // Reset classes
+    toast.classList.remove(
+        'toast-success',
+        'toast-error'
+    );
+
+    // Applique type
+    toast.classList.add(
+        type === 'error'
+            ? 'toast-error'
+            : 'toast-success'
+    );
+
     toast.textContent = message;
+
     toast.classList.add('show');
 
     clearTimeout(window.__toastTimeout);
@@ -15,5 +32,5 @@ export function showToast(message = '✓ Sauvegardé')
     window.__toastTimeout = setTimeout(() =>
     {
         toast.classList.remove('show');
-    }, 2000);
+    }, 2500);
 }
