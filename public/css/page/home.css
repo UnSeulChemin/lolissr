@@ -2,6 +2,7 @@
    PAGE : HOME
 ========================================= */
 
+
 /* =========================================
    SECTION TITLE
 ========================================= */
@@ -9,7 +10,7 @@
 .home-section-title
 {
     width: 100%;
-    margin: 40px 0;
+    margin: 34px 0 24px;
     padding: 12px 18px;
 
     color: var(--color-violet);
@@ -20,7 +21,12 @@
     border: 1px solid var(--color-violet-soft);
     border-radius: var(--radius-input);
 
-    background: linear-gradient(180deg, var(--color-violet-soft), rgba(123, 44, 255, 0.05));
+    background: linear-gradient(
+        180deg,
+        var(--color-violet-soft),
+        rgba(123, 44, 255, 0.05)
+    );
+
     box-shadow: 0 6px 18px rgba(123, 44, 255, 0.06);
 }
 
@@ -131,6 +137,7 @@
     margin: 0;
 
     font-size: 1rem;
+    text-align: center;
 }
 
 
@@ -285,6 +292,11 @@
     border: 1px solid var(--color-gold-border);
     border-radius: var(--radius-pill);
 
-    background: linear-gradient(135deg, var(--color-gold-soft), var(--color-gold-soft-2));
+    background: linear-gradient(
+        135deg,
+        var(--color-gold-soft),
+        var(--color-gold-soft-2)
+    );
+
     box-shadow: 0 3px 8px var(--color-gold-shadow);
 }
