@@ -81,12 +81,13 @@ select
     outline: none;
 }
 
-a:focus-visible,
+/* Focus global sur éléments standards seulement */
 button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible,
-.form-submit:focus-visible
+.form-submit:focus-visible,
+.collection-pagination-link:focus-visible
 {
     box-shadow:
         0 0 0 3px rgba(123, 44, 255, 0.16),
@@ -105,7 +106,12 @@ textarea:focus-visible
    FOCUS ANIMATION
 ========================================= */
 
-:focus-visible
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+.form-submit:focus-visible,
+.collection-pagination-link:focus-visible
 {
     animation: focusPulse 0.25s ease;
 }
