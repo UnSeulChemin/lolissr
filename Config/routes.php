@@ -28,6 +28,7 @@ return function ($router)
 
     /* Recherche */
     $router->get('/manga/recherche', 'MangaController@recherche');
+    $router->get('/manga/recherche/{query}', 'MangaController@recherche');
 
     /* Série */
     $router->get('/manga/serie/{slug}', 'MangaController@serie');
@@ -56,7 +57,6 @@ return function ($router)
     */
 
     $router->post('/manga/ajouter', 'MangaController@ajouterTraitement');
-
     $router->post('/manga/update/{slug}/{numero}', 'MangaController@update');
 
 

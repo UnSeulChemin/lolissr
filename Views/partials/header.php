@@ -33,7 +33,13 @@ $activeManga = (
     : '';
 
 /* Garde la recherche si présente */
-$currentSearch = $_GET['q'] ?? '';
+$currentSearch = '';
+
+if (str_starts_with($currentPath, '/manga/recherche/'))
+{
+    $searchSlug = substr($currentPath, strlen('/manga/recherche/'));
+    $currentSearch = str_replace('-', ' ', urldecode($searchSlug));
+}
 
 ?>
 
@@ -77,8 +83,7 @@ $currentSearch = $_GET['q'] ?? '';
         <!-- RECHERCHE -->
         <form
             class="header-search"
-            action="<?= $basePath ?>manga/recherche"
-            method="get">
+            onsubmit="return redirectSearch(event)">
 
             <input
                 type="search"
@@ -99,3 +104,42 @@ $currentSearch = $_GET['q'] ?? '';
 
     </nav>
 </header>
+
+<script>
+function redirectSearch(event)
+{
+    event.preventDefault();
+
+    const input = event.target.querySelector('input[name="q"]');
+
+    if (!input)
+    {
+        return false;
+    }
+
+    let value = input.value.trim();
+
+    if (value === '')
+    {
+        return false;
+    }
+
+    value = value
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9\s\-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/\-+/g, '-')
+        .replace(/^\-+|\-+$/g, '');
+
+    if (value === '')
+    {
+        return false;
+    }
+
+    window.location.href = "<?= $basePath ?>manga/recherche/" + encodeURIComponent(value);
+
+    return false;
+}
+</script>

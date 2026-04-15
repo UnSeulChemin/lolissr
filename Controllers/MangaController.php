@@ -89,11 +89,11 @@ class MangaController extends Controller
 
     /**
      * Recherche manga.
-     * Route : /manga/recherche
+     * Route : /manga/recherche/{query}
      */
-    public function recherche(): void
+    public function recherche(string $query = ''): void
     {
-        $search = trim((string) ($_GET['q'] ?? ''));
+        $search = trim(str_replace('-', ' ', urldecode($query)));
 
         $this->title = 'Manga | Recherche';
 
