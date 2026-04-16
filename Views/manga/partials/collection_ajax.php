@@ -43,14 +43,8 @@ $currentPage = $currentPage ?? 1;
             class="card card-link collection-card-link"
             href="<?= $href; ?>">
 
-            <?php if (!$isCollection): ?>
-                <span class="collection-card-badge collection-card-badge-count">
-                    📚 <?= (int) $manga->total; ?>
-                </span>
-            <?php endif; ?>
-
             <?php if ($isCollection && $manga->note !== null): ?>
-                <span class="collection-card-badge collection-card-badge-note <?= $noteClass; ?>">
+                <span class="collection-card-badge <?= $noteClass; ?>">
                     ⭐ <?= (int) $manga->note; ?>/10
                 </span>
             <?php endif; ?>

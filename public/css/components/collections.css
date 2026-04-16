@@ -28,7 +28,7 @@
     min-height: var(--height-collection-card);
 
     justify-content: flex-start;
-    padding: 58px 16px 18px;
+    padding: 44px 16px 18px;
 
     border: 1px solid transparent;
     border-radius: var(--radius-card-lg);
@@ -44,7 +44,7 @@
 
 .collection-card-link .card-image-box-portrait
 {
-    margin: 8px 0 14px;
+    margin: 16px 0 14px;
 }
 
 
@@ -87,13 +87,15 @@
 
 
 /* =========================================
-   BADGES
+   BADGE NOTE
 ========================================= */
 
 .collection-card-badge
 {
     position: absolute;
-    z-index: 3;
+    top: var(--offset-card-corner);
+    right: var(--offset-card-corner);
+    z-index: 2;
 
     display: inline-flex;
     align-items: center;
@@ -107,42 +109,11 @@
     font-size: 0.75rem;
     font-weight: 800;
     line-height: 1;
+    white-space: nowrap;
 
     border-radius: var(--radius-pill);
-}
-
-
-/* COUNT — violet */
-
-.collection-card-badge-count
-{
-    top: var(--offset-card-corner);
-    left: var(--offset-card-corner);
-
-    color: #ffffff;
-
-    border: 1px solid #5e2dd8;
-
-    background: linear-gradient(
-        135deg,
-        #7b2cff,
-        #9150ff
-    );
-
-    box-shadow:
-        0 3px 8px rgba(123, 44, 255, 0.16);
-}
-
-
-/* NOTE — gold */
-
-.collection-card-badge-note
-{
-    top: var(--offset-card-corner);
-    right: var(--offset-card-corner);
 
     color: var(--color-gold-text);
-
     border: 1px solid var(--color-gold-border);
 
     background: linear-gradient(
@@ -151,47 +122,43 @@
         var(--color-gold-soft-2)
     );
 
-    box-shadow:
-        0 3px 8px var(--color-gold-shadow);
+    box-shadow: 0 3px 8px var(--color-gold-shadow);
 }
 
 .collection-note-mid
 {
     color: #ffffff;
-    border: 1px solid rgba(88, 39, 196, 0.55);
+    border-color: rgba(88, 39, 196, 0.55);
     background: linear-gradient(
         135deg,
         #7b2cff,
         #9150ff
     );
     box-shadow: 0 3px 8px rgba(123, 44, 255, 0.16);
-    text-shadow: none;
 }
 
 .collection-note-low
 {
     color: var(--color-gold-text);
-    border: 1px solid var(--color-gold-border);
+    border-color: var(--color-gold-border);
     background: linear-gradient(
         135deg,
         var(--color-gold-soft),
         var(--color-gold-soft-2)
     );
     box-shadow: 0 3px 8px var(--color-gold-shadow);
-    text-shadow: none;
 }
 
 .collection-note-good
 {
     color: #ffffff;
-    border: 1px solid #cc2e2e;
+    border-color: #cc2e2e;
     background: linear-gradient(
         135deg,
         #ff4a4a,
         #ff7a7a
     );
     box-shadow: 0 3px 8px rgba(255, 74, 74, 0.18);
-    text-shadow: none;
 }
 
 
@@ -335,6 +302,8 @@
     box-shadow: 0 8px 22px rgba(0, 0, 0, 0.04);
 
     box-sizing: border-box;
+    padding: 44px 16px 18px;
+    margin-bottom: 2px;
 }
 
 .collection-skeleton-image,

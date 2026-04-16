@@ -47,6 +47,12 @@ $currentPage = $currentPage ?? 1;
                     class="card card-link collection-card-link"
                     href="<?= $href; ?>">
 
+                    <?php if ($isCollection && $manga->note !== null): ?>
+                        <span class="collection-card-badge <?= $noteClass; ?>">
+                            ⭐ <?= (int) $manga->note; ?>/10
+                        </span>
+                    <?php endif; ?>
+
                     <div class="card-image-box-portrait">
                         <img
                             class="card-image-portrait"
@@ -66,16 +72,6 @@ $currentPage = $currentPage ?? 1;
                         <p class="collection-card-subtitle">
                             <?= (int) $manga->total; ?> tomes
                         </p>
-
-                        <span class="collection-card-badge collection-card-badge-count">
-                            📚 <?= (int) $manga->total; ?>
-                        </span>
-                    <?php endif; ?>
-
-                    <?php if ($isCollection && $manga->note !== null): ?>
-                        <span class="collection-card-badge collection-card-badge-note <?= $noteClass; ?>">
-                            ⭐ <?= (int) $manga->note; ?>/10
-                        </span>
                     <?php endif; ?>
 
                 </a>
