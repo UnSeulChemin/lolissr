@@ -14,8 +14,7 @@ export function initCollectionKeyboardNavigation()
 
     function getCards()
     {
-        const container =
-            document.querySelector('.collection-grid');
+        const container = document.querySelector('.collection-grid');
 
         if (!container)
         {
@@ -24,6 +23,43 @@ export function initCollectionKeyboardNavigation()
 
         return Array.from(
             container.querySelectorAll('.collection-card-link')
+        );
+    }
+
+    function getColumns()
+    {
+        const cards = getCards();
+
+        if (cards.length === 0)
+        {
+            return 1;
+        }
+
+        const firstTop = cards[0].offsetTop;
+        let columns = 0;
+
+        for (const card of cards)
+        {
+            if (card.offsetTop !== firstTop)
+            {
+                break;
+            }
+
+            columns++;
+        }
+
+        return columns || 1;
+    }
+
+    function isTypingContext(target)
+    {
+        const tag = target.tagName?.toLowerCase();
+
+        return (
+            tag === 'input'
+            || tag === 'textarea'
+            || tag === 'select'
+            || target.isContentEditable
         );
     }
 
@@ -46,12 +82,11 @@ export function initCollectionKeyboardNavigation()
 
         const activeCard = cards[activeIndex];
 
-        activeCard.focus(); // ⭐ important
+        activeCard.focus();
 
         preloadUrl(activeCard.href);
 
-        const image =
-            activeCard.querySelector('.card-image-portrait');
+        const image = activeCard.querySelector('.card-image-portrait');
 
         if (image)
         {
@@ -63,37 +98,30 @@ export function initCollectionKeyboardNavigation()
     {
         const cards = getCards();
 
-        if (activeIndex < 0)
+        if (activeIndex < 0 || !cards[activeIndex])
         {
             return;
         }
 
-        const card = cards[activeIndex];
-
-        if (!card)
-        {
-            return;
-        }
-
-        window.location.href = card.href;
+        window.location.href = cards[activeIndex].href;
     }
 
     function resetActive()
     {
+        const cards = getCards();
+
         activeIndex = -1;
 
-        getCards().forEach((card) =>
+        cards.forEach((card) =>
         {
             card.classList.remove('is-active');
+            card.blur();
         });
     }
 
-    // 🎯 Si tu cliques une carte → elle devient active
-
     document.addEventListener('click', (event) =>
     {
-        const card =
-            event.target.closest('.collection-card-link');
+        const card = event.target.closest('.collection-card-link');
 
         if (!card)
         {
@@ -110,10 +138,13 @@ export function initCollectionKeyboardNavigation()
         }
     });
 
-    // 🎯 Navigation clavier
-
     document.addEventListener('keydown', (event) =>
     {
+        if (isTypingContext(event.target))
+        {
+            return;
+        }
+
         const cards = getCards();
 
         if (cards.length === 0)
@@ -121,73 +152,110 @@ export function initCollectionKeyboardNavigation()
             return;
         }
 
-        // TAB = flèche droite
-
         if (event.key === 'Tab')
         {
             event.preventDefault();
 
-            if (event.shiftKey)
+            if (activeIndex === -1)
             {
-                // SHIFT+TAB = gauche
-
-                activeIndex =
-                    activeIndex > 0
-                        ? activeIndex - 1
-                        : cards.length - 1;
+                activeIndex = 0;
+            }
+            else if (event.shiftKey)
+            {
+                activeIndex = activeIndex > 0
+                    ? activeIndex - 1
+                    : cards.length - 1;
             }
             else
             {
-                // TAB = droite
-
-                activeIndex =
-                    activeIndex < cards.length - 1
-                        ? activeIndex + 1
-                        : 0;
+                activeIndex = activeIndex < cards.length - 1
+                    ? activeIndex + 1
+                    : 0;
             }
 
             updateActive();
             return;
         }
 
-        // flèches classiques
-
         if (event.key === 'ArrowRight')
         {
             event.preventDefault();
 
-            activeIndex =
-                activeIndex < cards.length - 1
-                    ? activeIndex + 1
-                    : 0;
+            activeIndex = activeIndex < cards.length - 1
+                ? activeIndex + 1
+                : 0;
 
             updateActive();
+            return;
         }
 
         if (event.key === 'ArrowLeft')
         {
             event.preventDefault();
 
-            activeIndex =
-                activeIndex > 0
-                    ? activeIndex - 1
-                    : cards.length - 1;
+            activeIndex = activeIndex > 0
+                ? activeIndex - 1
+                : cards.length - 1;
 
             updateActive();
+            return;
+        }
+
+        if (event.key === 'ArrowDown')
+        {
+            event.preventDefault();
+
+            const columns = getColumns();
+
+            if (activeIndex === -1)
+            {
+                activeIndex = 0;
+            }
+            else
+            {
+                activeIndex = activeIndex + columns < cards.length
+                    ? activeIndex + columns
+                    : cards.length - 1;
+            }
+
+            updateActive();
+            return;
+        }
+
+        if (event.key === 'ArrowUp')
+        {
+            event.preventDefault();
+
+            const columns = getColumns();
+
+            if (activeIndex === -1)
+            {
+                activeIndex = 0;
+            }
+            else
+            {
+                activeIndex = activeIndex - columns >= 0
+                    ? activeIndex - columns
+                    : 0;
+            }
+
+            updateActive();
+            return;
         }
 
         if (event.key === 'Enter')
         {
             event.preventDefault();
             openCard();
+            return;
         }
 
         if (event.key === 'Escape')
         {
+            event.preventDefault();
             resetActive();
+            return;
         }
-
-        // ⬅️ BACKSPACE = retour
 
         if (event.key === 'Backspace')
         {
