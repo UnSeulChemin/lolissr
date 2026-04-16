@@ -1,11 +1,11 @@
-import { initPaginationAjax } from './pagination.js';
-import { initAjaxNotes } from './notes.js';
-import { initAutoSlug } from './slug.js';
-import { showToast } from './toast.js';
-import { initCardPrefetch } from './prefetch.js';
-import { initLiveSearch } from './search.js';
-import { initCollectionKeyboardNavigation } from './collection_keyboard.js';
-import { initLinkPreloading } from './preload-links.js';
+import { initPaginationAjax } from './features/pagination.js';
+import { initAjaxNotes } from './features/notes.js';
+import { initAutoSlug } from './features/slug.js';
+import { showToast } from './core/toast.js';
+import { initCardPrefetch } from './features/prefetch.js';
+import { initLiveSearch } from './features/search.js';
+import { initCollectionKeyboardNavigation } from './features/collection_keyboard.js';
+import { initLinkPreloading } from './features/preload-links.js';
 
 document.addEventListener('DOMContentLoaded', () =>
 {
@@ -17,6 +17,5 @@ document.addEventListener('DOMContentLoaded', () =>
     initCollectionKeyboardNavigation();
     initLinkPreloading();
 
-    // Rend showToast accessible globalement
     window.showToast = showToast;
 });
