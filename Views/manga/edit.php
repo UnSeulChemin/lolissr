@@ -4,8 +4,6 @@ use App\Core\Session;
 
 $errors = Session::get('errors', []);
 $old = Session::get('old', []);
-$error = Session::pull('error');
-$success = Session::pull('success');
 
 $jacquetteValue = $old['jacquette'] ?? ($manga->jacquette ?? '');
 $livreNoteValue = $old['livre_note'] ?? ($manga->livre_note ?? '');
@@ -20,18 +18,6 @@ $cancelUrl = $basePath . 'manga/' . rawurlencode($manga->slug) . '/' . (int) $ma
     <section class="form-page animate-fade-up">
 
         <section class="form-card">
-
-            <?php if (!empty($error)): ?>
-                <div class="alert alert-error">
-                    <?= htmlspecialchars($error) ?>
-                </div>
-            <?php endif; ?>
-
-            <?php if (!empty($success)): ?>
-                <div class="alert alert-success">
-                    <?= htmlspecialchars($success) ?>
-                </div>
-            <?php endif; ?>
 
             <form
                 class="form-layout"

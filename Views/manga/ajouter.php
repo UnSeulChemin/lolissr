@@ -4,8 +4,6 @@ use App\Core\Session;
 
 $errors = Session::get('errors', []);
 $old = Session::get('old', []);
-$error = Session::pull('error');
-$success = Session::pull('success');
 
 ?>
 
@@ -14,18 +12,6 @@ $success = Session::pull('success');
     <section class="form-page animate-fade-up">
 
         <section class="form-card">
-
-            <?php if (!empty($error)): ?>
-                <div class="alert alert-error">
-                    <?= htmlspecialchars($error) ?>
-                </div>
-            <?php endif; ?>
-
-            <?php if (!empty($success)): ?>
-                <div class="alert alert-success">
-                    <?= htmlspecialchars($success) ?>
-                </div>
-            <?php endif; ?>
 
             <form
                 class="form-layout"
@@ -187,7 +173,6 @@ $success = Session::pull('success');
 <?php Session::forget(['errors', 'old']); ?>
 
 <script>
-
 const livreInput = document.getElementById('livre');
 const slugInput = document.getElementById('slug');
 const imageInput = document.getElementById('image');
@@ -223,5 +208,4 @@ if (imageInput && uploadText)
         }
     });
 }
-
 </script>

@@ -31,5 +31,37 @@
 
     <script type="module" src="<?= $basePath ?>public/js/app.js"></script>
 
+    <?php if (!empty($_SESSION['success'])): ?>
+        <script>
+            document.addEventListener('DOMContentLoaded', () =>
+            {
+                if (window.showToast)
+                {
+                    window.showToast(
+                        <?= json_encode($_SESSION['success']) ?>,
+                        'success'
+                    );
+                }
+            });
+        </script>
+        <?php unset($_SESSION['success']); ?>
+    <?php endif; ?>
+
+    <?php if (!empty($_SESSION['error'])): ?>
+        <script>
+            document.addEventListener('DOMContentLoaded', () =>
+            {
+                if (window.showToast)
+                {
+                    window.showToast(
+                        <?= json_encode($_SESSION['error']) ?>,
+                        'error'
+                    );
+                }
+            });
+        </script>
+        <?php unset($_SESSION['error']); ?>
+    <?php endif; ?>
+
 </body>
 </html>
