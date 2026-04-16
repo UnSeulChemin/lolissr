@@ -73,23 +73,23 @@
 
 .home-grid-top .card
 {
-    min-height: 305px;
-    padding: 22px 28px 20px;
+    min-height: 297px;
+    padding: 20px 28px 18px;
 
     justify-content: flex-start;
     align-items: stretch;
-    gap: 18px;
+    gap: 16px;
 }
 
 .home-grid-top .card-wide
 {
-    min-height: 305px;
+    min-height: 297px;
 }
 
 .home-grid-top .card-medium
 {
     width: 100%;
-    min-height: 305px;
+    min-height: 297px;
 }
 
 .home-grid-top .home-card-title
@@ -107,10 +107,10 @@
 .home-grid-stats .card
 {
     width: 100%;
-    min-height: 205px;
+    min-height: 198px;
 
     justify-content: center;
-    gap: 12px;
+    gap: 10px;
 }
 
 .home-grid-stats .home-card-title
