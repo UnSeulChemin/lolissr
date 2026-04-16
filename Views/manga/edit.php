@@ -15,7 +15,7 @@ $cancelUrl = $basePath . 'manga/' . rawurlencode($manga->slug) . '/' . (int) $ma
 
 ?>
 
-<section class="layout-container">
+<section class="layout-container dashboard-page">
 
     <section class="form-page animate-fade-up">
 
