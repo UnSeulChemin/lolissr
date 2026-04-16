@@ -1,29 +1,81 @@
 import { preloadUrl, preloadImage } from './prefetch.js';
 
+let keyboardInitialized = false;
+let activeIndex = -1;
+
 export function initCollectionKeyboardNavigation()
 {
-    const container = document.querySelector('.collection-grid');
-
-    if (!container)
+    if (keyboardInitialized)
     {
         return;
     }
 
-    let activeIndex = -1;
+    keyboardInitialized = true;
 
     function getCards()
     {
+        const container =
+            document.querySelector('.collection-grid');
+
+        if (!container)
+        {
+            return [];
+        }
+
         return Array.from(
-            container.querySelectorAll('.collection-card')
+            container.querySelectorAll('.collection-card-link')
         );
     }
 
-    function getColumns()
+    function updateActive()
     {
-        const style = getComputedStyle(container);
-        const columns = style.gridTemplateColumns.split(' ').length;
+        const cards = getCards();
 
-        return columns || 4;
+        cards.forEach((card, index) =>
+        {
+            card.classList.toggle(
+                'is-active',
+                index === activeIndex
+            );
+        });
+
+        if (activeIndex < 0 || !cards[activeIndex])
+        {
+            return;
+        }
+
+        const activeCard = cards[activeIndex];
+
+        activeCard.focus(); // ⭐ important
+
+        preloadUrl(activeCard.href);
+
+        const image =
+            activeCard.querySelector('.card-image-portrait');
+
+        if (image)
+        {
+            preloadImage(image.src);
+        }
+    }
+
+    function openCard()
+    {
+        const cards = getCards();
+
+        if (activeIndex < 0)
+        {
+            return;
+        }
+
+        const card = cards[activeIndex];
+
+        if (!card)
+        {
+            return;
+        }
+
+        window.location.href = card.href;
     }
 
     function resetActive()
@@ -36,77 +88,32 @@ export function initCollectionKeyboardNavigation()
         });
     }
 
-    function updateActive()
+    // 🎯 Si tu cliques une carte → elle devient active
+
+    document.addEventListener('click', (event) =>
     {
-        const cards = getCards();
+        const card =
+            event.target.closest('.collection-card-link');
 
-        cards.forEach((card, index) =>
-        {
-            card.classList.toggle('is-active', index === activeIndex);
-        });
-
-        if (activeIndex >= 0 && cards[activeIndex])
-        {
-            cards[activeIndex].scrollIntoView({
-                block: 'nearest'
-            });
-
-            const activeCard = cards[activeIndex];
-            const activeLink = activeCard.closest('.collection-card-link')
-                || activeCard.parentElement;
-
-            if (activeLink && activeLink.classList.contains('collection-card-link'))
-            {
-                preloadUrl(activeLink.href);
-
-                const image = activeLink.querySelector('.card-image');
-
-                if (image)
-                {
-                    preloadImage(image.src);
-                }
-            }
-        }
-    }
-
-    function openCard()
-    {
-        const cards = getCards();
-
-        if (activeIndex < 0 || !cards[activeIndex])
+        if (!card)
         {
             return;
         }
 
-        const activeCard = cards[activeIndex];
-        const link = activeCard.closest('.collection-card-link')
-            || activeCard.parentElement;
+        const cards = getCards();
+        const index = cards.indexOf(card);
 
-        if (link && link.classList.contains('collection-card-link'))
+        if (index !== -1)
         {
-            window.location.href = link.href;
+            activeIndex = index;
+            updateActive();
         }
-    }
+    });
 
-    function isTypingContext(target)
-    {
-        const tag = target.tagName?.toLowerCase();
-
-        return (
-            tag === 'input'
-            || tag === 'textarea'
-            || tag === 'select'
-            || target.isContentEditable
-        );
-    }
+    // 🎯 Navigation clavier
 
     document.addEventListener('keydown', (event) =>
     {
-        if (isTypingContext(event.target))
-        {
-            return;
-        }
-
         const cards = getCards();
 
         if (cards.length === 0)
@@ -114,15 +121,45 @@ export function initCollectionKeyboardNavigation()
             return;
         }
 
-        const columns = getColumns();
+        // TAB = flèche droite
+
+        if (event.key === 'Tab')
+        {
+            event.preventDefault();
+
+            if (event.shiftKey)
+            {
+                // SHIFT+TAB = gauche
+
+                activeIndex =
+                    activeIndex > 0
+                        ? activeIndex - 1
+                        : cards.length - 1;
+            }
+            else
+            {
+                // TAB = droite
+
+                activeIndex =
+                    activeIndex < cards.length - 1
+                        ? activeIndex + 1
+                        : 0;
+            }
+
+            updateActive();
+            return;
+        }
+
+        // flèches classiques
 
         if (event.key === 'ArrowRight')
         {
             event.preventDefault();
 
-            activeIndex = activeIndex < cards.length - 1
-                ? activeIndex + 1
-                : 0;
+            activeIndex =
+                activeIndex < cards.length - 1
+                    ? activeIndex + 1
+                    : 0;
 
             updateActive();
         }
@@ -131,36 +168,10 @@ export function initCollectionKeyboardNavigation()
         {
             event.preventDefault();
 
-            activeIndex = activeIndex > 0
-                ? activeIndex - 1
-                : cards.length - 1;
-
-            updateActive();
-        }
-
-        if (event.key === 'ArrowDown')
-        {
-            event.preventDefault();
-
-            activeIndex = activeIndex + columns < cards.length
-                ? activeIndex + columns
-                : activeIndex % columns;
-
-            updateActive();
-        }
-
-        if (event.key === 'ArrowUp')
-        {
-            event.preventDefault();
-
-            activeIndex = activeIndex - columns >= 0
-                ? activeIndex - columns
-                : cards.length - (columns - (activeIndex % columns));
-
-            if (activeIndex >= cards.length)
-            {
-                activeIndex = cards.length - 1;
-            }
+            activeIndex =
+                activeIndex > 0
+                    ? activeIndex - 1
+                    : cards.length - 1;
 
             updateActive();
         }
@@ -174,6 +185,27 @@ export function initCollectionKeyboardNavigation()
         if (event.key === 'Escape')
         {
             resetActive();
+        }
+
+        // ⬅️ BACKSPACE = retour
+
+        if (event.key === 'Backspace')
+        {
+            event.preventDefault();
+
+            const backButton =
+                document.querySelector('.collection-back-button');
+
+            if (backButton)
+            {
+                window.location.href = backButton.href;
+            }
+            else
+            {
+                window.history.back();
+            }
+
+            return;
         }
     });
 }

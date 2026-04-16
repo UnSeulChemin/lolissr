@@ -202,7 +202,12 @@
         box-shadow var(--transition-fast);
 }
 
-.collection-pagination-link:hover
+/* =========================================
+   COLLECTION PAGINATION STATES
+========================================= */
+
+.collection-pagination-link:hover,
+.collection-pagination-link:focus-visible
 {
     transform: translateY(-2px);
     border-color: rgba(123, 44, 255, 0.25);
