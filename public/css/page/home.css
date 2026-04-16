@@ -130,6 +130,28 @@
 
 
 /* =========================================
+   WATCH CARDS
+========================================= */
+
+.home-grid-stats .card-link.card-medium
+{
+    min-height: 310px;
+    padding: 20px 28px 18px;
+
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 16px;
+}
+
+.home-grid-stats .card-link.card-medium .home-card-title
+{
+    margin: 0;
+    font-size: 1.02rem;
+    text-align: center;
+}
+
+
+/* =========================================
    TYPO
 ========================================= */
 
@@ -166,7 +188,7 @@
 
 
 /* =========================================
-   LONGEST / LAST
+   TOP CONTENT
 ========================================= */
 
 .home-longest-content,
@@ -178,23 +200,6 @@
     width: 100%;
     flex: 1;
 }
-
-/* Bloc gauche */
-
-
-
-.home-longest-info
-{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 8px;
-
-    width: var(--width-home-longest-info);
-    text-align: left;
-}
-
 
 .home-longest-content
 {
@@ -232,6 +237,18 @@
     overflow: hidden;
 }
 
+.home-longest-info
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 8px;
+
+    width: var(--width-home-longest-info);
+    text-align: left;
+}
+
 .home-last-info
 {
     display: flex;
@@ -244,18 +261,20 @@
     text-align: left;
 }
 
-/* Cartes de surveillance */
+
+/* =========================================
+   WATCH CONTENT
+========================================= */
 
 .home-grid-stats .card-link .home-last-content
 {
     display: grid;
-    grid-template-columns: 135px 1fr;
+    grid-template-columns: var(--width-image-portrait) var(--width-home-last-info);
     justify-content: center;
     align-items: center;
-    column-gap: var(--gap-home-watch-content);
+    column-gap: var(--gap-home-last-content);
 
-    width: 100%;
-    max-width: var(--width-home-watch-content);
+    width: fit-content;
     margin: 0 auto;
 }
 
@@ -272,30 +291,28 @@
     align-items: flex-start;
     gap: 6px;
 
-    min-width: 0;
+    width: var(--width-home-last-info);
     text-align: left;
 }
 
 
 /* =========================================
-   TEXT TOP
+   TOP TEXT
 ========================================= */
 
 .home-longest-name,
 .home-last-name
 {
+    width: 100%;
     margin: 0;
 
-    font-size: 1.15rem;
-    font-weight: 700;
-    line-height: 1.2;
-
-    /* 🔥 ellipsis */
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
 
-    width: 100%;
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1.2;
 }
 
 .home-longest-count,
@@ -361,7 +378,6 @@
 
     display: block;
     width: 100%;
-
     margin: 0 0 6px;
 
     overflow: hidden;
@@ -397,7 +413,7 @@
 
 
 /* =========================================
-   TOP SERIES RANK
+   BADGES / RANK
 ========================================= */
 
 .home-series-rank
@@ -412,11 +428,6 @@
     font-size: var(--font-size-base);
     font-weight: 800;
 }
-
-
-/* =========================================
-   NOTE BADGE
-========================================= */
 
 .home-note-badge
 {

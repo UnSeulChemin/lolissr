@@ -160,9 +160,11 @@
 
     <section class="home-grid home-grid-stats card-grid-3 animate-fade-up-stagger">
 
-        <?php $lowGlobal = $lowRatedMangas[0] ?? null; ?>
-        <?php $lowJacquette = $lowJacquetteMangas[0] ?? null; ?>
-        <?php $lowLivre = $lowLivreStateMangas[0] ?? null; ?>
+        <?php
+        $lowGlobal = $lowRatedMangas[0] ?? null;
+        $lowJacquette = $lowJacquetteMangas[0] ?? null;
+        $lowLivre = $lowLivreStateMangas[0] ?? null;
+        ?>
 
         <?php if ($lowGlobal): ?>
             <a
