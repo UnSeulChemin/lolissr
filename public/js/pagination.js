@@ -2,19 +2,7 @@ import { showToast } from './toast.js';
 
 const paginationCache = new Map();
 
-function getPaginationScrollTarget(container)
-{
-    const grid = container.querySelector('.collection-grid');
-
-    if (!grid)
-    {
-        return 0;
-    }
-
-    return grid.getBoundingClientRect().top + window.scrollY - 24;
-}
-
-function scrollToPaginationTarget(targetTop)
+function scrollToPaginationTop()
 {
     window.scrollTo({
         top: 0,
@@ -43,6 +31,7 @@ async function preloadPage(url)
         }
 
         const html = await response.text();
+
         paginationCache.set(url, html);
     }
     catch (error)
@@ -57,6 +46,30 @@ function buildAjaxUrl(link)
         '/manga/collection/page/',
         '/manga/collection-ajax/page/'
     );
+}
+
+function preloadNextPaginationLink(container)
+{
+    const activeLink = container.querySelector('.collection-pagination-link.active');
+
+    if (!activeLink)
+    {
+        return;
+    }
+
+    const nextLink = activeLink.nextElementSibling;
+
+    if (!nextLink)
+    {
+        return;
+    }
+
+    if (!nextLink.classList.contains('collection-pagination-link'))
+    {
+        return;
+    }
+
+    preloadPage(buildAjaxUrl(nextLink));
 }
 
 async function fetchPaginationHtml(ajaxUrl)
@@ -95,13 +108,13 @@ async function loadPaginationContent(ajaxUrl, container, fallbackUrl, errorMessa
 
         container.innerHTML = html;
 
+        preloadNextPaginationLink(container);
+
         if (shouldScroll)
         {
-            const targetTop = getPaginationScrollTarget(container);
-
             requestAnimationFrame(() =>
             {
-                scrollToPaginationTarget(targetTop);
+                scrollToPaginationTop();
             });
         }
     }
@@ -189,7 +202,7 @@ export function initPaginationAjax()
             return;
         }
 
-        const match = window.location.pathname.match(/\/manga\/collection\/page\/(\d+)$/);
+        const match = window.location.pathname.match(/\/\/?manga\/collection\/page\/(\d+)$/);
 
         if (!match)
         {
@@ -211,4 +224,11 @@ export function initPaginationAjax()
             true
         );
     });
+
+    const container = document.querySelector('.collection-ajax-container');
+
+    if (container)
+    {
+        preloadNextPaginationLink(container);
+    }
 }

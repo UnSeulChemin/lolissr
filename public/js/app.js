@@ -5,6 +5,7 @@ import { showToast } from './toast.js';
 import { initCardPrefetch } from './prefetch.js';
 import { initLiveSearch } from './search.js';
 import { initCollectionKeyboardNavigation } from './collection_keyboard.js';
+import { initLinkPreloading } from './preload-links.js';
 
 document.addEventListener('DOMContentLoaded', () =>
 {
@@ -14,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () =>
     initCardPrefetch();
     initLiveSearch();
     initCollectionKeyboardNavigation();
+    initLinkPreloading();
 
     // Rend showToast accessible globalement
     window.showToast = showToast;
