@@ -10,7 +10,7 @@
 .home-section-title
 {
     width: 100%;
-    margin: 50px 0 50px;
+    margin: 50px 0;
     padding: 12px 18px;
 
     color: var(--color-violet);
@@ -73,7 +73,7 @@
 
 .home-grid-top .card
 {
-    min-height: 297px;
+    min-height: 310px;
     padding: 20px 28px 18px;
 
     justify-content: flex-start;
@@ -83,13 +83,13 @@
 
 .home-grid-top .card-wide
 {
-    min-height: 297px;
+    min-height: 310px;
 }
 
 .home-grid-top .card-medium
 {
     width: 100%;
-    min-height: 297px;
+    min-height: 310px;
 }
 
 .home-grid-top .home-card-title
@@ -107,7 +107,7 @@
 .home-grid-stats .card
 {
     width: 100%;
-    min-height: 198px;
+    min-height: 215px;
 
     justify-content: center;
     gap: 10px;
@@ -139,7 +139,6 @@
     z-index: 1;
 
     margin: 0 0 8px;
-
     font-size: 1rem;
     font-weight: 700;
 }
@@ -150,7 +149,6 @@
     z-index: 1;
 
     margin: 0;
-
     font-size: 2.1rem;
     font-weight: 700;
     line-height: 1.1;
@@ -162,7 +160,6 @@
     z-index: 1;
 
     margin: 0;
-
     font-size: 1rem;
     text-align: center;
 }
@@ -182,7 +179,7 @@
     flex: 1;
 }
 
-/* ---------- Bloc gauche ---------- */
+/* Bloc gauche */
 
 .home-longest-content
 {
@@ -198,8 +195,6 @@
 
 .home-longest-content .home-top-image-box
 {
-    width: 180px;
-    height: 255px;
     margin: 0;
 }
 
@@ -215,25 +210,23 @@
     text-align: left;
 }
 
-/* ---------- Bloc droit ---------- */
+/* Bloc droit */
 
 .home-last-content
 {
     display: grid;
-    grid-template-columns: 130px 1fr;
+    grid-template-columns: 150px 1fr;
     justify-content: center;
     align-items: center;
-    column-gap: 22px;
+    column-gap: 26px;
 
     width: 100%;
-    max-width: 235px;
+    max-width: 265px;
     margin: 0 auto;
 }
 
 .home-last-content .home-top-image-box
 {
-    width: 130px;
-    height: 190px;
     margin: 0;
 }
 
@@ -249,8 +242,7 @@
     text-align: left;
 }
 
-
-/* ---------- Cartes de surveillance ---------- */
+/* Cartes de surveillance */
 
 .home-grid-stats .card-link .home-last-content
 {
@@ -267,8 +259,6 @@
 
 .home-grid-stats .card-link .home-top-image-box
 {
-    width: 135px;
-    height: 198px;
     margin: 0;
 }
 
@@ -293,7 +283,6 @@
 .home-last-name
 {
     margin: 0;
-
     font-size: 1.15rem;
     font-weight: 700;
     line-height: 1.2;
@@ -303,7 +292,6 @@
 .home-last-volume
 {
     margin: 0;
-
     font-size: 1rem;
     line-height: 1.35;
 }
@@ -324,8 +312,7 @@
 .home-best-list,
 .home-series-top
 {
-    margin-top: 0;
-    margin-bottom: 0;
+    margin: 0;
 }
 
 
@@ -367,17 +354,19 @@
     text-align: center;
 }
 
-.home-series-top .card-bottom
+.home-series-top .card-bottom,
+.home-best-list .card-bottom
 {
-    min-height: 420px;
+    min-height: 455px;
     padding: 34px 16px 20px;
 
     justify-content: flex-start;
 }
 
-.home-series-top .card-bottom .card-image-box-portrait
+.home-series-top .card-bottom .card-image-box-portrait,
+.home-best-list .card-bottom .card-image-box-portrait
 {
-    margin: 12px 0 10px;
+    margin: 14px auto 12px;
 }
 
 .home-bottom-subtitle-strong
