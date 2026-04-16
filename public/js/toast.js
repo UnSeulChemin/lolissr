@@ -7,27 +7,33 @@ export function showToast(
 
     if (!toast)
     {
+        console.warn('Toast introuvable (#toast)');
         return;
     }
 
-    // Reset classes
     toast.classList.remove(
         'toast-success',
-        'toast-error'
+        'toast-error',
+        'show'
     );
 
-    // Applique type
-    toast.classList.add(
+    const classType =
         type === 'error'
             ? 'toast-error'
-            : 'toast-success'
-    );
+            : 'toast-success';
+
+    toast.classList.add(classType);
 
     toast.textContent = message;
 
+    toast.offsetHeight;
+
     toast.classList.add('show');
 
-    clearTimeout(window.__toastTimeout);
+    if (window.__toastTimeout)
+    {
+        clearTimeout(window.__toastTimeout);
+    }
 
     window.__toastTimeout = setTimeout(() =>
     {

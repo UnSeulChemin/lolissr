@@ -147,17 +147,13 @@ $old = Session::get('old', []);
                     <button
                         type="submit"
                         class="form-submit">
-
                         Ajouter
-
                     </button>
 
                     <a
                         class="form-submit form-submit-secondary"
                         href="<?= $basePath; ?>manga">
-
                         Retour
-
                     </a>
 
                 </div>
@@ -172,11 +168,14 @@ $old = Session::get('old', []);
 
 <?php Session::forget(['errors', 'old']); ?>
 
-<script>
+<script type="module">
+import { showToast } from '<?= $basePath; ?>public/js/toast.js';
+
 const livreInput = document.getElementById('livre');
 const slugInput = document.getElementById('slug');
 const imageInput = document.getElementById('image');
 const uploadText = document.querySelector('.form-upload-text');
+const form = document.querySelector('.form-layout');
 
 if (livreInput && slugInput)
 {
@@ -205,6 +204,57 @@ if (imageInput && uploadText)
         else
         {
             uploadText.textContent = 'Choisir une image';
+        }
+    });
+}
+
+if (form)
+{
+    form.addEventListener('submit', async function (e)
+    {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+
+        try
+        {
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            });
+
+            const contentType = response.headers.get('content-type') || '';
+
+            if (!contentType.includes('application/json'))
+            {
+                throw new Error('Réponse non JSON');
+            }
+
+            const data = await response.json();
+
+            if (data.success)
+            {
+                showToast(data.message || 'Manga ajouté avec succès', 'success');
+                form.reset();
+
+                if (uploadText)
+                {
+                    uploadText.textContent = 'Choisir une image';
+                }
+            }
+            else
+            {
+                showToast(data.message || 'Une erreur est survenue', 'error');
+            }
+        }
+        catch (error)
+        {
+            console.error(error);
+            showToast('Erreur serveur', 'error');
         }
     });
 }

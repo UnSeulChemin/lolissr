@@ -144,3 +144,4 @@
 [2026-04-15 15:12:01] [ERROR] PHP Error [2] Undefined variable $isCollection dans C:\wamp64\www\lolissr\Views\manga\collection.php à la ligne 96
 [2026-04-16 11:21:41] [ERROR] Upload manga: fichier déjà existant : C:\wamp64\www\lolissr/public/images/mangas/thumbnail/one-piece-11.webp
 [2026-04-16 11:21:56] [ERROR] Upload manga: fichier déjà existant : C:\wamp64\www\lolissr/public/images/mangas/thumbnail/one-piece-11.webp
+[2026-04-16 19:41:06] [ERROR] Uncaught Exception: Call to undefined method App\Controllers\MangaController::isAjaxRequest() dans C:\wamp64\www\lolissr\Controllers\MangaController.php à la ligne 340

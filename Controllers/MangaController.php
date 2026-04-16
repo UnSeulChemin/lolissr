@@ -19,6 +19,27 @@ class MangaController extends Controller
     }
 
     /**
+     * Vérifie si la requête est AJAX.
+     */
+    private function isAjaxRequest(): bool
+    {
+        return !empty($_SERVER['HTTP_X_REQUESTED_WITH'])
+            && strtolower((string) $_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+    }
+
+    /**
+     * Retourne une réponse JSON.
+     */
+    private function jsonResponse(array $data, int $statusCode = 200): void
+    {
+        http_response_code($statusCode);
+        header('Content-Type: application/json; charset=utf-8');
+
+        echo json_encode($data);
+        exit;
+    }
+
+    /**
      * Convertit une note postée.
      * Retourne null si vide ou invalide.
      */
@@ -271,6 +292,14 @@ class MangaController extends Controller
     {
         if (!Functions::isPost())
         {
+            if ($this->isAjaxRequest())
+            {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Méthode non autorisée'
+                ], 405);
+            }
+
             $this->methodNotAllowed('Méthode non autorisée pour l’ajout d’un manga');
         }
 
@@ -298,6 +327,23 @@ class MangaController extends Controller
 
         if ($validator->fails())
         {
+            if ($this->isAjaxRequest())
+            {
+                $errors = $validator->errors();
+                $firstError = '';
+
+                if (!empty($errors))
+                {
+                    $firstError = (string) reset($errors);
+                }
+
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => $firstError !== '' ? $firstError : 'Le formulaire contient des erreurs.',
+                    'errors' => $errors
+                ], 422);
+            }
+
             $this->redirectWithValidationErrors('manga/ajouter', $validator->errors());
         }
 
@@ -312,6 +358,14 @@ class MangaController extends Controller
 
         if ($mangaModel->findOneBySlugAndNumero($slug, $numero))
         {
+            if ($this->isAjaxRequest())
+            {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Ce manga existe déjà'
+                ], 409);
+            }
+
             $this->redirectWithError('manga/ajouter', 'Ce manga existe déjà');
         }
 
@@ -339,10 +393,27 @@ class MangaController extends Controller
                 . $numero
             );
 
+            if ($this->isAjaxRequest())
+            {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Erreur lors de l’enregistrement du manga'
+                ], 500);
+            }
+
             $this->redirectWithError('manga/ajouter', 'Erreur lors de l’enregistrement du manga');
         }
 
         Session::forget(['errors', 'old']);
+
+        if ($this->isAjaxRequest())
+        {
+            $this->jsonResponse([
+                'success' => true,
+                'message' => 'Manga ajouté avec succès'
+            ]);
+        }
+
         $this->redirectWithSuccess('manga/ajouter', 'Manga ajouté avec succès');
     }
 
@@ -368,6 +439,15 @@ class MangaController extends Controller
         if ($extension === null)
         {
             Logger::error('Upload manga: extension introuvable.');
+
+            if ($this->isAjaxRequest())
+            {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Extension image introuvable'
+                ], 422);
+            }
+
             $this->redirectWithError('manga/ajouter', 'Extension image introuvable');
         }
 
@@ -383,6 +463,14 @@ class MangaController extends Controller
                 . ($mimeType ?? 'null')
             );
 
+            if ($this->isAjaxRequest())
+            {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Type MIME image non autorisé'
+                ], 422);
+            }
+
             $this->redirectWithError('manga/ajouter', 'Type MIME image non autorisé');
         }
 
@@ -391,6 +479,15 @@ class MangaController extends Controller
         if ($tmpName === null || !is_uploaded_file($tmpName))
         {
             Logger::error('Upload manga: fichier temporaire invalide ou absent.');
+
+            if ($this->isAjaxRequest())
+            {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Fichier temporaire introuvable'
+                ], 422);
+            }
+
             $this->redirectWithError('manga/ajouter', 'Fichier temporaire introuvable');
         }
 
@@ -399,6 +496,15 @@ class MangaController extends Controller
         if ($thumbnail === '')
         {
             Logger::error('Upload manga: nom de thumbnail invalide.');
+
+            if ($this->isAjaxRequest())
+            {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Nom de fichier invalide'
+                ], 422);
+            }
+
             $this->redirectWithError('manga/ajouter', 'Nom de fichier invalide');
         }
 
@@ -407,6 +513,15 @@ class MangaController extends Controller
         if (!is_dir($dossier))
         {
             Logger::error('Upload manga: dossier image introuvable : ' . $dossier);
+
+            if ($this->isAjaxRequest())
+            {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Dossier image introuvable'
+                ], 500);
+            }
+
             $this->redirectWithError('manga/ajouter', 'Dossier image introuvable');
         }
 
@@ -415,12 +530,30 @@ class MangaController extends Controller
         if (file_exists($destination))
         {
             Logger::error('Upload manga: fichier déjà existant : ' . $destination);
+
+            if ($this->isAjaxRequest())
+            {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Une image avec ce nom existe déjà'
+                ], 409);
+            }
+
             $this->redirectWithError('manga/ajouter', 'Une image avec ce nom existe déjà');
         }
 
         if (!move_uploaded_file($tmpName, $destination))
         {
             Logger::error('Upload manga: échec move_uploaded_file vers : ' . $destination);
+
+            if ($this->isAjaxRequest())
+            {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Erreur lors de l’upload de l’image'
+                ], 500);
+            }
+
             $this->redirectWithError('manga/ajouter', 'Erreur lors de l’upload de l’image');
         }
 
