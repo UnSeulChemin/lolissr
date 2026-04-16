@@ -19,62 +19,62 @@ $currentPage = $currentPage ?? 1;
 
     <?php foreach ($mangas as $manga): ?>
 
+        <?php
+        $href = $isCollection
+            ? $basePath . 'manga/' . rawurlencode($manga->slug) . '/' . (int) $manga->numero
+            : $basePath . 'manga/serie/' . rawurlencode($manga->slug);
+
+        $noteClass = 'collection-note-mid';
+
+        if ($isCollection && $manga->note !== null)
+        {
+            if ((int) $manga->note >= 8)
+            {
+                $noteClass = 'collection-note-good';
+            }
+            elseif ((int) $manga->note <= 4)
+            {
+                $noteClass = 'collection-note-low';
+            }
+        }
+        ?>
+
         <a
-            class="collection-card-link"
-            href="<?= $isCollection
-                ? $basePath . 'manga/' . rawurlencode($manga->slug) . '/' . (int) $manga->numero
-                : $basePath . 'manga/serie/' . rawurlencode($manga->slug) ?>">
+            class="card card-link collection-card-link"
+            href="<?= $href; ?>">
 
-            <article class="card collection-card">
+            <?php if (!$isCollection): ?>
+                <span class="collection-card-badge collection-card-badge-count">
+                    📚 <?= (int) $manga->total; ?>
+                </span>
+            <?php endif; ?>
 
-                <div class="card-image-box-portrait">
+            <?php if ($isCollection && $manga->note !== null): ?>
+                <span class="collection-card-badge collection-card-badge-note <?= $noteClass; ?>">
+                    ⭐ <?= (int) $manga->note; ?>/10
+                </span>
+            <?php endif; ?>
 
-                    <img
-                        class="card-image-portrait card-image"
-                        src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($manga->thumbnail . '.' . $manga->extension) ?>"
-                        alt="<?= htmlspecialchars($manga->livre) ?>">
+            <div class="card-image-box-portrait">
+                <img
+                    class="card-image-portrait"
+                    src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($manga->thumbnail . '.' . $manga->extension); ?>"
+                    alt="<?= htmlspecialchars($manga->livre); ?>">
+            </div>
 
-                </div>
+            <p class="collection-card-title">
+                <?= htmlspecialchars($manga->livre); ?>
+            </p>
 
-                <p class="collection-card-title">
-                    <?= htmlspecialchars($manga->livre) ?>
+            <?php if ($isCollection): ?>
+                <p class="collection-card-subtitle">
+                    Tome <?= str_pad((string) $manga->numero, 2, '0', STR_PAD_LEFT); ?>
                 </p>
-
-                <?php if ($isCollection): ?>
-                    <p class="collection-card-subtitle">
-                        Tome <?= (int) $manga->numero ?>
-                    </p>
-                <?php endif; ?>
-
-                <?php if (!$isCollection): ?>
-                    <p class="collection-card-subtitle">
-                        <?= (int) $manga->total ?> tomes
-                    </p>
-
-                    <span class="collection-card-badge collection-card-badge-count">
-                        📚 <?= (int) $manga->total ?>
-                    </span>
-                <?php endif; ?>
-
-                <?php if ($isCollection && $manga->note !== null): ?>
-                    <?php
-                    $noteClass = 'collection-note-mid';
-
-                    if ((int) $manga->note >= 8)
-                    {
-                        $noteClass = 'collection-note-good';
-                    }
-                    elseif ((int) $manga->note <= 4)
-                    {
-                        $noteClass = 'collection-note-low';
-                    }
-                    ?>
-                    <span class="collection-card-badge collection-card-badge-note <?= htmlspecialchars($noteClass) ?>">
-                        ⭐ <?= (int) $manga->note ?>
-                    </span>
-                <?php endif; ?>
-
-            </article>
+            <?php else: ?>
+                <p class="collection-card-subtitle">
+                    <?= (int) $manga->total; ?> tomes
+                </p>
+            <?php endif; ?>
 
         </a>
 
@@ -87,7 +87,7 @@ $currentPage = $currentPage ?? 1;
 
         <?php for ($getId = 1; $getId <= $compteur; $getId++): ?>
             <a
-                class="collection-pagination-link <?= ($currentPage === $getId) ? 'active' : '' ?>"
+                class="collection-pagination-link <?= ($currentPage === $getId) ? 'active' : ''; ?>"
                 href="<?= $basePath; ?>manga/collection/page/<?= $getId; ?>">
                 <?= $getId; ?>
             </a>

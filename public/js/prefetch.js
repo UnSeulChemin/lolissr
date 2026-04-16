@@ -47,7 +47,7 @@ export function initCardPrefetch()
 
         preloadUrl(link.href);
 
-        const image = link.querySelector('.card-image');
+        const image = link.querySelector('.card-image-portrait');
 
         if (image)
         {
@@ -66,7 +66,7 @@ export function initCardPrefetch()
 
         preloadUrl(link.href);
 
-        const image = link.querySelector('.card-image');
+        const image = link.querySelector('.card-image-portrait');
 
         if (image)
         {

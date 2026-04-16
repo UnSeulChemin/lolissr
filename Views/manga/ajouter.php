@@ -9,7 +9,7 @@ $success = Session::pull('success');
 
 ?>
 
-<section class="layout-container">
+<section class="layout-container dashboard-page">
 
     <section class="form-page animate-fade-up">
 
