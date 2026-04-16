@@ -1,14 +1,14 @@
-<section class="layout-container">
+<section class="layout-container dashboard-page">
 
     <section class="dashboard-header">
 
         <div class="dashboard-title-box animate-fade-up">
 
-            <h1 class="dashboard-title-main">
+            <h1 class="dashboard-title">
                 🔗 Liens utiles
             </h1>
 
-            <p class="dashboard-subtitle">
+            <p class="dashboard-description">
                 Accès rapide aux sites utiles pour mangas et outils.
             </p>
 
@@ -16,89 +16,89 @@
 
     </section>
 
-    <section class="dashboard-grid card-grid-3 animate-fade-up-stagger">
+    <section class="dashboard-grid animate-fade-up-stagger">
 
         <a
-            class="card card-small dashboard-panel"
+            class="dashboard-card"
             href="http://chasse-aux-livres.fr/"
             target="_blank"
             rel="noopener noreferrer">
 
-            <span class="dashboard-panel-icon">🔎</span>
-            <span class="dashboard-panel-title">Chasse au livre</span>
-            <span class="dashboard-panel-text">Recherche de tomes disponibles.</span>
+            <span class="dashboard-card-icon" aria-hidden="true">🔎</span>
+            <span class="dashboard-card-title">Chasse au livre</span>
+            <span class="dashboard-card-description">Recherche de tomes disponibles.</span>
 
         </a>
 
         <a
-            class="card card-small dashboard-panel"
+            class="dashboard-card"
             href="https://www.mangacollec.com/"
             target="_blank"
             rel="noopener noreferrer">
 
-            <span class="dashboard-panel-icon">🗂️</span>
-            <span class="dashboard-panel-title">Mangacollec</span>
-            <span class="dashboard-panel-text">Gestion de collection manga.</span>
+            <span class="dashboard-card-icon" aria-hidden="true">🗂️</span>
+            <span class="dashboard-card-title">Mangacollec</span>
+            <span class="dashboard-card-description">Gestion de collection manga.</span>
 
         </a>
 
         <a
-            class="card card-small dashboard-panel"
+            class="dashboard-card"
             href="https://www.nautiljon.com/mangas/?q=&public_averti=7"
             target="_blank"
             rel="noopener noreferrer">
 
-            <span class="dashboard-panel-icon">⚠️</span>
-            <span class="dashboard-panel-title">Nautiljon +</span>
-            <span class="dashboard-panel-text">Mangas avec nudité et violence.</span>
+            <span class="dashboard-card-icon" aria-hidden="true">⚠️</span>
+            <span class="dashboard-card-title">Nautiljon +</span>
+            <span class="dashboard-card-description">Mangas avec nudité et violence.</span>
 
         </a>
 
         <a
-            class="card card-small dashboard-panel"
+            class="dashboard-card"
             href="https://www.nautiljon.com/mangas/?q=&public_averti=3"
             target="_blank"
             rel="noopener noreferrer">
 
-            <span class="dashboard-panel-icon">🔞</span>
-            <span class="dashboard-panel-title">Nautiljon</span>
-            <span class="dashboard-panel-text">Mangas avec nudité.</span>
+            <span class="dashboard-card-icon" aria-hidden="true">🔞</span>
+            <span class="dashboard-card-title">Nautiljon</span>
+            <span class="dashboard-card-description">Mangas avec nudité.</span>
 
         </a>
 
         <a
-            class="card card-small dashboard-panel"
+            class="dashboard-card"
             href="https://www.glenat.com/manga"
             target="_blank"
             rel="noopener noreferrer">
 
-            <span class="dashboard-panel-icon">📚</span>
-            <span class="dashboard-panel-title">Glénat</span>
-            <span class="dashboard-panel-text">Maison d'édition officielle.</span>
+            <span class="dashboard-card-icon" aria-hidden="true">📚</span>
+            <span class="dashboard-card-title">Glénat</span>
+            <span class="dashboard-card-description">Maison d'édition officielle.</span>
 
         </a>
 
         <a
-            class="card card-small dashboard-panel"
+            class="dashboard-card"
             href="https://www.kana.fr/mangas/"
             target="_blank"
             rel="noopener noreferrer">
 
-            <span class="dashboard-panel-icon">📖</span>
-            <span class="dashboard-panel-title">Kana</span>
-            <span class="dashboard-panel-text">Catalogue manga Kana.</span>
+            <span class="dashboard-card-icon" aria-hidden="true">📖</span>
+            <span class="dashboard-card-title">Kana</span>
+            <span class="dashboard-card-description">Catalogue manga Kana.</span>
 
         </a>
 
         <a
-            class="card card-small dashboard-panel"
+            class="dashboard-card"
             href="https://www.xnview.com/fr/xnconvert/#downloads"
             target="_blank"
             rel="noopener noreferrer">
 
-            <span class="dashboard-panel-icon">🖼️</span>
-            <span class="dashboard-panel-title">XnConvert</span>
-            <span class="dashboard-panel-text">Conversion PNG / JPG → WEBP.</span>
+            <span class="dashboard-card-icon" aria-hidden="true">🖼️</span>
+            <span class="dashboard-card-title">XnConvert</span>
+            <span class="dashboard-card-description">Conversion PNG / JPG → WEBP.</span>
 
         </a>
 
