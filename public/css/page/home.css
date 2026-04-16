@@ -226,6 +226,12 @@
     margin: 0;
 }
 
+.home-longest-info,
+.home-last-info
+{
+    overflow: hidden;
+}
+
 .home-last-info
 {
     display: flex;
@@ -279,9 +285,17 @@
 .home-last-name
 {
     margin: 0;
+
     font-size: 1.15rem;
     font-weight: 700;
     line-height: 1.2;
+
+    /* 🔥 ellipsis */
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    width: 100%;
 }
 
 .home-longest-count,
@@ -311,7 +325,7 @@
     display: grid;
     grid-template-columns: repeat(5, minmax(0, var(--width-collection-card)));
     justify-content: center;
-    gap: var(--gap-grid-collection);
+    gap: var(--gap-grid-home);
 
     margin: 0 auto;
 }
