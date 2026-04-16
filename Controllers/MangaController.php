@@ -363,7 +363,7 @@ class MangaController extends Controller
                 $this->jsonResponse([
                     'success' => false,
                     'message' => 'Ce manga existe déjà'
-                ], 409);
+                ], 200);
             }
 
             $this->redirectWithError('manga/ajouter', 'Ce manga existe déjà');

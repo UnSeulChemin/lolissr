@@ -1,4 +1,4 @@
-import { showToast } from '../toast.js';
+import { showToast } from '../core/toast.js';
 
 const livreInput = document.getElementById('livre');
 const slugInput = document.getElementById('slug');
