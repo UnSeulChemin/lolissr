@@ -56,12 +56,7 @@
     align-items: stretch;
 }
 
-.home-grid-stats
-{
-    margin-bottom: var(--space-sm);
-    align-items: stretch;
-}
-
+.home-grid-stats,
 .home-grid-watch
 {
     margin-bottom: var(--space-sm);
@@ -88,7 +83,8 @@
     gap: 16px;
 }
 
-.home-grid-top .card-wide
+.home-grid-top .card-wide,
+.home-grid-top .card-medium
 {
     min-height: 310px;
 }
@@ -96,7 +92,6 @@
 .home-grid-top .card-medium
 {
     width: 100%;
-    min-height: 310px;
 }
 
 .home-grid-top .home-card-title
@@ -195,7 +190,7 @@
 
 
 /* =========================================
-   TOP / FEATURE CONTENT
+   FEATURE CONTENT
 ========================================= */
 
 .home-longest-content,
@@ -204,32 +199,25 @@
     position: relative;
     z-index: 1;
 
-    width: 100%;
     flex: 1;
+    width: fit-content;
+    margin: 0 auto;
+
+    display: grid;
+    justify-content: center;
+    align-items: center;
 }
 
 .home-longest-content
 {
-    display: grid;
     grid-template-columns: var(--width-image-portrait) var(--width-home-longest-info);
-    justify-content: center;
-    align-items: center;
     column-gap: var(--gap-home-feature-content);
-
-    width: fit-content;
-    margin: 0 auto;
 }
 
 .home-feature-content
 {
-    display: grid;
     grid-template-columns: var(--width-image-portrait) var(--width-home-feature-info);
-    justify-content: center;
-    align-items: center;
     column-gap: var(--gap-home-feature-content);
-
-    width: fit-content;
-    margin: 0 auto;
 }
 
 .home-feature-image-box
@@ -242,62 +230,28 @@
 {
     overflow: hidden;
     text-align: left;
-}
 
-.home-longest-info
-{
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
-    gap: 8px;
+}
 
+.home-longest-info
+{
+    gap: 8px;
     width: var(--width-home-longest-info);
 }
 
 .home-feature-info
 {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
     gap: 6px;
-
     width: var(--width-home-feature-info);
 }
 
 
 /* =========================================
-   WATCH FEATURE CONTENT
-========================================= */
-
-.home-grid-watch .card-link .home-feature-content
-{
-    display: grid;
-    grid-template-columns: var(--width-image-portrait) var(--width-home-feature-info);
-    justify-content: center;
-    align-items: center;
-    column-gap: var(--gap-home-feature-content);
-
-    width: fit-content;
-    margin: 0 auto;
-}
-
-.home-grid-watch .card-link .home-feature-info
-{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 6px;
-
-    width: var(--width-home-feature-info);
-    text-align: left;
-}
-
-
-/* =========================================
-   TOP / FEATURE TEXT
+   FEATURE TEXT
 ========================================= */
 
 .home-longest-name,
