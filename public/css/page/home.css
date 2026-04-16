@@ -10,7 +10,7 @@
 .home-section-title
 {
     width: 100%;
-    margin: 50px 0;
+    margin: var(--space-section-title) 0;
     padding: 12px 18px;
 
     color: var(--color-violet);
@@ -27,7 +27,7 @@
         rgba(123, 44, 255, 0.05)
     );
 
-    box-shadow: 0 6px 18px rgba(123, 44, 255, 0.06);
+    box-shadow: var(--shadow-violet-soft);
 }
 
 
@@ -43,7 +43,8 @@
 }
 
 .home-grid-top.card-grid-3,
-.home-grid-stats.card-grid-3
+.home-grid-stats.card-grid-3,
+.home-grid-watch.card-grid-3
 {
     grid-template-columns: repeat(3, var(--width-home-grid-column));
     gap: var(--gap-grid-home);
@@ -57,7 +58,13 @@
 
 .home-grid-stats
 {
-    margin-bottom: 10px;
+    margin-bottom: var(--space-sm);
+    align-items: stretch;
+}
+
+.home-grid-watch
+{
+    margin-bottom: var(--space-sm);
     align-items: stretch;
 }
 
@@ -133,7 +140,7 @@
    WATCH CARDS
 ========================================= */
 
-.home-grid-stats .card-link.card-medium
+.home-grid-watch .card-link.card-medium
 {
     min-height: 310px;
     padding: 20px 28px 18px;
@@ -143,7 +150,7 @@
     gap: 16px;
 }
 
-.home-grid-stats .card-link.card-medium .home-card-title
+.home-grid-watch .card-link.card-medium .home-card-title
 {
     margin: 0;
     font-size: 1.02rem;
@@ -188,11 +195,11 @@
 
 
 /* =========================================
-   TOP / WATCH CONTENT
+   TOP / FEATURE CONTENT
 ========================================= */
 
 .home-longest-content,
-.home-last-content
+.home-feature-content
 {
     position: relative;
     z-index: 1;
@@ -207,31 +214,31 @@
     grid-template-columns: var(--width-image-portrait) var(--width-home-longest-info);
     justify-content: center;
     align-items: center;
-    column-gap: var(--gap-home-top-content);
+    column-gap: var(--gap-home-feature-content);
 
     width: fit-content;
     margin: 0 auto;
 }
 
-.home-last-content
+.home-feature-content
 {
     display: grid;
-    grid-template-columns: var(--width-image-portrait) var(--width-home-last-info);
+    grid-template-columns: var(--width-image-portrait) var(--width-home-feature-info);
     justify-content: center;
     align-items: center;
-    column-gap: var(--gap-home-last-content);
+    column-gap: var(--gap-home-feature-content);
 
     width: fit-content;
     margin: 0 auto;
 }
 
-.home-top-image-box
+.home-feature-image-box
 {
     margin: 0;
 }
 
 .home-longest-info,
-.home-last-info
+.home-feature-info
 {
     overflow: hidden;
     text-align: left;
@@ -248,7 +255,7 @@
     width: var(--width-home-longest-info);
 }
 
-.home-last-info
+.home-feature-info
 {
     display: flex;
     flex-direction: column;
@@ -256,27 +263,27 @@
     align-items: flex-start;
     gap: 6px;
 
-    width: var(--width-home-last-info);
+    width: var(--width-home-feature-info);
 }
 
 
 /* =========================================
-   WATCH CONTENT
+   WATCH FEATURE CONTENT
 ========================================= */
 
-.home-grid-stats .card-link .home-last-content
+.home-grid-watch .card-link .home-feature-content
 {
     display: grid;
-    grid-template-columns: var(--width-image-portrait) var(--width-home-last-info);
+    grid-template-columns: var(--width-image-portrait) var(--width-home-feature-info);
     justify-content: center;
     align-items: center;
-    column-gap: var(--gap-home-last-content);
+    column-gap: var(--gap-home-feature-content);
 
     width: fit-content;
     margin: 0 auto;
 }
 
-.home-grid-stats .card-link .home-last-info
+.home-grid-watch .card-link .home-feature-info
 {
     display: flex;
     flex-direction: column;
@@ -284,17 +291,17 @@
     align-items: flex-start;
     gap: 6px;
 
-    width: var(--width-home-last-info);
+    width: var(--width-home-feature-info);
     text-align: left;
 }
 
 
 /* =========================================
-   TOP TEXT
+   TOP / FEATURE TEXT
 ========================================= */
 
 .home-longest-name,
-.home-last-name
+.home-feature-title
 {
     width: 100%;
     margin: 0;
@@ -309,14 +316,14 @@
 }
 
 .home-longest-count,
-.home-last-volume
+.home-feature-meta
 {
     margin: 0;
     font-size: var(--font-size-base);
     line-height: 1.35;
 }
 
-.home-last-volume
+.home-feature-meta
 {
     font-size: 0.98rem;
     font-weight: 600;
@@ -329,8 +336,8 @@
    BOTTOM LISTS
 ========================================= */
 
-.home-best-list,
-.home-series-top
+.home-ranking-list,
+.home-low-rated-list
 {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, var(--width-collection-card)));
@@ -345,8 +352,8 @@
    BOTTOM CARDS
 ========================================= */
 
-.home-series-top .card-bottom,
-.home-best-list .card-bottom
+.home-ranking-list .card-bottom,
+.home-low-rated-list .card-bottom
 {
     width: 100%;
     max-width: var(--width-collection-card);
@@ -358,22 +365,22 @@
     box-sizing: border-box;
 }
 
-.home-series-top .card-bottom .card-image-box-portrait
+.home-ranking-list .card-bottom .card-image-box-portrait
 {
     margin: 8px 0 14px;
 }
 
-.home-best-list .card-bottom
+.home-low-rated-list .card-bottom
 {
     padding-top: 44px;
 }
 
-.home-best-list .card-bottom .card-image-box-portrait
+.home-low-rated-list .card-bottom .card-image-box-portrait
 {
     margin: 16px 0 14px;
 }
 
-.home-bottom-title
+.home-list-card-title
 {
     position: relative;
     z-index: 1;
@@ -393,7 +400,7 @@
     text-align: center;
 }
 
-.home-bottom-subtitle
+.home-list-card-meta
 {
     position: relative;
     z-index: 1;
@@ -406,7 +413,7 @@
     opacity: 0.9;
 }
 
-.home-bottom-subtitle-strong
+.home-list-card-meta-strong
 {
     margin-top: 4px;
     color: var(--color-text-accent);

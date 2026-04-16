@@ -75,6 +75,7 @@
        BORDER RADIUS
     ========================= */
     --radius-image: 10px;
+    --radius-badge: 14px;
     --radius-input: 16px;
     --radius-card: 22px;
     --radius-card-lg: 24px;
@@ -92,10 +93,13 @@
     --space-xxl: 40px;
     --space-container: 50px;
 
+    --space-section-title: 50px;
+    --space-section-content: 30px;
+    --space-block: 40px;
+
     --gap-grid-home: 30px;
     --gap-grid-collection: 36px;
-    --gap-home-top-content: 34px;
-    --gap-home-last-content: 34px;
+    --gap-home-feature-content: 34px;
     --gap-home-watch-content: 22px;
 
 
@@ -118,9 +122,24 @@
 
     --width-home-longest-image-col: 180px;
     --width-home-longest-info: 220px;
-    --width-home-last-info: 120px;
-    --width-home-last-content: 285px;
+    --width-home-feature-info: 120px;
+    --width-home-feature-content: 285px;
     --width-home-watch-content: 240px;
+
+    --width-dashboard-header: 760px;
+    --width-dashboard-description: 560px;
+    --height-dashboard-card: 260px;
+
+    --size-dashboard-icon: 58px;
+    --size-badge-height: 34px;
+    --size-icon-box: 58px;
+
+
+    /* =========================
+       PADDINGS
+    ========================= */
+    --padding-dashboard-header: 34px 30px;
+    --padding-dashboard-card: 24px 22px;
 
 
     /* =========================
@@ -132,6 +151,10 @@
     --font-size-base: 1rem;
     --font-size-lg: 1.2rem;
     --font-size-xl: 2rem;
+
+    --font-size-caption: 0.82rem;
+    --font-size-body-sm: 0.95rem;
+    --font-size-title-card: 1.2rem;
 
 
     /* =========================
@@ -167,8 +190,20 @@
         0 18px 36px rgba(0, 0, 0, 0.10),
         0 6px 12px rgba(0, 0, 0, 0.06);
 
-    --shadow-text-badge: 0 1px 2px rgba(0, 0, 0, 0.30);
-    --ring-badge: 0 0 0 3px var(--color-violet-soft-medium);
+    --shadow-soft:
+        0 6px 18px rgba(0, 0, 0, 0.05);
+
+    --shadow-panel:
+        0 12px 28px rgba(0, 0, 0, 0.07);
+
+    --shadow-violet-soft:
+        0 10px 24px rgba(123, 44, 255, 0.12);
+
+    --shadow-text-badge:
+        0 1px 2px rgba(0, 0, 0, 0.30);
+
+    --ring-badge:
+        0 0 0 3px var(--color-violet-soft-medium);
 
 
     /* =========================
@@ -179,7 +214,9 @@
     --color-warning: #e0a800;
     --color-info: #17a2b8;
     --color-alert-text: #ffffff;
+
     --offset-card-corner: 16px;
+
 
     /* =========================
        Z-INDEX

@@ -1,14 +1,14 @@
-<section class="layout-container">
+<section class="layout-container dashboard-page">
 
     <section class="dashboard-header">
 
         <div class="dashboard-title-box animate-fade-up">
 
-            <h1 class="dashboard-title-main">
+            <h1 class="dashboard-title">
                 📚 Manga
             </h1>
 
-            <p class="dashboard-subtitle">
+            <p class="dashboard-description">
                 Gère ta collection, ajoute des mangas et accède à tes liens utiles.
             </p>
 
@@ -16,52 +16,52 @@
 
     </section>
 
-    <section class="dashboard-grid card-grid-3 animate-fade-up-stagger">
+    <section class="dashboard-grid animate-fade-up-stagger">
 
         <a
-            class="card card-small dashboard-panel"
+            class="dashboard-card"
             href="<?= $basePath ?>manga/collection">
 
-            <span class="dashboard-panel-icon">📚</span>
+            <span class="dashboard-card-icon" aria-hidden="true">📚</span>
 
-            <span class="dashboard-panel-title">
+            <span class="dashboard-card-title">
                 Collection
             </span>
 
-            <span class="dashboard-panel-text">
+            <span class="dashboard-card-description">
                 Voir tous les mangas enregistrés.
             </span>
 
         </a>
 
         <a
-            class="card card-small dashboard-panel"
+            class="dashboard-card"
             href="<?= $basePath ?>manga/ajouter">
 
-            <span class="dashboard-panel-icon">➕</span>
+            <span class="dashboard-card-icon" aria-hidden="true">➕</span>
 
-            <span class="dashboard-panel-title">
+            <span class="dashboard-card-title">
                 Ajouter
             </span>
 
-            <span class="dashboard-panel-text">
+            <span class="dashboard-card-description">
                 Ajouter un nouveau manga à la collection.
             </span>
 
         </a>
 
         <a
-            class="card card-small dashboard-panel"
+            class="dashboard-card"
             href="<?= $basePath ?>manga/lien">
 
-            <span class="dashboard-panel-icon">🔗</span>
+            <span class="dashboard-card-icon" aria-hidden="true">🔗</span>
 
-            <span class="dashboard-panel-title">
+            <span class="dashboard-card-title">
                 Liens utiles
             </span>
 
-            <span class="dashboard-panel-text">
-                Accéder aux liens utiles liés à la collection.
+            <span class="dashboard-card-description">
+                Accéder aux liens liés à la collection.
             </span>
 
         </a>

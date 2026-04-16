@@ -12,9 +12,9 @@
                 </h2>
 
                 <div class="home-longest-content">
-                    <div class="card-image-box-portrait home-top-image-box">
+                    <div class="card-image-box-portrait home-feature-image-box">
                         <img
-                            class="card-image-portrait card-image home-top-image"
+                            class="card-image-portrait"
                             src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($longestSeries->thumbnail . '.' . $longestSeries->extension) ?>"
                             alt="<?= htmlspecialchars($longestSeries->livre) ?>">
                     </div>
@@ -51,20 +51,20 @@
                     🆕 Dernier tome ajouté
                 </h2>
 
-                <div class="home-last-content">
-                    <div class="card-image-box-portrait home-top-image-box">
+                <div class="home-feature-content">
+                    <div class="card-image-box-portrait home-feature-image-box">
                         <img
-                            class="card-image-portrait card-image home-top-image"
+                            class="card-image-portrait"
                             src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($lastTome->thumbnail . '.' . $lastTome->extension) ?>"
                             alt="<?= htmlspecialchars($lastTome->livre) ?>">
                     </div>
 
-                    <div class="home-last-info">
-                        <p class="home-last-name">
+                    <div class="home-feature-info">
+                        <p class="home-feature-title">
                             <?= htmlspecialchars($lastTome->livre) ?>
                         </p>
 
-                        <p class="home-last-volume">
+                        <p class="home-feature-meta">
                             Tome <?= str_pad((string) $lastTome->numero, 2, '0', STR_PAD_LEFT) ?>
                         </p>
                     </div>
@@ -123,7 +123,7 @@
             📊 Top 5 séries les plus longues
         </h2>
 
-        <section class="home-series-top card-list animate-fade-up-stagger">
+        <section class="home-ranking-list card-list animate-fade-up-stagger">
 
             <?php foreach ($topLongestSeries as $index => $serie): ?>
                 <a
@@ -136,16 +136,16 @@
 
                     <div class="card-image-box-portrait">
                         <img
-                            class="card-image-portrait card-image"
+                            class="card-image-portrait"
                             src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($serie->thumbnail . '.' . $serie->extension) ?>"
                             alt="<?= htmlspecialchars($serie->livre) ?>">
                     </div>
 
-                    <p class="home-bottom-title">
+                    <p class="home-list-card-title">
                         <?= htmlspecialchars($serie->livre) ?>
                     </p>
 
-                    <p class="home-bottom-subtitle">
+                    <p class="home-list-card-meta">
                         <?= (int) $serie->total ?> tomes
                     </p>
                 </a>
@@ -164,7 +164,7 @@
     $lowLivre = $lowLivreStateMangas[0] ?? null;
     ?>
 
-    <section class="home-grid home-grid-stats card-grid-3 animate-fade-up-stagger">
+    <section class="home-grid home-grid-watch card-grid-3 animate-fade-up-stagger">
 
         <?php if ($lowGlobal): ?>
             <a
@@ -175,24 +175,24 @@
                     📉 À remplacer
                 </h2>
 
-                <div class="home-last-content">
-                    <div class="card-image-box-portrait home-top-image-box">
+                <div class="home-feature-content">
+                    <div class="card-image-box-portrait home-feature-image-box">
                         <img
-                            class="card-image-portrait card-image home-top-image"
+                            class="card-image-portrait"
                             src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($lowGlobal->thumbnail . '.' . $lowGlobal->extension) ?>"
                             alt="<?= htmlspecialchars($lowGlobal->livre) ?>">
                     </div>
 
-                    <div class="home-last-info">
-                        <p class="home-last-name">
+                    <div class="home-feature-info">
+                        <p class="home-feature-title">
                             <?= htmlspecialchars($lowGlobal->livre) ?>
                         </p>
 
-                        <p class="home-last-volume">
+                        <p class="home-feature-meta">
                             Tome <?= str_pad((string) $lowGlobal->numero, 2, '0', STR_PAD_LEFT) ?>
                         </p>
 
-                        <p class="home-last-volume">
+                        <p class="home-feature-meta">
                             ⭐ <?= (int) $lowGlobal->note ?>/10
                         </p>
                     </div>
@@ -219,24 +219,24 @@
                     🧥 Jacquette faible
                 </h2>
 
-                <div class="home-last-content">
-                    <div class="card-image-box-portrait home-top-image-box">
+                <div class="home-feature-content">
+                    <div class="card-image-box-portrait home-feature-image-box">
                         <img
-                            class="card-image-portrait card-image home-top-image"
+                            class="card-image-portrait"
                             src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($lowJacquette->thumbnail . '.' . $lowJacquette->extension) ?>"
                             alt="<?= htmlspecialchars($lowJacquette->livre) ?>">
                     </div>
 
-                    <div class="home-last-info">
-                        <p class="home-last-name">
+                    <div class="home-feature-info">
+                        <p class="home-feature-title">
                             <?= htmlspecialchars($lowJacquette->livre) ?>
                         </p>
 
-                        <p class="home-last-volume">
+                        <p class="home-feature-meta">
                             Tome <?= str_pad((string) $lowJacquette->numero, 2, '0', STR_PAD_LEFT) ?>
                         </p>
 
-                        <p class="home-last-volume">
+                        <p class="home-feature-meta">
                             ⭐ <?= (int) $lowJacquette->jacquette ?>/5
                         </p>
                     </div>
@@ -263,24 +263,24 @@
                     📘 Livre abîmé
                 </h2>
 
-                <div class="home-last-content">
-                    <div class="card-image-box-portrait home-top-image-box">
+                <div class="home-feature-content">
+                    <div class="card-image-box-portrait home-feature-image-box">
                         <img
-                            class="card-image-portrait card-image home-top-image"
+                            class="card-image-portrait"
                             src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($lowLivre->thumbnail . '.' . $lowLivre->extension) ?>"
                             alt="<?= htmlspecialchars($lowLivre->livre) ?>">
                     </div>
 
-                    <div class="home-last-info">
-                        <p class="home-last-name">
+                    <div class="home-feature-info">
+                        <p class="home-feature-title">
                             <?= htmlspecialchars($lowLivre->livre) ?>
                         </p>
 
-                        <p class="home-last-volume">
+                        <p class="home-feature-meta">
                             Tome <?= str_pad((string) $lowLivre->numero, 2, '0', STR_PAD_LEFT) ?>
                         </p>
 
-                        <p class="home-last-volume">
+                        <p class="home-feature-meta">
                             ⭐ <?= (int) $lowLivre->livre_note ?>/5
                         </p>
                     </div>
@@ -305,7 +305,7 @@
     </h2>
 
     <?php if (!empty($lowRatedMangas)): ?>
-        <section class="home-best-list card-list animate-fade-up-stagger">
+        <section class="home-low-rated-list card-list animate-fade-up-stagger">
 
             <?php foreach ($lowRatedMangas as $manga): ?>
                 <a
@@ -318,16 +318,16 @@
 
                     <div class="card-image-box-portrait">
                         <img
-                            class="card-image-portrait card-image"
+                            class="card-image-portrait"
                             src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($manga->thumbnail . '.' . $manga->extension) ?>"
                             alt="<?= htmlspecialchars($manga->livre) ?>">
                     </div>
 
-                    <p class="home-bottom-title">
+                    <p class="home-list-card-title">
                         <?= htmlspecialchars($manga->livre) ?>
                     </p>
 
-                    <p class="home-bottom-subtitle">
+                    <p class="home-list-card-meta">
                         Tome <?= str_pad((string) $manga->numero, 2, '0', STR_PAD_LEFT) ?>
                     </p>
                 </a>
