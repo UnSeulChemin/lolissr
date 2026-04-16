@@ -189,7 +189,7 @@
     align-items: stretch;
     justify-content: center;
     flex-wrap: wrap;
-    gap: var(--gap-grid-collection);
+    gap: var(--gap-grid-home);
 }
 
 
