@@ -18,4 +18,12 @@ document.addEventListener('DOMContentLoaded', () =>
     initLinkPreloading();
 
     window.showToast = showToast;
+
+    if (window.flashToast)
+    {
+        showToast(
+            window.flashToast.message,
+            window.flashToast.type
+        );
+    }
 });
