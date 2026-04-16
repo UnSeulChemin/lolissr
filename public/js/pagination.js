@@ -2,6 +2,26 @@ import { showToast } from './toast.js';
 
 const paginationCache = new Map();
 
+function getPaginationScrollTarget(container)
+{
+    const grid = container.querySelector('.collection-grid');
+
+    if (!grid)
+    {
+        return 0;
+    }
+
+    return grid.getBoundingClientRect().top + window.scrollY - 24;
+}
+
+function scrollToPaginationTarget(targetTop)
+{
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+}
+
 async function preloadPage(url)
 {
     if (paginationCache.has(url))
@@ -23,7 +43,6 @@ async function preloadPage(url)
         }
 
         const html = await response.text();
-
         paginationCache.set(url, html);
     }
     catch (error)
@@ -38,6 +57,63 @@ function buildAjaxUrl(link)
         '/manga/collection/page/',
         '/manga/collection-ajax/page/'
     );
+}
+
+async function fetchPaginationHtml(ajaxUrl)
+{
+    let html = paginationCache.get(ajaxUrl);
+
+    if (html)
+    {
+        return html;
+    }
+
+    const response = await fetch(ajaxUrl, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    });
+
+    if (!response.ok)
+    {
+        throw new Error('Erreur AJAX pagination');
+    }
+
+    html = await response.text();
+    paginationCache.set(ajaxUrl, html);
+
+    return html;
+}
+
+async function loadPaginationContent(ajaxUrl, container, fallbackUrl, errorMessage, shouldScroll = true)
+{
+    try
+    {
+        container.classList.add('is-loading');
+
+        const html = await fetchPaginationHtml(ajaxUrl);
+
+        container.innerHTML = html;
+
+        if (shouldScroll)
+        {
+            const targetTop = getPaginationScrollTarget(container);
+
+            requestAnimationFrame(() =>
+            {
+                scrollToPaginationTarget(targetTop);
+            });
+        }
+    }
+    catch (error)
+    {
+        showToast(errorMessage, 'error');
+        window.location.href = fallbackUrl;
+    }
+    finally
+    {
+        container.classList.remove('is-loading');
+    }
 }
 
 export function initPaginationAjax()
@@ -86,54 +162,22 @@ export function initPaginationAjax()
 
         const ajaxUrl = buildAjaxUrl(link);
 
-        try
-        {
-            container.classList.add('is-loading');
+        await loadPaginationContent(
+            ajaxUrl,
+            container,
+            link.href,
+            'Erreur chargement page',
+            true
+        );
 
-            let html = paginationCache.get(ajaxUrl);
-
-            if (!html)
+        history.pushState(
             {
-                const response = await fetch(ajaxUrl, {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-
-                if (!response.ok)
-                {
-                    throw new Error('Erreur AJAX pagination');
-                }
-
-                html = await response.text();
-                paginationCache.set(ajaxUrl, html);
-            }
-
-            container.innerHTML = html;
-
-            history.pushState(
-                {
-                    ajaxUrl: ajaxUrl,
-                    pageUrl: link.href
-                },
-                '',
-                link.href
-            );
-
-            window.scrollTo({
-                top: container.offsetTop - 30,
-                behavior: 'smooth'
-            });
-        }
-        catch (error)
-        {
-            showToast('Erreur chargement page', 'error');
-            window.location.href = link.href;
-        }
-        finally
-        {
-            container.classList.remove('is-loading');
-        }
+                ajaxUrl: ajaxUrl,
+                pageUrl: link.href
+            },
+            '',
+            link.href
+        );
     });
 
     window.addEventListener('popstate', async () =>
@@ -153,49 +197,18 @@ export function initPaginationAjax()
         }
 
         const page = match[1];
-        const ajaxUrl = `${window.location.origin}${window.location.pathname.replace(
+        const pageUrl = `${window.location.origin}${window.location.pathname}`;
+        const ajaxUrl = pageUrl.replace(
             '/manga/collection/page/',
             '/manga/collection-ajax/page/'
-        )}`;
+        );
 
-        try
-        {
-            container.classList.add('is-loading');
-
-            let html = paginationCache.get(ajaxUrl);
-
-            if (!html)
-            {
-                const response = await fetch(ajaxUrl, {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
-
-                if (!response.ok)
-                {
-                    throw new Error('Erreur AJAX pagination');
-                }
-
-                html = await response.text();
-                paginationCache.set(ajaxUrl, html);
-            }
-
-            container.innerHTML = html;
-
-            window.scrollTo({
-                top: container.offsetTop - 30,
-                behavior: 'smooth'
-            });
-        }
-        catch (error)
-        {
-            showToast(`Erreur chargement page ${page}`, 'error');
-            window.location.reload();
-        }
-        finally
-        {
-            container.classList.remove('is-loading');
-        }
+        await loadPaginationContent(
+            ajaxUrl,
+            container,
+            pageUrl,
+            `Erreur chargement page ${page}`,
+            true
+        );
     });
 }

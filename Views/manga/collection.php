@@ -7,6 +7,8 @@ $currentPage = $currentPage ?? 1;
 
     <div class="collection-ajax-container">
 
+        <div class="collection-scroll-anchor" aria-hidden="true"></div>
+
         <div class="collection-skeleton" aria-hidden="true">
 
             <?php for ($i = 1; $i <= 8; $i++): ?>
