@@ -188,7 +188,7 @@
 
 
 /* =========================================
-   TOP CONTENT
+   TOP / WATCH CONTENT
 ========================================= */
 
 .home-longest-content,
@@ -225,8 +225,7 @@
     margin: 0 auto;
 }
 
-.home-longest-content .home-top-image-box,
-.home-last-content .home-top-image-box
+.home-top-image-box
 {
     margin: 0;
 }
@@ -235,6 +234,7 @@
 .home-last-info
 {
     overflow: hidden;
+    text-align: left;
 }
 
 .home-longest-info
@@ -246,7 +246,6 @@
     gap: 8px;
 
     width: var(--width-home-longest-info);
-    text-align: left;
 }
 
 .home-last-info
@@ -258,7 +257,6 @@
     gap: 6px;
 
     width: var(--width-home-last-info);
-    text-align: left;
 }
 
 
@@ -276,11 +274,6 @@
 
     width: fit-content;
     margin: 0 auto;
-}
-
-.home-grid-stats .card-link .home-top-image-box
-{
-    margin: 0;
 }
 
 .home-grid-stats .card-link .home-last-info
@@ -342,7 +335,7 @@
     display: grid;
     grid-template-columns: repeat(5, minmax(0, var(--width-collection-card)));
     justify-content: center;
-    gap: var(--gap-grid-home);
+    gap: var(--gap-grid-collection);
 
     margin: 0 auto;
 }
@@ -365,10 +358,19 @@
     box-sizing: border-box;
 }
 
-.home-series-top .card-bottom .card-image-box-portrait,
-.home-best-list .card-bottom .card-image-box-portrait
+.home-series-top .card-bottom .card-image-box-portrait
 {
     margin: 8px 0 14px;
+}
+
+.home-best-list .card-bottom
+{
+    padding-top: 44px;
+}
+
+.home-best-list .card-bottom .card-image-box-portrait
+{
+    margin: 16px 0 14px;
 }
 
 .home-bottom-title
@@ -419,8 +421,8 @@
 .home-series-rank
 {
     position: absolute;
-    top: 16px;
-    left: 16px;
+    top: var(--offset-card-corner);
+    left: var(--offset-card-corner);
     z-index: 2;
 
     margin: 0;
@@ -432,21 +434,21 @@
 .home-note-badge
 {
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: var(--offset-card-corner);
+    right: var(--offset-card-corner);
     z-index: 2;
 
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 5px;
 
-    min-width: 58px;
-    height: 34px;
-    padding: 0 10px;
+    min-width: 54px;
+    height: 30px;
+    padding: 0 9px;
 
     color: var(--color-gold-text);
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 800;
     line-height: 1;
 
