@@ -94,7 +94,7 @@ $cancelUrl = $basePath . 'manga/' . rawurlencode($manga->slug) . '/' . (int) $ma
 
                 <div class="form-group">
 
-                    <label class="form-label">
+                    <label class="form-label" for="note-total">
                         Note totale actuelle
                     </label>
 
@@ -133,28 +133,4 @@ $cancelUrl = $basePath . 'manga/' . rawurlencode($manga->slug) . '/' . (int) $ma
 
 <?php Session::forget(['errors', 'old']); ?>
 
-<script>
-const jacquetteInput = document.getElementById('jacquette');
-const livreNoteInput = document.getElementById('livre_note');
-const noteTotal = document.getElementById('note-total');
-
-function updateNoteTotal()
-{
-    const jacquetteValue = jacquetteInput.value;
-    const livreValue = livreNoteInput.value;
-
-    if (jacquetteValue === '' || livreValue === '')
-    {
-        noteTotal.value = 'Non calculée';
-        return;
-    }
-
-    const total = parseInt(jacquetteValue, 10) + parseInt(livreValue, 10);
-    noteTotal.value = total + '/10';
-}
-
-jacquetteInput.addEventListener('change', updateNoteTotal);
-livreNoteInput.addEventListener('change', updateNoteTotal);
-
-updateNoteTotal();
-</script>
+<script type="module" src="<?= $basePath; ?>public/js/pages/edit.js"></script>

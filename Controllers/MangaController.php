@@ -671,28 +671,54 @@ class MangaController extends Controller
         $slug = Functions::normalizeSlug($slug);
         $numero = (int) $numero;
 
-        header('Content-Type: application/json; charset=utf-8');
-
         if (!Functions::isPost())
         {
-            http_response_code(405);
-            echo json_encode([
+            $this->jsonResponse([
                 'success' => false,
                 'message' => 'Méthode non autorisée'
-            ]);
-            return;
+            ], 405);
         }
 
         $manga = $this->mangaModel()->findOneBySlugAndNumero($slug, $numero);
 
         if (!$manga)
         {
-            http_response_code(404);
-            echo json_encode([
+            $this->jsonResponse([
                 'success' => false,
                 'message' => 'Manga introuvable'
-            ]);
-            return;
+            ], 404);
+        }
+
+        $validator = new Validator($_POST, $_FILES);
+
+        $validator
+            ->nullable('commentaire')
+            ->string('commentaire', 'Le commentaire doit être un texte.')
+            ->maxLength('commentaire', 1000, 'Le commentaire ne doit pas dépasser 1000 caractères.')
+            ->nullable('jacquette')
+            ->integer('jacquette', 'La note jacquette doit être un entier.')
+            ->min('jacquette', 1, 'La note jacquette doit être supérieure ou égale à 1.')
+            ->max('jacquette', 5, 'La note jacquette doit être inférieure ou égale à 5.')
+            ->nullable('livre_note')
+            ->integer('livre_note', 'La note du livre doit être un entier.')
+            ->min('livre_note', 1, 'La note du livre doit être supérieure ou égale à 1.')
+            ->max('livre_note', 5, 'La note du livre doit être inférieure ou égale à 5.');
+
+        if ($validator->fails())
+        {
+            $errors = $validator->errors();
+            $firstError = '';
+
+            if (!empty($errors))
+            {
+                $firstError = (string) reset($errors);
+            }
+
+            $this->jsonResponse([
+                'success' => false,
+                'message' => $firstError !== '' ? $firstError : 'Le formulaire contient des erreurs.',
+                'errors' => $errors
+            ], 422);
         }
 
         $jacquette = $this->normalizePostedNote(
@@ -717,17 +743,22 @@ class MangaController extends Controller
 
         if (!$updated)
         {
-            http_response_code(500);
-            echo json_encode([
+            Logger::error(
+                'Échec update AJAX manga. slug='
+                . $slug
+                . ', numero='
+                . $numero
+            );
+
+            $this->jsonResponse([
                 'success' => false,
                 'message' => 'Erreur lors de la mise à jour'
-            ]);
-            return;
+            ], 500);
         }
 
         $fresh = $this->mangaModel()->findOneBySlugAndNumero($slug, $numero);
 
-        echo json_encode([
+        $this->jsonResponse([
             'success' => true,
             'message' => 'Notes mises à jour',
             'jacquette' => $fresh->jacquette,

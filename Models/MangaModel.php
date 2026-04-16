@@ -500,27 +500,6 @@ class MangaModel extends Model
     }
 
     /**
-     * Vérifie si la requête est AJAX.
-     */
-    private function isAjaxRequest(): bool
-    {
-        return !empty($_SERVER['HTTP_X_REQUESTED_WITH'])
-            && strtolower((string) $_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
-    }
-
-    /**
-     * Retourne une réponse JSON.
-     */
-    private function jsonResponse(array $data, int $statusCode = 200): void
-    {
-        http_response_code($statusCode);
-        header('Content-Type: application/json; charset=utf-8');
-
-        echo json_encode($data);
-        exit;
-    }
-
-    /**
      * Retourne l'id.
      */
     public function getId(): int
