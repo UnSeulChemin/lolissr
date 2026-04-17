@@ -132,10 +132,27 @@ class MangaController extends Controller
     {
         $mangaModel = $this->mangaModel();
         $pagination = Functions::pagination();
-        $currentPage = max(1, (int) $page);
+
+        if (!ctype_digit($page))
+        {
+            $this->notFound('Page introuvable');
+        }
+
+        $currentPage = (int) $page;
+
+        if ($currentPage < 1)
+        {
+            $this->notFound('Page introuvable');
+        }
+
+        $compteur = $mangaModel->countFirstTomesPaginate($pagination);
+
+        if ($compteur > 0 && $currentPage > $compteur)
+        {
+            $this->notFound('Page introuvable');
+        }
 
         $mangas = $mangaModel->findAllFirstTomes('id DESC', $pagination, $currentPage);
-        $compteur = $mangaModel->countFirstTomesPaginate($pagination);
 
         $this->title = 'Manga | Collection';
 
@@ -160,10 +177,27 @@ class MangaController extends Controller
     {
         $mangaModel = $this->mangaModel();
         $pagination = Functions::pagination();
-        $currentPage = max(1, (int) $page);
+
+        if (!ctype_digit($page))
+        {
+            $this->notFound('Page introuvable');
+        }
+
+        $currentPage = (int) $page;
+
+        if ($currentPage < 1)
+        {
+            $this->notFound('Page introuvable');
+        }
+
+        $compteur = $mangaModel->countFirstTomesPaginate($pagination);
+
+        if ($compteur > 0 && $currentPage > $compteur)
+        {
+            $this->notFound('Page introuvable');
+        }
 
         $mangas = $mangaModel->findAllFirstTomes('id DESC', $pagination, $currentPage);
-        $compteur = $mangaModel->countFirstTomesPaginate($pagination);
 
         $this->renderPartial('manga/partials/collection_ajax', [
             'mangas' => $mangas,

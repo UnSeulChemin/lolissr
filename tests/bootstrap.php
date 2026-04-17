@@ -368,6 +368,52 @@ function requestUrl(
 
 /*
 |--------------------------------------------------------------------------
+| MULTIPART
+|--------------------------------------------------------------------------
+*/
+
+function buildMultipartBody(array $fields, array $files, string $boundary): string
+{
+    $eol = "\r\n";
+    $body = '';
+
+    foreach ($fields as $name => $value)
+    {
+        $body .= '--' . $boundary . $eol;
+        $body .= 'Content-Disposition: form-data; name="' . $name . '"' . $eol . $eol;
+        $body .= (string) $value . $eol;
+    }
+
+    foreach ($files as $name => $file)
+    {
+        if (empty($file['path']) || !is_file($file['path']))
+        {
+            throw new RuntimeException('Fichier multipart introuvable : ' . ($file['path'] ?? 'null'));
+        }
+
+        $content = file_get_contents($file['path']);
+
+        if ($content === false)
+        {
+            throw new RuntimeException('Impossible de lire le fichier : ' . $file['path']);
+        }
+
+        $filename = $file['filename'] ?? basename($file['path']);
+        $type = $file['type'] ?? 'application/octet-stream';
+
+        $body .= '--' . $boundary . $eol;
+        $body .= 'Content-Disposition: form-data; name="' . $name . '"; filename="' . $filename . '"' . $eol;
+        $body .= 'Content-Type: ' . $type . $eol . $eol;
+        $body .= $content . $eol;
+    }
+
+    $body .= '--' . $boundary . '--' . $eol;
+
+    return $body;
+}
+
+/*
+|--------------------------------------------------------------------------
 | HTML HELPERS
 |--------------------------------------------------------------------------
 */

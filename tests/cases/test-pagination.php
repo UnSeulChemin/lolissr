@@ -31,9 +31,9 @@ addGetTest($tests, [
 
 addGetTest($tests, [
     'category' => 'Pagination',
-    'label' => 'Collection page très haute',
+    'label' => 'Collection page très haute refusée',
     'path' => '/manga/collection/page/9999',
-    'expected_status' => 200,
+    'expected_status' => 404,
 ]);
 
 addHtmlCheck($htmlChecks, [
@@ -112,7 +112,7 @@ addHtmlCheck($htmlChecks, [
 
 addHtmlCheck($htmlChecks, [
     'category' => 'Pagination',
-    'label' => 'Collection page très haute reste propre',
+    'label' => 'Collection page très haute retourne bien 404',
     'url' => $base . '/manga/collection/page/9999',
     'callback' => static function () use ($base): array
     {
@@ -124,10 +124,10 @@ addHtmlCheck($htmlChecks, [
             || stripos($body, 'warning') !== false;
 
         return [
-            'ok' => $response['status'] === 200 && !$hasFatal,
-            'message' => $response['status'] === 200
-                ? ($hasFatal ? 'sortie anormale détectée' : 'page haute propre')
-                : 'page inaccessible',
+            'ok' => $response['status'] === 404 && !$hasFatal,
+            'message' => $response['status'] === 404
+                ? ($hasFatal ? 'sortie anormale détectée' : '404 propre')
+                : 'status ' . $response['status'],
         ];
     },
 ]);
