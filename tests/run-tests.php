@@ -261,109 +261,27 @@ function addResult(array &$stats, string $category, string $status, float $durat
 
 /*
 |--------------------------------------------------------------------------
-| CONFIG TESTS GET
+| REGISTRE DES TESTS
 |--------------------------------------------------------------------------
 */
 
-$tests = [
-    [
-        'category' => 'Pages principales',
-        'label' => 'Accueil',
-        'path' => '/',
-        'expected_status' => 200,
-        'must_contain' => ['<body'],
-    ],
-    [
-        'category' => 'Pages principales',
-        'label' => 'Dashboard manga',
-        'path' => '/manga',
-        'expected_status' => 200,
-        'must_contain' => ['Manga'],
-    ],
-    [
-        'category' => 'Pages principales',
-        'label' => 'Collection',
-        'path' => '/manga/collection',
-        'expected_status' => 200,
-        'must_contain' => ['Collection'],
-    ],
-    [
-        'category' => 'Pages principales',
-        'label' => 'Pagination collection page 2',
-        'path' => '/manga/collection/page/2',
-        'expected_status' => 200,
-    ],
-    [
-        'category' => 'Pages principales',
-        'label' => 'Recherche',
-        'path' => '/manga/recherche',
-        'expected_status' => 200,
-    ],
-    [
-        'category' => 'Pages principales',
-        'label' => 'Ajouter',
-        'path' => '/manga/ajouter',
-        'expected_status' => 200,
-        'must_contain' => ['<form', 'Livre', 'slug', 'numero'],
-    ],
-    [
-        'category' => 'Pages principales',
-        'label' => 'Page lien',
-        'path' => '/manga/lien',
-        'expected_status' => 200,
-    ],
-    [
-        'category' => 'Pages mangas',
-        'label' => 'Série existante',
-        'path' => '/manga/serie/' . $realSlug,
-        'expected_status' => 200,
-    ],
-    [
-        'category' => 'Pages mangas',
-        'label' => 'Tome existant',
-        'path' => '/manga/' . $realSlug . '/' . $realNumero,
-        'expected_status' => 200,
-    ],
-    [
-        'category' => 'Pages mangas',
-        'label' => 'Page modifier',
-        'path' => '/manga/update/' . $realSlug . '/' . $realNumero,
-        'expected_status' => 200,
-        'must_contain' => ['<form'],
-    ],
-    [
-        'category' => 'Erreurs',
-        'label' => '404 inexistante',
-        'path' => '/page-introuvable',
-        'expected_status' => 404,
-    ],
-];
+$tests = [];
+$htmlChecks = [];
+$postChecks = [];
 
-if ($testCanonicalRedirect)
+function addGetTest(array &$tests, array $test): void
 {
-    $tests[] = [
-        'category' => 'Canonical',
-        'label' => 'Redirect canonique série',
-        'path' => '/manga/serie/' . $nonCanonicalSlug,
-        'expected_status' => 301,
-        'expected_location_contains' => '/manga/serie/' . $realSlug,
-    ];
+    $tests[] = $test;
+}
 
-    $tests[] = [
-        'category' => 'Canonical',
-        'label' => 'Redirect canonique tome',
-        'path' => '/manga/' . $nonCanonicalSlug . '/' . $realNumero,
-        'expected_status' => 301,
-        'expected_location_contains' => '/manga/' . $realSlug . '/' . $realNumero,
-    ];
+function addHtmlCheck(array &$htmlChecks, array $check): void
+{
+    $htmlChecks[] = $check;
+}
 
-    $tests[] = [
-        'category' => 'Canonical',
-        'label' => 'Redirect canonique modifier',
-        'path' => '/manga/update/' . $nonCanonicalSlug . '/' . $realNumero,
-        'expected_status' => 301,
-        'expected_location_contains' => '/manga/update/' . $realSlug . '/' . $realNumero,
-    ];
+function addPostCheck(array &$postChecks, array $check): void
+{
+    $postChecks[] = $check;
 }
 
 /*
@@ -530,244 +448,17 @@ function runGetTest(string $base, array $test): array
 
 /*
 |--------------------------------------------------------------------------
-| CHECKS HTML
+| ASSERTIONS CHECKS CUSTOM
 |--------------------------------------------------------------------------
 */
 
-function runExtraChecks(string $base, string $realSlug, int $realNumero): array
+function runCallableCheck(callable $callback): array
 {
-    $checks = [];
-
     $start = microtime(true);
-    $detail = requestUrl($base . '/manga/' . $realSlug . '/' . $realNumero);
+    $result = $callback();
+    $result['duration'] = $result['duration'] ?? (microtime(true) - $start);
 
-    if ($detail['status'] === 200)
-    {
-        $title = extractTitle($detail['body']);
-
-        $checks[] = [
-            'category' => 'HTML',
-            'label' => 'Detail a un <title>',
-            'ok' => !empty($title),
-            'message' => $title ?: 'title absent',
-            'duration' => microtime(true) - $start,
-            'url' => $base . '/manga/' . $realSlug . '/' . $realNumero,
-        ];
-
-        $start = microtime(true);
-
-        $checks[] = [
-            'category' => 'HTML',
-            'label' => 'Detail contient au moins une image',
-            'ok' => preg_match('/<img\b/i', $detail['body']) === 1,
-            'message' => preg_match('/<img\b/i', $detail['body']) === 1 ? 'img trouvée' : 'aucune image',
-            'duration' => microtime(true) - $start,
-            'url' => $base . '/manga/' . $realSlug . '/' . $realNumero,
-        ];
-
-        $start = microtime(true);
-
-        $checks[] = [
-            'category' => 'HTML',
-            'label' => 'Detail contient au moins un lien',
-            'ok' => preg_match('/<a\b/i', $detail['body']) === 1,
-            'message' => preg_match('/<a\b/i', $detail['body']) === 1 ? 'lien trouvé' : 'aucun lien',
-            'duration' => microtime(true) - $start,
-            'url' => $base . '/manga/' . $realSlug . '/' . $realNumero,
-        ];
-    }
-    else
-    {
-        $checks[] = [
-            'category' => 'HTML',
-            'label' => 'Detail HTML check',
-            'ok' => false,
-            'message' => 'page détail inaccessible',
-            'duration' => microtime(true) - $start,
-            'url' => $base . '/manga/' . $realSlug . '/' . $realNumero,
-        ];
-    }
-
-    $start = microtime(true);
-    $ajouter = requestUrl($base . '/manga/ajouter');
-
-    if ($ajouter['status'] === 200)
-    {
-        $requiredFields = [
-            'name="livre"',
-            'name="slug"',
-            'name="numero"',
-        ];
-
-        foreach ($requiredFields as $field)
-        {
-            $fieldStart = microtime(true);
-
-            $checks[] = [
-                'category' => 'HTML',
-                'label' => 'Ajouter contient ' . $field,
-                'ok' => stripos($ajouter['body'], $field) !== false,
-                'message' => stripos($ajouter['body'], $field) !== false ? 'ok' : 'absent',
-                'duration' => microtime(true) - $fieldStart,
-                'url' => $base . '/manga/ajouter',
-            ];
-        }
-    }
-
-    $start = microtime(true);
-    $modifier = requestUrl($base . '/manga/update/' . $realSlug . '/' . $realNumero);
-
-    if ($modifier['status'] === 200)
-    {
-        $possibleFields = [
-            'name="jacquette"',
-            'name="livre_note"',
-            'name="commentaire"',
-        ];
-
-        foreach ($possibleFields as $field)
-        {
-            $fieldStart = microtime(true);
-
-            $checks[] = [
-                'category' => 'HTML',
-                'label' => 'Modifier contient ' . $field,
-                'ok' => stripos($modifier['body'], $field) !== false,
-                'message' => stripos($modifier['body'], $field) !== false ? 'ok' : 'absent',
-                'duration' => microtime(true) - $fieldStart,
-                'url' => $base . '/manga/update/' . $realSlug . '/' . $realNumero,
-            ];
-        }
-    }
-
-    $start = microtime(true);
-    $collection = requestUrl($base . '/manga/collection');
-
-    if ($collection['status'] === 200)
-    {
-        $linkCount = countOccurrences($collection['body'], '<a');
-
-        $checks[] = [
-            'category' => 'HTML',
-            'label' => 'Collection contient plusieurs liens',
-            'ok' => $linkCount >= 3,
-            'message' => $linkCount . ' lien(s)',
-            'duration' => microtime(true) - $start,
-            'url' => $base . '/manga/collection',
-        ];
-    }
-
-    return $checks;
-}
-
-/*
-|--------------------------------------------------------------------------
-| POST TESTS
-|--------------------------------------------------------------------------
-*/
-
-function runPostTests(
-    string $base,
-    string $realSlug,
-    int $realNumero,
-    bool $testPostAjouter,
-    bool $testPostUpdate
-): array
-{
-    $checks = [];
-
-    if ($testPostAjouter)
-    {
-        $start = microtime(true);
-
-        $payload = http_build_query([
-            'livre' => 'Test Manga Auto',
-            'slug' => 'test-manga-auto',
-            'numero' => 999,
-            'commentaire' => 'test auto'
-        ]);
-
-        $url = $base . '/manga/ajouter';
-
-        $response = requestUrl(
-            $url,
-            'POST',
-            [
-                'Content-Type: application/x-www-form-urlencoded',
-                'X-Requested-With: XMLHttpRequest',
-            ],
-            $payload
-        );
-
-        $checks[] = [
-            'category' => 'POST',
-            'label' => 'POST ajouter validation AJAX',
-            'ok' => in_array($response['status'], [200, 422], true),
-            'message' => 'status ' . $response['status'],
-            'duration' => microtime(true) - $start,
-            'url' => $url,
-        ];
-    }
-    else
-    {
-        $checks[] = [
-            'category' => 'POST',
-            'label' => 'POST ajouter',
-            'ok' => true,
-            'message' => 'skippé (option désactivée)',
-            'warn' => true,
-            'duration' => 0.0,
-            'url' => $base . '/manga/ajouter',
-        ];
-    }
-
-    if ($testPostUpdate)
-    {
-        $start = microtime(true);
-
-        $payload = http_build_query([
-            'jacquette' => '5',
-            'livre_note' => '5',
-            'commentaire' => 'Test update auto'
-        ]);
-
-        $url = $base . '/manga/ajax/update-note/' . $realSlug . '/' . $realNumero;
-
-        $response = requestUrl(
-            $url,
-            'POST',
-            [
-                'Content-Type: application/x-www-form-urlencoded',
-                'X-Requested-With: XMLHttpRequest',
-            ],
-            $payload
-        );
-
-        $json = json_decode($response['body'], true);
-
-        $checks[] = [
-            'category' => 'POST',
-            'label' => 'POST ajax update note',
-            'ok' => $response['status'] === 200 && is_array($json) && !empty($json['success']),
-            'message' => 'status ' . $response['status'],
-            'duration' => microtime(true) - $start,
-            'url' => $url,
-        ];
-    }
-    else
-    {
-        $checks[] = [
-            'category' => 'POST',
-            'label' => 'POST update',
-            'ok' => true,
-            'message' => 'skippé (option désactivée)',
-            'warn' => true,
-            'duration' => 0.0,
-            'url' => $base . '/manga/ajax/update-note/' . $realSlug . '/' . $realNumero,
-        ];
-    }
-
-    return $checks;
+    return $result;
 }
 
 /*
@@ -913,18 +604,14 @@ function buildHtmlReport(
             --surface: #141420;
             --surface-2: #1c1c2b;
             --border: rgba(255,255,255,0.08);
-
             --text: #f5f5ff;
             --text-soft: #cfcfe8;
             --text-muted: #9fa3b8;
-
             --violet: #7b2cff;
             --violet-2: #c44cff;
-
             --green: #22c55e;
             --red: #ef4444;
             --yellow: #f59e0b;
-
             --shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
             --radius: 18px;
         }
@@ -1083,11 +770,6 @@ function buildHtmlReport(
             gap: 16px;
             flex-wrap: wrap;
             margin-bottom: 16px;
-        }
-
-        .section-header h2
-        {
-            margin-bottom: 0;
         }
 
         .controls
@@ -1255,30 +937,11 @@ function buildHtmlReport(
     </div>
 
     <div class="grid">
-        <div class="card">
-            <h3>Tests exécutés</h3>
-            <p>' . h((string) $stats['global']['total']) . '</p>
-        </div>
-
-        <div class="card">
-            <h3>Succès</h3>
-            <p>' . h((string) $stats['global']['success']) . '</p>
-        </div>
-
-        <div class="card">
-            <h3>Échecs</h3>
-            <p>' . h((string) $stats['global']['fail']) . '</p>
-        </div>
-
-        <div class="card">
-            <h3>Warnings</h3>
-            <p>' . h((string) $stats['global']['warn']) . '</p>
-        </div>
-
-        <div class="card">
-            <h3>Temps cumulé</h3>
-            <p>' . h(formatDuration((float) $stats['global']['duration'])) . '</p>
-        </div>
+        <div class="card"><h3>Tests exécutés</h3><p>' . h((string) $stats['global']['total']) . '</p></div>
+        <div class="card"><h3>Succès</h3><p>' . h((string) $stats['global']['success']) . '</p></div>
+        <div class="card"><h3>Échecs</h3><p>' . h((string) $stats['global']['fail']) . '</p></div>
+        <div class="card"><h3>Warnings</h3><p>' . h((string) $stats['global']['warn']) . '</p></div>
+        <div class="card"><h3>Temps cumulé</h3><p>' . h(formatDuration((float) $stats['global']['duration'])) . '</p></div>
     </div>
 
     <div class="section">
@@ -1397,7 +1060,21 @@ function buildHtmlReport(
 
 /*
 |--------------------------------------------------------------------------
-| RUNNER
+| CHARGEMENT AUTOMATIQUE DES CASES
+|--------------------------------------------------------------------------
+*/
+
+$caseFiles = glob(__DIR__ . '/cases/*.php') ?: [];
+sort($caseFiles);
+
+foreach ($caseFiles as $caseFile)
+{
+    require $caseFile;
+}
+
+/*
+|--------------------------------------------------------------------------
+| RUNNER GET
 |--------------------------------------------------------------------------
 */
 
@@ -1459,9 +1136,14 @@ foreach ($tests as $test)
     }
 }
 
-sectionTitle('CHECKS HTML / STRUCTURE');
+/*
+|--------------------------------------------------------------------------
+| RUNNER CHECKS CUSTOM
+|--------------------------------------------------------------------------
+*/
 
-$htmlChecks = runExtraChecks($base, $realSlug, $realNumero);
+sectionTitle('CHECKS COMPLÉMENTAIRES');
+
 $currentCategory = null;
 
 foreach ($htmlChecks as $check)
@@ -1474,33 +1156,46 @@ foreach ($htmlChecks as $check)
         categoryTitle($category);
     }
 
-    $duration = $check['duration'] ?? 0.0;
+    $duration = 0.0;
     $checkUrl = $check['url'] ?? null;
 
-    if ($check['ok'])
+    if (isset($check['callback']) && is_callable($check['callback']))
     {
-        printOk($check['label'], $check['message'], $duration);
+        $result = runCallableCheck($check['callback']);
+        $duration = $result['duration'] ?? 0.0;
+        $ok = (bool) ($result['ok'] ?? false);
+        $message = (string) ($result['message'] ?? '');
+    }
+    else
+    {
+        $ok = false;
+        $message = 'callback absente';
+    }
+
+    if ($ok)
+    {
+        printOk($check['label'], $message, $duration);
         addResult($stats, $category, 'success', $duration);
 
         recordResult(
             'success',
             $category,
             $check['label'],
-            $check['message'],
+            $message,
             $duration,
             $checkUrl
         );
     }
     else
     {
-        printFail($check['label'], $check['message'], $duration);
+        printFail($check['label'], $message, $duration);
         addResult($stats, $category, 'fail', $duration);
 
         recordResult(
             'fail',
             $category,
             $check['label'],
-            $check['message'],
+            $message,
             $duration,
             $checkUrl
         );
@@ -1508,22 +1203,20 @@ foreach ($htmlChecks as $check)
         $failures[] = [
             'category' => $category,
             'label' => $check['label'],
-            'message' => $check['message'],
+            'message' => $message,
             'duration' => $duration,
             'url' => $checkUrl,
         ];
     }
 }
 
-sectionTitle('TESTS POST');
+/*
+|--------------------------------------------------------------------------
+| RUNNER POST
+|--------------------------------------------------------------------------
+*/
 
-$postChecks = runPostTests(
-    $base,
-    $realSlug,
-    $realNumero,
-    $testPostAjouter,
-    $testPostUpdate
-);
+sectionTitle('TESTS POST');
 
 $currentCategory = null;
 
@@ -1537,19 +1230,34 @@ foreach ($postChecks as $check)
         categoryTitle($category);
     }
 
-    $duration = $check['duration'] ?? 0.0;
+    $duration = 0.0;
     $checkUrl = $check['url'] ?? null;
 
-    if (!empty($check['warn']))
+    if (isset($check['callback']) && is_callable($check['callback']))
     {
-        printWarn($check['label'], $check['message'], $duration);
+        $result = runCallableCheck($check['callback']);
+        $duration = $result['duration'] ?? 0.0;
+        $ok = (bool) ($result['ok'] ?? false);
+        $message = (string) ($result['message'] ?? '');
+        $warn = (bool) ($result['warn'] ?? false);
+    }
+    else
+    {
+        $ok = false;
+        $warn = false;
+        $message = 'callback absente';
+    }
+
+    if ($warn)
+    {
+        printWarn($check['label'], $message, $duration);
         addResult($stats, $category, 'warn', $duration);
 
         recordResult(
             'warn',
             $category,
             $check['label'],
-            $check['message'],
+            $message,
             $duration,
             $checkUrl
         );
@@ -1557,37 +1265,38 @@ foreach ($postChecks as $check)
         $warnings[] = [
             'category' => $category,
             'label' => $check['label'],
-            'message' => $check['message'],
+            'message' => $message,
             'duration' => $duration,
             'url' => $checkUrl,
         ];
+
         continue;
     }
 
-    if ($check['ok'])
+    if ($ok)
     {
-        printOk($check['label'], $check['message'], $duration);
+        printOk($check['label'], $message, $duration);
         addResult($stats, $category, 'success', $duration);
 
         recordResult(
             'success',
             $category,
             $check['label'],
-            $check['message'],
+            $message,
             $duration,
             $checkUrl
         );
     }
     else
     {
-        printFail($check['label'], $check['message'], $duration);
+        printFail($check['label'], $message, $duration);
         addResult($stats, $category, 'fail', $duration);
 
         recordResult(
             'fail',
             $category,
             $check['label'],
-            $check['message'],
+            $message,
             $duration,
             $checkUrl
         );
@@ -1595,7 +1304,7 @@ foreach ($postChecks as $check)
         $failures[] = [
             'category' => $category,
             'label' => $check['label'],
-            'message' => $check['message'],
+            'message' => $message,
             'duration' => $duration,
             'url' => $checkUrl,
         ];
@@ -1654,7 +1363,7 @@ foreach ($stats['categories'] as $category => $categoryStats)
 
 /*
 |--------------------------------------------------------------------------
-| RÉSUMÉ FINAL PREMIUM
+| RÉSUMÉ FINAL
 |--------------------------------------------------------------------------
 */
 
