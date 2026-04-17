@@ -6,18 +6,18 @@ echo          LANCEMENT DES TESTS
 echo ======================================
 echo.
 
-cd /d %~dp0
+cd /d "%~dp0"
 
 php -v >nul 2>&1
 
-if %errorlevel% neq 0 (
+if errorlevel 1 (
     echo ERREUR : PHP n'est pas disponible dans le PATH.
     echo.
     pause
-    exit /b
+    exit /b 1
 )
 
-php run-tests.php
+php "run-tests.php"
 
 echo.
 echo ======================================
