@@ -1,4 +1,4 @@
-import { preloadUrl, preloadImage } from './prefetch.js';
+import { preloadUrl, preloadImage } from './prefetch-navigation.js';
 
 let keyboardInitialized = false;
 let activeIndex = -1;

@@ -3,12 +3,7 @@ let hoverTimer = null;
 
 function canPreloadLink(link)
 {
-    if (!link)
-    {
-        return false;
-    }
-
-    if (!link.href)
+    if (!link || !link.href)
     {
         return false;
     }
@@ -16,6 +11,24 @@ function canPreloadLink(link)
     if (
         link.classList.contains('collection-card-link') ||
         link.classList.contains('collection-pagination-link')
+    )
+    {
+        return false;
+    }
+
+    if (link.target === '_blank' || link.hasAttribute('download'))
+    {
+        return false;
+    }
+
+    const href = link.getAttribute('href');
+
+    if (
+        !href ||
+        href.startsWith('#') ||
+        href.startsWith('mailto:') ||
+        href.startsWith('tel:') ||
+        href.startsWith('javascript:')
     )
     {
         return false;
@@ -38,14 +51,14 @@ async function preloadLink(url)
         return;
     }
 
-    preloadedLinks.add(url);
-
     try
     {
         await fetch(url, {
             method: 'GET',
             credentials: 'same-origin'
         });
+
+        preloadedLinks.add(url);
     }
     catch (error)
     {
@@ -55,6 +68,11 @@ async function preloadLink(url)
 
 export function initLinkPreloading()
 {
+    if (navigator.connection?.saveData)
+    {
+        return;
+    }
+
     document.addEventListener('mouseover', (event) =>
     {
         const link = event.target.closest('a');
@@ -70,6 +88,11 @@ export function initLinkPreloading()
         {
             preloadLink(link.href);
         }, 120);
+    });
+
+    document.addEventListener('mouseout', () =>
+    {
+        clearTimeout(hoverTimer);
     });
 
     document.addEventListener('focusin', (event) =>

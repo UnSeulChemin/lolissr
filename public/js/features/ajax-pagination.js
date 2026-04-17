@@ -2,17 +2,17 @@ import { showToast } from '../core/toast.js';
 
 const paginationCache = new Map();
 
-function scrollToPaginationTop()
+function scrollToPaginationTop(container)
 {
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
+    container.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
     });
 }
 
 async function preloadPage(url)
 {
-    if (paginationCache.has(url))
+    if (!url || paginationCache.has(url))
     {
         return;
     }
@@ -42,10 +42,14 @@ async function preloadPage(url)
 
 function buildAjaxUrl(link)
 {
-    return link.href.replace(
+    const url = new URL(link.href, window.location.origin);
+
+    url.pathname = url.pathname.replace(
         '/manga/collection/page/',
         '/manga/collection-ajax/page/'
     );
+
+    return url.toString();
 }
 
 function preloadNextPaginationLink(container)
@@ -74,11 +78,11 @@ function preloadNextPaginationLink(container)
 
 async function fetchPaginationHtml(ajaxUrl)
 {
-    let html = paginationCache.get(ajaxUrl);
+    const cachedHtml = paginationCache.get(ajaxUrl);
 
-    if (html)
+    if (cachedHtml)
     {
-        return html;
+        return cachedHtml;
     }
 
     const response = await fetch(ajaxUrl, {
@@ -92,13 +96,20 @@ async function fetchPaginationHtml(ajaxUrl)
         throw new Error('Erreur AJAX pagination');
     }
 
-    html = await response.text();
+    const html = await response.text();
+
     paginationCache.set(ajaxUrl, html);
 
     return html;
 }
 
-async function loadPaginationContent(ajaxUrl, container, fallbackUrl, errorMessage, shouldScroll = true)
+async function loadPaginationContent(
+    ajaxUrl,
+    container,
+    fallbackUrl,
+    errorMessage,
+    shouldScroll = true
+)
 {
     try
     {
@@ -114,14 +125,18 @@ async function loadPaginationContent(ajaxUrl, container, fallbackUrl, errorMessa
         {
             requestAnimationFrame(() =>
             {
-                scrollToPaginationTop();
+                scrollToPaginationTop(container);
             });
         }
+
+        return true;
     }
     catch (error)
     {
         showToast(errorMessage, 'error');
         window.location.href = fallbackUrl;
+
+        return false;
     }
     finally
     {
@@ -131,6 +146,13 @@ async function loadPaginationContent(ajaxUrl, container, fallbackUrl, errorMessa
 
 export function initPaginationAjax()
 {
+    const container = document.querySelector('.collection-ajax-container');
+
+    if (!container)
+    {
+        return;
+    }
+
     document.addEventListener('mouseover', (event) =>
     {
         const link = event.target.closest('.collection-pagination-link');
@@ -164,24 +186,22 @@ export function initPaginationAjax()
             return;
         }
 
-        const container = document.querySelector('.collection-ajax-container');
-
-        if (!container)
-        {
-            return;
-        }
-
         event.preventDefault();
 
         const ajaxUrl = buildAjaxUrl(link);
 
-        await loadPaginationContent(
+        const success = await loadPaginationContent(
             ajaxUrl,
             container,
             link.href,
             'Erreur chargement page',
             true
         );
+
+        if (!success)
+        {
+            return;
+        }
 
         history.pushState(
             {
@@ -195,14 +215,7 @@ export function initPaginationAjax()
 
     window.addEventListener('popstate', async () =>
     {
-        const container = document.querySelector('.collection-ajax-container');
-
-        if (!container)
-        {
-            return;
-        }
-
-        const match = window.location.pathname.match(/\/\/?manga\/collection\/page\/(\d+)$/);
+        const match = window.location.pathname.match(/\/manga\/collection\/page\/(\d+)$/);
 
         if (!match)
         {
@@ -210,7 +223,7 @@ export function initPaginationAjax()
         }
 
         const page = match[1];
-        const pageUrl = `${window.location.origin}${window.location.pathname}`;
+        const pageUrl = window.location.href;
         const ajaxUrl = pageUrl.replace(
             '/manga/collection/page/',
             '/manga/collection-ajax/page/'
@@ -225,10 +238,5 @@ export function initPaginationAjax()
         );
     });
 
-    const container = document.querySelector('.collection-ajax-container');
-
-    if (container)
-    {
-        preloadNextPaginationLink(container);
-    }
+    preloadNextPaginationLink(container);
 }

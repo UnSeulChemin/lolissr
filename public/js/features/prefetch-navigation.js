@@ -8,14 +8,20 @@ export function preloadUrl(url)
         return;
     }
 
-    detailPageCache.add(url);
-
     fetch(url, {
         method: 'GET',
         headers: {
             'X-Requested-With': 'XMLHttpRequest'
         }
-    }).catch(() =>
+    })
+    .then((response) =>
+    {
+        if (response.ok)
+        {
+            detailPageCache.add(url);
+        }
+    })
+    .catch(() =>
     {
         // silence volontaire
     });
