@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 use App\Core\Router;
+use RuntimeException;
 
 final class RouterTest extends TestCase
 {
@@ -61,10 +62,6 @@ final class RouterTest extends TestCase
                 . $exception->getMessage()
             );
         }
-        catch (Throwable $throwable)
-        {
-            $this->assertTrue(true);
-        }
     }
 
     public function testDispatchAcceptsTrailingSlash(): void
@@ -84,10 +81,6 @@ final class RouterTest extends TestCase
                 'La route avec slash final aurait dû matcher. Exception RuntimeException : '
                 . $exception->getMessage()
             );
-        }
-        catch (Throwable $throwable)
-        {
-            $this->assertTrue(true);
         }
     }
 }
