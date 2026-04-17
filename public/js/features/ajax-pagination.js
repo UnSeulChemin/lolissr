@@ -2,12 +2,34 @@ import { showToast } from '../core/toast.js';
 
 const paginationCache = new Map();
 
+function isPaginationLink(element)
+{
+    return element?.closest('.collection-pagination-link') ?? null;
+}
+
+function getAjaxContainer()
+{
+    return document.querySelector('.collection-ajax-container');
+}
+
 function scrollToPaginationTop(container)
 {
     container.scrollIntoView({
         behavior: 'smooth',
         block: 'start'
     });
+}
+
+function buildAjaxUrl(link)
+{
+    const url = new URL(link.href, window.location.origin);
+
+    url.pathname = url.pathname.replace(
+        '/manga/collection/page/',
+        '/manga/collection-ajax/page/'
+    );
+
+    return url.toString();
 }
 
 async function preloadPage(url)
@@ -40,18 +62,6 @@ async function preloadPage(url)
     }
 }
 
-function buildAjaxUrl(link)
-{
-    const url = new URL(link.href, window.location.origin);
-
-    url.pathname = url.pathname.replace(
-        '/manga/collection/page/',
-        '/manga/collection-ajax/page/'
-    );
-
-    return url.toString();
-}
-
 function preloadNextPaginationLink(container)
 {
     const activeLink = container.querySelector('.collection-pagination-link.active');
@@ -63,12 +73,7 @@ function preloadNextPaginationLink(container)
 
     const nextLink = activeLink.nextElementSibling;
 
-    if (!nextLink)
-    {
-        return;
-    }
-
-    if (!nextLink.classList.contains('collection-pagination-link'))
+    if (!nextLink?.classList.contains('collection-pagination-link'))
     {
         return;
     }
@@ -144,9 +149,26 @@ async function loadPaginationContent(
     }
 }
 
+function getCurrentPaginationAjaxUrl()
+{
+    const url = new URL(window.location.href);
+
+    url.pathname = url.pathname.replace(
+        '/manga/collection/page/',
+        '/manga/collection-ajax/page/'
+    );
+
+    return url.toString();
+}
+
+function isCollectionPaginationPage()
+{
+    return /\/manga\/collection\/page\/\d+$/.test(window.location.pathname);
+}
+
 export function initPaginationAjax()
 {
-    const container = document.querySelector('.collection-ajax-container');
+    const container = getAjaxContainer();
 
     if (!container)
     {
@@ -155,7 +177,7 @@ export function initPaginationAjax()
 
     document.addEventListener('mouseover', (event) =>
     {
-        const link = event.target.closest('.collection-pagination-link');
+        const link = isPaginationLink(event.target);
 
         if (!link)
         {
@@ -167,7 +189,7 @@ export function initPaginationAjax()
 
     document.addEventListener('focusin', (event) =>
     {
-        const link = event.target.closest('.collection-pagination-link');
+        const link = isPaginationLink(event.target);
 
         if (!link)
         {
@@ -179,7 +201,7 @@ export function initPaginationAjax()
 
     document.addEventListener('click', async (event) =>
     {
-        const link = event.target.closest('.collection-pagination-link');
+        const link = isPaginationLink(event.target);
 
         if (!link)
         {
@@ -215,25 +237,21 @@ export function initPaginationAjax()
 
     window.addEventListener('popstate', async () =>
     {
-        const match = window.location.pathname.match(/\/manga\/collection\/page\/(\d+)$/);
-
-        if (!match)
+        if (!isCollectionPaginationPage())
         {
             return;
         }
 
-        const page = match[1];
-        const pageUrl = window.location.href;
-        const ajaxUrl = pageUrl.replace(
-            '/manga/collection/page/',
-            '/manga/collection-ajax/page/'
-        );
+        const pageMatch = window.location.pathname.match(/\/manga\/collection\/page\/(\d+)$/);
+        const page = pageMatch ? pageMatch[1] : null;
 
         await loadPaginationContent(
-            ajaxUrl,
+            getCurrentPaginationAjaxUrl(),
             container,
-            pageUrl,
-            `Erreur chargement page ${page}`,
+            window.location.href,
+            page
+                ? `Erreur chargement page ${page}`
+                : 'Erreur chargement page',
             true
         );
     });
