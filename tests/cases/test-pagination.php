@@ -15,6 +15,27 @@ addGetTest($tests, [
     'expected_status' => 200,
 ]);
 
+addGetTest($tests, [
+    'category' => 'Pagination',
+    'label' => 'Collection page 0 refusée',
+    'path' => '/manga/collection/page/0',
+    'expected_status' => 404,
+]);
+
+addGetTest($tests, [
+    'category' => 'Pagination',
+    'label' => 'Collection page négative refusée',
+    'path' => '/manga/collection/page/-1',
+    'expected_status' => 404,
+]);
+
+addGetTest($tests, [
+    'category' => 'Pagination',
+    'label' => 'Collection page très haute',
+    'path' => '/manga/collection/page/9999',
+    'expected_status' => 200,
+]);
+
 addHtmlCheck($htmlChecks, [
     'category' => 'Pagination',
     'label' => 'Collection page 1 contient du contenu',
@@ -78,11 +99,35 @@ addHtmlCheck($htmlChecks, [
             ];
         }
 
+        $different = md5($page1['body']) !== md5($page2['body']);
+
         return [
-            'ok' => md5($page1['body']) !== md5($page2['body']),
-            'message' => md5($page1['body']) !== md5($page2['body'])
+            'ok' => $different,
+            'message' => $different
                 ? 'les pages diffèrent'
                 : 'page 1 et page 2 identiques',
+        ];
+    },
+]);
+
+addHtmlCheck($htmlChecks, [
+    'category' => 'Pagination',
+    'label' => 'Collection page très haute reste propre',
+    'url' => $base . '/manga/collection/page/9999',
+    'callback' => static function () use ($base): array
+    {
+        $response = requestUrl($base . '/manga/collection/page/9999');
+        $body = $response['body'];
+
+        $hasFatal = stripos($body, 'fatal error') !== false
+            || stripos($body, 'uncaught exception') !== false
+            || stripos($body, 'warning') !== false;
+
+        return [
+            'ok' => $response['status'] === 200 && !$hasFatal,
+            'message' => $response['status'] === 200
+                ? ($hasFatal ? 'sortie anormale détectée' : 'page haute propre')
+                : 'page inaccessible',
         ];
     },
 ]);

@@ -40,6 +40,24 @@ class MangaController extends Controller
     }
 
     /**
+     * Retourne true si le mode test upload est activé.
+     */
+    private function isTestUploadMode(): bool
+    {
+        return Functions::env('TEST_UPLOAD_MODE', 'false') === 'true';
+    }
+
+    /**
+     * Retourne le dossier d’upload de test absolu.
+     */
+    private function testUploadDirectory(): string
+    {
+        $directory = trim(Functions::env('TEST_UPLOAD_DIR', 'tests/tmp-uploads'), '/\\');
+
+        return ROOT . '/' . $directory . '/';
+    }
+
+    /**
      * Convertit une note postée.
      * Retourne null si vide ou invalide.
      */
@@ -191,14 +209,11 @@ class MangaController extends Controller
      */
     public function searchAjax(string $query = ''): void
     {
-        header('Content-Type: application/json; charset=utf-8');
-
         $search = trim(str_replace('-', ' ', urldecode($query)));
 
         if ($search === '')
         {
-            echo json_encode([]);
-            return;
+            $this->jsonResponse([]);
         }
 
         $mangas = $this->mangaModel()->searchMangas($search);
@@ -216,7 +231,7 @@ class MangaController extends Controller
             ];
         }
 
-        echo json_encode($results);
+        $this->jsonResponse($results);
     }
 
     /**
@@ -404,20 +419,38 @@ class MangaController extends Controller
             Functions::postNullableString('commentaire')
         );
 
-        if ($mangaModel->findOneBySlugAndNumero($slug, $numero))
+        if (!$this->isTestUploadMode() && $mangaModel->findOneBySlugAndNumero($slug, $numero))
         {
             if ($this->isAjaxRequest())
             {
                 $this->jsonResponse([
                     'success' => false,
                     'message' => 'Ce manga existe déjà'
-                ], 200);
+                ], 409);
             }
 
             $this->redirectWithError('manga/ajouter', 'Ce manga existe déjà');
         }
 
         $upload = $this->uploadThumbnail($livre, $numero);
+
+        if ($this->isTestUploadMode())
+        {
+            $this->removeFileIfExists($upload['destination']);
+
+            if ($this->isAjaxRequest())
+            {
+                $this->jsonResponse([
+                    'success' => true,
+                    'message' => 'Upload test OK (aucune écriture en base)'
+                ]);
+            }
+
+            $this->redirectWithSuccess(
+                'manga/ajouter',
+                'Upload test OK (aucune écriture en base)'
+            );
+        }
 
         $insert = $mangaModel->insert([
             'thumbnail' => $upload['thumbnail'],
@@ -558,6 +591,26 @@ class MangaController extends Controller
 
         $dossier = Functions::mangaThumbnailDirectory();
 
+        if ($this->isTestUploadMode())
+        {
+            $dossier = $this->testUploadDirectory();
+        }
+
+        if (!is_dir($dossier) && !mkdir($dossier, 0777, true) && !is_dir($dossier))
+        {
+            Logger::error('Upload manga: impossible de créer le dossier image : ' . $dossier);
+
+            if ($this->isAjaxRequest())
+            {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Dossier image introuvable'
+                ], 500);
+            }
+
+            $this->redirectWithError('manga/ajouter', 'Dossier image introuvable');
+        }
+
         if (!is_dir($dossier))
         {
             Logger::error('Upload manga: dossier image introuvable : ' . $dossier);
@@ -666,20 +719,18 @@ class MangaController extends Controller
 
         if ($requestedSlug !== $canonicalSlug)
         {
+            $redirect = Functions::basePath() . 'manga/update/' . rawurlencode($canonicalSlug) . '/' . $numero;
+
             if ($this->isAjaxRequest())
             {
                 $this->jsonResponse([
                     'success' => false,
                     'message' => 'URL non canonique',
-                    'redirect' => Functions::basePath() . 'manga/update/' . rawurlencode($canonicalSlug) . '/' . $numero
+                    'redirect' => $redirect
                 ], 409);
             }
 
-            header(
-                'Location: ' . Functions::basePath() . 'manga/update/' . rawurlencode($canonicalSlug) . '/' . $numero,
-                true,
-                301
-            );
+            header('Location: ' . $redirect, true, 301);
             exit;
         }
 
@@ -772,10 +823,9 @@ class MangaController extends Controller
 
         if ($this->isAjaxRequest())
         {
-            Session::set('success', 'Manga mis à jour avec succès');
-
             $this->jsonResponse([
                 'success' => true,
+                'message' => 'Manga mis à jour avec succès',
                 'redirect' => Functions::basePath() . 'manga/' . rawurlencode($slug) . '/' . $numero
             ]);
         }
@@ -804,7 +854,8 @@ class MangaController extends Controller
             ], 405);
         }
 
-        $manga = $this->mangaModel()->findOneBySlugAndNumero($normalizedSlug, $numero);
+        $mangaModel = $this->mangaModel();
+        $manga = $mangaModel->findOneBySlugAndNumero($normalizedSlug, $numero);
 
         if (!$manga)
         {
@@ -871,7 +922,7 @@ class MangaController extends Controller
             Functions::postNullableString('commentaire')
         );
 
-        $updated = $this->mangaModel()->updateManga(
+        $updated = $mangaModel->updateManga(
             $slug,
             $numero,
             $jacquette,
@@ -894,7 +945,7 @@ class MangaController extends Controller
             ], 500);
         }
 
-        $fresh = $this->mangaModel()->findOneBySlugAndNumero($slug, $numero);
+        $fresh = $mangaModel->findOneBySlugAndNumero($slug, $numero);
 
         $this->jsonResponse([
             'success' => true,

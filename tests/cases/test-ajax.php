@@ -33,9 +33,7 @@ addPostCheck($postChecks, [
 
         $json = json_decode($response['body'], true);
 
-        $statusOk = in_array($response['status'], [200, 400, 422], true);
         $jsonOk = is_array($json);
-
         $hasErrorSignal = false;
 
         if ($jsonOk)
@@ -47,7 +45,7 @@ addPostCheck($postChecks, [
         }
 
         return [
-            'ok' => $statusOk && $jsonOk && $hasErrorSignal,
+            'ok' => $response['status'] === 422 && $jsonOk && $hasErrorSignal,
             'message' => 'status ' . $response['status'] . ($jsonOk ? ' | json erreur reçu' : ' | réponse non json'),
         ];
     },
@@ -55,7 +53,7 @@ addPostCheck($postChecks, [
 
 addPostCheck($postChecks, [
     'category' => 'AJAX',
-    'label' => 'POST ajouter JSON invalide',
+    'label' => 'POST ajouter body JSON non supporté',
     'url' => $base . '/manga/ajouter',
     'callback' => static function () use ($base): array
     {
@@ -66,17 +64,19 @@ addPostCheck($postChecks, [
                 'Content-Type: application/json',
                 'X-Requested-With: XMLHttpRequest',
             ],
-            '{"livre":',
+            '{"livre":'
         );
 
         $json = json_decode($response['body'], true);
 
-        $statusOk = in_array($response['status'], [200, 400, 415, 422], true);
-        $jsonOk = is_array($json) || trim($response['body']) !== '';
+        $ok = $response['status'] === 422
+            && is_array($json)
+            && isset($json['success'])
+            && $json['success'] === false;
 
         return [
-            'ok' => $statusOk && $jsonOk,
-            'message' => 'status ' . $response['status'] . ' | payload JSON invalide refusé',
+            'ok' => $ok,
+            'message' => 'status ' . $response['status'] . ' | body JSON non supporté',
         ];
     },
 ]);

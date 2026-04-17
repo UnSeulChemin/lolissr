@@ -29,7 +29,7 @@ return [
 
     'testCanonicalRedirect' => true,
     'testPostAjouter' => false,
-    'testPostUpdate' => false,
+    'testPostUpdate' => true,
 
     /*
     |--------------------------------------------------------------------------

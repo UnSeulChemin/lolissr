@@ -126,6 +126,11 @@ function categoryTitle(string $title): void
 
 function formatDuration(float $seconds): string
 {
+    if ($seconds <= 0)
+    {
+        return '0 ms';
+    }
+
     return number_format($seconds * 1000, 2, ',', ' ') . ' ms';
 }
 
@@ -197,7 +202,10 @@ function recordResult(
 {
     global $allResults;
 
+    static $resultId = 1;
+
     $allResults[] = [
+        'id' => $resultId++,
         'status' => $status,
         'category' => $category,
         'label' => $label,
@@ -304,7 +312,7 @@ function requestUrl(
             'ignore_errors' => true,
             'follow_location' => 0,
             'max_redirects' => 0,
-            'timeout' => 15,
+            'timeout' => 5,
             'header' => implode("\r\n", $finalHeaders) . "\r\n",
         ],
     ];
@@ -318,6 +326,18 @@ function requestUrl(
 
     $body = @file_get_contents($url, false, $context);
     $headersOut = $http_response_header ?? [];
+
+    if ($body === false && empty($headersOut))
+    {
+        return [
+            'status' => 0,
+            'body' => '',
+            'headers' => [],
+            'location' => null,
+            'url' => $url,
+            'method' => $method,
+        ];
+    }
 
     $status = 0;
     $location = null;
@@ -585,24 +605,36 @@ function buildHtmlReport(
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>LoliSSR Test Report</title>
     <style>
         body{margin:0;padding:32px;font-family:"Segoe UI",Arial,sans-serif;background:#0b0b12;color:#f5f5ff}
         .hero,.card{background:#141420;border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:18px;margin-bottom:18px}
+        .hero-success{box-shadow:0 0 0 1px rgba(34,197,94,.15)}
+        .hero-fail{box-shadow:0 0 0 1px rgba(239,68,68,.15)}
         .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
         .badge{display:inline-block;padding:5px 10px;border-radius:999px;font-size:12px;font-weight:800}
         .badge-success{background:rgba(34,197,94,.18);color:#86efac}
         .badge-fail{background:rgba(239,68,68,.18);color:#fca5a5}
         .badge-warn{background:rgba(245,158,11,.18);color:#fcd34d}
         .badge-default{background:rgba(148,163,184,.18);color:#cbd5e1}
-        .url-link{color:#c44cff;text-decoration:none}
-        table{width:100%;border-collapse:collapse;background:#141420;border:1px solid rgba(255,255,255,.08)}
+        .url-link{color:#c44cff;text-decoration:none;word-break:break-all}
+        .url-link:hover{text-decoration:underline}
+        table{width:100%;border-collapse:collapse;background:#141420;border:1px solid rgba(255,255,255,.08);border-radius:18px;overflow:hidden}
         th,td{padding:12px;border-bottom:1px solid rgba(255,255,255,.05);text-align:left;vertical-align:top}
         th{background:rgba(123,44,255,.12)}
         .mini{display:inline-block;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700}
         .ok{background:rgba(34,197,94,.15);color:#86efac}
         .fail{background:rgba(239,68,68,.15);color:#fca5a5}
         .warn{background:rgba(245,158,11,.15);color:#fcd34d}
+        .muted{opacity:.6}
+        .success-block{border-color:rgba(34,197,94,.2)}
+        .fail-block{border-color:rgba(239,68,68,.2)}
+        .warn-block{border-color:rgba(245,158,11,.2)}
+        @media (max-width: 768px){
+            body{padding:16px}
+            th,td{padding:10px;font-size:14px}
+        }
     </style>
 </head>
 <body>

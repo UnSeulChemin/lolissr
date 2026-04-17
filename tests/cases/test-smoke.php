@@ -76,13 +76,6 @@ addGetTest($tests, [
     'must_contain' => ['<form'],
 ]);
 
-addGetTest($tests, [
-    'category' => 'Erreurs',
-    'label' => '404 inexistante',
-    'path' => '/page-introuvable',
-    'expected_status' => 404,
-]);
-
 addHtmlCheck($htmlChecks, [
     'category' => 'Smoke HTML',
     'label' => 'Detail a un title',

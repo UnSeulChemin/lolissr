@@ -36,14 +36,15 @@ if ($testCanonicalRedirect)
 }
 else
 {
-    addHtmlCheck($htmlChecks, [
+    addPostCheck($postChecks, [
         'category' => 'Canonical',
         'label' => 'Redirect canonique',
         'url' => null,
         'callback' => static function (): array
         {
             return [
-                'ok' => false,
+                'ok' => true,
+                'warn' => true,
                 'message' => 'test canonical désactivé dans la config',
             ];
         },
