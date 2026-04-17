@@ -61,6 +61,32 @@ class MangaController extends Controller
     }
 
     /**
+     * Redirige vers l'URL canonique si le slug demandé n'est pas correct.
+     */
+    private function redirectToCanonicalUrl(
+        string $requestedSlug,
+        string $canonicalSlug,
+        string $pathPrefix,
+        ?int $numero = null
+    ): void
+    {
+        if ($requestedSlug === $canonicalSlug)
+        {
+            return;
+        }
+
+        $location = $pathPrefix . rawurlencode($canonicalSlug);
+
+        if ($numero !== null)
+        {
+            $location .= '/' . $numero;
+        }
+
+        header('Location: ' . Functions::basePath() . $location, true, 301);
+        exit;
+    }
+
+    /**
      * Accueil manga.
      * Route : /manga
      */
@@ -199,20 +225,30 @@ class MangaController extends Controller
      */
     public function serie(string $slug): void
     {
-        $slug = Functions::normalizeSlug($slug);
+        $requestedSlug = trim($slug);
+        $normalizedSlug = Functions::normalizeSlug($slug);
+
         $mangaModel = $this->mangaModel();
-        $mangas = $mangaModel->findBySlug($slug);
+        $mangas = $mangaModel->findBySlug($normalizedSlug);
 
         if (!$mangas)
         {
             $this->notFound('Manga introuvable');
         }
 
+        $canonicalSlug = Functions::normalizeSlug($mangas[0]->slug);
+
+        $this->redirectToCanonicalUrl(
+            $requestedSlug,
+            $canonicalSlug,
+            'manga/serie/'
+        );
+
         $this->title = 'Manga | ' . $mangas[0]->livre;
 
         $this->render('manga/collection', [
             'mangas' => $mangas,
-            'slugFilter' => $slug,
+            'slugFilter' => $canonicalSlug,
             'currentPage' => 1,
             'compteur' => 1
         ]);
@@ -224,26 +260,32 @@ class MangaController extends Controller
      */
     public function show(string $slug, string $numero): void
     {
-        $slug = Functions::normalizeSlug($slug);
+        $requestedSlug = trim($slug);
+        $normalizedSlug = Functions::normalizeSlug($slug);
         $numero = (int) $numero;
 
         $mangaModel = $this->mangaModel();
-        $manga = $mangaModel->findOneBySlugAndNumero($slug, $numero);
+        $manga = $mangaModel->findOneBySlugAndNumero($normalizedSlug, $numero);
 
         if (!$manga)
         {
             $this->notFound('Manga introuvable');
         }
 
-        $goodSlug = Functions::normalizeSlug($manga->slug);
+        $canonicalSlug = Functions::normalizeSlug($manga->slug);
 
-        if ($goodSlug !== $slug)
-        {
-            $this->redirect('manga/' . rawurlencode($goodSlug) . '/' . $manga->numero);
-        }
+        $this->redirectToCanonicalUrl(
+            $requestedSlug,
+            $canonicalSlug,
+            'manga/',
+            (int) $manga->numero
+        );
 
         $this->title = 'Manga | ' . $manga->livre . ' ' . str_pad((string) $manga->numero, 2, '0', STR_PAD_LEFT);
-        $this->render('manga/livre', ['manga' => $manga]);
+
+        $this->render('manga/livre', [
+            'manga' => $manga
+        ]);
     }
 
     /**
@@ -262,26 +304,32 @@ class MangaController extends Controller
      */
     public function modifier(string $slug, string $numero): void
     {
-        $slug = Functions::normalizeSlug($slug);
+        $requestedSlug = trim($slug);
+        $normalizedSlug = Functions::normalizeSlug($slug);
         $numero = (int) $numero;
 
         $mangaModel = $this->mangaModel();
-        $manga = $mangaModel->findOneBySlugAndNumero($slug, $numero);
+        $manga = $mangaModel->findOneBySlugAndNumero($normalizedSlug, $numero);
 
         if (!$manga)
         {
             $this->notFound('Manga introuvable');
         }
 
-        $goodSlug = Functions::normalizeSlug($manga->slug);
+        $canonicalSlug = Functions::normalizeSlug($manga->slug);
 
-        if ($goodSlug !== $slug)
-        {
-            $this->redirect('manga/update/' . rawurlencode($goodSlug) . '/' . $manga->numero);
-        }
+        $this->redirectToCanonicalUrl(
+            $requestedSlug,
+            $canonicalSlug,
+            'manga/update/',
+            (int) $manga->numero
+        );
 
         $this->title = 'Manga | Modifier';
-        $this->render('manga/edit', ['manga' => $manga]);
+
+        $this->render('manga/edit', [
+            'manga' => $manga
+        ]);
     }
 
     /**
@@ -581,7 +629,8 @@ class MangaController extends Controller
      */
     public function update(string $slug, string $numero): void
     {
-        $slug = Functions::normalizeSlug($slug);
+        $requestedSlug = trim($slug);
+        $normalizedSlug = Functions::normalizeSlug($slug);
         $numero = (int) $numero;
 
         if (!Functions::isPost())
@@ -598,7 +647,7 @@ class MangaController extends Controller
         }
 
         $mangaModel = $this->mangaModel();
-        $manga = $mangaModel->findOneBySlugAndNumero($slug, $numero);
+        $manga = $mangaModel->findOneBySlugAndNumero($normalizedSlug, $numero);
 
         if (!$manga)
         {
@@ -612,6 +661,29 @@ class MangaController extends Controller
 
             $this->notFound('Manga introuvable');
         }
+
+        $canonicalSlug = Functions::normalizeSlug($manga->slug);
+
+        if ($requestedSlug !== $canonicalSlug)
+        {
+            if ($this->isAjaxRequest())
+            {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'URL non canonique',
+                    'redirect' => Functions::basePath() . 'manga/update/' . rawurlencode($canonicalSlug) . '/' . $numero
+                ], 409);
+            }
+
+            header(
+                'Location: ' . Functions::basePath() . 'manga/update/' . rawurlencode($canonicalSlug) . '/' . $numero,
+                true,
+                301
+            );
+            exit;
+        }
+
+        $slug = $canonicalSlug;
 
         $validator = new Validator($_POST, $_FILES);
 
@@ -720,7 +792,8 @@ class MangaController extends Controller
      */
     public function ajaxUpdateNote(string $slug, string $numero): void
     {
-        $slug = Functions::normalizeSlug($slug);
+        $requestedSlug = trim($slug);
+        $normalizedSlug = Functions::normalizeSlug($slug);
         $numero = (int) $numero;
 
         if (!Functions::isPost())
@@ -731,7 +804,7 @@ class MangaController extends Controller
             ], 405);
         }
 
-        $manga = $this->mangaModel()->findOneBySlugAndNumero($slug, $numero);
+        $manga = $this->mangaModel()->findOneBySlugAndNumero($normalizedSlug, $numero);
 
         if (!$manga)
         {
@@ -740,6 +813,19 @@ class MangaController extends Controller
                 'message' => 'Manga introuvable'
             ], 404);
         }
+
+        $canonicalSlug = Functions::normalizeSlug($manga->slug);
+
+        if ($requestedSlug !== $canonicalSlug)
+        {
+            $this->jsonResponse([
+                'success' => false,
+                'message' => 'URL non canonique',
+                'redirect' => Functions::basePath() . 'manga/' . rawurlencode($canonicalSlug) . '/' . $numero
+            ], 409);
+        }
+
+        $slug = $canonicalSlug;
 
         $validator = new Validator($_POST, $_FILES);
 
