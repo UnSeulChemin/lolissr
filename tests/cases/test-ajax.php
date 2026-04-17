@@ -10,24 +10,15 @@ declare(strict_types=1);
 
 addPostCheck($postChecks, [
     'category' => 'AJAX',
-    'label' => 'POST ajouter validation AJAX',
+    'label' => 'POST ajouter validation AJAX invalide',
     'url' => $base . '/manga/ajouter',
-    'callback' => static function () use ($base, $testPostAjouter): array
+    'callback' => static function () use ($base): array
     {
-        if (!$testPostAjouter)
-        {
-            return [
-                'ok' => true,
-                'warn' => true,
-                'message' => 'skippé (option désactivée)',
-            ];
-        }
-
         $payload = http_build_query([
-            'livre' => 'Test Manga Auto',
-            'slug' => 'test-manga-auto',
-            'numero' => 999,
-            'commentaire' => 'test auto'
+            'livre' => '',
+            'slug' => '',
+            'numero' => '0',
+            'commentaire' => str_repeat('x', 1205),
         ]);
 
         $response = requestUrl(
@@ -42,24 +33,55 @@ addPostCheck($postChecks, [
 
         $json = json_decode($response['body'], true);
 
-        $ok = in_array($response['status'], [200, 201, 422], true);
+        $statusOk = in_array($response['status'], [200, 400, 422], true);
+        $jsonOk = is_array($json);
 
-        if (is_array($json))
+        $hasErrorSignal = false;
+
+        if ($jsonOk)
         {
-            return [
-                'ok' => $ok,
-                'message' => 'status ' . $response['status'] . ' | json reçu',
-            ];
+            $hasErrorSignal =
+                !empty($json['errors'])
+                || !empty($json['error'])
+                || (isset($json['success']) && $json['success'] === false);
         }
 
         return [
-            'ok' => $ok,
-            'message' => 'status ' . $response['status'] . ' | réponse non json',
+            'ok' => $statusOk && $jsonOk && $hasErrorSignal,
+            'message' => 'status ' . $response['status'] . ($jsonOk ? ' | json erreur reçu' : ' | réponse non json'),
         ];
     },
 ]);
 
 addPostCheck($postChecks, [
+    'category' => 'AJAX',
+    'label' => 'POST ajouter JSON invalide',
+    'url' => $base . '/manga/ajouter',
+    'callback' => static function () use ($base): array
+    {
+        $response = requestUrl(
+            $base . '/manga/ajouter',
+            'POST',
+            [
+                'Content-Type: application/json',
+                'X-Requested-With: XMLHttpRequest',
+            ],
+            '{"livre":',
+        );
+
+        $json = json_decode($response['body'], true);
+
+        $statusOk = in_array($response['status'], [200, 400, 415, 422], true);
+        $jsonOk = is_array($json) || trim($response['body']) !== '';
+
+        return [
+            'ok' => $statusOk && $jsonOk,
+            'message' => 'status ' . $response['status'] . ' | payload JSON invalide refusé',
+        ];
+    },
+]);
+
+addHtmlCheck($htmlChecks, [
     'category' => 'AJAX',
     'label' => 'GET détail contient hooks AJAX notes',
     'url' => $base . '/manga/' . $realSlug . '/' . $realNumero,

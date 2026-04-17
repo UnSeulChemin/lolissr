@@ -10,23 +10,14 @@ declare(strict_types=1);
 
 addPostCheck($postChecks, [
     'category' => 'Update',
-    'label' => 'POST ajax update note',
+    'label' => 'POST ajax update invalide',
     'url' => $base . '/manga/ajax/update-note/' . $realSlug . '/' . $realNumero,
-    'callback' => static function () use ($base, $realSlug, $realNumero, $testPostUpdate): array
+    'callback' => static function () use ($base, $realSlug, $realNumero): array
     {
-        if (!$testPostUpdate)
-        {
-            return [
-                'ok' => true,
-                'warn' => true,
-                'message' => 'skippé (option désactivée)',
-            ];
-        }
-
         $payload = http_build_query([
-            'jacquette' => '5',
-            'livre_note' => '5',
-            'commentaire' => 'Test update auto'
+            'jacquette' => '99',
+            'livre_note' => '-3',
+            'commentaire' => str_repeat('x', 1500),
         ]);
 
         $response = requestUrl(
@@ -41,9 +32,54 @@ addPostCheck($postChecks, [
 
         $json = json_decode($response['body'], true);
 
+        $statusOk = in_array($response['status'], [200, 400, 404, 422], true);
+        $jsonOk = is_array($json);
+
+        $hasErrorSignal = false;
+
+        if ($jsonOk)
+        {
+            $hasErrorSignal =
+                !empty($json['errors'])
+                || !empty($json['error'])
+                || (isset($json['success']) && $json['success'] === false);
+        }
+
         return [
-            'ok' => $response['status'] === 200 && is_array($json) && !empty($json['success']),
-            'message' => 'status ' . $response['status'],
+            'ok' => $statusOk && $jsonOk && $hasErrorSignal,
+            'message' => 'status ' . $response['status'] . ($jsonOk ? ' | json erreur reçu' : ' | réponse non json'),
+        ];
+    },
+]);
+
+addPostCheck($postChecks, [
+    'category' => 'Update',
+    'label' => 'POST ajax update slug inexistant',
+    'url' => $base . '/manga/ajax/update-note/slug-inexistant/999999',
+    'callback' => static function () use ($base): array
+    {
+        $payload = http_build_query([
+            'jacquette' => '5',
+            'livre_note' => '5',
+            'commentaire' => 'test safe',
+        ]);
+
+        $response = requestUrl(
+            $base . '/manga/ajax/update-note/slug-inexistant/999999',
+            'POST',
+            [
+                'Content-Type: application/x-www-form-urlencoded',
+                'X-Requested-With: XMLHttpRequest',
+            ],
+            $payload
+        );
+
+        $json = json_decode($response['body'], true);
+        $statusOk = in_array($response['status'], [404, 400, 422], true);
+
+        return [
+            'ok' => $statusOk && (is_array($json) || trim($response['body']) !== ''),
+            'message' => 'status ' . $response['status'] . ' | slug/numero invalides refusés',
         ];
     },
 ]);

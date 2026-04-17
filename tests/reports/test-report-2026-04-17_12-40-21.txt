@@ -1,0 +1,103 @@
+LoliSSR Test Report
+========================================================================
+Date: 2026-04-17 12:40:21
+Base URL: http://localhost/lolissr
+Slug: one-piece
+Numero: 1
+========================================================================
+
+
+════════════════════════════════════════════════════════════════════════
+  TESTS LOLISSR
+════════════════════════════════════════════════════════════════════════
+
+
+▶ Canonical
+──────────────────────────────────────────────────────
+✅ OK   Redirect canonique série -> /manga/serie/One-Piece (301 | 43,58 ms)
+✅ OK   Redirect canonique tome -> /manga/One-Piece/1 (301 | 32,07 ms)
+✅ OK   Redirect canonique modifier -> /manga/update/One-Piece/1 (301 | 30,31 ms)
+
+▶ Pagination
+──────────────────────────────────────────────────────
+✅ OK   Collection page 2 -> /manga/collection/page/2 (200 | 51,38 ms)
+
+▶ Smoke
+──────────────────────────────────────────────────────
+✅ OK   Accueil -> / (200 | 54,23 ms)
+✅ OK   Dashboard manga -> /manga (200 | 16,31 ms)
+✅ OK   Collection -> /manga/collection (200 | 45,44 ms)
+✅ OK   Recherche -> /manga/recherche (200 | 19,18 ms)
+✅ OK   Ajouter -> /manga/ajouter (200 | 17,86 ms)
+✅ OK   Page lien -> /manga/lien (200 | 13,44 ms)
+✅ OK   Série existante -> /manga/serie/one-piece (200 | 39,38 ms)
+✅ OK   Tome existant -> /manga/one-piece/1 (200 | 30,84 ms)
+✅ OK   Page modifier -> /manga/update/one-piece/1 (200 | 48,36 ms)
+
+▶ Erreurs
+──────────────────────────────────────────────────────
+✅ OK   404 inexistante -> /page-introuvable (404 | 24,60 ms)
+
+════════════════════════════════════════════════════════════════════════
+  CHECKS COMPLÉMENTAIRES
+════════════════════════════════════════════════════════════════════════
+
+
+▶ Update
+──────────────────────────────────────────────────────
+✅ OK   Page modifier contient jacquette (champ trouvé | 36,42 ms)
+✅ OK   Page modifier contient livre_note (champ trouvé | 32,86 ms)
+✅ OK   Page modifier contient commentaire (champ trouvé | 45,80 ms)
+
+▶ Pagination
+──────────────────────────────────────────────────────
+✅ OK   Collection page 1 contient du contenu (contenu détecté | 52,60 ms)
+✅ OK   Collection page 2 contient du contenu (contenu détecté | 47,59 ms)
+✅ OK   Collection page 2 différente de la page 1 (les pages diffèrent | 96,46 ms)
+
+▶ Smoke HTML
+──────────────────────────────────────────────────────
+✅ OK   Detail a un title (Manga | One Piece 01 | 28,18 ms)
+✅ OK   Detail contient une image (img trouvée | 32,10 ms)
+✅ OK   Collection contient plusieurs liens (21 lien(s) | 68,81 ms)
+
+════════════════════════════════════════════════════════════════════════
+  TESTS POST
+════════════════════════════════════════════════════════════════════════
+
+
+▶ Update
+──────────────────────────────────────────────────────
+⚠ WARN POST ajax update note [skippé (option désactivée) | 0,00 ms]
+
+▶ AJAX
+──────────────────────────────────────────────────────
+⚠ WARN POST ajouter validation AJAX [skippé (option désactivée) | 0,00 ms]
+✅ OK   GET détail contient hooks AJAX notes (hooks AJAX trouvés | 41,83 ms)
+
+════════════════════════════════════════════════════════════════════════
+  RÉSUMÉ PAR CATÉGORIE
+════════════════════════════════════════════════════════════════════════
+
+Canonical              OK: 3   FAIL: 0   WARN: 0   TOTAL: 3   TIME: 105,96 ms
+Pagination             OK: 4   FAIL: 0   WARN: 0   TOTAL: 4   TIME: 248,04 ms
+Smoke                  OK: 9   FAIL: 0   WARN: 0   TOTAL: 9   TIME: 285,05 ms
+Erreurs                OK: 1   FAIL: 0   WARN: 0   TOTAL: 1   TIME: 24,60 ms
+Update                 OK: 3   FAIL: 0   WARN: 1   TOTAL: 4   TIME: 115,09 ms
+Smoke HTML             OK: 3   FAIL: 0   WARN: 0   TOTAL: 3   TIME: 129,09 ms
+AJAX                   OK: 1   FAIL: 0   WARN: 1   TOTAL: 2   TIME: 41,83 ms
+
+════════════════════════════════════════════════════════════════════════
+  RÉSUMÉ FINAL
+════════════════════════════════════════════════════════════════════════
+
+────────────────────────────────────────────────────────────────────────
+Tests exécutés : 26
+Succès         : 24
+Échecs         : 0
+Warnings       : 2
+Temps cumulé   : 949,66 ms
+Temps global   : 960,50 ms
+────────────────────────────────────────────────────────────────────────
+🏆 SUITE VALIDÉE
+État global : stable, avec quelques tests skippés.
