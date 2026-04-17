@@ -1,42 +1,75 @@
-let toastTimeout = null;
+let toastHideTimeout = null;
 
+/**
+ * Affiche un toast temporaire.
+ */
 export function showToast(
     message = 'Sauvegardé',
     type = 'success'
 )
 {
-    const toast = document.getElementById('toast');
+    const toastElement = document.getElementById('toast');
 
-    if (!toast)
+    if (!toastElement)
     {
         console.warn('Toast introuvable (#toast)');
         return;
     }
 
-    toast.classList.remove(
+    /*
+    |------------------------------------------------------------------
+    | Reset des classes
+    |------------------------------------------------------------------
+    */
+
+    toastElement.classList.remove(
         'toast-success',
         'toast-error',
         'show'
     );
 
-    const classType = type === 'error'
+    /*
+    |------------------------------------------------------------------
+    | Type
+    |------------------------------------------------------------------
+    */
+
+    const toastTypeClass = type === 'error'
         ? 'toast-error'
         : 'toast-success';
 
-    toast.classList.add(classType);
-    toast.textContent = message;
+    toastElement.classList.add(toastTypeClass);
+    toastElement.textContent = message;
 
-    void toast.offsetWidth;
+    /*
+    |------------------------------------------------------------------
+    | Force reflow pour relancer l'animation
+    |------------------------------------------------------------------
+    */
 
-    toast.classList.add('show');
+    void toastElement.offsetWidth;
 
-    if (toastTimeout)
+    toastElement.classList.add('show');
+
+    /*
+    |------------------------------------------------------------------
+    | Timer précédent
+    |------------------------------------------------------------------
+    */
+
+    if (toastHideTimeout)
     {
-        clearTimeout(toastTimeout);
+        clearTimeout(toastHideTimeout);
     }
 
-    toastTimeout = setTimeout(() =>
+    /*
+    |------------------------------------------------------------------
+    | Fermeture automatique
+    |------------------------------------------------------------------
+    */
+
+    toastHideTimeout = setTimeout(() =>
     {
-        toast.classList.remove('show');
+        toastElement.classList.remove('show');
     }, 2500);
 }

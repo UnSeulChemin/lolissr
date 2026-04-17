@@ -2,36 +2,69 @@ import { showToast } from '../core/toast.js';
 
 export function initEditPage()
 {
+    /*
+    |------------------------------------------------------------------
+    | Éléments
+    |------------------------------------------------------------------
+    */
+
     const jacquetteInput = document.getElementById('jacquette');
     const livreNoteInput = document.getElementById('livre_note');
-    const noteTotal = document.getElementById('note-total');
+    const totalNoteInput = document.getElementById('note-total');
     const form = document.querySelector('.form-layout');
 
-    if (!jacquetteInput || !livreNoteInput || !noteTotal || !form)
+    if (!jacquetteInput || !livreNoteInput || !totalNoteInput || !form)
     {
         return;
     }
 
-    function updateNoteTotal()
+    /*
+    |------------------------------------------------------------------
+    | Sécurité anti double init
+    |------------------------------------------------------------------
+    */
+
+    if (form.dataset.editPageInit === 'true')
+    {
+        return;
+    }
+
+    form.dataset.editPageInit = 'true';
+
+    /*
+    |------------------------------------------------------------------
+    | Calcul note totale
+    |------------------------------------------------------------------
+    */
+
+    function updateTotalNotePreview()
     {
         const jacquetteValue = jacquetteInput.value;
         const livreValue = livreNoteInput.value;
 
         if (jacquetteValue === '' || livreValue === '')
         {
-            noteTotal.value = 'Non calculée';
+            totalNoteInput.value = 'Non calculée';
             return;
         }
 
-        const total = parseInt(jacquetteValue, 10) + parseInt(livreValue, 10);
+        const total =
+            parseInt(jacquetteValue, 10)
+            + parseInt(livreValue, 10);
 
-        noteTotal.value = `${total}/10`;
+        totalNoteInput.value = `${total}/10`;
     }
 
-    jacquetteInput.addEventListener('input', updateNoteTotal);
-    livreNoteInput.addEventListener('input', updateNoteTotal);
+    jacquetteInput.addEventListener('input', updateTotalNotePreview);
+    livreNoteInput.addEventListener('input', updateTotalNotePreview);
 
-    updateNoteTotal();
+    updateTotalNotePreview();
+
+    /*
+    |------------------------------------------------------------------
+    | Soumission AJAX
+    |------------------------------------------------------------------
+    */
 
     form.addEventListener('submit', async (event) =>
     {
@@ -58,9 +91,9 @@ export function initEditPage()
             });
 
             const contentType = response.headers.get('content-type') || '';
-            const isJson = contentType.includes('application/json');
+            const isJsonResponse = contentType.includes('application/json');
 
-            if (!isJson)
+            if (!isJsonResponse)
             {
                 throw new Error('Réponse non JSON');
             }
@@ -81,6 +114,11 @@ export function initEditPage()
                 window.location.href = data.redirect;
                 return;
             }
+
+            showToast(
+                data.message || 'Modification enregistrée',
+                'success'
+            );
         }
         catch (error)
         {

@@ -2,24 +2,60 @@ import { showToast } from '../core/toast.js';
 
 export function initAjouterPage()
 {
+    /*
+    |------------------------------------------------------------------
+    | Éléments
+    |------------------------------------------------------------------
+    */
+
     const imageInput = document.getElementById('image');
     const uploadText = document.querySelector('.form-upload-text');
     const form = document.querySelector('.form-layout');
 
+    /*
+    |------------------------------------------------------------------
+    | Preview nom fichier
+    |------------------------------------------------------------------
+    */
+
     if (imageInput && uploadText)
     {
-        imageInput.addEventListener('change', () =>
+        if (imageInput.dataset.uploadPreviewInit !== 'true')
         {
-            uploadText.textContent = imageInput.files.length > 0
-                ? imageInput.files[0].name
-                : 'Choisir une image';
-        });
+            imageInput.dataset.uploadPreviewInit = 'true';
+
+            imageInput.addEventListener('change', () =>
+            {
+                uploadText.textContent = imageInput.files.length > 0
+                    ? imageInput.files[0].name
+                    : 'Choisir une image';
+            });
+        }
     }
 
     if (!form)
     {
         return;
     }
+
+    /*
+    |------------------------------------------------------------------
+    | Sécurité anti double init
+    |------------------------------------------------------------------
+    */
+
+    if (form.dataset.ajouterPageInit === 'true')
+    {
+        return;
+    }
+
+    form.dataset.ajouterPageInit = 'true';
+
+    /*
+    |------------------------------------------------------------------
+    | Soumission AJAX
+    |------------------------------------------------------------------
+    */
 
     form.addEventListener('submit', async (event) =>
     {
@@ -46,9 +82,9 @@ export function initAjouterPage()
             });
 
             const contentType = response.headers.get('content-type') || '';
-            const isJson = contentType.includes('application/json');
+            const isJsonResponse = contentType.includes('application/json');
 
-            if (!isJson)
+            if (!isJsonResponse)
             {
                 throw new Error('Réponse non JSON');
             }
@@ -57,11 +93,17 @@ export function initAjouterPage()
 
             if (!data.success)
             {
-                showToast(data.message || 'Une erreur est survenue', 'error');
+                showToast(
+                    data.message || 'Une erreur est survenue',
+                    'error'
+                );
                 return;
             }
 
-            showToast(data.message || 'Manga ajouté avec succès', 'success');
+            showToast(
+                data.message || 'Manga ajouté avec succès',
+                'success'
+            );
 
             form.reset();
 

@@ -1,4 +1,7 @@
-function normalizeSearchValue(value)
+/**
+ * Normalise une valeur de recherche pour l'URL.
+ */
+function normalizeSearchQuery(value)
 {
     return value
         .toLowerCase()
@@ -10,6 +13,9 @@ function normalizeSearchValue(value)
         .replace(/^-+|-+$/g, '');
 }
 
+/**
+ * Échappe le HTML.
+ */
 function escapeHtml(value)
 {
     return String(value)
@@ -20,32 +26,38 @@ function escapeHtml(value)
         .replaceAll("'", '&#039;');
 }
 
+/**
+ * Échappe une chaîne pour RegExp.
+ */
 function escapeRegExp(value)
 {
     return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-function highlightTerm(text, rawQuery)
+/**
+ * Met en surbrillance les termes recherchés.
+ */
+function highlightSearchTerm(text, rawQuery)
 {
     const safeText = escapeHtml(text);
-    const query = rawQuery.trim();
+    const trimmedQuery = rawQuery.trim();
 
-    if (query === '')
+    if (trimmedQuery === '')
     {
         return safeText;
     }
 
-    const parts = query
+    const queryParts = trimmedQuery
         .split(/\s+/)
         .filter(Boolean)
         .map(escapeRegExp);
 
-    if (parts.length === 0)
+    if (queryParts.length === 0)
     {
         return safeText;
     }
 
-    const regex = new RegExp(`(${parts.join('|')})`, 'ig');
+    const regex = new RegExp(`(${queryParts.join('|')})`, 'ig');
 
     return safeText.replace(
         regex,
@@ -55,120 +67,158 @@ function highlightTerm(text, rawQuery)
 
 export function initLiveSearch()
 {
-    const form = document.querySelector('.js-header-search');
-    const input = document.getElementById('header-search-input');
-    const resultsBox = document.getElementById('header-search-results');
-    const dropdown = document.querySelector('.js-header-search-dropdown');
+    /*
+    |------------------------------------------------------------------
+    | Sélection des éléments
+    |------------------------------------------------------------------
+    */
 
-    if (!form || !input || !resultsBox || !dropdown)
+    const searchForm = document.querySelector('.js-header-search');
+    const searchInput = document.getElementById('header-search-input');
+    const searchResultsBox = document.getElementById('header-search-results');
+    const searchDropdown = document.querySelector('.js-header-search-dropdown');
+
+    if (!searchForm || !searchInput || !searchResultsBox || !searchDropdown)
     {
         return;
     }
 
-    const basePath = form.dataset.basePath || '/';
+    /*
+    |------------------------------------------------------------------
+    | Protection anti double init
+    |------------------------------------------------------------------
+    */
 
-    let debounceTimer = null;
-    let currentController = null;
-    let activeIndex = -1;
+    if (searchForm.dataset.liveSearchInit === 'true')
+    {
+        return;
+    }
 
-    function getItems()
+    searchForm.dataset.liveSearchInit = 'true';
+
+    /*
+    |------------------------------------------------------------------
+    | Configuration
+    |------------------------------------------------------------------
+    */
+
+    const basePath = searchForm.dataset.basePath || '/';
+
+    /*
+    |------------------------------------------------------------------
+    | État
+    |------------------------------------------------------------------
+    */
+
+    let searchDebounceTimer = null;
+    let searchAbortController = null;
+    let activeResultIndex = -1;
+
+    function getSearchResultItems()
     {
         return Array.from(
-            resultsBox.querySelectorAll('.search-result-item')
+            searchResultsBox.querySelectorAll('.search-result-item')
         );
     }
 
-    function resetActiveItem()
+    function resetActiveSearchResult()
     {
-        activeIndex = -1;
+        activeResultIndex = -1;
 
-        getItems().forEach((item) =>
+        getSearchResultItems().forEach((item) =>
         {
             item.classList.remove('is-active');
         });
     }
 
-    function updateActiveItem()
+    function updateActiveSearchResult()
     {
-        const items = getItems();
+        const items = getSearchResultItems();
 
         items.forEach((item, index) =>
         {
-            item.classList.toggle('is-active', index === activeIndex);
+            item.classList.toggle('is-active', index === activeResultIndex);
         });
 
-        if (activeIndex >= 0 && items[activeIndex])
+        if (activeResultIndex >= 0 && items[activeResultIndex])
         {
-            items[activeIndex].scrollIntoView({
+            items[activeResultIndex].scrollIntoView({
                 block: 'nearest'
             });
         }
     }
 
-    function activateFirstItem()
+    function activateFirstSearchResult()
     {
-        const items = getItems();
+        const items = getSearchResultItems();
 
         if (items.length === 0)
         {
-            activeIndex = -1;
+            activeResultIndex = -1;
             return;
         }
 
-        activeIndex = 0;
-        updateActiveItem();
+        activeResultIndex = 0;
+        updateActiveSearchResult();
     }
 
-    function openDropdown()
+    function openSearchDropdown()
     {
-        dropdown.classList.add('has-results');
+        searchDropdown.classList.add('has-results');
     }
 
-    function closeDropdown()
+    function closeSearchDropdown()
     {
-        resultsBox.innerHTML = '';
-        dropdown.classList.remove('is-loading', 'has-results');
-        resetActiveItem();
+        searchResultsBox.innerHTML = '';
+        searchDropdown.classList.remove('is-loading', 'has-results');
+
+        if (searchAbortController)
+        {
+            searchAbortController.abort();
+            searchAbortController = null;
+        }
+
+        resetActiveSearchResult();
     }
 
-    function setLoading(isLoading)
+    function setSearchLoadingState(isLoading)
     {
-        dropdown.classList.toggle('is-loading', isLoading);
+        searchDropdown.classList.toggle('is-loading', isLoading);
 
         if (isLoading)
         {
-            dropdown.classList.remove('has-results');
+            searchDropdown.classList.remove('has-results');
         }
     }
 
-    function renderEmptyState(message = 'Aucun manga trouvé')
+    function renderSearchEmptyState(message = 'Aucun manga trouvé')
     {
-        resultsBox.innerHTML = `
+        searchResultsBox.innerHTML = `
             <div class="search-result-empty">
                 ${escapeHtml(message)}
             </div>
         `;
 
-        openDropdown();
-        resetActiveItem();
+        openSearchDropdown();
+        resetActiveSearchResult();
     }
 
-    function buildResultItem(manga, rawValue)
+    function buildSearchResultItem(manga, rawValue)
     {
-        const link = document.createElement('a');
+        const resultLink = document.createElement('a');
 
-        link.href =
+        resultLink.href =
             `${basePath}manga/${encodeURIComponent(manga.slug)}/${manga.numero}`;
 
-        link.className = 'search-result-item';
+        resultLink.className = 'search-result-item';
 
-        link.innerHTML = `
+        resultLink.innerHTML = `
             <img
                 src="${basePath}public/images/mangas/thumbnail/${manga.thumbnail}.${manga.extension}"
                 alt="${escapeHtml(manga.livre)}">
             <span class="search-result-content">
                 <strong class="search-result-title">
-                    ${highlightTerm(manga.livre, rawValue)}
+                    ${highlightSearchTerm(manga.livre, rawValue)}
                 </strong>
                 <small class="search-result-meta">
                     Tome ${String(manga.numero).padStart(2, '0')}
@@ -176,43 +226,44 @@ export function initLiveSearch()
             </span>
         `;
 
-        link.addEventListener('mouseenter', () =>
+        resultLink.addEventListener('mouseenter', () =>
         {
-            const items = getItems();
-            activeIndex = items.indexOf(link);
-            updateActiveItem();
+            const items = getSearchResultItems();
+
+            activeResultIndex = items.indexOf(resultLink);
+            updateActiveSearchResult();
         });
 
-        return link;
+        return resultLink;
     }
 
-    async function fetchResults(rawValue)
+    async function fetchLiveSearchResults(rawValue)
     {
-        if (currentController)
+        if (searchAbortController)
         {
-            currentController.abort();
+            searchAbortController.abort();
         }
 
-        const normalizedValue = normalizeSearchValue(rawValue);
+        const normalizedValue = normalizeSearchQuery(rawValue);
 
         if (rawValue.length < 2 || normalizedValue === '')
         {
-            closeDropdown();
+            closeSearchDropdown();
             return;
         }
 
-        currentController = new AbortController();
+        searchAbortController = new AbortController();
 
         try
         {
-            setLoading(true);
-            resultsBox.innerHTML = '';
-            resetActiveItem();
+            setSearchLoadingState(true);
+            searchResultsBox.innerHTML = '';
+            resetActiveSearchResult();
 
             const response = await fetch(
                 `${basePath}manga/search-ajax/${encodeURIComponent(normalizedValue)}`,
                 {
-                    signal: currentController.signal,
+                    signal: searchAbortController.signal,
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest'
                     }
@@ -226,59 +277,67 @@ export function initLiveSearch()
 
             const data = await response.json();
 
-            resultsBox.innerHTML = '';
-            resetActiveItem();
+            searchResultsBox.innerHTML = '';
+            resetActiveSearchResult();
 
             if (!Array.isArray(data) || data.length === 0)
             {
-                renderEmptyState();
+                renderSearchEmptyState();
                 return;
             }
 
             data.forEach((manga) =>
             {
-                resultsBox.appendChild(buildResultItem(manga, rawValue));
+                searchResultsBox.appendChild(
+                    buildSearchResultItem(manga, rawValue)
+                );
             });
 
-            openDropdown();
-            activateFirstItem();
+            openSearchDropdown();
+            activateFirstSearchResult();
         }
         catch (error)
         {
             if (error.name !== 'AbortError')
             {
-                renderEmptyState('Erreur de chargement');
+                renderSearchEmptyState('Erreur de chargement');
             }
         }
         finally
         {
-            setLoading(false);
+            setSearchLoadingState(false);
         }
     }
 
-    form.addEventListener('submit', (event) =>
+    /*
+    |------------------------------------------------------------------
+    | Soumission formulaire
+    |------------------------------------------------------------------
+    */
+
+    searchForm.addEventListener('submit', (event) =>
     {
         event.preventDefault();
 
-        if (activeIndex >= 0)
+        if (activeResultIndex >= 0)
         {
-            const items = getItems();
+            const items = getSearchResultItems();
 
-            if (items[activeIndex])
+            if (items[activeResultIndex])
             {
-                window.location.href = items[activeIndex].href;
+                window.location.href = items[activeResultIndex].href;
                 return;
             }
         }
 
-        let value = input.value.trim();
+        let value = searchInput.value.trim();
 
         if (value === '')
         {
             return;
         }
 
-        value = normalizeSearchValue(value);
+        value = normalizeSearchQuery(value);
 
         if (value === '')
         {
@@ -289,28 +348,40 @@ export function initLiveSearch()
             `${basePath}manga/recherche/${encodeURIComponent(value)}`;
     });
 
-    input.addEventListener('input', () =>
-    {
-        clearTimeout(debounceTimer);
+    /*
+    |------------------------------------------------------------------
+    | Saisie utilisateur
+    |------------------------------------------------------------------
+    */
 
-        debounceTimer = setTimeout(() =>
+    searchInput.addEventListener('input', () =>
+    {
+        clearTimeout(searchDebounceTimer);
+
+        searchDebounceTimer = setTimeout(() =>
         {
-            fetchResults(input.value.trim());
+            fetchLiveSearchResults(searchInput.value.trim());
         }, 250);
     });
 
-    input.addEventListener('keydown', (event) =>
+    /*
+    |------------------------------------------------------------------
+    | Navigation clavier
+    |------------------------------------------------------------------
+    */
+
+    searchInput.addEventListener('keydown', (event) =>
     {
-        const items = getItems();
+        const items = getSearchResultItems();
 
         if (event.key === 'Escape')
         {
             event.preventDefault();
-            closeDropdown();
+            closeSearchDropdown();
             return;
         }
 
-        if (!dropdown.classList.contains('has-results') || items.length === 0)
+        if (!searchDropdown.classList.contains('has-results') || items.length === 0)
         {
             return;
         }
@@ -319,11 +390,11 @@ export function initLiveSearch()
         {
             event.preventDefault();
 
-            activeIndex = activeIndex < items.length - 1
-                ? activeIndex + 1
+            activeResultIndex = activeResultIndex < items.length - 1
+                ? activeResultIndex + 1
                 : 0;
 
-            updateActiveItem();
+            updateActiveSearchResult();
             return;
         }
 
@@ -331,20 +402,26 @@ export function initLiveSearch()
         {
             event.preventDefault();
 
-            activeIndex = activeIndex > 0
-                ? activeIndex - 1
+            activeResultIndex = activeResultIndex > 0
+                ? activeResultIndex - 1
                 : items.length - 1;
 
-            updateActiveItem();
+            updateActiveSearchResult();
             return;
         }
 
-        if (event.key === 'Enter' && activeIndex >= 0 && items[activeIndex])
+        if (event.key === 'Enter' && activeResultIndex >= 0 && items[activeResultIndex])
         {
             event.preventDefault();
-            window.location.href = items[activeIndex].href;
+            window.location.href = items[activeResultIndex].href;
         }
     });
+
+    /*
+    |------------------------------------------------------------------
+    | Fermeture clic extérieur
+    |------------------------------------------------------------------
+    */
 
     document.addEventListener('click', (event) =>
     {
@@ -353,7 +430,7 @@ export function initLiveSearch()
 
         if (!clickedInsideForm && !clickedInsideDropdown)
         {
-            closeDropdown();
+            closeSearchDropdown();
         }
     });
 }
