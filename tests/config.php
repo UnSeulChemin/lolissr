@@ -58,6 +58,9 @@ return [
     'testUploadInvalidImage' =>
         $testsEnabled && (bool) Functions::env('TEST_UPLOAD_INVALID_IMAGE', true),
 
+    'testUploadMaxSize' =>
+        $testsEnabled && (bool) Functions::env('TEST_UPLOAD_MAX_SIZE', true),
+
     /*
     |--------------------------------------------------------------------------
     | EXPORT

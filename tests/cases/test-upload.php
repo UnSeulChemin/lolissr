@@ -60,6 +60,11 @@ if ($testPostAjouter)
                 mkdir($uploadDir, 0777, true);
             }
 
+            if (is_file($tmpFile))
+            {
+                unlink($tmpFile);
+            }
+
             createValidJpeg($tmpFile);
 
             $boundary = uniqid('boundary_', true);
@@ -148,20 +153,8 @@ if ($testUploadDuplicateSlugNumero)
 
             createValidJpeg($tmpFile);
 
-            /*
-            |--------------------------------------------------------------------------
-            | slug unique fixture
-            |--------------------------------------------------------------------------
-            */
-
-            $slug = 'test-duplicate-slug';
+            $slug = 'test-duplicate-slug-' . uniqid();
             $numero = '777';
-
-            /*
-            |--------------------------------------------------------------------------
-            | 1er insert (doit réussir)
-            |--------------------------------------------------------------------------
-            */
 
             $boundary1 = uniqid('boundary_', true);
 
@@ -181,7 +174,7 @@ if ($testUploadDuplicateSlugNumero)
                 $boundary1
             );
 
-            requestUrl(
+            $firstResponse = requestUrl(
                 rtrim($base, '/') . '/manga/ajouter',
                 'POST',
                 [
@@ -191,11 +184,26 @@ if ($testUploadDuplicateSlugNumero)
                 $body1
             );
 
-            /*
-            |--------------------------------------------------------------------------
-            | 2e insert → doit échouer (doublon)
-            |--------------------------------------------------------------------------
-            */
+            $firstJson = decodeJsonResponse($firstResponse['body']);
+
+            $firstInsertOk =
+                $firstResponse['status'] === 200
+                && is_array($firstJson)
+                && isset($firstJson['success'])
+                && $firstJson['success'] === true;
+
+            if (!$firstInsertOk)
+            {
+                if (is_file($tmpFile))
+                {
+                    unlink($tmpFile);
+                }
+
+                return [
+                    'ok' => false,
+                    'message' => '1er insert impossible, test doublon invalide',
+                ];
+            }
 
             $boundary2 = uniqid('boundary_', true);
 
@@ -239,9 +247,7 @@ if ($testUploadDuplicateSlugNumero)
 
             return [
                 'ok' => $hasError || $response['status'] >= 400,
-                'message' =>
-                    'status ' . $response['status']
-                    . ' | doublon détecté',
+                'message' => 'status ' . $response['status'] . ' | doublon détecté',
             ];
         }
 
@@ -268,7 +274,7 @@ if ($testUploadInvalidImage)
 
             createInvalidTextFile($tmpFile);
 
-            $slug = 'test-invalid-image';
+            $slug = 'test-invalid-image-' . uniqid();
             $numero = '778';
 
             $boundary = uniqid('boundary_', true);
@@ -313,9 +319,94 @@ if ($testUploadInvalidImage)
 
             return [
                 'ok' => $hasError || $response['status'] >= 400,
-                'message' =>
-                    'status ' . $response['status']
-                    . ' | image invalide refusée',
+                'message' => 'status ' . $response['status'] . ' | image invalide refusée',
+            ];
+        }
+
+    ]);
+}
+
+if ($testUploadMaxSize)
+{
+    addPostCheck($postChecks, [
+
+        'category' => 'Upload',
+        'label' => 'Refuse fichier trop volumineux',
+
+        'url' => rtrim($base, '/') . '/manga/ajouter',
+
+        'callback' => static function () use ($base): array
+        {
+            $fixtureFile = ROOT . '/tests/fixtures/large.jpg';
+
+            if (!is_file($fixtureFile))
+            {
+                return [
+                    'ok' => false,
+                    'message' => 'fixture large.jpg introuvable',
+                ];
+            }
+
+            $slug = 'test-large-upload-' . uniqid();
+            $numero = '779';
+
+            $boundary = uniqid('boundary_', true);
+
+            $body = buildMultipartBody(
+                [
+                    'livre' => 'Test Large Upload',
+                    'slug' => $slug,
+                    'numero' => $numero,
+                ],
+                [
+                    'image' => [
+                        'filename' => 'large.jpg',
+                        'path' => $fixtureFile,
+                        'type' => 'image/jpeg',
+                    ]
+                ],
+                $boundary
+            );
+
+            $response = requestUrl(
+                rtrim($base, '/') . '/manga/ajouter',
+                'POST',
+                [
+                    "Content-Type: multipart/form-data; boundary=$boundary",
+                    'X-Requested-With: XMLHttpRequest',
+                ],
+                $body
+            );
+
+            $json = decodeJsonResponse($response['body']);
+
+            $hasJsonError =
+                is_array($json)
+                && isset($json['success'])
+                && $json['success'] === false;
+
+            $message = '';
+
+            if (is_array($json) && isset($json['message']) && is_string($json['message']))
+            {
+                $message = $json['message'];
+            }
+            else
+            {
+                $message = $response['body'];
+            }
+
+            $hasSizeMessage =
+                stripos($message, 'trop volumineux') !== false
+                || stripos($message, 'taille maximale') !== false
+                || stripos($message, 'trop lourd') !== false
+                || stripos($message, 'taille') !== false;
+
+            return [
+                'ok' => ($response['status'] >= 400) || $hasJsonError || $hasSizeMessage,
+                'message' => 'status ' . $response['status']
+                    . ' | taille max: '
+                    . (($hasJsonError || $hasSizeMessage) ? 'refusée' : 'non détectée'),
             ];
         }
 

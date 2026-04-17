@@ -56,6 +56,7 @@ $testPostAjouter = $config['testPostAjouter'];
 $testPostUpdate = $config['testPostUpdate'];
 $testUploadDuplicateSlugNumero = $config['testUploadDuplicateSlugNumero'];
 $testUploadInvalidImage = $config['testUploadInvalidImage'];
+$testUploadMaxSize = $config['testUploadMaxSize'];
 
 $exportDirectory = $config['exportDirectory'];
 $exportEnabled = $config['exportEnabled'];
