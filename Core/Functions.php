@@ -59,7 +59,30 @@ class Functions
      */
     public static function basePath(): string
     {
-        return (string) self::env('APP_BASE_PATH', '/');
+        $basePath = (string) self::env('APP_BASE_PATH', '/');
+
+        // Nettoyage sécurité
+        $basePath = trim($basePath);
+
+        // Si vide → racine
+        if ($basePath === '' || $basePath === '/')
+        {
+            return '/';
+        }
+
+        // Assure slash début
+        if ($basePath[0] !== '/')
+        {
+            $basePath = '/' . $basePath;
+        }
+
+        // Assure slash fin
+        if (substr($basePath, -1) !== '/')
+        {
+            $basePath .= '/';
+        }
+
+        return $basePath;
     }
 
     /**

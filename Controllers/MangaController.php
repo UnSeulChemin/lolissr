@@ -44,7 +44,7 @@ class MangaController extends Controller
      */
     private function isTestUploadMode(): bool
     {
-        return Functions::env('TEST_UPLOAD_MODE', 'false') === 'true';
+        return (bool) Functions::env('TEST_UPLOAD_MODE', false);
     }
 
     /**
@@ -52,7 +52,7 @@ class MangaController extends Controller
      */
     private function testUploadDirectory(): string
     {
-        $directory = trim(Functions::env('TEST_UPLOAD_DIR', 'tests/tmp-uploads'), '/\\');
+        $directory = trim((string) Functions::env('TEST_UPLOAD_DIR', 'tests/tmp-uploads'), '/\\');
 
         return ROOT . '/' . $directory . '/';
     }
@@ -93,14 +93,14 @@ class MangaController extends Controller
             return;
         }
 
-        $location = $pathPrefix . rawurlencode($canonicalSlug);
+        $location = trim($pathPrefix, '/') . '/' . rawurlencode($canonicalSlug);
 
         if ($numero !== null)
         {
             $location .= '/' . $numero;
         }
 
-        header('Location: ' . Functions::basePath() . $location, true, 301);
+        header('Location: ' . Functions::basePath() . '/' . $location, true, 301);
         exit;
     }
 
@@ -753,7 +753,7 @@ class MangaController extends Controller
 
         if ($requestedSlug !== $canonicalSlug)
         {
-            $redirect = Functions::basePath() . 'manga/update/' . rawurlencode($canonicalSlug) . '/' . $numero;
+            $redirect = Functions::basePath() . '/manga/update/' . rawurlencode($canonicalSlug) . '/' . $numero;
 
             if ($this->isAjaxRequest())
             {
@@ -860,7 +860,7 @@ class MangaController extends Controller
             $this->jsonResponse([
                 'success' => true,
                 'message' => 'Manga mis à jour avec succès',
-                'redirect' => Functions::basePath() . 'manga/' . rawurlencode($slug) . '/' . $numero
+                'redirect' => Functions::basePath() . '/manga/' . rawurlencode($slug) . '/' . $numero
             ]);
         }
 
@@ -906,7 +906,7 @@ class MangaController extends Controller
             $this->jsonResponse([
                 'success' => false,
                 'message' => 'URL non canonique',
-                'redirect' => Functions::basePath() . 'manga/' . rawurlencode($canonicalSlug) . '/' . $numero
+                'redirect' => Functions::basePath() . '/manga/' . rawurlencode($canonicalSlug) . '/' . $numero
             ], 409);
         }
 

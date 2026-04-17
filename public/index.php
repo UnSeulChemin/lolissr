@@ -33,7 +33,12 @@ if (is_file($envFile))
 
         [$name, $value] = explode('=', $line, 2);
 
-        $_ENV[trim($name)] = trim($value);
+        $name = trim($name);
+        $value = trim($value);
+
+        $_ENV[$name] = $value;
+        $_SERVER[$name] = $value;
+        putenv($name . '=' . $value);
     }
 }
 

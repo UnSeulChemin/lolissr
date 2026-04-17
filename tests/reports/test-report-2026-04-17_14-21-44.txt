@@ -1,0 +1,145 @@
+LoliSSR Test Report
+========================================================================
+Date: 2026-04-17 14:21:44
+Base URL: http://localhost/lolissr
+Slug: one-piece
+Numero: 1
+========================================================================
+
+
+════════════════════════════════════════════════════════════════════════
+  TESTS LOLISSR
+════════════════════════════════════════════════════════════════════════
+
+
+▶ Canonical
+──────────────────────────────────────────────────────
+❌ FAIL Redirect canonique série -> /manga/serie/One-Piece [status 200 attendu 301 | 38,39 ms]
+❌ FAIL Redirect canonique tome -> /manga/One-Piece/1 [status 200 attendu 301 | 20,28 ms]
+❌ FAIL Redirect canonique modifier -> /manga/update/One-Piece/1 [status 200 attendu 301 | 3,65 ms]
+
+▶ Erreurs
+──────────────────────────────────────────────────────
+❌ FAIL Série inexistante -> /manga/serie/slug-inexistante-test [status 200 attendu 404 | 12,41 ms]
+❌ FAIL Détail inexistant -> /manga/slug-inexistant-test/999999 [status 200 attendu 404 | 15,19 ms]
+
+▶ Pagination
+──────────────────────────────────────────────────────
+✅ OK   Collection page 2 -> /manga/collection/page/2 (200 | 14,98 ms)
+❌ FAIL Collection page 0 refusée -> /manga/collection/page/0 [status 200 attendu 404 | 15,52 ms]
+❌ FAIL Collection page négative refusée -> /manga/collection/page/-1 [status 200 attendu 404 | 3,42 ms]
+❌ FAIL Collection page très haute refusée -> /manga/collection/page/9999 [status 200 attendu 404 | 12,78 ms]
+
+▶ Smoke
+──────────────────────────────────────────────────────
+❌ FAIL Accueil -> / [texte absent : "<body" | 15,43 ms]
+❌ FAIL Dashboard manga -> /manga [texte absent : "Manga" | 15,91 ms]
+❌ FAIL Collection -> /manga/collection [texte absent : "Collection" | 15,73 ms]
+✅ OK   Recherche -> /manga/recherche (200 | 15,40 ms)
+❌ FAIL Ajouter -> /manga/ajouter [texte absent : "<form" | 16,16 ms]
+✅ OK   Page lien -> /manga/lien (200 | 15,14 ms)
+✅ OK   Série existante -> /manga/serie/one-piece (200 | 16,20 ms)
+✅ OK   Tome existant -> /manga/one-piece/1 (200 | 16,73 ms)
+❌ FAIL Page modifier -> /manga/update/one-piece/1 [texte absent : "<form" | 15,68 ms]
+
+════════════════════════════════════════════════════════════════════════
+  CHECKS COMPLÉMENTAIRES
+════════════════════════════════════════════════════════════════════════
+
+
+▶ AJAX
+──────────────────────────────────────────────────────
+❌ FAIL GET détail contient hooks AJAX notes [hooks AJAX absents | 15,05 ms]
+
+▶ Pagination
+──────────────────────────────────────────────────────
+❌ FAIL Collection page 1 contient du contenu [contenu détecté | 15,86 ms]
+❌ FAIL Collection page 2 contient du contenu [contenu détecté | 14,95 ms]
+❌ FAIL Collection page 2 différente de la page 1 [page 1 et page 2 identiques | 32,00 ms]
+❌ FAIL Collection page très haute retourne bien 404 [status 200 | 16,68 ms]
+
+▶ Smoke HTML
+──────────────────────────────────────────────────────
+❌ FAIL Detail a un title [title absent | 14,86 ms]
+❌ FAIL Detail contient une image [img trouvée | 15,48 ms]
+❌ FAIL Collection contient plusieurs liens [0 lien(s) | 16,18 ms]
+
+════════════════════════════════════════════════════════════════════════
+  TESTS POST
+════════════════════════════════════════════════════════════════════════
+
+
+▶ AJAX
+──────────────────────────────────────────────────────
+❌ FAIL POST ajouter validation AJAX invalide [status 200 | réponse non json | 14,94 ms]
+❌ FAIL POST ajouter body JSON non supporté [status 200 | body JSON non supporté | 15,51 ms]
+
+▶ Update
+──────────────────────────────────────────────────────
+❌ FAIL Update notes valide [status 200 | 15,86 ms]
+❌ FAIL Update invalide (note > 5) [status 200 | 15,36 ms]
+❌ FAIL Update slug non canonique [status 200 | 15,38 ms]
+
+▶ Upload
+──────────────────────────────────────────────────────
+❌ FAIL Upload image valide [status 200 | 32,18 ms]
+
+════════════════════════════════════════════════════════════════════════
+  FAILS TRIÉS
+════════════════════════════════════════════════════════════════════════
+
+❌ FAIL Canonical :: Redirect canonique série [status 200 attendu 301 | 38,39 ms]
+❌ FAIL Upload :: Upload image valide [status 200 | 32,18 ms]
+❌ FAIL Pagination :: Collection page 2 différente de la page 1 [page 1 et page 2 identiques | 32,00 ms]
+❌ FAIL Canonical :: Redirect canonique tome [status 200 attendu 301 | 20,28 ms]
+❌ FAIL Pagination :: Collection page très haute retourne bien 404 [status 200 | 16,68 ms]
+❌ FAIL Smoke HTML :: Collection contient plusieurs liens [0 lien(s) | 16,18 ms]
+❌ FAIL Smoke :: Ajouter [texte absent : "<form" | 16,16 ms]
+❌ FAIL Smoke :: Dashboard manga [texte absent : "Manga" | 15,91 ms]
+❌ FAIL Pagination :: Collection page 1 contient du contenu [contenu détecté | 15,86 ms]
+❌ FAIL Update :: Update notes valide [status 200 | 15,86 ms]
+❌ FAIL Smoke :: Collection [texte absent : "Collection" | 15,73 ms]
+❌ FAIL Smoke :: Page modifier [texte absent : "<form" | 15,68 ms]
+❌ FAIL Pagination :: Collection page 0 refusée [status 200 attendu 404 | 15,52 ms]
+❌ FAIL AJAX :: POST ajouter body JSON non supporté [status 200 | body JSON non supporté | 15,51 ms]
+❌ FAIL Smoke HTML :: Detail contient une image [img trouvée | 15,48 ms]
+❌ FAIL Smoke :: Accueil [texte absent : "<body" | 15,43 ms]
+❌ FAIL Update :: Update slug non canonique [status 200 | 15,38 ms]
+❌ FAIL Update :: Update invalide (note > 5) [status 200 | 15,36 ms]
+❌ FAIL Erreurs :: Détail inexistant [status 200 attendu 404 | 15,19 ms]
+❌ FAIL AJAX :: GET détail contient hooks AJAX notes [hooks AJAX absents | 15,05 ms]
+❌ FAIL Pagination :: Collection page 2 contient du contenu [contenu détecté | 14,95 ms]
+❌ FAIL AJAX :: POST ajouter validation AJAX invalide [status 200 | réponse non json | 14,94 ms]
+❌ FAIL Smoke HTML :: Detail a un title [title absent | 14,86 ms]
+❌ FAIL Pagination :: Collection page très haute refusée [status 200 attendu 404 | 12,78 ms]
+❌ FAIL Erreurs :: Série inexistante [status 200 attendu 404 | 12,41 ms]
+❌ FAIL Canonical :: Redirect canonique modifier [status 200 attendu 301 | 3,65 ms]
+❌ FAIL Pagination :: Collection page négative refusée [status 200 attendu 404 | 3,42 ms]
+
+════════════════════════════════════════════════════════════════════════
+  RÉSUMÉ PAR CATÉGORIE
+════════════════════════════════════════════════════════════════════════
+
+Canonical              OK: 0   FAIL: 3   WARN: 0   TOTAL: 3   TIME: 62,32 ms
+Erreurs                OK: 0   FAIL: 2   WARN: 0   TOTAL: 2   TIME: 27,60 ms
+Pagination             OK: 1   FAIL: 7   WARN: 0   TOTAL: 8   TIME: 126,19 ms
+Smoke                  OK: 4   FAIL: 5   WARN: 0   TOTAL: 9   TIME: 142,38 ms
+AJAX                   OK: 0   FAIL: 3   WARN: 0   TOTAL: 3   TIME: 45,50 ms
+Smoke HTML             OK: 0   FAIL: 3   WARN: 0   TOTAL: 3   TIME: 46,51 ms
+Update                 OK: 0   FAIL: 3   WARN: 0   TOTAL: 3   TIME: 46,59 ms
+Upload                 OK: 0   FAIL: 1   WARN: 0   TOTAL: 1   TIME: 32,18 ms
+
+════════════════════════════════════════════════════════════════════════
+  RÉSUMÉ FINAL
+════════════════════════════════════════════════════════════════════════
+
+────────────────────────────────────────────────────────────────────────
+Tests exécutés : 32
+Succès         : 5
+Échecs         : 27
+Warnings       : 0
+Temps cumulé   : 529,28 ms
+Temps global   : 542,39 ms
+────────────────────────────────────────────────────────────────────────
+💥 SUITE À CORRIGER
+État global : il reste des points à corriger.
