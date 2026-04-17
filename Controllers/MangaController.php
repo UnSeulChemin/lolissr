@@ -470,13 +470,14 @@ class MangaController extends Controller
 
         if ($this->isTestUploadMode())
         {
-            $this->removeFileIfExists($upload['destination']);
+            Session::forget(['errors', 'old']);
 
             if ($this->isAjaxRequest())
             {
                 $this->jsonResponse([
                     'success' => true,
-                    'message' => 'Upload test OK (aucune écriture en base)'
+                    'message' => 'Upload test OK (aucune écriture en base)',
+                    'file' => basename($upload['destination'])
                 ]);
             }
 
