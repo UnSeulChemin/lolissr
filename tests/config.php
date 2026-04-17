@@ -52,6 +52,12 @@ return [
     'testPostUpdate' =>
         $testsEnabled && (bool) Functions::env('TEST_POST_UPDATE', true),
 
+    'testUploadDuplicateSlugNumero' =>
+        $testsEnabled && (bool) Functions::env('TEST_UPLOAD_DUPLICATE_SLUG_NUMERO', true),
+
+    'testUploadInvalidImage' =>
+        $testsEnabled && (bool) Functions::env('TEST_UPLOAD_INVALID_IMAGE', true),
+
     /*
     |--------------------------------------------------------------------------
     | EXPORT

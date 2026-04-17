@@ -24,6 +24,23 @@ function createValidJpeg(string $path, int $width = 10, int $height = 10): void
     imagedestroy($image);
 }
 
+function createInvalidTextFile(string $path): void
+{
+    $written = file_put_contents($path, "ceci n'est pas une image");
+
+    if ($written === false)
+    {
+        throw new RuntimeException('Impossible de créer un faux fichier de test.');
+    }
+}
+
+function decodeJsonResponse(string $body): ?array
+{
+    $json = json_decode($body, true);
+
+    return is_array($json) ? $json : null;
+}
+
 if ($testPostAjouter)
 {
     addPostCheck($postChecks, [
@@ -78,7 +95,7 @@ if ($testPostAjouter)
                 unlink($tmpFile);
             }
 
-            $json = json_decode($response['body'], true);
+            $json = decodeJsonResponse($response['body']);
 
             $okResponse =
                 $response['status'] === 200
@@ -105,6 +122,200 @@ if ($testPostAjouter)
                     . ' | fichier: '
                     . ($fileExists ? 'présent' : 'absent')
                     . ($returnedFile !== '' ? ' (' . $returnedFile . ')' : ''),
+            ];
+        }
+
+    ]);
+}
+
+if ($testUploadDuplicateSlugNumero)
+{
+    addPostCheck($postChecks, [
+
+        'category' => 'Upload',
+        'label' => 'Refuse doublon slug + numero',
+
+        'url' => rtrim($base, '/') . '/manga/ajouter',
+
+        'callback' => static function () use ($base): array
+        {
+            $tmpFile = ROOT . '/tests/tmp-duplicate.jpg';
+
+            if (is_file($tmpFile))
+            {
+                unlink($tmpFile);
+            }
+
+            createValidJpeg($tmpFile);
+
+            /*
+            |--------------------------------------------------------------------------
+            | slug unique fixture
+            |--------------------------------------------------------------------------
+            */
+
+            $slug = 'test-duplicate-slug';
+            $numero = '777';
+
+            /*
+            |--------------------------------------------------------------------------
+            | 1er insert (doit réussir)
+            |--------------------------------------------------------------------------
+            */
+
+            $boundary1 = uniqid('boundary_', true);
+
+            $body1 = buildMultipartBody(
+                [
+                    'livre' => 'Test Duplicate',
+                    'slug' => $slug,
+                    'numero' => $numero,
+                ],
+                [
+                    'image' => [
+                        'filename' => 'valid.jpg',
+                        'path' => $tmpFile,
+                        'type' => 'image/jpeg',
+                    ]
+                ],
+                $boundary1
+            );
+
+            requestUrl(
+                rtrim($base, '/') . '/manga/ajouter',
+                'POST',
+                [
+                    "Content-Type: multipart/form-data; boundary=$boundary1",
+                    'X-Requested-With: XMLHttpRequest',
+                ],
+                $body1
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | 2e insert → doit échouer (doublon)
+            |--------------------------------------------------------------------------
+            */
+
+            $boundary2 = uniqid('boundary_', true);
+
+            $body2 = buildMultipartBody(
+                [
+                    'livre' => 'Test Duplicate',
+                    'slug' => $slug,
+                    'numero' => $numero,
+                ],
+                [
+                    'image' => [
+                        'filename' => 'valid.jpg',
+                        'path' => $tmpFile,
+                        'type' => 'image/jpeg',
+                    ]
+                ],
+                $boundary2
+            );
+
+            $response = requestUrl(
+                rtrim($base, '/') . '/manga/ajouter',
+                'POST',
+                [
+                    "Content-Type: multipart/form-data; boundary=$boundary2",
+                    'X-Requested-With: XMLHttpRequest',
+                ],
+                $body2
+            );
+
+            if (is_file($tmpFile))
+            {
+                unlink($tmpFile);
+            }
+
+            $json = decodeJsonResponse($response['body']);
+
+            $hasError =
+                is_array($json)
+                && isset($json['success'])
+                && $json['success'] === false;
+
+            return [
+                'ok' => $hasError || $response['status'] >= 400,
+                'message' =>
+                    'status ' . $response['status']
+                    . ' | doublon détecté',
+            ];
+        }
+
+    ]);
+}
+
+if ($testUploadInvalidImage)
+{
+    addPostCheck($postChecks, [
+
+        'category' => 'Upload',
+        'label' => 'Refuse image invalide',
+
+        'url' => rtrim($base, '/') . '/manga/ajouter',
+
+        'callback' => static function () use ($base): array
+        {
+            $tmpFile = ROOT . '/tests/tmp-invalid.txt';
+
+            if (is_file($tmpFile))
+            {
+                unlink($tmpFile);
+            }
+
+            createInvalidTextFile($tmpFile);
+
+            $slug = 'test-invalid-image';
+            $numero = '778';
+
+            $boundary = uniqid('boundary_', true);
+
+            $body = buildMultipartBody(
+                [
+                    'livre' => 'Test Invalid Image',
+                    'slug' => $slug,
+                    'numero' => $numero,
+                ],
+                [
+                    'image' => [
+                        'filename' => 'fake.txt',
+                        'path' => $tmpFile,
+                        'type' => 'text/plain',
+                    ]
+                ],
+                $boundary
+            );
+
+            $response = requestUrl(
+                rtrim($base, '/') . '/manga/ajouter',
+                'POST',
+                [
+                    "Content-Type: multipart/form-data; boundary=$boundary",
+                    'X-Requested-With: XMLHttpRequest',
+                ],
+                $body
+            );
+
+            if (is_file($tmpFile))
+            {
+                unlink($tmpFile);
+            }
+
+            $json = decodeJsonResponse($response['body']);
+
+            $hasError =
+                is_array($json)
+                && isset($json['success'])
+                && $json['success'] === false;
+
+            return [
+                'ok' => $hasError || $response['status'] >= 400,
+                'message' =>
+                    'status ' . $response['status']
+                    . ' | image invalide refusée',
             ];
         }
 

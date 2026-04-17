@@ -54,6 +54,8 @@ $nonCanonicalSlug = $config['nonCanonicalSlug'];
 $testCanonicalRedirect = $config['testCanonicalRedirect'];
 $testPostAjouter = $config['testPostAjouter'];
 $testPostUpdate = $config['testPostUpdate'];
+$testUploadDuplicateSlugNumero = $config['testUploadDuplicateSlugNumero'];
+$testUploadInvalidImage = $config['testUploadInvalidImage'];
 
 $exportDirectory = $config['exportDirectory'];
 $exportEnabled = $config['exportEnabled'];
@@ -68,14 +70,12 @@ function cleanTmpUploads(): void
 {
     $dir = __DIR__ . '/tmp-uploads';
 
-    // crée le dossier si absent
     if (!is_dir($dir))
     {
         mkdir($dir, 0777, true);
         return;
     }
 
-    // supprime tous les fichiers
     $files = glob($dir . '/*');
 
     if ($files === false)
