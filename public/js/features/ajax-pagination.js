@@ -1,18 +1,18 @@
 import { showToast } from '../core/toast.js';
 
-const paginationCache = new Map();
+const collectionPaginationHtmlCache = new Map();
 
-function isPaginationLink(element)
+function getCollectionPaginationLink(target)
 {
-    return element?.closest('.collection-pagination-link') ?? null;
+    return target?.closest('.collection-pagination-link') ?? null;
 }
 
-function getAjaxContainer()
+function getCollectionAjaxContainer()
 {
     return document.querySelector('.collection-ajax-container');
 }
 
-function scrollToPaginationTop()
+function scrollCollectionPaginationToTop()
 {
     window.scrollTo({
         top: 0,
@@ -20,7 +20,15 @@ function scrollToPaginationTop()
     });
 }
 
-function buildAjaxUrl(link)
+function isCollectionListingPage()
+{
+    return (
+        /\/manga\/collection$/.test(window.location.pathname)
+        || /\/manga\/collection\/page\/\d+$/.test(window.location.pathname)
+    );
+}
+
+function buildCollectionPaginationAjaxUrl(link)
 {
     const url = new URL(link.href, window.location.origin);
 
@@ -29,10 +37,18 @@ function buildAjaxUrl(link)
         '/manga/collection-ajax/page/'
     );
 
+    if (/\/manga\/collection$/.test(url.pathname))
+    {
+        url.pathname = url.pathname.replace(
+            '/manga/collection',
+            '/manga/collection-ajax/page/1'
+        );
+    }
+
     return url.toString();
 }
 
-function getCurrentPaginationAjaxUrl()
+function getCurrentCollectionPaginationAjaxUrl()
 {
     const url = new URL(window.location.href);
 
@@ -54,24 +70,16 @@ function getCurrentPaginationAjaxUrl()
     return url.toString();
 }
 
-function isCollectionPage()
+async function prefetchCollectionPaginationPage(ajaxUrl)
 {
-    return (
-        /\/manga\/collection$/.test(window.location.pathname)
-        || /\/manga\/collection\/page\/\d+$/.test(window.location.pathname)
-    );
-}
-
-async function preloadPage(url)
-{
-    if (!url || paginationCache.has(url))
+    if (!ajaxUrl || collectionPaginationHtmlCache.has(ajaxUrl))
     {
         return;
     }
 
     try
     {
-        const response = await fetch(url, {
+        const response = await fetch(ajaxUrl, {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
             }
@@ -84,7 +92,7 @@ async function preloadPage(url)
 
         const html = await response.text();
 
-        paginationCache.set(url, html);
+        collectionPaginationHtmlCache.set(ajaxUrl, html);
     }
     catch (error)
     {
@@ -92,28 +100,39 @@ async function preloadPage(url)
     }
 }
 
-function preloadNextPaginationLink(container)
+function prefetchNextCollectionPaginationPage()
 {
-    const activeLink = container.querySelector('.collection-pagination-link.active');
+    const ajaxContainer = getCollectionAjaxContainer();
 
-    if (!activeLink)
+    if (!ajaxContainer)
     {
         return;
     }
 
-    const nextLink = activeLink.nextElementSibling;
+    const activePaginationLink = ajaxContainer.querySelector(
+        '.collection-pagination-link.active'
+    );
 
-    if (!nextLink?.classList.contains('collection-pagination-link'))
+    if (!activePaginationLink)
     {
         return;
     }
 
-    preloadPage(buildAjaxUrl(nextLink));
+    const nextPaginationLink = activePaginationLink.nextElementSibling;
+
+    if (!nextPaginationLink?.classList.contains('collection-pagination-link'))
+    {
+        return;
+    }
+
+    const nextAjaxUrl = buildCollectionPaginationAjaxUrl(nextPaginationLink);
+
+    prefetchCollectionPaginationPage(nextAjaxUrl);
 }
 
-async function fetchPaginationHtml(ajaxUrl)
+async function fetchCollectionPaginationHtml(ajaxUrl)
 {
-    const cachedHtml = paginationCache.get(ajaxUrl);
+    const cachedHtml = collectionPaginationHtmlCache.get(ajaxUrl);
 
     if (cachedHtml)
     {
@@ -133,34 +152,41 @@ async function fetchPaginationHtml(ajaxUrl)
 
     const html = await response.text();
 
-    paginationCache.set(ajaxUrl, html);
+    collectionPaginationHtmlCache.set(ajaxUrl, html);
 
     return html;
 }
 
-async function loadPaginationContent(
+async function loadCollectionPaginationContent(
     ajaxUrl,
-    container,
     fallbackUrl,
     errorMessage,
-    shouldScroll = true
+    shouldScrollToTop = true
 )
 {
+    const ajaxContainer = getCollectionAjaxContainer();
+
+    if (!ajaxContainer)
+    {
+        window.location.href = fallbackUrl;
+        return false;
+    }
+
     try
     {
-        container.classList.add('is-loading');
+        ajaxContainer.classList.add('is-loading');
 
-        const html = await fetchPaginationHtml(ajaxUrl);
+        const html = await fetchCollectionPaginationHtml(ajaxUrl);
 
-        container.innerHTML = html;
+        ajaxContainer.innerHTML = html;
 
-        preloadNextPaginationLink(container);
+        prefetchNextCollectionPaginationPage();
 
-        if (shouldScroll)
+        if (shouldScrollToTop)
         {
             requestAnimationFrame(() =>
             {
-                scrollToPaginationTop();
+                scrollCollectionPaginationToTop();
             });
         }
 
@@ -175,18 +201,30 @@ async function loadPaginationContent(
     }
     finally
     {
-        container.classList.remove('is-loading');
+        const freshAjaxContainer = getCollectionAjaxContainer();
+
+        if (freshAjaxContainer)
+        {
+            freshAjaxContainer.classList.remove('is-loading');
+        }
     }
 }
 
-export function initPaginationAjax()
+export function initCollectionPaginationAjax()
 {
-    const container = getAjaxContainer();
+    const ajaxContainer = getCollectionAjaxContainer();
 
-    if (!container)
+    if (!ajaxContainer)
     {
         return;
     }
+
+    if (document.body.dataset.collectionPaginationAjaxInit === 'true')
+    {
+        return;
+    }
+
+    document.body.dataset.collectionPaginationAjaxInit = 'true';
 
     document.addEventListener('pointerover', (event) =>
     {
@@ -195,45 +233,55 @@ export function initPaginationAjax()
             return;
         }
 
-        const link = isPaginationLink(event.target);
+        const paginationLink = getCollectionPaginationLink(event.target);
 
-        if (!link)
+        if (!paginationLink)
         {
             return;
         }
 
-        preloadPage(buildAjaxUrl(link));
+        const ajaxUrl = buildCollectionPaginationAjaxUrl(paginationLink);
+
+        prefetchCollectionPaginationPage(ajaxUrl);
     });
 
     document.addEventListener('focusin', (event) =>
     {
-        const link = isPaginationLink(event.target);
+        const paginationLink = getCollectionPaginationLink(event.target);
 
-        if (!link)
+        if (!paginationLink)
         {
             return;
         }
 
-        preloadPage(buildAjaxUrl(link));
+        const ajaxUrl = buildCollectionPaginationAjaxUrl(paginationLink);
+
+        prefetchCollectionPaginationPage(ajaxUrl);
     });
 
     document.addEventListener('click', async (event) =>
     {
-        const link = isPaginationLink(event.target);
+        const paginationLink = getCollectionPaginationLink(event.target);
 
-        if (!link)
+        if (!paginationLink)
+        {
+            return;
+        }
+
+        const ajaxContainer = getCollectionAjaxContainer();
+
+        if (!ajaxContainer || !ajaxContainer.contains(paginationLink))
         {
             return;
         }
 
         event.preventDefault();
 
-        const ajaxUrl = buildAjaxUrl(link);
+        const ajaxUrl = buildCollectionPaginationAjaxUrl(paginationLink);
 
-        const success = await loadPaginationContent(
+        const success = await loadCollectionPaginationContent(
             ajaxUrl,
-            container,
-            link.href,
+            paginationLink.href,
             'Erreur chargement page',
             true
         );
@@ -246,31 +294,33 @@ export function initPaginationAjax()
         history.pushState(
             {
                 ajaxUrl: ajaxUrl,
-                pageUrl: link.href
+                pageUrl: paginationLink.href
             },
             '',
-            link.href
+            paginationLink.href
         );
     });
 
     window.addEventListener('popstate', async () =>
     {
-        if (!isCollectionPage())
+        if (!isCollectionListingPage())
         {
             return;
         }
 
-        const pageMatch = window.location.pathname.match(/\/manga\/collection\/page\/(\d+)$/);
-        const page = pageMatch ? pageMatch[1] : '1';
+        const pageMatch = window.location.pathname.match(
+            /\/manga\/collection\/page\/(\d+)$/
+        );
 
-        await loadPaginationContent(
-            getCurrentPaginationAjaxUrl(),
-            container,
+        const currentPageNumber = pageMatch ? pageMatch[1] : '1';
+
+        await loadCollectionPaginationContent(
+            getCurrentCollectionPaginationAjaxUrl(),
             window.location.href,
-            `Erreur chargement page ${page}`,
+            `Erreur chargement page ${currentPageNumber}`,
             false
         );
     });
 
-    preloadNextPaginationLink(container);
+    prefetchNextCollectionPaginationPage();
 }

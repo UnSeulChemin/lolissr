@@ -1,9 +1,19 @@
-const detailPageCache = new Set();
-const imageCache = new Set();
+const collectionPagePrefetchCache = new Set();
+const collectionImagePrefetchCache = new Set();
 
-export function preloadUrl(url)
+function canPrefetchCollectionUrl(url)
 {
-    if (!url || detailPageCache.has(url))
+    return Boolean(url) && !collectionPagePrefetchCache.has(url);
+}
+
+function canPrefetchCollectionImage(url)
+{
+    return Boolean(url) && !collectionImagePrefetchCache.has(url);
+}
+
+export function prefetchCollectionPage(url)
+{
+    if (!canPrefetchCollectionUrl(url))
     {
         return;
     }
@@ -16,10 +26,12 @@ export function preloadUrl(url)
     })
     .then((response) =>
     {
-        if (response.ok)
+        if (!response.ok)
         {
-            detailPageCache.add(url);
+            return;
         }
+
+        collectionPagePrefetchCache.add(url);
     })
     .catch(() =>
     {
@@ -27,21 +39,33 @@ export function preloadUrl(url)
     });
 }
 
-export function preloadImage(url)
+export function prefetchCollectionImage(url)
 {
-    if (!url || imageCache.has(url))
+    if (!canPrefetchCollectionImage(url))
     {
         return;
     }
 
-    imageCache.add(url);
+    collectionImagePrefetchCache.add(url);
 
-    const img = new Image();
-    img.src = url;
+    const image = new Image();
+    image.src = url;
 }
 
-export function initCardPrefetch()
+function getCollectionCardLinkFromEventTarget(target)
 {
+    return target?.closest('.collection-card-link') ?? null;
+}
+
+export function initCollectionCardPrefetch()
+{
+    if (document.body.dataset.collectionCardPrefetchInit === 'true')
+    {
+        return;
+    }
+
+    document.body.dataset.collectionCardPrefetchInit = 'true';
+
     document.addEventListener('pointerover', (event) =>
     {
         if (event.pointerType && event.pointerType !== 'mouse')
@@ -49,39 +73,39 @@ export function initCardPrefetch()
             return;
         }
 
-        const link = event.target.closest('.collection-card-link');
+        const cardLink = getCollectionCardLinkFromEventTarget(event.target);
 
-        if (!link)
+        if (!cardLink)
         {
             return;
         }
 
-        preloadUrl(link.href);
+        prefetchCollectionPage(cardLink.href);
 
-        const image = link.querySelector('.card-image-portrait');
+        const image = cardLink.querySelector('.card-image-portrait');
 
         if (image)
         {
-            preloadImage(image.src);
+            prefetchCollectionImage(image.src);
         }
     });
 
     document.addEventListener('focusin', (event) =>
     {
-        const link = event.target.closest('.collection-card-link');
+        const cardLink = getCollectionCardLinkFromEventTarget(event.target);
 
-        if (!link)
+        if (!cardLink)
         {
             return;
         }
 
-        preloadUrl(link.href);
+        prefetchCollectionPage(cardLink.href);
 
-        const image = link.querySelector('.card-image-portrait');
+        const image = cardLink.querySelector('.card-image-portrait');
 
         if (image)
         {
-            preloadImage(image.src);
+            prefetchCollectionImage(image.src);
         }
     });
 }

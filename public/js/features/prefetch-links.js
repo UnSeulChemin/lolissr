@@ -1,20 +1,35 @@
-const preloadedLinks = new Set();
-let hoverTimer = null;
+const genericLinkPrefetchCache = new Set();
+let genericLinkHoverTimer = null;
 
-function canPreloadLink(link)
+/**
+ * Vérifie si un lien peut être préchargé.
+ */
+function canPrefetchGenericLink(link)
 {
     if (!link || !link.href)
     {
         return false;
     }
 
+    /*
+    |------------------------------------------------------------------
+    | Liens déjà gérés ailleurs
+    |------------------------------------------------------------------
+    */
+
     if (
-        link.classList.contains('collection-card-link') ||
-        link.classList.contains('collection-pagination-link')
+        link.classList.contains('collection-card-link')
+        || link.classList.contains('collection-pagination-link')
     )
     {
         return false;
     }
+
+    /*
+    |------------------------------------------------------------------
+    | Liens exclus
+    |------------------------------------------------------------------
+    */
 
     if (link.target === '_blank' || link.hasAttribute('download'))
     {
@@ -24,11 +39,11 @@ function canPreloadLink(link)
     const href = link.getAttribute('href');
 
     if (
-        !href ||
-        href.startsWith('#') ||
-        href.startsWith('mailto:') ||
-        href.startsWith('tel:') ||
-        href.startsWith('javascript:')
+        !href
+        || href.startsWith('#')
+        || href.startsWith('mailto:')
+        || href.startsWith('tel:')
+        || href.startsWith('javascript:')
     )
     {
         return false;
@@ -44,9 +59,12 @@ function canPreloadLink(link)
     return true;
 }
 
-async function preloadLink(url)
+/**
+ * Précharge une page HTML classique.
+ */
+async function prefetchGenericLink(url)
 {
-    if (preloadedLinks.has(url))
+    if (!url || genericLinkPrefetchCache.has(url))
     {
         return;
     }
@@ -63,7 +81,7 @@ async function preloadLink(url)
             return;
         }
 
-        preloadedLinks.add(url);
+        genericLinkPrefetchCache.add(url);
     }
     catch (error)
     {
@@ -73,10 +91,29 @@ async function preloadLink(url)
 
 export function initLinkPreloading()
 {
+    /*
+    |------------------------------------------------------------------
+    | Sécurité
+    |------------------------------------------------------------------
+    */
+
     if (navigator.connection?.saveData)
     {
         return;
     }
+
+    if (document.body.dataset.genericLinkPrefetchInit === 'true')
+    {
+        return;
+    }
+
+    document.body.dataset.genericLinkPrefetchInit = 'true';
+
+    /*
+    |------------------------------------------------------------------
+    | Hover souris
+    |------------------------------------------------------------------
+    */
 
     document.addEventListener('pointerover', (event) =>
     {
@@ -87,16 +124,16 @@ export function initLinkPreloading()
 
         const link = event.target.closest('a');
 
-        if (!canPreloadLink(link))
+        if (!canPrefetchGenericLink(link))
         {
             return;
         }
 
-        clearTimeout(hoverTimer);
+        clearTimeout(genericLinkHoverTimer);
 
-        hoverTimer = setTimeout(() =>
+        genericLinkHoverTimer = setTimeout(() =>
         {
-            preloadLink(link.href);
+            prefetchGenericLink(link.href);
         }, 120);
     });
 
@@ -109,18 +146,24 @@ export function initLinkPreloading()
             return;
         }
 
-        clearTimeout(hoverTimer);
+        clearTimeout(genericLinkHoverTimer);
     });
+
+    /*
+    |------------------------------------------------------------------
+    | Focus clavier
+    |------------------------------------------------------------------
+    */
 
     document.addEventListener('focusin', (event) =>
     {
         const link = event.target.closest('a');
 
-        if (!canPreloadLink(link))
+        if (!canPrefetchGenericLink(link))
         {
             return;
         }
 
-        preloadLink(link.href);
+        prefetchGenericLink(link.href);
     });
 }

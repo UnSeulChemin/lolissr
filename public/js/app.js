@@ -1,14 +1,17 @@
-import { initPaginationAjax } from './features/ajax-pagination.js';
-import { initAjaxNotes } from './features/ajax-notes.js';
+import { initCollectionPaginationAjax } from './features/ajax-pagination.js';
+import { initMangaAjaxNotes } from './features/ajax-notes.js';
 import { initAutoSlug } from './features/slug.js';
 import { showToast } from './core/toast.js';
-import { initCardPrefetch } from './features/prefetch-collection.js';
+import { initCollectionCardPrefetch } from './features/prefetch-collection.js';
 import { initLiveSearch } from './features/search.js';
-import { initCollectionKeyboardNavigation } from './features/collection_keyboard.js';
+import { initCollectionKeyboardNavigation } from './features/collection-keyboard-navigation.js';
 import { initLinkPreloading } from './features/prefetch-links.js';
 import { initAjouterPage } from './pages/ajouter.js';
 import { initEditPage } from './pages/edit.js';
 
+/**
+ * Affiche un toast flash injecté côté PHP.
+ */
 function initFlashToast()
 {
     if (!window.flashToast || !window.flashToast.message)
@@ -24,25 +27,60 @@ function initFlashToast()
 
 document.addEventListener('DOMContentLoaded', () =>
 {
-    /* Core UI */
+    /*
+    |------------------------------------------------------------------
+    | PAGES
+    |------------------------------------------------------------------
+    */
+
     initAutoSlug();
     initAjouterPage();
     initEditPage();
 
-    /* AJAX */
-    initPaginationAjax();
-    initAjaxNotes();
 
-    /* Navigation */
+    /*
+    |------------------------------------------------------------------
+    | AJAX
+    |------------------------------------------------------------------
+    */
+
+    initCollectionPaginationAjax();
+    initMangaAjaxNotes();
+
+
+    /*
+    |------------------------------------------------------------------
+    | NAVIGATION
+    |------------------------------------------------------------------
+    */
+
     initCollectionKeyboardNavigation();
 
-    /* Prefetch */
-    initCardPrefetch();
+
+    /*
+    |------------------------------------------------------------------
+    | PREFETCH
+    |------------------------------------------------------------------
+    */
+
+    initCollectionCardPrefetch();
     initLinkPreloading();
 
-    /* Search (dernier) */
+
+    /*
+    |------------------------------------------------------------------
+    | SEARCH
+    |------------------------------------------------------------------
+    */
+
     initLiveSearch();
 
-    /* Toast flash */
+
+    /*
+    |------------------------------------------------------------------
+    | TOAST
+    |------------------------------------------------------------------
+    */
+
     initFlashToast();
 });
