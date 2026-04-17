@@ -74,10 +74,7 @@ export function initAjaxNotes()
 
             if (!data.success)
             {
-                showToast(
-                    '✓ Sauvegardé',
-                    'success'
-                );
+                throw new Error(data.message || 'Erreur lors de la sauvegarde');
             }
 
             state.jacquette = data.jacquette !== null
@@ -95,7 +92,7 @@ export function initAjaxNotes()
                     : 'Non calculée';
             }
 
-            showToast('✓ Sauvegardé');
+            showToast('✓ Sauvegardé', 'success');
         }
         catch (error)
         {
