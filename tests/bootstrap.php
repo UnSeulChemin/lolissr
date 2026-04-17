@@ -490,7 +490,7 @@ function runGetTest(string $base, array $test): array
 {
     $start = microtime(true);
 
-    $url = $base . $test['path'];
+    $url = rtrim($base, '/') . '/' . ltrim($test['path'], '/');
     $response = requestUrl($url);
 
     $expectedStatus = $test['expected_status'];

@@ -48,7 +48,7 @@ foreach ($tests as $test)
 
     $result = runGetTest($base, $test);
     $duration = (float) ($result['duration'] ?? 0.0);
-    $testUrl = $base . $test['path'];
+    $testUrl = rtrim($base, '/') . '/' . ltrim($test['path'], '/');
 
     if (!empty($result['ok']))
     {
