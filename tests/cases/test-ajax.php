@@ -204,3 +204,195 @@ addPostCheck($postChecks, [
         ];
     },
 ]);
+
+addPostCheck($postChecks, [
+    'category' => 'AJAX',
+    'label' => 'POST ajax update note validation invalide',
+    'url' => $base . '/manga/ajax/update-note/' . $realSlug . '/' . $realNumero,
+    'callback' => static function () use ($base, $realSlug, $realNumero): array
+    {
+        $payload = http_build_query([
+            'jacquette' => '9',
+            'livre_note' => 'abc',
+            'commentaire' => str_repeat('x', 1205),
+        ]);
+
+        $response = requestUrl(
+            $base . '/manga/ajax/update-note/' . $realSlug . '/' . $realNumero,
+            'POST',
+            [
+                'Content-Type: application/x-www-form-urlencoded',
+                'X-Requested-With: XMLHttpRequest',
+            ],
+            $payload
+        );
+
+        $json = json_decode($response['body'], true);
+
+        $ok = $response['status'] === 422
+            && is_array($json)
+            && isset($json['success'])
+            && $json['success'] === false
+            && !empty($json['errors']);
+
+        return [
+            'ok' => $ok,
+            'message' => 'status ' . $response['status'] . ' | validation AJAX invalide',
+        ];
+    },
+]);
+
+addPostCheck($postChecks, [
+    'category' => 'AJAX',
+    'label' => 'POST ajax update note succès',
+    'url' => $base . '/manga/ajax/update-note/' . $realSlug . '/' . $realNumero,
+    'callback' => static function () use ($base, $realSlug, $realNumero): array
+    {
+        $payload = http_build_query([
+            'jacquette' => '4',
+            'livre_note' => '5',
+            'commentaire' => 'test ajax ok',
+        ]);
+
+        $response = requestUrl(
+            $base . '/manga/ajax/update-note/' . $realSlug . '/' . $realNumero,
+            'POST',
+            [
+                'Content-Type: application/x-www-form-urlencoded',
+                'X-Requested-With: XMLHttpRequest',
+            ],
+            $payload
+        );
+
+        $json = json_decode($response['body'], true);
+
+        $ok = $response['status'] === 200
+            && is_array($json)
+            && isset($json['success'])
+            && $json['success'] === true
+            && array_key_exists('jacquette', $json)
+            && array_key_exists('livre_note', $json)
+            && array_key_exists('note', $json);
+
+        return [
+            'ok' => $ok,
+            'message' => 'status ' . $response['status'] . ' | update AJAX succès',
+        ];
+    },
+]);
+
+addPostCheck($postChecks, [
+    'category' => 'AJAX',
+    'label' => 'GET ajax update-note refusé en 405',
+    'url' => $base . '/manga/ajax/update-note/' . $realSlug . '/' . $realNumero,
+    'callback' => static function () use ($base, $realSlug, $realNumero): array
+    {
+        $response = requestUrl(
+            $base . '/manga/ajax/update-note/' . $realSlug . '/' . $realNumero,
+            'GET',
+            [
+                'X-Requested-With: XMLHttpRequest',
+            ]
+        );
+
+        $json = json_decode($response['body'], true);
+
+        $ok =
+            $response['status'] === 405
+            && (
+                is_array($json)
+                || stripos($response['body'], 'Méthode') !== false
+            );
+
+        return [
+            'ok' => $ok,
+            'message' =>
+                'status ' . $response['status']
+                . ' | GET refusé',
+        ];
+    },
+]);
+
+addPostCheck($postChecks, [
+    'category' => 'AJAX',
+    'label' => 'POST update AJAX manga introuvable',
+    'url' => $base . '/manga/update/slug-introuvable-test/999',
+    'callback' => static function () use ($base): array
+    {
+        $payload = http_build_query([
+            'jacquette' => '4',
+            'livre_note' => '4',
+            'commentaire' => 'test introuvable',
+        ]);
+
+        $response = requestUrl(
+            $base . '/manga/update/slug-introuvable-test/999',
+            'POST',
+            [
+                'Content-Type: application/x-www-form-urlencoded',
+                'X-Requested-With: XMLHttpRequest',
+            ],
+            $payload
+        );
+
+        $json = json_decode($response['body'], true);
+
+        $ok = $response['status'] === 404
+            && is_array($json)
+            && isset($json['success'])
+            && $json['success'] === false;
+
+        return [
+            'ok' => $ok,
+            'message' => 'status ' . $response['status'] . ' | update introuvable',
+        ];
+    },
+]);
+
+addHtmlCheck($htmlChecks, [
+    'category' => 'AJAX',
+    'label' => 'GET search AJAX limité à 6 résultats max',
+    'url' => $base . '/manga/search-ajax/a',
+    'callback' => static function () use ($base): array
+    {
+        $response = requestUrl($base . '/manga/search-ajax/a');
+        $json = json_decode($response['body'], true);
+
+        $ok = $response['status'] === 200
+            && is_array($json)
+            && count($json) <= 6;
+
+        return [
+            'ok' => $ok,
+            'message' => $response['status'] === 200
+                ? 'résultats: ' . (is_array($json) ? count($json) : 0)
+                : 'search AJAX inaccessible',
+        ];
+    },
+]);
+
+addHtmlCheck($htmlChecks, [
+    'category' => 'AJAX',
+    'label' => 'GET search AJAX vide retourne JSON vide',
+    'url' => $base . '/manga/search-ajax/-',
+    'callback' => static function () use ($base): array
+    {
+        $response = requestUrl(
+            $base . '/manga/search-ajax/-'
+        );
+
+        $json = json_decode($response['body'], true);
+
+        $ok =
+            $response['status'] === 200
+            && is_array($json)
+            && $json === [];
+
+        return [
+            'ok' => $ok,
+            'message' =>
+                'status ' . $response['status']
+                . ' | résultat vide attendu',
+        ];
+    },
+]);
