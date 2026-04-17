@@ -31,7 +31,7 @@ abstract class Controller
     /**
      * Retourne le chemin complet d'une vue standard.
      */
-    private function viewPath(string $file): string
+    protected function viewPath(string $file): string
     {
         return ROOT . '/Views/' . $file . '.php';
     }
@@ -39,7 +39,7 @@ abstract class Controller
     /**
      * Retourne le chemin complet d'une vue d'erreur.
      */
-    private function errorViewPath(string $file): string
+    protected function errorViewPath(string $file): string
     {
         return ROOT . '/Views/errors/' . $file . '.php';
     }
@@ -47,7 +47,7 @@ abstract class Controller
     /**
      * Retourne le chemin complet du template.
      */
-    private function templatePath(): string
+    protected function templatePath(): string
     {
         return ROOT . '/Views/' . $this->template . '.php';
     }
@@ -62,6 +62,7 @@ abstract class Controller
         if (!is_file($viewPath))
         {
             $this->notFound('Vue introuvable : ' . $file);
+            return;
         }
 
         extract($data, EXTR_SKIP);
@@ -78,6 +79,7 @@ abstract class Controller
         if (!is_file($templatePath))
         {
             $this->serverError('Template introuvable : ' . $this->template);
+            return;
         }
 
         require $templatePath;
@@ -93,6 +95,7 @@ abstract class Controller
         if (!is_file($viewPath))
         {
             $this->notFound('Vue partielle introuvable : ' . $file);
+            return;
         }
 
         extract($data, EXTR_SKIP);

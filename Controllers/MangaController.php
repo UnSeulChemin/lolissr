@@ -13,7 +13,7 @@ class MangaController extends Controller
     /**
      * Retourne le modèle manga.
      */
-    private function mangaModel(): MangaModel
+    protected function mangaModel(): MangaModel
     {
         return new MangaModel();
     }
@@ -21,7 +21,7 @@ class MangaController extends Controller
     /**
      * Vérifie si la requête est AJAX.
      */
-    private function isAjaxRequest(): bool
+    protected function isAjaxRequest(): bool
     {
         return !empty($_SERVER['HTTP_X_REQUESTED_WITH'])
             && strtolower((string) $_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
@@ -30,7 +30,7 @@ class MangaController extends Controller
     /**
      * Retourne une réponse JSON.
      */
-    private function jsonResponse(array $data, int $statusCode = 200): void
+    protected function jsonResponse(array $data, int $statusCode = 200): void
     {
         http_response_code($statusCode);
         header('Content-Type: application/json; charset=utf-8');
@@ -42,7 +42,7 @@ class MangaController extends Controller
     /**
      * Retourne true si le mode test upload est activé.
      */
-    private function isTestUploadMode(): bool
+    protected function isTestUploadMode(): bool
     {
         return (bool) Functions::env('TEST_UPLOAD_MODE', false);
     }
@@ -50,7 +50,7 @@ class MangaController extends Controller
     /**
      * Retourne le dossier d’upload de test absolu.
      */
-    private function testUploadDirectory(): string
+    protected function testUploadDirectory(): string
     {
         $directory = trim((string) Functions::env('TEST_UPLOAD_DIR', 'tests/tmp-uploads'), '/\\');
 
@@ -61,7 +61,7 @@ class MangaController extends Controller
      * Convertit une note postée.
      * Retourne null si vide ou invalide.
      */
-    private function normalizePostedNote(?string $value): ?int
+    protected function normalizePostedNote(?string $value): ?int
     {
         if ($value === null || trim($value) === '')
         {
@@ -79,9 +79,17 @@ class MangaController extends Controller
     }
 
     /**
+     * Fabrique le validator.
+     */
+    protected function makeValidator(array $post, array $files): Validator
+    {
+        return new Validator($post, $files);
+    }
+
+    /**
      * Redirige vers l'URL canonique si le slug demandé n'est pas correct.
      */
-    private function redirectToCanonicalUrl(
+    protected function redirectToCanonicalUrl(
         string $requestedSlug,
         string $canonicalSlug,
         string $pathPrefix,
@@ -136,6 +144,7 @@ class MangaController extends Controller
         if (!ctype_digit($page))
         {
             $this->notFound('Page introuvable');
+            return;
         }
 
         $currentPage = (int) $page;
@@ -143,6 +152,7 @@ class MangaController extends Controller
         if ($currentPage < 1)
         {
             $this->notFound('Page introuvable');
+            return;
         }
 
         $compteur = $mangaModel->countFirstTomesPaginate($pagination);
@@ -150,6 +160,7 @@ class MangaController extends Controller
         if ($compteur > 0 && $currentPage > $compteur)
         {
             $this->notFound('Page introuvable');
+            return;
         }
 
         $mangas = $mangaModel->findAllFirstTomes('id DESC', $pagination, $currentPage);
@@ -181,6 +192,7 @@ class MangaController extends Controller
         if (!ctype_digit($page))
         {
             $this->notFound('Page introuvable');
+            return;
         }
 
         $currentPage = (int) $page;
@@ -188,6 +200,7 @@ class MangaController extends Controller
         if ($currentPage < 1)
         {
             $this->notFound('Page introuvable');
+            return;
         }
 
         $compteur = $mangaModel->countFirstTomesPaginate($pagination);
@@ -195,6 +208,7 @@ class MangaController extends Controller
         if ($compteur > 0 && $currentPage > $compteur)
         {
             $this->notFound('Page introuvable');
+            return;
         }
 
         $mangas = $mangaModel->findAllFirstTomes('id DESC', $pagination, $currentPage);
@@ -248,6 +262,7 @@ class MangaController extends Controller
         if ($search === '')
         {
             $this->jsonResponse([]);
+            return;
         }
 
         $mangas = $this->mangaModel()->searchMangas($search);
@@ -266,6 +281,7 @@ class MangaController extends Controller
         }
 
         $this->jsonResponse($results);
+        return;
     }
 
     /**
@@ -283,6 +299,7 @@ class MangaController extends Controller
         if (!$mangas)
         {
             $this->notFound('Manga introuvable');
+            return;
         }
 
         $canonicalSlug = Functions::normalizeSlug($mangas[0]->slug);
@@ -319,6 +336,7 @@ class MangaController extends Controller
         if (!$manga)
         {
             $this->notFound('Manga introuvable');
+            return;
         }
 
         $canonicalSlug = Functions::normalizeSlug($manga->slug);
@@ -363,6 +381,7 @@ class MangaController extends Controller
         if (!$manga)
         {
             $this->notFound('Manga introuvable');
+            return;
         }
 
         $canonicalSlug = Functions::normalizeSlug($manga->slug);
@@ -395,12 +414,14 @@ class MangaController extends Controller
                     'success' => false,
                     'message' => 'Méthode non autorisée'
                 ], 405);
+                return;
             }
 
             $this->methodNotAllowed('Méthode non autorisée pour l’ajout d’un manga');
+            return;
         }
 
-        $validator = new Validator($_POST, $_FILES);
+        $validator = $this->makeValidator($_POST, $_FILES);
 
         $validator
             ->required('livre', 'Le titre est obligatoire.')
@@ -439,9 +460,11 @@ class MangaController extends Controller
                     'message' => $firstError !== '' ? $firstError : 'Le formulaire contient des erreurs.',
                     'errors' => $errors
                 ], 422);
+                return;
             }
 
             $this->redirectWithValidationErrors('manga/ajouter', $validator->errors());
+            return;
         }
 
         $mangaModel = $this->mangaModel();
@@ -461,9 +484,11 @@ class MangaController extends Controller
                     'success' => false,
                     'message' => 'Ce manga existe déjà'
                 ], 409);
+                return;
             }
 
             $this->redirectWithError('manga/ajouter', 'Ce manga existe déjà');
+            return;
         }
 
         $upload = $this->uploadThumbnail($livre, $numero);
@@ -479,12 +504,14 @@ class MangaController extends Controller
                     'message' => 'Upload test OK (aucune écriture en base)',
                     'file' => basename($upload['destination'])
                 ]);
+                return;
             }
 
             $this->redirectWithSuccess(
                 'manga/ajouter',
                 'Upload test OK (aucune écriture en base)'
             );
+            return;
         }
 
         $insert = $mangaModel->insert([
@@ -515,9 +542,11 @@ class MangaController extends Controller
                     'success' => false,
                     'message' => 'Erreur lors de l’enregistrement du manga'
                 ], 500);
+                return;
             }
 
             $this->redirectWithError('manga/ajouter', 'Erreur lors de l’enregistrement du manga');
+            return;
         }
 
         Session::forget(['errors', 'old']);
@@ -528,9 +557,11 @@ class MangaController extends Controller
                 'success' => true,
                 'message' => 'Manga ajouté avec succès'
             ]);
+            return;
         }
 
         $this->redirectWithSuccess('manga/ajouter', 'Manga ajouté avec succès');
+        return;
     }
 
     /**
@@ -543,7 +574,7 @@ class MangaController extends Controller
      *     destination: string
      * }
      */
-    private function uploadThumbnail(string $livre, int $numero): array
+    protected function uploadThumbnail(string $livre, int $numero): array
     {
         $extension = Functions::fileExtension('image');
 
@@ -703,7 +734,7 @@ class MangaController extends Controller
     /**
      * Supprime un fichier si présent.
      */
-    private function removeFileIfExists(string $path): void
+    protected function removeFileIfExists(string $path): void
     {
         if (is_file($path))
         {
@@ -729,9 +760,11 @@ class MangaController extends Controller
                     'success' => false,
                     'message' => 'Méthode non autorisée'
                 ], 405);
+                return;
             }
 
             $this->methodNotAllowed('Méthode non autorisée pour la modification d’un manga');
+            return;
         }
 
         $mangaModel = $this->mangaModel();
@@ -745,9 +778,11 @@ class MangaController extends Controller
                     'success' => false,
                     'message' => 'Manga introuvable'
                 ], 404);
+                return;
             }
 
             $this->notFound('Manga introuvable');
+            return;
         }
 
         $canonicalSlug = Functions::normalizeSlug($manga->slug);
@@ -763,6 +798,7 @@ class MangaController extends Controller
                     'message' => 'URL non canonique',
                     'redirect' => $redirect
                 ], 409);
+                return;
             }
 
             header('Location: ' . $redirect, true, 301);
@@ -771,7 +807,7 @@ class MangaController extends Controller
 
         $slug = $canonicalSlug;
 
-        $validator = new Validator($_POST, $_FILES);
+        $validator = $this->makeValidator($_POST, $_FILES);
 
         $validator
             ->nullable('commentaire')
@@ -803,12 +839,14 @@ class MangaController extends Controller
                     'message' => $firstError !== '' ? $firstError : 'Le formulaire contient des erreurs.',
                     'errors' => $errors
                 ], 422);
+                return;
             }
 
             $this->redirectWithValidationErrors(
                 'manga/update/' . rawurlencode($slug) . '/' . $numero,
                 $validator->errors()
             );
+            return;
         }
 
         $jacquette = $this->normalizePostedNote(
@@ -846,12 +884,14 @@ class MangaController extends Controller
                     'success' => false,
                     'message' => 'Erreur lors de la mise à jour'
                 ], 500);
+                return;
             }
 
             $this->redirectWithError(
                 'manga/update/' . rawurlencode($slug) . '/' . $numero,
                 'Erreur lors de la mise à jour'
             );
+            return;
         }
 
         Session::forget(['errors', 'old']);
@@ -863,12 +903,14 @@ class MangaController extends Controller
                 'message' => 'Manga mis à jour avec succès',
                 'redirect' => Functions::basePath() . '/manga/' . rawurlencode($slug) . '/' . $numero
             ]);
+            return;
         }
 
         $this->redirectWithSuccess(
             'manga/' . rawurlencode($slug) . '/' . $numero,
             'Manga mis à jour avec succès'
         );
+        return;
     }
 
     /**
@@ -887,6 +929,7 @@ class MangaController extends Controller
                 'success' => false,
                 'message' => 'Méthode non autorisée'
             ], 405);
+            return;
         }
 
         $mangaModel = $this->mangaModel();
@@ -898,6 +941,7 @@ class MangaController extends Controller
                 'success' => false,
                 'message' => 'Manga introuvable'
             ], 404);
+            return;
         }
 
         $canonicalSlug = Functions::normalizeSlug($manga->slug);
@@ -909,11 +953,12 @@ class MangaController extends Controller
                 'message' => 'URL non canonique',
                 'redirect' => Functions::basePath() . '/manga/' . rawurlencode($canonicalSlug) . '/' . $numero
             ], 409);
+            return;
         }
 
         $slug = $canonicalSlug;
 
-        $validator = new Validator($_POST, $_FILES);
+        $validator = $this->makeValidator($_POST, $_FILES);
 
         $validator
             ->nullable('commentaire')
@@ -943,6 +988,7 @@ class MangaController extends Controller
                 'message' => $firstError !== '' ? $firstError : 'Le formulaire contient des erreurs.',
                 'errors' => $errors
             ], 422);
+            return;
         }
 
         $jacquette = $this->normalizePostedNote(
@@ -978,6 +1024,7 @@ class MangaController extends Controller
                 'success' => false,
                 'message' => 'Erreur lors de la mise à jour'
             ], 500);
+            return;
         }
 
         $fresh = $mangaModel->findOneBySlugAndNumero($slug, $numero);
@@ -989,5 +1036,6 @@ class MangaController extends Controller
             'livre_note' => $fresh->livre_note,
             'note' => $fresh->note
         ]);
+        return;
     }
 }
