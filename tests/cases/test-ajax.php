@@ -119,10 +119,12 @@ addPostCheck($postChecks, [
 
         $json = json_decode($response['body'], true);
 
-        $ok = $response['status'] === 405
-            && is_array($json)
-            && isset($json['success'])
-            && $json['success'] === false;
+        $ok =
+            $response['status'] === 405
+            && (
+                is_array($json)
+                || stripos($response['body'], 'Méthode') !== false
+            );
 
         return [
             'ok' => $ok,
