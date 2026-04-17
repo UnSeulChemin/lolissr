@@ -1,11 +1,13 @@
-import { preloadUrl, preloadImage } from './prefetch-navigation.js';
+import { preloadUrl, preloadImage } from './prefetch-collection.js';
 
 let keyboardInitialized = false;
 let activeIndex = -1;
 
 export function initCollectionKeyboardNavigation()
 {
-    if (keyboardInitialized)
+    const container = document.querySelector('.collection-grid');
+
+    if (!container || keyboardInitialized)
     {
         return;
     }
@@ -14,13 +16,6 @@ export function initCollectionKeyboardNavigation()
 
     function getCards()
     {
-        const container = document.querySelector('.collection-grid');
-
-        if (!container)
-        {
-            return [];
-        }
-
         return Array.from(
             container.querySelectorAll('.collection-card-link')
         );
@@ -53,13 +48,13 @@ export function initCollectionKeyboardNavigation()
 
     function isTypingContext(target)
     {
-        const tag = target.tagName?.toLowerCase();
+        if (!target)
+        {
+            return false;
+        }
 
-        return (
-            tag === 'input'
-            || tag === 'textarea'
-            || tag === 'select'
-            || target.isContentEditable
+        return Boolean(
+            target.closest('input, textarea, select, [contenteditable="true"]')
         );
     }
 
@@ -69,10 +64,7 @@ export function initCollectionKeyboardNavigation()
 
         cards.forEach((card, index) =>
         {
-            card.classList.toggle(
-                'is-active',
-                index === activeIndex
-            );
+            card.classList.toggle('is-active', index === activeIndex);
         });
 
         if (activeIndex < 0 || !cards[activeIndex])
@@ -82,7 +74,7 @@ export function initCollectionKeyboardNavigation()
 
         const activeCard = cards[activeIndex];
 
-        activeCard.focus();
+        activeCard.focus({ preventScroll: true });
 
         preloadUrl(activeCard.href);
 
@@ -123,7 +115,7 @@ export function initCollectionKeyboardNavigation()
     {
         const card = event.target.closest('.collection-card-link');
 
-        if (!card)
+        if (!card || !container.contains(card))
         {
             return;
         }
@@ -261,8 +253,7 @@ export function initCollectionKeyboardNavigation()
         {
             event.preventDefault();
 
-            const backButton =
-                document.querySelector('.collection-back-button');
+            const backButton = document.querySelector('.collection-back-button');
 
             if (backButton)
             {
@@ -272,8 +263,6 @@ export function initCollectionKeyboardNavigation()
             {
                 window.history.back();
             }
-
-            return;
         }
     });
 }

@@ -53,10 +53,15 @@ async function preloadLink(url)
 
     try
     {
-        await fetch(url, {
+        const response = await fetch(url, {
             method: 'GET',
             credentials: 'same-origin'
         });
+
+        if (!response.ok)
+        {
+            return;
+        }
 
         preloadedLinks.add(url);
     }
@@ -73,8 +78,13 @@ export function initLinkPreloading()
         return;
     }
 
-    document.addEventListener('mouseover', (event) =>
+    document.addEventListener('pointerover', (event) =>
     {
+        if (event.pointerType && event.pointerType !== 'mouse')
+        {
+            return;
+        }
+
         const link = event.target.closest('a');
 
         if (!canPreloadLink(link))
@@ -90,8 +100,15 @@ export function initLinkPreloading()
         }, 120);
     });
 
-    document.addEventListener('mouseout', () =>
+    document.addEventListener('pointerout', (event) =>
     {
+        const link = event.target.closest('a');
+
+        if (!link)
+        {
+            return;
+        }
+
         clearTimeout(hoverTimer);
     });
 

@@ -1,3 +1,5 @@
+let toastTimeout = null;
+
 export function showToast(
     message = 'Sauvegardé',
     type = 'success'
@@ -17,25 +19,23 @@ export function showToast(
         'show'
     );
 
-    const classType =
-        type === 'error'
-            ? 'toast-error'
-            : 'toast-success';
+    const classType = type === 'error'
+        ? 'toast-error'
+        : 'toast-success';
 
     toast.classList.add(classType);
-
     toast.textContent = message;
 
-    toast.offsetHeight;
+    void toast.offsetWidth;
 
     toast.classList.add('show');
 
-    if (window.__toastTimeout)
+    if (toastTimeout)
     {
-        clearTimeout(window.__toastTimeout);
+        clearTimeout(toastTimeout);
     }
 
-    window.__toastTimeout = setTimeout(() =>
+    toastTimeout = setTimeout(() =>
     {
         toast.classList.remove('show');
     }, 2500);

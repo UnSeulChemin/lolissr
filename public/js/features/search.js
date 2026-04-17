@@ -4,10 +4,10 @@ function normalizeSearchValue(value)
         .toLowerCase()
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-z0-9\s\-]/g, '')
+        .replace(/[^a-z0-9\s-]/g, '')
         .replace(/\s+/g, '-')
-        .replace(/\-+/g, '-')
-        .replace(/^\-+|\-+$/g, '');
+        .replace(/-+/g, '-')
+        .replace(/^-+|-+$/g, '');
 }
 
 function escapeHtml(value)
@@ -285,7 +285,8 @@ export function initLiveSearch()
             return;
         }
 
-        window.location.href = `${basePath}manga/recherche/${encodeURIComponent(value)}`;
+        window.location.href =
+            `${basePath}manga/recherche/${encodeURIComponent(value)}`;
     });
 
     input.addEventListener('input', () =>

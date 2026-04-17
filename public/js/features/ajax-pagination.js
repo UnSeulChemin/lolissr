@@ -32,6 +32,36 @@ function buildAjaxUrl(link)
     return url.toString();
 }
 
+function getCurrentPaginationAjaxUrl()
+{
+    const url = new URL(window.location.href);
+
+    if (/\/manga\/collection$/.test(url.pathname))
+    {
+        url.pathname = url.pathname.replace(
+            '/manga/collection',
+            '/manga/collection-ajax/page/1'
+        );
+
+        return url.toString();
+    }
+
+    url.pathname = url.pathname.replace(
+        '/manga/collection/page/',
+        '/manga/collection-ajax/page/'
+    );
+
+    return url.toString();
+}
+
+function isCollectionPage()
+{
+    return (
+        /\/manga\/collection$/.test(window.location.pathname)
+        || /\/manga\/collection\/page\/\d+$/.test(window.location.pathname)
+    );
+}
+
 async function preloadPage(url)
 {
     if (!url || paginationCache.has(url))
@@ -149,23 +179,6 @@ async function loadPaginationContent(
     }
 }
 
-function getCurrentPaginationAjaxUrl()
-{
-    const url = new URL(window.location.href);
-
-    url.pathname = url.pathname.replace(
-        '/manga/collection/page/',
-        '/manga/collection-ajax/page/'
-    );
-
-    return url.toString();
-}
-
-function isCollectionPaginationPage()
-{
-    return /\/manga\/collection\/page\/\d+$/.test(window.location.pathname);
-}
-
 export function initPaginationAjax()
 {
     const container = getAjaxContainer();
@@ -175,8 +188,13 @@ export function initPaginationAjax()
         return;
     }
 
-    document.addEventListener('mouseover', (event) =>
+    document.addEventListener('pointerover', (event) =>
     {
+        if (event.pointerType && event.pointerType !== 'mouse')
+        {
+            return;
+        }
+
         const link = isPaginationLink(event.target);
 
         if (!link)
@@ -237,21 +255,19 @@ export function initPaginationAjax()
 
     window.addEventListener('popstate', async () =>
     {
-        if (!isCollectionPaginationPage())
+        if (!isCollectionPage())
         {
             return;
         }
 
         const pageMatch = window.location.pathname.match(/\/manga\/collection\/page\/(\d+)$/);
-        const page = pageMatch ? pageMatch[1] : null;
+        const page = pageMatch ? pageMatch[1] : '1';
 
         await loadPaginationContent(
             getCurrentPaginationAjaxUrl(),
             container,
             window.location.href,
-            page
-                ? `Erreur chargement page ${page}`
-                : 'Erreur chargement page',
+            `Erreur chargement page ${page}`,
             true
         );
     });

@@ -1,47 +1,36 @@
 import { showToast } from '../core/toast.js';
 
-const livreInput = document.getElementById('livre');
-const slugInput = document.getElementById('slug');
-const imageInput = document.getElementById('image');
-const uploadText = document.querySelector('.form-upload-text');
-const form = document.querySelector('.form-layout');
-
-if (livreInput && slugInput)
+export function initAjouterPage()
 {
-    livreInput.addEventListener('input', function ()
-    {
-        const slug = this.value
-            .toLowerCase()
-            .trim()
-            .replace(/[^a-z0-9\s-]/g, '')
-            .replace(/\s+/g, '-')
-            .replace(/-+/g, '-')
-            .replace(/^-|-$/g, '');
+    const imageInput = document.getElementById('image');
+    const uploadText = document.querySelector('.form-upload-text');
+    const form = document.querySelector('.form-layout');
 
-        slugInput.value = slug;
-    });
-}
-
-if (imageInput && uploadText)
-{
-    imageInput.addEventListener('change', function ()
+    if (imageInput && uploadText)
     {
-        if (this.files.length > 0)
+        imageInput.addEventListener('change', () =>
         {
-            uploadText.textContent = this.files[0].name;
-        }
-        else
-        {
-            uploadText.textContent = 'Choisir une image';
-        }
-    });
-}
+            uploadText.textContent = imageInput.files.length > 0
+                ? imageInput.files[0].name
+                : 'Choisir une image';
+        });
+    }
 
-if (form)
-{
-    form.addEventListener('submit', async function (e)
+    if (!form)
     {
-        e.preventDefault();
+        return;
+    }
+
+    form.addEventListener('submit', async (event) =>
+    {
+        event.preventDefault();
+
+        const submitButton = form.querySelector('[type="submit"]');
+
+        if (submitButton)
+        {
+            submitButton.disabled = true;
+        }
 
         const formData = new FormData(form);
 
@@ -57,33 +46,40 @@ if (form)
             });
 
             const contentType = response.headers.get('content-type') || '';
+            const isJson = contentType.includes('application/json');
 
-            if (!contentType.includes('application/json'))
+            if (!isJson)
             {
                 throw new Error('Réponse non JSON');
             }
 
             const data = await response.json();
 
-            if (data.success)
-            {
-                showToast(data.message || 'Manga ajouté avec succès', 'success');
-                form.reset();
-
-                if (uploadText)
-                {
-                    uploadText.textContent = 'Choisir une image';
-                }
-            }
-            else
+            if (!data.success)
             {
                 showToast(data.message || 'Une erreur est survenue', 'error');
+                return;
+            }
+
+            showToast(data.message || 'Manga ajouté avec succès', 'success');
+
+            form.reset();
+
+            if (uploadText)
+            {
+                uploadText.textContent = 'Choisir une image';
             }
         }
         catch (error)
         {
-            console.error(error);
             showToast('Erreur serveur', 'error');
+        }
+        finally
+        {
+            if (submitButton)
+            {
+                submitButton.disabled = false;
+            }
         }
     });
 }

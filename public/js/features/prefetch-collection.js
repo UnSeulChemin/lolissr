@@ -42,8 +42,13 @@ export function preloadImage(url)
 
 export function initCardPrefetch()
 {
-    document.addEventListener('mouseover', (event) =>
+    document.addEventListener('pointerover', (event) =>
     {
+        if (event.pointerType && event.pointerType !== 'mouse')
+        {
+            return;
+        }
+
         const link = event.target.closest('.collection-card-link');
 
         if (!link)

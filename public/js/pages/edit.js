@@ -1,31 +1,32 @@
-const jacquetteInput = document.getElementById('jacquette');
-const livreNoteInput = document.getElementById('livre_note');
-const noteTotal = document.getElementById('note-total');
-
-function updateNoteTotal()
+export function initEditPage()
 {
+    const jacquetteInput = document.getElementById('jacquette');
+    const livreNoteInput = document.getElementById('livre_note');
+    const noteTotal = document.getElementById('note-total');
+
     if (!jacquetteInput || !livreNoteInput || !noteTotal)
     {
         return;
     }
 
-    const jacquetteValue = jacquetteInput.value;
-    const livreValue = livreNoteInput.value;
-
-    if (jacquetteValue === '' || livreValue === '')
+    function updateNoteTotal()
     {
-        noteTotal.value = 'Non calculée';
-        return;
+        const jacquetteValue = jacquetteInput.value;
+        const livreValue = livreNoteInput.value;
+
+        if (jacquetteValue === '' || livreValue === '')
+        {
+            noteTotal.value = 'Non calculée';
+            return;
+        }
+
+        const total = parseInt(jacquetteValue, 10) + parseInt(livreValue, 10);
+
+        noteTotal.value = `${total}/10`;
     }
 
-    const total = parseInt(jacquetteValue, 10) + parseInt(livreValue, 10);
-    noteTotal.value = total + '/10';
-}
+    jacquetteInput.addEventListener('input', updateNoteTotal);
+    livreNoteInput.addEventListener('input', updateNoteTotal);
 
-if (jacquetteInput && livreNoteInput)
-{
-    jacquetteInput.addEventListener('change', updateNoteTotal);
-    livreNoteInput.addEventListener('change', updateNoteTotal);
+    updateNoteTotal();
 }
-
-updateNoteTotal();

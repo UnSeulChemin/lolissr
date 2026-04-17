@@ -1,3 +1,14 @@
+function generateSlug(value)
+{
+    return value
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-+|-+$/g, '');
+}
+
 export function initAutoSlug()
 {
     const livreInput = document.getElementById('livre');
@@ -15,19 +26,13 @@ export function initAutoSlug()
         slugManuallyEdited = true;
     });
 
-    livreInput.addEventListener('input', function ()
+    livreInput.addEventListener('input', () =>
     {
         if (slugManuallyEdited)
         {
             return;
         }
 
-        const slugValue = this.value
-            .toLowerCase()
-            .trim()
-            .replace(/[^a-z0-9\s-]/g, '')
-            .replace(/\s+/g, '-');
-
-        slugInput.value = slugValue;
+        slugInput.value = generateSlug(livreInput.value);
     });
 }

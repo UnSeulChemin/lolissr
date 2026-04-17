@@ -15,6 +15,7 @@ export function initAjaxNotes()
 
     const totalEl = document.getElementById('ajax-note-total');
     const noteButtons = detailCard.querySelectorAll('.ajax-note-button');
+    const noteGroups = detailCard.querySelectorAll('.ajax-note-group');
 
     const state = {
         jacquette: detailCard.dataset.jacquette !== ''
@@ -30,7 +31,7 @@ export function initAjaxNotes()
 
     function refreshActiveButtons()
     {
-        detailCard.querySelectorAll('.ajax-note-group').forEach((group) =>
+        noteGroups.forEach((group) =>
         {
             const field = group.dataset.field;
             const currentValue = state[field];
@@ -125,6 +126,12 @@ export function initAjaxNotes()
             }
 
             const field = group.dataset.field;
+
+            if (!Object.hasOwn(state, field))
+            {
+                return;
+            }
+
             const value = Number(button.dataset.value);
 
             state[field] = value;
