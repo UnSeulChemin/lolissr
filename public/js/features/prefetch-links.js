@@ -1,9 +1,20 @@
-const genericLinkPrefetchCache = new Set();
-let genericLinkHoverTimer = null;
+/*
+|------------------------------------------------------------------
+| Cache mémoire
+|------------------------------------------------------------------
+*/
 
-/**
- * Vérifie si un lien peut être préchargé.
- */
+const genericLinkPrefetchCache = new Set();
+const genericLinkPrefetchPending = new Set();
+const genericLinkHoverTimers = new WeakMap();
+
+
+/*
+|------------------------------------------------------------------
+| Vérifications
+|------------------------------------------------------------------
+*/
+
 function canPrefetchGenericLink(link)
 {
     if (!link || !link.href)
@@ -50,8 +61,17 @@ function canPrefetchGenericLink(link)
     }
 
     const url = new URL(link.href, window.location.origin);
+    const absoluteUrl = url.toString();
 
     if (url.origin !== window.location.origin)
+    {
+        return false;
+    }
+
+    if (
+        genericLinkPrefetchCache.has(absoluteUrl)
+        || genericLinkPrefetchPending.has(absoluteUrl)
+    )
     {
         return false;
     }
@@ -59,15 +79,29 @@ function canPrefetchGenericLink(link)
     return true;
 }
 
-/**
- * Précharge une page HTML classique.
- */
+
+/*
+|------------------------------------------------------------------
+| Prefetch page HTML
+|------------------------------------------------------------------
+*/
+
 async function prefetchGenericLink(url)
 {
-    if (!url || genericLinkPrefetchCache.has(url))
+    if (!url)
     {
         return;
     }
+
+    if (
+        genericLinkPrefetchCache.has(url)
+        || genericLinkPrefetchPending.has(url)
+    )
+    {
+        return;
+    }
+
+    genericLinkPrefetchPending.add(url);
 
     try
     {
@@ -87,7 +121,56 @@ async function prefetchGenericLink(url)
     {
         // silencieux
     }
+    finally
+    {
+        genericLinkPrefetchPending.delete(url);
+    }
 }
+
+
+/*
+|------------------------------------------------------------------
+| Hover par lien
+|------------------------------------------------------------------
+*/
+
+function scheduleGenericLinkPrefetch(link)
+{
+    const existingTimer = genericLinkHoverTimers.get(link);
+
+    if (existingTimer)
+    {
+        clearTimeout(existingTimer);
+    }
+
+    const hoverTimer = setTimeout(() =>
+    {
+        prefetchGenericLink(link.href);
+        genericLinkHoverTimers.delete(link);
+    }, 120);
+
+    genericLinkHoverTimers.set(link, hoverTimer);
+}
+
+function cancelGenericLinkPrefetch(link)
+{
+    const hoverTimer = genericLinkHoverTimers.get(link);
+
+    if (!hoverTimer)
+    {
+        return;
+    }
+
+    clearTimeout(hoverTimer);
+    genericLinkHoverTimers.delete(link);
+}
+
+
+/*
+|------------------------------------------------------------------
+| Initialisation globale
+|------------------------------------------------------------------
+*/
 
 export function initLinkPreloading()
 {
@@ -129,12 +212,20 @@ export function initLinkPreloading()
             return;
         }
 
-        clearTimeout(genericLinkHoverTimer);
+        /*
+        |--------------------------------------------------------------
+        | Ignore les mouvements internes au même lien
+        |--------------------------------------------------------------
+        */
 
-        genericLinkHoverTimer = setTimeout(() =>
+        const previousLink = event.relatedTarget?.closest?.('a');
+
+        if (previousLink === link)
         {
-            prefetchGenericLink(link.href);
-        }, 120);
+            return;
+        }
+
+        scheduleGenericLinkPrefetch(link);
     });
 
     document.addEventListener('pointerout', (event) =>
@@ -146,7 +237,20 @@ export function initLinkPreloading()
             return;
         }
 
-        clearTimeout(genericLinkHoverTimer);
+        /*
+        |--------------------------------------------------------------
+        | N'annule que si on quitte réellement le lien
+        |--------------------------------------------------------------
+        */
+
+        const nextLink = event.relatedTarget?.closest?.('a');
+
+        if (nextLink === link)
+        {
+            return;
+        }
+
+        cancelGenericLinkPrefetch(link);
     });
 
     /*

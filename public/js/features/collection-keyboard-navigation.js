@@ -27,27 +27,21 @@ function getCollectionCardLinks()
 
 function getCollectionGridColumnCount()
 {
-    const cards = getCollectionCardLinks();
+    const grid = getCollectionGrid();
 
-    if (cards.length === 0)
+    if (!grid)
     {
         return 1;
     }
 
-    const firstRowTop = cards[0].offsetTop;
-    let columnCount = 0;
+    const styles = window.getComputedStyle(grid);
 
-    for (const card of cards)
-    {
-        if (card.offsetTop !== firstRowTop)
-        {
-            break;
-        }
+    const columns = styles
+        .gridTemplateColumns
+        .split(' ')
+        .filter(Boolean);
 
-        columnCount++;
-    }
-
-    return columnCount || 1;
+    return columns.length || 1;
 }
 
 function isTypingContext(target)
@@ -103,6 +97,22 @@ function syncCollectionActiveState()
     const activeCard = cards[collectionActiveCardIndex];
 
     activeCard.focus({ preventScroll: true });
+
+    const rect = activeCard.getBoundingClientRect();
+
+    const viewportPadding = 120;
+
+    if (
+        rect.bottom > window.innerHeight - viewportPadding
+        || rect.top < viewportPadding
+    )
+    {
+        activeCard.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+            inline: 'nearest'
+        });
+    }
 
     prefetchCollectionPage(activeCard.href);
 

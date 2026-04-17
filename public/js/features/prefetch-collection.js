@@ -1,15 +1,40 @@
+/*
+|------------------------------------------------------------------
+| Cache mémoire
+|------------------------------------------------------------------
+*/
+
 const collectionPagePrefetchCache = new Set();
+const collectionPagePrefetchPending = new Set();
 const collectionImagePrefetchCache = new Set();
+const collectionCardHoverTimers = new WeakMap();
+
+
+/*
+|------------------------------------------------------------------
+| Vérifications
+|------------------------------------------------------------------
+*/
 
 function canPrefetchCollectionUrl(url)
 {
-    return Boolean(url) && !collectionPagePrefetchCache.has(url);
+    return Boolean(url)
+        && !collectionPagePrefetchCache.has(url)
+        && !collectionPagePrefetchPending.has(url);
 }
 
 function canPrefetchCollectionImage(url)
 {
-    return Boolean(url) && !collectionImagePrefetchCache.has(url);
+    return Boolean(url)
+        && !collectionImagePrefetchCache.has(url);
 }
+
+
+/*
+|------------------------------------------------------------------
+| Prefetch page manga
+|------------------------------------------------------------------
+*/
 
 export function prefetchCollectionPage(url)
 {
@@ -18,11 +43,11 @@ export function prefetchCollectionPage(url)
         return;
     }
 
+    collectionPagePrefetchPending.add(url);
+
     fetch(url, {
         method: 'GET',
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        }
+        credentials: 'same-origin'
     })
     .then((response) =>
     {
@@ -36,8 +61,19 @@ export function prefetchCollectionPage(url)
     .catch(() =>
     {
         // silence volontaire
+    })
+    .finally(() =>
+    {
+        collectionPagePrefetchPending.delete(url);
     });
 }
+
+
+/*
+|------------------------------------------------------------------
+| Prefetch image
+|------------------------------------------------------------------
+*/
 
 export function prefetchCollectionImage(url)
 {
@@ -52,10 +88,70 @@ export function prefetchCollectionImage(url)
     image.src = url;
 }
 
+
+/*
+|------------------------------------------------------------------
+| Utilitaire
+|------------------------------------------------------------------
+*/
+
 function getCollectionCardLinkFromEventTarget(target)
 {
     return target?.closest('.collection-card-link') ?? null;
 }
+
+
+/*
+|------------------------------------------------------------------
+| Hover
+|------------------------------------------------------------------
+*/
+
+function scheduleCollectionCardPrefetch(cardLink)
+{
+    const existingTimer = collectionCardHoverTimers.get(cardLink);
+
+    if (existingTimer)
+    {
+        clearTimeout(existingTimer);
+    }
+
+    const hoverTimer = setTimeout(() =>
+    {
+        prefetchCollectionPage(cardLink.href);
+
+        const image = cardLink.querySelector('.card-image-portrait');
+
+        if (image)
+        {
+            prefetchCollectionImage(image.src);
+        }
+
+        collectionCardHoverTimers.delete(cardLink);
+    }, 120);
+
+    collectionCardHoverTimers.set(cardLink, hoverTimer);
+}
+
+function cancelCollectionCardPrefetchHover(cardLink)
+{
+    const hoverTimer = collectionCardHoverTimers.get(cardLink);
+
+    if (!hoverTimer)
+    {
+        return;
+    }
+
+    clearTimeout(hoverTimer);
+    collectionCardHoverTimers.delete(cardLink);
+}
+
+
+/*
+|------------------------------------------------------------------
+| Initialisation globale
+|------------------------------------------------------------------
+*/
 
 export function initCollectionCardPrefetch()
 {
@@ -65,6 +161,12 @@ export function initCollectionCardPrefetch()
     }
 
     document.body.dataset.collectionCardPrefetchInit = 'true';
+
+    /*
+    |--------------------------------------------------------------
+    | Hover souris
+    |--------------------------------------------------------------
+    */
 
     document.addEventListener('pointerover', (event) =>
     {
@@ -80,15 +182,44 @@ export function initCollectionCardPrefetch()
             return;
         }
 
-        prefetchCollectionPage(cardLink.href);
+        const previousCardLink = getCollectionCardLinkFromEventTarget(
+            event.relatedTarget
+        );
 
-        const image = cardLink.querySelector('.card-image-portrait');
-
-        if (image)
+        if (previousCardLink === cardLink)
         {
-            prefetchCollectionImage(image.src);
+            return;
         }
+
+        scheduleCollectionCardPrefetch(cardLink);
     });
+
+    document.addEventListener('pointerout', (event) =>
+    {
+        const cardLink = getCollectionCardLinkFromEventTarget(event.target);
+
+        if (!cardLink)
+        {
+            return;
+        }
+
+        const nextCardLink = getCollectionCardLinkFromEventTarget(
+            event.relatedTarget
+        );
+
+        if (nextCardLink === cardLink)
+        {
+            return;
+        }
+
+        cancelCollectionCardPrefetchHover(cardLink);
+    });
+
+    /*
+    |--------------------------------------------------------------
+    | Navigation clavier (focus)
+    |--------------------------------------------------------------
+    */
 
     document.addEventListener('focusin', (event) =>
     {
