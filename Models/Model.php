@@ -3,8 +3,6 @@
 namespace App\Models;
 
 use App\Core\Database;
-use PDO;
-use PDOStatement;
 
 class Model
 {
@@ -16,7 +14,7 @@ class Model
     /**
      * Connexion PDO.
      */
-    protected ?PDO $db = null;
+    protected ?\PDO $db = null;
 
     public function __construct()
     {
@@ -205,7 +203,7 @@ class Model
     /**
      * Exécute une requête SQL.
      */
-    protected function requete(string $sql, ?array $attributes = null): PDOStatement|false
+    protected function requete(string $sql, ?array $attributes = null): \PDOStatement|false
     {
         if ($this->db === null)
         {

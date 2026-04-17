@@ -2,20 +2,17 @@
 
 namespace App\Models\Trait;
 
-use DateTimeImmutable;
-use Exception;
-
 trait CreatedAtTrait
 {
     /**
      * Date de création.
      */
-    protected ?DateTimeImmutable $created_at = null;
+    protected ?\DateTimeImmutable $created_at = null;
 
     /**
      * Retourne la date de création brute.
      */
-    public function getCreatedAt(): ?DateTimeImmutable
+    public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->created_at;
     }
@@ -42,10 +39,9 @@ trait CreatedAtTrait
 
         try
         {
-            $this->created_at = new DateTimeImmutable($created_at);
+            $this->created_at = new \DateTimeImmutable($created_at);
         }
-
-        catch (Exception)
+        catch (\Exception)
         {
             $this->created_at = null;
         }

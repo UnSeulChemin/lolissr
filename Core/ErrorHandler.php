@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-use Throwable;
-
 class ErrorHandler
 {
     /**
@@ -45,7 +43,7 @@ class ErrorHandler
     /**
      * Gère toutes les exceptions.
      */
-    public static function handleException(Throwable $exception): void
+    public static function handleException(\Throwable $exception): void
     {
         $message =
             $exception->getMessage()

@@ -309,15 +309,7 @@ class MangaController extends Controller
             $canonicalSlug,
             'manga/serie/'
         );
-
-        $this->title = 'Manga | ' . $mangas[0]->livre;
-
-        $this->render('manga/collection', [
-            'mangas' => $mangas,
-            'slugFilter' => $canonicalSlug,
-            'currentPage' => 1,
-            'compteur' => 1
-        ]);
+        return;
     }
 
     /**
@@ -347,12 +339,7 @@ class MangaController extends Controller
             'manga/',
             (int) $manga->numero
         );
-
-        $this->title = 'Manga | ' . $manga->livre . ' ' . str_pad((string) $manga->numero, 2, '0', STR_PAD_LEFT);
-
-        $this->render('manga/livre', [
-            'manga' => $manga
-        ]);
+        return;
     }
 
     /**
@@ -392,12 +379,7 @@ class MangaController extends Controller
             'manga/update/',
             (int) $manga->numero
         );
-
-        $this->title = 'Manga | Modifier';
-
-        $this->render('manga/edit', [
-            'manga' => $manga
-        ]);
+        return;
     }
 
     /**

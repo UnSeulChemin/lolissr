@@ -10,6 +10,9 @@ final class FunctionsTest extends TestCase
     private array $serverBackup = [];
     private array $envBackup = [];
     private array $filesBackup = [];
+    private string|false $appBasePathBackup = false;
+    private string|false $appNameBackup = false;
+    private string|false $appEnvBackup = false;
 
     protected function setUp(): void
     {
@@ -19,9 +22,19 @@ final class FunctionsTest extends TestCase
         $this->envBackup = $_ENV;
         $this->filesBackup = $_FILES;
 
+        $this->appBasePathBackup = getenv('APP_BASE_PATH');
+        $this->appNameBackup = getenv('APP_NAME');
+        $this->appEnvBackup = getenv('APP_ENV');
+
         $_SERVER = [];
         $_ENV = [];
         $_FILES = [];
+
+        putenv('APP_BASE_PATH');
+        putenv('APP_NAME');
+        putenv('APP_ENV');
+
+        Functions::clearEnvCache();
     }
 
     protected function tearDown(): void
@@ -30,7 +43,27 @@ final class FunctionsTest extends TestCase
         $_ENV = $this->envBackup;
         $_FILES = $this->filesBackup;
 
+        $this->restoreEnvVar('APP_BASE_PATH', $this->appBasePathBackup);
+        $this->restoreEnvVar('APP_NAME', $this->appNameBackup);
+        $this->restoreEnvVar('APP_ENV', $this->appEnvBackup);
+
+        Functions::clearEnvCache();
+
         parent::tearDown();
+    }
+
+    private function restoreEnvVar(string $key, string|false $value): void
+    {
+        if ($value === false)
+        {
+            putenv($key);
+            unset($_ENV[$key], $_SERVER[$key]);
+            return;
+        }
+
+        putenv($key . '=' . $value);
+        $_ENV[$key] = $value;
+        $_SERVER[$key] = $value;
     }
 
     public function testEnvReturnsDefaultWhenKeyDoesNotExist(): void
@@ -41,6 +74,7 @@ final class FunctionsTest extends TestCase
     public function testEnvReturnsValueFromEnvArray(): void
     {
         $_ENV['APP_NAME'] = 'LoliSSR';
+        Functions::clearEnvCache();
 
         $this->assertSame('LoliSSR', Functions::env('APP_NAME', 'fallback'));
     }
@@ -48,20 +82,22 @@ final class FunctionsTest extends TestCase
     public function testEnvReturnsValueFromServerArray(): void
     {
         $_SERVER['APP_ENV'] = 'local';
+        Functions::clearEnvCache();
 
         $this->assertSame('local', Functions::env('APP_ENV', 'prod'));
     }
 
     public function testBasePathReturnsDefaultSlash(): void
     {
-        $_ENV['APP_BASE_PATH'] = '/lolissr/';
+        Functions::clearEnvCache();
 
-        $this->assertSame('/lolissr/', Functions::basePath());
+        $this->assertSame('/', Functions::basePath());
     }
 
     public function testBasePathReturnsConfiguredPath(): void
     {
         $_ENV['APP_BASE_PATH'] = '/lolissr/';
+        Functions::clearEnvCache();
 
         $this->assertSame('/lolissr/', Functions::basePath());
     }
@@ -69,6 +105,7 @@ final class FunctionsTest extends TestCase
     public function testSiteNameReturnsConfiguredAppName(): void
     {
         $_ENV['APP_NAME'] = 'LoliSSR';
+        Functions::clearEnvCache();
 
         $this->assertSame('LoliSSR', Functions::siteName());
     }

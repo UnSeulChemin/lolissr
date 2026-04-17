@@ -12,6 +12,14 @@ class Functions
     private static array $envCache = [];
 
     /**
+     * Vide le cache mémoire des variables d'environnement.
+     */
+    public static function clearEnvCache(): void
+    {
+        self::$envCache = [];
+    }
+
+    /**
      * Récupère une variable d'environnement.
      */
     public static function env(string $key, mixed $default = null): mixed

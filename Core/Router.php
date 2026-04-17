@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Core;
 
 use App\Controllers\ErrorController;
-use RuntimeException;
 
 class Router
 {
@@ -139,7 +138,7 @@ class Router
     {
         if (!str_contains($action, '@'))
         {
-            throw new RuntimeException('Action invalide : ' . $action);
+            throw new \RuntimeException('Action invalide : ' . $action);
         }
 
         [$controllerName, $method] = explode('@', $action, 2);
@@ -148,14 +147,14 @@ class Router
 
         if (!class_exists($controllerClass))
         {
-            throw new RuntimeException('Controller introuvable : ' . $controllerClass);
+            throw new \RuntimeException('Controller introuvable : ' . $controllerClass);
         }
 
         $controller = new $controllerClass();
 
         if (!method_exists($controller, $method))
         {
-            throw new RuntimeException('Méthode introuvable : ' . $controllerClass . '::' . $method);
+            throw new \RuntimeException('Méthode introuvable : ' . $controllerClass . '::' . $method);
         }
 
         call_user_func_array([$controller, $method], array_values($params));

@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-use Exception;
-use PDO;
-use PDOException;
-
-class Database extends PDO
+class Database extends \PDO
 {
     /**
      * Instance unique de la base de données.
@@ -33,11 +29,11 @@ class Database extends PDO
                 Functions::dbPass()
             );
 
-            $this->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
-            $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $this->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+            $this->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_OBJ);
+            $this->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+            $this->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
         }
-        catch (PDOException $exception)
+        catch (\PDOException $exception)
         {
             Logger::error('Erreur connexion BDD : ' . $exception->getMessage());
 
@@ -75,6 +71,6 @@ class Database extends PDO
      */
     public function __wakeup(): void
     {
-        throw new Exception('Cannot unserialize singleton');
+        throw new \Exception('Cannot unserialize singleton');
     }
 }
