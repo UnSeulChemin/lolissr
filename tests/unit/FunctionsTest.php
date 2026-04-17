@@ -10,6 +10,7 @@ final class FunctionsTest extends TestCase
     private array $serverBackup = [];
     private array $envBackup = [];
     private array $filesBackup = [];
+
     private string|false $appBasePathBackup = false;
     private string|false $appNameBackup = false;
     private string|false $appEnvBackup = false;
