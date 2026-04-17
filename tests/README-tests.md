@@ -1,6 +1,13 @@
 # Tests LoliSSR
 
-## Structure actuelle
+Ce dossier contient le système de tests automatisés du projet **LoliSSR**.
+
+Les tests permettent de vérifier rapidement que les routes, redirections,
+AJAX et fonctionnalités principales fonctionnent correctement.
+
+---
+
+# Structure actuelle
 
 ```text
 tests/
@@ -9,10 +16,13 @@ tests/
 │   ├── test-ajax.php
 │   ├── test-canonical.php
 │   ├── test-pagination.php
-│   └── test-smoke.php
+│   ├── test-smoke.php
+│
 ├── reports/
+│   (rapports générés automatiquement)
+│
 ├── bootstrap.php
 ├── config.php
-├── README-tests.md
+├── run-tests.php
 ├── run-tests.bat
-└── run-tests.php
+├── README-tests.md
