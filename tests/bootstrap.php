@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 define('ROOT', dirname(__DIR__));
 
-require_once ROOT . '/Autoloader.php';
+require ROOT . '/Autoloader.php';
 
 \App\Autoloader::register();
 
 /*
 |--------------------------------------------------------------------------
-| Chargement .env
+| Chargement du fichier .env
 |--------------------------------------------------------------------------
 */
-
 $envFile = ROOT . '/.env';
 
 if (is_file($envFile))

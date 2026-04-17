@@ -35,8 +35,9 @@ addGetTest($tests, [
 addGetTest($tests, [
     'category' => 'Smoke',
     'label' => 'Recherche',
-    'path' => '/manga/recherche',
+    'path' => '/manga/recherche/' . $realSlug,
     'expected_status' => 200,
+    'must_contain' => ['Recherche'],
 ]);
 
 addGetTest($tests, [
@@ -59,6 +60,7 @@ addGetTest($tests, [
     'label' => 'Série existante',
     'path' => '/manga/serie/' . $realSlug,
     'expected_status' => 200,
+    'must_contain' => ['Collection'],
 ]);
 
 addGetTest($tests, [
@@ -66,6 +68,7 @@ addGetTest($tests, [
     'label' => 'Tome existant',
     'path' => '/manga/' . $realSlug . '/' . $realNumero,
     'expected_status' => 200,
+    'must_contain' => ['<img'],
 ]);
 
 addGetTest($tests, [

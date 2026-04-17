@@ -31,7 +31,7 @@ addPostCheck($postChecks, [
             $payload
         );
 
-        $json = json_decode($response['body'], true);
+        $json = decodeJsonResponse($response['body']);
 
         $jsonOk = is_array($json);
         $hasErrorSignal = false;
@@ -67,7 +67,7 @@ addPostCheck($postChecks, [
             '{"livre":'
         );
 
-        $json = json_decode($response['body'], true);
+        $json = decodeJsonResponse($response['body']);
 
         $ok = $response['status'] === 422
             && is_array($json)
@@ -105,7 +105,7 @@ addHtmlCheck($htmlChecks, [
 
 addPostCheck($postChecks, [
     'category' => 'AJAX',
-    'label' => 'GET ajax update note refusé en 405',
+    'label' => 'GET ajax update-note refusé en 405',
     'url' => $base . '/manga/ajax/update-note/' . $realSlug . '/' . $realNumero,
     'callback' => static function () use ($base, $realSlug, $realNumero): array
     {
@@ -117,7 +117,7 @@ addPostCheck($postChecks, [
             ]
         );
 
-        $json = json_decode($response['body'], true);
+        $json = decodeJsonResponse($response['body']);
 
         $ok =
             $response['status'] === 405
@@ -154,7 +154,7 @@ addPostCheck($postChecks, [
             $payload
         );
 
-        $json = json_decode($response['body'], true);
+        $json = decodeJsonResponse($response['body']);
 
         $ok = $response['status'] === 404
             && is_array($json)
@@ -190,7 +190,7 @@ addPostCheck($postChecks, [
             $payload
         );
 
-        $json = json_decode($response['body'], true);
+        $json = decodeJsonResponse($response['body']);
 
         $ok = $response['status'] === 409
             && is_array($json)
@@ -227,7 +227,7 @@ addPostCheck($postChecks, [
             $payload
         );
 
-        $json = json_decode($response['body'], true);
+        $json = decodeJsonResponse($response['body']);
 
         $ok = $response['status'] === 422
             && is_array($json)
@@ -264,7 +264,7 @@ addPostCheck($postChecks, [
             $payload
         );
 
-        $json = json_decode($response['body'], true);
+        $json = decodeJsonResponse($response['body']);
 
         $ok = $response['status'] === 200
             && is_array($json)
@@ -277,38 +277,6 @@ addPostCheck($postChecks, [
         return [
             'ok' => $ok,
             'message' => 'status ' . $response['status'] . ' | update AJAX succès',
-        ];
-    },
-]);
-
-addPostCheck($postChecks, [
-    'category' => 'AJAX',
-    'label' => 'GET ajax update-note refusé en 405',
-    'url' => $base . '/manga/ajax/update-note/' . $realSlug . '/' . $realNumero,
-    'callback' => static function () use ($base, $realSlug, $realNumero): array
-    {
-        $response = requestUrl(
-            $base . '/manga/ajax/update-note/' . $realSlug . '/' . $realNumero,
-            'GET',
-            [
-                'X-Requested-With: XMLHttpRequest',
-            ]
-        );
-
-        $json = json_decode($response['body'], true);
-
-        $ok =
-            $response['status'] === 405
-            && (
-                is_array($json)
-                || stripos($response['body'], 'Méthode') !== false
-            );
-
-        return [
-            'ok' => $ok,
-            'message' =>
-                'status ' . $response['status']
-                . ' | GET refusé',
         ];
     },
 ]);
@@ -335,7 +303,7 @@ addPostCheck($postChecks, [
             $payload
         );
 
-        $json = json_decode($response['body'], true);
+        $json = decodeJsonResponse($response['body']);
 
         $ok = $response['status'] === 404
             && is_array($json)
@@ -356,7 +324,7 @@ addHtmlCheck($htmlChecks, [
     'callback' => static function () use ($base): array
     {
         $response = requestUrl($base . '/manga/search-ajax/a');
-        $json = json_decode($response['body'], true);
+        $json = decodeJsonResponse($response['body']);
 
         $ok = $response['status'] === 200
             && is_array($json)
@@ -381,7 +349,7 @@ addHtmlCheck($htmlChecks, [
             $base . '/manga/search-ajax/-'
         );
 
-        $json = json_decode($response['body'], true);
+        $json = decodeJsonResponse($response['body']);
 
         $ok =
             $response['status'] === 200

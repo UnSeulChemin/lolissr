@@ -102,7 +102,7 @@ if (!function_exists('cleanTmpUploads'))
         {
             if (is_file($file))
             {
-                unlink($file);
+                @unlink($file);
             }
         }
     }

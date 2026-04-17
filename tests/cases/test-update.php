@@ -55,13 +55,14 @@ if ($testPostUpdate)
                 $body
             );
 
-            $json = json_decode($response['body'], true);
+            $json = decodeJsonResponse($response['body']);
 
             $ok =
                 $response['status'] === 200
                 && is_array($json)
                 && isset($json['success'])
-                && $json['success'] === true;
+                && $json['success'] === true
+                && isset($json['message']);
 
             return [
                 'ok' => $ok,
@@ -107,13 +108,14 @@ if ($testPostUpdate)
                 $body
             );
 
-            $json = json_decode($response['body'], true);
+            $json = decodeJsonResponse($response['body']);
 
             $ok =
                 $response['status'] === 422
                 && is_array($json)
                 && isset($json['success'])
-                && $json['success'] === false;
+                && $json['success'] === false
+                && isset($json['errors']);
 
             return [
                 'ok' => $ok,
@@ -136,7 +138,7 @@ if ($testPostUpdate)
 
         'url' => rtrim($base, '/') . '/manga/update/' . $nonCanonicalSlug . '/' . $realNumero,
 
-        'callback' => static function () use ($base, $nonCanonicalSlug, $realNumero): array
+        'callback' => static function () use ($base, $nonCanonicalSlug, $realNumero, $realSlug): array
         {
             $boundary = uniqid('boundary_', true);
 
@@ -159,12 +161,16 @@ if ($testPostUpdate)
                 $body
             );
 
-            $json = json_decode($response['body'], true);
+            $json = decodeJsonResponse($response['body']);
 
             $ok =
                 $response['status'] === 409
                 && is_array($json)
-                && isset($json['redirect']);
+                && isset($json['success'])
+                && $json['success'] === false
+                && isset($json['redirect'])
+                && is_string($json['redirect'])
+                && str_contains($json['redirect'], '/manga/update/' . rawurlencode($realSlug) . '/' . $realNumero);
 
             return [
                 'ok' => $ok,

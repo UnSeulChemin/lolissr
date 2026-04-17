@@ -66,6 +66,6 @@ return [
     | EXPORT
     |--------------------------------------------------------------------------
     */
-    'exportDirectory' => __DIR__ . '/reports',
+    'exportDirectory' => ROOT . '/tests/reports',
     'exportEnabled' => $testsEnabled,
 ];

@@ -54,6 +54,7 @@ if ($testPostAjouter)
         {
             $tmpFile = ROOT . '/tests/tmp-valid.jpg';
             $uploadDir = ROOT . '/tests/tmp-uploads';
+            $unique = uniqid('', true);
 
             if (!is_dir($uploadDir))
             {
@@ -62,7 +63,7 @@ if ($testPostAjouter)
 
             if (is_file($tmpFile))
             {
-                unlink($tmpFile);
+                @unlink($tmpFile);
             }
 
             createValidJpeg($tmpFile);
@@ -71,8 +72,8 @@ if ($testPostAjouter)
 
             $body = buildMultipartBody(
                 [
-                    'livre' => 'Test Upload',
-                    'slug' => 'test-upload',
+                    'livre' => 'Test Upload ' . $unique,
+                    'slug' => 'test-upload-' . md5($unique),
                     'numero' => '999',
                 ],
                 [
@@ -97,7 +98,7 @@ if ($testPostAjouter)
 
             if (is_file($tmpFile))
             {
-                unlink($tmpFile);
+                @unlink($tmpFile);
             }
 
             $json = decodeJsonResponse($response['body']);
@@ -145,22 +146,23 @@ if ($testUploadDuplicateSlugNumero)
         'callback' => static function () use ($base): array
         {
             $tmpFile = ROOT . '/tests/tmp-duplicate.jpg';
+            $unique = uniqid('', true);
+            $livre = 'Test Duplicate ' . $unique;
+            $slug = 'test-duplicate-slug-' . md5($unique);
+            $numero = '777';
 
             if (is_file($tmpFile))
             {
-                unlink($tmpFile);
+                @unlink($tmpFile);
             }
 
             createValidJpeg($tmpFile);
-
-            $slug = 'test-duplicate-slug-' . uniqid();
-            $numero = '777';
 
             $boundary1 = uniqid('boundary_', true);
 
             $body1 = buildMultipartBody(
                 [
-                    'livre' => 'Test Duplicate',
+                    'livre' => $livre,
                     'slug' => $slug,
                     'numero' => $numero,
                 ],
@@ -196,7 +198,7 @@ if ($testUploadDuplicateSlugNumero)
             {
                 if (is_file($tmpFile))
                 {
-                    unlink($tmpFile);
+                    @unlink($tmpFile);
                 }
 
                 return [
@@ -209,7 +211,7 @@ if ($testUploadDuplicateSlugNumero)
 
             $body2 = buildMultipartBody(
                 [
-                    'livre' => 'Test Duplicate',
+                    'livre' => $livre,
                     'slug' => $slug,
                     'numero' => $numero,
                 ],
@@ -235,7 +237,7 @@ if ($testUploadDuplicateSlugNumero)
 
             if (is_file($tmpFile))
             {
-                unlink($tmpFile);
+                @unlink($tmpFile);
             }
 
             $json = decodeJsonResponse($response['body']);
@@ -266,22 +268,23 @@ if ($testUploadInvalidImage)
         'callback' => static function () use ($base): array
         {
             $tmpFile = ROOT . '/tests/tmp-invalid.txt';
+            $unique = uniqid('', true);
 
             if (is_file($tmpFile))
             {
-                unlink($tmpFile);
+                @unlink($tmpFile);
             }
 
             createInvalidTextFile($tmpFile);
 
-            $slug = 'test-invalid-image-' . uniqid();
+            $slug = 'test-invalid-image-' . md5($unique);
             $numero = '778';
 
             $boundary = uniqid('boundary_', true);
 
             $body = buildMultipartBody(
                 [
-                    'livre' => 'Test Invalid Image',
+                    'livre' => 'Test Invalid Image ' . $unique,
                     'slug' => $slug,
                     'numero' => $numero,
                 ],
@@ -307,7 +310,7 @@ if ($testUploadInvalidImage)
 
             if (is_file($tmpFile))
             {
-                unlink($tmpFile);
+                @unlink($tmpFile);
             }
 
             $json = decodeJsonResponse($response['body']);
@@ -338,6 +341,7 @@ if ($testUploadMaxSize)
         'callback' => static function () use ($base): array
         {
             $fixtureFile = ROOT . '/tests/fixtures/large.jpg';
+            $unique = uniqid('', true);
 
             if (!is_file($fixtureFile))
             {
@@ -347,14 +351,14 @@ if ($testUploadMaxSize)
                 ];
             }
 
-            $slug = 'test-large-upload-' . uniqid();
+            $slug = 'test-large-upload-' . md5($unique);
             $numero = '779';
 
             $boundary = uniqid('boundary_', true);
 
             $body = buildMultipartBody(
                 [
-                    'livre' => 'Test Large Upload',
+                    'livre' => 'Test Large Upload ' . $unique,
                     'slug' => $slug,
                     'numero' => $numero,
                 ],
