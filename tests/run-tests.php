@@ -20,13 +20,19 @@ foreach ($caseFiles as $caseFile)
 
 /*
 |--------------------------------------------------------------------------
-| RUNNER GET
+| RUNNER GLOBAL
 |--------------------------------------------------------------------------
 */
 
 $globalStart = microtime(true);
 
 sectionTitle('TESTS LOLISSR');
+
+/*
+|--------------------------------------------------------------------------
+| RUNNER GET
+|--------------------------------------------------------------------------
+*/
 
 $currentCategory = null;
 
@@ -41,31 +47,28 @@ foreach ($tests as $test)
     }
 
     $result = runGetTest($base, $test);
-    $duration = $result['duration'] ?? 0.0;
+    $duration = (float) ($result['duration'] ?? 0.0);
     $testUrl = $base . $test['path'];
 
-    if ($result['ok'])
+    if (!empty($result['ok']))
     {
-        printOk($test['label'] . ' -> ' . $test['path'], $result['message'], $duration);
+        printOk($test['label'] . ' -> ' . $test['path'], (string) $result['message'], $duration);
         addResult($stats, $category, 'success', $duration);
-
-        recordResult('success', $category, $test['label'] . ' -> ' . $test['path'], $result['message'], $duration, $testUrl);
+        recordResult('success', $category, $test['label'] . ' -> ' . $test['path'], (string) $result['message'], $duration, $testUrl);
+        continue;
     }
-    else
-    {
-        printFail($test['label'] . ' -> ' . $test['path'], $result['message'], $duration);
-        addResult($stats, $category, 'fail', $duration);
 
-        recordResult('fail', $category, $test['label'] . ' -> ' . $test['path'], $result['message'], $duration, $testUrl);
+    printFail($test['label'] . ' -> ' . $test['path'], (string) $result['message'], $duration);
+    addResult($stats, $category, 'fail', $duration);
+    recordResult('fail', $category, $test['label'] . ' -> ' . $test['path'], (string) $result['message'], $duration, $testUrl);
 
-        $failures[] = [
-            'category' => $category,
-            'label' => $test['label'],
-            'message' => $result['message'],
-            'duration' => $duration,
-            'url' => $testUrl,
-        ];
-    }
+    $failures[] = [
+        'category' => $category,
+        'label' => $test['label'],
+        'message' => (string) $result['message'],
+        'duration' => $duration,
+        'url' => $testUrl,
+    ];
 }
 
 /*
@@ -92,7 +95,7 @@ foreach ($htmlChecks as $check)
         ? runCallableCheck($check['callback'])
         : ['ok' => false, 'message' => 'callback absente', 'duration' => 0.0];
 
-    $duration = $result['duration'] ?? 0.0;
+    $duration = (float) ($result['duration'] ?? 0.0);
     $ok = (bool) ($result['ok'] ?? false);
     $message = (string) ($result['message'] ?? '');
     $checkUrl = $check['url'] ?? null;
@@ -101,24 +104,21 @@ foreach ($htmlChecks as $check)
     {
         printOk($check['label'], $message, $duration);
         addResult($stats, $category, 'success', $duration);
-
         recordResult('success', $category, $check['label'], $message, $duration, $checkUrl);
+        continue;
     }
-    else
-    {
-        printFail($check['label'], $message, $duration);
-        addResult($stats, $category, 'fail', $duration);
 
-        recordResult('fail', $category, $check['label'], $message, $duration, $checkUrl);
+    printFail($check['label'], $message, $duration);
+    addResult($stats, $category, 'fail', $duration);
+    recordResult('fail', $category, $check['label'], $message, $duration, $checkUrl);
 
-        $failures[] = [
-            'category' => $category,
-            'label' => $check['label'],
-            'message' => $message,
-            'duration' => $duration,
-            'url' => $checkUrl,
-        ];
-    }
+    $failures[] = [
+        'category' => $category,
+        'label' => $check['label'],
+        'message' => $message,
+        'duration' => $duration,
+        'url' => $checkUrl,
+    ];
 }
 
 /*
@@ -145,7 +145,7 @@ foreach ($postChecks as $check)
         ? runCallableCheck($check['callback'])
         : ['ok' => false, 'warn' => false, 'message' => 'callback absente', 'duration' => 0.0];
 
-    $duration = $result['duration'] ?? 0.0;
+    $duration = (float) ($result['duration'] ?? 0.0);
     $ok = (bool) ($result['ok'] ?? false);
     $warn = (bool) ($result['warn'] ?? false);
     $message = (string) ($result['message'] ?? '');
@@ -155,7 +155,6 @@ foreach ($postChecks as $check)
     {
         printWarn($check['label'], $message, $duration);
         addResult($stats, $category, 'warn', $duration);
-
         recordResult('warn', $category, $check['label'], $message, $duration, $checkUrl);
 
         $warnings[] = [
@@ -173,24 +172,22 @@ foreach ($postChecks as $check)
     {
         printOk($check['label'], $message, $duration);
         addResult($stats, $category, 'success', $duration);
-
         recordResult('success', $category, $check['label'], $message, $duration, $checkUrl);
-    }
-    else
-    {
-        printFail($check['label'], $message, $duration);
-        addResult($stats, $category, 'fail', $duration);
 
-        recordResult('fail', $category, $check['label'], $message, $duration, $checkUrl);
-
-        $failures[] = [
-            'category' => $category,
-            'label' => $check['label'],
-            'message' => $message,
-            'duration' => $duration,
-            'url' => $checkUrl,
-        ];
+        continue;
     }
+
+    printFail($check['label'], $message, $duration);
+    addResult($stats, $category, 'fail', $duration);
+    recordResult('fail', $category, $check['label'], $message, $duration, $checkUrl);
+
+    $failures[] = [
+        'category' => $category,
+        'label' => $check['label'],
+        'message' => $message,
+        'duration' => $duration,
+        'url' => $checkUrl,
+    ];
 }
 
 /*
@@ -220,7 +217,7 @@ if (!empty($failures))
 
 /*
 |--------------------------------------------------------------------------
-| RÉSUMÉ CATÉGORIES
+| RÉSUMÉ PAR CATÉGORIE
 |--------------------------------------------------------------------------
 */
 

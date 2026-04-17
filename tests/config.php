@@ -2,18 +2,39 @@
 
 declare(strict_types=1);
 
+use App\Core\Functions;
+
+/*
+|--------------------------------------------------------------------------
+| MASTER SWITCH TESTS
+|--------------------------------------------------------------------------
+|
+| Permet de désactiver toute la suite avec :
+| TESTS_ENABLED=false dans .env
+|
+*/
+
+$testsEnabled = (bool) Functions::env('TESTS_ENABLED', true);
+
+/*
+|--------------------------------------------------------------------------
+| CONFIG
+|--------------------------------------------------------------------------
+*/
+
 return [
+
     /*
     |--------------------------------------------------------------------------
     | BASE URL
     |--------------------------------------------------------------------------
     */
 
-    'base' => 'http://localhost/lolissr',
+    'base' => 'http://localhost/lolissr/',
 
     /*
     |--------------------------------------------------------------------------
-    | CONFIG
+    | CONFIG DONNÉES
     |--------------------------------------------------------------------------
     */
 
@@ -23,13 +44,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | OPTIONS
+    | OPTIONS TESTS
     |--------------------------------------------------------------------------
+    |
+    | Chaque test dépend de TESTS_ENABLED
+    | Si TESTS_ENABLED=false → tout OFF
+    |
     */
 
-    'testCanonicalRedirect' => true,
-    'testPostAjouter' => false,
-    'testPostUpdate' => true,
+    'testCanonicalRedirect' =>
+        $testsEnabled && (bool) Functions::env('TEST_CANONICAL_REDIRECT', true),
+
+    'testPostAjouter' =>
+        $testsEnabled && (bool) Functions::env('TEST_POST_AJOUTER', false),
+
+    'testPostUpdate' =>
+        $testsEnabled && (bool) Functions::env('TEST_POST_UPDATE', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -38,5 +68,7 @@ return [
     */
 
     'exportDirectory' => __DIR__ . '/reports',
-    'exportEnabled' => true,
+
+    'exportEnabled' =>
+        $testsEnabled && true,
 ];

@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+require dirname(__DIR__) . '/App/Core/Autoloader.php';
+
+use App\Core\Autoloader;
+
+Autoloader::register();
+
 /*
 |--------------------------------------------------------------------------
 | CONFIG

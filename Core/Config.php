@@ -70,7 +70,7 @@ class Config
      */
     public static function appEnv(): string
     {
-        return (string) self::get('app.env', 'local');
+        return (string) self::env('APP_ENV', 'local');
     }
 
     /**
