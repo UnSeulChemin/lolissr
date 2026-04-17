@@ -1,19 +1,55 @@
-### COMMANDS ###
-# git add .
-# git commit -m 'update'
-# git push origin master
+#################################
+# ENVIRONNEMENT
+#################################
 
-### CACHE ###
-# clear cache
-# git rm -r --cached .
-# git add .
-
-### HIDE ###
-Core/Save/
 .env
-/logs/
-public/images
 notes.txt
 
+#################################
+# LOGS
+#################################
+
+/logs/
+*.log
+
+#################################
+# CACHE / STORAGE
+#################################
+
+Core/Save/
+
+#################################
+# UPLOADS
+#################################
+
+# Images mangas (si générées localement)
+public/images/
+
+# Uploads temporaires tests
+tests/tmp-uploads/
+
+#################################
+# TESTS / PHPUnit
+#################################
+
 /vendor/
+
 .phpunit.result.cache
+.phpunit.cache/
+
+coverage/
+
+#################################
+# REPORTS TESTS
+#################################
+
+tests/reports/
+
+#################################
+# IDE / OS
+#################################
+
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
