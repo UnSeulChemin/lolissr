@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core;
 
 use App\Controllers\ErrorController;
+use RuntimeException;
 
 class Router
 {
@@ -36,7 +39,7 @@ class Router
 
         $pattern = preg_replace_callback(
             '#\{([a-zA-Z_][a-zA-Z0-9_]*)\}#',
-            function ($matches) use (&$paramNames)
+            function (array $matches) use (&$paramNames): string
             {
                 $paramNames[] = $matches[1];
                 return '([^/]+)';
@@ -44,7 +47,7 @@ class Router
             $path
         );
 
-        $pattern = '#^' . rtrim($pattern, '/') . '/?$#';
+        $pattern = '#^' . rtrim((string) $pattern, '/') . '/?$#';
 
         if ($path === '/')
         {
@@ -55,7 +58,7 @@ class Router
             'path' => $path,
             'action' => $action,
             'pattern' => $pattern,
-            'params' => $paramNames
+            'params' => $paramNames,
         ];
     }
 
@@ -65,11 +68,11 @@ class Router
     public function dispatch(string $uri, string $method): void
     {
         $path = parse_url($uri, PHP_URL_PATH) ?? '/';
-        $basePath = rtrim(Functions::basePath(), '/');
+        $basePath = Functions::basePath();
 
-        if ($basePath !== '' && $basePath !== '/' && str_starts_with($path, $basePath))
+        if ($basePath !== '/' && str_starts_with($path, rtrim($basePath, '/')))
         {
-            $path = substr($path, strlen($basePath));
+            $path = substr($path, strlen(rtrim($basePath, '/')));
         }
 
         $path = $path === '' ? '/' : $path;
@@ -136,7 +139,7 @@ class Router
     {
         if (!str_contains($action, '@'))
         {
-            throw new \RuntimeException('Action invalide : ' . $action);
+            throw new RuntimeException('Action invalide : ' . $action);
         }
 
         [$controllerName, $method] = explode('@', $action, 2);
@@ -145,14 +148,14 @@ class Router
 
         if (!class_exists($controllerClass))
         {
-            throw new \RuntimeException('Controller introuvable : ' . $controllerClass);
+            throw new RuntimeException('Controller introuvable : ' . $controllerClass);
         }
 
         $controller = new $controllerClass();
 
         if (!method_exists($controller, $method))
         {
-            throw new \RuntimeException('Méthode introuvable : ' . $controllerClass . '::' . $method);
+            throw new RuntimeException('Méthode introuvable : ' . $controllerClass . '::' . $method);
         }
 
         call_user_func_array([$controller, $method], array_values($params));

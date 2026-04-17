@@ -2,18 +2,48 @@
 
 declare(strict_types=1);
 
-require dirname(__DIR__) . '/App/Core/Autoloader.php';
+define('ROOT', dirname(__DIR__));
 
-use App\Core\Autoloader;
+require ROOT . '/Autoloader.php';
 
-Autoloader::register();
+\App\Autoloader::register();
+
+/*
+|--------------------------------------------------------------------------
+| Chargement du fichier .env
+|--------------------------------------------------------------------------
+*/
+$envFile = ROOT . '/.env';
+
+if (is_file($envFile))
+{
+    $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: [];
+
+    foreach ($lines as $line)
+    {
+        $line = trim($line);
+
+        if ($line === '' || str_starts_with($line, '#') || !str_contains($line, '='))
+        {
+            continue;
+        }
+
+        [$name, $value] = explode('=', $line, 2);
+
+        $name = trim($name);
+        $value = trim($value);
+
+        $_ENV[$name] = $value;
+        $_SERVER[$name] = $value;
+        putenv($name . '=' . $value);
+    }
+}
 
 /*
 |--------------------------------------------------------------------------
 | CONFIG
 |--------------------------------------------------------------------------
 */
-
 $config = require __DIR__ . '/config.php';
 
 $base = $config['base'];
@@ -204,8 +234,7 @@ function recordResult(
     string $message,
     float $duration,
     ?string $url = null
-): void
-{
+): void {
     global $allResults;
 
     static $resultId = 1;
@@ -304,8 +333,7 @@ function requestUrl(
     string $method = 'GET',
     array $headers = [],
     ?string $content = null
-): array
-{
+): array {
     $baseHeaders = [
         'User-Agent: LoliSSR-TestRunner',
     ];
@@ -601,8 +629,7 @@ function buildHtmlReport(
     string $realSlug,
     int $realNumero,
     float $totalDuration
-): string
-{
+): string {
     $rows = '';
 
     foreach ($allResults as $index => $result)

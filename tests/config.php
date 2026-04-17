@@ -9,11 +9,10 @@ use App\Core\Functions;
 | MASTER SWITCH TESTS
 |--------------------------------------------------------------------------
 |
-| Permet de désactiver toute la suite avec :
-| TESTS_ENABLED=false dans .env
+| true  = suite de tests active
+| false = aucun test exécuté
 |
 */
-
 $testsEnabled = (bool) Functions::env('TESTS_ENABLED', true);
 
 /*
@@ -21,7 +20,6 @@ $testsEnabled = (bool) Functions::env('TESTS_ENABLED', true);
 | CONFIG
 |--------------------------------------------------------------------------
 */
-
 return [
 
     /*
@@ -29,15 +27,13 @@ return [
     | BASE URL
     |--------------------------------------------------------------------------
     */
-
-    'base' => 'http://localhost/lolissr/',
+    'base' => 'http://localhost' . Functions::basePath(),
 
     /*
     |--------------------------------------------------------------------------
     | CONFIG DONNÉES
     |--------------------------------------------------------------------------
     */
-
     'realSlug' => 'one-piece',
     'realNumero' => 1,
     'nonCanonicalSlug' => 'One-Piece',
@@ -46,12 +42,7 @@ return [
     |--------------------------------------------------------------------------
     | OPTIONS TESTS
     |--------------------------------------------------------------------------
-    |
-    | Chaque test dépend de TESTS_ENABLED
-    | Si TESTS_ENABLED=false → tout OFF
-    |
     */
-
     'testCanonicalRedirect' =>
         $testsEnabled && (bool) Functions::env('TEST_CANONICAL_REDIRECT', true),
 
@@ -66,9 +57,6 @@ return [
     | EXPORT
     |--------------------------------------------------------------------------
     */
-
     'exportDirectory' => __DIR__ . '/reports',
-
-    'exportEnabled' =>
-        $testsEnabled && true,
+    'exportEnabled' => $testsEnabled,
 ];
