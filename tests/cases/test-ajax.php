@@ -102,3 +102,103 @@ addHtmlCheck($htmlChecks, [
         ];
     },
 ]);
+
+addPostCheck($postChecks, [
+    'category' => 'AJAX',
+    'label' => 'GET ajax update note refusé en 405',
+    'url' => $base . '/manga/ajax/update-note/' . $realSlug . '/' . $realNumero,
+    'callback' => static function () use ($base, $realSlug, $realNumero): array
+    {
+        $response = requestUrl(
+            $base . '/manga/ajax/update-note/' . $realSlug . '/' . $realNumero,
+            'GET',
+            [
+                'X-Requested-With: XMLHttpRequest',
+            ]
+        );
+
+        $json = json_decode($response['body'], true);
+
+        $ok = $response['status'] === 405
+            && is_array($json)
+            && isset($json['success'])
+            && $json['success'] === false;
+
+        return [
+            'ok' => $ok,
+            'message' => 'status ' . $response['status'] . ' | GET refusé',
+        ];
+    },
+]);
+
+addPostCheck($postChecks, [
+    'category' => 'AJAX',
+    'label' => 'POST ajax update note manga introuvable',
+    'url' => $base . '/manga/ajax/update-note/slug-introuvable-test/999',
+    'callback' => static function () use ($base): array
+    {
+        $payload = http_build_query([
+            'jacquette' => '4',
+            'livre_note' => '4',
+        ]);
+
+        $response = requestUrl(
+            $base . '/manga/ajax/update-note/slug-introuvable-test/999',
+            'POST',
+            [
+                'Content-Type: application/x-www-form-urlencoded',
+                'X-Requested-With: XMLHttpRequest',
+            ],
+            $payload
+        );
+
+        $json = json_decode($response['body'], true);
+
+        $ok = $response['status'] === 404
+            && is_array($json)
+            && isset($json['success'])
+            && $json['success'] === false;
+
+        return [
+            'ok' => $ok,
+            'message' => 'status ' . $response['status'] . ' | manga introuvable',
+        ];
+    },
+]);
+
+addPostCheck($postChecks, [
+    'category' => 'AJAX',
+    'label' => 'POST update AJAX URL non canonique',
+    'url' => $base . '/manga/update/' . $nonCanonicalSlug . '/' . $realNumero,
+    'callback' => static function () use ($base, $nonCanonicalSlug, $realNumero): array
+    {
+        $payload = http_build_query([
+            'jacquette' => '4',
+            'livre_note' => '4',
+            'commentaire' => 'test canonical ajax',
+        ]);
+
+        $response = requestUrl(
+            $base . '/manga/update/' . $nonCanonicalSlug . '/' . $realNumero,
+            'POST',
+            [
+                'Content-Type: application/x-www-form-urlencoded',
+                'X-Requested-With: XMLHttpRequest',
+            ],
+            $payload
+        );
+
+        $json = json_decode($response['body'], true);
+
+        $ok = $response['status'] === 409
+            && is_array($json)
+            && isset($json['success'])
+            && $json['success'] === false
+            && !empty($json['redirect']);
+
+        return [
+            'ok' => $ok,
+            'message' => 'status ' . $response['status'] . ' | URL non canonique',
+        ];
+    },
+]);

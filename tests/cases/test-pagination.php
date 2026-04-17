@@ -131,3 +131,53 @@ addHtmlCheck($htmlChecks, [
         ];
     },
 ]);
+
+/*
+|--------------------------------------------------------------------------
+| PAGINATION AJAX
+|--------------------------------------------------------------------------
+*/
+
+addGetTest($tests, [
+    'category' => 'Pagination',
+    'label' => 'Collection AJAX page 0 refusée',
+    'path' => '/manga/collection-ajax/page/0',
+    'expected_status' => 404,
+]);
+
+addGetTest($tests, [
+    'category' => 'Pagination',
+    'label' => 'Collection AJAX page négative refusée',
+    'path' => '/manga/collection-ajax/page/-1',
+    'expected_status' => 404,
+]);
+
+addGetTest($tests, [
+    'category' => 'Pagination',
+    'label' => 'Collection AJAX page très haute refusée',
+    'path' => '/manga/collection-ajax/page/9999',
+    'expected_status' => 404,
+]);
+
+addHtmlCheck($htmlChecks, [
+    'category' => 'Pagination',
+    'label' => 'Collection AJAX page 1 contient du contenu',
+    'url' => $base . '/manga/collection-ajax/page/1',
+    'callback' => static function () use ($base): array
+    {
+        $response = requestUrl($base . '/manga/collection-ajax/page/1');
+        $body = $response['body'];
+
+        return [
+            'ok' => $response['status'] === 200
+                && (
+                    stripos($body, 'collection-card') !== false
+                    || stripos($body, '<article') !== false
+                    || stripos($body, '<a') !== false
+                ),
+            'message' => $response['status'] === 200
+                ? 'contenu AJAX détecté'
+                : 'page AJAX inaccessible',
+        ];
+    },
+]);
