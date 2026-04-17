@@ -1,32 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<phpunit
-    bootstrap="tests/bootstrap.php"
-    colors="true"
-    verbose="true"
-    stopOnFailure="false"
->
-
-    <testsuites>
-
-        <testsuite name="Unit Tests">
-
-            <directory>
+<phpunit bootstrap="tests/bootstrap.php" colors="true" stopOnFailure="false" cacheDirectory=".phpunit.cache">
+  <testsuites>
+    <testsuite name="Unit Tests">
+      <directory>
                 tests/unit
             </directory>
-
-        </testsuite>
-
-    </testsuites>
-
-    <php>
-
-        <!-- Mode test -->
-        <env name="APP_ENV" value="test"/>
-
-        <!-- Mode upload test -->
-        <env name="TEST_UPLOAD_MODE" value="true"/>
-
-    </php>
-
+    </testsuite>
+  </testsuites>
+  <php>
+    <!-- Mode test -->
+    <env name="APP_ENV" value="test"/>
+    <!-- Mode upload test -->
+    <env name="TEST_UPLOAD_MODE" value="true"/>
+  </php>
 </phpunit>

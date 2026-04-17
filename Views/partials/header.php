@@ -6,7 +6,8 @@
 |--------------------------------------------------------------------------
 */
 
-$currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '/';
+$currentUri = $_SERVER['REQUEST_URI'] ?? '/';
+$currentPath = parse_url($currentUri, PHP_URL_PATH) ?: '/';
 $cleanBasePath = rtrim($basePath, '/');
 
 /* Retire le basePath si présent */
@@ -118,7 +119,6 @@ if (str_starts_with($currentPath, '/manga/recherche/'))
                     class="header-search-results"
                     id="header-search-results">
                 </div>
-
 
             </div>
 

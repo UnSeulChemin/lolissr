@@ -35,7 +35,7 @@ final class FunctionsTest extends TestCase
 
     public function testEnvReturnsDefaultWhenKeyDoesNotExist(): void
     {
-        $this->assertSame('fallback', Functions::env('APP_NAME', 'fallback'));
+        $this->assertSame('fallback', Functions::env('KEY_INEXISTANTE_TEST', 'fallback'));
     }
 
     public function testEnvReturnsValueFromEnvArray(): void
@@ -54,7 +54,9 @@ final class FunctionsTest extends TestCase
 
     public function testBasePathReturnsDefaultSlash(): void
     {
-        $this->assertSame('/', Functions::basePath());
+        $_ENV['APP_BASE_PATH'] = '/lolissr/';
+
+        $this->assertSame('/lolissr/', Functions::basePath());
     }
 
     public function testBasePathReturnsConfiguredPath(): void

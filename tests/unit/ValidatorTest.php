@@ -25,7 +25,7 @@ final class ValidatorTest extends TestCase
         $validator->required('livre', 'Le titre est obligatoire.');
 
         $this->assertArrayHasKey('livre', $validator->errors());
-        $this->assertContains('Le titre est obligatoire.', $validator->errors()['livre']);
+        $this->assertSame('Le titre est obligatoire.', $validator->errors()['livre']);
     }
 
     public function testStringPassesWithStringValue(): void
@@ -48,7 +48,7 @@ final class ValidatorTest extends TestCase
         $validator->string('slug', 'Le slug doit être une chaîne.');
 
         $this->assertArrayHasKey('slug', $validator->errors());
-        $this->assertContains('Le slug doit être une chaîne.', $validator->errors()['slug']);
+        $this->assertSame('Le slug doit être une chaîne.', $validator->errors()['slug']);
     }
 
     public function testMaxLengthPassesWhenLengthIsValid(): void
@@ -71,7 +71,7 @@ final class ValidatorTest extends TestCase
         $validator->maxLength('commentaire', 1000, 'Le commentaire est trop long.');
 
         $this->assertArrayHasKey('commentaire', $validator->errors());
-        $this->assertContains('Le commentaire est trop long.', $validator->errors()['commentaire']);
+        $this->assertSame('Le commentaire est trop long.', $validator->errors()['commentaire']);
     }
 
     public function testIntegerPassesWithNumericString(): void
@@ -94,7 +94,7 @@ final class ValidatorTest extends TestCase
         $validator->integer('numero', 'Le numéro doit être un entier.');
 
         $this->assertArrayHasKey('numero', $validator->errors());
-        $this->assertContains('Le numéro doit être un entier.', $validator->errors()['numero']);
+        $this->assertSame('Le numéro doit être un entier.', $validator->errors()['numero']);
     }
 
     public function testMinPassesWhenValueIsGreaterThanMinimum(): void
@@ -117,7 +117,7 @@ final class ValidatorTest extends TestCase
         $validator->min('numero', 1, 'Le numéro doit être supérieur ou égal à 1.');
 
         $this->assertArrayHasKey('numero', $validator->errors());
-        $this->assertContains('Le numéro doit être supérieur ou égal à 1.', $validator->errors()['numero']);
+        $this->assertSame('Le numéro doit être supérieur ou égal à 1.', $validator->errors()['numero']);
     }
 
     public function testNullableFieldDoesNotTriggerOtherRulesWhenEmpty(): void
