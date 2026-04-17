@@ -79,11 +79,15 @@ if (!function_exists('cleanTmpUploads'))
 {
     function cleanTmpUploads(): void
     {
-        $dir = __DIR__ . '/tmp-uploads';
+        $dir = ROOT . '/tests/tmp-uploads';
 
         if (!is_dir($dir))
         {
-            mkdir($dir, 0777, true);
+            if (!mkdir($dir, 0777, true) && !is_dir($dir))
+            {
+                throw new RuntimeException('Impossible de créer le dossier tmp-uploads : ' . $dir);
+            }
+
             return;
         }
 
@@ -98,7 +102,7 @@ if (!function_exists('cleanTmpUploads'))
         {
             if (is_file($file))
             {
-                @unlink($file);
+                unlink($file);
             }
         }
     }
