@@ -12,11 +12,11 @@ function getAjaxContainer()
     return document.querySelector('.collection-ajax-container');
 }
 
-function scrollToPaginationTop(container)
+function scrollToPaginationTop()
 {
-    container.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
     });
 }
 
@@ -160,7 +160,7 @@ async function loadPaginationContent(
         {
             requestAnimationFrame(() =>
             {
-                scrollToPaginationTop(container);
+                scrollToPaginationTop();
             });
         }
 
@@ -268,7 +268,7 @@ export function initPaginationAjax()
             container,
             window.location.href,
             `Erreur chargement page ${page}`,
-            true
+            false
         );
     });
 

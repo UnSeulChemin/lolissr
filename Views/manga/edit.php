@@ -132,5 +132,3 @@ $cancelUrl = $basePath . 'manga/' . rawurlencode($manga->slug) . '/' . (int) $ma
 </section>
 
 <?php Session::forget(['errors', 'old']); ?>
-
-<script type="module" src="<?= $basePath; ?>public/js/pages/edit.js"></script>

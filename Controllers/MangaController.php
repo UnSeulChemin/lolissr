@@ -586,6 +586,14 @@ class MangaController extends Controller
 
         if (!Functions::isPost())
         {
+            if ($this->isAjaxRequest())
+            {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Méthode non autorisée'
+                ], 405);
+            }
+
             $this->methodNotAllowed('Méthode non autorisée pour la modification d’un manga');
         }
 
@@ -594,6 +602,14 @@ class MangaController extends Controller
 
         if (!$manga)
         {
+            if ($this->isAjaxRequest())
+            {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Manga introuvable'
+                ], 404);
+            }
+
             $this->notFound('Manga introuvable');
         }
 
@@ -614,6 +630,23 @@ class MangaController extends Controller
 
         if ($validator->fails())
         {
+            if ($this->isAjaxRequest())
+            {
+                $errors = $validator->errors();
+                $firstError = '';
+
+                if (!empty($errors))
+                {
+                    $firstError = (string) reset($errors);
+                }
+
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => $firstError !== '' ? $firstError : 'Le formulaire contient des erreurs.',
+                    'errors' => $errors
+                ], 422);
+            }
+
             $this->redirectWithValidationErrors(
                 'manga/update/' . rawurlencode($slug) . '/' . $numero,
                 $validator->errors()
@@ -649,6 +682,14 @@ class MangaController extends Controller
                 . $numero
             );
 
+            if ($this->isAjaxRequest())
+            {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Erreur lors de la mise à jour'
+                ], 500);
+            }
+
             $this->redirectWithError(
                 'manga/update/' . rawurlencode($slug) . '/' . $numero,
                 'Erreur lors de la mise à jour'
@@ -656,6 +697,17 @@ class MangaController extends Controller
         }
 
         Session::forget(['errors', 'old']);
+
+        if ($this->isAjaxRequest())
+        {
+            Session::set('success', 'Manga mis à jour avec succès');
+
+            $this->jsonResponse([
+                'success' => true,
+                'redirect' => Functions::basePath() . 'manga/' . rawurlencode($slug) . '/' . $numero
+            ]);
+        }
+
         $this->redirectWithSuccess(
             'manga/' . rawurlencode($slug) . '/' . $numero,
             'Manga mis à jour avec succès'

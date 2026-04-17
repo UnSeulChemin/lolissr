@@ -9,6 +9,19 @@ import { initLinkPreloading } from './features/prefetch-links.js';
 import { initAjouterPage } from './pages/ajouter.js';
 import { initEditPage } from './pages/edit.js';
 
+function initFlashToast()
+{
+    if (!window.flashToast || !window.flashToast.message)
+    {
+        return;
+    }
+
+    showToast(
+        window.flashToast.message,
+        window.flashToast.type || 'success'
+    );
+}
+
 document.addEventListener('DOMContentLoaded', () =>
 {
     /* Core UI */
@@ -31,11 +44,5 @@ document.addEventListener('DOMContentLoaded', () =>
     initLiveSearch();
 
     /* Toast flash */
-    if (window.flashToast)
-    {
-        showToast(
-            window.flashToast.message,
-            window.flashToast.type
-        );
-    }
+    initFlashToast();
 });

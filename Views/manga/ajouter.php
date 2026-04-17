@@ -167,5 +167,3 @@ $old = Session::get('old', []);
 </section>
 
 <?php Session::forget(['errors', 'old']); ?>
-
-<script type="module" src="<?= $basePath; ?>public/js/pages/ajouter.js"></script>
