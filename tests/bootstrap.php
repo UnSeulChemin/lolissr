@@ -60,6 +60,48 @@ $exportEnabled = $config['exportEnabled'];
 
 /*
 |--------------------------------------------------------------------------
+| CLEAN TMP UPLOADS
+|--------------------------------------------------------------------------
+*/
+
+function cleanTmpUploads(): void
+{
+    $dir = __DIR__ . '/tmp-uploads';
+
+    // crée le dossier si absent
+    if (!is_dir($dir))
+    {
+        mkdir($dir, 0777, true);
+        return;
+    }
+
+    // supprime tous les fichiers
+    $files = glob($dir . '/*');
+
+    if ($files === false)
+    {
+        return;
+    }
+
+    foreach ($files as $file)
+    {
+        if (is_file($file))
+        {
+            unlink($file);
+        }
+    }
+}
+
+/*
+|--------------------------------------------------------------------------
+| LANCEMENT NETTOYAGE
+|--------------------------------------------------------------------------
+*/
+
+cleanTmpUploads();
+
+/*
+|--------------------------------------------------------------------------
 | COULEURS TERMINAL
 |--------------------------------------------------------------------------
 */

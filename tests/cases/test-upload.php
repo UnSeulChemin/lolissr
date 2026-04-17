@@ -37,16 +37,10 @@ if ($testPostAjouter)
         {
             $tmpFile = ROOT . '/tests/tmp-valid.jpg';
             $uploadDir = ROOT . '/tests/tmp-uploads';
-            $expectedFile = $uploadDir . '/test-upload-999.jpg';
 
             if (!is_dir($uploadDir))
             {
                 mkdir($uploadDir, 0777, true);
-            }
-
-            if (is_file($expectedFile))
-            {
-                unlink($expectedFile);
             }
 
             createValidJpeg($tmpFile);
@@ -61,7 +55,7 @@ if ($testPostAjouter)
                 ],
                 [
                     'image' => [
-                        'filename' => 'test.jpg',
+                        'filename' => 'valid.jpg',
                         'path' => $tmpFile,
                         'type' => 'image/jpeg',
                     ]
@@ -90,13 +84,27 @@ if ($testPostAjouter)
                 $response['status'] === 200
                 && is_array($json)
                 && isset($json['success'])
-                && $json['success'] === true;
+                && $json['success'] === true
+                && isset($json['file'])
+                && is_string($json['file'])
+                && $json['file'] !== '';
 
-            $okFile = is_file($expectedFile);
+            $fileExists = false;
+            $returnedFile = '';
+
+            if ($okResponse)
+            {
+                $returnedFile = $json['file'];
+                $expectedPath = $uploadDir . '/' . $returnedFile;
+                $fileExists = is_file($expectedPath);
+            }
 
             return [
-                'ok' => $okResponse && $okFile,
-                'message' => 'status ' . $response['status'] . ' | fichier: ' . ($okFile ? 'OK' : 'absent'),
+                'ok' => $okResponse && $fileExists,
+                'message' => 'status ' . $response['status']
+                    . ' | fichier: '
+                    . ($fileExists ? 'présent' : 'absent')
+                    . ($returnedFile !== '' ? ' (' . $returnedFile . ')' : ''),
             ];
         }
 
