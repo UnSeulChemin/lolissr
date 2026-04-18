@@ -372,11 +372,11 @@ class MangaController extends Controller
     public function modifier(string $slug, string $numero): void
     {
         $requestedSlug = trim($slug);
-        $normalizedSlug = Functions::normalizeSlug($slug);
+        $normalizedSlug = Functions::normalizeSlug($requestedSlug);
         $numero = (int) $numero;
 
-        $mangaModel = $this->mangaModel();
-        $manga = $mangaModel->findOneBySlugAndNumero($normalizedSlug, $numero);
+        $manga = $this->mangaModel()
+            ->findOneBySlugAndNumero($normalizedSlug, $numero);
 
         if (!$manga)
         {
@@ -384,12 +384,12 @@ class MangaController extends Controller
             return;
         }
 
-        $canonicalSlug = Functions::normalizeSlug($manga->slug);
+        $canonicalSlug = Functions::normalizeSlug((string) $manga->slug);
 
         $this->redirectToCanonicalUrl(
             $requestedSlug,
             $canonicalSlug,
-            'manga/modifier/',
+            'manga/update/',
             (int) $manga->numero
         );
 
@@ -790,7 +790,7 @@ class MangaController extends Controller
 
         if ($requestedSlug !== $canonicalSlug)
         {
-            $redirect = Functions::basePath() . '/manga/modifier/' . rawurlencode($canonicalSlug) . '/' . $numero;
+            $redirect = Functions::basePath() . 'manga/update/' . rawurlencode($canonicalSlug) . '/' . $numero;
 
             if ($this->isAjaxRequest())
             {
@@ -844,7 +844,7 @@ class MangaController extends Controller
             }
 
             $this->redirectWithValidationErrors(
-                'manga/modifier/' . rawurlencode($slug) . '/' . $numero,
+                'manga/update/' . rawurlencode($slug) . '/' . $numero,
                 $validator->errors()
             );
             return;
@@ -889,7 +889,7 @@ class MangaController extends Controller
             }
 
             $this->redirectWithError(
-                'manga/modifier/' . rawurlencode($slug) . '/' . $numero,
+                'manga/update/' . rawurlencode($slug) . '/' . $numero,
                 'Erreur lors de la mise à jour'
             );
             return;

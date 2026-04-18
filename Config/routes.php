@@ -53,7 +53,7 @@ return function ($router)
     $router->get('/manga/ajouter', 'MangaController@ajouter');
 
     /* Modifier */
-    $router->get('/manga/modifier/{slug}/{numero}', 'MangaController@modifier');
+    $router->get('/manga/update/{slug}/{numero}', 'MangaController@modifier');
 
 
     /*
@@ -63,7 +63,7 @@ return function ($router)
     */
 
     $router->post('/manga/ajouter', 'MangaController@ajouterTraitement');
-    $router->post('/manga/modifier/{slug}/{numero}', 'MangaController@update');
+    $router->post('/manga/update/{slug}/{numero}', 'MangaController@update');
 
     /* Update note AJAX */
     $router->post('/manga/ajax/update-note/{slug}/{numero}', 'MangaController@ajaxUpdateNote');

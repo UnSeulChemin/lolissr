@@ -98,7 +98,7 @@
             <div class="detail-actions">
                 <a
                     class="form-submit"
-                    href="<?= $basePath; ?>manga/modifier/<?= rawurlencode($manga->slug) ?>/<?= (int) $manga->numero ?>">
+                    href="<?= $basePath; ?>manga/update/<?= rawurlencode($manga->slug) ?>/<?= (int) $manga->numero ?>">
                     Modifier
                 </a>
             </div>
