@@ -70,6 +70,9 @@ return [
     'testPostUpdate' =>
         $testsEnabled && (bool) Functions::env('TEST_POST_UPDATE', true),
 
+    'testAjaxUpdate' =>
+        $testsEnabled && (bool) Functions::env('TEST_AJAX_UPDATE', false),
+
     'testUploadDuplicateSlugNumero' =>
         $testsEnabled && (bool) Functions::env('TEST_UPLOAD_DUPLICATE_SLUG_NUMERO', true),
 

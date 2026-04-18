@@ -64,6 +64,7 @@ $casesDirectory = $config['casesDirectory'];
 $fixturesDirectory = $config['fixturesDirectory'];
 $tmpUploadsDirectory = $config['tmpUploadsDirectory'];
 $exportDirectory = $config['exportDirectory'];
+$testAjaxUpdate = (bool) $config['testAjaxUpdate'];
 
 $testCanonicalRedirect = (bool) $config['testCanonicalRedirect'];
 $testPostAjouter = (bool) $config['testPostAjouter'];
