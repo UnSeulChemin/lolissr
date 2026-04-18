@@ -1,0 +1,128 @@
+LoliSSR Test Report
+========================================================================
+Date: 2026-04-18 07:36:40
+Base URL: http://localhost/lolissr
+Slug: one-piece
+Numero: 1
+========================================================================
+
+
+════════════════════════════════════════════════════════════════════════
+  TESTS LOLISSR
+════════════════════════════════════════════════════════════════════════
+
+
+▶ Canonical
+──────────────────────────────────────────────────────
+✅ OK   Redirect canonique série -> /manga/serie/One-Piece (301 | 23,38 ms)
+✅ OK   Redirect canonique tome -> /manga/One-Piece/1 (301 | 50,37 ms)
+✅ OK   Redirect canonique modifier -> /manga/update/One-Piece/1 (301 | 48,08 ms)
+
+▶ Erreurs
+──────────────────────────────────────────────────────
+✅ OK   Série inexistante -> /manga/serie/slug-inexistante-test (404 | 47,85 ms)
+✅ OK   Détail inexistant -> /manga/slug-inexistant-test/999999 (404 | 46,86 ms)
+
+▶ Pagination
+──────────────────────────────────────────────────────
+✅ OK   Collection page 2 -> /manga/collection/page/2 (200 | 54,73 ms)
+✅ OK   Collection page 0 refusée -> /manga/collection/page/0 (404 | 43,89 ms)
+✅ OK   Collection page négative refusée -> /manga/collection/page/-1 (404 | 35,94 ms)
+✅ OK   Collection page très haute refusée -> /manga/collection/page/9999 (404 | 44,13 ms)
+✅ OK   Collection AJAX page 0 refusée -> /manga/collection-ajax/page/0 (404 | 53,59 ms)
+✅ OK   Collection AJAX page négative refusée -> /manga/collection-ajax/page/-1 (404 | 52,10 ms)
+✅ OK   Collection AJAX page très haute refusée -> /manga/collection-ajax/page/9999 (404 | 31,51 ms)
+
+▶ Smoke
+──────────────────────────────────────────────────────
+✅ OK   Accueil -> / (200 | 59,21 ms)
+✅ OK   Dashboard manga -> /manga (200 | 19,81 ms)
+✅ OK   Collection -> /manga/collection (200 | 39,35 ms)
+✅ OK   Recherche -> /manga/recherche/one-piece (200 | 68,71 ms)
+✅ OK   Ajouter -> /manga/ajouter (200 | 9,04 ms)
+✅ OK   Page lien -> /manga/lien (200 | 15,49 ms)
+✅ OK   Série existante -> /manga/serie/one-piece (200 | 39,32 ms)
+✅ OK   Tome existant -> /manga/one-piece/1 (200 | 30,97 ms)
+✅ OK   Page modifier -> /manga/update/one-piece/1 (200 | 49,69 ms)
+
+════════════════════════════════════════════════════════════════════════
+  CHECKS COMPLÉMENTAIRES
+════════════════════════════════════════════════════════════════════════
+
+
+▶ AJAX
+──────────────────────────────────────────────────────
+✅ OK   GET détail contient hooks AJAX notes (hooks AJAX trouvés | 57,61 ms)
+✅ OK   GET search AJAX limité à 6 résultats max (résultats: 6 | 33,01 ms)
+✅ OK   GET search AJAX vide retourne JSON vide (status 200 | résultat vide attendu | 6,90 ms)
+
+▶ Pagination
+──────────────────────────────────────────────────────
+✅ OK   Collection page 1 contient du contenu (contenu détecté | 56,41 ms)
+✅ OK   Collection page 2 contient du contenu (contenu détecté | 18,25 ms)
+✅ OK   Collection page 2 différente de la page 1 (les pages diffèrent | 94,84 ms)
+✅ OK   Collection page très haute retourne bien 404 (404 propre | 47,74 ms)
+✅ OK   Collection AJAX page 1 contient du contenu (contenu AJAX détecté | 38,33 ms)
+
+▶ Smoke HTML
+──────────────────────────────────────────────────────
+✅ OK   Detail a un title (Manga | One Piece | 45,90 ms)
+✅ OK   Detail contient une image (img trouvée | 29,71 ms)
+✅ OK   Collection contient plusieurs liens (21 lien(s) | 55,96 ms)
+
+════════════════════════════════════════════════════════════════════════
+  TESTS POST
+════════════════════════════════════════════════════════════════════════
+
+
+▶ AJAX
+──────────────────────────────────────────────────────
+✅ OK   POST ajouter validation AJAX invalide (status 422 | json erreur reçu | 16,55 ms)
+✅ OK   POST ajouter body JSON non supporté (status 422 | body JSON non supporté | 16,28 ms)
+✅ OK   GET ajax update-note refusé en 405 (status 405 | GET refusé | 16,04 ms)
+✅ OK   POST ajax update note manga introuvable (status 404 | manga introuvable | 45,09 ms)
+✅ OK   POST update AJAX URL non canonique (status 409 | URL non canonique | 32,43 ms)
+✅ OK   POST ajax update note validation invalide (status 422 | validation AJAX invalide | 29,07 ms)
+✅ OK   POST ajax update note succès (status 200 | update AJAX succès | 30,48 ms)
+✅ OK   POST update AJAX manga introuvable (status 404 | update introuvable | 40,14 ms)
+
+▶ Update
+──────────────────────────────────────────────────────
+✅ OK   Update notes valide (status 200 | 52,00 ms)
+✅ OK   Update invalide (note > 5) (status 422 | 52,16 ms)
+✅ OK   Update slug non canonique (status 409 | 43,47 ms)
+
+▶ Upload
+──────────────────────────────────────────────────────
+✅ OK   Upload image valide (status 200 | fichier: présent (test-upload-69e33488b3f0a272749605-999.jpg) | 53,54 ms)
+✅ OK   Refuse doublon slug + numero (status 409 | doublon détecté | 107,98 ms)
+✅ OK   Refuse image invalide (status 422 | image invalide refusée | 26,61 ms)
+✅ OK   Refuse fichier trop volumineux (status 422 | taille max: non détectée | 38,90 ms)
+
+════════════════════════════════════════════════════════════════════════
+  RÉSUMÉ PAR CATÉGORIE
+════════════════════════════════════════════════════════════════════════
+
+Canonical              OK: 3   FAIL: 0   WARN: 0   TOTAL: 3   TIME: 121,83 ms
+Erreurs                OK: 2   FAIL: 0   WARN: 0   TOTAL: 2   TIME: 94,72 ms
+Pagination             OK: 12   FAIL: 0   WARN: 0   TOTAL: 12   TIME: 571,46 ms
+Smoke                  OK: 9   FAIL: 0   WARN: 0   TOTAL: 9   TIME: 331,59 ms
+AJAX                   OK: 11   FAIL: 0   WARN: 0   TOTAL: 11   TIME: 323,60 ms
+Smoke HTML             OK: 3   FAIL: 0   WARN: 0   TOTAL: 3   TIME: 131,57 ms
+Update                 OK: 3   FAIL: 0   WARN: 0   TOTAL: 3   TIME: 147,63 ms
+Upload                 OK: 4   FAIL: 0   WARN: 0   TOTAL: 4   TIME: 227,04 ms
+
+════════════════════════════════════════════════════════════════════════
+  RÉSUMÉ FINAL
+════════════════════════════════════════════════════════════════════════
+
+────────────────────────────────────────────────────────────────────────
+Tests exécutés : 47
+Succès         : 47
+Échecs         : 0
+Warnings       : 0
+Temps cumulé   : 1 949,43 ms
+Temps global   : 1 965,01 ms
+────────────────────────────────────────────────────────────────────────
+🏆 SUITE VALIDÉE
+État global : nickel, tout est vert.
