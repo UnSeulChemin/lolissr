@@ -38,7 +38,9 @@ $currentCategory = null;
 
 foreach ($tests as $test)
 {
-    $category = $test['category'];
+    $category = (string) ($test['category'] ?? 'Sans catégorie');
+    $label = (string) ($test['label'] ?? 'Test sans label');
+    $path = (string) ($test['path'] ?? '/');
 
     if ($currentCategory !== $category)
     {
@@ -48,24 +50,25 @@ foreach ($tests as $test)
 
     $result = runGetTest($base, $test);
     $duration = (float) ($result['duration'] ?? 0.0);
-    $testUrl = rtrim($base, '/') . '/' . ltrim($test['path'], '/');
+    $message = (string) ($result['message'] ?? '');
+    $testUrl = rtrim($base, '/') . '/' . ltrim($path, '/');
 
     if (!empty($result['ok']))
     {
-        printOk($test['label'] . ' -> ' . $test['path'], (string) $result['message'], $duration);
+        printOk($label . ' -> ' . $path, $message, $duration);
         addResult($stats, $category, 'success', $duration);
-        recordResult('success', $category, $test['label'] . ' -> ' . $test['path'], (string) $result['message'], $duration, $testUrl);
+        recordResult('success', $category, $label . ' -> ' . $path, $message, $duration, $testUrl);
         continue;
     }
 
-    printFail($test['label'] . ' -> ' . $test['path'], (string) $result['message'], $duration);
+    printFail($label . ' -> ' . $path, $message, $duration);
     addResult($stats, $category, 'fail', $duration);
-    recordResult('fail', $category, $test['label'] . ' -> ' . $test['path'], (string) $result['message'], $duration, $testUrl);
+    recordResult('fail', $category, $label . ' -> ' . $path, $message, $duration, $testUrl);
 
     $failures[] = [
         'category' => $category,
-        'label' => $test['label'],
-        'message' => (string) $result['message'],
+        'label' => $label,
+        'message' => $message,
         'duration' => $duration,
         'url' => $testUrl,
     ];
@@ -83,7 +86,8 @@ $currentCategory = null;
 
 foreach ($htmlChecks as $check)
 {
-    $category = $check['category'];
+    $category = (string) ($check['category'] ?? 'Sans catégorie');
+    $label = (string) ($check['label'] ?? 'Check sans label');
 
     if ($currentCategory !== $category)
     {
@@ -93,28 +97,46 @@ foreach ($htmlChecks as $check)
 
     $result = isset($check['callback']) && is_callable($check['callback'])
         ? runCallableCheck($check['callback'])
-        : ['ok' => false, 'message' => 'callback absente', 'duration' => 0.0];
+        : ['ok' => false, 'warn' => false, 'message' => 'callback absente', 'duration' => 0.0];
 
     $duration = (float) ($result['duration'] ?? 0.0);
     $ok = (bool) ($result['ok'] ?? false);
+    $warn = (bool) ($result['warn'] ?? false);
     $message = (string) ($result['message'] ?? '');
-    $checkUrl = $check['url'] ?? null;
+    $checkUrl = isset($check['url']) ? (string) $check['url'] : null;
 
-    if ($ok)
+    if ($warn)
     {
-        printOk($check['label'], $message, $duration);
-        addResult($stats, $category, 'success', $duration);
-        recordResult('success', $category, $check['label'], $message, $duration, $checkUrl);
+        printWarn($label, $message, $duration);
+        addResult($stats, $category, 'warn', $duration);
+        recordResult('warn', $category, $label, $message, $duration, $checkUrl);
+
+        $warnings[] = [
+            'category' => $category,
+            'label' => $label,
+            'message' => $message,
+            'duration' => $duration,
+            'url' => $checkUrl,
+        ];
+
         continue;
     }
 
-    printFail($check['label'], $message, $duration);
+    if ($ok)
+    {
+        printOk($label, $message, $duration);
+        addResult($stats, $category, 'success', $duration);
+        recordResult('success', $category, $label, $message, $duration, $checkUrl);
+        continue;
+    }
+
+    printFail($label, $message, $duration);
     addResult($stats, $category, 'fail', $duration);
-    recordResult('fail', $category, $check['label'], $message, $duration, $checkUrl);
+    recordResult('fail', $category, $label, $message, $duration, $checkUrl);
 
     $failures[] = [
         'category' => $category,
-        'label' => $check['label'],
+        'label' => $label,
         'message' => $message,
         'duration' => $duration,
         'url' => $checkUrl,
@@ -133,7 +155,8 @@ $currentCategory = null;
 
 foreach ($postChecks as $check)
 {
-    $category = $check['category'];
+    $category = (string) ($check['category'] ?? 'Sans catégorie');
+    $label = (string) ($check['label'] ?? 'Check sans label');
 
     if ($currentCategory !== $category)
     {
@@ -149,17 +172,17 @@ foreach ($postChecks as $check)
     $ok = (bool) ($result['ok'] ?? false);
     $warn = (bool) ($result['warn'] ?? false);
     $message = (string) ($result['message'] ?? '');
-    $checkUrl = $check['url'] ?? null;
+    $checkUrl = isset($check['url']) ? (string) $check['url'] : null;
 
     if ($warn)
     {
-        printWarn($check['label'], $message, $duration);
+        printWarn($label, $message, $duration);
         addResult($stats, $category, 'warn', $duration);
-        recordResult('warn', $category, $check['label'], $message, $duration, $checkUrl);
+        recordResult('warn', $category, $label, $message, $duration, $checkUrl);
 
         $warnings[] = [
             'category' => $category,
-            'label' => $check['label'],
+            'label' => $label,
             'message' => $message,
             'duration' => $duration,
             'url' => $checkUrl,
@@ -170,20 +193,20 @@ foreach ($postChecks as $check)
 
     if ($ok)
     {
-        printOk($check['label'], $message, $duration);
+        printOk($label, $message, $duration);
         addResult($stats, $category, 'success', $duration);
-        recordResult('success', $category, $check['label'], $message, $duration, $checkUrl);
+        recordResult('success', $category, $label, $message, $duration, $checkUrl);
 
         continue;
     }
 
-    printFail($check['label'], $message, $duration);
+    printFail($label, $message, $duration);
     addResult($stats, $category, 'fail', $duration);
-    recordResult('fail', $category, $check['label'], $message, $duration, $checkUrl);
+    recordResult('fail', $category, $label, $message, $duration, $checkUrl);
 
     $failures[] = [
         'category' => $category,
-        'label' => $check['label'],
+        'label' => $label,
         'message' => $message,
         'duration' => $duration,
         'url' => $checkUrl,
@@ -200,7 +223,7 @@ if (!empty($failures))
 {
     usort($failures, static function (array $a, array $b): int
     {
-        return $b['duration'] <=> $a['duration'];
+        return ((float) $b['duration']) <=> ((float) $a['duration']);
     });
 
     sectionTitle('FAILS TRIÉS');
@@ -208,9 +231,9 @@ if (!empty($failures))
     foreach ($failures as $failure)
     {
         printFail(
-            $failure['category'] . ' :: ' . $failure['label'],
-            $failure['message'],
-            $failure['duration']
+            (string) $failure['category'] . ' :: ' . (string) $failure['label'],
+            (string) $failure['message'],
+            (float) $failure['duration']
         );
     }
 }
@@ -225,17 +248,17 @@ sectionTitle('RÉSUMÉ PAR CATÉGORIE');
 
 foreach ($stats['categories'] as $category => $categoryStats)
 {
-    $line = str_pad($category, 22);
+    $line = str_pad((string) $category, 22);
     $line .= ' ';
-    $line .= color('OK: ' . $categoryStats['success'], C_GREEN . C_BOLD);
+    $line .= color('OK: ' . (int) ($categoryStats['success'] ?? 0), C_GREEN . C_BOLD);
     $line .= '   ';
-    $line .= color('FAIL: ' . $categoryStats['fail'], C_RED . C_BOLD);
+    $line .= color('FAIL: ' . (int) ($categoryStats['fail'] ?? 0), C_RED . C_BOLD);
     $line .= '   ';
-    $line .= color('WARN: ' . $categoryStats['warn'], C_YELLOW . C_BOLD);
+    $line .= color('WARN: ' . (int) ($categoryStats['warn'] ?? 0), C_YELLOW . C_BOLD);
     $line .= '   ';
-    $line .= color('TOTAL: ' . $categoryStats['total'], C_CYAN . C_BOLD);
+    $line .= color('TOTAL: ' . (int) ($categoryStats['total'] ?? 0), C_CYAN . C_BOLD);
     $line .= '   ';
-    $line .= color('TIME: ' . formatDuration($categoryStats['duration']), C_DIM);
+    $line .= color('TIME: ' . formatDuration((float) ($categoryStats['duration'] ?? 0.0)), C_DIM);
 
     outLine($line);
 }
@@ -252,15 +275,15 @@ $g = $stats['global'];
 $totalDuration = microtime(true) - $globalStart;
 
 outLine(color(line('─'), C_DIM));
-outLine(color('Tests exécutés : ', C_BOLD) . color((string) $g['total'], C_CYAN . C_BOLD));
-outLine(color('Succès         : ', C_BOLD) . color((string) $g['success'], C_GREEN . C_BOLD));
-outLine(color('Échecs         : ', C_BOLD) . color((string) $g['fail'], C_RED . C_BOLD));
-outLine(color('Warnings       : ', C_BOLD) . color((string) $g['warn'], C_YELLOW . C_BOLD));
-outLine(color('Temps cumulé   : ', C_BOLD) . color(formatDuration($g['duration']), C_DIM));
+outLine(color('Tests exécutés : ', C_BOLD) . color((string) ((int) ($g['total'] ?? 0)), C_CYAN . C_BOLD));
+outLine(color('Succès         : ', C_BOLD) . color((string) ((int) ($g['success'] ?? 0)), C_GREEN . C_BOLD));
+outLine(color('Échecs         : ', C_BOLD) . color((string) ((int) ($g['fail'] ?? 0)), C_RED . C_BOLD));
+outLine(color('Warnings       : ', C_BOLD) . color((string) ((int) ($g['warn'] ?? 0)), C_YELLOW . C_BOLD));
+outLine(color('Temps cumulé   : ', C_BOLD) . color(formatDuration((float) ($g['duration'] ?? 0.0)), C_DIM));
 outLine(color('Temps global   : ', C_BOLD) . color(formatDuration($totalDuration), C_DIM));
 outLine(color(line('─'), C_DIM));
 
-if ($g['fail'] === 0)
+if (((int) ($g['fail'] ?? 0)) === 0)
 {
     outLine(color('🏆 SUITE VALIDÉE', C_BG_GREEN . C_WHITE . C_BOLD));
 }
@@ -269,11 +292,11 @@ else
     outLine(color('💥 SUITE À CORRIGER', C_BG_RED . C_WHITE . C_BOLD));
 }
 
-if ($g['fail'] === 0 && $g['warn'] === 0)
+if (((int) ($g['fail'] ?? 0)) === 0 && ((int) ($g['warn'] ?? 0)) === 0)
 {
     outLine(color('État global : nickel, tout est vert.', C_GREEN . C_BOLD));
 }
-elseif ($g['fail'] === 0)
+elseif (((int) ($g['fail'] ?? 0)) === 0)
 {
     outLine(color('État global : stable, avec quelques tests skippés.', C_YELLOW . C_BOLD));
 }

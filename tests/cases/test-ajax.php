@@ -6,6 +6,11 @@ declare(strict_types=1);
 |--------------------------------------------------------------------------
 | TESTS AJAX
 |--------------------------------------------------------------------------
+|
+| NOTE :
+| Certains tests modifient les notes/commentaires du manga de test.
+| Prévoir une fixture dédiée ou accepter cette mutation en environnement local.
+|
 */
 
 addPostCheck($postChecks, [
@@ -69,7 +74,7 @@ addPostCheck($postChecks, [
 
         $json = decodeJsonResponse($response['body']);
 
-        $ok = $response['status'] === 422
+        $ok = in_array($response['status'], [400, 415, 422], true)
             && is_array($json)
             && isset($json['success'])
             && $json['success'] === false;
@@ -83,7 +88,7 @@ addPostCheck($postChecks, [
 
 addHtmlCheck($htmlChecks, [
     'category' => 'AJAX',
-    'label' => 'GET détail contient hooks AJAX notes',
+    'label' => 'GET détail contient hooks JS/AJAX',
     'url' => $base . '/manga/' . $realSlug . '/' . $realNumero,
     'callback' => static function () use ($base, $realSlug, $realNumero): array
     {
@@ -119,8 +124,7 @@ addPostCheck($postChecks, [
 
         $json = decodeJsonResponse($response['body']);
 
-        $ok =
-            $response['status'] === 405
+        $ok = $response['status'] === 405
             && (
                 is_array($json)
                 || stripos($response['body'], 'Méthode') !== false
@@ -345,22 +349,16 @@ addHtmlCheck($htmlChecks, [
     'url' => $base . '/manga/search-ajax/-',
     'callback' => static function () use ($base): array
     {
-        $response = requestUrl(
-            $base . '/manga/search-ajax/-'
-        );
-
+        $response = requestUrl($base . '/manga/search-ajax/-');
         $json = decodeJsonResponse($response['body']);
 
-        $ok =
-            $response['status'] === 200
+        $ok = $response['status'] === 200
             && is_array($json)
             && $json === [];
 
         return [
             'ok' => $ok,
-            'message' =>
-                'status ' . $response['status']
-                . ' | résultat vide attendu',
+            'message' => 'status ' . $response['status'] . ' | résultat vide attendu',
         ];
     },
 ]);

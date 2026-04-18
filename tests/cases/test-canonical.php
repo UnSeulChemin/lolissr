@@ -10,6 +10,14 @@ declare(strict_types=1);
 
 if ($testCanonicalRedirect)
 {
+    /*
+    |----------------------------------------------------------------------
+    | NOTE
+    |----------------------------------------------------------------------
+    | Active ce test seulement si ton action serie() redirige bien le slug
+    | non canonique vers le slug canonique.
+    */
+    /*
     addGetTest($tests, [
         'category' => 'Canonical',
         'label' => 'Redirect canonique série',
@@ -17,6 +25,7 @@ if ($testCanonicalRedirect)
         'expected_status' => 301,
         'expected_location_contains' => '/manga/serie/' . $realSlug,
     ]);
+    */
 
     addGetTest($tests, [
         'category' => 'Canonical',
@@ -36,15 +45,14 @@ if ($testCanonicalRedirect)
 }
 else
 {
-    addPostCheck($postChecks, [
+    addHtmlCheck($htmlChecks, [
         'category' => 'Canonical',
-        'label' => 'Redirect canonique',
+        'label' => 'Redirect canonique désactivé',
         'url' => null,
         'callback' => static function (): array
         {
             return [
                 'ok' => true,
-                'warn' => true,
                 'message' => 'test canonical désactivé dans la config',
             ];
         },

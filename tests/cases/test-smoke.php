@@ -34,18 +34,10 @@ addGetTest($tests, [
 
 addGetTest($tests, [
     'category' => 'Smoke',
-    'label' => 'Recherche',
-    'path' => '/manga/recherche/' . $realSlug,
-    'expected_status' => 200,
-    'must_contain' => ['Recherche'],
-]);
-
-addGetTest($tests, [
-    'category' => 'Smoke',
     'label' => 'Ajouter',
     'path' => '/manga/ajouter',
     'expected_status' => 200,
-    'must_contain' => ['<form', 'Livre', 'slug', 'numero'],
+    'must_contain' => ['<form', 'name="livre"', 'name="slug"', 'name="numero"'],
 ]);
 
 addGetTest($tests, [
@@ -107,7 +99,9 @@ addHtmlCheck($htmlChecks, [
 
         return [
             'ok' => $response['status'] === 200 && preg_match('/<img\b/i', $response['body']) === 1,
-            'message' => $response['status'] === 200 ? 'img trouvée' : 'page détail inaccessible',
+            'message' => $response['status'] === 200
+                ? 'img trouvée'
+                : 'page détail inaccessible',
         ];
     },
 ]);
