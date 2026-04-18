@@ -4,8 +4,8 @@
          colors="true">
 
     <testsuites>
-        <testsuite name="Application Tests">
-            <directory>tests</directory>
+        <testsuite name="Unit">
+            <directory>tests/unit</directory>
         </testsuite>
     </testsuites>
 

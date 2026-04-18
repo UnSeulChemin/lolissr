@@ -49,13 +49,17 @@ final class RouterTest extends TestCase
 
         $router->get('/manga/{slug}/{numero}', 'MangaController@show');
 
+        ob_start();
+
         try
         {
             $router->dispatch('/manga/one-piece/1', 'GET');
+            ob_end_clean();
             $this->assertTrue(true);
         }
         catch (\RuntimeException $exception)
         {
+            ob_end_clean();
             $this->fail(
                 'La route dynamique aurait dû matcher. Exception RuntimeException : '
                 . $exception->getMessage()
@@ -69,13 +73,17 @@ final class RouterTest extends TestCase
 
         $router->get('/manga/{slug}/{numero}', 'MangaController@show');
 
+        ob_start();
+
         try
         {
             $router->dispatch('/manga/one-piece/1/', 'GET');
+            ob_end_clean();
             $this->assertTrue(true);
         }
         catch (\RuntimeException $exception)
         {
+            ob_end_clean();
             $this->fail(
                 'La route avec slash final aurait dû matcher. Exception RuntimeException : '
                 . $exception->getMessage()
