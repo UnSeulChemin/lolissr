@@ -52,7 +52,7 @@ class MangaController extends Controller
      */
     protected function testUploadDirectory(): string
     {
-        $directory = trim((string) Functions::env('TEST_UPLOAD_DIR', 'tests/tmp-uploads'), '/\\');
+        $directory = trim((string) Functions::env('TEST_UPLOAD_DIR', 'tests/Http/tmp-uploads'), '/\\');
 
         return ROOT . '/' . $directory . '/';
     }
@@ -108,7 +108,7 @@ class MangaController extends Controller
             $location .= '/' . $numero;
         }
 
-        header('Location: ' . Functions::basePath() . '/' . $location, true, 301);
+        header('Location: ' . Functions::basePath() . $location, true, 301);
         exit;
     }
 
@@ -902,7 +902,7 @@ class MangaController extends Controller
             $this->jsonResponse([
                 'success' => true,
                 'message' => 'Manga mis à jour avec succès',
-                'redirect' => Functions::basePath() . '/manga/' . rawurlencode($slug) . '/' . $numero
+                'redirect' => Functions::basePath() . 'manga/' . rawurlencode($slug) . '/' . $numero
             ]);
             return;
         }
@@ -952,7 +952,7 @@ class MangaController extends Controller
             $this->jsonResponse([
                 'success' => false,
                 'message' => 'URL non canonique',
-                'redirect' => Functions::basePath() . '/manga/' . rawurlencode($canonicalSlug) . '/' . $numero
+                'redirect' => Functions::basePath() . 'manga/' . rawurlencode($canonicalSlug) . '/' . $numero
             ], 409);
             return;
         }

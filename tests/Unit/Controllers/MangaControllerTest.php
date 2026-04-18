@@ -798,7 +798,7 @@ final class MangaControllerTest extends TestCase
         $this->assertSame(409, $controller->jsonStatus);
         $this->assertFalse($controller->jsonData['success']);
         $this->assertSame('URL non canonique', $controller->jsonData['message']);
-        $this->assertSame('/lolissr//manga/one-piece/1', $controller->jsonData['redirect']);
+        $this->assertSame('/lolissr/manga/one-piece/1', $controller->jsonData['redirect']);
     }
 
     public function testAjaxUpdateNoteReturns500WhenUpdateFails(): void
@@ -1078,7 +1078,7 @@ final class TestableMangaController extends MangaController
         return [
             'thumbnail' => 'one-piece-01',
             'extension' => 'jpg',
-            'destination' => ROOT . '/tests/tmp-uploads/one-piece-01.jpg'
+            'destination' => ROOT . '/tests/Http/tmp-uploads/one-piece-01.jpg'
         ];
     }
 }
