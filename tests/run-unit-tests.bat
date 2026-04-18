@@ -1,25 +1,42 @@
 @echo off
 title LoliSSR - Tests UNITAIRES
-color 0F
+cls
 
+cd /d "%~dp0\.."
+
+echo.
 echo ================================
 echo   LoliSSR - Tests UNITAIRES
 echo ================================
 echo.
 
-REM Se placer dans le dossier racine du projet
-cd /d "%~dp0\.."
+php -v >nul 2>&1
+if errorlevel 1 (
+    echo [ERREUR] PHP non detecte dans le PATH.
+    echo.
+    pause
+    exit /b 1
+)
+
+if not exist "vendor\bin\phpunit.bat" (
+    echo [ERREUR] PHPUnit introuvable : vendor\bin\phpunit.bat
+    echo.
+    echo Verifie que Composer a bien installe les dependances.
+    echo.
+    pause
+    exit /b 1
+)
+
+if not exist "phpunit.xml" (
+    echo [ERREUR] phpunit.xml introuvable a la racine du projet.
+    echo.
+    pause
+    exit /b 1
+)
 
 echo Dossier courant :
 cd
 echo.
-
-REM Verification PHPUnit
-if not exist vendor\bin\phpunit.bat (
-    echo [ERREUR] PHPUnit introuvable dans vendor\bin
-    pause
-    exit /b 1
-)
 
 echo Lancement des tests Unit...
 echo.
@@ -28,6 +45,8 @@ call vendor\bin\phpunit.bat --testsuite Unit
 
 echo.
 echo ================================
-echo   Fin des tests
+echo        Fin des tests
 echo ================================
+echo.
+
 pause
