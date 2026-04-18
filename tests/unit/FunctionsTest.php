@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-use PHPUnit\Framework\TestCase;
 use App\Core\Functions;
+use PHPUnit\Framework\TestCase;
 
 final class FunctionsTest extends TestCase
 {
     private array $serverBackup = [];
     private array $envBackup = [];
     private array $filesBackup = [];
+    private array $postBackup = [];
 
     private string|false $appBasePathBackup = false;
     private string|false $appNameBackup = false;
@@ -22,6 +23,7 @@ final class FunctionsTest extends TestCase
         $this->serverBackup = $_SERVER;
         $this->envBackup = $_ENV;
         $this->filesBackup = $_FILES;
+        $this->postBackup = $_POST;
 
         $this->appBasePathBackup = getenv('APP_BASE_PATH');
         $this->appNameBackup = getenv('APP_NAME');
@@ -30,6 +32,7 @@ final class FunctionsTest extends TestCase
         $_SERVER = [];
         $_ENV = [];
         $_FILES = [];
+        $_POST = [];
 
         putenv('APP_BASE_PATH');
         putenv('APP_NAME');
@@ -43,6 +46,7 @@ final class FunctionsTest extends TestCase
         $_SERVER = $this->serverBackup;
         $_ENV = $this->envBackup;
         $_FILES = $this->filesBackup;
+        $_POST = $this->postBackup;
 
         $this->restoreEnvVar('APP_BASE_PATH', $this->appBasePathBackup);
         $this->restoreEnvVar('APP_NAME', $this->appNameBackup);
@@ -125,6 +129,75 @@ final class FunctionsTest extends TestCase
         $this->assertFalse(Functions::isPost());
     }
 
+    public function testPostStringReturnsTrimmedValue(): void
+    {
+        $_POST['livre'] = '  One Piece  ';
+
+        $this->assertSame('One Piece', Functions::postString('livre'));
+    }
+
+    public function testPostStringReturnsEmptyStringWhenMissing(): void
+    {
+        $this->assertSame('', Functions::postString('livre'));
+    }
+
+    public function testPostIntReturnsIntegerValue(): void
+    {
+        $_POST['numero'] = '12';
+
+        $this->assertSame(12, Functions::postInt('numero'));
+    }
+
+    public function testPostIntReturnsZeroWhenMissing(): void
+    {
+        $this->assertSame(0, Functions::postInt('numero'));
+    }
+
+    public function testPostNullableStringReturnsNullWhenMissing(): void
+    {
+        $this->assertNull(Functions::postNullableString('commentaire'));
+    }
+
+    public function testPostNullableStringReturnsNullWhenEmpty(): void
+    {
+        $_POST['commentaire'] = '   ';
+
+        $this->assertNull(Functions::postNullableString('commentaire'));
+    }
+
+    public function testPostNullableStringReturnsTrimmedValue(): void
+    {
+        $_POST['commentaire'] = '  Très bon tome  ';
+
+        $this->assertSame('Très bon tome', Functions::postNullableString('commentaire'));
+    }
+
+    public function testNormalizeSlugReturnsNormalizedValue(): void
+    {
+        $this->assertSame('one-piece', Functions::normalizeSlug('One Piece'));
+    }
+
+    public function testNormalizeSlugTrimsAndLowercasesValue(): void
+    {
+        $this->assertSame(
+            'dragon-ball-super',
+            Functions::normalizeSlug('  Dragon Ball Super  ')
+        );
+    }
+
+    public function testNormalizeCommentaireReturnsNullWhenValueIsEmpty(): void
+    {
+        $this->assertNull(Functions::normalizeCommentaire('   '));
+    }
+
+    public function testNormalizeCommentaireReturnsTrimmedValue(): void
+    {
+        $this->assertSame(
+            'Excellent tome',
+            Functions::normalizeCommentaire('  Excellent tome  ')
+        );
+    }
+
     public function testFileExistsReturnsTrueWhenFileIsPresent(): void
     {
         $_FILES['image'] = [
@@ -156,6 +229,11 @@ final class FunctionsTest extends TestCase
         $this->assertSame(UPLOAD_ERR_NO_FILE, Functions::fileError('image'));
     }
 
+    public function testFileErrorReturnsNullWhenFileDoesNotExist(): void
+    {
+        $this->assertNull(Functions::fileError('image'));
+    }
+
     public function testFileExtensionReturnsLowercaseExtension(): void
     {
         $_FILES['image'] = [
@@ -169,6 +247,11 @@ final class FunctionsTest extends TestCase
         $this->assertSame('webp', Functions::fileExtension('image'));
     }
 
+    public function testFileExtensionReturnsNullWhenFileDoesNotExist(): void
+    {
+        $this->assertNull(Functions::fileExtension('image'));
+    }
+
     public function testFileTmpReturnsTmpPath(): void
     {
         $_FILES['image'] = [
@@ -180,5 +263,54 @@ final class FunctionsTest extends TestCase
         ];
 
         $this->assertSame('C:/wamp64/tmp/php999.tmp', Functions::fileTmp('image'));
+    }
+
+    public function testFileTmpReturnsNullWhenFileDoesNotExist(): void
+    {
+        $this->assertNull(Functions::fileTmp('image'));
+    }
+
+    public function testBuildThumbnailNameReturnsExpectedFormat(): void
+    {
+        $this->assertSame('one-piece-01', Functions::buildThumbnailName('One Piece', 1));
+    }
+
+    public function testBuildThumbnailNamePadsNumeroWithTwoDigits(): void
+    {
+        $this->assertSame('naruto-09', Functions::buildThumbnailName('Naruto', 9));
+    }
+
+    public function testBuildThumbnailNameReturnsEmptyStringWhenNumeroIsInvalid(): void
+    {
+        $this->assertSame('', Functions::buildThumbnailName('One Piece', 0));
+    }
+
+    public function testBuildThumbnailNameReturnsEmptyStringWhenLivreIsInvalid(): void
+    {
+        $this->assertSame('', Functions::buildThumbnailName('', 1));
+    }
+
+    public function testUploadAllowedExtensionsReturnsArray(): void
+    {
+        $result = Functions::uploadAllowedExtensions();
+
+        $this->assertIsArray($result);
+        $this->assertNotEmpty($result);
+    }
+
+    public function testUploadAllowedMimeTypesReturnsArray(): void
+    {
+        $result = Functions::uploadAllowedMimeTypes();
+
+        $this->assertIsArray($result);
+        $this->assertNotEmpty($result);
+    }
+
+    public function testUploadMaxSizeReturnsPositiveInteger(): void
+    {
+        $result = Functions::uploadMaxSize();
+
+        $this->assertIsInt($result);
+        $this->assertGreaterThan(0, $result);
     }
 }
