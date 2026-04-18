@@ -5,7 +5,7 @@
 
     <testsuites>
         <testsuite name="Unit">
-            <directory>tests/unit</directory>
+            <directory>tests/Unit</directory>
         </testsuite>
     </testsuites>
 
@@ -16,6 +16,12 @@
             <directory suffix=".php">Core</directory>
             <directory suffix=".php">Models</directory>
         </include>
+
+        <exclude>
+            <directory>Core/Save</directory>
+            <directory>Storage</directory>
+            <directory>public</directory>
+        </exclude>
     </source>
 
 </phpunit>
