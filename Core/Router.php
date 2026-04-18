@@ -30,6 +30,14 @@ class Router
     }
 
     /**
+     * Retourne les routes enregistrées.
+     */
+    public function getRoutes(): array
+    {
+        return $this->routes;
+    }
+
+    /**
      * Enregistre une route.
      */
     private function addRoute(string $method, string $path, string $action): void
