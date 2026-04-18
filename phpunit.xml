@@ -24,4 +24,10 @@
         </exclude>
     </source>
 
+    <coverage>
+        <report>
+            <html outputDirectory="tests/reports/coverage"/>
+        </report>
+    </coverage>
+
 </phpunit>

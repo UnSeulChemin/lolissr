@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-require __DIR__ . '/http/bootstrap-runner.php';
+require __DIR__ . '/Http/bootstrap-runner.php';
 
 /*
 |--------------------------------------------------------------------------
@@ -10,7 +10,7 @@ require __DIR__ . '/http/bootstrap-runner.php';
 |--------------------------------------------------------------------------
 */
 
-$caseFiles = glob(__DIR__ . '/cases/*.php') ?: [];
+$caseFiles = glob($casesDirectory . '/*.php') ?: [];
 sort($caseFiles);
 
 foreach ($caseFiles as $caseFile)
@@ -196,7 +196,6 @@ foreach ($postChecks as $check)
         printOk($label, $message, $duration);
         addResult($stats, $category, 'success', $duration);
         recordResult('success', $category, $label, $message, $duration, $checkUrl);
-
         continue;
     }
 
@@ -313,12 +312,7 @@ else
 
 if ($exportEnabled)
 {
-    if (!is_dir($exportDirectory) && !mkdir($exportDirectory, 0777, true) && !is_dir($exportDirectory))
-    {
-        outLine();
-        outLine(color('❌ Impossible de créer le dossier de rapport : ' . $exportDirectory, C_RED . C_BOLD));
-        exit(1);
-    }
+    ensureDirectory($exportDirectory);
 
     $timestamp = date('Y-m-d_H-i-s');
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /*
 |--------------------------------------------------------------------------
-| TEST UPDATE
+| TESTS UPDATE
 |--------------------------------------------------------------------------
 |
 | Test POST /manga/update/{slug}/{numero}
@@ -12,7 +12,7 @@ declare(strict_types=1);
 | Vérifie :
 | - update valide
 | - validation erreur
-| - réponse AJAX correcte
+| - slug non canonique
 |
 */
 
@@ -60,9 +60,9 @@ if ($testPostUpdate)
             $ok =
                 $response['status'] === 200
                 && is_array($json)
-                && isset($json['success'])
-                && $json['success'] === true
-                && isset($json['message']);
+                && ($json['success'] ?? null) === true
+                && isset($json['message'])
+                && is_string($json['message']);
 
             return [
                 'ok' => $ok,
@@ -74,7 +74,7 @@ if ($testPostUpdate)
 
     /*
     |--------------------------------------------------------------------------
-    | Update invalide (note hors limite)
+    | Update invalide
     |--------------------------------------------------------------------------
     */
 
@@ -113,9 +113,9 @@ if ($testPostUpdate)
             $ok =
                 $response['status'] === 422
                 && is_array($json)
-                && isset($json['success'])
-                && $json['success'] === false
-                && isset($json['errors']);
+                && ($json['success'] ?? null) === false
+                && isset($json['errors'])
+                && is_array($json['errors']);
 
             return [
                 'ok' => $ok,
@@ -166,11 +166,13 @@ if ($testPostUpdate)
             $ok =
                 $response['status'] === 409
                 && is_array($json)
-                && isset($json['success'])
-                && $json['success'] === false
+                && ($json['success'] ?? null) === false
                 && isset($json['redirect'])
                 && is_string($json['redirect'])
-                && str_contains($json['redirect'], '/manga/update/' . rawurlencode($realSlug) . '/' . $realNumero);
+                && str_contains(
+                    $json['redirect'],
+                    '/manga/update/' . rawurlencode($realSlug) . '/' . $realNumero
+                );
 
             return [
                 'ok' => $ok,

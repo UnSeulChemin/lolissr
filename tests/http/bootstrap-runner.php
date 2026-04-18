@@ -31,7 +31,8 @@ if (is_file($envFile))
             $line === ''
             || str_starts_with($line, '#')
             || !str_contains($line, '=')
-        ) {
+        )
+        {
             continue;
         }
 
@@ -59,6 +60,11 @@ $realSlug = $config['realSlug'];
 $realNumero = (int) $config['realNumero'];
 $nonCanonicalSlug = $config['nonCanonicalSlug'];
 
+$casesDirectory = $config['casesDirectory'];
+$fixturesDirectory = $config['fixturesDirectory'];
+$tmpUploadsDirectory = $config['tmpUploadsDirectory'];
+$exportDirectory = $config['exportDirectory'];
+
 $testCanonicalRedirect = (bool) $config['testCanonicalRedirect'];
 $testPostAjouter = (bool) $config['testPostAjouter'];
 $testPostUpdate = (bool) $config['testPostUpdate'];
@@ -66,30 +72,35 @@ $testUploadDuplicateSlugNumero = (bool) $config['testUploadDuplicateSlugNumero']
 $testUploadInvalidImage = (bool) $config['testUploadInvalidImage'];
 $testUploadMaxSize = (bool) $config['testUploadMaxSize'];
 
-$exportDirectory = $config['exportDirectory'];
 $exportEnabled = (bool) $config['exportEnabled'];
 
 /*
 |--------------------------------------------------------------------------
-| CLEAN TMP UPLOADS
+| HELPERS DOSSIERS
 |--------------------------------------------------------------------------
 */
 
-if (!function_exists('cleanTmpUploads'))
+if (!function_exists('ensureDirectory'))
 {
-    function cleanTmpUploads(): void
+    function ensureDirectory(string $dir): void
     {
-        $dir = ROOT . '/tests/tmp-uploads';
-
-        if (!is_dir($dir))
+        if (is_dir($dir))
         {
-            if (!mkdir($dir, 0777, true) && !is_dir($dir))
-            {
-                throw new RuntimeException('Impossible de créer le dossier tmp-uploads : ' . $dir);
-            }
-
             return;
         }
+
+        if (!mkdir($dir, 0777, true) && !is_dir($dir))
+        {
+            throw new RuntimeException('Impossible de créer le dossier : ' . $dir);
+        }
+    }
+}
+
+if (!function_exists('cleanTmpUploads'))
+{
+    function cleanTmpUploads(string $dir): void
+    {
+        ensureDirectory($dir);
 
         $files = glob($dir . '/*');
 
@@ -108,7 +119,9 @@ if (!function_exists('cleanTmpUploads'))
     }
 }
 
-cleanTmpUploads();
+ensureDirectory($exportDirectory);
+ensureDirectory($tmpUploadsDirectory);
+cleanTmpUploads($tmpUploadsDirectory);
 
 /*
 |--------------------------------------------------------------------------
@@ -338,6 +351,16 @@ if (!function_exists('recordResult'))
             'duration' => $duration,
             'url' => $url,
         ];
+    }
+}
+
+if (!function_exists('decodeJsonResponse'))
+{
+    function decodeJsonResponse(string $body): ?array
+    {
+        $json = json_decode($body, true);
+
+        return is_array($json) ? $json : null;
     }
 }
 

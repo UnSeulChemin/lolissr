@@ -10,23 +10,6 @@ declare(strict_types=1);
 
 if ($testCanonicalRedirect)
 {
-    /*
-    |----------------------------------------------------------------------
-    | NOTE
-    |----------------------------------------------------------------------
-    | Active ce test seulement si ton action serie() redirige bien le slug
-    | non canonique vers le slug canonique.
-    */
-    /*
-    addGetTest($tests, [
-        'category' => 'Canonical',
-        'label' => 'Redirect canonique série',
-        'path' => '/manga/serie/' . $nonCanonicalSlug,
-        'expected_status' => 301,
-        'expected_location_contains' => '/manga/serie/' . $realSlug,
-    ]);
-    */
-
     addGetTest($tests, [
         'category' => 'Canonical',
         'label' => 'Redirect canonique tome',

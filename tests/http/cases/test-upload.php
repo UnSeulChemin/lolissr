@@ -8,37 +8,56 @@ declare(strict_types=1);
 |--------------------------------------------------------------------------
 */
 
-function createValidJpeg(string $path, int $width = 10, int $height = 10): void
+if (!function_exists('createValidJpeg'))
 {
-    $image = imagecreatetruecolor($width, $height);
-
-    if ($image === false)
+    function createValidJpeg(string $path, int $width = 10, int $height = 10): void
     {
-        throw new RuntimeException('Impossible de créer une image JPEG de test.');
-    }
+        $image = imagecreatetruecolor($width, $height);
 
-    $background = imagecolorallocate($image, 255, 255, 255);
-    imagefill($image, 0, 0, $background);
+        if ($image === false)
+        {
+            throw new RuntimeException('Impossible de créer une image JPEG de test.');
+        }
 
-    imagejpeg($image, $path, 90);
-    imagedestroy($image);
-}
+        $background = imagecolorallocate($image, 255, 255, 255);
+        imagefill($image, 0, 0, $background);
 
-function createInvalidTextFile(string $path): void
-{
-    $written = file_put_contents($path, "ceci n'est pas une image");
-
-    if ($written === false)
-    {
-        throw new RuntimeException('Impossible de créer un faux fichier de test.');
+        imagejpeg($image, $path, 90);
+        imagedestroy($image);
     }
 }
 
-function decodeJsonResponse(string $body): ?array
+if (!function_exists('createInvalidTextFile'))
 {
-    $json = json_decode($body, true);
+    function createInvalidTextFile(string $path): void
+    {
+        $written = file_put_contents($path, "ceci n'est pas une image");
 
-    return is_array($json) ? $json : null;
+        if ($written === false)
+        {
+            throw new RuntimeException('Impossible de créer un faux fichier de test.');
+        }
+    }
+}
+
+if (!function_exists('decodeJsonResponse'))
+{
+    function decodeJsonResponse(string $body): ?array
+    {
+        $json = json_decode($body, true);
+
+        return is_array($json) ? $json : null;
+    }
+}
+
+if (!function_exists('buildTmpTestFile'))
+{
+    function buildTmpTestFile(string $directory, string $filename): string
+    {
+        ensureDirectory($directory);
+
+        return rtrim($directory, '/\\') . DIRECTORY_SEPARATOR . $filename;
+    }
 }
 
 if ($testPostAjouter)
@@ -50,16 +69,10 @@ if ($testPostAjouter)
 
         'url' => rtrim($base, '/') . '/manga/ajouter',
 
-        'callback' => static function () use ($base): array
+        'callback' => static function () use ($base, $tmpUploadsDirectory): array
         {
-            $tmpFile = ROOT . '/tests/tmp-valid.jpg';
-            $uploadDir = ROOT . '/tests/tmp-uploads';
+            $tmpFile = buildTmpTestFile($tmpUploadsDirectory, 'tmp-valid.jpg');
             $unique = uniqid('', true);
-
-            if (!is_dir($uploadDir))
-            {
-                mkdir($uploadDir, 0777, true);
-            }
 
             if (is_file($tmpFile))
             {
@@ -118,7 +131,7 @@ if ($testPostAjouter)
             if ($okResponse)
             {
                 $returnedFile = $json['file'];
-                $expectedPath = $uploadDir . '/' . $returnedFile;
+                $expectedPath = rtrim($tmpUploadsDirectory, '/\\') . DIRECTORY_SEPARATOR . $returnedFile;
                 $fileExists = is_file($expectedPath);
             }
 
@@ -143,9 +156,9 @@ if ($testUploadDuplicateSlugNumero)
 
         'url' => rtrim($base, '/') . '/manga/ajouter',
 
-        'callback' => static function () use ($base): array
+        'callback' => static function () use ($base, $tmpUploadsDirectory): array
         {
-            $tmpFile = ROOT . '/tests/tmp-duplicate.jpg';
+            $tmpFile = buildTmpTestFile($tmpUploadsDirectory, 'tmp-duplicate.jpg');
             $unique = uniqid('', true);
             $livre = 'Test Duplicate ' . $unique;
             $slug = 'test-duplicate-slug-' . md5($unique);
@@ -265,9 +278,9 @@ if ($testUploadInvalidImage)
 
         'url' => rtrim($base, '/') . '/manga/ajouter',
 
-        'callback' => static function () use ($base): array
+        'callback' => static function () use ($base, $tmpUploadsDirectory): array
         {
-            $tmpFile = ROOT . '/tests/tmp-invalid.txt';
+            $tmpFile = buildTmpTestFile($tmpUploadsDirectory, 'tmp-invalid.txt');
             $unique = uniqid('', true);
 
             if (is_file($tmpFile))
@@ -338,9 +351,9 @@ if ($testUploadMaxSize)
 
         'url' => rtrim($base, '/') . '/manga/ajouter',
 
-        'callback' => static function () use ($base): array
+        'callback' => static function () use ($base, $fixturesDirectory): array
         {
-            $fixtureFile = ROOT . '/tests/fixtures/large.jpg';
+            $fixtureFile = rtrim($fixturesDirectory, '/\\') . DIRECTORY_SEPARATOR . 'large.jpg';
             $unique = uniqid('', true);
 
             if (!is_file($fixtureFile))
