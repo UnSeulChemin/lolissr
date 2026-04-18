@@ -20,6 +20,9 @@ return function ($router)
     /* Accueil manga */
     $router->get('/manga', 'MangaController@index');
 
+    /* Page lien */
+    $router->get('/manga/lien', 'MangaController@lien');
+
     /* Collection */
     $router->get('/manga/collection', 'MangaController@collection');
 
@@ -39,9 +42,6 @@ return function ($router)
     /* Série */
     $router->get('/manga/serie/{slug}', 'MangaController@serie');
 
-    /* Page lien */
-    $router->get('/manga/lien', 'MangaController@lien');
-
 
     /*
     |------------------------------------------------------------------
@@ -53,7 +53,7 @@ return function ($router)
     $router->get('/manga/ajouter', 'MangaController@ajouter');
 
     /* Modifier */
-    $router->get('/manga/update/{slug}/{numero}', 'MangaController@modifier');
+    $router->get('/manga/modifier/{slug}/{numero}', 'MangaController@modifier');
 
 
     /*
@@ -63,7 +63,7 @@ return function ($router)
     */
 
     $router->post('/manga/ajouter', 'MangaController@ajouterTraitement');
-    $router->post('/manga/update/{slug}/{numero}', 'MangaController@update');
+    $router->post('/manga/modifier/{slug}/{numero}', 'MangaController@update');
 
     /* Update note AJAX */
     $router->post('/manga/ajax/update-note/{slug}/{numero}', 'MangaController@ajaxUpdateNote');

@@ -1,5 +1,5 @@
 <?php
-$isCollection = isset($slugFilter) && !empty($slugFilter);
+$isSerieView = isset($slugFilter) && !empty($slugFilter);
 $currentPage = $currentPage ?? 1;
 ?>
 
@@ -26,13 +26,13 @@ $currentPage = $currentPage ?? 1;
             <?php foreach ($mangas as $manga): ?>
 
                 <?php
-                $href = $isCollection
+                $href = $isSerieView
                     ? $basePath . 'manga/' . rawurlencode($manga->slug) . '/' . (int) $manga->numero
                     : $basePath . 'manga/serie/' . rawurlencode($manga->slug);
 
                 $noteClass = 'collection-note-mid';
 
-                if ($isCollection && $manga->note !== null)
+                if ($isSerieView && $manga->note !== null)
                 {
                     if ((int) $manga->note >= 8)
                     {
@@ -49,7 +49,7 @@ $currentPage = $currentPage ?? 1;
                     class="card card-link collection-card-link"
                     href="<?= $href; ?>">
 
-                    <?php if ($isCollection && $manga->note !== null): ?>
+                    <?php if ($isSerieView && $manga->note !== null): ?>
                         <span class="collection-card-badge <?= $noteClass; ?>">
                             ⭐ <?= (int) $manga->note; ?>/10
                         </span>
@@ -66,13 +66,13 @@ $currentPage = $currentPage ?? 1;
                         <?= htmlspecialchars($manga->livre); ?>
                     </p>
 
-                    <?php if ($isCollection): ?>
+                    <?php if ($isSerieView): ?>
                         <p class="collection-card-subtitle">
                             Tome <?= str_pad((string) $manga->numero, 2, '0', STR_PAD_LEFT); ?>
                         </p>
                     <?php else: ?>
                         <p class="collection-card-subtitle">
-                            <?= (int) $manga->total; ?> tomes
+                            <?= isset($manga->total) ? (int) $manga->total : 0; ?> tomes
                         </p>
                     <?php endif; ?>
 
@@ -82,7 +82,7 @@ $currentPage = $currentPage ?? 1;
 
         </section>
 
-        <?php if (!$isCollection && isset($compteur)): ?>
+        <?php if (!$isSerieView && isset($compteur)): ?>
             <nav class="collection-pagination">
 
                 <?php for ($getId = 1; $getId <= $compteur; $getId++): ?>
@@ -96,7 +96,7 @@ $currentPage = $currentPage ?? 1;
             </nav>
         <?php endif; ?>
 
-        <?php if ($isCollection): ?>
+        <?php if ($isSerieView): ?>
             <div class="collection-back-wrapper">
                 <a
                     class="form-submit collection-back-button"

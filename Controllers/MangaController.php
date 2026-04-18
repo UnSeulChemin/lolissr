@@ -309,7 +309,15 @@ class MangaController extends Controller
             $canonicalSlug,
             'manga/serie/'
         );
-        return;
+
+        $this->title = 'Manga | ' . $mangas[0]->livre;
+
+        $this->render('manga/collection', [
+            'mangas' => $mangas,
+            'compteur' => null,
+            'slugFilter' => $canonicalSlug,
+            'currentPage' => 1
+        ]);
     }
 
     /**
@@ -339,7 +347,12 @@ class MangaController extends Controller
             'manga/',
             (int) $manga->numero
         );
-        return;
+
+        $this->title = 'Manga | ' . $manga->livre;
+
+        $this->render('manga/livre', [
+            'manga' => $manga
+        ]);
     }
 
     /**
@@ -376,11 +389,17 @@ class MangaController extends Controller
         $this->redirectToCanonicalUrl(
             $requestedSlug,
             $canonicalSlug,
-            'manga/update/',
+            'manga/modifier/',
             (int) $manga->numero
         );
-        return;
+
+        $this->title = 'Manga | Modifier';
+
+        $this->render('manga/edit', [
+            'manga' => $manga
+        ]);
     }
+
 
     /**
      * Traite l'ajout.
@@ -771,7 +790,7 @@ class MangaController extends Controller
 
         if ($requestedSlug !== $canonicalSlug)
         {
-            $redirect = Functions::basePath() . '/manga/update/' . rawurlencode($canonicalSlug) . '/' . $numero;
+            $redirect = Functions::basePath() . '/manga/modifier/' . rawurlencode($canonicalSlug) . '/' . $numero;
 
             if ($this->isAjaxRequest())
             {
@@ -825,7 +844,7 @@ class MangaController extends Controller
             }
 
             $this->redirectWithValidationErrors(
-                'manga/update/' . rawurlencode($slug) . '/' . $numero,
+                'manga/modifier/' . rawurlencode($slug) . '/' . $numero,
                 $validator->errors()
             );
             return;
@@ -870,7 +889,7 @@ class MangaController extends Controller
             }
 
             $this->redirectWithError(
-                'manga/update/' . rawurlencode($slug) . '/' . $numero,
+                'manga/modifier/' . rawurlencode($slug) . '/' . $numero,
                 'Erreur lors de la mise à jour'
             );
             return;
