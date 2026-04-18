@@ -624,6 +624,310 @@ final class MangaControllerTest extends TestCase
             $controller->successRedirectMessage
         );
     }
+
+    public function testSerieRedirectsWhenSlugIsNotCanonical(): void
+    {
+        $mangas = [
+            (object) [
+                'slug' => 'one-piece',
+                'numero' => 1,
+                'livre' => 'One Piece'
+            ]
+        ];
+
+        $model = new FakeMangaModel();
+        $model->findBySlugReturn = $mangas;
+
+        $controller = new TestableMangaController($model);
+        $controller->serie('One Piece');
+
+        $this->assertSame('manga/serie/one-piece', $controller->successRedirectPath);
+    }
+
+    public function testShowRedirectsWhenSlugIsNotCanonical(): void
+    {
+        $manga = (object) [
+            'slug' => 'one-piece',
+            'numero' => 20,
+            'livre' => 'One Piece'
+        ];
+
+        $model = new FakeMangaModel();
+        $model->findOneBySlugAndNumeroReturn = $manga;
+
+        $controller = new TestableMangaController($model);
+        $controller->show('One Piece', '20');
+
+        $this->assertSame('manga/one-piece/20', $controller->successRedirectPath);
+    }
+
+    public function testModifierRedirectsWhenSlugIsNotCanonical(): void
+    {
+        $manga = (object) [
+            'slug' => 'one-piece',
+            'numero' => 20,
+            'livre' => 'One Piece'
+        ];
+
+        $model = new FakeMangaModel();
+        $model->findOneBySlugAndNumeroReturn = $manga;
+
+        $controller = new TestableMangaController($model);
+        $controller->modifier('One Piece', '20');
+
+        $this->assertSame('manga/update/one-piece/20', $controller->successRedirectPath);
+    }
+
+    public function testSearchAjaxReturnsEmptyArrayWhenQueryIsEmpty(): void
+    {
+        $controller = new TestableMangaController(new FakeMangaModel());
+
+        $controller->searchAjax('');
+
+        $this->assertSame(200, $controller->jsonStatus);
+        $this->assertSame([], $controller->jsonData);
+    }
+
+    public function testSearchAjaxReturnsLimitedFormattedResults(): void
+    {
+        $results = [
+            (object) [
+                'slug' => 'one-piece',
+                'numero' => 1,
+                'livre' => 'One Piece',
+                'thumbnail' => 'one-piece-01',
+                'extension' => 'jpg',
+                'note' => 9
+            ],
+            (object) [
+                'slug' => 'naruto',
+                'numero' => 2,
+                'livre' => 'Naruto',
+                'thumbnail' => 'naruto-02',
+                'extension' => 'png',
+                'note' => 8
+            ]
+        ];
+
+        $model = new FakeMangaModel();
+        $model->searchMangasReturn = $results;
+
+        $controller = new TestableMangaController($model);
+        $controller->searchAjax('one-piece');
+
+        $this->assertSame(200, $controller->jsonStatus);
+        $this->assertCount(2, $controller->jsonData);
+
+        $this->assertSame('one-piece', $controller->jsonData[0]['slug']);
+        $this->assertSame(1, $controller->jsonData[0]['numero']);
+        $this->assertSame('One Piece', $controller->jsonData[0]['livre']);
+        $this->assertSame('one-piece-01', $controller->jsonData[0]['thumbnail']);
+        $this->assertSame('jpg', $controller->jsonData[0]['extension']);
+        $this->assertSame(9, $controller->jsonData[0]['note']);
+    }
+
+    public function testUpdateReturns409JsonWhenSlugIsNotCanonicalInAjax(): void
+    {
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+
+        $manga = (object) [
+            'slug' => 'one-piece',
+            'numero' => 1,
+            'livre' => 'One Piece'
+        ];
+
+        $model = new FakeMangaModel();
+        $model->findOneBySlugAndNumeroReturn = $manga;
+
+        $controller = new TestableMangaController($model);
+        $controller->ajaxRequest = true;
+
+        $controller->update('One Piece', '1');
+
+        $this->assertSame(409, $controller->jsonStatus);
+        $this->assertFalse($controller->jsonData['success']);
+        $this->assertSame('URL non canonique', $controller->jsonData['message']);
+        $this->assertSame('/lolissr/manga/update/one-piece/1', $controller->jsonData['redirect']);
+    }
+
+    public function testUpdateRedirectsWithErrorWhenUpdateFails(): void
+    {
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        $_POST['jacquette'] = '4';
+        $_POST['livre_note'] = '5';
+        $_POST['commentaire'] = 'Très bon tome';
+
+        $manga = (object) [
+            'slug' => 'one-piece',
+            'numero' => 1,
+            'livre' => 'One Piece'
+        ];
+
+        $model = new FakeMangaModel();
+        $model->findOneBySlugAndNumeroReturn = $manga;
+        $model->updateMangaReturn = false;
+
+        $validator = new FakeValidator();
+        $validator->failsReturn = false;
+
+        $controller = new TestableMangaController($model);
+        $controller->fakeValidator = $validator;
+
+        $controller->update('one-piece', '1');
+
+        $this->assertSame('manga/update/one-piece/1', $controller->errorRedirectPath);
+        $this->assertSame('Erreur lors de la mise à jour', $controller->errorRedirectMessage);
+    }
+
+    public function testAjaxUpdateNoteReturns409WhenSlugIsNotCanonical(): void
+    {
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+
+        $manga = (object) [
+            'slug' => 'one-piece',
+            'numero' => 1,
+            'livre' => 'One Piece'
+        ];
+
+        $model = new FakeMangaModel();
+        $model->findOneBySlugAndNumeroReturn = $manga;
+
+        $controller = new TestableMangaController($model);
+        $controller->ajaxUpdateNote('One Piece', '1');
+
+        $this->assertSame(409, $controller->jsonStatus);
+        $this->assertFalse($controller->jsonData['success']);
+        $this->assertSame('URL non canonique', $controller->jsonData['message']);
+        $this->assertSame('/lolissr//manga/one-piece/1', $controller->jsonData['redirect']);
+    }
+
+    public function testAjaxUpdateNoteReturns500WhenUpdateFails(): void
+    {
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        $_POST['jacquette'] = '2';
+        $_POST['livre_note'] = '4';
+        $_POST['commentaire'] = 'Correct';
+
+        $manga = (object) [
+            'slug' => 'one-piece',
+            'numero' => 1,
+            'livre' => 'One Piece'
+        ];
+
+        $model = new FakeMangaModel();
+        $model->findOneBySlugAndNumeroReturn = $manga;
+        $model->updateMangaReturn = false;
+
+        $validator = new FakeValidator();
+        $validator->failsReturn = false;
+
+        $controller = new TestableMangaController($model);
+        $controller->fakeValidator = $validator;
+
+        $controller->ajaxUpdateNote('one-piece', '1');
+
+        $this->assertSame(500, $controller->jsonStatus);
+        $this->assertFalse($controller->jsonData['success']);
+        $this->assertSame('Erreur lors de la mise à jour', $controller->jsonData['message']);
+    }
+
+    public function testAjouterTraitementRedirectsWithSuccessWhenInsertSucceeds(): void
+    {
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        $_POST['livre'] = 'One Piece';
+        $_POST['slug'] = 'one-piece';
+        $_POST['numero'] = '1';
+        $_POST['commentaire'] = 'Très bon tome';
+
+        $model = new FakeMangaModel();
+        $model->findOneBySlugAndNumeroReturn = false;
+        $model->insertReturn = true;
+
+        $validator = new FakeValidator();
+        $validator->failsReturn = false;
+
+        $controller = new TestableMangaController($model);
+        $controller->fakeValidator = $validator;
+        $controller->testUploadMode = false;
+
+        $controller->ajouterTraitement();
+
+        $this->assertSame('manga/ajouter', $controller->successRedirectPath);
+        $this->assertSame('Manga ajouté avec succès', $controller->successRedirectMessage);
+
+        $this->assertSame('one-piece-01', $model->insertArgs['thumbnail']);
+        $this->assertSame('jpg', $model->insertArgs['extension']);
+        $this->assertSame('one-piece', $model->insertArgs['slug']);
+        $this->assertSame('One Piece', $model->insertArgs['livre']);
+        $this->assertSame(1, $model->insertArgs['numero']);
+        $this->assertNull($model->insertArgs['jacquette']);
+        $this->assertNull($model->insertArgs['livre_note']);
+        $this->assertSame('Très bon tome', $model->insertArgs['commentaire']);
+    }
+
+    public function testAjouterTraitementRedirectsWithErrorWhenInsertFails(): void
+    {
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        $_POST['livre'] = 'One Piece';
+        $_POST['slug'] = 'one-piece';
+        $_POST['numero'] = '1';
+        $_POST['commentaire'] = 'Très bon tome';
+
+        $model = new FakeMangaModel();
+        $model->findOneBySlugAndNumeroReturn = false;
+        $model->insertReturn = false;
+
+        $validator = new FakeValidator();
+        $validator->failsReturn = false;
+
+        $controller = new TestableMangaController($model);
+        $controller->fakeValidator = $validator;
+        $controller->testUploadMode = false;
+
+        $controller->ajouterTraitement();
+
+        $this->assertSame('manga/ajouter', $controller->errorRedirectPath);
+        $this->assertSame('Erreur lors de l’enregistrement du manga', $controller->errorRedirectMessage);
+    }
+
+    public function testAjouterTraitementReturns405JsonWhenAjaxRequestMethodIsNotPost(): void
+    {
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+
+        $controller = new TestableMangaController(new FakeMangaModel());
+        $controller->ajaxRequest = true;
+
+        $controller->ajouterTraitement();
+
+        $this->assertSame(405, $controller->jsonStatus);
+        $this->assertFalse($controller->jsonData['success']);
+        $this->assertSame('Méthode non autorisée', $controller->jsonData['message']);
+    }
+
+    public function testAjouterTraitementReturns422JsonWhenAjaxValidatorFails(): void
+    {
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+
+        $validator = new FakeValidator();
+        $validator->failsReturn = true;
+        $validator->errorsReturn = [
+            'livre' => 'Le titre est obligatoire.'
+        ];
+
+        $controller = new TestableMangaController(new FakeMangaModel());
+        $controller->fakeValidator = $validator;
+        $controller->ajaxRequest = true;
+
+        $controller->ajouterTraitement();
+
+        $this->assertSame(422, $controller->jsonStatus);
+        $this->assertFalse($controller->jsonData['success']);
+        $this->assertSame('Le titre est obligatoire.', $controller->jsonData['message']);
+        $this->assertSame(
+            ['livre' => 'Le titre est obligatoire.'],
+            $controller->jsonData['errors']
+        );
+    }
 }
 
 final class TestableMangaController extends MangaController
@@ -632,6 +936,7 @@ final class TestableMangaController extends MangaController
     public array $renderedData = [];
     public ?string $notFoundMessage = null;
     public ?string $methodNotAllowedMessage = null;
+    public bool $ajaxRequest = false;
 
     public array $jsonData = [];
     public int $jsonStatus = 200;
@@ -670,7 +975,7 @@ final class TestableMangaController extends MangaController
 
     protected function isAjaxRequest(): bool
     {
-        return false;
+        return $this->ajaxRequest;
     }
 
     protected function isTestUploadMode(): bool
@@ -771,9 +1076,9 @@ final class TestableMangaController extends MangaController
     protected function uploadThumbnail(string $livre, int $numero): array
     {
         return [
-            'thumbnail' => 'ONE PIECE 01',
+            'thumbnail' => 'one-piece-01',
             'extension' => 'jpg',
-            'destination' => ROOT . '/tests/tmp-uploads/ONE PIECE 01.jpg'
+            'destination' => ROOT . '/tests/tmp-uploads/one-piece-01.jpg'
         ];
     }
 }
