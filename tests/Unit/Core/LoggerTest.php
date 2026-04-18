@@ -2,14 +2,17 @@
 
 declare(strict_types=1);
 
-use App\Core\Logger;
 use App\Core\Functions;
+use App\Core\Logger;
 use PHPUnit\Framework\TestCase;
 
 final class LoggerTest extends TestCase
 {
     private string $testLogDir;
     private string $logFile;
+    private ?string $previousEnvLogDir = null;
+    private ?string $previousServerLogDir = null;
+    private string|false $previousPutenvLogDir = false;
 
     protected function setUp(): void
     {
@@ -18,39 +21,57 @@ final class LoggerTest extends TestCase
         $this->testLogDir = ROOT . '/tests/tmp-logs';
         $this->logFile = $this->testLogDir . '/app.log';
 
-        // Configure LOG_DIR
+        $this->previousEnvLogDir = $_ENV['LOG_DIR'] ?? null;
+        $this->previousServerLogDir = $_SERVER['LOG_DIR'] ?? null;
+        $this->previousPutenvLogDir = getenv('LOG_DIR');
+
+        $this->removeTestLogDirectory();
+
         $_ENV['LOG_DIR'] = $this->testLogDir;
         $_SERVER['LOG_DIR'] = $this->testLogDir;
+        putenv('LOG_DIR=' . $this->testLogDir);
 
-        Functions::clearEnvCache();
-
-        // Nettoyage avant test
-        if (file_exists($this->logFile))
+        if (method_exists(Functions::class, 'clearEnvCache'))
         {
-            unlink($this->logFile);
-        }
-
-        if (is_dir($this->testLogDir))
-        {
-            rmdir($this->testLogDir);
+            Functions::clearEnvCache();
         }
     }
 
     protected function tearDown(): void
     {
-        if (file_exists($this->logFile))
+        $this->removeTestLogDirectory();
+
+        if ($this->previousEnvLogDir !== null)
         {
-            unlink($this->logFile);
+            $_ENV['LOG_DIR'] = $this->previousEnvLogDir;
+        }
+        else
+        {
+            unset($_ENV['LOG_DIR']);
         }
 
-        if (is_dir($this->testLogDir))
+        if ($this->previousServerLogDir !== null)
         {
-            rmdir($this->testLogDir);
+            $_SERVER['LOG_DIR'] = $this->previousServerLogDir;
+        }
+        else
+        {
+            unset($_SERVER['LOG_DIR']);
         }
 
-        unset($_ENV['LOG_DIR'], $_SERVER['LOG_DIR']);
+        if ($this->previousPutenvLogDir !== false)
+        {
+            putenv('LOG_DIR=' . $this->previousPutenvLogDir);
+        }
+        else
+        {
+            putenv('LOG_DIR');
+        }
 
-        Functions::clearEnvCache();
+        if (method_exists(Functions::class, 'clearEnvCache'))
+        {
+            Functions::clearEnvCache();
+        }
 
         parent::tearDown();
     }
@@ -63,6 +84,7 @@ final class LoggerTest extends TestCase
 
         $content = file_get_contents($this->logFile);
 
+        $this->assertIsString($content);
         $this->assertStringContainsString('[ERROR]', $content);
         $this->assertStringContainsString('Erreur test', $content);
     }
@@ -71,8 +93,11 @@ final class LoggerTest extends TestCase
     {
         Logger::warning('Attention');
 
+        $this->assertFileExists($this->logFile);
+
         $content = file_get_contents($this->logFile);
 
+        $this->assertIsString($content);
         $this->assertStringContainsString('[WARNING]', $content);
         $this->assertStringContainsString('Attention', $content);
     }
@@ -81,8 +106,11 @@ final class LoggerTest extends TestCase
     {
         Logger::info('Information');
 
+        $this->assertFileExists($this->logFile);
+
         $content = file_get_contents($this->logFile);
 
+        $this->assertIsString($content);
         $this->assertStringContainsString('[INFO]', $content);
         $this->assertStringContainsString('Information', $content);
     }
@@ -102,9 +130,38 @@ final class LoggerTest extends TestCase
         Logger::info('Message 1');
         Logger::info('Message 2');
 
+        $this->assertFileExists($this->logFile);
+
         $content = file_get_contents($this->logFile);
 
+        $this->assertIsString($content);
         $this->assertStringContainsString('Message 1', $content);
         $this->assertStringContainsString('Message 2', $content);
+    }
+
+    public function testLogLineContainsFormattedDateAndLevel(): void
+    {
+        Logger::error('Date format test');
+
+        $content = file_get_contents($this->logFile);
+
+        $this->assertIsString($content);
+        $this->assertMatchesRegularExpression(
+            '/^\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\] \[ERROR\] Date format test\r?\n$/',
+            $content
+        );
+    }
+
+    private function removeTestLogDirectory(): void
+    {
+        if (file_exists($this->logFile))
+        {
+            unlink($this->logFile);
+        }
+
+        if (is_dir($this->testLogDir))
+        {
+            rmdir($this->testLogDir);
+        }
     }
 }

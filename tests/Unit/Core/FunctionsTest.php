@@ -15,6 +15,16 @@ final class FunctionsTest extends TestCase
     private string|false $appBasePathBackup = false;
     private string|false $appNameBackup = false;
     private string|false $appEnvBackup = false;
+    private string|false $appDebugBackup = false;
+    private string|false $appPaginationBackup = false;
+    private string|false $dbHostBackup = false;
+    private string|false $dbNameBackup = false;
+    private string|false $dbUserBackup = false;
+    private string|false $dbPassBackup = false;
+    private string|false $dbCharsetBackup = false;
+    private string|false $uploadMaxSizeBackup = false;
+    private string|false $uploadAllowedExtBackup = false;
+    private string|false $uploadAllowedMimeBackup = false;
 
     protected function setUp(): void
     {
@@ -28,6 +38,16 @@ final class FunctionsTest extends TestCase
         $this->appBasePathBackup = getenv('APP_BASE_PATH');
         $this->appNameBackup = getenv('APP_NAME');
         $this->appEnvBackup = getenv('APP_ENV');
+        $this->appDebugBackup = getenv('APP_DEBUG');
+        $this->appPaginationBackup = getenv('APP_PAGINATION');
+        $this->dbHostBackup = getenv('DB_HOST');
+        $this->dbNameBackup = getenv('DB_NAME');
+        $this->dbUserBackup = getenv('DB_USER');
+        $this->dbPassBackup = getenv('DB_PASS');
+        $this->dbCharsetBackup = getenv('DB_CHARSET');
+        $this->uploadMaxSizeBackup = getenv('UPLOAD_MAX_SIZE');
+        $this->uploadAllowedExtBackup = getenv('UPLOAD_ALLOWED_EXT');
+        $this->uploadAllowedMimeBackup = getenv('UPLOAD_ALLOWED_MIME');
 
         $_SERVER = [];
         $_ENV = [];
@@ -37,6 +57,16 @@ final class FunctionsTest extends TestCase
         putenv('APP_BASE_PATH');
         putenv('APP_NAME');
         putenv('APP_ENV');
+        putenv('APP_DEBUG');
+        putenv('APP_PAGINATION');
+        putenv('DB_HOST');
+        putenv('DB_NAME');
+        putenv('DB_USER');
+        putenv('DB_PASS');
+        putenv('DB_CHARSET');
+        putenv('UPLOAD_MAX_SIZE');
+        putenv('UPLOAD_ALLOWED_EXT');
+        putenv('UPLOAD_ALLOWED_MIME');
 
         Functions::clearEnvCache();
     }
@@ -51,6 +81,16 @@ final class FunctionsTest extends TestCase
         $this->restoreEnvVar('APP_BASE_PATH', $this->appBasePathBackup);
         $this->restoreEnvVar('APP_NAME', $this->appNameBackup);
         $this->restoreEnvVar('APP_ENV', $this->appEnvBackup);
+        $this->restoreEnvVar('APP_DEBUG', $this->appDebugBackup);
+        $this->restoreEnvVar('APP_PAGINATION', $this->appPaginationBackup);
+        $this->restoreEnvVar('DB_HOST', $this->dbHostBackup);
+        $this->restoreEnvVar('DB_NAME', $this->dbNameBackup);
+        $this->restoreEnvVar('DB_USER', $this->dbUserBackup);
+        $this->restoreEnvVar('DB_PASS', $this->dbPassBackup);
+        $this->restoreEnvVar('DB_CHARSET', $this->dbCharsetBackup);
+        $this->restoreEnvVar('UPLOAD_MAX_SIZE', $this->uploadMaxSizeBackup);
+        $this->restoreEnvVar('UPLOAD_ALLOWED_EXT', $this->uploadAllowedExtBackup);
+        $this->restoreEnvVar('UPLOAD_ALLOWED_MIME', $this->uploadAllowedMimeBackup);
 
         Functions::clearEnvCache();
 
@@ -69,6 +109,22 @@ final class FunctionsTest extends TestCase
         putenv($key . '=' . $value);
         $_ENV[$key] = $value;
         $_SERVER[$key] = $value;
+    }
+
+    public function testClearEnvCacheForcesFreshRead(): void
+    {
+        $_ENV['APP_NAME'] = 'Premier';
+        Functions::clearEnvCache();
+
+        $this->assertSame('Premier', Functions::env('APP_NAME'));
+
+        $_ENV['APP_NAME'] = 'Second';
+
+        $this->assertSame('Premier', Functions::env('APP_NAME'));
+
+        Functions::clearEnvCache();
+
+        $this->assertSame('Second', Functions::env('APP_NAME'));
     }
 
     public function testEnvReturnsDefaultWhenKeyDoesNotExist(): void
@@ -92,8 +148,56 @@ final class FunctionsTest extends TestCase
         $this->assertSame('local', Functions::env('APP_ENV', 'prod'));
     }
 
+    public function testEnvReturnsTrimmedStringValue(): void
+    {
+        $_ENV['APP_NAME'] = '  LoliSSR  ';
+        Functions::clearEnvCache();
+
+        $this->assertSame('LoliSSR', Functions::env('APP_NAME'));
+    }
+
+    public function testEnvConvertsTrueStringToBooleanTrue(): void
+    {
+        $_ENV['APP_DEBUG'] = 'true';
+        Functions::clearEnvCache();
+
+        $this->assertTrue(Functions::env('APP_DEBUG'));
+    }
+
+    public function testEnvConvertsFalseStringToBooleanFalse(): void
+    {
+        $_ENV['APP_DEBUG'] = 'false';
+        Functions::clearEnvCache();
+
+        $this->assertFalse(Functions::env('APP_DEBUG'));
+    }
+
+    public function testEnvConvertsNullStringToNull(): void
+    {
+        $_ENV['APP_NAME'] = 'null';
+        Functions::clearEnvCache();
+
+        $this->assertNull(Functions::env('APP_NAME', 'fallback'));
+    }
+
+    public function testEnvConvertsEmptyStringKeywordToEmptyString(): void
+    {
+        $_ENV['APP_NAME'] = 'empty';
+        Functions::clearEnvCache();
+
+        $this->assertSame('', Functions::env('APP_NAME', 'fallback'));
+    }
+
     public function testBasePathReturnsDefaultSlash(): void
     {
+        Functions::clearEnvCache();
+
+        $this->assertSame('/', Functions::basePath());
+    }
+
+    public function testBasePathReturnsSlashWhenConfiguredValueIsEmpty(): void
+    {
+        $_ENV['APP_BASE_PATH'] = '';
         Functions::clearEnvCache();
 
         $this->assertSame('/', Functions::basePath());
@@ -107,12 +211,106 @@ final class FunctionsTest extends TestCase
         $this->assertSame('/lolissr/', Functions::basePath());
     }
 
+    public function testBasePathNormalizesPathWithoutLeadingOrTrailingSlashes(): void
+    {
+        $_ENV['APP_BASE_PATH'] = 'lolissr';
+        Functions::clearEnvCache();
+
+        $this->assertSame('/lolissr/', Functions::basePath());
+    }
+
     public function testSiteNameReturnsConfiguredAppName(): void
     {
         $_ENV['APP_NAME'] = 'LoliSSR';
         Functions::clearEnvCache();
 
         $this->assertSame('LoliSSR', Functions::siteName());
+    }
+
+    public function testSiteNameReturnsDefaultValue(): void
+    {
+        Functions::clearEnvCache();
+
+        $this->assertSame('Site', Functions::siteName());
+    }
+
+    public function testPaginationReturnsConfiguredValue(): void
+    {
+        $_ENV['APP_PAGINATION'] = '12';
+        Functions::clearEnvCache();
+
+        $this->assertSame(12, Functions::pagination());
+    }
+
+    public function testPaginationReturnsMinimumOne(): void
+    {
+        $_ENV['APP_PAGINATION'] = '0';
+        Functions::clearEnvCache();
+
+        $this->assertSame(1, Functions::pagination());
+    }
+
+    public function testAppEnvReturnsConfiguredValue(): void
+    {
+        $_ENV['APP_ENV'] = 'production';
+        Functions::clearEnvCache();
+
+        $this->assertSame('production', Functions::appEnv());
+    }
+
+    public function testAppDebugReturnsBooleanTrue(): void
+    {
+        $_ENV['APP_DEBUG'] = 'true';
+        Functions::clearEnvCache();
+
+        $this->assertTrue(Functions::appDebug());
+    }
+
+    public function testAppDebugReturnsBooleanFalseByDefault(): void
+    {
+        Functions::clearEnvCache();
+
+        $this->assertFalse(Functions::appDebug());
+    }
+
+    public function testDbHostReturnsConfiguredValue(): void
+    {
+        $_ENV['DB_HOST'] = '127.0.0.1';
+        Functions::clearEnvCache();
+
+        $this->assertSame('127.0.0.1', Functions::dbHost());
+    }
+
+    public function testDbNameReturnsConfiguredValue(): void
+    {
+        $_ENV['DB_NAME'] = 'lolissr';
+        Functions::clearEnvCache();
+
+        $this->assertSame('lolissr', Functions::dbName());
+    }
+
+    public function testDbUserReturnsConfiguredValue(): void
+    {
+        $_ENV['DB_USER'] = 'root';
+        Functions::clearEnvCache();
+
+        $this->assertSame('root', Functions::dbUser());
+    }
+
+    public function testDbPassReturnsConfiguredValue(): void
+    {
+        $_ENV['DB_PASS'] = 'secret';
+        Functions::clearEnvCache();
+
+        $this->assertSame('secret', Functions::dbPass());
+    }
+
+    public function testDbCharsetReturnsConfiguredValue(): void
+    {
+        $_ENV['DB_CHARSET'] = 'utf8';
+        Functions::clearEnvCache();
+
+        $this->assertSame('utf8', Functions::dbCharset());
     }
 
     public function testIsPostReturnsTrueWhenRequestMethodIsPost(): void
@@ -172,30 +370,35 @@ final class FunctionsTest extends TestCase
         $this->assertSame('Très bon tome', Functions::postNullableString('commentaire'));
     }
 
-    public function testNormalizeSlugReturnsNormalizedValue(): void
+    public function testHasUploadedFileReturnsTrueWhenFileIsPresent(): void
     {
-        $this->assertSame('one-piece', Functions::normalizeSlug('One Piece'));
+        $_FILES['image'] = [
+            'name' => 'cover.jpg',
+            'type' => 'image/jpeg',
+            'tmp_name' => 'C:/wamp64/tmp/php123.tmp',
+            'error' => UPLOAD_ERR_OK,
+            'size' => 12345,
+        ];
+
+        $this->assertTrue(Functions::hasUploadedFile('image'));
     }
 
-    public function testNormalizeSlugTrimsAndLowercasesValue(): void
+    public function testHasUploadedFileReturnsFalseWhenFileIsMissing(): void
     {
-        $this->assertSame(
-            'dragon-ball-super',
-            Functions::normalizeSlug('  Dragon Ball Super  ')
-        );
+        $this->assertFalse(Functions::hasUploadedFile('image'));
     }
 
-    public function testNormalizeCommentaireReturnsNullWhenValueIsEmpty(): void
+    public function testHasUploadedFileReturnsFalseWhenNoFileWasUploaded(): void
     {
-        $this->assertNull(Functions::normalizeCommentaire('   '));
-    }
+        $_FILES['image'] = [
+            'name' => '',
+            'type' => '',
+            'tmp_name' => '',
+            'error' => UPLOAD_ERR_NO_FILE,
+            'size' => 0,
+        ];
 
-    public function testNormalizeCommentaireReturnsTrimmedValue(): void
-    {
-        $this->assertSame(
-            'Excellent tome',
-            Functions::normalizeCommentaire('  Excellent tome  ')
-        );
+        $this->assertFalse(Functions::hasUploadedFile('image'));
     }
 
     public function testFileExistsReturnsTrueWhenFileIsPresent(): void
@@ -216,40 +419,22 @@ final class FunctionsTest extends TestCase
         $this->assertFalse(Functions::fileExists('image'));
     }
 
-    public function testFileErrorReturnsUploadErrorCode(): void
+    public function testFileNameReturnsOriginalName(): void
     {
         $_FILES['image'] = [
             'name' => 'cover.jpg',
             'type' => 'image/jpeg',
             'tmp_name' => 'C:/wamp64/tmp/php123.tmp',
-            'error' => UPLOAD_ERR_NO_FILE,
-            'size' => 0,
-        ];
-
-        $this->assertSame(UPLOAD_ERR_NO_FILE, Functions::fileError('image'));
-    }
-
-    public function testFileErrorReturnsNullWhenFileDoesNotExist(): void
-    {
-        $this->assertNull(Functions::fileError('image'));
-    }
-
-    public function testFileExtensionReturnsLowercaseExtension(): void
-    {
-        $_FILES['image'] = [
-            'name' => 'Cover.WEBP',
-            'type' => 'image/webp',
-            'tmp_name' => 'C:/wamp64/tmp/php123.tmp',
             'error' => UPLOAD_ERR_OK,
             'size' => 12345,
         ];
 
-        $this->assertSame('webp', Functions::fileExtension('image'));
+        $this->assertSame('cover.jpg', Functions::fileName('image'));
     }
 
-    public function testFileExtensionReturnsNullWhenFileDoesNotExist(): void
+    public function testFileNameReturnsNullWhenFileIsMissing(): void
     {
-        $this->assertNull(Functions::fileExtension('image'));
+        $this->assertNull(Functions::fileName('image'));
     }
 
     public function testFileTmpReturnsTmpPath(): void
@@ -270,6 +455,211 @@ final class FunctionsTest extends TestCase
         $this->assertNull(Functions::fileTmp('image'));
     }
 
+    public function testFileErrorReturnsUploadErrorCode(): void
+    {
+        $_FILES['image'] = [
+            'name' => 'cover.jpg',
+            'type' => 'image/jpeg',
+            'tmp_name' => 'C:/wamp64/tmp/php123.tmp',
+            'error' => UPLOAD_ERR_NO_FILE,
+            'size' => 0,
+        ];
+
+        $this->assertSame(UPLOAD_ERR_NO_FILE, Functions::fileError('image'));
+    }
+
+    public function testFileErrorReturnsNullWhenFileDoesNotExist(): void
+    {
+        $this->assertNull(Functions::fileError('image'));
+    }
+
+    public function testFileSizeReturnsIntegerSize(): void
+    {
+        $_FILES['image'] = [
+            'name' => 'cover.jpg',
+            'type' => 'image/jpeg',
+            'tmp_name' => 'C:/wamp64/tmp/php123.tmp',
+            'error' => UPLOAD_ERR_OK,
+            'size' => 12345,
+        ];
+
+        $this->assertSame(12345, Functions::fileSize('image'));
+    }
+
+    public function testFileSizeReturnsIntegerWhenNumericString(): void
+    {
+        $_FILES['image'] = [
+            'name' => 'cover.jpg',
+            'type' => 'image/jpeg',
+            'tmp_name' => 'C:/wamp64/tmp/php123.tmp',
+            'error' => UPLOAD_ERR_OK,
+            'size' => '456',
+        ];
+
+        $this->assertSame(456, Functions::fileSize('image'));
+    }
+
+    public function testFileSizeReturnsNullWhenValueIsInvalid(): void
+    {
+        $_FILES['image'] = [
+            'name' => 'cover.jpg',
+            'type' => 'image/jpeg',
+            'tmp_name' => 'C:/wamp64/tmp/php123.tmp',
+            'error' => UPLOAD_ERR_OK,
+            'size' => 'abc',
+        ];
+
+        $this->assertNull(Functions::fileSize('image'));
+    }
+
+    public function testFileExtensionReturnsLowercaseExtension(): void
+    {
+        $_FILES['image'] = [
+            'name' => 'Cover.WEBP',
+            'type' => 'image/webp',
+            'tmp_name' => 'C:/wamp64/tmp/php123.tmp',
+            'error' => UPLOAD_ERR_OK,
+            'size' => 12345,
+        ];
+
+        $this->assertSame('webp', Functions::fileExtension('image'));
+    }
+
+    public function testFileExtensionReturnsNullWhenFileDoesNotExist(): void
+    {
+        $this->assertNull(Functions::fileExtension('image'));
+    }
+
+    public function testFileExtensionReturnsNullWhenFileHasNoExtension(): void
+    {
+        $_FILES['image'] = [
+            'name' => 'cover',
+            'type' => 'image/jpeg',
+            'tmp_name' => 'C:/wamp64/tmp/php123.tmp',
+            'error' => UPLOAD_ERR_OK,
+            'size' => 12345,
+        ];
+
+        $this->assertNull(Functions::fileExtension('image'));
+    }
+
+    public function testFileMimeTypeReturnsNullWhenTmpFileIsMissing(): void
+    {
+        $_FILES['image'] = [
+            'name' => 'cover.jpg',
+            'type' => 'image/jpeg',
+            'tmp_name' => ROOT . '/tests/fake-missing-file.tmp',
+            'error' => UPLOAD_ERR_OK,
+            'size' => 12345,
+        ];
+
+        $this->assertNull(Functions::fileMimeType('image'));
+    }
+
+    public function testUploadMaxSizeReturnsConfiguredValue(): void
+    {
+        $_ENV['UPLOAD_MAX_SIZE'] = '1024';
+        Functions::clearEnvCache();
+
+        $this->assertSame(1024, Functions::uploadMaxSize());
+    }
+
+    public function testUploadMaxSizeReturnsMinimumOne(): void
+    {
+        $_ENV['UPLOAD_MAX_SIZE'] = '0';
+        Functions::clearEnvCache();
+
+        $this->assertSame(1, Functions::uploadMaxSize());
+    }
+
+    public function testUploadAllowedExtensionsReturnsDefaultValues(): void
+    {
+        Functions::clearEnvCache();
+
+        $this->assertSame(['jpg', 'jpeg', 'png', 'webp'], Functions::uploadAllowedExtensions());
+    }
+
+    public function testUploadAllowedExtensionsNormalizesAndDeduplicatesValues(): void
+    {
+        $_ENV['UPLOAD_ALLOWED_EXT'] = ' JPG, png ,jpg,WEBP ,, jpeg ';
+        Functions::clearEnvCache();
+
+        $this->assertSame(['jpg', 'png', 'webp', 'jpeg'], Functions::uploadAllowedExtensions());
+    }
+
+    public function testUploadAllowedMimeTypesReturnsDefaultValues(): void
+    {
+        Functions::clearEnvCache();
+
+        $this->assertSame(
+            ['image/jpeg', 'image/png', 'image/webp'],
+            Functions::uploadAllowedMimeTypes()
+        );
+    }
+
+    public function testUploadAllowedMimeTypesNormalizesAndDeduplicatesValues(): void
+    {
+        $_ENV['UPLOAD_ALLOWED_MIME'] = ' IMAGE/JPEG, image/png ,image/jpeg,, IMAGE/WEBP ';
+        Functions::clearEnvCache();
+
+        $this->assertSame(
+            ['image/jpeg', 'image/png', 'image/webp'],
+            Functions::uploadAllowedMimeTypes()
+        );
+    }
+
+    public function testMangaThumbnailDirectoryReturnsExpectedPath(): void
+    {
+        $this->assertSame(
+            ROOT . '/public/images/mangas/thumbnail/',
+            Functions::mangaThumbnailDirectory()
+        );
+    }
+
+    public function testNormalizeSlugReturnsNormalizedValue(): void
+    {
+        $this->assertSame('one-piece', Functions::normalizeSlug('One Piece'));
+    }
+
+    public function testNormalizeSlugTrimsAndLowercasesValue(): void
+    {
+        $this->assertSame(
+            'dragon-ball-super',
+            Functions::normalizeSlug('  Dragon Ball Super  ')
+        );
+    }
+
+    public function testNormalizeSlugRemovesSpecialCharacters(): void
+    {
+        $this->assertSame(
+            'one-piece-édition-1',
+            Functions::normalizeSlug('One Piece ! Édition #1')
+        );
+    }
+
+    public function testNormalizeSlugReturnsEmptyStringWhenValueBecomesEmpty(): void
+    {
+        $this->assertSame('', Functions::normalizeSlug('@@@###'));
+    }
+
+    public function testNormalizeCommentaireReturnsNullWhenValueIsNull(): void
+    {
+        $this->assertNull(Functions::normalizeCommentaire(null));
+    }
+
+    public function testNormalizeCommentaireReturnsNullWhenValueIsEmpty(): void
+    {
+        $this->assertNull(Functions::normalizeCommentaire('   '));
+    }
+
+    public function testNormalizeCommentaireReturnsTrimmedValue(): void
+    {
+        $this->assertSame(
+            'Excellent tome',
+            Functions::normalizeCommentaire('  Excellent tome  ')
+        );
+    }
+
     public function testBuildThumbnailNameReturnsExpectedFormat(): void
     {
         $this->assertSame('one-piece-01', Functions::buildThumbnailName('One Piece', 1));
@@ -288,29 +678,5 @@ final class FunctionsTest extends TestCase
     public function testBuildThumbnailNameReturnsEmptyStringWhenLivreIsInvalid(): void
     {
         $this->assertSame('', Functions::buildThumbnailName('', 1));
-    }
-
-    public function testUploadAllowedExtensionsReturnsArray(): void
-    {
-        $result = Functions::uploadAllowedExtensions();
-
-        $this->assertIsArray($result);
-        $this->assertNotEmpty($result);
-    }
-
-    public function testUploadAllowedMimeTypesReturnsArray(): void
-    {
-        $result = Functions::uploadAllowedMimeTypes();
-
-        $this->assertIsArray($result);
-        $this->assertNotEmpty($result);
-    }
-
-    public function testUploadMaxSizeReturnsPositiveInteger(): void
-    {
-        $result = Functions::uploadMaxSize();
-
-        $this->assertIsInt($result);
-        $this->assertGreaterThan(0, $result);
     }
 }

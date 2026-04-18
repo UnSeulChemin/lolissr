@@ -158,7 +158,7 @@ final class MangaModelTest extends TestCase
         $this->assertSame(4, $model->getJacquette());
         $this->assertSame(5, $model->getLivreNote());
         $this->assertSame(9, $model->getNote());
-        $this->assertIsString($model->getCommentaire());
+        $this->assertSame('Très bon tome', $model->getCommentaire());
     }
 
     public function testSetNumeroDoesNotAllowNegativeValue(): void
@@ -169,12 +169,28 @@ final class MangaModelTest extends TestCase
         $this->assertSame(0, $model->getNumero());
     }
 
+    public function testSetNumeroKeepsPositiveValue(): void
+    {
+        $model = new MangaModel();
+        $model->setNumero(7);
+
+        $this->assertSame(7, $model->getNumero());
+    }
+
     public function testSetJacquetteInvalidValueBecomesNull(): void
     {
         $model = new MangaModel();
         $model->setJacquette(9);
 
         $this->assertNull($model->getJacquette());
+    }
+
+    public function testSetJacquetteAcceptsValidValue(): void
+    {
+        $model = new MangaModel();
+        $model->setJacquette(5);
+
+        $this->assertSame(5, $model->getJacquette());
     }
 
     public function testSetLivreNoteInvalidValueBecomesNull(): void
@@ -185,11 +201,51 @@ final class MangaModelTest extends TestCase
         $this->assertNull($model->getLivreNote());
     }
 
+    public function testSetLivreNoteAcceptsValidValue(): void
+    {
+        $model = new MangaModel();
+        $model->setLivreNote(3);
+
+        $this->assertSame(3, $model->getLivreNote());
+    }
+
     public function testSetSlugNormalizesValue(): void
     {
         $model = new MangaModel();
         $model->setSlug('Dragon Ball Super');
 
         $this->assertSame('dragon-ball-super', $model->getSlug());
+    }
+
+    public function testSetCommentaireEmptyValueBecomesNull(): void
+    {
+        $model = new MangaModel();
+        $model->setCommentaire('   ');
+
+        $this->assertNull($model->getCommentaire());
+    }
+
+    public function testSetCommentaireNullValueStaysNull(): void
+    {
+        $model = new MangaModel();
+        $model->setCommentaire(null);
+
+        $this->assertNull($model->getCommentaire());
+    }
+
+    public function testSetExtensionNormalizesToLowercase(): void
+    {
+        $model = new MangaModel();
+        $model->setExtension('WEBP');
+
+        $this->assertSame('webp', $model->getExtension());
+    }
+
+    public function testSetLivreTrimsValue(): void
+    {
+        $model = new MangaModel();
+        $model->setLivre('  Naruto  ');
+
+        $this->assertSame('Naruto', $model->getLivre());
     }
 }
