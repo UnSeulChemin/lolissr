@@ -1,0 +1,170 @@
+LoliSSR Test Report
+========================================================================
+Date: 2026-04-19 09:07:55
+Base URL: http://localhost/lolissr
+Slug: one-piece
+Numero: 1
+========================================================================
+
+
+════════════════════════════════════════════════════════════════════════
+  TESTS LOLISSR
+════════════════════════════════════════════════════════════════════════
+
+
+▶ HTTP 404
+──────────────────────────────────────────────────────
+❌ FAIL Série inexistante -> /manga/serie/slug-inexistant-test-http [status 500 attendu 404 | 34,43 ms]
+❌ FAIL Tome inexistant -> /manga/slug-inexistant-test-http/999999 [status 500 attendu 404 | 31,55 ms]
+❌ FAIL Page modifier inexistante -> /manga/update/slug-inexistant-test-http/999999 [status 500 attendu 404 | 31,58 ms]
+❌ FAIL Pagination très élevée -> /manga/collection/page/999 [status 500 attendu 404 | 47,71 ms]
+
+▶ Canonical
+──────────────────────────────────────────────────────
+✅ OK   Redirect canonique tome -> /manga/One-Piece/1 (301 | 46,33 ms)
+✅ OK   Redirect canonique modifier -> /manga/update/One-Piece/1 (301 | 32,29 ms)
+
+▶ Edge
+──────────────────────────────────────────────────────
+✅ OK   Slug vide -> /manga//1 (404 | 7,84 ms)
+❌ FAIL Numero négatif -> /manga/one-piece/-1 [status 500 attendu 404 | 41,26 ms]
+❌ FAIL Numero texte -> /manga/one-piece/abc [status 500 attendu 404 | 30,31 ms]
+✅ OK   Route inconnue totale -> /route-totalement-inconnue-test (404 | 25,94 ms)
+
+▶ Erreurs
+──────────────────────────────────────────────────────
+❌ FAIL Série inexistante -> /manga/serie/slug-inexistante-test [status 500 attendu 404 | 52,47 ms]
+❌ FAIL Détail inexistant -> /manga/slug-inexistant-test/999999 [status 500 attendu 404 | 47,71 ms]
+
+▶ Pagination
+──────────────────────────────────────────────────────
+❌ FAIL Collection page 2 -> /manga/collection/page/2 [status 500 attendu 200 | 50,06 ms]
+❌ FAIL Collection page 0 refusée -> /manga/collection/page/0 [status 500 attendu 404 | 28,42 ms]
+❌ FAIL Collection page négative refusée -> /manga/collection/page/-1 [status 500 attendu 404 | 32,00 ms]
+❌ FAIL Collection page très haute refusée -> /manga/collection/page/9999 [status 500 attendu 404 | 33,29 ms]
+❌ FAIL Collection AJAX page 0 refusée -> /manga/collection-ajax/page/0 [status 500 attendu 404 | 30,79 ms]
+❌ FAIL Collection AJAX page négative refusée -> /manga/collection-ajax/page/-1 [status 500 attendu 404 | 47,61 ms]
+❌ FAIL Collection AJAX page très haute refusée -> /manga/collection-ajax/page/9999 [status 500 attendu 404 | 32,98 ms]
+
+▶ Smoke
+──────────────────────────────────────────────────────
+✅ OK   Accueil -> / (200 | 37,99 ms)
+❌ FAIL Dashboard manga -> /manga [status 500 attendu 200 | 40,14 ms]
+❌ FAIL Collection -> /manga/collection [status 500 attendu 200 | 36,13 ms]
+❌ FAIL Ajouter -> /manga/ajouter [status 500 attendu 200 | 43,03 ms]
+❌ FAIL Page lien -> /manga/lien [status 500 attendu 200 | 44,73 ms]
+❌ FAIL Série existante -> /manga/serie/one-piece [status 500 attendu 200 | 50,24 ms]
+❌ FAIL Tome existant -> /manga/one-piece/1 [status 500 attendu 200 | 31,58 ms]
+❌ FAIL Page modifier -> /manga/update/one-piece/1 [status 500 attendu 200 | 47,65 ms]
+
+════════════════════════════════════════════════════════════════════════
+  CHECKS COMPLÉMENTAIRES
+════════════════════════════════════════════════════════════════════════
+
+
+▶ AJAX
+──────────────────────────────────────────────────────
+❌ FAIL GET détail contient hooks JS/AJAX [page détail inaccessible | 48,89 ms]
+✅ OK   GET search AJAX limité à 6 résultats max (résultats: 6 | 47,59 ms)
+✅ OK   GET search AJAX vide retourne JSON vide (status 200 | résultat vide attendu | 30,58 ms)
+
+▶ Pagination
+──────────────────────────────────────────────────────
+❌ FAIL Collection page 1 contient du contenu [page inaccessible | 37,12 ms]
+❌ FAIL Collection page 2 contient du contenu [page inaccessible | 46,71 ms]
+❌ FAIL Collection page 2 différente de la page 1 [une des pages pagination est inaccessible | 95,48 ms]
+❌ FAIL Collection page très haute retourne bien 404 [status 500 | 45,12 ms]
+❌ FAIL Collection AJAX page 1 contient du contenu [page AJAX inaccessible | 32,94 ms]
+
+▶ Smoke HTML
+──────────────────────────────────────────────────────
+❌ FAIL Detail a un title [page détail inaccessible | 28,45 ms]
+❌ FAIL Detail contient une image [page détail inaccessible | 32,91 ms]
+❌ FAIL Collection contient plusieurs liens [collection inaccessible | 52,65 ms]
+
+════════════════════════════════════════════════════════════════════════
+  TESTS POST
+════════════════════════════════════════════════════════════════════════
+
+
+▶ Upload
+──────────────────────────────────────────────────────
+✅ OK   Refuse doublon slug + numero (status 409 | doublon détecté | 73,97 ms)
+✅ OK   Refuse image invalide (status 422 | image invalide refusée | 45,54 ms)
+✅ OK   Refuse fichier trop volumineux (status 422 | taille max: non détectée | 56,07 ms)
+
+▶ AJAX
+──────────────────────────────────────────────────────
+✅ OK   POST ajouter validation AJAX invalide (status 422 | json erreur reçu | 38,35 ms)
+✅ OK   POST ajouter body JSON non supporté (status 422 | body JSON non supporté | 31,37 ms)
+✅ OK   GET ajax update-note refusé en 405 (status 405 | GET refusé | 9,97 ms)
+✅ OK   POST ajax update note manga introuvable (status 404 | manga introuvable | 38,89 ms)
+❌ FAIL POST update AJAX URL non canonique [status 301 | URL non canonique | 33,10 ms]
+❌ FAIL POST update AJAX manga introuvable [status 500 | update introuvable | 29,79 ms]
+
+════════════════════════════════════════════════════════════════════════
+  FAILS TRIÉS
+════════════════════════════════════════════════════════════════════════
+
+❌ FAIL Pagination :: Collection page 2 différente de la page 1 [une des pages pagination est inaccessible | 95,48 ms]
+❌ FAIL Smoke HTML :: Collection contient plusieurs liens [collection inaccessible | 52,65 ms]
+❌ FAIL Erreurs :: Série inexistante [status 500 attendu 404 | 52,47 ms]
+❌ FAIL Smoke :: Série existante [status 500 attendu 200 | 50,24 ms]
+❌ FAIL Pagination :: Collection page 2 [status 500 attendu 200 | 50,06 ms]
+❌ FAIL AJAX :: GET détail contient hooks JS/AJAX [page détail inaccessible | 48,89 ms]
+❌ FAIL Erreurs :: Détail inexistant [status 500 attendu 404 | 47,71 ms]
+❌ FAIL HTTP 404 :: Pagination très élevée [status 500 attendu 404 | 47,71 ms]
+❌ FAIL Smoke :: Page modifier [status 500 attendu 200 | 47,65 ms]
+❌ FAIL Pagination :: Collection AJAX page négative refusée [status 500 attendu 404 | 47,61 ms]
+❌ FAIL Pagination :: Collection page 2 contient du contenu [page inaccessible | 46,71 ms]
+❌ FAIL Pagination :: Collection page très haute retourne bien 404 [status 500 | 45,12 ms]
+❌ FAIL Smoke :: Page lien [status 500 attendu 200 | 44,73 ms]
+❌ FAIL Smoke :: Ajouter [status 500 attendu 200 | 43,03 ms]
+❌ FAIL Edge :: Numero négatif [status 500 attendu 404 | 41,26 ms]
+❌ FAIL Smoke :: Dashboard manga [status 500 attendu 200 | 40,14 ms]
+❌ FAIL Pagination :: Collection page 1 contient du contenu [page inaccessible | 37,12 ms]
+❌ FAIL Smoke :: Collection [status 500 attendu 200 | 36,13 ms]
+❌ FAIL HTTP 404 :: Série inexistante [status 500 attendu 404 | 34,43 ms]
+❌ FAIL Pagination :: Collection page très haute refusée [status 500 attendu 404 | 33,29 ms]
+❌ FAIL AJAX :: POST update AJAX URL non canonique [status 301 | URL non canonique | 33,10 ms]
+❌ FAIL Pagination :: Collection AJAX page très haute refusée [status 500 attendu 404 | 32,98 ms]
+❌ FAIL Pagination :: Collection AJAX page 1 contient du contenu [page AJAX inaccessible | 32,94 ms]
+❌ FAIL Smoke HTML :: Detail contient une image [page détail inaccessible | 32,91 ms]
+❌ FAIL Pagination :: Collection page négative refusée [status 500 attendu 404 | 32,00 ms]
+❌ FAIL Smoke :: Tome existant [status 500 attendu 200 | 31,58 ms]
+❌ FAIL HTTP 404 :: Page modifier inexistante [status 500 attendu 404 | 31,58 ms]
+❌ FAIL HTTP 404 :: Tome inexistant [status 500 attendu 404 | 31,55 ms]
+❌ FAIL Pagination :: Collection AJAX page 0 refusée [status 500 attendu 404 | 30,79 ms]
+❌ FAIL Edge :: Numero texte [status 500 attendu 404 | 30,31 ms]
+❌ FAIL AJAX :: POST update AJAX manga introuvable [status 500 | update introuvable | 29,79 ms]
+❌ FAIL Smoke HTML :: Detail a un title [page détail inaccessible | 28,45 ms]
+❌ FAIL Pagination :: Collection page 0 refusée [status 500 attendu 404 | 28,42 ms]
+
+════════════════════════════════════════════════════════════════════════
+  RÉSUMÉ PAR CATÉGORIE
+════════════════════════════════════════════════════════════════════════
+
+HTTP 404               OK: 0   FAIL: 4   WARN: 0   TOTAL: 4   TIME: 145,26 ms
+Canonical              OK: 2   FAIL: 0   WARN: 0   TOTAL: 2   TIME: 78,61 ms
+Edge                   OK: 2   FAIL: 2   WARN: 0   TOTAL: 4   TIME: 105,36 ms
+Erreurs                OK: 0   FAIL: 2   WARN: 0   TOTAL: 2   TIME: 100,18 ms
+Pagination             OK: 0   FAIL: 12   WARN: 0   TOTAL: 12   TIME: 512,52 ms
+Smoke                  OK: 1   FAIL: 7   WARN: 0   TOTAL: 8   TIME: 331,50 ms
+AJAX                   OK: 6   FAIL: 3   WARN: 0   TOTAL: 9   TIME: 308,54 ms
+Smoke HTML             OK: 0   FAIL: 3   WARN: 0   TOTAL: 3   TIME: 114,01 ms
+Upload                 OK: 3   FAIL: 0   WARN: 0   TOTAL: 3   TIME: 175,58 ms
+
+════════════════════════════════════════════════════════════════════════
+  RÉSUMÉ FINAL
+════════════════════════════════════════════════════════════════════════
+
+────────────────────────────────────────────────────────────────────────
+Tests exécutés : 47
+Succès         : 14
+Échecs         : 33
+Warnings       : 0
+Temps cumulé   : 1 871,57 ms
+Temps global   : 1 892,31 ms
+────────────────────────────────────────────────────────────────────────
+💥 SUITE À CORRIGER
+État global : il reste des points à corriger.
