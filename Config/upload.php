@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Core\Env;
+use App\Core\Config\Env;
 
 return [
 

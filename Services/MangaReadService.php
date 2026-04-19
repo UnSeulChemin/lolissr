@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Core\App;
-use App\Core\Str;
+use App\Core\Application\App;
+use App\Core\Support\Str;
 use App\Models\MangaModel;
 
 class MangaReadService

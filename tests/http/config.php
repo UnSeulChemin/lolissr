@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Core\App;
-use App\Core\Env;
+use App\Core\Application\App;
+use App\Core\Config\Env;
 
 /*
 |--------------------------------------------------------------------------

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Core\Session;
+use App\Core\Support\Session;
 use PHPUnit\Framework\TestCase;
 
 final class SessionTest extends TestCase

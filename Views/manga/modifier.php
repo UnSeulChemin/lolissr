@@ -1,6 +1,6 @@
 <?php
 
-use App\Core\Session;
+use App\Core\Support\Session;
 
 $errors = Session::get('errors', []);
 $old = Session::get('old', []);

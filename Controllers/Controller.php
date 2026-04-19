@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Core\App;
-use App\Core\Session;
+use App\Core\Application\App;
+use App\Core\Support\Session;
 
 abstract class Controller
 {

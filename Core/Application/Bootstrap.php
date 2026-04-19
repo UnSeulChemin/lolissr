@@ -2,7 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Core;
+namespace App\Core\Application;
+
+use App\Core\Config\Config;
+use App\Core\Config\Env;
+use App\Core\Exceptions\ErrorHandler;
+use App\Core\Http\Router;
 
 final class Bootstrap
 {

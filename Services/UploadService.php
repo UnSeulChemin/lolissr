@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Core\Env;
-use App\Core\Logger;
-use App\Core\Str;
-use App\Core\UploadConfig;
+use App\Core\Config\Env;
+use App\Core\Support\Logger;
+use App\Core\Support\Str;
+use App\Core\Config\UploadConfig;
 
 class UploadService
 {

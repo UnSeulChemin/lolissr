@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Core\Validator;
+use App\Core\Validation\Validator;
 use PHPUnit\Framework\TestCase;
 
 final class ValidatorTest extends TestCase

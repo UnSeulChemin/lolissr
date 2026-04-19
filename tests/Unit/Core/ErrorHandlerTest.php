@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Core\ErrorHandler;
+use App\Core\Exceptions\ErrorHandler;
 use PHPUnit\Framework\TestCase;
 
 final class ErrorHandlerTest extends TestCase

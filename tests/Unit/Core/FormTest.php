@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Core\Form;
+use App\Core\Validation\Form;
 use PHPUnit\Framework\TestCase;
 
 final class FormTest extends TestCase

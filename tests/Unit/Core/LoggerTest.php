@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Core\Env;
-use App\Core\Logger;
+use App\Core\Config\Env;
+use App\Core\Support\Logger;
 use PHPUnit\Framework\TestCase;
 
 final class LoggerTest extends TestCase

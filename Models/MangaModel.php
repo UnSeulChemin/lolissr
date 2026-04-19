@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Core\Str;
+use App\Core\Support\Str;
 use App\Models\Trait\CreatedAtTrait;
 
 class MangaModel extends Model

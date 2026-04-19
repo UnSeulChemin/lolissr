@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Core\App;
-use App\Core\Request;
-use App\Core\Session;
-use App\Core\Str;
+use App\Core\Application\App;
+use App\Core\Http\Request;
+use App\Core\Support\Session;
+use App\Core\Support\Str;
 use App\Models\MangaModel;
 use App\Services\MangaReadService;
 use App\Services\MangaService;
