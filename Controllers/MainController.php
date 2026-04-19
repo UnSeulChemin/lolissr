@@ -1,17 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controllers;
 
-use App\Models\MangaModel;
+use App\Repositories\MangaRepository;
 
 class MainController extends Controller
 {
     /**
-     * Retourne le modèle manga.
+     * Retourne le repository manga.
      */
-    private function mangaModel(): MangaModel
+    private function mangaRepository(): MangaRepository
     {
-        return new MangaModel();
+        return new MangaRepository();
     }
 
     /**
@@ -22,18 +24,18 @@ class MainController extends Controller
     {
         $this->title = 'Accueil';
 
-        $mangaModel = $this->mangaModel();
+        $mangaRepository = $this->mangaRepository();
 
-        $totalTomes = $mangaModel->countAllTomes();
-        $totalSeries = $mangaModel->countSeries();
-        $averageNote = $mangaModel->averageNote();
-        $lastTome = $mangaModel->findLastAdded();
-        $longestSeries = $mangaModel->findLongestSeries();
-        $topLongestSeries = $mangaModel->topLongestSeries();
+        $totalTomes = $mangaRepository->countAllTomes();
+        $totalSeries = $mangaRepository->countSeries();
+        $averageNote = $mangaRepository->averageNote();
+        $lastTome = $mangaRepository->findLastAdded();
+        $longestSeries = $mangaRepository->findLongestSeries();
+        $topLongestSeries = $mangaRepository->topLongestSeries();
 
-        $lowRatedMangas = $mangaModel->findLowRatedMangas();
-        $lowJacquetteMangas = $mangaModel->findLowJacquetteMangas();
-        $lowLivreStateMangas = $mangaModel->findLowLivreStateMangas();
+        $lowRatedMangas = $mangaRepository->findLowRatedMangas();
+        $lowJacquetteMangas = $mangaRepository->findLowJacquetteMangas();
+        $lowLivreStateMangas = $mangaRepository->findLowLivreStateMangas();
 
         $this->render('main/index', [
             'totalTomes' => $totalTomes,

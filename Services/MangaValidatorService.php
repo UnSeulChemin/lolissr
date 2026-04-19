@@ -64,6 +64,8 @@ class MangaValidatorService
 
     /**
      * Retourne le premier message d’erreur lisible.
+     *
+     * @param array<string, mixed> $errors
      */
     public function firstErrorMessage(
         array $errors,

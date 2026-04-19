@@ -6,13 +6,21 @@ namespace App\Services;
 
 use App\Core\Application\App;
 use App\Core\Support\Str;
-use App\Models\MangaModel;
+use App\Repositories\MangaRepository;
 
 class MangaReadService
 {
     public function __construct(
-        private readonly MangaModel $mangaModel = new MangaModel()
+        private readonly MangaRepository $mangaRepository = new MangaRepository()
     ) {
+    }
+
+    /**
+     * Retourne le repository manga.
+     */
+    public function repository(): MangaRepository
+    {
+        return $this->mangaRepository;
     }
 
     /**
@@ -27,7 +35,7 @@ class MangaReadService
      * Retourne les données de collection paginée.
      *
      * @return array{
-     *     mangas: array,
+     *     mangas: array<int, object>,
      *     compteur: int,
      *     currentPage: int
      * }|null
@@ -47,7 +55,7 @@ class MangaReadService
         }
 
         $pagination = App::pagination();
-        $compteur = $this->mangaModel->countFirstTomesPaginate($pagination);
+        $compteur = $this->mangaRepository->countFirstTomesPaginate($pagination);
 
         if ($compteur > 0 && $currentPage > $compteur)
         {
@@ -55,7 +63,7 @@ class MangaReadService
         }
 
         return [
-            'mangas' => $this->mangaModel->findAllFirstTomes('id DESC', $pagination, $currentPage),
+            'mangas' => $this->mangaRepository->findAllFirstTomes('id DESC', $pagination, $currentPage),
             'compteur' => $compteur,
             'currentPage' => $currentPage
         ];
@@ -65,7 +73,7 @@ class MangaReadService
      * Retourne les données de recherche.
      *
      * @return array{
-     *     mangas: array,
+     *     mangas: array<int, object>,
      *     search: string
      * }
      */
@@ -82,13 +90,15 @@ class MangaReadService
         }
 
         return [
-            'mangas' => $this->mangaModel->searchMangas($search),
+            'mangas' => $this->mangaRepository->searchMangas($search),
             'search' => $search
         ];
     }
 
     /**
      * Retourne les résultats live search.
+     *
+     * @return array<int, array<string, mixed>>
      */
     public function searchAjax(string $query = ''): array
     {
@@ -99,7 +109,7 @@ class MangaReadService
             return [];
         }
 
-        $mangas = $this->mangaModel->searchMangas($search);
+        $mangas = $this->mangaRepository->searchMangas($search);
         $results = [];
 
         foreach (array_slice($mangas, 0, 6) as $manga)
@@ -110,7 +120,7 @@ class MangaReadService
                 'livre' => $manga->livre,
                 'thumbnail' => $manga->thumbnail,
                 'extension' => $manga->extension,
-                'note' => $manga->note
+                'note' => $manga->note !== null ? (int) $manga->note : null
             ];
         }
 
@@ -121,16 +131,16 @@ class MangaReadService
      * Retourne les mangas d’une série avec slug canonique.
      *
      * @return array{
-     *     mangas: array,
+     *     mangas: array<int, object>,
      *     canonicalSlug: string
      * }|null
      */
     public function serie(string $slug): ?array
     {
         $normalizedSlug = Str::slug($slug);
-        $mangas = $this->mangaModel->findBySlug($normalizedSlug);
+        $mangas = $this->mangaRepository->findBySlug($normalizedSlug);
 
-        if (!$mangas)
+        if ($mangas === [])
         {
             return null;
         }
@@ -152,9 +162,9 @@ class MangaReadService
     public function one(string $slug, int $numero): ?array
     {
         $normalizedSlug = Str::slug($slug);
-        $manga = $this->mangaModel->findOneBySlugAndNumero($normalizedSlug, $numero);
+        $manga = $this->mangaRepository->findOneBySlugAndNumero($normalizedSlug, $numero);
 
-        if (!$manga)
+        if ($manga === false)
         {
             return null;
         }

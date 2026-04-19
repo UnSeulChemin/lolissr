@@ -8,13 +8,13 @@ use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Support\Session;
 use App\Core\Support\Str;
-use App\Models\MangaModel;
+use App\Repositories\MangaRepository;
 use App\Services\MangaReadService;
 use App\Services\MangaService;
 
 class MangaController extends Controller
 {
-    protected MangaModel $mangaModel;
+    protected MangaRepository $mangaRepository;
     protected MangaService $mangaService;
     protected MangaReadService $mangaReadService;
 
@@ -22,17 +22,17 @@ class MangaController extends Controller
     {
         parent::__construct();
 
-        $this->mangaModel = new MangaModel();
-        $this->mangaService = new MangaService($this->mangaModel);
-        $this->mangaReadService = new MangaReadService($this->mangaModel);
+        $this->mangaRepository = new MangaRepository();
+        $this->mangaService = new MangaService($this->mangaRepository);
+        $this->mangaReadService = new MangaReadService($this->mangaRepository);
     }
 
     /**
-     * Retourne le modèle manga.
+     * Retourne le repository manga.
      */
-    protected function mangaModel(): MangaModel
+    protected function mangaRepository(): MangaRepository
     {
-        return $this->mangaModel;
+        return $this->mangaRepository;
     }
 
     /**
@@ -143,6 +143,8 @@ class MangaController extends Controller
         }
 
         $this->notFound('Manga introuvable');
+
+        throw new \RuntimeException('Exécution interrompue après manga introuvable.');
     }
 
     /**
@@ -173,6 +175,8 @@ class MangaController extends Controller
         }
 
         Response::redirect($redirect, 301);
+
+        throw new \RuntimeException('Exécution interrompue après redirection canonique.');
     }
 
     /**
@@ -215,6 +219,14 @@ class MangaController extends Controller
         if ($ajax)
         {
             $fresh = $this->mangaReadService()->one($slug, $numero);
+
+            if ($fresh === null)
+            {
+                $this->jsonResponse([
+                    'success' => false,
+                    'message' => 'Manga introuvable'
+                ], 404);
+            }
 
             $this->jsonResponse([
                 'success' => true,

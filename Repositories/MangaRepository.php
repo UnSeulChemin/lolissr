@@ -2,27 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Models;
+namespace App\Repositories;
 
 use App\Core\Support\Str;
-use App\Models\Trait\CreatedAtTrait;
+use App\Models\Model;
 
-class MangaModel extends Model
+final class MangaRepository extends Model
 {
-    use CreatedAtTrait;
-
     protected string $table = 'manga';
-
-    protected int $id;
-    protected string $thumbnail;
-    protected string $extension;
-    protected string $slug;
-    protected string $livre;
-    protected int $numero;
-    protected ?int $jacquette = null;
-    protected ?int $livre_note = null;
-    protected ?int $note = null;
-    protected ?string $commentaire = null;
 
     /**
      * Convertit une note en int ou null.
@@ -45,8 +32,23 @@ class MangaModel extends Model
     }
 
     /**
+     * Calcule la note finale sur 10.
+     */
+    private function calculateNote(?int $jacquette, ?int $livreNote): ?int
+    {
+        if ($jacquette === null || $livreNote === null)
+        {
+            return null;
+        }
+
+        return $jacquette + $livreNote;
+    }
+
+    /**
      * Recherche mangas par titre, slug
      * et numéro de tome (tome, t, vol, volume, n°, no, #, etc.)
+     *
+     * @return array<int, object>
      */
     public function searchMangas(string $search): array
     {
@@ -57,27 +59,9 @@ class MangaModel extends Model
             return [];
         }
 
-        /* Nettoyage espaces */
         $search = preg_replace('/\s+/', ' ', $search);
-        $search = trim($search);
+        $search = trim((string) $search);
 
-        /*
-        |-------------------------------------------------------
-        | Détecte un numéro de tome à la fin
-        | Exemples :
-        | - rave 1
-        | - rave 01
-        | - rave tome 1
-        | - rave t1
-        | - rave t01
-        | - rave vol 1
-        | - rave vol.1
-        | - rave volume 1
-        | - rave n°1
-        | - rave no 1
-        | - rave #1
-        |-------------------------------------------------------
-        */
         $pattern = '/^(.*?)(?:\s+(?:t|tome|vol|vol\.|volume|n°|no|#)?\s*0*([1-9][0-9]*))$/iu';
 
         if (preg_match($pattern, $search, $matches))
@@ -107,33 +91,14 @@ class MangaModel extends Model
             }
         }
 
-        /*
-        |-------------------------------------------------------
-        | Nettoie un suffixe tome sans numéro
-        | Exemples :
-        | - rave tome
-        | - rave t
-        | - rave vol
-        | - rave vol.
-        | - rave volume
-        | - rave n°
-        | - rave no
-        | - rave #
-        |-------------------------------------------------------
-        */
         $search = preg_replace('/\s+(t|tome|vol|vol\.|volume|n°|no|#)$/iu', '', $search);
-        $search = trim($search);
+        $search = trim((string) $search);
 
         if ($search === '')
         {
             return [];
         }
 
-        /*
-        |-------------------------------------------------------
-        | Recherche simple (sans numéro)
-        |-------------------------------------------------------
-        */
         $query = $this->requete(
             "SELECT *
             FROM {$this->getTable()}
@@ -150,19 +115,6 @@ class MangaModel extends Model
     }
 
     /**
-     * Calcule la note finale sur 10.
-     */
-    private function calculateNote(?int $jacquette, ?int $livreNote): ?int
-    {
-        if ($jacquette === null || $livreNote === null)
-        {
-            return null;
-        }
-
-        return $jacquette + $livreNote;
-    }
-
-    /**
      * Compte le nombre total de tomes.
      */
     public function countAllTomes(): int
@@ -171,6 +123,11 @@ class MangaModel extends Model
             "SELECT COUNT(*) AS total
             FROM {$this->getTable()}"
         );
+
+        if ($query === false)
+        {
+            return 0;
+        }
 
         $result = $query->fetch();
 
@@ -187,6 +144,11 @@ class MangaModel extends Model
             FROM {$this->getTable()}"
         );
 
+        if ($query === false)
+        {
+            return 0;
+        }
+
         $result = $query->fetch();
 
         return (int) ($result->total ?? 0);
@@ -197,12 +159,14 @@ class MangaModel extends Model
      */
     public function findLastAdded(): object|false
     {
-        return $this->requete(
+        $query = $this->requete(
             "SELECT *
             FROM {$this->getTable()}
             ORDER BY id DESC
             LIMIT 1"
-        )->fetch();
+        );
+
+        return $query ? $query->fetch() : false;
     }
 
     /**
@@ -210,7 +174,7 @@ class MangaModel extends Model
      */
     public function findLongestSeries(): object|false
     {
-        return $this->requete(
+        $query = $this->requete(
             "SELECT m1.slug, m1.livre, m1.thumbnail, m1.extension, counts.total
             FROM {$this->getTable()} m1
             INNER JOIN (
@@ -222,7 +186,9 @@ class MangaModel extends Model
             ) counts ON counts.slug = m1.slug
             WHERE m1.numero = 1
             LIMIT 1"
-        )->fetch();
+        );
+
+        return $query ? $query->fetch() : false;
     }
 
     /**
@@ -236,6 +202,11 @@ class MangaModel extends Model
             WHERE note IS NOT NULL"
         );
 
+        if ($query === false)
+        {
+            return null;
+        }
+
         $result = $query->fetch();
 
         if (!isset($result->moyenne))
@@ -248,12 +219,14 @@ class MangaModel extends Model
 
     /**
      * Retourne le top des séries les plus longues.
+     *
+     * @return array<int, object>
      */
     public function topLongestSeries(int $limit = 5): array
     {
         $limit = max(1, (int) $limit);
 
-        return $this->requete(
+        $query = $this->requete(
             "SELECT m1.slug, m1.livre, m1.thumbnail, m1.extension, counts.total
             FROM {$this->getTable()} m1
             INNER JOIN (
@@ -265,66 +238,76 @@ class MangaModel extends Model
             ) counts ON counts.slug = m1.slug
             WHERE m1.numero = 1
             ORDER BY counts.total DESC, m1.livre ASC"
-        )->fetchAll();
+        );
+
+        return $query ? $query->fetchAll() : [];
     }
 
     /**
      * Récupère les mangas faiblement notés.
-     * Règle : note strictement inférieure à 8/10.
+     *
+     * @return array<int, object>
      */
     public function findLowRatedMangas(int $limit = 10): array
     {
         $limit = max(1, (int) $limit);
 
-        return $this->requete(
+        $query = $this->requete(
             "SELECT *
             FROM {$this->getTable()}
             WHERE note IS NOT NULL
             AND note < 8
             ORDER BY note ASC, livre ASC, numero ASC
             LIMIT {$limit}"
-        )->fetchAll();
+        );
+
+        return $query ? $query->fetchAll() : [];
     }
 
     /**
      * Récupère les mangas avec jacquette faible.
-     * Règle : jacquette strictement inférieure à 4/5.
+     *
+     * @return array<int, object>
      */
     public function findLowJacquetteMangas(int $limit = 10): array
     {
         $limit = max(1, (int) $limit);
 
-        return $this->requete(
+        $query = $this->requete(
             "SELECT *
             FROM {$this->getTable()}
             WHERE jacquette IS NOT NULL
             AND jacquette < 4
             ORDER BY jacquette ASC, livre ASC, numero ASC
             LIMIT {$limit}"
-        )->fetchAll();
+        );
+
+        return $query ? $query->fetchAll() : [];
     }
 
     /**
      * Récupère les mangas avec état livre faible.
-     * Règle : livre_note strictement inférieure à 4/5.
+     *
+     * @return array<int, object>
      */
     public function findLowLivreStateMangas(int $limit = 10): array
     {
         $limit = max(1, (int) $limit);
 
-        return $this->requete(
+        $query = $this->requete(
             "SELECT *
             FROM {$this->getTable()}
             WHERE livre_note IS NOT NULL
             AND livre_note < 4
             ORDER BY livre_note ASC, livre ASC, numero ASC
             LIMIT {$limit}"
-        )->fetchAll();
+        );
+
+        return $query ? $query->fetchAll() : [];
     }
 
     /**
-     * Compte le nombre total de pages
-     * pour la collection générale des tomes 1.
+     * Compte le nombre total de pages pour la collection des tomes 1.
      */
     public function countFirstTomesPaginate(int $eachPerPage): int
     {
@@ -337,6 +320,11 @@ class MangaModel extends Model
             [1]
         );
 
+        if ($query === false)
+        {
+            return 1;
+        }
+
         $result = $query->fetch();
         $total = (int) ($result->total ?? 0);
 
@@ -344,8 +332,9 @@ class MangaModel extends Model
     }
 
     /**
-     * Récupère les tomes 1 paginés
-     * avec le total de tomes par série.
+     * Récupère les tomes 1 paginés.
+     *
+     * @return array<int, object>
      */
     public function findAllFirstTomes(string $orderBy, int $eachPerPage, int $page): array
     {
@@ -353,9 +342,9 @@ class MangaModel extends Model
         $eachPerPage = max(1, $eachPerPage);
         $start = ($page - 1) * $eachPerPage;
 
-        $orderByAutorises = ['id DESC', 'id ASC'];
+        $allowedOrderBy = ['id DESC', 'id ASC'];
 
-        if (!in_array($orderBy, $orderByAutorises, true))
+        if (!in_array($orderBy, $allowedOrderBy, true))
         {
             $orderBy = 'id DESC';
         }
@@ -383,6 +372,8 @@ class MangaModel extends Model
 
     /**
      * Récupère tous les tomes d'un manga à partir de son slug.
+     *
+     * @return array<int, object>
      */
     public function findBySlug(string $slug): array
     {
@@ -454,10 +445,10 @@ class MangaModel extends Model
                 NOW()
             )",
             [
-                'thumbnail' => trim($datas['thumbnail'] ?? ''),
-                'extension' => strtolower(trim($datas['extension'] ?? '')),
-                'slug' => Str::slug($datas['slug'] ?? ''),
-                'livre' => trim($datas['livre'] ?? ''),
+                'thumbnail' => trim((string) ($datas['thumbnail'] ?? '')),
+                'extension' => strtolower(trim((string) ($datas['extension'] ?? ''))),
+                'slug' => Str::slug((string) ($datas['slug'] ?? '')),
+                'livre' => trim((string) ($datas['livre'] ?? '')),
                 'numero' => max(0, (int) ($datas['numero'] ?? 0)),
                 'jacquette' => $jacquette,
                 'livre_note' => $livreNote,
@@ -468,8 +459,7 @@ class MangaModel extends Model
     }
 
     /**
-     * Met à jour un manga :
-     * jacquette, livre_note, note et commentaire.
+     * Met à jour un manga.
      */
     public function updateManga(
         string $slug,
@@ -499,175 +489,5 @@ class MangaModel extends Model
                 'numero' => $numero
             ]
         );
-    }
-
-    /**
-     * Retourne l'id.
-     */
-    public function getId(): int
-    {
-        return $this->id;
-    }
-
-    /**
-     * Définit l'id.
-     */
-    public function setId(int $id): self
-    {
-        $this->id = $id;
-        return $this;
-    }
-
-    /**
-     * Retourne le thumbnail.
-     */
-    public function getThumbnail(): string
-    {
-        return $this->thumbnail;
-    }
-
-    /**
-     * Définit le thumbnail.
-     */
-    public function setThumbnail(string $thumbnail): self
-    {
-        $this->thumbnail = trim($thumbnail);
-        return $this;
-    }
-
-    /**
-     * Retourne l'extension.
-     */
-    public function getExtension(): string
-    {
-        return $this->extension;
-    }
-
-    /**
-     * Définit l'extension.
-     */
-    public function setExtension(string $extension): self
-    {
-        $this->extension = strtolower(trim($extension));
-        return $this;
-    }
-
-    /**
-     * Retourne le slug.
-     */
-    public function getSlug(): string
-    {
-        return $this->slug;
-    }
-
-    /**
-     * Définit le slug.
-     */
-    public function setSlug(string $slug): self
-    {
-        $this->slug = Str::slug($slug);
-        return $this;
-    }
-
-    /**
-     * Retourne le livre.
-     */
-    public function getLivre(): string
-    {
-        return $this->livre;
-    }
-
-    /**
-     * Définit le livre.
-     */
-    public function setLivre(string $livre): self
-    {
-        $this->livre = trim($livre);
-        return $this;
-    }
-
-    /**
-     * Retourne le numéro.
-     */
-    public function getNumero(): int
-    {
-        return $this->numero;
-    }
-
-    /**
-     * Définit le numéro.
-     */
-    public function setNumero(int $numero): self
-    {
-        $this->numero = max(0, $numero);
-        return $this;
-    }
-
-    /**
-     * Retourne la note jacquette.
-     */
-    public function getJacquette(): ?int
-    {
-        return $this->jacquette;
-    }
-
-    /**
-     * Définit la note jacquette.
-     */
-    public function setJacquette(?int $jacquette): self
-    {
-        $this->jacquette = $this->normalizeNoteValue($jacquette);
-        return $this;
-    }
-
-    /**
-     * Retourne la note du livre.
-     */
-    public function getLivreNote(): ?int
-    {
-        return $this->livre_note;
-    }
-
-    /**
-     * Définit la note du livre.
-     */
-    public function setLivreNote(?int $livre_note): self
-    {
-        $this->livre_note = $this->normalizeNoteValue($livre_note);
-        return $this;
-    }
-
-    /**
-     * Retourne la note totale.
-     */
-    public function getNote(): ?int
-    {
-        return $this->note;
-    }
-
-    /**
-     * Définit la note totale.
-     */
-    public function setNote(?int $note): self
-    {
-        $this->note = $note;
-        return $this;
-    }
-
-    /**
-     * Retourne le commentaire.
-     */
-    public function getCommentaire(): ?string
-    {
-        return $this->commentaire;
-    }
-
-    /**
-     * Définit le commentaire.
-     */
-    public function setCommentaire(?string $commentaire): self
-    {
-        $this->commentaire = Str::nullableTrim($commentaire);
-        return $this;
     }
 }

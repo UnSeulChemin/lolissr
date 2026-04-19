@@ -6,23 +6,23 @@ namespace App\Services;
 
 use App\Core\Support\Logger;
 use App\Core\Support\Str;
-use App\Models\MangaModel;
+use App\Repositories\MangaRepository;
 
 class MangaService
 {
     public function __construct(
-        private readonly MangaModel $mangaModel = new MangaModel(),
+        private readonly MangaRepository $mangaRepository = new MangaRepository(),
         private readonly UploadService $uploadService = new UploadService(),
         private readonly MangaValidatorService $validatorService = new MangaValidatorService()
     ) {
     }
 
     /**
-     * Retourne le modèle manga.
+     * Retourne le repository manga.
      */
-    public function model(): MangaModel
+    public function repository(): MangaRepository
     {
-        return $this->mangaModel;
+        return $this->mangaRepository;
     }
 
     /**
@@ -158,7 +158,7 @@ class MangaService
      *     success: bool,
      *     status: int,
      *     message: string,
-     *     errors?: array,
+     *     errors?: array<string, mixed>,
      *     file?: string
      * }
      */
@@ -182,7 +182,7 @@ class MangaService
 
         if (
             !$this->uploadService->isTestUploadMode()
-            && $this->mangaModel->findOneBySlugAndNumero($data['slug'], $data['numero'])
+            && $this->mangaRepository->findOneBySlugAndNumero($data['slug'], $data['numero'])
         )
         {
             return [
@@ -218,7 +218,7 @@ class MangaService
             ];
         }
 
-        $insert = $this->mangaModel->insert([
+        $insert = $this->mangaRepository->insert([
             'thumbnail' => $upload['thumbnail'],
             'extension' => $upload['extension'],
             'slug' => $data['slug'],
@@ -261,7 +261,7 @@ class MangaService
      *     success: bool,
      *     status: int,
      *     message: string,
-     *     errors?: array
+     *     errors?: array<string, mixed>
      * }
      */
     public function update(string $slug, int $numero, array $post, array $files): array
@@ -282,7 +282,7 @@ class MangaService
 
         $data = $this->normalizedUpdateData($post);
 
-        $updated = $this->mangaModel->updateManga(
+        $updated = $this->mangaRepository->updateManga(
             $slug,
             $numero,
             $data['jacquette'],

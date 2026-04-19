@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\Controllers\MangaController;
-use App\Models\MangaModel;
+use App\Repositories\MangaRepository;
 use PHPUnit\Framework\TestCase;
 use App\Core\Validation\Validator;
 
