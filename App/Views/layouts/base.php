@@ -34,7 +34,7 @@ elseif (!empty($_SESSION['error']))
 
 <body>
 
-    <?php require_once ROOT . '/Views/partials/header.php'; ?>
+    <?php require_once ROOT . '/App/Views/partials/header.php'; ?>
 
     <main>
         <?= $content ?>

@@ -39,7 +39,7 @@ abstract class Controller
      */
     protected function viewPath(string $file): string
     {
-        return ROOT . '/Views/' . $file . '.php';
+        return ROOT . '/App/Views/' . $file . '.php';
     }
 
     /**
@@ -47,7 +47,7 @@ abstract class Controller
      */
     protected function errorViewPath(string $file): string
     {
-        return ROOT . '/Views/errors/' . $file . '.php';
+        return ROOT . '/App/Views/errors/' . $file . '.php';
     }
 
     /**
@@ -55,7 +55,7 @@ abstract class Controller
      */
     protected function templatePath(): string
     {
-        return ROOT . '/Views/' . $this->template . '.php';
+        return ROOT . '/App/Views/' . $this->template . '.php';
     }
 
     /**
@@ -137,6 +137,7 @@ abstract class Controller
         if (!is_file($viewPath))
         {
             Response::html('Vue erreur introuvable : ' . $file, 500);
+            return;
         }
 
         extract($data, EXTR_SKIP);
@@ -153,6 +154,7 @@ abstract class Controller
         if (!is_file($templatePath))
         {
             Response::html('Template introuvable : ' . $this->template, 500);
+            return;
         }
 
         ob_start();

@@ -55,6 +55,12 @@ class ErrorHandler
             . ' on line '
             . $exception->getLine();
 
+        /*
+        |--------------------------------------------------
+        | HTTP Exceptions (404, 405...)
+        |--------------------------------------------------
+        */
+
         if ($exception instanceof HttpException)
         {
             Logger::warning(
@@ -62,20 +68,16 @@ class ErrorHandler
                 . $message
             );
 
-            if (App::debug())
-            {
-                http_response_code($exception->getStatusCode());
-
-                echo '<pre>';
-                echo 'HTTP Exception [' . $exception->getStatusCode() . '] : ' . $message . PHP_EOL;
-                echo $exception->getTraceAsString();
-                echo '</pre>';
-
-                exit;
-            }
-
+            // Toujours afficher la page custom
             self::renderHttpErrorPage($exception);
+            return;
         }
+
+        /*
+        |--------------------------------------------------
+        | Autres exceptions (500)
+        |--------------------------------------------------
+        */
 
         Logger::error(
             'Uncaught Exception: '
