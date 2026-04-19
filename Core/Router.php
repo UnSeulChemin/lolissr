@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace App\Core;
 
 use App\Controllers\ErrorController;
+use RuntimeException;
 
 class Router
 {
     /**
      * Liste des routes enregistrées.
+     *
+     * @var array<string, array<int, array<string, mixed>>>
      */
     private array $routes = [];
 
@@ -31,6 +34,8 @@ class Router
 
     /**
      * Retourne les routes enregistrées.
+     *
+     * @return array<string, array<int, array<string, mixed>>>
      */
     public function getRoutes(): array
     {
@@ -42,11 +47,12 @@ class Router
      */
     private function addRoute(string $method, string $path, string $action): void
     {
+        $path = $this->normalizeRoutePath($path);
         $paramNames = [];
 
         $pattern = preg_replace_callback(
             '#\{([a-zA-Z_][a-zA-Z0-9_]*)\}#',
-            function (array $matches) use (&$paramNames): string
+            static function (array $matches) use (&$paramNames): string
             {
                 $paramNames[] = $matches[1];
                 return '([^/]+)';
@@ -54,11 +60,13 @@ class Router
             $path
         );
 
-        $pattern = '#^' . rtrim((string) $pattern, '/') . '/?$#';
-
         if ($path === '/')
         {
             $pattern = '#^/$#';
+        }
+        else
+        {
+            $pattern = '#^' . rtrim((string) $pattern, '/') . '/?$#';
         }
 
         $this->routes[$method][] = [
@@ -74,20 +82,20 @@ class Router
      */
     public function dispatch(string $uri, string $method): void
     {
-        $path = parse_url($uri, PHP_URL_PATH) ?? '/';
-        $basePath = Functions::basePath();
+        $path = parse_url($uri, PHP_URL_PATH);
 
-        if ($basePath !== '/' && str_starts_with($path, rtrim($basePath, '/')))
+        if (!is_string($path) || $path === '')
         {
-            $path = substr($path, strlen(rtrim($basePath, '/')));
+            $path = '/';
         }
 
-        $path = $path === '' ? '/' : $path;
+        $path = $this->stripBasePath($path);
+        $path = $this->normalizeRequestPath($path);
         $method = strtoupper($method);
 
         foreach ($this->routes[$method] ?? [] as $route)
         {
-            if (preg_match($route['pattern'], $path, $matches))
+            if (preg_match($route['pattern'], $path, $matches) === 1)
             {
                 array_shift($matches);
 
@@ -98,14 +106,14 @@ class Router
                     $params[$name] = $matches[$index] ?? null;
                 }
 
-                $this->callAction($route['action'], $params);
+                $this->callAction((string) $route['action'], $params);
                 return;
             }
         }
 
         $allowedMethods = $this->findAllowedMethods($path);
 
-        if (!empty($allowedMethods))
+        if ($allowedMethods !== [])
         {
             header('Allow: ' . implode(', ', $allowedMethods));
 
@@ -120,6 +128,8 @@ class Router
 
     /**
      * Retourne les méthodes autorisées pour une route trouvée.
+     *
+     * @return string[]
      */
     private function findAllowedMethods(string $path): array
     {
@@ -129,7 +139,7 @@ class Router
         {
             foreach ($registeredRoutes as $route)
             {
-                if (preg_match($route['pattern'], $path))
+                if (preg_match($route['pattern'], $path) === 1)
                 {
                     $allowedMethods[] = $registeredMethod;
                 }
@@ -141,12 +151,14 @@ class Router
 
     /**
      * Appelle le controller et la méthode.
+     *
+     * @param array<string, mixed> $params
      */
     private function callAction(string $action, array $params = []): void
     {
         if (!str_contains($action, '@'))
         {
-            throw new \RuntimeException('Action invalide : ' . $action);
+            throw new RuntimeException('Action invalide : ' . $action);
         }
 
         [$controllerName, $method] = explode('@', $action, 2);
@@ -155,16 +167,77 @@ class Router
 
         if (!class_exists($controllerClass))
         {
-            throw new \RuntimeException('Controller introuvable : ' . $controllerClass);
+            throw new RuntimeException('Controller introuvable : ' . $controllerClass);
         }
 
         $controller = new $controllerClass();
 
         if (!method_exists($controller, $method))
         {
-            throw new \RuntimeException('Méthode introuvable : ' . $controllerClass . '::' . $method);
+            throw new RuntimeException(
+                'Méthode introuvable : ' . $controllerClass . '::' . $method
+            );
         }
 
-        call_user_func_array([$controller, $method], array_values($params));
+        $controller->{$method}(...array_values($params));
+    }
+
+    /**
+     * Normalise un chemin de route déclaré.
+     */
+    private function normalizeRoutePath(string $path): string
+    {
+        $path = trim($path);
+
+        if ($path === '' || $path === '/')
+        {
+            return '/';
+        }
+
+        return '/' . trim($path, '/');
+    }
+
+    /**
+     * Normalise le chemin de la requête.
+     */
+    private function normalizeRequestPath(string $path): string
+    {
+        $path = trim($path);
+
+        if ($path === '' || $path === '/')
+        {
+            return '/';
+        }
+
+        return '/' . trim($path, '/');
+    }
+
+    /**
+     * Supprime le base path de l'URI courante.
+     */
+    private function stripBasePath(string $path): string
+    {
+        $basePath = Functions::basePath();
+
+        if ($basePath === '/')
+        {
+            return $path;
+        }
+
+        $trimmedBasePath = rtrim($basePath, '/');
+
+        if ($path === $trimmedBasePath)
+        {
+            return '/';
+        }
+
+        if (str_starts_with($path, $trimmedBasePath . '/'))
+        {
+            $path = substr($path, strlen($trimmedBasePath));
+
+            return $path === '' ? '/' : $path;
+        }
+
+        return $path;
     }
 }

@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-class Database extends \PDO
+use PDO;
+use PDOException;
+use Exception;
+
+class Database extends PDO
 {
     /**
      * Instance unique de la base de données.
@@ -17,27 +21,29 @@ class Database extends \PDO
      */
     private function __construct()
     {
-        $dsn = 'mysql:host=' . Functions::dbHost()
-            . ';dbname=' . Functions::dbName()
-            . ';charset=' . Functions::dbCharset();
+        $host = (string) Config::get('database.host', 'localhost');
+        $name = (string) Config::get('database.name', '');
+        $charset = (string) Config::get('database.charset', 'utf8mb4');
+        $user = (string) Config::get('database.user', '');
+        $pass = (string) Config::get('database.pass', '');
+
+        $dsn = 'mysql:host=' . $host
+            . ';dbname=' . $name
+            . ';charset=' . $charset;
 
         try
         {
-            parent::__construct(
-                $dsn,
-                Functions::dbUser(),
-                Functions::dbPass()
-            );
+            parent::__construct($dsn, $user, $pass);
 
-            $this->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE, \PDO::FETCH_OBJ);
-            $this->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-            $this->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
+            $this->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
+            $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
         }
-        catch (\PDOException $exception)
+        catch (PDOException $exception)
         {
             Logger::error('Erreur connexion BDD : ' . $exception->getMessage());
 
-            if (Functions::appDebug())
+            if ((bool) Config::get('app.debug', false))
             {
                 exit('Erreur PDO : ' . $exception->getMessage());
             }
@@ -71,6 +77,6 @@ class Database extends \PDO
      */
     public function __wakeup(): void
     {
-        throw new \Exception('Cannot unserialize singleton');
+        throw new Exception('Cannot unserialize singleton');
     }
 }

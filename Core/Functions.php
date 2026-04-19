@@ -8,6 +8,8 @@ class Functions
 {
     /**
      * Cache mémoire des variables d'environnement déjà lues.
+     *
+     * @var array<string, mixed>
      */
     private static array $envCache = [];
 
@@ -21,6 +23,8 @@ class Functions
 
     /**
      * Récupère une variable d'environnement.
+     *
+     * @param mixed $default
      */
     public static function env(string $key, mixed $default = null): mixed
     {
@@ -67,7 +71,7 @@ class Functions
      */
     public static function basePath(): string
     {
-        $basePath = trim((string) self::env('APP_BASE_PATH', '/'));
+        $basePath = trim((string) Config::get('app.base_path', '/'));
 
         if ($basePath === '' || $basePath === '/')
         {
@@ -82,7 +86,7 @@ class Functions
      */
     public static function siteName(): string
     {
-        return (string) self::env('APP_NAME', 'Site');
+        return (string) Config::get('app.name', 'Site');
     }
 
     /**
@@ -90,7 +94,7 @@ class Functions
      */
     public static function pagination(): int
     {
-        return max(1, (int) self::env('APP_PAGINATION', 8));
+        return max(1, (int) Config::get('app.pagination', 8));
     }
 
     /**
@@ -98,7 +102,7 @@ class Functions
      */
     public static function appEnv(): string
     {
-        return (string) self::env('APP_ENV', 'local');
+        return (string) Config::get('app.env', 'local');
     }
 
     /**
@@ -106,7 +110,7 @@ class Functions
      */
     public static function appDebug(): bool
     {
-        return (bool) self::env('APP_DEBUG', false);
+        return (bool) Config::get('app.debug', false);
     }
 
     /*
@@ -120,7 +124,7 @@ class Functions
      */
     public static function dbHost(): string
     {
-        return (string) self::env('DB_HOST', 'localhost');
+        return (string) Config::get('database.host', 'localhost');
     }
 
     /**
@@ -128,7 +132,7 @@ class Functions
      */
     public static function dbName(): string
     {
-        return (string) self::env('DB_NAME', '');
+        return (string) Config::get('database.name', '');
     }
 
     /**
@@ -136,7 +140,7 @@ class Functions
      */
     public static function dbUser(): string
     {
-        return (string) self::env('DB_USER', '');
+        return (string) Config::get('database.user', '');
     }
 
     /**
@@ -144,7 +148,7 @@ class Functions
      */
     public static function dbPass(): string
     {
-        return (string) self::env('DB_PASS', '');
+        return (string) Config::get('database.pass', '');
     }
 
     /**
@@ -152,7 +156,7 @@ class Functions
      */
     public static function dbCharset(): string
     {
-        return (string) self::env('DB_CHARSET', 'utf8mb4');
+        return (string) Config::get('database.charset', 'utf8mb4');
     }
 
     /*
@@ -332,7 +336,9 @@ class Functions
         $mimeType = finfo_file($finfo, $tmpName);
         finfo_close($finfo);
 
-        return is_string($mimeType) && $mimeType !== '' ? strtolower($mimeType) : null;
+        return is_string($mimeType) && $mimeType !== ''
+            ? strtolower($mimeType)
+            : null;
     }
 
     /**
@@ -340,7 +346,7 @@ class Functions
      */
     public static function uploadMaxSize(): int
     {
-        return max(1, (int) self::env('UPLOAD_MAX_SIZE', 5242880));
+        return max(1, (int) Config::get('upload.max_size', 5242880));
     }
 
     /**
@@ -350,11 +356,22 @@ class Functions
      */
     public static function uploadAllowedExtensions(): array
     {
-        $extensions = (string) self::env('UPLOAD_ALLOWED_EXT', 'jpg,jpeg,png,webp');
+        $extensions = Config::get('upload.allowed_extensions', []);
 
-        $extensions = explode(',', strtolower($extensions));
-        $extensions = array_map('trim', $extensions);
-        $extensions = array_filter($extensions);
+        if (!is_array($extensions))
+        {
+            return [];
+        }
+
+        $extensions = array_map(
+            static fn (mixed $extension): string => strtolower(trim((string) $extension)),
+            $extensions
+        );
+
+        $extensions = array_filter(
+            $extensions,
+            static fn (string $extension): bool => $extension !== ''
+        );
 
         return array_values(array_unique($extensions));
     }
@@ -366,14 +383,22 @@ class Functions
      */
     public static function uploadAllowedMimeTypes(): array
     {
-        $mimeTypes = (string) self::env(
-            'UPLOAD_ALLOWED_MIME',
-            'image/jpeg,image/png,image/webp'
+        $mimeTypes = Config::get('upload.allowed_mime', []);
+
+        if (!is_array($mimeTypes))
+        {
+            return [];
+        }
+
+        $mimeTypes = array_map(
+            static fn (mixed $mimeType): string => strtolower(trim((string) $mimeType)),
+            $mimeTypes
         );
 
-        $mimeTypes = explode(',', strtolower($mimeTypes));
-        $mimeTypes = array_map('trim', $mimeTypes);
-        $mimeTypes = array_filter($mimeTypes);
+        $mimeTypes = array_filter(
+            $mimeTypes,
+            static fn (string $mimeType): bool => $mimeType !== ''
+        );
 
         return array_values(array_unique($mimeTypes));
     }

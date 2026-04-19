@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controllers;
 
 use App\Core\Functions;
@@ -54,8 +56,10 @@ abstract class Controller
 
     /**
      * Affiche une vue standard.
+     *
+     * @param array<string, mixed> $data
      */
-    public function render(string $file, array $data = []): void
+    protected function render(string $file, array $data = []): void
     {
         $viewPath = $this->viewPath($file);
 
@@ -87,6 +91,8 @@ abstract class Controller
 
     /**
      * Affiche une vue partielle sans template.
+     *
+     * @param array<string, mixed> $data
      */
     protected function renderPartial(string $file, array $data = []): void
     {
@@ -108,6 +114,8 @@ abstract class Controller
 
     /**
      * Affiche une vue d'erreur.
+     *
+     * @param array<string, mixed> $data
      */
     protected function renderError(string $file, int $statusCode, array $data = []): void
     {
@@ -144,6 +152,12 @@ abstract class Controller
      */
     protected function redirect(string $url): void
     {
+        if (preg_match('#^https?://#i', $url) === 1)
+        {
+            header('Location: ' . $url);
+            exit;
+        }
+
         header('Location: ' . $this->basePath . ltrim($url, '/'));
         exit;
     }
@@ -164,6 +178,8 @@ abstract class Controller
 
     /**
      * Redirection avec erreurs de validation.
+     *
+     * @param array<string, mixed> $errors
      */
     protected function redirectWithValidationErrors(
         string $url,
@@ -190,7 +206,7 @@ abstract class Controller
     /**
      * Page 404.
      */
-    protected function notFound(string $message = 'Page introuvable'): void
+    public function notFound(string $message = 'Page introuvable'): void
     {
         $this->title = '404 | Page introuvable';
         $this->renderError('404', 404, ['message' => $message]);
@@ -200,7 +216,7 @@ abstract class Controller
     /**
      * Page 405.
      */
-    protected function methodNotAllowed(string $message = 'Méthode non autorisée'): void
+    public function methodNotAllowed(string $message = 'Méthode non autorisée'): void
     {
         $this->title = '405 | Méthode non autorisée';
         $this->renderError('405', 405, ['message' => $message]);
@@ -210,7 +226,7 @@ abstract class Controller
     /**
      * Page 500.
      */
-    protected function serverError(string $message = 'Erreur interne du serveur'): void
+    public function serverError(string $message = 'Erreur interne du serveur'): void
     {
         $this->title = '500 | Erreur serveur';
         $this->renderError('500', 500, ['message' => $message]);
