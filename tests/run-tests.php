@@ -10,7 +10,11 @@ require __DIR__ . '/Http/bootstrap-runner.php';
 |--------------------------------------------------------------------------
 */
 
-$caseFiles = glob($casesDirectory . '/*.php') ?: [];
+$caseFiles = array_merge(
+    glob($casesDirectory . '/safe/*.php') ?: [],
+    glob($casesDirectory . '/mutateurs/*.php') ?: []
+);
+
 sort($caseFiles);
 
 foreach ($caseFiles as $caseFile)
