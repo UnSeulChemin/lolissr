@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\Application\App;
+use App\Core\Exceptions\MethodNotAllowedException;
+use App\Core\Exceptions\NotFoundException;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Support\Session;
@@ -67,8 +69,7 @@ abstract class Controller
 
         if (!is_file($viewPath))
         {
-            $this->notFound('Vue introuvable : ' . $file);
-            return;
+            throw new NotFoundException('Vue introuvable : ' . $file);
         }
 
         extract($data, EXTR_SKIP);
@@ -84,8 +85,9 @@ abstract class Controller
 
         if (!is_file($templatePath))
         {
-            $this->serverError('Template introuvable : ' . $this->template);
-            return;
+            throw new \RuntimeException(
+                'Template introuvable : ' . $this->template
+            );
         }
 
         ob_start();
@@ -106,8 +108,9 @@ abstract class Controller
 
         if (!is_file($viewPath))
         {
-            $this->notFound('Vue partielle introuvable : ' . $file);
-            return;
+            throw new NotFoundException(
+                'Vue partielle introuvable : ' . $file
+            );
         }
 
         extract($data, EXTR_SKIP);
@@ -134,6 +137,7 @@ abstract class Controller
         if (!is_file($viewPath))
         {
             Response::html('Vue erreur introuvable : ' . $file, 500);
+            return;
         }
 
         extract($data, EXTR_SKIP);
@@ -150,6 +154,7 @@ abstract class Controller
         if (!is_file($templatePath))
         {
             Response::html('Template introuvable : ' . $this->template, 500);
+            return;
         }
 
         ob_start();
@@ -167,6 +172,7 @@ abstract class Controller
         if (preg_match('#^https?://#i', $url) === 1)
         {
             Response::redirect($url);
+            return;
         }
 
         Response::redirect($this->basePath . ltrim($url, '/'));
@@ -214,27 +220,51 @@ abstract class Controller
     }
 
     /**
-     * Page 404.
+     * Lance une 404.
      */
     public function notFound(string $message = 'Page introuvable'): void
+    {
+        throw new NotFoundException($message);
+    }
+
+    /**
+     * Lance une 405.
+     */
+    public function methodNotAllowed(string $message = 'Méthode non autorisée'): void
+    {
+        throw new MethodNotAllowedException($message);
+    }
+
+    /**
+     * Lance une erreur serveur.
+     */
+    public function serverError(string $message = 'Erreur interne du serveur'): void
+    {
+        throw new \RuntimeException($message);
+    }
+
+    /**
+     * Affiche réellement la page 404.
+     */
+    public function renderNotFoundPage(string $message = 'Page introuvable'): void
     {
         $this->title = '404 | Page introuvable';
         $this->renderError('404', 404, ['message' => $message]);
     }
 
     /**
-     * Page 405.
+     * Affiche réellement la page 405.
      */
-    public function methodNotAllowed(string $message = 'Méthode non autorisée'): void
+    public function renderMethodNotAllowedPage(string $message = 'Méthode non autorisée'): void
     {
         $this->title = '405 | Méthode non autorisée';
         $this->renderError('405', 405, ['message' => $message]);
     }
 
     /**
-     * Page 500.
+     * Affiche réellement la page 500.
      */
-    public function serverError(string $message = 'Erreur interne du serveur'): void
+    public function renderServerErrorPage(string $message = 'Erreur interne du serveur'): void
     {
         $this->title = '500 | Erreur serveur';
         $this->renderError('500', 500, ['message' => $message]);

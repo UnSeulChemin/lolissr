@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Core\Http;
 
-use App\Controllers\ErrorController;
 use App\Core\Application\App;
+use App\Core\Exceptions\MethodNotAllowedException;
+use App\Core\Exceptions\NotFoundException;
 use RuntimeException;
 
 class Router
@@ -113,14 +114,10 @@ class Router
         if ($allowedMethods !== [])
         {
             header('Allow: ' . implode(', ', $allowedMethods));
-
-            $controller = new ErrorController();
-            $controller->methodNotAllowed('Méthode non autorisée');
-            return;
+            throw new MethodNotAllowedException('Méthode non autorisée');
         }
 
-        $controller = new ErrorController();
-        $controller->notFound('Page introuvable');
+        throw new NotFoundException('Page introuvable');
     }
 
     /**

@@ -55,6 +55,29 @@ class ErrorHandler
             . ' on line '
             . $exception->getLine();
 
+        if ($exception instanceof HttpException)
+        {
+            Logger::warning(
+                'HTTP Exception [' . $exception->getStatusCode() . '] : '
+                . $message
+            );
+
+            if (App::debug())
+            {
+                http_response_code($exception->getStatusCode());
+
+                echo '<pre>';
+                echo 'HTTP Exception [' . $exception->getStatusCode() . '] : ' . $message . PHP_EOL;
+                echo $exception->getTraceAsString();
+                echo '</pre>';
+
+                exit;
+            }
+
+            self::renderHttpErrorPage($exception);
+            return;
+        }
+
         Logger::error(
             'Uncaught Exception: '
             . $message
@@ -126,6 +149,50 @@ class ErrorHandler
     }
 
     /**
+     * Affiche la bonne page HTTP via le Controller.
+     */
+    private static function renderHttpErrorPage(HttpException $exception): void
+    {
+        http_response_code($exception->getStatusCode());
+
+        $controller = new class extends \App\Controllers\Controller
+        {
+            public function show404(string $message): void
+            {
+                $this->renderNotFoundPage($message);
+            }
+
+            public function show405(string $message): void
+            {
+                $this->renderMethodNotAllowedPage($message);
+            }
+
+            public function show500(string $message): void
+            {
+                $this->renderServerErrorPage($message);
+            }
+        };
+
+        $statusCode = $exception->getStatusCode();
+        $message = $exception->getMessage();
+
+        if ($statusCode === 404)
+        {
+            $controller->show404($message);
+            exit;
+        }
+
+        if ($statusCode === 405)
+        {
+            $controller->show405($message);
+            exit;
+        }
+
+        $controller->show500($message);
+        exit;
+    }
+
+    /**
      * Affiche la page 500 via le Controller.
      */
     private static function renderServerErrorPage(): void
@@ -134,9 +201,9 @@ class ErrorHandler
 
         $controller = new class extends \App\Controllers\Controller
         {
-            public function show500(): void
+            public function show500(string $message = 'Erreur interne du serveur'): void
             {
-                $this->serverError();
+                $this->renderServerErrorPage($message);
             }
         };
 
