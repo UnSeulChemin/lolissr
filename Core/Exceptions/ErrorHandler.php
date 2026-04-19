@@ -75,7 +75,6 @@ class ErrorHandler
             }
 
             self::renderHttpErrorPage($exception);
-            return;
         }
 
         Logger::error(
@@ -179,17 +178,16 @@ class ErrorHandler
         if ($statusCode === 404)
         {
             $controller->show404($message);
-            exit;
+            return;
         }
 
         if ($statusCode === 405)
         {
             $controller->show405($message);
-            exit;
+            return;
         }
 
         $controller->show500($message);
-        exit;
     }
 
     /**
@@ -208,7 +206,5 @@ class ErrorHandler
         };
 
         $controller->show500();
-
-        exit;
     }
 }

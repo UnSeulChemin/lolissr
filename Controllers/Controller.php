@@ -137,7 +137,6 @@ abstract class Controller
         if (!is_file($viewPath))
         {
             Response::html('Vue erreur introuvable : ' . $file, 500);
-            return;
         }
 
         extract($data, EXTR_SKIP);
@@ -154,7 +153,6 @@ abstract class Controller
         if (!is_file($templatePath))
         {
             Response::html('Template introuvable : ' . $this->template, 500);
-            return;
         }
 
         ob_start();
