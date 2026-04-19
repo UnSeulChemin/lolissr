@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Core\Functions;
+use App\Core\UploadConfig;
 use App\Core\Validator;
 
 class MangaValidatorService
@@ -32,9 +32,9 @@ class MangaValidatorService
             ->maxLength('commentaire', 1000, 'Le commentaire ne doit pas dépasser 1000 caractères.')
             ->fileRequired('image', 'Aucune image envoyée.')
             ->fileOk('image', 'Erreur lors de l’envoi du fichier.')
-            ->imageExtension('image', Functions::uploadAllowedExtensions(), 'Format image non autorisé.')
-            ->imageMime('image', Functions::uploadAllowedMimeTypes(), 'Type MIME image non autorisé.')
-            ->maxFileSize('image', Functions::uploadMaxSize(), 'L’image ne doit pas dépasser la taille autorisée.');
+            ->imageExtension('image', UploadConfig::allowedExtensions(), 'Format image non autorisé.')
+            ->imageMime('image', UploadConfig::allowedMimeTypes(), 'Type MIME image non autorisé.')
+            ->maxFileSize('image', UploadConfig::maxSize(), 'L’image ne doit pas dépasser la taille autorisée.');
 
         return $validator;
     }

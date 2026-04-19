@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Core\Functions;
 use App\Core\Logger;
+use App\Core\Str;
 use App\Models\MangaModel;
 
 class MangaService
@@ -113,9 +113,9 @@ class MangaService
     private function normalizedCreateData(array $post): array
     {
         $livre = $this->postString($post, 'livre');
-        $slug = Functions::normalizeSlug($this->postString($post, 'slug'));
+        $slug = Str::slug($this->postString($post, 'slug'));
         $numero = $this->postInt($post, 'numero');
-        $commentaire = Functions::normalizeCommentaire(
+        $commentaire = Str::nullableTrim(
             $this->postNullableString($post, 'commentaire')
         );
 
@@ -140,7 +140,7 @@ class MangaService
     {
         $jacquette = $this->normalizePostedNote($post['jacquette'] ?? null);
         $livreNote = $this->normalizePostedNote($post['livre_note'] ?? null);
-        $commentaire = Functions::normalizeCommentaire(
+        $commentaire = Str::nullableTrim(
             $this->postNullableString($post, 'commentaire')
         );
 

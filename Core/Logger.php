@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Core;
 
 class Logger
@@ -9,7 +11,7 @@ class Logger
      */
     private static function logDirectory(): string
     {
-        return (string) Functions::env('LOG_DIR', ROOT . '/Storage/logs');
+        return (string) Env::get('LOG_DIR', ROOT . '/Storage/logs');
     }
 
     /**

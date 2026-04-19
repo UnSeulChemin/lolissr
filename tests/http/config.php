@@ -2,7 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Core\Functions;
+use App\Core\App;
+use App\Core\Env;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,7 +14,7 @@ use App\Core\Functions;
 | false = aucun test exécuté
 |
 */
-$testsEnabled = (bool) Functions::env('TESTS_ENABLED', true);
+$testsEnabled = (bool) Env::get('TESTS_ENABLED', true);
 
 /*
 |--------------------------------------------------------------------------
@@ -34,7 +35,7 @@ return [
     | BASE URL
     |--------------------------------------------------------------------------
     */
-    'base' => rtrim('http://localhost' . Functions::basePath(), '/'),
+    'base' => rtrim('http://localhost' . App::basePath(), '/'),
 
     /*
     |--------------------------------------------------------------------------
@@ -62,25 +63,25 @@ return [
     |--------------------------------------------------------------------------
     */
     'testCanonicalRedirect' =>
-        $testsEnabled && (bool) Functions::env('TEST_CANONICAL_REDIRECT', true),
+        $testsEnabled && (bool) Env::get('TEST_CANONICAL_REDIRECT', true),
 
     'testPostAjouter' =>
-        $testsEnabled && (bool) Functions::env('TEST_POST_AJOUTER', false),
+        $testsEnabled && (bool) Env::get('TEST_POST_AJOUTER', false),
 
     'testPostUpdate' =>
-        $testsEnabled && (bool) Functions::env('TEST_POST_UPDATE', true),
+        $testsEnabled && (bool) Env::get('TEST_POST_UPDATE', true),
 
     'testAjaxUpdate' =>
-        $testsEnabled && (bool) Functions::env('TEST_AJAX_UPDATE', false),
+        $testsEnabled && (bool) Env::get('TEST_AJAX_UPDATE', false),
 
     'testUploadDuplicateSlugNumero' =>
-        $testsEnabled && (bool) Functions::env('TEST_UPLOAD_DUPLICATE_SLUG_NUMERO', true),
+        $testsEnabled && (bool) Env::get('TEST_UPLOAD_DUPLICATE_SLUG_NUMERO', true),
 
     'testUploadInvalidImage' =>
-        $testsEnabled && (bool) Functions::env('TEST_UPLOAD_INVALID_IMAGE', true),
+        $testsEnabled && (bool) Env::get('TEST_UPLOAD_INVALID_IMAGE', true),
 
     'testUploadMaxSize' =>
-        $testsEnabled && (bool) Functions::env('TEST_UPLOAD_MAX_SIZE', true),
+        $testsEnabled && (bool) Env::get('TEST_UPLOAD_MAX_SIZE', true),
 
     /*
     |--------------------------------------------------------------------------

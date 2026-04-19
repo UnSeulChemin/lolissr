@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Core\Functions;
+use App\Core\App;
 use App\Core\Session;
 
 abstract class Controller
@@ -26,8 +26,8 @@ abstract class Controller
 
     public function __construct()
     {
-        $this->title = Functions::siteName();
-        $this->basePath = Functions::basePath();
+        $this->title = App::siteName();
+        $this->basePath = App::basePath();
     }
 
     /**

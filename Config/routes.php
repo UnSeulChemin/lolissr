@@ -1,80 +1,65 @@
 <?php
 
-return function ($router)
+declare(strict_types=1);
+
+use App\Core\Router;
+
+return static function (Router $router): void
 {
     /*
-    |------------------------------------------------------------------
-    | PRINCIPAL
-    |------------------------------------------------------------------
+    |--------------------------------------------------------------------------
+    | Principal
+    |--------------------------------------------------------------------------
     */
 
     $router->get('/', 'MainController@index');
 
-
     /*
-    |------------------------------------------------------------------
-    | MANGA — PAGES
-    |------------------------------------------------------------------
+    |--------------------------------------------------------------------------
+    | Manga — pages
+    |--------------------------------------------------------------------------
     */
 
-    /* Accueil manga */
     $router->get('/manga', 'MangaController@index');
-
-    /* Page lien */
     $router->get('/manga/lien', 'MangaController@lien');
 
-    /* Collection */
     $router->get('/manga/collection', 'MangaController@collection');
-
-    /* Pagination collection */
     $router->get('/manga/collection/page/{page}', 'MangaController@collection');
-
-    /* Collection AJAX */
     $router->get('/manga/collection-ajax/page/{page}', 'MangaController@collectionAjax');
 
-    /* Recherche */
     $router->get('/manga/recherche', 'MangaController@recherche');
     $router->get('/manga/recherche/{query}', 'MangaController@recherche');
-
-    /* Recherche AJAX */
     $router->get('/manga/search-ajax/{query}', 'MangaController@searchAjax');
 
-    /* Série */
     $router->get('/manga/serie/{slug}', 'MangaController@serie');
 
-
     /*
-    |------------------------------------------------------------------
-    | MANGA — FORMULAIRES
-    |------------------------------------------------------------------
+    |--------------------------------------------------------------------------
+    | Manga — formulaires
+    |--------------------------------------------------------------------------
     */
 
-    /* Ajouter */
     $router->get('/manga/ajouter', 'MangaController@ajouter');
-
-    /* Modifier */
     $router->get('/manga/modifier/{slug}/{numero}', 'MangaController@modifier');
 
-
     /*
-    |------------------------------------------------------------------
-    | POST — TRAITEMENTS
-    |------------------------------------------------------------------
+    |--------------------------------------------------------------------------
+    | POST — traitements
+    |--------------------------------------------------------------------------
     */
 
     $router->post('/manga/ajouter', 'MangaController@ajouterTraitement');
     $router->post('/manga/modifier/{slug}/{numero}', 'MangaController@update');
-
-    /* Update note AJAX */
     $router->post('/manga/ajax/update-note/{slug}/{numero}', 'MangaController@ajaxUpdateNote');
 
-
     /*
-    |------------------------------------------------------------------
-    | MANGA — DYNAMIQUE (TOUJOURS EN DERNIER)
-    |------------------------------------------------------------------
+    |--------------------------------------------------------------------------
+    | Manga — dynamique
+    |--------------------------------------------------------------------------
+    |
+    | Toujours en dernier pour éviter de capter les routes plus spécifiques.
+    |
     */
 
-    /* Fiche manga */
     $router->get('/manga/{slug}/{numero}', 'MangaController@show');
 };

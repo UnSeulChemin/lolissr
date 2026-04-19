@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use App\Core\Functions;
+use App\Core\Env;
 
 return [
 
-    'enabled' => (bool) Functions::env('CACHE_ENABLED', false),
+    'enabled' => (bool) Env::get('CACHE_ENABLED', false),
 
 ];

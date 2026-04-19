@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
-use App\Core\Functions;
+use App\Core\Str;
 use App\Models\Trait\CreatedAtTrait;
 
 class MangaModel extends Model
@@ -96,7 +98,7 @@ class MangaModel extends Model
                     ORDER BY livre ASC, numero ASC",
                     [
                         'search_livre' => '%' . $titlePart . '%',
-                        'search_slug' => '%' . Functions::normalizeSlug($titlePart) . '%',
+                        'search_slug' => '%' . Str::slug($titlePart) . '%',
                         'numero' => $numero
                     ]
                 );
@@ -140,7 +142,7 @@ class MangaModel extends Model
             ORDER BY livre ASC, numero ASC",
             [
                 'search_livre' => '%' . $search . '%',
-                'search_slug' => '%' . Functions::normalizeSlug($search) . '%'
+                'search_slug' => '%' . Str::slug($search) . '%'
             ]
         );
 
@@ -390,7 +392,7 @@ class MangaModel extends Model
             WHERE slug = :slug
             ORDER BY numero DESC",
             [
-                'slug' => Functions::normalizeSlug($slug)
+                'slug' => Str::slug($slug)
             ]
         );
 
@@ -408,7 +410,7 @@ class MangaModel extends Model
             WHERE slug = :slug
             AND numero = :numero",
             [
-                'slug' => Functions::normalizeSlug($slug),
+                'slug' => Str::slug($slug),
                 'numero' => $numero
             ]
         );
@@ -423,7 +425,7 @@ class MangaModel extends Model
     {
         $jacquette = $this->normalizeNoteValue($datas['jacquette'] ?? null);
         $livreNote = $this->normalizeNoteValue($datas['livre_note'] ?? null);
-        $commentaire = Functions::normalizeCommentaire($datas['commentaire'] ?? null);
+        $commentaire = Str::nullableTrim($datas['commentaire'] ?? null);
         $note = $this->calculateNote($jacquette, $livreNote);
 
         return $this->requete(
@@ -454,7 +456,7 @@ class MangaModel extends Model
             [
                 'thumbnail' => trim($datas['thumbnail'] ?? ''),
                 'extension' => strtolower(trim($datas['extension'] ?? '')),
-                'slug' => Functions::normalizeSlug($datas['slug'] ?? ''),
+                'slug' => Str::slug($datas['slug'] ?? ''),
                 'livre' => trim($datas['livre'] ?? ''),
                 'numero' => max(0, (int) ($datas['numero'] ?? 0)),
                 'jacquette' => $jacquette,
@@ -477,12 +479,12 @@ class MangaModel extends Model
         ?string $commentaire
     ): bool
     {
-        $slug = Functions::normalizeSlug($slug);
+        $slug = Str::slug($slug);
         $numero = (int) $numero;
 
         $jacquette = $this->normalizeNoteValue($jacquette);
         $livreNote = $this->normalizeNoteValue($livreNote);
-        $commentaire = Functions::normalizeCommentaire($commentaire);
+        $commentaire = Str::nullableTrim($commentaire);
         $note = $this->calculateNote($jacquette, $livreNote);
 
         return $this->update(
@@ -563,7 +565,7 @@ class MangaModel extends Model
      */
     public function setSlug(string $slug): self
     {
-        $this->slug = Functions::normalizeSlug($slug);
+        $this->slug = Str::slug($slug);
         return $this;
     }
 
@@ -665,7 +667,7 @@ class MangaModel extends Model
      */
     public function setCommentaire(?string $commentaire): self
     {
-        $this->commentaire = Functions::normalizeCommentaire($commentaire);
+        $this->commentaire = Str::nullableTrim($commentaire);
         return $this;
     }
 }

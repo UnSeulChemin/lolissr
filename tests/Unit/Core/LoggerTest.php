@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Core\Functions;
+use App\Core\Env;
 use App\Core\Logger;
 use PHPUnit\Framework\TestCase;
 
@@ -31,10 +31,7 @@ final class LoggerTest extends TestCase
         $_SERVER['LOG_DIR'] = $this->testLogDir;
         putenv('LOG_DIR=' . $this->testLogDir);
 
-        if (method_exists(Functions::class, 'clearEnvCache'))
-        {
-            Functions::clearEnvCache();
-        }
+        Env::clear();
     }
 
     protected function tearDown(): void
@@ -68,10 +65,7 @@ final class LoggerTest extends TestCase
             putenv('LOG_DIR');
         }
 
-        if (method_exists(Functions::class, 'clearEnvCache'))
-        {
-            Functions::clearEnvCache();
-        }
+        Env::clear();
 
         parent::tearDown();
     }

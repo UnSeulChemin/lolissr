@@ -25,7 +25,13 @@ final class Config
      */
     public static function get(string $key, mixed $default = null): mixed
     {
-        $segments = explode('.', $key);
+        $segments = self::segments($key);
+
+        if ($segments === [])
+        {
+            return $default;
+        }
+
         $file = array_shift($segments);
 
         if ($file === null || $file === '')
@@ -40,7 +46,80 @@ final class Config
             return $config !== [] ? $config : $default;
         }
 
-        $value = $config;
+        return self::arrayGet($config, $segments, $default);
+    }
+
+    /**
+     * Vérifie si une clé de configuration existe.
+     */
+    public static function has(string $key): bool
+    {
+        $segments = self::segments($key);
+
+        if ($segments === [])
+        {
+            return false;
+        }
+
+        $file = array_shift($segments);
+
+        if ($file === null || $file === '')
+        {
+            return false;
+        }
+
+        $config = self::load($file);
+
+        if ($segments === [])
+        {
+            return $config !== [];
+        }
+
+        return self::arrayHas($config, $segments);
+    }
+
+    /**
+     * Vide le cache local de configuration.
+     */
+    public static function clear(): void
+    {
+        self::$items = [];
+    }
+
+    /**
+     * Retourne les segments d'une clé de configuration.
+     *
+     * @return string[]
+     */
+    private static function segments(string $key): array
+    {
+        $key = trim($key);
+
+        if ($key === '')
+        {
+            return [];
+        }
+
+        $segments = explode('.', $key);
+
+        $segments = array_values(array_filter(
+            $segments,
+            static fn (string $segment): bool => $segment !== ''
+        ));
+
+        return $segments;
+    }
+
+    /**
+     * Retourne une valeur dans un tableau imbriqué.
+     *
+     * @param array<string, mixed> $items
+     * @param string[] $segments
+     * @param mixed $default
+     */
+    private static function arrayGet(array $items, array $segments, mixed $default = null): mixed
+    {
+        $value = $items;
 
         foreach ($segments as $segment)
         {
@@ -56,26 +135,14 @@ final class Config
     }
 
     /**
-     * Vérifie si une clé de configuration existe.
+     * Vérifie l'existence d'une clé dans un tableau imbriqué.
+     *
+     * @param array<string, mixed> $items
+     * @param string[] $segments
      */
-    public static function has(string $key): bool
+    private static function arrayHas(array $items, array $segments): bool
     {
-        $segments = explode('.', $key);
-        $file = array_shift($segments);
-
-        if ($file === null || $file === '')
-        {
-            return false;
-        }
-
-        $config = self::load($file);
-
-        if ($segments === [])
-        {
-            return $config !== [];
-        }
-
-        $value = $config;
+        $value = $items;
 
         foreach ($segments as $segment)
         {
@@ -88,14 +155,6 @@ final class Config
         }
 
         return true;
-    }
-
-    /**
-     * Vide le cache local de configuration.
-     */
-    public static function clear(): void
-    {
-        self::$items = [];
     }
 
     /**

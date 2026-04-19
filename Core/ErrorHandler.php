@@ -59,7 +59,7 @@ class ErrorHandler
             . $exception->getTraceAsString()
         );
 
-        if (Functions::appDebug())
+        if (App::debug())
         {
             http_response_code(500);
 
@@ -108,7 +108,7 @@ class ErrorHandler
 
         Logger::error('Fatal Error: ' . $message);
 
-        if (Functions::appDebug())
+        if (App::debug())
         {
             http_response_code(500);
 

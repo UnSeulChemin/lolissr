@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Core\Functions;
+use App\Core\App;
+use App\Core\Str;
 use App\Models\MangaModel;
 
 class MangaReadService
@@ -45,7 +46,7 @@ class MangaReadService
             return null;
         }
 
-        $pagination = Functions::pagination();
+        $pagination = App::pagination();
         $compteur = $this->mangaModel->countFirstTomesPaginate($pagination);
 
         if ($compteur > 0 && $currentPage > $compteur)
@@ -126,7 +127,7 @@ class MangaReadService
      */
     public function serie(string $slug): ?array
     {
-        $normalizedSlug = Functions::normalizeSlug($slug);
+        $normalizedSlug = Str::slug($slug);
         $mangas = $this->mangaModel->findBySlug($normalizedSlug);
 
         if (!$mangas)
@@ -136,7 +137,7 @@ class MangaReadService
 
         return [
             'mangas' => $mangas,
-            'canonicalSlug' => Functions::normalizeSlug((string) $mangas[0]->slug)
+            'canonicalSlug' => Str::slug((string) $mangas[0]->slug)
         ];
     }
 
@@ -150,7 +151,7 @@ class MangaReadService
      */
     public function one(string $slug, int $numero): ?array
     {
-        $normalizedSlug = Functions::normalizeSlug($slug);
+        $normalizedSlug = Str::slug($slug);
         $manga = $this->mangaModel->findOneBySlugAndNumero($normalizedSlug, $numero);
 
         if (!$manga)
@@ -160,7 +161,7 @@ class MangaReadService
 
         return [
             'manga' => $manga,
-            'canonicalSlug' => Functions::normalizeSlug((string) $manga->slug)
+            'canonicalSlug' => Str::slug((string) $manga->slug)
         ];
     }
 }

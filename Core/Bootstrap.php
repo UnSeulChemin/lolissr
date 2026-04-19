@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-use App\Core\Config;
-use App\Core\ErrorHandler;
-use App\Core\Functions;
-use App\Core\Router;
-
 final class Bootstrap
 {
     /**
@@ -18,7 +13,7 @@ final class Bootstrap
     {
         self::loadEnvironment(ROOT . '/.env');
 
-        Functions::clearEnvCache();
+        Env::clear();
         Config::clear();
 
         self::configureDebug();
@@ -90,7 +85,7 @@ final class Bootstrap
      */
     private static function configureDebug(): void
     {
-        $debug = Functions::appDebug();
+        $debug = App::debug();
 
         error_reporting($debug ? E_ALL : 0);
         ini_set('display_errors', $debug ? '1' : '0');

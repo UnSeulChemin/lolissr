@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Core\Functions;
+use App\Core\Env;
 use App\Core\Logger;
+use App\Core\Str;
+use App\Core\UploadConfig;
 
 class UploadService
 {
@@ -14,7 +16,7 @@ class UploadService
      */
     public function isTestUploadMode(): bool
     {
-        return (bool) Functions::env('TEST_UPLOAD_MODE', false);
+        return (bool) Env::get('TEST_UPLOAD_MODE', false);
     }
 
     /**
@@ -22,7 +24,7 @@ class UploadService
      */
     public function testUploadDirectory(): string
     {
-        $directory = trim((string) Functions::env('TEST_UPLOAD_DIR', 'tests/Http/tmp-uploads'), '/\\');
+        $directory = trim((string) Env::get('TEST_UPLOAD_DIR', 'tests/Http/tmp-uploads'), '/\\');
 
         return ROOT . '/' . $directory . '/';
     }
@@ -37,11 +39,13 @@ class UploadService
             return $this->testUploadDirectory();
         }
 
-        return Functions::mangaThumbnailDirectory();
+        return UploadConfig::mangaThumbnailDirectory();
     }
 
     /**
      * Retourne les infos d’un fichier uploadé.
+     *
+     * @return array<string, mixed>|null
      */
     private function fileData(array $files, string $fileKey): ?array
     {
@@ -140,7 +144,7 @@ class UploadService
             return null;
         }
 
-        return $mimeType;
+        return strtolower($mimeType);
     }
 
     /**
@@ -227,7 +231,7 @@ class UploadService
 
         if (
             $mimeType === null
-            || !in_array($mimeType, Functions::uploadAllowedMimeTypes(), true)
+            || !in_array($mimeType, UploadConfig::allowedMimeTypes(), true)
         )
         {
             Logger::error(
@@ -255,7 +259,7 @@ class UploadService
             ];
         }
 
-        $thumbnail = Functions::buildThumbnailName($livre, $numero);
+        $thumbnail = Str::thumbnailName($livre, $numero);
 
         if ($thumbnail === '')
         {

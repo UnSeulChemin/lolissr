@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Core\Functions;
+use App\Core\App;
+use App\Core\Request;
 use App\Core\Session;
+use App\Core\Str;
 use App\Models\MangaModel;
 use App\Services\MangaReadService;
 use App\Services\MangaService;
@@ -60,6 +62,8 @@ class MangaController extends Controller
 
     /**
      * Retourne une réponse JSON.
+     *
+     * @param array<string, mixed> $data
      */
     protected function jsonResponse(array $data, int $statusCode = 200): void
     {
@@ -72,6 +76,9 @@ class MangaController extends Controller
 
     /**
      * Retourne un payload JSON d’erreur standard.
+     *
+     * @param array<string, mixed> $result
+     * @return array<string, mixed>
      */
     protected function jsonErrorPayload(array $result): array
     {
@@ -115,7 +122,7 @@ class MangaController extends Controller
             $location .= '/' . $numero;
         }
 
-        header('Location: ' . Functions::basePath() . $location, true, 301);
+        header('Location: ' . App::basePath() . $location, true, 301);
         exit;
     }
 
@@ -153,8 +160,8 @@ class MangaController extends Controller
         bool $ajax = false
     ): string
     {
-        $canonicalSlug = Functions::normalizeSlug((string) $manga->slug);
-        $redirect = Functions::basePath() . 'manga/modifier/' . rawurlencode($canonicalSlug) . '/' . $numero;
+        $canonicalSlug = Str::slug((string) $manga->slug);
+        $redirect = App::basePath() . 'manga/modifier/' . rawurlencode($canonicalSlug) . '/' . $numero;
 
         if ($requestedSlug === $canonicalSlug)
         {
@@ -176,6 +183,8 @@ class MangaController extends Controller
 
     /**
      * Gère la réponse après update.
+     *
+     * @param array<string, mixed> $result
      */
     protected function handleUpdateResult(array $result, string $slug, int $numero, bool $ajax = false): void
     {
@@ -236,7 +245,7 @@ class MangaController extends Controller
         $requestedSlug = trim($slug);
         $numero = (int) $numero;
 
-        if (!Functions::isPost())
+        if (!Request::isPost())
         {
             if ($ajax)
             {
@@ -443,7 +452,7 @@ class MangaController extends Controller
         $numero = (int) $numero;
 
         $manga = $this->findCanonicalMangaOrFail($requestedSlug, $numero);
-        $canonicalSlug = Functions::normalizeSlug((string) $manga->slug);
+        $canonicalSlug = Str::slug((string) $manga->slug);
 
         $this->redirectToCanonicalUrl(
             $requestedSlug,
@@ -465,7 +474,7 @@ class MangaController extends Controller
      */
     public function ajouterTraitement(): void
     {
-        if (!Functions::isPost())
+        if (!Request::isPost())
         {
             if ($this->isAjaxRequest())
             {

@@ -217,7 +217,7 @@ class Router
      */
     private function stripBasePath(string $path): string
     {
-        $basePath = Functions::basePath();
+        $basePath = App::basePath();
 
         if ($basePath === '/')
         {
