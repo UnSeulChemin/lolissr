@@ -24,10 +24,23 @@ class Autoloader
             return;
         }
 
+        // Supprime "App\"
         $relativeClass = substr($class, 4);
-        $relativeClass = str_replace('\\', DIRECTORY_SEPARATOR, $relativeClass);
 
-        $file = ROOT . DIRECTORY_SEPARATOR . $relativeClass . '.php';
+        // Convertit namespace en chemin
+        $relativeClass = str_replace(
+            '\\',
+            DIRECTORY_SEPARATOR,
+            $relativeClass
+        );
+
+        // Chemin vers App/
+        $file = ROOT
+            . DIRECTORY_SEPARATOR
+            . 'App'
+            . DIRECTORY_SEPARATOR
+            . $relativeClass
+            . '.php';
 
         if (is_file($file))
         {
