@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Core\Exceptions;
 
+use App\Core\Application\App;
+use App\Core\Support\Logger;
+
 class ErrorHandler
 {
     /**

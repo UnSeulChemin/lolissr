@@ -6,6 +6,7 @@ namespace App\Core\Http;
 
 use App\Controllers\ErrorController;
 use RuntimeException;
+use App\Core\Application\App;
 
 class Router
 {

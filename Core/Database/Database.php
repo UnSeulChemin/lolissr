@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Core\Database;
 
+use App\Core\Config\Config;
+use App\Core\Support\Logger;
+use Exception;
 use PDO;
 use PDOException;
-use Exception;
 
 class Database extends PDO
 {
