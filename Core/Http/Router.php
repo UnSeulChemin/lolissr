@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Core\Http;
 
 use App\Controllers\ErrorController;
-use RuntimeException;
 use App\Core\Application\App;
+use RuntimeException;
 
 class Router
 {
@@ -81,18 +81,14 @@ class Router
     /**
      * Lance le dispatch de la requête.
      */
-    public function dispatch(string $uri, string $method): void
+    public function dispatch(?string $uri = null, ?string $method = null): void
     {
-        $path = parse_url($uri, PHP_URL_PATH);
-
-        if (!is_string($path) || $path === '')
-        {
-            $path = '/';
-        }
+        $path = $uri ?? Request::path();
+        $method = $method ?? Request::method();
 
         $path = $this->stripBasePath($path);
         $path = $this->normalizeRequestPath($path);
-        $method = strtoupper($method);
+        $method = strtoupper(trim($method));
 
         foreach ($this->routes[$method] ?? [] as $route)
         {

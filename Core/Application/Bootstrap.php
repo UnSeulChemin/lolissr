@@ -33,10 +33,7 @@ final class Bootstrap
             $routes($router);
         }
 
-        $router->dispatch(
-            $_SERVER['REQUEST_URI'] ?? '/',
-            $_SERVER['REQUEST_METHOD'] ?? 'GET'
-        );
+        $router->dispatch();
     }
 
     /**
@@ -79,10 +76,38 @@ final class Bootstrap
                 continue;
             }
 
+            $value = self::normalizeEnvValue($value);
+
             $_ENV[$name] = $value;
             $_SERVER[$name] = $value;
             putenv($name . '=' . $value);
         }
+    }
+
+    /**
+     * Normalise une valeur de variable d'environnement.
+     */
+    private static function normalizeEnvValue(string $value): string
+    {
+        $value = trim($value);
+
+        $length = strlen($value);
+
+        if ($length >= 2)
+        {
+            $firstChar = $value[0];
+            $lastChar = $value[$length - 1];
+
+            if (
+                ($firstChar === '"' && $lastChar === '"')
+                || ($firstChar === "'" && $lastChar === "'")
+            )
+            {
+                return substr($value, 1, -1);
+            }
+        }
+
+        return $value;
     }
 
     /**

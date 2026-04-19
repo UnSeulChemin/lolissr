@@ -1,13 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
+use App\Core\Http\Request;
+
 /*
 |--------------------------------------------------------------------------
 | Détection de la page active
 |--------------------------------------------------------------------------
 */
 
-$currentUri = $_SERVER['REQUEST_URI'] ?? '/';
-$currentPath = parse_url($currentUri, PHP_URL_PATH) ?: '/';
+$currentPath = Request::path();
 $cleanBasePath = rtrim($basePath, '/');
 
 /* Retire le basePath si présent */

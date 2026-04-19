@@ -42,8 +42,7 @@ final class Env
 
         if (is_string($value))
         {
-            $value = trim($value);
-            $value = self::cast($value);
+            $value = self::cast(trim($value));
         }
 
         self::$items[$key] = $value;

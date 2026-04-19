@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Core\Application\App;
 use App\Core\Http\Request;
+use App\Core\Http\Response;
 use App\Core\Support\Session;
 use App\Core\Support\Str;
 use App\Models\MangaModel;
@@ -56,8 +56,9 @@ class MangaController extends Controller
      */
     protected function isAjaxRequest(): bool
     {
-        return !empty($_SERVER['HTTP_X_REQUESTED_WITH'])
-            && strtolower((string) $_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+        $requestedWith = Request::server('HTTP_X_REQUESTED_WITH', '');
+
+        return strtolower(trim((string) $requestedWith)) === 'xmlhttprequest';
     }
 
     /**
@@ -67,11 +68,7 @@ class MangaController extends Controller
      */
     protected function jsonResponse(array $data, int $statusCode = 200): void
     {
-        http_response_code($statusCode);
-        header('Content-Type: application/json; charset=utf-8');
-
-        echo json_encode($data);
-        exit;
+        Response::json($data, $statusCode);
     }
 
     /**
@@ -122,8 +119,7 @@ class MangaController extends Controller
             $location .= '/' . $numero;
         }
 
-        header('Location: ' . App::basePath() . $location, true, 301);
-        exit;
+        Response::redirect($this->basePath . $location, 301);
     }
 
     /**
@@ -147,7 +143,6 @@ class MangaController extends Controller
         }
 
         $this->notFound('Manga introuvable');
-        exit;
     }
 
     /**
@@ -161,7 +156,7 @@ class MangaController extends Controller
     ): string
     {
         $canonicalSlug = Str::slug((string) $manga->slug);
-        $redirect = App::basePath() . 'manga/modifier/' . rawurlencode($canonicalSlug) . '/' . $numero;
+        $redirect = $this->basePath . 'manga/modifier/' . rawurlencode($canonicalSlug) . '/' . $numero;
 
         if ($requestedSlug === $canonicalSlug)
         {
@@ -177,8 +172,7 @@ class MangaController extends Controller
             ], 409);
         }
 
-        header('Location: ' . $redirect, true, 301);
-        exit;
+        Response::redirect($redirect, 301);
     }
 
     /**
@@ -262,7 +256,12 @@ class MangaController extends Controller
         $manga = $this->findCanonicalMangaOrFail($requestedSlug, $numero, $ajax);
         $canonicalSlug = $this->handleCanonicalUpdateAccess($requestedSlug, $manga, $numero, $ajax);
 
-        $result = $this->mangaService()->update($canonicalSlug, $numero, $_POST, $_FILES);
+        $result = $this->mangaService()->update(
+            $canonicalSlug,
+            $numero,
+            Request::allPost(),
+            Request::allFiles()
+        );
 
         $this->handleUpdateResult($result, $canonicalSlug, $numero, $ajax);
     }
@@ -488,7 +487,10 @@ class MangaController extends Controller
             return;
         }
 
-        $result = $this->mangaService()->create($_POST, $_FILES);
+        $result = $this->mangaService()->create(
+            Request::allPost(),
+            Request::allFiles()
+        );
 
         if (!$result['success'])
         {

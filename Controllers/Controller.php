@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\Application\App;
+use App\Core\Http\Request;
+use App\Core\Http\Response;
 use App\Core\Support\Session;
 
 abstract class Controller
@@ -86,7 +88,11 @@ abstract class Controller
             return;
         }
 
+        ob_start();
         require $templatePath;
+        $html = ob_get_clean() ?: '';
+
+        Response::html($html);
     }
 
     /**
@@ -109,7 +115,11 @@ abstract class Controller
         $title = $this->title;
         $basePath = $this->basePath;
 
+        ob_start();
         require $viewPath;
+        $html = ob_get_clean() ?: '';
+
+        Response::html($html);
     }
 
     /**
@@ -119,13 +129,11 @@ abstract class Controller
      */
     protected function renderError(string $file, int $statusCode, array $data = []): void
     {
-        http_response_code($statusCode);
-
         $viewPath = $this->errorViewPath($file);
 
         if (!is_file($viewPath))
         {
-            exit('Vue erreur introuvable : ' . $file);
+            Response::html('Vue erreur introuvable : ' . $file, 500);
         }
 
         extract($data, EXTR_SKIP);
@@ -141,10 +149,14 @@ abstract class Controller
 
         if (!is_file($templatePath))
         {
-            exit('Template introuvable : ' . $this->template);
+            Response::html('Template introuvable : ' . $this->template, 500);
         }
 
+        ob_start();
         require $templatePath;
+        $html = ob_get_clean() ?: '';
+
+        Response::html($html, $statusCode);
     }
 
     /**
@@ -154,12 +166,10 @@ abstract class Controller
     {
         if (preg_match('#^https?://#i', $url) === 1)
         {
-            header('Location: ' . $url);
-            exit;
+            Response::redirect($url);
         }
 
-        header('Location: ' . $this->basePath . ltrim($url, '/'));
-        exit;
+        Response::redirect($this->basePath . ltrim($url, '/'));
     }
 
     /**
@@ -169,7 +179,7 @@ abstract class Controller
     {
         if ($withOld)
         {
-            Session::set('old', $_POST);
+            Session::set('old', Request::allPost());
         }
 
         Session::set('error', $message);
@@ -188,7 +198,7 @@ abstract class Controller
     ): void
     {
         Session::set('errors', $errors);
-        Session::set('old', $_POST);
+        Session::set('old', Request::allPost());
         Session::set('error', $message);
 
         $this->redirect($url);
@@ -210,7 +220,6 @@ abstract class Controller
     {
         $this->title = '404 | Page introuvable';
         $this->renderError('404', 404, ['message' => $message]);
-        exit;
     }
 
     /**
@@ -220,7 +229,6 @@ abstract class Controller
     {
         $this->title = '405 | Méthode non autorisée';
         $this->renderError('405', 405, ['message' => $message]);
-        exit;
     }
 
     /**
@@ -230,6 +238,5 @@ abstract class Controller
     {
         $this->title = '500 | Erreur serveur';
         $this->renderError('500', 500, ['message' => $message]);
-        exit;
     }
 }
