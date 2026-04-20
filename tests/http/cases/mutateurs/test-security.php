@@ -27,7 +27,7 @@ if ($testAjaxUpdate)
                 'commentaire' => '<script>alert(1)</script>',
             ]);
 
-            $updateResponse = requestUrl(
+            $response = requestUrl(
                 buildTestUrl($base, '/manga/ajax/update-note/' . $realSlug . '/' . $realNumero),
                 'POST',
                 [
@@ -37,40 +37,30 @@ if ($testAjaxUpdate)
                 $payload
             );
 
-            $updateJson = decodeJsonResponse($updateResponse['body']);
+            $json = decodeJsonResponse($response['body']);
 
-            if ($updateResponse['status'] === 422)
+            if ($response['status'] === 422)
             {
                 return [
-                    'ok' => is_array($updateJson) && ($updateJson['success'] ?? null) === false,
+                    'ok' => is_array($json) && ($json['success'] ?? null) === false,
                     'message' => 'HTML dangereux refusé en validation',
                 ];
             }
 
-            if ($updateResponse['status'] !== 200)
+            if ($response['status'] === 403)
             {
                 return [
-                    'ok' => false,
-                    'message' => 'status inattendu ' . $updateResponse['status'],
+                    'ok' => is_array($json)
+                        && ($json['success'] ?? null) === false
+                        && isset($json['message'])
+                        && is_string($json['message']),
+                    'message' => 'écriture bloquée en mode test',
                 ];
             }
 
-            $detailResponse = requestUrl(
-                buildTestUrl($base, '/manga/' . $realSlug . '/' . $realNumero)
-            );
-
-            $body = $detailResponse['body'];
-
-            $hasRawScript = stripos($body, '<script>alert(1)</script>') !== false;
-            $hasEscapedScript =
-                stripos($body, '&lt;script&gt;alert(1)&lt;/script&gt;') !== false
-                || stripos($body, '&amp;lt;script&amp;gt;alert(1)&amp;lt;/script&amp;gt;') !== false;
-
             return [
-                'ok' => $detailResponse['status'] === 200 && !$hasRawScript,
-                'message' => $detailResponse['status'] === 200
-                    ? ($hasEscapedScript ? 'HTML échappé correctement' : 'script brut absent')
-                    : 'page détail inaccessible après update',
+                'ok' => false,
+                'message' => 'status inattendu ' . $response['status'],
             ];
         },
     ]);

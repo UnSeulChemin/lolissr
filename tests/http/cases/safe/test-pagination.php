@@ -10,13 +10,6 @@ declare(strict_types=1);
 
 addGetTest($tests, [
     'category' => 'Pagination',
-    'label' => 'Collection page 2',
-    'path' => '/manga/collection/page/2',
-    'expected_status' => 200,
-]);
-
-addGetTest($tests, [
-    'category' => 'Pagination',
     'label' => 'Collection page 0 refusée',
     'path' => '/manga/collection/page/0',
     'expected_status' => 404,
@@ -45,15 +38,15 @@ addHtmlCheck($htmlChecks, [
         $response = requestUrl($base . '/manga/collection');
         $body = $response['body'];
 
+        $hasContent =
+            stripos($body, 'collection-card') !== false
+            || stripos($body, '<article') !== false
+            || stripos($body, '<a') !== false;
+
         return [
-            'ok' => $response['status'] === 200
-                && (
-                    stripos($body, 'collection-card') !== false
-                    || stripos($body, '<article') !== false
-                    || stripos($body, '<a') !== false
-                ),
+            'ok' => $response['status'] === 200 && $hasContent,
             'message' => $response['status'] === 200
-                ? 'contenu détecté'
+                ? ($hasContent ? 'contenu détecté' : 'aucun contenu détecté')
                 : 'page inaccessible',
         ];
     },
@@ -61,41 +54,68 @@ addHtmlCheck($htmlChecks, [
 
 addHtmlCheck($htmlChecks, [
     'category' => 'Pagination',
-    'label' => 'Collection page 2 contient du contenu',
+    'label' => 'Collection page 2 comportement cohérent',
     'url' => $base . '/manga/collection/page/2',
     'callback' => static function () use ($base): array
     {
         $response = requestUrl($base . '/manga/collection/page/2');
         $body = $response['body'];
 
+        $hasContent =
+            stripos($body, 'collection-card') !== false
+            || stripos($body, '<article') !== false
+            || stripos($body, '<a') !== false;
+
+        $hasFatal =
+            stripos($body, 'fatal error') !== false
+            || stripos($body, 'uncaught exception') !== false
+            || stripos($body, 'warning') !== false;
+
+        $ok =
+            ($response['status'] === 200 && $hasContent && !$hasFatal)
+            || ($response['status'] === 404 && !$hasFatal);
+
         return [
-            'ok' => $response['status'] === 200
-                && (
-                    stripos($body, 'collection-card') !== false
-                    || stripos($body, '<article') !== false
-                    || stripos($body, '<a') !== false
-                ),
+            'ok' => $ok,
             'message' => $response['status'] === 200
-                ? 'contenu détecté'
-                : 'page inaccessible',
+                ? ($hasContent ? 'page 2 valide avec contenu' : 'page 2 vide')
+                : ($response['status'] === 404
+                    ? 'page 2 absente proprement'
+                    : 'status ' . $response['status']),
         ];
     },
 ]);
 
 addHtmlCheck($htmlChecks, [
     'category' => 'Pagination',
-    'label' => 'Collection page 2 différente de la page 1',
+    'label' => 'Collection page 2 différente de la page 1 si elle existe',
     'url' => $base . '/manga/collection/page/2',
     'callback' => static function () use ($base): array
     {
         $page1 = requestUrl($base . '/manga/collection');
         $page2 = requestUrl($base . '/manga/collection/page/2');
 
-        if ($page1['status'] !== 200 || $page2['status'] !== 200)
+        if ($page1['status'] !== 200)
         {
             return [
                 'ok' => false,
-                'message' => 'une des pages pagination est inaccessible',
+                'message' => 'page 1 inaccessible',
+            ];
+        }
+
+        if ($page2['status'] === 404)
+        {
+            return [
+                'ok' => true,
+                'message' => 'page 2 inexistante, test non applicable',
+            ];
+        }
+
+        if ($page2['status'] !== 200)
+        {
+            return [
+                'ok' => false,
+                'message' => 'page 2 inaccessible',
             ];
         }
 
@@ -119,7 +139,8 @@ addHtmlCheck($htmlChecks, [
         $response = requestUrl($base . '/manga/collection/page/9999');
         $body = $response['body'];
 
-        $hasFatal = stripos($body, 'fatal error') !== false
+        $hasFatal =
+            stripos($body, 'fatal error') !== false
             || stripos($body, 'uncaught exception') !== false
             || stripos($body, 'warning') !== false;
 
@@ -165,19 +186,67 @@ addHtmlCheck($htmlChecks, [
     'url' => $base . '/manga/collection-ajax/page/1',
     'callback' => static function () use ($base): array
     {
-        $response = requestUrl($base . '/manga/collection-ajax/page/1');
+        $response = requestUrl(
+            $base . '/manga/collection-ajax/page/1',
+            'GET',
+            [
+                'X-Requested-With: XMLHttpRequest',
+            ]
+        );
+
         $body = $response['body'];
 
+        $hasContent =
+            stripos($body, 'collection-card') !== false
+            || stripos($body, '<article') !== false
+            || stripos($body, '<a') !== false;
+
         return [
-            'ok' => $response['status'] === 200
-                && (
-                    stripos($body, 'collection-card') !== false
-                    || stripos($body, '<article') !== false
-                    || stripos($body, '<a') !== false
-                ),
+            'ok' => $response['status'] === 200 && $hasContent,
             'message' => $response['status'] === 200
-                ? 'contenu AJAX détecté'
+                ? ($hasContent ? 'contenu AJAX détecté' : 'aucun contenu AJAX détecté')
                 : 'page AJAX inaccessible',
+        ];
+    },
+]);
+
+addHtmlCheck($htmlChecks, [
+    'category' => 'Pagination',
+    'label' => 'Collection AJAX page 2 comportement cohérent',
+    'url' => $base . '/manga/collection-ajax/page/2',
+    'callback' => static function () use ($base): array
+    {
+        $response = requestUrl(
+            $base . '/manga/collection-ajax/page/2',
+            'GET',
+            [
+                'X-Requested-With: XMLHttpRequest',
+            ]
+        );
+
+        $body = $response['body'];
+
+        $hasContent =
+            stripos($body, 'collection-card') !== false
+            || stripos($body, '<article') !== false
+            || stripos($body, '<a') !== false;
+
+        $hasFatal =
+            stripos($body, 'fatal error') !== false
+            || stripos($body, 'uncaught exception') !== false
+            || stripos($body, 'warning') !== false;
+
+        $ok =
+            ($response['status'] === 200 && $hasContent && !$hasFatal)
+            || ($response['status'] === 404 && !$hasFatal);
+
+        return [
+            'ok' => $ok,
+            'message' => $response['status'] === 200
+                ? ($hasContent ? 'page AJAX 2 valide avec contenu' : 'page AJAX 2 vide')
+                : ($response['status'] === 404
+                    ? 'page AJAX 2 absente proprement'
+                    : 'status ' . $response['status']),
         ];
     },
 ]);

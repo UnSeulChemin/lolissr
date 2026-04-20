@@ -32,11 +32,27 @@ final class App
 
     public static function env(): string
     {
-        return (string) Config::get('app.env', 'local');
+        return strtolower((string) Config::get('app.env', 'local'));
     }
 
     public static function debug(): bool
     {
         return (bool) Config::get('app.debug', false);
+    }
+
+    /**
+     * Indique si l'application tourne en environnement de test.
+     */
+    public static function isTesting(): bool
+    {
+        return self::env() === 'testing';
+    }
+
+    /**
+     * Indique si les écritures doivent être bloquées.
+     */
+    public static function isReadOnly(): bool
+    {
+        return self::isTesting();
     }
 }

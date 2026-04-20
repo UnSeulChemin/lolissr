@@ -21,9 +21,9 @@ if ($testCanonicalRedirect)
     addGetTest($tests, [
         'category' => 'Canonical',
         'label' => 'Redirect canonique modifier',
-        'path' => '/manga/update/' . $nonCanonicalSlug . '/' . $realNumero,
+        'path' => '/manga/modifier/' . $nonCanonicalSlug . '/' . $realNumero,
         'expected_status' => 301,
-        'expected_location_contains' => '/manga/update/' . $realSlug . '/' . $realNumero,
+        'expected_location_contains' => '/manga/modifier/' . $realSlug . '/' . $realNumero,
     ]);
 }
 else

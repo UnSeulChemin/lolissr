@@ -63,7 +63,11 @@ class MangaReadService
         }
 
         return [
-            'mangas' => $this->mangaRepository->findAllFirstTomes('id DESC', $pagination, $currentPage),
+            'mangas' => $this->mangaRepository->findAllFirstTomes(
+                'id DESC',
+                $pagination,
+                $currentPage
+            ),
             'compteur' => $compteur,
             'currentPage' => $currentPage
         ];

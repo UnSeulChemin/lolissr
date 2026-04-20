@@ -14,7 +14,18 @@ use App\Core\Config\Env;
 | false = aucun test exécuté
 |
 */
-$testsEnabled = (bool) Env::get('TESTS_ENABLED', true);
+$testsEnabled = Env::bool('TESTS_ENABLED', true);
+
+/*
+|--------------------------------------------------------------------------
+| ENVIRONNEMENT TEST
+|--------------------------------------------------------------------------
+|
+| Les tests mutateurs ne doivent tourner que si l'application
+| est explicitement en environnement "testing".
+|
+*/
+$isTestingAppEnv = App::isTesting();
 
 /*
 |--------------------------------------------------------------------------
@@ -45,7 +56,8 @@ return [
     'httpRoot' => $httpRoot,
     'casesDirectory' => $httpRoot . '/cases',
     'fixturesDirectory' => $httpRoot . '/fixtures',
-    'tmpUploadsDirectory' => $httpRoot . '/tmp-uploads',
+    'tmpUploadsDirectory' => ROOT . '/'
+        . trim((string) Env::get('TEST_UPLOAD_DIR', 'tests/Http/tmp-uploads'), '/'),
     'exportDirectory' => $httpRoot . '/reports',
 
     /*
@@ -59,29 +71,49 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | INFOS ENV
+    |--------------------------------------------------------------------------
+    */
+    'testsEnabled' => $testsEnabled,
+    'isTestingAppEnv' => $isTestingAppEnv,
+
+    /*
+    |--------------------------------------------------------------------------
     | OPTIONS TESTS
     |--------------------------------------------------------------------------
     */
     'testCanonicalRedirect' =>
-        $testsEnabled && (bool) Env::get('TEST_CANONICAL_REDIRECT', true),
+        $testsEnabled && Env::bool('TEST_CANONICAL_REDIRECT', true),
 
     'testPostAjouter' =>
-        $testsEnabled && (bool) Env::get('TEST_POST_AJOUTER', false),
+        $testsEnabled
+        && $isTestingAppEnv
+        && Env::bool('TEST_POST_AJOUTER', false),
 
     'testPostUpdate' =>
-        $testsEnabled && (bool) Env::get('TEST_POST_UPDATE', true),
+        $testsEnabled
+        && $isTestingAppEnv
+        && Env::bool('TEST_POST_UPDATE', true),
 
     'testAjaxUpdate' =>
-        $testsEnabled && (bool) Env::get('TEST_AJAX_UPDATE', false),
+        $testsEnabled
+        && $isTestingAppEnv
+        && Env::bool('TEST_AJAX_UPDATE', false),
 
     'testUploadDuplicateSlugNumero' =>
-        $testsEnabled && (bool) Env::get('TEST_UPLOAD_DUPLICATE_SLUG_NUMERO', true),
+        $testsEnabled
+        && $isTestingAppEnv
+        && Env::bool('TEST_UPLOAD_DUPLICATE_SLUG_NUMERO', true),
 
     'testUploadInvalidImage' =>
-        $testsEnabled && (bool) Env::get('TEST_UPLOAD_INVALID_IMAGE', true),
+        $testsEnabled
+        && $isTestingAppEnv
+        && Env::bool('TEST_UPLOAD_INVALID_IMAGE', true),
 
     'testUploadMaxSize' =>
-        $testsEnabled && (bool) Env::get('TEST_UPLOAD_MAX_SIZE', true),
+        $testsEnabled
+        && $isTestingAppEnv
+        && Env::bool('TEST_UPLOAD_MAX_SIZE', true),
 
     /*
     |--------------------------------------------------------------------------

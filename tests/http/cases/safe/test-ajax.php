@@ -46,7 +46,8 @@ addPostCheck($postChecks, [
 
         return [
             'ok' => $response['status'] === 422 && $jsonOk && $hasErrorSignal,
-            'message' => 'status ' . $response['status'] . ($jsonOk ? ' | json erreur reçu' : ' | réponse non json'),
+            'message' => 'status ' . $response['status']
+                . ($jsonOk ? ' | json erreur reçu' : ' | réponse non json'),
         ];
     },
 ]);
@@ -170,7 +171,7 @@ addPostCheck($postChecks, [
 addPostCheck($postChecks, [
     'category' => 'AJAX',
     'label' => 'POST update AJAX URL non canonique',
-    'url' => $base . '/manga/update/' . $nonCanonicalSlug . '/' . $realNumero,
+    'url' => $base . '/manga/modifier/' . $nonCanonicalSlug . '/' . $realNumero,
     'callback' => static function () use ($base, $nonCanonicalSlug, $realNumero): array
     {
         $payload = http_build_query([
@@ -180,7 +181,7 @@ addPostCheck($postChecks, [
         ]);
 
         $response = requestUrl(
-            $base . '/manga/update/' . $nonCanonicalSlug . '/' . $realNumero,
+            $base . '/manga/modifier/' . $nonCanonicalSlug . '/' . $realNumero,
             'POST',
             [
                 'Content-Type: application/x-www-form-urlencoded',
@@ -207,7 +208,7 @@ addPostCheck($postChecks, [
 addPostCheck($postChecks, [
     'category' => 'AJAX',
     'label' => 'POST update AJAX manga introuvable',
-    'url' => $base . '/manga/update/slug-introuvable-test/999',
+    'url' => $base . '/manga/modifier/slug-introuvable-test/999',
     'callback' => static function () use ($base): array
     {
         $payload = http_build_query([
@@ -217,7 +218,7 @@ addPostCheck($postChecks, [
         ]);
 
         $response = requestUrl(
-            $base . '/manga/update/slug-introuvable-test/999',
+            $base . '/manga/modifier/slug-introuvable-test/999',
             'POST',
             [
                 'Content-Type: application/x-www-form-urlencoded',

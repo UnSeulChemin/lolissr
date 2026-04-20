@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Core\Database\Database;
@@ -54,6 +56,8 @@ class Model
 
     /**
      * Récupère plusieurs lignes selon des conditions.
+     *
+     * @return array<int, object>
      */
     public function findBy(array $targets): array
     {
@@ -67,7 +71,7 @@ class Model
 
         foreach ($targets as $field => $value)
         {
-            $field = $this->cleanField($field);
+            $field = $this->cleanField((string) $field);
 
             if ($field === '')
             {
@@ -108,7 +112,7 @@ class Model
 
         foreach ($datas as $field => $value)
         {
-            $field = $this->cleanField($field);
+            $field = $this->cleanField((string) $field);
 
             if ($field === '')
             {
@@ -151,7 +155,7 @@ class Model
 
         foreach ($datas as $field => $value)
         {
-            $field = $this->cleanField($field);
+            $field = $this->cleanField((string) $field);
 
             if ($field === '')
             {
@@ -164,7 +168,7 @@ class Model
 
         foreach ($where as $field => $value)
         {
-            $field = $this->cleanField($field);
+            $field = $this->cleanField((string) $field);
 
             if ($field === '')
             {
@@ -188,16 +192,51 @@ class Model
     }
 
     /**
+     * Delete générique.
+     */
+    public function delete(array $where): bool
+    {
+        if (empty($where))
+        {
+            return false;
+        }
+
+        $conditions = [];
+        $values = [];
+
+        foreach ($where as $field => $value)
+        {
+            $field = $this->cleanField((string) $field);
+
+            if ($field === '')
+            {
+                continue;
+            }
+
+            $conditions[] = "{$field} = ?";
+            $values[] = $value;
+        }
+
+        if (empty($conditions))
+        {
+            return false;
+        }
+
+        $sql = "DELETE
+                FROM {$this->getTable()}
+                WHERE " . implode(' AND ', $conditions);
+
+        return $this->requete($sql, $values) !== false;
+    }
+
+    /**
      * Supprime une ligne par id.
      */
-    public function delete(int $id): bool
+    public function deleteById(int $id): bool
     {
-        return $this->requete(
-            "DELETE
-            FROM {$this->getTable()}
-            WHERE id = ?",
-            [$id]
-        ) !== false;
+        return $this->delete([
+            'id' => $id
+        ]);
     }
 
     /**

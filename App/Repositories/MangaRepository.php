@@ -4,12 +4,25 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
+use App\Core\Application\App;
 use App\Core\Support\Str;
 use App\Models\Model;
+use LogicException;
 
 final class MangaRepository extends Model
 {
     protected string $table = 'manga';
+
+    /**
+     * Bloque les écritures en environnement de test.
+     */
+    private function guardWrite(): void
+    {
+        if (App::isReadOnly())
+        {
+            throw new LogicException('Écriture en base interdite en mode test.');
+        }
+    }
 
     /**
      * Convertit une note en int ou null.
@@ -414,6 +427,8 @@ final class MangaRepository extends Model
      */
     public function insert(array $datas): bool
     {
+        $this->guardWrite();
+
         $jacquette = $this->normalizeNoteValue($datas['jacquette'] ?? null);
         $livreNote = $this->normalizeNoteValue($datas['livre_note'] ?? null);
         $commentaire = Str::nullableTrim($datas['commentaire'] ?? null);
@@ -467,8 +482,9 @@ final class MangaRepository extends Model
         ?int $jacquette,
         ?int $livreNote,
         ?string $commentaire
-    ): bool
-    {
+    ): bool {
+        $this->guardWrite();
+
         $slug = Str::slug($slug);
         $numero = (int) $numero;
 
@@ -487,6 +503,21 @@ final class MangaRepository extends Model
             [
                 'slug' => $slug,
                 'numero' => $numero
+            ]
+        );
+    }
+
+    /**
+     * Supprime un manga via son slug et son numéro.
+     */
+    public function deleteBySlugAndNumero(string $slug, int $numero): bool
+    {
+        $this->guardWrite();
+
+        return $this->delete(
+            [
+                'slug' => Str::slug($slug),
+                'numero' => (int) $numero
             ]
         );
     }

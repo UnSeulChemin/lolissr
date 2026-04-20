@@ -65,7 +65,7 @@ if ($testPostAjouter)
     addPostCheck($postChecks, [
 
         'category' => 'Upload',
-        'label' => 'Upload image valide',
+        'label' => 'Upload image valide (mode test)',
 
         'url' => rtrim($base, '/') . '/manga/ajouter',
 
@@ -119,8 +119,7 @@ if ($testPostAjouter)
             $okResponse =
                 $response['status'] === 200
                 && is_array($json)
-                && isset($json['success'])
-                && $json['success'] === true
+                && ($json['success'] ?? null) === true
                 && isset($json['file'])
                 && is_string($json['file'])
                 && $json['file'] !== '';
@@ -152,7 +151,7 @@ if ($testUploadDuplicateSlugNumero)
     addPostCheck($postChecks, [
 
         'category' => 'Upload',
-        'label' => 'Refuse doublon slug + numero',
+        'label' => 'Upload doublon slug + numero (mode test)',
 
         'url' => rtrim($base, '/') . '/manga/ajouter',
 
@@ -201,13 +200,12 @@ if ($testUploadDuplicateSlugNumero)
 
             $firstJson = decodeJsonResponse($firstResponse['body']);
 
-            $firstInsertOk =
+            $firstOk =
                 $firstResponse['status'] === 200
                 && is_array($firstJson)
-                && isset($firstJson['success'])
-                && $firstJson['success'] === true;
+                && ($firstJson['success'] ?? null) === true;
 
-            if (!$firstInsertOk)
+            if (!$firstOk)
             {
                 if (is_file($tmpFile))
                 {
@@ -216,9 +214,11 @@ if ($testUploadDuplicateSlugNumero)
 
                 return [
                     'ok' => false,
-                    'message' => '1er insert impossible, test doublon invalide',
+                    'message' => '1er upload test impossible',
                 ];
             }
+
+            createValidJpeg($tmpFile);
 
             $boundary2 = uniqid('boundary_', true);
 
@@ -257,12 +257,11 @@ if ($testUploadDuplicateSlugNumero)
 
             $hasError =
                 is_array($json)
-                && isset($json['success'])
-                && $json['success'] === false;
+                && ($json['success'] ?? null) === false;
 
             return [
                 'ok' => $hasError || $response['status'] >= 400,
-                'message' => 'status ' . $response['status'] . ' | doublon détecté',
+                'message' => 'status ' . $response['status'] . ' | doublon refusé',
             ];
         }
 
@@ -330,8 +329,7 @@ if ($testUploadInvalidImage)
 
             $hasError =
                 is_array($json)
-                && isset($json['success'])
-                && $json['success'] === false;
+                && ($json['success'] ?? null) === false;
 
             return [
                 'ok' => $hasError || $response['status'] >= 400,
@@ -399,8 +397,7 @@ if ($testUploadMaxSize)
 
             $hasJsonError =
                 is_array($json)
-                && isset($json['success'])
-                && $json['success'] === false;
+                && ($json['success'] ?? null) === false;
 
             $message = '';
 

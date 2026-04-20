@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Core\Application\App;
 use App\Core\Support\Logger;
 use App\Core\Support\Str;
 use App\Repositories\MangaRepository;
@@ -39,6 +40,32 @@ class MangaService
     public function validatorService(): MangaValidatorService
     {
         return $this->validatorService;
+    }
+
+    /**
+     * Indique si les écritures doivent être bloquées.
+     */
+    private function isReadOnlyMode(): bool
+    {
+        return App::isReadOnly();
+    }
+
+    /**
+     * Retourne la réponse standard de blocage d’écriture.
+     *
+     * @return array{
+     *     success: bool,
+     *     status: int,
+     *     message: string
+     * }
+     */
+    private function blockedWriteResponse(): array
+    {
+        return [
+            'success' => false,
+            'status' => 403,
+            'message' => 'Écriture en base désactivée en mode test'
+        ];
     }
 
     /**
@@ -182,7 +209,10 @@ class MangaService
 
         if (
             !$this->uploadService->isTestUploadMode()
-            && $this->mangaRepository->findOneBySlugAndNumero($data['slug'], $data['numero'])
+            && $this->mangaRepository->findOneBySlugAndNumero(
+                $data['slug'],
+                $data['numero']
+            )
         )
         {
             return [
@@ -216,6 +246,13 @@ class MangaService
                 'message' => 'Upload test OK (aucune écriture en base)',
                 'file' => basename((string) $upload['destination'])
             ];
+        }
+
+        if ($this->isReadOnlyMode())
+        {
+            $this->uploadService->removeFileIfExists((string) $upload['destination']);
+
+            return $this->blockedWriteResponse();
         }
 
         $insert = $this->mangaRepository->insert([
@@ -280,6 +317,11 @@ class MangaService
             ];
         }
 
+        if ($this->isReadOnlyMode())
+        {
+            return $this->blockedWriteResponse();
+        }
+
         $data = $this->normalizedUpdateData($post);
 
         $updated = $this->mangaRepository->updateManga(
@@ -310,6 +352,47 @@ class MangaService
             'success' => true,
             'status' => 200,
             'message' => 'Manga mis à jour avec succès'
+        ];
+    }
+
+    /**
+     * Traite la suppression d’un manga.
+     *
+     * @return array{
+     *     success: bool,
+     *     status: int,
+     *     message: string
+     * }
+     */
+    public function delete(string $slug, int $numero): array
+    {
+        if ($this->isReadOnlyMode())
+        {
+            return $this->blockedWriteResponse();
+        }
+
+        $deleted = $this->mangaRepository->deleteBySlugAndNumero($slug, $numero);
+
+        if (!$deleted)
+        {
+            Logger::error(
+                'Échec suppression manga. slug='
+                . $slug
+                . ', numero='
+                . $numero
+            );
+
+            return [
+                'success' => false,
+                'status' => 500,
+                'message' => 'Erreur lors de la suppression'
+            ];
+        }
+
+        return [
+            'success' => true,
+            'status' => 200,
+            'message' => 'Manga supprimé avec succès'
         ];
     }
 }

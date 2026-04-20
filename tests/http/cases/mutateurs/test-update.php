@@ -7,10 +7,10 @@ declare(strict_types=1);
 | TESTS UPDATE
 |--------------------------------------------------------------------------
 |
-| Test POST /manga/update/{slug}/{numero}
+| Test POST /manga/modifier/{slug}/{numero}
 |
 | Vérifie :
-| - update valide
+| - blocage écriture en mode test
 | - validation erreur
 | - slug non canonique
 |
@@ -20,16 +20,16 @@ if ($testPostUpdate)
 {
     /*
     |--------------------------------------------------------------------------
-    | Update valide
+    | Update bloqué en mode test
     |--------------------------------------------------------------------------
     */
 
     addPostCheck($postChecks, [
 
         'category' => 'Update',
-        'label' => 'Update notes valide',
+        'label' => 'Update bloqué en mode test',
 
-        'url' => rtrim($base, '/') . '/manga/update/' . $realSlug . '/' . $realNumero,
+        'url' => rtrim($base, '/') . '/manga/modifier/' . $realSlug . '/' . $realNumero,
 
         'callback' => static function () use ($base, $realSlug, $realNumero): array
         {
@@ -46,7 +46,7 @@ if ($testPostUpdate)
             );
 
             $response = requestUrl(
-                rtrim($base, '/') . '/manga/update/' . $realSlug . '/' . $realNumero,
+                rtrim($base, '/') . '/manga/modifier/' . $realSlug . '/' . $realNumero,
                 'POST',
                 [
                     "Content-Type: multipart/form-data; boundary=$boundary",
@@ -58,9 +58,9 @@ if ($testPostUpdate)
             $json = decodeJsonResponse($response['body']);
 
             $ok =
-                $response['status'] === 200
+                $response['status'] === 403
                 && is_array($json)
-                && ($json['success'] ?? null) === true
+                && ($json['success'] ?? null) === false
                 && isset($json['message'])
                 && is_string($json['message']);
 
@@ -83,7 +83,7 @@ if ($testPostUpdate)
         'category' => 'Update',
         'label' => 'Update invalide (note > 5)',
 
-        'url' => rtrim($base, '/') . '/manga/update/' . $realSlug . '/' . $realNumero,
+        'url' => rtrim($base, '/') . '/manga/modifier/' . $realSlug . '/' . $realNumero,
 
         'callback' => static function () use ($base, $realSlug, $realNumero): array
         {
@@ -99,7 +99,7 @@ if ($testPostUpdate)
             );
 
             $response = requestUrl(
-                rtrim($base, '/') . '/manga/update/' . $realSlug . '/' . $realNumero,
+                rtrim($base, '/') . '/manga/modifier/' . $realSlug . '/' . $realNumero,
                 'POST',
                 [
                     "Content-Type: multipart/form-data; boundary=$boundary",
@@ -136,7 +136,7 @@ if ($testPostUpdate)
         'category' => 'Update',
         'label' => 'Update slug non canonique',
 
-        'url' => rtrim($base, '/') . '/manga/update/' . $nonCanonicalSlug . '/' . $realNumero,
+        'url' => rtrim($base, '/') . '/manga/modifier/' . $nonCanonicalSlug . '/' . $realNumero,
 
         'callback' => static function () use ($base, $nonCanonicalSlug, $realNumero, $realSlug): array
         {
@@ -152,7 +152,7 @@ if ($testPostUpdate)
             );
 
             $response = requestUrl(
-                rtrim($base, '/') . '/manga/update/' . $nonCanonicalSlug . '/' . $realNumero,
+                rtrim($base, '/') . '/manga/modifier/' . $nonCanonicalSlug . '/' . $realNumero,
                 'POST',
                 [
                     "Content-Type: multipart/form-data; boundary=$boundary",
@@ -171,7 +171,7 @@ if ($testPostUpdate)
                 && is_string($json['redirect'])
                 && str_contains(
                     $json['redirect'],
-                    '/manga/update/' . rawurlencode($realSlug) . '/' . $realNumero
+                    '/manga/modifier/' . rawurlencode($realSlug) . '/' . $realNumero
                 );
 
             return [

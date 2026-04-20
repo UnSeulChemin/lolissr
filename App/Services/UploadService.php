@@ -4,19 +4,20 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Core\Application\App;
 use App\Core\Config\Env;
+use App\Core\Config\UploadConfig;
 use App\Core\Support\Logger;
 use App\Core\Support\Str;
-use App\Core\Config\UploadConfig;
 
 class UploadService
 {
     /**
-     * Retourne true si le mode test upload est activé.
+     * Retourne true si le mode upload de test est actif.
      */
     public function isTestUploadMode(): bool
     {
-        return (bool) Env::get('TEST_UPLOAD_MODE', false);
+        return App::isTesting();
     }
 
     /**
@@ -24,7 +25,10 @@ class UploadService
      */
     public function testUploadDirectory(): string
     {
-        $directory = trim((string) Env::get('TEST_UPLOAD_DIR', 'tests/Http/tmp-uploads'), '/\\');
+        $directory = trim(
+            (string) Env::get('TEST_UPLOAD_DIR', 'tests/Http/tmp-uploads'),
+            '/\\'
+        );
 
         return ROOT . '/' . $directory . '/';
     }
@@ -276,7 +280,10 @@ class UploadService
 
         if (!$this->ensureDirectoryExists($directory))
         {
-            Logger::error('Upload manga: impossible de créer le dossier image : ' . $directory);
+            Logger::error(
+                'Upload manga: impossible de créer le dossier image : '
+                . $directory
+            );
 
             return [
                 'success' => false,
@@ -304,7 +311,10 @@ class UploadService
 
         if (!$moved)
         {
-            Logger::error('Upload manga: échec déplacement fichier vers : ' . $destination);
+            Logger::error(
+                'Upload manga: échec déplacement fichier vers : '
+                . $destination
+            );
 
             return [
                 'success' => false,

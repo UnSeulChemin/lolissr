@@ -13,6 +13,7 @@ require ROOT . '/Autoloader.php';
 | Chargement du fichier .env
 |--------------------------------------------------------------------------
 */
+
 $envFile = ROOT . '/.env';
 
 if (is_file($envFile))
@@ -27,7 +28,8 @@ if (is_file($envFile))
             $line === ''
             || str_starts_with($line, '#')
             || !str_contains($line, '=')
-        ) {
+        )
+        {
             continue;
         }
 
@@ -44,14 +46,44 @@ if (is_file($envFile))
 
 /*
 |--------------------------------------------------------------------------
-| Mode test
+| Mode test forcé
+|--------------------------------------------------------------------------
+|
+| Ce fichier force un contexte de test runtime.
+| Il ne doit pas autoriser d'écriture mutatrice par défaut.
+|
+*/
+
+$_ENV['APP_ENV'] = 'testing';
+$_SERVER['APP_ENV'] = 'testing';
+putenv('APP_ENV=testing');
+
+/*
+|--------------------------------------------------------------------------
+| Tests safe par défaut
 |--------------------------------------------------------------------------
 */
 
-$_ENV['APP_ENV'] = 'test';
-$_SERVER['APP_ENV'] = 'test';
-putenv('APP_ENV=test');
+$_ENV['TESTS_ENABLED'] = 'true';
+$_SERVER['TESTS_ENABLED'] = 'true';
+putenv('TESTS_ENABLED=true');
 
 $_ENV['TEST_UPLOAD_MODE'] = 'true';
 $_SERVER['TEST_UPLOAD_MODE'] = 'true';
 putenv('TEST_UPLOAD_MODE=true');
+
+$_ENV['TEST_UPLOAD_REAL'] = 'false';
+$_SERVER['TEST_UPLOAD_REAL'] = 'false';
+putenv('TEST_UPLOAD_REAL=false');
+
+$_ENV['TEST_POST_AJOUTER'] = 'false';
+$_SERVER['TEST_POST_AJOUTER'] = 'false';
+putenv('TEST_POST_AJOUTER=false');
+
+$_ENV['TEST_POST_UPDATE'] = 'false';
+$_SERVER['TEST_POST_UPDATE'] = 'false';
+putenv('TEST_POST_UPDATE=false');
+
+$_ENV['TEST_AJAX_UPDATE'] = 'false';
+$_SERVER['TEST_AJAX_UPDATE'] = 'false';
+putenv('TEST_AJAX_UPDATE=false');

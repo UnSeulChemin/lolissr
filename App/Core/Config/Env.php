@@ -51,6 +51,37 @@ final class Env
     }
 
     /**
+     * Retourne une variable d'environnement en booléen strict.
+     */
+    public static function bool(string $key, bool $default = false): bool
+    {
+        $value = self::get($key, $default);
+
+        if (is_bool($value))
+        {
+            return $value;
+        }
+
+        if (is_int($value))
+        {
+            return $value === 1;
+        }
+
+        if (!is_string($value))
+        {
+            return $default;
+        }
+
+        $result = filter_var(
+            $value,
+            FILTER_VALIDATE_BOOL,
+            FILTER_NULL_ON_FAILURE
+        );
+
+        return $result ?? $default;
+    }
+
+    /**
      * Vérifie si une variable d'environnement existe.
      */
     public static function has(string $key): bool
