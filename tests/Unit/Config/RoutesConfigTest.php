@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use PHPUnit\Framework\TestCase;
 use App\Core\Http\Router;
+use PHPUnit\Framework\TestCase;
 
 final class RoutesConfigTest extends TestCase
 {
@@ -11,7 +11,7 @@ final class RoutesConfigTest extends TestCase
     {
         $router = new Router();
 
-        $routesFile = ROOT . '/config/routes.php';
+        $routesFile = ROOT . '/Config/routes.php';
 
         $this->assertFileExists($routesFile);
 
@@ -30,37 +30,27 @@ final class RoutesConfigTest extends TestCase
     {
         $router = new Router();
 
-        $routes = require ROOT . '/config/routes.php';
-
+        $routes = require ROOT . '/Config/routes.php';
         $routes($router);
 
         $routesList = $router->getRoutes();
 
         $this->assertArrayHasKey('GET', $routesList);
-
-        $this->assertTrue(
-            $this->routeExists(
-                $routesList['GET'],
-                '/'
-            )
-        );
+        $this->assertTrue($this->routeExists($routesList['GET'], '/'));
     }
 
     public function testMangaShowRouteExists(): void
     {
         $router = new Router();
 
-        $routes = require ROOT . '/config/routes.php';
-
+        $routes = require ROOT . '/Config/routes.php';
         $routes($router);
 
         $routesList = $router->getRoutes();
 
+        $this->assertArrayHasKey('GET', $routesList);
         $this->assertTrue(
-            $this->routeExists(
-                $routesList['GET'],
-                '/manga/{slug}/{numero}'
-            )
+            $this->routeExists($routesList['GET'], '/manga/{slug}/{numero}')
         );
     }
 
