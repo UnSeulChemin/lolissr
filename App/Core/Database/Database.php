@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Database;
 
-use App\Core\Config\Config;
+use App\Core\Config\DatabaseConfig;
 use App\Core\Support\Logger;
 use Exception;
 use PDO;
@@ -12,22 +12,15 @@ use PDOException;
 
 class Database extends PDO
 {
-    /**
-     * Instance unique de la base de données.
-     */
     private static ?self $instance = null;
 
-    /**
-     * Constructeur privé.
-     * Initialise la connexion PDO.
-     */
     private function __construct()
     {
-        $host = (string) Config::get('database.host', 'localhost');
-        $name = (string) Config::get('database.name', '');
-        $charset = (string) Config::get('database.charset', 'utf8mb4');
-        $user = (string) Config::get('database.user', '');
-        $pass = (string) Config::get('database.pass', '');
+        $host = DatabaseConfig::host();
+        $name = DatabaseConfig::name();
+        $charset = DatabaseConfig::charset();
+        $user = DatabaseConfig::user();
+        $pass = DatabaseConfig::pass();
 
         $dsn = 'mysql:host=' . $host
             . ';dbname=' . $name
@@ -45,7 +38,7 @@ class Database extends PDO
         {
             Logger::error('Erreur connexion BDD : ' . $exception->getMessage());
 
-            if ((bool) Config::get('app.debug', false))
+            if (\config('app.debug', false))
             {
                 exit('Erreur PDO : ' . $exception->getMessage());
             }
@@ -54,9 +47,6 @@ class Database extends PDO
         }
     }
 
-    /**
-     * Retourne l'instance unique de la base de données.
-     */
     public static function getInstance(): self
     {
         if (self::$instance === null)
@@ -67,16 +57,10 @@ class Database extends PDO
         return self::$instance;
     }
 
-    /**
-     * Empêche le clonage de l'instance.
-     */
     private function __clone(): void
     {
     }
 
-    /**
-     * Empêche la désérialisation de l'instance.
-     */
     public function __wakeup(): void
     {
         throw new Exception('Cannot unserialize singleton');

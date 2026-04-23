@@ -26,38 +26,19 @@ class MangaController extends Controller
         $this->mangaReadService = new MangaReadService($this->mangaRepository);
     }
 
-    /**
-     * Retourne le repository manga.
-     */
     protected function mangaRepository(): MangaRepository
     {
         return $this->mangaRepository;
     }
 
-    /**
-     * Retourne le service manga.
-     */
     protected function mangaService(): MangaService
     {
         return $this->mangaService;
     }
 
-    /**
-     * Retourne le service de lecture manga.
-     */
     protected function mangaReadService(): MangaReadService
     {
         return $this->mangaReadService;
-    }
-
-    /**
-     * Vérifie si la requête est AJAX.
-     */
-    protected function isAjaxRequest(): bool
-    {
-        $requestedWith = Request::server('HTTP_X_REQUESTED_WITH', '');
-
-        return strtolower(trim((string) $requestedWith)) === 'xmlhttprequest';
     }
 
     /**
@@ -96,9 +77,6 @@ class MangaController extends Controller
         return $payload;
     }
 
-    /**
-     * Redirige vers l'URL canonique si le slug demandé n'est pas correct.
-     */
     protected function redirectToCanonicalUrl(
         string $requestedSlug,
         string $canonicalSlug,
@@ -120,9 +98,6 @@ class MangaController extends Controller
         $this->redirect($location, 301);
     }
 
-    /**
-     * Retourne un manga ou déclenche une 404 / JSON 404.
-     */
     protected function findCanonicalMangaOrFail(
         string $slug,
         int $numero,
@@ -146,9 +121,6 @@ class MangaController extends Controller
         $this->notFound('Manga introuvable');
     }
 
-    /**
-     * Gère l’accès canonique pour une route modifier.
-     */
     protected function handleCanonicalUpdateAccess(
         string $requestedSlug,
         object $manga,
@@ -183,8 +155,6 @@ class MangaController extends Controller
     }
 
     /**
-     * Gère la réponse après update.
-     *
      * @param array<string, mixed> $result
      */
     protected function handleUpdateResult(
@@ -246,9 +216,6 @@ class MangaController extends Controller
         );
     }
 
-    /**
-     * Logique partagée de mise à jour.
-     */
     protected function performUpdate(
         string $slug,
         string $numero,
@@ -273,6 +240,7 @@ class MangaController extends Controller
         }
 
         $manga = $this->findCanonicalMangaOrFail($requestedSlug, $numero, $ajax);
+
         $canonicalSlug = $this->handleCanonicalUpdateAccess(
             $requestedSlug,
             $manga,
@@ -290,30 +258,18 @@ class MangaController extends Controller
         $this->handleUpdateResult($result, $canonicalSlug, $numero, $ajax);
     }
 
-    /**
-     * Accueil manga.
-     * Route : /manga
-     */
     public function index(): void
     {
         $this->title = 'Manga';
         $this->render('manga/index');
     }
 
-    /**
-     * Page lien.
-     * Route : /manga/lien
-     */
     public function lien(): void
     {
         $this->title = 'Manga | Lien';
         $this->render('manga/lien');
     }
 
-    /**
-     * Collection paginée.
-     * Routes : /manga/collection | /manga/collection/page/{page}
-     */
     public function collection(string $page = '1'): void
     {
         $data = $this->mangaReadService()->collection($page);
@@ -338,10 +294,6 @@ class MangaController extends Controller
         ]);
     }
 
-    /**
-     * Collection AJAX.
-     * Route : /manga/collection-ajax/page/{page}
-     */
     public function collectionAjax(string $page = '1'): void
     {
         $data = $this->mangaReadService()->collection($page);
@@ -359,10 +311,6 @@ class MangaController extends Controller
         ]);
     }
 
-    /**
-     * Recherche manga.
-     * Route : /manga/recherche/{query}
-     */
     public function recherche(string $query = ''): void
     {
         $data = $this->mangaReadService()->search($query);
@@ -380,10 +328,6 @@ class MangaController extends Controller
         ]);
     }
 
-    /**
-     * Recherche AJAX (live search).
-     * Route : /manga/search-ajax/{query}
-     */
     public function searchAjax(string $query = ''): void
     {
         $this->jsonResponse(
@@ -391,10 +335,6 @@ class MangaController extends Controller
         );
     }
 
-    /**
-     * Affiche une série.
-     * Route : /manga/serie/{slug}
-     */
     public function serie(string $slug): void
     {
         $requestedSlug = trim($slug);
@@ -408,7 +348,7 @@ class MangaController extends Controller
         $this->redirectToCanonicalUrl(
             $requestedSlug,
             $data['canonicalSlug'],
-            'manga/serie',
+            'manga/serie'
         );
 
         $this->title = 'Manga | ' . $data['mangas'][0]->livre;
@@ -421,10 +361,6 @@ class MangaController extends Controller
         ]);
     }
 
-    /**
-     * Affiche un tome.
-     * Route : /manga/{slug}/{numero}
-     */
     public function show(string $slug, string $numero): void
     {
         $requestedSlug = trim($slug);
@@ -451,20 +387,12 @@ class MangaController extends Controller
         ]);
     }
 
-    /**
-     * Formulaire d'ajout.
-     * Route : /manga/ajouter
-     */
     public function ajouter(): void
     {
         $this->title = 'Manga | Ajouter';
         $this->render('manga/ajouter');
     }
 
-    /**
-     * Formulaire de modification.
-     * Route : /manga/modifier/{slug}/{numero}
-     */
     public function modifier(string $slug, string $numero): void
     {
         $requestedSlug = trim($slug);
@@ -487,15 +415,11 @@ class MangaController extends Controller
         ]);
     }
 
-    /**
-     * Traite l'ajout.
-     * Route : POST /manga/ajouter
-     */
     public function ajouterTraitement(): void
     {
         if (!Request::isPost())
         {
-            if ($this->isAjaxRequest())
+            if (is_ajax())
             {
                 $this->jsonResponse([
                     'success' => false,
@@ -515,7 +439,7 @@ class MangaController extends Controller
 
         if (!$result['success'])
         {
-            if ($this->isAjaxRequest())
+            if (is_ajax())
             {
                 $this->jsonResponse(
                     $this->jsonErrorPayload($result),
@@ -539,7 +463,7 @@ class MangaController extends Controller
 
         Session::forget(['errors', 'old']);
 
-        if ($this->isAjaxRequest())
+        if (is_ajax())
         {
             $payload = [
                 'success' => true,
@@ -560,28 +484,16 @@ class MangaController extends Controller
         );
     }
 
-    /**
-     * Traite la modification.
-     * Route : POST /manga/modifier/{slug}/{numero}
-     */
     public function update(string $slug, string $numero): void
     {
-        $this->performUpdate($slug, $numero, $this->isAjaxRequest());
+        $this->performUpdate($slug, $numero, is_ajax());
     }
 
-    /**
-     * Mise à jour AJAX des notes.
-     * Route : POST /manga/ajax/update-note/{slug}/{numero}
-     */
     public function ajaxUpdateNote(string $slug, string $numero): void
     {
         $this->performUpdate($slug, $numero, true);
     }
 
-    /**
-     * Suppression AJAX d’un manga.
-     * Route : POST /manga/ajax/supprimer/{slug}/{numero}
-     */
     public function ajaxDelete(string $slug, string $numero): void
     {
         $numero = (int) $numero;
@@ -594,7 +506,7 @@ class MangaController extends Controller
             ], 405);
         }
 
-        if (!$this->isAjaxRequest())
+        if (!is_ajax())
         {
             $this->jsonResponse([
                 'success' => false,

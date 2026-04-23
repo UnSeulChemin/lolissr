@@ -238,4 +238,12 @@ final class Request
     {
         return $_SERVER[$key] ?? $default;
     }
+
+    /**
+     * Vérifie si la requête courante est AJAX.
+     */
+    public static function isAjax(): bool
+    {
+        return strtolower((string) self::server('HTTP_X_REQUESTED_WITH', '')) === 'xmlhttprequest';
+    }
 }

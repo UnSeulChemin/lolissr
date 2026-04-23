@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 use App\Controllers\ErrorController;
 use App\Core\Application\App;
+use App\Core\Config\Config;
 use App\Core\Config\Env;
+use App\Core\Http\Request;
 use App\Core\Http\Response;
 
 /*
@@ -15,9 +17,6 @@ use App\Core\Http\Response;
 
 if (!function_exists('dump'))
 {
-    /**
-     * Affiche une ou plusieurs variables.
-     */
     function dump(mixed ...$vars): void
     {
         echo '<pre style="
@@ -48,9 +47,6 @@ if (!function_exists('dump'))
 
 if (!function_exists('dd'))
 {
-    /**
-     * Dump + stop.
-     */
     function dd(mixed ...$vars): void
     {
         dump(...$vars);
@@ -66,9 +62,6 @@ if (!function_exists('dd'))
 
 if (!function_exists('base_path'))
 {
-    /**
-     * Retourne le base path URL de l'application.
-     */
     function base_path(): string
     {
         return App::basePath();
@@ -83,14 +76,11 @@ if (!function_exists('base_path'))
 
 if (!function_exists('app_path'))
 {
-    /**
-     * Retourne le chemin absolu depuis la racine du projet.
-     */
     function app_path(string $path = ''): string
     {
         return rtrim(ROOT, DIRECTORY_SEPARATOR)
             . ($path !== ''
-                ? DIRECTORY_SEPARATOR . ltrim($path, DIRECTORY_SEPARATOR)
+                ? DIRECTORY_SEPARATOR . ltrim($path, '/\\')
                 : '');
     }
 }
@@ -103,14 +93,11 @@ if (!function_exists('app_path'))
 
 if (!function_exists('view_path'))
 {
-    /**
-     * Retourne le chemin absolu vers une vue.
-     */
     function view_path(string $view = ''): string
     {
         return app_path('App/Views')
             . ($view !== ''
-                ? DIRECTORY_SEPARATOR . ltrim($view, DIRECTORY_SEPARATOR)
+                ? DIRECTORY_SEPARATOR . ltrim($view, '/\\')
                 : '');
     }
 }
@@ -123,9 +110,6 @@ if (!function_exists('view_path'))
 
 if (!function_exists('abort'))
 {
-    /**
-     * Stoppe avec une erreur HTTP.
-     */
     function abort(int $code = 404): void
     {
         $controller = new ErrorController();
@@ -148,9 +132,6 @@ if (!function_exists('abort'))
 
 if (!function_exists('redirect'))
 {
-    /**
-     * Redirection globale.
-     */
     function redirect(string $path = '', int $status = 302): void
     {
         if (preg_match('#^https?://#i', $path) === 1)
@@ -159,7 +140,7 @@ if (!function_exists('redirect'))
             return;
         }
 
-        $url = base_path() . ltrim($path, '/');
+        $url = rtrim(base_path(), '/') . '/' . ltrim($path, '/');
 
         Response::redirect($url, $status);
     }
@@ -173,9 +154,6 @@ if (!function_exists('redirect'))
 
 if (!function_exists('json'))
 {
-    /**
-     * Réponse JSON.
-     */
     function json(array $data, int $status = 200): void
     {
         Response::json($data, $status);
@@ -190,11 +168,6 @@ if (!function_exists('json'))
 
 if (!function_exists('view'))
 {
-    /**
-     * Rend une vue avec layout.
-     *
-     * @param array<string, mixed> $data
-     */
     function view(
         string $view,
         array $data = [],
@@ -210,16 +183,12 @@ if (!function_exists('view'))
 
         if (!is_file($viewPath))
         {
-            throw new \RuntimeException(
-                'Vue introuvable : ' . $view
-            );
+            throw new RuntimeException('Vue introuvable : ' . $view);
         }
 
         if (!is_file($templatePath))
         {
-            throw new \RuntimeException(
-                'Template introuvable : layouts/base'
-            );
+            throw new RuntimeException('Template introuvable : layouts/base');
         }
 
         ob_start();
@@ -236,15 +205,12 @@ if (!function_exists('view'))
 
 /*
 |--------------------------------------------------------------------------
-| env helpers
+| env()
 |--------------------------------------------------------------------------
 */
 
 if (!function_exists('env'))
 {
-    /**
-     * Récupère une variable d'environnement.
-     */
     function env(string $key, mixed $default = null): mixed
     {
         return Env::get($key, $default);
@@ -253,9 +219,6 @@ if (!function_exists('env'))
 
 if (!function_exists('env_bool'))
 {
-    /**
-     * Récupère une variable d'environnement booléenne.
-     */
     function env_bool(string $key, bool $default = false): bool
     {
         return Env::bool($key, $default);
@@ -264,11 +227,36 @@ if (!function_exists('env_bool'))
 
 if (!function_exists('env_int'))
 {
-    /**
-     * Récupère une variable d'environnement entière.
-     */
     function env_int(string $key, int $default = 0): int
     {
         return Env::int($key, $default);
+    }
+}
+
+/*
+|--------------------------------------------------------------------------
+| config()
+|--------------------------------------------------------------------------
+*/
+
+if (!function_exists('config'))
+{
+    function config(string $key, mixed $default = null): mixed
+    {
+        return Config::get($key, $default);
+    }
+}
+
+/*
+|--------------------------------------------------------------------------
+| is_ajax()
+|--------------------------------------------------------------------------
+*/
+
+if (!function_exists('is_ajax'))
+{
+    function is_ajax(): bool
+    {
+        return Request::isAjax();
     }
 }
