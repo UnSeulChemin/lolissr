@@ -17,6 +17,7 @@ final class Bootstrap
     public static function run(): void
     {
         self::loadEnvironment(ROOT . '/.env');
+        require_once ROOT . '/App/Core/Support/helpers.php';
 
         Env::clear();
         Config::clear();
