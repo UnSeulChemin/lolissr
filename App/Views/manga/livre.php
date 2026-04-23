@@ -101,6 +101,14 @@
                     href="<?= $basePath; ?>manga/modifier/<?= rawurlencode($manga->slug) ?>/<?= (int) $manga->numero ?>">
                     Modifier
                 </a>
+
+                <button
+                    type="button"
+                    class="form-submit form-submit-danger js-delete-manga"
+                    data-url="<?= $basePath; ?>manga/ajax/supprimer/<?= rawurlencode($manga->slug) ?>/<?= (int) $manga->numero ?>"
+                    data-redirect="<?= $basePath; ?>manga/serie/<?= rawurlencode($manga->slug) ?>">
+                    Supprimer
+                </button>
             </div>
 
         </article>

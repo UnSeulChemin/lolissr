@@ -51,6 +51,7 @@ return static function (Router $router): void
     $router->post('/manga/ajouter', 'MangaController@ajouterTraitement');
     $router->post('/manga/modifier/{slug}/{numero}', 'MangaController@update');
     $router->post('/manga/ajax/update-note/{slug}/{numero}', 'MangaController@ajaxUpdateNote');
+    $router->post('/manga/ajax/supprimer/{slug}/{numero}', 'MangaController@ajaxDelete');
 
     /*
     |--------------------------------------------------------------------------

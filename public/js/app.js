@@ -1,5 +1,6 @@
 import { initCollectionPaginationAjax } from './features/ajax-pagination.js';
 import { initMangaAjaxNotes } from './features/ajax-notes.js';
+import { initMangaAjaxDelete } from './features/ajax-delete.js';
 import { initAutoSlug } from './features/slug.js';
 import { showToast } from './core/toast.js';
 import { initCollectionCardPrefetch } from './features/prefetch-collection.js';
@@ -37,7 +38,6 @@ document.addEventListener('DOMContentLoaded', () =>
     initAjouterPage();
     initEditPage();
 
-
     /*
     |------------------------------------------------------------------
     | AJAX
@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () =>
 
     initCollectionPaginationAjax();
     initMangaAjaxNotes();
-
+    initMangaAjaxDelete();
 
     /*
     |------------------------------------------------------------------
@@ -55,7 +55,6 @@ document.addEventListener('DOMContentLoaded', () =>
     */
 
     initCollectionKeyboardNavigation();
-
 
     /*
     |------------------------------------------------------------------
@@ -66,7 +65,6 @@ document.addEventListener('DOMContentLoaded', () =>
     initCollectionCardPrefetch();
     initLinkPreloading();
 
-
     /*
     |------------------------------------------------------------------
     | SEARCH
@@ -74,7 +72,6 @@ document.addEventListener('DOMContentLoaded', () =>
     */
 
     initLiveSearch();
-
 
     /*
     |------------------------------------------------------------------

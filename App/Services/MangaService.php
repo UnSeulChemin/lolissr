@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Core\Application\App;
+use App\Core\Config\UploadConfig;
 use App\Core\Support\Logger;
 use App\Core\Support\Str;
 use App\Repositories\MangaRepository;
@@ -371,6 +372,22 @@ class MangaService
             return $this->blockedWriteResponse();
         }
 
+        $manga = $this->mangaRepository->findOneBySlugAndNumero($slug, $numero);
+
+        if ($manga === false)
+        {
+            return [
+                'success' => false,
+                'status' => 404,
+                'message' => 'Manga introuvable'
+            ];
+        }
+
+        $imagePath = UploadConfig::mangaThumbnailDirectory()
+            . $manga->thumbnail
+            . '.'
+            . $manga->extension;
+
         $deleted = $this->mangaRepository->deleteBySlugAndNumero($slug, $numero);
 
         if (!$deleted)
@@ -388,6 +405,8 @@ class MangaService
                 'message' => 'Erreur lors de la suppression'
             ];
         }
+
+        $this->uploadService->removeFileIfExists($imagePath);
 
         return [
             'success' => true,

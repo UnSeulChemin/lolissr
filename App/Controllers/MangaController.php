@@ -558,4 +558,58 @@ class MangaController extends Controller
     {
         $this->performUpdate($slug, $numero, true);
     }
+
+    /**
+     * Suppression AJAX d’un manga.
+     * Route : POST /manga/ajax/supprimer/{slug}/{numero}
+     */
+    public function ajaxDelete(string $slug, string $numero): void
+    {
+        $numero = (int) $numero;
+
+        if (!Request::isPost())
+        {
+            $this->jsonResponse([
+                'success' => false,
+                'message' => 'Méthode non autorisée'
+            ], 405);
+        }
+
+        if (!$this->isAjaxRequest())
+        {
+            $this->jsonResponse([
+                'success' => false,
+                'message' => 'Requête AJAX requise'
+            ], 400);
+        }
+
+        $requestedSlug = trim($slug);
+        $manga = $this->findCanonicalMangaOrFail($requestedSlug, $numero, true);
+        $canonicalSlug = Str::slug((string) $manga->slug);
+
+        if ($requestedSlug !== $canonicalSlug)
+        {
+            $this->jsonResponse([
+                'success' => false,
+                'message' => 'URL non canonique',
+                'redirect' => $this->basePath . 'manga/' . rawurlencode($canonicalSlug) . '/' . $numero
+            ], 409);
+        }
+
+        $result = $this->mangaService()->delete($canonicalSlug, $numero);
+
+        if (!$result['success'])
+        {
+            $this->jsonResponse(
+                $this->jsonErrorPayload($result),
+                (int) $result['status']
+            );
+        }
+
+        $this->jsonResponse([
+            'success' => true,
+            'message' => (string) $result['message'],
+            'redirect' => $this->basePath . 'manga/serie/' . rawurlencode($canonicalSlug)
+        ], 200);
+    }
 }

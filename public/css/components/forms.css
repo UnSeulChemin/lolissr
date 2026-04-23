@@ -235,6 +235,33 @@
     filter: brightness(1.05);
 }
 
+.form-submit-danger
+{
+    background: linear-gradient(135deg, #ff4d4d, #d60000);
+    color: #fff;
+    min-width: 170px;
+}
+
+.form-submit-danger:hover
+{
+    background: linear-gradient(135deg, #ff6666, #b30000);
+}
+
+.detail-actions
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    gap: 16px;
+    margin-top: var(--space-lg);
+}
+
+.detail-actions form
+{
+    margin: 0;
+}
+
 
 /* =========================================
    BUTTON VARIANTS
@@ -266,22 +293,4 @@
     font-size: var(--font-size-xs);
     font-weight: 600;
     line-height: 1.4;
-}
-
-
-/* =========================================
-   RESPONSIVE
-========================================= */
-
-@media (max-width: 700px)
-{
-    .form-page
-    {
-        padding: 20px 16px 0;
-    }
-
-    .form-card
-    {
-        padding: 22px 18px;
-    }
 }
