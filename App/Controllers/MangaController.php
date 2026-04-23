@@ -81,7 +81,7 @@ class MangaController extends Controller
     {
         $payload = [
             'success' => false,
-            'message' => (string) ($result['message'] ?? 'Une erreur est survenue')
+            'message' => (string) ($result['message'] ?? 'Une erreur est survenue'),
         ];
 
         if (isset($result['errors']))
@@ -118,7 +118,7 @@ class MangaController extends Controller
             $location .= '/' . $numero;
         }
 
-        Response::redirect($this->basePath . $location, 301);
+        $this->redirect($location, 301);
     }
 
     /**
@@ -140,7 +140,7 @@ class MangaController extends Controller
         {
             $this->jsonResponse([
                 'success' => false,
-                'message' => 'Manga introuvable'
+                'message' => 'Manga introuvable',
             ], 404);
         }
 
@@ -157,7 +157,11 @@ class MangaController extends Controller
         bool $ajax = false
     ): string {
         $canonicalSlug = Str::slug((string) $manga->slug);
-        $redirect = $this->basePath . 'manga/modifier/' . rawurlencode($canonicalSlug) . '/' . $numero;
+        $redirect = $this->basePath
+            . 'manga/modifier/'
+            . rawurlencode($canonicalSlug)
+            . '/'
+            . $numero;
 
         if ($requestedSlug === $canonicalSlug)
         {
@@ -169,11 +173,14 @@ class MangaController extends Controller
             $this->jsonResponse([
                 'success' => false,
                 'message' => 'URL non canonique',
-                'redirect' => $redirect
+                'redirect' => $redirect,
             ], 409);
         }
 
-        Response::redirect($redirect, 301);
+        $this->redirect(
+            'manga/modifier/' . rawurlencode($canonicalSlug) . '/' . $numero,
+            301
+        );
     }
 
     /**
@@ -221,7 +228,7 @@ class MangaController extends Controller
             {
                 $this->jsonResponse([
                     'success' => false,
-                    'message' => 'Manga introuvable'
+                    'message' => 'Manga introuvable',
                 ], 404);
             }
 
@@ -230,7 +237,7 @@ class MangaController extends Controller
                 'message' => 'Notes mises à jour',
                 'jacquette' => $fresh['manga']->jacquette,
                 'livre_note' => $fresh['manga']->livre_note,
-                'note' => $fresh['manga']->note
+                'note' => $fresh['manga']->note,
             ]);
         }
 
@@ -243,8 +250,11 @@ class MangaController extends Controller
     /**
      * Logique partagée de mise à jour.
      */
-    protected function performUpdate(string $slug, string $numero, bool $ajax = false): void
-    {
+    protected function performUpdate(
+        string $slug,
+        string $numero,
+        bool $ajax = false
+    ): void {
         $requestedSlug = trim($slug);
         $numero = (int) $numero;
 
@@ -254,11 +264,13 @@ class MangaController extends Controller
             {
                 $this->jsonResponse([
                     'success' => false,
-                    'message' => 'Méthode non autorisée'
+                    'message' => 'Méthode non autorisée',
                 ], 405);
             }
 
-            $this->methodNotAllowed('Méthode non autorisée pour la modification d’un manga');
+            $this->methodNotAllowed(
+                'Méthode non autorisée pour la modification d’un manga'
+            );
         }
 
         $manga = $this->findCanonicalMangaOrFail($requestedSlug, $numero, $ajax);
@@ -323,7 +335,7 @@ class MangaController extends Controller
             'mangas' => $data['mangas'],
             'compteur' => $data['compteur'],
             'slugFilter' => null,
-            'currentPage' => $data['currentPage']
+            'currentPage' => $data['currentPage'],
         ]);
     }
 
@@ -344,7 +356,7 @@ class MangaController extends Controller
             'mangas' => $data['mangas'],
             'compteur' => $data['compteur'],
             'currentPage' => $data['currentPage'],
-            'slugFilter' => null
+            'slugFilter' => null,
         ]);
     }
 
@@ -365,7 +377,7 @@ class MangaController extends Controller
 
         $this->render('manga/search', [
             'mangas' => $data['mangas'],
-            'search' => $data['search']
+            'search' => $data['search'],
         ]);
     }
 
@@ -397,7 +409,7 @@ class MangaController extends Controller
         $this->redirectToCanonicalUrl(
             $requestedSlug,
             $data['canonicalSlug'],
-            'manga/serie/'
+            'manga/serie',
         );
 
         $this->title = 'Manga | ' . $data['mangas'][0]->livre;
@@ -406,7 +418,7 @@ class MangaController extends Controller
             'mangas' => $data['mangas'],
             'compteur' => null,
             'slugFilter' => $data['canonicalSlug'],
-            'currentPage' => 1
+            'currentPage' => 1,
         ]);
     }
 
@@ -429,14 +441,14 @@ class MangaController extends Controller
         $this->redirectToCanonicalUrl(
             $requestedSlug,
             $data['canonicalSlug'],
-            'manga/',
+            'manga',
             (int) $data['manga']->numero
         );
 
         $this->title = 'Manga | ' . $data['manga']->livre;
 
         $this->render('manga/livre', [
-            'manga' => $data['manga']
+            'manga' => $data['manga'],
         ]);
     }
 
@@ -465,14 +477,14 @@ class MangaController extends Controller
         $this->redirectToCanonicalUrl(
             $requestedSlug,
             $canonicalSlug,
-            'manga/modifier/',
+            'manga/modifier',
             (int) $manga->numero
         );
 
         $this->title = 'Manga | Modifier';
 
         $this->render('manga/modifier', [
-            'manga' => $manga
+            'manga' => $manga,
         ]);
     }
 
@@ -488,11 +500,13 @@ class MangaController extends Controller
             {
                 $this->jsonResponse([
                     'success' => false,
-                    'message' => 'Méthode non autorisée'
+                    'message' => 'Méthode non autorisée',
                 ], 405);
             }
 
-            $this->methodNotAllowed('Méthode non autorisée pour l’ajout d’un manga');
+            $this->methodNotAllowed(
+                'Méthode non autorisée pour l’ajout d’un manga'
+            );
         }
 
         $result = $this->mangaService()->create(
@@ -518,7 +532,10 @@ class MangaController extends Controller
                 );
             }
 
-            $this->redirectWithError('manga/ajouter', (string) $result['message']);
+            $this->redirectWithError(
+                'manga/ajouter',
+                (string) $result['message']
+            );
         }
 
         Session::forget(['errors', 'old']);
@@ -527,7 +544,7 @@ class MangaController extends Controller
         {
             $payload = [
                 'success' => true,
-                'message' => (string) $result['message']
+                'message' => (string) $result['message'],
             ];
 
             if (isset($result['file']))
@@ -538,7 +555,10 @@ class MangaController extends Controller
             $this->jsonResponse($payload);
         }
 
-        $this->redirectWithSuccess('manga/ajouter', (string) $result['message']);
+        $this->redirectWithSuccess(
+            'manga/ajouter',
+            (string) $result['message']
+        );
     }
 
     /**
@@ -571,7 +591,7 @@ class MangaController extends Controller
         {
             $this->jsonResponse([
                 'success' => false,
-                'message' => 'Méthode non autorisée'
+                'message' => 'Méthode non autorisée',
             ], 405);
         }
 
@@ -579,7 +599,7 @@ class MangaController extends Controller
         {
             $this->jsonResponse([
                 'success' => false,
-                'message' => 'Requête AJAX requise'
+                'message' => 'Requête AJAX requise',
             ], 400);
         }
 
@@ -592,7 +612,11 @@ class MangaController extends Controller
             $this->jsonResponse([
                 'success' => false,
                 'message' => 'URL non canonique',
-                'redirect' => $this->basePath . 'manga/' . rawurlencode($canonicalSlug) . '/' . $numero
+                'redirect' => $this->basePath
+                    . 'manga/'
+                    . rawurlencode($canonicalSlug)
+                    . '/'
+                    . $numero,
             ], 409);
         }
 
@@ -609,7 +633,9 @@ class MangaController extends Controller
         $this->jsonResponse([
             'success' => true,
             'message' => (string) $result['message'],
-            'redirect' => $this->basePath . 'manga/serie/' . rawurlencode($canonicalSlug)
+            'redirect' => $this->basePath
+                . 'manga/serie/'
+                . rawurlencode($canonicalSlug),
         ], 200);
     }
 }

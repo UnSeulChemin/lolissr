@@ -130,7 +130,11 @@ abstract class Controller
      *
      * @param array<string, mixed> $data
      */
-    protected function renderError(string $file, int $statusCode, array $data = []): void
+    protected function renderError(
+        string $file,
+        int $statusCode,
+        array $data = []
+    ): void
     {
         $viewPath = $this->errorViewPath($file);
 
@@ -167,21 +171,27 @@ abstract class Controller
     /**
      * Redirection simple.
      */
-    protected function redirect(string $url): void
+    protected function redirect(string $url, int $statusCode = 302): void
     {
         if (preg_match('#^https?://#i', $url) === 1)
         {
-            Response::redirect($url);
-            return;
+            Response::redirect($url, $statusCode);
         }
 
-        Response::redirect($this->basePath . ltrim($url, '/'));
+        Response::redirect(
+            $this->basePath . ltrim($url, '/'),
+            $statusCode
+        );
     }
 
     /**
      * Redirection avec erreur simple.
      */
-    protected function redirectWithError(string $url, string $message, bool $withOld = true): void
+    protected function redirectWithError(
+        string $url,
+        string $message,
+        bool $withOld = true
+    ): void
     {
         if ($withOld)
         {
@@ -230,7 +240,9 @@ abstract class Controller
     /**
      * Lance une 405.
      */
-    public function methodNotAllowed(string $message = 'Méthode non autorisée'): void
+    public function methodNotAllowed(
+        string $message = 'Méthode non autorisée'
+    ): void
     {
         throw new MethodNotAllowedException($message);
     }
@@ -238,7 +250,9 @@ abstract class Controller
     /**
      * Lance une erreur serveur.
      */
-    public function serverError(string $message = 'Erreur interne du serveur'): void
+    public function serverError(
+        string $message = 'Erreur interne du serveur'
+    ): void
     {
         throw new \RuntimeException($message);
     }
@@ -246,7 +260,9 @@ abstract class Controller
     /**
      * Affiche réellement la page 404.
      */
-    public function renderNotFoundPage(string $message = 'Page introuvable'): void
+    public function renderNotFoundPage(
+        string $message = 'Page introuvable'
+    ): void
     {
         $this->title = '404 | Page introuvable';
         $this->renderError('404', 404, ['message' => $message]);
@@ -255,7 +271,9 @@ abstract class Controller
     /**
      * Affiche réellement la page 405.
      */
-    public function renderMethodNotAllowedPage(string $message = 'Méthode non autorisée'): void
+    public function renderMethodNotAllowedPage(
+        string $message = 'Méthode non autorisée'
+    ): void
     {
         $this->title = '405 | Méthode non autorisée';
         $this->renderError('405', 405, ['message' => $message]);
@@ -264,7 +282,9 @@ abstract class Controller
     /**
      * Affiche réellement la page 500.
      */
-    public function renderServerErrorPage(string $message = 'Erreur interne du serveur'): void
+    public function renderServerErrorPage(
+        string $message = 'Erreur interne du serveur'
+    ): void
     {
         $this->title = '500 | Erreur serveur';
         $this->renderError('500', 500, ['message' => $message]);

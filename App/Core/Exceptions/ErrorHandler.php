@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Core\Exceptions;
 
+use App\Controllers\Controller;
 use App\Core\Application\App;
 use App\Core\Support\Logger;
 
-class ErrorHandler
+final class ErrorHandler
 {
     /**
      * Initialise le handler global.
@@ -48,12 +49,7 @@ class ErrorHandler
      */
     public static function handleException(\Throwable $exception): void
     {
-        $message =
-            $exception->getMessage()
-            . ' in '
-            . $exception->getFile()
-            . ' on line '
-            . $exception->getLine();
+        $message = self::formatExceptionMessage($exception);
 
         /*
         |--------------------------------------------------
@@ -68,9 +64,8 @@ class ErrorHandler
                 . $message
             );
 
-            // Toujours afficher la page custom
-            self::renderHttpErrorPage($exception);
-            return;
+            self::safeRenderHttpErrorPage($exception);
+            exit;
         }
 
         /*
@@ -88,17 +83,11 @@ class ErrorHandler
 
         if (App::debug())
         {
-            http_response_code(500);
-
-            echo '<pre>';
-            echo 'Exception : ' . $message . PHP_EOL;
-            echo $exception->getTraceAsString();
-            echo '</pre>';
-
-            exit;
+            self::renderDebugException($exception);
         }
 
-        self::renderServerErrorPage();
+        self::safeRenderServerErrorPage();
+        exit;
     }
 
     /**
@@ -140,13 +129,43 @@ class ErrorHandler
             http_response_code(500);
 
             echo '<pre>';
-            echo 'Fatal Error : ' . $message;
+            echo 'Fatal Error : ' . htmlspecialchars($message, ENT_QUOTES, 'UTF-8');
             echo '</pre>';
 
             exit;
         }
 
-        self::renderServerErrorPage();
+        self::safeRenderServerErrorPage();
+        exit;
+    }
+
+    /**
+     * Formate le message d’exception.
+     */
+    private static function formatExceptionMessage(\Throwable $exception): string
+    {
+        return $exception->getMessage()
+            . ' in '
+            . $exception->getFile()
+            . ' on line '
+            . $exception->getLine();
+    }
+
+    /**
+     * Affiche une exception en mode debug.
+     */
+    private static function renderDebugException(\Throwable $exception): void
+    {
+        http_response_code(500);
+
+        echo '<pre>';
+        echo 'Exception : '
+            . htmlspecialchars(self::formatExceptionMessage($exception), ENT_QUOTES, 'UTF-8')
+            . PHP_EOL;
+        echo htmlspecialchars($exception->getTraceAsString(), ENT_QUOTES, 'UTF-8');
+        echo '</pre>';
+
+        exit;
     }
 
     /**
@@ -156,24 +175,7 @@ class ErrorHandler
     {
         http_response_code($exception->getStatusCode());
 
-        $controller = new class extends \App\Controllers\Controller
-        {
-            public function show404(string $message): void
-            {
-                $this->renderNotFoundPage($message);
-            }
-
-            public function show405(string $message): void
-            {
-                $this->renderMethodNotAllowedPage($message);
-            }
-
-            public function show500(string $message): void
-            {
-                $this->renderServerErrorPage($message);
-            }
-        };
-
+        $controller = self::makeErrorController();
         $statusCode = $exception->getStatusCode();
         $message = $exception->getMessage();
 
@@ -199,14 +201,90 @@ class ErrorHandler
     {
         http_response_code(500);
 
-        $controller = new class extends \App\Controllers\Controller
+        $controller = self::makeErrorController();
+        $controller->show500();
+    }
+
+    /**
+     * Rend une page HTTP en sécurité.
+     */
+    private static function safeRenderHttpErrorPage(HttpException $exception): void
+    {
+        try
         {
+            self::renderHttpErrorPage($exception);
+        }
+        catch (\Throwable $renderException)
+        {
+            Logger::error(
+                'Error while rendering HTTP error page: '
+                . self::formatExceptionMessage($renderException)
+            );
+
+            self::renderPlainFallback(
+                $exception->getStatusCode(),
+                $exception->getMessage()
+            );
+        }
+    }
+
+    /**
+     * Rend la page 500 en sécurité.
+     */
+    private static function safeRenderServerErrorPage(): void
+    {
+        try
+        {
+            self::renderServerErrorPage();
+        }
+        catch (\Throwable $renderException)
+        {
+            Logger::error(
+                'Error while rendering 500 page: '
+                . self::formatExceptionMessage($renderException)
+            );
+
+            self::renderPlainFallback(
+                500,
+                'Erreur interne du serveur'
+            );
+        }
+    }
+
+    /**
+     * Fallback minimal si même la page d’erreur échoue.
+     */
+    private static function renderPlainFallback(int $statusCode, string $message): void
+    {
+        http_response_code($statusCode);
+
+        echo '<h1>' . $statusCode . '</h1>';
+        echo '<p>' . htmlspecialchars($message, ENT_QUOTES, 'UTF-8') . '</p>';
+
+        exit;
+    }
+
+    /**
+     * Retourne un mini controller pour afficher les pages d’erreur.
+     */
+    private static function makeErrorController(): object
+    {
+        return new class extends Controller
+        {
+            public function show404(string $message): void
+            {
+                $this->renderNotFoundPage($message);
+            }
+
+            public function show405(string $message): void
+            {
+                $this->renderMethodNotAllowedPage($message);
+            }
+
             public function show500(string $message = 'Erreur interne du serveur'): void
             {
                 $this->renderServerErrorPage($message);
             }
         };
-
-        $controller->show500();
     }
 }
