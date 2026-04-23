@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Controllers\ErrorController;
 use App\Core\Application\App;
+use App\Core\Config\Env;
 use App\Core\Http\Response;
 
 /*
@@ -227,5 +228,35 @@ if (!function_exists('view'))
         $html = ob_get_clean() ?: '';
 
         Response::html($html);
+    }
+}
+
+if (!function_exists('env'))
+{
+    /**
+     * Récupère une variable d'environnement.
+     *
+     * Exemple :
+     * env('APP_DEBUG', false);
+     */
+    function env(string $key, mixed $default = null): mixed
+    {
+        return Env::get($key, $default);
+    }
+}
+
+if (!function_exists('env_bool'))
+{
+    function env_bool(string $key, bool $default = false): bool
+    {
+        return Env::bool($key, $default);
+    }
+}
+
+if (!function_exists('env_int'))
+{
+    function env_int(string $key, int $default = 0): int
+    {
+        return Env::int($key, $default);
     }
 }

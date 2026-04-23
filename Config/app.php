@@ -2,14 +2,12 @@
 
 declare(strict_types=1);
 
-use App\Core\Config\Env;
-
 return [
 
-    'name' => Env::get('APP_NAME', 'Site'),
-    'base_path' => Env::get('APP_BASE_PATH', '/'),
-    'env' => Env::get('APP_ENV', 'local'),
-    'debug' => Env::bool('APP_DEBUG', false),
-    'pagination' => max(1, (int) Env::get('APP_PAGINATION', 8)),
+    'name' => env('APP_NAME', 'Site'),
+    'base_path' => env('APP_BASE_PATH', '/'),
+    'env' => env('APP_ENV', 'local'),
+    'debug' => env_bool('APP_DEBUG', false),
+    'pagination' => max(1, (int) env('APP_PAGINATION', 8)),
 
 ];

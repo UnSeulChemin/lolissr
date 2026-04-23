@@ -2,14 +2,12 @@
 
 declare(strict_types=1);
 
-use App\Core\Config\Env;
-
 return [
 
-    'host' => Env::get('DB_HOST', 'localhost'),
-    'name' => Env::get('DB_NAME', ''),
-    'user' => Env::get('DB_USER', ''),
-    'pass' => Env::get('DB_PASS', ''),
-    'charset' => Env::get('DB_CHARSET', 'utf8mb4'),
+    'host' => env('DB_HOST', 'localhost'),
+    'name' => env('DB_NAME', ''),
+    'user' => env('DB_USER', ''),
+    'pass' => env('DB_PASS', ''),
+    'charset' => env('DB_CHARSET', 'utf8mb4'),
 
 ];
