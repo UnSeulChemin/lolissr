@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use App\Core\Application\App;
-use App\Core\Config\Env;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,7 +13,7 @@ use App\Core\Config\Env;
 | false = aucun test exécuté
 |
 */
-$testsEnabled = Env::bool('TESTS_ENABLED', true);
+$testsEnabled = env_bool('TESTS_ENABLED', true);
 
 /*
 |--------------------------------------------------------------------------
@@ -57,7 +56,7 @@ return [
     'casesDirectory' => app_path('tests/Http/cases'),
     'fixturesDirectory' => app_path('tests/Http/fixtures'),
     'tmpUploadsDirectory' => app_path(
-        trim((string) Env::get('TEST_UPLOAD_DIR', 'tests/Http/tmp-uploads'), '/')
+        trim((string) env('TEST_UPLOAD_DIR', 'tests/Http/tmp-uploads'), '/')
     ),
     'exportDirectory' => app_path('tests/Http/reports'),
 
@@ -84,37 +83,37 @@ return [
     |--------------------------------------------------------------------------
     */
     'testCanonicalRedirect' =>
-        $testsEnabled && Env::bool('TEST_CANONICAL_REDIRECT', true),
+        $testsEnabled && env_bool('TEST_CANONICAL_REDIRECT', true),
 
     'testPostAjouter' =>
         $testsEnabled
         && $isTestingAppEnv
-        && Env::bool('TEST_POST_AJOUTER', false),
+        && env_bool('TEST_POST_AJOUTER', false),
 
     'testPostUpdate' =>
         $testsEnabled
         && $isTestingAppEnv
-        && Env::bool('TEST_POST_UPDATE', true),
+        && env_bool('TEST_POST_UPDATE', true),
 
     'testAjaxUpdate' =>
         $testsEnabled
         && $isTestingAppEnv
-        && Env::bool('TEST_AJAX_UPDATE', false),
+        && env_bool('TEST_AJAX_UPDATE', false),
 
     'testUploadDuplicateSlugNumero' =>
         $testsEnabled
         && $isTestingAppEnv
-        && Env::bool('TEST_UPLOAD_DUPLICATE_SLUG_NUMERO', true),
+        && env_bool('TEST_UPLOAD_DUPLICATE_SLUG_NUMERO', true),
 
     'testUploadInvalidImage' =>
         $testsEnabled
         && $isTestingAppEnv
-        && Env::bool('TEST_UPLOAD_INVALID_IMAGE', true),
+        && env_bool('TEST_UPLOAD_INVALID_IMAGE', true),
 
     'testUploadMaxSize' =>
         $testsEnabled
         && $isTestingAppEnv
-        && Env::bool('TEST_UPLOAD_MAX_SIZE', true),
+        && env_bool('TEST_UPLOAD_MAX_SIZE', true),
 
     /*
     |--------------------------------------------------------------------------

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Core\Support;
 
-use App\Core\Config\Env;
-
 class Logger
 {
     /**
@@ -13,7 +11,7 @@ class Logger
      */
     private static function logDirectory(): string
     {
-        return (string) Env::get('LOG_DIR', app_path('Storage/logs'));
+        return (string) env('LOG_DIR', app_path('Storage/logs'));
     }
 
     /**
@@ -21,7 +19,7 @@ class Logger
      */
     private static function logFile(): string
     {
-        return self::logDirectory() . '/app.log';
+        return self::logDirectory() . DIRECTORY_SEPARATOR . 'app.log';
     }
 
     /**

@@ -67,7 +67,7 @@ if (!function_exists('dd'))
 if (!function_exists('base_path'))
 {
     /**
-     * Retourne le base path de l'application.
+     * Retourne le base path URL de l'application.
      */
     function base_path(): string
     {
@@ -84,12 +84,14 @@ if (!function_exists('base_path'))
 if (!function_exists('app_path'))
 {
     /**
-     * Retourne le chemin absolu de l'application.
+     * Retourne le chemin absolu depuis la racine du projet.
      */
     function app_path(string $path = ''): string
     {
-        return ROOT
-            . ($path !== '' ? '/' . ltrim($path, '/') : '');
+        return rtrim(ROOT, DIRECTORY_SEPARATOR)
+            . ($path !== ''
+                ? DIRECTORY_SEPARATOR . ltrim($path, DIRECTORY_SEPARATOR)
+                : '');
     }
 }
 
@@ -102,12 +104,14 @@ if (!function_exists('app_path'))
 if (!function_exists('view_path'))
 {
     /**
-     * Retourne le chemin vers les vues.
+     * Retourne le chemin absolu vers une vue.
      */
     function view_path(string $view = ''): string
     {
         return app_path('App/Views')
-            . ($view !== '' ? '/' . ltrim($view, '/') : '');
+            . ($view !== ''
+                ? DIRECTORY_SEPARATOR . ltrim($view, DIRECTORY_SEPARATOR)
+                : '');
     }
 }
 
@@ -195,8 +199,7 @@ if (!function_exists('view'))
         string $view,
         array $data = [],
         ?string $title = null
-    ): void
-    {
+    ): void {
         $basePath = base_path();
         $title ??= App::siteName();
 
@@ -207,14 +210,14 @@ if (!function_exists('view'))
 
         if (!is_file($viewPath))
         {
-            throw new RuntimeException(
+            throw new \RuntimeException(
                 'Vue introuvable : ' . $view
             );
         }
 
         if (!is_file($templatePath))
         {
-            throw new RuntimeException(
+            throw new \RuntimeException(
                 'Template introuvable : layouts/base'
             );
         }
@@ -231,13 +234,16 @@ if (!function_exists('view'))
     }
 }
 
+/*
+|--------------------------------------------------------------------------
+| env helpers
+|--------------------------------------------------------------------------
+*/
+
 if (!function_exists('env'))
 {
     /**
      * Récupère une variable d'environnement.
-     *
-     * Exemple :
-     * env('APP_DEBUG', false);
      */
     function env(string $key, mixed $default = null): mixed
     {
@@ -247,6 +253,9 @@ if (!function_exists('env'))
 
 if (!function_exists('env_bool'))
 {
+    /**
+     * Récupère une variable d'environnement booléenne.
+     */
     function env_bool(string $key, bool $default = false): bool
     {
         return Env::bool($key, $default);
@@ -255,6 +264,9 @@ if (!function_exists('env_bool'))
 
 if (!function_exists('env_int'))
 {
+    /**
+     * Récupère une variable d'environnement entière.
+     */
     function env_int(string $key, int $default = 0): int
     {
         return Env::int($key, $default);

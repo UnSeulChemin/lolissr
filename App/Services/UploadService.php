@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Core\Application\App;
-use App\Core\Config\Env;
 use App\Core\Config\UploadConfig;
 use App\Core\Support\Logger;
 use App\Core\Support\Str;
@@ -26,7 +25,7 @@ class UploadService
     public function testUploadDirectory(): string
     {
         $directory = trim(
-            (string) Env::get('TEST_UPLOAD_DIR', 'tests/Http/tmp-uploads'),
+            (string) env('TEST_UPLOAD_DIR', 'tests/Http/tmp-uploads'),
             '/\\'
         );
 
