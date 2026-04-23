@@ -13,4 +13,6 @@ require_once ROOT . '/Autoloader.php';
 
 Autoloader::register();
 
+require_once ROOT . '/App/Core/Support/helpers.php';
+
 Bootstrap::run();

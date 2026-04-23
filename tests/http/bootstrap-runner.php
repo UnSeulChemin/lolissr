@@ -11,13 +11,15 @@ require_once ROOT . '/Autoloader.php';
 
 \App\Autoloader::register();
 
+require_once app_path('App/Core/Support/helpers.php');
+
 /*
 |--------------------------------------------------------------------------
 | Chargement du fichier .env
 |--------------------------------------------------------------------------
 */
 
-$envFile = ROOT . '/.env';
+$envFile = app_path('.env');
 
 if (is_file($envFile))
 {
@@ -49,37 +51,11 @@ if (is_file($envFile))
 
 /*
 |--------------------------------------------------------------------------
-| Helpers bool
-|--------------------------------------------------------------------------
-*/
-
-if (!function_exists('envBool'))
-{
-    function envBool(mixed $value, bool $default = false): bool
-    {
-        if (is_bool($value))
-        {
-            return $value;
-        }
-
-        if ($value === null)
-        {
-            return $default;
-        }
-
-        $normalized = strtolower(trim((string) $value));
-
-        return in_array($normalized, ['1', 'true', 'on', 'yes'], true);
-    }
-}
-
-/*
-|--------------------------------------------------------------------------
 | CONFIG
 |--------------------------------------------------------------------------
 */
 
-$config = require __DIR__ . '/config.php';
+$config = require app_path('tests/Http/config.php');
 
 $base = (string) ($config['base'] ?? '');
 $realSlug = (string) ($config['realSlug'] ?? '');

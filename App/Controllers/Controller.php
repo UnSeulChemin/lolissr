@@ -31,7 +31,7 @@ abstract class Controller
     public function __construct()
     {
         $this->title = App::siteName();
-        $this->basePath = App::basePath();
+        $this->basePath = base_path();
     }
 
     /**
@@ -39,7 +39,7 @@ abstract class Controller
      */
     protected function viewPath(string $file): string
     {
-        return ROOT . '/App/Views/' . $file . '.php';
+        return view_path($file . '.php');
     }
 
     /**
@@ -47,7 +47,7 @@ abstract class Controller
      */
     protected function errorViewPath(string $file): string
     {
-        return ROOT . '/App/Views/errors/' . $file . '.php';
+        return view_path('errors/' . $file . '.php');
     }
 
     /**
@@ -55,7 +55,7 @@ abstract class Controller
      */
     protected function templatePath(): string
     {
-        return ROOT . '/App/Views/' . $this->template . '.php';
+        return view_path($this->template . '.php');
     }
 
     /**
@@ -176,6 +176,7 @@ abstract class Controller
         if (preg_match('#^https?://#i', $url) === 1)
         {
             Response::redirect($url, $statusCode);
+            return;
         }
 
         Response::redirect(

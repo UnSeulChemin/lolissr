@@ -13,7 +13,7 @@ class Logger
      */
     private static function logDirectory(): string
     {
-        return (string) Env::get('LOG_DIR', ROOT . '/Storage/logs');
+        return (string) Env::get('LOG_DIR', app_path('Storage/logs'));
     }
 
     /**

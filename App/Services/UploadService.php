@@ -30,7 +30,7 @@ class UploadService
             '/\\'
         );
 
-        return ROOT . '/' . $directory . '/';
+        return app_path($directory) . '/';
     }
 
     /**

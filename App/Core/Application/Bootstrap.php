@@ -17,7 +17,6 @@ final class Bootstrap
     public static function run(): void
     {
         self::loadEnvironment(ROOT . '/.env');
-        require_once ROOT . '/App/Core/Support/helpers.php';
 
         Env::clear();
         Config::clear();
@@ -27,7 +26,7 @@ final class Bootstrap
 
         $router = new Router();
 
-        $routes = require ROOT . '/Config/routes.php';
+        $routes = require app_path('Config/routes.php');
 
         if (is_callable($routes))
         {

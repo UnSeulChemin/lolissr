@@ -8,13 +8,15 @@ require ROOT . '/Autoloader.php';
 
 \App\Autoloader::register();
 
+require_once app_path('App/Core/Support/helpers.php');
+
 /*
 |--------------------------------------------------------------------------
 | Chargement du fichier .env
 |--------------------------------------------------------------------------
 */
 
-$envFile = ROOT . '/.env';
+$envFile = app_path('.env');
 
 if (is_file($envFile))
 {

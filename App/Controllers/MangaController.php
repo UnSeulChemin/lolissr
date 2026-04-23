@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\Http\Request;
-use App\Core\Http\Response;
 use App\Core\Support\Session;
 use App\Core\Support\Str;
 use App\Repositories\MangaRepository;
@@ -68,7 +67,7 @@ class MangaController extends Controller
      */
     protected function jsonResponse(array $data, int $statusCode = 200): void
     {
-        Response::json($data, $statusCode);
+        json($data, $statusCode);
     }
 
     /**

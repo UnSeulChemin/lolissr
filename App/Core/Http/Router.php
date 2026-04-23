@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Core\Http;
 
-use App\Core\Application\App;
 use App\Core\Exceptions\MethodNotAllowedException;
 use App\Core\Exceptions\NotFoundException;
 use RuntimeException;
@@ -161,7 +160,9 @@ class Router
 
         if (!class_exists($controllerClass))
         {
-            throw new RuntimeException('Controller introuvable : ' . $controllerClass);
+            throw new RuntimeException(
+                'Controller introuvable : ' . $controllerClass
+            );
         }
 
         $controller = new $controllerClass();
@@ -211,7 +212,7 @@ class Router
      */
     private function stripBasePath(string $path): string
     {
-        $basePath = App::basePath();
+        $basePath = base_path();
 
         if ($basePath === '/')
         {

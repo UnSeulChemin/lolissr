@@ -63,6 +63,6 @@ final class UploadConfig
 
     public static function mangaThumbnailDirectory(): string
     {
-        return ROOT . '/public/images/mangas/thumbnail/';
+        return app_path('public/images/mangas/thumbnail/');
     }
 }

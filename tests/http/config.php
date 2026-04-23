@@ -32,7 +32,7 @@ $isTestingAppEnv = App::isTesting();
 | DIRECTORIES
 |--------------------------------------------------------------------------
 */
-$httpRoot = ROOT . '/tests/Http';
+$httpRoot = app_path('tests/Http');
 
 /*
 |--------------------------------------------------------------------------
@@ -46,7 +46,7 @@ return [
     | BASE URL
     |--------------------------------------------------------------------------
     */
-    'base' => rtrim('http://localhost' . App::basePath(), '/'),
+    'base' => rtrim('http://localhost' . base_path(), '/'),
 
     /*
     |--------------------------------------------------------------------------
@@ -54,11 +54,12 @@ return [
     |--------------------------------------------------------------------------
     */
     'httpRoot' => $httpRoot,
-    'casesDirectory' => $httpRoot . '/cases',
-    'fixturesDirectory' => $httpRoot . '/fixtures',
-    'tmpUploadsDirectory' => ROOT . '/'
-        . trim((string) Env::get('TEST_UPLOAD_DIR', 'tests/Http/tmp-uploads'), '/'),
-    'exportDirectory' => $httpRoot . '/reports',
+    'casesDirectory' => app_path('tests/Http/cases'),
+    'fixturesDirectory' => app_path('tests/Http/fixtures'),
+    'tmpUploadsDirectory' => app_path(
+        trim((string) Env::get('TEST_UPLOAD_DIR', 'tests/Http/tmp-uploads'), '/')
+    ),
+    'exportDirectory' => app_path('tests/Http/reports'),
 
     /*
     |--------------------------------------------------------------------------

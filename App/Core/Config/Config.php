@@ -169,7 +169,7 @@ final class Config
             return self::$items[$file];
         }
 
-        $path = ROOT . '/Config/' . $file . '.php';
+        $path = app_path('Config/' . $file . '.php');
 
         if (!is_file($path))
         {
