@@ -21,6 +21,7 @@ $cancelUrl = $basePath . 'manga/' . rawurlencode($manga->slug) . '/' . (int) $ma
 
             <form
                 class="form-layout"
+                data-form-page="modifier"
                 action="<?= $basePath . 'manga/modifier/' . rawurlencode($manga->slug) . '/' . (int) $manga->numero; ?>"
                 method="post">
 

@@ -8,35 +8,17 @@ export function initAjouterPage()
     |------------------------------------------------------------------
     */
 
-    const imageInput = document.getElementById('image');
-    const uploadText = document.querySelector('.form-upload-text');
-    const form = document.querySelector('.form-layout');
-
-    /*
-    |------------------------------------------------------------------
-    | Preview nom fichier
-    |------------------------------------------------------------------
-    */
-
-    if (imageInput && uploadText)
-    {
-        if (imageInput.dataset.uploadPreviewInit !== 'true')
-        {
-            imageInput.dataset.uploadPreviewInit = 'true';
-
-            imageInput.addEventListener('change', () =>
-            {
-                uploadText.textContent = imageInput.files.length > 0
-                    ? imageInput.files[0].name
-                    : 'Choisir une image';
-            });
-        }
-    }
+    const form = document.querySelector(
+        '.form-layout[data-form-page="ajouter"]'
+    );
 
     if (!form)
     {
         return;
     }
+
+    const imageInput = document.getElementById('image');
+    const uploadText = document.querySelector('.form-upload-text');
 
     /*
     |------------------------------------------------------------------
@@ -50,6 +32,24 @@ export function initAjouterPage()
     }
 
     form.dataset.ajouterPageInit = 'true';
+
+    /*
+    |------------------------------------------------------------------
+    | Preview nom fichier
+    |------------------------------------------------------------------
+    */
+
+    if (imageInput && uploadText && imageInput.dataset.uploadPreviewInit !== 'true')
+    {
+        imageInput.dataset.uploadPreviewInit = 'true';
+
+        imageInput.addEventListener('change', () =>
+        {
+            uploadText.textContent = imageInput.files.length > 0
+                ? imageInput.files[0].name
+                : 'Choisir une image';
+        });
+    }
 
     /*
     |------------------------------------------------------------------

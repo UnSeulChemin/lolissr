@@ -15,6 +15,7 @@ $old = Session::get('old', []);
 
             <form
                 class="form-layout"
+                data-form-page="ajouter"
                 action="<?= $basePath; ?>manga/ajouter"
                 method="post"
                 enctype="multipart/form-data">

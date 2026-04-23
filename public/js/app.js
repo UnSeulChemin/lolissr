@@ -8,7 +8,7 @@ import { initLiveSearch } from './features/search.js';
 import { initCollectionKeyboardNavigation } from './features/collection-keyboard-navigation.js';
 import { initLinkPreloading } from './features/prefetch-links.js';
 import { initAjouterPage } from './pages/ajouter.js';
-import { initEditPage } from './pages/edit.js';
+import { initEditPage } from './pages/modifier.js';
 
 /**
  * Affiche un toast flash injecté côté PHP.
