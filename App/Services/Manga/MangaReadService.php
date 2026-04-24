@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Services;
+namespace App\Services\Manga;
 
 use App\Core\Application\App;
 use App\Core\Support\Str;

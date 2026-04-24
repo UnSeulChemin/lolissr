@@ -8,8 +8,8 @@ use App\Core\Http\Request;
 use App\Core\Support\Session;
 use App\Core\Support\Str;
 use App\Repositories\MangaRepository;
-use App\Services\MangaReadService;
-use App\Services\MangaWriteService;
+use App\Services\Manga\MangaReadService;
+use App\Services\Manga\MangaWriteService;
 
 final class MangaController extends Controller
 {

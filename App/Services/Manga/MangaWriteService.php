@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Services;
+namespace App\Services\Manga;
 
 use App\Core\Application\App;
 use App\Core\Config\UploadConfig;
@@ -11,6 +11,7 @@ use App\DTO\Manga\MangaCreateDTO;
 use App\DTO\Manga\MangaUpdateDTO;
 use App\DTO\Manga\MangaUpdateNoteDTO;
 use App\Repositories\MangaRepository;
+use App\Services\UploadService;
 
 final class MangaWriteService
 {

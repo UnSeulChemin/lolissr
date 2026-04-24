@@ -6,8 +6,8 @@ namespace App\Controllers;
 
 use App\Core\Http\Request;
 use App\Repositories\MangaRepository;
-use App\Services\MangaReadService;
-use App\Services\MangaWriteService;
+use App\Services\Manga\MangaReadService;
+use App\Services\Manga\MangaWriteService;
 
 final class MangaAjaxController extends Controller
 {
