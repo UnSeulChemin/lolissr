@@ -13,7 +13,7 @@ class UploadService
 {
     public function isTestUploadMode(): bool
     {
-        return App::isTesting();
+        return App::isTesting() || env_bool('TEST_UPLOAD_MODE', false);
     }
 
     public function testUploadDirectory(): string

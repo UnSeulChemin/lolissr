@@ -2,25 +2,16 @@
 
 declare(strict_types=1);
 
-/*
-|--------------------------------------------------------------------------
-| SECURITY TESTS
-|--------------------------------------------------------------------------
-*/
-
-if (!isset($testAjaxUpdate))
-{
+if (!isset($testAjaxUpdate)) {
     $testAjaxUpdate = false;
 }
 
-if ($testAjaxUpdate)
-{
+if ($testAjaxUpdate) {
     addPostCheck($postChecks, [
         'category' => 'Security',
         'label' => 'Injection HTML commentaire',
         'url' => buildTestUrl($base, '/manga/ajax/update-note/' . $realSlug . '/' . $realNumero),
-        'callback' => static function () use ($base, $realSlug, $realNumero): array
-        {
+        'callback' => static function () use ($base, $realSlug, $realNumero): array {
             $payload = http_build_query([
                 'jacquette' => '4',
                 'livre_note' => '4',
@@ -33,34 +24,18 @@ if ($testAjaxUpdate)
                 [
                     'Content-Type: application/x-www-form-urlencoded',
                     'X-Requested-With: XMLHttpRequest',
+                    'Accept: application/json',
                 ],
                 $payload
             );
 
             $json = decodeJsonResponse($response['body']);
 
-            if ($response['status'] === 422)
-            {
-                return [
-                    'ok' => is_array($json) && ($json['success'] ?? null) === false,
-                    'message' => 'HTML dangereux refusé en validation',
-                ];
-            }
-
-            if ($response['status'] === 403)
-            {
-                return [
-                    'ok' => is_array($json)
-                        && ($json['success'] ?? null) === false
-                        && isset($json['message'])
-                        && is_string($json['message']),
-                    'message' => 'écriture bloquée en mode test',
-                ];
-            }
-
             return [
-                'ok' => false,
-                'message' => 'status inattendu ' . $response['status'],
+                'ok' => in_array($response['status'], [403, 422], true)
+                    && is_array($json)
+                    && ($json['success'] ?? null) === false,
+                'message' => 'status ' . $response['status'],
             ];
         },
     ]);

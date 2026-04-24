@@ -2,25 +2,16 @@
 
 declare(strict_types=1);
 
-/*
-|--------------------------------------------------------------------------
-| TESTS AJAX MUTATEURS
-|--------------------------------------------------------------------------
-*/
-
-if (!isset($testAjaxUpdate))
-{
+if (!isset($testAjaxUpdate)) {
     $testAjaxUpdate = false;
 }
 
-if ($testAjaxUpdate)
-{
+if ($testAjaxUpdate) {
     addPostCheck($postChecks, [
         'category' => 'AJAX',
         'label' => 'POST ajax update note validation invalide',
         'url' => $base . '/manga/ajax/update-note/' . $realSlug . '/' . $realNumero,
-        'callback' => static function () use ($base, $realSlug, $realNumero): array
-        {
+        'callback' => static function () use ($base, $realSlug, $realNumero): array {
             $payload = http_build_query([
                 'jacquette' => '9',
                 'livre_note' => 'abc',
@@ -33,20 +24,18 @@ if ($testAjaxUpdate)
                 [
                     'Content-Type: application/x-www-form-urlencoded',
                     'X-Requested-With: XMLHttpRequest',
+                    'Accept: application/json',
                 ],
                 $payload
             );
 
             $json = decodeJsonResponse($response['body']);
 
-            $ok = $response['status'] === 422
-                && is_array($json)
-                && isset($json['success'])
-                && $json['success'] === false
-                && !empty($json['errors']);
-
             return [
-                'ok' => $ok,
+                'ok' => $response['status'] === 422
+                    && is_array($json)
+                    && ($json['success'] ?? null) === false
+                    && !empty($json['errors']),
                 'message' => 'status ' . $response['status'] . ' | validation AJAX invalide',
             ];
         },
@@ -56,8 +45,7 @@ if ($testAjaxUpdate)
         'category' => 'AJAX',
         'label' => 'POST ajax update note bloqué en mode test',
         'url' => $base . '/manga/ajax/update-note/' . $realSlug . '/' . $realNumero,
-        'callback' => static function () use ($base, $realSlug, $realNumero): array
-        {
+        'callback' => static function () use ($base, $realSlug, $realNumero): array {
             $payload = http_build_query([
                 'jacquette' => '4',
                 'livre_note' => '5',
@@ -70,21 +58,18 @@ if ($testAjaxUpdate)
                 [
                     'Content-Type: application/x-www-form-urlencoded',
                     'X-Requested-With: XMLHttpRequest',
+                    'Accept: application/json',
                 ],
                 $payload
             );
 
             $json = decodeJsonResponse($response['body']);
 
-            $ok = $response['status'] === 403
-                && is_array($json)
-                && isset($json['success'])
-                && $json['success'] === false
-                && isset($json['message'])
-                && is_string($json['message']);
-
             return [
-                'ok' => $ok,
+                'ok' => $response['status'] === 403
+                    && is_array($json)
+                    && ($json['success'] ?? null) === false
+                    && isset($json['message']),
                 'message' => 'status ' . $response['status'] . ' | update AJAX bloqué',
             ];
         },

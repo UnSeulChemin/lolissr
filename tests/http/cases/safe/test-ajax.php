@@ -8,6 +8,18 @@ declare(strict_types=1);
 |--------------------------------------------------------------------------
 */
 
+if (!function_exists('ajaxJsonHeaders'))
+{
+    function ajaxJsonHeaders(string $contentType = 'application/x-www-form-urlencoded'): array
+    {
+        return [
+            'Content-Type: ' . $contentType,
+            'X-Requested-With: XMLHttpRequest',
+            'Accept: application/json',
+        ];
+    }
+}
+
 addPostCheck($postChecks, [
     'category' => 'AJAX',
     'label' => 'POST ajouter validation AJAX invalide',
@@ -24,30 +36,25 @@ addPostCheck($postChecks, [
         $response = requestUrl(
             $base . '/manga/ajouter',
             'POST',
-            [
-                'Content-Type: application/x-www-form-urlencoded',
-                'X-Requested-With: XMLHttpRequest',
-            ],
+            ajaxJsonHeaders(),
             $payload
         );
 
         $json = decodeJsonResponse($response['body']);
 
-        $jsonOk = is_array($json);
-        $hasErrorSignal = false;
-
-        if ($jsonOk)
-        {
-            $hasErrorSignal =
+        $ok =
+            $response['status'] === 422
+            && is_array($json)
+            && ($json['success'] ?? null) === false
+            && (
                 !empty($json['errors'])
                 || !empty($json['error'])
-                || (isset($json['success']) && $json['success'] === false);
-        }
+            );
 
         return [
-            'ok' => $response['status'] === 422 && $jsonOk && $hasErrorSignal,
+            'ok' => $ok,
             'message' => 'status ' . $response['status']
-                . ($jsonOk ? ' | json erreur reçu' : ' | réponse non json'),
+                . (is_array($json) ? ' | json erreur reçu' : ' | réponse non json'),
         ];
     },
 ]);
@@ -61,19 +68,16 @@ addPostCheck($postChecks, [
         $response = requestUrl(
             $base . '/manga/ajouter',
             'POST',
-            [
-                'Content-Type: application/json',
-                'X-Requested-With: XMLHttpRequest',
-            ],
+            ajaxJsonHeaders('application/json'),
             '{"livre":'
         );
 
         $json = decodeJsonResponse($response['body']);
 
-        $ok = in_array($response['status'], [400, 415, 422], true)
+        $ok =
+            in_array($response['status'], [400, 415, 422], true)
             && is_array($json)
-            && isset($json['success'])
-            && $json['success'] === false;
+            && ($json['success'] ?? null) === false;
 
         return [
             'ok' => $ok,
@@ -91,7 +95,8 @@ addHtmlCheck($htmlChecks, [
         $response = requestUrl($base . '/manga/' . $realSlug . '/' . $realNumero);
         $body = $response['body'];
 
-        $hasHook = stripos($body, 'ajax-note') !== false
+        $hasHook =
+            stripos($body, 'ajax-note') !== false
             || stripos($body, 'ajax-note-button') !== false
             || stripos($body, 'js-detail-card') !== false;
 
@@ -115,12 +120,14 @@ addPostCheck($postChecks, [
             'GET',
             [
                 'X-Requested-With: XMLHttpRequest',
+                'Accept: application/json',
             ]
         );
 
         $json = decodeJsonResponse($response['body']);
 
-        $ok = $response['status'] === 405
+        $ok =
+            $response['status'] === 405
             && (
                 is_array($json)
                 || stripos($response['body'], 'Méthode') !== false
@@ -147,19 +154,16 @@ addPostCheck($postChecks, [
         $response = requestUrl(
             $base . '/manga/ajax/update-note/slug-introuvable-test/999',
             'POST',
-            [
-                'Content-Type: application/x-www-form-urlencoded',
-                'X-Requested-With: XMLHttpRequest',
-            ],
+            ajaxJsonHeaders(),
             $payload
         );
 
         $json = decodeJsonResponse($response['body']);
 
-        $ok = $response['status'] === 404
+        $ok =
+            $response['status'] === 404
             && is_array($json)
-            && isset($json['success'])
-            && $json['success'] === false;
+            && ($json['success'] ?? null) === false;
 
         return [
             'ok' => $ok,
@@ -183,19 +187,16 @@ addPostCheck($postChecks, [
         $response = requestUrl(
             $base . '/manga/modifier/' . $nonCanonicalSlug . '/' . $realNumero,
             'POST',
-            [
-                'Content-Type: application/x-www-form-urlencoded',
-                'X-Requested-With: XMLHttpRequest',
-            ],
+            ajaxJsonHeaders(),
             $payload
         );
 
         $json = decodeJsonResponse($response['body']);
 
-        $ok = $response['status'] === 409
+        $ok =
+            $response['status'] === 409
             && is_array($json)
-            && isset($json['success'])
-            && $json['success'] === false
+            && ($json['success'] ?? null) === false
             && !empty($json['redirect']);
 
         return [
@@ -220,19 +221,16 @@ addPostCheck($postChecks, [
         $response = requestUrl(
             $base . '/manga/modifier/slug-introuvable-test/999',
             'POST',
-            [
-                'Content-Type: application/x-www-form-urlencoded',
-                'X-Requested-With: XMLHttpRequest',
-            ],
+            ajaxJsonHeaders(),
             $payload
         );
 
         $json = decodeJsonResponse($response['body']);
 
-        $ok = $response['status'] === 404
+        $ok =
+            $response['status'] === 404
             && is_array($json)
-            && isset($json['success'])
-            && $json['success'] === false;
+            && ($json['success'] ?? null) === false;
 
         return [
             'ok' => $ok,
@@ -247,10 +245,19 @@ addHtmlCheck($htmlChecks, [
     'url' => $base . '/manga/search-ajax/a',
     'callback' => static function () use ($base): array
     {
-        $response = requestUrl($base . '/manga/search-ajax/a');
+        $response = requestUrl(
+            $base . '/manga/search-ajax/a',
+            'GET',
+            [
+                'X-Requested-With: XMLHttpRequest',
+                'Accept: application/json',
+            ]
+        );
+
         $json = decodeJsonResponse($response['body']);
 
-        $ok = $response['status'] === 200
+        $ok =
+            $response['status'] === 200
             && is_array($json)
             && count($json) <= 6;
 
@@ -269,10 +276,19 @@ addHtmlCheck($htmlChecks, [
     'url' => $base . '/manga/search-ajax/-',
     'callback' => static function () use ($base): array
     {
-        $response = requestUrl($base . '/manga/search-ajax/-');
+        $response = requestUrl(
+            $base . '/manga/search-ajax/-',
+            'GET',
+            [
+                'X-Requested-With: XMLHttpRequest',
+                'Accept: application/json',
+            ]
+        );
+
         $json = decodeJsonResponse($response['body']);
 
-        $ok = $response['status'] === 200
+        $ok =
+            $response['status'] === 200
             && is_array($json)
             && $json === [];
 

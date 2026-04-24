@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Controllers\Manga;
 
 use App\Controllers\Controller;
-use App\Core\Support\Session;
-use App\Core\Support\Str;
 use App\Http\Requests\Manga\MangaCreateRequest;
 use App\Http\Requests\Manga\MangaUpdateRequest;
 use App\Repositories\Manga\MangaRepository;
@@ -213,27 +211,57 @@ final class MangaController extends Controller
     public function update(string $slug, string $numero): void
     {
         $numero = (int) $numero;
+        $isAjax = is_ajax();
 
         $data = $this->mangaReadService->one($slug, $numero);
 
         if ($data === null) {
+            if ($isAjax) {
+                json([
+                    'success' => false,
+                    'message' => 'Manga introuvable',
+                ], 404);
+            }
+
             $this->notFound('Manga introuvable');
         }
 
-        $canonicalSlug = $data['canonicalSlug'];
+        if ($slug !== $data['canonicalSlug']) {
+            $redirect = $this->basePath
+                . 'manga/modifier/'
+                . rawurlencode($data['canonicalSlug'])
+                . '/'
+                . $numero;
 
-        $this->redirectToCanonicalUrl(
-            $slug,
-            $canonicalSlug,
-            'manga/modifier',
-            $numero
-        );
+            if ($isAjax) {
+                json([
+                    'success' => false,
+                    'message' => 'URL non canonique',
+                    'redirect' => $redirect,
+                ], 409);
+            }
+
+            $this->redirectToCanonicalUrl(
+                $slug,
+                $data['canonicalSlug'],
+                'manga/modifier',
+                $numero
+            );
+        }
 
         $request = new MangaUpdateRequest();
 
-        $redirectPath = 'manga/modifier/' . rawurlencode($canonicalSlug) . '/' . $numero;
+        $redirectPath = 'manga/modifier/' . rawurlencode($data['canonicalSlug']) . '/' . $numero;
 
         if ($request->fails()) {
+            if ($isAjax) {
+                json([
+                    'success' => false,
+                    'message' => 'Formulaire invalide',
+                    'errors' => $request->errors(),
+                ], 422);
+            }
+
             $this->redirectWithValidationErrors(
                 $redirectPath,
                 $request->errors()
@@ -241,11 +269,15 @@ final class MangaController extends Controller
         }
 
         $result = $this->mangaWriteService->update(
-            $canonicalSlug,
+            $data['canonicalSlug'],
             $numero,
             $request->data(),
             $request->files()
         );
+
+        if ($isAjax) {
+            json($result, (int) ($result['status'] ?? 200));
+        }
 
         if (!$result['success']) {
             $this->redirectWithError(
@@ -255,7 +287,7 @@ final class MangaController extends Controller
         }
 
         $this->redirectWithSuccess(
-            'manga/' . rawurlencode($canonicalSlug) . '/' . $numero,
+            'manga/' . rawurlencode($data['canonicalSlug']) . '/' . $numero,
             $result['message']
         );
     }

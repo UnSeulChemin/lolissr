@@ -2,28 +2,8 @@
 
 declare(strict_types=1);
 
-/*
-|--------------------------------------------------------------------------
-| TESTS UPDATE
-|--------------------------------------------------------------------------
-|
-| Test POST /manga/modifier/{slug}/{numero}
-|
-| Vérifie :
-| - blocage écriture en mode test
-| - validation erreur
-| - slug non canonique
-|
-*/
-
 if ($testPostUpdate)
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Update bloqué en mode test
-    |--------------------------------------------------------------------------
-    */
-
     addPostCheck($postChecks, [
 
         'category' => 'Update',
@@ -51,6 +31,7 @@ if ($testPostUpdate)
                 [
                     "Content-Type: multipart/form-data; boundary=$boundary",
                     'X-Requested-With: XMLHttpRequest',
+                    'Accept: application/json',
                 ],
                 $body
             );
@@ -71,12 +52,6 @@ if ($testPostUpdate)
         }
 
     ]);
-
-    /*
-    |--------------------------------------------------------------------------
-    | Update invalide
-    |--------------------------------------------------------------------------
-    */
 
     addPostCheck($postChecks, [
 
@@ -104,6 +79,7 @@ if ($testPostUpdate)
                 [
                     "Content-Type: multipart/form-data; boundary=$boundary",
                     'X-Requested-With: XMLHttpRequest',
+                    'Accept: application/json',
                 ],
                 $body
             );
@@ -124,12 +100,6 @@ if ($testPostUpdate)
         }
 
     ]);
-
-    /*
-    |--------------------------------------------------------------------------
-    | Update slug non canonique
-    |--------------------------------------------------------------------------
-    */
 
     addPostCheck($postChecks, [
 
@@ -157,6 +127,7 @@ if ($testPostUpdate)
                 [
                     "Content-Type: multipart/form-data; boundary=$boundary",
                     'X-Requested-With: XMLHttpRequest',
+                    'Accept: application/json',
                 ],
                 $body
             );

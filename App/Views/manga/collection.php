@@ -1,6 +1,11 @@
 <?php
-$isSerieView = isset($slugFilter) && !empty($slugFilter);
-$currentPage = $currentPage ?? 1;
+
+$mangas = isset($mangas) && is_array($mangas) ? $mangas : [];
+$compteur = isset($compteur) ? (int) $compteur : 0;
+$currentPage = isset($currentPage) ? (int) $currentPage : 1;
+$slugFilter = $slugFilter ?? null;
+$isSerieView = is_string($slugFilter) && trim($slugFilter) !== '';
+
 ?>
 
 <section class="layout-container dashboard-page">
@@ -10,7 +15,6 @@ $currentPage = $currentPage ?? 1;
         <div class="collection-scroll-anchor" aria-hidden="true"></div>
 
         <div class="collection-skeleton" aria-hidden="true">
-
             <?php for ($i = 1; $i <= 8; $i++): ?>
                 <article class="collection-skeleton-card">
                     <div class="collection-skeleton-image"></div>
@@ -18,69 +22,84 @@ $currentPage = $currentPage ?? 1;
                     <div class="collection-skeleton-line collection-skeleton-line-subtitle"></div>
                 </article>
             <?php endfor; ?>
-
         </div>
 
         <div class="collection-ajax-content">
 
-            <section class="collection-grid animate-fade-up-stagger">
+            <?php if ($mangas === []): ?>
 
-                <?php foreach ($mangas as $manga): ?>
+                <p class="collection-empty">Aucun manga trouvé.</p>
 
-                    <?php
-                    $href = $isSerieView
-                        ? $basePath . 'manga/' . rawurlencode($manga->slug) . '/' . (int) $manga->numero
-                        : $basePath . 'manga/serie/' . rawurlencode($manga->slug);
+            <?php else: ?>
 
-                    $noteClass = 'collection-note-mid';
+                <section class="collection-grid animate-fade-up-stagger">
 
-                    if ($isSerieView && $manga->note !== null)
-                    {
-                        if ((int) $manga->note >= 8)
-                        {
-                            $noteClass = 'collection-note-good';
+                    <?php foreach ($mangas as $manga): ?>
+
+                        <?php
+                        $slug = isset($manga->slug) ? (string) $manga->slug : '';
+                        $numero = isset($manga->numero) ? (int) $manga->numero : 0;
+                        $thumbnail = isset($manga->thumbnail) ? (string) $manga->thumbnail : '';
+                        $extension = isset($manga->extension) ? (string) $manga->extension : '';
+                        $livre = isset($manga->livre) ? (string) $manga->livre : '';
+                        $note = $manga->note ?? null;
+                        $total = isset($manga->total) ? (int) $manga->total : 0;
+
+                        if ($slug === '' || $thumbnail === '' || $extension === '' || $livre === '') {
+                            continue;
                         }
-                        elseif ((int) $manga->note <= 4)
-                        {
-                            $noteClass = 'collection-note-low';
+
+                        $href = $isSerieView
+                            ? $basePath . 'manga/' . rawurlencode($slug) . '/' . $numero
+                            : $basePath . 'manga/serie/' . rawurlencode($slug);
+
+                        $noteClass = 'collection-note-mid';
+
+                        if ($isSerieView && $note !== null) {
+                            if ((int) $note >= 8) {
+                                $noteClass = 'collection-note-good';
+                            } elseif ((int) $note <= 4) {
+                                $noteClass = 'collection-note-low';
+                            }
                         }
-                    }
-                    ?>
+                        ?>
 
-                    <a class="card card-link collection-card-link" href="<?= $href; ?>">
+                        <a class="card card-link collection-card-link" href="<?= htmlspecialchars($href, ENT_QUOTES, 'UTF-8'); ?>">
 
-                        <?php if ($isSerieView && $manga->note !== null): ?>
-                            <span class="collection-card-badge <?= $noteClass; ?>">
-                                ⭐ <?= (int) $manga->note; ?>/10
-                            </span>
-                        <?php endif; ?>
-
-                        <div class="card-image-box-portrait">
-                            <img
-                                class="card-image-portrait"
-                                src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($manga->thumbnail . '.' . $manga->extension); ?>"
-                                alt="<?= htmlspecialchars($manga->livre); ?>">
-                        </div>
-
-                        <p class="collection-card-title">
-                            <?= htmlspecialchars($manga->livre); ?>
-                        </p>
-
-                        <p class="collection-card-subtitle">
-                            <?php if ($isSerieView): ?>
-                                Tome <?= str_pad((string) $manga->numero, 2, '0', STR_PAD_LEFT); ?>
-                            <?php else: ?>
-                                <?= isset($manga->total) ? (int) $manga->total : 0; ?> tomes
+                            <?php if ($isSerieView && $note !== null): ?>
+                                <span class="collection-card-badge <?= htmlspecialchars($noteClass, ENT_QUOTES, 'UTF-8'); ?>">
+                                    ⭐ <?= (int) $note; ?>/10
+                                </span>
                             <?php endif; ?>
-                        </p>
 
-                    </a>
+                            <div class="card-image-box-portrait">
+                                <img
+                                    class="card-image-portrait"
+                                    src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($thumbnail . '.' . $extension, ENT_QUOTES, 'UTF-8'); ?>"
+                                    alt="<?= htmlspecialchars($livre, ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
 
-                <?php endforeach; ?>
+                            <p class="collection-card-title">
+                                <?= htmlspecialchars($livre, ENT_QUOTES, 'UTF-8'); ?>
+                            </p>
 
-            </section>
+                            <p class="collection-card-subtitle">
+                                <?php if ($isSerieView): ?>
+                                    Tome <?= str_pad((string) $numero, 2, '0', STR_PAD_LEFT); ?>
+                                <?php else: ?>
+                                    <?= $total; ?> tomes
+                                <?php endif; ?>
+                            </p>
 
-            <?php if (!$isSerieView && isset($compteur)): ?>
+                        </a>
+
+                    <?php endforeach; ?>
+
+                </section>
+
+            <?php endif; ?>
+
+            <?php if (!$isSerieView && $compteur > 1): ?>
                 <nav class="collection-pagination">
 
                     <?php for ($getId = 1; $getId <= $compteur; $getId++): ?>

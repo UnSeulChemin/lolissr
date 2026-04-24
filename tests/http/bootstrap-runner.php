@@ -513,21 +513,29 @@ if (!function_exists('requestUrl'))
         array $headers = [],
         ?string $content = null
     ): array {
-        $baseHeaders = [
+        $method = strtoupper($method);
+
+        $isAjaxUrl =
+            str_contains($url, '/ajax/')
+            || str_contains($url, '-ajax')
+            || str_contains($url, 'search-ajax')
+            || str_contains($url, 'collection-ajax');
+
+        $finalHeaders = [
             'User-Agent: LoliSSR-TestRunner',
         ];
 
-        if (str_contains($url, '/ajax/') || str_contains($url, '-ajax/'))
-        {
-            $baseHeaders[] = 'X-Requested-With: XMLHttpRequest';
-            $baseHeaders[] = 'Accept: application/json';
+        if ($isAjaxUrl) {
+            $finalHeaders[] = 'X-Requested-With: XMLHttpRequest';
         }
 
-        $finalHeaders = array_merge($baseHeaders, $headers);
+        foreach ($headers as $header) {
+            $finalHeaders[] = $header;
+        }
 
         $options = [
             'http' => [
-                'method' => strtoupper($method),
+                'method' => $method,
                 'ignore_errors' => true,
                 'follow_location' => 0,
                 'max_redirects' => 0,
@@ -536,8 +544,7 @@ if (!function_exists('requestUrl'))
             ],
         ];
 
-        if ($content !== null)
-        {
+        if ($content !== null) {
             $options['http']['content'] = $content;
         }
 
@@ -546,32 +553,15 @@ if (!function_exists('requestUrl'))
         $body = @file_get_contents($url, false, $context);
         $headersOut = $http_response_header ?? [];
 
-        if ($body === false && empty($headersOut))
-        {
-            return [
-                'status' => 0,
-                'body' => '',
-                'headers' => [],
-                'location' => null,
-                'url' => $url,
-                'method' => strtoupper($method),
-            ];
-        }
-
         $status = 0;
         $location = null;
 
-        if (
-            !empty($headersOut[0])
-            && preg_match('/\s(\d{3})\s/', $headersOut[0], $matches)
-        ) {
+        if (!empty($headersOut[0]) && preg_match('/HTTP\/\S+\s+(\d{3})/', $headersOut[0], $matches)) {
             $status = (int) $matches[1];
         }
 
-        foreach ($headersOut as $header)
-        {
-            if (stripos($header, 'Location:') === 0)
-            {
+        foreach ($headersOut as $header) {
+            if (stripos($header, 'Location:') === 0) {
                 $location = trim(substr($header, 9));
                 break;
             }
@@ -583,7 +573,7 @@ if (!function_exists('requestUrl'))
             'headers' => $headersOut,
             'location' => $location,
             'url' => $url,
-            'method' => strtoupper($method),
+            'method' => $method,
         ];
     }
 }

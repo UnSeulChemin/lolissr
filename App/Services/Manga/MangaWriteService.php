@@ -51,11 +51,16 @@ final class MangaWriteService
             ];
         }
 
-        if ($this->isReadOnlyMode()) {
+        $dto = MangaCreateDTO::fromPost($post);
+
+        /*
+         * En testing :
+         * - upload test autorisé
+         * - aucune écriture DB
+         */
+        if ($this->isReadOnlyMode() && !$this->uploadService->isTestUploadMode()) {
             return $this->blockedWriteResponse();
         }
-
-        $dto = MangaCreateDTO::fromPost($post);
 
         if (
             !$this->uploadService->isTestUploadMode()
@@ -124,12 +129,8 @@ final class MangaWriteService
         ];
     }
 
-    public function update(
-        string $slug,
-        int $numero,
-        array $post,
-        array $files
-    ): array {
+    public function update(string $slug, int $numero, array $post, array $files): array
+    {
         $validator = $this->validatorService->makeUpdateValidator($post, $files);
 
         if ($validator->fails()) {
@@ -176,11 +177,8 @@ final class MangaWriteService
         ];
     }
 
-    public function updateNote(
-        string $slug,
-        int $numero,
-        array $post
-    ): array {
+    public function updateNote(string $slug, int $numero, array $post): array
+    {
         $validator = $this->validatorService->makeUpdateNoteValidator($post);
 
         if ($validator->fails()) {
@@ -194,7 +192,7 @@ final class MangaWriteService
             ];
         }
 
-        if ($this->isReadOnlyMode() && !$this->uploadService->isTestUploadMode()) {
+        if ($this->isReadOnlyMode()) {
             return $this->blockedWriteResponse();
         }
 
@@ -273,7 +271,6 @@ final class MangaWriteService
         }
 
         $this->uploadService->removeFileIfExists($imagePath);
-
         $this->cacheService->clear();
 
         return [

@@ -291,7 +291,12 @@ if (!function_exists('is_ajax'))
 {
     function is_ajax(): bool
     {
-        return Request::isAjax();
+        $header =
+            $_SERVER['HTTP_X_REQUESTED_WITH']
+            ?? $_SERVER['X_REQUESTED_WITH']
+            ?? '';
+
+        return strtolower((string) $header) === 'xmlhttprequest';
     }
 }
 
