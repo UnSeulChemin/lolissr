@@ -11,11 +11,18 @@ final class CsrfMiddleware implements MiddlewareInterface
 {
     public function handle(): void
     {
-        if (Request::method() !== 'POST') {
+        if (Request::method() !== 'POST')
+        {
             return;
         }
 
-        if (App::isTesting()) {
+        if (
+            App::isTesting()
+            || env('APP_ENV') === 'testing'
+            || ($_ENV['APP_ENV'] ?? null) === 'testing'
+            || ($_SERVER['APP_ENV'] ?? null) === 'testing'
+            || getenv('APP_ENV') === 'testing'
+        ) {
             return;
         }
 

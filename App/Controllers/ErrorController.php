@@ -8,10 +8,7 @@ use App\Core\Support\Logger;
 
 final class ErrorController extends Controller
 {
-    /**
-     * 404 — Page non trouvée
-     */
-    public function notFound(): void
+    public function notFound(string $message = 'Page introuvable'): void
     {
         Logger::warning('404 Not Found', [
             'uri' => $_SERVER['REQUEST_URI'] ?? null,
@@ -19,14 +16,11 @@ final class ErrorController extends Controller
 
         $this->renderError('errors/404', 404, [
             'title' => '404 | Page introuvable',
-            'message' => 'La page demandée est introuvable.',
+            'message' => $message,
         ]);
     }
 
-    /**
-     * 405 — Méthode non autorisée
-     */
-    public function methodNotAllowed(): void
+    public function methodNotAllowed(string $message = 'Méthode non autorisée'): void
     {
         Logger::warning('405 Method Not Allowed', [
             'method' => $_SERVER['REQUEST_METHOD'] ?? null,
@@ -35,13 +29,10 @@ final class ErrorController extends Controller
 
         $this->renderError('errors/405', 405, [
             'title' => '405 | Méthode non autorisée',
-            'message' => 'Méthode HTTP non autorisée.',
+            'message' => $message,
         ]);
     }
 
-    /**
-     * 419 — CSRF expiré
-     */
     public function renderCsrfExpiredPage(): void
     {
         Logger::warning('419 CSRF expired', [
@@ -54,10 +45,7 @@ final class ErrorController extends Controller
         ]);
     }
 
-    /**
-     * 500 — Erreur serveur
-     */
-    public function serverError(): void
+    public function serverError(string $message = 'Erreur interne du serveur'): void
     {
         Logger::error('500 Internal Server Error', [
             'uri' => $_SERVER['REQUEST_URI'] ?? null,
@@ -65,7 +53,7 @@ final class ErrorController extends Controller
 
         $this->renderError('errors/500', 500, [
             'title' => '500 | Erreur serveur',
-            'message' => 'Une erreur interne est survenue.',
+            'message' => $message,
         ]);
     }
 }

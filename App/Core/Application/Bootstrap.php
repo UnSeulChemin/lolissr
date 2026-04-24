@@ -33,8 +33,6 @@ final class Bootstrap
             $routes($router);
         }
 
-        csrf_verify();
-
         $router->dispatch();
     }
 
