@@ -11,11 +11,16 @@ final class MangaUpdateNoteDTO
         public readonly ?int $livreNote
     ) {}
 
-    public static function fromPost(array $post): self
+    public static function fromArray(array $data): self
     {
         return new self(
-            MangaNoteNormalizer::normalize($post['jacquette'] ?? null),
-            MangaNoteNormalizer::normalize($post['livre_note'] ?? null)
+            jacquette: MangaNoteNormalizer::normalize($data['jacquette'] ?? null),
+            livreNote: MangaNoteNormalizer::normalize($data['livre_note'] ?? null)
         );
+    }
+
+    public static function fromPost(array $post): self
+    {
+        return self::fromArray($post);
     }
 }

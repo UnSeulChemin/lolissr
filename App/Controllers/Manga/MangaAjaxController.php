@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Controllers\Manga;
 
-use App\Core\Http\Request;
+use App\Controllers\Controller;
+use App\Http\Requests\Manga\MangaUpdateNoteRequest;
 use App\Repositories\Manga\MangaRepository;
 use App\Services\Manga\MangaReadService;
 use App\Services\Manga\MangaWriteService;
-use App\Controllers\Controller;
 
 final class MangaAjaxController extends Controller
 {
@@ -87,10 +87,20 @@ final class MangaAjaxController extends Controller
     {
         $this->ensureAjax();
 
+        $request = new MangaUpdateNoteRequest();
+
+        if ($request->fails()) {
+            json([
+                'success' => false,
+                'message' => 'Erreur de validation',
+                'errors' => $request->errors(),
+            ], 422);
+        }
+
         $result = $this->mangaWriteService->updateNote(
             $slug,
             (int) $numero,
-            Request::allPost()
+            $request->data()
         );
 
         json(

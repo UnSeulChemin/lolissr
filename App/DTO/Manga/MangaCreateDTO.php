@@ -15,28 +15,20 @@ final class MangaCreateDTO
         public readonly ?string $commentaire
     ) {}
 
-    public static function fromPost(array $post): self
+    public static function fromArray(array $data): self
     {
-        $livre = trim((string) ($post['livre'] ?? ''));
-
-        $slug = Str::slug(
-            trim((string) ($post['slug'] ?? ''))
-        );
-
-        $numero = max(
-            1,
-            (int) ($post['numero'] ?? 1)
-        );
-
-        $commentaire = Str::nullableTrim(
-            $post['commentaire'] ?? null
-        );
+        $livre = trim((string) ($data['livre'] ?? ''));
 
         return new self(
-            $livre,
-            $slug,
-            $numero,
-            $commentaire
+            livre: $livre,
+            slug: Str::slug((string) ($data['slug'] ?? $livre)),
+            numero: max(1, (int) ($data['numero'] ?? 1)),
+            commentaire: Str::nullableTrim($data['commentaire'] ?? null)
         );
+    }
+
+    public static function fromPost(array $post): self
+    {
+        return self::fromArray($post);
     }
 }

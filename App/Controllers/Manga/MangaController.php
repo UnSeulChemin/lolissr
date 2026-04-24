@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\Controllers\Manga;
 
-use App\Core\Http\Request;
+use App\Controllers\Controller;
 use App\Core\Support\Session;
 use App\Core\Support\Str;
+use App\Http\Requests\Manga\MangaCreateRequest;
+use App\Http\Requests\Manga\MangaUpdateRequest;
 use App\Repositories\Manga\MangaRepository;
 use App\Services\Manga\MangaReadService;
 use App\Services\Manga\MangaWriteService;
-use App\Controllers\Controller;
 
 final class MangaController extends Controller
 {
@@ -194,19 +195,21 @@ final class MangaController extends Controller
 
     public function ajouterTraitement(): void
     {
+        $request = new MangaCreateRequest();
+
+        if ($request->fails()) {
+            $this->redirectWithValidationErrors(
+                'manga/ajouter',
+                $request->errors()
+            );
+        }
+
         $result = $this->mangaWriteService->create(
-            Request::allPost(),
-            Request::allFiles()
+            $request->data(),
+            $request->files()
         );
 
         if (!$result['success']) {
-            if (($result['status'] ?? 500) === 422) {
-                $this->redirectWithValidationErrors(
-                    'manga/ajouter',
-                    $result['errors'] ?? []
-                );
-            }
-
             $this->redirectWithError(
                 'manga/ajouter',
                 $result['message'] ?? 'Erreur'
@@ -225,23 +228,27 @@ final class MangaController extends Controller
     {
         $numero = (int) $numero;
 
+        $request = new MangaUpdateRequest();
+
+        $redirectPath = 'manga/modifier/' . rawurlencode($slug) . '/' . $numero;
+
+        if ($request->fails()) {
+            $this->redirectWithValidationErrors(
+                $redirectPath,
+                $request->errors()
+            );
+        }
+
         $result = $this->mangaWriteService->update(
             $slug,
             $numero,
-            Request::allPost(),
-            Request::allFiles()
+            $request->data(),
+            $request->files()
         );
 
         if (!$result['success']) {
-            if (($result['status'] ?? 500) === 422) {
-                $this->redirectWithValidationErrors(
-                    'manga/modifier/' . rawurlencode($slug) . '/' . $numero,
-                    $result['errors'] ?? []
-                );
-            }
-
             $this->redirectWithError(
-                'manga/modifier/' . rawurlencode($slug) . '/' . $numero,
+                $redirectPath,
                 $result['message'] ?? 'Erreur'
             );
         }

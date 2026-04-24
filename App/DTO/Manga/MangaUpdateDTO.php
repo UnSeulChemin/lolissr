@@ -14,12 +14,17 @@ final class MangaUpdateDTO
         public readonly ?string $commentaire
     ) {}
 
-    public static function fromPost(array $post): self
+    public static function fromArray(array $data): self
     {
         return new self(
-            MangaNoteNormalizer::normalize($post['jacquette'] ?? null),
-            MangaNoteNormalizer::normalize($post['livre_note'] ?? null),
-            Str::nullableTrim($post['commentaire'] ?? null)
+            jacquette: MangaNoteNormalizer::normalize($data['jacquette'] ?? null),
+            livreNote: MangaNoteNormalizer::normalize($data['livre_note'] ?? null),
+            commentaire: Str::nullableTrim($data['commentaire'] ?? null)
         );
+    }
+
+    public static function fromPost(array $post): self
+    {
+        return self::fromArray($post);
     }
 }
