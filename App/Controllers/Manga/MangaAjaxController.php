@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Controllers;
+namespace App\Controllers\Manga;
 
 use App\Core\Http\Request;
 use App\Repositories\Manga\MangaRepository;
 use App\Services\Manga\MangaReadService;
 use App\Services\Manga\MangaWriteService;
+use App\Controllers\Controller;
 
 final class MangaAjaxController extends Controller
 {
