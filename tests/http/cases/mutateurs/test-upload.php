@@ -134,7 +134,7 @@ if ($testUploadDuplicateSlugNumero)
 {
     addPostCheck($postChecks, [
         'category' => 'Upload',
-        'label' => 'Upload doublon slug + numero (mode test)',
+        'label' => 'Upload doublon remplacé en mode test',
         'url' => rtrim($base, '/') . '/manga/ajouter',
 
         'callback' => static function () use ($base, $tmpUploadsDirectory): array
@@ -179,7 +179,10 @@ if ($testUploadDuplicateSlugNumero)
             $firstOk =
                 $firstResponse['status'] === 200
                 && is_array($firstJson)
-                && ($firstJson['success'] ?? null) === true;
+                && ($firstJson['success'] ?? null) === true
+                && isset($firstJson['file'])
+                && is_string($firstJson['file'])
+                && $firstJson['file'] !== '';
 
             if (!$firstOk) {
                 @unlink($tmpFile);
@@ -222,13 +225,24 @@ if ($testUploadDuplicateSlugNumero)
 
             $json = decodeJsonResponse($response['body']);
 
-            $hasError =
-                is_array($json)
-                && ($json['success'] ?? null) === false;
+            $ok =
+                $response['status'] === 200
+                && is_array($json)
+                && ($json['success'] ?? null) === true
+                && isset($json['file'])
+                && is_string($json['file'])
+                && $json['file'] !== '';
+
+            $fileExists = false;
+
+            if ($ok) {
+                $expectedPath = rtrim($tmpUploadsDirectory, '/\\') . DIRECTORY_SEPARATOR . $json['file'];
+                $fileExists = is_file($expectedPath);
+            }
 
             return [
-                'ok' => $hasError || $response['status'] >= 400,
-                'message' => 'status ' . $response['status'] . ' | doublon refusé',
+                'ok' => $ok && $fileExists,
+                'message' => 'status ' . $response['status'] . ' | doublon remplacé en mode test',
             ];
         },
     ]);
