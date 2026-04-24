@@ -53,3 +53,6 @@ tests/reports/
 .idea/
 .DS_Store
 Thumbs.db
+
+/Storage/cache/*
+!/Storage/cache/.gitkeep

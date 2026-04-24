@@ -7,11 +7,8 @@ namespace App\Services;
 use App\Core\Config\UploadConfig;
 use App\Core\Validation\Validator;
 
-class MangaValidatorService
+final class MangaValidatorService
 {
-    /**
-     * Retourne le validator d’ajout.
-     */
     public function makeCreateValidator(array $post, array $files): Validator
     {
         $validator = new Validator($post, $files);
@@ -32,28 +29,13 @@ class MangaValidatorService
             ->maxLength('commentaire', 1000, 'Le commentaire ne doit pas dépasser 1000 caractères.')
             ->fileRequired('image', 'Aucune image envoyée.')
             ->fileOk('image', 'Erreur lors de l’envoi du fichier.')
-            ->imageExtension(
-                'image',
-                UploadConfig::allowedExtensions(),
-                'Format image non autorisé.'
-            )
-            ->imageMime(
-                'image',
-                UploadConfig::allowedMimeTypes(),
-                'Type MIME image non autorisé.'
-            )
-            ->maxFileSize(
-                'image',
-                UploadConfig::maxSize(),
-                'L’image ne doit pas dépasser la taille autorisée.'
-            );
+            ->imageExtension('image', UploadConfig::allowedExtensions(), 'Format image non autorisé.')
+            ->imageMime('image', UploadConfig::allowedMimeTypes(), 'Type MIME image non autorisé.')
+            ->maxFileSize('image', UploadConfig::maxSize(), 'L’image ne doit pas dépasser la taille autorisée.');
 
         return $validator;
     }
 
-    /**
-     * Retourne le validator de modification.
-     */
     public function makeUpdateValidator(array $post, array $files): Validator
     {
         $validator = new Validator($post, $files);
@@ -74,24 +56,16 @@ class MangaValidatorService
         return $validator;
     }
 
-    /**
-     * Retourne le premier message d’erreur lisible.
-     *
-     * @param array<string, mixed> $errors
-     */
     public function firstErrorMessage(
         array $errors,
         string $fallback = 'Le formulaire contient des erreurs.'
     ): string {
-        foreach ($errors as $messages)
-        {
-            if (is_array($messages) && !empty($messages))
-            {
+        foreach ($errors as $messages) {
+            if (is_array($messages) && !empty($messages)) {
                 return (string) $messages[0];
             }
 
-            if (is_string($messages) && trim($messages) !== '')
-            {
+            if (is_string($messages) && trim($messages) !== '') {
                 return $messages;
             }
         }

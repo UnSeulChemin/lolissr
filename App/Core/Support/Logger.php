@@ -4,29 +4,25 @@ declare(strict_types=1);
 
 namespace App\Core\Support;
 
-class Logger
+use Throwable;
+
+final class Logger
 {
-    /**
-     * Retourne le dossier des logs.
-     */
     private static function logDirectory(): string
     {
         return (string) env('LOG_DIR', app_path('Storage/logs'));
     }
 
-    /**
-     * Retourne le fichier de log principal.
-     */
     private static function logFile(): string
     {
         return self::logDirectory() . DIRECTORY_SEPARATOR . 'app.log';
     }
 
-    /**
-     * Écrit un message dans le fichier de log.
-     */
-    private static function write(string $level, string $message): void
-    {
+    private static function write(
+        string $level,
+        string $message,
+        array $context = []
+    ): void {
         $logDir = self::logDirectory();
         $logFile = self::logFile();
 
@@ -40,42 +36,55 @@ class Logger
             }
         }
 
-        $date = date('Y-m-d H:i:s');
-        $formatted = "[{$date}] [{$level}] {$message}" . PHP_EOL;
+        $payload = [
+            'date' => date('Y-m-d H:i:s'),
+            'level' => $level,
+            'message' => $message,
+            'context' => $context,
+            'request' => [
+                'method' => $_SERVER['REQUEST_METHOD'] ?? null,
+                'uri' => $_SERVER['REQUEST_URI'] ?? null,
+                'ip' => $_SERVER['REMOTE_ADDR'] ?? null,
+            ],
+        ];
 
-        $result = @file_put_contents(
+        @file_put_contents(
             $logFile,
-            $formatted,
+            json_encode(
+                $payload,
+                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+            ) . PHP_EOL,
             FILE_APPEND | LOCK_EX
         );
-
-        if ($result === false)
-        {
-            return;
-        }
     }
 
-    /**
-     * Log une erreur.
-     */
-    public static function error(string $message): void
+    public static function debug(string $message, array $context = []): void
     {
-        self::write('ERROR', $message);
+        self::write('DEBUG', $message, $context);
     }
 
-    /**
-     * Log un warning.
-     */
-    public static function warning(string $message): void
+    public static function info(string $message, array $context = []): void
     {
-        self::write('WARNING', $message);
+        self::write('INFO', $message, $context);
     }
 
-    /**
-     * Log une information.
-     */
-    public static function info(string $message): void
+    public static function warning(string $message, array $context = []): void
     {
-        self::write('INFO', $message);
+        self::write('WARNING', $message, $context);
+    }
+
+    public static function error(string $message, array $context = []): void
+    {
+        self::write('ERROR', $message, $context);
+    }
+
+    public static function exception(Throwable $exception, array $context = []): void
+    {
+        self::error($exception->getMessage(), array_merge($context, [
+            'exception' => $exception::class,
+            'file' => $exception->getFile(),
+            'line' => $exception->getLine(),
+            'trace' => $exception->getTraceAsString(),
+        ]));
     }
 }

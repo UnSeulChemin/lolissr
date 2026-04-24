@@ -9,12 +9,30 @@ use App\Core\Config\Env;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Support\Session;
+use App\Core\Container\Container;
 
 /*
 |--------------------------------------------------------------------------
 | dump()
 |--------------------------------------------------------------------------
 */
+
+if (!function_exists('app')) {
+    function app(?string $abstract = null): mixed
+    {
+        static $container = null;
+
+        if ($container === null) {
+            $container = new Container();
+        }
+
+        if ($abstract === null) {
+            return $container;
+        }
+
+        return $container->get($abstract);
+    }
+}
 
 if (!function_exists('dump'))
 {

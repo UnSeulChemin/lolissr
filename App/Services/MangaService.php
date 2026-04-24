@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Core\Application\App;
+use App\Core\Cache\Cache;
 use App\Core\Config\UploadConfig;
 use App\Core\Support\Logger;
 use App\DTO\Manga\MangaCreateDTO;
@@ -15,9 +16,9 @@ use App\Repositories\MangaRepository;
 final class MangaService
 {
     public function __construct(
-        private readonly MangaRepository $mangaRepository = new MangaRepository(),
-        private readonly UploadService $uploadService = new UploadService(),
-        private readonly MangaValidatorService $validatorService = new MangaValidatorService()
+        private readonly MangaRepository $mangaRepository,
+        private readonly UploadService $uploadService,
+        private readonly MangaValidatorService $validatorService
     ) {}
 
     private function isReadOnlyMode(): bool
@@ -30,7 +31,7 @@ final class MangaService
         return [
             'success' => false,
             'status' => 403,
-            'message' => 'Écriture en base désactivée en mode test'
+            'message' => 'Écriture en base désactivée en mode test',
         ];
     }
 
@@ -38,15 +39,14 @@ final class MangaService
     {
         $validator = $this->validatorService->makeCreateValidator($post, $files);
 
-        if ($validator->fails())
-        {
+        if ($validator->fails()) {
             $errors = $validator->errors();
 
             return [
                 'success' => false,
                 'status' => 422,
                 'message' => $this->validatorService->firstErrorMessage($errors),
-                'errors' => $errors
+                'errors' => $errors,
             ];
         }
 
@@ -55,12 +55,11 @@ final class MangaService
         if (
             !$this->uploadService->isTestUploadMode()
             && $this->mangaRepository->findOneBySlugAndNumero($dto->slug, $dto->numero)
-        )
-        {
+        ) {
             return [
                 'success' => false,
                 'status' => 409,
-                'message' => 'Ce manga existe déjà'
+                'message' => 'Ce manga existe déjà',
             ];
         }
 
@@ -71,27 +70,24 @@ final class MangaService
             'image'
         );
 
-        if (!$upload['success'])
-        {
+        if (!$upload['success']) {
             return [
                 'success' => false,
                 'status' => (int) $upload['status'],
-                'message' => (string) $upload['message']
+                'message' => (string) $upload['message'],
             ];
         }
 
-        if ($this->uploadService->isTestUploadMode())
-        {
+        if ($this->uploadService->isTestUploadMode()) {
             return [
                 'success' => true,
                 'status' => 200,
                 'message' => 'Upload test OK',
-                'file' => basename((string) $upload['destination'])
+                'file' => basename((string) $upload['destination']),
             ];
         }
 
-        if ($this->isReadOnlyMode())
-        {
+        if ($this->isReadOnlyMode()) {
             $this->uploadService->removeFileIfExists((string) $upload['destination']);
 
             return $this->blockedWriteResponse();
@@ -105,28 +101,27 @@ final class MangaService
             'numero' => $dto->numero,
             'jacquette' => null,
             'livre_note' => null,
-            'commentaire' => $dto->commentaire
+            'commentaire' => $dto->commentaire,
         ]);
 
-        if (!$insert)
-        {
+        if (!$insert) {
             $this->uploadService->removeFileIfExists((string) $upload['destination']);
 
-            Logger::error(
-                "Insertion manga échouée slug={$dto->slug} numero={$dto->numero}"
-            );
+            Logger::error("Insertion manga échouée slug={$dto->slug} numero={$dto->numero}");
 
             return [
                 'success' => false,
                 'status' => 500,
-                'message' => 'Erreur lors de l’enregistrement'
+                'message' => 'Erreur lors de l’enregistrement',
             ];
         }
+
+        Cache::clear();
 
         return [
             'success' => true,
             'status' => 200,
-            'message' => 'Manga ajouté avec succès'
+            'message' => 'Manga ajouté avec succès',
         ];
     }
 
@@ -138,20 +133,18 @@ final class MangaService
     ): array {
         $validator = $this->validatorService->makeUpdateValidator($post, $files);
 
-        if ($validator->fails())
-        {
+        if ($validator->fails()) {
             $errors = $validator->errors();
 
             return [
                 'success' => false,
                 'status' => 422,
                 'message' => $this->validatorService->firstErrorMessage($errors),
-                'errors' => $errors
+                'errors' => $errors,
             ];
         }
 
-        if ($this->isReadOnlyMode())
-        {
+        if ($this->isReadOnlyMode()) {
             return $this->blockedWriteResponse();
         }
 
@@ -165,21 +158,22 @@ final class MangaService
             $dto->commentaire
         );
 
-        if (!$updated)
-        {
+        if (!$updated) {
             Logger::error("Update manga échoué slug=$slug numero=$numero");
 
             return [
                 'success' => false,
                 'status' => 500,
-                'message' => 'Erreur lors de la mise à jour'
+                'message' => 'Erreur lors de la mise à jour',
             ];
         }
+
+        Cache::clear();
 
         return [
             'success' => true,
             'status' => 200,
-            'message' => 'Manga mis à jour avec succès'
+            'message' => 'Manga mis à jour avec succès',
         ];
     }
 
@@ -190,20 +184,18 @@ final class MangaService
     ): array {
         $validator = $this->validatorService->makeUpdateValidator($post, []);
 
-        if ($validator->fails())
-        {
+        if ($validator->fails()) {
             $errors = $validator->errors();
 
             return [
                 'success' => false,
                 'status' => 422,
                 'message' => $this->validatorService->firstErrorMessage($errors),
-                'errors' => $errors
+                'errors' => $errors,
             ];
         }
 
-        if ($this->isReadOnlyMode())
-        {
+        if ($this->isReadOnlyMode()) {
             return $this->blockedWriteResponse();
         }
 
@@ -216,27 +208,27 @@ final class MangaService
             $dto->livreNote
         );
 
-        if (!$updated)
-        {
+        if (!$updated) {
             Logger::error("Update note échoué slug=$slug numero=$numero");
 
             return [
                 'success' => false,
                 'status' => 500,
-                'message' => 'Erreur lors de la mise à jour'
+                'message' => 'Erreur lors de la mise à jour',
             ];
         }
 
         $manga = $this->mangaRepository->findOneBySlugAndNumero($slug, $numero);
 
-        if ($manga === false)
-        {
+        if ($manga === false) {
             return [
                 'success' => false,
                 'status' => 404,
-                'message' => 'Manga introuvable après mise à jour'
+                'message' => 'Manga introuvable après mise à jour',
             ];
         }
+
+        Cache::clear();
 
         return [
             'success' => true,
@@ -244,25 +236,23 @@ final class MangaService
             'message' => 'Notes mises à jour',
             'jacquette' => $manga->jacquette,
             'livre_note' => $manga->livre_note,
-            'note' => $manga->note
+            'note' => $manga->note,
         ];
     }
 
     public function delete(string $slug, int $numero): array
     {
-        if ($this->isReadOnlyMode())
-        {
+        if ($this->isReadOnlyMode()) {
             return $this->blockedWriteResponse();
         }
 
         $manga = $this->mangaRepository->findOneBySlugAndNumero($slug, $numero);
 
-        if ($manga === false)
-        {
+        if ($manga === false) {
             return [
                 'success' => false,
                 'status' => 404,
-                'message' => 'Manga introuvable'
+                'message' => 'Manga introuvable',
             ];
         }
 
@@ -273,24 +263,25 @@ final class MangaService
 
         $deleted = $this->mangaRepository->deleteBySlugAndNumero($slug, $numero);
 
-        if (!$deleted)
-        {
+        if (!$deleted) {
             Logger::error("Delete manga échoué slug=$slug numero=$numero");
 
             return [
                 'success' => false,
                 'status' => 500,
-                'message' => 'Erreur lors de la suppression'
+                'message' => 'Erreur lors de la suppression',
             ];
         }
 
         $this->uploadService->removeFileIfExists($imagePath);
 
+        Cache::clear();
+
         return [
             'success' => true,
             'status' => 200,
             'message' => 'Manga supprimé avec succès',
-            'canonicalSlug' => $manga->slug
+            'canonicalSlug' => $manga->slug,
         ];
     }
 }

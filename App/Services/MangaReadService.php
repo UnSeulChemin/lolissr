@@ -11,171 +11,83 @@ use App\Repositories\MangaRepository;
 final class MangaReadService
 {
     public function __construct(
-        private readonly MangaRepository $mangaRepository = new MangaRepository()
+        private readonly MangaRepository $mangaRepository
     ) {}
 
-    /**
-     * Retourne le repository manga.
-     */
     public function repository(): MangaRepository
     {
         return $this->mangaRepository;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | SEARCH
-    |--------------------------------------------------------------------------
-    */
-
-    private function normalizeSearchQuery(
-        string $query
-    ): string {
-
+    private function normalizeSearchQuery(string $query): string
+    {
         $query = urldecode($query);
-
         $query = str_replace('-', ' ', $query);
 
-        $query = trim(
-            preg_replace('/\s+/', ' ', $query) ?? ''
-        );
-
-        return $query;
+        return trim(preg_replace('/\s+/', ' ', $query) ?? '');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | COLLECTION
-    |--------------------------------------------------------------------------
-    */
-
-    /**
-     * @return array{
-     *     mangas: array<int, object>,
-     *     compteur: int,
-     *     currentPage: int
-     * }|null
-     */
-    public function collection(
-        string $page = '1'
-    ): ?array {
-
-        if (!ctype_digit($page))
-        {
+    public function collection(string $page = '1'): ?array
+    {
+        if (!ctype_digit($page)) {
             return null;
         }
 
         $currentPage = (int) $page;
 
-        if ($currentPage < 1)
-        {
+        if ($currentPage < 1) {
             return null;
         }
 
-        $pagination =
-            App::pagination();
+        $pagination = App::pagination();
 
-        $compteur =
-            $this->mangaRepository
-                ->countFirstTomesPaginate(
-                    $pagination
-                );
+        $compteur = $this->mangaRepository
+            ->countFirstTomesPaginate($pagination);
 
-        if ($currentPage > $compteur)
-        {
+        if ($compteur > 0 && $currentPage > $compteur) {
             return null;
         }
 
-        $mangas =
-            $this->mangaRepository
-                ->findAllFirstTomes(
-                    'id DESC',
-                    $pagination,
-                    $currentPage
-                );
+        $mangas = $this->mangaRepository
+            ->findAllFirstTomes('id DESC', $pagination, $currentPage);
 
         return [
             'mangas' => $mangas,
             'compteur' => $compteur,
-            'currentPage' => $currentPage
+            'currentPage' => $currentPage,
         ];
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | SEARCH PAGE
-    |--------------------------------------------------------------------------
-    */
+    public function search(string $query = ''): array
+    {
+        $search = $this->normalizeSearchQuery($query);
 
-    /**
-     * @return array{
-     *     mangas: array<int, object>,
-     *     search: string
-     * }
-     */
-    public function search(
-        string $query = ''
-    ): array {
-
-        $search =
-            $this->normalizeSearchQuery(
-                $query
-            );
-
-        if ($search === '')
-        {
+        if ($search === '') {
             return [
                 'mangas' => [],
-                'search' => ''
+                'search' => '',
             ];
         }
 
-        $mangas =
-            $this->mangaRepository
-                ->searchMangas($search);
-
         return [
-            'mangas' => $mangas,
-            'search' => $search
+            'mangas' => $this->mangaRepository->searchMangas($search),
+            'search' => $search,
         ];
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | AJAX SEARCH
-    |--------------------------------------------------------------------------
-    */
+    public function searchAjax(string $query = ''): array
+    {
+        $search = $this->normalizeSearchQuery($query);
 
-    /**
-     * @return array<int, array<string, mixed>>
-     */
-    public function searchAjax(
-        string $query = ''
-    ): array {
-
-        $search =
-            $this->normalizeSearchQuery(
-                $query
-            );
-
-        if ($search === '')
-        {
+        if ($search === '') {
             return [];
         }
 
-        $mangas =
-            $this->mangaRepository
-                ->searchMangas($search);
-
+        $mangas = $this->mangaRepository->searchMangas($search);
         $results = [];
 
-        foreach (
-            array_slice($mangas, 0, 6)
-            as $manga
-        ) {
-
-            if (!isset($manga->slug))
-            {
+        foreach (array_slice($mangas, 0, 6) as $manga) {
+            if (!isset($manga->slug)) {
                 continue;
             }
 
@@ -185,87 +97,43 @@ final class MangaReadService
                 'livre' => $manga->livre,
                 'thumbnail' => $manga->thumbnail,
                 'extension' => $manga->extension,
-                'note' =>
-                    $manga->note !== null
-                        ? (int) $manga->note
-                        : null
+                'note' => $manga->note !== null ? (int) $manga->note : null,
             ];
         }
 
         return $results;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | SERIE
-    |--------------------------------------------------------------------------
-    */
+    public function serie(string $slug): ?array
+    {
+        $normalizedSlug = Str::slug($slug);
 
-    /**
-     * @return array{
-     *     mangas: array<int, object>,
-     *     canonicalSlug: string
-     * }|null
-     */
-    public function serie(
-        string $slug
-    ): ?array {
+        $mangas = $this->mangaRepository->findBySlug($normalizedSlug);
 
-        $normalizedSlug =
-            Str::slug($slug);
-
-        $mangas =
-            $this->mangaRepository
-                ->findBySlug(
-                    $normalizedSlug
-                );
-
-        if ($mangas === [])
-        {
+        if ($mangas === []) {
             return null;
         }
 
         return [
             'mangas' => $mangas,
-            'canonicalSlug' => $normalizedSlug
+            'canonicalSlug' => $normalizedSlug,
         ];
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | ONE
-    |--------------------------------------------------------------------------
-    */
+    public function one(string $slug, int $numero): ?array
+    {
+        $normalizedSlug = Str::slug($slug);
 
-    /**
-     * @return array{
-     *     manga: object,
-     *     canonicalSlug: string
-     * }|null
-     */
-    public function one(
-        string $slug,
-        int $numero
-    ): ?array {
+        $manga = $this->mangaRepository
+            ->findOneBySlugAndNumero($normalizedSlug, $numero);
 
-        $normalizedSlug =
-            Str::slug($slug);
-
-        $manga =
-            $this->mangaRepository
-                ->findOneBySlugAndNumero(
-                    $normalizedSlug,
-                    $numero
-                );
-
-        if ($manga === false)
-        {
+        if ($manga === false) {
             return null;
         }
 
         return [
             'manga' => $manga,
-            'canonicalSlug' => $normalizedSlug
+            'canonicalSlug' => $normalizedSlug,
         ];
     }
 }
