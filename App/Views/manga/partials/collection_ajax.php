@@ -3,20 +3,6 @@ $isCollection = isset($slugFilter) && !empty($slugFilter);
 $currentPage = $currentPage ?? 1;
 ?>
 
-<div class="collection-scroll-anchor" aria-hidden="true"></div>
-
-<div class="collection-skeleton" aria-hidden="true">
-
-    <?php for ($i = 1; $i <= 8; $i++): ?>
-        <article class="collection-skeleton-card">
-            <div class="collection-skeleton-image"></div>
-            <div class="collection-skeleton-line collection-skeleton-line-title"></div>
-            <div class="collection-skeleton-line collection-skeleton-line-subtitle"></div>
-        </article>
-    <?php endfor; ?>
-
-</div>
-
 <section class="collection-grid animate-fade-up-stagger">
 
     <?php foreach ($mangas as $manga): ?>

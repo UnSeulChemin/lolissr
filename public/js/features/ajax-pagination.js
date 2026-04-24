@@ -12,6 +12,11 @@ function getCollectionAjaxContainer()
     return document.querySelector('.collection-ajax-container');
 }
 
+function getCollectionAjaxContent()
+{
+    return document.querySelector('.collection-ajax-content');
+}
+
 function scrollCollectionPaginationToTop()
 {
     window.scrollTo({
@@ -165,8 +170,9 @@ async function loadCollectionPaginationContent(
 )
 {
     const ajaxContainer = getCollectionAjaxContainer();
+    const ajaxContent = getCollectionAjaxContent();
 
-    if (!ajaxContainer)
+    if (!ajaxContainer || !ajaxContent)
     {
         window.location.href = fallbackUrl;
         return false;
@@ -178,7 +184,7 @@ async function loadCollectionPaginationContent(
 
         const html = await fetchCollectionPaginationHtml(ajaxUrl);
 
-        ajaxContainer.innerHTML = html;
+        ajaxContent.innerHTML = html;
 
         prefetchNextCollectionPaginationPage();
 
@@ -201,12 +207,7 @@ async function loadCollectionPaginationContent(
     }
     finally
     {
-        const freshAjaxContainer = getCollectionAjaxContainer();
-
-        if (freshAjaxContainer)
-        {
-            freshAjaxContainer.classList.remove('is-loading');
-        }
+        ajaxContainer.classList.remove('is-loading');
     }
 }
 

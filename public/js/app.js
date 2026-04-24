@@ -26,6 +26,18 @@ function initFlashToast()
     );
 }
 
+window.addEventListener('load', () =>
+{
+    const container = document.querySelector('.collection-ajax-container');
+
+    if (!container)
+    {
+        return;
+    }
+
+    container.classList.remove('is-loading');
+});
+
 document.addEventListener('DOMContentLoaded', () =>
 {
     /*
