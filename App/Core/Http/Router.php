@@ -11,31 +11,50 @@ use RuntimeException;
 class Router
 {
     /**
-     * Liste des routes enregistrées.
-     *
      * @var array<string, array<int, array<string, mixed>>>
      */
     private array $routes = [];
 
-    /**
-     * Enregistre une route GET.
-     */
-    public function get(string $path, string $action): void
+    private ?string $lastMethod = null;
+    private ?int $lastRouteIndex = null;
+
+    public function get(string $path, string $action): self
     {
         $this->addRoute('GET', $path, $action);
+
+        return $this;
     }
 
-    /**
-     * Enregistre une route POST.
-     */
-    public function post(string $path, string $action): void
+    public function post(string $path, string $action): self
     {
         $this->addRoute('POST', $path, $action);
+
+        return $this;
     }
 
     /**
-     * Retourne les routes enregistrées.
-     *
+     * @param string|array<int, string> $middlewares
+     */
+    public function middleware(string|array $middlewares): self
+    {
+        if ($this->lastMethod === null || $this->lastRouteIndex === null)
+        {
+            throw new RuntimeException('Aucune route disponible pour ajouter un middleware.');
+        }
+
+        $middlewares = is_array($middlewares)
+            ? $middlewares
+            : [$middlewares];
+
+        foreach ($middlewares as $middleware)
+        {
+            $this->routes[$this->lastMethod][$this->lastRouteIndex]['middlewares'][] = $middleware;
+        }
+
+        return $this;
+    }
+
+    /**
      * @return array<string, array<int, array<string, mixed>>>
      */
     public function getRoutes(): array
@@ -43,9 +62,6 @@ class Router
         return $this->routes;
     }
 
-    /**
-     * Enregistre une route.
-     */
     private function addRoute(string $method, string $path, string $action): void
     {
         $path = $this->normalizeRoutePath($path);
@@ -56,31 +72,28 @@ class Router
             static function (array $matches) use (&$paramNames): string
             {
                 $paramNames[] = $matches[1];
+
                 return '([^/]+)';
             },
             $path
         );
 
-        if ($path === '/')
-        {
-            $pattern = '#^/$#';
-        }
-        else
-        {
-            $pattern = '#^' . rtrim((string) $pattern, '/') . '/?$#';
-        }
+        $pattern = $path === '/'
+            ? '#^/$#'
+            : '#^' . rtrim((string) $pattern, '/') . '/?$#';
 
         $this->routes[$method][] = [
             'path' => $path,
             'action' => $action,
             'pattern' => $pattern,
             'params' => $paramNames,
+            'middlewares' => [],
         ];
+
+        $this->lastMethod = $method;
+        $this->lastRouteIndex = array_key_last($this->routes[$method]);
     }
 
-    /**
-     * Lance le dispatch de la requête.
-     */
     public function dispatch(?string $uri = null, ?string $method = null): void
     {
         $path = $uri ?? Request::path();
@@ -103,7 +116,9 @@ class Router
                     $params[$name] = $matches[$index] ?? null;
                 }
 
+                $this->runMiddlewares($route['middlewares'] ?? []);
                 $this->callAction((string) $route['action'], $params);
+
                 return;
             }
         }
@@ -120,8 +135,29 @@ class Router
     }
 
     /**
-     * Retourne les méthodes autorisées pour une route trouvée.
-     *
+     * @param array<int, string> $middlewares
+     */
+    private function runMiddlewares(array $middlewares): void
+    {
+        foreach ($middlewares as $middlewareClass)
+        {
+            if (!class_exists($middlewareClass))
+            {
+                throw new RuntimeException('Middleware introuvable : ' . $middlewareClass);
+            }
+
+            $middleware = new $middlewareClass();
+
+            if (!method_exists($middleware, 'handle'))
+            {
+                throw new RuntimeException('Méthode handle() introuvable dans : ' . $middlewareClass);
+            }
+
+            $middleware->handle();
+        }
+    }
+
+    /**
      * @return string[]
      */
     private function findAllowedMethods(string $path): array
@@ -143,8 +179,6 @@ class Router
     }
 
     /**
-     * Appelle le controller et la méthode.
-     *
      * @param array<string, mixed> $params
      */
     private function callAction(string $action, array $params = []): void
@@ -160,9 +194,7 @@ class Router
 
         if (!class_exists($controllerClass))
         {
-            throw new RuntimeException(
-                'Controller introuvable : ' . $controllerClass
-            );
+            throw new RuntimeException('Controller introuvable : ' . $controllerClass);
         }
 
         $controller = new $controllerClass();
@@ -177,9 +209,6 @@ class Router
         $controller->{$method}(...array_values($params));
     }
 
-    /**
-     * Normalise un chemin de route déclaré.
-     */
     private function normalizeRoutePath(string $path): string
     {
         $path = trim($path);
@@ -192,9 +221,6 @@ class Router
         return '/' . trim($path, '/');
     }
 
-    /**
-     * Normalise le chemin de la requête.
-     */
     private function normalizeRequestPath(string $path): string
     {
         $path = trim($path);
@@ -207,9 +233,6 @@ class Router
         return '/' . trim($path, '/');
     }
 
-    /**
-     * Supprime le base path de l'URI courante.
-     */
     private function stripBasePath(string $path): string
     {
         $basePath = base_path();

@@ -41,22 +41,11 @@ class MangaController extends Controller
         return $this->mangaReadService;
     }
 
-    /**
-     * Retourne une réponse JSON.
-     *
-     * @param array<string, mixed> $data
-     */
     protected function jsonResponse(array $data, int $statusCode = 200): void
     {
         json($data, $statusCode);
     }
 
-    /**
-     * Retourne un payload JSON d’erreur standard.
-     *
-     * @param array<string, mixed> $result
-     * @return array<string, mixed>
-     */
     protected function jsonErrorPayload(array $result): array
     {
         $payload = [
@@ -128,6 +117,7 @@ class MangaController extends Controller
         bool $ajax = false
     ): string {
         $canonicalSlug = Str::slug((string) $manga->slug);
+
         $redirect = $this->basePath
             . 'manga/modifier/'
             . rawurlencode($canonicalSlug)
@@ -154,9 +144,6 @@ class MangaController extends Controller
         );
     }
 
-    /**
-     * @param array<string, mixed> $result
-     */
     protected function handleUpdateResult(
         array $result,
         string $slug,
@@ -224,22 +211,11 @@ class MangaController extends Controller
         $requestedSlug = trim($slug);
         $numero = (int) $numero;
 
-        if (!Request::isPost())
-        {
-            if ($ajax)
-            {
-                $this->jsonResponse([
-                    'success' => false,
-                    'message' => 'Méthode non autorisée',
-                ], 405);
-            }
-
-            $this->methodNotAllowed(
-                'Méthode non autorisée pour la modification d’un manga'
-            );
-        }
-
-        $manga = $this->findCanonicalMangaOrFail($requestedSlug, $numero, $ajax);
+        $manga = $this->findCanonicalMangaOrFail(
+            $requestedSlug,
+            $numero,
+            $ajax
+        );
 
         $canonicalSlug = $this->handleCanonicalUpdateAccess(
             $requestedSlug,
@@ -255,267 +231,44 @@ class MangaController extends Controller
             Request::allFiles()
         );
 
-        $this->handleUpdateResult($result, $canonicalSlug, $numero, $ajax);
-    }
-
-    public function index(): void
-    {
-        $this->title = 'Manga';
-        $this->render('manga/index');
-    }
-
-    public function lien(): void
-    {
-        $this->title = 'Manga | Lien';
-        $this->render('manga/lien');
-    }
-
-    public function collection(string $page = '1'): void
-    {
-        $data = $this->mangaReadService()->collection($page);
-
-        if ($data === null)
-        {
-            $this->notFound('Page introuvable');
-        }
-
-        $this->title = 'Manga | Collection';
-
-        if ($data['currentPage'] > 1)
-        {
-            $this->title .= ' - Page ' . $data['currentPage'];
-        }
-
-        $this->render('manga/collection', [
-            'mangas' => $data['mangas'],
-            'compteur' => $data['compteur'],
-            'slugFilter' => null,
-            'currentPage' => $data['currentPage'],
-        ]);
-    }
-
-    public function collectionAjax(string $page = '1'): void
-    {
-        $data = $this->mangaReadService()->collection($page);
-
-        if ($data === null)
-        {
-            $this->notFound('Page introuvable');
-        }
-
-        $this->renderPartial('manga/partials/collection_ajax', [
-            'mangas' => $data['mangas'],
-            'compteur' => $data['compteur'],
-            'currentPage' => $data['currentPage'],
-            'slugFilter' => null,
-        ]);
-    }
-
-    public function recherche(string $query = ''): void
-    {
-        $data = $this->mangaReadService()->search($query);
-
-        $this->title = 'Manga | Recherche';
-
-        if ($data['search'] !== '')
-        {
-            $this->title = 'Manga | Recherche : ' . $data['search'];
-        }
-
-        $this->render('manga/search', [
-            'mangas' => $data['mangas'],
-            'search' => $data['search'],
-        ]);
-    }
-
-    public function searchAjax(string $query = ''): void
-    {
-        $this->jsonResponse(
-            $this->mangaReadService()->searchAjax($query)
-        );
-    }
-
-    public function serie(string $slug): void
-    {
-        $requestedSlug = trim($slug);
-        $data = $this->mangaReadService()->serie($slug);
-
-        if ($data === null)
-        {
-            $this->notFound('Manga introuvable');
-        }
-
-        $this->redirectToCanonicalUrl(
-            $requestedSlug,
-            $data['canonicalSlug'],
-            'manga/serie'
-        );
-
-        $this->title = 'Manga | ' . $data['mangas'][0]->livre;
-
-        $this->render('manga/collection', [
-            'mangas' => $data['mangas'],
-            'compteur' => null,
-            'slugFilter' => $data['canonicalSlug'],
-            'currentPage' => 1,
-        ]);
-    }
-
-    public function show(string $slug, string $numero): void
-    {
-        $requestedSlug = trim($slug);
-        $numero = (int) $numero;
-
-        $data = $this->mangaReadService()->one($slug, $numero);
-
-        if ($data === null)
-        {
-            $this->notFound('Manga introuvable');
-        }
-
-        $this->redirectToCanonicalUrl(
-            $requestedSlug,
-            $data['canonicalSlug'],
-            'manga',
-            (int) $data['manga']->numero
-        );
-
-        $this->title = 'Manga | ' . $data['manga']->livre;
-
-        $this->render('manga/livre', [
-            'manga' => $data['manga'],
-        ]);
-    }
-
-    public function ajouter(): void
-    {
-        $this->title = 'Manga | Ajouter';
-        $this->render('manga/ajouter');
-    }
-
-    public function modifier(string $slug, string $numero): void
-    {
-        $requestedSlug = trim($slug);
-        $numero = (int) $numero;
-
-        $manga = $this->findCanonicalMangaOrFail($requestedSlug, $numero);
-        $canonicalSlug = Str::slug((string) $manga->slug);
-
-        $this->redirectToCanonicalUrl(
-            $requestedSlug,
+        $this->handleUpdateResult(
+            $result,
             $canonicalSlug,
-            'manga/modifier',
-            (int) $manga->numero
-        );
-
-        $this->title = 'Manga | Modifier';
-
-        $this->render('manga/modifier', [
-            'manga' => $manga,
-        ]);
-    }
-
-    public function ajouterTraitement(): void
-    {
-        if (!Request::isPost())
-        {
-            if (is_ajax())
-            {
-                $this->jsonResponse([
-                    'success' => false,
-                    'message' => 'Méthode non autorisée',
-                ], 405);
-            }
-
-            $this->methodNotAllowed(
-                'Méthode non autorisée pour l’ajout d’un manga'
-            );
-        }
-
-        $result = $this->mangaService()->create(
-            Request::allPost(),
-            Request::allFiles()
-        );
-
-        if (!$result['success'])
-        {
-            if (is_ajax())
-            {
-                $this->jsonResponse(
-                    $this->jsonErrorPayload($result),
-                    (int) $result['status']
-                );
-            }
-
-            if ((int) $result['status'] === 422)
-            {
-                $this->redirectWithValidationErrors(
-                    'manga/ajouter',
-                    $result['errors'] ?? []
-                );
-            }
-
-            $this->redirectWithError(
-                'manga/ajouter',
-                (string) $result['message']
-            );
-        }
-
-        Session::forget(['errors', 'old']);
-
-        if (is_ajax())
-        {
-            $payload = [
-                'success' => true,
-                'message' => (string) $result['message'],
-            ];
-
-            if (isset($result['file']))
-            {
-                $payload['file'] = $result['file'];
-            }
-
-            $this->jsonResponse($payload);
-        }
-
-        $this->redirectWithSuccess(
-            'manga/ajouter',
-            (string) $result['message']
+            $numero,
+            $ajax
         );
     }
 
     public function update(string $slug, string $numero): void
     {
-        $this->performUpdate($slug, $numero, is_ajax());
+        $this->performUpdate(
+            $slug,
+            $numero,
+            is_ajax()
+        );
     }
 
     public function ajaxUpdateNote(string $slug, string $numero): void
     {
-        $this->performUpdate($slug, $numero, true);
+        $this->performUpdate(
+            $slug,
+            $numero,
+            true
+        );
     }
 
     public function ajaxDelete(string $slug, string $numero): void
     {
         $numero = (int) $numero;
 
-        if (!Request::isPost())
-        {
-            $this->jsonResponse([
-                'success' => false,
-                'message' => 'Méthode non autorisée',
-            ], 405);
-        }
-
-        if (!is_ajax())
-        {
-            $this->jsonResponse([
-                'success' => false,
-                'message' => 'Requête AJAX requise',
-            ], 400);
-        }
-
         $requestedSlug = trim($slug);
-        $manga = $this->findCanonicalMangaOrFail($requestedSlug, $numero, true);
+
+        $manga = $this->findCanonicalMangaOrFail(
+            $requestedSlug,
+            $numero,
+            true
+        );
+
         $canonicalSlug = Str::slug((string) $manga->slug);
 
         if ($requestedSlug !== $canonicalSlug)
@@ -531,7 +284,10 @@ class MangaController extends Controller
             ], 409);
         }
 
-        $result = $this->mangaService()->delete($canonicalSlug, $numero);
+        $result = $this->mangaService()->delete(
+            $canonicalSlug,
+            $numero
+        );
 
         if (!$result['success'])
         {
@@ -547,6 +303,6 @@ class MangaController extends Controller
             'redirect' => $this->basePath
                 . 'manga/serie/'
                 . rawurlencode($canonicalSlug),
-        ], 200);
+        ]);
     }
 }
