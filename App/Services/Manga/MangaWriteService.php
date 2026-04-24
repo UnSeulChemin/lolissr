@@ -10,7 +10,7 @@ use App\Core\Support\Logger;
 use App\DTO\Manga\MangaCreateDTO;
 use App\DTO\Manga\MangaUpdateDTO;
 use App\DTO\Manga\MangaUpdateNoteDTO;
-use App\Repositories\MangaRepository;
+use App\Repositories\Manga\MangaRepository;
 use App\Services\UploadService;
 
 final class MangaWriteService

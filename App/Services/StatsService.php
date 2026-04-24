@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Repositories\MangaRepository;
+use App\Repositories\Manga\MangaRepository;
 
 final class StatsService
 {

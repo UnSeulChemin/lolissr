@@ -6,7 +6,7 @@ namespace App\Services\Manga;
 
 use App\Core\Application\App;
 use App\Core\Support\Str;
-use App\Repositories\MangaRepository;
+use App\Repositories\Manga\MangaRepository;
 
 final class MangaReadService
 {
@@ -87,6 +87,7 @@ final class MangaReadService
         $results = [];
 
         foreach (array_slice($mangas, 0, 6) as $manga) {
+
             if (!isset($manga->slug)) {
                 continue;
             }
@@ -97,7 +98,9 @@ final class MangaReadService
                 'livre' => $manga->livre,
                 'thumbnail' => $manga->thumbnail,
                 'extension' => $manga->extension,
-                'note' => $manga->note !== null ? (int) $manga->note : null,
+                'note' => $manga->note !== null
+                    ? (int) $manga->note
+                    : null,
             ];
         }
 
@@ -108,7 +111,8 @@ final class MangaReadService
     {
         $normalizedSlug = Str::slug($slug);
 
-        $mangas = $this->mangaRepository->findBySlug($normalizedSlug);
+        $mangas = $this->mangaRepository
+            ->findBySlug($normalizedSlug);
 
         if ($mangas === []) {
             return null;
@@ -125,7 +129,10 @@ final class MangaReadService
         $normalizedSlug = Str::slug($slug);
 
         $manga = $this->mangaRepository
-            ->findOneBySlugAndNumero($normalizedSlug, $numero);
+            ->findOneBySlugAndNumero(
+                $normalizedSlug,
+                $numero
+            );
 
         if ($manga === false) {
             return null;

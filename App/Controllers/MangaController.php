@@ -7,7 +7,7 @@ namespace App\Controllers;
 use App\Core\Http\Request;
 use App\Core\Support\Session;
 use App\Core\Support\Str;
-use App\Repositories\MangaRepository;
+use App\Repositories\Manga\MangaRepository;
 use App\Services\Manga\MangaReadService;
 use App\Services\Manga\MangaWriteService;
 

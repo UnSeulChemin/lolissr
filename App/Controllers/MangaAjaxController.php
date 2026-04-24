@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\Http\Request;
-use App\Repositories\MangaRepository;
+use App\Repositories\Manga\MangaRepository;
 use App\Services\Manga\MangaReadService;
 use App\Services\Manga\MangaWriteService;
 
@@ -24,9 +24,14 @@ final class MangaAjaxController extends Controller
         $this->mangaReadService = app(MangaReadService::class);
     }
 
-    protected function jsonResponse(array $data, int $statusCode = 200): void
+    private function ensureAjax(): void
     {
-        json($data, $statusCode);
+        if (!is_ajax()) {
+            json([
+                'success' => false,
+                'message' => 'Requête AJAX requise',
+            ], 400);
+        }
     }
 
     protected function jsonErrorPayload(array $result): array
@@ -47,16 +52,6 @@ final class MangaAjaxController extends Controller
         return $payload;
     }
 
-    private function ensureAjax(): void
-    {
-        if (!is_ajax()) {
-            $this->jsonResponse([
-                'success' => false,
-                'message' => 'Requête AJAX requise',
-            ], 400);
-        }
-    }
-
     public function collectionPage(string $page = '1'): void
     {
         $this->ensureAjax();
@@ -64,7 +59,7 @@ final class MangaAjaxController extends Controller
         $data = $this->mangaReadService->collection($page);
 
         if ($data === null) {
-            $this->jsonResponse([
+            json([
                 'success' => false,
                 'message' => 'Page introuvable',
             ], 404);
@@ -82,7 +77,7 @@ final class MangaAjaxController extends Controller
     {
         $this->ensureAjax();
 
-        $this->jsonResponse(
+        json(
             $this->mangaReadService->searchAjax($query)
         );
     }
@@ -97,7 +92,7 @@ final class MangaAjaxController extends Controller
             Request::allPost()
         );
 
-        $this->jsonResponse(
+        json(
             $result,
             (int) ($result['status'] ?? 200)
         );
@@ -107,10 +102,13 @@ final class MangaAjaxController extends Controller
     {
         $this->ensureAjax();
 
-        $result = $this->mangaWriteService->delete($slug, (int) $numero);
+        $result = $this->mangaWriteService->delete(
+            $slug,
+            (int) $numero
+        );
 
         if (!$result['success']) {
-            $this->jsonResponse(
+            json(
                 $this->jsonErrorPayload($result),
                 (int) ($result['status'] ?? 500)
             );
@@ -118,7 +116,7 @@ final class MangaAjaxController extends Controller
 
         $redirectSlug = (string) ($result['canonicalSlug'] ?? $slug);
 
-        $this->jsonResponse([
+        json([
             'success' => true,
             'message' => $result['message'],
             'redirect' => $this->basePath
