@@ -27,15 +27,35 @@ return static function (Router $router): void
 
     $router->get('/manga/collection', 'MangaController@collection');
     $router->get('/manga/collection/page/{page}', 'MangaController@collection');
-    $router->get('/manga/collection-ajax/page/{page}', 'MangaController@collectionAjax')
-        ->middleware(AjaxOnlyMiddleware::class);
 
     $router->get('/manga/recherche', 'MangaController@recherche');
     $router->get('/manga/recherche/{query}', 'MangaController@recherche');
-    $router->get('/manga/search-ajax/{query}', 'MangaController@searchAjax')
-        ->middleware(AjaxOnlyMiddleware::class);
 
     $router->get('/manga/serie/{slug}', 'MangaController@serie');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Manga — AJAX
+    |--------------------------------------------------------------------------
+    */
+
+    $router->get('/manga/collection-ajax/page/{page}', 'MangaAjaxController@collectionPage')
+        ->middleware(AjaxOnlyMiddleware::class);
+
+    $router->get('/manga/search-ajax/{query}', 'MangaAjaxController@search')
+        ->middleware(AjaxOnlyMiddleware::class);
+
+    $router->post('/manga/ajax/update-note/{slug}/{numero}', 'MangaAjaxController@updateNote')
+        ->middleware([
+            PostOnlyMiddleware::class,
+            AjaxOnlyMiddleware::class,
+        ]);
+
+    $router->post('/manga/ajax/supprimer/{slug}/{numero}', 'MangaAjaxController@delete')
+        ->middleware([
+            PostOnlyMiddleware::class,
+            AjaxOnlyMiddleware::class,
+        ]);
 
     /*
     |--------------------------------------------------------------------------
@@ -48,7 +68,7 @@ return static function (Router $router): void
 
     /*
     |--------------------------------------------------------------------------
-    | POST — traitements
+    | POST — traitements HTML
     |--------------------------------------------------------------------------
     */
 
@@ -57,18 +77,6 @@ return static function (Router $router): void
 
     $router->post('/manga/modifier/{slug}/{numero}', 'MangaController@update')
         ->middleware(PostOnlyMiddleware::class);
-
-    $router->post('/manga/ajax/update-note/{slug}/{numero}', 'MangaController@ajaxUpdateNote')
-        ->middleware([
-            PostOnlyMiddleware::class,
-            AjaxOnlyMiddleware::class,
-        ]);
-
-    $router->post('/manga/ajax/supprimer/{slug}/{numero}', 'MangaController@ajaxDelete')
-        ->middleware([
-            PostOnlyMiddleware::class,
-            AjaxOnlyMiddleware::class,
-        ]);
 
     /*
     |--------------------------------------------------------------------------
