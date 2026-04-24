@@ -27,6 +27,8 @@ elseif (!empty($_SESSION['error']))
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <?= csrf_meta_tag() ?>
+
     <title><?= htmlspecialchars($title) ?></title>
     <link rel="shortcut icon" href="<?= $basePath ?>public/images/favicon/favicon.png">
     <link rel="stylesheet" href="<?= $basePath ?>public/css/app.css">
@@ -46,17 +48,19 @@ elseif (!empty($_SESSION['error']))
         aria-live="polite"
         aria-atomic="true"></div>
 
-<script>
-    window.csrfToken = "<?= htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8') ?>";
-</script>
-
-<?php if ($flashToast !== null): ?>
     <script>
-        window.flashToast = <?= json_encode($flashToast, JSON_UNESCAPED_UNICODE) ?>;
+        window.csrfToken = document
+            .querySelector('meta[name="csrf-token"]')
+            ?.getAttribute('content') || '';
     </script>
-<?php endif; ?>
 
-<script type="module" src="<?= $basePath ?>public/js/app.js"></script>
+    <?php if ($flashToast !== null): ?>
+        <script>
+            window.flashToast = <?= json_encode($flashToast, JSON_UNESCAPED_UNICODE) ?>;
+        </script>
+    <?php endif; ?>
+
+    <script type="module" src="<?= $basePath ?>public/js/app.js"></script>
 
 </body>
 </html>

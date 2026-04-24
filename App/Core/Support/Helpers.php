@@ -118,7 +118,8 @@ if (!function_exists('abort'))
         match ($code) {
             404 => $controller->renderNotFoundPage(),
             405 => $controller->renderMethodNotAllowedPage(),
-            419 => $controller->renderServerErrorPage(),
+            419 => $controller->renderCsrfExpiredPage(),
+            500 => $controller->renderServerErrorPage(),
             default => $controller->renderServerErrorPage(),
         };
 
@@ -322,5 +323,15 @@ if (!function_exists('csrf_verify'))
         }
 
         abort(419);
+    }
+}
+
+if (!function_exists('csrf_meta_tag'))
+{
+    function csrf_meta_tag(): string
+    {
+        return '<meta name="csrf-token" content="'
+            . htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8')
+            . '">';
     }
 }
