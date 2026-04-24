@@ -87,6 +87,29 @@ final class MangaAjaxController extends Controller
     {
         $this->ensureAjax();
 
+        $numero = (int) $numero;
+
+        $data = $this->mangaReadService->one($slug, $numero);
+
+        if ($data === null) {
+            json([
+                'success' => false,
+                'message' => 'Manga introuvable',
+            ], 404);
+        }
+
+        if ($slug !== $data['canonicalSlug']) {
+            json([
+                'success' => false,
+                'message' => 'URL non canonique',
+                'redirect' => $this->basePath
+                    . 'manga/modifier/'
+                    . rawurlencode($data['canonicalSlug'])
+                    . '/'
+                    . $numero,
+            ], 409);
+        }
+
         $request = new MangaUpdateNoteRequest();
 
         if ($request->fails()) {
@@ -97,16 +120,15 @@ final class MangaAjaxController extends Controller
             ], 422);
         }
 
+        $post = $request->data() ?? [];
+
         $result = $this->mangaWriteService->updateNote(
-            $slug,
-            (int) $numero,
-            $request->data()
+            $data['canonicalSlug'],
+            $numero,
+            $post
         );
 
-        json(
-            $result,
-            (int) ($result['status'] ?? 200)
-        );
+        json($result, (int) ($result['status'] ?? 200));
     }
 
     public function delete(string $slug, string $numero): void

@@ -194,7 +194,7 @@ final class MangaWriteService
             ];
         }
 
-        if ($this->isReadOnlyMode()) {
+        if ($this->isReadOnlyMode() && !$this->uploadService->isTestUploadMode()) {
             return $this->blockedWriteResponse();
         }
 

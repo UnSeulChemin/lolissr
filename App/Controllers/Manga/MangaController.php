@@ -214,9 +214,24 @@ final class MangaController extends Controller
     {
         $numero = (int) $numero;
 
+        $data = $this->mangaReadService->one($slug, $numero);
+
+        if ($data === null) {
+            $this->notFound('Manga introuvable');
+        }
+
+        $canonicalSlug = $data['canonicalSlug'];
+
+        $this->redirectToCanonicalUrl(
+            $slug,
+            $canonicalSlug,
+            'manga/modifier',
+            $numero
+        );
+
         $request = new MangaUpdateRequest();
 
-        $redirectPath = 'manga/modifier/' . rawurlencode($slug) . '/' . $numero;
+        $redirectPath = 'manga/modifier/' . rawurlencode($canonicalSlug) . '/' . $numero;
 
         if ($request->fails()) {
             $this->redirectWithValidationErrors(
@@ -226,7 +241,7 @@ final class MangaController extends Controller
         }
 
         $result = $this->mangaWriteService->update(
-            $slug,
+            $canonicalSlug,
             $numero,
             $request->data(),
             $request->files()
@@ -240,7 +255,7 @@ final class MangaController extends Controller
         }
 
         $this->redirectWithSuccess(
-            'manga/' . rawurlencode($slug) . '/' . $numero,
+            'manga/' . rawurlencode($canonicalSlug) . '/' . $numero,
             $result['message']
         );
     }

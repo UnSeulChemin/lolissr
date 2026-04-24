@@ -87,7 +87,19 @@ class UploadService
     {
         $tmpName = $this->tmpName($file);
 
-        if ($tmpName === null || !is_file($tmpName))
+        if ($tmpName === null)
+        {
+            return null;
+        }
+
+        if (
+            !$this->isTestUploadMode()
+            && !is_uploaded_file($tmpName)
+        ) {
+            return null;
+        }
+
+        if (!is_file($tmpName))
         {
             return null;
         }
@@ -103,7 +115,7 @@ class UploadService
 
         finfo_close($finfo);
 
-        return is_string($mimeType) && $mimeType !== ''
+        return is_string($mimeType)
             ? strtolower($mimeType)
             : null;
     }
@@ -240,17 +252,23 @@ class UploadService
 
         if (is_file($destination))
         {
-            Logger::error('Upload manga: fichier déjà existant : ' . $destination);
+            if ($this->isTestUploadMode()) {
+                unlink($destination);
+            } else {
+                Logger::error(
+                    'Upload manga: fichier déjà existant : ' . $destination
+                );
 
-            return [
-                'success' => false,
-                'message' => 'Une image avec ce nom existe déjà',
-                'status' => 409
-            ];
+                return [
+                    'success' => false,
+                    'message' => 'Une image avec ce nom existe déjà',
+                    'status' => 409
+                ];
+            }
         }
 
         $moved = $this->isTestUploadMode()
-            ? rename((string) $tmpName, $destination)
+            ? copy((string) $tmpName, $destination)
             : move_uploaded_file((string) $tmpName, $destination);
 
         if (!$moved || !is_file($destination))

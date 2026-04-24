@@ -47,9 +47,11 @@ abstract class Controller
      */
     protected function errorViewPath(string $file): string
     {
+        $file = preg_replace('#^errors/#', '', $file);
+
         return view_path('errors/' . $file . '.php');
     }
-
+    
     /**
      * Retourne le chemin complet du template.
      */

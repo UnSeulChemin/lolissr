@@ -68,8 +68,22 @@ class Validator
      */
     private function hasUploadedFile(string $field): bool
     {
-        return isset($this->files[$field]['error'])
-            && $this->files[$field]['error'] !== UPLOAD_ERR_NO_FILE;
+        if (!isset($this->files[$field])) {
+            return false;
+        }
+
+        $file = $this->files[$field];
+
+        if (!is_array($file)) {
+            return false;
+        }
+
+        if (!isset($file['tmp_name'])) {
+            return false;
+        }
+
+        return is_string($file['tmp_name'])
+            && $file['tmp_name'] !== '';
     }
 
     /**
