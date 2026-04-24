@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Core\Http\Router;
 use App\Core\Http\Middleware\AjaxOnlyMiddleware;
 use App\Core\Http\Middleware\PostOnlyMiddleware;
+use App\Core\Http\Middleware\CsrfMiddleware;
 
 return static function (Router $router): void
 {
@@ -55,6 +56,7 @@ return static function (Router $router): void
     )->middleware([
         PostOnlyMiddleware::class,
         AjaxOnlyMiddleware::class,
+        CsrfMiddleware::class,
     ]);
 
     $router->post(
@@ -63,6 +65,7 @@ return static function (Router $router): void
     )->middleware([
         PostOnlyMiddleware::class,
         AjaxOnlyMiddleware::class,
+        CsrfMiddleware::class,
     ]);
 
     /*
@@ -83,12 +86,18 @@ return static function (Router $router): void
     $router->post(
         '/manga/ajouter',
         'Manga\MangaController@ajouterTraitement'
-    )->middleware(PostOnlyMiddleware::class);
+    )->middleware([
+        PostOnlyMiddleware::class,
+        CsrfMiddleware::class,
+    ]);
 
     $router->post(
         '/manga/modifier/{slug}/{numero}',
         'Manga\MangaController@update'
-    )->middleware(PostOnlyMiddleware::class);
+    )->middleware([
+        PostOnlyMiddleware::class,
+        CsrfMiddleware::class,
+    ]);
 
     /*
     |--------------------------------------------------------------------------
