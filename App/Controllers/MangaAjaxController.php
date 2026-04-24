@@ -7,12 +7,12 @@ namespace App\Controllers;
 use App\Core\Http\Request;
 use App\Repositories\MangaRepository;
 use App\Services\MangaReadService;
-use App\Services\MangaService;
+use App\Services\MangaWriteService;
 
 final class MangaAjaxController extends Controller
 {
     protected MangaRepository $mangaRepository;
-    protected MangaService $mangaService;
+    protected MangaWriteService $mangaWriteService;
     protected MangaReadService $mangaReadService;
 
     public function __construct()
@@ -20,7 +20,7 @@ final class MangaAjaxController extends Controller
         parent::__construct();
 
         $this->mangaRepository = app(MangaRepository::class);
-        $this->mangaService = app(MangaService::class);
+        $this->mangaWriteService = app(MangaWriteService::class);
         $this->mangaReadService = app(MangaReadService::class);
     }
 
@@ -57,8 +57,7 @@ final class MangaAjaxController extends Controller
         }
     }
 
-// MangaAjaxController
-public function collectionPage(string $page = '1'): void
+    public function collectionPage(string $page = '1'): void
     {
         $this->ensureAjax();
 
@@ -92,7 +91,7 @@ public function collectionPage(string $page = '1'): void
     {
         $this->ensureAjax();
 
-        $result = $this->mangaService->updateNote(
+        $result = $this->mangaWriteService->updateNote(
             $slug,
             (int) $numero,
             Request::allPost()
@@ -108,7 +107,7 @@ public function collectionPage(string $page = '1'): void
     {
         $this->ensureAjax();
 
-        $result = $this->mangaService->delete($slug, (int) $numero);
+        $result = $this->mangaWriteService->delete($slug, (int) $numero);
 
         if (!$result['success']) {
             $this->jsonResponse(

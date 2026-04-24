@@ -9,12 +9,12 @@ use App\Core\Support\Session;
 use App\Core\Support\Str;
 use App\Repositories\MangaRepository;
 use App\Services\MangaReadService;
-use App\Services\MangaService;
+use App\Services\MangaWriteService;
 
 final class MangaController extends Controller
 {
     protected MangaRepository $mangaRepository;
-    protected MangaService $mangaService;
+    protected MangaWriteService $mangaWriteService;
     protected MangaReadService $mangaReadService;
 
     public function __construct()
@@ -22,7 +22,7 @@ final class MangaController extends Controller
         parent::__construct();
 
         $this->mangaRepository = app(MangaRepository::class);
-        $this->mangaService = app(MangaService::class);
+        $this->mangaWriteService = app(MangaWriteService::class);
         $this->mangaReadService = app(MangaReadService::class);
     }
 
@@ -193,7 +193,7 @@ final class MangaController extends Controller
 
     public function ajouterTraitement(): void
     {
-        $result = $this->mangaService->create(
+        $result = $this->mangaWriteService->create(
             Request::allPost(),
             Request::allFiles()
         );
@@ -224,7 +224,7 @@ final class MangaController extends Controller
     {
         $numero = (int) $numero;
 
-        $result = $this->mangaService->update(
+        $result = $this->mangaWriteService->update(
             $slug,
             $numero,
             Request::allPost(),

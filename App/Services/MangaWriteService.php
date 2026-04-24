@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Core\Application\App;
-use App\Core\Cache\Cache;
 use App\Core\Config\UploadConfig;
 use App\Core\Support\Logger;
 use App\DTO\Manga\MangaCreateDTO;
@@ -13,12 +12,13 @@ use App\DTO\Manga\MangaUpdateDTO;
 use App\DTO\Manga\MangaUpdateNoteDTO;
 use App\Repositories\MangaRepository;
 
-final class MangaService
+final class MangaWriteService
 {
     public function __construct(
         private readonly MangaRepository $mangaRepository,
         private readonly UploadService $uploadService,
-        private readonly MangaValidatorService $validatorService
+        private readonly MangaValidatorService $validatorService,
+        private readonly MangaCacheService $cacheService
     ) {}
 
     private function isReadOnlyMode(): bool
@@ -116,7 +116,7 @@ final class MangaService
             ];
         }
 
-        Cache::clear();
+        $this->cacheService->clear();
 
         return [
             'success' => true,
@@ -168,7 +168,7 @@ final class MangaService
             ];
         }
 
-        Cache::clear();
+        $this->cacheService->clear();
 
         return [
             'success' => true,
@@ -228,7 +228,7 @@ final class MangaService
             ];
         }
 
-        Cache::clear();
+        $this->cacheService->clear();
 
         return [
             'success' => true,
@@ -275,7 +275,7 @@ final class MangaService
 
         $this->uploadService->removeFileIfExists($imagePath);
 
-        Cache::clear();
+        $this->cacheService->clear();
 
         return [
             'success' => true,
