@@ -9,6 +9,7 @@ import { initCollectionKeyboardNavigation } from './features/collection-keyboard
 import { initLinkPreloading } from './features/prefetch-links.js';
 import { initAjouterPage } from './pages/ajouter.js';
 import { initEditPage } from './pages/modifier.js';
+import { initBackspaceNavigation } from './features/backspace-navigation.js';
 
 /**
  * Affiche un toast flash injecté côté PHP.
@@ -67,6 +68,7 @@ document.addEventListener('DOMContentLoaded', () =>
     */
 
     initCollectionKeyboardNavigation();
+    initBackspaceNavigation();
 
     /*
     |------------------------------------------------------------------
