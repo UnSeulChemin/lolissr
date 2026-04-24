@@ -11,17 +11,11 @@ use App\Core\Support\Str;
 
 class UploadService
 {
-    /**
-     * Retourne true si le mode upload de test est actif.
-     */
     public function isTestUploadMode(): bool
     {
         return App::isTesting();
     }
 
-    /**
-     * Retourne le dossier d’upload de test absolu.
-     */
     public function testUploadDirectory(): string
     {
         $directory = trim(
@@ -29,42 +23,23 @@ class UploadService
             '/\\'
         );
 
-        return app_path($directory) . '/';
+        return rtrim(app_path($directory), '/\\') . DIRECTORY_SEPARATOR;
     }
 
-    /**
-     * Retourne le dossier d’upload cible.
-     */
     private function uploadDirectory(): string
     {
-        if ($this->isTestUploadMode())
-        {
-            return $this->testUploadDirectory();
-        }
-
-        return UploadConfig::mangaThumbnailDirectory();
+        return $this->isTestUploadMode()
+            ? $this->testUploadDirectory()
+            : UploadConfig::mangaThumbnailDirectory();
     }
 
-    /**
-     * Retourne les infos d’un fichier uploadé.
-     *
-     * @return array<string, mixed>|null
-     */
     private function fileData(array $files, string $fileKey): ?array
     {
         $file = $files[$fileKey] ?? null;
 
-        if (!is_array($file))
-        {
-            return null;
-        }
-
-        return $file;
+        return is_array($file) ? $file : null;
     }
 
-    /**
-     * Retourne le nom original du fichier.
-     */
     private function originalFilename(array $file): ?string
     {
         $name = $file['name'] ?? null;
@@ -77,9 +52,6 @@ class UploadService
         return $name;
     }
 
-    /**
-     * Retourne l’extension normalisée du fichier.
-     */
     private function fileExtension(array $file): ?string
     {
         $name = $this->originalFilename($file);
@@ -96,17 +68,9 @@ class UploadService
             return null;
         }
 
-        if ($extension === 'jpeg')
-        {
-            $extension = 'jpg';
-        }
-
-        return $extension;
+        return $extension === 'jpeg' ? 'jpg' : $extension;
     }
 
-    /**
-     * Retourne le chemin temporaire du fichier.
-     */
     private function tmpName(array $file): ?string
     {
         $tmpName = $file['tmp_name'] ?? null;
@@ -119,9 +83,6 @@ class UploadService
         return $tmpName;
     }
 
-    /**
-     * Retourne le type MIME réel du fichier temporaire.
-     */
     private function fileMimeType(array $file): ?string
     {
         $tmpName = $this->tmpName($file);
@@ -142,17 +103,11 @@ class UploadService
 
         finfo_close($finfo);
 
-        if (!is_string($mimeType) || $mimeType === '')
-        {
-            return null;
-        }
-
-        return strtolower($mimeType);
+        return is_string($mimeType) && $mimeType !== ''
+            ? strtolower($mimeType)
+            : null;
     }
 
-    /**
-     * Vérifie que le fichier temporaire est valide.
-     */
     private function isValidTmpFile(?string $tmpName): bool
     {
         if ($tmpName === null)
@@ -160,17 +115,11 @@ class UploadService
             return false;
         }
 
-        if ($this->isTestUploadMode())
-        {
-            return is_file($tmpName);
-        }
-
-        return is_uploaded_file($tmpName);
+        return $this->isTestUploadMode()
+            ? is_file($tmpName)
+            : is_uploaded_file($tmpName);
     }
 
-    /**
-     * S'assure que le dossier existe.
-     */
     private function ensureDirectoryExists(string $directory): bool
     {
         if (is_dir($directory))
@@ -178,26 +127,14 @@ class UploadService
             return true;
         }
 
-        if (mkdir($directory, 0777, true))
+        if (!mkdir($directory, 0777, true) && !is_dir($directory))
         {
-            return true;
+            return false;
         }
 
-        return is_dir($directory);
+        return true;
     }
 
-    /**
-     * Upload la miniature manga.
-     *
-     * @return array{
-     *     success: bool,
-     *     message?: string,
-     *     status?: int,
-     *     thumbnail?: string,
-     *     extension?: string,
-     *     destination?: string
-     * }
-     */
     public function uploadThumbnail(
         string $livre,
         int $numero,
@@ -208,7 +145,7 @@ class UploadService
 
         if ($file === null)
         {
-            Logger::error('Upload manga: fichier introuvable dans les données upload.');
+            Logger::error('Upload manga: fichier introuvable.');
 
             return [
                 'success' => false,
@@ -230,6 +167,17 @@ class UploadService
             ];
         }
 
+        if (!in_array($extension, UploadConfig::allowedExtensions(), true))
+        {
+            Logger::error('Upload manga: extension non autorisée : ' . $extension);
+
+            return [
+                'success' => false,
+                'message' => 'Format image non autorisé',
+                'status' => 422
+            ];
+        }
+
         $mimeType = $this->fileMimeType($file);
 
         if (
@@ -238,7 +186,7 @@ class UploadService
         )
         {
             Logger::error(
-                'Upload manga refusé: type MIME invalide. MIME reçu: '
+                'Upload manga: MIME non autorisé. MIME reçu: '
                 . ($mimeType ?? 'null')
             );
 
@@ -253,7 +201,7 @@ class UploadService
 
         if (!$this->isValidTmpFile($tmpName))
         {
-            Logger::error('Upload manga: fichier temporaire invalide ou absent.');
+            Logger::error('Upload manga: fichier temporaire invalide.');
 
             return [
                 'success' => false,
@@ -266,7 +214,7 @@ class UploadService
 
         if ($thumbnail === '')
         {
-            Logger::error('Upload manga: nom de thumbnail invalide.');
+            Logger::error('Upload manga: nom thumbnail invalide.');
 
             return [
                 'success' => false,
@@ -279,10 +227,7 @@ class UploadService
 
         if (!$this->ensureDirectoryExists($directory))
         {
-            Logger::error(
-                'Upload manga: impossible de créer le dossier image : '
-                . $directory
-            );
+            Logger::error('Upload manga: dossier impossible à créer : ' . $directory);
 
             return [
                 'success' => false,
@@ -293,7 +238,7 @@ class UploadService
 
         $destination = $directory . $thumbnail . '.' . $extension;
 
-        if (file_exists($destination))
+        if (is_file($destination))
         {
             Logger::error('Upload manga: fichier déjà existant : ' . $destination);
 
@@ -305,19 +250,21 @@ class UploadService
         }
 
         $moved = $this->isTestUploadMode()
-            ? rename($tmpName, $destination)
-            : move_uploaded_file($tmpName, $destination);
+            ? rename((string) $tmpName, $destination)
+            : move_uploaded_file((string) $tmpName, $destination);
 
-        if (!$moved)
+        if (!$moved || !is_file($destination))
         {
             Logger::error(
-                'Upload manga: échec déplacement fichier vers : '
+                'Upload manga: fichier non enregistré. tmp='
+                . (string) $tmpName
+                . ' destination='
                 . $destination
             );
 
             return [
                 'success' => false,
-                'message' => 'Erreur lors de l’upload de l’image',
+                'message' => 'Image non enregistrée sur le disque',
                 'status' => 500
             ];
         }
@@ -330,9 +277,6 @@ class UploadService
         ];
     }
 
-    /**
-     * Supprime un fichier si présent.
-     */
     public function removeFileIfExists(string $path): void
     {
         if (is_file($path))

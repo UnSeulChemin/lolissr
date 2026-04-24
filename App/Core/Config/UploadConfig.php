@@ -8,7 +8,7 @@ final class UploadConfig
 {
     public static function maxSize(): int
     {
-        return max(1, (int) \config('upload.max_size', 5242880));
+        return max(1, (int) config('upload.max_size', 5242880));
     }
 
     /**
@@ -16,7 +16,7 @@ final class UploadConfig
      */
     public static function allowedExtensions(): array
     {
-        $extensions = \config('upload.allowed_extensions', []);
+        $extensions = config('upload.allowed_extensions', []);
 
         if (!is_array($extensions))
         {
@@ -41,7 +41,7 @@ final class UploadConfig
      */
     public static function allowedMimeTypes(): array
     {
-        $mimeTypes = \config('upload.allowed_mime', []);
+        $mimeTypes = config('upload.allowed_mime', []);
 
         if (!is_array($mimeTypes))
         {
@@ -63,6 +63,9 @@ final class UploadConfig
 
     public static function mangaThumbnailDirectory(): string
     {
-        return app_path('public/images/mangas/thumbnail');
+        return rtrim(
+            app_path('public/images/mangas/thumbnail'),
+            '/\\'
+        ) . DIRECTORY_SEPARATOR;
     }
 }

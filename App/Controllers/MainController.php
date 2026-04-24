@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Repositories\MangaRepository;
+use App\Services\StatsService;
 
 class MainController extends Controller
 {
-    /**
-     * Retourne le repository manga.
-     */
-    private function mangaRepository(): MangaRepository
+    private StatsService $statsService;
+
+    public function __construct()
     {
-        return new MangaRepository();
+        parent::__construct();
+
+        $this->statsService =
+            new StatsService();
     }
 
     /**
@@ -24,29 +26,13 @@ class MainController extends Controller
     {
         $this->title = 'Accueil';
 
-        $mangaRepository = $this->mangaRepository();
+        $stats =
+            $this->statsService
+                ->dashboard();
 
-        $totalTomes = $mangaRepository->countAllTomes();
-        $totalSeries = $mangaRepository->countSeries();
-        $averageNote = $mangaRepository->averageNote();
-        $lastTome = $mangaRepository->findLastAdded();
-        $longestSeries = $mangaRepository->findLongestSeries();
-        $topLongestSeries = $mangaRepository->topLongestSeries();
-
-        $lowRatedMangas = $mangaRepository->findLowRatedMangas();
-        $lowJacquetteMangas = $mangaRepository->findLowJacquetteMangas();
-        $lowLivreStateMangas = $mangaRepository->findLowLivreStateMangas();
-
-        $this->render('main/index', [
-            'totalTomes' => $totalTomes,
-            'totalSeries' => $totalSeries,
-            'averageNote' => $averageNote,
-            'lastTome' => $lastTome,
-            'longestSeries' => $longestSeries,
-            'topLongestSeries' => $topLongestSeries,
-            'lowRatedMangas' => $lowRatedMangas,
-            'lowJacquetteMangas' => $lowJacquetteMangas,
-            'lowLivreStateMangas' => $lowLivreStateMangas
-        ]);
+        $this->render(
+            'main/index',
+            $stats
+        );
     }
 }
