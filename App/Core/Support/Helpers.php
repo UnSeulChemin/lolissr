@@ -246,6 +246,19 @@ if (!function_exists('env_bool'))
     }
 }
 
+if (!function_exists('envBool'))
+{
+    function envBool(mixed $value, bool $default = false): bool
+    {
+        if ($value === null)
+        {
+            return $default;
+        }
+
+        return filter_var($value, FILTER_VALIDATE_BOOLEAN);
+    }
+}
+
 if (!function_exists('env_int'))
 {
     function env_int(string $key, int $default = 0): int

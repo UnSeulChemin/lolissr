@@ -11,7 +11,18 @@ require_once ROOT . '/Autoloader.php';
 
 \App\Autoloader::register();
 
-require_once app_path('App/Core/Support/helpers.php');
+/*
+|--------------------------------------------------------------------------
+| Chargement des helpers
+|--------------------------------------------------------------------------
+|
+| IMPORTANT :
+| On ne peut pas utiliser app_path() pour charger helpers.php,
+| car app_path() est justement défini dans helpers.php.
+|
+*/
+
+require_once ROOT . '/App/Core/Support/helpers.php';
 
 /*
 |--------------------------------------------------------------------------

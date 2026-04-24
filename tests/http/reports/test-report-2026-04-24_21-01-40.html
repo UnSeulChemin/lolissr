@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>LoliSSR Test Report</title>
+    <style>
+:root{
+    --bg:#0a0914;
+    --bg-soft:#121022;
+    --card:#151228;
+    --card-2:#1a1630;
+    --text:#f5f3ff;
+    --muted:#b8accf;
+    --border:rgba(255,255,255,.08);
+    --violet:#7b2cff;
+    --violet-2:#c44cff;
+    --gradient:linear-gradient(135deg,#7b2cff 0%,#c44cff 100%);
+    --ok:#22c55e;
+    --fail:#ef4444;
+    --warn:#f59e0b;
+    --shadow:0 14px 40px rgba(0,0,0,.35);
+    --shadow-violet:0 0 0 1px rgba(123,44,255,.22), 0 14px 40px rgba(123,44,255,.14);
+}
+
+*{box-sizing:border-box}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    margin:0;
+    padding:32px;
+    font-family:"Segoe UI",Arial,sans-serif;
+    background:
+        radial-gradient(circle at top left, rgba(123,44,255,.18), transparent 28%),
+        radial-gradient(circle at top right, rgba(196,76,255,.14), transparent 26%),
+        var(--bg);
+    color:var(--text);
+}
+
+.hero,
+.card{
+    background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
+    border:1px solid var(--border);
+    border-radius:24px;
+    padding:20px;
+    margin-bottom:18px;
+    box-shadow:var(--shadow);
+}
+
+.hero{
+    padding:28px;
+}
+
+.hero h1{
+    margin:0 0 18px;
+    font-size:52px;
+    line-height:1;
+    letter-spacing:.02em;
+}
+
+.hero-success{
+    box-shadow:0 0 0 1px rgba(34,197,94,.20), 0 14px 40px rgba(34,197,94,.12);
+}
+
+.hero-fail{
+    box-shadow:var(--shadow-violet);
+}
+
+.hero p{
+    margin:10px 0;
+    color:var(--text);
+    font-size:17px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:16px;
+}
+
+.stats-grid{
+    margin-bottom:18px;
+}
+
+.card h3{
+    margin:0 0 12px;
+    font-size:18px;
+}
+
+.card p{
+    margin:0;
+}
+
+.stat-card,
+.category-card{
+    text-align:left;
+    color:var(--text);
+    cursor:pointer;
+    transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.stat-card{
+    background:none;
+    width:100%;
+}
+
+.category-card{
+    background:none;
+    width:100%;
+}
+
+.stat-card:hover,
+.category-card:hover{
+    transform:translateY(-3px);
+    box-shadow:var(--shadow-violet);
+    border-color:rgba(196,76,255,.32);
+}
+
+.stat-card.is-active,
+.category-card.is-active{
+    background:linear-gradient(180deg, rgba(123,44,255,.18), rgba(255,255,255,.03));
+    border-color:rgba(196,76,255,.45);
+    box-shadow:var(--shadow-violet);
+}
+
+.stat-card p{
+    font-size:38px;
+    font-weight:800;
+    color:#fff;
+}
+
+.stats-mini{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom:12px;
+}
+
+.mini,
+.filter-pill,
+.badge{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:7px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:800;
+    border:1px solid rgba(255,255,255,.06);
+}
+
+.badge-success,
+.ok{
+    background:rgba(34,197,94,.14);
+    color:#9cf0b7;
+}
+
+.badge-fail,
+.fail{
+    background:rgba(239,68,68,.14);
+    color:#ffb1b1;
+}
+
+.badge-warn,
+.warn{
+    background:rgba(245,158,11,.14);
+    color:#ffd67d;
+}
+
+.badge-default{
+    background:rgba(148,163,184,.14);
+    color:#d7dcea;
+}
+
+.filter-pill{
+    background:rgba(123,44,255,.12);
+    color:#ead8ff;
+}
+
+.toolbar{
+    display:flex;
+    justify-content:space-between;
+    gap:16px;
+    align-items:center;
+    flex-wrap:wrap;
+}
+
+.toolbar-left,
+.toolbar-right{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.search-input{
+    min-width:320px;
+    max-width:100%;
+    padding:12px 16px;
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,.10);
+    background:rgba(255,255,255,.04);
+    color:#fff;
+    outline:none;
+}
+
+.search-input:focus{
+    border-color:rgba(196,76,255,.55);
+    box-shadow:0 0 0 4px rgba(123,44,255,.14);
+}
+
+.reset-btn{
+    border:none;
+    border-radius:999px;
+    padding:12px 16px;
+    background:var(--gradient);
+    color:#fff;
+    font-weight:800;
+    cursor:pointer;
+    transition:transform .18s ease, opacity .18s ease;
+}
+
+.reset-btn:hover{
+    transform:translateY(-2px);
+    opacity:.96;
+}
+
+.results-counter{
+    margin:18px 0 10px;
+    color:var(--muted);
+    font-size:14px;
+}
+
+.table-wrap{
+    overflow:hidden;
+    padding:0;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    background:transparent;
+}
+
+th,
+td{
+    padding:14px 16px;
+    border-bottom:1px solid rgba(255,255,255,.05);
+    text-align:left;
+    vertical-align:top;
+}
+
+th{
+    background:linear-gradient(180deg, rgba(123,44,255,.16), rgba(123,44,255,.08));
+    color:#f6ebff;
+    font-size:13px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+}
+
+tbody tr{
+    transition:background .14s ease;
+}
+
+tbody tr:hover{
+    background:rgba(255,255,255,.03);
+}
+
+tbody tr.is-hidden{
+    display:none;
+}
+
+.url-link{
+    color:#d169ff;
+    text-decoration:none;
+    word-break:break-all;
+}
+
+.url-link:hover{
+    text-decoration:underline;
+}
+
+.muted{
+    opacity:.6;
+}
+
+.success-block{
+    border-color:rgba(34,197,94,.22);
+}
+
+.fail-block{
+    border-color:rgba(239,68,68,.22);
+}
+
+.warn-block{
+    border-color:rgba(245,158,11,.22);
+}
+
+.section-title{
+    margin:28px 0 14px;
+    font-size:24px;
+}
+
+.issue-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    gap:16px;
+}
+
+@media (max-width: 768px){
+    body{
+        padding:16px;
+    }
+
+    .hero h1{
+        font-size:34px;
+    }
+
+    .stat-card p{
+        font-size:30px;
+    }
+
+    .search-input{
+        min-width:100%;
+    }
+
+    th,
+    td{
+        padding:10px;
+        font-size:14px;
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="hero hero-fail">
+        <h1>SUITE À CORRIGER</h1>
+        <p><strong>Date :</strong> 2026-04-24 21:01:40</p>
+        <p><strong>Base URL :</strong> http://localhost/lolissr</p>
+        <p><strong>Slug :</strong> one-piece</p>
+        <p><strong>Numero :</strong> 1</p>
+        <p><strong>Temps global :</strong> 1 949,00 ms</p>
+    </div>
+
+    <div class="grid stats-grid">
+        <button class="card stat-card is-active" type="button" data-filter-status="all">
+            <h3>Tests exécutés</h3>
+            <p>54</p>
+        </button>
+
+        <button class="card stat-card" type="button" data-filter-status="success">
+            <h3>Succès</h3>
+            <p>34</p>
+        </button>
+
+        <button class="card stat-card" type="button" data-filter-status="fail">
+            <h3>Échecs</h3>
+            <p>20</p>
+        </button>
+
+        <button class="card stat-card" type="button" data-filter-status="warn">
+            <h3>Warnings</h3>
+            <p>0</p>
+        </button>
+    </div>
+
+    <div class="grid"><button class="card small category-card" type="button" data-filter-category="HTTP 404"><h3>HTTP 404</h3><div class="stats-mini"><span class="mini ok">OK: 4</span><span class="mini fail">FAIL: 0</span><span class="mini warn">WARN: 0</span></div><p><strong>Total :</strong> 4</p><p><strong>Temps :</strong> 119,75 ms</p></button><button class="card small category-card" type="button" data-filter-category="Canonical"><h3>Canonical</h3><div class="stats-mini"><span class="mini ok">OK: 0</span><span class="mini fail">FAIL: 2</span><span class="mini warn">WARN: 0</span></div><p><strong>Total :</strong> 2</p><p><strong>Temps :</strong> 96,58 ms</p></button><button class="card small category-card" type="button" data-filter-category="Edge"><h3>Edge</h3><div class="stats-mini"><span class="mini ok">OK: 4</span><span class="mini fail">FAIL: 0</span><span class="mini warn">WARN: 0</span></div><p><strong>Total :</strong> 4</p><p><strong>Temps :</strong> 150,89 ms</p></button><button class="card small category-card" type="button" data-filter-category="Erreurs"><h3>Erreurs</h3><div class="stats-mini"><span class="mini ok">OK: 2</span><span class="mini fail">FAIL: 0</span><span class="mini warn">WARN: 0</span></div><p><strong>Total :</strong> 2</p><p><strong>Temps :</strong> 69,85 ms</p></button><button class="card small category-card" type="button" data-filter-category="Pagination"><h3>Pagination</h3><div class="stats-mini"><span class="mini ok">OK: 9</span><span class="mini fail">FAIL: 3</span><span class="mini warn">WARN: 0</span></div><p><strong>Total :</strong> 12</p><p><strong>Temps :</strong> 531,79 ms</p></button><button class="card small category-card" type="button" data-filter-category="Smoke"><h3>Smoke</h3><div class="stats-mini"><span class="mini ok">OK: 8</span><span class="mini fail">FAIL: 0</span><span class="mini warn">WARN: 0</span></div><p><strong>Total :</strong> 8</p><p><strong>Temps :</strong> 403,35 ms</p></button><button class="card small category-card" type="button" data-filter-category="AJAX"><h3>AJAX</h3><div class="stats-mini"><span class="mini ok">OK: 2</span><span class="mini fail">FAIL: 9</span><span class="mini warn">WARN: 0</span></div><p><strong>Total :</strong> 11</p><p><strong>Temps :</strong> 223,40 ms</p></button><button class="card small category-card" type="button" data-filter-category="Smoke HTML"><h3>Smoke HTML</h3><div class="stats-mini"><span class="mini ok">OK: 3</span><span class="mini fail">FAIL: 0</span><span class="mini warn">WARN: 0</span></div><p><strong>Total :</strong> 3</p><p><strong>Temps :</strong> 128,93 ms</p></button><button class="card small category-card" type="button" data-filter-category="Security"><h3>Security</h3><div class="stats-mini"><span class="mini ok">OK: 0</span><span class="mini fail">FAIL: 1</span><span class="mini warn">WARN: 0</span></div><p><strong>Total :</strong> 1</p><p><strong>Temps :</strong> 14,50 ms</p></button><button class="card small category-card" type="button" data-filter-category="Update"><h3>Update</h3><div class="stats-mini"><span class="mini ok">OK: 0</span><span class="mini fail">FAIL: 3</span><span class="mini warn">WARN: 0</span></div><p><strong>Total :</strong> 3</p><p><strong>Temps :</strong> 45,97 ms</p></button><button class="card small category-card" type="button" data-filter-category="Upload"><h3>Upload</h3><div class="stats-mini"><span class="mini ok">OK: 2</span><span class="mini fail">FAIL: 2</span><span class="mini warn">WARN: 0</span></div><p><strong>Total :</strong> 4</p><p><strong>Temps :</strong> 141,11 ms</p></button></div>
+
+    <div class="toolbar card">
+        <div class="toolbar-left">
+            <strong>Filtre actif :</strong>
+            <span id="active-filter-status" class="filter-pill">Tous</span>
+            <span id="active-filter-category" class="filter-pill">Toutes catégories</span>
+        </div>
+
+        <div class="toolbar-right">
+            <input
+                id="result-search"
+                class="search-input"
+                type="text"
+                placeholder="Rechercher un test, une URL, un message..."
+            >
+            <button id="reset-filters" class="reset-btn" type="button">Réinitialiser</button>
+        </div>
+    </div>
+
+    <p class="results-counter">
+        <span id="visible-results-count">54</span>
+        résultat(s) affiché(s)
+    </p>
+
+    <div class="table-wrap card">
+        <table id="results-table">
+            <thead>
+                <tr>
+                    <th>Statut</th>
+                    <th>Catégorie</th>
+                    <th>Test</th>
+                    <th>URL</th>
+                    <th>Message</th>
+                    <th>Durée</th>
+                </tr>
+            </thead>
+            <tbody><tr data-index="0" data-status="success" data-category="HTTP 404" data-duration="0.043437957763672"><td><span class="badge badge-success">OK</span></td><td>HTTP 404</td><td>Série inexistante -&gt; /manga/serie/slug-inexistant-test-http</td><td><a class="url-link" href="http://localhost/lolissr/manga/serie/slug-inexistant-test-http" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/serie/slug-inexistant-test-http</a></td><td>404</td><td>43,44 ms</td></tr><tr data-index="1" data-status="success" data-category="HTTP 404" data-duration="0.019631147384644"><td><span class="badge badge-success">OK</span></td><td>HTTP 404</td><td>Tome inexistant -&gt; /manga/slug-inexistant-test-http/999999</td><td><a class="url-link" href="http://localhost/lolissr/manga/slug-inexistant-test-http/999999" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/slug-inexistant-test-http/999999</a></td><td>404</td><td>19,63 ms</td></tr><tr data-index="2" data-status="success" data-category="HTTP 404" data-duration="0.020233869552612"><td><span class="badge badge-success">OK</span></td><td>HTTP 404</td><td>Page modifier inexistante -&gt; /manga/update/slug-inexistant-test-http/999999</td><td><a class="url-link" href="http://localhost/lolissr/manga/update/slug-inexistant-test-http/999999" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/update/slug-inexistant-test-http/999999</a></td><td>404</td><td>20,23 ms</td></tr><tr data-index="3" data-status="success" data-category="HTTP 404" data-duration="0.036447048187256"><td><span class="badge badge-success">OK</span></td><td>HTTP 404</td><td>Pagination très élevée -&gt; /manga/collection/page/999</td><td><a class="url-link" href="http://localhost/lolissr/manga/collection/page/999" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/collection/page/999</a></td><td>404</td><td>36,45 ms</td></tr><tr data-index="4" data-status="fail" data-category="Canonical" data-duration="0.047933101654053"><td><span class="badge badge-fail">FAIL</span></td><td>Canonical</td><td>Redirect canonique tome -&gt; /manga/One-Piece/1</td><td><a class="url-link" href="http://localhost/lolissr/manga/One-Piece/1" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/One-Piece/1</a></td><td>status 200 attendu 301</td><td>47,93 ms</td></tr><tr data-index="5" data-status="fail" data-category="Canonical" data-duration="0.048645973205566"><td><span class="badge badge-fail">FAIL</span></td><td>Canonical</td><td>Redirect canonique modifier -&gt; /manga/modifier/One-Piece/1</td><td><a class="url-link" href="http://localhost/lolissr/manga/modifier/One-Piece/1" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/modifier/One-Piece/1</a></td><td>status 200 attendu 301</td><td>48,65 ms</td></tr><tr data-index="6" data-status="success" data-category="Edge" data-duration="0.023921966552734"><td><span class="badge badge-success">OK</span></td><td>Edge</td><td>Slug vide -&gt; /manga//1</td><td><a class="url-link" href="http://localhost/lolissr/manga//1" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga//1</a></td><td>404</td><td>23,92 ms</td></tr><tr data-index="7" data-status="success" data-category="Edge" data-duration="0.05520486831665"><td><span class="badge badge-success">OK</span></td><td>Edge</td><td>Numero négatif -&gt; /manga/one-piece/-1</td><td><a class="url-link" href="http://localhost/lolissr/manga/one-piece/-1" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/one-piece/-1</a></td><td>404</td><td>55,20 ms</td></tr><tr data-index="8" data-status="success" data-category="Edge" data-duration="0.047821044921875"><td><span class="badge badge-success">OK</span></td><td>Edge</td><td>Numero texte -&gt; /manga/one-piece/abc</td><td><a class="url-link" href="http://localhost/lolissr/manga/one-piece/abc" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/one-piece/abc</a></td><td>404</td><td>47,82 ms</td></tr><tr data-index="9" data-status="success" data-category="Edge" data-duration="0.023943901062012"><td><span class="badge badge-success">OK</span></td><td>Edge</td><td>Route inconnue totale -&gt; /route-totalement-inconnue-test</td><td><a class="url-link" href="http://localhost/lolissr/route-totalement-inconnue-test" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/route-totalement-inconnue-test</a></td><td>404</td><td>23,94 ms</td></tr><tr data-index="10" data-status="success" data-category="Erreurs" data-duration="0.038465023040771"><td><span class="badge badge-success">OK</span></td><td>Erreurs</td><td>Série inexistante -&gt; /manga/serie/slug-inexistante-test</td><td><a class="url-link" href="http://localhost/lolissr/manga/serie/slug-inexistante-test" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/serie/slug-inexistante-test</a></td><td>404</td><td>38,47 ms</td></tr><tr data-index="11" data-status="success" data-category="Erreurs" data-duration="0.0313880443573"><td><span class="badge badge-success">OK</span></td><td>Erreurs</td><td>Détail inexistant -&gt; /manga/slug-inexistant-test/999999</td><td><a class="url-link" href="http://localhost/lolissr/manga/slug-inexistant-test/999999" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/slug-inexistant-test/999999</a></td><td>404</td><td>31,39 ms</td></tr><tr data-index="12" data-status="success" data-category="Pagination" data-duration="0.046281814575195"><td><span class="badge badge-success">OK</span></td><td>Pagination</td><td>Collection page 0 refusée -&gt; /manga/collection/page/0</td><td><a class="url-link" href="http://localhost/lolissr/manga/collection/page/0" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/collection/page/0</a></td><td>404</td><td>46,28 ms</td></tr><tr data-index="13" data-status="success" data-category="Pagination" data-duration="0.046475172042847"><td><span class="badge badge-success">OK</span></td><td>Pagination</td><td>Collection page négative refusée -&gt; /manga/collection/page/-1</td><td><a class="url-link" href="http://localhost/lolissr/manga/collection/page/-1" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/collection/page/-1</a></td><td>404</td><td>46,48 ms</td></tr><tr data-index="14" data-status="success" data-category="Pagination" data-duration="0.047185897827148"><td><span class="badge badge-success">OK</span></td><td>Pagination</td><td>Collection page très haute refusée -&gt; /manga/collection/page/9999</td><td><a class="url-link" href="http://localhost/lolissr/manga/collection/page/9999" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/collection/page/9999</a></td><td>404</td><td>47,19 ms</td></tr><tr data-index="15" data-status="fail" data-category="Pagination" data-duration="0.030648946762085"><td><span class="badge badge-fail">FAIL</span></td><td>Pagination</td><td>Collection AJAX page 0 refusée -&gt; /manga/collection-ajax/page/0</td><td><a class="url-link" href="http://localhost/lolissr/manga/collection-ajax/page/0" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/collection-ajax/page/0</a></td><td>status 500 attendu 404</td><td>30,65 ms</td></tr><tr data-index="16" data-status="fail" data-category="Pagination" data-duration="0.032963037490845"><td><span class="badge badge-fail">FAIL</span></td><td>Pagination</td><td>Collection AJAX page négative refusée -&gt; /manga/collection-ajax/page/-1</td><td><a class="url-link" href="http://localhost/lolissr/manga/collection-ajax/page/-1" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/collection-ajax/page/-1</a></td><td>status 500 attendu 404</td><td>32,96 ms</td></tr><tr data-index="17" data-status="fail" data-category="Pagination" data-duration="0.031272888183594"><td><span class="badge badge-fail">FAIL</span></td><td>Pagination</td><td>Collection AJAX page très haute refusée -&gt; /manga/collection-ajax/page/9999</td><td><a class="url-link" href="http://localhost/lolissr/manga/collection-ajax/page/9999" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/collection-ajax/page/9999</a></td><td>status 500 attendu 404</td><td>31,27 ms</td></tr><tr data-index="18" data-status="success" data-category="Smoke" data-duration="0.064107894897461"><td><span class="badge badge-success">OK</span></td><td>Smoke</td><td>Accueil -&gt; /</td><td><a class="url-link" href="http://localhost/lolissr/" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/</a></td><td>200</td><td>64,11 ms</td></tr><tr data-index="19" data-status="success" data-category="Smoke" data-duration="0.051224946975708"><td><span class="badge badge-success">OK</span></td><td>Smoke</td><td>Dashboard manga -&gt; /manga</td><td><a class="url-link" href="http://localhost/lolissr/manga" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga</a></td><td>200</td><td>51,22 ms</td></tr><tr data-index="20" data-status="success" data-category="Smoke" data-duration="0.054457187652588"><td><span class="badge badge-success">OK</span></td><td>Smoke</td><td>Collection -&gt; /manga/collection</td><td><a class="url-link" href="http://localhost/lolissr/manga/collection" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/collection</a></td><td>200</td><td>54,46 ms</td></tr><tr data-index="21" data-status="success" data-category="Smoke" data-duration="0.041478872299194"><td><span class="badge badge-success">OK</span></td><td>Smoke</td><td>Ajouter -&gt; /manga/ajouter</td><td><a class="url-link" href="http://localhost/lolissr/manga/ajouter" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/ajouter</a></td><td>200</td><td>41,48 ms</td></tr><tr data-index="22" data-status="success" data-category="Smoke" data-duration="0.046766042709351"><td><span class="badge badge-success">OK</span></td><td>Smoke</td><td>Page lien -&gt; /manga/lien</td><td><a class="url-link" href="http://localhost/lolissr/manga/lien" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/lien</a></td><td>200</td><td>46,77 ms</td></tr><tr data-index="23" data-status="success" data-category="Smoke" data-duration="0.048875093460083"><td><span class="badge badge-success">OK</span></td><td>Smoke</td><td>Série existante -&gt; /manga/serie/one-piece</td><td><a class="url-link" href="http://localhost/lolissr/manga/serie/one-piece" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/serie/one-piece</a></td><td>200</td><td>48,88 ms</td></tr><tr data-index="24" data-status="success" data-category="Smoke" data-duration="0.049005031585693"><td><span class="badge badge-success">OK</span></td><td>Smoke</td><td>Tome existant -&gt; /manga/one-piece/1</td><td><a class="url-link" href="http://localhost/lolissr/manga/one-piece/1" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/one-piece/1</a></td><td>200</td><td>49,01 ms</td></tr><tr data-index="25" data-status="success" data-category="Smoke" data-duration="0.047435998916626"><td><span class="badge badge-success">OK</span></td><td>Smoke</td><td>Page modifier -&gt; /manga/modifier/one-piece/1</td><td><a class="url-link" href="http://localhost/lolissr/manga/modifier/one-piece/1" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/modifier/one-piece/1</a></td><td>200</td><td>47,44 ms</td></tr><tr data-index="26" data-status="success" data-category="AJAX" data-duration="0.04583215713501"><td><span class="badge badge-success">OK</span></td><td>AJAX</td><td>GET détail contient hooks JS/AJAX</td><td><a class="url-link" href="http://localhost/lolissr/manga/one-piece/1" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/one-piece/1</a></td><td>hooks AJAX trouvés</td><td>45,83 ms</td></tr><tr data-index="27" data-status="fail" data-category="AJAX" data-duration="0.02683687210083"><td><span class="badge badge-fail">FAIL</span></td><td>AJAX</td><td>GET search AJAX limité à 6 résultats max</td><td><a class="url-link" href="http://localhost/lolissr/manga/search-ajax/a" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/search-ajax/a</a></td><td>search AJAX inaccessible</td><td>26,84 ms</td></tr><tr data-index="28" data-status="fail" data-category="AJAX" data-duration="0.031438112258911"><td><span class="badge badge-fail">FAIL</span></td><td>AJAX</td><td>GET search AJAX vide retourne JSON vide</td><td><a class="url-link" href="http://localhost/lolissr/manga/search-ajax/-" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/search-ajax/-</a></td><td>status 500 | résultat vide attendu</td><td>31,44 ms</td></tr><tr data-index="29" data-status="success" data-category="Pagination" data-duration="0.056787014007568"><td><span class="badge badge-success">OK</span></td><td>Pagination</td><td>Collection page 1 contient du contenu</td><td><a class="url-link" href="http://localhost/lolissr/manga/collection" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/collection</a></td><td>contenu détecté</td><td>56,79 ms</td></tr><tr data-index="30" data-status="success" data-category="Pagination" data-duration="0.030217170715332"><td><span class="badge badge-success">OK</span></td><td>Pagination</td><td>Collection page 2 comportement cohérent</td><td><a class="url-link" href="http://localhost/lolissr/manga/collection/page/2" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/collection/page/2</a></td><td>page 2 valide avec contenu</td><td>30,22 ms</td></tr><tr data-index="31" data-status="success" data-category="Pagination" data-duration="0.076781034469604"><td><span class="badge badge-success">OK</span></td><td>Pagination</td><td>Collection page 2 différente de la page 1 si elle existe</td><td><a class="url-link" href="http://localhost/lolissr/manga/collection/page/2" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/collection/page/2</a></td><td>les pages diffèrent</td><td>76,78 ms</td></tr><tr data-index="32" data-status="success" data-category="Pagination" data-duration="0.036616802215576"><td><span class="badge badge-success">OK</span></td><td>Pagination</td><td>Collection page très haute retourne bien 404</td><td><a class="url-link" href="http://localhost/lolissr/manga/collection/page/9999" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/collection/page/9999</a></td><td>404 propre</td><td>36,62 ms</td></tr><tr data-index="33" data-status="success" data-category="Pagination" data-duration="0.049771070480347"><td><span class="badge badge-success">OK</span></td><td>Pagination</td><td>Collection AJAX page 1 contient du contenu</td><td><a class="url-link" href="http://localhost/lolissr/manga/collection-ajax/page/1" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/collection-ajax/page/1</a></td><td>contenu AJAX détecté</td><td>49,77 ms</td></tr><tr data-index="34" data-status="success" data-category="Pagination" data-duration="0.04679012298584"><td><span class="badge badge-success">OK</span></td><td>Pagination</td><td>Collection AJAX page 2 comportement cohérent</td><td><a class="url-link" href="http://localhost/lolissr/manga/collection-ajax/page/2" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/collection-ajax/page/2</a></td><td>page AJAX 2 valide avec contenu</td><td>46,79 ms</td></tr><tr data-index="35" data-status="success" data-category="Smoke HTML" data-duration="0.029875993728638"><td><span class="badge badge-success">OK</span></td><td>Smoke HTML</td><td>Detail a un title</td><td><a class="url-link" href="http://localhost/lolissr/manga/one-piece/1" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/one-piece/1</a></td><td>Manga | One Piece</td><td>29,88 ms</td></tr><tr data-index="36" data-status="success" data-category="Smoke HTML" data-duration="0.048060178756714"><td><span class="badge badge-success">OK</span></td><td>Smoke HTML</td><td>Detail contient une image</td><td><a class="url-link" href="http://localhost/lolissr/manga/one-piece/1" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/one-piece/1</a></td><td>img trouvée</td><td>48,06 ms</td></tr><tr data-index="37" data-status="success" data-category="Smoke HTML" data-duration="0.050989866256714"><td><span class="badge badge-success">OK</span></td><td>Smoke HTML</td><td>Collection contient au moins un lien</td><td><a class="url-link" href="http://localhost/lolissr/manga/collection" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/collection</a></td><td>21 lien(s)</td><td>50,99 ms</td></tr><tr data-index="38" data-status="fail" data-category="AJAX" data-duration="0.01806902885437"><td><span class="badge badge-fail">FAIL</span></td><td>AJAX</td><td>POST ajax update note validation invalide</td><td><a class="url-link" href="http://localhost/lolissr/manga/ajax/update-note/one-piece/1" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/ajax/update-note/one-piece/1</a></td><td>status 500 | validation AJAX invalide</td><td>18,07 ms</td></tr><tr data-index="39" data-status="fail" data-category="AJAX" data-duration="0.016830921173096"><td><span class="badge badge-fail">FAIL</span></td><td>AJAX</td><td>POST ajax update note bloqué en mode test</td><td><a class="url-link" href="http://localhost/lolissr/manga/ajax/update-note/one-piece/1" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/ajax/update-note/one-piece/1</a></td><td>status 500 | update AJAX bloqué</td><td>16,83 ms</td></tr><tr data-index="40" data-status="fail" data-category="Security" data-duration="0.014501094818115"><td><span class="badge badge-fail">FAIL</span></td><td>Security</td><td>Injection HTML commentaire</td><td><a class="url-link" href="http://localhost/lolissr/manga/ajax/update-note/one-piece/1" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/ajax/update-note/one-piece/1</a></td><td>status inattendu 500</td><td>14,50 ms</td></tr><tr data-index="41" data-status="fail" data-category="Update" data-duration="0.015252113342285"><td><span class="badge badge-fail">FAIL</span></td><td>Update</td><td>Update bloqué en mode test</td><td><a class="url-link" href="http://localhost/lolissr/manga/modifier/one-piece/1" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/modifier/one-piece/1</a></td><td>status 500</td><td>15,25 ms</td></tr><tr data-index="42" data-status="fail" data-category="Update" data-duration="0.015936136245728"><td><span class="badge badge-fail">FAIL</span></td><td>Update</td><td>Update invalide (note &gt; 5)</td><td><a class="url-link" href="http://localhost/lolissr/manga/modifier/one-piece/1" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/modifier/one-piece/1</a></td><td>status 500</td><td>15,94 ms</td></tr><tr data-index="43" data-status="fail" data-category="Update" data-duration="0.01478099822998"><td><span class="badge badge-fail">FAIL</span></td><td>Update</td><td>Update slug non canonique</td><td><a class="url-link" href="http://localhost/lolissr/manga/modifier/One-Piece/1" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/modifier/One-Piece/1</a></td><td>status 500</td><td>14,78 ms</td></tr><tr data-index="44" data-status="fail" data-category="Upload" data-duration="0.034304141998291"><td><span class="badge badge-fail">FAIL</span></td><td>Upload</td><td>Upload image valide (mode test)</td><td><a class="url-link" href="http://localhost/lolissr/manga/ajouter" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/ajouter</a></td><td>status 500 | fichier: absent</td><td>34,30 ms</td></tr><tr data-index="45" data-status="fail" data-category="Upload" data-duration="0.030679941177368"><td><span class="badge badge-fail">FAIL</span></td><td>Upload</td><td>Upload doublon slug + numero (mode test)</td><td><a class="url-link" href="http://localhost/lolissr/manga/ajouter" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/ajouter</a></td><td>1er upload test impossible</td><td>30,68 ms</td></tr><tr data-index="46" data-status="success" data-category="Upload" data-duration="0.031481027603149"><td><span class="badge badge-success">OK</span></td><td>Upload</td><td>Refuse image invalide</td><td><a class="url-link" href="http://localhost/lolissr/manga/ajouter" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/ajouter</a></td><td>status 500 | image invalide refusée</td><td>31,48 ms</td></tr><tr data-index="47" data-status="success" data-category="Upload" data-duration="0.044646978378296"><td><span class="badge badge-success">OK</span></td><td>Upload</td><td>Refuse fichier trop volumineux</td><td><a class="url-link" href="http://localhost/lolissr/manga/ajouter" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/ajouter</a></td><td>status 500 | taille max: refusée</td><td>44,65 ms</td></tr><tr data-index="48" data-status="fail" data-category="AJAX" data-duration="0.017087936401367"><td><span class="badge badge-fail">FAIL</span></td><td>AJAX</td><td>POST ajouter validation AJAX invalide</td><td><a class="url-link" href="http://localhost/lolissr/manga/ajouter" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/ajouter</a></td><td>status 500 | json erreur reçu</td><td>17,09 ms</td></tr><tr data-index="49" data-status="fail" data-category="AJAX" data-duration="0.015478134155273"><td><span class="badge badge-fail">FAIL</span></td><td>AJAX</td><td>POST ajouter body JSON non supporté</td><td><a class="url-link" href="http://localhost/lolissr/manga/ajouter" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/ajouter</a></td><td>status 500 | body JSON non supporté</td><td>15,48 ms</td></tr><tr data-index="50" data-status="success" data-category="AJAX" data-duration="0.0059559345245361"><td><span class="badge badge-success">OK</span></td><td>AJAX</td><td>GET ajax update-note refusé en 405</td><td><a class="url-link" href="http://localhost/lolissr/manga/ajax/update-note/one-piece/1" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/ajax/update-note/one-piece/1</a></td><td>status 405 | GET refusé</td><td>5,96 ms</td></tr><tr data-index="51" data-status="fail" data-category="AJAX" data-duration="0.025332927703857"><td><span class="badge badge-fail">FAIL</span></td><td>AJAX</td><td>POST ajax update note manga introuvable</td><td><a class="url-link" href="http://localhost/lolissr/manga/ajax/update-note/slug-introuvable-test/999" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/ajax/update-note/slug-introuvable-test/999</a></td><td>status 500 | manga introuvable</td><td>25,33 ms</td></tr><tr data-index="52" data-status="fail" data-category="AJAX" data-duration="0.016085147857666"><td><span class="badge badge-fail">FAIL</span></td><td>AJAX</td><td>POST update AJAX URL non canonique</td><td><a class="url-link" href="http://localhost/lolissr/manga/modifier/One-Piece/1" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/modifier/One-Piece/1</a></td><td>status 500 | URL non canonique</td><td>16,09 ms</td></tr><tr data-index="53" data-status="fail" data-category="AJAX" data-duration="0.0044481754302979"><td><span class="badge badge-fail">FAIL</span></td><td>AJAX</td><td>POST update AJAX manga introuvable</td><td><a class="url-link" href="http://localhost/lolissr/manga/modifier/slug-introuvable-test/999" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/modifier/slug-introuvable-test/999</a></td><td>status 500 | update introuvable</td><td>4,45 ms</td></tr></tbody>
+        </table>
+    </div>
+
+    <h2 id="fails-section" class="section-title">Fails</h2>
+    <div class="issue-grid"><div class="card fail-block"><h3>Canonical :: Redirect canonique modifier</h3><p><strong>Message :</strong> status 200 attendu 301</p><p><strong>URL :</strong> <a class="url-link" href="http://localhost/lolissr/manga/modifier/One-Piece/1" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/modifier/One-Piece/1</a></p><p><strong>Durée :</strong> 48,65 ms</p></div><div class="card fail-block"><h3>Canonical :: Redirect canonique tome</h3><p><strong>Message :</strong> status 200 attendu 301</p><p><strong>URL :</strong> <a class="url-link" href="http://localhost/lolissr/manga/One-Piece/1" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/One-Piece/1</a></p><p><strong>Durée :</strong> 47,93 ms</p></div><div class="card fail-block"><h3>Upload :: Upload image valide (mode test)</h3><p><strong>Message :</strong> status 500 | fichier: absent</p><p><strong>URL :</strong> <a class="url-link" href="http://localhost/lolissr/manga/ajouter" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/ajouter</a></p><p><strong>Durée :</strong> 34,30 ms</p></div><div class="card fail-block"><h3>Pagination :: Collection AJAX page négative refusée</h3><p><strong>Message :</strong> status 500 attendu 404</p><p><strong>URL :</strong> <a class="url-link" href="http://localhost/lolissr/manga/collection-ajax/page/-1" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/collection-ajax/page/-1</a></p><p><strong>Durée :</strong> 32,96 ms</p></div><div class="card fail-block"><h3>AJAX :: GET search AJAX vide retourne JSON vide</h3><p><strong>Message :</strong> status 500 | résultat vide attendu</p><p><strong>URL :</strong> <a class="url-link" href="http://localhost/lolissr/manga/search-ajax/-" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/search-ajax/-</a></p><p><strong>Durée :</strong> 31,44 ms</p></div><div class="card fail-block"><h3>Pagination :: Collection AJAX page très haute refusée</h3><p><strong>Message :</strong> status 500 attendu 404</p><p><strong>URL :</strong> <a class="url-link" href="http://localhost/lolissr/manga/collection-ajax/page/9999" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/collection-ajax/page/9999</a></p><p><strong>Durée :</strong> 31,27 ms</p></div><div class="card fail-block"><h3>Upload :: Upload doublon slug + numero (mode test)</h3><p><strong>Message :</strong> 1er upload test impossible</p><p><strong>URL :</strong> <a class="url-link" href="http://localhost/lolissr/manga/ajouter" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/ajouter</a></p><p><strong>Durée :</strong> 30,68 ms</p></div><div class="card fail-block"><h3>Pagination :: Collection AJAX page 0 refusée</h3><p><strong>Message :</strong> status 500 attendu 404</p><p><strong>URL :</strong> <a class="url-link" href="http://localhost/lolissr/manga/collection-ajax/page/0" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/collection-ajax/page/0</a></p><p><strong>Durée :</strong> 30,65 ms</p></div><div class="card fail-block"><h3>AJAX :: GET search AJAX limité à 6 résultats max</h3><p><strong>Message :</strong> search AJAX inaccessible</p><p><strong>URL :</strong> <a class="url-link" href="http://localhost/lolissr/manga/search-ajax/a" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/search-ajax/a</a></p><p><strong>Durée :</strong> 26,84 ms</p></div><div class="card fail-block"><h3>AJAX :: POST ajax update note manga introuvable</h3><p><strong>Message :</strong> status 500 | manga introuvable</p><p><strong>URL :</strong> <a class="url-link" href="http://localhost/lolissr/manga/ajax/update-note/slug-introuvable-test/999" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/ajax/update-note/slug-introuvable-test/999</a></p><p><strong>Durée :</strong> 25,33 ms</p></div><div class="card fail-block"><h3>AJAX :: POST ajax update note validation invalide</h3><p><strong>Message :</strong> status 500 | validation AJAX invalide</p><p><strong>URL :</strong> <a class="url-link" href="http://localhost/lolissr/manga/ajax/update-note/one-piece/1" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/ajax/update-note/one-piece/1</a></p><p><strong>Durée :</strong> 18,07 ms</p></div><div class="card fail-block"><h3>AJAX :: POST ajouter validation AJAX invalide</h3><p><strong>Message :</strong> status 500 | json erreur reçu</p><p><strong>URL :</strong> <a class="url-link" href="http://localhost/lolissr/manga/ajouter" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/ajouter</a></p><p><strong>Durée :</strong> 17,09 ms</p></div><div class="card fail-block"><h3>AJAX :: POST ajax update note bloqué en mode test</h3><p><strong>Message :</strong> status 500 | update AJAX bloqué</p><p><strong>URL :</strong> <a class="url-link" href="http://localhost/lolissr/manga/ajax/update-note/one-piece/1" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/ajax/update-note/one-piece/1</a></p><p><strong>Durée :</strong> 16,83 ms</p></div><div class="card fail-block"><h3>AJAX :: POST update AJAX URL non canonique</h3><p><strong>Message :</strong> status 500 | URL non canonique</p><p><strong>URL :</strong> <a class="url-link" href="http://localhost/lolissr/manga/modifier/One-Piece/1" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/modifier/One-Piece/1</a></p><p><strong>Durée :</strong> 16,09 ms</p></div><div class="card fail-block"><h3>Update :: Update invalide (note &gt; 5)</h3><p><strong>Message :</strong> status 500</p><p><strong>URL :</strong> <a class="url-link" href="http://localhost/lolissr/manga/modifier/one-piece/1" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/modifier/one-piece/1</a></p><p><strong>Durée :</strong> 15,94 ms</p></div><div class="card fail-block"><h3>AJAX :: POST ajouter body JSON non supporté</h3><p><strong>Message :</strong> status 500 | body JSON non supporté</p><p><strong>URL :</strong> <a class="url-link" href="http://localhost/lolissr/manga/ajouter" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/ajouter</a></p><p><strong>Durée :</strong> 15,48 ms</p></div><div class="card fail-block"><h3>Update :: Update bloqué en mode test</h3><p><strong>Message :</strong> status 500</p><p><strong>URL :</strong> <a class="url-link" href="http://localhost/lolissr/manga/modifier/one-piece/1" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/modifier/one-piece/1</a></p><p><strong>Durée :</strong> 15,25 ms</p></div><div class="card fail-block"><h3>Update :: Update slug non canonique</h3><p><strong>Message :</strong> status 500</p><p><strong>URL :</strong> <a class="url-link" href="http://localhost/lolissr/manga/modifier/One-Piece/1" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/modifier/One-Piece/1</a></p><p><strong>Durée :</strong> 14,78 ms</p></div><div class="card fail-block"><h3>Security :: Injection HTML commentaire</h3><p><strong>Message :</strong> status inattendu 500</p><p><strong>URL :</strong> <a class="url-link" href="http://localhost/lolissr/manga/ajax/update-note/one-piece/1" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/ajax/update-note/one-piece/1</a></p><p><strong>Durée :</strong> 14,50 ms</p></div><div class="card fail-block"><h3>AJAX :: POST update AJAX manga introuvable</h3><p><strong>Message :</strong> status 500 | update introuvable</p><p><strong>URL :</strong> <a class="url-link" href="http://localhost/lolissr/manga/modifier/slug-introuvable-test/999" target="_blank" rel="noopener noreferrer">http://localhost/lolissr/manga/modifier/slug-introuvable-test/999</a></p><p><strong>Durée :</strong> 4,45 ms</p></div></div>
+
+    <h2 id="warnings-section" class="section-title">Warnings</h2>
+    <div class="issue-grid"><div class="card success-block">Aucun warning ✅</div></div>
+
+    <script>
+    (() => {
+        const rows = Array.from(document.querySelectorAll("#results-table tbody tr"));
+        const statCards = Array.from(document.querySelectorAll(".stat-card"));
+        const categoryCards = Array.from(document.querySelectorAll(".category-card"));
+        const searchInput = document.getElementById("result-search");
+        const resetBtn = document.getElementById("reset-filters");
+        const activeStatus = document.getElementById("active-filter-status");
+        const activeCategory = document.getElementById("active-filter-category");
+        const visibleCount = document.getElementById("visible-results-count");
+
+        let currentStatus = "all";
+        let currentCategory = "all";
+        let currentSearch = "";
+
+        function normalize(value) {
+            return (value || "").toLowerCase().trim();
+        }
+
+        function updateCards() {
+            statCards.forEach(card => {
+                card.classList.toggle("is-active", card.dataset.filterStatus === currentStatus);
+            });
+
+            categoryCards.forEach(card => {
+                card.classList.toggle("is-active", card.dataset.filterCategory === currentCategory);
+            });
+        }
+
+        function updateLabels() {
+            activeStatus.textContent =
+                currentStatus === "all"
+                    ? "Tous"
+                    : currentStatus === "success"
+                        ? "Succès"
+                        : currentStatus === "fail"
+                            ? "Échecs"
+                            : "Warnings";
+
+            activeCategory.textContent =
+                currentCategory === "all"
+                    ? "Toutes catégories"
+                    : currentCategory;
+        }
+
+        function applyFilters() {
+            let count = 0;
+
+            rows.forEach(row => {
+                const rowStatus = row.dataset.status || "";
+                const rowCategory = row.dataset.category || "";
+                const rowText = normalize(row.textContent);
+
+                const matchStatus = currentStatus === "all" || rowStatus === currentStatus;
+                const matchCategory = currentCategory === "all" || rowCategory === currentCategory;
+                const matchSearch = currentSearch === "" || rowText.includes(currentSearch);
+
+                const visible = matchStatus && matchCategory && matchSearch;
+
+                row.classList.toggle("is-hidden", !visible);
+
+                if (visible) {
+                    count++;
+                }
+            });
+
+            visibleCount.textContent = String(count);
+            updateCards();
+            updateLabels();
+        }
+
+        statCards.forEach(card => {
+            card.addEventListener("click", () => {
+                currentStatus = card.dataset.filterStatus || "all";
+                applyFilters();
+
+                if (currentStatus === "fail") {
+                    const failTitle = document.getElementById("fails-section");
+
+                    if (failTitle) {
+                        failTitle.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }
+                }
+            });
+        });
+
+        categoryCards.forEach(card => {
+            card.addEventListener("click", () => {
+                const clickedCategory = card.dataset.filterCategory || "all";
+                currentCategory = currentCategory === clickedCategory ? "all" : clickedCategory;
+                applyFilters();
+            });
+        });
+
+        if (searchInput) {
+            searchInput.addEventListener("input", () => {
+                currentSearch = normalize(searchInput.value);
+                applyFilters();
+            });
+        }
+
+        if (resetBtn) {
+            resetBtn.addEventListener("click", () => {
+                currentStatus = "all";
+                currentCategory = "all";
+                currentSearch = "";
+
+                if (searchInput) {
+                    searchInput.value = "";
+                }
+
+                applyFilters();
+            });
+        }
+
+        applyFilters();
+    })();
+    </script>
+</body>
+</html>
