@@ -8,15 +8,17 @@ use App\Core\Http\FormRequest;
 
 final class MangaUpdateNoteRequest extends FormRequest
 {
-    protected function rules(): array
+    protected function validate(): void
     {
-        return [
-            'note' => [
-                'required',
-                'integer',
-                'min:1',
-                'max:5'
-            ]
-        ];
+        $this->validator
+            ->nullable('jacquette')
+            ->integer('jacquette')
+            ->min('jacquette', 1)
+            ->max('jacquette', 5)
+
+            ->nullable('livre_note')
+            ->integer('livre_note')
+            ->min('livre_note', 1)
+            ->max('livre_note', 5);
     }
 }

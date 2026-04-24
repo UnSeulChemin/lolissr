@@ -8,24 +8,21 @@ use App\Core\Http\FormRequest;
 
 final class MangaUpdateRequest extends FormRequest
 {
-    protected function rules(): array
+    protected function validate(): void
     {
-        return [
-            'commentaire' => ['nullable'],
+        $this->validator
+            ->nullable('commentaire')
+            ->string('commentaire')
+            ->maxLength('commentaire', 1000)
 
-            'livre_note' => [
-                'nullable',
-                'integer',
-                'min:1',
-                'max:5'
-            ],
+            ->nullable('livre_note')
+            ->integer('livre_note')
+            ->min('livre_note', 1)
+            ->max('livre_note', 5)
 
-            'jacquette' => [
-                'nullable',
-                'integer',
-                'min:1',
-                'max:5'
-            ]
-        ];
+            ->nullable('jacquette')
+            ->integer('jacquette')
+            ->min('jacquette', 1)
+            ->max('jacquette', 5);
     }
 }

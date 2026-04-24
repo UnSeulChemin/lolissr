@@ -1,5 +1,3 @@
-import { showToast } from '../core/toast.js';
-
 export function initEditPage()
 {
     /*

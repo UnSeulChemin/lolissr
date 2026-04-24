@@ -17,20 +17,19 @@ abstract class FormRequest
             Request::allFiles()
         );
 
-        $this->validator->rules($this->rules());
-        $this->validator->validate();
+        $this->validate();
     }
 
-    abstract protected function rules(): array;
+    abstract protected function validate(): void;
 
     public function passes(): bool
     {
-        return empty($this->errors());
+        return !$this->validator->fails();
     }
 
     public function fails(): bool
     {
-        return !$this->passes();
+        return $this->validator->fails();
     }
 
     public function errors(): array
