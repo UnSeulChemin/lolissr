@@ -34,8 +34,6 @@ final class MangaController extends Controller
         string $pathPrefix,
         ?int $numero = null
     ): void {
-        $requestedSlug = Str::slug($requestedSlug);
-
         if ($requestedSlug === $canonicalSlug) {
             return;
         }
@@ -49,14 +47,14 @@ final class MangaController extends Controller
         $this->redirect($location, 301);
     }
 
-    protected function findCanonicalMangaOrFail(
+    protected function findCanonicalMangaDataOrFail(
         string $slug,
         int $numero
-    ): object {
+    ): array {
         $data = $this->mangaReadService->one($slug, $numero);
 
         if ($data !== null) {
-            return $data['manga'];
+            return $data;
         }
 
         $this->notFound('Manga introuvable');
@@ -175,13 +173,11 @@ final class MangaController extends Controller
     {
         $numero = (int) $numero;
 
-        $manga = $this->findCanonicalMangaOrFail($slug, $numero);
-
-        $canonicalSlug = Str::slug((string) $manga->slug);
+        $data = $this->findCanonicalMangaDataOrFail($slug, $numero);
 
         $this->redirectToCanonicalUrl(
             $slug,
-            $canonicalSlug,
+            $data['canonicalSlug'],
             'manga/modifier',
             $numero
         );
@@ -189,7 +185,7 @@ final class MangaController extends Controller
         $this->title = 'Manga | Modifier';
 
         $this->render('manga/modifier', [
-            'manga' => $manga,
+            'manga' => $data['manga'],
         ]);
     }
 

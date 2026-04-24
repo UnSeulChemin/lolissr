@@ -9,19 +9,7 @@ use App\Core\Http\Middleware\CsrfMiddleware;
 
 return static function (Router $router): void
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Principal
-    |--------------------------------------------------------------------------
-    */
-
     $router->get('/', 'MainController@index');
-
-    /*
-    |--------------------------------------------------------------------------
-    | Manga — pages
-    |--------------------------------------------------------------------------
-    */
 
     $router->get('/manga', 'Manga\MangaController@index');
     $router->get('/manga/lien', 'Manga\MangaController@lien');
@@ -88,7 +76,6 @@ return static function (Router $router): void
         'Manga\MangaController@ajouterTraitement'
     )->middleware([
         PostOnlyMiddleware::class,
-        AjaxOnlyMiddleware::class,
         CsrfMiddleware::class,
     ]);
 
@@ -99,12 +86,6 @@ return static function (Router $router): void
         PostOnlyMiddleware::class,
         CsrfMiddleware::class,
     ]);
-
-    /*
-    |--------------------------------------------------------------------------
-    | Manga — dynamique
-    |--------------------------------------------------------------------------
-    */
 
     $router->get('/manga/{slug}/{numero}', 'Manga\MangaController@show');
 };

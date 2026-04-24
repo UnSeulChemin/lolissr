@@ -517,11 +517,17 @@ if (!function_exists('requestUrl'))
             'User-Agent: LoliSSR-TestRunner',
         ];
 
+        if (str_contains($url, '/ajax/') || str_contains($url, '-ajax/'))
+        {
+            $baseHeaders[] = 'X-Requested-With: XMLHttpRequest';
+            $baseHeaders[] = 'Accept: application/json';
+        }
+
         $finalHeaders = array_merge($baseHeaders, $headers);
 
         $options = [
             'http' => [
-                'method' => $method,
+                'method' => strtoupper($method),
                 'ignore_errors' => true,
                 'follow_location' => 0,
                 'max_redirects' => 0,
@@ -548,15 +554,17 @@ if (!function_exists('requestUrl'))
                 'headers' => [],
                 'location' => null,
                 'url' => $url,
-                'method' => $method,
+                'method' => strtoupper($method),
             ];
         }
 
         $status = 0;
         $location = null;
 
-        if (!empty($headersOut[0]) && preg_match('/\s(\d{3})\s/', $headersOut[0], $matches))
-        {
+        if (
+            !empty($headersOut[0])
+            && preg_match('/\s(\d{3})\s/', $headersOut[0], $matches)
+        ) {
             $status = (int) $matches[1];
         }
 
@@ -575,7 +583,7 @@ if (!function_exists('requestUrl'))
             'headers' => $headersOut,
             'location' => $location,
             'url' => $url,
-            'method' => $method,
+            'method' => strtoupper($method),
         ];
     }
 }

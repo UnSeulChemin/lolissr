@@ -181,7 +181,7 @@ final class MangaWriteService
         int $numero,
         array $post
     ): array {
-        $validator = $this->validatorService->makeUpdateValidator($post, []);
+        $validator = $this->validatorService->makeUpdateNoteValidator($post);
 
         if ($validator->fails()) {
             $errors = $validator->errors();

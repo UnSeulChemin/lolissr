@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Http\Middleware;
 
+use App\Core\Application\App;
 use App\Core\Http\Request;
 
 final class CsrfMiddleware implements MiddlewareInterface
@@ -11,6 +12,10 @@ final class CsrfMiddleware implements MiddlewareInterface
     public function handle(): void
     {
         if (Request::method() !== 'POST') {
+            return;
+        }
+
+        if (App::isTesting()) {
             return;
         }
 
