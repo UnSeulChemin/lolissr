@@ -198,10 +198,12 @@ final class MangaController extends Controller
         $request = new MangaCreateRequest();
 
         if ($request->fails()) {
-            $this->redirectWithValidationErrors(
-                'manga/ajouter',
-                $request->errors()
-            );
+            json([
+                'success' => false,
+                'status' => 422,
+                'message' => 'Formulaire invalide',
+                'errors' => $request->errors(),
+            ], 422);
         }
 
         $result = $this->mangaWriteService->create(
@@ -209,19 +211,7 @@ final class MangaController extends Controller
             $request->files()
         );
 
-        if (!$result['success']) {
-            $this->redirectWithError(
-                'manga/ajouter',
-                $result['message'] ?? 'Erreur'
-            );
-        }
-
-        Session::forget(['errors', 'old']);
-
-        $this->redirectWithSuccess(
-            'manga/ajouter',
-            $result['message']
-        );
+        json($result, $result['status'] ?? 200);
     }
 
     public function update(string $slug, string $numero): void

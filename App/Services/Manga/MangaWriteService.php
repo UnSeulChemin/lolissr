@@ -51,6 +51,10 @@ final class MangaWriteService
             ];
         }
 
+        if ($this->isReadOnlyMode()) {
+            return $this->blockedWriteResponse();
+        }
+
         $dto = MangaCreateDTO::fromPost($post);
 
         if (
@@ -86,12 +90,6 @@ final class MangaWriteService
                 'message' => 'Upload test OK',
                 'file' => basename((string) $upload['destination']),
             ];
-        }
-
-        if ($this->isReadOnlyMode()) {
-            $this->uploadService->removeFileIfExists((string) $upload['destination']);
-
-            return $this->blockedWriteResponse();
         }
 
         $insert = $this->mangaRepository->insert([

@@ -88,6 +88,7 @@ return static function (Router $router): void
         'Manga\MangaController@ajouterTraitement'
     )->middleware([
         PostOnlyMiddleware::class,
+        AjaxOnlyMiddleware::class,
         CsrfMiddleware::class,
     ]);
 
