@@ -33,6 +33,9 @@ export function initMangaAjaxDelete()
             return;
         }
 
+        const formData = new FormData();
+        formData.append('csrf_token', window.csrfToken || '');
+
         deleteButton.disabled = true;
         deleteButton.textContent = 'Suppression...';
 
@@ -40,6 +43,7 @@ export function initMangaAjaxDelete()
         {
             const response = await fetch(url, {
                 method: 'POST',
+                body: formData,
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
                     'Accept': 'application/json'

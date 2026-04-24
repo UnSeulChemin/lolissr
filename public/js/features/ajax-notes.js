@@ -2,12 +2,6 @@ import { showToast } from '../core/toast.js';
 
 export function initMangaAjaxNotes()
 {
-    /*
-    |------------------------------------------------------------------
-    | Élément principal
-    |------------------------------------------------------------------
-    */
-
     const mangaDetailCard = document.querySelector('.js-detail-card');
 
     if (!mangaDetailCard)
@@ -15,24 +9,12 @@ export function initMangaAjaxNotes()
         return;
     }
 
-    /*
-    |------------------------------------------------------------------
-    | Sécurité anti double init
-    |------------------------------------------------------------------
-    */
-
     if (mangaDetailCard.dataset.mangaAjaxNotesInit === 'true')
     {
         return;
     }
 
     mangaDetailCard.dataset.mangaAjaxNotesInit = 'true';
-
-    /*
-    |------------------------------------------------------------------
-    | Données
-    |------------------------------------------------------------------
-    */
 
     const mangaSlug = mangaDetailCard.dataset.slug;
     const mangaNumero = mangaDetailCard.dataset.numero;
@@ -53,12 +35,6 @@ export function initMangaAjaxNotes()
     };
 
     let isSavingNotes = false;
-
-    /*
-    |------------------------------------------------------------------
-    | Rafraîchit l'état visuel des boutons
-    |------------------------------------------------------------------
-    */
 
     function refreshNoteButtonsState()
     {
@@ -81,18 +57,13 @@ export function initMangaAjaxNotes()
         });
     }
 
-    /*
-    |------------------------------------------------------------------
-    | Sauvegarde AJAX
-    |------------------------------------------------------------------
-    */
-
     async function saveMangaNotes()
     {
         const formData = new FormData();
 
         formData.append('jacquette', noteState.jacquette ?? '');
         formData.append('livre_note', noteState.livre_note ?? '');
+        formData.append('csrf_token', window.csrfToken || '');
 
         try
         {
@@ -111,14 +82,9 @@ export function initMangaAjaxNotes()
                 }
             );
 
-            if (!response.ok)
-            {
-                throw new Error('Erreur réseau');
-            }
-
             const data = await response.json();
 
-            if (!data.success)
+            if (!response.ok || !data.success)
             {
                 throw new Error(
                     data.message || 'Erreur lors de la sauvegarde'
@@ -156,12 +122,6 @@ export function initMangaAjaxNotes()
         }
     }
 
-    /*
-    |------------------------------------------------------------------
-    | Clic sur une note
-    |------------------------------------------------------------------
-    */
-
     noteButtons.forEach((button) =>
     {
         button.addEventListener('click', async () =>
@@ -185,9 +145,7 @@ export function initMangaAjaxNotes()
                 return;
             }
 
-            const selectedValue = Number(button.dataset.value);
-
-            noteState[fieldName] = selectedValue;
+            noteState[fieldName] = Number(button.dataset.value);
 
             refreshNoteButtonsState();
             await saveMangaNotes();

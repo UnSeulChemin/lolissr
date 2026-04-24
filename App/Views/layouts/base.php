@@ -46,13 +46,17 @@ elseif (!empty($_SESSION['error']))
         aria-live="polite"
         aria-atomic="true"></div>
 
-    <?php if ($flashToast !== null): ?>
-        <script>
-            window.flashToast = <?= json_encode($flashToast, JSON_UNESCAPED_UNICODE) ?>;
-        </script>
-    <?php endif; ?>
+<script>
+    window.csrfToken = "<?= htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8') ?>";
+</script>
 
-    <script type="module" src="<?= $basePath ?>public/js/app.js"></script>
+<?php if ($flashToast !== null): ?>
+    <script>
+        window.flashToast = <?= json_encode($flashToast, JSON_UNESCAPED_UNICODE) ?>;
+    </script>
+<?php endif; ?>
+
+<script type="module" src="<?= $basePath ?>public/js/app.js"></script>
 
 </body>
 </html>

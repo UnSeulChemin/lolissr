@@ -2,12 +2,6 @@ import { showToast } from '../core/toast.js';
 
 export function initAjouterPage()
 {
-    /*
-    |------------------------------------------------------------------
-    | Éléments
-    |------------------------------------------------------------------
-    */
-
     const form = document.querySelector(
         '.form-layout[data-form-page="ajouter"]'
     );
@@ -20,24 +14,12 @@ export function initAjouterPage()
     const imageInput = document.getElementById('image');
     const uploadText = document.querySelector('.form-upload-text');
 
-    /*
-    |------------------------------------------------------------------
-    | Sécurité anti double init
-    |------------------------------------------------------------------
-    */
-
     if (form.dataset.ajouterPageInit === 'true')
     {
         return;
     }
 
     form.dataset.ajouterPageInit = 'true';
-
-    /*
-    |------------------------------------------------------------------
-    | Preview nom fichier
-    |------------------------------------------------------------------
-    */
 
     if (imageInput && uploadText && imageInput.dataset.uploadPreviewInit !== 'true')
     {
@@ -50,12 +32,6 @@ export function initAjouterPage()
                 : 'Choisir une image';
         });
     }
-
-    /*
-    |------------------------------------------------------------------
-    | Soumission AJAX
-    |------------------------------------------------------------------
-    */
 
     form.addEventListener('submit', async (event) =>
     {
@@ -70,6 +46,11 @@ export function initAjouterPage()
 
         const formData = new FormData(form);
 
+        if (!formData.has('csrf_token'))
+        {
+            formData.append('csrf_token', window.csrfToken || '');
+        }
+
         try
         {
             const response = await fetch(form.action, {
@@ -82,16 +63,17 @@ export function initAjouterPage()
             });
 
             const contentType = response.headers.get('content-type') || '';
-            const isJsonResponse = contentType.includes('application/json');
 
-            if (!isJsonResponse)
-            {
-                throw new Error('Réponse non JSON');
-            }
+if (!contentType.includes('application/json'))
+{
+    const text = await response.text();
+    console.error('Réponse serveur HTML :', text);
+    throw new Error('Réponse serveur non JSON');
+}
 
             const data = await response.json();
 
-            if (!data.success)
+            if (!response.ok || !data.success)
             {
                 showToast(
                     data.message || 'Une erreur est survenue',
@@ -114,7 +96,8 @@ export function initAjouterPage()
         }
         catch (error)
         {
-            showToast('Erreur serveur', 'error');
+            console.error(error);
+            showToast(error.message || 'Erreur serveur', 'error');
         }
         finally
         {

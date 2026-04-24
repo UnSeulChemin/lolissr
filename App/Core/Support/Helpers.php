@@ -8,6 +8,7 @@ use App\Core\Config\Config;
 use App\Core\Config\Env;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
+use App\Core\Support\Session;
 
 /*
 |--------------------------------------------------------------------------
@@ -117,6 +118,7 @@ if (!function_exists('abort'))
         match ($code) {
             404 => $controller->renderNotFoundPage(),
             405 => $controller->renderMethodNotAllowedPage(),
+            419 => $controller->renderServerErrorPage(),
             default => $controller->renderServerErrorPage(),
         };
 
@@ -229,7 +231,7 @@ if (!function_exists('env_int'))
 {
     function env_int(string $key, int $default = 0): int
     {
-        return Env::int($key, $default);
+        return (int) Env::get($key, $default);
     }
 }
 
@@ -258,5 +260,67 @@ if (!function_exists('is_ajax'))
     function is_ajax(): bool
     {
         return Request::isAjax();
+    }
+}
+
+if (!function_exists('csrf_token'))
+{
+    function csrf_token(): string
+    {
+        if (!Session::has('csrf_token'))
+        {
+            Session::set(
+                'csrf_token',
+                bin2hex(random_bytes(32))
+            );
+        }
+
+        return Session::get('csrf_token');
+    }
+}
+
+if (!function_exists('csrf_field'))
+{
+    function csrf_field(): string
+    {
+        return '<input type="hidden" name="csrf_token" value="'
+            . htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8')
+            . '">';
+    }
+}
+
+if (!function_exists('csrf_verify'))
+{
+    function csrf_verify(): void
+    {
+        if (!Request::isPost())
+        {
+            return;
+        }
+
+        $token = Request::post('csrf_token');
+        $sessionToken = Session::get('csrf_token');
+
+        $validToken =
+            is_string($token)
+            && $token !== ''
+            && is_string($sessionToken)
+            && $sessionToken !== ''
+            && hash_equals($sessionToken, $token);
+
+        if ($validToken)
+        {
+            return;
+        }
+
+        if (Request::isAjax())
+        {
+            json([
+                'success' => false,
+                'message' => 'Session expirée, recharge la page.'
+            ], 419);
+        }
+
+        abort(419);
     }
 }

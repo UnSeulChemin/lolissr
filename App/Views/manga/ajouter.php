@@ -20,6 +20,8 @@ $old = Session::get('old', []);
                 method="post"
                 enctype="multipart/form-data">
 
+                <?= csrf_field() ?>
+
                 <div class="form-group">
 
                     <label class="form-label" for="livre">

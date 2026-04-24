@@ -25,6 +25,8 @@ $cancelUrl = $basePath . 'manga/' . rawurlencode($manga->slug) . '/' . (int) $ma
                 action="<?= $basePath . 'manga/modifier/' . rawurlencode($manga->slug) . '/' . (int) $manga->numero; ?>"
                 method="post">
 
+                <?= csrf_field() ?>
+
                 <div class="form-group">
 
                     <label class="form-label" for="jacquette">
