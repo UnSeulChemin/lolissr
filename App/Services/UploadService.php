@@ -11,10 +11,11 @@ use App\Core\Support\Str;
 
 class UploadService
 {
-    public function isTestUploadMode(): bool
-    {
-        return App::isTesting() || env_bool('TEST_UPLOAD_MODE', false);
-    }
+public function isTestUploadMode(): bool
+{
+    return App::isTesting()
+        && env_bool('TEST_UPLOAD_MODE', false);
+}
 
     public function testUploadDirectory(): string
     {
