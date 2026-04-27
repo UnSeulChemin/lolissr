@@ -44,6 +44,7 @@ $isSerieView = is_string($slugFilter) && trim($slugFilter) !== '';
                         $livre = isset($manga->livre) ? (string) $manga->livre : '';
                         $note = $manga->note ?? null;
                         $total = isset($manga->total) ? (int) $manga->total : 0;
+                        $totalLu = isset($manga->total_lu) ? (int) $manga->total_lu : 0;
                         $lu = isset($manga->lu) ? (int) $manga->lu : 0;
 
                         if ($slug === '' || $thumbnail === '' || $extension === '' || $livre === '') {
@@ -63,6 +64,14 @@ $isSerieView = is_string($slugFilter) && trim($slugFilter) !== '';
                                 $noteClass = 'collection-note-low';
                             }
                         }
+
+                        $readBadgeActive = $isSerieView
+                            ? $lu === 1
+                            : ($total > 0 && $totalLu >= $total);
+
+                        $readBadgeTitle = $isSerieView
+                            ? ($readBadgeActive ? 'Tome lu' : 'Tome non lu')
+                            : ($readBadgeActive ? 'Série lue' : 'Série non terminée');
                         ?>
 
                         <a
@@ -75,21 +84,19 @@ $isSerieView = is_string($slugFilter) && trim($slugFilter) !== '';
                                 </span>
                             <?php endif; ?>
 
-                            <?php if ($isSerieView): ?>
-                                <span
-                                    class="collection-read-badge <?= $lu === 1 ? 'active' : '' ?>"
-                                    title="<?= $lu === 1 ? 'Lu' : 'Non lu' ?>"
-                                    aria-label="<?= $lu === 1 ? 'Lu' : 'Non lu' ?>">
+                            <span
+                                class="collection-read-badge <?= $readBadgeActive ? 'active' : '' ?>"
+                                title="<?= htmlspecialchars($readBadgeTitle, ENT_QUOTES, 'UTF-8'); ?>"
+                                aria-label="<?= htmlspecialchars($readBadgeTitle, ENT_QUOTES, 'UTF-8'); ?>">
 
-                                    <svg
-                                        class="collection-read-icon"
-                                        viewBox="0 0 24 24"
-                                        aria-hidden="true">
-                                        <path d="M7 3C6.45 3 6 3.45 6 4V21L12 17L18 21V4C18 3.45 17.55 3 17 3H7Z"/>
-                                    </svg>
+                                <svg
+                                    class="collection-read-icon"
+                                    viewBox="0 0 24 24"
+                                    aria-hidden="true">
+                                    <path d="M7 3C6.45 3 6 3.45 6 4V21L12 17L18 21V4C18 3.45 17.55 3 17 3H7Z"/>
+                                </svg>
 
-                                </span>
-                            <?php endif; ?>
+                            </span>
 
                             <div class="card-image-box-portrait">
                                 <img

@@ -289,7 +289,13 @@ final class MangaRepository extends Model
                     SELECT COUNT(*)
                     FROM {$this->getTable()}
                     WHERE slug = m.slug
-                ) AS total
+                ) AS total,
+                (
+                    SELECT COUNT(*)
+                    FROM {$this->getTable()}
+                    WHERE slug = m.slug
+                    AND lu = 1
+                ) AS total_lu
             FROM {$this->getTable()} m
             WHERE m.numero = 1
             ORDER BY {$orderBy}
