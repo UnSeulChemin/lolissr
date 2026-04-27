@@ -233,17 +233,113 @@
 {
     margin-top: 32px;
 
-    display: flex;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
 }
+
+
+/* --- gauche (bookmark) --- */
+
+.detail-actions-left
+{
+    justify-self: start;
+}
+
+
+/* --- centre (Modifier / Supprimer) --- */
+
+.detail-actions-right
+{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+
+    grid-column: 2;
+}
+
+
+/* --- boutons --- */
 
 .detail-actions .form-submit
 {
     min-width: 160px;
 }
 
-#ajax-note-total
+/* =========================================
+   LU / BOOKMARK AJAX
+========================================= */
+
+.ajax-lu-button
 {
-    font-size: 20px;
-    font-weight: 700;
+    width: 54px;
+    height: 54px;
+    padding: 0;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    flex: 0 0 54px;
+
+    border: 2px solid #4f63ff;
+    border-radius: 50%;
+    background: #ffffff;
+    color: #4f63ff;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 2px 6px rgba(79, 99, 255, 0.12),
+        inset 0 1px 1px rgba(255,255,255,0.25);
+
+    transition:
+        transform 0.18s ease,
+        background 0.18s ease,
+        color 0.18s ease,
+        box-shadow 0.18s ease;
+
+    margin-left: 6px;
+}
+
+.ajax-lu-button:hover
+{
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 3px 8px rgba(79, 99, 255, 0.16);
+}
+
+.ajax-lu-button.active
+{
+    background: #4f63ff;
+    color: #ffffff;
+
+    box-shadow:
+        0 4px 12px rgba(79, 99, 255, 0.25);
+}
+
+.ajax-lu-button:disabled
+{
+    opacity: 0.6;
+    cursor: wait;
+    transform: none;
+}
+
+.lu-icon
+{
+    width: 28px;
+    height: 28px;
+
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.4;
+    stroke-linejoin: round;
+}
+
+.ajax-lu-button.active .lu-icon
+{
+    fill: currentColor;
+    stroke: currentColor;
 }

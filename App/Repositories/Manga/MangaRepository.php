@@ -431,6 +431,24 @@ final class MangaRepository extends Model
         );
     }
 
+    public function updateLu(
+        string $slug,
+        int $numero,
+        bool $lu
+    ): bool {
+        $this->guardWrite();
+
+        return $this->update(
+            [
+                'lu' => $lu ? 1 : 0
+            ],
+            [
+                'slug' => Str::slug($slug),
+                'numero' => $numero
+            ]
+        );
+    }
+
     public function deleteBySlugAndNumero(string $slug, int $numero): bool
     {
         $this->guardWrite();

@@ -48,6 +48,15 @@ return static function (Router $router): void
     ]);
 
     $router->post(
+        '/manga/ajax/update-lu/{slug}/{numero}',
+        'Manga\MangaAjaxController@updateLu'
+    )->middleware([
+        PostOnlyMiddleware::class,
+        AjaxOnlyMiddleware::class,
+        CsrfMiddleware::class,
+    ]);
+
+    $router->post(
         '/manga/ajax/supprimer/{slug}/{numero}',
         'Manga\MangaAjaxController@delete'
     )->middleware([

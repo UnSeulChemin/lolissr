@@ -237,6 +237,48 @@ final class MangaWriteService
         ];
     }
 
+    public function updateLu(string $slug, int $numero, array $post): array
+    {
+        if ($this->isReadOnlyMode()) {
+            return $this->blockedWriteResponse();
+        }
+
+        $lu = (int) ($post['lu'] ?? 0);
+
+        if (!in_array($lu, [0, 1], true)) {
+            return [
+                'success' => false,
+                'status' => 422,
+                'message' => 'Statut de lecture invalide',
+            ];
+        }
+
+        $updated = $this->mangaRepository->updateLu(
+            $slug,
+            $numero,
+            $lu === 1
+        );
+
+        if (!$updated) {
+            Logger::error("Update lu échoué slug=$slug numero=$numero");
+
+            return [
+                'success' => false,
+                'status' => 500,
+                'message' => 'Erreur lors de la mise à jour',
+            ];
+        }
+
+        $this->cacheService->clear();
+
+        return [
+            'success' => true,
+            'status' => 200,
+            'message' => $lu === 1 ? 'Manga marqué comme lu' : 'Manga marqué comme non lu',
+            'lu' => $lu,
+        ];
+    }
+
     public function delete(string $slug, int $numero): array
     {
         if ($this->isReadOnlyMode()) {

@@ -130,6 +130,46 @@ private function ensureAjax(): void
         json($result, (int) ($result['status'] ?? 200));
     }
 
+    public function updateLu(string $slug, string $numero): void
+    {
+        $this->ensureAjax();
+
+        if (!ctype_digit($numero)) {
+            $this->error([
+                'message' => 'Numéro invalide',
+            ], 404);
+        }
+
+        $numero = (int) $numero;
+
+        $data = $this->mangaReadService->one($slug, $numero);
+
+        if ($data === null) {
+            $this->error([
+                'message' => 'Manga introuvable',
+            ], 404);
+        }
+
+        if ($slug !== $data['canonicalSlug']) {
+            $this->error([
+                'message' => 'URL non canonique',
+                'redirect' => $this->basePath
+                    . 'manga/ajax/update-lu/'
+                    . rawurlencode($data['canonicalSlug'])
+                    . '/'
+                    . $numero,
+            ], 409);
+        }
+
+        $result = $this->mangaWriteService->updateLu(
+            $data['canonicalSlug'],
+            $numero,
+            $_POST
+        );
+
+        json($result, (int) ($result['status'] ?? 200));
+    }
+
     public function delete(string $slug, string $numero): void
     {
         $this->ensureAjax();

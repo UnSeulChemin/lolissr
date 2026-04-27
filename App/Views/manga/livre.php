@@ -96,19 +96,48 @@
             </div>
 
             <div class="detail-actions">
-                <a
-                    class="form-submit"
-                    href="<?= $basePath; ?>manga/modifier/<?= rawurlencode($manga->slug) ?>/<?= (int) $manga->numero ?>">
-                    Modifier
-                </a>
 
-                <button
-                    type="button"
-                    class="form-submit form-submit-danger js-delete-manga"
-                    data-url="<?= $basePath; ?>manga/ajax/supprimer/<?= rawurlencode($manga->slug) ?>/<?= (int) $manga->numero ?>"
-                    data-redirect="<?= $basePath; ?>manga/serie/<?= rawurlencode($manga->slug) ?>">
-                    Supprimer
-                </button>
+                <div class="detail-actions-left">
+
+                    <button
+                        type="button"
+                        class="ajax-lu-button <?= (int) ($manga->lu ?? 0) === 1 ? 'active' : '' ?>"
+                        data-url="<?= $basePath; ?>manga/ajax/update-lu/<?= rawurlencode($manga->slug) ?>/<?= (int) $manga->numero ?>"
+                        data-lu="<?= (int) ($manga->lu ?? 0) ?>"
+                        title="<?= (int) ($manga->lu ?? 0) === 1 ? 'Marquer comme non lu' : 'Marquer comme lu' ?>"
+                        aria-label="<?= (int) ($manga->lu ?? 0) === 1 ? 'Marquer comme non lu' : 'Marquer comme lu' ?>">
+
+                        <svg
+                            class="lu-icon"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true">
+
+                            <path d="M7 3C6.45 3 6 3.45 6 4V21L12 17L18 21V4C18 3.45 17.55 3 17 3H7Z"/>
+
+                        </svg>
+
+                    </button>
+
+                </div>
+
+                <div class="detail-actions-right">
+
+                    <a
+                        class="form-submit"
+                        href="<?= $basePath; ?>manga/modifier/<?= rawurlencode($manga->slug) ?>/<?= (int) $manga->numero ?>">
+                        Modifier
+                    </a>
+
+                    <button
+                        type="button"
+                        class="form-submit form-submit-danger js-delete-manga"
+                        data-url="<?= $basePath; ?>manga/ajax/supprimer/<?= rawurlencode($manga->slug) ?>/<?= (int) $manga->numero ?>"
+                        data-redirect="<?= $basePath; ?>manga/serie/<?= rawurlencode($manga->slug) ?>">
+                        Supprimer
+                    </button>
+
+                </div>
+
             </div>
 
         </article>
