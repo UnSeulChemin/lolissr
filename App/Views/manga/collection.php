@@ -44,6 +44,7 @@ $isSerieView = is_string($slugFilter) && trim($slugFilter) !== '';
                         $livre = isset($manga->livre) ? (string) $manga->livre : '';
                         $note = $manga->note ?? null;
                         $total = isset($manga->total) ? (int) $manga->total : 0;
+                        $lu = isset($manga->lu) ? (int) $manga->lu : 0;
 
                         if ($slug === '' || $thumbnail === '' || $extension === '' || $livre === '') {
                             continue;
@@ -64,11 +65,29 @@ $isSerieView = is_string($slugFilter) && trim($slugFilter) !== '';
                         }
                         ?>
 
-                        <a class="card card-link collection-card-link" href="<?= htmlspecialchars($href, ENT_QUOTES, 'UTF-8'); ?>">
+                        <a
+                            class="card card-link collection-card-link"
+                            href="<?= htmlspecialchars($href, ENT_QUOTES, 'UTF-8'); ?>">
 
                             <?php if ($isSerieView && $note !== null): ?>
                                 <span class="collection-card-badge <?= htmlspecialchars($noteClass, ENT_QUOTES, 'UTF-8'); ?>">
                                     ⭐ <?= (int) $note; ?>/10
+                                </span>
+                            <?php endif; ?>
+
+                            <?php if ($isSerieView): ?>
+                                <span
+                                    class="collection-read-badge <?= $lu === 1 ? 'active' : '' ?>"
+                                    title="<?= $lu === 1 ? 'Lu' : 'Non lu' ?>"
+                                    aria-label="<?= $lu === 1 ? 'Lu' : 'Non lu' ?>">
+
+                                    <svg
+                                        class="collection-read-icon"
+                                        viewBox="0 0 24 24"
+                                        aria-hidden="true">
+                                        <path d="M7 3C6.45 3 6 3.45 6 4V21L12 17L18 21V4C18 3.45 17.55 3 17 3H7Z"/>
+                                    </svg>
+
                                 </span>
                             <?php endif; ?>
 
