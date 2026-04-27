@@ -164,6 +164,7 @@
 
 .home-grid-watch .card-link.card-medium
 {
+    width: auto;
     min-height: 310px;
     padding: 20px 28px 18px;
 
@@ -450,4 +451,18 @@
     );
 
     box-shadow: 0 3px 8px var(--color-gold-shadow);
+}
+
+/* =========================================
+   HOME — ELLIPSIS "MANGAS À SURVEILLER"
+========================================= */
+
+.home-grid-watch .home-feature-title,
+.home-grid-watch .home-feature-meta
+{
+    max-width: 10ch;
+
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
