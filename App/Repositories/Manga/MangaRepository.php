@@ -466,4 +466,22 @@ final class MangaRepository extends Model
             ]
         );
     }
+
+    public function countRead(): int
+    {
+        $query = $this->requete(
+            "SELECT COUNT(*) AS total
+            FROM {$this->getTable()}
+            WHERE lu = 1"
+        );
+
+        if ($query === false)
+        {
+            return 0;
+        }
+
+        $result = $query->fetch();
+
+        return (int) ($result->total ?? 0);
+    }
 }

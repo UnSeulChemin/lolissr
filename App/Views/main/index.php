@@ -155,6 +155,50 @@
     <?php endif; ?>
 
     <h2 class="home-section-title">
+        📖 Lecture
+    </h2>
+
+    <section class="home-grid home-grid-stats card-grid-3 animate-fade-up-stagger">
+
+        <article class="card card-small">
+            <h2 class="home-card-title">
+                ✅ Total lus
+            </h2>
+
+            <p class="home-card-value">
+                <?= (int) $totalRead ?> lus
+            </p>
+        </article>
+
+        <article class="card card-small">
+            <h2 class="home-card-title">
+                📚 Restants à lire
+            </h2>
+
+            <p class="home-card-value">
+                <?= (int) $totalUnread ?> à lire
+            </p>
+        </article>
+
+        <article class="card card-small home-reading-progress-card">
+            <h2 class="home-card-title">
+                📊 Progression lecture
+            </h2>
+
+            <p class="home-card-value home-reading-progress-value">
+                <?= (int) $readingProgress ?>%
+            </p>
+
+            <div
+                class="home-reading-progress"
+                style="--progress: <?= (int) $readingProgress ?>%;">
+                <div class="home-reading-progress-bar"></div>
+            </div>
+        </article>
+
+    </section>
+
+    <h2 class="home-section-title">
         ⚠️ Mangas à surveiller
     </h2>
 

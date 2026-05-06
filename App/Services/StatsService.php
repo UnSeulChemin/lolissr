@@ -22,6 +22,27 @@ final class StatsService
         return $this->repository->countSeries();
     }
 
+    public function totalRead(): int
+    {
+        return $this->repository->countRead();
+    }
+
+    public function totalUnread(): int
+    {
+        return max(0, $this->totalTomes() - $this->totalRead());
+    }
+
+    public function readingProgress(): int
+    {
+        $totalTomes = $this->totalTomes();
+
+        if ($totalTomes <= 0) {
+            return 0;
+        }
+
+        return (int) round(($this->totalRead() / $totalTomes) * 100);
+    }
+
     public function averageNote(): ?float
     {
         return $this->repository->averageNote();
@@ -59,9 +80,20 @@ final class StatsService
 
     public function dashboard(): array
     {
+        $totalTomes = $this->totalTomes();
+        $totalRead = $this->totalRead();
+        $totalUnread = max(0, $totalTomes - $totalRead);
+
+        $readingProgress = $totalTomes > 0
+            ? (int) round(($totalRead / $totalTomes) * 100)
+            : 0;
+
         return [
-            'totalTomes' => $this->totalTomes(),
+            'totalTomes' => $totalTomes,
             'totalSeries' => $this->totalSeries(),
+            'totalRead' => $totalRead,
+            'totalUnread' => $totalUnread,
+            'readingProgress' => $readingProgress,
             'averageNote' => $this->averageNote(),
             'lastTome' => $this->lastTome(),
             'longestSeries' => $this->longestSeries(),
