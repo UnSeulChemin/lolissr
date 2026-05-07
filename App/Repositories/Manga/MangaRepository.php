@@ -136,9 +136,8 @@ final class MangaRepository extends Model
     public function averageNote(): ?float
     {
         $query = $this->requete(
-            "SELECT AVG(note) AS moyenne
-            FROM {$this->getTable()}
-            WHERE note IS NOT NULL"
+            "SELECT AVG(COALESCE(note, 0)) AS moyenne
+            FROM {$this->getTable()}"
         );
 
         if ($query === false)
@@ -208,8 +207,7 @@ final class MangaRepository extends Model
         $query = $this->requete(
             "SELECT *
             FROM {$this->getTable()}
-            WHERE note IS NOT NULL
-            ORDER BY note ASC, livre ASC, numero ASC
+            ORDER BY COALESCE(note, 0) ASC, livre ASC, numero ASC
             LIMIT {$limit}"
         );
 
@@ -223,8 +221,7 @@ final class MangaRepository extends Model
         $query = $this->requete(
             "SELECT *
             FROM {$this->getTable()}
-            WHERE jacquette IS NOT NULL
-            ORDER BY jacquette ASC, livre ASC, numero ASC
+            ORDER BY COALESCE(jacquette, 0) ASC, livre ASC, numero ASC
             LIMIT {$limit}"
         );
 
@@ -238,8 +235,7 @@ final class MangaRepository extends Model
         $query = $this->requete(
             "SELECT *
             FROM {$this->getTable()}
-            WHERE livre_note IS NOT NULL
-            ORDER BY livre_note ASC, livre ASC, numero ASC
+            ORDER BY COALESCE(livre_note, 0) ASC, livre ASC, numero ASC
             LIMIT {$limit}"
         );
 
