@@ -5,6 +5,13 @@ use App\Core\Support\Session;
 $errors = Session::get('errors', []);
 $old = Session::get('old', []);
 
+$statutValue = $old['statut'] ?? 'en_cours';
+
+$statutOptions = [
+    'en_cours' => 'En cours',
+    'termine' => 'Terminé',
+];
+
 ?>
 
 <section class="layout-container dashboard-page">
@@ -91,7 +98,41 @@ $old = Session::get('old', []);
                         </p>
                     <?php endif; ?>
 
-                </div>                
+                </div>
+
+                <div class="form-group">
+
+                    <label class="form-label" for="statut">
+                        Statut
+                    </label>
+
+                    <select
+                        class="form-input form-select"
+                        name="statut"
+                        id="statut"
+                        required>
+
+                        <?php foreach ($statutOptions as $value => $label): ?>
+
+                            <option
+                                value="<?= htmlspecialchars($value) ?>"
+                                <?= $statutValue === $value ? 'selected' : '' ?>>
+
+                                <?= htmlspecialchars($label) ?>
+
+                            </option>
+
+                        <?php endforeach; ?>
+
+                    </select>
+
+                    <?php if (!empty($errors['statut'])): ?>
+                        <p class="form-error">
+                            <?= htmlspecialchars($errors['statut']) ?>
+                        </p>
+                    <?php endif; ?>
+
+                </div>
 
                 <div class="form-group">
 

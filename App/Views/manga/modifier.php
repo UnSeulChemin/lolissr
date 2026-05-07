@@ -6,9 +6,15 @@ $errors = Session::get('errors', []);
 $old = Session::get('old', []);
 
 $editeurValue = $old['editeur'] ?? ($manga->editeur ?? '');
+$statutValue = $old['statut'] ?? ($manga->statut ?? 'en_cours');
 $jacquetteValue = $old['jacquette'] ?? ($manga->jacquette ?? '');
 $livreNoteValue = $old['livre_note'] ?? ($manga->livre_note ?? '');
 $commentaireValue = $old['commentaire'] ?? ($manga->commentaire ?? '');
+
+$statutOptions = [
+    'en_cours' => 'En cours',
+    'termine' => 'Terminé',
+];
 
 $cancelUrl = $basePath . 'manga/' . rawurlencode($manga->slug) . '/' . (int) $manga->numero;
 
@@ -36,11 +42,13 @@ $cancelUrl = $basePath . 'manga/' . rawurlencode($manga->slug) . '/' . (int) $ma
 
                     <select class="form-input form-select" name="jacquette" id="jacquette">
                         <option value="">Choisir</option>
+
                         <?php for ($i = 1; $i <= 5; $i++): ?>
                             <option value="<?= $i; ?>" <?= ((string) $jacquetteValue === (string) $i) ? 'selected' : ''; ?>>
                                 <?= $i; ?>
                             </option>
                         <?php endfor; ?>
+
                     </select>
 
                     <?php if (!empty($errors['jacquette'])): ?>
@@ -59,11 +67,13 @@ $cancelUrl = $basePath . 'manga/' . rawurlencode($manga->slug) . '/' . (int) $ma
 
                     <select class="form-input form-select" name="livre_note" id="livre_note">
                         <option value="">Choisir</option>
+
                         <?php for ($i = 1; $i <= 5; $i++): ?>
                             <option value="<?= $i; ?>" <?= ((string) $livreNoteValue === (string) $i) ? 'selected' : ''; ?>>
                                 <?= $i; ?>
                             </option>
                         <?php endfor; ?>
+
                     </select>
 
                     <?php if (!empty($errors['livre_note'])): ?>
@@ -87,11 +97,42 @@ $cancelUrl = $basePath . 'manga/' . rawurlencode($manga->slug) . '/' . (int) $ma
                         id="editeur"
                         placeholder="Ex : Delcourt/Tonkam"
                         value="<?= htmlspecialchars($editeurValue) ?>"
-                        maxlength="100">
+                        maxlength="100"
+                        required>
 
                     <?php if (!empty($errors['editeur'])): ?>
                         <p class="form-error">
                             <?= htmlspecialchars($errors['editeur']) ?>
+                        </p>
+                    <?php endif; ?>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label class="form-label" for="statut">
+                        Statut
+                    </label>
+
+                    <select
+                        class="form-input form-select"
+                        name="statut"
+                        id="statut"
+                        required>
+
+                        <?php foreach ($statutOptions as $value => $label): ?>
+                            <option
+                                value="<?= htmlspecialchars($value) ?>"
+                                <?= ((string) $statutValue === (string) $value) ? 'selected' : ''; ?>>
+                                <?= htmlspecialchars($label) ?>
+                            </option>
+                        <?php endforeach; ?>
+
+                    </select>
+
+                    <?php if (!empty($errors['statut'])): ?>
+                        <p class="form-error">
+                            <?= htmlspecialchars($errors['statut']) ?>
                         </p>
                     <?php endif; ?>
 

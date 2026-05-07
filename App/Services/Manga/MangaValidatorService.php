@@ -9,6 +9,11 @@ use App\Core\Validation\Validator;
 
 final class MangaValidatorService
 {
+    private const STATUTS = [
+        'en_cours',
+        'termine',
+    ];
+
     public function makeCreateValidator(array $post, array $files): Validator
     {
         $validator = new Validator($post, $files);
@@ -20,6 +25,9 @@ final class MangaValidatorService
             ->nullable('editeur')
             ->string('editeur', 'L’éditeur doit être une chaîne.')
             ->maxLength('editeur', 100, 'L’éditeur ne doit pas dépasser 100 caractères.')
+            ->required('statut', 'Le statut est obligatoire.')
+            ->string('statut', 'Le statut doit être une chaîne.')
+            ->in('statut', self::STATUTS, 'Statut invalide.')
             ->required('slug', 'Le slug est obligatoire.')
             ->string('slug', 'Le slug doit être une chaîne.')
             ->maxLength('slug', 150, 'Le slug ne doit pas dépasser 150 caractères.')
@@ -47,6 +55,9 @@ final class MangaValidatorService
             ->nullable('editeur')
             ->string('editeur', 'L’éditeur doit être une chaîne.')
             ->maxLength('editeur', 100, 'L’éditeur ne doit pas dépasser 100 caractères.')
+            ->required('statut', 'Le statut est obligatoire.')
+            ->string('statut', 'Le statut doit être une chaîne.')
+            ->in('statut', self::STATUTS, 'Statut invalide.')
             ->nullable('commentaire')
             ->string('commentaire', 'Le commentaire doit être un texte.')
             ->maxLength('commentaire', 1000, 'Le commentaire ne doit pas dépasser 1000 caractères.')

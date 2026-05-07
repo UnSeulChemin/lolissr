@@ -343,3 +343,61 @@
     fill: currentColor;
     stroke: currentColor;
 }
+
+.collection-card-link
+{
+    position: relative;
+}
+
+.collection-status-badge
+{
+    position: absolute;
+    top: 18px;
+    left: 18px;
+    z-index: 2;
+
+    height: 30px;
+    padding: 0 11px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1;
+
+    border-radius: 999px;
+
+    backdrop-filter: blur(8px);
+
+    box-shadow:
+        0 3px 10px rgba(0, 0, 0, 0.08),
+        inset 0 1px 1px rgba(255,255,255,0.18);
+}
+
+.collection-status-progress
+{
+    color: #ffffff;
+
+    background: linear-gradient(
+        180deg,
+        rgba(123, 44, 255, 0.88),
+        rgba(94, 23, 235, 0.88)
+    );
+
+    border: 1px solid rgba(255,255,255,0.12);
+}
+
+.collection-status-finished
+{
+    color: #ffffff;
+
+    background: linear-gradient(
+        180deg,
+        rgba(34, 197, 94, 0.88),
+        rgba(21, 128, 61, 0.88)
+    );
+
+    border: 1px solid rgba(255,255,255,0.12);
+}

@@ -104,6 +104,8 @@ final class MangaWriteService
             'livre' => $dto->livre,
             'editeur' => $dto->editeur,
             'numero' => $dto->numero,
+            'lu' => 0,
+            'statut' => $dto->statut,
             'jacquette' => null,
             'livre_note' => null,
             'commentaire' => $dto->commentaire,
@@ -155,6 +157,7 @@ final class MangaWriteService
             $slug,
             $numero,
             $dto->editeur,
+            $dto->statut,
             $dto->jacquette,
             $dto->livreNote,
             $dto->commentaire

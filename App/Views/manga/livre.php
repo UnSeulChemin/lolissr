@@ -44,6 +44,15 @@
             </div>
 
             <div class="detail-row">
+                <div class="detail-label">Statut</div>
+                <div class="detail-value">
+                    <?= ($manga->statut ?? 'en_cours') === 'termine'
+                        ? 'Terminé'
+                        : 'En cours' ?>
+                </div>
+            </div>
+
+            <div class="detail-row">
                 <div class="detail-label">Jacquette</div>
 
                 <div class="detail-value detail-value-notes">

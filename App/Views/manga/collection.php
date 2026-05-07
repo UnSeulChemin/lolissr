@@ -42,6 +42,7 @@ $isSerieView = is_string($slugFilter) && trim($slugFilter) !== '';
                         $thumbnail = isset($manga->thumbnail) ? (string) $manga->thumbnail : '';
                         $extension = isset($manga->extension) ? (string) $manga->extension : '';
                         $livre = isset($manga->livre) ? (string) $manga->livre : '';
+                        $statut = isset($manga->statut) ? (string) $manga->statut : 'en_cours';
 
                         $note = $isSerieView
                             ? ($manga->note ?? null)
@@ -82,11 +83,22 @@ $isSerieView = is_string($slugFilter) && trim($slugFilter) !== '';
                         $noteLabel = $isSerieView
                             ? (string) (int) $note
                             : number_format((float) $note, 1, ',', '');
+
+                        $statutLabel = $statut === 'termine' ? 'Terminé' : 'En cours';
+                        $statutClass = $statut === 'termine'
+                            ? 'collection-status-finished'
+                            : 'collection-status-progress';
                         ?>
 
                         <a
                             class="card card-link collection-card-link"
                             href="<?= htmlspecialchars($href, ENT_QUOTES, 'UTF-8'); ?>">
+
+                            <?php if (!$isSerieView): ?>
+                                <span class="collection-status-badge <?= htmlspecialchars($statutClass, ENT_QUOTES, 'UTF-8'); ?>">
+                                    <?= htmlspecialchars($statutLabel, ENT_QUOTES, 'UTF-8'); ?>
+                                </span>
+                            <?php endif; ?>
 
                             <span class="collection-card-badge <?= htmlspecialchars($noteClass, ENT_QUOTES, 'UTF-8'); ?>">
                                 ⭐ <?= $note !== null ? htmlspecialchars($noteLabel, ENT_QUOTES, 'UTF-8') : '0'; ?>/10

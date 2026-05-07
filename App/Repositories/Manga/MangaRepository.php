@@ -359,6 +359,7 @@ final class MangaRepository extends Model
         $jacquette = MangaNoteNormalizer::normalize($datas['jacquette'] ?? null);
         $livreNote = MangaNoteNormalizer::normalize($datas['livre_note'] ?? null);
         $editeur = Str::nullableTrim($datas['editeur'] ?? null);
+        $statut = trim((string) ($datas['statut'] ?? 'en_cours'));
         $commentaire = Str::nullableTrim($datas['commentaire'] ?? null);
         $note = $this->calculateNote($jacquette, $livreNote);
 
@@ -370,6 +371,8 @@ final class MangaRepository extends Model
                 livre,
                 editeur,
                 numero,
+                lu,
+                statut,
                 jacquette,
                 livre_note,
                 note,
@@ -383,6 +386,8 @@ final class MangaRepository extends Model
                 :livre,
                 :editeur,
                 :numero,
+                :lu,
+                :statut,
                 :jacquette,
                 :livre_note,
                 :note,
@@ -396,6 +401,8 @@ final class MangaRepository extends Model
                 'livre' => trim((string) ($datas['livre'] ?? '')),
                 'editeur' => $editeur,
                 'numero' => max(1, (int) ($datas['numero'] ?? 1)),
+                'lu' => 0,
+                'statut' => $statut,
                 'jacquette' => $jacquette,
                 'livre_note' => $livreNote,
                 'note' => $note,
@@ -408,6 +415,7 @@ final class MangaRepository extends Model
         string $slug,
         int $numero,
         ?string $editeur,
+        string $statut,
         ?int $jacquette,
         ?int $livreNote,
         ?string $commentaire
@@ -415,6 +423,7 @@ final class MangaRepository extends Model
         $this->guardWrite();
 
         $editeur = Str::nullableTrim($editeur);
+        $statut = trim($statut);
         $jacquette = MangaNoteNormalizer::normalize($jacquette);
         $livreNote = MangaNoteNormalizer::normalize($livreNote);
         $commentaire = Str::nullableTrim($commentaire);
@@ -423,6 +432,7 @@ final class MangaRepository extends Model
         return $this->update(
             [
                 'editeur' => $editeur,
+                'statut' => $statut,
                 'jacquette' => $jacquette,
                 'livre_note' => $livreNote,
                 'note' => $note,
