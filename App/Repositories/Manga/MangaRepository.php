@@ -281,39 +281,32 @@ final class MangaRepository extends Model
 
         $query = $this->requete(
             "SELECT m.*,
-                (
-                    SELECT COUNT(*)
-                    FROM {$this->getTable()}
-                    WHERE slug = m.slug
-                ) AS total,
-                (
-                    SELECT COUNT(*)
-                    FROM {$this->getTable()}
-                    WHERE slug = m.slug
-                    AND lu = 1
-                ) AS total_lu,
-                (
-                    SELECT ROUND(AVG(COALESCE(note, 0)), 1)
-                    FROM {$this->getTable()}
-                    WHERE slug = m.slug
-                ) AS average_note
+                stats.total,
+                stats.total_lu,
+                stats.average_note
             FROM {$this->getTable()} m
+            INNER JOIN (
+                SELECT slug,
+                    COUNT(*) AS total,
+                    SUM(CASE WHEN lu = 1 THEN 1 ELSE 0 END) AS total_lu,
+                    ROUND(AVG(COALESCE(note, 0)), 1) AS average_note
+                FROM {$this->getTable()}
+                GROUP BY slug
+            ) stats ON stats.slug = m.slug
             WHERE m.numero = 1
             ORDER BY
                 CASE
-                    WHEN (
-                        SELECT COUNT(*)
-                        FROM {$this->getTable()}
-                        WHERE slug = m.slug
-                        AND lu = 1
-                    ) < (
-                        SELECT COUNT(*)
-                        FROM {$this->getTable()}
-                        WHERE slug = m.slug
-                    )
-                    THEN 0
+                    WHEN stats.total_lu < stats.total THEN 0
                     ELSE 1
-                END,
+                END ASC,
+
+                CASE
+                    WHEN m.statut = 'termine' THEN 1
+                    ELSE 0
+                END ASC,
+
+                stats.average_note ASC,
+
                 {$orderBy}
             LIMIT {$start}, {$eachPerPage}"
         );
