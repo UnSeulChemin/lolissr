@@ -102,6 +102,7 @@ final class MangaWriteService
             'extension' => $upload['extension'],
             'slug' => $dto->slug,
             'livre' => $dto->livre,
+            'editeur' => $dto->editeur,
             'numero' => $dto->numero,
             'jacquette' => null,
             'livre_note' => null,
@@ -153,6 +154,7 @@ final class MangaWriteService
         $updated = $this->mangaRepository->updateManga(
             $slug,
             $numero,
+            $dto->editeur,
             $dto->jacquette,
             $dto->livreNote,
             $dto->commentaire

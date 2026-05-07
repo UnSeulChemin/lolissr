@@ -342,6 +342,7 @@ final class MangaRepository extends Model
 
         $jacquette = MangaNoteNormalizer::normalize($datas['jacquette'] ?? null);
         $livreNote = MangaNoteNormalizer::normalize($datas['livre_note'] ?? null);
+        $editeur = Str::nullableTrim($datas['editeur'] ?? null);
         $commentaire = Str::nullableTrim($datas['commentaire'] ?? null);
         $note = $this->calculateNote($jacquette, $livreNote);
 
@@ -351,6 +352,7 @@ final class MangaRepository extends Model
                 extension,
                 slug,
                 livre,
+                editeur,
                 numero,
                 jacquette,
                 livre_note,
@@ -363,6 +365,7 @@ final class MangaRepository extends Model
                 :extension,
                 :slug,
                 :livre,
+                :editeur,
                 :numero,
                 :jacquette,
                 :livre_note,
@@ -375,6 +378,7 @@ final class MangaRepository extends Model
                 'extension' => strtolower(trim((string) ($datas['extension'] ?? ''))),
                 'slug' => Str::slug((string) ($datas['slug'] ?? '')),
                 'livre' => trim((string) ($datas['livre'] ?? '')),
+                'editeur' => $editeur,
                 'numero' => max(1, (int) ($datas['numero'] ?? 1)),
                 'jacquette' => $jacquette,
                 'livre_note' => $livreNote,
@@ -387,12 +391,14 @@ final class MangaRepository extends Model
     public function updateManga(
         string $slug,
         int $numero,
+        ?string $editeur,
         ?int $jacquette,
         ?int $livreNote,
         ?string $commentaire
     ): bool {
         $this->guardWrite();
 
+        $editeur = Str::nullableTrim($editeur);
         $jacquette = MangaNoteNormalizer::normalize($jacquette);
         $livreNote = MangaNoteNormalizer::normalize($livreNote);
         $commentaire = Str::nullableTrim($commentaire);
@@ -400,6 +406,7 @@ final class MangaRepository extends Model
 
         return $this->update(
             [
+                'editeur' => $editeur,
                 'jacquette' => $jacquette,
                 'livre_note' => $livreNote,
                 'note' => $note,

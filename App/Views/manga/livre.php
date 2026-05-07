@@ -28,6 +28,15 @@
             </div>
 
             <div class="detail-row">
+                <div class="detail-label">Éditeur</div>
+                <div class="detail-value">
+                    <?= !empty($manga->editeur)
+                        ? htmlspecialchars($manga->editeur)
+                        : 'Non renseigné' ?>
+                </div>
+            </div>
+
+            <div class="detail-row">
                 <div class="detail-label">Tome</div>
                 <div class="detail-value">
                     <?= str_pad((string) ((int) $manga->numero), 2, '0', STR_PAD_LEFT) ?>

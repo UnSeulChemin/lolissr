@@ -71,6 +71,30 @@ $old = Session::get('old', []);
 
                 <div class="form-group">
 
+                    <label class="form-label" for="editeur">
+                        Éditeur
+                    </label>
+
+                    <input
+                        class="form-input"
+                        type="text"
+                        name="editeur"
+                        id="editeur"
+                        placeholder="Ex : Delcourt/Tonkam"
+                        value="<?= htmlspecialchars($old['editeur'] ?? '') ?>"
+                        maxlength="100"
+                        required>
+
+                    <?php if (!empty($errors['editeur'])): ?>
+                        <p class="form-error">
+                            <?= htmlspecialchars($errors['editeur']) ?>
+                        </p>
+                    <?php endif; ?>
+
+                </div>                
+
+                <div class="form-group">
+
                     <label class="form-label" for="numero">
                         Numéro
                     </label>

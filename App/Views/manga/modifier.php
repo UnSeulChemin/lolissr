@@ -5,6 +5,7 @@ use App\Core\Support\Session;
 $errors = Session::get('errors', []);
 $old = Session::get('old', []);
 
+$editeurValue = $old['editeur'] ?? ($manga->editeur ?? '');
 $jacquetteValue = $old['jacquette'] ?? ($manga->jacquette ?? '');
 $livreNoteValue = $old['livre_note'] ?? ($manga->livre_note ?? '');
 $commentaireValue = $old['commentaire'] ?? ($manga->commentaire ?? '');
@@ -68,6 +69,29 @@ $cancelUrl = $basePath . 'manga/' . rawurlencode($manga->slug) . '/' . (int) $ma
                     <?php if (!empty($errors['livre_note'])): ?>
                         <p class="form-error">
                             <?= htmlspecialchars($errors['livre_note']) ?>
+                        </p>
+                    <?php endif; ?>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label class="form-label" for="editeur">
+                        Éditeur
+                    </label>
+
+                    <input
+                        class="form-input"
+                        type="text"
+                        name="editeur"
+                        id="editeur"
+                        placeholder="Ex : Delcourt/Tonkam"
+                        value="<?= htmlspecialchars($editeurValue) ?>"
+                        maxlength="100">
+
+                    <?php if (!empty($errors['editeur'])): ?>
+                        <p class="form-error">
+                            <?= htmlspecialchars($errors['editeur']) ?>
                         </p>
                     <?php endif; ?>
 
