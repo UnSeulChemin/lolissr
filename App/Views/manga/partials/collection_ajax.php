@@ -26,7 +26,11 @@ $isSerieView = is_string($slugFilter) && trim($slugFilter) !== '';
             $thumbnail = isset($manga->thumbnail) ? (string) $manga->thumbnail : '';
             $extension = isset($manga->extension) ? (string) $manga->extension : '';
             $livre = isset($manga->livre) ? (string) $manga->livre : '';
-            $note = $manga->note ?? null;
+
+            $note = $isSerieView
+                ? ($manga->note ?? null)
+                : ($manga->average_note ?? null);
+
             $total = isset($manga->total) ? (int) $manga->total : 0;
             $totalLu = isset($manga->total_lu) ? (int) $manga->total_lu : 0;
             $lu = isset($manga->lu) ? (int) $manga->lu : 0;
@@ -41,10 +45,12 @@ $isSerieView = is_string($slugFilter) && trim($slugFilter) !== '';
 
             $noteClass = 'collection-note-mid';
 
-            if ($isSerieView && $note !== null) {
-                if ((int) $note >= 8) {
+            if ($note !== null) {
+                $noteValue = (float) $note;
+
+                if ($noteValue >= 8) {
                     $noteClass = 'collection-note-good';
-                } elseif ((int) $note <= 4) {
+                } elseif ($noteValue <= 4) {
                     $noteClass = 'collection-note-low';
                 }
             }
@@ -56,17 +62,19 @@ $isSerieView = is_string($slugFilter) && trim($slugFilter) !== '';
             $readBadgeTitle = $isSerieView
                 ? ($readBadgeActive ? 'Tome lu' : 'Tome non lu')
                 : ($readBadgeActive ? 'Série lue' : 'Série non terminée');
+
+            $noteLabel = $isSerieView
+                ? (string) (int) $note
+                : number_format((float) $note, 1, ',', '');
             ?>
 
             <a
                 class="card card-link collection-card-link"
                 href="<?= htmlspecialchars($href, ENT_QUOTES, 'UTF-8'); ?>">
 
-                <?php if ($isSerieView && $note !== null): ?>
-                    <span class="collection-card-badge <?= htmlspecialchars($noteClass, ENT_QUOTES, 'UTF-8'); ?>">
-                        ⭐ <?= (int) $note; ?>/10
-                    </span>
-                <?php endif; ?>
+                <span class="collection-card-badge <?= htmlspecialchars($noteClass, ENT_QUOTES, 'UTF-8'); ?>">
+                    ⭐ <?= $note !== null ? htmlspecialchars($noteLabel, ENT_QUOTES, 'UTF-8') : '0'; ?>/10
+                </span>
 
                 <span
                     class="collection-read-badge <?= $readBadgeActive ? 'active' : '' ?>"

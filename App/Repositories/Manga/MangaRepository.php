@@ -295,7 +295,12 @@ final class MangaRepository extends Model
                     FROM {$this->getTable()}
                     WHERE slug = m.slug
                     AND lu = 1
-                ) AS total_lu
+                ) AS total_lu,
+                (
+                    SELECT ROUND(AVG(COALESCE(note, 0)), 1)
+                    FROM {$this->getTable()}
+                    WHERE slug = m.slug
+                ) AS average_note
             FROM {$this->getTable()} m
             WHERE m.numero = 1
             ORDER BY {$orderBy}
