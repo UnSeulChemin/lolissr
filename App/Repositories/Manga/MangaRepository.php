@@ -299,7 +299,22 @@ final class MangaRepository extends Model
                 ) AS average_note
             FROM {$this->getTable()} m
             WHERE m.numero = 1
-            ORDER BY {$orderBy}
+            ORDER BY
+                CASE
+                    WHEN (
+                        SELECT COUNT(*)
+                        FROM {$this->getTable()}
+                        WHERE slug = m.slug
+                        AND lu = 1
+                    ) < (
+                        SELECT COUNT(*)
+                        FROM {$this->getTable()}
+                        WHERE slug = m.slug
+                    )
+                    THEN 0
+                    ELSE 1
+                END,
+                {$orderBy}
             LIMIT {$start}, {$eachPerPage}"
         );
 
