@@ -6,6 +6,8 @@ namespace App\Core\Http;
 
 use App\Core\Exceptions\MethodNotAllowedException;
 use App\Core\Exceptions\NotFoundException;
+use ReflectionClass;
+use ReflectionNamedType;
 use RuntimeException;
 
 class Router
@@ -146,7 +148,7 @@ class Router
                 throw new RuntimeException('Middleware introuvable : ' . $middlewareClass);
             }
 
-            $middleware = new $middlewareClass();
+            $middleware = $this->resolve($middlewareClass);
 
             if (!method_exists($middleware, 'handle'))
             {
@@ -155,6 +157,40 @@ class Router
 
             $middleware->handle();
         }
+    }
+
+    private function resolve(string $class): object
+    {
+        if (!class_exists($class))
+        {
+            throw new RuntimeException('Classe introuvable : ' . $class);
+        }
+
+        $reflection = new ReflectionClass($class);
+        $constructor = $reflection->getConstructor();
+
+        if ($constructor === null)
+        {
+            return new $class();
+        }
+
+        $dependencies = [];
+
+        foreach ($constructor->getParameters() as $parameter)
+        {
+            $type = $parameter->getType();
+
+            if (!$type instanceof ReflectionNamedType || $type->isBuiltin())
+            {
+                throw new RuntimeException(
+                    'Impossible de résoudre la dépendance : ' . $class . '::$' . $parameter->getName()
+                );
+            }
+
+            $dependencies[] = $this->resolve($type->getName());
+        }
+
+        return $reflection->newInstanceArgs($dependencies);
     }
 
     /**
@@ -197,7 +233,7 @@ class Router
             throw new RuntimeException('Controller introuvable : ' . $controllerClass);
         }
 
-        $controller = new $controllerClass();
+        $controller = $this->resolve($controllerClass);
 
         if (!method_exists($controller, $method))
         {

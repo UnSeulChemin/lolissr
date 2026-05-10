@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Controllers\Chinois;
 
 use App\Controllers\Controller;
+use App\Services\Chinois\ChinoisReadService;
 
 final class ChinoisController extends Controller
 {
-    public function __construct()
-    {
+    public function __construct(
+        private readonly ChinoisReadService $chinoisReadService
+    ) {
         parent::__construct();
     }
 
@@ -24,14 +26,18 @@ final class ChinoisController extends Controller
     {
         $this->title = 'Chinois | Mandarin';
 
-        $this->render('chinois/mandarin');
+        $this->render('chinois/mandarin', [
+            'vocabulaires' => $this->chinoisReadService->mandarin(),
+        ]);
     }
 
     public function jin(): void
     {
         $this->title = 'Chinois | 晋语';
 
-        $this->render('chinois/jin');
+        $this->render('chinois/jin', [
+            'vocabulaires' => $this->chinoisReadService->jin(),
+        ]);
     }
 
     public function flashcards(): void

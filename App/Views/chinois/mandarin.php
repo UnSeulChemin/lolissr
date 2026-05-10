@@ -1,3 +1,9 @@
+<?php
+
+$vocabulaires = isset($vocabulaires) && is_array($vocabulaires) ? $vocabulaires : [];
+
+?>
+
 <section class="layout-container dashboard-page">
 
     <section class="dashboard-header">
@@ -48,47 +54,49 @@
 
                 <tbody>
 
-                    <tr>
-                        <td>
-                            <span class="chinois-vocab-word">好像</span>
-                            <span class="chinois-vocab-pinyin">hǎoxiàng</span>
-                        </td>
+                    <?php if ($vocabulaires === []): ?>
 
-                        <td>
-                            <span class="chinois-vocab-type">Adverbe</span>
-                        </td>
+                        <tr>
+                            <td colspan="4">
+                                Aucun vocabulaire enregistré.
+                            </td>
+                        </tr>
 
-                        <td>
-                            On dirait / sembler
-                        </td>
+                    <?php else: ?>
 
-                        <td>
-                            <span class="chinois-vocab-example">
-                                他好像不太高兴。
-                            </span>
-                        </td>
-                    </tr>
+                        <?php foreach ($vocabulaires as $vocabulaire): ?>
 
-                    <tr>
-                        <td>
-                            <span class="chinois-vocab-word">觉得</span>
-                            <span class="chinois-vocab-pinyin">juéde</span>
-                        </td>
+                            <tr>
+                                <td>
+                                    <span class="chinois-vocab-word">
+                                        <?= e($vocabulaire->mot) ?>
+                                    </span>
 
-                        <td>
-                            <span class="chinois-vocab-type">Verbe</span>
-                        </td>
+                                    <span class="chinois-vocab-pinyin">
+                                        <?= e($vocabulaire->pinyin) ?>
+                                    </span>
+                                </td>
 
-                        <td>
-                            Penser / trouver que
-                        </td>
+                                <td>
+                                    <span class="chinois-vocab-type">
+                                        <?= e($vocabulaire->type) ?>
+                                    </span>
+                                </td>
 
-                        <td>
-                            <span class="chinois-vocab-example">
-                                我觉得这个词很好用。
-                            </span>
-                        </td>
-                    </tr>
+                                <td>
+                                    <?= e($vocabulaire->traduction) ?>
+                                </td>
+
+                                <td>
+                                    <span class="chinois-vocab-example">
+                                        <?= e($vocabulaire->exemple) ?>
+                                    </span>
+                                </td>
+                            </tr>
+
+                        <?php endforeach; ?>
+
+                    <?php endif; ?>
 
                 </tbody>
 
