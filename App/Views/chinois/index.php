@@ -56,6 +56,22 @@
 
         <a
             class="dashboard-card"
+            href="<?= $basePath ?>chinois/ajouter">
+
+            <span class="dashboard-card-icon" aria-hidden="true">➕</span>
+
+            <span class="dashboard-card-title">
+                Ajouter
+            </span>
+
+            <span class="dashboard-card-description">
+                Ajouter des mots, expressions et exemples en chinois.
+            </span>
+
+        </a>
+
+        <a
+            class="dashboard-card"
             href="<?= $basePath ?>chinois/grammaire">
 
             <span class="dashboard-card-icon" aria-hidden="true">📖</span>
@@ -82,22 +98,6 @@
 
             <span class="dashboard-card-description">
                 Réviser automatiquement le vocabulaire enregistré.
-            </span>
-
-        </a>
-
-        <a
-            class="dashboard-card"
-            href="<?= $basePath ?>chinois/ajouter">
-
-            <span class="dashboard-card-icon" aria-hidden="true">➕</span>
-
-            <span class="dashboard-card-title">
-                Ajouter
-            </span>
-
-            <span class="dashboard-card-description">
-                Ajouter des mots, expressions et exemples en chinois.
             </span>
 
         </a>

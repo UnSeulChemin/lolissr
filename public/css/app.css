@@ -24,4 +24,5 @@
 
 /* PAGES */
 @import url('./page/home.css');
-@import url('./page/chinois.css');
+@import url('./page/chinois/chinois.css');
+@import url('./page/chinois/grammaire.css');

@@ -29,8 +29,6 @@ return static function (Router $router): void
     $router->get('/chinois/grammaire/hsk2', 'Chinois\ChinoisController@hsk2');
     $router->get('/chinois/grammaire/hsk3', 'Chinois\ChinoisController@hsk3');
     $router->get('/chinois/grammaire/hsk4', 'Chinois\ChinoisController@hsk4');
-    $router->get('/chinois/grammaire/hsk5', 'Chinois\ChinoisController@hsk5');
-    $router->get('/chinois/grammaire/hsk6', 'Chinois\ChinoisController@hsk6');
 
     /*
     |--------------------------------------------------------------------------

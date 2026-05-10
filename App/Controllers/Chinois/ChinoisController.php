@@ -75,20 +75,6 @@ final class ChinoisController extends Controller
         $this->render('chinois/grammaire/hsk4');
     }
 
-    public function hsk5(): void
-    {
-        $this->title = 'Chinois | Grammaire HSK5';
-
-        $this->render('chinois/grammaire/hsk5');
-    }
-
-    public function hsk6(): void
-    {
-        $this->title = 'Chinois | Grammaire HSK6';
-
-        $this->render('chinois/grammaire/hsk6');
-    }
-
     public function flashcards(): void
     {
         $this->title = 'Chinois | Flashcards';
