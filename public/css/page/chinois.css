@@ -1,0 +1,155 @@
+/* =========================================
+   PAGE : CHINOIS
+========================================= */
+
+.chinois-vocab-panel
+{
+    width: min(1220px, 100%);
+
+    margin: 42px auto 0;
+    padding: 34px;
+
+    border: 1px solid rgba(123, 44, 255, 0.16);
+    border-radius: 32px;
+
+    background:
+        linear-gradient(180deg, rgba(255,255,255,0.97), rgba(250,247,255,0.92));
+
+    box-shadow:
+        0 20px 50px rgba(45, 35, 75, 0.12),
+        0 0 0 1px rgba(255,255,255,0.72) inset;
+}
+
+.chinois-vocab-header
+{
+    margin-bottom: 34px;
+
+    text-align: center;
+}
+
+.chinois-vocab-title
+{
+    margin: 0;
+
+    color: var(--color-violet);
+    font-size: 1.75rem;
+    font-weight: 780;
+    text-align: center;
+}
+
+.chinois-vocab-subtitle
+{
+    margin: 8px 0 0;
+
+    color: rgba(40, 35, 50, 0.66);
+    font-size: 1.04rem;
+    text-align: center;
+}
+
+.chinois-vocab-table-wrap
+{
+    overflow: hidden;
+
+    border: 1px solid rgba(123, 44, 255, 0.13);
+    border-radius: 24px;
+
+    background: rgba(255,255,255,0.82);
+}
+
+.chinois-vocab-table
+{
+    width: 100%;
+
+    border-collapse: collapse;
+
+    color: rgba(28, 25, 35, 0.84);
+}
+
+.chinois-vocab-table thead
+{
+    background:
+        linear-gradient(135deg, rgba(123, 44, 255, 0.14), rgba(178, 76, 255, 0.08));
+}
+
+.chinois-vocab-table th
+{
+    padding: 19px 24px;
+
+    color: var(--color-violet);
+    font-size: 0.82rem;
+    font-weight: 850;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.chinois-vocab-table td
+{
+    padding: 25px 24px;
+
+    font-size: 1rem;
+    text-align: center;
+    vertical-align: middle;
+
+    border-top: 1px solid rgba(123, 44, 255, 0.09);
+}
+
+.chinois-vocab-table tbody tr
+{
+    transition: background 0.18s ease;
+}
+
+.chinois-vocab-table tbody tr:hover
+{
+    background: rgba(123, 44, 255, 0.045);
+}
+
+.chinois-vocab-word
+{
+    display: block;
+
+    color: rgba(22, 18, 32, 0.94);
+    font-size: 1.55rem;
+    font-weight: 850;
+}
+
+.chinois-vocab-pinyin
+{
+    display: block;
+
+    margin-top: 7px;
+
+    color: rgba(123, 44, 255, 0.72);
+    font-size: 0.92rem;
+    font-weight: 720;
+}
+
+.chinois-vocab-type
+{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 96px;
+    padding: 9px 15px;
+
+    color: #7b2cff;
+    font-size: 0.84rem;
+    font-weight: 850;
+
+    border: 1px solid rgba(123, 44, 255, 0.20);
+    border-radius: 999px;
+
+    background: rgba(123, 44, 255, 0.08);
+}
+
+.chinois-vocab-example
+{
+    display: inline-block;
+
+    max-width: 360px;
+
+    color: rgba(40, 35, 50, 0.72);
+    font-size: 1rem;
+    line-height: 1.7;
+}
