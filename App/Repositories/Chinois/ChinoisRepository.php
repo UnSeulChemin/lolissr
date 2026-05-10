@@ -8,7 +8,7 @@ use App\Models\Model;
 
 final class ChinoisRepository extends Model
 {
-    protected string $table = 'chinois';
+    protected string $table = 'chinois_vocabulaire';
 
     public function findByLangue(string $langue): array
     {
