@@ -275,7 +275,21 @@ class Router
                 continue;
             }
 
-            $dependencies[] = array_shift($params);
+            if ($params !== [])
+            {
+                $dependencies[] = array_shift($params);
+
+                continue;
+            }
+
+            if ($parameter->isDefaultValueAvailable())
+            {
+                $dependencies[] = $parameter->getDefaultValue();
+
+                continue;
+            }
+
+            $dependencies[] = null;
         }
 
         $controller->{$method}(...$dependencies);
