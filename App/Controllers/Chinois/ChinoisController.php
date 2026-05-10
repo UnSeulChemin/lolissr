@@ -31,12 +31,12 @@ final class ChinoisController extends Controller
         ]);
     }
 
-    public function jin(): void
+    public function jinyu(): void
     {
         $this->title = 'Chinois | 晋语';
 
-        $this->render('chinois/jin', [
-            'vocabulaires' => $this->chinoisReadService->jin(),
+        $this->render('chinois/jinyu', [
+            'vocabulaires' => $this->chinoisReadService->jinyu(),
         ]);
     }
 

@@ -36,7 +36,7 @@
 
         <a
             class="dashboard-card"
-            href="<?= $basePath ?>chinois/jin">
+            href="<?= $basePath ?>chinois/jinyu">
 
             <span
                 class="dashboard-card-icon"
@@ -45,7 +45,7 @@
             </span>
 
             <span class="dashboard-card-title">
-                Jin
+                JinYu
             </span>
 
             <span class="dashboard-card-description">

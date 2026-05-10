@@ -18,7 +18,7 @@ final class ChinoisReadService
             ->findByLangue('mandarin');
     }
 
-    public function jin(): array
+    public function jinyu(): array
     {
         return $this->chinoisRepository
             ->findByLangue('jinyu');
