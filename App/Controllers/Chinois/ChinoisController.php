@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers\Chinois;
 
 use App\Controllers\Controller;
+use App\Repositories\Chinois\ChinoisGrammaireRepository;
 use App\Services\Chinois\ChinoisReadService;
 
 final class ChinoisController extends Controller
@@ -47,11 +48,17 @@ final class ChinoisController extends Controller
         $this->render('chinois/grammaire');
     }
 
-    public function hsk1(): void
+    public function hsk1(
+        ChinoisGrammaireRepository $repository,
+    ): void
     {
         $this->title = 'Chinois | Grammaire HSK1';
 
-        $this->render('chinois/grammaire/hsk1');
+        $grammaires = $repository->findByLevel('HSK1');
+
+        $this->render('chinois/grammaire/hsk1', [
+            'grammaires' => $grammaires,
+        ]);
     }
 
     public function hsk2(): void

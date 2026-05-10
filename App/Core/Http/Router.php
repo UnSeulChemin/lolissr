@@ -10,6 +10,7 @@ use App\Core\Exceptions\NotFoundException;
 use ReflectionClass;
 use ReflectionNamedType;
 use RuntimeException;
+use ReflectionMethod;
 
 class Router
 {
@@ -256,7 +257,28 @@ class Router
             );
         }
 
-        $controller->{$method}(...array_values($params));
+        $reflectionMethod = new ReflectionMethod($controller, $method);
+
+        $dependencies = [];
+
+        foreach ($reflectionMethod->getParameters() as $parameter)
+        {
+            $type = $parameter->getType();
+
+            if (
+                $type instanceof ReflectionNamedType
+                && !$type->isBuiltin()
+            )
+            {
+                $dependencies[] = $this->resolve($type->getName());
+
+                continue;
+            }
+
+            $dependencies[] = array_shift($params);
+        }
+
+        $controller->{$method}(...$dependencies);
     }
 
     private function normalizeRoutePath(string $path): string
