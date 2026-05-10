@@ -40,6 +40,55 @@ final class ChinoisController extends Controller
         ]);
     }
 
+    public function grammaire(): void
+    {
+        $this->title = 'Chinois | Grammaire';
+
+        $this->render('chinois/grammaire');
+    }
+
+    public function hsk1(): void
+    {
+        $this->title = 'Chinois | Grammaire HSK1';
+
+        $this->render('chinois/grammaire/hsk1');
+    }
+
+    public function hsk2(): void
+    {
+        $this->title = 'Chinois | Grammaire HSK2';
+
+        $this->render('chinois/grammaire/hsk2');
+    }
+
+    public function hsk3(): void
+    {
+        $this->title = 'Chinois | Grammaire HSK3';
+
+        $this->render('chinois/grammaire/hsk3');
+    }
+
+    public function hsk4(): void
+    {
+        $this->title = 'Chinois | Grammaire HSK4';
+
+        $this->render('chinois/grammaire/hsk4');
+    }
+
+    public function hsk5(): void
+    {
+        $this->title = 'Chinois | Grammaire HSK5';
+
+        $this->render('chinois/grammaire/hsk5');
+    }
+
+    public function hsk6(): void
+    {
+        $this->title = 'Chinois | Grammaire HSK6';
+
+        $this->render('chinois/grammaire/hsk6');
+    }
+
     public function flashcards(): void
     {
         $this->title = 'Chinois | Flashcards';

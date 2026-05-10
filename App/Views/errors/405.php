@@ -1,4 +1,4 @@
-<section class="layout-container animate-fade-up">
+<section class="layout-container dashboard-page animate-fade-up">
 
     <section class="detail-card">
 

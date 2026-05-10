@@ -21,8 +21,16 @@ return static function (Router $router): void
 
     $router->get('/chinois/mandarin', 'Chinois\ChinoisController@mandarin');
     $router->get('/chinois/jinyu', 'Chinois\ChinoisController@jinyu');
+    $router->get('/chinois/grammaire', 'Chinois\ChinoisController@grammaire');
     $router->get('/chinois/flashcards', 'Chinois\ChinoisController@flashcards');
     $router->get('/chinois/ajouter', 'Chinois\ChinoisController@ajouter');
+
+    $router->get('/chinois/grammaire/hsk1', 'Chinois\ChinoisController@hsk1');
+    $router->get('/chinois/grammaire/hsk2', 'Chinois\ChinoisController@hsk2');
+    $router->get('/chinois/grammaire/hsk3', 'Chinois\ChinoisController@hsk3');
+    $router->get('/chinois/grammaire/hsk4', 'Chinois\ChinoisController@hsk4');
+    $router->get('/chinois/grammaire/hsk5', 'Chinois\ChinoisController@hsk5');
+    $router->get('/chinois/grammaire/hsk6', 'Chinois\ChinoisController@hsk6');
 
     /*
     |--------------------------------------------------------------------------

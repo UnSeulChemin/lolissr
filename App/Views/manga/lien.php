@@ -1,21 +1,5 @@
 <section class="layout-container dashboard-page">
 
-    <section class="dashboard-header">
-
-        <div class="dashboard-title-box animate-fade-up">
-
-            <h1 class="dashboard-title">
-                🔗 Liens utiles
-            </h1>
-
-            <p class="dashboard-description">
-                Accès rapide aux sites utiles pour mangas et outils.
-            </p>
-
-        </div>
-
-    </section>
-
     <section class="dashboard-grid animate-fade-up-stagger">
 
         <a
