@@ -66,6 +66,22 @@
 
         </a>
 
+        <a
+            class="dashboard-card"
+            href="<?= $basePath ?>chinois/ajouter">
+
+            <span class="dashboard-card-icon" aria-hidden="true">➕</span>
+
+            <span class="dashboard-card-title">
+                Ajouter
+            </span>
+
+            <span class="dashboard-card-description">
+                Ajouter du vocabulaire, des phrases ou des notes en chinois.
+            </span>
+
+        </a>
+
     </section>
 
 </section>

@@ -19,6 +19,11 @@ return static function (Router $router): void
 
     $router->get('/chinois', 'Chinois\ChinoisController@index');
 
+    $router->get('/chinois/mandarin', 'Chinois\ChinoisController@mandarin');
+    $router->get('/chinois/jin', 'Chinois\ChinoisController@jin');
+    $router->get('/chinois/flashcards', 'Chinois\ChinoisController@flashcards');
+    $router->get('/chinois/ajouter', 'Chinois\ChinoisController@ajouter');
+
     /*
     |--------------------------------------------------------------------------
     | Manga
