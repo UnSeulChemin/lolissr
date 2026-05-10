@@ -29,7 +29,7 @@
             </span>
 
             <span class="dashboard-card-description">
-                Vocabulaire, phrases, grammaire et notes en chinois standard.
+                Mots, expressions et vocabulaire en chinois standard.
             </span>
 
         </a>
@@ -49,8 +49,7 @@
             </span>
 
             <span class="dashboard-card-description">
-                Expressions locales, dialecte du Shanxi
-                et tournures régionales.
+                Mots, expressions locales et tournures du 晋语.
             </span>
 
         </a>
@@ -66,7 +65,7 @@
             </span>
 
             <span class="dashboard-card-description">
-                Réviser automatiquement le vocabulaire et les phrases avec un système type Anki.
+                Réviser automatiquement le vocabulaire enregistré.
             </span>
 
         </a>
@@ -82,7 +81,7 @@
             </span>
 
             <span class="dashboard-card-description">
-                Ajouter du vocabulaire, des phrases ou des notes en chinois.
+                Ajouter des mots, expressions et exemples en chinois.
             </span>
 
         </a>

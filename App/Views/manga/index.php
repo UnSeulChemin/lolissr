@@ -61,7 +61,7 @@
             </span>
 
             <span class="dashboard-card-description">
-                Accéder aux liens liés à la collection.
+                Sites, références et ressources utiles autour des mangas.
             </span>
 
         </a>
