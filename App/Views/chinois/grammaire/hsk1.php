@@ -42,4 +42,35 @@
 
     </section>
 
+    <section class="grammar-list">
+
+        <div class="grammar-item">
+            <div class="grammar-example">
+                我没有钱。
+            </div>
+            <div class="grammar-explanation">
+                Négation avec "没有 (méiyǒu)" pour exprimer l'absence.
+            </div>
+        </div>
+
+        <div class="grammar-item">
+            <div class="grammar-example">
+                我们都住在上海。
+            </div>
+            <div class="grammar-explanation">
+                "都 (dōu)" signifie "tous" et se place avant le verbe.
+            </div>
+        </div>
+
+        <div class="grammar-item">
+            <div class="grammar-example">
+                昨天很冷，今天也很冷。
+            </div>
+            <div class="grammar-explanation">
+                "也 (yě)" signifie "aussi" et s'utilise avant le verbe/adjectif.
+            </div>
+        </div>
+
+    </section>
+
 </section>

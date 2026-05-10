@@ -14,6 +14,7 @@
        SURFACES
     ========================= */
     --color-background: #ebebeb;
+
     --color-surface: #ffffff;
     --color-surface-soft: #f8f8fb;
     --color-surface-muted: #f7f7fb;
@@ -25,49 +26,165 @@
     ========================= */
     --color-text: #1a1a1a;
     --color-title: #222222;
+
     --color-text-soft: rgba(0, 0, 0, 0.90);
     --color-text-muted: rgba(0, 0, 0, 0.35);
     --color-text-accent: #5e4b75;
+
+    --color-panel-text: #27223a;
+    --color-panel-text-soft: rgba(40, 35, 50, 0.72);
+
+    --color-grammar-text: #27223a;
+    --color-grammar-text-soft: rgba(0, 0, 0, 0.80);
+
+    --color-chinois-pinyin: rgba(123, 44, 255, 0.72);
 
 
     /* =========================
        PRIMARY COLORS
     ========================= */
     --color-violet: #7b2cff;
+
     --color-violet-soft: rgba(123, 44, 255, 0.10);
     --color-violet-soft-hover: rgba(123, 44, 255, 0.18);
-    --color-violet-border: rgba(123, 44, 255, 0.35);
-    --color-violet-border-soft: rgba(123, 44, 255, 0.10);
-    --color-violet-border-strong: rgba(123, 44, 255, 0.55);
-    --color-violet-ring: rgba(123, 44, 255, 0.12);
+
     --color-violet-softest: rgba(123, 44, 255, 0.02);
     --color-violet-soft-light: rgba(123, 44, 255, 0.04);
     --color-violet-soft-medium: rgba(123, 44, 255, 0.06);
     --color-violet-soft-strong: rgba(123, 44, 255, 0.08);
+
+    --color-violet-border: rgba(123, 44, 255, 0.35);
+    --color-violet-border-soft: rgba(123, 44, 255, 0.10);
+    --color-violet-border-strong: rgba(123, 44, 255, 0.55);
+
+    --color-violet-ring: rgba(123, 44, 255, 0.12);
 
 
     /* =========================
        GOLD BADGE COLORS
     ========================= */
     --color-gold-text: #9a4f00;
+
     --color-gold-soft: rgba(255, 170, 40, 0.45);
     --color-gold-soft-2: rgba(255, 130, 0, 0.35);
+
     --color-gold-border: rgba(255, 130, 0, 0.45);
+
     --color-gold-shadow: rgba(255, 130, 0, 0.18);
 
 
     /* =========================
        GRADIENTS
     ========================= */
-    --gradient-violet: linear-gradient(135deg, #6a1fff, #a84dff);
+    --gradient-violet:
+        linear-gradient(
+            135deg,
+            #6a1fff,
+            #a84dff
+        );
+
+    --gradient-dashboard-header:
+        linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.98) 0%,
+            rgba(123, 44, 255, 0.06) 100%
+        );
+
+    --gradient-dashboard-header-overlay:
+        linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.30) 0%,
+            rgba(255, 255, 255, 0.10) 25%,
+            transparent 50%
+        );
+
+    --gradient-dashboard-card:
+        linear-gradient(
+            180deg,
+            var(--color-surface) 0%,
+            var(--color-surface-soft) 100%
+        );
+
+    --gradient-dashboard-card-overlay:
+        linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.34) 0%,
+            rgba(255, 255, 255, 0.10) 28%,
+            transparent 48%
+        );
+
+    --gradient-dashboard-icon:
+        linear-gradient(
+            180deg,
+            var(--color-violet-soft) 0%,
+            var(--color-violet-soft-medium) 100%
+        );
+
+    --gradient-dashboard-glow:
+        radial-gradient(
+            ellipse,
+            rgba(123, 44, 255, 0.08) 0%,
+            rgba(123, 44, 255, 0.03) 45%,
+            transparent 75%
+        );
+
+    --gradient-chinois-table-head:
+        linear-gradient(
+            135deg,
+            rgba(123, 44, 255, 0.14),
+            rgba(178, 76, 255, 0.08)
+        );
+
+
+    /* =========================
+       BACKGROUNDS
+    ========================= */
+    --background-panel:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,0.97),
+            rgba(250,247,255,0.92)
+        );
+
+    --background-grammar:
+        linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.98) 0%,
+            rgba(123, 44, 255, 0.06) 100%
+        );
+
+    --background-chinois-table:
+        rgba(255,255,255,0.82);
+
+    --background-chinois-table-row-hover:
+        rgba(123, 44, 255, 0.045);
+
+    --background-chinois-type:
+        rgba(123, 44, 255, 0.08);
 
 
     /* =========================
        BORDERS
     ========================= */
+    --border-panel:
+        1px solid rgba(123, 44, 255, 0.14);
+
+    --border-grammar:
+        1px solid rgba(123, 44, 255, 0.10);
+
+    --border-chinois-table:
+        1px solid rgba(123, 44, 255, 0.13);
+
+    --border-chinois-table-row:
+        1px solid rgba(123, 44, 255, 0.09);
+
+    --border-chinois-type:
+        1px solid rgba(123, 44, 255, 0.20);
+
     --color-border-soft: rgba(0, 0, 0, 0.08);
     --color-border-light: rgba(0, 0, 0, 0.06);
     --color-border-white-soft: rgba(255, 255, 255, 0.70);
+
     --color-badge-border: rgba(255, 255, 255, 0.35);
 
 
@@ -75,11 +192,20 @@
        BORDER RADIUS
     ========================= */
     --radius-image: 10px;
+
     --radius-badge: 14px;
     --radius-input: 16px;
+
     --radius-card: 22px;
     --radius-card-lg: 24px;
+
     --radius-pill: 999px;
+
+    --radius-grammar-hero: 28px;
+    --radius-grammar-item: 24px;
+
+    --radius-chinois-panel: 32px;
+    --radius-chinois-table: 24px;
 
 
     /* =========================
@@ -91,6 +217,7 @@
     --space-lg: 20px;
     --space-xl: 30px;
     --space-xxl: 40px;
+
     --space-container: 50px;
 
     --space-section-title: 50px;
@@ -99,35 +226,58 @@
 
     --gap-grid-home: 30px;
     --gap-grid-collection: 50px;
+
     --gap-home-feature-content: 34px;
     --gap-home-watch-content: 22px;
+
+    --margin-dashboard-page-top: 50px;
+    --margin-dashboard-header-bottom: 50px;
+    --margin-dashboard-icon-bottom: 18px;
+
+    --margin-chinois-panel-top: 42px;
+    --margin-chinois-header-bottom: 34px;
 
 
     /* =========================
        WIDTHS / HEIGHTS
     ========================= */
     --width-card: 320px;
+
     --width-form: 640px;
     --width-page: 900px;
     --width-container: 1400px;
+
+    --width-grammar: 1080px;
+    --width-chinois-panel: 1220px;
+
+    --width-dashboard-header: 760px;
+    --width-dashboard-description: 560px;
+
+    --width-dashboard-glow: 340px;
+    --height-dashboard-glow: 180px;
 
     --width-image-portrait: 150px;
     --height-image-portrait: 215px;
 
     --width-home-grid-column: 350px;
+
     --width-home-card-bottom: 235px;
     --height-home-card-bottom: 300px;
+
     --width-collection-card: 235px;
     --height-collection-card: 300px;
 
     --width-home-longest-image-col: 180px;
     --width-home-longest-info: 220px;
+
     --width-home-feature-info: 120px;
     --width-home-feature-content: 285px;
+
     --width-home-watch-content: 240px;
 
-    --width-dashboard-header: 760px;
-    --width-dashboard-description: 560px;
+    --width-chinois-type: 96px;
+    --width-chinois-example: 360px;
+
     --height-dashboard-card: 260px;
 
     --size-dashboard-icon: 58px;
@@ -141,6 +291,16 @@
     --padding-dashboard-header: 34px 30px;
     --padding-dashboard-card: 24px 22px;
 
+    --padding-grammar-hero: 18px 30px;
+    --padding-grammar-item: 22px 28px;
+
+    --padding-chinois-panel: 34px;
+
+    --padding-chinois-table-head: 19px 24px;
+    --padding-chinois-table-cell: 25px 24px;
+
+    --padding-chinois-type: 9px 15px;
+
 
     /* =========================
        FONT SIZES
@@ -148,13 +308,73 @@
     --font-size-xs: 0.82rem;
     --font-size-sm: 0.9rem;
     --font-size-md: 0.95rem;
+
     --font-size-base: 1rem;
+
     --font-size-lg: 1.2rem;
     --font-size-xl: 2rem;
 
     --font-size-caption: 0.82rem;
     --font-size-body-sm: 0.95rem;
+
     --font-size-title-card: 1.2rem;
+
+    --font-size-dashboard-icon: 1.7rem;
+
+    --font-size-chinois-title: 1.75rem;
+    --font-size-chinois-subtitle: 1.04rem;
+
+    --font-size-chinois-table-head: 0.82rem;
+
+    --font-size-chinois-word: 1.42rem;
+    --font-size-chinois-pinyin: 0.92rem;
+    --font-size-chinois-type: 0.84rem;
+
+
+    /* =========================
+       FONT WEIGHTS
+    ========================= */
+    --font-weight-chinois-title: 780;
+
+    --font-weight-chinois-table-head: 850;
+
+    --font-weight-chinois-word: 650;
+    --font-weight-chinois-pinyin: 720;
+    --font-weight-chinois-type: 850;
+
+
+    /* =========================
+       LINE HEIGHTS
+    ========================= */
+    --line-height-dashboard-title: 1.2;
+    --line-height-dashboard-description: 1.65;
+
+    --line-height-dashboard-card-title: 1.3;
+    --line-height-dashboard-card-description: 1.6;
+
+    --line-height-chinois-example: 1.7;
+
+
+    /* =========================
+       OPACITY
+    ========================= */
+    --opacity-dashboard-description: 0.8;
+    --opacity-dashboard-card-description: 0.85;
+
+
+    /* =========================
+       LETTER SPACING
+    ========================= */
+    --letter-spacing-dashboard-title: 0.2px;
+
+    --letter-spacing-chinois-table-head: 0.08em;
+
+
+    /* =========================
+       TRANSFORMS
+    ========================= */
+    --transform-dashboard-card-hover: translateY(-6px);
+    --transform-dashboard-icon-hover: scale(1.06);
 
 
     /* =========================
@@ -196,8 +416,28 @@
     --shadow-panel:
         0 12px 28px rgba(0, 0, 0, 0.07);
 
+    --shadow-panel-large:
+        0 20px 50px rgba(45, 35, 75, 0.12),
+        0 0 0 1px rgba(255,255,255,0.72) inset;
+
     --shadow-violet-soft:
         0 10px 24px rgba(123, 44, 255, 0.12);
+
+    --shadow-dashboard-header:
+        var(--shadow-panel),
+        0 0 0 1px rgba(255, 255, 255, 0.60) inset;
+
+    --shadow-dashboard-icon:
+        inset 0 1px 0 rgba(255, 255, 255, 0.55),
+        var(--shadow-violet-soft);
+
+    --shadow-dashboard-icon-hover:
+        inset 0 1px 0 rgba(255, 255, 255, 0.55),
+        0 12px 24px rgba(123, 44, 255, 0.14);
+
+    --shadow-grammar:
+        var(--shadow-panel),
+        0 0 0 1px rgba(255, 255, 255, 0.60) inset;
 
     --shadow-text-badge:
         0 1px 2px rgba(0, 0, 0, 0.30);
@@ -213,8 +453,13 @@
     --color-error: #c82333;
     --color-warning: #e0a800;
     --color-info: #17a2b8;
+
     --color-alert-text: #ffffff;
 
+
+    /* =========================
+       MISC
+    ========================= */
     --offset-card-corner: 16px;
 
 

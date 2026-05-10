@@ -4,7 +4,7 @@
 
 .dashboard-page
 {
-   margin-top: 50px;
+    margin-top: var(--margin-dashboard-page-top);
 }
 
 
@@ -12,13 +12,9 @@
    DASHBOARD : HEADER
 ========================================= */
 
-/* =========================================
-   DASHBOARD : HEADER
-========================================= */
-
 .dashboard-header
 {
-    margin-bottom: 50px;
+    margin-bottom: var(--margin-dashboard-header-bottom);
 }
 
 .dashboard-title-box
@@ -34,15 +30,9 @@
     border: 1px solid var(--color-violet-border-soft);
     border-radius: var(--radius-card-lg);
 
-    background: linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.98) 0%,
-        rgba(123, 44, 255, 0.06) 100%
-    );
+    background: var(--gradient-dashboard-header);
 
-    box-shadow:
-        var(--shadow-panel),
-        0 0 0 1px rgba(255, 255, 255, 0.60) inset;
+    box-shadow: var(--shadow-dashboard-header);
 
     overflow: hidden;
     box-sizing: border-box;
@@ -55,12 +45,7 @@
     position: absolute;
     inset: 0;
 
-    background: linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.30) 0%,
-        rgba(255, 255, 255, 0.10) 25%,
-        transparent 50%
-    );
+    background: var(--gradient-dashboard-header-overlay);
 
     pointer-events: none;
 }
@@ -73,17 +58,12 @@
     top: 50%;
     left: 50%;
 
-    width: 340px;
-    height: 180px;
+    width: var(--width-dashboard-glow);
+    height: var(--height-dashboard-glow);
 
     transform: translate(-50%, -50%);
 
-    background: radial-gradient(
-        ellipse,
-        rgba(123, 44, 255, 0.08) 0%,
-        rgba(123, 44, 255, 0.03) 45%,
-        transparent 75%
-    );
+    background: var(--gradient-dashboard-glow);
 
     pointer-events: none;
 }
@@ -98,8 +78,8 @@
     color: var(--color-violet);
     font-size: var(--font-size-xl);
     font-weight: 700;
-    line-height: 1.2;
-    letter-spacing: 0.2px;
+    line-height: var(--line-height-dashboard-title);
+    letter-spacing: var(--letter-spacing-dashboard-title);
 }
 
 .dashboard-description
@@ -112,8 +92,8 @@
 
     color: var(--color-text);
     font-size: var(--font-size-base);
-    line-height: 1.65;
-    opacity: 0.8;
+    line-height: var(--line-height-dashboard-description);
+    opacity: var(--opacity-dashboard-description);
 }
 
 
@@ -155,11 +135,7 @@
     border: 1px solid var(--color-border-white-soft);
     border-radius: var(--radius-card-lg);
 
-    background: linear-gradient(
-        180deg,
-        var(--color-surface) 0%,
-        var(--color-surface-soft) 100%
-    );
+    background: var(--gradient-dashboard-card);
 
     box-shadow: var(--shadow-card);
 
@@ -180,12 +156,7 @@
     position: absolute;
     inset: 0;
 
-    background: linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.34) 0%,
-        rgba(255, 255, 255, 0.10) 28%,
-        transparent 48%
-    );
+    background: var(--gradient-dashboard-card-overlay);
 
     pointer-events: none;
 }
@@ -200,7 +171,7 @@
 .dashboard-card:focus-visible,
 .dashboard-card.is-active
 {
-    transform: translateY(-6px);
+    transform: var(--transform-dashboard-card-hover);
     border-color: var(--color-violet-border);
     box-shadow: var(--shadow-card-hover);
 }
@@ -219,22 +190,16 @@
     align-items: center;
     justify-content: center;
 
-    margin-bottom: 18px;
+    margin-bottom: var(--margin-dashboard-icon-bottom);
 
-    font-size: 1.7rem;
+    font-size: var(--font-size-dashboard-icon);
     line-height: 1;
 
     border-radius: var(--radius-input);
 
-    background: linear-gradient(
-        180deg,
-        var(--color-violet-soft) 0%,
-        var(--color-violet-soft-medium) 100%
-    );
+    background: var(--gradient-dashboard-icon);
 
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.55),
-        var(--shadow-violet-soft);
+    box-shadow: var(--shadow-dashboard-icon);
 
     transition:
         transform var(--transition-fast),
@@ -246,11 +211,9 @@
 .dashboard-card:focus-visible .dashboard-card-icon,
 .dashboard-card.is-active .dashboard-card-icon
 {
-    transform: scale(1.06);
+    transform: var(--transform-dashboard-icon-hover);
 
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.55),
-        0 12px 24px rgba(123, 44, 255, 0.14);
+    box-shadow: var(--shadow-dashboard-icon-hover);
 }
 
 
@@ -269,7 +232,7 @@
     color: var(--color-title);
     font-size: var(--font-size-title-card);
     font-weight: 700;
-    line-height: 1.3;
+    line-height: var(--line-height-dashboard-card-title);
 }
 
 .dashboard-card-description
@@ -282,6 +245,6 @@
 
     color: var(--color-text);
     font-size: var(--font-size-body-sm);
-    line-height: 1.6;
-    opacity: 0.85;
+    line-height: var(--line-height-dashboard-card-description);
+    opacity: var(--opacity-dashboard-card-description);
 }
