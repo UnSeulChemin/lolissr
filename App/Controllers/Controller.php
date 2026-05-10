@@ -31,7 +31,7 @@ abstract class Controller
     public function __construct()
     {
         $this->title = App::siteName();
-        $this->basePath = base_path();
+        $this->basePath = App::basePath();
     }
 
     /**

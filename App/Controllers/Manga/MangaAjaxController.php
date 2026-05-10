@@ -5,47 +5,40 @@ declare(strict_types=1);
 namespace App\Controllers\Manga;
 
 use App\Controllers\Controller;
+use App\Core\Application\App;
 use App\Http\Requests\Manga\MangaUpdateNoteRequest;
-use App\Repositories\Manga\MangaRepository;
 use App\Services\Manga\MangaReadService;
 use App\Services\Manga\MangaWriteService;
-use App\Core\Application\App;
 
 final class MangaAjaxController extends Controller
 {
-    protected MangaRepository $mangaRepository;
-    protected MangaWriteService $mangaWriteService;
-    protected MangaReadService $mangaReadService;
-
-    public function __construct()
-    {
-        parent::__construct();
-
-        $this->mangaRepository = app(MangaRepository::class);
-        $this->mangaWriteService = app(MangaWriteService::class);
-        $this->mangaReadService = app(MangaReadService::class);
-    }
-
-private function ensureAjax(): void
-{
-    if (is_ajax()) {
-        return;
-    }
-
-    $userAgent = (string) ($_SERVER['HTTP_USER_AGENT'] ?? '');
-
-    if (
-        \App\Core\Application\App::isTesting()
-        && str_contains($userAgent, 'LoliSSR-TestRunner')
+    public function __construct(
+        protected MangaReadService $mangaReadService,
+        protected MangaWriteService $mangaWriteService
     ) {
-        return;
+        parent::__construct();
     }
 
-    json([
-        'success' => false,
-        'message' => 'Requête AJAX requise',
-    ], 400);
-}
+    private function ensureAjax(): void
+    {
+        if (is_ajax()) {
+            return;
+        }
+
+        $userAgent = (string) ($_SERVER['HTTP_USER_AGENT'] ?? '');
+
+        if (
+            App::isTesting()
+            && str_contains($userAgent, 'LoliSSR-TestRunner')
+        ) {
+            return;
+        }
+
+        json([
+            'success' => false,
+            'message' => 'Requête AJAX requise',
+        ], 400);
+    }
 
     private function error(array $payload, int $status = 400): void
     {

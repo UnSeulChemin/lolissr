@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Http;
 
+use App\Core\Application\App;
 use App\Core\Exceptions\MethodNotAllowedException;
 use App\Core\Exceptions\NotFoundException;
 use ReflectionClass;
@@ -130,6 +131,7 @@ class Router
         if ($allowedMethods !== [])
         {
             header('Allow: ' . implode(', ', $allowedMethods));
+
             throw new MethodNotAllowedException('Méthode non autorisée');
         }
 
@@ -167,11 +169,17 @@ class Router
         }
 
         $reflection = new ReflectionClass($class);
+
+        if (!$reflection->isInstantiable())
+        {
+            throw new RuntimeException('Classe non instanciable : ' . $class);
+        }
+
         $constructor = $reflection->getConstructor();
 
         if ($constructor === null)
         {
-            return new $class();
+            return $reflection->newInstance();
         }
 
         $dependencies = [];
@@ -182,6 +190,12 @@ class Router
 
             if (!$type instanceof ReflectionNamedType || $type->isBuiltin())
             {
+                if ($parameter->isDefaultValueAvailable())
+                {
+                    $dependencies[] = $parameter->getDefaultValue();
+                    continue;
+                }
+
                 throw new RuntimeException(
                     'Impossible de résoudre la dépendance : ' . $class . '::$' . $parameter->getName()
                 );
@@ -271,7 +285,7 @@ class Router
 
     private function stripBasePath(string $path): string
     {
-        $basePath = base_path();
+        $basePath = App::basePath();
 
         if ($basePath === '/')
         {

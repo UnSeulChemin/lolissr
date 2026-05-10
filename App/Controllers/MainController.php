@@ -9,13 +9,10 @@ use App\Services\StatsService;
 
 final class MainController extends Controller
 {
-    private StatsService $statsService;
-
-    public function __construct()
-    {
+    public function __construct(
+        private readonly StatsService $statsService
+    ) {
         parent::__construct();
-
-        $this->statsService = app(StatsService::class);
     }
 
     public function index(): void
@@ -28,9 +25,6 @@ final class MainController extends Controller
             fn () => $this->statsService->dashboard()
         );
 
-        $this->render(
-            'main/index',
-            $stats
-        );
+        $this->render('main/index', $stats);
     }
 }

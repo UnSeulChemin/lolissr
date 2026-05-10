@@ -14,8 +14,9 @@ final class ErrorController extends Controller
             'uri' => $_SERVER['REQUEST_URI'] ?? null,
         ]);
 
-        $this->renderError('errors/404', 404, [
-            'title' => '404 | Page introuvable',
+        $this->title = '404 | Page introuvable';
+
+        $this->renderError('404', 404, [
             'message' => $message,
         ]);
     }
@@ -27,8 +28,9 @@ final class ErrorController extends Controller
             'uri' => $_SERVER['REQUEST_URI'] ?? null,
         ]);
 
-        $this->renderError('errors/405', 405, [
-            'title' => '405 | Méthode non autorisée',
+        $this->title = '405 | Méthode non autorisée';
+
+        $this->renderError('405', 405, [
             'message' => $message,
         ]);
     }
@@ -39,8 +41,9 @@ final class ErrorController extends Controller
             'uri' => $_SERVER['REQUEST_URI'] ?? null,
         ]);
 
-        $this->renderError('errors/419', 419, [
-            'title' => '419 | Session expirée',
+        $this->title = '419 | Session expirée';
+
+        $this->renderError('419', 419, [
             'message' => 'Session expirée ou requête invalide.',
         ]);
     }
@@ -51,8 +54,9 @@ final class ErrorController extends Controller
             'uri' => $_SERVER['REQUEST_URI'] ?? null,
         ]);
 
-        $this->renderError('errors/500', 500, [
-            'title' => '500 | Erreur serveur',
+        $this->title = '500 | Erreur serveur';
+
+        $this->renderError('500', 500, [
             'message' => $message,
         ]);
     }
