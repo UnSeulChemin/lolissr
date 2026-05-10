@@ -11,6 +11,20 @@ return static function (Router $router): void
 {
     $router->get('/', 'MainController@index');
 
+    /*
+    |--------------------------------------------------------------------------
+    | Chinois
+    |--------------------------------------------------------------------------
+    */
+
+    $router->get('/chinois', 'Chinois\ChinoisController@index');
+
+    /*
+    |--------------------------------------------------------------------------
+    | Manga
+    |--------------------------------------------------------------------------
+    */
+
     $router->get('/manga', 'Manga\MangaController@index');
     $router->get('/manga/lien', 'Manga\MangaController@lien');
 
@@ -95,6 +109,12 @@ return static function (Router $router): void
         PostOnlyMiddleware::class,
         CsrfMiddleware::class,
     ]);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Manga — détail
+    |--------------------------------------------------------------------------
+    */
 
     $router->get('/manga/{slug}/{numero}', 'Manga\MangaController@show');
 };

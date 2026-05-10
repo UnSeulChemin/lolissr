@@ -36,6 +36,13 @@ $activeManga = (
     ? 'active'
     : '';
 
+$activeChinois = (
+    $currentPath === '/chinois'
+    || str_starts_with($currentPath, '/chinois/')
+)
+    ? 'active'
+    : '';
+
 /* Garde la recherche si présente */
 $currentSearch = '';
 
@@ -76,6 +83,15 @@ if (str_starts_with($currentPath, '/manga/recherche/'))
                     href="<?= $basePath ?>manga"
                     title="Manga">
                     📚
+                </a>
+            </li>
+
+            <li>
+                <a
+                    class="nav-link-icon <?= $activeChinois ?>"
+                    href="<?= $basePath ?>chinois"
+                    title="Chinois">
+                    ⛩️
                 </a>
             </li>
         </ul>
