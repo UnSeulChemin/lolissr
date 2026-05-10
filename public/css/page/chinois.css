@@ -108,9 +108,10 @@
 {
     display: block;
 
-    color: rgba(22, 18, 32, 0.94);
-    font-size: 1.55rem;
-    font-weight: 850;
+    font-size: 1.42rem;
+    font-weight: 650;
+
+    color: #27223a;
 }
 
 .chinois-vocab-pinyin

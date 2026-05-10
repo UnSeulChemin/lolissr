@@ -69,27 +69,27 @@ $vocabulaires = isset($vocabulaires) && is_array($vocabulaires) ? $vocabulaires 
                             <tr>
                                 <td>
                                     <span class="chinois-vocab-word">
-                                        <?= e($vocabulaire->mot) ?>
+                                        <?= htmlspecialchars((string) $vocabulaire->mot, ENT_QUOTES, 'UTF-8') ?>
                                     </span>
 
                                     <span class="chinois-vocab-pinyin">
-                                        <?= e($vocabulaire->pinyin) ?>
+                                        <?= htmlspecialchars((string) $vocabulaire->pinyin, ENT_QUOTES, 'UTF-8') ?>
                                     </span>
                                 </td>
 
                                 <td>
                                     <span class="chinois-vocab-type">
-                                        <?= e($vocabulaire->type) ?>
+                                        <?= htmlspecialchars((string) $vocabulaire->type, ENT_QUOTES, 'UTF-8') ?>
                                     </span>
                                 </td>
 
                                 <td>
-                                    <?= e($vocabulaire->traduction) ?>
+                                    <?= htmlspecialchars((string) $vocabulaire->traduction, ENT_QUOTES, 'UTF-8') ?>
                                 </td>
 
                                 <td>
                                     <span class="chinois-vocab-example">
-                                        <?= e($vocabulaire->exemple) ?>
+                                        <?= htmlspecialchars((string) $vocabulaire->exemple, ENT_QUOTES, 'UTF-8') ?>
                                     </span>
                                 </td>
                             </tr>
