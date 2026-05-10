@@ -56,6 +56,22 @@
 
         <a
             class="dashboard-card"
+            href="<?= $basePath ?>chinois/grammaire">
+
+            <span class="dashboard-card-icon" aria-hidden="true">📖</span>
+
+            <span class="dashboard-card-title">
+                Grammaire
+            </span>
+
+            <span class="dashboard-card-description">
+                Structures, règles et notes de grammaire chinoise.
+            </span>
+
+        </a>
+
+        <a
+            class="dashboard-card"
             href="<?= $basePath ?>chinois/flashcards">
 
             <span class="dashboard-card-icon" aria-hidden="true">🧠</span>

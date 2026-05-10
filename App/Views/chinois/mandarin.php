@@ -6,23 +6,6 @@ $vocabulaires = isset($vocabulaires) && is_array($vocabulaires) ? $vocabulaires 
 
 <section class="layout-container dashboard-page">
 
-    <section class="dashboard-header">
-
-        <div class="dashboard-title-box animate-fade-up">
-
-            <h1 class="dashboard-title">
-                🐉 Mandarin
-            </h1>
-
-            <p class="dashboard-description">
-                Vocabulaire, grammaire, immersion
-                et notes en chinois standard.
-            </p>
-
-        </div>
-
-    </section>
-
     <section class="chinois-vocab-panel animate-fade-up">
 
         <div class="chinois-vocab-header">
