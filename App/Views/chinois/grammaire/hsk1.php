@@ -65,11 +65,11 @@ $grammaires = $grammaires ?? [];
                 </div>
 
                 <div class="grammar-structure">
-                    <?= htmlspecialchars($grammaire->structureGrammaire) ?>
+                    <?= htmlspecialchars($grammaire->structure) ?>
                 </div>
 
                 <div class="grammar-example">
-                    <?= htmlspecialchars($grammaire->phraseChinoise) ?>
+                    <?= htmlspecialchars($grammaire->phrase) ?>
                 </div>
 
                 <div class="grammar-pinyin">

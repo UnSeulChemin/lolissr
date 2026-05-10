@@ -10,11 +10,11 @@ final readonly class ChinoisGrammaireDTO
         public int $id,
         public string $niveau,
         public string $titre,
-        public string $structureGrammaire,
-        public string $phraseChinoise,
+        public string $structure,
+        public string $phrase,
         public string $pinyin,
         public string $traduction,
         public string $explication,
-        public int $ordreAffichage,
+        public int $position,
     ) {}
 }

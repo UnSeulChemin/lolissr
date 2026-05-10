@@ -22,15 +22,15 @@ final class ChinoisGrammaireRepository extends Model
                 id,
                 niveau,
                 titre,
-                structure_grammaire,
-                phrase_chinoise,
+                structure,
+                phrase,
                 pinyin,
                 traduction,
                 explication,
-                ordre_affichage
+                position
             FROM {$this->getTable()}
             WHERE niveau = ?
-            ORDER BY ordre_affichage ASC
+            ORDER BY position ASC
             ",
             [$niveau]
         );
@@ -47,12 +47,12 @@ final class ChinoisGrammaireRepository extends Model
                 id: (int) $row->id,
                 niveau: (string) $row->niveau,
                 titre: (string) $row->titre,
-                structureGrammaire: (string) $row->structure_grammaire,
-                phraseChinoise: (string) $row->phrase_chinoise,
+                structure: (string) $row->structure,
+                phrase: (string) $row->phrase,
                 pinyin: (string) $row->pinyin,
                 traduction: (string) $row->traduction,
                 explication: (string) $row->explication,
-                ordreAffichage: (int) $row->ordre_affichage,
+                position: (int) $row->position,
             ),
             $results
         );
