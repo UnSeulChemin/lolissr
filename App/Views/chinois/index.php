@@ -38,14 +38,19 @@
             class="dashboard-card"
             href="<?= $basePath ?>chinois/jin">
 
-            <span class="dashboard-card-icon" aria-hidden="true">晋语</span>
-
-            <span class="dashboard-card-title">
+            <span
+                class="dashboard-card-icon"
+                aria-hidden="true">
                 晋语
             </span>
 
+            <span class="dashboard-card-title">
+                Jin
+            </span>
+
             <span class="dashboard-card-description">
-                Expressions locales, dialecte du Shanxi et tournures régionales.
+                Expressions locales, dialecte du Shanxi
+                et tournures régionales.
             </span>
 
         </a>
