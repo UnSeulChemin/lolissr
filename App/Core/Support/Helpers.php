@@ -129,15 +129,15 @@ if (!function_exists('abort'))
 {
     function abort(int $code = 404): void
     {
-        $controller = new ErrorController();
+$controller = app(ErrorController::class);
 
-        match ($code) {
-            404 => $controller->renderNotFoundPage(),
-            405 => $controller->renderMethodNotAllowedPage(),
-            419 => $controller->renderCsrfExpiredPage(),
-            500 => $controller->renderServerErrorPage(),
-            default => $controller->renderServerErrorPage(),
-        };
+match ($code) {
+    404 => $controller->notFound(),
+    405 => $controller->methodNotAllowed(),
+    419 => $controller->renderCsrfExpiredPage(),
+    500 => $controller->serverError(),
+    default => $controller->serverError(),
+};
 
         exit;
     }
@@ -367,23 +367,6 @@ if (!function_exists('csrf_meta_tag'))
         return '<meta name="csrf-token" content="'
             . htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8')
             . '">';
-    }
-}
-
-if (!function_exists('json'))
-{
-    function json(array $data, int $status = 200): never
-    {
-        http_response_code($status);
-
-        header('Content-Type: application/json; charset=utf-8');
-
-        echo json_encode(
-            $data,
-            JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
-        );
-
-        exit;
     }
 }
 
