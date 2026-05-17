@@ -15,23 +15,19 @@ final class ChinoisAjaxController
 
     public function toggleGrammaireMaitrise(): void
     {
-        header('Content-Type: application/json');
-
         $id = (int) ($_POST['id'] ?? 0);
 
         if ($id <= 0)
         {
-            echo json_encode([
+            json([
                 'success' => false,
                 'message' => 'ID invalide'
-            ]);
-
-            return;
+            ], 422);
         }
 
         $maitrise = $this->repository->toggleMaitrise($id);
 
-        echo json_encode([
+        json([
             'success' => true,
             'maitrise' => $maitrise,
             'message' => $maitrise
