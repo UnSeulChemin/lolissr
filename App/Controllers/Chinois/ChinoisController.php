@@ -11,7 +11,8 @@ use App\Services\Chinois\ChinoisReadService;
 final class ChinoisController extends Controller
 {
     public function __construct(
-        private readonly ChinoisReadService $chinoisReadService
+        private readonly ChinoisReadService $chinoisReadService,
+        private readonly ChinoisGrammaireRepository $chinoisGrammaireRepository,
     ) {
         parent::__construct();
     }
@@ -48,13 +49,12 @@ final class ChinoisController extends Controller
         $this->render('chinois/grammaire');
     }
 
-    public function hsk1(
-        ChinoisGrammaireRepository $repository,
-    ): void
+    public function hsk1(): void
     {
         $this->title = 'Chinois | Grammaire HSK1';
 
-        $grammaires = $repository->findByLevel('HSK1');
+        $grammaires = $this->chinoisGrammaireRepository
+            ->findByLevel('HSK1');
 
         $this->render('chinois/grammaire/hsk1', [
             'grammaires' => $grammaires,

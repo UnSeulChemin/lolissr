@@ -21,6 +21,7 @@ final class ChinoisGrammaireRepository extends Model
             SELECT
                 id,
                 niveau,
+                categorie,
                 titre,
                 structure,
                 phrase,
@@ -30,7 +31,10 @@ final class ChinoisGrammaireRepository extends Model
                 position
             FROM {$this->getTable()}
             WHERE niveau = ?
-            ORDER BY position ASC
+            ORDER BY
+                categorie ASC,
+                position ASC,
+                id ASC
             ",
             [$niveau]
         );
@@ -46,6 +50,7 @@ final class ChinoisGrammaireRepository extends Model
             static fn(object $row): ChinoisGrammaireDTO => new ChinoisGrammaireDTO(
                 id: (int) $row->id,
                 niveau: (string) $row->niveau,
+                categorie: (string) $row->categorie,
                 titre: (string) $row->titre,
                 structure: (string) $row->structure,
                 phrase: (string) $row->phrase,

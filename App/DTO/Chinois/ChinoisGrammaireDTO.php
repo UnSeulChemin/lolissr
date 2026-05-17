@@ -9,6 +9,7 @@ final readonly class ChinoisGrammaireDTO
     public function __construct(
         public int $id,
         public string $niveau,
+        public string $categorie,
         public string $titre,
         public string $structure,
         public string $phrase,
@@ -16,5 +17,6 @@ final readonly class ChinoisGrammaireDTO
         public string $traduction,
         public string $explication,
         public int $position,
-    ) {}
+    ) {
+    }
 }

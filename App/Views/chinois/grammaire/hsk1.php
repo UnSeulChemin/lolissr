@@ -6,6 +6,13 @@
 
 $grammaires = $grammaires ?? [];
 
+$categories = [];
+
+foreach ($grammaires as $grammaire)
+{
+    $categories[$grammaire->categorie][] = $grammaire;
+}
+
 ?>
 
 <section class="layout-container dashboard-page">
@@ -19,7 +26,7 @@ $grammaires = $grammaires ?? [];
             </h1>
 
             <p class="grammar-hero-description">
-                Points de grammaire, structures de base et notes pour le niveau HSK1.
+                Points de grammaire, structures de base et notes essentielles du niveau HSK1.
             </p>
 
         </div>
@@ -37,7 +44,7 @@ $grammaires = $grammaires ?? [];
                 </h2>
 
                 <p class="grammar-source-description">
-                    Liste des points de grammaire HSK1 avec exemples et explications.
+                    Références, structures et exemples de grammaire chinoise pour débutants.
                 </p>
 
             </div>
@@ -54,40 +61,72 @@ $grammaires = $grammaires ?? [];
 
     </section>
 
-    <section class="grammar-list">
+    <section class="grammar-section-header">
 
-        <?php foreach ($grammaires as $grammaire): ?>
+        <h2 class="grammar-section-title">
 
-            <article class="grammar-item">
+            <span class="grammar-section-bar"></span>
 
-                <div class="grammar-topic">
-                    <?= htmlspecialchars($grammaire->titre) ?>
-                </div>
+            Structures de grammaire
 
-                <div class="grammar-structure">
-                    <?= htmlspecialchars($grammaire->structure) ?>
-                </div>
-
-                <div class="grammar-example">
-                    <?= htmlspecialchars($grammaire->phrase) ?>
-                </div>
-
-                <div class="grammar-pinyin">
-                    <?= htmlspecialchars($grammaire->pinyin) ?>
-                </div>
-
-                <div class="grammar-translation">
-                    <?= htmlspecialchars($grammaire->traduction) ?>
-                </div>
-
-                <div class="grammar-explanation">
-                    <?= htmlspecialchars($grammaire->explication) ?>
-                </div>
-
-            </article>
-
-        <?php endforeach; ?>
+        </h2>
 
     </section>
+
+    <?php foreach ($categories as $categorie => $items): ?>
+
+        <section class="grammar-category">
+
+            <h3 class="grammar-category-title">
+
+                <span class="grammar-category-bar"></span>
+
+                <?= htmlspecialchars($categorie) ?>
+
+            </h3>
+
+            <section class="grammar-list">
+
+                <?php foreach ($items as $grammaire): ?>
+
+                    <article class="grammar-item">
+
+                        <h3 class="grammar-topic">
+                            <?= htmlspecialchars($grammaire->titre) ?>
+                        </h3>
+
+                        <div class="grammar-structure">
+                            <?= htmlspecialchars($grammaire->structure) ?>
+                        </div>
+
+                        <div class="grammar-example">
+                            <?= htmlspecialchars($grammaire->phrase) ?>
+                        </div>
+
+                        <div class="grammar-pinyin">
+                            <?= htmlspecialchars($grammaire->pinyin) ?>
+                        </div>
+
+                        <div class="grammar-translation">
+                            <?= htmlspecialchars($grammaire->traduction) ?>
+                        </div>
+
+                        <?php if (!empty($grammaire->explication)): ?>
+
+                            <div class="grammar-explanation">
+                                <?= htmlspecialchars($grammaire->explication) ?>
+                            </div>
+
+                        <?php endif; ?>
+
+                    </article>
+
+                <?php endforeach; ?>
+
+            </section>
+
+        </section>
+
+    <?php endforeach; ?>
 
 </section>
