@@ -31,7 +31,8 @@ final class ChinoisGrammaireRepository extends Model
                 pinyin,
                 traduction,
                 explication,
-                position
+                position,
+                maitrise
             FROM {$this->getTable()}
             WHERE niveau = ?
             ORDER BY
@@ -65,8 +66,32 @@ final class ChinoisGrammaireRepository extends Model
                 traduction: (string) $row->traduction,
                 explication: (string) $row->explication,
                 position: (int) $row->position,
+                maitrise: (bool) $row->maitrise,
             ),
             $results
         );
+    }
+
+    public function toggleMaitrise(int $id): int
+    {
+        $this->requete(
+            "
+            UPDATE chinois_grammaire
+            SET maitrise = NOT maitrise
+            WHERE id = ?
+            ",
+            [$id]
+        );
+
+        $query = $this->requete(
+            "
+            SELECT maitrise
+            FROM {$this->getTable()}
+            WHERE id = ?
+            ",
+            [$id]
+        );
+
+        return (int) $query->fetch()->maitrise;
     }
 }

@@ -463,3 +463,90 @@
 
     margin: 0 auto;
 }
+
+/* =========================================
+   MAÎTRISE
+========================================= */
+
+.grammar-item
+{
+    position: relative;
+}
+
+.grammar-mastered
+{
+    position: absolute;
+
+    right: 18px;
+    bottom: 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 34px;
+    height: 34px;
+
+    padding: 0;
+
+    color: #22c55e;
+
+    font-size: 0.82rem;
+
+    border: 2px solid rgba(34, 197, 94, 0.20);
+    border-radius: 11px;
+
+    background: rgba(34, 197, 94, 0.05);
+
+    box-shadow:
+        0 4px 10px rgba(34, 197, 94, 0.06);
+
+    cursor: pointer;
+
+    transition:
+        transform var(--transition-fast),
+        background var(--transition-fast),
+        border-color var(--transition-fast),
+        color var(--transition-fast),
+        box-shadow var(--transition-fast);
+
+    z-index: 5;
+}
+
+.grammar-mastered:hover
+{
+    transform: scale(1.05);
+
+    background: rgba(34, 197, 94, 0.10);
+
+    border-color: rgba(34, 197, 94, 0.34);
+}
+
+.grammar-mastered.active
+{
+    color: #ffffff;
+
+    border-color: #22c55e;
+
+    background: linear-gradient(
+        135deg,
+        #22c55e 0%,
+        #16a34a 100%
+    );
+
+    box-shadow:
+        0 8px 18px rgba(34, 197, 94, 0.22);
+}
+
+.grammar-mastered i
+{
+    line-height: 1;
+}
+
+.grammar-mastered-icon
+{
+    width: 19px;
+    height: 19px;
+
+    flex-shrink: 0;
+}

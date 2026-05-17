@@ -20,6 +20,7 @@ final readonly class ChinoisGrammaireDTO
         public string $traduction,
         public string $explication,
         public int $position,
+        public bool $maitrise,
     ) {
     }
 }

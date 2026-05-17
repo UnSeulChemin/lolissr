@@ -32,6 +32,21 @@ return static function (Router $router): void
 
     /*
     |--------------------------------------------------------------------------
+    | Chinois — AJAX
+    |--------------------------------------------------------------------------
+    */
+
+    $router->post(
+        '/chinois/ajax/grammaire-maitrise',
+        'Chinois\ChinoisAjaxController@toggleGrammaireMaitrise'
+    )->middleware([
+        PostOnlyMiddleware::class,
+        AjaxOnlyMiddleware::class,
+        CsrfMiddleware::class,
+    ]);
+
+    /*
+    |--------------------------------------------------------------------------
     | Manga
     |--------------------------------------------------------------------------
     */

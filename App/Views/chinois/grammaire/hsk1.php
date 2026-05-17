@@ -119,6 +119,31 @@ foreach ($grammaires as $grammaire)
 
                                 <?php endif; ?>
 
+                                <button
+                                    class="grammar-mastered <?= !empty($grammaire->maitrise) ? 'active' : '' ?>"
+                                    data-id="<?= $grammaire->id ?>"
+                                    data-url="<?= $basePath; ?>chinois/ajax/grammaire-maitrise"
+                                    data-maitrise="<?= !empty($grammaire->maitrise) ? '1' : '0' ?>"
+                                    type="button"
+                                    aria-label="Marquer comme maîtrisé">
+
+                                    <svg
+                                        class="grammar-mastered-icon"
+                                        viewBox="0 0 24 24"
+                                        aria-hidden="true">
+
+                                        <path
+                                            d="M20 6L9 17L4 12"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="3"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round" />
+
+                                    </svg>
+
+                                </button>
+
                             </article>
 
                         <?php endforeach; ?>

@@ -11,6 +11,7 @@ import { initAjouterPage } from './pages/ajouter.js';
 import { initEditPage } from './pages/modifier.js';
 import { initBackspaceNavigation } from './features/backspace-navigation.js';
 import { initMangaLuToggle } from './features/mangaLu.js';
+import { initGrammaireMaitrise } from './features/ajax-maitrise.js';
 
 /**
  * Affiche un toast flash injecté côté PHP.
@@ -51,7 +52,6 @@ document.addEventListener('DOMContentLoaded', () =>
     initAutoSlug();
     initAjouterPage();
     initEditPage();
-    initMangaLuToggle();
 
     /*
     |------------------------------------------------------------------
@@ -62,6 +62,8 @@ document.addEventListener('DOMContentLoaded', () =>
     initCollectionPaginationAjax();
     initMangaAjaxNotes();
     initMangaAjaxDelete();
+    initMangaLuToggle();
+    initGrammaireMaitrise();
 
     /*
     |------------------------------------------------------------------
