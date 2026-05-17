@@ -16,7 +16,8 @@
 
         <div class="grammar-hero-source">
 
-            <div>
+            <div class="grammar-source-content">
+
                 <span class="grammar-source-label">
                     Source
                 </span>
@@ -28,6 +29,7 @@
                 <p class="grammar-source-description">
                     Liste des points de grammaire HSK3 avec exemples et explications.
                 </p>
+
             </div>
 
             <a

@@ -26,7 +26,7 @@ $grammaires = $grammaires ?? [];
 
         <div class="grammar-hero-source">
 
-            <div>
+            <div class="grammar-source-content">
 
                 <span class="grammar-source-label">
                     Source
