@@ -6,11 +6,11 @@
 
 $grammaires = $grammaires ?? [];
 
-$categories = [];
+$sections = [];
 
 foreach ($grammaires as $grammaire)
 {
-    $categories[$grammaire->categorie][] = $grammaire;
+    $sections[$grammaire->section][$grammaire->categorie][] = $grammaire;
 }
 
 ?>
@@ -61,69 +61,73 @@ foreach ($grammaires as $grammaire)
 
     </section>
 
-    <section class="grammar-section-header">
+    <?php foreach ($sections as $section => $categories): ?>
 
-        <h2 class="grammar-section-title">
+        <section class="grammar-main-section">
 
-            <span class="grammar-section-bar"></span>
+            <h2 class="grammar-section-title">
 
-            Structures de grammaire
+                <span class="grammar-section-bar"></span>
 
-        </h2>
+                <?= htmlspecialchars($section) ?>
 
-    </section>
+            </h2>
 
-    <?php foreach ($categories as $categorie => $items): ?>
+            <?php foreach ($categories as $categorie => $items): ?>
 
-        <section class="grammar-category">
+                <section class="grammar-category">
 
-            <h3 class="grammar-category-title">
+                    <h3 class="grammar-category-title">
 
-                <span class="grammar-category-bar"></span>
+                        <span class="grammar-category-bar"></span>
 
-                <?= htmlspecialchars($categorie) ?>
+                        <?= htmlspecialchars($categorie) ?>
 
-            </h3>
+                    </h3>
 
-            <section class="grammar-list">
+                    <section class="grammar-list">
 
-                <?php foreach ($items as $grammaire): ?>
+                        <?php foreach ($items as $grammaire): ?>
 
-                    <article class="grammar-item">
+                            <article class="grammar-item">
 
-                        <h3 class="grammar-topic">
-                            <?= htmlspecialchars($grammaire->titre) ?>
-                        </h3>
+                                <h4 class="grammar-topic">
+                                    <?= htmlspecialchars($grammaire->titre) ?>
+                                </h4>
 
-                        <div class="grammar-structure">
-                            <?= htmlspecialchars($grammaire->structure) ?>
-                        </div>
+                                <div class="grammar-structure">
+                                    <?= htmlspecialchars($grammaire->structure) ?>
+                                </div>
 
-                        <div class="grammar-example">
-                            <?= htmlspecialchars($grammaire->phrase) ?>
-                        </div>
+                                <div class="grammar-example">
+                                    <?= htmlspecialchars($grammaire->phrase) ?>
+                                </div>
 
-                        <div class="grammar-pinyin">
-                            <?= htmlspecialchars($grammaire->pinyin) ?>
-                        </div>
+                                <div class="grammar-pinyin">
+                                    <?= htmlspecialchars($grammaire->pinyin) ?>
+                                </div>
 
-                        <div class="grammar-translation">
-                            <?= htmlspecialchars($grammaire->traduction) ?>
-                        </div>
+                                <div class="grammar-translation">
+                                    <?= htmlspecialchars($grammaire->traduction) ?>
+                                </div>
 
-                        <?php if (!empty($grammaire->explication)): ?>
+                                <?php if (!empty($grammaire->explication)): ?>
 
-                            <div class="grammar-explanation">
-                                <?= htmlspecialchars($grammaire->explication) ?>
-                            </div>
+                                    <div class="grammar-explanation">
+                                        <?= htmlspecialchars($grammaire->explication) ?>
+                                    </div>
 
-                        <?php endif; ?>
+                                <?php endif; ?>
 
-                    </article>
+                            </article>
 
-                <?php endforeach; ?>
+                        <?php endforeach; ?>
 
-            </section>
+                    </section>
+
+                </section>
+
+            <?php endforeach; ?>
 
         </section>
 
