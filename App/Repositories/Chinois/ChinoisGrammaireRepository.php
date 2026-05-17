@@ -9,7 +9,7 @@ use App\Models\Model;
 
 final class ChinoisGrammaireRepository extends Model
 {
-    protected string $table = 'chinois_grammaires';
+    protected string $table = 'chinois_grammaire';
 
     /**
      * @return ChinoisGrammaireDTO[]
