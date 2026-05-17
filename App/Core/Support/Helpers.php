@@ -9,7 +9,7 @@ use App\Core\Config\Env;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Support\Session;
-use App\Core\Container\Container;
+use App\Core\Container\AppContainer;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,16 +17,14 @@ use App\Core\Container\Container;
 |--------------------------------------------------------------------------
 */
 
-if (!function_exists('app')) {
+if (!function_exists('app'))
+{
     function app(?string $abstract = null): mixed
     {
-        static $container = null;
+        $container = AppContainer::get();
 
-        if ($container === null) {
-            $container = new Container();
-        }
-
-        if ($abstract === null) {
+        if ($abstract === null)
+        {
             return $container;
         }
 

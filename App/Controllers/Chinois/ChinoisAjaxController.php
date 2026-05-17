@@ -8,6 +8,11 @@ use App\Repositories\Chinois\ChinoisGrammaireRepository;
 
 final class ChinoisAjaxController
 {
+    public function __construct(
+        private ChinoisGrammaireRepository $repository
+    ) {
+    }
+
     public function toggleGrammaireMaitrise(): void
     {
         header('Content-Type: application/json');
@@ -24,13 +29,14 @@ final class ChinoisAjaxController
             return;
         }
 
-        $repository = new ChinoisGrammaireRepository();
-
-        $maitrise = $repository->toggleMaitrise($id);
+        $maitrise = $this->repository->toggleMaitrise($id);
 
         echo json_encode([
             'success' => true,
-            'maitrise' => $maitrise
+            'maitrise' => $maitrise,
+            'message' => $maitrise
+                ? 'Grammaire maîtrisée'
+                : 'Maîtrise retirée'
         ]);
     }
 }

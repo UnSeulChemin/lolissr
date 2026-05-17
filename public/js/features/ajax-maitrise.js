@@ -22,7 +22,7 @@ export function initGrammaireMaitrise()
 
         if (!url)
         {
-            showToast('URL manquante', 'error');
+            showToast('URL de mise à jour manquante', 'error');
 
             return;
         }
@@ -78,6 +78,22 @@ export function initGrammaireMaitrise()
             button.classList.toggle(
                 'active',
                 maitrise === 1
+            );
+
+            button.title = maitrise === 1
+                ? 'Retirer la maîtrise'
+                : 'Marquer comme maîtrisé';
+
+            button.setAttribute(
+                'aria-label',
+                maitrise === 1
+                    ? 'Retirer la maîtrise'
+                    : 'Marquer comme maîtrisé'
+            );
+
+            showToast(
+                data.message ?? 'Statut mis à jour',
+                'success'
             );
         }
         catch
