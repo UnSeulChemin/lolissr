@@ -106,9 +106,9 @@ if (str_starts_with($currentPath, '/manga/recherche/'))
                     id="header-search-input"
                     type="search"
                     name="q"
-                    placeholder="Rechercher un manga..."
+                    placeholder="Rechercher..."
                     value="<?= htmlspecialchars($currentSearch) ?>"
-                    aria-label="Rechercher un manga"
+                    aria-label="Rechercher"
                     autocomplete="off">
 
                 <button

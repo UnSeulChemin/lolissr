@@ -252,6 +252,102 @@ export function initLiveSearch()
             return;
         }
 
+        /*
+        |------------------------------------------------------------------
+        | Pages HSK
+        |------------------------------------------------------------------
+        */
+
+        const hskPages = [
+            {
+                key: 'hsk1',
+                title: 'HSK1',
+                description: 'Débutant total.',
+                url: `${basePath}chinois/grammaire/hsk1`
+            },
+
+            {
+                key: 'hsk2',
+                title: 'HSK2',
+                description: 'Bases essentielles.',
+                url: `${basePath}chinois/grammaire/hsk2`
+            },
+
+            {
+                key: 'hsk3',
+                title: 'HSK3',
+                description: 'Intermédiaire.',
+                url: `${basePath}chinois/grammaire/hsk3`
+            },
+
+            {
+                key: 'hsk4',
+                title: 'HSK4',
+                description: 'Conversation avancée.',
+                url: `${basePath}chinois/grammaire/hsk4`
+            }
+        ];
+
+        const matchedHskPages = hskPages.filter((page) =>
+        {
+            return (
+                normalizedValue.includes(page.key)
+                || normalizeSearchQuery(page.title).includes(normalizedValue)
+            );
+        });
+
+        if (matchedHskPages.length > 0)
+        {
+            searchResultsBox.innerHTML = '';
+
+            matchedHskPages.forEach((page) =>
+            {
+                const resultLink = document.createElement('a');
+
+                resultLink.href = page.url;
+
+                resultLink.className = 'search-result-item';
+
+                resultLink.innerHTML = `
+                    <div class="search-result-hsk-icon">
+                        一
+                    </div>
+
+                    <span class="search-result-content">
+                        <strong class="search-result-title">
+                            ${page.title}
+                        </strong>
+
+                        <small class="search-result-meta">
+                            ${page.description}
+                        </small>
+                    </span>
+                `;
+
+                resultLink.addEventListener('mouseenter', () =>
+                {
+                    const items = getSearchResultItems();
+
+                    activeResultIndex = items.indexOf(resultLink);
+
+                    updateActiveSearchResult();
+                });
+
+                searchResultsBox.appendChild(resultLink);
+            });
+
+            openSearchDropdown();
+            activateFirstSearchResult();
+
+            return;
+        }
+
+        /*
+        |------------------------------------------------------------------
+        | Recherche mangas
+        |------------------------------------------------------------------
+        */
+
         searchAbortController = new AbortController();
 
         try
