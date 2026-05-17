@@ -65,21 +65,36 @@ final class ChinoisController extends Controller
     {
         $this->title = 'Chinois | Grammaire HSK2';
 
-        $this->render('chinois/grammaire/hsk2');
+        $grammaires = $this->chinoisGrammaireRepository
+            ->findByLevel('HSK2');
+
+        $this->render('chinois/grammaire/hsk2', [
+            'grammaires' => $grammaires,
+        ]);
     }
 
     public function hsk3(): void
     {
         $this->title = 'Chinois | Grammaire HSK3';
 
-        $this->render('chinois/grammaire/hsk3');
+        $grammaires = $this->chinoisGrammaireRepository
+            ->findByLevel('HSK3');
+
+        $this->render('chinois/grammaire/hsk3', [
+            'grammaires' => $grammaires,
+        ]);
     }
 
     public function hsk4(): void
     {
         $this->title = 'Chinois | Grammaire HSK4';
 
-        $this->render('chinois/grammaire/hsk4');
+        $grammaires = $this->chinoisGrammaireRepository
+            ->findByLevel('HSK4');
+
+        $this->render('chinois/grammaire/hsk4', [
+            'grammaires' => $grammaires,
+        ]);
     }
 
     public function flashcards(): void

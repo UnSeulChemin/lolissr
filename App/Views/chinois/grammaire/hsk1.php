@@ -26,7 +26,7 @@ foreach ($grammaires as $grammaire)
             </h1>
 
             <p class="grammar-hero-description">
-                Points de grammaire, structures de base et notes essentielles du niveau HSK1.
+                Structures courantes, phrases du quotidien et grammaire HSK1.
             </p>
 
         </div>
