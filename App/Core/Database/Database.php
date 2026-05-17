@@ -6,15 +6,12 @@ namespace App\Core\Database;
 
 use App\Core\Config\DatabaseConfig;
 use App\Core\Support\Logger;
-use Exception;
 use PDO;
 use PDOException;
 
-class Database extends PDO
+final class Database extends PDO
 {
-    private static ?self $instance = null;
-
-    private function __construct()
+    public function __construct()
     {
         $host = DatabaseConfig::host();
         $name = DatabaseConfig::name();
@@ -45,24 +42,5 @@ class Database extends PDO
 
             exit('Erreur de connexion à la base de données.');
         }
-    }
-
-    public static function getInstance(): self
-    {
-        if (self::$instance === null)
-        {
-            self::$instance = new self();
-        }
-
-        return self::$instance;
-    }
-
-    private function __clone(): void
-    {
-    }
-
-    public function __wakeup(): void
-    {
-        throw new Exception('Cannot unserialize singleton');
     }
 }

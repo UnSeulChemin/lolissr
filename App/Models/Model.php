@@ -18,11 +18,11 @@ class Model
      */
     protected ?\PDO $db = null;
 
-    public function __construct()
+    public function __construct(Database $database)
     {
-        $this->db = Database::getInstance();
+        $this->db = $database;
     }
-
+    
     /**
      * Retourne le nom de table sécurisé.
      */
