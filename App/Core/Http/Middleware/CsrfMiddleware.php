@@ -9,14 +9,9 @@ use App\Core\Http\Request;
 
 final class CsrfMiddleware implements MiddlewareInterface
 {
-    public function __construct(
-        private readonly Request $request
-    ) {
-    }
-
-    public function handle(): void
+    public function handle(Request $request): void
     {
-        if ($this->request->method() !== 'POST') {
+        if ($request->method() !== 'POST') {
             return;
         }
 
@@ -29,8 +24,8 @@ final class CsrfMiddleware implements MiddlewareInterface
 
         $sessionToken = $_SESSION['csrf_token'] ?? null;
 
-        $postedToken = $this->request->input('csrf_token')
-            ?? $this->request->header('X-CSRF-TOKEN');
+        $postedToken = $request->input('csrf_token')
+            ?? $request->header('X-CSRF-TOKEN');
 
         if (
             !is_string($sessionToken)

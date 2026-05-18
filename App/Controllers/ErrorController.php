@@ -10,9 +10,10 @@ use App\Core\Support\Logger;
 final class ErrorController extends Controller
 {
     public function notFound(
-        Request $request,
         string $message = 'Page introuvable'
     ): void {
+        $request = app(Request::class);
+
         Logger::warning('404 Not Found', [
             'uri' => $request->uri(),
         ]);
@@ -25,9 +26,10 @@ final class ErrorController extends Controller
     }
 
     public function methodNotAllowed(
-        Request $request,
         string $message = 'Méthode non autorisée'
     ): void {
+        $request = app(Request::class);
+
         Logger::warning('405 Method Not Allowed', [
             'method' => $request->method(),
             'uri' => $request->uri(),
@@ -40,9 +42,10 @@ final class ErrorController extends Controller
         ]);
     }
 
-    public function renderCsrfExpiredPage(
-        Request $request
-    ): void {
+    public function renderCsrfExpiredPage(): void
+    {
+        $request = app(Request::class);
+
         Logger::warning('419 CSRF expired', [
             'uri' => $request->uri(),
         ]);
@@ -55,9 +58,10 @@ final class ErrorController extends Controller
     }
 
     public function serverError(
-        Request $request,
         string $message = 'Erreur interne du serveur'
     ): void {
+        $request = app(Request::class);
+
         Logger::error('500 Internal Server Error', [
             'uri' => $request->uri(),
         ]);

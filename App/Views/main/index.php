@@ -5,7 +5,7 @@
         <?php if (!empty($longestSeries)): ?>
             <a
                 class="card card-link card-link-wide card-wide"
-                href="<?= $basePath; ?>manga/serie/<?= rawurlencode($longestSeries->slug) ?>">
+                href="<?= $basePath; ?>manga/series/<?= rawurlencode($longestSeries->slug) ?>">
 
                 <h2 class="home-card-title">
                     📚 Série la plus longue
@@ -45,7 +45,7 @@
         <?php if (!empty($lastTome)): ?>
             <a
                 class="card card-link card-medium"
-                href="<?= $basePath; ?>manga/<?= rawurlencode($lastTome->slug) ?>/<?= (int) $lastTome->numero ?>">
+                href="<?= $basePath; ?>manga/series/<?= rawurlencode($lastTome->slug) ?>/<?= (int) $lastTome->numero ?>">
 
                 <h2 class="home-card-title">
                     🆕 Dernier tome ajouté
@@ -128,7 +128,7 @@
             <?php foreach ($topLongestSeries as $index => $serie): ?>
                 <a
                     class="card card-link card-bottom"
-                    href="<?= $basePath; ?>manga/serie/<?= rawurlencode($serie->slug) ?>">
+                    href="<?= $basePath; ?>manga/series/<?= rawurlencode($serie->slug) ?>">
 
                     <p class="home-series-rank">
                         #<?= $index + 1 ?>
@@ -213,7 +213,7 @@
         <?php if ($lowGlobal): ?>
             <a
                 class="card card-link card-medium"
-                href="<?= $basePath; ?>manga/<?= rawurlencode($lowGlobal->slug) ?>/<?= (int) $lowGlobal->numero ?>">
+                href="<?= $basePath; ?>manga/series/<?= rawurlencode($lowGlobal->slug) ?>/<?= (int) $lowGlobal->numero ?>">
 
                 <h2 class="home-card-title">
                     📉 À remplacer

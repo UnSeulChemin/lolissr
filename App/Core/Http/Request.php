@@ -199,7 +199,7 @@ final class Request
         }
 
         $basePath = rtrim(
-            \App\Core\Application\App::basePath(),
+            base_path(),
             '/'
         );
 
@@ -214,11 +214,11 @@ final class Request
             );
         }
 
-        $path = trim($path);
+        $path = trim($path, '/');
 
         return $path === ''
             ? '/'
-            : $path;
+            : '/' . $path;
     }
 
     public function server(

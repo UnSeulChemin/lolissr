@@ -150,7 +150,7 @@
                         type="button"
                         class="form-submit form-submit-danger js-delete-manga"
                         data-url="<?= $basePath; ?>manga/ajax/supprimer/<?= rawurlencode($manga->slug) ?>/<?= (int) $manga->numero ?>"
-                        data-redirect="<?= $basePath; ?>manga/serie/<?= rawurlencode($manga->slug) ?>">
+                        data-redirect="<?= $basePath; ?>manga/series/<?= rawurlencode($manga->slug) ?>">
                         Supprimer
                     </button>
 
@@ -165,7 +165,7 @@
     <div class="collection-back-wrapper">
         <a
             class="form-submit collection-back-button"
-            href="<?= $basePath; ?>manga/serie/<?= rawurlencode($manga->slug) ?>">
+            href="<?= $basePath; ?>manga/series/<?= rawurlencode($manga->slug) ?>"
             Retour
         </a>
     </div>

@@ -15,7 +15,8 @@ final class MangaAjaxController extends Controller
 {
     public function __construct(
         protected MangaReadService $mangaReadService,
-        protected MangaWriteService $mangaWriteService
+        protected MangaWriteService $mangaWriteService,
+        protected Request $request
     ) {
         parent::__construct();
     }
@@ -113,7 +114,7 @@ final class MangaAjaxController extends Controller
             ], 409);
         }
 
-        $noteRequest = new MangaUpdateNoteRequest();
+        $noteRequest = new MangaUpdateNoteRequest($request);
 
         if ($noteRequest->fails()) {
             $this->error([
@@ -201,7 +202,7 @@ final class MangaAjaxController extends Controller
             'success' => true,
             'message' => $result['message'],
             'redirect' => $this->basePath
-                . 'manga/serie/'
+                . 'manga/series/'
                 . rawurlencode((string) ($result['canonicalSlug'] ?? $slug)),
         ]);
     }

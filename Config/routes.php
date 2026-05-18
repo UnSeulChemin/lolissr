@@ -2,47 +2,31 @@
 
 declare(strict_types=1);
 
-use App\Core\Http\Router;
+use App\Controllers\MainController;
+
+use App\Controllers\Manga\MangaAjaxController;
+use App\Controllers\Manga\MangaController;
+
+use App\Controllers\Chinois\ChinoisAjaxController;
+use App\Controllers\Chinois\ChinoisController;
+
 use App\Core\Http\Middleware\AjaxOnlyMiddleware;
-use App\Core\Http\Middleware\PostOnlyMiddleware;
 use App\Core\Http\Middleware\CsrfMiddleware;
+use App\Core\Http\Middleware\PostOnlyMiddleware;
 
-return static function (Router $router): void
-{
-    $router->get('/', 'MainController@index');
+use App\Core\Http\Router;
 
-    /*
-    |--------------------------------------------------------------------------
-    | Chinois
-    |--------------------------------------------------------------------------
-    */
-
-    $router->get('/chinois', 'Chinois\ChinoisController@index');
-
-    $router->get('/chinois/mandarin', 'Chinois\ChinoisController@mandarin');
-    $router->get('/chinois/jinyu', 'Chinois\ChinoisController@jinyu');
-    $router->get('/chinois/grammaire', 'Chinois\ChinoisController@grammaire');
-    $router->get('/chinois/flashcards', 'Chinois\ChinoisController@flashcards');
-    $router->get('/chinois/ajouter', 'Chinois\ChinoisController@ajouter');
-
-    $router->get('/chinois/grammaire/hsk1', 'Chinois\ChinoisController@hsk1');
-    $router->get('/chinois/grammaire/hsk2', 'Chinois\ChinoisController@hsk2');
-    $router->get('/chinois/grammaire/hsk3', 'Chinois\ChinoisController@hsk3');
-    $router->get('/chinois/grammaire/hsk4', 'Chinois\ChinoisController@hsk4');
+return static function (Router $router): void {
 
     /*
     |--------------------------------------------------------------------------
-    | Chinois — AJAX
+    | Main
     |--------------------------------------------------------------------------
     */
 
-    $router->post(
-        '/chinois/ajax/grammaire-maitrise',
-        'Chinois\ChinoisAjaxController@toggleGrammaireMaitrise'
-    )->middleware([
-        PostOnlyMiddleware::class,
-        AjaxOnlyMiddleware::class,
-        CsrfMiddleware::class,
+    $router->get('/', [
+        MainController::class,
+        'index',
     ]);
 
     /*
@@ -51,96 +35,85 @@ return static function (Router $router): void
     |--------------------------------------------------------------------------
     */
 
-    $router->get('/manga', 'Manga\MangaController@index');
-    $router->get('/manga/lien', 'Manga\MangaController@lien');
+    $router->get('/manga', [
+        MangaController::class,
+        'index',
+    ]);
 
-    $router->get('/manga/collection', 'Manga\MangaController@collection');
-    $router->get('/manga/collection/page/{page}', 'Manga\MangaController@collection');
+    $router->get('/manga/collection/{page}', [
+        MangaController::class,
+        'collection',
+    ]);
 
-    $router->get('/manga/recherche', 'Manga\MangaController@recherche');
-    $router->get('/manga/recherche/{query}', 'Manga\MangaController@recherche');
-
-    $router->get('/manga/serie/{slug}', 'Manga\MangaController@serie');
+    $router->get('/manga/series/{slug}/{numero}', [
+        MangaController::class,
+        'show',
+    ]);
 
     /*
     |--------------------------------------------------------------------------
-    | Manga — AJAX
+    | Manga AJAX
     |--------------------------------------------------------------------------
     */
-
-    $router->get(
-        '/manga/collection-ajax/page/{page}',
-        'Manga\MangaAjaxController@collectionPage'
-    )->middleware(AjaxOnlyMiddleware::class);
-
-    $router->get(
-        '/manga/search-ajax/{query}',
-        'Manga\MangaAjaxController@search'
-    )->middleware(AjaxOnlyMiddleware::class);
 
     $router->post(
         '/manga/ajax/update-note/{slug}/{numero}',
-        'Manga\MangaAjaxController@updateNote'
-    )->middleware([
-        PostOnlyMiddleware::class,
-        AjaxOnlyMiddleware::class,
-        CsrfMiddleware::class,
-    ]);
+        [
+            MangaAjaxController::class,
+            'updateNote',
+        ],
+        [
+            PostOnlyMiddleware::class,
+            AjaxOnlyMiddleware::class,
+            CsrfMiddleware::class,
+        ]
+    );
 
     $router->post(
         '/manga/ajax/update-lu/{slug}/{numero}',
-        'Manga\MangaAjaxController@updateLu'
-    )->middleware([
-        PostOnlyMiddleware::class,
-        AjaxOnlyMiddleware::class,
-        CsrfMiddleware::class,
+        [
+            MangaAjaxController::class,
+            'updateLu',
+        ],
+        [
+            PostOnlyMiddleware::class,
+            AjaxOnlyMiddleware::class,
+            CsrfMiddleware::class,
+        ]
+    );
+
+    /*
+    |--------------------------------------------------------------------------
+    | Chinois
+    |--------------------------------------------------------------------------
+    */
+
+    $router->get('/chinois', [
+        ChinoisController::class,
+        'index',
     ]);
 
-    $router->post(
-        '/manga/ajax/supprimer/{slug}/{numero}',
-        'Manga\MangaAjaxController@delete'
-    )->middleware([
-        PostOnlyMiddleware::class,
-        AjaxOnlyMiddleware::class,
-        CsrfMiddleware::class,
+    $router->get('/chinois/grammaire/hsk-1', [
+        ChinoisController::class,
+        'hsk1',
     ]);
 
     /*
     |--------------------------------------------------------------------------
-    | Manga — formulaires
-    |--------------------------------------------------------------------------
-    */
-
-    $router->get('/manga/ajouter', 'Manga\MangaController@ajouter');
-    $router->get('/manga/modifier/{slug}/{numero}', 'Manga\MangaController@modifier');
-
-    /*
-    |--------------------------------------------------------------------------
-    | POST — traitements HTML
+    | Chinois AJAX
     |--------------------------------------------------------------------------
     */
 
     $router->post(
-        '/manga/ajouter',
-        'Manga\MangaController@ajouterTraitement'
-    )->middleware([
-        PostOnlyMiddleware::class,
-        CsrfMiddleware::class,
-    ]);
-
-    $router->post(
-        '/manga/modifier/{slug}/{numero}',
-        'Manga\MangaController@update'
-    )->middleware([
-        PostOnlyMiddleware::class,
-        CsrfMiddleware::class,
-    ]);
-
-    /*
-    |--------------------------------------------------------------------------
-    | Manga — détail
-    |--------------------------------------------------------------------------
-    */
-
-    $router->get('/manga/{slug}/{numero}', 'Manga\MangaController@show');
+        '/chinois/ajax/toggle-grammaire-maitrise',
+        [
+            ChinoisAjaxController::class,
+            'toggleGrammaireMaitrise',
+        ],
+        [
+            PostOnlyMiddleware::class,
+            AjaxOnlyMiddleware::class,
+            CsrfMiddleware::class,
+        ]
+    );
 };

@@ -10,11 +10,12 @@ abstract class FormRequest
 {
     protected Validator $validator;
 
-    public function __construct()
-    {
+    public function __construct(
+        protected Request $request
+    ) {
         $this->validator = new Validator(
-            Request::allPost(),
-            Request::allFiles()
+            $request->post(),
+            $request->files()
         );
 
         $this->validate();
@@ -39,11 +40,18 @@ abstract class FormRequest
 
     public function data(): array
     {
-        return Request::allPost();
+        return $this->request->post();
     }
 
     public function files(): array
     {
-        return Request::allFiles();
+        return $this->request->files();
+    }
+
+    protected function input(
+        string $key,
+        mixed $default = null
+    ): mixed {
+        return $this->request->input($key, $default);
     }
 }

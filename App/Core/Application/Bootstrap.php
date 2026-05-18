@@ -10,6 +10,7 @@ use App\Core\Container\AppContainer;
 use App\Core\Container\Container;
 use App\Core\Exceptions\ErrorHandler;
 use App\Core\Http\Router;
+use App\Core\Http\Request;
 
 final class Bootstrap
 {
@@ -54,6 +55,11 @@ final class Bootstrap
         $container = new Container();
 
         AppContainer::set($container);
+
+        $container->singleton(
+            Request::class,
+            fn () => Request::capture()
+        );
 
         /*
         |--------------------------------------------------------------------------

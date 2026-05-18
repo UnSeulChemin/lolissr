@@ -6,26 +6,31 @@ namespace App\Core\Http;
 
 final class UploadedFile
 {
+    public function __construct(
+        private Request $request
+    ) {
+    }
+
     /**
      * Vérifie si un fichier uploadé existe.
      */
-    public static function exists(string $key): bool
+    public function exists(string $key): bool
     {
-        return Request::hasFile($key)
-            && Request::fileError($key) !== UPLOAD_ERR_NO_FILE;
+        return $this->request->hasFile($key)
+            && $this->request->fileError($key) !== UPLOAD_ERR_NO_FILE;
     }
 
     /**
      * Retourne le nom original du fichier.
      */
-    public static function name(string $key): ?string
+    public function name(string $key): ?string
     {
-        if (!self::exists($key))
+        if (!$this->exists($key))
         {
             return null;
         }
 
-        $name = Request::fileName($key);
+        $name = $this->request->fileName($key);
 
         return $name !== '' ? $name : null;
     }
@@ -33,14 +38,14 @@ final class UploadedFile
     /**
      * Retourne le chemin temporaire du fichier.
      */
-    public static function tmp(string $key): ?string
+    public function tmp(string $key): ?string
     {
-        if (!self::exists($key))
+        if (!$this->exists($key))
         {
             return null;
         }
 
-        $tmp = Request::fileTmpPath($key);
+        $tmp = $this->request->fileTmpPath($key);
 
         return $tmp !== '' ? $tmp : null;
     }
@@ -48,35 +53,35 @@ final class UploadedFile
     /**
      * Retourne le code d'erreur du fichier.
      */
-    public static function error(string $key): ?int
+    public function error(string $key): ?int
     {
-        if (!Request::hasFile($key))
+        if (!$this->request->hasFile($key))
         {
             return null;
         }
 
-        return Request::fileError($key);
+        return $this->request->fileError($key);
     }
 
     /**
      * Retourne la taille du fichier.
      */
-    public static function size(string $key): ?int
+    public function size(string $key): ?int
     {
-        if (!self::exists($key))
+        if (!$this->exists($key))
         {
             return null;
         }
 
-        return Request::fileSize($key);
+        return $this->request->fileSize($key);
     }
 
     /**
      * Retourne l'extension du fichier.
      */
-    public static function extension(string $key): ?string
+    public function extension(string $key): ?string
     {
-        $name = self::name($key);
+        $name = $this->name($key);
 
         if ($name === null)
         {
@@ -85,15 +90,17 @@ final class UploadedFile
 
         $extension = strtolower(pathinfo($name, PATHINFO_EXTENSION));
 
-        return $extension !== '' ? $extension : null;
+        return $extension !== ''
+            ? $extension
+            : null;
     }
 
     /**
      * Retourne le type MIME réel du fichier.
      */
-    public static function mimeType(string $key): ?string
+    public function mimeType(string $key): ?string
     {
-        $tmpName = self::tmp($key);
+        $tmpName = $this->tmp($key);
 
         if ($tmpName === null || !is_file($tmpName))
         {
@@ -108,6 +115,7 @@ final class UploadedFile
         }
 
         $mimeType = finfo_file($finfo, $tmpName);
+
         finfo_close($finfo);
 
         return is_string($mimeType) && $mimeType !== ''

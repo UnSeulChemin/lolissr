@@ -51,7 +51,7 @@ abstract class Controller
 
         return view_path('errors/' . $file . '.php');
     }
-    
+
     /**
      * Retourne le chemin complet du template.
      */
@@ -65,19 +65,24 @@ abstract class Controller
      *
      * @param array<string, mixed> $data
      */
-    protected function render(string $file, array $data = []): void
-    {
+    protected function render(
+        string $file,
+        array $data = []
+    ): void {
         $viewPath = $this->viewPath($file);
 
         if (!is_file($viewPath))
         {
-            throw new NotFoundException('Vue introuvable : ' . $file);
+            throw new NotFoundException(
+                'Vue introuvable : ' . $file
+            );
         }
 
         extract($data, EXTR_SKIP);
 
         $title = $this->title;
         $basePath = $this->basePath;
+        $currentPath = app(Request::class)->path();
 
         ob_start();
         require $viewPath;
@@ -88,7 +93,8 @@ abstract class Controller
         if (!is_file($templatePath))
         {
             throw new \RuntimeException(
-                'Template introuvable : ' . $this->template
+                'Template introuvable : '
+                . $this->template
             );
         }
 
@@ -104,14 +110,17 @@ abstract class Controller
      *
      * @param array<string, mixed> $data
      */
-    protected function renderPartial(string $file, array $data = []): void
-    {
+    protected function renderPartial(
+        string $file,
+        array $data = []
+    ): void {
         $viewPath = $this->viewPath($file);
 
         if (!is_file($viewPath))
         {
             throw new NotFoundException(
-                'Vue partielle introuvable : ' . $file
+                'Vue partielle introuvable : '
+                . $file
             );
         }
 
@@ -119,6 +128,7 @@ abstract class Controller
 
         $title = $this->title;
         $basePath = $this->basePath;
+        $currentPath = app(Request::class)->path();
 
         ob_start();
         require $viewPath;
@@ -136,13 +146,16 @@ abstract class Controller
         string $file,
         int $statusCode,
         array $data = []
-    ): void
-    {
+    ): void {
         $viewPath = $this->errorViewPath($file);
 
         if (!is_file($viewPath))
         {
-            Response::html('Vue erreur introuvable : ' . $file, 500);
+            Response::html(
+                'Vue erreur introuvable : ' . $file,
+                500
+            );
+
             return;
         }
 
@@ -150,6 +163,7 @@ abstract class Controller
 
         $title = $this->title;
         $basePath = $this->basePath;
+        $currentPath = app(Request::class)->path();
 
         ob_start();
         require $viewPath;
@@ -159,7 +173,12 @@ abstract class Controller
 
         if (!is_file($templatePath))
         {
-            Response::html('Template introuvable : ' . $this->template, 500);
+            Response::html(
+                'Template introuvable : '
+                . $this->template,
+                500
+            );
+
             return;
         }
 
@@ -173,11 +192,14 @@ abstract class Controller
     /**
      * Redirection simple.
      */
-    protected function redirect(string $url, int $statusCode = 302): void
-    {
+    protected function redirect(
+        string $url,
+        int $statusCode = 302
+    ): void {
         if (preg_match('#^https?://#i', $url) === 1)
         {
             Response::redirect($url, $statusCode);
+
             return;
         }
 
@@ -194,14 +216,17 @@ abstract class Controller
         string $url,
         string $message,
         bool $withOld = true
-    ): void
-    {
+    ): void {
         if ($withOld)
         {
-            Session::set('old', Request::allPost());
+            Session::set(
+                'old',
+                app(Request::class)->all()
+            );
         }
 
         Session::set('error', $message);
+
         $this->redirect($url);
     }
 
@@ -214,10 +239,14 @@ abstract class Controller
         string $url,
         array $errors,
         string $message = 'Le formulaire contient des erreurs.'
-    ): void
-    {
+    ): void {
         Session::set('errors', $errors);
-        Session::set('old', Request::allPost());
+
+        Session::set(
+            'old',
+            app(Request::class)->all()
+        );
+
         Session::set('error', $message);
 
         $this->redirect($url);
@@ -226,17 +255,21 @@ abstract class Controller
     /**
      * Redirection avec succès.
      */
-    protected function redirectWithSuccess(string $url, string $message): void
-    {
+    protected function redirectWithSuccess(
+        string $url,
+        string $message
+    ): void {
         Session::set('success', $message);
+
         $this->redirect($url);
     }
 
     /**
      * Lance une 404.
      */
-    public function notFound(string $message = 'Page introuvable'): void
-    {
+    public function notFound(
+        string $message = 'Page introuvable'
+    ): void {
         throw new NotFoundException($message);
     }
 
@@ -245,8 +278,7 @@ abstract class Controller
      */
     public function methodNotAllowed(
         string $message = 'Méthode non autorisée'
-    ): void
-    {
+    ): void {
         throw new MethodNotAllowedException($message);
     }
 
@@ -255,8 +287,7 @@ abstract class Controller
      */
     public function serverError(
         string $message = 'Erreur interne du serveur'
-    ): void
-    {
+    ): void {
         throw new \RuntimeException($message);
     }
 
@@ -265,10 +296,14 @@ abstract class Controller
      */
     public function renderNotFoundPage(
         string $message = 'Page introuvable'
-    ): void
-    {
+    ): void {
         $this->title = '404 | Page introuvable';
-        $this->renderError('404', 404, ['message' => $message]);
+
+        $this->renderError(
+            '404',
+            404,
+            ['message' => $message]
+        );
     }
 
     /**
@@ -276,10 +311,14 @@ abstract class Controller
      */
     public function renderMethodNotAllowedPage(
         string $message = 'Méthode non autorisée'
-    ): void
-    {
+    ): void {
         $this->title = '405 | Méthode non autorisée';
-        $this->renderError('405', 405, ['message' => $message]);
+
+        $this->renderError(
+            '405',
+            405,
+            ['message' => $message]
+        );
     }
 
     /**
@@ -287,9 +326,13 @@ abstract class Controller
      */
     public function renderServerErrorPage(
         string $message = 'Erreur interne du serveur'
-    ): void
-    {
+    ): void {
         $this->title = '500 | Erreur serveur';
-        $this->renderError('500', 500, ['message' => $message]);
+
+        $this->renderError(
+            '500',
+            500,
+            ['message' => $message]
+        );
     }
 }

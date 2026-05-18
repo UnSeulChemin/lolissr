@@ -28,7 +28,9 @@ $isSerieView = is_string($slugFilter) && trim($slugFilter) !== '';
 
             <?php if ($mangas === []): ?>
 
-                <p class="collection-empty">Aucun manga trouvé.</p>
+                <p class="collection-empty">
+                    Aucun manga trouvé.
+                </p>
 
             <?php else: ?>
 
@@ -57,8 +59,8 @@ $isSerieView = is_string($slugFilter) && trim($slugFilter) !== '';
                         }
 
                         $href = $isSerieView
-                            ? $basePath . 'manga/' . rawurlencode($slug) . '/' . $numero
-                            : $basePath . 'manga/serie/' . rawurlencode($slug);
+                            ? $basePath . 'manga/series/' . rawurlencode($slug) . '/' . $numero
+                            : $basePath . 'manga/series/' . rawurlencode($slug);
 
                         $noteClass = 'collection-note-mid';
 
@@ -151,7 +153,7 @@ $isSerieView = is_string($slugFilter) && trim($slugFilter) !== '';
                     <?php for ($getId = 1; $getId <= $compteur; $getId++): ?>
                         <a
                             class="collection-pagination-link <?= ($currentPage === $getId) ? 'active' : ''; ?>"
-                            href="<?= $basePath; ?>manga/collection/page/<?= $getId; ?>">
+                            href="<?= $basePath; ?>manga/collection/<?= $getId; ?>">
                             <?= $getId; ?>
                         </a>
                     <?php endfor; ?>
@@ -163,7 +165,7 @@ $isSerieView = is_string($slugFilter) && trim($slugFilter) !== '';
                 <div class="collection-back-wrapper">
                     <a
                         class="form-submit collection-back-button"
-                        href="<?= $basePath; ?>manga/collection">
+                        href="<?= $basePath; ?>manga/collection/1">
                         Retour
                     </a>
                 </div>

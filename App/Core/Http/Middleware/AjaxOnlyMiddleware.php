@@ -5,16 +5,17 @@ declare(strict_types=1);
 namespace App\Core\Http\Middleware;
 
 use App\Core\Application\App;
+use App\Core\Http\Request;
 
 final class AjaxOnlyMiddleware implements MiddlewareInterface
 {
-    public function handle(): void
+    public function handle(Request $request): void
     {
-        if (is_ajax()) {
+        if ($request->isAjax()) {
             return;
         }
 
-        $userAgent = (string) ($_SERVER['HTTP_USER_AGENT'] ?? '');
+        $userAgent = $request->userAgent();
 
         if (
             App::isTesting()

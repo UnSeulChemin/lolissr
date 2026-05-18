@@ -4,302 +4,208 @@ declare(strict_types=1);
 
 namespace App\Core\Http;
 
-use App\Core\Application\App;
-use ReflectionClass;
+use App\Core\Container\AppContainer;
+use App\Core\Http\Middleware\MiddlewareInterface;
+use ReflectionMethod;
 use ReflectionNamedType;
 use RuntimeException;
-use ReflectionMethod;
 
-class Router
+final class Router
 {
-    /**
-     * @var array<string, array<int, array<string, mixed>>>
-     */
     private array $routes = [];
 
-    private ?string $lastMethod = null;
-    private ?int $lastRouteIndex = null;
-
-    public function get(string $path, string $action): self
-    {
-        $this->addRoute('GET', $path, $action);
-
-        return $this;
-    }
-
-    public function post(string $path, string $action): self
-    {
-        $this->addRoute('POST', $path, $action);
-
-        return $this;
-    }
-
-    /**
-     * @param string|array<int, string> $middlewares
-     */
-    public function middleware(string|array $middlewares): self
-    {
-        if ($this->lastMethod === null || $this->lastRouteIndex === null)
-        {
-            throw new RuntimeException('Aucune route disponible pour ajouter un middleware.');
-        }
-
-        $middlewares = is_array($middlewares)
-            ? $middlewares
-            : [$middlewares];
-
-        foreach ($middlewares as $middleware)
-        {
-            $this->routes[$this->lastMethod][$this->lastRouteIndex]['middlewares'][] = $middleware;
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return array<string, array<int, array<string, mixed>>>
-     */
-    public function getRoutes(): array
-    {
-        return $this->routes;
-    }
-
-    private function addRoute(string $method, string $path, string $action): void
-    {
-        $path = $this->normalizeRoutePath($path);
-        $paramNames = [];
-
-        $pattern = preg_replace_callback(
-            '#\{([a-zA-Z_][a-zA-Z0-9_]*)\}#',
-            static function (array $matches) use (&$paramNames): string
-            {
-                $paramNames[] = $matches[1];
-
-                return '([^/]+)';
-            },
-            $path
+    public function get(
+        string $uri,
+        array|string $action,
+        array $middlewares = []
+    ): void {
+        $this->addRoute(
+            'GET',
+            $uri,
+            $action,
+            $middlewares
         );
+    }
 
-        $pattern = $path === '/'
-            ? '#^/$#'
-            : '#^' . rtrim((string) $pattern, '/') . '/?$#';
+    public function post(
+        string $uri,
+        array|string $action,
+        array $middlewares = []
+    ): void {
+        $this->addRoute(
+            'POST',
+            $uri,
+            $action,
+            $middlewares
+        );
+    }
 
-        $this->routes[$method][] = [
-            'path' => $path,
-            'action' => $action,
-            'pattern' => $pattern,
-            'params' => $paramNames,
-            'middlewares' => [],
+    private function addRoute(
+        string $method,
+        string $uri,
+        array|string $action,
+        array $middlewares = []
+    ): void {
+        $this->routes[] = [
+            'method' => strtoupper($method),
+            'uri' => $uri === '/'
+            ? '/'
+            : '/' . trim($uri, '/'),
+                    'action' => $action,
+            'middlewares' => $middlewares,
         ];
-
-        $this->lastMethod = $method;
-        $this->lastRouteIndex = array_key_last($this->routes[$method]);
     }
 
     public function dispatch(): void
     {
-        $request = Request::capture();
+        $request = $this->resolve(Request::class);
 
-        $requestMethod = $request->method();
+        $method = $request->method();
 
-        $requestPath = $this->normalizeRequestPath(
-            $this->stripBasePath(
-                $request->path()
-            )
-        );
+        $uri = $request->path();
 
-        $routes = $this->routes[$requestMethod] ?? [];
-
-        foreach ($routes as $route)
+        foreach ($this->routes as $route)
         {
-            if (
-                preg_match(
-                    $route['pattern'],
-                    $requestPath,
-                    $matches
-                ) !== 1
-            ) {
+            $pattern = preg_replace(
+                '#\{([^/]+)\}#',
+                '([^/]+)',
+                $route['uri']
+            );
+
+            $pattern = '#^' . $pattern . '$#';
+
+            if (!preg_match($pattern, $uri, $matches))
+            {
                 continue;
+            }
+
+            if ($method !== $route['method'])
+            {
+                abort(405);
             }
 
             array_shift($matches);
 
-            $params = [];
-
-            foreach ($route['params'] as $index => $name)
-            {
-                $params[$name] = $matches[$index] ?? null;
-            }
-
             $this->runMiddlewares(
-                $route['middlewares']
+                $route['middlewares'],
+                $request
             );
 
-            $this->callAction(
-                $route['action'],
-                $params
+            $action = $route['action'];
+
+            if (is_string($action))
+            {
+                [$controllerClass, $controllerMethod] = explode(
+                    '@',
+                    $action
+                );
+
+                $controllerClass = 'App\\Controllers\\'
+                    . $controllerClass;
+            }
+            else
+            {
+                [$controllerClass, $controllerMethod] = $action;
+            }
+
+            $controller = $this->resolve(
+                $controllerClass
+            );
+
+            $parameters = $this->resolveMethodDependencies(
+                $controller,
+                $controllerMethod,
+                $matches,
+                $request
+            );
+
+            $controller->{$controllerMethod}(
+                ...$parameters
             );
 
             return;
         }
 
-        $allowedMethods = $this->findAllowedMethods(
-            $requestPath
-        );
-
-        if ($allowedMethods !== [])
-        {
-            http_response_code(405);
-
-            header(
-                'Allow: ' . implode(', ', $allowedMethods)
-            );
-
-            abort(405);
-        }
-
         abort(404);
     }
 
-    /**
-     * @param array<int, string> $middlewares
-     */
-    private function runMiddlewares(array $middlewares): void
-    {
+    private function runMiddlewares(
+        array $middlewares,
+        Request $request
+    ): void {
         foreach ($middlewares as $middlewareClass)
         {
             if (!class_exists($middlewareClass))
             {
-                throw new RuntimeException('Middleware introuvable : ' . $middlewareClass);
-            }
-
-            $middleware = $this->resolve($middlewareClass);
-
-            if (!method_exists($middleware, 'handle'))
-            {
-                throw new RuntimeException('Méthode handle() introuvable dans : ' . $middlewareClass);
-            }
-
-            $middleware->handle();
-        }
-    }
-
-    private function resolve(string $class): object
-    {
-        if (!class_exists($class))
-        {
-            throw new RuntimeException('Classe introuvable : ' . $class);
-        }
-
-        $reflection = new ReflectionClass($class);
-
-        if (!$reflection->isInstantiable())
-        {
-            throw new RuntimeException('Classe non instanciable : ' . $class);
-        }
-
-        $constructor = $reflection->getConstructor();
-
-        if ($constructor === null)
-        {
-            return $reflection->newInstance();
-        }
-
-        $dependencies = [];
-
-        foreach ($constructor->getParameters() as $parameter)
-        {
-            $type = $parameter->getType();
-
-            if (!$type instanceof ReflectionNamedType || $type->isBuiltin())
-            {
-                if ($parameter->isDefaultValueAvailable())
-                {
-                    $dependencies[] = $parameter->getDefaultValue();
-                    continue;
-                }
-
                 throw new RuntimeException(
-                    'Impossible de résoudre la dépendance : ' . $class . '::$' . $parameter->getName()
+                    'Middleware introuvable : '
+                    . $middlewareClass
                 );
             }
 
-            $dependencies[] = $this->resolve($type->getName());
-        }
-
-        return $reflection->newInstanceArgs($dependencies);
-    }
-
-    /**
-     * @return string[]
-     */
-    private function findAllowedMethods(string $path): array
-    {
-        $allowedMethods = [];
-
-        foreach ($this->routes as $registeredMethod => $registeredRoutes)
-        {
-            foreach ($registeredRoutes as $route)
-            {
-                if (preg_match($route['pattern'], $path) === 1)
-                {
-                    $allowedMethods[] = $registeredMethod;
-                }
-            }
-        }
-
-        return array_values(array_unique($allowedMethods));
-    }
-
-    /**
-     * @param array<string, mixed> $params
-     */
-    private function callAction(string $action, array $params = []): void
-    {
-        if (!str_contains($action, '@'))
-        {
-            throw new RuntimeException('Action invalide : ' . $action);
-        }
-
-        [$controllerName, $method] = explode('@', $action, 2);
-
-        $controllerClass = 'App\\Controllers\\' . $controllerName;
-
-        if (!class_exists($controllerClass))
-        {
-            throw new RuntimeException('Controller introuvable : ' . $controllerClass);
-        }
-
-        $controller = $this->resolve($controllerClass);
-
-        if (!method_exists($controller, $method))
-        {
-            throw new RuntimeException(
-                'Méthode introuvable : ' . $controllerClass . '::' . $method
+            $middleware = $this->resolve(
+                $middlewareClass
             );
-        }
 
-        $reflectionMethod = new ReflectionMethod($controller, $method);
+            if (
+                !$middleware instanceof MiddlewareInterface
+            ) {
+                throw new RuntimeException(
+                    'Middleware invalide : '
+                    . $middlewareClass
+                );
+            }
+
+            $middleware->handle($request);
+        }
+    }
+
+    private function resolveMethodDependencies(
+        object $controller,
+        string $method,
+        array $routeParameters,
+        Request $request
+    ): array {
+        $reflection = new ReflectionMethod(
+            $controller,
+            $method
+        );
 
         $dependencies = [];
 
-        foreach ($reflectionMethod->getParameters() as $parameter)
-        {
+        $routeIndex = 0;
+
+        foreach (
+            $reflection->getParameters()
+            as $parameter
+        ) {
             $type = $parameter->getType();
 
             if (
                 $type instanceof ReflectionNamedType
                 && !$type->isBuiltin()
-            )
-            {
-                $dependencies[] = $this->resolve($type->getName());
+            ) {
+                $typeName = $type->getName();
+
+                if ($typeName === Request::class)
+                {
+                    $dependencies[] = $request;
+
+                    continue;
+                }
+
+                $dependencies[] = $this->resolve(
+                    $typeName
+                );
 
                 continue;
             }
 
-            if ($params !== [])
+            if (isset($routeParameters[$routeIndex]))
             {
-                $dependencies[] = array_shift($params);
+                $dependencies[] = $routeParameters[$routeIndex];
+
+                $routeIndex++;
 
                 continue;
             }
@@ -311,59 +217,18 @@ class Router
                 continue;
             }
 
-            $dependencies[] = null;
+            throw new RuntimeException(
+                'Impossible de résoudre le paramètre : '
+                . $parameter->getName()
+            );
         }
 
-        $controller->{$method}(...$dependencies);
+        return $dependencies;
     }
 
-    private function normalizeRoutePath(string $path): string
-    {
-        $path = trim($path);
-
-        if ($path === '' || $path === '/')
-        {
-            return '/';
-        }
-
-        return '/' . trim($path, '/');
-    }
-
-    private function normalizeRequestPath(string $path): string
-    {
-        $path = trim($path);
-
-        if ($path === '' || $path === '/')
-        {
-            return '/';
-        }
-
-        return '/' . trim($path, '/');
-    }
-
-    private function stripBasePath(string $path): string
-    {
-        $basePath = App::basePath();
-
-        if ($basePath === '/')
-        {
-            return $path;
-        }
-
-        $trimmedBasePath = rtrim($basePath, '/');
-
-        if ($path === $trimmedBasePath)
-        {
-            return '/';
-        }
-
-        if (str_starts_with($path, $trimmedBasePath . '/'))
-        {
-            $path = substr($path, strlen($trimmedBasePath));
-
-            return $path === '' ? '/' : $path;
-        }
-
-        return $path;
+    private function resolve(
+        string $class
+    ): object {
+        return AppContainer::get()->get($class);
     }
 }

@@ -8,10 +8,9 @@ use App\Core\Http\Request;
 
 final class PostOnlyMiddleware implements MiddlewareInterface
 {
-    public function handle(): void
+    public function handle(Request $request): void
     {
-        if (!Request::isPost())
-        {
+        if (!$request->isPost()) {
             abort(405);
         }
     }
