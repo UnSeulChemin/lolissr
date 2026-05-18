@@ -144,8 +144,7 @@ class Model
      */
     public function update(array $datas, array $where): bool
     {
-        if (empty($datas) || empty($where))
-        {
+        if (empty($datas) || empty($where)) {
             return false;
         }
 
@@ -153,12 +152,10 @@ class Model
         $conditions = [];
         $values = [];
 
-        foreach ($datas as $field => $value)
-        {
+        foreach ($datas as $field => $value) {
             $field = $this->cleanField((string) $field);
 
-            if ($field === '')
-            {
+            if ($field === '') {
                 continue;
             }
 
@@ -166,12 +163,10 @@ class Model
             $values[] = $value;
         }
 
-        foreach ($where as $field => $value)
-        {
+        foreach ($where as $field => $value) {
             $field = $this->cleanField((string) $field);
 
-            if ($field === '')
-            {
+            if ($field === '') {
                 continue;
             }
 
@@ -179,8 +174,7 @@ class Model
             $values[] = $value;
         }
 
-        if (empty($fields) || empty($conditions))
-        {
+        if (empty($fields) || empty($conditions)) {
             return false;
         }
 
@@ -188,7 +182,16 @@ class Model
                 SET " . implode(', ', $fields) . "
                 WHERE " . implode(' AND ', $conditions);
 
-        return $this->requete($sql, $values) !== false;
+        $stmt = $this->requete($sql, $values);
+
+        if ($stmt === false) {
+            error_log('SQL UPDATE FAILED');
+            error_log($this->lastError());
+            return false;
+        }
+
+        // 🔥 IMPORTANT: vrai check logique
+        return true;
     }
 
     /**
@@ -244,23 +247,35 @@ class Model
      */
     protected function requete(string $sql, ?array $attributes = null): \PDOStatement|false
     {
-        if ($this->db === null)
-        {
+        if ($this->db === null) {
             $this->db = Database::getInstance();
         }
 
-        if ($attributes !== null)
-        {
-            $query = $this->db->prepare($sql);
+        try {
+            $pdo = $this->db;
 
-            if ($query === false)
-            {
-                return false;
+            if ($attributes !== null) {
+                $stmt = $pdo->prepare($sql);
+
+                if ($stmt === false) {
+                    return false;
+                }
+
+                $stmt->execute($attributes);
+                return $stmt;
             }
 
-            return $query->execute($attributes) ? $query : false;
-        }
+            return $pdo->query($sql);
 
-        return $this->db->query($sql);
+        } catch (\Throwable $e) {
+            error_log("SQL ERROR: " . $e->getMessage());
+            error_log($sql);
+            return false;
+        }
+    }
+
+    public function lastError(): ?string
+    {
+        return $this->db?->errorInfo()[2] ?? null;
     }
 }

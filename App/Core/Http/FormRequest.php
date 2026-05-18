@@ -9,12 +9,15 @@ use App\Core\Validation\Validator;
 abstract class FormRequest
 {
     protected Validator $validator;
+    protected array $data;
 
     public function __construct(
         protected Request $request
     ) {
+        $this->data = $request->postAll();
+
         $this->validator = new Validator(
-            $request->post(),
+            $this->data,
             $request->files()
         );
 
@@ -40,7 +43,7 @@ abstract class FormRequest
 
     public function data(): array
     {
-        return $this->request->post();
+        return $this->data;
     }
 
     public function files(): array

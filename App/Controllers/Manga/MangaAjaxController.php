@@ -40,6 +40,8 @@ final class MangaAjaxController extends Controller
             'success' => false,
             'message' => 'Requête AJAX requise',
         ], 400);
+
+        exit;
     }
 
     private function error(array $payload, int $status = 400): void
@@ -47,6 +49,8 @@ final class MangaAjaxController extends Controller
         json(array_merge([
             'success' => false,
         ], $payload), $status);
+
+        exit;
     }
 
     public function collectionPage(
@@ -61,6 +65,8 @@ final class MangaAjaxController extends Controller
             $this->error([
                 'message' => 'Page introuvable',
             ], 404);
+
+            return;
         }
 
         $this->renderPartial('manga/partials/collection_ajax', [
@@ -91,6 +97,7 @@ final class MangaAjaxController extends Controller
             $this->error([
                 'message' => 'Numéro invalide',
             ], 404);
+            return;
         }
 
         $numero = (int) $numero;
@@ -169,7 +176,7 @@ final class MangaAjaxController extends Controller
         $result = $this->mangaWriteService->updateLu(
             $data['canonicalSlug'],
             $numero,
-            $request->post()
+            $request->integer('lu', 0)
         );
 
         json($result, (int) ($result['status'] ?? 200));

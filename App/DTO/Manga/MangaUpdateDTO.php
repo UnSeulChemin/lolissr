@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\DTO\Manga;
 
 use App\Core\Support\Str;
+use App\DTO\Manga\MangaNoteNormalizer;
 
 final class MangaUpdateDTO
 {

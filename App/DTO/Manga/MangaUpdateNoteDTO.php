@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\DTO\Manga;
+use App\DTO\Manga\MangaNoteNormalizer;
 
 final class MangaUpdateNoteDTO
 {

@@ -457,7 +457,7 @@ final class MangaRepository extends Model
                 'note' => $note
             ],
             [
-                'slug' => Str::slug($slug),
+                'slug' => Str::slug($slug), // 🔥 IMPORTANT (cohérence DB)
                 'numero' => $numero
             ]
         );
@@ -485,12 +485,10 @@ final class MangaRepository extends Model
     {
         $this->guardWrite();
 
-        return $this->delete(
-            [
-                'slug' => Str::slug($slug),
-                'numero' => $numero
-            ]
-        );
+        return $this->delete([
+            'slug' => Str::slug($slug),
+            'numero' => $numero
+        ]);
     }
 
     public function countRead(): int

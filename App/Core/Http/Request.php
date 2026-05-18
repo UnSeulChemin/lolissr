@@ -52,8 +52,12 @@ final class Request
         string $key,
         mixed $default = null
     ): mixed {
-        return $this->post[$key]
-            ?? $default;
+        return $this->post[$key] ?? $default;
+    }
+
+    public function postAll(): array
+    {
+        return $this->post;
     }
 
     public function string(

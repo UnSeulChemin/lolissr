@@ -23,18 +23,23 @@ final class Response
     {
         http_response_code($statusCode);
 
-        if (!headers_sent())
-        {
+        if (!headers_sent()) {
             header('Content-Type: application/json; charset=UTF-8');
         }
 
-        echo json_encode(
+        $json = json_encode(
             $data,
-            JSON_UNESCAPED_UNICODE
-            | JSON_UNESCAPED_SLASHES
-            | JSON_THROW_ON_ERROR
+            JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
         );
 
+        if ($json === false) {
+            $json = json_encode([
+                'success' => false,
+                'message' => 'JSON encode error',
+            ]);
+        }
+
+        echo $json;
         exit;
     }
 
