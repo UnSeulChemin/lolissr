@@ -42,16 +42,36 @@ return static function (Router $router): void {
 
     /*
     |--------------------------------------------------------------------------
-    | Manga - Pages statiques
+    | Anciennes URLs -> Redirections SEO
     |--------------------------------------------------------------------------
     */
 
-    $router->get('/manga/collection', [
+    $router->get('/manga/collection', function (): void {
+        redirect('manga/series', 301);
+    });
+
+    $router->get(
+        '/manga/collection/{page}',
+        function (string $page): void {
+            redirect(
+                'manga/series/' . rawurlencode($page),
+                301
+            );
+        }
+    );
+
+    /*
+    |--------------------------------------------------------------------------
+    | Manga - Collection / Series
+    |--------------------------------------------------------------------------
+    */
+
+    $router->get('/manga/series', [
         MangaController::class,
         'collection',
     ]);
 
-    $router->get('/manga/collection/{page}', [
+    $router->get('/manga/series/{page}', [
         MangaController::class,
         'collection',
     ]);
@@ -144,7 +164,7 @@ return static function (Router $router): void {
     */
 
     $router->get(
-        '/manga/ajax/collection/{page}',
+        '/manga/ajax/series/{page}',
         [
             MangaAjaxController::class,
             'collectionPage',

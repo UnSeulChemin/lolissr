@@ -28,8 +28,8 @@ function scrollCollectionPaginationToTop()
 function isCollectionListingPage()
 {
     return (
-        /\/manga\/collection$/.test(window.location.pathname)
-        || /\/manga\/collection\/\d+$/.test(window.location.pathname)
+        /\/manga\/series$/.test(window.location.pathname)
+        || /\/manga\/series\/\d+$/.test(window.location.pathname)
     );
 }
 
@@ -38,13 +38,13 @@ function buildCollectionPaginationAjaxUrl(link)
     const url = new URL(link.href, window.location.origin);
 
     url.pathname = url.pathname.replace(
-        '/manga/collection/',
-        '/manga/ajax/collection/'
+        '/manga/series/',
+        '/manga/ajax/series/'
     );
 
-    if (/\/manga\/collection$/.test(url.pathname))
+    if (/\/manga\/series$/.test(url.pathname))
     {
-        url.pathname = '/manga/ajax/collection/1';
+        url.pathname = '/manga/ajax/series/1';
     }
 
     return url.toString();
@@ -54,16 +54,16 @@ function getCurrentCollectionPaginationAjaxUrl()
 {
     const url = new URL(window.location.href);
 
-    if (/\/manga\/collection$/.test(url.pathname))
+    if (/\/manga\/series$/.test(url.pathname))
     {
-        url.pathname = '/manga/ajax/collection/1';
+        url.pathname = '/manga/ajax/series/1';
 
         return url.toString();
     }
 
     url.pathname = url.pathname.replace(
-        '/manga/collection/',
-        '/manga/ajax/collection/'
+        '/manga/series/',
+        '/manga/ajax/series/'
     );
 
     return url.toString();
@@ -304,7 +304,7 @@ export function initCollectionPaginationAjax()
         }
 
         const pageMatch = window.location.pathname.match(
-            /\/manga\/collection\/(\d+)$/
+            /\/manga\/series\/(\d+)$/
         );
 
         const currentPageNumber = pageMatch ? pageMatch[1] : '1';

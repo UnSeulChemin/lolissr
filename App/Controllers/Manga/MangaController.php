@@ -103,7 +103,7 @@ final class MangaController extends Controller
         $this->redirectToCanonicalUrl(
             $requestedSlug,
             $data['canonicalSlug'],
-            'manga/serie'
+            'manga/series'
         );
 
         $this->title = 'Manga | ' . $data['mangas'][0]->livre;
@@ -124,7 +124,10 @@ final class MangaController extends Controller
 
         $numero = (int) $numero;
 
-        $data = $this->mangaReadService->one($slug, $numero);
+        $data = $this->mangaReadService->one(
+            $slug,
+            $numero
+        );
 
         if ($data === null) {
             $this->notFound('Manga introuvable');
@@ -133,7 +136,7 @@ final class MangaController extends Controller
         $this->redirectToCanonicalUrl(
             $slug,
             $data['canonicalSlug'],
-            'manga',
+            'manga/series',
             $numero
         );
 
@@ -151,8 +154,10 @@ final class MangaController extends Controller
         $this->render('manga/ajouter');
     }
 
-    public function modifier(string $slug, string $numero): void
-    {
+    public function modifier(
+        string $slug,
+        string $numero
+    ): void {
         if (!ctype_digit($numero)) {
             $this->notFound('Manga introuvable');
         }
@@ -167,7 +172,7 @@ final class MangaController extends Controller
         $this->redirectToCanonicalUrl(
             $slug,
             $data['canonicalSlug'],
-            'manga/modifier',
+            'manga/series/modifier',
             $numero
         );
 
@@ -232,7 +237,7 @@ final class MangaController extends Controller
 
         if ($slug !== $data['canonicalSlug']) {
             $redirect = $this->basePath
-                . 'manga/modifier/'
+                . 'manga/series/modifier/'
                 . rawurlencode($data['canonicalSlug'])
                 . '/'
                 . $numero;
@@ -248,13 +253,13 @@ final class MangaController extends Controller
             $this->redirectToCanonicalUrl(
                 $slug,
                 $data['canonicalSlug'],
-                'manga/modifier',
+                'manga/series/modifier',
                 $numero
             );
         }
 
         $redirectPath =
-            'manga/modifier/'
+            'manga/series/modifier/'
             . rawurlencode($data['canonicalSlug'])
             . '/'
             . $numero;
@@ -296,7 +301,7 @@ final class MangaController extends Controller
         }
 
         $this->redirectWithSuccess(
-            'manga/'
+            'manga/series/'
             . rawurlencode($data['canonicalSlug'])
             . '/'
             . $numero,
