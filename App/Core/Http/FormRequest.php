@@ -27,7 +27,7 @@ abstract class FormRequest
 
     public function passes(): bool
     {
-        return !$this->validator->fails();
+        return !$this->fails();
     }
 
     public function fails(): bool
@@ -40,6 +40,11 @@ abstract class FormRequest
         return $this->validator->errors();
     }
 
+    public function validated(): array
+    {
+        return $this->request->postAll();
+    }
+
     public function files(): array
     {
         return $this->request->files();
@@ -47,7 +52,7 @@ abstract class FormRequest
 
     public function all(): array
     {
-        return $this->request->postAll();
+        return $this->request->all();
     }
 
     protected function input(

@@ -18,8 +18,10 @@ final class Container
         string $abstract,
         callable|string|null $concrete = null
     ): void {
-        $this->bindings[$abstract] =
-            $concrete ?? $abstract;
+        $this->bindings[$abstract] = [
+            'concrete' => $concrete ?? $abstract,
+            'singleton' => false,
+        ];
     }
 
     public function singleton(
@@ -39,19 +41,10 @@ final class Container
             return $this->instances[$abstract];
         }
 
-        $binding = $this->bindings[$abstract]
-            ?? [
-                'concrete' => $abstract,
-                'singleton' => false,
-            ];
-
-        if (!is_array($binding))
-        {
-            $binding = [
-                'concrete' => $binding,
-                'singleton' => false,
-            ];
-        }
+        $binding = $this->bindings[$abstract] ?? [
+            'concrete' => $abstract,
+            'singleton' => false,
+        ];
 
         $object = $this->resolve(
             $binding['concrete']
@@ -119,10 +112,7 @@ final class Container
                 }
 
                 throw new RuntimeException(
-                    'Impossible de résoudre : '
-                    . $concrete
-                    . '::$'
-                    . $parameter->getName()
+                    "Impossible de résoudre {$concrete}::\${$parameter->getName()}"
                 );
             }
 

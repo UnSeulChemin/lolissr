@@ -82,18 +82,13 @@ final class StatsService
     {
         $totalTomes = $this->totalTomes();
         $totalRead = $this->totalRead();
-        $totalUnread = max(0, $totalTomes - $totalRead);
-
-        $readingProgress = $totalTomes > 0
-            ? (int) round(($totalRead / $totalTomes) * 100)
-            : 0;
 
         return [
             'totalTomes' => $totalTomes,
             'totalSeries' => $this->totalSeries(),
             'totalRead' => $totalRead,
-            'totalUnread' => $totalUnread,
-            'readingProgress' => $readingProgress,
+            'totalUnread' => max(0, $totalTomes - $totalRead),
+            'readingProgress' => $this->readingProgress(),
             'averageNote' => $this->averageNote(),
             'lastTome' => $this->lastTome(),
             'longestSeries' => $this->longestSeries(),

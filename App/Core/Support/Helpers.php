@@ -6,14 +6,15 @@ use App\Controllers\ErrorController;
 use App\Core\Application\App;
 use App\Core\Config\Config;
 use App\Core\Config\Env;
+use App\Core\Container\AppContainer;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Support\Session;
-use App\Core\Container\AppContainer;
+use RuntimeException;
 
 /*
 |--------------------------------------------------------------------------
-| dump()
+| app()
 |--------------------------------------------------------------------------
 */
 
@@ -31,6 +32,12 @@ if (!function_exists('app'))
         return $container->get($abstract);
     }
 }
+
+/*
+|--------------------------------------------------------------------------
+| dump()
+|--------------------------------------------------------------------------
+*/
 
 if (!function_exists('dump'))
 {
@@ -64,16 +71,17 @@ if (!function_exists('dump'))
 
 if (!function_exists('dd'))
 {
-    function dd(mixed ...$vars): void
+    function dd(mixed ...$vars): never
     {
         dump(...$vars);
+
         exit;
     }
 }
 
 /*
 |--------------------------------------------------------------------------
-| base_path()
+| Paths
 |--------------------------------------------------------------------------
 */
 
@@ -85,37 +93,29 @@ if (!function_exists('base_path'))
     }
 }
 
-/*
-|--------------------------------------------------------------------------
-| app_path()
-|--------------------------------------------------------------------------
-*/
-
 if (!function_exists('app_path'))
 {
     function app_path(string $path = ''): string
     {
         return rtrim(ROOT, DIRECTORY_SEPARATOR)
-            . ($path !== ''
-                ? DIRECTORY_SEPARATOR . ltrim($path, '/\\')
-                : '');
+            . (
+                $path !== ''
+                    ? DIRECTORY_SEPARATOR . ltrim($path, '/\\')
+                    : ''
+            );
     }
 }
-
-/*
-|--------------------------------------------------------------------------
-| view_path()
-|--------------------------------------------------------------------------
-*/
 
 if (!function_exists('view_path'))
 {
     function view_path(string $view = ''): string
     {
         return app_path('App/Views')
-            . ($view !== ''
-                ? DIRECTORY_SEPARATOR . ltrim($view, '/\\')
-                : '');
+            . (
+                $view !== ''
+                    ? DIRECTORY_SEPARATOR . ltrim($view, '/\\')
+                    : ''
+            );
     }
 }
 
@@ -127,17 +127,19 @@ if (!function_exists('view_path'))
 
 if (!function_exists('abort'))
 {
-    function abort(int $code = 404): void
+    function abort(int $code = 404): never
     {
-$controller = app(ErrorController::class);
+        $controller = app(
+            ErrorController::class
+        );
 
-match ($code) {
-    404 => $controller->notFound(),
-    405 => $controller->methodNotAllowed(),
-    419 => $controller->renderCsrfExpiredPage(),
-    500 => $controller->serverError(),
-    default => $controller->serverError(),
-};
+        match ($code)
+        {
+            404 => $controller->notFound(),
+            405 => $controller->methodNotAllowed(),
+            419 => $controller->renderCsrfExpiredPage(),
+            default => $controller->serverError(),
+        };
 
         exit;
     }
@@ -151,17 +153,28 @@ match ($code) {
 
 if (!function_exists('redirect'))
 {
-    function redirect(string $path = '', int $status = 302): void
-    {
-        if (preg_match('#^https?://#i', $path) === 1)
-        {
-            Response::redirect($path, $status);
-            return;
+    function redirect(
+        string $path = '',
+        int $status = 302
+    ): never {
+        if (
+            preg_match('#^https?://#i', $path) === 1
+        ) {
+            Response::redirect(
+                $path,
+                $status
+            );
         }
 
-        $url = rtrim(base_path(), '/') . '/' . ltrim($path, '/');
+        $url = rtrim(
+            base_path(),
+            '/'
+        ) . '/' . ltrim($path, '/');
 
-        Response::redirect($url, $status);
+        Response::redirect(
+            $url,
+            $status
+        );
     }
 }
 
@@ -173,9 +186,14 @@ if (!function_exists('redirect'))
 
 if (!function_exists('json'))
 {
-    function json(array $data, int $status = 200): void
-    {
-        Response::json($data, $status);
+    function json(
+        array $data,
+        int $status = 200
+    ): never {
+        Response::json(
+            $data,
+            $status
+        );
     }
 }
 
@@ -191,31 +209,47 @@ if (!function_exists('view'))
         string $view,
         array $data = [],
         ?string $title = null
-    ): void {
-        $basePath = base_path();
+    ): never {
         $title ??= App::siteName();
 
-        extract($data, EXTR_SKIP);
+        extract(
+            $data,
+            EXTR_SKIP
+        );
 
-        $viewPath = view_path($view . '.php');
-        $templatePath = view_path('layouts/base.php');
+        $viewPath = view_path(
+            $view . '.php'
+        );
+
+        $layoutPath = view_path(
+            'layouts/base.php'
+        );
 
         if (!is_file($viewPath))
         {
-            throw new RuntimeException('Vue introuvable : ' . $view);
+            throw new RuntimeException(
+                'Vue introuvable : '
+                . $view
+            );
         }
 
-        if (!is_file($templatePath))
+        if (!is_file($layoutPath))
         {
-            throw new RuntimeException('Template introuvable : layouts/base');
+            throw new RuntimeException(
+                'Layout introuvable : layouts/base'
+            );
         }
 
         ob_start();
+
         require $viewPath;
+
         $content = ob_get_clean() ?: '';
 
         ob_start();
-        require $templatePath;
+
+        require $layoutPath;
+
         $html = ob_get_clean() ?: '';
 
         Response::html($html);
@@ -230,38 +264,40 @@ if (!function_exists('view'))
 
 if (!function_exists('env'))
 {
-    function env(string $key, mixed $default = null): mixed
-    {
-        return Env::get($key, $default);
+    function env(
+        string $key,
+        mixed $default = null
+    ): mixed {
+        return Env::get(
+            $key,
+            $default
+        );
     }
 }
 
 if (!function_exists('env_bool'))
 {
-    function env_bool(string $key, bool $default = false): bool
-    {
-        return Env::bool($key, $default);
-    }
-}
-
-if (!function_exists('envBool'))
-{
-    function envBool(mixed $value, bool $default = false): bool
-    {
-        if ($value === null)
-        {
-            return $default;
-        }
-
-        return filter_var($value, FILTER_VALIDATE_BOOLEAN);
+    function env_bool(
+        string $key,
+        bool $default = false
+    ): bool {
+        return Env::bool(
+            $key,
+            $default
+        );
     }
 }
 
 if (!function_exists('env_int'))
 {
-    function env_int(string $key, int $default = 0): int
-    {
-        return (int) Env::get($key, $default);
+    function env_int(
+        string $key,
+        int $default = 0
+    ): int {
+        return (int) Env::get(
+            $key,
+            $default
+        );
     }
 }
 
@@ -273,15 +309,20 @@ if (!function_exists('env_int'))
 
 if (!function_exists('config'))
 {
-    function config(string $key, mixed $default = null): mixed
-    {
-        return Config::get($key, $default);
+    function config(
+        string $key,
+        mixed $default = null
+    ): mixed {
+        return Config::get(
+            $key,
+            $default
+        );
     }
 }
 
 /*
 |--------------------------------------------------------------------------
-| is_ajax()
+| AJAX
 |--------------------------------------------------------------------------
 */
 
@@ -289,14 +330,16 @@ if (!function_exists('is_ajax'))
 {
     function is_ajax(): bool
     {
-        $header =
-            $_SERVER['HTTP_X_REQUESTED_WITH']
-            ?? $_SERVER['X_REQUESTED_WITH']
-            ?? '';
-
-        return strtolower((string) $header) === 'xmlhttprequest';
+        return app(Request::class)
+            ->isAjax();
     }
 }
+
+/*
+|--------------------------------------------------------------------------
+| CSRF
+|--------------------------------------------------------------------------
+*/
 
 if (!function_exists('csrf_token'))
 {
@@ -310,7 +353,9 @@ if (!function_exists('csrf_token'))
             );
         }
 
-        return Session::get('csrf_token');
+        return (string) Session::get(
+            'csrf_token'
+        );
     }
 }
 
@@ -319,44 +364,12 @@ if (!function_exists('csrf_field'))
     function csrf_field(): string
     {
         return '<input type="hidden" name="csrf_token" value="'
-            . htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8')
+            . htmlspecialchars(
+                csrf_token(),
+                ENT_QUOTES,
+                'UTF-8'
+            )
             . '">';
-    }
-}
-
-if (!function_exists('csrf_verify'))
-{
-    function csrf_verify(): void
-    {
-        if (!Request::isPost())
-        {
-            return;
-        }
-
-        $token = Request::post('csrf_token');
-        $sessionToken = Session::get('csrf_token');
-
-        $validToken =
-            is_string($token)
-            && $token !== ''
-            && is_string($sessionToken)
-            && $sessionToken !== ''
-            && hash_equals($sessionToken, $token);
-
-        if ($validToken)
-        {
-            return;
-        }
-
-        if (Request::isAjax())
-        {
-            json([
-                'success' => false,
-                'message' => 'Session expirée, recharge la page.'
-            ], 419);
-        }
-
-        abort(419);
     }
 }
 
@@ -365,17 +378,57 @@ if (!function_exists('csrf_meta_tag'))
     function csrf_meta_tag(): string
     {
         return '<meta name="csrf-token" content="'
-            . htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8')
+            . htmlspecialchars(
+                csrf_token(),
+                ENT_QUOTES,
+                'UTF-8'
+            )
             . '">';
     }
 }
 
-if (!function_exists('redirect'))
+if (!function_exists('csrf_verify'))
 {
-    function redirect(string $url, int $status = 302): never
+    function csrf_verify(): void
     {
-        header('Location: ' . $url, true, $status);
+        $request = app(Request::class);
 
-        exit;
+        if (!$request->isPost())
+        {
+            return;
+        }
+
+        $token = $request->post(
+            'csrf_token'
+        );
+
+        $sessionToken = Session::get(
+            'csrf_token'
+        );
+
+        $validToken =
+            is_string($token)
+            && $token !== ''
+            && is_string($sessionToken)
+            && $sessionToken !== ''
+            && hash_equals(
+                $sessionToken,
+                $token
+            );
+
+        if ($validToken)
+        {
+            return;
+        }
+
+        if ($request->isAjax())
+        {
+            json([
+                'success' => false,
+                'message' => 'Session expirée, recharge la page.',
+            ], 419);
+        }
+
+        abort(419);
     }
 }

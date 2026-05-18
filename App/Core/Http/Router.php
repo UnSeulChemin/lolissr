@@ -44,13 +44,25 @@ final class Router
         string $method,
         string $uri,
         array|string $action,
-        array $middlewares = []
+        array $middlewares
     ): void {
+        $uri = '/' . trim($uri, '/');
+
+        if ($uri === '//')
+        {
+            $uri = '/';
+        }
+
+        $pattern = preg_replace(
+            '#\{[^/]+\}#',
+            '([^/]+)',
+            $uri
+        );
+
         $this->routes[] = [
             'method' => strtoupper($method),
-            'uri' => $uri === '/'
-                ? '/'
-                : '/' . trim($uri, '/'),
+            'uri' => $uri,
+            'pattern' => '#^' . $pattern . '$#',
             'action' => $action,
             'middlewares' => $middlewares,
         ];
@@ -61,27 +73,27 @@ final class Router
         $request = $this->resolve(Request::class);
 
         $method = $request->method();
-
         $uri = $request->path();
+
+        $methodNotAllowed = false;
 
         foreach ($this->routes as $route)
         {
-            $pattern = preg_replace(
-                '#\{([^/]+)\}#',
-                '([^/]+)',
-                $route['uri']
-            );
-
-            $pattern = '#^' . $pattern . '$#';
-
-            if (!preg_match($pattern, $uri, $matches))
-            {
+            if (
+                !preg_match(
+                    $route['pattern'],
+                    $uri,
+                    $matches
+                )
+            ) {
                 continue;
             }
 
             if ($method !== $route['method'])
             {
-                abort(405);
+                $methodNotAllowed = true;
+
+                continue;
             }
 
             array_shift($matches);
@@ -91,34 +103,18 @@ final class Router
                 $request
             );
 
-            $action = $route['action'];
-
-            if (is_string($action))
-            {
-                [$controllerClass, $controllerMethod] = explode(
-                    '@',
-                    $action
+            [$controller, $controllerMethod] =
+                $this->resolveAction(
+                    $route['action']
                 );
 
-                $controllerClass =
-                    'App\\Controllers\\'
-                    . $controllerClass;
-            }
-            else
-            {
-                [$controllerClass, $controllerMethod] = $action;
-            }
-
-            $controller = $this->resolve(
-                $controllerClass
-            );
-
-            $parameters = $this->resolveMethodDependencies(
-                $controller,
-                $controllerMethod,
-                $matches,
-                $request
-            );
+            $parameters =
+                $this->resolveMethodDependencies(
+                    $controller,
+                    $controllerMethod,
+                    $matches,
+                    $request
+                );
 
             $controller->{$controllerMethod}(
                 ...$parameters
@@ -127,7 +123,30 @@ final class Router
             return;
         }
 
-        abort(404);
+        abort($methodNotAllowed ? 405 : 404);
+    }
+
+    private function resolveAction(
+        array|string $action
+    ): array {
+        if (is_string($action))
+        {
+            [$controller, $method] =
+                explode('@', $action);
+
+            $controller =
+                'App\\Controllers\\'
+                . $controller;
+        }
+        else
+        {
+            [$controller, $method] = $action;
+        }
+
+        return [
+            $this->resolve($controller),
+            $method
+        ];
     }
 
     private function runMiddlewares(
@@ -139,8 +158,7 @@ final class Router
             if (!class_exists($middlewareClass))
             {
                 throw new RuntimeException(
-                    'Middleware introuvable : '
-                    . $middlewareClass
+                    "Middleware introuvable : {$middlewareClass}"
                 );
             }
 
@@ -152,8 +170,7 @@ final class Router
                 !$middleware instanceof MiddlewareInterface
             ) {
                 throw new RuntimeException(
-                    'Middleware invalide : '
-                    . $middlewareClass
+                    "Middleware invalide : {$middlewareClass}"
                 );
             }
 
@@ -201,16 +218,14 @@ final class Router
                         FormRequest::class
                     )
                 ) {
-                    $dependencies[] = new $typeName(
-                        $request
-                    );
+                    $dependencies[] =
+                        new $typeName($request);
 
                     continue;
                 }
 
-                $dependencies[] = $this->resolve(
-                    $typeName
-                );
+                $dependencies[] =
+                    $this->resolve($typeName);
 
                 continue;
             }
@@ -218,9 +233,7 @@ final class Router
             if (isset($routeParameters[$routeIndex]))
             {
                 $dependencies[] =
-                    $routeParameters[$routeIndex];
-
-                $routeIndex++;
+                    $routeParameters[$routeIndex++];
 
                 continue;
             }

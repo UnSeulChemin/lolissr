@@ -31,6 +31,16 @@ final class Request
         ];
     }
 
+    public function postAll(): array
+    {
+        return $this->post;
+    }
+
+    public function files(): array
+    {
+        return $this->files;
+    }
+
     public function input(
         string $key,
         mixed $default = null
@@ -52,12 +62,8 @@ final class Request
         string $key,
         mixed $default = null
     ): mixed {
-        return $this->post[$key] ?? $default;
-    }
-
-    public function postAll(): array
-    {
-        return $this->post;
+        return $this->post[$key]
+            ?? $default;
     }
 
     public function string(
@@ -99,16 +105,15 @@ final class Request
 
     public function filled(string $key): bool
     {
-        return trim(
-            (string) $this->input($key)
-        ) !== '';
+        return $this->string($key) !== '';
     }
 
     public function only(array $keys): array
     {
         $data = [];
 
-        foreach ($keys as $key) {
+        foreach ($keys as $key)
+        {
             $data[$key] = $this->input($key);
         }
 
@@ -121,11 +126,6 @@ final class Request
             $this->all(),
             array_flip($keys)
         );
-    }
-
-    public function files(): array
-    {
-        return $this->files;
     }
 
     public function file(string $key): ?array
@@ -141,11 +141,8 @@ final class Request
     {
         $file = $this->file($key);
 
-        if ($file === null) {
-            return false;
-        }
-
-        return isset($file['tmp_name'])
+        return $file !== null
+            && isset($file['tmp_name'])
             && $file['tmp_name'] !== '';
     }
 
@@ -153,12 +150,9 @@ final class Request
     {
         $file = $this->file($key);
 
-        if ($file === null) {
-            return false;
-        }
-
-        return ($file['error'] ?? UPLOAD_ERR_NO_FILE)
-            === UPLOAD_ERR_OK;
+        return $file !== null
+            && ($file['error'] ?? UPLOAD_ERR_NO_FILE)
+                === UPLOAD_ERR_OK;
     }
 
     public function method(): string
@@ -198,7 +192,10 @@ final class Request
             PHP_URL_PATH
         );
 
-        if (!is_string($path) || $path === '') {
+        if (
+            !is_string($path)
+            || $path === ''
+        ) {
             return '/';
         }
 

@@ -3,46 +3,54 @@
 #################################
 
 .env
+.env.*
+
+#################################
+# NOTES / TEMP
+#################################
+
 notes.txt
 
 #################################
 # LOGS
 #################################
 
-/logs/
+/Storage/logs/
 *.log
 
 #################################
 # CACHE / STORAGE
 #################################
 
-Core/Save/
+/Storage/cache/*
+!/Storage/cache/.gitkeep
+
+/Core/Save/
 
 #################################
 # UPLOADS
 #################################
 
-# Images mangas (si générées localement)
-public/images/
+# Images mangas générées localement
+/public/images/
 
 # Uploads temporaires tests
-tests/tmp-uploads/
+/tests/tmp-uploads/
 
 #################################
-# TESTS / PHPUnit
+# DEPENDANCES
 #################################
 
 /vendor/
+
+#################################
+# TESTS / COVERAGE
+#################################
 
 .phpunit.result.cache
 .phpunit.cache/
 
 coverage/
-
-#################################
-# REPORTS TESTS
-#################################
-
 tests/reports/
 
 #################################
@@ -51,8 +59,6 @@ tests/reports/
 
 .vscode/
 .idea/
+
 .DS_Store
 Thumbs.db
-
-/Storage/cache/*
-!/Storage/cache/.gitkeep
