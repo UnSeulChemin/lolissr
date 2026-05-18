@@ -6,7 +6,7 @@ function isTypingTarget(target)
         || target?.isContentEditable;
 }
 
-export function initBackspaceNavigation()
+export function initBackNavigation()
 {
     document.addEventListener('keydown', (event) =>
     {
@@ -22,6 +22,6 @@ export function initBackspaceNavigation()
 
         event.preventDefault();
 
-        history.back();
+        window.history.back();
     });
 }

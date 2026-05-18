@@ -60,7 +60,7 @@ elseif (!empty($_SESSION['error']))
         </script>
     <?php endif; ?>
 
-    <script type="module" src="<?= $basePath ?>public/js/app.js"></script>
+    <script type="module" src="<?= $basePath ?>public/js/core/app.js"></script>
 
 </body>
 </html>

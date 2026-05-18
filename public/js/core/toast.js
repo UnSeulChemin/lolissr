@@ -8,11 +8,15 @@ export function showToast(
     type = 'success'
 )
 {
-    const toastElement = document.getElementById('toast');
+    const toastElement =
+        document.getElementById('toast');
 
     if (!toastElement)
     {
-        console.warn('Toast introuvable (#toast)');
+        console.warn(
+            'Toast introuvable (#toast)'
+        );
+
         return;
     }
 
@@ -34,12 +38,17 @@ export function showToast(
     |------------------------------------------------------------------
     */
 
-    const toastTypeClass = type === 'error'
-        ? 'toast-error'
-        : 'toast-success';
+    const toastTypeClass =
+        type === 'error'
+            ? 'toast-error'
+            : 'toast-success';
 
-    toastElement.classList.add(toastTypeClass);
-    toastElement.textContent = message;
+    toastElement.classList.add(
+        toastTypeClass
+    );
+
+    toastElement.textContent =
+        message;
 
     /*
     |------------------------------------------------------------------
@@ -59,7 +68,9 @@ export function showToast(
 
     if (toastHideTimeout)
     {
-        clearTimeout(toastHideTimeout);
+        clearTimeout(
+            toastHideTimeout
+        );
     }
 
     /*
@@ -70,6 +81,8 @@ export function showToast(
 
     toastHideTimeout = setTimeout(() =>
     {
-        toastElement.classList.remove('show');
+        toastElement.classList.remove(
+            'show'
+        );
     }, 2500);
 }

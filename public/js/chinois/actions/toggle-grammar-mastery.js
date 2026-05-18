@@ -1,4 +1,4 @@
-import { showToast } from '../core/toast.js';
+import { showToast } from '../../core/toast.js';
 
 function getCsrfToken()
 {
@@ -7,7 +7,7 @@ function getCsrfToken()
         ?.getAttribute('content') ?? '';
 }
 
-export function initGrammaireMaitrise()
+export function initToggleGrammaireMaitrise()
 {
     document.addEventListener('click', async (event) =>
     {
@@ -22,24 +22,38 @@ export function initGrammaireMaitrise()
 
         if (!url)
         {
-            showToast('URL de mise à jour manquante', 'error');
+            showToast(
+                'URL de mise à jour manquante',
+                'error'
+            );
 
             return;
         }
 
         const current = button.dataset.maitrise === '1';
+
         const next = current ? 0 : 1;
 
         const formData = new FormData();
 
-        formData.append('id', button.dataset.id);
-        formData.append('maitrise', String(next));
+        formData.append(
+            'id',
+            button.dataset.id ?? ''
+        );
+
+        formData.append(
+            'maitrise',
+            String(next)
+        );
 
         const csrfToken = getCsrfToken();
 
         if (csrfToken !== '')
         {
-            formData.append('csrf_token', csrfToken);
+            formData.append(
+                'csrf_token',
+                csrfToken
+            );
         }
 
         button.disabled = true;
@@ -64,7 +78,8 @@ export function initGrammaireMaitrise()
             if (!response.ok || !data.success)
             {
                 showToast(
-                    data.message ?? 'Erreur lors de la mise à jour',
+                    data.message
+                        ?? 'Erreur lors de la mise à jour',
                     'error'
                 );
 
@@ -80,15 +95,15 @@ export function initGrammaireMaitrise()
                 maitrise === 1
             );
 
-            button.title = maitrise === 1
+            const label = maitrise === 1
                 ? 'Retirer la maîtrise'
                 : 'Marquer comme maîtrisé';
 
+            button.title = label;
+
             button.setAttribute(
                 'aria-label',
-                maitrise === 1
-                    ? 'Retirer la maîtrise'
-                    : 'Marquer comme maîtrisé'
+                label
             );
 
             showToast(
@@ -98,7 +113,10 @@ export function initGrammaireMaitrise()
         }
         catch
         {
-            showToast('Erreur réseau', 'error');
+            showToast(
+                'Erreur réseau',
+                'error'
+            );
         }
         finally
         {
