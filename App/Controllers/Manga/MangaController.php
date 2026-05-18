@@ -166,10 +166,14 @@ final class MangaController extends Controller
 
         $numero = (int) $numero;
 
-        $data = $this->findCanonicalMangaDataOrFail(
+        $data = $this->mangaReadService->one(
             $slug,
             $numero
         );
+
+        if ($data === null) {
+            $this->notFound('Manga introuvable');
+        }
 
         $this->redirectToCanonicalUrl(
             $slug,
