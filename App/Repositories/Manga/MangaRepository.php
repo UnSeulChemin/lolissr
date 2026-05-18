@@ -438,6 +438,26 @@ final class MangaRepository extends Model
         );
     }
 
+    public function updateLu(
+        string $slug,
+        int $numero,
+        bool $lu
+    ): bool {
+        $this->guardWrite();
+
+        return $this->requete(
+            "UPDATE {$this->getTable()}
+            SET lu = :lu
+            WHERE slug = :slug
+            AND numero = :numero",
+            [
+                'slug' => Str::slug($slug),
+                'numero' => $numero,
+                'lu' => $lu ? 1 : 0,
+            ]
+        ) !== false;
+    }
+
     public function updateNote(string $slug, int $numero, ?int $jacquette, ?int $livreNote): bool
     {
         $this->guardWrite();

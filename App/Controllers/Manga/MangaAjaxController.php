@@ -182,7 +182,7 @@ final class MangaAjaxController extends Controller
         $this->json([
             'success' => $result->success,
             'message' => $result->message,
-            ...$result->data,
+            'lu' => $result->data['lu'] ?? null,
         ], $result->status);
     }
 
