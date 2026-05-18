@@ -9,7 +9,6 @@ use App\Core\Config\UploadConfig;
 use App\Core\Support\Logger;
 use App\DTO\Manga\MangaCreateDTO;
 use App\DTO\Manga\MangaUpdateDTO;
-use App\DTO\Manga\MangaUpdateNoteDTO;
 use App\Repositories\Manga\MangaRepository;
 use App\Services\UploadService;
 
@@ -41,23 +40,16 @@ final class MangaWriteService
         $validator = $this->validatorService->makeCreateValidator($post, $files);
 
         if ($validator->fails()) {
-            $errors = $validator->errors();
-
             return [
                 'success' => false,
                 'status' => 422,
-                'message' => $this->validatorService->firstErrorMessage($errors),
-                'errors' => $errors,
+                'message' => $this->validatorService->firstErrorMessage($validator->errors()),
+                'errors' => $validator->errors(),
             ];
         }
 
         $dto = MangaCreateDTO::fromPost($post);
 
-        /*
-         * En testing :
-         * - upload test autorisé
-         * - aucune écriture DB
-         */
         if ($this->isReadOnlyMode() && !$this->uploadService->isTestUploadMode()) {
             return $this->blockedWriteResponse();
         }
@@ -113,7 +105,6 @@ final class MangaWriteService
 
         if (!$insert) {
             $this->uploadService->removeFileIfExists((string) $upload['destination']);
-
             Logger::error("Insertion manga échouée slug={$dto->slug} numero={$dto->numero}");
 
             return [
@@ -137,13 +128,11 @@ final class MangaWriteService
         $validator = $this->validatorService->makeUpdateValidator($post, $files);
 
         if ($validator->fails()) {
-            $errors = $validator->errors();
-
             return [
                 'success' => false,
                 'status' => 422,
-                'message' => $this->validatorService->firstErrorMessage($errors),
-                'errors' => $errors,
+                'message' => $this->validatorService->firstErrorMessage($validator->errors()),
+                'errors' => $validator->errors(),
             ];
         }
 
@@ -182,32 +171,24 @@ final class MangaWriteService
         ];
     }
 
-    public function updateNote(string $slug, int $numero, array $post): array
+    public function updateNote(string $slug, int $numero, string $note): array
     {
-        $validator = $this->validatorService->makeUpdateNoteValidator($post);
-
-        if ($validator->fails()) {
-            $errors = $validator->errors();
-
-            return [
-                'success' => false,
-                'status' => 422,
-                'message' => $this->validatorService->firstErrorMessage($errors),
-                'errors' => $errors,
-            ];
-        }
-
         if ($this->isReadOnlyMode()) {
             return $this->blockedWriteResponse();
         }
 
-        $dto = MangaUpdateNoteDTO::fromPost($post);
+        if (trim($note) === '') {
+            return [
+                'success' => false,
+                'status' => 422,
+                'message' => 'Note vide',
+            ];
+        }
 
         $updated = $this->mangaRepository->updateNote(
             $slug,
             $numero,
-            $dto->jacquette,
-            $dto->livreNote
+            $note
         );
 
         if (!$updated) {
@@ -236,19 +217,15 @@ final class MangaWriteService
             'success' => true,
             'status' => 200,
             'message' => 'Notes mises à jour',
-            'jacquette' => $manga->jacquette,
-            'livre_note' => $manga->livre_note,
             'note' => $manga->note,
         ];
     }
 
-    public function updateLu(string $slug, int $numero, array $post): array
+    public function updateLu(string $slug, int $numero, int $lu): array
     {
         if ($this->isReadOnlyMode()) {
             return $this->blockedWriteResponse();
         }
-
-        $lu = (int) ($post['lu'] ?? 0);
 
         if (!in_array($lu, [0, 1], true)) {
             return [

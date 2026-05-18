@@ -7,7 +7,6 @@ namespace App\Controllers\Manga;
 use App\Controllers\Controller;
 use App\Core\Application\App;
 use App\Core\Http\Request;
-use App\Http\Requests\Manga\MangaUpdateNoteRequest;
 use App\Services\Manga\MangaReadService;
 use App\Services\Manga\MangaWriteService;
 
@@ -29,10 +28,7 @@ final class MangaAjaxController extends Controller
 
         $userAgent = $request->userAgent();
 
-        if (
-            App::isTesting()
-            && str_contains($userAgent, 'LoliSSR-TestRunner')
-        ) {
+        if (App::isTesting() && str_contains($userAgent, 'LoliSSR-TestRunner')) {
             return;
         }
 
@@ -46,9 +42,10 @@ final class MangaAjaxController extends Controller
 
     private function error(array $payload, int $status = 400): void
     {
-        json(array_merge([
+        json([
             'success' => false,
-        ], $payload), $status);
+            ...$payload
+        ], $status);
 
         exit;
     }
@@ -65,8 +62,6 @@ final class MangaAjaxController extends Controller
             $this->error([
                 'message' => 'Page introuvable',
             ], 404);
-
-            return;
         }
 
         $this->renderPartial('manga/partials/collection_ajax', [
@@ -94,10 +89,7 @@ final class MangaAjaxController extends Controller
         $this->ensureAjax($request);
 
         if (!ctype_digit($numero)) {
-            $this->error([
-                'message' => 'Numéro invalide',
-            ], 404);
-            return;
+            $this->error(['message' => 'Numéro invalide'], 404);
         }
 
         $numero = (int) $numero;
@@ -105,9 +97,7 @@ final class MangaAjaxController extends Controller
         $data = $this->mangaReadService->one($slug, $numero);
 
         if ($data === null) {
-            $this->error([
-                'message' => 'Manga introuvable',
-            ], 404);
+            $this->error(['message' => 'Manga introuvable'], 404);
         }
 
         if ($slug !== $data['canonicalSlug']) {
@@ -121,19 +111,10 @@ final class MangaAjaxController extends Controller
             ], 409);
         }
 
-        $noteRequest = new MangaUpdateNoteRequest($request);
-
-        if ($noteRequest->fails()) {
-            $this->error([
-                'message' => 'Erreur de validation',
-                'errors' => $noteRequest->errors(),
-            ], 422);
-        }
-
         $result = $this->mangaWriteService->updateNote(
             $data['canonicalSlug'],
             $numero,
-            $noteRequest->data()
+            $request->input('note')
         );
 
         json($result, (int) ($result['status'] ?? 200));
@@ -147,9 +128,7 @@ final class MangaAjaxController extends Controller
         $this->ensureAjax($request);
 
         if (!ctype_digit($numero)) {
-            $this->error([
-                'message' => 'Numéro invalide',
-            ], 404);
+            $this->error(['message' => 'Numéro invalide'], 404);
         }
 
         $numero = (int) $numero;
@@ -157,9 +136,7 @@ final class MangaAjaxController extends Controller
         $data = $this->mangaReadService->one($slug, $numero);
 
         if ($data === null) {
-            $this->error([
-                'message' => 'Manga introuvable',
-            ], 404);
+            $this->error(['message' => 'Manga introuvable'], 404);
         }
 
         if ($slug !== $data['canonicalSlug']) {
@@ -190,16 +167,14 @@ final class MangaAjaxController extends Controller
         $this->ensureAjax($request);
 
         if (!ctype_digit($numero)) {
-            $this->error([
-                'message' => 'Numéro invalide',
-            ], 404);
+            $this->error(['message' => 'Numéro invalide'], 404);
         }
 
         $result = $this->mangaWriteService->delete($slug, (int) $numero);
 
         if (!$result['success']) {
             $this->error([
-                'message' => (string) ($result['message'] ?? 'Une erreur est survenue'),
+                'message' => $result['message'] ?? 'Une erreur est survenue',
                 'errors' => $result['errors'] ?? null,
                 'redirect' => $result['redirect'] ?? null,
             ], (int) ($result['status'] ?? 500));
@@ -210,7 +185,7 @@ final class MangaAjaxController extends Controller
             'message' => $result['message'],
             'redirect' => $this->basePath
                 . 'manga/series/'
-                . rawurlencode((string) ($result['canonicalSlug'] ?? $slug)),
+                . rawurlencode($result['canonicalSlug'] ?? $slug),
         ]);
     }
 }

@@ -14,26 +14,22 @@ final class ChinoisAjaxController
     ) {
     }
 
-    public function toggleGrammaireMaitrise(
-        Request $request
-    ): void {
-        $id = (int) $request->input('id', 0);
+    public function toggleGrammaireMaitrise(Request $request): void
+    {
+        $id = $request->integer('id');
 
         if ($id <= 0) {
             json([
                 'success' => false,
                 'message' => 'ID invalide',
             ], 422);
-        }
 
-        $maitrise = $this->repository->toggleMaitrise($id);
+            return;
+        }
 
         json([
             'success' => true,
-            'maitrise' => $maitrise,
-            'message' => $maitrise
-                ? 'Grammaire maîtrisée'
-                : 'Maîtrise retirée',
+            'maitrise' => $this->repository->toggleMaitrise($id),
         ]);
     }
 }
