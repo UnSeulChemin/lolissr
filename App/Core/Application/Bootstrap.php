@@ -6,6 +6,8 @@ namespace App\Core\Application;
 
 use App\Core\Config\Config;
 use App\Core\Config\Env;
+use App\Core\Container\AppContainer;
+use App\Core\Container\Container;
 use App\Core\Exceptions\ErrorHandler;
 use App\Core\Http\Router;
 
@@ -16,17 +18,54 @@ final class Bootstrap
      */
     public static function run(): void
     {
+        /*
+        |--------------------------------------------------------------------------
+        | Environment
+        |--------------------------------------------------------------------------
+        */
+
         self::loadEnvironment(ROOT . '/.env');
 
         Env::clear();
         Config::clear();
 
+        /*
+        |--------------------------------------------------------------------------
+        | Debug
+        |--------------------------------------------------------------------------
+        */
+
         self::configureDebug();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Error handler
+        |--------------------------------------------------------------------------
+        */
+
         ErrorHandler::register();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Container
+        |--------------------------------------------------------------------------
+        */
+
+        $container = new Container();
+
+        AppContainer::set($container);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Router
+        |--------------------------------------------------------------------------
+        */
 
         $router = new Router();
 
-        $routes = require app_path('Config/routes.php');
+        $routes = require app_path(
+            'Config/routes.php'
+        );
 
         if (is_callable($routes))
         {
@@ -37,16 +76,21 @@ final class Bootstrap
     }
 
     /**
-     * Charge les variables d'environnement depuis le fichier .env.
+     * Charge les variables d'environnement.
      */
-    private static function loadEnvironment(string $envFile): void
-    {
+    private static function loadEnvironment(
+        string $envFile
+    ): void {
         if (!is_file($envFile))
         {
             return;
         }
 
-        $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        $lines = file(
+            $envFile,
+            FILE_IGNORE_NEW_LINES
+            | FILE_SKIP_EMPTY_LINES
+        );
 
         if ($lines === false)
         {
@@ -66,7 +110,11 @@ final class Bootstrap
                 continue;
             }
 
-            [$name, $value] = explode('=', $line, 2);
+            [$name, $value] = explode(
+                '=',
+                $line,
+                2
+            );
 
             $name = trim($name);
             $value = trim($value);
@@ -76,19 +124,25 @@ final class Bootstrap
                 continue;
             }
 
-            $value = self::normalizeEnvValue($value);
+            $value = self::normalizeEnvValue(
+                $value
+            );
 
             $_ENV[$name] = $value;
             $_SERVER[$name] = $value;
-            putenv($name . '=' . $value);
+
+            putenv(
+                $name . '=' . $value
+            );
         }
     }
 
     /**
-     * Normalise une valeur de variable d'environnement.
+     * Normalise une valeur .env.
      */
-    private static function normalizeEnvValue(string $value): string
-    {
+    private static function normalizeEnvValue(
+        string $value
+    ): string {
         $value = trim($value);
 
         $length = strlen($value);
@@ -103,7 +157,11 @@ final class Bootstrap
                 || ($firstChar === "'" && $lastChar === "'")
             )
             {
-                return substr($value, 1, -1);
+                return substr(
+                    $value,
+                    1,
+                    -1
+                );
             }
         }
 
@@ -111,13 +169,23 @@ final class Bootstrap
     }
 
     /**
-     * Configure le mode debug PHP.
+     * Configure le debug PHP.
      */
     private static function configureDebug(): void
     {
         $debug = App::debug();
 
-        error_reporting($debug ? E_ALL : 0);
-        ini_set('display_errors', $debug ? '1' : '0');
+        error_reporting(
+            $debug
+                ? E_ALL
+                : 0
+        );
+
+        ini_set(
+            'display_errors',
+            $debug
+                ? '1'
+                : '0'
+        );
     }
 }

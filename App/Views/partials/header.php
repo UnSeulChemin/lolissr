@@ -2,15 +2,14 @@
 
 declare(strict_types=1);
 
-use App\Core\Http\Request;
-
 /*
 |--------------------------------------------------------------------------
 | Détection de la page active
 |--------------------------------------------------------------------------
 */
 
-$currentPath = Request::path();
+$currentPath ??= '/';
+
 $cleanBasePath = rtrim($basePath, '/');
 
 /* Retire le basePath si présent */
@@ -20,14 +19,26 @@ if (
     && str_starts_with($currentPath, $cleanBasePath)
 )
 {
-    $currentPath = substr($currentPath, strlen($cleanBasePath));
+    $currentPath = substr(
+        $currentPath,
+        strlen($cleanBasePath)
+    );
 }
 
 /* Normalise */
-$currentPath = $currentPath === '' ? '/' : $currentPath;
+$currentPath = $currentPath === ''
+    ? '/'
+    : $currentPath;
 
-/* États actifs */
-$activeHome = $currentPath === '/' ? 'active' : '';
+/*
+|--------------------------------------------------------------------------
+| États actifs
+|--------------------------------------------------------------------------
+*/
+
+$activeHome = $currentPath === '/'
+    ? 'active'
+    : '';
 
 $activeManga = (
     $currentPath === '/manga'
@@ -43,13 +54,31 @@ $activeChinois = (
     ? 'active'
     : '';
 
-/* Garde la recherche si présente */
+/*
+|--------------------------------------------------------------------------
+| Recherche actuelle
+|--------------------------------------------------------------------------
+*/
+
 $currentSearch = '';
 
-if (str_starts_with($currentPath, '/manga/recherche/'))
+if (
+    str_starts_with(
+        $currentPath,
+        '/manga/recherche/'
+    )
+)
 {
-    $searchSlug = substr($currentPath, strlen('/manga/recherche/'));
-    $currentSearch = str_replace('-', ' ', urldecode($searchSlug));
+    $searchSlug = substr(
+        $currentPath,
+        strlen('/manga/recherche/')
+    );
+
+    $currentSearch = str_replace(
+        '-',
+        ' ',
+        urldecode($searchSlug)
+    );
 }
 
 ?>
@@ -68,6 +97,7 @@ if (str_starts_with($currentPath, '/manga/recherche/'))
         </a>
 
         <ul>
+
             <li>
                 <a
                     class="nav-link-icon <?= $activeHome ?>"
@@ -94,6 +124,7 @@ if (str_starts_with($currentPath, '/manga/recherche/'))
                     ⛩️
                 </a>
             </li>
+
         </ul>
 
         <div class="header-search-area">
@@ -121,17 +152,28 @@ if (str_starts_with($currentPath, '/manga/recherche/'))
 
             <div class="header-search-dropdown js-header-search-dropdown">
 
-                <div class="header-search-skeleton" aria-hidden="true">
+                <div
+                    class="header-search-skeleton"
+                    aria-hidden="true">
+
                     <?php for ($i = 1; $i <= 5; $i++): ?>
+
                         <div class="header-search-skeleton-item">
+
                             <div class="header-search-skeleton-thumb"></div>
 
                             <div class="header-search-skeleton-texts">
+
                                 <div class="header-search-skeleton-line header-search-skeleton-line-title"></div>
+
                                 <div class="header-search-skeleton-line header-search-skeleton-line-subtitle"></div>
+
                             </div>
+
                         </div>
+
                     <?php endfor; ?>
+
                 </div>
 
                 <div

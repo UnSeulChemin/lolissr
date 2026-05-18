@@ -6,244 +6,236 @@ namespace App\Core\Http;
 
 final class Request
 {
-    /**
-     * Retourne la méthode HTTP courante.
-     */
-    public static function method(): string
+    public function __construct(
+        private readonly array $get = [],
+        private readonly array $post = [],
+        private readonly array $files = [],
+        private readonly array $server = []
+    ) {}
+
+    public static function capture(): self
     {
-        return strtoupper(trim((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET')));
+        return new self(
+            $_GET,
+            $_POST,
+            $_FILES,
+            $_SERVER
+        );
     }
 
-    /**
-     * Vérifie si la requête courante est en GET.
-     */
-    public static function isGet(): bool
+    public function all(): array
     {
-        return self::method() === 'GET';
+        return [
+            ...$this->get,
+            ...$this->post,
+        ];
     }
 
-    /**
-     * Vérifie si la requête courante est en POST.
-     */
-    public static function isPost(): bool
-    {
-        return self::method() === 'POST';
+    public function input(
+        string $key,
+        mixed $default = null
+    ): mixed {
+        return $this->post[$key]
+            ?? $this->get[$key]
+            ?? $default;
     }
 
-    /**
-     * Retourne l'URI courante.
-     */
-    public static function uri(): string
-    {
-        return (string) ($_SERVER['REQUEST_URI'] ?? '/');
+    public function query(
+        string $key,
+        mixed $default = null
+    ): mixed {
+        return $this->get[$key]
+            ?? $default;
     }
 
-    /**
-     * Retourne le path courant sans query string.
-     */
-    public static function path(): string
-    {
-        $path = parse_url(self::uri(), PHP_URL_PATH);
+    public function post(
+        string $key,
+        mixed $default = null
+    ): mixed {
+        return $this->post[$key]
+            ?? $default;
+    }
 
-        if (!is_string($path) || $path === '')
-        {
+    public function string(
+        string $key,
+        string $default = ''
+    ): string {
+        return trim(
+            (string) $this->input($key, $default)
+        );
+    }
+
+    public function integer(
+        string $key,
+        int $default = 0
+    ): int {
+        return (int) $this->input($key, $default);
+    }
+
+    public function boolean(
+        string $key,
+        bool $default = false
+    ): bool {
+        $value = filter_var(
+            $this->input($key, $default),
+            FILTER_VALIDATE_BOOLEAN,
+            FILTER_NULL_ON_FAILURE
+        );
+
+        return $value ?? $default;
+    }
+
+    public function has(string $key): bool
+    {
+        return array_key_exists(
+            $key,
+            $this->all()
+        );
+    }
+
+    public function filled(string $key): bool
+    {
+        return trim(
+            (string) $this->input($key)
+        ) !== '';
+    }
+
+    public function only(array $keys): array
+    {
+        $data = [];
+
+        foreach ($keys as $key) {
+            $data[$key] = $this->input($key);
+        }
+
+        return $data;
+    }
+
+    public function except(array $keys): array
+    {
+        return array_diff_key(
+            $this->all(),
+            array_flip($keys)
+        );
+    }
+
+    public function files(): array
+    {
+        return $this->files;
+    }
+
+    public function file(string $key): ?array
+    {
+        $file = $this->files[$key] ?? null;
+
+        return is_array($file)
+            ? $file
+            : null;
+    }
+
+    public function hasFile(string $key): bool
+    {
+        $file = $this->file($key);
+
+        if ($file === null) {
+            return false;
+        }
+
+        return isset($file['tmp_name'])
+            && $file['tmp_name'] !== '';
+    }
+
+    public function hasValidFile(string $key): bool
+    {
+        $file = $this->file($key);
+
+        if ($file === null) {
+            return false;
+        }
+
+        return ($file['error'] ?? UPLOAD_ERR_NO_FILE)
+            === UPLOAD_ERR_OK;
+    }
+
+    public function method(): string
+    {
+        return strtoupper(
+            trim(
+                (string) (
+                    $this->server['REQUEST_METHOD']
+                    ?? 'GET'
+                )
+            )
+        );
+    }
+
+    public function isGet(): bool
+    {
+        return $this->method() === 'GET';
+    }
+
+    public function isPost(): bool
+    {
+        return $this->method() === 'POST';
+    }
+
+    public function uri(): string
+    {
+        return (string) (
+            $this->server['REQUEST_URI']
+            ?? '/'
+        );
+    }
+
+    public function path(): string
+    {
+        $path = parse_url(
+            $this->uri(),
+            PHP_URL_PATH
+        );
+
+        if (!is_string($path) || $path === '') {
             return '/';
         }
 
-        return $path;
-    }
+        $basePath = rtrim(
+            \App\Core\Application\App::basePath(),
+            '/'
+        );
 
-    /**
-     * Récupère une valeur brute depuis GET.
-     */
-    public static function query(string $key, mixed $default = null): mixed
-    {
-        return $_GET[$key] ?? $default;
-    }
-
-    /**
-     * Récupère une chaîne depuis GET.
-     */
-    public static function queryString(string $key): string
-    {
-        return trim((string) ($_GET[$key] ?? ''));
-    }
-
-    /**
-     * Récupère un entier depuis GET.
-     */
-    public static function queryInt(string $key): int
-    {
-        return (int) ($_GET[$key] ?? 0);
-    }
-
-    /**
-     * Vérifie si une clé GET existe.
-     */
-    public static function hasQuery(string $key): bool
-    {
-        return array_key_exists($key, $_GET);
-    }
-
-    /**
-     * Récupère une valeur brute depuis POST.
-     */
-    public static function post(string $key, mixed $default = null): mixed
-    {
-        return $_POST[$key] ?? $default;
-    }
-
-    /**
-     * Récupère une chaîne depuis POST.
-     */
-    public static function postString(string $key): string
-    {
-        return trim((string) ($_POST[$key] ?? ''));
-    }
-
-    /**
-     * Récupère un entier depuis POST.
-     */
-    public static function postInt(string $key): int
-    {
-        return (int) ($_POST[$key] ?? 0);
-    }
-
-    /**
-     * Récupère une chaîne nullable depuis POST.
-     * Retourne null si la valeur est vide.
-     */
-    public static function postNullableString(string $key): ?string
-    {
-        $value = trim((string) ($_POST[$key] ?? ''));
-
-        return $value === '' ? null : $value;
-    }
-
-    /**
-     * Vérifie si une clé POST existe.
-     */
-    public static function hasPost(string $key): bool
-    {
-        return array_key_exists($key, $_POST);
-    }
-
-    /**
-     * Retourne toutes les données POST.
-     *
-     * @return array<string, mixed>
-     */
-    public static function allPost(): array
-    {
-        return $_POST;
-    }
-
-    /**
-     * Retourne toutes les données GET.
-     *
-     * @return array<string, mixed>
-     */
-    public static function allQuery(): array
-    {
-        return $_GET;
-    }
-
-    /**
-     * Retourne toutes les données FILES.
-     *
-     * @return array<string, mixed>
-     */
-    public static function allFiles(): array
-    {
-        return $_FILES;
-    }
-
-    /**
-     * Vérifie si un fichier uploadé existe.
-     */
-    public static function hasFile(string $key): bool
-    {
-        return isset($_FILES[$key]) && is_array($_FILES[$key]);
-    }
-
-    /**
-     * Retourne les données brutes d'un fichier uploadé.
-     *
-     * @return array<string, mixed>|null
-     */
-    public static function file(string $key): ?array
-    {
-        if (!self::hasFile($key))
-        {
-            return null;
+        if (
+            $basePath !== ''
+            && $basePath !== '/'
+            && str_starts_with($path, $basePath)
+        ) {
+            $path = substr(
+                $path,
+                strlen($basePath)
+            );
         }
 
-        $file = $_FILES[$key];
+        $path = trim($path);
 
-        return is_array($file) ? $file : null;
+        return $path === ''
+            ? '/'
+            : $path;
     }
 
-    /**
-     * Retourne le nom original du fichier uploadé.
-     */
-    public static function fileName(string $key): string
-    {
-        return (string) (self::file($key)['name'] ?? '');
+    public function server(
+        string $key,
+        mixed $default = null
+    ): mixed {
+        return $this->server[$key]
+            ?? $default;
     }
 
-    /**
-     * Retourne le type MIME du fichier uploadé.
-     */
-    public static function fileType(string $key): string
+    public function isAjax(): bool
     {
-        return (string) (self::file($key)['type'] ?? '');
-    }
-
-    /**
-     * Retourne le chemin temporaire du fichier uploadé.
-     */
-    public static function fileTmpPath(string $key): string
-    {
-        return (string) (self::file($key)['tmp_name'] ?? '');
-    }
-
-    /**
-     * Retourne la taille du fichier uploadé.
-     */
-    public static function fileSize(string $key): int
-    {
-        return (int) (self::file($key)['size'] ?? 0);
-    }
-
-    /**
-     * Retourne le code d'erreur du fichier uploadé.
-     */
-    public static function fileError(string $key): int
-    {
-        return (int) (self::file($key)['error'] ?? UPLOAD_ERR_NO_FILE);
-    }
-
-    /**
-     * Vérifie si le fichier uploadé est valide.
-     */
-    public static function hasValidFile(string $key): bool
-    {
-        return self::hasFile($key) && self::fileError($key) === UPLOAD_ERR_OK;
-    }
-
-    /**
-     * Retourne une valeur du serveur.
-     */
-    public static function server(string $key, mixed $default = null): mixed
-    {
-        return $_SERVER[$key] ?? $default;
-    }
-
-    /**
-     * Vérifie si la requête courante est AJAX.
-     */
-    public static function isAjax(): bool
-    {
-        return strtolower((string) self::server('HTTP_X_REQUESTED_WITH', '')) === 'xmlhttprequest';
+        return strtolower(
+            (string) $this->server(
+                'HTTP_X_REQUESTED_WITH',
+                ''
+            )
+        ) === 'xmlhttprequest';
     }
 }

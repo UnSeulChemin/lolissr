@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\Cache\Cache;
+use App\Core\Http\Request;
 use App\Services\StatsService;
 
 final class MainController extends Controller
@@ -15,8 +16,9 @@ final class MainController extends Controller
         parent::__construct();
     }
 
-    public function index(): void
-    {
+    public function index(
+        Request $request
+    ): void {
         $this->title = 'Accueil';
 
         $stats = Cache::remember(
@@ -25,6 +27,10 @@ final class MainController extends Controller
             fn () => $this->statsService->dashboard()
         );
 
-        $this->render('main/index', $stats);
+        $this->render(
+            'main/index',
+            $stats,
+            $request
+        );
     }
 }

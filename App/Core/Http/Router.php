@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Core\Http;
 
 use App\Core\Application\App;
-use App\Core\Exceptions\MethodNotAllowedException;
-use App\Core\Exceptions\NotFoundException;
 use ReflectionClass;
 use ReflectionNamedType;
 use RuntimeException;
@@ -98,45 +96,69 @@ class Router
         $this->lastRouteIndex = array_key_last($this->routes[$method]);
     }
 
-    public function dispatch(?string $uri = null, ?string $method = null): void
+    public function dispatch(): void
     {
-        $path = $uri ?? Request::path();
-        $method = $method ?? Request::method();
+        $request = Request::capture();
 
-        $path = $this->stripBasePath($path);
-        $path = $this->normalizeRequestPath($path);
-        $method = strtoupper(trim($method));
+        $requestMethod = $request->method();
 
-        foreach ($this->routes[$method] ?? [] as $route)
+        $requestPath = $this->normalizeRequestPath(
+            $this->stripBasePath(
+                $request->path()
+            )
+        );
+
+        $routes = $this->routes[$requestMethod] ?? [];
+
+        foreach ($routes as $route)
         {
-            if (preg_match($route['pattern'], $path, $matches) === 1)
-            {
-                array_shift($matches);
-
-                $params = [];
-
-                foreach ($route['params'] as $index => $name)
-                {
-                    $params[$name] = $matches[$index] ?? null;
-                }
-
-                $this->runMiddlewares($route['middlewares'] ?? []);
-                $this->callAction((string) $route['action'], $params);
-
-                return;
+            if (
+                preg_match(
+                    $route['pattern'],
+                    $requestPath,
+                    $matches
+                ) !== 1
+            ) {
+                continue;
             }
+
+            array_shift($matches);
+
+            $params = [];
+
+            foreach ($route['params'] as $index => $name)
+            {
+                $params[$name] = $matches[$index] ?? null;
+            }
+
+            $this->runMiddlewares(
+                $route['middlewares']
+            );
+
+            $this->callAction(
+                $route['action'],
+                $params
+            );
+
+            return;
         }
 
-        $allowedMethods = $this->findAllowedMethods($path);
+        $allowedMethods = $this->findAllowedMethods(
+            $requestPath
+        );
 
         if ($allowedMethods !== [])
         {
-            header('Allow: ' . implode(', ', $allowedMethods));
+            http_response_code(405);
 
-            throw new MethodNotAllowedException('Méthode non autorisée');
+            header(
+                'Allow: ' . implode(', ', $allowedMethods)
+            );
+
+            abort(405);
         }
 
-        throw new NotFoundException('Page introuvable');
+        abort(404);
     }
 
     /**
