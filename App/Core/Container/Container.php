@@ -6,71 +6,133 @@ namespace App\Core\Container;
 
 use ReflectionClass;
 use ReflectionNamedType;
+use RuntimeException;
 
 final class Container
 {
     private array $bindings = [];
+
     private array $instances = [];
 
-    public function bind(string $abstract, callable|string|null $concrete = null): void
-    {
-        $this->bindings[$abstract] = $concrete ?? $abstract;
+    public function bind(
+        string $abstract,
+        callable|string|null $concrete = null
+    ): void {
+        $this->bindings[$abstract] =
+            $concrete ?? $abstract;
     }
 
-    public function singleton(string $abstract, callable|string|null $concrete = null): void
-    {
-        $this->instances[$abstract] = null;
-        $this->bindings[$abstract] = $concrete ?? $abstract;
+    public function singleton(
+        string $abstract,
+        callable|string|null $concrete = null
+    ): void {
+        $this->bindings[$abstract] = [
+            'concrete' => $concrete ?? $abstract,
+            'singleton' => true,
+        ];
     }
 
     public function get(string $abstract): object
     {
-        if (array_key_exists($abstract, $this->instances) && $this->instances[$abstract] !== null) {
+        if (isset($this->instances[$abstract]))
+        {
             return $this->instances[$abstract];
         }
 
-        $object = $this->resolve($abstract);
+        $binding = $this->bindings[$abstract]
+            ?? [
+                'concrete' => $abstract,
+                'singleton' => false,
+            ];
 
-        if (array_key_exists($abstract, $this->instances)) {
+        if (!is_array($binding))
+        {
+            $binding = [
+                'concrete' => $binding,
+                'singleton' => false,
+            ];
+        }
+
+        $object = $this->resolve(
+            $binding['concrete']
+        );
+
+        if ($binding['singleton'])
+        {
             $this->instances[$abstract] = $object;
         }
 
         return $object;
     }
 
-    private function resolve(string $abstract): object
-    {
-        $concrete = $this->bindings[$abstract] ?? $abstract;
-
-        if (is_callable($concrete)) {
+    private function resolve(
+        callable|string $concrete
+    ): object {
+        if (is_callable($concrete))
+        {
             return $concrete($this);
         }
 
-        $reflection = new ReflectionClass($concrete);
+        if (!class_exists($concrete))
+        {
+            throw new RuntimeException(
+                "Classe introuvable : {$concrete}"
+            );
+        }
+
+        $reflection = new ReflectionClass(
+            $concrete
+        );
+
+        if (!$reflection->isInstantiable())
+        {
+            throw new RuntimeException(
+                "Classe non instanciable : {$concrete}"
+            );
+        }
 
         $constructor = $reflection->getConstructor();
 
-        if ($constructor === null) {
+        if ($constructor === null)
+        {
             return new $concrete();
         }
 
         $dependencies = [];
 
-        foreach ($constructor->getParameters() as $parameter) {
+        foreach (
+            $constructor->getParameters()
+            as $parameter
+        ) {
             $type = $parameter->getType();
 
-            if (!$type instanceof ReflectionNamedType || $type->isBuiltin()) {
-                if ($parameter->isDefaultValueAvailable()) {
-                    $dependencies[] = $parameter->getDefaultValue();
+            if (
+                !$type instanceof ReflectionNamedType
+                || $type->isBuiltin()
+            ) {
+                if ($parameter->isDefaultValueAvailable())
+                {
+                    $dependencies[] =
+                        $parameter->getDefaultValue();
+
                     continue;
                 }
 
-                throw new \RuntimeException("Impossible de résoudre {$parameter->getName()}");
+                throw new RuntimeException(
+                    'Impossible de résoudre : '
+                    . $concrete
+                    . '::$'
+                    . $parameter->getName()
+                );
             }
 
-            $dependencies[] = $this->get($type->getName());
+            $dependencies[] = $this->get(
+                $type->getName()
+            );
         }
 
-        return $reflection->newInstanceArgs($dependencies);
+        return $reflection->newInstanceArgs(
+            $dependencies
+        );
     }
 }

@@ -49,9 +49,9 @@ final class Router
         $this->routes[] = [
             'method' => strtoupper($method),
             'uri' => $uri === '/'
-            ? '/'
-            : '/' . trim($uri, '/'),
-                    'action' => $action,
+                ? '/'
+                : '/' . trim($uri, '/'),
+            'action' => $action,
             'middlewares' => $middlewares,
         ];
     }
@@ -100,7 +100,8 @@ final class Router
                     $action
                 );
 
-                $controllerClass = 'App\\Controllers\\'
+                $controllerClass =
+                    'App\\Controllers\\'
                     . $controllerClass;
             }
             else
@@ -194,6 +195,19 @@ final class Router
                     continue;
                 }
 
+                if (
+                    is_subclass_of(
+                        $typeName,
+                        FormRequest::class
+                    )
+                ) {
+                    $dependencies[] = new $typeName(
+                        $request
+                    );
+
+                    continue;
+                }
+
                 $dependencies[] = $this->resolve(
                     $typeName
                 );
@@ -203,7 +217,8 @@ final class Router
 
             if (isset($routeParameters[$routeIndex]))
             {
-                $dependencies[] = $routeParameters[$routeIndex];
+                $dependencies[] =
+                    $routeParameters[$routeIndex];
 
                 $routeIndex++;
 
@@ -212,7 +227,8 @@ final class Router
 
             if ($parameter->isDefaultValueAvailable())
             {
-                $dependencies[] = $parameter->getDefaultValue();
+                $dependencies[] =
+                    $parameter->getDefaultValue();
 
                 continue;
             }

@@ -29,7 +29,9 @@ final class MangaController extends Controller
             return;
         }
 
-        $location = trim($pathPrefix, '/') . '/' . rawurlencode($canonicalSlug);
+        $location = trim($pathPrefix, '/')
+            . '/'
+            . rawurlencode($canonicalSlug);
 
         if ($numero !== null) {
             $location .= '/' . $numero;
@@ -157,7 +159,10 @@ final class MangaController extends Controller
 
         $numero = (int) $numero;
 
-        $data = $this->findCanonicalMangaDataOrFail($slug, $numero);
+        $data = $this->findCanonicalMangaDataOrFail(
+            $slug,
+            $numero
+        );
 
         $this->redirectToCanonicalUrl(
             $slug,
@@ -173,10 +178,9 @@ final class MangaController extends Controller
         ]);
     }
 
-    public function ajouterTraitement(): void
-    {
-        $request = new MangaCreateRequest();
-
+    public function ajouterTraitement(
+        MangaCreateRequest $request
+    ): void {
         if ($request->fails()) {
             json([
                 'success' => false,
@@ -187,23 +191,33 @@ final class MangaController extends Controller
         }
 
         $result = $this->mangaWriteService->create(
-            $request->data(),
+            $request->dto(),
             $request->files()
         );
 
-        json($result, (int) ($result['status'] ?? 200));
+        json(
+            $result,
+            (int) ($result['status'] ?? 200)
+        );
     }
 
-    public function update(string $slug, string $numero): void
-    {
+    public function update(
+        MangaUpdateRequest $request,
+        string $slug,
+        string $numero
+    ): void {
         if (!ctype_digit($numero)) {
             $this->notFound('Manga introuvable');
         }
 
         $numero = (int) $numero;
+
         $isAjax = is_ajax();
 
-        $data = $this->mangaReadService->one($slug, $numero);
+        $data = $this->mangaReadService->one(
+            $slug,
+            $numero
+        );
 
         if ($data === null) {
             if ($isAjax) {
@@ -239,9 +253,11 @@ final class MangaController extends Controller
             );
         }
 
-        $request = new MangaUpdateRequest();
-
-        $redirectPath = 'manga/modifier/' . rawurlencode($data['canonicalSlug']) . '/' . $numero;
+        $redirectPath =
+            'manga/modifier/'
+            . rawurlencode($data['canonicalSlug'])
+            . '/'
+            . $numero;
 
         if ($request->fails()) {
             if ($isAjax) {
@@ -252,18 +268,24 @@ final class MangaController extends Controller
                 ], 422);
             }
 
-            $this->redirectWithValidationErrors($redirectPath, $request->errors());
+            $this->redirectWithValidationErrors(
+                $redirectPath,
+                $request->errors()
+            );
         }
 
         $result = $this->mangaWriteService->update(
             $data['canonicalSlug'],
             $numero,
-            $request->data(),
+            $request->dto(),
             $request->files()
         );
 
         if ($isAjax) {
-            json($result, (int) ($result['status'] ?? 200));
+            json(
+                $result,
+                (int) ($result['status'] ?? 200)
+            );
         }
 
         if (!$result['success']) {
@@ -274,7 +296,10 @@ final class MangaController extends Controller
         }
 
         $this->redirectWithSuccess(
-            'manga/' . rawurlencode($data['canonicalSlug']) . '/' . $numero,
+            'manga/'
+            . rawurlencode($data['canonicalSlug'])
+            . '/'
+            . $numero,
             $result['message']
         );
     }

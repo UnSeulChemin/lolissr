@@ -9,6 +9,7 @@ use App\Core\Config\UploadConfig;
 use App\Core\Support\Logger;
 use App\DTO\Manga\MangaCreateDTO;
 use App\DTO\Manga\MangaUpdateDTO;
+use App\DTO\Manga\MangaUpdateNoteDTO;
 use App\Repositories\Manga\MangaRepository;
 use App\Services\UploadService;
 
@@ -174,8 +175,7 @@ final class MangaWriteService
     public function updateNote(
         string $slug,
         int $numero,
-        int $jacquette,
-        int $livreNote
+        MangaUpdateNoteDTO $dto
     ): array {
         if ($this->isReadOnlyMode()) {
             return $this->blockedWriteResponse();
@@ -184,8 +184,8 @@ final class MangaWriteService
         $updated = $this->mangaRepository->updateNote(
             $slug,
             $numero,
-            $jacquette,
-            $livreNote
+            $dto->jacquette,
+            $dto->livreNote
         );
 
         if (!$updated) {
@@ -204,9 +204,9 @@ final class MangaWriteService
             'success' => true,
             'status' => 200,
             'message' => 'Notes mises à jour',
-            'jacquette' => $jacquette,
-            'livre_note' => $livreNote,
-            'note' => $manga ? $manga->note : ($jacquette + $livreNote),
+            'jacquette' => $dto->jacquette,
+            'livre_note' => $dto->livreNote,
+            'note' => $manga ? $manga->note : ($dto->jacquette + $dto->livreNote),
         ];
     }
 

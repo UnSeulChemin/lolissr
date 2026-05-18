@@ -9,22 +9,21 @@ use App\Core\Validation\Validator;
 abstract class FormRequest
 {
     protected Validator $validator;
-    protected array $data;
 
     public function __construct(
-        protected Request $request
+        protected readonly Request $request
     ) {
-        $this->data = $request->postAll();
-
         $this->validator = new Validator(
-            $this->data,
-            $request->files()
+            $this->request->postAll(),
+            $this->request->files()
         );
 
         $this->validate();
     }
 
     abstract protected function validate(): void;
+
+    abstract public function dto(): object;
 
     public function passes(): bool
     {
@@ -41,20 +40,23 @@ abstract class FormRequest
         return $this->validator->errors();
     }
 
-    public function data(): array
-    {
-        return $this->data;
-    }
-
     public function files(): array
     {
         return $this->request->files();
+    }
+
+    public function all(): array
+    {
+        return $this->request->postAll();
     }
 
     protected function input(
         string $key,
         mixed $default = null
     ): mixed {
-        return $this->request->input($key, $default);
+        return $this->request->input(
+            $key,
+            $default
+        );
     }
 }
