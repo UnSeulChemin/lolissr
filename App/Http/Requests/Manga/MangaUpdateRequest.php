@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests\Manga;
 
 use App\Core\Http\FormRequest;
+use App\DTO\Manga\MangaUpdateDTO;
 
 final class MangaUpdateRequest extends FormRequest
 {
@@ -24,5 +25,12 @@ final class MangaUpdateRequest extends FormRequest
             ->integer('jacquette')
             ->min('jacquette', 1)
             ->max('jacquette', 5);
+    }
+
+    public function dto(): MangaUpdateDTO
+    {
+        return MangaUpdateDTO::fromPost(
+            $this->validated()
+        );
     }
 }

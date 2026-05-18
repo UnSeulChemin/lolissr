@@ -204,21 +204,10 @@ final class MangaAjaxController extends Controller
             (int) $numero
         );
 
-        if (!$result->success) {
-            $this->error([
-                'message' => $result->message,
-            ], $result->status);
-        }
-
         $this->json([
-            'success' => true,
+            'success' => $result->success,
             'message' => $result->message,
-            'redirect' => $this->basePath
-                . 'manga/series/'
-                . rawurlencode(
-                    $result->data['canonicalSlug']
-                    ?? $slug
-                ),
-        ]);
+            ...$result->data,
+        ], $result->status);
     }
 }

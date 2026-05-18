@@ -19,7 +19,6 @@ final class MangaWriteService
     public function __construct(
         private readonly MangaRepository $mangaRepository,
         private readonly UploadService $uploadService,
-        private readonly MangaValidatorService $validatorService,
         private readonly MangaCacheService $cacheService
     ) {}
 
@@ -62,19 +61,6 @@ final class MangaWriteService
         );
     }
 
-    private function validationError(
-        array $errors
-    ): ServiceResult {
-        return $this->error(
-            $this->validatorService
-                ->firstErrorMessage($errors),
-            422,
-            [
-                'errors' => $errors,
-            ]
-        );
-    }
-
     private function logFailure(
         string $action,
         string $slug,
@@ -86,27 +72,15 @@ final class MangaWriteService
     }
 
     public function create(
-        array $post,
+        MangaCreateDTO $dto,
         array $files
     ): ServiceResult {
-        $validator = $this->validatorService
-            ->makeCreateValidator($post, $files);
-
-        if ($validator->fails())
-        {
-            return $this->validationError(
-                $validator->errors()
-            );
-        }
-
         if (
             $this->isReadOnlyMode()
             && !$this->uploadService->isTestUploadMode()
         ) {
             return $this->blockedWriteResponse();
         }
-
-        $dto = MangaCreateDTO::fromPost($post);
 
         if (
             !$this->uploadService->isTestUploadMode()
@@ -192,25 +166,13 @@ final class MangaWriteService
     public function update(
         string $slug,
         int $numero,
-        array $post,
+        MangaUpdateDTO $dto,
         array $files
     ): ServiceResult {
-        $validator = $this->validatorService
-            ->makeUpdateValidator($post, $files);
-
-        if ($validator->fails())
-        {
-            return $this->validationError(
-                $validator->errors()
-            );
-        }
-
         if ($this->isReadOnlyMode())
         {
             return $this->blockedWriteResponse();
         }
-
-        $dto = MangaUpdateDTO::fromPost($post);
 
         $updated = $this->mangaRepository
             ->updateManga(
@@ -399,10 +361,26 @@ final class MangaWriteService
 
         $this->cacheService->clear();
 
+        /*
+        |--------------------------------------------------------------------------
+        | Vérifie si la série existe encore
+        |--------------------------------------------------------------------------
+        */
+
+        $remainingMangas = $this->mangaRepository
+            ->findBySlug($manga->slug);
+
+        $redirect = !empty($remainingMangas)
+            ? base_path()
+                . '/manga/series/'
+                . rawurlencode($manga->slug)
+            : base_path()
+                . '/manga/collection';
+
         return $this->success(
             'Manga supprimé avec succès',
             [
-                'canonicalSlug' => $manga->slug,
+                'redirect' => $redirect,
             ]
         );
     }

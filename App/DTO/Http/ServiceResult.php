@@ -12,4 +12,14 @@ final readonly class ServiceResult
         public string $message,
         public array $data = [],
     ) {}
+
+    public function toArray(): array
+    {
+        return [
+            'success' => $this->success,
+            'status' => $this->status,
+            'message' => $this->message,
+            ...$this->data,
+        ];
+    }
 }

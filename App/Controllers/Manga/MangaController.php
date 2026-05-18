@@ -196,8 +196,8 @@ final class MangaController extends Controller
         );
 
         json(
-            $result,
-            (int) ($result['status'] ?? 200)
+            $result->toArray(),
+            $result->status
         );
     }
 
@@ -283,15 +283,15 @@ final class MangaController extends Controller
 
         if ($isAjax) {
             json(
-                $result,
-                (int) ($result['status'] ?? 200)
+                $result->toArray(),
+                $result->status
             );
         }
 
-        if (!$result['success']) {
+        if (!$result->success) {
             $this->redirectWithError(
                 $redirectPath,
-                $result['message'] ?? 'Erreur'
+                $result->message
             );
         }
 
@@ -300,7 +300,7 @@ final class MangaController extends Controller
             . rawurlencode($data['canonicalSlug'])
             . '/'
             . $numero,
-            $result['message']
+            $result->message
         );
     }
 }

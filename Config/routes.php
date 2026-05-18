@@ -104,13 +104,16 @@ return static function (Router $router): void {
         'show',
     ]);
 
-    $router->get('/manga/series/{slug}/{numero}/modifier', [
-        MangaController::class,
-        'modifier',
-    ]);
+    $router->get(
+        '/manga/series/modifier/{slug}/{numero}',
+        [
+            MangaController::class,
+            'modifier',
+        ]
+    );
 
     $router->post(
-        '/manga/series/{slug}/{numero}/modifier',
+        '/manga/series/modifier/{slug}/{numero}',
         [
             MangaController::class,
             'update',
@@ -122,13 +125,14 @@ return static function (Router $router): void {
     );
 
     $router->post(
-        '/manga/modifier/{slug}/{numero}',
+        '/manga/series/supprimer/{slug}/{numero}',
         [
-            MangaController::class,
-            'update',
+            MangaAjaxController::class,
+            'delete',
         ],
         [
             PostOnlyMiddleware::class,
+            AjaxOnlyMiddleware::class,
             CsrfMiddleware::class,
         ]
     );
@@ -179,19 +183,6 @@ return static function (Router $router): void {
         [
             MangaAjaxController::class,
             'updateLu',
-        ],
-        [
-            PostOnlyMiddleware::class,
-            AjaxOnlyMiddleware::class,
-            CsrfMiddleware::class,
-        ]
-    );
-
-    $router->post(
-        '/manga/ajax/delete/{slug}/{numero}',
-        [
-            MangaAjaxController::class,
-            'delete',
         ],
         [
             PostOnlyMiddleware::class,

@@ -10,7 +10,6 @@ use App\Core\Container\AppContainer;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Support\Session;
-use RuntimeException;
 
 /*
 |--------------------------------------------------------------------------
@@ -227,7 +226,7 @@ if (!function_exists('view'))
 
         if (!is_file($viewPath))
         {
-            throw new RuntimeException(
+            throw new \RuntimeException(
                 'Vue introuvable : '
                 . $view
             );
@@ -235,7 +234,7 @@ if (!function_exists('view'))
 
         if (!is_file($layoutPath))
         {
-            throw new RuntimeException(
+            throw new \RuntimeException(
                 'Layout introuvable : layouts/base'
             );
         }

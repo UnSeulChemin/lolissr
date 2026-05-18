@@ -6,6 +6,7 @@ namespace App\Http\Requests\Manga;
 
 use App\Core\Config\UploadConfig;
 use App\Core\Http\FormRequest;
+use App\DTO\Manga\MangaCreateDTO;
 
 final class MangaCreateRequest extends FormRequest
 {
@@ -33,5 +34,12 @@ final class MangaCreateRequest extends FormRequest
             ->imageExtension('image', UploadConfig::allowedExtensions())
             ->imageMime('image', UploadConfig::allowedMimeTypes())
             ->maxFileSize('image', UploadConfig::maxSize());
+    }
+
+    public function dto(): MangaCreateDTO
+    {
+        return MangaCreateDTO::fromPost(
+            $this->validated()
+        );
     }
 }
