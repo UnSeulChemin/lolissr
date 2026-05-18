@@ -6,6 +6,7 @@ namespace App\Core\Http;
 
 use App\Core\Container\AppContainer;
 use App\Core\Http\Middleware\MiddlewareInterface;
+use Closure;
 use ReflectionMethod;
 use ReflectionNamedType;
 use RuntimeException;
@@ -16,7 +17,7 @@ final class Router
 
     public function get(
         string $uri,
-        array|string $action,
+        array|string|Closure $action,
         array $middlewares = []
     ): void {
         $this->addRoute(
@@ -29,7 +30,7 @@ final class Router
 
     public function post(
         string $uri,
-        array|string $action,
+        array|string|Closure $action,
         array $middlewares = []
     ): void {
         $this->addRoute(
@@ -43,7 +44,7 @@ final class Router
     private function addRoute(
         string $method,
         string $uri,
-        array|string $action,
+        array|string|Closure $action,
         array $middlewares
     ): void {
         $uri = '/' . trim($uri, '/');
@@ -102,6 +103,13 @@ final class Router
                 $route['middlewares'],
                 $request
             );
+
+            if ($route['action'] instanceof Closure)
+            {
+                $route['action'](...$matches);
+
+                return;
+            }
 
             [$controller, $controllerMethod] =
                 $this->resolveAction(
