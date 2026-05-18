@@ -1,10 +1,21 @@
 <?php
 
-$mangas = isset($mangas) && is_array($mangas) ? $mangas : [];
-$compteur = isset($compteur) ? (int) $compteur : 0;
-$currentPage = isset($currentPage) ? (int) $currentPage : 1;
+$mangas = isset($mangas) && is_array($mangas)
+    ? $mangas
+    : [];
+
+$compteur = isset($compteur)
+    ? (int) $compteur
+    : 0;
+
+$currentPage = isset($currentPage)
+    ? (int) $currentPage
+    : 1;
+
 $slugFilter = $slugFilter ?? null;
-$isSerieView = is_string($slugFilter) && trim($slugFilter) !== '';
+
+$isSerieView = is_string($slugFilter)
+    && trim($slugFilter) !== '';
 
 $basePath = rtrim($basePath, '/') . '/';
 
@@ -17,13 +28,21 @@ $basePath = rtrim($basePath, '/') . '/';
         <div class="collection-scroll-anchor" aria-hidden="true"></div>
 
         <div class="collection-skeleton" aria-hidden="true">
+
             <?php for ($i = 1; $i <= 8; $i++): ?>
+
                 <article class="collection-skeleton-card">
+
                     <div class="collection-skeleton-image"></div>
+
                     <div class="collection-skeleton-line collection-skeleton-line-title"></div>
+
                     <div class="collection-skeleton-line collection-skeleton-line-subtitle"></div>
+
                 </article>
+
             <?php endfor; ?>
+
         </div>
 
         <div class="collection-ajax-content">
@@ -92,12 +111,12 @@ $basePath = rtrim($basePath, '/') . '/';
 
                         $href = $isSerieView
                             ? $basePath
-                                . 'manga/collection/'
+                                . 'manga/series/'
                                 . rawurlencode($slug)
                                 . '/'
                                 . $numero
                             : $basePath
-                                . 'manga/collection/'
+                                . 'manga/series/'
                                 . rawurlencode($slug);
 
                         $noteClass = 'collection-note-mid';
@@ -158,13 +177,21 @@ $basePath = rtrim($basePath, '/') . '/';
                             href="<?= htmlspecialchars($href, ENT_QUOTES, 'UTF-8'); ?>">
 
                             <?php if (!$isSerieView): ?>
+
                                 <span class="collection-status-badge <?= htmlspecialchars($statutClass, ENT_QUOTES, 'UTF-8'); ?>">
+
                                     <?= htmlspecialchars($statutLabel, ENT_QUOTES, 'UTF-8'); ?>
+
                                 </span>
+
                             <?php endif; ?>
 
                             <span class="collection-card-badge <?= htmlspecialchars($noteClass, ENT_QUOTES, 'UTF-8'); ?>">
-                                ⭐ <?= $note !== null ? htmlspecialchars($noteLabel, ENT_QUOTES, 'UTF-8') : '0'; ?>/10
+
+                                ⭐ <?= $note !== null
+                                    ? htmlspecialchars($noteLabel, ENT_QUOTES, 'UTF-8')
+                                    : '0'; ?>/10
+
                             </span>
 
                             <span
@@ -193,7 +220,9 @@ $basePath = rtrim($basePath, '/') . '/';
                             </div>
 
                             <p class="collection-card-title">
+
                                 <?= htmlspecialchars($livre, ENT_QUOTES, 'UTF-8'); ?>
+
                             </p>
 
                             <p class="collection-card-subtitle">
@@ -226,7 +255,7 @@ $basePath = rtrim($basePath, '/') . '/';
 
                         <a
                             class="collection-pagination-link <?= ($currentPage === $getId) ? 'active' : ''; ?>"
-                            href="<?= $basePath; ?>manga/collection/<?= $getId; ?>">
+                            href="<?= $basePath; ?>manga/series/page/<?= $getId; ?>">
 
                             <?= $getId; ?>
 
@@ -244,7 +273,7 @@ $basePath = rtrim($basePath, '/') . '/';
 
                     <a
                         class="form-submit collection-back-button"
-                        href="<?= $basePath; ?>manga/collection/1">
+                        href="<?= $basePath; ?>manga/series">
 
                         Retour
 

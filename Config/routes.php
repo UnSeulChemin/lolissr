@@ -54,7 +54,7 @@ return static function (Router $router): void {
         '/manga/collection/{page}',
         function (string $page): void {
             redirect(
-                'manga/series/' . rawurlencode($page),
+                'manga/series/page/' . rawurlencode($page),
                 301
             );
         }
@@ -71,7 +71,7 @@ return static function (Router $router): void {
         'series',
     ]);
 
-    $router->get('/manga/series/{page}', [
+    $router->get('/manga/series/page/{page}', [
         MangaController::class,
         'series',
     ]);
@@ -114,14 +114,14 @@ return static function (Router $router): void {
     |--------------------------------------------------------------------------
     */
 
-    $router->get('/manga/series/{slug}', [
-        MangaController::class,
-        'serie',
-    ]);
-
     $router->get('/manga/series/{slug}/{numero}', [
         MangaController::class,
         'show',
+    ]);
+
+    $router->get('/manga/series/{slug}', [
+        MangaController::class,
+        'serie',
     ]);
 
     $router->get(
@@ -164,7 +164,7 @@ return static function (Router $router): void {
     */
 
     $router->get(
-        '/manga/ajax/series/{page}',
+        '/manga/ajax/series/page/{page}',
         [
             MangaAjaxController::class,
             'seriesPage',

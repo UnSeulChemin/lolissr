@@ -110,7 +110,7 @@ final class MangaController extends Controller
 
         $this->title = 'Manga | ' . $data['mangas'][0]->livre;
 
-        $this->render('manga/collection', [
+        $this->render('manga/series', [
             'mangas' => $data['mangas'],
             'compteur' => null,
             'slugFilter' => $data['canonicalSlug'],

@@ -153,7 +153,9 @@ $basePath = rtrim($basePath, '/') . '/';
                 <?php if (!$isSerieView): ?>
 
                     <span class="collection-status-badge <?= htmlspecialchars($statutClass, ENT_QUOTES, 'UTF-8'); ?>">
+
                         <?= htmlspecialchars($statutLabel, ENT_QUOTES, 'UTF-8'); ?>
+
                     </span>
 
                 <?php endif; ?>
@@ -192,7 +194,9 @@ $basePath = rtrim($basePath, '/') . '/';
                 </div>
 
                 <p class="collection-card-title">
+
                     <?= htmlspecialchars($livre, ENT_QUOTES, 'UTF-8'); ?>
+
                 </p>
 
                 <p class="collection-card-subtitle">
@@ -225,7 +229,7 @@ $basePath = rtrim($basePath, '/') . '/';
 
             <a
                 class="collection-pagination-link <?= ($currentPage === $getId) ? 'active' : ''; ?>"
-                href="<?= $basePath; ?>manga/series/<?= $getId; ?>">
+                href="<?= $basePath; ?>manga/series/page/<?= $getId; ?>">
 
                 <?= $getId; ?>
 
@@ -243,7 +247,7 @@ $basePath = rtrim($basePath, '/') . '/';
 
         <a
             class="form-submit collection-back-button"
-            href="<?= $basePath; ?>manga/series/1">
+            href="<?= $basePath; ?>manga/series/page/1">
 
             Retour
 
