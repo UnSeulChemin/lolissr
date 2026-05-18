@@ -6,6 +6,7 @@ namespace App\Controllers\Manga;
 
 use App\Controllers\Controller;
 use App\Core\Application\App;
+use App\Core\Http\Request;
 use App\Http\Requests\Manga\MangaUpdateNoteRequest;
 use App\Services\Manga\MangaReadService;
 use App\Services\Manga\MangaWriteService;
@@ -19,13 +20,13 @@ final class MangaAjaxController extends Controller
         parent::__construct();
     }
 
-    private function ensureAjax(): void
+    private function ensureAjax(Request $request): void
     {
-        if (is_ajax()) {
+        if ($request->isAjax()) {
             return;
         }
 
-        $userAgent = (string) ($_SERVER['HTTP_USER_AGENT'] ?? '');
+        $userAgent = $request->userAgent();
 
         if (
             App::isTesting()
@@ -47,9 +48,11 @@ final class MangaAjaxController extends Controller
         ], $payload), $status);
     }
 
-    public function collectionPage(string $page = '1'): void
-    {
-        $this->ensureAjax();
+    public function collectionPage(
+        Request $request,
+        string $page = '1'
+    ): void {
+        $this->ensureAjax($request);
 
         $data = $this->mangaReadService->collection($page);
 
@@ -67,16 +70,21 @@ final class MangaAjaxController extends Controller
         ]);
     }
 
-    public function search(string $query = ''): void
-    {
-        $this->ensureAjax();
+    public function search(
+        Request $request,
+        string $query = ''
+    ): void {
+        $this->ensureAjax($request);
 
         json($this->mangaReadService->searchAjax($query));
     }
 
-    public function updateNote(string $slug, string $numero): void
-    {
-        $this->ensureAjax();
+    public function updateNote(
+        Request $request,
+        string $slug,
+        string $numero
+    ): void {
+        $this->ensureAjax($request);
 
         if (!ctype_digit($numero)) {
             $this->error([
@@ -105,27 +113,30 @@ final class MangaAjaxController extends Controller
             ], 409);
         }
 
-        $request = new MangaUpdateNoteRequest();
+        $noteRequest = new MangaUpdateNoteRequest();
 
-        if ($request->fails()) {
+        if ($noteRequest->fails()) {
             $this->error([
                 'message' => 'Erreur de validation',
-                'errors' => $request->errors(),
+                'errors' => $noteRequest->errors(),
             ], 422);
         }
 
         $result = $this->mangaWriteService->updateNote(
             $data['canonicalSlug'],
             $numero,
-            $request->data()
+            $noteRequest->data()
         );
 
         json($result, (int) ($result['status'] ?? 200));
     }
 
-    public function updateLu(string $slug, string $numero): void
-    {
-        $this->ensureAjax();
+    public function updateLu(
+        Request $request,
+        string $slug,
+        string $numero
+    ): void {
+        $this->ensureAjax($request);
 
         if (!ctype_digit($numero)) {
             $this->error([
@@ -157,15 +168,18 @@ final class MangaAjaxController extends Controller
         $result = $this->mangaWriteService->updateLu(
             $data['canonicalSlug'],
             $numero,
-            $_POST
+            $request->post()
         );
 
         json($result, (int) ($result['status'] ?? 200));
     }
 
-    public function delete(string $slug, string $numero): void
-    {
-        $this->ensureAjax();
+    public function delete(
+        Request $request,
+        string $slug,
+        string $numero
+    ): void {
+        $this->ensureAjax($request);
 
         if (!ctype_digit($numero)) {
             $this->error([

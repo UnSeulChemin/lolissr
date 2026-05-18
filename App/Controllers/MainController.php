@@ -16,9 +16,8 @@ final class MainController extends Controller
         parent::__construct();
     }
 
-    public function index(
-        Request $request
-    ): void {
+    public function index(Request $request): void
+    {
         $this->title = 'Accueil';
 
         $stats = Cache::remember(
@@ -29,8 +28,7 @@ final class MainController extends Controller
 
         $this->render(
             'main/index',
-            $stats,
-            $request
+            $stats
         );
     }
 }

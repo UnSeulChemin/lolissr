@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers\Chinois;
 
 use App\Controllers\Controller;
+use App\Core\Http\Request;
 use App\Repositories\Chinois\ChinoisGrammaireRepository;
 use App\Services\Chinois\ChinoisReadService;
 
@@ -17,15 +18,17 @@ final class ChinoisController extends Controller
         parent::__construct();
     }
 
-    public function index(): void
-    {
+    public function index(
+        Request $request
+    ): void {
         $this->title = 'Chinois';
 
         $this->render('chinois/index');
     }
 
-    public function mandarin(): void
-    {
+    public function mandarin(
+        Request $request
+    ): void {
         $this->title = 'Chinois | Mandarin';
 
         $this->render('chinois/mandarin', [
@@ -33,8 +36,9 @@ final class ChinoisController extends Controller
         ]);
     }
 
-    public function jinyu(): void
-    {
+    public function jinyu(
+        Request $request
+    ): void {
         $this->title = 'Chinois | 晋语';
 
         $this->render('chinois/jinyu', [
@@ -42,15 +46,17 @@ final class ChinoisController extends Controller
         ]);
     }
 
-    public function grammaire(): void
-    {
+    public function grammaire(
+        Request $request
+    ): void {
         $this->title = 'Chinois | Grammaire';
 
         $this->render('chinois/grammaire');
     }
 
-    public function hsk1(): void
-    {
+    public function hsk1(
+        Request $request
+    ): void {
         $this->title = 'Chinois | Grammaire HSK1';
 
         $grammaires = $this->chinoisGrammaireRepository
@@ -61,8 +67,9 @@ final class ChinoisController extends Controller
         ]);
     }
 
-    public function hsk2(): void
-    {
+    public function hsk2(
+        Request $request
+    ): void {
         $this->title = 'Chinois | Grammaire HSK2';
 
         $grammaires = $this->chinoisGrammaireRepository
@@ -73,8 +80,9 @@ final class ChinoisController extends Controller
         ]);
     }
 
-    public function hsk3(): void
-    {
+    public function hsk3(
+        Request $request
+    ): void {
         $this->title = 'Chinois | Grammaire HSK3';
 
         $grammaires = $this->chinoisGrammaireRepository
@@ -85,8 +93,9 @@ final class ChinoisController extends Controller
         ]);
     }
 
-    public function hsk4(): void
-    {
+    public function hsk4(
+        Request $request
+    ): void {
         $this->title = 'Chinois | Grammaire HSK4';
 
         $grammaires = $this->chinoisGrammaireRepository
@@ -97,15 +106,17 @@ final class ChinoisController extends Controller
         ]);
     }
 
-    public function flashcards(): void
-    {
+    public function flashcards(
+        Request $request
+    ): void {
         $this->title = 'Chinois | Flashcards';
 
         $this->render('chinois/flashcards');
     }
 
-    public function ajouter(): void
-    {
+    public function ajouter(
+        Request $request
+    ): void {
         $this->title = 'Chinois | Ajouter';
 
         $this->render('chinois/ajouter');

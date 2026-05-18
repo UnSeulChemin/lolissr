@@ -38,17 +38,6 @@ final class MangaController extends Controller
         $this->redirect($location, 301);
     }
 
-    protected function findCanonicalMangaDataOrFail(string $slug, int $numero): array
-    {
-        $data = $this->mangaReadService->one($slug, $numero);
-
-        if ($data !== null) {
-            return $data;
-        }
-
-        $this->notFound('Manga introuvable');
-    }
-
     public function index(): void
     {
         $this->title = 'Manga';

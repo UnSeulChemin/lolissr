@@ -9,28 +9,28 @@ use App\Core\Http\Request;
 
 final class CsrfMiddleware implements MiddlewareInterface
 {
+    public function __construct(
+        private readonly Request $request
+    ) {
+    }
+
     public function handle(): void
     {
-        if (Request::method() !== 'POST')
-        {
+        if ($this->request->method() !== 'POST') {
             return;
         }
 
         if (
             App::isTesting()
             || env('APP_ENV') === 'testing'
-            || ($_ENV['APP_ENV'] ?? null) === 'testing'
-            || ($_SERVER['APP_ENV'] ?? null) === 'testing'
-            || getenv('APP_ENV') === 'testing'
         ) {
             return;
         }
 
         $sessionToken = $_SESSION['csrf_token'] ?? null;
 
-        $postedToken = $_POST['csrf_token']
-            ?? $_SERVER['HTTP_X_CSRF_TOKEN']
-            ?? null;
+        $postedToken = $this->request->input('csrf_token')
+            ?? $this->request->header('X-CSRF-TOKEN');
 
         if (
             !is_string($sessionToken)
