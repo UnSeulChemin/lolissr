@@ -13,7 +13,7 @@ final class ChinoisController extends Controller
 {
     public function __construct(
         private readonly ChinoisReadService $chinoisReadService,
-        private readonly ChinoisGrammaireRepository $chinoisGrammaireRepository,
+        private readonly ChinoisGrammaireRepository $chinoisGrammaireRepository
     ) {
         parent::__construct();
     }
@@ -130,10 +130,10 @@ final class ChinoisController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $this->render(
-            'chinois/grammaire/hsk' . $level,
-            ['grammaires' => $grammaires]
-        );
+        $this->render('chinois/hsk', [
+            'grammaires' => $grammaires,
+            'level' => $level,
+        ]);
     }
 
     /*

@@ -2,9 +2,11 @@
 
 /**
  * @var \App\DTO\Chinois\ChinoisGrammaireDTO[] $grammaires
+ * @var string $level
  */
 
 $grammaires = $grammaires ?? [];
+$level = $level ?? '1';
 
 $sections = [];
 
@@ -12,6 +14,27 @@ foreach ($grammaires as $grammaire)
 {
     $sections[$grammaire->section][$grammaire->categorie][] = $grammaire;
 }
+
+$descriptions = [
+    '1' => 'Structures courantes, phrases du quotidien et grammaire HSK1.',
+    '2' => 'Structures courantes, phrases du quotidien et grammaire HSK2.',
+    '3' => 'Structures intermédiaires, phrases naturelles et grammaire HSK3.',
+    '4' => 'Structures avancées, nuances et grammaire HSK4.',
+];
+
+$sources = [
+    '1' => 'https://chine.in/mandarin/grammaire/RGLA1',
+    '2' => 'https://chine.in/mandarin/grammaire/RGLA2',
+    '3' => 'https://chine.in/mandarin/grammaire/RGLB1',
+    '4' => 'https://chine.in/mandarin/grammaire/RGLB2',
+];
+
+$sourceDescriptions = [
+    '1' => 'Références, structures et exemples de grammaire chinoise pour débutants.',
+    '2' => 'Références, structures et exemples de grammaire chinoise pour débutants intermédiaires.',
+    '3' => 'Références, structures et exemples de grammaire chinoise intermédiaire.',
+    '4' => 'Références, structures et exemples de grammaire chinoise avancée.',
+];
 
 ?>
 
@@ -22,11 +45,11 @@ foreach ($grammaires as $grammaire)
         <div class="grammar-hero-main">
 
             <h1 class="grammar-hero-title">
-                📘 HSK4
+                📘 HSK<?= htmlspecialchars($level) ?>
             </h1>
 
             <p class="grammar-hero-description">
-                Structures avancées, nuances et grammaire HSK4.
+                <?= htmlspecialchars($descriptions[$level]) ?>
             </p>
 
         </div>
@@ -40,18 +63,18 @@ foreach ($grammaires as $grammaire)
                 </span>
 
                 <h2 class="grammar-source-title">
-                    Chine Informations — HSK4
+                    Chine Informations — HSK<?= htmlspecialchars($level) ?>
                 </h2>
 
                 <p class="grammar-source-description">
-                    Références, structures et exemples de grammaire chinoise avancée.
+                    <?= htmlspecialchars($sourceDescriptions[$level]) ?>
                 </p>
 
             </div>
 
             <a
                 class="grammar-source-link"
-                href="https://chine.in/mandarin/grammaire/RGLB2"
+                href="<?= htmlspecialchars($sources[$level]) ?>"
                 target="_blank"
                 rel="noopener noreferrer">
                 Ouvrir
@@ -118,6 +141,31 @@ foreach ($grammaires as $grammaire)
                                     </div>
 
                                 <?php endif; ?>
+
+                                <button
+                                    class="grammar-mastered <?= !empty($grammaire->maitrise) ? 'active' : '' ?>"
+                                    data-id="<?= $grammaire->id ?>"
+                                    data-url="<?= $basePath; ?>/chinois/ajax/toggle-grammaire-maitrise"
+                                    data-maitrise="<?= !empty($grammaire->maitrise) ? '1' : '0' ?>"
+                                    type="button"
+                                    aria-label="Marquer comme maîtrisé">
+
+                                    <svg
+                                        class="grammar-mastered-icon"
+                                        viewBox="0 0 24 24"
+                                        aria-hidden="true">
+
+                                        <path
+                                            d="M20 6L9 17L4 12"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="3"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round" />
+
+                                    </svg>
+
+                                </button>
 
                             </article>
 
