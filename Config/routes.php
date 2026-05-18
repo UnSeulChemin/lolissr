@@ -66,6 +66,14 @@ return static function (Router $router): void {
     |--------------------------------------------------------------------------
     */
 
+    /*
+    |--------------------------------------------------------------------------
+    | IMPORTANT :
+    | Les routes spécifiques DOIVENT être déclarées
+    | avant les routes dynamiques {slug}
+    |--------------------------------------------------------------------------
+    */
+
     $router->get('/manga/series', [
         MangaController::class,
         'series',
@@ -110,19 +118,9 @@ return static function (Router $router): void {
 
     /*
     |--------------------------------------------------------------------------
-    | Manga - Serie
+    | Manga - Modifier
     |--------------------------------------------------------------------------
     */
-
-    $router->get('/manga/series/{slug}/{numero}', [
-        MangaController::class,
-        'show',
-    ]);
-
-    $router->get('/manga/series/{slug}', [
-        MangaController::class,
-        'serie',
-    ]);
 
     $router->get(
         '/manga/series/modifier/{slug}/{numero}',
@@ -144,6 +142,12 @@ return static function (Router $router): void {
         ]
     );
 
+    /*
+    |--------------------------------------------------------------------------
+    | Manga - Delete
+    |--------------------------------------------------------------------------
+    */
+
     $router->post(
         '/manga/series/supprimer/{slug}/{numero}',
         [
@@ -156,6 +160,22 @@ return static function (Router $router): void {
             CsrfMiddleware::class,
         ]
     );
+
+    /*
+    |--------------------------------------------------------------------------
+    | Manga - Show
+    |--------------------------------------------------------------------------
+    */
+
+    $router->get('/manga/series/{slug}/{numero}', [
+        MangaController::class,
+        'show',
+    ]);
+
+    $router->get('/manga/series/{slug}', [
+        MangaController::class,
+        'serie',
+    ]);
 
     /*
     |--------------------------------------------------------------------------

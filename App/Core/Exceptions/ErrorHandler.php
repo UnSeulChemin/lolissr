@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Exceptions;
 
+use App\Controllers\Controller;
 use App\Core\Application\App;
 use App\Core\Support\Logger;
 use ErrorException;
@@ -89,9 +90,8 @@ final class ErrorHandler
     {
         $error = error_get_last();
 
-        if (
-            $error === null
-        ) {
+        if ($error === null)
+        {
             return;
         }
 
@@ -127,6 +127,7 @@ final class ErrorHandler
             http_response_code(500);
 
             echo '<pre>';
+
             echo htmlspecialchars(
                 $error['message']
                 . ' in '
@@ -136,6 +137,7 @@ final class ErrorHandler
                 ENT_QUOTES,
                 'UTF-8'
             );
+
             echo '</pre>';
 
             exit;
@@ -147,31 +149,33 @@ final class ErrorHandler
     private static function renderHttpException(
         HttpException $exception
     ): never {
-        http_response_code(
-            $exception->getStatusCode()
-        );
+        $controller = new class extends Controller {};
 
-        echo '<h1>'
-            . $exception->getStatusCode()
-            . '</h1>';
+        match ($exception->getStatusCode()) {
 
-        echo '<p>'
-            . htmlspecialchars(
-                $exception->getMessage(),
-                ENT_QUOTES,
-                'UTF-8'
-            )
-            . '</p>';
+            404 => $controller->renderNotFoundPage(
+                $exception->getMessage()
+            ),
+
+            405 => $controller->renderMethodNotAllowedPage(
+                $exception->getMessage()
+            ),
+
+            default => $controller->renderServerErrorPage(
+                $exception->getMessage()
+            ),
+        };
 
         exit;
     }
 
     private static function render500(): never
     {
-        http_response_code(500);
+        $controller = new class extends Controller {};
 
-        echo '<h1>500</h1>';
-        echo '<p>Erreur interne du serveur.</p>';
+        $controller->renderServerErrorPage(
+            'Erreur interne du serveur.'
+        );
 
         exit;
     }

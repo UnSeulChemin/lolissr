@@ -257,7 +257,7 @@
         <?php if ($lowJacquette): ?>
             <a
                 class="card card-link card-medium"
-                href="<?= $basePath; ?>manga/<?= rawurlencode($lowJacquette->slug) ?>/<?= (int) $lowJacquette->numero ?>">
+                href="<?= $basePath; ?>manga/series/<?= rawurlencode($lowJacquette->slug) ?>/<?= (int) $lowJacquette->numero ?>">
 
                 <h2 class="home-card-title">
                     🧥 Jacquette faible
@@ -301,7 +301,7 @@
         <?php if ($lowLivre): ?>
             <a
                 class="card card-link card-medium"
-                href="<?= $basePath; ?>manga/<?= rawurlencode($lowLivre->slug) ?>/<?= (int) $lowLivre->numero ?>">
+                href="<?= $basePath; ?>manga/series/<?= rawurlencode($lowLivre->slug) ?>/<?= (int) $lowLivre->numero ?>">
 
                 <h2 class="home-card-title">
                     📘 Livre abîmé
@@ -354,7 +354,7 @@
             <?php foreach ($lowRatedMangas as $manga): ?>
                 <a
                     class="card card-link card-bottom"
-                    href="<?= $basePath; ?>manga/<?= rawurlencode($manga->slug) ?>/<?= (int) $manga->numero ?>">
+                    href="<?= $basePath; ?>manga/series/<?= rawurlencode($manga->slug) ?>/<?= (int) $manga->numero ?>">
 
                     <span class="home-note-badge">
                         ⭐ <?= (int) $manga->note ?>/10
