@@ -34,13 +34,11 @@ final class StatsService
 
     public function readingProgress(): int
     {
-        $totalTomes = $this->totalTomes();
+        $total = $this->totalTomes();
 
-        if ($totalTomes <= 0) {
-            return 0;
-        }
-
-        return (int) round(($this->totalRead() / $totalTomes) * 100);
+        return $total > 0
+            ? (int) round(($this->totalRead() / $total) * 100)
+            : 0;
     }
 
     public function averageNote(): ?float
@@ -50,96 +48,69 @@ final class StatsService
         return $value !== null ? (float) $value : null;
     }
 
-    /**
-     * 🔥 SAFE CACHE FRIENDLY
-     */
-    public function lastTome(): ?array
+    public function lastTome(): ?object
     {
-        $data = $this->repository->findLastAdded();
-
-        return $data ? (array) $data : null;
+        return $this->repository->findLastAdded();
     }
 
-    /**
-     * 🔥 SAFE CACHE FRIENDLY
-     */
-    public function longestSeries(): ?array
+    public function longestSeries(): ?object
     {
-        $data = $this->repository->findLongestSeries();
+        return $this->repository->findLongestSeries();
+    }
 
-        return $data ? (array) $data : null;
+    private function toObjectList(array $items): array
+    {
+        return array_map(
+            static fn ($item) => (object) $item,
+            $items
+        );
     }
 
     public function topLongestSeries(int $limit = 5): array
     {
-        return $this->normalizeList(
+        return $this->toObjectList(
             $this->repository->topLongestSeries($limit)
         );
     }
 
     public function lowRated(int $limit = 5): array
     {
-        return $this->normalizeList(
+        return $this->toObjectList(
             $this->repository->findLowRatedMangas($limit)
         );
     }
 
     public function lowJacquette(int $limit = 5): array
     {
-        return $this->normalizeList(
+        return $this->toObjectList(
             $this->repository->findLowJacquetteMangas($limit)
         );
     }
 
     public function lowLivreState(int $limit = 5): array
     {
-        return $this->normalizeList(
+        return $this->toObjectList(
             $this->repository->findLowLivreStateMangas($limit)
         );
     }
 
-    /**
-     * 🔥 DASHBOARD SAFE POUR CACHE
-     */
-    public function dashboard(): array
+    public function dashboard(): object
     {
-        $totalTomes = $this->totalTomes();
-        $totalRead = $this->totalRead();
-
-        return [
-            'totalTomes' => $totalTomes,
+        return (object) [
+            'totalTomes' => $this->totalTomes(),
             'totalSeries' => $this->totalSeries(),
-            'totalRead' => $totalRead,
-            'totalUnread' => max(0, $totalTomes - $totalRead),
+            'totalRead' => $this->totalRead(),
+            'totalUnread' => $this->totalUnread(),
             'readingProgress' => $this->readingProgress(),
             'averageNote' => $this->averageNote(),
 
-            // SAFE ARRAY ONLY
             'lastTome' => $this->lastTome(),
             'longestSeries' => $this->longestSeries(),
 
-            // LISTS SAFE
             'topLongestSeries' => $this->topLongestSeries(),
             'lowRatedMangas' => $this->lowRated(),
             'lowJacquetteMangas' => $this->lowJacquette(),
             'lowLivreStateMangas' => $this->lowLivreState(),
         ];
-    }
-
-    /**
-     * 🔥 NORMALISE TOUT EN ARRAY SAFE POUR CACHE
-     */
-    private function normalizeList(array $items): array
-    {
-        return array_map(
-            static function ($item) {
-                if (is_object($item)) {
-                    return (array) $item;
-                }
-
-                return $item;
-            },
-            $items
-        );
     }
 }

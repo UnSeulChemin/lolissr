@@ -67,18 +67,23 @@ abstract class Controller
      */
     protected function render(
         string $file,
-        array $data = []
+        array|object $data = []
     ): void {
         $viewPath = $this->viewPath($file);
 
-        if (!is_file($viewPath))
-        {
-            throw new NotFoundException(
-                'Vue introuvable : ' . $file
-            );
+        if (!is_file($viewPath)) {
+            throw new NotFoundException('Vue introuvable : ' . $file);
         }
 
-        extract($data, EXTR_SKIP);
+        // 👉 normalize object → array
+        if (is_object($data)) {
+            $data = (array) $data;
+        }
+
+        // 🔥 SAFE VARIABLE INJECTION (remplace extract)
+        foreach ($data as $key => $value) {
+            $$key = $value;
+        }
 
         $title = $this->title;
         $basePath = $this->basePath;
@@ -90,12 +95,8 @@ abstract class Controller
 
         $templatePath = $this->templatePath();
 
-        if (!is_file($templatePath))
-        {
-            throw new \RuntimeException(
-                'Template introuvable : '
-                . $this->template
-            );
+        if (!is_file($templatePath)) {
+            throw new \RuntimeException('Template introuvable : ' . $this->template);
         }
 
         ob_start();

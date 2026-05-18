@@ -26,9 +26,8 @@ final class MainController extends Controller
             fn () => $this->statsService->dashboard()
         );
 
-        $this->render(
-            'main/index',
-            $stats
-        );
+        $this->render('main/index', [
+            'stats' => $stats
+        ]);
     }
 }
