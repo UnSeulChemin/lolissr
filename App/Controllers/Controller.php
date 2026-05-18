@@ -335,4 +335,29 @@ abstract class Controller
             ['message' => $message]
         );
     }
+
+    protected function isAjax(Request $request): bool
+    {
+        return $request->isAjax()
+            || str_contains($request->server('HTTP_ACCEPT', ''), 'application/json');
+    }
+
+    protected function json(array $data, int $status = 200): void
+    {
+        Response::json($data, $status);
+        exit;
+    }
+
+    protected function ajaxOrHtml(
+        Request $request,
+        callable $ajax,
+        callable $html
+    ): void {
+        if ($this->isAjax($request)) {
+            $ajax();
+            return;
+        }
+
+        $html();
+    }
 }

@@ -438,47 +438,26 @@ final class MangaRepository extends Model
         );
     }
 
-    public function updateNote(
-        string $slug,
-        int $numero,
-        ?int $jacquette,
-        ?int $livreNote
-    ): bool {
+    public function updateNote(string $slug, int $numero, ?int $jacquette, ?int $livreNote): bool
+    {
         $this->guardWrite();
 
-        $jacquette = MangaNoteNormalizer::normalize($jacquette);
-        $livreNote = MangaNoteNormalizer::normalize($livreNote);
         $note = $this->calculateNote($jacquette, $livreNote);
 
-        return $this->update(
-            [
-                'jacquette' => $jacquette,
-                'livre_note' => $livreNote,
-                'note' => $note
-            ],
-            [
-                'slug' => Str::slug($slug), // 🔥 IMPORTANT (cohérence DB)
-                'numero' => $numero
-            ]
-        );
-    }
-
-    public function updateLu(
-        string $slug,
-        int $numero,
-        bool $lu
-    ): bool {
-        $this->guardWrite();
-
-        return $this->update(
-            [
-                'lu' => $lu ? 1 : 0
-            ],
+        return $this->requete(
+            "UPDATE {$this->getTable()}
+            SET jacquette = :jacquette,
+                livre_note = :livre_note,
+                note = :note
+            WHERE slug = :slug AND numero = :numero",
             [
                 'slug' => Str::slug($slug),
-                'numero' => $numero
+                'numero' => $numero,
+                'jacquette' => $jacquette,
+                'livre_note' => $livreNote,
+                'note' => $note,
             ]
-        );
+        ) !== false;
     }
 
     public function deleteBySlugAndNumero(string $slug, int $numero): bool

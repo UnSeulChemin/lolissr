@@ -32,22 +32,18 @@ final class MangaAjaxController extends Controller
             return;
         }
 
-        json([
+        $this->json([
             'success' => false,
             'message' => 'Requête AJAX requise',
         ], 400);
-
-        exit;
     }
 
     private function error(array $payload, int $status = 400): void
     {
-        json([
+        $this->json([
             'success' => false,
             ...$payload
         ], $status);
-
-        exit;
     }
 
     public function collectionPage(
@@ -72,13 +68,13 @@ final class MangaAjaxController extends Controller
         ]);
     }
 
-    public function search(
-        Request $request,
-        string $query = ''
-    ): void {
+    public function search(Request $request, string $query = ''): void
+    {
         $this->ensureAjax($request);
 
-        json($this->mangaReadService->searchAjax($query));
+        $this->json(
+            $this->mangaReadService->searchAjax($query)
+        );
     }
 
     public function updateNote(
@@ -100,24 +96,28 @@ final class MangaAjaxController extends Controller
             $this->error(['message' => 'Manga introuvable'], 404);
         }
 
-        if ($slug !== $data['canonicalSlug']) {
-            $this->error([
-                'message' => 'URL non canonique',
-                'redirect' => $this->basePath
-                    . 'manga/ajax/update-note/'
-                    . rawurlencode($data['canonicalSlug'])
-                    . '/'
-                    . $numero,
-            ], 409);
+        $jacquette = $request->input('jacquette');
+        $livre_note = $request->input('livre_note');
+
+        if ($jacquette === null || $livre_note === null) {
+            $this->error(['message' => 'Note manquante'], 422);
         }
+
+        if (!is_numeric($jacquette) || !is_numeric($livre_note)) {
+            $this->error(['message' => 'Notes invalides'], 422);
+        }
+
+        $jacquette = (int) $jacquette;
+        $livre_note = (int) $livre_note;
 
         $result = $this->mangaWriteService->updateNote(
             $data['canonicalSlug'],
             $numero,
-            $request->input('note')
+            $jacquette,
+            $livre_note
         );
 
-        json($result, (int) ($result['status'] ?? 200));
+        $this->json($result, (int) ($result['status'] ?? 200));
     }
 
     public function updateLu(
@@ -156,7 +156,7 @@ final class MangaAjaxController extends Controller
             $request->integer('lu', 0)
         );
 
-        json($result, (int) ($result['status'] ?? 200));
+        $this->json($result, (int) ($result['status'] ?? 200));
     }
 
     public function delete(
@@ -174,13 +174,11 @@ final class MangaAjaxController extends Controller
 
         if (!$result['success']) {
             $this->error([
-                'message' => $result['message'] ?? 'Une erreur est survenue',
-                'errors' => $result['errors'] ?? null,
-                'redirect' => $result['redirect'] ?? null,
+                'message' => $result['message'] ?? 'Erreur',
             ], (int) ($result['status'] ?? 500));
         }
 
-        json([
+        $this->json([
             'success' => true,
             'message' => $result['message'],
             'redirect' => $this->basePath

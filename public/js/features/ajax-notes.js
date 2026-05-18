@@ -61,8 +61,8 @@ export function initMangaAjaxNotes()
     {
         const formData = new FormData();
 
-        formData.append('jacquette', noteState.jacquette ?? '');
-        formData.append('livre_note', noteState.livre_note ?? '');
+        formData.append('jacquette', noteState.jacquette ?? 0);
+        formData.append('livre_note', noteState.livre_note ?? 0);
         formData.append('csrf_token', window.csrfToken || '');
 
         try
@@ -86,19 +86,23 @@ export function initMangaAjaxNotes()
 
             if (!response.ok || !data.success)
             {
-                throw new Error(
-                    data.message || 'Erreur lors de la sauvegarde'
-                );
+                throw new Error(data.message || 'Erreur');
             }
 
-            noteState.jacquette = data.jacquette !== null
+            // 🔥 IMPORTANT: UPDATE STATE FROM BACKEND
+            noteState.jacquette = data.jacquette !== undefined
                 ? Number(data.jacquette)
-                : null;
+                : noteState.jacquette;
 
-            noteState.livre_note = data.livre_note !== null
+            noteState.livre_note = data.livre_note !== undefined
                 ? Number(data.livre_note)
-                : null;
+                : noteState.livre_note;
 
+            // 🔥 IMPORTANT: UPDATE DOM DATASET
+            mangaDetailCard.dataset.jacquette = noteState.jacquette ?? '';
+            mangaDetailCard.dataset.livreNote = noteState.livre_note ?? '';
+
+            // 🔥 IMPORTANT: UPDATE TOTAL DISPLAY
             if (totalNoteElement)
             {
                 totalNoteElement.textContent = data.note !== null
@@ -106,14 +110,14 @@ export function initMangaAjaxNotes()
                     : 'Non calculée';
             }
 
+            // 🔥 IMPORTANT: REFRESH BUTTONS UI
+            refreshNoteButtonsState();
+
             showToast('✓ Sauvegardé', 'success');
         }
         catch (error)
         {
-            showToast(
-                error.message || 'Erreur lors de la mise à jour',
-                'error'
-            );
+            showToast(error.message || 'Erreur', 'error');
         }
         finally
         {

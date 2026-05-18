@@ -171,53 +171,42 @@ final class MangaWriteService
         ];
     }
 
-    public function updateNote(string $slug, int $numero, string $note): array
-    {
+    public function updateNote(
+        string $slug,
+        int $numero,
+        int $jacquette,
+        int $livreNote
+    ): array {
         if ($this->isReadOnlyMode()) {
             return $this->blockedWriteResponse();
-        }
-
-        if (trim($note) === '') {
-            return [
-                'success' => false,
-                'status' => 422,
-                'message' => 'Note vide',
-            ];
         }
 
         $updated = $this->mangaRepository->updateNote(
             $slug,
             $numero,
-            $note
+            $jacquette,
+            $livreNote
         );
 
         if (!$updated) {
-            Logger::error("Update note échoué slug=$slug numero=$numero");
-
             return [
                 'success' => false,
                 'status' => 500,
-                'message' => 'Erreur lors de la mise à jour',
-            ];
-        }
-
-        $manga = $this->mangaRepository->findOneBySlugAndNumero($slug, $numero);
-
-        if ($manga === false) {
-            return [
-                'success' => false,
-                'status' => 404,
-                'message' => 'Manga introuvable après mise à jour',
+                'message' => 'Erreur update note',
             ];
         }
 
         $this->cacheService->clear();
 
+        $manga = $this->mangaRepository->findOneBySlugAndNumero($slug, $numero);
+
         return [
             'success' => true,
             'status' => 200,
             'message' => 'Notes mises à jour',
-            'note' => $manga->note,
+            'jacquette' => $jacquette,
+            'livre_note' => $livreNote,
+            'note' => $manga ? $manga->note : ($jacquette + $livreNote),
         ];
     }
 
