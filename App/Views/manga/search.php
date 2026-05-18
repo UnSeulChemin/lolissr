@@ -45,7 +45,7 @@ $search = $search ?? '';
 
                 <a
                     class="collection-card-link"
-                    href="<?= $basePath; ?>manga/<?= rawurlencode($manga->slug) ?>/<?= (int) $manga->numero ?>">
+                    href="<?= $basePath; ?>manga/series/<?= rawurlencode($manga->slug) ?>/<?= (int) $manga->numero ?>">
 
                     <article class="card collection-card">
 

@@ -55,13 +55,13 @@ final class MangaAjaxController extends Controller
         ], $status);
     }
 
-    public function collectionPage(
+    public function seriesPage(
         Request $request,
         string $page = '1'
     ): void {
         $this->ensureAjax($request);
 
-        $data = $this->mangaReadService->collection(
+        $data = $this->mangaReadService->series(
             $page
         );
 
@@ -72,7 +72,7 @@ final class MangaAjaxController extends Controller
         }
 
         $this->renderPartial(
-            'manga/partials/collection_ajax',
+            'manga/partials/series_ajax',
             [
                 'mangas' => $data['mangas'],
                 'compteur' => $data['compteur'],

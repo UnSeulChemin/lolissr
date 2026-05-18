@@ -62,18 +62,18 @@ return static function (Router $router): void {
 
     /*
     |--------------------------------------------------------------------------
-    | Manga - Collection / Series
+    | Manga - Series
     |--------------------------------------------------------------------------
     */
 
     $router->get('/manga/series', [
         MangaController::class,
-        'collection',
+        'series',
     ]);
 
     $router->get('/manga/series/{page}', [
         MangaController::class,
-        'collection',
+        'series',
     ]);
 
     $router->get('/manga/lien', [
@@ -110,7 +110,7 @@ return static function (Router $router): void {
 
     /*
     |--------------------------------------------------------------------------
-    | Manga - Série
+    | Manga - Serie
     |--------------------------------------------------------------------------
     */
 
@@ -167,7 +167,7 @@ return static function (Router $router): void {
         '/manga/ajax/series/{page}',
         [
             MangaAjaxController::class,
-            'collectionPage',
+            'seriesPage',
         ],
         [
             AjaxOnlyMiddleware::class,

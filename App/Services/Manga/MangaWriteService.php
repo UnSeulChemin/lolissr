@@ -375,7 +375,7 @@ final class MangaWriteService
                 . '/manga/series/'
                 . rawurlencode($manga->slug)
             : base_path()
-                . '/manga/collection';
+                . '/manga/series';
 
         return $this->success(
             'Manga supprimé avec succès',

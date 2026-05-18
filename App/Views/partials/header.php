@@ -10,6 +10,9 @@ declare(strict_types=1);
 
 $currentPath ??= '/';
 
+/* Base path toujours propre */
+$basePath = rtrim($basePath, '/') . '/';
+
 $cleanBasePath = rtrim($basePath, '/');
 
 /* Retire le basePath si présent */

@@ -54,21 +54,23 @@ final class MangaController extends Controller
         $this->render('manga/lien');
     }
 
-    public function collection(string $page = '1'): void
+    public function series(string $page = '1'): void
     {
-        $data = $this->mangaReadService->collection($page);
+        $data = $this->mangaReadService->series($page);
 
-        if ($data === null) {
+        if ($data === null)
+        {
             $this->notFound('Page introuvable');
         }
 
-        $this->title = 'Manga | Collection';
+        $this->title = 'Manga | Series';
 
-        if ($data['currentPage'] > 1) {
+        if ($data['currentPage'] > 1)
+        {
             $this->title .= ' - Page ' . $data['currentPage'];
         }
 
-        $this->render('manga/collection', [
+        $this->render('manga/series', [
             'mangas' => $data['mangas'],
             'compteur' => $data['compteur'],
             'slugFilter' => null,

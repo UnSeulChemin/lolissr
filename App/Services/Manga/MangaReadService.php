@@ -24,10 +24,12 @@ final class MangaReadService
         $query = urldecode($query);
         $query = str_replace('-', ' ', $query);
 
-        return trim(preg_replace('/\s+/', ' ', $query) ?? '');
+        return trim(
+            preg_replace('/\s+/', ' ', $query) ?? ''
+        );
     }
 
-    public function collection(string $page = '1'): ?array
+    public function series(string $page = '1'): ?array
     {
         if (!ctype_digit($page)) {
             return null;
@@ -44,12 +46,19 @@ final class MangaReadService
         $compteur = $this->mangaRepository
             ->countFirstTomesPaginate($pagination);
 
-        if ($compteur > 0 && $currentPage > $compteur) {
+        if (
+            $compteur > 0
+            && $currentPage > $compteur
+        ) {
             return null;
         }
 
         $mangas = $this->mangaRepository
-            ->findAllFirstTomes('id DESC', $pagination, $currentPage);
+            ->findAllFirstTomes(
+                'id DESC',
+                $pagination,
+                $currentPage
+            );
 
         return [
             'mangas' => $mangas,
@@ -70,7 +79,9 @@ final class MangaReadService
         }
 
         return [
-            'mangas' => $this->mangaRepository->searchMangas($search),
+            'mangas' => $this->mangaRepository
+                ->searchMangas($search),
+
             'search' => $search,
         ];
     }
@@ -83,11 +94,15 @@ final class MangaReadService
             return [];
         }
 
-        $mangas = $this->mangaRepository->searchMangas($search);
+        $mangas = $this->mangaRepository
+            ->searchMangas($search);
+
         $results = [];
 
-        foreach (array_slice($mangas, 0, 6) as $manga) {
-
+        foreach (
+            array_slice($mangas, 0, 6)
+            as $manga
+        ) {
             if (!isset($manga->slug)) {
                 continue;
             }
@@ -124,8 +139,10 @@ final class MangaReadService
         ];
     }
 
-    public function one(string $slug, int $numero): ?array
-    {
+    public function one(
+        string $slug,
+        int $numero
+    ): ?array {
         $normalizedSlug = Str::slug($slug);
 
         $manga = $this->mangaRepository
