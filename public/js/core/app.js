@@ -14,8 +14,7 @@ import { initBackNavigation } from '../manga/navigation/back-navigation.js';
 import { initAjouterPage } from '../manga/pages/ajouter.js';
 import { initModifierPage } from '../manga/pages/modifier.js';
 
-import { initToggleGrammaireMaitrise }
-    from '../chinois/actions/toggle-grammar-mastery.js';
+import { initToggleGrammaireMaitrise } from '../chinois/actions/toggle-grammar-mastery.js';
 
 /**
  * Affiche un toast flash injecté côté PHP.
@@ -34,9 +33,7 @@ function initFlashToast()
 
 window.addEventListener('load', () =>
 {
-    const container = document.querySelector(
-        '.collection-ajax-container'
-    );
+    const container = document.querySelector('.collection-ajax-container');
 
     if (!container) {
         return;

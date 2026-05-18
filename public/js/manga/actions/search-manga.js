@@ -1,6 +1,9 @@
 import { normalizeSearchQuery }
     from '../utils/slug.js';
 
+import { findSearchShortcuts }
+    from '../../navigation/search-shortcuts.js';
+
 /**
  * Échappe le HTML.
  */
@@ -253,7 +256,7 @@ export function initSearchManga()
     }
 
     function renderSearchEmptyState(
-        message = 'Aucun manga trouvé'
+        message = 'Aucun résultat trouvé'
     )
     {
         mangaSearchResults.innerHTML = `
@@ -316,6 +319,51 @@ export function initSearchManga()
         return resultLink;
     }
 
+    function buildShortcutSearchResult(
+        shortcut
+    )
+    {
+        const resultLink =
+            document.createElement('a');
+
+        resultLink.href =
+            `${basePath}${shortcut.url}`;
+
+        resultLink.className =
+            'search-result-item';
+
+        resultLink.innerHTML = `
+            <span class="search-result-icon">
+                ${escapeHtml(shortcut.symbol)}
+            </span>
+
+            <span class="search-result-content">
+                <strong class="search-result-title">
+                    ${escapeHtml(shortcut.title)}
+                </strong>
+
+                <small class="search-result-meta">
+                    ${escapeHtml(shortcut.description)}
+                </small>
+            </span>
+        `;
+
+        resultLink.addEventListener(
+            'mouseenter',
+            () =>
+        {
+            const items =
+                getSearchResultItems();
+
+            activeResultIndex =
+                items.indexOf(resultLink);
+
+            updateActiveSearchResult();
+        });
+
+        return resultLink;
+    }
+
     async function fetchSearchResults(
         rawValue
     )
@@ -351,6 +399,18 @@ export function initSearchManga()
 
             resetActiveSearchResult();
 
+            const shortcuts =
+                findSearchShortcuts(rawValue);
+
+            shortcuts.forEach((shortcut) =>
+            {
+                mangaSearchResults.appendChild(
+                    buildShortcutSearchResult(
+                        shortcut
+                    )
+                );
+            });
+
             const response =
                 await fetch(
                 `${basePath}manga/ajax/search/${encodeURIComponent(normalizedValue)}`,
@@ -376,13 +436,10 @@ export function initSearchManga()
             const data =
                 await response.json();
 
-            mangaSearchResults.innerHTML = '';
-
-            resetActiveSearchResult();
-
             if (
-                !Array.isArray(data)
-                || data.length === 0
+                (!Array.isArray(data)
+                || data.length === 0)
+                && shortcuts.length === 0
             )
             {
                 renderSearchEmptyState();
