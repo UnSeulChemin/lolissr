@@ -7,7 +7,10 @@ use App\Core\Application\Bootstrap;
 
 session_start();
 
-define('ROOT', dirname(__DIR__));
+define(
+    'ROOT',
+    dirname(__DIR__)
+);
 
 require_once ROOT . '/Autoloader.php';
 

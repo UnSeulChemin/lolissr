@@ -9,63 +9,34 @@ use App\Core\Config\Env;
 use App\Core\Container\AppContainer;
 use App\Core\Container\Container;
 use App\Core\Exceptions\ErrorHandler;
-use App\Core\Http\Router;
 use App\Core\Http\Request;
+use App\Core\Http\Router;
 
 final class Bootstrap
 {
-    /**
-     * Lance l'application.
-     */
     public static function run(): void
     {
-        /*
-        |--------------------------------------------------------------------------
-        | Environment
-        |--------------------------------------------------------------------------
-        */
-
-        self::loadEnvironment(ROOT . '/.env');
+        self::loadEnvironment(
+            ROOT . '/.env'
+        );
 
         Env::clear();
         Config::clear();
 
-        /*
-        |--------------------------------------------------------------------------
-        | Debug
-        |--------------------------------------------------------------------------
-        */
-
         self::configureDebug();
-
-        /*
-        |--------------------------------------------------------------------------
-        | Error handler
-        |--------------------------------------------------------------------------
-        */
 
         ErrorHandler::register();
 
-        /*
-        |--------------------------------------------------------------------------
-        | Container
-        |--------------------------------------------------------------------------
-        */
-
         $container = new Container();
 
-        AppContainer::set($container);
+        AppContainer::set(
+            $container
+        );
 
         $container->singleton(
             Request::class,
-            fn () => Request::capture()
+            fn (): Request => Request::capture()
         );
-
-        /*
-        |--------------------------------------------------------------------------
-        | Router
-        |--------------------------------------------------------------------------
-        */
 
         $router = new Router();
 
@@ -81,9 +52,6 @@ final class Bootstrap
         $router->dispatch();
     }
 
-    /**
-     * Charge les variables d'environnement.
-     */
     private static function loadEnvironment(
         string $envFile
     ): void {
@@ -111,8 +79,7 @@ final class Bootstrap
                 $line === ''
                 || str_starts_with($line, '#')
                 || !str_contains($line, '=')
-            )
-            {
+            ) {
                 continue;
             }
 
@@ -123,7 +90,6 @@ final class Bootstrap
             );
 
             $name = trim($name);
-            $value = trim($value);
 
             if ($name === '')
             {
@@ -131,38 +97,32 @@ final class Bootstrap
             }
 
             $value = self::normalizeEnvValue(
-                $value
+                trim($value)
             );
 
             $_ENV[$name] = $value;
             $_SERVER[$name] = $value;
 
             putenv(
-                $name . '=' . $value
+                "{$name}={$value}"
             );
         }
     }
 
-    /**
-     * Normalise une valeur .env.
-     */
     private static function normalizeEnvValue(
         string $value
     ): string {
-        $value = trim($value);
-
         $length = strlen($value);
 
         if ($length >= 2)
         {
-            $firstChar = $value[0];
-            $lastChar = $value[$length - 1];
+            $first = $value[0];
+            $last = $value[$length - 1];
 
             if (
-                ($firstChar === '"' && $lastChar === '"')
-                || ($firstChar === "'" && $lastChar === "'")
-            )
-            {
+                ($first === '"' && $last === '"')
+                || ($first === "'" && $last === "'")
+            ) {
                 return substr(
                     $value,
                     1,
@@ -174,9 +134,6 @@ final class Bootstrap
         return $value;
     }
 
-    /**
-     * Configure le debug PHP.
-     */
     private static function configureDebug(): void
     {
         $debug = App::debug();
@@ -192,6 +149,11 @@ final class Bootstrap
             $debug
                 ? '1'
                 : '0'
+        );
+
+        ini_set(
+            'log_errors',
+            '1'
         );
     }
 }

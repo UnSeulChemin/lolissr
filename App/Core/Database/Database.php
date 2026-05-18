@@ -8,39 +8,56 @@ use App\Core\Config\DatabaseConfig;
 use App\Core\Support\Logger;
 use PDO;
 use PDOException;
+use RuntimeException;
 
 final class Database extends PDO
 {
     public function __construct()
     {
-        $host = DatabaseConfig::host();
-        $name = DatabaseConfig::name();
-        $charset = DatabaseConfig::charset();
-        $user = DatabaseConfig::user();
-        $pass = DatabaseConfig::pass();
-
-        $dsn = 'mysql:host=' . $host
-            . ';dbname=' . $name
-            . ';charset=' . $charset;
+        $dsn = sprintf(
+            'mysql:host=%s;dbname=%s;charset=%s',
+            DatabaseConfig::host(),
+            DatabaseConfig::name(),
+            DatabaseConfig::charset()
+        );
 
         try
         {
-            parent::__construct($dsn, $user, $pass);
+            parent::__construct(
+                $dsn,
+                DatabaseConfig::user(),
+                DatabaseConfig::pass(),
+            );
 
-            $this->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
-            $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $this->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+            $this->setAttribute(
+                PDO::ATTR_DEFAULT_FETCH_MODE,
+                PDO::FETCH_OBJ
+            );
+
+            $this->setAttribute(
+                PDO::ATTR_ERRMODE,
+                PDO::ERRMODE_EXCEPTION
+            );
+
+            $this->setAttribute(
+                PDO::ATTR_EMULATE_PREPARES,
+                false
+            );
         }
         catch (PDOException $exception)
         {
-            Logger::error('Erreur connexion BDD : ' . $exception->getMessage());
+            Logger::exception(
+                $exception,
+                [
+                    'type' => 'database_connection',
+                ]
+            );
 
-            if (\config('app.debug', false))
-            {
-                exit('Erreur PDO : ' . $exception->getMessage());
-            }
-
-            exit('Erreur de connexion à la base de données.');
+            throw new RuntimeException(
+                App::debug()
+                    ? $exception->getMessage()
+                    : 'Erreur de connexion à la base de données.'
+            );
         }
     }
 }
