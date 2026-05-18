@@ -40,9 +40,63 @@ return static function (Router $router): void {
         'index',
     ]);
 
+    /*
+    |--------------------------------------------------------------------------
+    | Manga - Pages statiques
+    |--------------------------------------------------------------------------
+    */
+
+    $router->get('/manga/collection', [
+        MangaController::class,
+        'collection',
+    ]);
+
     $router->get('/manga/collection/{page}', [
         MangaController::class,
         'collection',
+    ]);
+
+    $router->get('/manga/lien', [
+        MangaController::class,
+        'lien',
+    ]);
+
+    $router->get('/manga/ajouter', [
+        MangaController::class,
+        'ajouter',
+    ]);
+
+    $router->post(
+        '/manga/ajouter',
+        [
+            MangaController::class,
+            'ajouterTraitement',
+        ],
+        [
+            PostOnlyMiddleware::class,
+            CsrfMiddleware::class,
+        ]
+    );
+
+    $router->get('/manga/recherche', [
+        MangaController::class,
+        'recherche',
+    ]);
+
+    $router->get('/manga/recherche/{query}', [
+        MangaController::class,
+        'recherche',
+    ]);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Manga - Série
+    |--------------------------------------------------------------------------
+    */
+
+    $router->get('/manga/series/{slug}', [
+        MangaController::class,
+        'serie',
     ]);
 
     $router->get('/manga/series/{slug}/{numero}', [
@@ -50,11 +104,62 @@ return static function (Router $router): void {
         'show',
     ]);
 
+    $router->get('/manga/series/{slug}/{numero}/modifier', [
+        MangaController::class,
+        'modifier',
+    ]);
+
+    $router->post(
+        '/manga/series/{slug}/{numero}/modifier',
+        [
+            MangaController::class,
+            'update',
+        ],
+        [
+            PostOnlyMiddleware::class,
+            CsrfMiddleware::class,
+        ]
+    );
+
+    $router->post(
+        '/manga/modifier/{slug}/{numero}',
+        [
+            MangaController::class,
+            'update',
+        ],
+        [
+            PostOnlyMiddleware::class,
+            CsrfMiddleware::class,
+        ]
+    );
+
     /*
     |--------------------------------------------------------------------------
     | Manga AJAX
     |--------------------------------------------------------------------------
     */
+
+    $router->get(
+        '/manga/ajax/collection/{page}',
+        [
+            MangaAjaxController::class,
+            'collectionPage',
+        ],
+        [
+            AjaxOnlyMiddleware::class,
+        ]
+    );
+
+    $router->get(
+        '/manga/ajax/search/{query}',
+        [
+            MangaAjaxController::class,
+            'search',
+        ],
+        [
+            AjaxOnlyMiddleware::class,
+        ]
+    );
 
     $router->post(
         '/manga/ajax/update-note/{slug}/{numero}',
@@ -82,6 +187,19 @@ return static function (Router $router): void {
         ]
     );
 
+    $router->post(
+        '/manga/ajax/delete/{slug}/{numero}',
+        [
+            MangaAjaxController::class,
+            'delete',
+        ],
+        [
+            PostOnlyMiddleware::class,
+            AjaxOnlyMiddleware::class,
+            CsrfMiddleware::class,
+        ]
+    );
+
     /*
     |--------------------------------------------------------------------------
     | Chinois
@@ -93,9 +211,67 @@ return static function (Router $router): void {
         'index',
     ]);
 
+    /*
+    |--------------------------------------------------------------------------
+    | Chinois - Langues
+    |--------------------------------------------------------------------------
+    */
+
+    $router->get('/chinois/mandarin', [
+        ChinoisController::class,
+        'mandarin',
+    ]);
+
+    $router->get('/chinois/jinyu', [
+        ChinoisController::class,
+        'jinyu',
+    ]);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Chinois - Grammaire
+    |--------------------------------------------------------------------------
+    */
+
+    $router->get('/chinois/grammaire', [
+        ChinoisController::class,
+        'grammaire',
+    ]);
+
     $router->get('/chinois/grammaire/hsk-1', [
         ChinoisController::class,
         'hsk1',
+    ]);
+
+    $router->get('/chinois/grammaire/hsk-2', [
+        ChinoisController::class,
+        'hsk2',
+    ]);
+
+    $router->get('/chinois/grammaire/hsk-3', [
+        ChinoisController::class,
+        'hsk3',
+    ]);
+
+    $router->get('/chinois/grammaire/hsk-4', [
+        ChinoisController::class,
+        'hsk4',
+    ]);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Chinois - Outils
+    |--------------------------------------------------------------------------
+    */
+
+    $router->get('/chinois/flashcards', [
+        ChinoisController::class,
+        'flashcards',
+    ]);
+
+    $router->get('/chinois/ajouter', [
+        ChinoisController::class,
+        'ajouter',
     ]);
 
     /*
