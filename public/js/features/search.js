@@ -208,7 +208,7 @@ export function initLiveSearch()
         const resultLink = document.createElement('a');
 
         resultLink.href =
-            `${basePath}manga/${encodeURIComponent(manga.slug)}/${manga.numero}`;
+            `${basePath}manga/series/${encodeURIComponent(manga.slug)}/${manga.numero}`;
 
         resultLink.className = 'search-result-item';
 
@@ -263,28 +263,28 @@ export function initLiveSearch()
                 key: 'hsk1',
                 title: 'HSK1',
                 description: 'Débutant total.',
-                url: `${basePath}chinois/grammaire/hsk1`
+                url: `${basePath}chinois/grammaire/hsk-1`
             },
 
             {
                 key: 'hsk2',
                 title: 'HSK2',
                 description: 'Bases essentielles.',
-                url: `${basePath}chinois/grammaire/hsk2`
+                url: `${basePath}chinois/grammaire/hsk-2`
             },
 
             {
                 key: 'hsk3',
                 title: 'HSK3',
                 description: 'Intermédiaire.',
-                url: `${basePath}chinois/grammaire/hsk3`
+                url: `${basePath}chinois/grammaire/hsk-3`
             },
 
             {
                 key: 'hsk4',
                 title: 'HSK4',
                 description: 'Conversation avancée.',
-                url: `${basePath}chinois/grammaire/hsk4`
+                url: `${basePath}chinois/grammaire/hsk-4`
             }
         ];
 
@@ -357,7 +357,7 @@ export function initLiveSearch()
             resetActiveSearchResult();
 
             const response = await fetch(
-                `${basePath}manga/search-ajax/${encodeURIComponent(normalizedValue)}`,
+                `${basePath}manga/ajax/search/${encodeURIComponent(normalizedValue)}`,
                 {
                     signal: searchAbortController.signal,
                     headers: {
@@ -444,12 +444,6 @@ export function initLiveSearch()
             `${basePath}manga/recherche/${encodeURIComponent(value)}`;
     });
 
-    /*
-    |------------------------------------------------------------------
-    | Saisie utilisateur
-    |------------------------------------------------------------------
-    */
-
     searchInput.addEventListener('input', () =>
     {
         clearTimeout(searchDebounceTimer);
@@ -459,12 +453,6 @@ export function initLiveSearch()
             fetchLiveSearchResults(searchInput.value.trim());
         }, 250);
     });
-
-    /*
-    |------------------------------------------------------------------
-    | Navigation clavier
-    |------------------------------------------------------------------
-    */
 
     searchInput.addEventListener('keydown', (event) =>
     {
@@ -512,12 +500,6 @@ export function initLiveSearch()
             window.location.href = items[activeResultIndex].href;
         }
     });
-
-    /*
-    |------------------------------------------------------------------
-    | Fermeture clic extérieur
-    |------------------------------------------------------------------
-    */
 
     document.addEventListener('click', (event) =>
     {
