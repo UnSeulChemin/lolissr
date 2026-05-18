@@ -18,17 +18,27 @@ final class ChinoisController extends Controller
         parent::__construct();
     }
 
-    public function index(
-        Request $request
-    ): void {
+    /*
+    |--------------------------------------------------------------------------
+    | Accueil
+    |--------------------------------------------------------------------------
+    */
+
+    public function index(Request $request): void
+    {
         $this->title = 'Chinois';
 
         $this->render('chinois/index');
     }
 
-    public function mandarin(
-        Request $request
-    ): void {
+    /*
+    |--------------------------------------------------------------------------
+    | Mandarin
+    |--------------------------------------------------------------------------
+    */
+
+    public function mandarin(Request $request): void
+    {
         $this->title = 'Chinois | Mandarin';
 
         $this->render('chinois/mandarin', [
@@ -36,9 +46,14 @@ final class ChinoisController extends Controller
         ]);
     }
 
-    public function jinyu(
-        Request $request
-    ): void {
+    /*
+    |--------------------------------------------------------------------------
+    | 晋语
+    |--------------------------------------------------------------------------
+    */
+
+    public function jinyu(Request $request): void
+    {
         $this->title = 'Chinois | 晋语';
 
         $this->render('chinois/jinyu', [
@@ -46,77 +61,102 @@ final class ChinoisController extends Controller
         ]);
     }
 
-    public function grammaire(
-        Request $request
-    ): void {
+    /*
+    |--------------------------------------------------------------------------
+    | Grammaire
+    |--------------------------------------------------------------------------
+    */
+
+    public function grammaire(Request $request): void
+    {
         $this->title = 'Chinois | Grammaire';
 
         $this->render('chinois/grammaire');
     }
 
-    public function hsk1(
-        Request $request
+    /*
+    |--------------------------------------------------------------------------
+    | HSK
+    |--------------------------------------------------------------------------
+    */
+
+    public function hsk(
+        Request $request,
+        string $level
     ): void {
-        $this->title = 'Chinois | Grammaire HSK1';
+        /*
+        |--------------------------------------------------------------------------
+        | Vérifie le niveau
+        |--------------------------------------------------------------------------
+        */
+
+        $allowedLevels = ['1', '2', '3', '4'];
+
+        if (! in_array($level, $allowedLevels, true))
+        {
+            abort404();
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Prépare le niveau HSK
+        |--------------------------------------------------------------------------
+        */
+
+        $hskLevel = 'HSK' . $level;
+
+        /*
+        |--------------------------------------------------------------------------
+        | Récupère les règles de grammaire
+        |--------------------------------------------------------------------------
+        */
 
         $grammaires = $this->chinoisGrammaireRepository
-            ->findByLevel('HSK1');
+            ->findByLevel($hskLevel);
 
-        $this->render('chinois/grammaire/hsk1', [
-            'grammaires' => $grammaires,
-        ]);
+        /*
+        |--------------------------------------------------------------------------
+        | Meta
+        |--------------------------------------------------------------------------
+        */
+
+        $this->title =
+            'Chinois | Grammaire '
+            . $hskLevel;
+
+        /*
+        |--------------------------------------------------------------------------
+        | Render
+        |--------------------------------------------------------------------------
+        */
+
+        $this->render(
+            'chinois/grammaire/hsk' . $level,
+            ['grammaires' => $grammaires]
+        );
     }
 
-    public function hsk2(
-        Request $request
-    ): void {
-        $this->title = 'Chinois | Grammaire HSK2';
+    /*
+    |--------------------------------------------------------------------------
+    | Flashcards
+    |--------------------------------------------------------------------------
+    */
 
-        $grammaires = $this->chinoisGrammaireRepository
-            ->findByLevel('HSK2');
-
-        $this->render('chinois/grammaire/hsk2', [
-            'grammaires' => $grammaires,
-        ]);
-    }
-
-    public function hsk3(
-        Request $request
-    ): void {
-        $this->title = 'Chinois | Grammaire HSK3';
-
-        $grammaires = $this->chinoisGrammaireRepository
-            ->findByLevel('HSK3');
-
-        $this->render('chinois/grammaire/hsk3', [
-            'grammaires' => $grammaires,
-        ]);
-    }
-
-    public function hsk4(
-        Request $request
-    ): void {
-        $this->title = 'Chinois | Grammaire HSK4';
-
-        $grammaires = $this->chinoisGrammaireRepository
-            ->findByLevel('HSK4');
-
-        $this->render('chinois/grammaire/hsk4', [
-            'grammaires' => $grammaires,
-        ]);
-    }
-
-    public function flashcards(
-        Request $request
-    ): void {
+    public function flashcards(Request $request): void
+    {
         $this->title = 'Chinois | Flashcards';
 
         $this->render('chinois/flashcards');
     }
 
-    public function ajouter(
-        Request $request
-    ): void {
+    /*
+    |--------------------------------------------------------------------------
+    | Ajouter
+    |--------------------------------------------------------------------------
+    */
+
+    public function ajouter(Request $request): void
+    {
         $this->title = 'Chinois | Ajouter';
 
         $this->render('chinois/ajouter');

@@ -249,25 +249,13 @@ return static function (Router $router): void {
         'grammaire',
     ]);
 
-    $router->get('/chinois/grammaire/hsk-1', [
-        ChinoisController::class,
-        'hsk1',
-    ]);
-
-    $router->get('/chinois/grammaire/hsk-2', [
-        ChinoisController::class,
-        'hsk2',
-    ]);
-
-    $router->get('/chinois/grammaire/hsk-3', [
-        ChinoisController::class,
-        'hsk3',
-    ]);
-
-    $router->get('/chinois/grammaire/hsk-4', [
-        ChinoisController::class,
-        'hsk4',
-    ]);
+    $router->get(
+        '/chinois/grammaire/hsk{level}',
+        [
+            ChinoisController::class,
+            'hsk',
+        ]
+    );
 
     /*
     |--------------------------------------------------------------------------
