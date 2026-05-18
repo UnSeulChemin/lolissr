@@ -7,9 +7,9 @@ namespace App\Controllers\Manga;
 use App\Controllers\Controller;
 use App\Core\Application\App;
 use App\Core\Http\Request;
+use App\Http\Requests\Manga\MangaUpdateNoteRequest;
 use App\Services\Manga\MangaReadService;
 use App\Services\Manga\MangaWriteService;
-use App\Http\Requests\Manga\MangaUpdateNoteRequest;
 
 final class MangaAjaxController extends Controller
 {
@@ -127,10 +127,11 @@ final class MangaAjaxController extends Controller
             $request->dto()
         );
 
-        $this->json(
-            $result,
-            (int) ($result['status'] ?? 200)
-        );
+        $this->json([
+            'success' => $result->success,
+            'message' => $result->message,
+            ...$result->data,
+        ], $result->status);
     }
 
     public function updateLu(
@@ -178,10 +179,11 @@ final class MangaAjaxController extends Controller
             $request->integer('lu', 0)
         );
 
-        $this->json(
-            $result,
-            (int) ($result['status'] ?? 200)
-        );
+        $this->json([
+            'success' => $result->success,
+            'message' => $result->message,
+            ...$result->data,
+        ], $result->status);
     }
 
     public function delete(
@@ -202,20 +204,19 @@ final class MangaAjaxController extends Controller
             (int) $numero
         );
 
-        if (!$result['success']) {
+        if (!$result->success) {
             $this->error([
-                'message' => $result['message']
-                    ?? 'Erreur',
-            ], (int) ($result['status'] ?? 500));
+                'message' => $result->message,
+            ], $result->status);
         }
 
         $this->json([
             'success' => true,
-            'message' => $result['message'],
+            'message' => $result->message,
             'redirect' => $this->basePath
                 . 'manga/series/'
                 . rawurlencode(
-                    $result['canonicalSlug']
+                    $result->data['canonicalSlug']
                     ?? $slug
                 ),
         ]);
