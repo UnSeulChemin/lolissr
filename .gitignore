@@ -15,26 +15,38 @@ notes.txt
 # LOGS
 #################################
 
-/Storage/logs/
+/storage/logs/*
+!/storage/logs/.gitkeep
+
 *.log
 
 #################################
-# CACHE / STORAGE
+# CACHE
 #################################
 
-/Storage/cache/*
-!/Storage/cache/.gitkeep
+/storage/cache/*
+!/storage/cache/.gitkeep
 
-/Core/Save/
+#################################
+# SESSIONS
+#################################
+
+/storage/sessions/*
+!/storage/sessions/.gitkeep
+
+#################################
+# BACKUPS
+#################################
+
+/storage/backups/*
+!/storage/backups/.gitkeep
 
 #################################
 # UPLOADS
 #################################
 
-# Images mangas générées localement
 /public/images/
 
-# Uploads temporaires tests
 /tests/tmp-uploads/
 
 #################################

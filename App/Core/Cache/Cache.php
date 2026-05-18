@@ -11,19 +11,39 @@ final class Cache
 {
     private static function enabled(): bool
     {
-        return Env::get('CACHE_ENABLED', false) === true;
+        return Env::get(
+            'CACHE_ENABLED',
+            false
+        ) === true;
     }
 
     private static function directory(): string
     {
-        return ROOT . '/Storage/cache';
+        return ROOT . '/storage/cache';
     }
 
     private static function path(string $key): string
     {
-        $safeKey = sha1($key);
+        return self::directory()
+            . '/'
+            . sha1($key)
+            . '.cache';
+    }
 
-        return self::directory() . '/' . $safeKey . '.cache';
+    private static function ensureDirectory(): bool
+    {
+        $directory = self::directory();
+
+        if (is_dir($directory))
+        {
+            return true;
+        }
+
+        return mkdir(
+            $directory,
+            0755,
+            true
+        ) || is_dir($directory);
     }
 
     public static function get(string $key): mixed
@@ -47,31 +67,45 @@ final class Cache
             return null;
         }
 
-        $payload = @unserialize($content);
+        $payload = unserialize(
+            $content,
+            [
+                'allowed_classes' => false,
+            ]
+        );
 
         if (!is_array($payload))
         {
-            Logger::warning('Cache payload invalid', [
-                'key' => $key,
-            ]);
+            Logger::warning(
+                'Cache payload invalid',
+                [
+                    'key' => $key,
+                ]
+            );
 
             return null;
         }
 
         if (($payload['expires_at'] ?? 0) < time())
         {
-            @unlink($path);
+            unlink($path);
 
-            Logger::debug('Cache expired', [
-                'key' => $key,
-            ]);
+            Logger::debug(
+                'Cache expired',
+                [
+                    'key' => $key,
+                ]
+            );
 
             return null;
         }
 
-        Logger::debug('Cache hit', [
-            'key' => $key,
-        ]);
+        Logger::debug(
+            'Cache hit',
+            [
+                'key' => $key,
+            ]
+        );
 
         return $payload['value'] ?? null;
     }
@@ -86,14 +120,15 @@ final class Cache
             return;
         }
 
-        $directory = self::directory();
-
-        if (!is_dir($directory))
+        if (!self::ensureDirectory())
         {
-            mkdir($directory, 0775, true);
+            return;
         }
 
-        $ttl ??= (int) Env::get('CACHE_TTL', 300);
+        $ttl ??= (int) Env::get(
+            'CACHE_TTL',
+            300
+        );
 
         $payload = [
             'expires_at' => time() + $ttl,
@@ -106,10 +141,13 @@ final class Cache
             LOCK_EX
         );
 
-        Logger::debug('Cache stored', [
-            'key' => $key,
-            'ttl' => $ttl,
-        ]);
+        Logger::debug(
+            'Cache stored',
+            [
+                'key' => $key,
+                'ttl' => $ttl,
+            ]
+        );
     }
 
     public static function remember(
@@ -130,41 +168,55 @@ final class Cache
         |-----------------------------------------
         */
 
-        if ($cached !== null || self::has($key))
-        {
+        if (
+            $cached !== null
+            || self::has($key)
+        ) {
             return $cached;
         }
 
-        Logger::debug('Cache miss', [
-            'key' => $key,
-        ]);
+        Logger::debug(
+            'Cache miss',
+            [
+                'key' => $key,
+            ]
+        );
 
         $value = $callback();
 
-        self::put($key, $value, $ttl);
+        self::put(
+            $key,
+            $value,
+            $ttl
+        );
 
         return $value;
     }
 
     public static function has(string $key): bool
     {
-        $path = self::path($key);
-
-        return is_file($path);
+        return is_file(
+            self::path($key)
+        );
     }
 
     public static function forget(string $key): void
     {
         $path = self::path($key);
 
-        if (is_file($path))
+        if (!is_file($path))
         {
-            unlink($path);
-
-            Logger::debug('Cache deleted', [
-                'key' => $key,
-            ]);
+            return;
         }
+
+        unlink($path);
+
+        Logger::debug(
+            'Cache deleted',
+            [
+                'key' => $key,
+            ]
+        );
     }
 
     public static function clear(): void
@@ -176,9 +228,14 @@ final class Cache
             return;
         }
 
-        foreach (glob($directory . '/*.cache') ?: [] as $file)
-        {
-            unlink($file);
+        foreach (
+            glob($directory . '/*.cache') ?: []
+            as $file
+        ) {
+            if (is_file($file))
+            {
+                unlink($file);
+            }
         }
 
         Logger::info('Cache cleared');

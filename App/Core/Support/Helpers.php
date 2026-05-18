@@ -42,6 +42,11 @@ if (!function_exists('dump'))
 {
     function dump(mixed ...$vars): void
     {
+        if (!env_bool('APP_DEBUG'))
+        {
+            return;
+        }
+
         echo '<pre style="
             background:#222;
             color:#fff;
@@ -72,6 +77,13 @@ if (!function_exists('dd'))
 {
     function dd(mixed ...$vars): never
     {
+        if (!env_bool('APP_DEBUG'))
+        {
+            http_response_code(404);
+
+            exit;
+        }
+
         dump(...$vars);
 
         exit;

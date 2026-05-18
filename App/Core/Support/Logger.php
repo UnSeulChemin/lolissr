@@ -9,24 +9,28 @@ use Throwable;
 
 final class Logger
 {
-    private static function logDirectory(): string
+    private static function enabled(): bool
     {
-        return (string) env(
-            'LOG_DIR',
-            app_path('Storage/logs')
+        return env_bool(
+            'LOG_ENABLED',
+            true
         );
     }
 
-    private static function logFile(): string
+    private static function directory(): string
     {
-        return self::logDirectory()
-            . DIRECTORY_SEPARATOR
-            . 'app.log';
+        return ROOT . '/storage/logs';
+    }
+
+    private static function file(): string
+    {
+        return self::directory()
+            . '/app.log';
     }
 
     private static function ensureDirectory(): bool
     {
-        $directory = self::logDirectory();
+        $directory = self::directory();
 
         if (is_dir($directory))
         {
@@ -45,6 +49,24 @@ final class Logger
         string $message,
         array $context = []
     ): void {
+        if (!self::enabled())
+        {
+            return;
+        }
+
+        /*
+        |-----------------------------------------
+        | Désactive DEBUG en production
+        |-----------------------------------------
+        */
+
+        if (
+            strtoupper($level) === 'DEBUG'
+            && !env_bool('APP_DEBUG')
+        ) {
+            return;
+        }
+
         if (!self::ensureDirectory())
         {
             return;
@@ -73,20 +95,11 @@ final class Logger
         }
         catch (JsonException)
         {
-            $content = json_encode([
-                'date' => date('Y-m-d H:i:s'),
-                'level' => 'ERROR',
-                'message' => 'Logger JSON encoding failed',
-            ]);
-        }
-
-        if ($content === false)
-        {
             return;
         }
 
-        @file_put_contents(
-            self::logFile(),
+        file_put_contents(
+            self::file(),
             $content . PHP_EOL,
             FILE_APPEND | LOCK_EX
         );
