@@ -49,14 +49,22 @@ final class Router
     ): void {
         $uri = '/' . trim($uri, '/');
 
-        if ($uri === '//')
-        {
+        if ($uri === '//') {
             $uri = '/';
         }
 
-        $pattern = preg_replace(
-            '#\{[^/]+\}#',
-            '([^/]+)',
+        $pattern = preg_replace_callback(
+            '#\{([a-zA-Z0-9_]+)(?::([a-zA-Z]+))?\}#',
+            static function (array $matches): string
+            {
+                $type = $matches[2] ?? 'string';
+
+                return match ($type)
+                {
+                    'int' => '([0-9]+)',
+                    default => '([^/]+)',
+                };
+            },
             $uri
         );
 
@@ -153,7 +161,7 @@ final class Router
 
         return [
             $this->resolve($controller),
-            $method
+            $method,
         ];
     }
 
@@ -240,8 +248,24 @@ final class Router
 
             if (isset($routeParameters[$routeIndex]))
             {
-                $dependencies[] =
+                $value =
                     $routeParameters[$routeIndex++];
+
+                if (
+                    $type instanceof ReflectionNamedType
+                ) {
+                    $value = $this->castRouteParameter(
+                        $value,
+                        $type->getName()
+                    );
+                }
+
+                if ($value === null)
+                {
+                    abort(404);
+                }
+
+                $dependencies[] = $value;
 
                 continue;
             }
@@ -263,9 +287,36 @@ final class Router
         return $dependencies;
     }
 
+    private function castRouteParameter(
+        string $value,
+        string $type
+    ): mixed {
+        return match ($type)
+        {
+            'int' => ctype_digit($value)
+                ? (int) $value
+                : null,
+
+            'float' => is_numeric($value)
+                ? (float) $value
+                : null,
+
+            'bool' => filter_var(
+                $value,
+                FILTER_VALIDATE_BOOL,
+                FILTER_NULL_ON_FAILURE
+            ),
+
+            'string' => $value,
+
+            default => $value,
+        };
+    }
+
     private function resolve(
         string $class
     ): object {
-        return AppContainer::get()->get($class);
+        return AppContainer::get()
+            ->get($class);
     }
 }

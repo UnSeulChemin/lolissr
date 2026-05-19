@@ -6,6 +6,9 @@ namespace App\Services\Manga;
 
 use App\Core\Application\App;
 use App\Core\Support\Str;
+use App\DTO\Manga\Responses\MangaSearchData;
+use App\DTO\Manga\Responses\MangaSeriesData;
+use App\DTO\Manga\Responses\MangaShowData;
 use App\Repositories\Manga\MangaRepository;
 
 final class MangaReadService
@@ -19,18 +22,26 @@ final class MangaReadService
         return $this->mangaRepository;
     }
 
-    private function normalizeSearchQuery(string $query): string
-    {
+    private function normalizeSearchQuery(
+        string $query
+    ): string {
         $query = urldecode($query);
-        $query = str_replace('-', ' ', $query);
+
+        $query = str_replace(
+            '-',
+            ' ',
+            $query
+        );
 
         return trim(
-            preg_replace('/\s+/', ' ', $query) ?? ''
+            preg_replace('/\s+/', ' ', $query)
+            ?? ''
         );
     }
 
-    public function series(string $page = '1'): ?array
-    {
+    public function series(
+        string $page = '1'
+    ): ?MangaSeriesData {
         if (!ctype_digit($page)) {
             return null;
         }
@@ -44,7 +55,9 @@ final class MangaReadService
         $pagination = App::pagination();
 
         $compteur = $this->mangaRepository
-            ->countFirstTomesPaginate($pagination);
+            ->countFirstTomesPaginate(
+                $pagination
+            );
 
         if (
             $compteur > 0
@@ -60,35 +73,53 @@ final class MangaReadService
                 $currentPage
             );
 
-        return [
-            'mangas' => $mangas,
-            'compteur' => $compteur,
-            'currentPage' => $currentPage,
-        ];
+        return new MangaSeriesData(
+            mangas: $mangas,
+            compteur: $compteur,
+            slugFilter: null,
+            currentPage: $currentPage,
+        );
     }
 
-    public function search(string $query = ''): array
-    {
-        $search = $this->normalizeSearchQuery($query);
+    public function search(
+        string $query = ''
+    ): MangaSearchData {
+        $search = $this->normalizeSearchQuery(
+            $query
+        );
 
         if ($search === '') {
-            return [
-                'mangas' => [],
-                'search' => '',
-            ];
+            return new MangaSearchData(
+                mangas: [],
+                search: '',
+            );
         }
 
-        return [
-            'mangas' => $this->mangaRepository
-                ->searchMangas($search),
+        $mangas = $this->mangaRepository
+            ->searchMangas($search);
 
-            'search' => $search,
-        ];
+        return new MangaSearchData(
+            mangas: $mangas,
+            search: $search,
+        );
     }
 
-    public function searchAjax(string $query = ''): array
-    {
-        $search = $this->normalizeSearchQuery($query);
+    /**
+     * @return list<array{
+     *     slug: string,
+     *     numero: int,
+     *     livre: string,
+     *     thumbnail: string|null,
+     *     extension: string|null,
+     *     note: int|null
+     * }>
+     */
+    public function searchAjax(
+        string $query = ''
+    ): array {
+        $search = $this->normalizeSearchQuery(
+            $query
+        );
 
         if ($search === '') {
             return [];
@@ -122,8 +153,9 @@ final class MangaReadService
         return $results;
     }
 
-    public function serie(string $slug): ?array
-    {
+    public function serie(
+        string $slug
+    ): ?MangaSeriesData {
         $normalizedSlug = Str::slug($slug);
 
         $mangas = $this->mangaRepository
@@ -133,16 +165,18 @@ final class MangaReadService
             return null;
         }
 
-        return [
-            'mangas' => $mangas,
-            'canonicalSlug' => $normalizedSlug,
-        ];
+        return new MangaSeriesData(
+            mangas: $mangas,
+            compteur: null,
+            slugFilter: $normalizedSlug,
+            currentPage: 1,
+        );
     }
 
     public function one(
         string $slug,
         int $numero
-    ): ?array {
+    ): ?MangaShowData {
         $normalizedSlug = Str::slug($slug);
 
         $manga = $this->mangaRepository
@@ -155,9 +189,9 @@ final class MangaReadService
             return null;
         }
 
-        return [
-            'manga' => $manga,
-            'canonicalSlug' => $normalizedSlug,
-        ];
+        return new MangaShowData(
+            manga: $manga,
+            canonicalSlug: $normalizedSlug,
+        );
     }
 }

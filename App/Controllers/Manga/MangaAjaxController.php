@@ -21,8 +21,9 @@ final class MangaAjaxController extends Controller
         parent::__construct();
     }
 
-    private function ensureAjax(Request $request): void
-    {
+    private function ensureAjax(
+        Request $request
+    ): void {
         if ($request->isAjax()) {
             return;
         }
@@ -61,9 +62,8 @@ final class MangaAjaxController extends Controller
     ): void {
         $this->ensureAjax($request);
 
-        $data = $this->mangaReadService->series(
-            $page
-        );
+        $data = $this->mangaReadService
+            ->series($page);
 
         if ($data === null) {
             $this->error([
@@ -74,10 +74,10 @@ final class MangaAjaxController extends Controller
         $this->renderPartial(
             'manga/partials/series_ajax',
             [
-                'mangas' => $data['mangas'],
-                'compteur' => $data['compteur'],
-                'currentPage' => $data['currentPage'],
-                'slugFilter' => null,
+                'mangas' => $data->mangas,
+                'compteur' => $data->compteur,
+                'currentPage' => $data->currentPage,
+                'slugFilter' => $data->slugFilter,
             ]
         );
     }
@@ -89,31 +89,23 @@ final class MangaAjaxController extends Controller
         $this->ensureAjax($request);
 
         $this->json(
-            $this->mangaReadService->searchAjax(
-                $query
-            )
+            $this->mangaReadService
+                ->searchAjax($query)
         );
     }
 
     public function updateNote(
         MangaUpdateNoteRequest $request,
         string $slug,
-        string $numero
+        int $numero
     ): void {
         $this->ensureAjax($this->request);
 
-        if (!ctype_digit($numero)) {
-            $this->error([
-                'message' => 'Numéro invalide',
-            ], 404);
-        }
-
-        $numero = (int) $numero;
-
-        $data = $this->mangaReadService->one(
-            $slug,
-            $numero
-        );
+        $data = $this->mangaReadService
+            ->one(
+                $slug,
+                $numero
+            );
 
         if ($data === null) {
             $this->error([
@@ -121,11 +113,25 @@ final class MangaAjaxController extends Controller
             ], 404);
         }
 
-        $result = $this->mangaWriteService->updateNote(
-            $data['canonicalSlug'],
-            $numero,
-            $request->dto()
-        );
+        if ($slug !== $data->canonicalSlug) {
+            $this->error([
+                'message' => 'URL non canonique',
+                'redirect' => $this->basePath
+                    . 'manga/ajax/update-note/'
+                    . rawurlencode(
+                        $data->canonicalSlug
+                    )
+                    . '/'
+                    . $numero,
+            ], 409);
+        }
+
+        $result = $this->mangaWriteService
+            ->updateNote(
+                $data->canonicalSlug,
+                $numero,
+                $request->dto()
+            );
 
         $this->json([
             'success' => $result->success,
@@ -137,22 +143,15 @@ final class MangaAjaxController extends Controller
     public function updateLu(
         Request $request,
         string $slug,
-        string $numero
+        int $numero
     ): void {
         $this->ensureAjax($request);
 
-        if (!ctype_digit($numero)) {
-            $this->error([
-                'message' => 'Numéro invalide',
-            ], 404);
-        }
-
-        $numero = (int) $numero;
-
-        $data = $this->mangaReadService->one(
-            $slug,
-            $numero
-        );
+        $data = $this->mangaReadService
+            ->one(
+                $slug,
+                $numero
+            );
 
         if ($data === null) {
             $this->error([
@@ -160,24 +159,25 @@ final class MangaAjaxController extends Controller
             ], 404);
         }
 
-        if ($slug !== $data['canonicalSlug']) {
+        if ($slug !== $data->canonicalSlug) {
             $this->error([
                 'message' => 'URL non canonique',
                 'redirect' => $this->basePath
                     . 'manga/ajax/update-lu/'
                     . rawurlencode(
-                        $data['canonicalSlug']
+                        $data->canonicalSlug
                     )
                     . '/'
                     . $numero,
             ], 409);
         }
 
-        $result = $this->mangaWriteService->updateLu(
-            $data['canonicalSlug'],
-            $numero,
-            $request->integer('lu', 0)
-        );
+        $result = $this->mangaWriteService
+            ->updateLu(
+                $data->canonicalSlug,
+                $numero,
+                $request->integer('lu', 0)
+            );
 
         $this->json([
             'success' => $result->success,
@@ -189,20 +189,40 @@ final class MangaAjaxController extends Controller
     public function delete(
         Request $request,
         string $slug,
-        string $numero
+        int $numero
     ): void {
         $this->ensureAjax($request);
 
-        if (!ctype_digit($numero)) {
+        $data = $this->mangaReadService
+            ->one(
+                $slug,
+                $numero
+            );
+
+        if ($data === null) {
             $this->error([
-                'message' => 'Numéro invalide',
+                'message' => 'Manga introuvable',
             ], 404);
         }
 
-        $result = $this->mangaWriteService->delete(
-            $slug,
-            (int) $numero
-        );
+        if ($slug !== $data->canonicalSlug) {
+            $this->error([
+                'message' => 'URL non canonique',
+                'redirect' => $this->basePath
+                    . 'manga/ajax/delete/'
+                    . rawurlencode(
+                        $data->canonicalSlug
+                    )
+                    . '/'
+                    . $numero,
+            ], 409);
+        }
+
+        $result = $this->mangaWriteService
+            ->delete(
+                $data->canonicalSlug,
+                $numero
+            );
 
         $this->json([
             'success' => $result->success,

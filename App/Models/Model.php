@@ -13,16 +13,22 @@ use Throwable;
 abstract class Model
 {
     protected string $table;
+
     protected PDO $db;
 
-    public function __construct(Database $database)
-    {
+    public function __construct(
+        Database $database
+    ) {
         $this->db = $database;
     }
 
     protected function table(): string
     {
-        return preg_replace('/[^a-zA-Z0-9_]/', '', $this->table) ?? '';
+        return preg_replace(
+            '/[^a-zA-Z0-9_]/',
+            '',
+            $this->table
+        ) ?? '';
     }
 
     protected function getTable(): string
@@ -30,95 +36,154 @@ abstract class Model
         return $this->table();
     }
 
-    protected function clean(string $field): string
-    {
-        return preg_replace('/[^a-zA-Z0-9_]/', '', $field) ?? '';
+    protected function clean(
+        string $field
+    ): string {
+        return preg_replace(
+            '/[^a-zA-Z0-9_]/',
+            '',
+            $field
+        ) ?? '';
     }
 
-    /**
-     * 💥 CORE FIX: FORCE OBJECT MODE
-     */
-    protected function query(string $sql, array $params = []): PDOStatement|false
-    {
+    protected function query(
+        string $sql,
+        array $params = []
+    ): PDOStatement|false {
         try {
-            $stmt = $this->db->prepare($sql);
+            $statement = $this->db->prepare(
+                $sql
+            );
 
-            if ($stmt === false) {
+            if ($statement === false) {
                 return false;
             }
 
-            $stmt->execute($params);
+            $statement->execute($params);
 
-            return $stmt;
-
-        } catch (Throwable $e) {
-            throw new RuntimeException($e->getMessage());
+            return $statement;
+        }
+        catch (Throwable $e) {
+            throw new RuntimeException(
+                $e->getMessage(),
+                previous: $e
+            );
         }
     }
 
-    protected function requete(string $sql, array $params = []): PDOStatement|false
-    {
-        return $this->query($sql, $params);
+    protected function requete(
+        string $sql,
+        array $params = []
+    ): PDOStatement|false {
+        return $this->query(
+            $sql,
+            $params
+        );
     }
 
-    /**
-     * 🚀 OBJECT SAFE
-     */
-    protected function fetchOne(string $sql, array $params = []): ?object
-    {
-        $stmt = $this->query($sql, $params);
+    protected function fetchOne(
+        string $sql,
+        array $params = [],
+        ?string $class = null
+    ): ?object {
+        $statement = $this->query(
+            $sql,
+            $params
+        );
 
-        if ($stmt === false) {
+        if ($statement === false) {
             return null;
         }
 
-        $result = $stmt->fetch();
+        if ($class !== null) {
+            $statement->setFetchMode(
+                PDO::FETCH_CLASS,
+                $class
+            );
+        }
 
-        return $result !== false ? $result : null;
+        $result = $statement->fetch();
+
+        return $result !== false
+            ? $result
+            : null;
     }
 
     /**
-     * 🚀 OBJECT ARRAY ALWAYS
      * @return array<int, object>
      */
-    protected function fetchAll(string $sql, array $params = []): array
-    {
-        $stmt = $this->query($sql, $params);
+    protected function fetchAll(
+        string $sql,
+        array $params = [],
+        ?string $class = null
+    ): array {
+        $statement = $this->query(
+            $sql,
+            $params
+        );
 
-        if ($stmt === false) {
+        if ($statement === false) {
             return [];
         }
 
-        return $stmt->fetchAll();
+        if ($class !== null) {
+            $statement->setFetchMode(
+                PDO::FETCH_CLASS,
+                $class
+            );
+        }
+
+        return $statement->fetchAll();
     }
 
-    protected function execute(string $sql, array $params = []): bool
-    {
-        return $this->query($sql, $params) !== false;
+    protected function execute(
+        string $sql,
+        array $params = []
+    ): bool {
+        return $this->query(
+            $sql,
+            $params
+        ) !== false;
     }
 
-    public function find(int $id): ?object
-    {
+    public function find(
+        int $id,
+        ?string $class = null
+    ): ?object {
         return $this->fetchOne(
-            "SELECT * FROM {$this->table()} WHERE id = ? LIMIT 1",
-            [$id]
+            "SELECT *
+            FROM {$this->table()}
+            WHERE id = ?
+            LIMIT 1",
+            [$id],
+            $class
         );
     }
 
     /**
      * @param array<string, mixed> $where
+     * @return array{
+     *     conditions: array<int, string>,
+     *     values: array<int, mixed>
+     * }
      */
-    protected function buildWhere(array $where): array
-    {
+    protected function buildWhere(
+        array $where
+    ): array {
         $conditions = [];
+
         $values = [];
 
-        foreach ($where as $field => $value) {
+        foreach ($where as $field => $value)
+        {
             $field = $this->clean($field);
 
-            if ($field === '') continue;
+            if ($field === '') {
+                continue;
+            }
 
             $conditions[] = "{$field} = ?";
+
             $values[] = $value;
         }
 
@@ -131,8 +196,10 @@ abstract class Model
     /**
      * @return array<int, object>
      */
-    public function findBy(array $where): array
-    {
+    public function findBy(
+        array $where,
+        ?string $class = null
+    ): array {
         if ($where === []) {
             return [];
         }
@@ -144,25 +211,47 @@ abstract class Model
         }
 
         return $this->fetchAll(
-            "SELECT * FROM {$this->table()}
-             WHERE " . implode(' AND ', $built['conditions']),
-            $built['values']
+            "SELECT *
+            FROM {$this->table()}
+            WHERE "
+            . implode(
+                ' AND ',
+                $built['conditions']
+            ),
+            $built['values'],
+            $class
         );
     }
 
-    protected function buildInsert(array $data): array
-    {
+    /**
+     * @param array<string, mixed> $data
+     * @return array{
+     *     fields: array<int, string>,
+     *     placeholders: array<int, string>,
+     *     values: array<int, mixed>
+     * }
+     */
+    protected function buildInsert(
+        array $data
+    ): array {
         $fields = [];
+
         $placeholders = [];
+
         $values = [];
 
-        foreach ($data as $field => $value) {
+        foreach ($data as $field => $value)
+        {
             $field = $this->clean($field);
 
-            if ($field === '') continue;
+            if ($field === '') {
+                continue;
+            }
 
             $fields[] = $field;
+
             $placeholders[] = '?';
+
             $values[] = $value;
         }
 
@@ -173,8 +262,9 @@ abstract class Model
         ];
     }
 
-    public function insert(array $data): bool
-    {
+    public function insert(
+        array $data
+    ): bool {
         if ($data === []) {
             return false;
         }
@@ -186,50 +276,78 @@ abstract class Model
         }
 
         return $this->execute(
-            "INSERT INTO {$this->table()} (" .
-                implode(', ', $built['fields']) .
-            ")
-            VALUES (" .
-                implode(', ', $built['placeholders']) .
-            ")",
+            "INSERT INTO {$this->table()} ("
+            . implode(', ', $built['fields'])
+            . ")
+            VALUES ("
+            . implode(
+                ', ',
+                $built['placeholders']
+            )
+            . ")",
             $built['values']
         );
     }
 
-    public function update(array $data, array $where): bool
-    {
-        if ($data === [] || $where === []) {
+    public function update(
+        array $data,
+        array $where
+    ): bool {
+        if (
+            $data === []
+            || $where === []
+        ) {
             return false;
         }
 
         $fields = [];
+
         $values = [];
 
-        foreach ($data as $field => $value) {
+        foreach ($data as $field => $value)
+        {
             $field = $this->clean($field);
 
-            if ($field === '') continue;
+            if ($field === '') {
+                continue;
+            }
 
             $fields[] = "{$field} = ?";
+
             $values[] = $value;
         }
 
-        $builtWhere = $this->buildWhere($where);
+        $builtWhere = $this->buildWhere(
+            $where
+        );
 
-        if ($fields === [] || $builtWhere['conditions'] === []) {
+        if (
+            $fields === []
+            || $builtWhere['conditions'] === []
+        ) {
             return false;
         }
 
         return $this->execute(
             "UPDATE {$this->table()}
-             SET " . implode(', ', $fields) . "
-             WHERE " . implode(' AND ', $builtWhere['conditions']),
-            array_merge($values, $builtWhere['values'])
+            SET "
+            . implode(', ', $fields)
+            . "
+            WHERE "
+            . implode(
+                ' AND ',
+                $builtWhere['conditions']
+            ),
+            array_merge(
+                $values,
+                $builtWhere['values']
+            )
         );
     }
 
-    public function delete(array $where): bool
-    {
+    public function delete(
+        array $where
+    ): bool {
         if ($where === []) {
             return false;
         }
@@ -242,7 +360,11 @@ abstract class Model
 
         return $this->execute(
             "DELETE FROM {$this->table()}
-             WHERE " . implode(' AND ', $built['conditions']),
+            WHERE "
+            . implode(
+                ' AND ',
+                $built['conditions']
+            ),
             $built['values']
         );
     }

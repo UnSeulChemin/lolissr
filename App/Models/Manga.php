@@ -1,0 +1,42 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Models;
+
+final class Manga
+{
+    public int $id;
+
+    public string $thumbnail;
+
+    public string $extension;
+
+    public string $slug;
+
+    public string $livre;
+
+    public string $editeur;
+
+    public int $numero;
+
+    public int $lu;
+
+    public string $statut;
+
+    public ?int $jacquette = null;
+
+    public ?int $livre_note = null;
+
+    public ?int $note = null;
+
+    public ?string $commentaire = null;
+
+    public string $created_at;
+
+    public ?int $total = null;
+
+    public ?int $total_lu = null;
+
+    public ?float $average_note = null;
+}

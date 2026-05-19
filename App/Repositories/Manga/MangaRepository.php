@@ -6,7 +6,7 @@ namespace App\Repositories\Manga;
 
 use App\Core\Application\App;
 use App\Core\Support\Str;
-use App\DTO\Manga\MangaNoteNormalizer;
+use App\Models\Manga;
 use App\Models\Model;
 use LogicException;
 
@@ -16,8 +16,7 @@ final class MangaRepository extends Model
 
     private function guardWrite(): void
     {
-        if (App::isReadOnly())
-        {
+        if (App::isReadOnly()) {
             throw new LogicException(
                 'Écriture en base interdite en mode test.'
             );
@@ -44,11 +43,18 @@ final class MangaRepository extends Model
         array $params = [],
         mixed $default = 0
     ): mixed {
-        $result = $this->fetchOne($sql, $params);
+        $result = $this->fetchOne(
+            $sql,
+            $params
+        );
 
-        return $result->{$field} ?? $default;
+        return $result->{$field}
+            ?? $default;
     }
 
+    /**
+     * @return list<Manga>
+     */
     public function searchMangas(
         string $search
     ): array {
@@ -60,20 +66,24 @@ final class MangaRepository extends Model
             ) ?? ''
         );
 
-        if ($search === '')
-        {
+        if ($search === '') {
             return [];
         }
 
         $pattern = '/^(.*?)(?:\s+(?:t|tome|vol|vol\.|volume|n°|no|#)?\s*0*([1-9][0-9]*))$/iu';
 
-        if (preg_match($pattern, $search, $matches))
-        {
+        if (
+            preg_match(
+                $pattern,
+                $search,
+                $matches
+            )
+        ) {
             $titlePart = trim($matches[1]);
+
             $numero = (int) $matches[2];
 
-            if ($titlePart !== '')
-            {
+            if ($titlePart !== '') {
                 return $this->fetchAll(
                     "SELECT *
                     FROM {$this->getTable()}
@@ -84,10 +94,17 @@ final class MangaRepository extends Model
                     AND numero = :numero
                     ORDER BY livre ASC, numero ASC",
                     [
-                        'search_livre' => "%{$titlePart}%",
-                        'search_slug' => '%' . Str::slug($titlePart) . '%',
+                        'search_livre' =>
+                            "%{$titlePart}%",
+
+                        'search_slug' =>
+                            '%'
+                            . Str::slug($titlePart)
+                            . '%',
+
                         'numero' => $numero,
-                    ]
+                    ],
+                    Manga::class
                 );
             }
         }
@@ -99,9 +116,15 @@ final class MangaRepository extends Model
             OR slug LIKE :search_slug
             ORDER BY livre ASC, numero ASC",
             [
-                'search_livre' => "%{$search}%",
-                'search_slug' => '%' . Str::slug($search) . '%',
-            ]
+                'search_livre' =>
+                    "%{$search}%",
+
+                'search_slug' =>
+                    '%'
+                    . Str::slug($search)
+                    . '%',
+            ],
+            Manga::class
         );
     }
 
@@ -148,13 +171,15 @@ final class MangaRepository extends Model
             : null;
     }
 
-    public function findLastAdded(): ?object
+    public function findLastAdded(): ?Manga
     {
         return $this->fetchOne(
             "SELECT *
             FROM {$this->getTable()}
             ORDER BY id DESC
-            LIMIT 1"
+            LIMIT 1",
+            [],
+            Manga::class
         );
     }
 
@@ -180,6 +205,9 @@ final class MangaRepository extends Model
         );
     }
 
+    /**
+     * @return array<int, object>
+     */
     public function topLongestSeries(
         int $limit = 5
     ): array {
@@ -206,6 +234,9 @@ final class MangaRepository extends Model
         );
     }
 
+    /**
+     * @return list<Manga>
+     */
     public function findLowRatedMangas(
         int $limit = 5
     ): array {
@@ -217,10 +248,15 @@ final class MangaRepository extends Model
             ORDER BY COALESCE(note, 0) ASC,
                      livre ASC,
                      numero ASC
-            LIMIT {$limit}"
+            LIMIT {$limit}",
+            [],
+            Manga::class
         );
     }
 
+    /**
+     * @return list<Manga>
+     */
     public function findLowJacquetteMangas(
         int $limit = 5
     ): array {
@@ -232,10 +268,15 @@ final class MangaRepository extends Model
             ORDER BY COALESCE(jacquette, 0) ASC,
                      livre ASC,
                      numero ASC
-            LIMIT {$limit}"
+            LIMIT {$limit}",
+            [],
+            Manga::class
         );
     }
 
+    /**
+     * @return list<Manga>
+     */
     public function findLowLivreStateMangas(
         int $limit = 5
     ): array {
@@ -247,7 +288,9 @@ final class MangaRepository extends Model
             ORDER BY COALESCE(livre_note, 0) ASC,
                      livre ASC,
                      numero ASC
-            LIMIT {$limit}"
+            LIMIT {$limit}",
+            [],
+            Manga::class
         );
     }
 
@@ -269,15 +312,21 @@ final class MangaRepository extends Model
         );
     }
 
+    /**
+     * @return list<Manga>
+     */
     public function findAllFirstTomes(
         string $orderBy,
         int $eachPerPage,
         int $page
     ): array {
         $page = max(1, $page);
+
         $eachPerPage = max(1, $eachPerPage);
 
-        $start = ($page - 1) * $eachPerPage;
+        $start =
+            ($page - 1)
+            * $eachPerPage;
 
         $allowedOrderBy = [
             'id DESC',
@@ -333,10 +382,15 @@ final class MangaRepository extends Model
                 stats.average_note ASC,
                 {$orderBy}
 
-            LIMIT {$start}, {$eachPerPage}"
+            LIMIT {$start}, {$eachPerPage}",
+            [],
+            Manga::class
         );
     }
 
+    /**
+     * @return list<Manga>
+     */
     public function findBySlug(
         string $slug
     ): array {
@@ -347,14 +401,15 @@ final class MangaRepository extends Model
             ORDER BY numero DESC",
             [
                 'slug' => Str::slug($slug),
-            ]
+            ],
+            Manga::class
         );
     }
 
     public function findOneBySlugAndNumero(
         string $slug,
         int $numero
-    ): ?object {
+    ): ?Manga {
         return $this->fetchOne(
             "SELECT *
             FROM {$this->getTable()}
@@ -363,7 +418,8 @@ final class MangaRepository extends Model
             [
                 'slug' => Str::slug($slug),
                 'numero' => $numero,
-            ]
+            ],
+            Manga::class
         );
     }
 
@@ -372,48 +428,72 @@ final class MangaRepository extends Model
     ): bool {
         $this->guardWrite();
 
-        $jacquette = MangaNoteNormalizer::normalize(
-            $datas['jacquette'] ?? null
-        );
+        $jacquette = MangaNoteNormalizer
+            ::normalize(
+                $datas['jacquette']
+                ?? null
+            );
 
-        $livreNote = MangaNoteNormalizer::normalize(
-            $datas['livre_note'] ?? null
-        );
+        $livreNote = MangaNoteNormalizer
+            ::normalize(
+                $datas['livre_note']
+                ?? null
+            );
 
         return parent::insert([
             'thumbnail' => trim(
-                (string) ($datas['thumbnail'] ?? '')
+                (string)
+                ($datas['thumbnail'] ?? '')
             ),
+
             'extension' => strtolower(
                 trim(
-                    (string) ($datas['extension'] ?? '')
+                    (string)
+                    ($datas['extension'] ?? '')
                 )
             ),
+
             'slug' => Str::slug(
-                (string) ($datas['slug'] ?? '')
+                (string)
+                ($datas['slug'] ?? '')
             ),
+
             'livre' => trim(
-                (string) ($datas['livre'] ?? '')
+                (string)
+                ($datas['livre'] ?? '')
             ),
+
             'editeur' => Str::nullableTrim(
-                $datas['editeur'] ?? null
+                $datas['editeur']
+                ?? null
             ),
+
             'numero' => max(
                 1,
-                (int) ($datas['numero'] ?? 1)
+                (int)
+                ($datas['numero'] ?? 1)
             ),
+
             'lu' => 0,
+
             'statut' => trim(
-                (string) ($datas['statut'] ?? 'en_cours')
+                (string)
+                ($datas['statut']
+                ?? 'en_cours')
             ),
+
             'jacquette' => $jacquette,
+
             'livre_note' => $livreNote,
+
             'note' => $this->calculateNote(
                 $jacquette,
                 $livreNote
             ),
+
             'commentaire' => Str::nullableTrim(
-                $datas['commentaire'] ?? null
+                $datas['commentaire']
+                ?? null
             ),
         ]);
     }
@@ -429,31 +509,45 @@ final class MangaRepository extends Model
     ): bool {
         $this->guardWrite();
 
-        $jacquette = MangaNoteNormalizer::normalize(
-            $jacquette
-        );
+        $jacquette = MangaNoteNormalizer
+            ::normalize($jacquette);
 
-        $livreNote = MangaNoteNormalizer::normalize(
-            $livreNote
-        );
+        $livreNote = MangaNoteNormalizer
+            ::normalize($livreNote);
 
         return $this->update(
             [
-                'editeur' => Str::nullableTrim($editeur),
-                'statut' => trim($statut),
-                'jacquette' => $jacquette,
-                'livre_note' => $livreNote,
-                'note' => $this->calculateNote(
+                'editeur' =>
+                    Str::nullableTrim(
+                        $editeur
+                    ),
+
+                'statut' =>
+                    trim($statut),
+
+                'jacquette' =>
                     $jacquette,
-                    $livreNote
-                ),
-                'commentaire' => Str::nullableTrim(
-                    $commentaire
-                ),
+
+                'livre_note' =>
+                    $livreNote,
+
+                'note' =>
+                    $this->calculateNote(
+                        $jacquette,
+                        $livreNote
+                    ),
+
+                'commentaire' =>
+                    Str::nullableTrim(
+                        $commentaire
+                    ),
             ],
             [
-                'slug' => Str::slug($slug),
-                'numero' => $numero,
+                'slug' =>
+                    Str::slug($slug),
+
+                'numero' =>
+                    $numero,
             ]
         );
     }
@@ -470,8 +564,11 @@ final class MangaRepository extends Model
                 'lu' => $lu ? 1 : 0,
             ],
             [
-                'slug' => Str::slug($slug),
-                'numero' => $numero,
+                'slug' =>
+                    Str::slug($slug),
+
+                'numero' =>
+                    $numero,
             ]
         );
     }
@@ -486,16 +583,24 @@ final class MangaRepository extends Model
 
         return $this->update(
             [
-                'jacquette' => $jacquette,
-                'livre_note' => $livreNote,
-                'note' => $this->calculateNote(
+                'jacquette' =>
                     $jacquette,
-                    $livreNote
-                ),
+
+                'livre_note' =>
+                    $livreNote,
+
+                'note' =>
+                    $this->calculateNote(
+                        $jacquette,
+                        $livreNote
+                    ),
             ],
             [
-                'slug' => Str::slug($slug),
-                'numero' => $numero,
+                'slug' =>
+                    Str::slug($slug),
+
+                'numero' =>
+                    $numero,
             ]
         );
     }
@@ -507,8 +612,11 @@ final class MangaRepository extends Model
         $this->guardWrite();
 
         return $this->delete([
-            'slug' => Str::slug($slug),
-            'numero' => $numero,
+            'slug' =>
+                Str::slug($slug),
+
+            'numero' =>
+                $numero,
         ]);
     }
 }
