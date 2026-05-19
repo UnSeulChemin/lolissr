@@ -2,11 +2,15 @@
 
 declare(strict_types=1);
 
-$basePath = rtrim($basePath, '/') . '/';
+$basePath = rtrim(
+    (string) ($basePath ?? ''),
+    '/'
+) . '/';
 
-$message = isset($message) && is_string($message)
-    ? $message
-    : 'Le contenu demandé est introuvable.';
+$message = isset($view['message'])
+    && is_string($view['message'])
+        ? $view['message']
+        : 'Le contenu demandé est introuvable.';
 
 ?>
 

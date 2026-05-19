@@ -2,27 +2,35 @@
 
 declare(strict_types=1);
 
-$basePath = rtrim($basePath, '/') . '/';
+use App\Core\Support\Session;
+
+$basePath = rtrim(
+    (string) ($basePath ?? ''),
+    '/'
+) . '/';
 
 $flashToast = null;
 
-if (!empty($_SESSION['success']))
+$success = Session::get('success');
+$error = Session::get('error');
+
+if (is_string($success) && $success !== '')
 {
     $flashToast = [
-        'message' => (string) $_SESSION['success'],
+        'message' => $success,
         'type' => 'success',
     ];
 
-    unset($_SESSION['success']);
+    Session::remove('success');
 }
-elseif (!empty($_SESSION['error']))
+elseif (is_string($error) && $error !== '')
 {
     $flashToast = [
-        'message' => (string) $_SESSION['error'],
+        'message' => $error,
         'type' => 'error',
     ];
 
-    unset($_SESSION['error']);
+    Session::remove('error');
 }
 
 ?>
@@ -34,15 +42,21 @@ elseif (!empty($_SESSION['error']))
 
     <meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
 
     <?= csrf_meta_tag() ?>
 
-    <title><?= e($title) ?></title>
+    <title><?= e($title ?? '') ?></title>
 
-    <link rel="shortcut icon" href="<?= e($basePath) ?>public/images/favicon/favicon.png">
+    <link
+        rel="shortcut icon"
+        href="<?= e($basePath) ?>public/images/favicon/favicon.png">
 
-    <link rel="stylesheet" href="<?= e($basePath) ?>public/css/app.css">
+    <link
+        rel="stylesheet"
+        href="<?= e($basePath) ?>public/css/app.css">
 
 </head>
 
@@ -50,7 +64,7 @@ elseif (!empty($_SESSION['error']))
 
     <?php require_once view_path('partials/header.php'); ?>
 
-    <main><?= $content ?></main>
+    <main><?= $content ?? '' ?></main>
 
     <div
         id="toast"
@@ -74,12 +88,15 @@ elseif (!empty($_SESSION['error']))
                 | JSON_HEX_AMP
                 | JSON_HEX_APOS
                 | JSON_HEX_QUOT
+                | JSON_THROW_ON_ERROR
             ) ?>;
         </script>
 
     <?php endif; ?>
 
-    <script type="module" src="<?= e($basePath) ?>public/js/core/app.js"></script>
+    <script
+        type="module"
+        src="<?= e($basePath) ?>public/js/core/app.js"></script>
 
 </body>
 

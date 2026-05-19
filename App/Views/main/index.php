@@ -2,7 +2,19 @@
 
 declare(strict_types=1);
 
-$basePath = rtrim($basePath, '/') . '/';
+$stats = $view['stats'] ?? null;
+
+if ($stats === null)
+{
+    throw new \RuntimeException(
+        'Stats manquantes dans la vue.'
+    );
+}
+
+$basePath = rtrim(
+    (string) ($basePath ?? ''),
+    '/'
+) . '/';
 
 $lowGlobal = $stats->lowRatedMangas[0] ?? null;
 $lowJacquette = $stats->lowJacquetteMangas[0] ?? null;

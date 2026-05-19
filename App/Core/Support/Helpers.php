@@ -217,19 +217,16 @@ if (!function_exists('json'))
 if (!function_exists('view'))
 {
     function view(
-        string $view,
+        string $viewFile,
         array $data = [],
         ?string $title = null
     ): never {
         $title ??= App::siteName();
 
-        extract(
-            $data,
-            EXTR_SKIP
-        );
+        $view = $data;
 
         $viewPath = view_path(
-            $view . '.php'
+            $viewFile . '.php'
         );
 
         $layoutPath = view_path(
@@ -240,7 +237,7 @@ if (!function_exists('view'))
         {
             throw new \RuntimeException(
                 'Vue introuvable : '
-                . $view
+                . $viewFile
             );
         }
 
@@ -264,6 +261,8 @@ if (!function_exists('view'))
         $html = ob_get_clean() ?: '';
 
         Response::html($html);
+
+        exit;
     }
 }
 

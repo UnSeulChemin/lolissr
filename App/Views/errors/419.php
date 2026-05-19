@@ -2,11 +2,15 @@
 
 declare(strict_types=1);
 
-$basePath = rtrim($basePath, '/') . '/';
+$basePath = rtrim(
+    (string) ($basePath ?? ''),
+    '/'
+) . '/';
 
-$message = isset($message) && is_string($message)
-    ? $message
-    : 'Session expirée ou requête invalide.';
+$message = isset($view['message'])
+    && is_string($view['message'])
+        ? $view['message']
+        : 'Session expirée ou requête invalide.';
 
 ?>
 

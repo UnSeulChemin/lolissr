@@ -3,19 +3,21 @@
 declare(strict_types=1);
 
 /**
- * @var \App\DTO\Chinois\ChinoisGrammaireDTO[] $grammaires
- * @var string $level
+ * @var array<string, mixed> $view
  */
 
-$grammaires = isset($grammaires) && is_array($grammaires)
-    ? $grammaires
+$grammaires = isset($view['grammaires']) && is_array($view['grammaires'])
+    ? $view['grammaires']
     : [];
 
-$level = isset($level)
-    ? (string) $level
+$level = isset($view['level'])
+    ? (string) $view['level']
     : '1';
 
-$basePath = rtrim($basePath, '/') . '/';
+$basePath = rtrim(
+    (string) ($basePath ?? ''),
+    '/'
+) . '/';
 
 $sections = [];
 

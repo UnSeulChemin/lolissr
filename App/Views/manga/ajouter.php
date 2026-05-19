@@ -7,7 +7,10 @@ use App\Core\Support\Session;
 $errors = Session::get('errors', []);
 $old = Session::get('old', []);
 
-$basePath = rtrim($basePath, '/') . '/';
+$basePath = rtrim(
+    (string) ($basePath ?? ''),
+    '/'
+) . '/';
 
 $statutValue = $old['statut'] ?? 'en_cours';
 

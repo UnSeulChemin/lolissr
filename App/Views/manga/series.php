@@ -2,24 +2,28 @@
 
 declare(strict_types=1);
 
-$mangas = isset($mangas) && is_array($mangas)
-    ? $mangas
-    : [];
+$mangas = isset($view['mangas'])
+    && is_array($view['mangas'])
+        ? $view['mangas']
+        : [];
 
-$compteur = isset($compteur)
-    ? (int) $compteur
+$compteur = isset($view['compteur'])
+    ? (int) $view['compteur']
     : 0;
 
-$currentPage = isset($currentPage)
-    ? (int) $currentPage
+$currentPage = isset($view['currentPage'])
+    ? (int) $view['currentPage']
     : 1;
 
-$slugFilter = $slugFilter ?? null;
+$slugFilter = $view['slugFilter'] ?? null;
 
 $isSerieView = is_string($slugFilter)
     && trim($slugFilter) !== '';
 
-$basePath = rtrim($basePath, '/') . '/';
+$basePath = rtrim(
+    (string) ($basePath ?? ''),
+    '/'
+) . '/';
 
 ?>
 

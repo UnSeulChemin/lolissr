@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-$vocabulaires = isset($vocabulaires) && is_array($vocabulaires)
-    ? $vocabulaires
-    : [];
+$vocabulaires = isset($view['vocabulaires'])
+    && is_array($view['vocabulaires'])
+        ? $view['vocabulaires']
+        : [];
 
 ?>
 

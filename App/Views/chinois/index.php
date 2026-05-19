@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
-$basePath = rtrim($basePath, '/') . '/';
+$basePath = rtrim(
+    (string) ($basePath ?? ''),
+    '/'
+) . '/';
 
 ?>
 

@@ -2,15 +2,19 @@
 
 declare(strict_types=1);
 
-$search = isset($search)
-    ? (string) $search
+$search = isset($view['search'])
+    ? (string) $view['search']
     : '';
 
-$mangas = isset($mangas) && is_array($mangas)
-    ? $mangas
-    : [];
+$mangas = isset($view['mangas'])
+    && is_array($view['mangas'])
+        ? $view['mangas']
+        : [];
 
-$basePath = rtrim($basePath, '/') . '/';
+$basePath = rtrim(
+    (string) ($basePath ?? ''),
+    '/'
+) . '/';
 
 ?>
 

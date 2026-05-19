@@ -63,7 +63,7 @@ abstract class Controller
     /**
      * Affiche une vue standard.
      *
-     * @param array<string, mixed> $data
+     * @param array<string, mixed>|object $data
      */
     protected function render(
         string $file,
@@ -71,36 +71,44 @@ abstract class Controller
     ): void {
         $viewPath = $this->viewPath($file);
 
-        if (!is_file($viewPath)) {
-            throw new NotFoundException('Vue introuvable : ' . $file);
+        if (!is_file($viewPath))
+        {
+            throw new NotFoundException(
+                'Vue introuvable : ' . $file
+            );
         }
 
-        // 👉 normalize object → array
-        if (is_object($data)) {
+        if (is_object($data))
+        {
             $data = (array) $data;
         }
 
-        // 🔥 SAFE VARIABLE INJECTION (remplace extract)
-        foreach ($data as $key => $value) {
-            $$key = $value;
-        }
+        $view = $data;
 
         $title = $this->title;
         $basePath = $this->basePath;
         $currentPath = app(Request::class)->path();
 
         ob_start();
+
         require $viewPath;
+
         $content = ob_get_clean() ?: '';
 
         $templatePath = $this->templatePath();
 
-        if (!is_file($templatePath)) {
-            throw new \RuntimeException('Template introuvable : ' . $this->template);
+        if (!is_file($templatePath))
+        {
+            throw new \RuntimeException(
+                'Template introuvable : '
+                . $this->template
+            );
         }
 
         ob_start();
+
         require $templatePath;
+
         $html = ob_get_clean() ?: '';
 
         Response::html($html);
@@ -125,14 +133,16 @@ abstract class Controller
             );
         }
 
-        extract($data, EXTR_SKIP);
+        $view = $data;
 
         $title = $this->title;
         $basePath = $this->basePath;
         $currentPath = app(Request::class)->path();
 
         ob_start();
+
         require $viewPath;
+
         $html = ob_get_clean() ?: '';
 
         Response::html($html);
@@ -160,14 +170,16 @@ abstract class Controller
             return;
         }
 
-        extract($data, EXTR_SKIP);
+        $view = $data;
 
         $title = $this->title;
         $basePath = $this->basePath;
         $currentPath = app(Request::class)->path();
 
         ob_start();
+
         require $viewPath;
+
         $content = ob_get_clean() ?: '';
 
         $templatePath = $this->templatePath();
@@ -184,7 +196,9 @@ abstract class Controller
         }
 
         ob_start();
+
         require $templatePath;
+
         $html = ob_get_clean() ?: '';
 
         Response::html($html, $statusCode);
@@ -303,7 +317,9 @@ abstract class Controller
         $this->renderError(
             '404',
             404,
-            ['message' => $message]
+            [
+                'message' => $message,
+            ]
         );
     }
 
@@ -318,7 +334,9 @@ abstract class Controller
         $this->renderError(
             '405',
             405,
-            ['message' => $message]
+            [
+                'message' => $message,
+            ]
         );
     }
 
@@ -333,19 +351,27 @@ abstract class Controller
         $this->renderError(
             '500',
             500,
-            ['message' => $message]
+            [
+                'message' => $message,
+            ]
         );
     }
 
     protected function isAjax(Request $request): bool
     {
         return $request->isAjax()
-            || str_contains($request->server('HTTP_ACCEPT', ''), 'application/json');
+            || str_contains(
+                $request->server('HTTP_ACCEPT', ''),
+                'application/json'
+            );
     }
 
-    protected function json(array $data, int $status = 200): void
-    {
+    protected function json(
+        array $data,
+        int $status = 200
+    ): void {
         Response::json($data, $status);
+
         exit;
     }
 
@@ -354,8 +380,10 @@ abstract class Controller
         callable $ajax,
         callable $html
     ): void {
-        if ($this->isAjax($request)) {
+        if ($this->isAjax($request))
+        {
             $ajax();
+
             return;
         }
 

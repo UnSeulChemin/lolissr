@@ -4,6 +4,20 @@ declare(strict_types=1);
 
 use App\Core\Support\Session;
 
+$manga = $view['manga'] ?? null;
+
+if ($manga === null)
+{
+    throw new \RuntimeException(
+        'Manga manquant dans la vue.'
+    );
+}
+
+$basePath = rtrim(
+    (string) ($basePath ?? ''),
+    '/'
+) . '/';
+
 $errors = Session::get('errors', []);
 $old = Session::get('old', []);
 

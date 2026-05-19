@@ -11,7 +11,10 @@ declare(strict_types=1);
 $currentPath ??= '/';
 
 /* Base path toujours propre */
-$basePath = rtrim($basePath, '/') . '/';
+$basePath = rtrim(
+    (string) ($basePath ?? ''),
+    '/'
+) . '/';
 
 $cleanBasePath = rtrim($basePath, '/');
 
@@ -87,6 +90,7 @@ if (
 ?>
 
 <header>
+
     <nav>
 
         <a
@@ -95,6 +99,7 @@ if (
             title="Accueil">
 
             <span class="site-logo-loli">Loli</span>
+
             <span class="site-logo-ssr">SSR</span>
 
         </a>
@@ -102,30 +107,42 @@ if (
         <ul>
 
             <li>
+
                 <a
                     class="nav-link-icon <?= e($activeHome) ?>"
                     href="<?= e($basePath) ?>"
                     title="Accueil">
+
                     🏠
+
                 </a>
+
             </li>
 
             <li>
+
                 <a
                     class="nav-link-icon <?= e($activeManga) ?>"
                     href="<?= e($basePath) ?>manga"
                     title="Manga">
+
                     📚
+
                 </a>
+
             </li>
 
             <li>
+
                 <a
                     class="nav-link-icon <?= e($activeChinois) ?>"
                     href="<?= e($basePath) ?>chinois"
                     title="Chinois">
+
                     ⛩️
+
                 </a>
+
             </li>
 
         </ul>
@@ -148,7 +165,9 @@ if (
                 <button
                     type="submit"
                     title="Rechercher">
+
                     🔎
+
                 </button>
 
             </form>
@@ -189,4 +208,5 @@ if (
         </div>
 
     </nav>
+
 </header>

@@ -2,6 +2,20 @@
 
 declare(strict_types=1);
 
+$manga = $view['manga'] ?? null;
+
+if ($manga === null)
+{
+    throw new \RuntimeException(
+        'Manga manquant dans la vue.'
+    );
+}
+
+$basePath = rtrim(
+    (string) ($basePath ?? ''),
+    '/'
+) . '/';
+
 $slug = rawurlencode((string) $manga->slug);
 
 $numero = (int) $manga->numero;
