@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Database;
 
+use App\Core\Application\App;
 use App\Core\Config\DatabaseConfig;
 use App\Core\Support\Logger;
 use PDO;

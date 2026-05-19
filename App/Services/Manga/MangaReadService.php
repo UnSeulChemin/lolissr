@@ -185,7 +185,7 @@ final class MangaReadService
                 $numero
             );
 
-        if ($manga === false) {
+        if ($manga === null) {
             return null;
         }
 

@@ -6,23 +6,23 @@ namespace App\Models;
 
 final class Manga
 {
-    public int $id;
+    public int $id = 0;
 
-    public string $thumbnail;
+    public string $thumbnail = '';
 
-    public string $extension;
+    public string $extension = '';
 
-    public string $slug;
+    public string $slug = '';
 
-    public string $livre;
+    public string $livre = '';
 
-    public string $editeur;
+    public string $editeur = '';
 
-    public int $numero;
+    public int $numero = 0;
 
-    public int $lu;
+    public int $lu = 0;
 
-    public string $statut;
+    public string $statut = '';
 
     public ?int $jacquette = null;
 
@@ -32,7 +32,7 @@ final class Manga
 
     public ?string $commentaire = null;
 
-    public string $created_at;
+    public string $created_at = '';
 
     public ?int $total = null;
 
