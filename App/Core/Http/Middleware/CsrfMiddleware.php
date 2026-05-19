@@ -6,6 +6,7 @@ namespace App\Core\Http\Middleware;
 
 use App\Core\Application\App;
 use App\Core\Http\Request;
+use App\Core\Support\Session;
 
 final class CsrfMiddleware implements MiddlewareInterface
 {
@@ -22,7 +23,9 @@ final class CsrfMiddleware implements MiddlewareInterface
             return;
         }
 
-        $sessionToken = $_SESSION['csrf_token'] ?? null;
+        $sessionToken = Session::get(
+            'csrf_token'
+        );
 
         $postedToken = $request->input('csrf_token')
             ?? $request->header('X-CSRF-TOKEN');
