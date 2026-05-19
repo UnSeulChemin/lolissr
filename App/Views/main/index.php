@@ -16,8 +16,6 @@ $basePath = rtrim(
     '/'
 ) . '/';
 
-$lowGlobal = $stats->lowRatedMangas[0] ?? null;
-
 ?>
 
 <section class="layout-container">
@@ -310,63 +308,6 @@ $lowGlobal = $stats->lowRatedMangas[0] ?? null;
             </div>
 
         </article>
-
-    </section>
-
-    <h2 class="home-section-title">
-        ⚠️ Mangas à surveiller
-    </h2>
-
-    <section class="home-grid home-grid-watch card-grid-3 animate-fade-up-stagger">
-
-        <?php if ($lowGlobal): ?>
-
-            <?php
-            $href = $basePath
-                . 'manga/series/'
-                . rawurlencode($lowGlobal->slug)
-                . '/'
-                . (int) $lowGlobal->numero;
-
-            $thumbnailPath = $basePath
-                . 'public/images/mangas/thumbnail/'
-                . $lowGlobal->thumbnail
-                . '.'
-                . $lowGlobal->extension;
-            ?>
-
-            <a
-                class="card card-link card-medium"
-                href="<?= e($href) ?>">
-
-                <h2 class="home-card-title">
-                    📉 À remplacer
-                </h2>
-
-                <div class="home-feature-content">
-
-                    <div class="card-image-box-portrait home-feature-image-box">
-
-                        <img
-                            class="card-image-portrait"
-                            src="<?= e($thumbnailPath) ?>"
-                            alt="<?= e($lowGlobal->livre) ?>">
-
-                    </div>
-
-                    <div class="home-feature-info">
-
-                        <p><?= e($lowGlobal->livre) ?></p>
-
-                        <p><?= (int) $lowGlobal->note ?>/10</p>
-
-                    </div>
-
-                </div>
-
-            </a>
-
-        <?php endif; ?>
 
     </section>
 

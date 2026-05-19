@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Repositories\Manga;
 
-use App\Core\Support\MangaNoteNormalizer;
 use App\Core\Application\App;
+use App\Core\Support\MangaNoteNormalizer;
 use App\Core\Support\Str;
 use App\Models\Manga;
 use App\Models\Model;
@@ -17,7 +17,8 @@ final class MangaRepository extends Model
 
     private function guardWrite(): void
     {
-        if (App::isReadOnly()) {
+        if (App::isReadOnly())
+        {
             throw new LogicException(
                 'Écriture en base interdite en mode test.'
             );
@@ -67,7 +68,8 @@ final class MangaRepository extends Model
             ) ?? ''
         );
 
-        if ($search === '') {
+        if ($search === '')
+        {
             return [];
         }
 
@@ -84,7 +86,8 @@ final class MangaRepository extends Model
 
             $numero = (int) $matches[2];
 
-            if ($titlePart !== '') {
+            if ($titlePart !== '')
+            {
                 return $this->fetchAll(
                     "SELECT *
                     FROM {$this->getTable()}
@@ -232,26 +235,6 @@ final class MangaRepository extends Model
             WHERE m1.numero = 1
             ORDER BY counts.total DESC,
                      m1.livre ASC"
-        );
-    }
-
-    /**
-     * @return list<Manga>
-     */
-    public function findLowRatedMangas(
-        int $limit = 5
-    ): array {
-        $limit = max(1, $limit);
-
-        return $this->fetchAll(
-            "SELECT *
-            FROM {$this->getTable()}
-            ORDER BY COALESCE(note, 0) ASC,
-                     livre ASC,
-                     numero ASC
-            LIMIT {$limit}",
-            [],
-            Manga::class
         );
     }
 

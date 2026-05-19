@@ -29,7 +29,10 @@ final class StatsService
 
     public function totalUnread(): int
     {
-        return max(0, $this->totalTomes() - $this->totalRead());
+        return max(
+            0,
+            $this->totalTomes() - $this->totalRead()
+        );
     }
 
     public function readingProgress(): int
@@ -37,7 +40,9 @@ final class StatsService
         $total = $this->totalTomes();
 
         return $total > 0
-            ? (int) round(($this->totalRead() / $total) * 100)
+            ? (int) round(
+                ($this->totalRead() / $total) * 100
+            )
             : 0;
     }
 
@@ -45,7 +50,9 @@ final class StatsService
     {
         $value = $this->repository->averageNote();
 
-        return $value !== null ? (float) $value : null;
+        return $value !== null
+            ? (float) $value
+            : null;
     }
 
     public function lastTome(): ?object
@@ -58,43 +65,42 @@ final class StatsService
         return $this->repository->findLongestSeries();
     }
 
-    private function toObjectList(array $items): array
-    {
-        return array_map(
-            static fn ($item) => (object) $item,
-            $items
-        );
-    }
-
-    public function topLongestSeries(int $limit = 5): array
-    {
-        return $this->toObjectList(
-            $this->repository->topLongestSeries($limit)
-        );
-    }
-
-    public function lowRated(int $limit = 5): array
-    {
-        return $this->toObjectList(
-            $this->repository->findLowRatedMangas($limit)
-        );
+    public function topLongestSeries(
+        int $limit = 5
+    ): array {
+        return $this->repository
+            ->topLongestSeries($limit);
     }
 
     public function dashboard(): object
     {
         return (object) [
-            'totalTomes' => $this->totalTomes(),
-            'totalSeries' => $this->totalSeries(),
-            'totalRead' => $this->totalRead(),
-            'totalUnread' => $this->totalUnread(),
-            'readingProgress' => $this->readingProgress(),
-            'averageNote' => $this->averageNote(),
+            'totalTomes' =>
+                $this->totalTomes(),
 
-            'lastTome' => $this->lastTome(),
-            'longestSeries' => $this->longestSeries(),
+            'totalSeries' =>
+                $this->totalSeries(),
 
-            'topLongestSeries' => $this->topLongestSeries(),
-            'lowRatedMangas' => $this->lowRated(),
+            'totalRead' =>
+                $this->totalRead(),
+
+            'totalUnread' =>
+                $this->totalUnread(),
+
+            'readingProgress' =>
+                $this->readingProgress(),
+
+            'averageNote' =>
+                $this->averageNote(),
+
+            'lastTome' =>
+                $this->lastTome(),
+
+            'longestSeries' =>
+                $this->longestSeries(),
+
+            'topLongestSeries' =>
+                $this->topLongestSeries(),
         ];
     }
 }
