@@ -2,7 +2,10 @@ parameters:
     level: 5
 
     paths:
-        - app
+        - App
 
     excludePaths:
         - vendor
+
+    bootstrapFiles:
+        - phpstan-bootstrap.php

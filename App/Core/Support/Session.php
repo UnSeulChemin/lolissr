@@ -52,6 +52,7 @@ final class Session
         ini_set('session.use_only_cookies', '1');
         ini_set('session.use_trans_sid', '0');
         ini_set('session.cookie_httponly', '1');
+
         ini_set(
             'session.cookie_secure',
             $secure ? '1' : '0'
@@ -200,7 +201,7 @@ final class Session
                     'domain' => $params['domain'],
                     'secure' => $params['secure'],
                     'httponly' => $params['httponly'],
-                    'samesite' => $params['samesite'] ?? 'Lax',
+                    'samesite' => $params['samesite'],
                 ]
             );
         }
