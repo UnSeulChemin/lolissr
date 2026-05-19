@@ -1,3 +1,11 @@
+<?php
+
+declare(strict_types=1);
+
+$basePath = rtrim($basePath, '/') . '/';
+
+?>
+
 <section class="layout-container dashboard-page">
 
     <section class="dashboard-header">
@@ -20,7 +28,7 @@
 
         <a
             class="dashboard-card"
-            href="<?= $basePath ?>manga/collection">
+            href="<?= e($basePath) ?>manga/collection">
 
             <span class="dashboard-card-icon" aria-hidden="true">📚</span>
 
@@ -36,7 +44,7 @@
 
         <a
             class="dashboard-card"
-            href="<?= $basePath ?>manga/ajouter">
+            href="<?= e($basePath) ?>manga/ajouter">
 
             <span class="dashboard-card-icon" aria-hidden="true">➕</span>
 
@@ -52,7 +60,7 @@
 
         <a
             class="dashboard-card"
-            href="<?= $basePath ?>manga/lien">
+            href="<?= e($basePath) ?>manga/lien">
 
             <span class="dashboard-card-icon" aria-hidden="true">🔗</span>
 

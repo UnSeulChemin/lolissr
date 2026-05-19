@@ -1,3 +1,11 @@
+<?php
+
+declare(strict_types=1);
+
+$basePath = rtrim($basePath, '/') . '/';
+
+?>
+
 <section class="layout-container dashboard-page">
 
     <section class="dashboard-header">
@@ -20,7 +28,7 @@
 
         <a
             class="dashboard-card"
-            href="<?= $basePath ?>chinois/mandarin">
+            href="<?= e($basePath) ?>chinois/mandarin">
 
             <span class="dashboard-card-icon" aria-hidden="true">中文</span>
 
@@ -36,13 +44,9 @@
 
         <a
             class="dashboard-card"
-            href="<?= $basePath ?>chinois/jinyu">
+            href="<?= e($basePath) ?>chinois/jinyu">
 
-            <span
-                class="dashboard-card-icon"
-                aria-hidden="true">
-                晋语
-            </span>
+            <span class="dashboard-card-icon" aria-hidden="true">晋语</span>
 
             <span class="dashboard-card-title">
                 JinYu
@@ -56,7 +60,7 @@
 
         <a
             class="dashboard-card"
-            href="<?= $basePath ?>chinois/ajouter">
+            href="<?= e($basePath) ?>chinois/ajouter">
 
             <span class="dashboard-card-icon" aria-hidden="true">➕</span>
 
@@ -72,7 +76,7 @@
 
         <a
             class="dashboard-card"
-            href="<?= $basePath ?>chinois/grammaire">
+            href="<?= e($basePath) ?>chinois/grammaire">
 
             <span class="dashboard-card-icon" aria-hidden="true">📖</span>
 
@@ -88,7 +92,7 @@
 
         <a
             class="dashboard-card"
-            href="<?= $basePath ?>chinois/flashcards">
+            href="<?= e($basePath) ?>chinois/flashcards">
 
             <span class="dashboard-card-icon" aria-hidden="true">🧠</span>
 

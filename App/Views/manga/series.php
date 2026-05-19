@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $mangas = isset($mangas) && is_array($mangas)
     ? $mangas
     : [];
@@ -105,7 +107,8 @@ $basePath = rtrim($basePath, '/') . '/';
                             || $thumbnail === ''
                             || $extension === ''
                             || $livre === ''
-                        ) {
+                        )
+                        {
                             continue;
                         }
 
@@ -170,34 +173,42 @@ $basePath = rtrim($basePath, '/') . '/';
                         $statutClass = $statut === 'termine'
                             ? 'collection-status-finished'
                             : 'collection-status-progress';
+
+                        $thumbnailPath = $basePath
+                            . 'public/images/mangas/thumbnail/'
+                            . $thumbnail
+                            . '.'
+                            . $extension;
                         ?>
 
                         <a
                             class="card card-link collection-card-link"
-                            href="<?= htmlspecialchars($href, ENT_QUOTES, 'UTF-8'); ?>">
+                            href="<?= e($href) ?>">
 
                             <?php if (!$isSerieView): ?>
 
-                                <span class="collection-status-badge <?= htmlspecialchars($statutClass, ENT_QUOTES, 'UTF-8'); ?>">
+                                <span
+                                    class="collection-status-badge <?= e($statutClass) ?>">
 
-                                    <?= htmlspecialchars($statutLabel, ENT_QUOTES, 'UTF-8'); ?>
+                                    <?= e($statutLabel) ?>
 
                                 </span>
 
                             <?php endif; ?>
 
-                            <span class="collection-card-badge <?= htmlspecialchars($noteClass, ENT_QUOTES, 'UTF-8'); ?>">
+                            <span
+                                class="collection-card-badge <?= e($noteClass) ?>">
 
                                 ⭐ <?= $note !== null
-                                    ? htmlspecialchars($noteLabel, ENT_QUOTES, 'UTF-8')
-                                    : '0'; ?>/10
+                                    ? e($noteLabel)
+                                    : '0' ?>/10
 
                             </span>
 
                             <span
                                 class="collection-read-badge <?= $readBadgeActive ? 'active' : '' ?>"
-                                title="<?= htmlspecialchars($readBadgeTitle, ENT_QUOTES, 'UTF-8'); ?>"
-                                aria-label="<?= htmlspecialchars($readBadgeTitle, ENT_QUOTES, 'UTF-8'); ?>">
+                                title="<?= e($readBadgeTitle) ?>"
+                                aria-label="<?= e($readBadgeTitle) ?>">
 
                                 <svg
                                     class="collection-read-icon"
@@ -214,14 +225,14 @@ $basePath = rtrim($basePath, '/') . '/';
 
                                 <img
                                     class="card-image-portrait"
-                                    src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($thumbnail . '.' . $extension, ENT_QUOTES, 'UTF-8'); ?>"
-                                    alt="<?= htmlspecialchars($livre, ENT_QUOTES, 'UTF-8'); ?>">
+                                    src="<?= e($thumbnailPath) ?>"
+                                    alt="<?= e($livre) ?>">
 
                             </div>
 
                             <p class="collection-card-title">
 
-                                <?= htmlspecialchars($livre, ENT_QUOTES, 'UTF-8'); ?>
+                                <?= e($livre) ?>
 
                             </p>
 
@@ -229,11 +240,11 @@ $basePath = rtrim($basePath, '/') . '/';
 
                                 <?php if ($isSerieView): ?>
 
-                                    Tome <?= str_pad((string) $numero, 2, '0', STR_PAD_LEFT); ?>
+                                    Tome <?= str_pad((string) $numero, 2, '0', STR_PAD_LEFT) ?>
 
                                 <?php else: ?>
 
-                                    <?= $total; ?> tomes
+                                    <?= $total ?> tomes
 
                                 <?php endif; ?>
 
@@ -254,10 +265,10 @@ $basePath = rtrim($basePath, '/') . '/';
                     <?php for ($getId = 1; $getId <= $compteur; $getId++): ?>
 
                         <a
-                            class="collection-pagination-link <?= ($currentPage === $getId) ? 'active' : ''; ?>"
-                            href="<?= $basePath; ?>manga/series/page/<?= $getId; ?>">
+                            class="collection-pagination-link <?= $currentPage === $getId ? 'active' : '' ?>"
+                            href="<?= e($basePath) ?>manga/series/page/<?= $getId ?>">
 
-                            <?= $getId; ?>
+                            <?= $getId ?>
 
                         </a>
 
@@ -273,7 +284,7 @@ $basePath = rtrim($basePath, '/') . '/';
 
                     <a
                         class="form-submit collection-back-button"
-                        href="<?= $basePath; ?>manga/series">
+                        href="<?= e($basePath) ?>manga/series">
 
                         Retour
 

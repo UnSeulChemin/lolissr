@@ -91,7 +91,7 @@ if (
 
         <a
             class="site-logo"
-            href="<?= $basePath ?>"
+            href="<?= e($basePath) ?>"
             title="Accueil">
 
             <span class="site-logo-loli">Loli</span>
@@ -103,8 +103,8 @@ if (
 
             <li>
                 <a
-                    class="nav-link-icon <?= $activeHome ?>"
-                    href="<?= $basePath ?>"
+                    class="nav-link-icon <?= e($activeHome) ?>"
+                    href="<?= e($basePath) ?>"
                     title="Accueil">
                     🏠
                 </a>
@@ -112,8 +112,8 @@ if (
 
             <li>
                 <a
-                    class="nav-link-icon <?= $activeManga ?>"
-                    href="<?= $basePath ?>manga"
+                    class="nav-link-icon <?= e($activeManga) ?>"
+                    href="<?= e($basePath) ?>manga"
                     title="Manga">
                     📚
                 </a>
@@ -121,8 +121,8 @@ if (
 
             <li>
                 <a
-                    class="nav-link-icon <?= $activeChinois ?>"
-                    href="<?= $basePath ?>chinois"
+                    class="nav-link-icon <?= e($activeChinois) ?>"
+                    href="<?= e($basePath) ?>chinois"
                     title="Chinois">
                     ⛩️
                 </a>
@@ -134,14 +134,14 @@ if (
 
             <form
                 class="header-search js-header-search"
-                data-base-path="<?= htmlspecialchars($basePath, ENT_QUOTES) ?>">
+                data-base-path="<?= e($basePath) ?>">
 
                 <input
                     id="header-search-input"
                     type="search"
                     name="q"
                     placeholder="Rechercher..."
-                    value="<?= htmlspecialchars($currentSearch) ?>"
+                    value="<?= e($currentSearch) ?>"
                     aria-label="Rechercher"
                     autocomplete="off">
 

@@ -1,12 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @var \App\DTO\Chinois\ChinoisGrammaireDTO[] $grammaires
  * @var string $level
  */
 
-$grammaires = $grammaires ?? [];
-$level = $level ?? '1';
+$grammaires = isset($grammaires) && is_array($grammaires)
+    ? $grammaires
+    : [];
+
+$level = isset($level)
+    ? (string) $level
+    : '1';
+
+$basePath = rtrim($basePath, '/') . '/';
 
 $sections = [];
 
@@ -45,11 +54,11 @@ $sourceDescriptions = [
         <div class="grammar-hero-main">
 
             <h1 class="grammar-hero-title">
-                📘 HSK<?= htmlspecialchars($level) ?>
+                📘 HSK<?= e($level) ?>
             </h1>
 
             <p class="grammar-hero-description">
-                <?= htmlspecialchars($descriptions[$level]) ?>
+                <?= e($descriptions[$level]) ?>
             </p>
 
         </div>
@@ -63,21 +72,23 @@ $sourceDescriptions = [
                 </span>
 
                 <h2 class="grammar-source-title">
-                    Chine Informations — HSK<?= htmlspecialchars($level) ?>
+                    Chine Informations — HSK<?= e($level) ?>
                 </h2>
 
                 <p class="grammar-source-description">
-                    <?= htmlspecialchars($sourceDescriptions[$level]) ?>
+                    <?= e($sourceDescriptions[$level]) ?>
                 </p>
 
             </div>
 
             <a
                 class="grammar-source-link"
-                href="<?= htmlspecialchars($sources[$level]) ?>"
+                href="<?= e($sources[$level]) ?>"
                 target="_blank"
                 rel="noopener noreferrer">
+
                 Ouvrir
+
             </a>
 
         </div>
@@ -92,7 +103,7 @@ $sourceDescriptions = [
 
                 <span class="grammar-section-bar"></span>
 
-                <?= htmlspecialchars($section) ?>
+                <?= e($section) ?>
 
             </h2>
 
@@ -104,7 +115,7 @@ $sourceDescriptions = [
 
                         <span class="grammar-category-bar"></span>
 
-                        <?= htmlspecialchars($categorie) ?>
+                        <?= e($categorie) ?>
 
                     </h3>
 
@@ -115,37 +126,37 @@ $sourceDescriptions = [
                             <article class="grammar-item">
 
                                 <h4 class="grammar-topic">
-                                    <?= htmlspecialchars($grammaire->titre) ?>
+                                    <?= e($grammaire->titre) ?>
                                 </h4>
 
                                 <div class="grammar-structure">
-                                    <?= htmlspecialchars($grammaire->structure) ?>
+                                    <?= e($grammaire->structure) ?>
                                 </div>
 
                                 <div class="grammar-example">
-                                    <?= htmlspecialchars($grammaire->phrase) ?>
+                                    <?= e($grammaire->phrase) ?>
                                 </div>
 
                                 <div class="grammar-pinyin">
-                                    <?= htmlspecialchars($grammaire->pinyin) ?>
+                                    <?= e($grammaire->pinyin) ?>
                                 </div>
 
                                 <div class="grammar-translation">
-                                    <?= htmlspecialchars($grammaire->traduction) ?>
+                                    <?= e($grammaire->traduction) ?>
                                 </div>
 
                                 <?php if (!empty($grammaire->explication)): ?>
 
                                     <div class="grammar-explanation">
-                                        <?= htmlspecialchars($grammaire->explication) ?>
+                                        <?= e($grammaire->explication) ?>
                                     </div>
 
                                 <?php endif; ?>
 
                                 <button
                                     class="grammar-mastered <?= !empty($grammaire->maitrise) ? 'active' : '' ?>"
-                                    data-id="<?= $grammaire->id ?>"
-                                    data-url="<?= $basePath; ?>/chinois/ajax/toggle-grammaire-maitrise"
+                                    data-id="<?= (int) $grammaire->id ?>"
+                                    data-url="<?= e($basePath) ?>chinois/ajax/toggle-grammaire-maitrise"
                                     data-maitrise="<?= !empty($grammaire->maitrise) ? '1' : '0' ?>"
                                     type="button"
                                     aria-label="Marquer comme maîtrisé">

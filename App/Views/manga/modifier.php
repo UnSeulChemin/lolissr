@@ -1,27 +1,47 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Core\Support\Session;
 
 $errors = Session::get('errors', []);
 $old = Session::get('old', []);
 
-$editeurValue = $old['editeur'] ?? ($manga->editeur ?? '');
-$statutValue = $old['statut'] ?? ($manga->statut ?? 'en_cours');
-$jacquetteValue = $old['jacquette'] ?? ($manga->jacquette ?? '');
-$livreNoteValue = $old['livre_note'] ?? ($manga->livre_note ?? '');
-$commentaireValue = $old['commentaire'] ?? ($manga->commentaire ?? '');
+$editeurValue = $old['editeur']
+    ?? ($manga->editeur ?? '');
+
+$statutValue = $old['statut']
+    ?? ($manga->statut ?? 'en_cours');
+
+$jacquetteValue = $old['jacquette']
+    ?? ($manga->jacquette ?? '');
+
+$livreNoteValue = $old['livre_note']
+    ?? ($manga->livre_note ?? '');
+
+$commentaireValue = $old['commentaire']
+    ?? ($manga->commentaire ?? '');
 
 $statutOptions = [
     'en_cours' => 'En cours',
     'termine' => 'Terminé',
 ];
 
-$cancelUrl =
-    $basePath
-    . 'manga/series/'
-    . rawurlencode($manga->slug)
+$formAction = $basePath
+    . 'manga/series/modifier/'
+    . rawurlencode((string) $manga->slug)
     . '/'
     . (int) $manga->numero;
+
+$cancelUrl = $basePath
+    . 'manga/series/'
+    . rawurlencode((string) $manga->slug)
+    . '/'
+    . (int) $manga->numero;
+
+$noteTotal = $manga->note !== null
+    ? (int) $manga->note . '/10'
+    : 'Non calculée';
 
 ?>
 
@@ -34,65 +54,113 @@ $cancelUrl =
             <form
                 class="form-layout"
                 data-form-page="modifier"
-                action="<?= $basePath . 'manga/series/modifier/' . rawurlencode($manga->slug) . '/' . (int) $manga->numero; ?>"
+                action="<?= e($formAction) ?>"
                 method="post">
 
                 <?= csrf_field() ?>
 
                 <div class="form-group">
 
-                    <label class="form-label" for="jacquette">
+                    <label
+                        class="form-label"
+                        for="jacquette">
+
                         Note jacquette
+
                     </label>
 
-                    <select class="form-input form-select" name="jacquette" id="jacquette">
-                        <option value="">Choisir</option>
+                    <select
+                        class="form-input form-select"
+                        name="jacquette"
+                        id="jacquette">
+
+                        <option value="">
+                            Choisir
+                        </option>
 
                         <?php for ($i = 1; $i <= 5; $i++): ?>
-                            <option value="<?= $i; ?>" <?= ((string) $jacquetteValue === (string) $i) ? 'selected' : ''; ?>>
-                                <?= $i; ?>
+
+                            <option
+                                value="<?= $i ?>"
+                                <?= (string) $jacquetteValue === (string) $i
+                                    ? 'selected'
+                                    : '' ?>>
+
+                                <?= $i ?>
+
                             </option>
+
                         <?php endfor; ?>
 
                     </select>
 
                     <?php if (!empty($errors['jacquette'])): ?>
+
                         <p class="form-error">
-                            <?= htmlspecialchars($errors['jacquette']) ?>
+
+                            <?= e($errors['jacquette']) ?>
+
                         </p>
+
                     <?php endif; ?>
 
                 </div>
 
                 <div class="form-group">
 
-                    <label class="form-label" for="livre_note">
+                    <label
+                        class="form-label"
+                        for="livre_note">
+
                         Note livre
+
                     </label>
 
-                    <select class="form-input form-select" name="livre_note" id="livre_note">
-                        <option value="">Choisir</option>
+                    <select
+                        class="form-input form-select"
+                        name="livre_note"
+                        id="livre_note">
+
+                        <option value="">
+                            Choisir
+                        </option>
 
                         <?php for ($i = 1; $i <= 5; $i++): ?>
-                            <option value="<?= $i; ?>" <?= ((string) $livreNoteValue === (string) $i) ? 'selected' : ''; ?>>
-                                <?= $i; ?>
+
+                            <option
+                                value="<?= $i ?>"
+                                <?= (string) $livreNoteValue === (string) $i
+                                    ? 'selected'
+                                    : '' ?>>
+
+                                <?= $i ?>
+
                             </option>
+
                         <?php endfor; ?>
 
                     </select>
 
                     <?php if (!empty($errors['livre_note'])): ?>
+
                         <p class="form-error">
-                            <?= htmlspecialchars($errors['livre_note']) ?>
+
+                            <?= e($errors['livre_note']) ?>
+
                         </p>
+
                     <?php endif; ?>
 
                 </div>
 
                 <div class="form-group">
 
-                    <label class="form-label" for="editeur">
+                    <label
+                        class="form-label"
+                        for="editeur">
+
                         Éditeur
+
                     </label>
 
                     <input
@@ -101,22 +169,30 @@ $cancelUrl =
                         name="editeur"
                         id="editeur"
                         placeholder="Ex : Delcourt/Tonkam"
-                        value="<?= htmlspecialchars($editeurValue) ?>"
+                        value="<?= e($editeurValue) ?>"
                         maxlength="100"
                         required>
 
                     <?php if (!empty($errors['editeur'])): ?>
+
                         <p class="form-error">
-                            <?= htmlspecialchars($errors['editeur']) ?>
+
+                            <?= e($errors['editeur']) ?>
+
                         </p>
+
                     <?php endif; ?>
 
                 </div>
 
                 <div class="form-group">
 
-                    <label class="form-label" for="statut">
+                    <label
+                        class="form-label"
+                        for="statut">
+
                         Statut
+
                     </label>
 
                     <select
@@ -126,27 +202,41 @@ $cancelUrl =
                         required>
 
                         <?php foreach ($statutOptions as $value => $label): ?>
+
                             <option
-                                value="<?= htmlspecialchars($value) ?>"
-                                <?= ((string) $statutValue === (string) $value) ? 'selected' : ''; ?>>
-                                <?= htmlspecialchars($label) ?>
+                                value="<?= e($value) ?>"
+                                <?= (string) $statutValue === (string) $value
+                                    ? 'selected'
+                                    : '' ?>>
+
+                                <?= e($label) ?>
+
                             </option>
+
                         <?php endforeach; ?>
 
                     </select>
 
                     <?php if (!empty($errors['statut'])): ?>
+
                         <p class="form-error">
-                            <?= htmlspecialchars($errors['statut']) ?>
+
+                            <?= e($errors['statut']) ?>
+
                         </p>
+
                     <?php endif; ?>
 
                 </div>
 
                 <div class="form-group">
 
-                    <label class="form-label" for="commentaire">
+                    <label
+                        class="form-label"
+                        for="commentaire">
+
                         Commentaire
+
                     </label>
 
                     <textarea
@@ -155,27 +245,35 @@ $cancelUrl =
                         id="commentaire"
                         rows="5"
                         maxlength="1000"
-                        placeholder="Ex : défaut en haut de la jacquette"><?= htmlspecialchars($commentaireValue) ?></textarea>
+                        placeholder="Ex : défaut en haut de la jacquette"><?= e($commentaireValue) ?></textarea>
 
                     <?php if (!empty($errors['commentaire'])): ?>
+
                         <p class="form-error">
-                            <?= htmlspecialchars($errors['commentaire']) ?>
+
+                            <?= e($errors['commentaire']) ?>
+
                         </p>
+
                     <?php endif; ?>
 
                 </div>
 
                 <div class="form-group">
 
-                    <label class="form-label" for="note-total">
+                    <label
+                        class="form-label"
+                        for="note-total">
+
                         Note totale actuelle
+
                     </label>
 
                     <input
                         class="form-input"
                         type="text"
                         id="note-total"
-                        value="<?= $manga->note !== null ? (int) $manga->note . '/10' : 'Non calculée' ?>"
+                        value="<?= e($noteTotal) ?>"
                         readonly>
 
                 </div>
@@ -185,13 +283,17 @@ $cancelUrl =
                     <button
                         type="submit"
                         class="form-submit">
+
                         Enregistrer
+
                     </button>
 
                     <a
                         class="form-submit form-submit-secondary"
-                        href="<?= $cancelUrl; ?>">
+                        href="<?= e($cancelUrl) ?>">
+
                         Annuler
+
                     </a>
 
                 </div>

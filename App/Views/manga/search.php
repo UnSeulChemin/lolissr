@@ -1,5 +1,17 @@
 <?php
-$search = $search ?? '';
+
+declare(strict_types=1);
+
+$search = isset($search)
+    ? (string) $search
+    : '';
+
+$mangas = isset($mangas) && is_array($mangas)
+    ? $mangas
+    : [];
+
+$basePath = rtrim($basePath, '/') . '/';
+
 ?>
 
 <section class="layout-container">
@@ -9,70 +21,148 @@ $search = $search ?? '';
     </h1>
 
     <?php if ($search !== ''): ?>
-        <p class="home-empty" style="text-align: center; margin-bottom: 10px;">
-            Résultats pour : <strong><?= htmlspecialchars($search) ?></strong>
+
+        <p
+            class="home-empty"
+            style="text-align:center;margin-bottom:10px;">
+
+            Résultats pour :
+            <strong><?= e($search) ?></strong>
+
         </p>
+
     <?php endif; ?>
 
     <?php if ($search === ''): ?>
-        <p class="home-empty" style="text-align: center;">
+
+        <p
+            class="home-empty"
+            style="text-align:center;">
+
             Saisissez un titre dans la barre de recherche.
+
         </p>
-    <?php elseif (empty($mangas)): ?>
-        <p class="home-empty" style="text-align: center;">
+
+    <?php elseif ($mangas === []): ?>
+
+        <p
+            class="home-empty"
+            style="text-align:center;">
+
             Aucun manga trouvé.
+
         </p>
+
     <?php else: ?>
 
         <section class="collection-grid animate-fade-up-stagger">
 
             <?php foreach ($mangas as $manga): ?>
+
                 <?php
+                $slug = isset($manga->slug)
+                    ? (string) $manga->slug
+                    : '';
+
+                $numero = isset($manga->numero)
+                    ? (int) $manga->numero
+                    : 0;
+
+                $thumbnail = isset($manga->thumbnail)
+                    ? (string) $manga->thumbnail
+                    : '';
+
+                $extension = isset($manga->extension)
+                    ? (string) $manga->extension
+                    : '';
+
+                $livre = isset($manga->livre)
+                    ? (string) $manga->livre
+                    : '';
+
+                $note = $manga->note ?? null;
+
+                if (
+                    $slug === ''
+                    || $thumbnail === ''
+                    || $extension === ''
+                    || $livre === ''
+                )
+                {
+                    continue;
+                }
+
                 $noteClass = 'collection-note-mid';
 
-                if ($manga->note !== null)
+                if ($note !== null)
                 {
-                    if ((int) $manga->note >= 8)
+                    $noteValue = (int) $note;
+
+                    if ($noteValue >= 8)
                     {
                         $noteClass = 'collection-note-good';
                     }
-                    elseif ((int) $manga->note <= 4)
+                    elseif ($noteValue <= 4)
                     {
                         $noteClass = 'collection-note-low';
                     }
                 }
+
+                $href = $basePath
+                    . 'manga/series/'
+                    . rawurlencode($slug)
+                    . '/'
+                    . $numero;
+
+                $thumbnailPath = $basePath
+                    . 'public/images/mangas/thumbnail/'
+                    . $thumbnail
+                    . '.'
+                    . $extension;
                 ?>
 
                 <a
                     class="collection-card-link"
-                    href="<?= $basePath; ?>manga/series/<?= rawurlencode($manga->slug) ?>/<?= (int) $manga->numero ?>">
+                    href="<?= e($href) ?>">
 
                     <article class="card collection-card">
 
                         <div class="card-image-box-portrait">
+
                             <img
                                 class="card-image-portrait card-image"
-                                src="<?= $basePath; ?>public/images/mangas/thumbnail/<?= htmlspecialchars($manga->thumbnail . '.' . $manga->extension) ?>"
-                                alt="<?= htmlspecialchars($manga->livre) ?>">
+                                src="<?= e($thumbnailPath) ?>"
+                                alt="<?= e($livre) ?>">
+
                         </div>
 
                         <p class="collection-card-title">
-                            <?= htmlspecialchars($manga->livre) ?>
+
+                            <?= e($livre) ?>
+
                         </p>
 
                         <p class="collection-card-subtitle">
-                            Tome <?= (int) $manga->numero ?>
+
+                            Tome <?= $numero ?>
+
                         </p>
 
-                        <?php if ($manga->note !== null): ?>
-                            <span class="collection-card-badge collection-card-badge-note <?= htmlspecialchars($noteClass) ?>">
-                                ⭐ <?= (int) $manga->note ?>
+                        <?php if ($note !== null): ?>
+
+                            <span
+                                class="collection-card-badge collection-card-badge-note <?= e($noteClass) ?>">
+
+                                ⭐ <?= (int) $note ?>
+
                             </span>
+
                         <?php endif; ?>
 
                     </article>
 
                 </a>
+
             <?php endforeach; ?>
 
         </section>

@@ -333,6 +333,25 @@ if (!function_exists('config'))
 
 /*
 |--------------------------------------------------------------------------
+| Escape HTML
+|--------------------------------------------------------------------------
+*/
+
+if (!function_exists('e'))
+{
+    function e(
+        mixed $value
+    ): string {
+        return htmlspecialchars(
+            (string) $value,
+            ENT_QUOTES | ENT_SUBSTITUTE,
+            'UTF-8'
+        );
+    }
+}
+
+/*
+|--------------------------------------------------------------------------
 | AJAX
 |--------------------------------------------------------------------------
 */
@@ -375,11 +394,7 @@ if (!function_exists('csrf_field'))
     function csrf_field(): string
     {
         return '<input type="hidden" name="csrf_token" value="'
-            . htmlspecialchars(
-                csrf_token(),
-                ENT_QUOTES,
-                'UTF-8'
-            )
+            . e(csrf_token())
             . '">';
     }
 }
@@ -389,11 +404,7 @@ if (!function_exists('csrf_meta_tag'))
     function csrf_meta_tag(): string
     {
         return '<meta name="csrf-token" content="'
-            . htmlspecialchars(
-                csrf_token(),
-                ENT_QUOTES,
-                'UTF-8'
-            )
+            . e(csrf_token())
             . '">';
     }
 }

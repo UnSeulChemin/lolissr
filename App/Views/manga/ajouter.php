@@ -1,9 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Core\Support\Session;
 
 $errors = Session::get('errors', []);
 $old = Session::get('old', []);
+
+$basePath = rtrim($basePath, '/') . '/';
 
 $statutValue = $old['statut'] ?? 'en_cours';
 
@@ -11,6 +15,10 @@ $statutOptions = [
     'en_cours' => 'En cours',
     'termine' => 'Terminé',
 ];
+
+$formAction = $basePath . 'manga/ajouter';
+
+$returnUrl = $basePath . 'manga';
 
 ?>
 
@@ -23,7 +31,7 @@ $statutOptions = [
             <form
                 class="form-layout"
                 data-form-page="ajouter"
-                action="<?= $basePath; ?>manga/ajouter"
+                action="<?= e($formAction) ?>"
                 method="post"
                 enctype="multipart/form-data">
 
@@ -31,8 +39,12 @@ $statutOptions = [
 
                 <div class="form-group">
 
-                    <label class="form-label" for="livre">
+                    <label
+                        class="form-label"
+                        for="livre">
+
                         Livre
+
                     </label>
 
                     <input
@@ -41,22 +53,30 @@ $statutOptions = [
                         name="livre"
                         id="livre"
                         placeholder="Ex : To Love Ru"
-                        value="<?= htmlspecialchars($old['livre'] ?? '') ?>"
+                        value="<?= e($old['livre'] ?? '') ?>"
                         autofocus
                         required>
 
                     <?php if (!empty($errors['livre'])): ?>
+
                         <p class="form-error">
-                            <?= htmlspecialchars($errors['livre']) ?>
+
+                            <?= e($errors['livre']) ?>
+
                         </p>
+
                     <?php endif; ?>
 
                 </div>
 
                 <div class="form-group">
 
-                    <label class="form-label" for="slug">
+                    <label
+                        class="form-label"
+                        for="slug">
+
                         Slug
+
                     </label>
 
                     <input
@@ -65,21 +85,29 @@ $statutOptions = [
                         name="slug"
                         id="slug"
                         placeholder="Ex : to-love-ru"
-                        value="<?= htmlspecialchars($old['slug'] ?? '') ?>"
+                        value="<?= e($old['slug'] ?? '') ?>"
                         required>
 
                     <?php if (!empty($errors['slug'])): ?>
+
                         <p class="form-error">
-                            <?= htmlspecialchars($errors['slug']) ?>
+
+                            <?= e($errors['slug']) ?>
+
                         </p>
+
                     <?php endif; ?>
 
                 </div>
 
                 <div class="form-group">
 
-                    <label class="form-label" for="editeur">
+                    <label
+                        class="form-label"
+                        for="editeur">
+
                         Éditeur
+
                     </label>
 
                     <input
@@ -88,22 +116,30 @@ $statutOptions = [
                         name="editeur"
                         id="editeur"
                         placeholder="Ex : Delcourt/Tonkam"
-                        value="<?= htmlspecialchars($old['editeur'] ?? '') ?>"
+                        value="<?= e($old['editeur'] ?? '') ?>"
                         maxlength="100"
                         required>
 
                     <?php if (!empty($errors['editeur'])): ?>
+
                         <p class="form-error">
-                            <?= htmlspecialchars($errors['editeur']) ?>
+
+                            <?= e($errors['editeur']) ?>
+
                         </p>
+
                     <?php endif; ?>
 
                 </div>
 
                 <div class="form-group">
 
-                    <label class="form-label" for="statut">
+                    <label
+                        class="form-label"
+                        for="statut">
+
                         Statut
+
                     </label>
 
                     <select
@@ -115,10 +151,12 @@ $statutOptions = [
                         <?php foreach ($statutOptions as $value => $label): ?>
 
                             <option
-                                value="<?= htmlspecialchars($value) ?>"
-                                <?= $statutValue === $value ? 'selected' : '' ?>>
+                                value="<?= e($value) ?>"
+                                <?= $statutValue === $value
+                                    ? 'selected'
+                                    : '' ?>>
 
-                                <?= htmlspecialchars($label) ?>
+                                <?= e($label) ?>
 
                             </option>
 
@@ -127,17 +165,25 @@ $statutOptions = [
                     </select>
 
                     <?php if (!empty($errors['statut'])): ?>
+
                         <p class="form-error">
-                            <?= htmlspecialchars($errors['statut']) ?>
+
+                            <?= e($errors['statut']) ?>
+
                         </p>
+
                     <?php endif; ?>
 
                 </div>
 
                 <div class="form-group">
 
-                    <label class="form-label" for="numero">
+                    <label
+                        class="form-label"
+                        for="numero">
+
                         Numéro
+
                     </label>
 
                     <input
@@ -147,24 +193,34 @@ $statutOptions = [
                         id="numero"
                         min="1"
                         placeholder="Ex : 1"
-                        value="<?= htmlspecialchars($old['numero'] ?? '') ?>"
+                        value="<?= e($old['numero'] ?? '') ?>"
                         required>
 
                     <?php if (!empty($errors['numero'])): ?>
+
                         <p class="form-error">
-                            <?= htmlspecialchars($errors['numero']) ?>
+
+                            <?= e($errors['numero']) ?>
+
                         </p>
+
                     <?php endif; ?>
 
                 </div>
 
                 <div class="form-group">
 
-                    <label class="form-label" for="image">
+                    <label
+                        class="form-label"
+                        for="image">
+
                         Image
+
                     </label>
 
-                    <label class="form-upload" for="image">
+                    <label
+                        class="form-upload"
+                        for="image">
 
                         <input
                             class="form-file"
@@ -181,17 +237,25 @@ $statutOptions = [
                     </label>
 
                     <?php if (!empty($errors['image'])): ?>
+
                         <p class="form-error">
-                            <?= htmlspecialchars($errors['image']) ?>
+
+                            <?= e($errors['image']) ?>
+
                         </p>
+
                     <?php endif; ?>
 
                 </div>
 
                 <div class="form-group">
 
-                    <label class="form-label" for="commentaire">
+                    <label
+                        class="form-label"
+                        for="commentaire">
+
                         Commentaire
+
                     </label>
 
                     <textarea
@@ -200,12 +264,16 @@ $statutOptions = [
                         id="commentaire"
                         rows="4"
                         maxlength="1000"
-                        placeholder="Ex : défaut en haut de la jacquette"><?= htmlspecialchars($old['commentaire'] ?? '') ?></textarea>
+                        placeholder="Ex : défaut en haut de la jacquette"><?= e($old['commentaire'] ?? '') ?></textarea>
 
                     <?php if (!empty($errors['commentaire'])): ?>
+
                         <p class="form-error">
-                            <?= htmlspecialchars($errors['commentaire']) ?>
+
+                            <?= e($errors['commentaire']) ?>
+
                         </p>
+
                     <?php endif; ?>
 
                 </div>
@@ -215,13 +283,17 @@ $statutOptions = [
                     <button
                         type="submit"
                         class="form-submit">
+
                         Ajouter
+
                     </button>
 
                     <a
                         class="form-submit form-submit-secondary"
-                        href="<?= $basePath; ?>manga">
+                        href="<?= e($returnUrl) ?>">
+
                         Retour
+
                     </a>
 
                 </div>

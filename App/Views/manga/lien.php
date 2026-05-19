@@ -1,3 +1,9 @@
+<?php
+
+declare(strict_types=1);
+
+?>
+
 <section class="layout-container dashboard-page">
 
     <section class="dashboard-grid animate-fade-up-stagger">
@@ -8,9 +14,21 @@
             target="_blank"
             rel="noopener noreferrer">
 
-            <span class="dashboard-card-icon" aria-hidden="true">🔎</span>
-            <span class="dashboard-card-title">Chasse au livre</span>
-            <span class="dashboard-card-description">Recherche de tomes disponibles.</span>
+            <span
+                class="dashboard-card-icon"
+                aria-hidden="true">
+
+                🔎
+
+            </span>
+
+            <span class="dashboard-card-title">
+                Chasse au livre
+            </span>
+
+            <span class="dashboard-card-description">
+                Recherche de tomes disponibles.
+            </span>
 
         </a>
 
@@ -20,9 +38,21 @@
             target="_blank"
             rel="noopener noreferrer">
 
-            <span class="dashboard-card-icon" aria-hidden="true">🗂️</span>
-            <span class="dashboard-card-title">Mangacollec</span>
-            <span class="dashboard-card-description">Gestion de collection manga.</span>
+            <span
+                class="dashboard-card-icon"
+                aria-hidden="true">
+
+                🗂️
+
+            </span>
+
+            <span class="dashboard-card-title">
+                Mangacollec
+            </span>
+
+            <span class="dashboard-card-description">
+                Gestion de collection manga.
+            </span>
 
         </a>
 
@@ -32,9 +62,21 @@
             target="_blank"
             rel="noopener noreferrer">
 
-            <span class="dashboard-card-icon" aria-hidden="true">⚠️</span>
-            <span class="dashboard-card-title">Nautiljon +</span>
-            <span class="dashboard-card-description">Mangas avec nudité et violence.</span>
+            <span
+                class="dashboard-card-icon"
+                aria-hidden="true">
+
+                ⚠️
+
+            </span>
+
+            <span class="dashboard-card-title">
+                Nautiljon +
+            </span>
+
+            <span class="dashboard-card-description">
+                Mangas avec nudité et violence.
+            </span>
 
         </a>
 
@@ -44,9 +86,21 @@
             target="_blank"
             rel="noopener noreferrer">
 
-            <span class="dashboard-card-icon" aria-hidden="true">🔞</span>
-            <span class="dashboard-card-title">Nautiljon</span>
-            <span class="dashboard-card-description">Mangas avec nudité.</span>
+            <span
+                class="dashboard-card-icon"
+                aria-hidden="true">
+
+                🔞
+
+            </span>
+
+            <span class="dashboard-card-title">
+                Nautiljon
+            </span>
+
+            <span class="dashboard-card-description">
+                Mangas avec nudité.
+            </span>
 
         </a>
 
@@ -56,9 +110,21 @@
             target="_blank"
             rel="noopener noreferrer">
 
-            <span class="dashboard-card-icon" aria-hidden="true">📚</span>
-            <span class="dashboard-card-title">Glénat</span>
-            <span class="dashboard-card-description">Maison d'édition officielle.</span>
+            <span
+                class="dashboard-card-icon"
+                aria-hidden="true">
+
+                📚
+
+            </span>
+
+            <span class="dashboard-card-title">
+                Glénat
+            </span>
+
+            <span class="dashboard-card-description">
+                Maison d'édition officielle.
+            </span>
 
         </a>
 
@@ -68,9 +134,21 @@
             target="_blank"
             rel="noopener noreferrer">
 
-            <span class="dashboard-card-icon" aria-hidden="true">📖</span>
-            <span class="dashboard-card-title">Kana</span>
-            <span class="dashboard-card-description">Catalogue manga Kana.</span>
+            <span
+                class="dashboard-card-icon"
+                aria-hidden="true">
+
+                📖
+
+            </span>
+
+            <span class="dashboard-card-title">
+                Kana
+            </span>
+
+            <span class="dashboard-card-description">
+                Catalogue manga Kana.
+            </span>
 
         </a>
 
@@ -80,9 +158,21 @@
             target="_blank"
             rel="noopener noreferrer">
 
-            <span class="dashboard-card-icon" aria-hidden="true">🖼️</span>
-            <span class="dashboard-card-title">XnConvert</span>
-            <span class="dashboard-card-description">Conversion PNG / JPG → WEBP.</span>
+            <span
+                class="dashboard-card-icon"
+                aria-hidden="true">
+
+                🖼️
+
+            </span>
+
+            <span class="dashboard-card-title">
+                XnConvert
+            </span>
+
+            <span class="dashboard-card-description">
+                Conversion PNG / JPG → WEBP.
+            </span>
 
         </a>
 

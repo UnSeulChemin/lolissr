@@ -1,3 +1,15 @@
+<?php
+
+declare(strict_types=1);
+
+$basePath = rtrim($basePath, '/') . '/';
+
+$message = isset($message) && is_string($message)
+    ? $message
+    : 'La méthode utilisée n’est pas autorisée.';
+
+?>
+
 <section class="layout-container dashboard-page animate-fade-up">
 
     <section class="detail-card">
@@ -8,15 +20,13 @@
                 ⛔ 405 — Méthode non autorisée
             </h1>
 
-            <p>
-                <?= htmlspecialchars($message ?? 'La méthode utilisée n’est pas autorisée.') ?>
-            </p>
+            <p><?= e($message) ?></p>
 
             <div class="detail-actions">
 
                 <a
                     class="form-submit form-submit-secondary"
-                    href="<?= $basePath; ?>">
+                    href="<?= e($basePath) ?>">
 
                     Retour à l’accueil
 
