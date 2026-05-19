@@ -26,9 +26,10 @@ final class Cache
 
     private static function ensureDirectory(): bool
     {
-        $dir = self::directory();
+        $directory = self::directory();
 
-        return is_dir($dir) || mkdir($dir, 0755, true);
+        return is_dir($directory)
+            || mkdir($directory, 0755, true);
     }
 
     /**
@@ -49,24 +50,61 @@ final class Cache
         $content = file_get_contents($path);
 
         if ($content === false) {
+            Logger::warning('Cache unreadable', [
+                'key' => $key,
+            ]);
+
             return null;
         }
 
-        $payload = json_decode($content);
-
-        if (!is_object($payload) || !property_exists($payload, 'value')) {
-            Logger::warning('Cache invalid payload', ['key' => $key]);
-            return null;
+        try
+        {
+            $payload = json_decode(
+                $content,
+                false,
+                512,
+                JSON_THROW_ON_ERROR
+            );
         }
-
-        if (($payload->expires_at ?? 0) < time()) {
+        catch (\JsonException $exception)
+        {
             @unlink($path);
 
-            Logger::debug('Cache expired', ['key' => $key]);
+            Logger::warning('Cache corrupted JSON', [
+                'key' => $key,
+                'error' => $exception->getMessage(),
+            ]);
+
             return null;
         }
 
-        Logger::debug('Cache hit', ['key' => $key]);
+        if (
+            !is_object($payload)
+            || !property_exists($payload, 'value')
+        ) {
+            @unlink($path);
+
+            Logger::warning('Cache invalid payload', [
+                'key' => $key,
+            ]);
+
+            return null;
+        }
+
+        if (($payload->expires_at ?? 0) < time())
+        {
+            @unlink($path);
+
+            Logger::debug('Cache expired', [
+                'key' => $key,
+            ]);
+
+            return null;
+        }
+
+        Logger::debug('Cache hit', [
+            'key' => $key,
+        ]);
 
         return $payload->value;
     }
@@ -74,40 +112,75 @@ final class Cache
     /**
      * PUT CACHE
      */
-    public static function put(string $key, mixed $value, ?int $ttl = null): void
-    {
+    public static function put(
+        string $key,
+        mixed $value,
+        ?int $ttl = null
+    ): void {
         if (!self::enabled()) {
             return;
         }
 
         if (!self::ensureDirectory()) {
+            Logger::warning('Cache directory unavailable');
+
             return;
         }
 
         $ttl ??= (int) Env::get('CACHE_TTL', 300);
 
-        $payload = (object) [
+        $payload = [
             'expires_at' => time() + $ttl,
             'value' => $value,
         ];
 
-        file_put_contents(
+        try
+        {
+            $json = json_encode(
+                $payload,
+                JSON_UNESCAPED_UNICODE
+                | JSON_THROW_ON_ERROR
+            );
+        }
+        catch (\JsonException $exception)
+        {
+            Logger::warning('Cache encoding failed', [
+                'key' => $key,
+                'error' => $exception->getMessage(),
+            ]);
+
+            return;
+        }
+
+        $written = file_put_contents(
             self::path($key),
-            json_encode($payload, JSON_UNESCAPED_UNICODE),
+            $json,
             LOCK_EX
         );
 
+        if ($written === false)
+        {
+            Logger::warning('Cache write failed', [
+                'key' => $key,
+            ]);
+
+            return;
+        }
+
         Logger::debug('Cache stored', [
             'key' => $key,
-            'ttl' => $ttl
+            'ttl' => $ttl,
         ]);
     }
 
     /**
      * REMEMBER
      */
-    public static function remember(string $key, ?int $ttl, callable $callback): mixed
-    {
+    public static function remember(
+        string $key,
+        ?int $ttl,
+        callable $callback
+    ): mixed {
         if (!self::enabled()) {
             return $callback();
         }
@@ -118,7 +191,9 @@ final class Cache
             return $cached;
         }
 
-        Logger::debug('Cache miss', ['key' => $key]);
+        Logger::debug('Cache miss', [
+            'key' => $key,
+        ]);
 
         $value = $callback();
 
@@ -127,11 +202,19 @@ final class Cache
         return $value;
     }
 
+    /**
+     * CHECK CACHE
+     */
     public static function has(string $key): bool
     {
-        return is_file(self::path($key));
+        return is_file(
+            self::path($key)
+        );
     }
 
+    /**
+     * DELETE CACHE
+     */
     public static function forget(string $key): void
     {
         $path = self::path($key);
@@ -140,18 +223,24 @@ final class Cache
             @unlink($path);
         }
 
-        Logger::debug('Cache deleted', ['key' => $key]);
+        Logger::debug('Cache deleted', [
+            'key' => $key,
+        ]);
     }
 
+    /**
+     * CLEAR CACHE
+     */
     public static function clear(): void
     {
-        $dir = self::directory();
+        $directory = self::directory();
 
-        if (!is_dir($dir)) {
+        if (!is_dir($directory)) {
             return;
         }
 
-        foreach (glob($dir . '/*.cache') ?: [] as $file) {
+        foreach (glob($directory . '/*.cache') ?: [] as $file)
+        {
             if (is_file($file)) {
                 @unlink($file);
             }
