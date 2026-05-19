@@ -3,7 +3,8 @@
 declare(strict_types=1);
 
 namespace App\DTO\Manga;
-use App\DTO\Manga\MangaNoteNormalizer;
+
+use App\Core\Support\MangaNoteNormalizer;
 
 final class MangaUpdateNoteDTO
 {
@@ -12,16 +13,23 @@ final class MangaUpdateNoteDTO
         public readonly ?int $livreNote
     ) {}
 
-    public static function fromArray(array $data): self
-    {
+    public static function fromArray(
+        array $data
+    ): self {
         return new self(
-            jacquette: MangaNoteNormalizer::normalize($data['jacquette'] ?? null),
-            livreNote: MangaNoteNormalizer::normalize($data['livre_note'] ?? null)
+            jacquette: MangaNoteNormalizer::normalize(
+                $data['jacquette'] ?? null
+            ),
+
+            livreNote: MangaNoteNormalizer::normalize(
+                $data['livre_note'] ?? null
+            )
         );
     }
 
-    public static function fromPost(array $post): self
-    {
+    public static function fromPost(
+        array $post
+    ): self {
         return self::fromArray($post);
     }
 }

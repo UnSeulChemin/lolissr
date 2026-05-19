@@ -134,10 +134,6 @@ final class MangaReadService
             array_slice($mangas, 0, 6)
             as $manga
         ) {
-            if (!isset($manga->slug)) {
-                continue;
-            }
-
             $results[] = [
                 'slug' => $manga->slug,
                 'numero' => (int) $manga->numero,

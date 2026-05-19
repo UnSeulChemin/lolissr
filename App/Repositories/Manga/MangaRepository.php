@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories\Manga;
 
+use App\Core\Support\MangaNoteNormalizer;
 use App\Core\Application\App;
 use App\Core\Support\Str;
 use App\Models\Manga;
@@ -428,58 +429,49 @@ final class MangaRepository extends Model
     ): bool {
         $this->guardWrite();
 
-        $jacquette = MangaNoteNormalizer
-            ::normalize(
-                $datas['jacquette']
-                ?? null
-            );
+        $jacquette = MangaNoteNormalizer::normalize(
+            $datas['jacquette'] ?? null
+        );
 
-        $livreNote = MangaNoteNormalizer
-            ::normalize(
-                $datas['livre_note']
-                ?? null
-            );
+        $livreNote = MangaNoteNormalizer::normalize(
+            $datas['livre_note'] ?? null
+        );
 
         return parent::insert([
             'thumbnail' => trim(
-                (string)
-                ($datas['thumbnail'] ?? '')
+                (string) ($datas['thumbnail'] ?? '')
             ),
 
             'extension' => strtolower(
                 trim(
-                    (string)
-                    ($datas['extension'] ?? '')
+                    (string) ($datas['extension'] ?? '')
                 )
             ),
 
             'slug' => Str::slug(
-                (string)
-                ($datas['slug'] ?? '')
+                (string) ($datas['slug'] ?? '')
             ),
 
             'livre' => trim(
-                (string)
-                ($datas['livre'] ?? '')
+                (string) ($datas['livre'] ?? '')
             ),
 
             'editeur' => Str::nullableTrim(
-                $datas['editeur']
-                ?? null
+                $datas['editeur'] ?? null
             ),
 
             'numero' => max(
                 1,
-                (int)
-                ($datas['numero'] ?? 1)
+                (int) ($datas['numero'] ?? 1)
             ),
 
             'lu' => 0,
 
             'statut' => trim(
-                (string)
-                ($datas['statut']
-                ?? 'en_cours')
+                (string) (
+                    $datas['statut']
+                    ?? 'en_cours'
+                )
             ),
 
             'jacquette' => $jacquette,
@@ -492,8 +484,7 @@ final class MangaRepository extends Model
             ),
 
             'commentaire' => Str::nullableTrim(
-                $datas['commentaire']
-                ?? null
+                $datas['commentaire'] ?? null
             ),
         ]);
     }
@@ -509,45 +500,43 @@ final class MangaRepository extends Model
     ): bool {
         $this->guardWrite();
 
-        $jacquette = MangaNoteNormalizer
-            ::normalize($jacquette);
+        $jacquette = MangaNoteNormalizer::normalize(
+            $jacquette
+        );
 
-        $livreNote = MangaNoteNormalizer
-            ::normalize($livreNote);
+        $livreNote = MangaNoteNormalizer::normalize(
+            $livreNote
+        );
 
         return $this->update(
             [
-                'editeur' =>
-                    Str::nullableTrim(
-                        $editeur
-                    ),
+                'editeur' => Str::nullableTrim(
+                    $editeur
+                ),
 
-                'statut' =>
-                    trim($statut),
+                'statut' => trim(
+                    $statut
+                ),
 
-                'jacquette' =>
+                'jacquette' => $jacquette,
+
+                'livre_note' => $livreNote,
+
+                'note' => $this->calculateNote(
                     $jacquette,
+                    $livreNote
+                ),
 
-                'livre_note' =>
-                    $livreNote,
-
-                'note' =>
-                    $this->calculateNote(
-                        $jacquette,
-                        $livreNote
-                    ),
-
-                'commentaire' =>
-                    Str::nullableTrim(
-                        $commentaire
-                    ),
+                'commentaire' => Str::nullableTrim(
+                    $commentaire
+                ),
             ],
             [
-                'slug' =>
-                    Str::slug($slug),
+                'slug' => Str::slug(
+                    $slug
+                ),
 
-                'numero' =>
-                    $numero,
+                'numero' => $numero,
             ]
         );
     }

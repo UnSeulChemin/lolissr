@@ -244,12 +244,20 @@ final class MangaWriteService
                 $numero
             );
 
+        if ($manga === null)
+        {
+            return $this->error(
+                'Manga introuvable',
+                404
+            );
+        }
+
         return $this->success(
             'Notes mises à jour',
             [
                 'jacquette' => $dto->jacquette,
                 'livre_note' => $dto->livreNote,
-                'note' => $manga?->note
+                'note' => $manga->note
                     ?? (
                         $dto->jacquette
                         + $dto->livreNote
@@ -323,7 +331,7 @@ final class MangaWriteService
                 $numero
             );
 
-        if (!$manga)
+        if ($manga === null)
         {
             return $this->error(
                 'Manga introuvable',
