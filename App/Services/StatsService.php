@@ -80,20 +80,6 @@ final class StatsService
         );
     }
 
-    public function lowJacquette(int $limit = 5): array
-    {
-        return $this->toObjectList(
-            $this->repository->findLowJacquetteMangas($limit)
-        );
-    }
-
-    public function lowLivreState(int $limit = 5): array
-    {
-        return $this->toObjectList(
-            $this->repository->findLowLivreStateMangas($limit)
-        );
-    }
-
     public function dashboard(): object
     {
         return (object) [
@@ -109,8 +95,6 @@ final class StatsService
 
             'topLongestSeries' => $this->topLongestSeries(),
             'lowRatedMangas' => $this->lowRated(),
-            'lowJacquetteMangas' => $this->lowJacquette(),
-            'lowLivreStateMangas' => $this->lowLivreState(),
         ];
     }
 }

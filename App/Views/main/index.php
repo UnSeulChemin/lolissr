@@ -17,8 +17,6 @@ $basePath = rtrim(
 ) . '/';
 
 $lowGlobal = $stats->lowRatedMangas[0] ?? null;
-$lowJacquette = $stats->lowJacquetteMangas[0] ?? null;
-$lowLivre = $stats->lowLivreStateMangas[0] ?? null;
 
 ?>
 

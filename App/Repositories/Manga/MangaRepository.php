@@ -255,46 +255,6 @@ final class MangaRepository extends Model
         );
     }
 
-    /**
-     * @return list<Manga>
-     */
-    public function findLowJacquetteMangas(
-        int $limit = 5
-    ): array {
-        $limit = max(1, $limit);
-
-        return $this->fetchAll(
-            "SELECT *
-            FROM {$this->getTable()}
-            ORDER BY COALESCE(jacquette, 0) ASC,
-                     livre ASC,
-                     numero ASC
-            LIMIT {$limit}",
-            [],
-            Manga::class
-        );
-    }
-
-    /**
-     * @return list<Manga>
-     */
-    public function findLowLivreStateMangas(
-        int $limit = 5
-    ): array {
-        $limit = max(1, $limit);
-
-        return $this->fetchAll(
-            "SELECT *
-            FROM {$this->getTable()}
-            ORDER BY COALESCE(livre_note, 0) ASC,
-                     livre ASC,
-                     numero ASC
-            LIMIT {$limit}",
-            [],
-            Manga::class
-        );
-    }
-
     public function countFirstTomesPaginate(
         int $eachPerPage
     ): int {
