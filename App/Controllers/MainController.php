@@ -16,7 +16,7 @@ final class MainController extends Controller
         parent::__construct();
     }
 
-    public function index(Request $request): void
+    public function index(Request $request): never
     {
         $this->title = 'Accueil';
 
@@ -27,7 +27,7 @@ final class MainController extends Controller
         );
 
         $this->render('main/index', [
-            'stats' => $stats
+            'stats' => $stats,
         ]);
     }
 }

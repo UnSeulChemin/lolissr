@@ -151,8 +151,6 @@ if (!function_exists('abort'))
             419 => $controller->renderCsrfExpiredPage(),
             default => $controller->serverError(),
         };
-
-        exit;
     }
 }
 
@@ -261,8 +259,6 @@ if (!function_exists('view'))
         $html = ob_get_clean() ?: '';
 
         Response::html($html);
-
-        exit;
     }
 }
 

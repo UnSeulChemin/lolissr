@@ -14,7 +14,7 @@ use App\Core\Http\Router;
 
 final class Bootstrap
 {
-    public static function run(): void
+    public static function run(): never
     {
         self::loadEnvironment(
             ROOT . '/.env'

@@ -49,7 +49,8 @@ final class Router
     ): void {
         $uri = '/' . trim($uri, '/');
 
-        if ($uri === '//') {
+        if ($uri === '//')
+        {
             $uri = '/';
         }
 
@@ -77,7 +78,7 @@ final class Router
         ];
     }
 
-    public function dispatch(): void
+    public function dispatch(): never
     {
         $request = $this->resolve(Request::class);
 
@@ -115,8 +116,6 @@ final class Router
             if ($route['action'] instanceof Closure)
             {
                 $route['action'](...$matches);
-
-                return;
             }
 
             [$controller, $controllerMethod] =
@@ -135,8 +134,6 @@ final class Router
             $controller->{$controllerMethod}(
                 ...$parameters
             );
-
-            return;
         }
 
         abort($methodNotAllowed ? 405 : 404);

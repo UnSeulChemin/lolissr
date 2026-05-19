@@ -24,7 +24,7 @@ final class ChinoisController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function index(Request $request): void
+    public function index(Request $request): never
     {
         $this->title = 'Chinois';
 
@@ -37,7 +37,7 @@ final class ChinoisController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function mandarin(Request $request): void
+    public function mandarin(Request $request): never
     {
         $this->title = 'Chinois | Mandarin';
 
@@ -52,7 +52,7 @@ final class ChinoisController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function jinyu(Request $request): void
+    public function jinyu(Request $request): never
     {
         $this->title = 'Chinois | 晋语';
 
@@ -67,7 +67,7 @@ final class ChinoisController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function grammaire(Request $request): void
+    public function grammaire(Request $request): never
     {
         $this->title = 'Chinois | Grammaire';
 
@@ -83,7 +83,7 @@ final class ChinoisController extends Controller
     public function hsk(
         Request $request,
         string $level
-    ): void {
+    ): never {
         /*
         |--------------------------------------------------------------------------
         | Vérifie le niveau
@@ -92,9 +92,9 @@ final class ChinoisController extends Controller
 
         $allowedLevels = ['1', '2', '3', '4'];
 
-        if (! in_array($level, $allowedLevels, true))
+        if (!in_array($level, $allowedLevels, true))
         {
-            abort404();
+            abort(404);
         }
 
         /*
@@ -142,7 +142,7 @@ final class ChinoisController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function flashcards(Request $request): void
+    public function flashcards(Request $request): never
     {
         $this->title = 'Chinois | Flashcards';
 
@@ -155,7 +155,7 @@ final class ChinoisController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function ajouter(Request $request): void
+    public function ajouter(Request $request): never
     {
         $this->title = 'Chinois | Ajouter';
 

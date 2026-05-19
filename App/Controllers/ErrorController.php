@@ -11,7 +11,7 @@ final class ErrorController extends Controller
 {
     public function notFound(
         string $message = 'Page introuvable'
-    ): void {
+    ): never {
         $request = app(Request::class);
 
         Logger::warning('404 Not Found', [
@@ -27,7 +27,7 @@ final class ErrorController extends Controller
 
     public function methodNotAllowed(
         string $message = 'Méthode non autorisée'
-    ): void {
+    ): never {
         $request = app(Request::class);
 
         Logger::warning('405 Method Not Allowed', [
@@ -42,7 +42,7 @@ final class ErrorController extends Controller
         ]);
     }
 
-    public function renderCsrfExpiredPage(): void
+    public function renderCsrfExpiredPage(): never
     {
         $request = app(Request::class);
 
@@ -59,7 +59,7 @@ final class ErrorController extends Controller
 
     public function serverError(
         string $message = 'Erreur interne du serveur'
-    ): void {
+    ): never {
         $request = app(Request::class);
 
         Logger::error('500 Internal Server Error', [

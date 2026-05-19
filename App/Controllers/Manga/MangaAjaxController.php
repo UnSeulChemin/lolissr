@@ -24,7 +24,8 @@ final class MangaAjaxController extends Controller
     private function ensureAjax(
         Request $request
     ): void {
-        if ($request->isAjax()) {
+        if ($request->isAjax())
+        {
             return;
         }
 
@@ -49,7 +50,7 @@ final class MangaAjaxController extends Controller
     private function error(
         array $payload,
         int $status = 400
-    ): void {
+    ): never {
         $this->json([
             'success' => false,
             ...$payload,
@@ -59,13 +60,14 @@ final class MangaAjaxController extends Controller
     public function seriesPage(
         Request $request,
         string $page = '1'
-    ): void {
+    ): never {
         $this->ensureAjax($request);
 
         $data = $this->mangaReadService
             ->series($page);
 
-        if ($data === null) {
+        if ($data === null)
+        {
             $this->error([
                 'message' => 'Page introuvable',
             ], 404);
@@ -85,7 +87,7 @@ final class MangaAjaxController extends Controller
     public function search(
         Request $request,
         string $query = ''
-    ): void {
+    ): never {
         $this->ensureAjax($request);
 
         $this->json(
@@ -98,7 +100,7 @@ final class MangaAjaxController extends Controller
         MangaUpdateNoteRequest $request,
         string $slug,
         int $numero
-    ): void {
+    ): never {
         $this->ensureAjax($this->request);
 
         $data = $this->mangaReadService
@@ -107,13 +109,15 @@ final class MangaAjaxController extends Controller
                 $numero
             );
 
-        if ($data === null) {
+        if ($data === null)
+        {
             $this->error([
                 'message' => 'Manga introuvable',
             ], 404);
         }
 
-        if ($slug !== $data->canonicalSlug) {
+        if ($slug !== $data->canonicalSlug)
+        {
             $this->error([
                 'message' => 'URL non canonique',
                 'redirect' => $this->basePath
@@ -144,7 +148,7 @@ final class MangaAjaxController extends Controller
         Request $request,
         string $slug,
         int $numero
-    ): void {
+    ): never {
         $this->ensureAjax($request);
 
         $data = $this->mangaReadService
@@ -153,13 +157,15 @@ final class MangaAjaxController extends Controller
                 $numero
             );
 
-        if ($data === null) {
+        if ($data === null)
+        {
             $this->error([
                 'message' => 'Manga introuvable',
             ], 404);
         }
 
-        if ($slug !== $data->canonicalSlug) {
+        if ($slug !== $data->canonicalSlug)
+        {
             $this->error([
                 'message' => 'URL non canonique',
                 'redirect' => $this->basePath
@@ -190,7 +196,7 @@ final class MangaAjaxController extends Controller
         Request $request,
         string $slug,
         int $numero
-    ): void {
+    ): never {
         $this->ensureAjax($request);
 
         $data = $this->mangaReadService
@@ -199,13 +205,15 @@ final class MangaAjaxController extends Controller
                 $numero
             );
 
-        if ($data === null) {
+        if ($data === null)
+        {
             $this->error([
                 'message' => 'Manga introuvable',
             ], 404);
         }
 
-        if ($slug !== $data->canonicalSlug) {
+        if ($slug !== $data->canonicalSlug)
+        {
             $this->error([
                 'message' => 'URL non canonique',
                 'redirect' => $this->basePath

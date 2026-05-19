@@ -68,7 +68,7 @@ abstract class Controller
     protected function render(
         string $file,
         array|object $data = []
-    ): void {
+    ): never {
         $viewPath = $this->viewPath($file);
 
         if (!is_file($viewPath))
@@ -122,7 +122,7 @@ abstract class Controller
     protected function renderPartial(
         string $file,
         array $data = []
-    ): void {
+    ): never {
         $viewPath = $this->viewPath($file);
 
         if (!is_file($viewPath))
@@ -157,7 +157,7 @@ abstract class Controller
         string $file,
         int $statusCode,
         array $data = []
-    ): void {
+    ): never {
         $viewPath = $this->errorViewPath($file);
 
         if (!is_file($viewPath))
@@ -166,8 +166,6 @@ abstract class Controller
                 'Vue erreur introuvable : ' . $file,
                 500
             );
-
-            return;
         }
 
         $view = $data;
@@ -191,8 +189,6 @@ abstract class Controller
                 . $this->template,
                 500
             );
-
-            return;
         }
 
         ob_start();
@@ -210,12 +206,10 @@ abstract class Controller
     protected function redirect(
         string $url,
         int $statusCode = 302
-    ): void {
+    ): never {
         if (preg_match('#^https?://#i', $url) === 1)
         {
             Response::redirect($url, $statusCode);
-
-            return;
         }
 
         Response::redirect(
@@ -231,7 +225,7 @@ abstract class Controller
         string $url,
         string $message,
         bool $withOld = true
-    ): void {
+    ): never {
         if ($withOld)
         {
             Session::set(
@@ -254,7 +248,7 @@ abstract class Controller
         string $url,
         array $errors,
         string $message = 'Le formulaire contient des erreurs.'
-    ): void {
+    ): never {
         Session::set('errors', $errors);
 
         Session::set(
@@ -273,7 +267,7 @@ abstract class Controller
     protected function redirectWithSuccess(
         string $url,
         string $message
-    ): void {
+    ): never {
         Session::set('success', $message);
 
         $this->redirect($url);
@@ -284,7 +278,7 @@ abstract class Controller
      */
     public function notFound(
         string $message = 'Page introuvable'
-    ): void {
+    ): never {
         throw new NotFoundException($message);
     }
 
@@ -293,7 +287,7 @@ abstract class Controller
      */
     public function methodNotAllowed(
         string $message = 'Méthode non autorisée'
-    ): void {
+    ): never {
         throw new MethodNotAllowedException($message);
     }
 
@@ -302,7 +296,7 @@ abstract class Controller
      */
     public function serverError(
         string $message = 'Erreur interne du serveur'
-    ): void {
+    ): never {
         throw new \RuntimeException($message);
     }
 
@@ -311,7 +305,7 @@ abstract class Controller
      */
     public function renderNotFoundPage(
         string $message = 'Page introuvable'
-    ): void {
+    ): never {
         $this->title = '404 | Page introuvable';
 
         $this->renderError(
@@ -328,7 +322,7 @@ abstract class Controller
      */
     public function renderMethodNotAllowedPage(
         string $message = 'Méthode non autorisée'
-    ): void {
+    ): never {
         $this->title = '405 | Méthode non autorisée';
 
         $this->renderError(
@@ -345,7 +339,7 @@ abstract class Controller
      */
     public function renderServerErrorPage(
         string $message = 'Erreur interne du serveur'
-    ): void {
+    ): never {
         $this->title = '500 | Erreur serveur';
 
         $this->renderError(
@@ -369,10 +363,8 @@ abstract class Controller
     protected function json(
         array $data,
         int $status = 200
-    ): void {
+    ): never {
         Response::json($data, $status);
-
-        exit;
     }
 
     protected function ajaxOrHtml(

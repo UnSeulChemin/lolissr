@@ -20,8 +20,9 @@ final class ChinoisAjaxController
     |--------------------------------------------------------------------------
     */
 
-    public function toggleGrammaireMaitrise(Request $request): void
-    {
+    public function toggleGrammaireMaitrise(
+        Request $request
+    ): never {
         $id = $request->integer('id');
 
         /*
@@ -36,8 +37,6 @@ final class ChinoisAjaxController
                 'success' => false,
                 'message' => 'ID invalide',
             ], 422);
-
-            return;
         }
 
         /*
