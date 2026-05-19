@@ -4,15 +4,21 @@ declare(strict_types=1);
 
 namespace App\Repositories\Chinois;
 
+use App\Models\ChinoisVocabulaire;
 use App\Models\Model;
 
-final class ChinoisRepository extends Model
+final class ChinoisVocabulaireRepository extends Model
 {
-    protected string $table = 'chinois_vocabulaire';
+    protected string $table =
+        'chinois_vocabulaire';
 
-    public function findByLangue(string $langue): array
-    {
-        $query = $this->requete(
+    /**
+     * @return list<ChinoisVocabulaire>
+     */
+    public function findByLangue(
+        string $langue
+    ): array {
+        return $this->fetchAll(
             "SELECT
                 id,
                 langue,
@@ -25,9 +31,8 @@ final class ChinoisRepository extends Model
             FROM {$this->getTable()}
             WHERE langue = ?
             ORDER BY id DESC",
-            [$langue]
+            [$langue],
+            ChinoisVocabulaire::class
         );
-
-        return $query ? $query->fetchAll() : [];
     }
 }
