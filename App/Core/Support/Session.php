@@ -37,16 +37,43 @@ final class Session
             )
         );
 
+        $secure =
+            (
+                !empty($_SERVER['HTTPS'])
+                && $_SERVER['HTTPS'] !== 'off'
+            )
+            || (int) ($_SERVER['SERVER_PORT'] ?? 0) === 443
+            || (
+                $_SERVER['HTTP_X_FORWARDED_PROTO']
+                ?? ''
+            ) === 'https';
+
+        ini_set('session.use_strict_mode', '1');
+        ini_set('session.use_only_cookies', '1');
+        ini_set('session.use_trans_sid', '0');
+        ini_set('session.cookie_httponly', '1');
+        ini_set(
+            'session.cookie_secure',
+            $secure ? '1' : '0'
+        );
+
         session_set_cookie_params([
             'lifetime' => 0,
             'path' => '/',
             'domain' => '',
-            'secure' => !empty($_SERVER['HTTPS']),
+            'secure' => $secure,
             'httponly' => true,
             'samesite' => 'Lax',
         ]);
 
-        session_start();
+        session_start([
+            'use_strict_mode' => true,
+            'use_only_cookies' => true,
+            'use_trans_sid' => false,
+            'cookie_httponly' => true,
+            'cookie_secure' => $secure,
+            'cookie_samesite' => 'Lax',
+        ]);
     }
 
     /**
@@ -167,11 +194,14 @@ final class Session
             setcookie(
                 session_name(),
                 '',
-                time() - 42000,
-                $params['path'],
-                $params['domain'],
-                $params['secure'],
-                $params['httponly']
+                [
+                    'expires' => time() - 42000,
+                    'path' => $params['path'],
+                    'domain' => $params['domain'],
+                    'secure' => $params['secure'],
+                    'httponly' => $params['httponly'],
+                    'samesite' => $params['samesite'] ?? 'Lax',
+                ]
             );
         }
 
