@@ -79,7 +79,7 @@ if (!function_exists('dd'))
     {
         if (!env_bool('APP_DEBUG'))
         {
-            http_response_code(404);
+            http_response_code(500);
 
             exit;
         }
