@@ -29,8 +29,9 @@ abstract class Controller
      */
     protected string $basePath;
 
-    public function __construct()
-    {
+    public function __construct(
+        protected Request $request,
+    ) {
         $this->title = App::siteName();
         $this->basePath = App::basePath();
     }
@@ -115,9 +116,7 @@ abstract class Controller
             'view' => $data,
             'title' => $this->title,
             'basePath' => $this->basePath,
-            'currentPath' => app(
-                Request::class,
-            )->path(),
+            'currentPath' => $this->request->path(),
         ];
     }
 
@@ -174,8 +173,6 @@ abstract class Controller
     }
 
     /**
-     * Affiche une vue partielle sans template.
-     *
      * @param array<string, mixed> $data
      */
     protected function renderPartial(
@@ -204,8 +201,6 @@ abstract class Controller
     }
 
     /**
-     * Affiche une vue d'erreur.
-     *
      * @param array<string, mixed> $data
      */
     protected function renderError(
@@ -260,9 +255,6 @@ abstract class Controller
         );
     }
 
-    /**
-     * Redirection simple.
-     */
     protected function redirect(
         string $url,
         int $statusCode = 302,
@@ -286,9 +278,6 @@ abstract class Controller
         );
     }
 
-    /**
-     * Redirection avec erreur simple.
-     */
     protected function redirectWithError(
         string $url,
         string $message,
@@ -297,7 +286,7 @@ abstract class Controller
         if ($withOld) {
             Session::set(
                 'old',
-                app(Request::class)->all(),
+                $this->request->all(),
             );
         }
 
@@ -324,7 +313,7 @@ abstract class Controller
 
         Session::set(
             'old',
-            app(Request::class)->all(),
+            $this->request->all(),
         );
 
         Session::set(
@@ -335,9 +324,6 @@ abstract class Controller
         $this->redirect($url);
     }
 
-    /**
-     * Redirection avec succès.
-     */
     protected function redirectWithSuccess(
         string $url,
         string $message,
@@ -350,9 +336,6 @@ abstract class Controller
         $this->redirect($url);
     }
 
-    /**
-     * Lance une 404.
-     */
     public function notFound(
         string $message = 'Page introuvable',
     ): never {
@@ -361,9 +344,6 @@ abstract class Controller
         );
     }
 
-    /**
-     * Lance une 405.
-     */
     public function methodNotAllowed(
         string $message = 'Méthode non autorisée',
     ): never {
@@ -372,9 +352,6 @@ abstract class Controller
         );
     }
 
-    /**
-     * Lance une erreur serveur.
-     */
     public function serverError(
         string $message = 'Erreur interne du serveur',
     ): never {
@@ -383,9 +360,6 @@ abstract class Controller
         );
     }
 
-    /**
-     * Affiche réellement la page 404.
-     */
     public function renderNotFoundPage(
         string $message = 'Page introuvable',
     ): never {
@@ -401,9 +375,6 @@ abstract class Controller
         );
     }
 
-    /**
-     * Affiche réellement la page 405.
-     */
     public function renderMethodNotAllowedPage(
         string $message = 'Méthode non autorisée',
     ): never {
@@ -419,9 +390,6 @@ abstract class Controller
         );
     }
 
-    /**
-     * Affiche réellement la page 500.
-     */
     public function renderServerErrorPage(
         string $message = 'Erreur interne du serveur',
     ): never {
@@ -437,12 +405,11 @@ abstract class Controller
         );
     }
 
-    protected function isAjax(
-        Request $request,
-    ): bool {
-        return $request->isAjax()
+    protected function isAjax(): bool
+    {
+        return $this->request->isAjax()
             || str_contains(
-                $request->server(
+                $this->request->server(
                     'HTTP_ACCEPT',
                     '',
                 ),
@@ -464,11 +431,10 @@ abstract class Controller
     }
 
     protected function ajaxOrHtml(
-        Request $request,
         callable $ajax,
         callable $html,
     ): void {
-        if ($this->isAjax($request)) {
+        if ($this->isAjax()) {
             $ajax();
 
             return;

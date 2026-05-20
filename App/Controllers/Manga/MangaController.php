@@ -16,8 +16,9 @@ final class MangaController extends Controller
     public function __construct(
         protected MangaReadService $mangaReadService,
         protected MangaWriteService $mangaWriteService,
+        Request $request,
     ) {
-        parent::__construct();
+        parent::__construct($request);
     }
 
     protected function redirectToCanonicalUrl(
@@ -264,9 +265,7 @@ final class MangaController extends Controller
         string $slug,
         int $numero,
     ): never {
-        $isAjax = $this->isAjax(
-            $request,
-        );
+        $isAjax = $this->isAjax();
 
         $data = $this->mangaReadService
             ->one(

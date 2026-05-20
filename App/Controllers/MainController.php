@@ -6,13 +6,15 @@ namespace App\Controllers;
 
 use App\Services\StatsService;
 use Framework\Cache\Cache;
+use Framework\Http\Request;
 
 final class MainController extends Controller
 {
     public function __construct(
         private readonly StatsService $statsService,
+        Request $request,
     ) {
-        parent::__construct();
+        parent::__construct($request);
     }
 
     public function index(): never

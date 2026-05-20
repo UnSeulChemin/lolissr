@@ -12,8 +12,9 @@ final class ChinoisAjaxController extends Controller
 {
     public function __construct(
         private readonly ChinoisGrammaireRepository $repository,
+        Request $request,
     ) {
-        parent::__construct();
+        parent::__construct($request);
     }
 
     /*
@@ -22,23 +23,16 @@ final class ChinoisAjaxController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function toggleGrammaireMaitrise(
-        Request $request,
-    ): never {
-        if (!$this->isAjax($request)) {
+    public function toggleGrammaireMaitrise(): never
+    {
+        if (!$this->isAjax()) {
             $this->json([
                 'success' => false,
                 'message' => 'Requête AJAX requise',
             ], 400);
         }
 
-        $id = $request->integer('id');
-
-        /*
-        |--------------------------------------------------------------------------
-        | Vérifie l'ID
-        |--------------------------------------------------------------------------
-        */
+        $id = $this->request->integer('id');
 
         if ($id <= 0) {
             $this->json([
@@ -47,20 +41,8 @@ final class ChinoisAjaxController extends Controller
             ], 422);
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Toggle maîtrise
-        |--------------------------------------------------------------------------
-        */
-
         $maitrise = $this->repository
             ->toggleMaitrise($id);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Response
-        |--------------------------------------------------------------------------
-        */
 
         $this->json([
             'success' => true,

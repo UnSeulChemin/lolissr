@@ -7,14 +7,16 @@ namespace App\Controllers\Chinois;
 use App\Controllers\Controller;
 use App\Repositories\Chinois\ChinoisGrammaireRepository;
 use App\Services\Chinois\ChinoisReadService;
+use Framework\Http\Request;
 
 final class ChinoisController extends Controller
 {
     public function __construct(
         private readonly ChinoisReadService $chinoisReadService,
         private readonly ChinoisGrammaireRepository $chinoisGrammaireRepository,
+        Request $request,
     ) {
-        parent::__construct();
+        parent::__construct($request);
     }
 
     /*

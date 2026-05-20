@@ -9,9 +9,10 @@ use Framework\Support\Logger;
 
 final class ErrorController extends Controller
 {
-    private function request(): Request
-    {
-        return app(Request::class);
+    public function __construct(
+        Request $request,
+    ) {
+        parent::__construct($request);
     }
 
     public function notFound(
@@ -20,9 +21,7 @@ final class ErrorController extends Controller
         Logger::warning(
             '404 Not Found',
             [
-                'uri' => $this
-                    ->request()
-                    ->uri(),
+                'uri' => $this->request->uri(),
             ],
         );
 
@@ -41,13 +40,11 @@ final class ErrorController extends Controller
     public function methodNotAllowed(
         string $message = 'Méthode non autorisée',
     ): never {
-        $request = $this->request();
-
         Logger::warning(
             '405 Method Not Allowed',
             [
-                'method' => $request->method(),
-                'uri' => $request->uri(),
+                'method' => $this->request->method(),
+                'uri' => $this->request->uri(),
             ],
         );
 
@@ -68,9 +65,7 @@ final class ErrorController extends Controller
         Logger::warning(
             '419 CSRF expired',
             [
-                'uri' => $this
-                    ->request()
-                    ->uri(),
+                'uri' => $this->request->uri(),
             ],
         );
 
@@ -93,9 +88,7 @@ final class ErrorController extends Controller
         Logger::error(
             '500 Internal Server Error',
             [
-                'uri' => $this
-                    ->request()
-                    ->uri(),
+                'uri' => $this->request->uri(),
             ],
         );
 

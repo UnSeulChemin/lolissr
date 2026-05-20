@@ -16,31 +16,31 @@ final class MangaAjaxController extends Controller
     public function __construct(
         protected MangaReadService $mangaReadService,
         protected MangaWriteService $mangaWriteService,
+        Request $request,
     ) {
-        parent::__construct();
+        parent::__construct($request);
     }
 
-    private function ensureAjax(
-        Request $request,
-    ): void {
-        if ($this->isAjax($request)) {
+    private function ensureAjax(): void
+    {
+        if ($this->request->isAjax()) {
             return;
         }
 
         if (
             App::isTesting()
             && str_contains(
-                $request->userAgent(),
+                $this->request->userAgent(),
                 'LoliSSR-TestRunner',
             )
         ) {
             return;
         }
 
-        $this->error(
-            'Requête AJAX requise',
-            400,
-        );
+        $this->json([
+            'success' => false,
+            'message' => 'Requête AJAX requise',
+        ], 400);
     }
 
     private function error(
@@ -78,10 +78,9 @@ final class MangaAjaxController extends Controller
     }
 
     public function seriesPage(
-        Request $request,
         string $page = '1',
     ): never {
-        $this->ensureAjax($request);
+        $this->ensureAjax();
 
         $data = $this->mangaReadService
             ->series($page);
@@ -105,10 +104,9 @@ final class MangaAjaxController extends Controller
     }
 
     public function search(
-        Request $request,
         string $query = '',
     ): never {
-        $this->ensureAjax($request);
+        $this->ensureAjax();
 
         $results = $this->mangaReadService
             ->searchAjax($query);
@@ -124,7 +122,7 @@ final class MangaAjaxController extends Controller
         string $slug,
         int $numero,
     ): never {
-        $this->ensureAjax($request);
+        $this->ensureAjax();
 
         $data = $this->mangaReadService
             ->one(
@@ -151,6 +149,14 @@ final class MangaAjaxController extends Controller
             );
         }
 
+        if ($request->fails()) {
+            $this->json([
+                'success' => false,
+                'message' => 'Formulaire invalide',
+                'errors' => $request->errors(),
+            ], 422);
+        }
+
         $result = $this->mangaWriteService
             ->updateNote(
                 $data->canonicalSlug,
@@ -166,11 +172,10 @@ final class MangaAjaxController extends Controller
     }
 
     public function updateLu(
-        Request $request,
         string $slug,
         int $numero,
     ): never {
-        $this->ensureAjax($request);
+        $this->ensureAjax();
 
         $data = $this->mangaReadService
             ->one(
@@ -201,7 +206,7 @@ final class MangaAjaxController extends Controller
             ->updateLu(
                 $data->canonicalSlug,
                 $numero,
-                $request->integer(
+                $this->request->integer(
                     'lu',
                     0,
                 ),
@@ -215,11 +220,10 @@ final class MangaAjaxController extends Controller
     }
 
     public function delete(
-        Request $request,
         string $slug,
         int $numero,
     ): never {
-        $this->ensureAjax($request);
+        $this->ensureAjax();
 
         $data = $this->mangaReadService
             ->one(
