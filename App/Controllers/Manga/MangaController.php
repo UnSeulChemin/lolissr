@@ -14,7 +14,7 @@ final class MangaController extends Controller
 {
     public function __construct(
         protected MangaReadService $mangaReadService,
-        protected MangaWriteService $mangaWriteService
+        protected MangaWriteService $mangaWriteService,
     ) {
         parent::__construct();
     }
@@ -23,7 +23,7 @@ final class MangaController extends Controller
         string $requestedSlug,
         string $canonicalSlug,
         string $pathPrefix,
-        ?int $numero = null
+        ?int $numero = null,
     ): void {
         if ($requestedSlug === $canonicalSlug) {
             return;
@@ -55,14 +55,14 @@ final class MangaController extends Controller
     }
 
     public function series(
-        string $page = '1'
+        string $page = '1',
     ): never {
         $data = $this->mangaReadService
             ->series($page);
 
         if ($data === null) {
             $this->notFound(
-                'Page introuvable'
+                'Page introuvable',
             );
         }
 
@@ -83,7 +83,7 @@ final class MangaController extends Controller
     }
 
     public function recherche(
-        string $query = ''
+        string $query = '',
     ): never {
         $data = $this->mangaReadService
             ->search($query);
@@ -100,7 +100,7 @@ final class MangaController extends Controller
     }
 
     public function serie(
-        string $slug
+        string $slug,
     ): never {
         $requestedSlug = trim($slug);
 
@@ -109,14 +109,14 @@ final class MangaController extends Controller
 
         if ($data === null) {
             $this->notFound(
-                'Manga introuvable'
+                'Manga introuvable',
             );
         }
 
         $this->redirectToCanonicalUrl(
             $requestedSlug,
             $data->slugFilter ?? '',
-            'manga/series'
+            'manga/series',
         );
 
         $this->title =
@@ -133,17 +133,17 @@ final class MangaController extends Controller
 
     public function show(
         string $slug,
-        int $numero
+        int $numero,
     ): never {
         $data = $this->mangaReadService
             ->one(
                 $slug,
-                $numero
+                $numero,
             );
 
         if ($data === null) {
             $this->notFound(
-                'Manga introuvable'
+                'Manga introuvable',
             );
         }
 
@@ -151,7 +151,7 @@ final class MangaController extends Controller
             $slug,
             $data->canonicalSlug,
             'manga/series',
-            $numero
+            $numero,
         );
 
         $this->title =
@@ -172,17 +172,17 @@ final class MangaController extends Controller
 
     public function modifier(
         string $slug,
-        int $numero
+        int $numero,
     ): never {
         $data = $this->mangaReadService
             ->one(
                 $slug,
-                $numero
+                $numero,
             );
 
         if ($data === null) {
             $this->notFound(
-                'Manga introuvable'
+                'Manga introuvable',
             );
         }
 
@@ -190,7 +190,7 @@ final class MangaController extends Controller
             $slug,
             $data->canonicalSlug,
             'manga/series/modifier',
-            $numero
+            $numero,
         );
 
         $this->title = 'Manga | Modifier';
@@ -201,7 +201,7 @@ final class MangaController extends Controller
     }
 
     public function ajouterTraitement(
-        MangaCreateRequest $request
+        MangaCreateRequest $request,
     ): never {
         if ($request->fails()) {
             json([
@@ -215,26 +215,26 @@ final class MangaController extends Controller
         $result = $this->mangaWriteService
             ->create(
                 $request->dto(),
-                $request->files()
+                $request->files(),
             );
 
         json(
             $result->toArray(),
-            $result->status
+            $result->status,
         );
     }
 
     public function update(
         MangaUpdateRequest $request,
         string $slug,
-        int $numero
+        int $numero,
     ): never {
         $isAjax = is_ajax();
 
         $data = $this->mangaReadService
             ->one(
                 $slug,
-                $numero
+                $numero,
             );
 
         if ($data === null) {
@@ -246,7 +246,7 @@ final class MangaController extends Controller
             }
 
             $this->notFound(
-                'Manga introuvable'
+                'Manga introuvable',
             );
         }
 
@@ -254,7 +254,7 @@ final class MangaController extends Controller
             $redirect = $this->basePath
                 . 'manga/series/modifier/'
                 . rawurlencode(
-                    $data->canonicalSlug
+                    $data->canonicalSlug,
                 )
                 . '/'
                 . $numero;
@@ -271,14 +271,14 @@ final class MangaController extends Controller
                 $slug,
                 $data->canonicalSlug,
                 'manga/series/modifier',
-                $numero
+                $numero,
             );
         }
 
         $redirectPath =
             'manga/series/modifier/'
             . rawurlencode(
-                $data->canonicalSlug
+                $data->canonicalSlug,
             )
             . '/'
             . $numero;
@@ -294,7 +294,7 @@ final class MangaController extends Controller
 
             $this->redirectWithValidationErrors(
                 $redirectPath,
-                $request->errors()
+                $request->errors(),
             );
         }
 
@@ -303,31 +303,31 @@ final class MangaController extends Controller
                 $data->canonicalSlug,
                 $numero,
                 $request->dto(),
-                $request->files()
+                $request->files(),
             );
 
         if ($isAjax) {
             json(
                 $result->toArray(),
-                $result->status
+                $result->status,
             );
         }
 
         if (!$result->success) {
             $this->redirectWithError(
                 $redirectPath,
-                $result->message
+                $result->message,
             );
         }
 
         $this->redirectWithSuccess(
             'manga/series/'
             . rawurlencode(
-                $data->canonicalSlug
+                $data->canonicalSlug,
             )
             . '/'
             . $numero,
-            $result->message
+            $result->message,
         );
     }
 }

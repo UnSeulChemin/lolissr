@@ -13,7 +13,7 @@ final class Logger
     {
         return env_bool(
             'LOG_ENABLED',
-            true
+            true,
         );
     }
 
@@ -39,7 +39,7 @@ final class Logger
         return mkdir(
             $directory,
             0755,
-            true
+            true,
         ) || is_dir($directory);
     }
 
@@ -49,7 +49,7 @@ final class Logger
     private static function write(
         string $level,
         string $message,
-        array $context = []
+        array $context = [],
     ): void {
         if (!self::enabled()) {
             return;
@@ -83,7 +83,7 @@ final class Logger
                 $payload,
                 JSON_UNESCAPED_UNICODE
                 | JSON_UNESCAPED_SLASHES
-                | JSON_THROW_ON_ERROR
+                | JSON_THROW_ON_ERROR,
             );
         } catch (JsonException) {
             return;
@@ -92,7 +92,7 @@ final class Logger
         file_put_contents(
             self::file(),
             $content . PHP_EOL,
-            FILE_APPEND | LOCK_EX
+            FILE_APPEND | LOCK_EX,
         );
     }
 
@@ -101,12 +101,12 @@ final class Logger
      */
     public static function debug(
         string $message,
-        array $context = []
+        array $context = [],
     ): void {
         self::write(
             'DEBUG',
             $message,
-            $context
+            $context,
         );
     }
 
@@ -115,12 +115,12 @@ final class Logger
      */
     public static function info(
         string $message,
-        array $context = []
+        array $context = [],
     ): void {
         self::write(
             'INFO',
             $message,
-            $context
+            $context,
         );
     }
 
@@ -129,12 +129,12 @@ final class Logger
      */
     public static function warning(
         string $message,
-        array $context = []
+        array $context = [],
     ): void {
         self::write(
             'WARNING',
             $message,
-            $context
+            $context,
         );
     }
 
@@ -143,12 +143,12 @@ final class Logger
      */
     public static function error(
         string $message,
-        array $context = []
+        array $context = [],
     ): void {
         self::write(
             'ERROR',
             $message,
-            $context
+            $context,
         );
     }
 
@@ -157,7 +157,7 @@ final class Logger
      */
     public static function exception(
         Throwable $exception,
-        array $context = []
+        array $context = [],
     ): void {
         self::error(
             $exception->getMessage(),
@@ -168,8 +168,8 @@ final class Logger
                     'file' => $exception->getFile(),
                     'line' => $exception->getLine(),
                     'trace' => $exception->getTraceAsString(),
-                ]
-            )
+                ],
+            ),
         );
     }
 }

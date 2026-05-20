@@ -41,7 +41,7 @@ final class ChinoisGrammaireRepository extends Model
                 position ASC,
                 id ASC
             ",
-            [$niveau]
+            [$niveau],
         );
 
         if (!$query) {
@@ -67,7 +67,7 @@ final class ChinoisGrammaireRepository extends Model
                 position: (int) $row->position,
                 maitrise: (bool) $row->maitrise,
             ),
-            $results
+            $results,
         );
     }
 
@@ -79,7 +79,7 @@ final class ChinoisGrammaireRepository extends Model
             SET maitrise = NOT maitrise
             WHERE id = ?
             ',
-            [$id]
+            [$id],
         );
 
         $query = $this->requete(
@@ -88,7 +88,7 @@ final class ChinoisGrammaireRepository extends Model
             FROM {$this->getTable()}
             WHERE id = ?
             ",
-            [$id]
+            [$id],
         );
 
         return (int) $query->fetch()->maitrise;

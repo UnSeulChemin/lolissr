@@ -14,7 +14,7 @@ final class MangaUpdateDTO
         public readonly string $statut,
         public readonly ?int $jacquette,
         public readonly ?int $livreNote,
-        public readonly ?string $commentaire
+        public readonly ?string $commentaire,
     ) {
     }
 
@@ -22,27 +22,27 @@ final class MangaUpdateDTO
      * @param array<string, mixed> $data
      */
     public static function fromArray(
-        array $data
+        array $data,
     ): self {
         return new self(
             editeur: Str::nullableTrim(
-                $data['editeur'] ?? null
+                $data['editeur'] ?? null,
             ),
             statut: trim(
                 (string) (
                     $data['statut']
                     ?? 'en_cours'
-                )
+                ),
             ),
             jacquette: MangaNoteNormalizer::normalize(
-                $data['jacquette'] ?? null
+                $data['jacquette'] ?? null,
             ),
             livreNote: MangaNoteNormalizer::normalize(
-                $data['livre_note'] ?? null
+                $data['livre_note'] ?? null,
             ),
             commentaire: Str::nullableTrim(
-                $data['commentaire'] ?? null
-            )
+                $data['commentaire'] ?? null,
+            ),
         );
     }
 
@@ -50,7 +50,7 @@ final class MangaUpdateDTO
      * @param array<string, mixed> $post
      */
     public static function fromPost(
-        array $post
+        array $post,
     ): self {
         return self::fromArray($post);
     }

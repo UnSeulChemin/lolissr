@@ -20,113 +20,113 @@ final class MangaValidatorService
      */
     public function makeCreateValidator(
         array $post,
-        array $files
+        array $files,
     ): Validator {
         $validator = new Validator(
             $post,
-            $files
+            $files,
         );
 
         $validator
             ->required(
                 'livre',
-                'Le titre est obligatoire.'
+                'Le titre est obligatoire.',
             )
             ->string(
                 'livre',
-                'Le titre doit être une chaîne.'
+                'Le titre doit être une chaîne.',
             )
             ->maxLength(
                 'livre',
                 150,
-                'Le titre ne doit pas dépasser 150 caractères.'
+                'Le titre ne doit pas dépasser 150 caractères.',
             )
             ->nullable('editeur')
             ->string(
                 'editeur',
-                'L’éditeur doit être une chaîne.'
+                'L’éditeur doit être une chaîne.',
             )
             ->maxLength(
                 'editeur',
                 100,
-                'L’éditeur ne doit pas dépasser 100 caractères.'
+                'L’éditeur ne doit pas dépasser 100 caractères.',
             )
             ->required(
                 'statut',
-                'Le statut est obligatoire.'
+                'Le statut est obligatoire.',
             )
             ->string(
                 'statut',
-                'Le statut doit être une chaîne.'
+                'Le statut doit être une chaîne.',
             )
             ->in(
                 'statut',
                 self::STATUTS,
-                'Statut invalide.'
+                'Statut invalide.',
             )
             ->required(
                 'slug',
-                'Le slug est obligatoire.'
+                'Le slug est obligatoire.',
             )
             ->string(
                 'slug',
-                'Le slug doit être une chaîne.'
+                'Le slug doit être une chaîne.',
             )
             ->maxLength(
                 'slug',
                 150,
-                'Le slug ne doit pas dépasser 150 caractères.'
+                'Le slug ne doit pas dépasser 150 caractères.',
             )
             ->required(
                 'numero',
-                'Le numéro est obligatoire.'
+                'Le numéro est obligatoire.',
             )
             ->integer(
                 'numero',
-                'Le numéro doit être un entier.'
+                'Le numéro doit être un entier.',
             )
             ->min(
                 'numero',
                 1,
-                'Le numéro doit être supérieur à 0.'
+                'Le numéro doit être supérieur à 0.',
             )
             ->max(
                 'numero',
                 999,
-                'Le numéro ne doit pas dépasser 999.'
+                'Le numéro ne doit pas dépasser 999.',
             )
             ->nullable('commentaire')
             ->string(
                 'commentaire',
-                'Le commentaire doit être un texte.'
+                'Le commentaire doit être un texte.',
             )
             ->maxLength(
                 'commentaire',
                 1000,
-                'Le commentaire ne doit pas dépasser 1000 caractères.'
+                'Le commentaire ne doit pas dépasser 1000 caractères.',
             )
             ->fileRequired(
                 'image',
-                'Aucune image envoyée.'
+                'Aucune image envoyée.',
             )
             ->fileOk(
                 'image',
-                'Erreur lors de l’envoi du fichier.'
+                'Erreur lors de l’envoi du fichier.',
             )
             ->imageExtension(
                 'image',
                 UploadConfig::allowedExtensions(),
-                'Format image non autorisé.'
+                'Format image non autorisé.',
             )
             ->imageMime(
                 'image',
                 UploadConfig::allowedMimeTypes(),
-                'Type MIME image non autorisé.'
+                'Type MIME image non autorisé.',
             )
             ->maxFileSize(
                 'image',
                 UploadConfig::maxSize(),
-                'L’image ne doit pas dépasser la taille autorisée.'
+                'L’image ne doit pas dépasser la taille autorisée.',
             );
 
         return $validator;
@@ -138,76 +138,76 @@ final class MangaValidatorService
      */
     public function makeUpdateValidator(
         array $post,
-        array $files
+        array $files,
     ): Validator {
         $validator = new Validator(
             $post,
-            $files
+            $files,
         );
 
         $validator
             ->nullable('editeur')
             ->string(
                 'editeur',
-                'L’éditeur doit être une chaîne.'
+                'L’éditeur doit être une chaîne.',
             )
             ->maxLength(
                 'editeur',
                 100,
-                'L’éditeur ne doit pas dépasser 100 caractères.'
+                'L’éditeur ne doit pas dépasser 100 caractères.',
             )
             ->required(
                 'statut',
-                'Le statut est obligatoire.'
+                'Le statut est obligatoire.',
             )
             ->string(
                 'statut',
-                'Le statut doit être une chaîne.'
+                'Le statut doit être une chaîne.',
             )
             ->in(
                 'statut',
                 self::STATUTS,
-                'Statut invalide.'
+                'Statut invalide.',
             )
             ->nullable('commentaire')
             ->string(
                 'commentaire',
-                'Le commentaire doit être un texte.'
+                'Le commentaire doit être un texte.',
             )
             ->maxLength(
                 'commentaire',
                 1000,
-                'Le commentaire ne doit pas dépasser 1000 caractères.'
+                'Le commentaire ne doit pas dépasser 1000 caractères.',
             )
             ->nullable('jacquette')
             ->integer(
                 'jacquette',
-                'La note jacquette doit être un entier.'
+                'La note jacquette doit être un entier.',
             )
             ->min(
                 'jacquette',
                 1,
-                'La note jacquette doit être supérieure ou égale à 1.'
+                'La note jacquette doit être supérieure ou égale à 1.',
             )
             ->max(
                 'jacquette',
                 5,
-                'La note jacquette doit être inférieure ou égale à 5.'
+                'La note jacquette doit être inférieure ou égale à 5.',
             )
             ->nullable('livre_note')
             ->integer(
                 'livre_note',
-                'La note du livre doit être un entier.'
+                'La note du livre doit être un entier.',
             )
             ->min(
                 'livre_note',
                 1,
-                'La note du livre doit être supérieure ou égale à 1.'
+                'La note du livre doit être supérieure ou égale à 1.',
             )
             ->max(
                 'livre_note',
                 5,
-                'La note du livre doit être inférieure ou égale à 5.'
+                'La note du livre doit être inférieure ou égale à 5.',
             );
 
         return $validator;
@@ -217,43 +217,43 @@ final class MangaValidatorService
      * @param array<string, mixed> $post
      */
     public function makeUpdateNoteValidator(
-        array $post
+        array $post,
     ): Validator {
         $validator = new Validator(
             $post,
-            []
+            [],
         );
 
         $validator
             ->nullable('jacquette')
             ->integer(
                 'jacquette',
-                'La note jacquette doit être un entier.'
+                'La note jacquette doit être un entier.',
             )
             ->min(
                 'jacquette',
                 1,
-                'La note jacquette doit être supérieure ou égale à 1.'
+                'La note jacquette doit être supérieure ou égale à 1.',
             )
             ->max(
                 'jacquette',
                 5,
-                'La note jacquette doit être inférieure ou égale à 5.'
+                'La note jacquette doit être inférieure ou égale à 5.',
             )
             ->nullable('livre_note')
             ->integer(
                 'livre_note',
-                'La note du livre doit être un entier.'
+                'La note du livre doit être un entier.',
             )
             ->min(
                 'livre_note',
                 1,
-                'La note du livre doit être supérieure ou égale à 1.'
+                'La note du livre doit être supérieure ou égale à 1.',
             )
             ->max(
                 'livre_note',
                 5,
-                'La note du livre doit être inférieure ou égale à 5.'
+                'La note du livre doit être inférieure ou égale à 5.',
             );
 
         return $validator;
@@ -264,7 +264,7 @@ final class MangaValidatorService
      */
     public function firstErrorMessage(
         array $errors,
-        string $fallback = 'Le formulaire contient des erreurs.'
+        string $fallback = 'Le formulaire contient des erreurs.',
     ): string {
         foreach ($errors as $messages) {
             if (

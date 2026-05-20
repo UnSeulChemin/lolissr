@@ -128,7 +128,7 @@ if (!function_exists('abort')) {
     function abort(int $code = 404): never
     {
         $controller = app(
-            ErrorController::class
+            ErrorController::class,
         );
 
         match ($code) {
@@ -151,25 +151,25 @@ if (!function_exists('abort')) {
 if (!function_exists('redirect')) {
     function redirect(
         string $path = '',
-        int $status = 302
+        int $status = 302,
     ): never {
         if (
             preg_match('#^https?://#i', $path) === 1
         ) {
             Response::redirect(
                 $path,
-                $status
+                $status,
             );
         }
 
         $url = rtrim(
             base_path(),
-            '/'
+            '/',
         ) . '/' . ltrim($path, '/');
 
         Response::redirect(
             $url,
-            $status
+            $status,
         );
     }
 }
@@ -186,7 +186,7 @@ if (!function_exists('json')) {
      */
     function json(
         array $data,
-        int $status = 200
+        int $status = 200,
     ): never {
         Response::json($data, $status);
     }
@@ -205,30 +205,30 @@ if (!function_exists('view')) {
     function view(
         string $viewFile,
         array $data = [],
-        ?string $title = null
+        ?string $title = null,
     ): never {
         $title ??= App::siteName();
 
         $view = $data;
 
         $viewPath = view_path(
-            $viewFile . '.php'
+            $viewFile . '.php',
         );
 
         $layoutPath = view_path(
-            'layouts/base.php'
+            'layouts/base.php',
         );
 
         if (!is_file($viewPath)) {
             throw new \RuntimeException(
                 'Vue introuvable : '
-                . $viewFile
+                . $viewFile,
             );
         }
 
         if (!is_file($layoutPath)) {
             throw new \RuntimeException(
-                'Layout introuvable : layouts/base'
+                'Layout introuvable : layouts/base',
             );
         }
 
@@ -265,11 +265,11 @@ if (!function_exists('view')) {
 if (!function_exists('env')) {
     function env(
         string $key,
-        mixed $default = null
+        mixed $default = null,
     ): mixed {
         return Env::get(
             $key,
-            $default
+            $default,
         );
     }
 }
@@ -277,11 +277,11 @@ if (!function_exists('env')) {
 if (!function_exists('env_bool')) {
     function env_bool(
         string $key,
-        bool $default = false
+        bool $default = false,
     ): bool {
         return Env::bool(
             $key,
-            $default
+            $default,
         );
     }
 }
@@ -289,11 +289,11 @@ if (!function_exists('env_bool')) {
 if (!function_exists('env_int')) {
     function env_int(
         string $key,
-        int $default = 0
+        int $default = 0,
     ): int {
         return (int) Env::get(
             $key,
-            $default
+            $default,
         );
     }
 }
@@ -307,11 +307,11 @@ if (!function_exists('env_int')) {
 if (!function_exists('config')) {
     function config(
         string $key,
-        mixed $default = null
+        mixed $default = null,
     ): mixed {
         return Config::get(
             $key,
-            $default
+            $default,
         );
     }
 }
@@ -324,12 +324,12 @@ if (!function_exists('config')) {
 
 if (!function_exists('e')) {
     function e(
-        mixed $value
+        mixed $value,
     ): string {
         return htmlspecialchars(
             (string) $value,
             ENT_QUOTES | ENT_SUBSTITUTE,
-            'UTF-8'
+            'UTF-8',
         );
     }
 }
@@ -360,12 +360,12 @@ if (!function_exists('csrf_token')) {
         if (!Session::has('csrf_token')) {
             Session::set(
                 'csrf_token',
-                bin2hex(random_bytes(32))
+                bin2hex(random_bytes(32)),
             );
         }
 
         return (string) Session::get(
-            'csrf_token'
+            'csrf_token',
         );
     }
 }
@@ -398,11 +398,11 @@ if (!function_exists('csrf_verify')) {
         }
 
         $token = $request->post(
-            'csrf_token'
+            'csrf_token',
         );
 
         $sessionToken = Session::get(
-            'csrf_token'
+            'csrf_token',
         );
 
         $validToken =
@@ -412,7 +412,7 @@ if (!function_exists('csrf_verify')) {
             && $sessionToken !== ''
             && hash_equals(
                 $sessionToken,
-                $token
+                $token,
             );
 
         if ($validToken) {

@@ -10,7 +10,7 @@ use App\Repositories\Chinois\ChinoisGrammaireRepository;
 final class ChinoisAjaxController
 {
     public function __construct(
-        private readonly ChinoisGrammaireRepository $repository
+        private readonly ChinoisGrammaireRepository $repository,
     ) {
     }
 
@@ -21,7 +21,7 @@ final class ChinoisAjaxController
     */
 
     public function toggleGrammaireMaitrise(
-        Request $request
+        Request $request,
     ): never {
         $id = $request->integer('id');
 

@@ -19,7 +19,7 @@ final class Database extends PDO
             'mysql:host=%s;dbname=%s;charset=%s',
             DatabaseConfig::host(),
             DatabaseConfig::name(),
-            DatabaseConfig::charset()
+            DatabaseConfig::charset(),
         );
 
         try {
@@ -31,30 +31,30 @@ final class Database extends PDO
 
             $this->setAttribute(
                 PDO::ATTR_DEFAULT_FETCH_MODE,
-                PDO::FETCH_OBJ
+                PDO::FETCH_OBJ,
             );
 
             $this->setAttribute(
                 PDO::ATTR_ERRMODE,
-                PDO::ERRMODE_EXCEPTION
+                PDO::ERRMODE_EXCEPTION,
             );
 
             $this->setAttribute(
                 PDO::ATTR_EMULATE_PREPARES,
-                false
+                false,
             );
         } catch (PDOException $exception) {
             Logger::exception(
                 $exception,
                 [
                     'type' => 'database_connection',
-                ]
+                ],
             );
 
             throw new RuntimeException(
                 App::debug()
                     ? $exception->getMessage()
-                    : 'Erreur de connexion à la base de données.'
+                    : 'Erreur de connexion à la base de données.',
             );
         }
     }

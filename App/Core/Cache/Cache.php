@@ -62,7 +62,7 @@ final class Cache
                 $content,
                 false,
                 512,
-                JSON_THROW_ON_ERROR
+                JSON_THROW_ON_ERROR,
             );
         } catch (\JsonException $exception) {
             @unlink($path);
@@ -111,7 +111,7 @@ final class Cache
     public static function put(
         string $key,
         mixed $value,
-        ?int $ttl = null
+        ?int $ttl = null,
     ): void {
         if (!self::enabled()) {
             return;
@@ -134,7 +134,7 @@ final class Cache
             $json = json_encode(
                 $payload,
                 JSON_UNESCAPED_UNICODE
-                | JSON_THROW_ON_ERROR
+                | JSON_THROW_ON_ERROR,
             );
         } catch (\JsonException $exception) {
             Logger::warning('Cache encoding failed', [
@@ -148,7 +148,7 @@ final class Cache
         $written = file_put_contents(
             self::path($key),
             $json,
-            LOCK_EX
+            LOCK_EX,
         );
 
         if ($written === false) {
@@ -171,7 +171,7 @@ final class Cache
     public static function remember(
         string $key,
         ?int $ttl,
-        callable $callback
+        callable $callback,
     ): mixed {
         if (!self::enabled()) {
             return $callback();
@@ -200,7 +200,7 @@ final class Cache
     public static function has(string $key): bool
     {
         return is_file(
-            self::path($key)
+            self::path($key),
         );
     }
 

@@ -32,47 +32,47 @@ final class Validator
      */
     public function __construct(
         array $data,
-        array $files = []
+        array $files = [],
     ) {
         $this->data = $data;
         $this->files = $files;
     }
 
     private function hasError(
-        string $field
+        string $field,
     ): bool {
         return isset($this->errors[$field]);
     }
 
     private function isNullableAndEmpty(
-        string $field
+        string $field,
     ): bool {
         if (
             !in_array(
                 $field,
                 $this->nullable,
-                true
+                true,
             )
         ) {
             return false;
         }
 
         $value = trim(
-            (string) ($this->data[$field] ?? '')
+            (string) ($this->data[$field] ?? ''),
         );
 
         return $value === '';
     }
 
     private function shouldSkip(
-        string $field
+        string $field,
     ): bool {
         return $this->hasError($field)
             || $this->isNullableAndEmpty($field);
     }
 
     private function hasUploadedFile(
-        string $field
+        string $field,
     ): bool {
         if (!isset($this->files[$field])) {
             return false;
@@ -89,20 +89,20 @@ final class Validator
     }
 
     private function shouldSkipFile(
-        string $field
+        string $field,
     ): bool {
         return $this->hasError($field)
             || !$this->hasUploadedFile($field);
     }
 
     public function nullable(
-        string $field
+        string $field,
     ): self {
         if (
             !in_array(
                 $field,
                 $this->nullable,
-                true
+                true,
             )
         ) {
             $this->nullable[] = $field;
@@ -113,14 +113,14 @@ final class Validator
 
     public function required(
         string $field,
-        ?string $message = null
+        ?string $message = null,
     ): self {
         if ($this->hasError($field)) {
             return $this;
         }
 
         $value = trim(
-            (string) ($this->data[$field] ?? '')
+            (string) ($this->data[$field] ?? ''),
         );
 
         if ($value === '') {
@@ -134,7 +134,7 @@ final class Validator
 
     public function string(
         string $field,
-        ?string $message = null
+        ?string $message = null,
     ): self {
         if ($this->shouldSkip($field)) {
             return $this;
@@ -153,7 +153,7 @@ final class Validator
 
     public function integer(
         string $field,
-        ?string $message = null
+        ?string $message = null,
     ): self {
         if ($this->shouldSkip($field)) {
             return $this;
@@ -164,7 +164,7 @@ final class Validator
         if (
             filter_var(
                 $value,
-                FILTER_VALIDATE_INT
+                FILTER_VALIDATE_INT,
             ) === false
         ) {
             $this->errors[$field] =
@@ -178,7 +178,7 @@ final class Validator
     public function min(
         string $field,
         int $min,
-        ?string $message = null
+        ?string $message = null,
     ): self {
         if ($this->shouldSkip($field)) {
             return $this;
@@ -189,7 +189,7 @@ final class Validator
         if (
             filter_var(
                 $value,
-                FILTER_VALIDATE_INT
+                FILTER_VALIDATE_INT,
             ) === false
             || (int) $value < $min
         ) {
@@ -204,7 +204,7 @@ final class Validator
     public function max(
         string $field,
         int $max,
-        ?string $message = null
+        ?string $message = null,
     ): self {
         if ($this->shouldSkip($field)) {
             return $this;
@@ -215,7 +215,7 @@ final class Validator
         if (
             filter_var(
                 $value,
-                FILTER_VALIDATE_INT
+                FILTER_VALIDATE_INT,
             ) === false
             || (int) $value > $max
         ) {
@@ -230,14 +230,14 @@ final class Validator
     public function maxLength(
         string $field,
         int $max,
-        ?string $message = null
+        ?string $message = null,
     ): self {
         if ($this->shouldSkip($field)) {
             return $this;
         }
 
         $value = trim(
-            (string) ($this->data[$field] ?? '')
+            (string) ($this->data[$field] ?? ''),
         );
 
         if (mb_strlen($value) > $max) {
@@ -255,7 +255,7 @@ final class Validator
     public function in(
         string $field,
         array $allowedValues,
-        ?string $message = null
+        ?string $message = null,
     ): self {
         if ($this->shouldSkip($field)) {
             return $this;
@@ -267,7 +267,7 @@ final class Validator
             !in_array(
                 $value,
                 $allowedValues,
-                true
+                true,
             )
         ) {
             $this->errors[$field] =
@@ -280,7 +280,7 @@ final class Validator
 
     public function fileRequired(
         string $field,
-        ?string $message = null
+        ?string $message = null,
     ): self {
         if ($this->hasError($field)) {
             return $this;
@@ -297,7 +297,7 @@ final class Validator
 
     public function fileOk(
         string $field,
-        ?string $message = null
+        ?string $message = null,
     ): self {
         if ($this->hasError($field)) {
             return $this;
@@ -324,7 +324,7 @@ final class Validator
     public function imageExtension(
         string $field,
         array $allowedExtensions,
-        ?string $message = null
+        ?string $message = null,
     ): self {
         if ($this->shouldSkipFile($field)) {
             return $this;
@@ -343,8 +343,8 @@ final class Validator
         $extension = strtolower(
             pathinfo(
                 $name,
-                PATHINFO_EXTENSION
-            )
+                PATHINFO_EXTENSION,
+            ),
         );
 
         if ($extension === 'jpeg') {
@@ -355,7 +355,7 @@ final class Validator
             !in_array(
                 $extension,
                 $allowedExtensions,
-                true
+                true,
             )
         ) {
             $this->errors[$field] =
@@ -372,7 +372,7 @@ final class Validator
     public function imageMime(
         string $field,
         array $allowedMimeTypes,
-        ?string $message = null
+        ?string $message = null,
     ): self {
         if ($this->shouldSkipFile($field)) {
             return $this;
@@ -404,7 +404,7 @@ final class Validator
 
         $mimeType = finfo_file(
             $finfo,
-            $tmpName
+            $tmpName,
         );
 
         finfo_close($finfo);
@@ -414,7 +414,7 @@ final class Validator
             || !in_array(
                 $mimeType,
                 $allowedMimeTypes,
-                true
+                true,
             )
         ) {
             $this->errors[$field] =
@@ -428,7 +428,7 @@ final class Validator
     public function maxFileSize(
         string $field,
         int $maxBytes,
-        ?string $message = null
+        ?string $message = null,
     ): self {
         if ($this->shouldSkipFile($field)) {
             return $this;

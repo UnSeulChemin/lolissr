@@ -10,7 +10,7 @@ use App\Repositories\Chinois\ChinoisVocabulaireRepository;
 final class ChinoisReadService
 {
     public function __construct(
-        private readonly ChinoisVocabulaireRepository $chinoisRepository
+        private readonly ChinoisVocabulaireRepository $chinoisRepository,
     ) {
     }
 

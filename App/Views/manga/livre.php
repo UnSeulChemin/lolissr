@@ -6,13 +6,13 @@ $manga = $view['manga'] ?? null;
 
 if ($manga === null) {
     throw new \RuntimeException(
-        'Manga manquant dans la vue.'
+        'Manga manquant dans la vue.',
     );
 }
 
 $basePath = rtrim(
     (string) ($basePath ?? ''),
-    '/'
+    '/',
 ) . '/';
 
 $slug = rawurlencode((string) $manga->slug);
@@ -137,7 +137,7 @@ $hasEditeur = $manga->editeur !== null
                         (string) $numero,
                         2,
                         '0',
-                        STR_PAD_LEFT
+                        STR_PAD_LEFT,
                     ) ?>
 
                 </div>

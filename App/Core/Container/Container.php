@@ -25,7 +25,7 @@ final class Container
 
     public function bind(
         string $abstract,
-        callable|string|null $concrete = null
+        callable|string|null $concrete = null,
     ): void {
         $this->bindings[$abstract] = [
             'concrete' => $concrete ?? $abstract,
@@ -35,7 +35,7 @@ final class Container
 
     public function singleton(
         string $abstract,
-        callable|string|null $concrete = null
+        callable|string|null $concrete = null,
     ): void {
         $this->bindings[$abstract] = [
             'concrete' => $concrete ?? $abstract,
@@ -44,7 +44,7 @@ final class Container
     }
 
     public function get(
-        string $abstract
+        string $abstract,
     ): object {
         if (isset($this->instances[$abstract])) {
             return $this->instances[$abstract];
@@ -57,7 +57,7 @@ final class Container
             ];
 
         $object = $this->resolve(
-            $binding['concrete']
+            $binding['concrete'],
         );
 
         if ($binding['singleton']) {
@@ -68,7 +68,7 @@ final class Container
     }
 
     private function resolve(
-        callable|string $concrete
+        callable|string $concrete,
     ): object {
         if (is_callable($concrete)) {
             return $concrete($this);
@@ -76,17 +76,17 @@ final class Container
 
         if (!class_exists($concrete)) {
             throw new RuntimeException(
-                "Classe introuvable : {$concrete}"
+                "Classe introuvable : {$concrete}",
             );
         }
 
         $reflection = new ReflectionClass(
-            $concrete
+            $concrete,
         );
 
         if (!$reflection->isInstantiable()) {
             throw new RuntimeException(
-                "Classe non instanciable : {$concrete}"
+                "Classe non instanciable : {$concrete}",
             );
         }
 
@@ -115,17 +115,17 @@ final class Container
                 }
 
                 throw new RuntimeException(
-                    "Impossible de résoudre {$concrete}::\${$parameter->getName()}"
+                    "Impossible de résoudre {$concrete}::\${$parameter->getName()}",
                 );
             }
 
             $dependencies[] = $this->get(
-                $type->getName()
+                $type->getName(),
             );
         }
 
         return $reflection->newInstanceArgs(
-            $dependencies
+            $dependencies,
         );
     }
 }

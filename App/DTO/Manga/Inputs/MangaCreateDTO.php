@@ -14,7 +14,7 @@ final class MangaCreateDTO
         public readonly string $statut,
         public readonly string $slug,
         public readonly int $numero,
-        public readonly ?string $commentaire
+        public readonly ?string $commentaire,
     ) {
     }
 
@@ -22,36 +22,36 @@ final class MangaCreateDTO
      * @param array<string, mixed> $data
      */
     public static function fromArray(
-        array $data
+        array $data,
     ): self {
         $livre = trim(
-            (string) ($data['livre'] ?? '')
+            (string) ($data['livre'] ?? ''),
         );
 
         return new self(
             livre: $livre,
             editeur: Str::nullableTrim(
-                $data['editeur'] ?? null
+                $data['editeur'] ?? null,
             ),
             statut: trim(
                 (string) (
                     $data['statut']
                     ?? 'en_cours'
-                )
+                ),
             ),
             slug: Str::slug(
                 (string) (
                     $data['slug']
                     ?? $livre
-                )
+                ),
             ),
             numero: max(
                 1,
-                (int) ($data['numero'] ?? 1)
+                (int) ($data['numero'] ?? 1),
             ),
             commentaire: Str::nullableTrim(
-                $data['commentaire'] ?? null
-            )
+                $data['commentaire'] ?? null,
+            ),
         );
     }
 
@@ -59,7 +59,7 @@ final class MangaCreateDTO
      * @param array<string, mixed> $post
      */
     public static function fromPost(
-        array $post
+        array $post,
     ): self {
         return self::fromArray($post);
     }

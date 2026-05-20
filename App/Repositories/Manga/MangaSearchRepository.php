@@ -16,14 +16,14 @@ final class MangaSearchRepository extends Model
      * @return list<Manga>
      */
     public function searchMangas(
-        string $search
+        string $search,
     ): array {
         $search = trim(
             preg_replace(
                 '/\s+/',
                 ' ',
-                trim($search)
-            ) ?? ''
+                trim($search),
+            ) ?? '',
         );
 
         if ($search === '') {
@@ -36,7 +36,7 @@ final class MangaSearchRepository extends Model
             preg_match(
                 $pattern,
                 $search,
-                $matches
+                $matches,
             )
         ) {
             $titlePart = trim($matches[1]);
@@ -64,7 +64,7 @@ final class MangaSearchRepository extends Model
 
                         'numero' => $numero,
                     ],
-                    Manga::class
+                    Manga::class,
                 );
             }
         }
@@ -84,26 +84,26 @@ final class MangaSearchRepository extends Model
                     . Str::slug($search)
                     . '%',
             ],
-            Manga::class
+            Manga::class,
         );
     }
 
     public function countFirstTomesPaginate(
-        int $eachPerPage
+        int $eachPerPage,
     ): int {
         $eachPerPage = max(1, $eachPerPage);
 
         $result = $this->fetchOne(
             "SELECT COUNT(*) AS total
             FROM {$this->getTable()}
-            WHERE numero = 1"
+            WHERE numero = 1",
         );
 
         $total = (int) ($result->total ?? 0);
 
         return max(
             1,
-            (int) ceil($total / $eachPerPage)
+            (int) ceil($total / $eachPerPage),
         );
     }
 
@@ -113,7 +113,7 @@ final class MangaSearchRepository extends Model
     public function findAllFirstTomes(
         string $orderBy,
         int $eachPerPage,
-        int $page
+        int $page,
     ): array {
         $page = max(1, $page);
 
@@ -132,7 +132,7 @@ final class MangaSearchRepository extends Model
             !in_array(
                 $orderBy,
                 $allowedOrderBy,
-                true
+                true,
             )
         ) {
             $orderBy = 'id DESC';
@@ -179,7 +179,7 @@ final class MangaSearchRepository extends Model
 
             LIMIT {$start}, {$eachPerPage}",
             [],
-            Manga::class
+            Manga::class,
         );
     }
 }

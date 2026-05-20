@@ -10,7 +10,7 @@ use App\Core\Support\Logger;
 final class ErrorController extends Controller
 {
     public function notFound(
-        string $message = 'Page introuvable'
+        string $message = 'Page introuvable',
     ): never {
         $request = app(Request::class);
 
@@ -26,7 +26,7 @@ final class ErrorController extends Controller
     }
 
     public function methodNotAllowed(
-        string $message = 'Méthode non autorisée'
+        string $message = 'Méthode non autorisée',
     ): never {
         $request = app(Request::class);
 
@@ -58,7 +58,7 @@ final class ErrorController extends Controller
     }
 
     public function serverError(
-        string $message = 'Erreur interne du serveur'
+        string $message = 'Erreur interne du serveur',
     ): never {
         $request = app(Request::class);
 

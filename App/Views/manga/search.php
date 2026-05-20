@@ -13,7 +13,7 @@ $mangas = isset($view['mangas'])
 
 $basePath = rtrim(
     (string) ($basePath ?? ''),
-    '/'
+    '/',
 ) . '/';
 
 ?>

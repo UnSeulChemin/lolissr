@@ -18,7 +18,7 @@ final class Env
      */
     public static function get(
         string $key,
-        mixed $default = null
+        mixed $default = null,
     ): mixed {
         $key = trim($key);
 
@@ -50,7 +50,7 @@ final class Env
 
         if (is_string($value)) {
             $value = self::cast(
-                trim($value)
+                trim($value),
             );
         }
 
@@ -64,11 +64,11 @@ final class Env
      */
     public static function bool(
         string $key,
-        bool $default = false
+        bool $default = false,
     ): bool {
         $value = self::get(
             $key,
-            $default
+            $default,
         );
 
         if (is_bool($value)) {
@@ -86,7 +86,7 @@ final class Env
         $result = filter_var(
             $value,
             FILTER_VALIDATE_BOOL,
-            FILTER_NULL_ON_FAILURE
+            FILTER_NULL_ON_FAILURE,
         );
 
         return $result ?? $default;
@@ -126,7 +126,7 @@ final class Env
      * Convertit une valeur texte en type PHP cohérent.
      */
     private static function cast(
-        string $value
+        string $value,
     ): mixed {
         return match (strtolower($value)) {
             'true', '(true)' => true,

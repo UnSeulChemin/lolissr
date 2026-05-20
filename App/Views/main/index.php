@@ -6,13 +6,13 @@ $stats = $view['stats'] ?? null;
 
 if ($stats === null) {
     throw new \RuntimeException(
-        'Stats manquantes dans la vue.'
+        'Stats manquantes dans la vue.',
     );
 }
 
 $basePath = rtrim(
     (string) ($basePath ?? ''),
-    '/'
+    '/',
 ) . '/';
 
 $hasLongestSeries = $stats->longestSeries !== null;
@@ -144,7 +144,7 @@ $hasTopLongestSeries = is_iterable($stats->topLongestSeries)
                                 (string) $tome->numero,
                                 2,
                                 '0',
-                                STR_PAD_LEFT
+                                STR_PAD_LEFT,
                             ) ?>
 
                         </p>
@@ -213,8 +213,8 @@ $hasTopLongestSeries = is_iterable($stats->topLongestSeries)
                             (float) $stats->averageNote,
                             1,
                             ',',
-                            ' '
-                        ) . '/10'
+                            ' ',
+                        ) . '/10',
                     )
                     : 'Aucune note' ?>
 

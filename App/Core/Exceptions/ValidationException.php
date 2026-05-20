@@ -11,11 +11,11 @@ final class ValidationException extends HttpException
      */
     public function __construct(
         private readonly array $errors,
-        string $message = 'Erreur de validation'
+        string $message = 'Erreur de validation',
     ) {
         parent::__construct(
             $message,
-            422
+            422,
         );
     }
 

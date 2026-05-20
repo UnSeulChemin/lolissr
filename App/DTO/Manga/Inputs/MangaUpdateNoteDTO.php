@@ -10,7 +10,7 @@ final class MangaUpdateNoteDTO
 {
     public function __construct(
         public readonly ?int $jacquette,
-        public readonly ?int $livreNote
+        public readonly ?int $livreNote,
     ) {
     }
 
@@ -18,15 +18,15 @@ final class MangaUpdateNoteDTO
      * @param array<string, mixed> $data
      */
     public static function fromArray(
-        array $data
+        array $data,
     ): self {
         return new self(
             jacquette: MangaNoteNormalizer::normalize(
-                $data['jacquette'] ?? null
+                $data['jacquette'] ?? null,
             ),
             livreNote: MangaNoteNormalizer::normalize(
-                $data['livre_note'] ?? null
-            )
+                $data['livre_note'] ?? null,
+            ),
         );
     }
 
@@ -34,7 +34,7 @@ final class MangaUpdateNoteDTO
      * @param array<string, mixed> $post
      */
     public static function fromPost(
-        array $post
+        array $post,
     ): self {
         return self::fromArray($post);
     }

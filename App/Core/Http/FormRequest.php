@@ -11,11 +11,11 @@ abstract class FormRequest
     protected Validator $validator;
 
     public function __construct(
-        protected readonly Request $request
+        protected readonly Request $request,
     ) {
         $this->validator = new Validator(
             $this->request->postAll(),
-            $this->request->files()
+            $this->request->files(),
         );
 
         $this->validate();
@@ -69,11 +69,11 @@ abstract class FormRequest
 
     final protected function input(
         string $key,
-        mixed $default = null
+        mixed $default = null,
     ): mixed {
         return $this->request->input(
             $key,
-            $default
+            $default,
         );
     }
 }

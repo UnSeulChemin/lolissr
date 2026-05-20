@@ -24,7 +24,7 @@ final class CsrfMiddleware implements MiddlewareInterface
         }
 
         $sessionToken = Session::get(
-            'csrf_token'
+            'csrf_token',
         );
 
         $postedToken = $request->input('csrf_token')

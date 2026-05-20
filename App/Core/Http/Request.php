@@ -16,7 +16,7 @@ final class Request
         private readonly array $get = [],
         private readonly array $post = [],
         private readonly array $files = [],
-        private readonly array $server = []
+        private readonly array $server = [],
     ) {
     }
 
@@ -25,10 +25,10 @@ final class Request
      */
     public function header(
         string $key,
-        mixed $default = null
+        mixed $default = null,
     ): mixed {
         $serverKey = 'HTTP_' . strtoupper(
-            str_replace('-', '_', $key)
+            str_replace('-', '_', $key),
         );
 
         return $this->server[$serverKey]
@@ -41,7 +41,7 @@ final class Request
             $_GET,
             $_POST,
             $_FILES,
-            $_SERVER
+            $_SERVER,
         );
     }
 
@@ -74,7 +74,7 @@ final class Request
 
     public function input(
         string $key,
-        mixed $default = null
+        mixed $default = null,
     ): mixed {
         return $this->post[$key]
             ?? $this->get[$key]
@@ -83,7 +83,7 @@ final class Request
 
     public function query(
         string $key,
-        mixed $default = null
+        mixed $default = null,
     ): mixed {
         return $this->get[$key]
             ?? $default;
@@ -91,7 +91,7 @@ final class Request
 
     public function post(
         string $key,
-        mixed $default = null
+        mixed $default = null,
     ): mixed {
         return $this->post[$key]
             ?? $default;
@@ -99,28 +99,28 @@ final class Request
 
     public function string(
         string $key,
-        string $default = ''
+        string $default = '',
     ): string {
         return trim(
-            (string) $this->input($key, $default)
+            (string) $this->input($key, $default),
         );
     }
 
     public function integer(
         string $key,
-        int $default = 0
+        int $default = 0,
     ): int {
         return (int) $this->input($key, $default);
     }
 
     public function boolean(
         string $key,
-        bool $default = false
+        bool $default = false,
     ): bool {
         $value = filter_var(
             $this->input($key, $default),
             FILTER_VALIDATE_BOOLEAN,
-            FILTER_NULL_ON_FAILURE
+            FILTER_NULL_ON_FAILURE,
         );
 
         return $value ?? $default;
@@ -130,7 +130,7 @@ final class Request
     {
         return array_key_exists(
             $key,
-            $this->all()
+            $this->all(),
         );
     }
 
@@ -162,7 +162,7 @@ final class Request
     {
         return array_diff_key(
             $this->all(),
-            array_flip($keys)
+            array_flip($keys),
         );
     }
 
@@ -264,8 +264,8 @@ final class Request
                 (string) (
                     $this->server['REQUEST_METHOD']
                     ?? 'GET'
-                )
-            )
+                ),
+            ),
         );
     }
 
@@ -291,7 +291,7 @@ final class Request
     {
         $path = parse_url(
             $this->uri(),
-            PHP_URL_PATH
+            PHP_URL_PATH,
         );
 
         if (
@@ -303,7 +303,7 @@ final class Request
 
         $basePath = rtrim(
             base_path(),
-            '/'
+            '/',
         );
 
         if (
@@ -313,7 +313,7 @@ final class Request
         ) {
             $path = substr(
                 $path,
-                strlen($basePath)
+                strlen($basePath),
             );
         }
 
@@ -326,7 +326,7 @@ final class Request
 
     public function server(
         string $key,
-        mixed $default = null
+        mixed $default = null,
     ): mixed {
         return $this->server[$key]
             ?? $default;
@@ -336,7 +336,7 @@ final class Request
     {
         return (string) $this->server(
             'HTTP_USER_AGENT',
-            ''
+            '',
         );
     }
 
@@ -345,8 +345,8 @@ final class Request
         return strtolower(
             (string) $this->server(
                 'HTTP_X_REQUESTED_WITH',
-                ''
-            )
+                '',
+            ),
         ) === 'xmlhttprequest';
     }
 }

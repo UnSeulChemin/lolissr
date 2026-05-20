@@ -16,7 +16,7 @@ $level = isset($view['level'])
 
 $basePath = rtrim(
     (string) ($basePath ?? ''),
-    '/'
+    '/',
 ) . '/';
 
 $sections = [];

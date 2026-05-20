@@ -22,7 +22,7 @@ final class Session
             && !is_dir($directory)
         ) {
             throw new RuntimeException(
-                'Impossible de créer le dossier de session.'
+                'Impossible de créer le dossier de session.',
             );
         }
 
@@ -31,8 +31,8 @@ final class Session
         session_name(
             (string) env(
                 'SESSION_NAME',
-                'LOLISSR_SESSION'
-            )
+                'LOLISSR_SESSION',
+            ),
         );
 
         $https = $_SERVER['HTTPS'] ?? null;
@@ -56,7 +56,7 @@ final class Session
 
         ini_set(
             'session.cookie_secure',
-            $secure ? '1' : '0'
+            $secure ? '1' : '0',
         );
 
         session_set_cookie_params([
@@ -80,7 +80,7 @@ final class Session
 
     public static function set(
         string $key,
-        mixed $value
+        mixed $value,
     ): void {
         self::ensureStarted();
 
@@ -89,7 +89,7 @@ final class Session
 
     public static function get(
         string $key,
-        mixed $default = null
+        mixed $default = null,
     ): mixed {
         self::ensureStarted();
 
@@ -98,18 +98,18 @@ final class Session
     }
 
     public static function has(
-        string $key
+        string $key,
     ): bool {
         self::ensureStarted();
 
         return array_key_exists(
             $key,
-            $_SESSION
+            $_SESSION,
         );
     }
 
     public static function remove(
-        string $key
+        string $key,
     ): void {
         self::forget([$key]);
     }
@@ -118,7 +118,7 @@ final class Session
      * @param list<string> $keys
      */
     public static function forget(
-        array $keys
+        array $keys,
     ): void {
         self::ensureStarted();
 
@@ -129,7 +129,7 @@ final class Session
 
     public static function pull(
         string $key,
-        mixed $default = null
+        mixed $default = null,
     ): mixed {
         self::ensureStarted();
 
@@ -143,11 +143,11 @@ final class Session
 
     public static function flash(
         string $key,
-        mixed $value
+        mixed $value,
     ): void {
         self::set(
             $key,
-            $value
+            $value,
         );
     }
 
@@ -177,7 +177,7 @@ final class Session
                     'secure' => $params['secure'],
                     'httponly' => $params['httponly'],
                     'samesite' => $params['samesite'],
-                ]
+                ],
             );
         }
 

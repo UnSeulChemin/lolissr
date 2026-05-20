@@ -30,7 +30,23 @@ return (new PhpCsFixer\Config())
         'trailing_comma_in_multiline' => [
             'elements' => [
                 'arrays',
+                'arguments',
+                'parameters',
             ],
         ],
+
+        'method_argument_space' => [
+            'on_multiline' => 'ensure_fully_multiline',
+        ],
+
+        'braces_position' => [
+            'control_structures_opening_brace' => 'same_line',
+            'functions_opening_brace' => 'next_line_unless_newline_at_signature_end',
+            'classes_opening_brace' => 'next_line_unless_newline_at_signature_end',
+        ],
+
+        'control_structure_braces' => true,
+
+        'no_multiple_statements_per_line' => true,
     ])
     ->setFinder($finder);

@@ -7,7 +7,7 @@ namespace App\Core\Http;
 final class UploadedFile
 {
     public function __construct(
-        private Request $request
+        private Request $request,
     ) {
     }
 

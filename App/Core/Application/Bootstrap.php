@@ -17,7 +17,7 @@ final class Bootstrap
     public static function run(): never
     {
         self::loadEnvironment(
-            ROOT . '/.env'
+            ROOT . '/.env',
         );
 
         Env::clear();
@@ -30,18 +30,18 @@ final class Bootstrap
         $container = new Container();
 
         AppContainer::set(
-            $container
+            $container,
         );
 
         $container->singleton(
             Request::class,
-            fn (): Request => Request::capture()
+            fn (): Request => Request::capture(),
         );
 
         $router = new Router();
 
         $routes = require app_path(
-            'Config/routes.php'
+            'Config/routes.php',
         );
 
         if (is_callable($routes)) {
@@ -54,7 +54,7 @@ final class Bootstrap
     }
 
     private static function loadEnvironment(
-        string $envFile
+        string $envFile,
     ): void {
         if (!is_file($envFile)) {
             return;
@@ -63,7 +63,7 @@ final class Bootstrap
         $lines = file(
             $envFile,
             FILE_IGNORE_NEW_LINES
-            | FILE_SKIP_EMPTY_LINES
+            | FILE_SKIP_EMPTY_LINES,
         );
 
         if ($lines === false) {
@@ -84,7 +84,7 @@ final class Bootstrap
             [$name, $value] = explode(
                 '=',
                 $line,
-                2
+                2,
             );
 
             $name = trim($name);
@@ -94,20 +94,20 @@ final class Bootstrap
             }
 
             $value = self::normalizeEnvValue(
-                trim($value)
+                trim($value),
             );
 
             $_ENV[$name] = $value;
             $_SERVER[$name] = $value;
 
             putenv(
-                "{$name}={$value}"
+                "{$name}={$value}",
             );
         }
     }
 
     private static function normalizeEnvValue(
-        string $value
+        string $value,
     ): string {
         $length = strlen($value);
 
@@ -122,7 +122,7 @@ final class Bootstrap
                 return substr(
                     $value,
                     1,
-                    -1
+                    -1,
                 );
             }
         }
@@ -137,19 +137,19 @@ final class Bootstrap
         error_reporting(
             $debug
                 ? E_ALL
-                : 0
+                : 0,
         );
 
         ini_set(
             'display_errors',
             $debug
                 ? '1'
-                : '0'
+                : '0',
         );
 
         ini_set(
             'log_errors',
-            '1'
+            '1',
         );
     }
 }

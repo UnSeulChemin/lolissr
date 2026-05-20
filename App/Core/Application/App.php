@@ -11,8 +11,8 @@ final class App
         $basePath = trim(
             (string) config(
                 'app.base_path',
-                '/'
-            )
+                '/',
+            ),
         );
 
         if (
@@ -31,7 +31,7 @@ final class App
     {
         return (string) config(
             'app.name',
-            'Site'
+            'Site',
         );
     }
 
@@ -41,8 +41,8 @@ final class App
             1,
             (int) config(
                 'app.pagination',
-                8
-            )
+                8,
+            ),
         );
     }
 
@@ -51,8 +51,8 @@ final class App
         return strtolower(
             (string) config(
                 'app.env',
-                'local'
-            )
+                'local',
+            ),
         );
     }
 
@@ -60,7 +60,7 @@ final class App
     {
         return (bool) config(
             'app.debug',
-            false
+            false,
         );
     }
 

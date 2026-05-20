@@ -8,13 +8,13 @@ $manga = $view['manga'] ?? null;
 
 if ($manga === null) {
     throw new \RuntimeException(
-        'Manga manquant dans la vue.'
+        'Manga manquant dans la vue.',
     );
 }
 
 $basePath = rtrim(
     $basePath ?? '',
-    '/'
+    '/',
 ) . '/';
 
 $errors = Session::get('errors', []);

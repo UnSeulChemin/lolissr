@@ -17,7 +17,7 @@ abstract class Model
     protected PDO $db;
 
     public function __construct(
-        Database $database
+        Database $database,
     ) {
         $this->db = $database;
     }
@@ -27,12 +27,12 @@ abstract class Model
         $table = preg_replace(
             '/[^a-zA-Z0-9_]/',
             '',
-            $this->table
+            $this->table,
         ) ?? '';
 
         if ($table === '') {
             throw new RuntimeException(
-                'Nom de table invalide.'
+                'Nom de table invalide.',
             );
         }
 
@@ -45,12 +45,12 @@ abstract class Model
     }
 
     protected function clean(
-        string $field
+        string $field,
     ): string {
         return preg_replace(
             '/[^a-zA-Z0-9_]/',
             '',
-            $field
+            $field,
         ) ?? '';
     }
 
@@ -59,11 +59,11 @@ abstract class Model
      */
     protected function query(
         string $sql,
-        array $params = []
+        array $params = [],
     ): PDOStatement|false {
         try {
             $statement = $this->db->prepare(
-                $sql
+                $sql,
             );
 
             if ($statement === false) {
@@ -76,7 +76,7 @@ abstract class Model
         } catch (Throwable $e) {
             throw new RuntimeException(
                 $e->getMessage(),
-                previous: $e
+                previous: $e,
             );
         }
     }
@@ -86,11 +86,11 @@ abstract class Model
      */
     protected function requete(
         string $sql,
-        array $params = []
+        array $params = [],
     ): PDOStatement|false {
         return $this->query(
             $sql,
-            $params
+            $params,
         );
     }
 
@@ -100,11 +100,11 @@ abstract class Model
     protected function fetchOne(
         string $sql,
         array $params = [],
-        ?string $class = null
+        ?string $class = null,
     ): ?object {
         $statement = $this->query(
             $sql,
-            $params
+            $params,
         );
 
         if ($statement === false) {
@@ -114,7 +114,7 @@ abstract class Model
         if ($class !== null) {
             $statement->setFetchMode(
                 PDO::FETCH_CLASS,
-                $class
+                $class,
             );
         }
 
@@ -132,11 +132,11 @@ abstract class Model
     protected function fetchAll(
         string $sql,
         array $params = [],
-        ?string $class = null
+        ?string $class = null,
     ): array {
         $statement = $this->query(
             $sql,
-            $params
+            $params,
         );
 
         if ($statement === false) {
@@ -146,7 +146,7 @@ abstract class Model
         if ($class !== null) {
             $statement->setFetchMode(
                 PDO::FETCH_CLASS,
-                $class
+                $class,
             );
         }
 
@@ -161,17 +161,17 @@ abstract class Model
      */
     protected function execute(
         string $sql,
-        array $params = []
+        array $params = [],
     ): bool {
         return $this->query(
             $sql,
-            $params
+            $params,
         ) !== false;
     }
 
     public function find(
         int $id,
-        ?string $class = null
+        ?string $class = null,
     ): ?object {
         return $this->fetchOne(
             "SELECT *
@@ -179,7 +179,7 @@ abstract class Model
             WHERE id = ?
             LIMIT 1",
             [$id],
-            $class
+            $class,
         );
     }
 
@@ -191,7 +191,7 @@ abstract class Model
      * }
      */
     protected function buildWhere(
-        array $where
+        array $where,
     ): array {
         $conditions = [];
 
@@ -221,7 +221,7 @@ abstract class Model
      */
     public function findBy(
         array $where,
-        ?string $class = null
+        ?string $class = null,
     ): array {
         if ($where === []) {
             return [];
@@ -239,10 +239,10 @@ abstract class Model
             WHERE "
             . implode(
                 ' AND ',
-                $built['conditions']
+                $built['conditions'],
             ),
             $built['values'],
-            $class
+            $class,
         );
     }
 
@@ -255,7 +255,7 @@ abstract class Model
      * }
      */
     protected function buildInsert(
-        array $data
+        array $data,
     ): array {
         $fields = [];
 
@@ -288,7 +288,7 @@ abstract class Model
      * @param array<string, mixed> $data
      */
     public function insert(
-        array $data
+        array $data,
     ): bool {
         if ($data === []) {
             return false;
@@ -307,10 +307,10 @@ abstract class Model
             VALUES ('
             . implode(
                 ', ',
-                $built['placeholders']
+                $built['placeholders'],
             )
             . ')',
-            $built['values']
+            $built['values'],
         );
     }
 
@@ -320,7 +320,7 @@ abstract class Model
      */
     public function update(
         array $data,
-        array $where
+        array $where,
     ): bool {
         if (
             $data === []
@@ -346,7 +346,7 @@ abstract class Model
         }
 
         $builtWhere = $this->buildWhere(
-            $where
+            $where,
         );
 
         if (
@@ -364,12 +364,12 @@ abstract class Model
             WHERE '
             . implode(
                 ' AND ',
-                $builtWhere['conditions']
+                $builtWhere['conditions'],
             ),
             array_merge(
                 $values,
-                $builtWhere['values']
-            )
+                $builtWhere['values'],
+            ),
         );
     }
 
@@ -377,7 +377,7 @@ abstract class Model
      * @param array<string, mixed> $where
      */
     public function delete(
-        array $where
+        array $where,
     ): bool {
         if ($where === []) {
             return false;
@@ -394,9 +394,9 @@ abstract class Model
             WHERE "
             . implode(
                 ' AND ',
-                $built['conditions']
+                $built['conditions'],
             ),
-            $built['values']
+            $built['values'],
         );
     }
 }

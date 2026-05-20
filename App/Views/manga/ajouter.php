@@ -9,7 +9,7 @@ $old = Session::get('old', []);
 
 $basePath = rtrim(
     (string) ($basePath ?? ''),
-    '/'
+    '/',
 ) . '/';
 
 $statutValue = (string) ($old['statut'] ?? 'en_cours');

@@ -9,7 +9,7 @@ use App\Repositories\Manga\MangaStatsRepository;
 final class StatsService
 {
     public function __construct(
-        private readonly MangaStatsRepository $repository
+        private readonly MangaStatsRepository $repository,
     ) {
     }
 
@@ -36,7 +36,7 @@ final class StatsService
         return max(
             0,
             $this->totalTomes()
-            - $this->totalRead()
+            - $this->totalRead(),
         );
     }
 
@@ -47,7 +47,7 @@ final class StatsService
         return $total > 0
             ? (int) round(
                 ($this->totalRead() / $total)
-                * 100
+                * 100,
             )
             : 0;
     }
@@ -74,7 +74,7 @@ final class StatsService
      * @return array<int, object>
      */
     public function topLongestSeries(
-        int $limit = 5
+        int $limit = 5,
     ): array {
         return $this->repository
             ->topLongestSeries($limit);

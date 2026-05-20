@@ -22,7 +22,7 @@ $isSerieView = is_string($slugFilter)
 
 $basePath = rtrim(
     (string) ($basePath ?? ''),
-    '/'
+    '/',
 ) . '/';
 
 ?>
@@ -142,7 +142,7 @@ $basePath = rtrim(
                     (float) $note,
                     1,
                     ',',
-                    ''
+                    '',
                 );
 
             $statutLabel = $statut === 'termine'

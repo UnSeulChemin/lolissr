@@ -11,7 +11,7 @@ use App\Services\StatsService;
 final class MainController extends Controller
 {
     public function __construct(
-        private readonly StatsService $statsService
+        private readonly StatsService $statsService,
     ) {
         parent::__construct();
     }
@@ -23,7 +23,7 @@ final class MainController extends Controller
         $stats = Cache::remember(
             'home.dashboard',
             300,
-            fn () => $this->statsService->dashboard()
+            fn () => $this->statsService->dashboard(),
         );
 
         $this->render('main/index', [

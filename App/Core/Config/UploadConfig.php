@@ -24,12 +24,12 @@ final class UploadConfig
 
         $extensions = array_map(
             static fn (mixed $extension): string => strtolower(trim((string) $extension)),
-            $extensions
+            $extensions,
         );
 
         $extensions = array_filter(
             $extensions,
-            static fn (string $extension): bool => $extension !== ''
+            static fn (string $extension): bool => $extension !== '',
         );
 
         return array_values(array_unique($extensions));
@@ -48,12 +48,12 @@ final class UploadConfig
 
         $mimeTypes = array_map(
             static fn (mixed $mimeType): string => strtolower(trim((string) $mimeType)),
-            $mimeTypes
+            $mimeTypes,
         );
 
         $mimeTypes = array_filter(
             $mimeTypes,
-            static fn (string $mimeType): bool => $mimeType !== ''
+            static fn (string $mimeType): bool => $mimeType !== '',
         );
 
         return array_values(array_unique($mimeTypes));
@@ -63,7 +63,7 @@ final class UploadConfig
     {
         return rtrim(
             app_path('public/images/mangas/thumbnail'),
-            '/\\'
+            '/\\',
         ) . DIRECTORY_SEPARATOR;
     }
 }

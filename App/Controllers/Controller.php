@@ -38,7 +38,7 @@ abstract class Controller
      * Retourne le chemin complet d'une vue standard.
      */
     protected function viewPath(
-        string $file
+        string $file,
     ): string {
         return view_path($file . '.php');
     }
@@ -47,12 +47,12 @@ abstract class Controller
      * Retourne le chemin complet d'une vue d'erreur.
      */
     protected function errorViewPath(
-        string $file
+        string $file,
     ): string {
         $file = preg_replace(
             '#^errors/#',
             '',
-            $file
+            $file,
         );
 
         if ($file === null) {
@@ -60,7 +60,7 @@ abstract class Controller
         }
 
         return view_path(
-            'errors/' . $file . '.php'
+            'errors/' . $file . '.php',
         );
     }
 
@@ -70,7 +70,7 @@ abstract class Controller
     protected function templatePath(): string
     {
         return view_path(
-            $this->template . '.php'
+            $this->template . '.php',
         );
     }
 
@@ -79,13 +79,13 @@ abstract class Controller
      */
     protected function render(
         string $file,
-        array|object $data = []
+        array|object $data = [],
     ): never {
         $viewPath = $this->viewPath($file);
 
         if (!is_file($viewPath)) {
             throw new NotFoundException(
-                'Vue introuvable : ' . $file
+                'Vue introuvable : ' . $file,
             );
         }
 
@@ -100,7 +100,7 @@ abstract class Controller
         $basePath = $this->basePath;
 
         $currentPath = app(
-            Request::class
+            Request::class,
         )->path();
 
         ob_start();
@@ -118,7 +118,7 @@ abstract class Controller
         if (!is_file($templatePath)) {
             throw new \RuntimeException(
                 'Template introuvable : '
-                . $this->template
+                . $this->template,
             );
         }
 
@@ -142,14 +142,14 @@ abstract class Controller
      */
     protected function renderPartial(
         string $file,
-        array $data = []
+        array $data = [],
     ): never {
         $viewPath = $this->viewPath($file);
 
         if (!is_file($viewPath)) {
             throw new NotFoundException(
                 'Vue partielle introuvable : '
-                . $file
+                . $file,
             );
         }
 
@@ -160,7 +160,7 @@ abstract class Controller
         $basePath = $this->basePath;
 
         $currentPath = app(
-            Request::class
+            Request::class,
         )->path();
 
         ob_start();
@@ -184,14 +184,14 @@ abstract class Controller
     protected function renderError(
         string $file,
         int $statusCode,
-        array $data = []
+        array $data = [],
     ): never {
         $viewPath = $this->errorViewPath($file);
 
         if (!is_file($viewPath)) {
             Response::html(
                 'Vue erreur introuvable : ' . $file,
-                500
+                500,
             );
         }
 
@@ -202,7 +202,7 @@ abstract class Controller
         $basePath = $this->basePath;
 
         $currentPath = app(
-            Request::class
+            Request::class,
         )->path();
 
         ob_start();
@@ -221,7 +221,7 @@ abstract class Controller
             Response::html(
                 'Template introuvable : '
                 . $this->template,
-                500
+                500,
             );
         }
 
@@ -237,7 +237,7 @@ abstract class Controller
 
         Response::html(
             $html,
-            $statusCode
+            $statusCode,
         );
     }
 
@@ -246,24 +246,24 @@ abstract class Controller
      */
     protected function redirect(
         string $url,
-        int $statusCode = 302
+        int $statusCode = 302,
     ): never {
         if (
             preg_match(
                 '#^https?://#i',
-                $url
+                $url,
             ) === 1
         ) {
             Response::redirect(
                 $url,
-                $statusCode
+                $statusCode,
             );
         }
 
         Response::redirect(
             $this->basePath
             . ltrim($url, '/'),
-            $statusCode
+            $statusCode,
         );
     }
 
@@ -273,18 +273,18 @@ abstract class Controller
     protected function redirectWithError(
         string $url,
         string $message,
-        bool $withOld = true
+        bool $withOld = true,
     ): never {
         if ($withOld) {
             Session::set(
                 'old',
-                app(Request::class)->all()
+                app(Request::class)->all(),
             );
         }
 
         Session::set(
             'error',
-            $message
+            $message,
         );
 
         $this->redirect($url);
@@ -296,21 +296,21 @@ abstract class Controller
     protected function redirectWithValidationErrors(
         string $url,
         array $errors,
-        string $message = 'Le formulaire contient des erreurs.'
+        string $message = 'Le formulaire contient des erreurs.',
     ): never {
         Session::set(
             'errors',
-            $errors
+            $errors,
         );
 
         Session::set(
             'old',
-            app(Request::class)->all()
+            app(Request::class)->all(),
         );
 
         Session::set(
             'error',
-            $message
+            $message,
         );
 
         $this->redirect($url);
@@ -321,11 +321,11 @@ abstract class Controller
      */
     protected function redirectWithSuccess(
         string $url,
-        string $message
+        string $message,
     ): never {
         Session::set(
             'success',
-            $message
+            $message,
         );
 
         $this->redirect($url);
@@ -335,10 +335,10 @@ abstract class Controller
      * Lance une 404.
      */
     public function notFound(
-        string $message = 'Page introuvable'
+        string $message = 'Page introuvable',
     ): never {
         throw new NotFoundException(
-            $message
+            $message,
         );
     }
 
@@ -346,10 +346,10 @@ abstract class Controller
      * Lance une 405.
      */
     public function methodNotAllowed(
-        string $message = 'Méthode non autorisée'
+        string $message = 'Méthode non autorisée',
     ): never {
         throw new MethodNotAllowedException(
-            $message
+            $message,
         );
     }
 
@@ -357,10 +357,10 @@ abstract class Controller
      * Lance une erreur serveur.
      */
     public function serverError(
-        string $message = 'Erreur interne du serveur'
+        string $message = 'Erreur interne du serveur',
     ): never {
         throw new \RuntimeException(
-            $message
+            $message,
         );
     }
 
@@ -368,7 +368,7 @@ abstract class Controller
      * Affiche réellement la page 404.
      */
     public function renderNotFoundPage(
-        string $message = 'Page introuvable'
+        string $message = 'Page introuvable',
     ): never {
         $this->title =
             '404 | Page introuvable';
@@ -378,7 +378,7 @@ abstract class Controller
             404,
             [
                 'message' => $message,
-            ]
+            ],
         );
     }
 
@@ -386,7 +386,7 @@ abstract class Controller
      * Affiche réellement la page 405.
      */
     public function renderMethodNotAllowedPage(
-        string $message = 'Méthode non autorisée'
+        string $message = 'Méthode non autorisée',
     ): never {
         $this->title =
             '405 | Méthode non autorisée';
@@ -396,7 +396,7 @@ abstract class Controller
             405,
             [
                 'message' => $message,
-            ]
+            ],
         );
     }
 
@@ -404,7 +404,7 @@ abstract class Controller
      * Affiche réellement la page 500.
      */
     public function renderServerErrorPage(
-        string $message = 'Erreur interne du serveur'
+        string $message = 'Erreur interne du serveur',
     ): never {
         $this->title =
             '500 | Erreur serveur';
@@ -414,20 +414,20 @@ abstract class Controller
             500,
             [
                 'message' => $message,
-            ]
+            ],
         );
     }
 
     protected function isAjax(
-        Request $request
+        Request $request,
     ): bool {
         return $request->isAjax()
             || str_contains(
                 $request->server(
                     'HTTP_ACCEPT',
-                    ''
+                    '',
                 ),
-                'application/json'
+                'application/json',
             );
     }
 
@@ -436,18 +436,18 @@ abstract class Controller
      */
     protected function json(
         array $data,
-        int $status = 200
+        int $status = 200,
     ): never {
         Response::json(
             $data,
-            $status
+            $status,
         );
     }
 
     protected function ajaxOrHtml(
         Request $request,
         callable $ajax,
-        callable $html
+        callable $html,
     ): void {
         if ($this->isAjax($request)) {
             $ajax();

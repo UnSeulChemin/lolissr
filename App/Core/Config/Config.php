@@ -18,7 +18,7 @@ final class Config
      */
     public static function get(
         string $key,
-        mixed $default = null
+        mixed $default = null,
     ): mixed {
         $segments = self::segments($key);
 
@@ -43,7 +43,7 @@ final class Config
         return self::arrayGet(
             $config,
             $segments,
-            $default
+            $default,
         );
     }
 
@@ -72,7 +72,7 @@ final class Config
 
         return self::arrayHas(
             $config,
-            $segments
+            $segments,
         );
     }
 
@@ -102,8 +102,8 @@ final class Config
         return array_values(
             array_filter(
                 $segments,
-                static fn (string $segment): bool => $segment !== ''
-            )
+                static fn (string $segment): bool => $segment !== '',
+            ),
         );
     }
 
@@ -116,7 +116,7 @@ final class Config
     private static function arrayGet(
         array $items,
         array $segments,
-        mixed $default = null
+        mixed $default = null,
     ): mixed {
         $value = $items;
 
@@ -142,7 +142,7 @@ final class Config
      */
     private static function arrayHas(
         array $items,
-        array $segments
+        array $segments,
     ): bool {
         $value = $items;
 
@@ -172,7 +172,7 @@ final class Config
         }
 
         $path = app_path(
-            'Config/' . $file . '.php'
+            'Config/' . $file . '.php',
         );
 
         if (!is_file($path)) {

@@ -15,15 +15,15 @@ final class ErrorHandler
     public static function register(): void
     {
         set_error_handler(
-            [self::class, 'handleError']
+            [self::class, 'handleError'],
         );
 
         set_exception_handler(
-            [self::class, 'handleException']
+            [self::class, 'handleException'],
         );
 
         register_shutdown_function(
-            [self::class, 'handleShutdown']
+            [self::class, 'handleShutdown'],
         );
     }
 
@@ -31,7 +31,7 @@ final class ErrorHandler
         int $severity,
         string $message,
         string $file,
-        int $line
+        int $line,
     ): bool {
         if (
             (error_reporting() & $severity) === 0
@@ -44,12 +44,12 @@ final class ErrorHandler
             0,
             $severity,
             $file,
-            $line
+            $line,
         );
     }
 
     public static function handleException(
-        Throwable $exception
+        Throwable $exception,
     ): never {
         if (
             $exception instanceof HttpException
@@ -59,11 +59,11 @@ final class ErrorHandler
                 [
                     'status' => $exception->getStatusCode(),
                     'message' => $exception->getMessage(),
-                ]
+                ],
             );
 
             self::renderHttpException(
-                $exception
+                $exception,
             );
         }
 
@@ -71,12 +71,12 @@ final class ErrorHandler
             $exception,
             [
                 'type' => 'uncaught_exception',
-            ]
+            ],
         );
 
         if (App::debug()) {
             self::renderDebug(
-                $exception
+                $exception,
             );
         }
 
@@ -103,7 +103,7 @@ final class ErrorHandler
             !in_array(
                 $error['type'],
                 $fatalErrors,
-                true
+                true,
             )
         ) {
             return;
@@ -115,7 +115,7 @@ final class ErrorHandler
                 'message' => $error['message'],
                 'file' => $error['file'],
                 'line' => $error['line'],
-            ]
+            ],
         );
 
         if (App::debug()) {
@@ -130,7 +130,7 @@ final class ErrorHandler
                 . ' on line '
                 . $error['line'],
                 ENT_QUOTES,
-                'UTF-8'
+                'UTF-8',
             );
 
             echo '</pre>';
@@ -142,22 +142,22 @@ final class ErrorHandler
     }
 
     private static function renderHttpException(
-        HttpException $exception
+        HttpException $exception,
     ): never {
         $controller = new class () extends Controller {};
 
         match ($exception->getStatusCode()) {
 
             404 => $controller->renderNotFoundPage(
-                $exception->getMessage()
+                $exception->getMessage(),
             ),
 
             405 => $controller->renderMethodNotAllowedPage(
-                $exception->getMessage()
+                $exception->getMessage(),
             ),
 
             default => $controller->renderServerErrorPage(
-                $exception->getMessage()
+                $exception->getMessage(),
             ),
         };
     }
@@ -167,12 +167,12 @@ final class ErrorHandler
         $controller = new class () extends Controller {};
 
         $controller->renderServerErrorPage(
-            'Erreur interne du serveur.'
+            'Erreur interne du serveur.',
         );
     }
 
     private static function renderDebug(
-        Throwable $exception
+        Throwable $exception,
     ): never {
         http_response_code(500);
 
@@ -185,7 +185,7 @@ final class ErrorHandler
             . ' on line '
             . $exception->getLine(),
             ENT_QUOTES,
-            'UTF-8'
+            'UTF-8',
         );
 
         echo PHP_EOL . PHP_EOL;
@@ -193,7 +193,7 @@ final class ErrorHandler
         echo htmlspecialchars(
             $exception->getTraceAsString(),
             ENT_QUOTES,
-            'UTF-8'
+            'UTF-8',
         );
 
         echo '</pre>';

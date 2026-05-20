@@ -7,7 +7,7 @@ namespace App\Core\Support;
 final class MangaNoteNormalizer
 {
     public static function normalize(
-        mixed $value
+        mixed $value,
     ): ?int {
         if ($value === null) {
             return null;

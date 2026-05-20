@@ -39,7 +39,7 @@ final class MangaCreateRequest extends FormRequest
     public function dto(): MangaCreateDTO
     {
         return MangaCreateDTO::fromPost(
-            $this->validated()
+            $this->validated(),
         );
     }
 }

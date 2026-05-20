@@ -30,7 +30,7 @@ final class MangaUpdateRequest extends FormRequest
     public function dto(): MangaUpdateDTO
     {
         return MangaUpdateDTO::fromPost(
-            $this->validated()
+            $this->validated(),
         );
     }
 }

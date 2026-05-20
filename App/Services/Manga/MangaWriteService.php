@@ -23,7 +23,7 @@ final class MangaWriteService
     public function __construct(
         private readonly MangaRepository $mangaRepository,
         private readonly UploadService $uploadService,
-        private readonly MangaCacheService $cacheService
+        private readonly MangaCacheService $cacheService,
     ) {
     }
 
@@ -33,13 +33,13 @@ final class MangaWriteService
     private function success(
         string $message,
         array $data = [],
-        int $status = 200
+        int $status = 200,
     ): ServiceResultData {
         return new ServiceResultData(
             true,
             $status,
             $message,
-            $data
+            $data,
         );
     }
 
@@ -49,13 +49,13 @@ final class MangaWriteService
     private function error(
         string $message,
         int $status = 500,
-        array $data = []
+        array $data = [],
     ): ServiceResultData {
         return new ServiceResultData(
             false,
             $status,
             $message,
-            $data
+            $data,
         );
     }
 
@@ -68,17 +68,17 @@ final class MangaWriteService
     {
         return $this->error(
             'Écriture en base désactivée en mode test',
-            403
+            403,
         );
     }
 
     private function logFailure(
         string $action,
         string $slug,
-        int $numero
+        int $numero,
     ): void {
         Logger::error(
-            "{$action} échoué slug={$slug} numero={$numero}"
+            "{$action} échoué slug={$slug} numero={$numero}",
         );
     }
 
@@ -87,7 +87,7 @@ final class MangaWriteService
      */
     public function create(
         MangaCreateDTO $dto,
-        array $files
+        array $files,
     ): ServiceResultData {
         if (
             $this->isReadOnlyMode()
@@ -99,7 +99,7 @@ final class MangaWriteService
         $existingManga = $this->mangaRepository
             ->findOneBySlugAndNumero(
                 $dto->slug,
-                $dto->numero
+                $dto->numero,
             );
 
         if (
@@ -108,7 +108,7 @@ final class MangaWriteService
         ) {
             return $this->error(
                 'Ce manga existe déjà',
-                409
+                409,
             );
         }
 
@@ -117,13 +117,13 @@ final class MangaWriteService
                 $dto->livre,
                 $dto->numero,
                 $files,
-                'image'
+                'image',
             );
 
         if (!$upload->success) {
             return $this->error(
                 $upload->message,
-                $upload->status
+                $upload->status,
             );
         }
 
@@ -131,7 +131,7 @@ final class MangaWriteService
 
         if (!$uploadData instanceof UploadThumbnailData) {
             return $this->error(
-                'Upload invalide'
+                'Upload invalide',
             );
         }
 
@@ -140,9 +140,9 @@ final class MangaWriteService
                 'Upload test OK',
                 [
                     'file' => basename(
-                        $uploadData->destination
+                        $uploadData->destination,
                     ),
-                ]
+                ],
             );
         }
 
@@ -164,24 +164,24 @@ final class MangaWriteService
         if ($inserted === false) {
             $this->uploadService
                 ->removeFileIfExists(
-                    $uploadData->destination
+                    $uploadData->destination,
                 );
 
             $this->logFailure(
                 'Insertion manga',
                 $dto->slug,
-                $dto->numero
+                $dto->numero,
             );
 
             return $this->error(
-                'Erreur lors de l’enregistrement'
+                'Erreur lors de l’enregistrement',
             );
         }
 
         $this->cacheService->clear();
 
         return $this->success(
-            'Manga ajouté avec succès'
+            'Manga ajouté avec succès',
         );
     }
 
@@ -192,7 +192,7 @@ final class MangaWriteService
         string $slug,
         int $numero,
         MangaUpdateDTO $dto,
-        array $files
+        array $files,
     ): ServiceResultData {
         if ($this->isReadOnlyMode()) {
             return $this->blockedWriteResponse();
@@ -206,32 +206,32 @@ final class MangaWriteService
                 $dto->statut,
                 $dto->jacquette,
                 $dto->livreNote,
-                $dto->commentaire
+                $dto->commentaire,
             );
 
         if ($updated === false) {
             $this->logFailure(
                 'Update manga',
                 $slug,
-                $numero
+                $numero,
             );
 
             return $this->error(
-                'Erreur lors de la mise à jour'
+                'Erreur lors de la mise à jour',
             );
         }
 
         $this->cacheService->clear();
 
         return $this->success(
-            'Manga mis à jour avec succès'
+            'Manga mis à jour avec succès',
         );
     }
 
     public function updateNote(
         string $slug,
         int $numero,
-        MangaUpdateNoteDTO $dto
+        MangaUpdateNoteDTO $dto,
     ): ServiceResultData {
         if ($this->isReadOnlyMode()) {
             return $this->blockedWriteResponse();
@@ -242,18 +242,18 @@ final class MangaWriteService
                 $slug,
                 $numero,
                 $dto->jacquette,
-                $dto->livreNote
+                $dto->livreNote,
             );
 
         if ($updated === false) {
             $this->logFailure(
                 'Update note',
                 $slug,
-                $numero
+                $numero,
             );
 
             return $this->error(
-                'Erreur update note'
+                'Erreur update note',
             );
         }
 
@@ -262,13 +262,13 @@ final class MangaWriteService
         $manga = $this->mangaRepository
             ->findOneBySlugAndNumero(
                 $slug,
-                $numero
+                $numero,
             );
 
         if ($manga === null) {
             return $this->error(
                 'Manga introuvable',
-                404
+                404,
             );
         }
 
@@ -284,21 +284,21 @@ final class MangaWriteService
                             + $dto->livreNote
                         ),
                 ),
-            ]
+            ],
         );
     }
 
     public function updateLu(
         string $slug,
         int $numero,
-        int $lu
+        int $lu,
     ): UpdateLuResultData {
         if ($this->isReadOnlyMode()) {
             return new UpdateLuResultData(
                 success: false,
                 message: 'Écriture en base désactivée en mode test',
                 status: 403,
-                lu: $lu
+                lu: $lu,
             );
         }
 
@@ -307,7 +307,7 @@ final class MangaWriteService
                 success: false,
                 message: 'Statut de lecture invalide',
                 status: 422,
-                lu: $lu
+                lu: $lu,
             );
         }
 
@@ -315,21 +315,21 @@ final class MangaWriteService
             ->updateLu(
                 $slug,
                 $numero,
-                $lu === 1
+                $lu === 1,
             );
 
         if ($updated === false) {
             $this->logFailure(
                 'Update lu',
                 $slug,
-                $numero
+                $numero,
             );
 
             return new UpdateLuResultData(
                 success: false,
                 message: 'Erreur lors de la mise à jour',
                 status: 500,
-                lu: $lu
+                lu: $lu,
             );
         }
 
@@ -341,53 +341,53 @@ final class MangaWriteService
                 ? 'Manga marqué comme lu'
                 : 'Manga marqué comme non lu',
             status: 200,
-            lu: $lu
+            lu: $lu,
         );
     }
 
     public function delete(
         string $slug,
-        int $numero
+        int $numero,
     ): DeleteResultData {
         if ($this->isReadOnlyMode()) {
             return new DeleteResultData(
                 success: false,
                 message: 'Écriture en base désactivée en mode test',
-                status: 403
+                status: 403,
             );
         }
 
         $manga = $this->mangaRepository
             ->findOneBySlugAndNumero(
                 $slug,
-                $numero
+                $numero,
             );
 
         if ($manga === null) {
             return new DeleteResultData(
                 success: false,
                 message: 'Manga introuvable',
-                status: 404
+                status: 404,
             );
         }
 
         $deleted = $this->mangaRepository
             ->deleteBySlugAndNumero(
                 $slug,
-                $numero
+                $numero,
             );
 
         if ($deleted === false) {
             $this->logFailure(
                 'Delete manga',
                 $slug,
-                $numero
+                $numero,
             );
 
             return new DeleteResultData(
                 success: false,
                 message: 'Erreur lors de la suppression',
-                status: 500
+                status: 500,
             );
         }
 
@@ -405,7 +405,7 @@ final class MangaWriteService
         return new DeleteResultData(
             success: true,
             message: 'Manga supprimé avec succès',
-            status: 200
+            status: 200,
         );
     }
 }

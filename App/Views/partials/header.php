@@ -13,7 +13,7 @@ $currentPath ??= '/';
 /* Base path toujours propre */
 $basePath = rtrim(
     (string) ($basePath ?? ''),
-    '/'
+    '/',
 ) . '/';
 
 $cleanBasePath = rtrim($basePath, '/');
@@ -26,7 +26,7 @@ if (
 ) {
     $currentPath = substr(
         $currentPath,
-        strlen($cleanBasePath)
+        strlen($cleanBasePath),
     );
 }
 
@@ -70,18 +70,18 @@ $currentSearch = '';
 if (
     str_starts_with(
         $currentPath,
-        '/manga/recherche/'
+        '/manga/recherche/',
     )
 ) {
     $searchSlug = substr(
         $currentPath,
-        strlen('/manga/recherche/')
+        strlen('/manga/recherche/'),
     );
 
     $currentSearch = str_replace(
         '-',
         ' ',
-        urldecode($searchSlug)
+        urldecode($searchSlug),
     );
 }
 

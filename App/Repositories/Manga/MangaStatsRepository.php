@@ -18,11 +18,11 @@ final class MangaStatsRepository extends Model
         string $sql,
         string $field,
         array $params = [],
-        mixed $default = 0
+        mixed $default = 0,
     ): mixed {
         $result = $this->fetchOne(
             $sql,
-            $params
+            $params,
         );
 
         if (!$result instanceof stdClass) {
@@ -39,7 +39,7 @@ final class MangaStatsRepository extends Model
         return (int) $this->fetchSingleValue(
             "SELECT COUNT(*) AS total
             FROM {$this->getTable()}",
-            'total'
+            'total',
         );
     }
 
@@ -48,7 +48,7 @@ final class MangaStatsRepository extends Model
         return (int) $this->fetchSingleValue(
             "SELECT COUNT(DISTINCT livre) AS total
             FROM {$this->getTable()}",
-            'total'
+            'total',
         );
     }
 
@@ -58,7 +58,7 @@ final class MangaStatsRepository extends Model
             "SELECT COUNT(*) AS total
             FROM {$this->getTable()}
             WHERE lu = 1",
-            'total'
+            'total',
         );
     }
 
@@ -69,7 +69,7 @@ final class MangaStatsRepository extends Model
             FROM {$this->getTable()}",
             'moyenne',
             [],
-            null
+            null,
         );
 
         return $average !== null
@@ -83,7 +83,7 @@ final class MangaStatsRepository extends Model
             "SELECT *
             FROM {$this->getTable()}
             ORDER BY id DESC
-            LIMIT 1"
+            LIMIT 1",
         );
     }
 
@@ -105,7 +105,7 @@ final class MangaStatsRepository extends Model
                 LIMIT 1
             ) counts ON counts.slug = m1.slug
             WHERE m1.numero = 1
-            LIMIT 1"
+            LIMIT 1",
         );
     }
 
@@ -113,7 +113,7 @@ final class MangaStatsRepository extends Model
      * @return array<int, object>
      */
     public function topLongestSeries(
-        int $limit = 5
+        int $limit = 5,
     ): array {
         $limit = max(1, $limit);
 
@@ -134,7 +134,7 @@ final class MangaStatsRepository extends Model
             ) counts ON counts.slug = m1.slug
             WHERE m1.numero = 1
             ORDER BY counts.total DESC,
-                     m1.livre ASC"
+                     m1.livre ASC",
         );
     }
 }

@@ -16,13 +16,13 @@ final class MangaAjaxController extends Controller
     public function __construct(
         protected MangaReadService $mangaReadService,
         protected MangaWriteService $mangaWriteService,
-        protected Request $request
+        protected Request $request,
     ) {
         parent::__construct();
     }
 
     private function ensureAjax(
-        Request $request
+        Request $request,
     ): void {
         if ($request->isAjax()) {
             return;
@@ -32,7 +32,7 @@ final class MangaAjaxController extends Controller
             App::isTesting()
             && str_contains(
                 $request->userAgent(),
-                'LoliSSR-TestRunner'
+                'LoliSSR-TestRunner',
             )
         ) {
             return;
@@ -47,7 +47,7 @@ final class MangaAjaxController extends Controller
     private function error(
         string $message,
         int $status = 400,
-        ?string $redirect = null
+        ?string $redirect = null,
     ): never {
         $response = [
             'success' => false,
@@ -60,14 +60,14 @@ final class MangaAjaxController extends Controller
 
         $this->json(
             $response,
-            $status
+            $status,
         );
     }
 
     private function canonicalRedirect(
         string $action,
         string $slug,
-        int $numero
+        int $numero,
     ): string {
         return $this->basePath
             . 'manga/ajax/'
@@ -80,7 +80,7 @@ final class MangaAjaxController extends Controller
 
     public function seriesPage(
         Request $request,
-        string $page = '1'
+        string $page = '1',
     ): never {
         $this->ensureAjax($request);
 
@@ -90,7 +90,7 @@ final class MangaAjaxController extends Controller
         if ($data === null) {
             $this->error(
                 'Page introuvable',
-                404
+                404,
             );
         }
 
@@ -101,13 +101,13 @@ final class MangaAjaxController extends Controller
                 'compteur' => $data->compteur,
                 'currentPage' => $data->currentPage,
                 'slugFilter' => $data->slugFilter,
-            ]
+            ],
         );
     }
 
     public function search(
         Request $request,
-        string $query = ''
+        string $query = '',
     ): never {
         $this->ensureAjax($request);
 
@@ -123,20 +123,20 @@ final class MangaAjaxController extends Controller
     public function updateNote(
         MangaUpdateNoteRequest $request,
         string $slug,
-        int $numero
+        int $numero,
     ): never {
         $this->ensureAjax($this->request);
 
         $data = $this->mangaReadService
             ->one(
                 $slug,
-                $numero
+                $numero,
             );
 
         if ($data === null) {
             $this->error(
                 'Manga introuvable',
-                404
+                404,
             );
         }
 
@@ -147,8 +147,8 @@ final class MangaAjaxController extends Controller
                 $this->canonicalRedirect(
                     'update-note',
                     $data->canonicalSlug,
-                    $numero
-                )
+                    $numero,
+                ),
             );
         }
 
@@ -156,7 +156,7 @@ final class MangaAjaxController extends Controller
             ->updateNote(
                 $data->canonicalSlug,
                 $numero,
-                $request->dto()
+                $request->dto(),
             );
 
         $this->json([
@@ -169,20 +169,20 @@ final class MangaAjaxController extends Controller
     public function updateLu(
         Request $request,
         string $slug,
-        int $numero
+        int $numero,
     ): never {
         $this->ensureAjax($request);
 
         $data = $this->mangaReadService
             ->one(
                 $slug,
-                $numero
+                $numero,
             );
 
         if ($data === null) {
             $this->error(
                 'Manga introuvable',
-                404
+                404,
             );
         }
 
@@ -193,8 +193,8 @@ final class MangaAjaxController extends Controller
                 $this->canonicalRedirect(
                     'update-lu',
                     $data->canonicalSlug,
-                    $numero
-                )
+                    $numero,
+                ),
             );
         }
 
@@ -202,7 +202,7 @@ final class MangaAjaxController extends Controller
             ->updateLu(
                 $data->canonicalSlug,
                 $numero,
-                $request->integer('lu', 0)
+                $request->integer('lu', 0),
             );
 
         $this->json([
@@ -215,20 +215,20 @@ final class MangaAjaxController extends Controller
     public function delete(
         Request $request,
         string $slug,
-        int $numero
+        int $numero,
     ): never {
         $this->ensureAjax($request);
 
         $data = $this->mangaReadService
             ->one(
                 $slug,
-                $numero
+                $numero,
             );
 
         if ($data === null) {
             $this->error(
                 'Manga introuvable',
-                404
+                404,
             );
         }
 
@@ -239,15 +239,15 @@ final class MangaAjaxController extends Controller
                 $this->canonicalRedirect(
                     'delete',
                     $data->canonicalSlug,
-                    $numero
-                )
+                    $numero,
+                ),
             );
         }
 
         $result = $this->mangaWriteService
             ->delete(
                 $data->canonicalSlug,
-                $numero
+                $numero,
             );
 
         $this->json([

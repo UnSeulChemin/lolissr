@@ -6,7 +6,7 @@ use App\Core\Support\Session;
 
 $basePath = rtrim(
     (string) ($basePath ?? ''),
-    '/'
+    '/',
 ) . '/';
 
 $flashToast = null;
@@ -85,7 +85,7 @@ if (is_string($success) && $success !== '') {
                 | JSON_HEX_AMP
                 | JSON_HEX_APOS
                 | JSON_HEX_QUOT
-                | JSON_THROW_ON_ERROR
+                | JSON_THROW_ON_ERROR,
             ) ?>;
         </script>
 

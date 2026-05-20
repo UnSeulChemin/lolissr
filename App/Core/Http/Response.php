@@ -9,23 +9,23 @@ use JsonException;
 final class Response
 {
     private static function sendContentType(
-        string $contentType
+        string $contentType,
     ): void {
         if (!headers_sent()) {
             header(
-                "Content-Type: {$contentType}; charset=UTF-8"
+                "Content-Type: {$contentType}; charset=UTF-8",
             );
         }
     }
 
     public static function html(
         string $content,
-        int $statusCode = 200
+        int $statusCode = 200,
     ): never {
         http_response_code($statusCode);
 
         self::sendContentType(
-            'text/html'
+            'text/html',
         );
 
         echo $content;
@@ -38,12 +38,12 @@ final class Response
      */
     public static function json(
         array $data,
-        int $statusCode = 200
+        int $statusCode = 200,
     ): never {
         http_response_code($statusCode);
 
         self::sendContentType(
-            'application/json'
+            'application/json',
         );
 
         try {
@@ -51,7 +51,7 @@ final class Response
                 $data,
                 JSON_UNESCAPED_UNICODE
                 | JSON_UNESCAPED_SLASHES
-                | JSON_THROW_ON_ERROR
+                | JSON_THROW_ON_ERROR,
             );
         } catch (JsonException) {
             http_response_code(500);
@@ -62,7 +62,7 @@ final class Response
                     'message' => 'JSON encode error',
                 ],
                 JSON_UNESCAPED_UNICODE
-                | JSON_UNESCAPED_SLASHES
+                | JSON_UNESCAPED_SLASHES,
             );
         }
 
@@ -71,13 +71,13 @@ final class Response
 
     public static function redirect(
         string $url,
-        int $statusCode = 302
+        int $statusCode = 302,
     ): never {
         http_response_code($statusCode);
 
         if (!headers_sent()) {
             header(
-                'Location: ' . $url
+                'Location: ' . $url,
             );
         }
 
