@@ -12,7 +12,7 @@ $basePath = rtrim(
     '/'
 ) . '/';
 
-$statutValue = $old['statut'] ?? 'en_cours';
+$statutValue = (string) ($old['statut'] ?? 'en_cours');
 
 $statutOptions = [
     'en_cours' => 'En cours',
@@ -56,15 +56,15 @@ $returnUrl = $basePath . 'manga';
                         name="livre"
                         id="livre"
                         placeholder="Ex : To Love Ru"
-                        value="<?= e($old['livre'] ?? '') ?>"
+                        value="<?= e((string) ($old['livre'] ?? '')) ?>"
                         autofocus
                         required>
 
-                    <?php if (!empty($errors['livre'])): ?>
+                    <?php if (isset($errors['livre']) && $errors['livre'] !== ''): ?>
 
                         <p class="form-error">
 
-                            <?= e($errors['livre']) ?>
+                            <?= e((string) $errors['livre']) ?>
 
                         </p>
 
@@ -88,14 +88,14 @@ $returnUrl = $basePath . 'manga';
                         name="slug"
                         id="slug"
                         placeholder="Ex : to-love-ru"
-                        value="<?= e($old['slug'] ?? '') ?>"
+                        value="<?= e((string) ($old['slug'] ?? '')) ?>"
                         required>
 
-                    <?php if (!empty($errors['slug'])): ?>
+                    <?php if (isset($errors['slug']) && $errors['slug'] !== ''): ?>
 
                         <p class="form-error">
 
-                            <?= e($errors['slug']) ?>
+                            <?= e((string) $errors['slug']) ?>
 
                         </p>
 
@@ -119,15 +119,15 @@ $returnUrl = $basePath . 'manga';
                         name="editeur"
                         id="editeur"
                         placeholder="Ex : Delcourt/Tonkam"
-                        value="<?= e($old['editeur'] ?? '') ?>"
+                        value="<?= e((string) ($old['editeur'] ?? '')) ?>"
                         maxlength="100"
                         required>
 
-                    <?php if (!empty($errors['editeur'])): ?>
+                    <?php if (isset($errors['editeur']) && $errors['editeur'] !== ''): ?>
 
                         <p class="form-error">
 
-                            <?= e($errors['editeur']) ?>
+                            <?= e((string) $errors['editeur']) ?>
 
                         </p>
 
@@ -167,11 +167,11 @@ $returnUrl = $basePath . 'manga';
 
                     </select>
 
-                    <?php if (!empty($errors['statut'])): ?>
+                    <?php if (isset($errors['statut']) && $errors['statut'] !== ''): ?>
 
                         <p class="form-error">
 
-                            <?= e($errors['statut']) ?>
+                            <?= e((string) $errors['statut']) ?>
 
                         </p>
 
@@ -196,14 +196,14 @@ $returnUrl = $basePath . 'manga';
                         id="numero"
                         min="1"
                         placeholder="Ex : 1"
-                        value="<?= e($old['numero'] ?? '') ?>"
+                        value="<?= e((string) ($old['numero'] ?? '')) ?>"
                         required>
 
-                    <?php if (!empty($errors['numero'])): ?>
+                    <?php if (isset($errors['numero']) && $errors['numero'] !== ''): ?>
 
                         <p class="form-error">
 
-                            <?= e($errors['numero']) ?>
+                            <?= e((string) $errors['numero']) ?>
 
                         </p>
 
@@ -239,11 +239,11 @@ $returnUrl = $basePath . 'manga';
 
                     </label>
 
-                    <?php if (!empty($errors['image'])): ?>
+                    <?php if (isset($errors['image']) && $errors['image'] !== ''): ?>
 
                         <p class="form-error">
 
-                            <?= e($errors['image']) ?>
+                            <?= e((string) $errors['image']) ?>
 
                         </p>
 
@@ -267,13 +267,13 @@ $returnUrl = $basePath . 'manga';
                         id="commentaire"
                         rows="4"
                         maxlength="1000"
-                        placeholder="Ex : défaut en haut de la jacquette"><?= e($old['commentaire'] ?? '') ?></textarea>
+                        placeholder="Ex : défaut en haut de la jacquette"><?= e((string) ($old['commentaire'] ?? '')) ?></textarea>
 
-                    <?php if (!empty($errors['commentaire'])): ?>
+                    <?php if (isset($errors['commentaire']) && $errors['commentaire'] !== ''): ?>
 
                         <p class="form-error">
 
-                            <?= e($errors['commentaire']) ?>
+                            <?= e((string) $errors['commentaire']) ?>
 
                         </p>
 

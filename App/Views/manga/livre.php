@@ -62,9 +62,15 @@ $noteTotal = $manga->note !== null
     ? (int) $manga->note . '/10'
     : 'Non calculée';
 
-$commentaire = !empty($manga->commentaire)
-    ? nl2br(e($manga->commentaire))
+$hasCommentaire = $manga->commentaire !== null
+    && trim((string) $manga->commentaire) !== '';
+
+$commentaire = $hasCommentaire
+    ? nl2br(e((string) $manga->commentaire))
     : 'Aucun commentaire';
+
+$hasEditeur = $manga->editeur !== null
+    && trim((string) $manga->editeur) !== '';
 
 ?>
 
@@ -112,8 +118,8 @@ $commentaire = !empty($manga->commentaire)
 
                 <div class="detail-value">
 
-                    <?= !empty($manga->editeur)
-                        ? e($manga->editeur)
+                    <?= $hasEditeur
+                        ? e((string) $manga->editeur)
                         : 'Non renseigné' ?>
 
                 </div>
@@ -237,7 +243,7 @@ $commentaire = !empty($manga->commentaire)
                     Commentaire
                 </div>
 
-                <div class="detail-value detail-comment-box <?= empty($manga->commentaire) ? 'is-empty' : '' ?>">
+                <div class="detail-value detail-comment-box <?= !$hasCommentaire ? 'is-empty' : '' ?>">
 
                     <?= $commentaire ?>
 

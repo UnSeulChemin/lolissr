@@ -16,20 +16,27 @@ $basePath = rtrim(
     '/'
 ) . '/';
 
+$hasLongestSeries = $stats->longestSeries !== null;
+
+$hasLastTome = $stats->lastTome !== null;
+
+$hasTopLongestSeries = is_iterable($stats->topLongestSeries)
+    && count((array) $stats->topLongestSeries) > 0;
+
 ?>
 
 <section class="layout-container">
 
     <section class="home-grid home-grid-top card-grid-3 animate-fade-up-stagger">
 
-        <?php if (!empty($stats->longestSeries)): ?>
+        <?php if ($hasLongestSeries): ?>
 
             <?php
             $serie = $stats->longestSeries;
 
             $href = $basePath
                 . 'manga/series/'
-                . rawurlencode($serie->slug);
+                . rawurlencode((string) $serie->slug);
 
             $thumbnailPath = $basePath
                 . 'public/images/mangas/thumbnail/'
@@ -89,14 +96,14 @@ $basePath = rtrim(
 
         <?php endif; ?>
 
-        <?php if (!empty($stats->lastTome)): ?>
+        <?php if ($hasLastTome): ?>
 
             <?php
             $tome = $stats->lastTome;
 
             $href = $basePath
                 . 'manga/series/'
-                . rawurlencode($tome->slug)
+                . rawurlencode((string) $tome->slug)
                 . '/'
                 . (int) $tome->numero;
 
@@ -133,7 +140,14 @@ $basePath = rtrim(
                         </p>
 
                         <p class="home-feature-meta">
-                            Tome <?= str_pad((string) $tome->numero, 2, '0', STR_PAD_LEFT) ?>
+
+                            Tome <?= str_pad(
+                                (string) $tome->numero,
+                                2,
+                                '0',
+                                STR_PAD_LEFT
+                            ) ?>
+
                         </p>
 
                     </div>
@@ -195,7 +209,14 @@ $basePath = rtrim(
             <p class="home-card-value">
 
                 <?= $stats->averageNote !== null
-                    ? e(number_format((float) $stats->averageNote, 1, ',', ' ') . '/10')
+                    ? e(
+                        number_format(
+                            (float) $stats->averageNote,
+                            1,
+                            ',',
+                            ' '
+                        ) . '/10'
+                    )
                     : 'Aucune note' ?>
 
             </p>
@@ -204,7 +225,7 @@ $basePath = rtrim(
 
     </section>
 
-    <?php if (!empty($stats->topLongestSeries)): ?>
+    <?php if ($hasTopLongestSeries): ?>
 
         <h2 class="home-section-title">
             📊 Top 5 séries les plus longues
@@ -217,7 +238,7 @@ $basePath = rtrim(
                 <?php
                 $href = $basePath
                     . 'manga/series/'
-                    . rawurlencode($serie->slug);
+                    . rawurlencode((string) $serie->slug);
 
                 $thumbnailPath = $basePath
                     . 'public/images/mangas/thumbnail/'

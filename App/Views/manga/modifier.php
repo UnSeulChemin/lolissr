@@ -14,7 +14,7 @@ if ($manga === null)
 }
 
 $basePath = rtrim(
-    (string) ($basePath ?? ''),
+    $basePath ?? '',
     '/'
 ) . '/';
 
@@ -108,7 +108,10 @@ $noteTotal = $manga->note !== null
 
                     </select>
 
-                    <?php if (!empty($errors['jacquette'])): ?>
+                    <?php if (
+                        isset($errors['jacquette'])
+                        && $errors['jacquette'] !== ''
+                    ): ?>
 
                         <p class="form-error">
 
@@ -155,7 +158,10 @@ $noteTotal = $manga->note !== null
 
                     </select>
 
-                    <?php if (!empty($errors['livre_note'])): ?>
+                    <?php if (
+                        isset($errors['livre_note'])
+                        && $errors['livre_note'] !== ''
+                    ): ?>
 
                         <p class="form-error">
 
@@ -187,7 +193,10 @@ $noteTotal = $manga->note !== null
                         maxlength="100"
                         required>
 
-                    <?php if (!empty($errors['editeur'])): ?>
+                    <?php if (
+                        isset($errors['editeur'])
+                        && $errors['editeur'] !== ''
+                    ): ?>
 
                         <p class="form-error">
 
@@ -219,7 +228,7 @@ $noteTotal = $manga->note !== null
 
                             <option
                                 value="<?= e($value) ?>"
-                                <?= (string) $statutValue === (string) $value
+                                <?= (string) $statutValue === $value
                                     ? 'selected'
                                     : '' ?>>
 
@@ -231,7 +240,10 @@ $noteTotal = $manga->note !== null
 
                     </select>
 
-                    <?php if (!empty($errors['statut'])): ?>
+                    <?php if (
+                        isset($errors['statut'])
+                        && $errors['statut'] !== ''
+                    ): ?>
 
                         <p class="form-error">
 
@@ -261,7 +273,10 @@ $noteTotal = $manga->note !== null
                         maxlength="1000"
                         placeholder="Ex : défaut en haut de la jacquette"><?= e($commentaireValue) ?></textarea>
 
-                    <?php if (!empty($errors['commentaire'])): ?>
+                    <?php if (
+                        isset($errors['commentaire'])
+                        && $errors['commentaire'] !== ''
+                    ): ?>
 
                         <p class="form-error">
 

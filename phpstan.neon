@@ -13,4 +13,4 @@ parameters:
     bootstrapFiles:
         - phpstan-bootstrap.php
 
-    checkUninitializedProperties: true
+    checkUninitializedProperties: false

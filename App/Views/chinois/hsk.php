@@ -23,7 +23,11 @@ $sections = [];
 
 foreach ($grammaires as $grammaire)
 {
-    $sections[$grammaire->section][$grammaire->categorie][] = $grammaire;
+    $section = (string) $grammaire->section;
+
+    $categorie = (string) $grammaire->categorie;
+
+    $sections[$section][$categorie][] = $grammaire;
 }
 
 $descriptions = [
@@ -47,6 +51,15 @@ $sourceDescriptions = [
     '4' => 'Références, structures et exemples de grammaire chinoise avancée.',
 ];
 
+$description = $descriptions[$level]
+    ?? $descriptions['1'];
+
+$sourceUrl = $sources[$level]
+    ?? $sources['1'];
+
+$sourceDescription = $sourceDescriptions[$level]
+    ?? $sourceDescriptions['1'];
+
 ?>
 
 <section class="layout-container dashboard-page">
@@ -60,7 +73,7 @@ $sourceDescriptions = [
             </h1>
 
             <p class="grammar-hero-description">
-                <?= e($descriptions[$level]) ?>
+                <?= e($description) ?>
             </p>
 
         </div>
@@ -78,14 +91,14 @@ $sourceDescriptions = [
                 </h2>
 
                 <p class="grammar-source-description">
-                    <?= e($sourceDescriptions[$level]) ?>
+                    <?= e($sourceDescription) ?>
                 </p>
 
             </div>
 
             <a
                 class="grammar-source-link"
-                href="<?= e($sources[$level]) ?>"
+                href="<?= e($sourceUrl) ?>"
                 target="_blank"
                 rel="noopener noreferrer">
 
@@ -125,41 +138,48 @@ $sourceDescriptions = [
 
                         <?php foreach ($items as $grammaire): ?>
 
+                            <?php
+                            $hasExplication = $grammaire->explication !== null
+                                && trim((string) $grammaire->explication) !== '';
+
+                            $isMaitrise = (int) ($grammaire->maitrise ?? 0) === 1;
+                            ?>
+
                             <article class="grammar-item">
 
                                 <h4 class="grammar-topic">
-                                    <?= e($grammaire->titre) ?>
+                                    <?= e((string) $grammaire->titre) ?>
                                 </h4>
 
                                 <div class="grammar-structure">
-                                    <?= e($grammaire->structure) ?>
+                                    <?= e((string) $grammaire->structure) ?>
                                 </div>
 
                                 <div class="grammar-example">
-                                    <?= e($grammaire->phrase) ?>
+                                    <?= e((string) $grammaire->phrase) ?>
                                 </div>
 
                                 <div class="grammar-pinyin">
-                                    <?= e($grammaire->pinyin) ?>
+                                    <?= e((string) $grammaire->pinyin) ?>
                                 </div>
 
                                 <div class="grammar-translation">
-                                    <?= e($grammaire->traduction) ?>
+                                    <?= e((string) $grammaire->traduction) ?>
                                 </div>
 
-                                <?php if (!empty($grammaire->explication)): ?>
+                                <?php if ($hasExplication): ?>
 
                                     <div class="grammar-explanation">
-                                        <?= e($grammaire->explication) ?>
+                                        <?= e((string) $grammaire->explication) ?>
                                     </div>
 
                                 <?php endif; ?>
 
                                 <button
-                                    class="grammar-mastered <?= !empty($grammaire->maitrise) ? 'active' : '' ?>"
+                                    class="grammar-mastered <?= $isMaitrise ? 'active' : '' ?>"
                                     data-id="<?= (int) $grammaire->id ?>"
                                     data-url="<?= e($basePath) ?>chinois/ajax/toggle-grammaire-maitrise"
-                                    data-maitrise="<?= !empty($grammaire->maitrise) ? '1' : '0' ?>"
+                                    data-maitrise="<?= $isMaitrise ? '1' : '0' ?>"
                                     type="button"
                                     aria-label="Marquer comme maîtrisé">
 
