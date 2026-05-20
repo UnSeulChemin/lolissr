@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\DTO\Http;
+namespace App\DTO\Common;
 
-final readonly class ServiceResult
+final readonly class ServiceResultData
 {
     /**
      * @param array<string, mixed> $data

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\DTO\Manga;
 
-final readonly class UpdateLuResultDTO
+final readonly class UpdateLuResultData
 {
     public function __construct(
         public bool $success,

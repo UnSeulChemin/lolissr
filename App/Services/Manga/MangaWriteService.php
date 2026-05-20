@@ -7,12 +7,12 @@ namespace App\Services\Manga;
 use App\Core\Application\App;
 use App\Core\Config\UploadConfig;
 use App\Core\Support\Logger;
-use App\DTO\Http\ServiceResult;
-use App\DTO\Manga\DeleteResultDTO;
+use App\DTO\Common\ServiceResultData;
+use App\DTO\Manga\DeleteResultData;
 use App\DTO\Manga\MangaCreateDTO;
 use App\DTO\Manga\MangaUpdateDTO;
 use App\DTO\Manga\MangaUpdateNoteDTO;
-use App\DTO\Manga\UpdateLuResultDTO;
+use App\DTO\Manga\UpdateLuResultData;
 use App\DTO\Upload\UploadThumbnailData;
 use App\Repositories\Manga\MangaRepository;
 use App\Services\UploadService;
@@ -32,8 +32,8 @@ final class MangaWriteService
         string $message,
         array $data = [],
         int $status = 200
-    ): ServiceResult {
-        return new ServiceResult(
+    ): ServiceResultData {
+        return new ServiceResultData(
             true,
             $status,
             $message,
@@ -48,8 +48,8 @@ final class MangaWriteService
         string $message,
         int $status = 500,
         array $data = []
-    ): ServiceResult {
-        return new ServiceResult(
+    ): ServiceResultData {
+        return new ServiceResultData(
             false,
             $status,
             $message,
@@ -62,7 +62,7 @@ final class MangaWriteService
         return App::isReadOnly();
     }
 
-    private function blockedWriteResponse(): ServiceResult
+    private function blockedWriteResponse(): ServiceResultData
     {
         return $this->error(
             'Écriture en base désactivée en mode test',
@@ -86,7 +86,7 @@ final class MangaWriteService
     public function create(
         MangaCreateDTO $dto,
         array $files
-    ): ServiceResult {
+    ): ServiceResultData {
         if (
             $this->isReadOnlyMode()
             && !$this->uploadService->isTestUploadMode()
@@ -195,7 +195,7 @@ final class MangaWriteService
         int $numero,
         MangaUpdateDTO $dto,
         array $files
-    ): ServiceResult {
+    ): ServiceResultData {
         if ($this->isReadOnlyMode())
         {
             return $this->blockedWriteResponse();
@@ -236,7 +236,7 @@ final class MangaWriteService
         string $slug,
         int $numero,
         MangaUpdateNoteDTO $dto
-    ): ServiceResult {
+    ): ServiceResultData {
         if ($this->isReadOnlyMode())
         {
             return $this->blockedWriteResponse();
@@ -297,10 +297,10 @@ final class MangaWriteService
         string $slug,
         int $numero,
         int $lu
-    ): UpdateLuResultDTO {
+    ): UpdateLuResultData {
         if ($this->isReadOnlyMode())
         {
-            return new UpdateLuResultDTO(
+            return new UpdateLuResultData(
                 success: false,
                 message: 'Écriture en base désactivée en mode test',
                 status: 403,
@@ -310,7 +310,7 @@ final class MangaWriteService
 
         if (!in_array($lu, [0, 1], true))
         {
-            return new UpdateLuResultDTO(
+            return new UpdateLuResultData(
                 success: false,
                 message: 'Statut de lecture invalide',
                 status: 422,
@@ -333,7 +333,7 @@ final class MangaWriteService
                 $numero
             );
 
-            return new UpdateLuResultDTO(
+            return new UpdateLuResultData(
                 success: false,
                 message: 'Erreur lors de la mise à jour',
                 status: 500,
@@ -343,7 +343,7 @@ final class MangaWriteService
 
         $this->cacheService->clear();
 
-        return new UpdateLuResultDTO(
+        return new UpdateLuResultData(
             success: true,
             message: $lu === 1
                 ? 'Manga marqué comme lu'
@@ -356,10 +356,10 @@ final class MangaWriteService
     public function delete(
         string $slug,
         int $numero
-    ): DeleteResultDTO {
+    ): DeleteResultData {
         if ($this->isReadOnlyMode())
         {
-            return new DeleteResultDTO(
+            return new DeleteResultData(
                 success: false,
                 message: 'Écriture en base désactivée en mode test',
                 status: 403
@@ -374,7 +374,7 @@ final class MangaWriteService
 
         if ($manga === null)
         {
-            return new DeleteResultDTO(
+            return new DeleteResultData(
                 success: false,
                 message: 'Manga introuvable',
                 status: 404
@@ -395,7 +395,7 @@ final class MangaWriteService
                 $numero
             );
 
-            return new DeleteResultDTO(
+            return new DeleteResultData(
                 success: false,
                 message: 'Erreur lors de la suppression',
                 status: 500
@@ -413,7 +413,7 @@ final class MangaWriteService
 
         $this->cacheService->clear();
 
-        return new DeleteResultDTO(
+        return new DeleteResultData(
             success: true,
             message: 'Manga supprimé avec succès',
             status: 200
