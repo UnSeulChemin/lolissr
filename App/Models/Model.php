@@ -46,6 +46,9 @@ abstract class Model
         ) ?? '';
     }
 
+    /**
+     * @param array<int|string, mixed> $params
+     */
     protected function query(
         string $sql,
         array $params = []
@@ -71,6 +74,9 @@ abstract class Model
         }
     }
 
+    /**
+     * @param array<int|string, mixed> $params
+     */
     protected function requete(
         string $sql,
         array $params = []
@@ -81,6 +87,9 @@ abstract class Model
         );
     }
 
+    /**
+     * @param array<int|string, mixed> $params
+     */
     protected function fetchOne(
         string $sql,
         array $params = [],
@@ -110,6 +119,7 @@ abstract class Model
     }
 
     /**
+     * @param array<int|string, mixed> $params
      * @return array<int, object>
      */
     protected function fetchAll(
@@ -136,6 +146,9 @@ abstract class Model
         return $statement->fetchAll();
     }
 
+    /**
+     * @param array<int|string, mixed> $params
+     */
     protected function execute(
         string $sql,
         array $params = []
@@ -262,6 +275,9 @@ abstract class Model
         ];
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public function insert(
         array $data
     ): bool {
