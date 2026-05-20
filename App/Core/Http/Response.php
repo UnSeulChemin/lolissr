@@ -58,10 +58,16 @@ final class Response
         }
         catch (JsonException)
         {
-            echo json_encode([
-                'success' => false,
-                'message' => 'JSON encode error',
-            ]);
+            http_response_code(500);
+
+            echo json_encode(
+                [
+                    'success' => false,
+                    'message' => 'JSON encode error',
+                ],
+                JSON_UNESCAPED_UNICODE
+                | JSON_UNESCAPED_SLASHES
+            );
         }
 
         exit;

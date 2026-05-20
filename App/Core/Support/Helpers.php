@@ -201,10 +201,7 @@ if (!function_exists('json'))
         array $data,
         int $status = 200
     ): never {
-        Response::json(
-            $data,
-            $status
-        );
+        Response::json($data, $status);
     }
 }
 
