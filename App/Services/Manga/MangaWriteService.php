@@ -117,11 +117,11 @@ final class MangaWriteService
                 'image'
             );
 
-        if (($upload['success'] ?? false) !== true)
+        if (!$upload->success)
         {
             return $this->error(
-                (string) ($upload['message'] ?? ''),
-                (int) ($upload['status'] ?? 500)
+                $upload->message,
+                $upload->status
             );
         }
 
@@ -131,7 +131,7 @@ final class MangaWriteService
                 'Upload test OK',
                 [
                     'file' => basename(
-                        (string) ($upload['destination'] ?? '')
+                        (string) $upload->destination
                     ),
                 ]
             );
@@ -139,8 +139,8 @@ final class MangaWriteService
 
         $inserted = $this->mangaRepository
             ->insert([
-                'thumbnail' => $upload['thumbnail'],
-                'extension' => $upload['extension'],
+                'thumbnail' => $upload->thumbnail,
+                'extension' => $upload->extension,
                 'slug' => $dto->slug,
                 'livre' => $dto->livre,
                 'editeur' => $dto->editeur,
@@ -156,7 +156,7 @@ final class MangaWriteService
         {
             $this->uploadService
                 ->removeFileIfExists(
-                    (string) ($upload['destination'] ?? '')
+                    (string) $upload->destination
                 );
 
             $this->logFailure(

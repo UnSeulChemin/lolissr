@@ -8,8 +8,9 @@ use App\Core\Application\App;
 use App\Core\Config\UploadConfig;
 use App\Core\Support\Logger;
 use App\Core\Support\Str;
+use App\DTO\Upload\UploadResultDTO;
 
-class UploadService
+final class UploadService
 {
     public function isTestUploadMode(): bool
     {
@@ -20,7 +21,10 @@ class UploadService
     public function testUploadDirectory(): string
     {
         $directory = trim(
-            (string) env('TEST_UPLOAD_DIR', 'tests/Http/tmp-uploads'),
+            (string) env(
+                'TEST_UPLOAD_DIR',
+                'tests/Http/tmp-uploads'
+            ),
             '/\\'
         );
 
@@ -55,8 +59,9 @@ class UploadService
     /**
      * @param array<string, mixed> $file
      */
-    private function originalFilename(array $file): ?string
-    {
+    private function originalFilename(
+        array $file
+    ): ?string {
         $name = $file['name'] ?? null;
 
         if (
@@ -72,8 +77,9 @@ class UploadService
     /**
      * @param array<string, mixed> $file
      */
-    private function fileExtension(array $file): ?string
-    {
+    private function fileExtension(
+        array $file
+    ): ?string {
         $name = $this->originalFilename($file);
 
         if ($name === null)
@@ -82,7 +88,10 @@ class UploadService
         }
 
         $extension = strtolower(
-            pathinfo($name, PATHINFO_EXTENSION)
+            pathinfo(
+                $name,
+                PATHINFO_EXTENSION
+            )
         );
 
         if ($extension === '')
@@ -98,8 +107,9 @@ class UploadService
     /**
      * @param array<string, mixed> $file
      */
-    private function tmpName(array $file): ?string
-    {
+    private function tmpName(
+        array $file
+    ): ?string {
         $tmpName = $file['tmp_name'] ?? null;
 
         if (
@@ -115,8 +125,9 @@ class UploadService
     /**
      * @param array<string, mixed> $file
      */
-    private function fileMimeType(array $file): ?string
-    {
+    private function fileMimeType(
+        array $file
+    ): ?string {
         $tmpName = $this->tmpName($file);
 
         if ($tmpName === null)
@@ -155,8 +166,9 @@ class UploadService
             : null;
     }
 
-    private function isValidTmpFile(?string $tmpName): bool
-    {
+    private function isValidTmpFile(
+        ?string $tmpName
+    ): bool {
         if ($tmpName === null)
         {
             return false;
@@ -175,26 +187,51 @@ class UploadService
             return true;
         }
 
-        if (
-            !mkdir($directory, 0777, true)
-            && !is_dir($directory)
-        ) {
-            return false;
-        }
+        return mkdir(
+            $directory,
+            0777,
+            true
+        ) || is_dir($directory);
+    }
 
-        return true;
+    private function failure(
+        string $message,
+        int $status
+    ): UploadResultDTO {
+        return new UploadResultDTO(
+            success: false,
+            message: $message,
+            status: $status,
+            thumbnail: null,
+            extension: null,
+            destination: null
+        );
+    }
+
+    private function success(
+        string $thumbnail,
+        string $extension,
+        string $destination
+    ): UploadResultDTO {
+        return new UploadResultDTO(
+            success: true,
+            message: 'Upload réussi',
+            status: 200,
+            thumbnail: $thumbnail,
+            extension: $extension,
+            destination: $destination
+        );
     }
 
     /**
      * @param array<string, mixed> $files
-     * @return array<string, mixed>
      */
     public function uploadThumbnail(
         string $livre,
         int $numero,
         array $files,
         string $fileKey = 'image'
-    ): array {
+    ): UploadResultDTO {
         $file = $this->fileData(
             $files,
             $fileKey
@@ -206,11 +243,10 @@ class UploadService
                 'Upload manga: fichier introuvable.'
             );
 
-            return [
-                'success' => false,
-                'message' => 'Fichier image introuvable',
-                'status' => 422,
-            ];
+            return $this->failure(
+                'Fichier image introuvable',
+                422
+            );
         }
 
         $extension = $this->fileExtension($file);
@@ -221,11 +257,10 @@ class UploadService
                 'Upload manga: extension introuvable.'
             );
 
-            return [
-                'success' => false,
-                'message' => 'Extension image introuvable',
-                'status' => 422,
-            ];
+            return $this->failure(
+                'Extension image introuvable',
+                422
+            );
         }
 
         if (
@@ -240,11 +275,10 @@ class UploadService
                 . $extension
             );
 
-            return [
-                'success' => false,
-                'message' => 'Format image non autorisé',
-                'status' => 422,
-            ];
+            return $this->failure(
+                'Format image non autorisé',
+                422
+            );
         }
 
         $mimeType = $this->fileMimeType($file);
@@ -262,11 +296,10 @@ class UploadService
                 . ($mimeType ?? 'null')
             );
 
-            return [
-                'success' => false,
-                'message' => 'Type MIME image non autorisé',
-                'status' => 422,
-            ];
+            return $this->failure(
+                'Type MIME image non autorisé',
+                422
+            );
         }
 
         $tmpName = $this->tmpName($file);
@@ -277,11 +310,10 @@ class UploadService
                 'Upload manga: fichier temporaire invalide.'
             );
 
-            return [
-                'success' => false,
-                'message' => 'Fichier temporaire introuvable',
-                'status' => 422,
-            ];
+            return $this->failure(
+                'Fichier temporaire introuvable',
+                422
+            );
         }
 
         $thumbnail = Str::thumbnailName(
@@ -295,11 +327,10 @@ class UploadService
                 'Upload manga: nom thumbnail invalide.'
             );
 
-            return [
-                'success' => false,
-                'message' => 'Nom de fichier invalide',
-                'status' => 422,
-            ];
+            return $this->failure(
+                'Nom de fichier invalide',
+                422
+            );
         }
 
         $directory = $this->uploadDirectory();
@@ -312,11 +343,10 @@ class UploadService
                 . $directory
             );
 
-            return [
-                'success' => false,
-                'message' => 'Dossier image introuvable',
-                'status' => 500,
-            ];
+            return $this->failure(
+                'Dossier image introuvable',
+                500
+            );
         }
 
         $destination = $directory
@@ -337,16 +367,18 @@ class UploadService
                     . $destination
                 );
 
-                return [
-                    'success' => false,
-                    'message' => 'Une image avec ce nom existe déjà',
-                    'status' => 409,
-                ];
+                return $this->failure(
+                    'Une image avec ce nom existe déjà',
+                    409
+                );
             }
         }
 
         $moved = $this->isTestUploadMode()
-            ? copy($tmpName, $destination)
+            ? copy(
+                $tmpName,
+                $destination
+            )
             : move_uploaded_file(
                 $tmpName,
                 $destination
@@ -363,19 +395,17 @@ class UploadService
                 . $destination
             );
 
-            return [
-                'success' => false,
-                'message' => 'Image non enregistrée sur le disque',
-                'status' => 500,
-            ];
+            return $this->failure(
+                'Image non enregistrée sur le disque',
+                500
+            );
         }
 
-        return [
-            'success' => true,
-            'thumbnail' => $thumbnail,
-            'extension' => $extension,
-            'destination' => $destination,
-        ];
+        return $this->success(
+            $thumbnail,
+            $extension,
+            $destination
+        );
     }
 
     public function removeFileIfExists(
