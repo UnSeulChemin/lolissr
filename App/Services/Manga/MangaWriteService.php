@@ -13,6 +13,7 @@ use App\DTO\Manga\MangaCreateDTO;
 use App\DTO\Manga\MangaUpdateDTO;
 use App\DTO\Manga\MangaUpdateNoteDTO;
 use App\DTO\Manga\UpdateLuResultDTO;
+use App\DTO\Upload\UploadThumbnailData;
 use App\Repositories\Manga\MangaRepository;
 use App\Services\UploadService;
 
@@ -125,13 +126,22 @@ final class MangaWriteService
             );
         }
 
+        $uploadData = $upload->data;
+
+        if (!$uploadData instanceof UploadThumbnailData)
+        {
+            return $this->error(
+                'Upload invalide'
+            );
+        }
+
         if ($this->uploadService->isTestUploadMode())
         {
             return $this->success(
                 'Upload test OK',
                 [
                     'file' => basename(
-                        (string) $upload->destination
+                        $uploadData->destination
                     ),
                 ]
             );
@@ -139,8 +149,8 @@ final class MangaWriteService
 
         $inserted = $this->mangaRepository
             ->insert([
-                'thumbnail' => $upload->thumbnail,
-                'extension' => $upload->extension,
+                'thumbnail' => $uploadData->thumbnail,
+                'extension' => $uploadData->extension,
                 'slug' => $dto->slug,
                 'livre' => $dto->livre,
                 'editeur' => $dto->editeur,
@@ -156,7 +166,7 @@ final class MangaWriteService
         {
             $this->uploadService
                 ->removeFileIfExists(
-                    (string) $upload->destination
+                    $uploadData->destination
                 );
 
             $this->logFailure(

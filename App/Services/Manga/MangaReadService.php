@@ -7,6 +7,7 @@ namespace App\Services\Manga;
 use App\Core\Application\App;
 use App\Core\Support\Str;
 use App\DTO\Manga\Responses\MangaSearchData;
+use App\DTO\Manga\Responses\MangaSearchItemData;
 use App\DTO\Manga\Responses\MangaShowData;
 use App\DTO\Manga\Responses\MangaSeriesData;
 use App\Repositories\Manga\MangaRepository;
@@ -113,14 +114,7 @@ final class MangaReadService
     }
 
     /**
-     * @return list<array{
-     *     slug: string,
-     *     numero: int,
-     *     livre: string,
-     *     thumbnail: string|null,
-     *     extension: string|null,
-     *     note: int|null
-     * }>
+     * @return list<MangaSearchItemData>
      */
     public function searchAjax(
         string $query = ''
@@ -137,23 +131,18 @@ final class MangaReadService
         $mangas = $this->searchRepository
             ->searchMangas($search);
 
-        $results = [];
-
-        foreach (
+        return array_map(
+            static fn ($manga): MangaSearchItemData =>
+                new MangaSearchItemData(
+                    slug: $manga->slug,
+                    numero: $manga->numero,
+                    livre: $manga->livre,
+                    thumbnail: $manga->thumbnail,
+                    extension: $manga->extension,
+                    note: $manga->note,
+                ),
             array_slice($mangas, 0, 6)
-            as $manga
-        ) {
-            $results[] = [
-                'slug' => $manga->slug,
-                'numero' => $manga->numero,
-                'livre' => $manga->livre,
-                'thumbnail' => $manga->thumbnail,
-                'extension' => $manga->extension,
-                'note' => $manga->note,
-            ];
-        }
-
-        return $results;
+        );
     }
 
     public function serie(
