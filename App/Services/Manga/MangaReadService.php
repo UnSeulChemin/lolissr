@@ -34,21 +34,26 @@ final class MangaReadService
         );
 
         return trim(
-            preg_replace('/\s+/', ' ', $query)
-            ?? ''
+            preg_replace(
+                '/\s+/',
+                ' ',
+                $query
+            ) ?? ''
         );
     }
 
     public function series(
         string $page = '1'
     ): ?MangaSeriesData {
-        if (!ctype_digit($page)) {
+        if (!ctype_digit($page))
+        {
             return null;
         }
 
         $currentPage = (int) $page;
 
-        if ($currentPage < 1) {
+        if ($currentPage < 1)
+        {
             return null;
         }
 
@@ -88,7 +93,8 @@ final class MangaReadService
             $query
         );
 
-        if ($search === '') {
+        if ($search === '')
+        {
             return new MangaSearchData(
                 mangas: [],
                 search: '',
@@ -121,7 +127,8 @@ final class MangaReadService
             $query
         );
 
-        if ($search === '') {
+        if ($search === '')
+        {
             return [];
         }
 
@@ -136,13 +143,11 @@ final class MangaReadService
         ) {
             $results[] = [
                 'slug' => $manga->slug,
-                'numero' => (int) $manga->numero,
+                'numero' => $manga->numero,
                 'livre' => $manga->livre,
                 'thumbnail' => $manga->thumbnail,
                 'extension' => $manga->extension,
-                'note' => $manga->note !== null
-                    ? (int) $manga->note
-                    : null,
+                'note' => $manga->note,
             ];
         }
 
@@ -157,7 +162,8 @@ final class MangaReadService
         $mangas = $this->mangaRepository
             ->findBySlug($normalizedSlug);
 
-        if ($mangas === []) {
+        if ($mangas === [])
+        {
             return null;
         }
 
@@ -181,7 +187,8 @@ final class MangaReadService
                 $numero
             );
 
-        if ($manga === null) {
+        if ($manga === null)
+        {
             return null;
         }
 

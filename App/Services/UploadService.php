@@ -11,11 +11,11 @@ use App\Core\Support\Str;
 
 class UploadService
 {
-public function isTestUploadMode(): bool
-{
-    return App::isTesting()
-        && env_bool('TEST_UPLOAD_MODE', false);
-}
+    public function isTestUploadMode(): bool
+    {
+        return App::isTesting()
+            && env_bool('TEST_UPLOAD_MODE', false);
+    }
 
     public function testUploadDirectory(): string
     {
@@ -24,7 +24,10 @@ public function isTestUploadMode(): bool
             '/\\'
         );
 
-        return rtrim(app_path($directory), '/\\') . DIRECTORY_SEPARATOR;
+        return rtrim(
+            app_path($directory),
+            '/\\'
+        ) . DIRECTORY_SEPARATOR;
     }
 
     private function uploadDirectory(): string
@@ -34,25 +37,41 @@ public function isTestUploadMode(): bool
             : UploadConfig::mangaThumbnailDirectory();
     }
 
-    private function fileData(array $files, string $fileKey): ?array
-    {
+    /**
+     * @param array<string, mixed> $files
+     * @return array<string, mixed>|null
+     */
+    private function fileData(
+        array $files,
+        string $fileKey
+    ): ?array {
         $file = $files[$fileKey] ?? null;
 
-        return is_array($file) ? $file : null;
+        return is_array($file)
+            ? $file
+            : null;
     }
 
+    /**
+     * @param array<string, mixed> $file
+     */
     private function originalFilename(array $file): ?string
     {
         $name = $file['name'] ?? null;
 
-        if (!is_string($name) || trim($name) === '')
-        {
+        if (
+            !is_string($name)
+            || trim($name) === ''
+        ) {
             return null;
         }
 
         return $name;
     }
 
+    /**
+     * @param array<string, mixed> $file
+     */
     private function fileExtension(array $file): ?string
     {
         $name = $this->originalFilename($file);
@@ -62,28 +81,40 @@ public function isTestUploadMode(): bool
             return null;
         }
 
-        $extension = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+        $extension = strtolower(
+            pathinfo($name, PATHINFO_EXTENSION)
+        );
 
         if ($extension === '')
         {
             return null;
         }
 
-        return $extension === 'jpeg' ? 'jpg' : $extension;
+        return $extension === 'jpeg'
+            ? 'jpg'
+            : $extension;
     }
 
+    /**
+     * @param array<string, mixed> $file
+     */
     private function tmpName(array $file): ?string
     {
         $tmpName = $file['tmp_name'] ?? null;
 
-        if (!is_string($tmpName) || trim($tmpName) === '')
-        {
+        if (
+            !is_string($tmpName)
+            || trim($tmpName) === ''
+        ) {
             return null;
         }
 
         return $tmpName;
     }
 
+    /**
+     * @param array<string, mixed> $file
+     */
     private function fileMimeType(array $file): ?string
     {
         $tmpName = $this->tmpName($file);
@@ -112,7 +143,10 @@ public function isTestUploadMode(): bool
             return null;
         }
 
-        $mimeType = finfo_file($finfo, $tmpName);
+        $mimeType = finfo_file(
+            $finfo,
+            $tmpName
+        );
 
         finfo_close($finfo);
 
@@ -133,37 +167,49 @@ public function isTestUploadMode(): bool
             : is_uploaded_file($tmpName);
     }
 
-    private function ensureDirectoryExists(string $directory): bool
-    {
+    private function ensureDirectoryExists(
+        string $directory
+    ): bool {
         if (is_dir($directory))
         {
             return true;
         }
 
-        if (!mkdir($directory, 0777, true) && !is_dir($directory))
-        {
+        if (
+            !mkdir($directory, 0777, true)
+            && !is_dir($directory)
+        ) {
             return false;
         }
 
         return true;
     }
 
+    /**
+     * @param array<string, mixed> $files
+     * @return array<string, mixed>
+     */
     public function uploadThumbnail(
         string $livre,
         int $numero,
         array $files,
         string $fileKey = 'image'
     ): array {
-        $file = $this->fileData($files, $fileKey);
+        $file = $this->fileData(
+            $files,
+            $fileKey
+        );
 
         if ($file === null)
         {
-            Logger::error('Upload manga: fichier introuvable.');
+            Logger::error(
+                'Upload manga: fichier introuvable.'
+            );
 
             return [
                 'success' => false,
                 'message' => 'Fichier image introuvable',
-                'status' => 422
+                'status' => 422,
             ];
         }
 
@@ -171,23 +217,33 @@ public function isTestUploadMode(): bool
 
         if ($extension === null)
         {
-            Logger::error('Upload manga: extension introuvable.');
+            Logger::error(
+                'Upload manga: extension introuvable.'
+            );
 
             return [
                 'success' => false,
                 'message' => 'Extension image introuvable',
-                'status' => 422
+                'status' => 422,
             ];
         }
 
-        if (!in_array($extension, UploadConfig::allowedExtensions(), true))
-        {
-            Logger::error('Upload manga: extension non autorisée : ' . $extension);
+        if (
+            !in_array(
+                $extension,
+                UploadConfig::allowedExtensions(),
+                true
+            )
+        ) {
+            Logger::error(
+                'Upload manga: extension non autorisée : '
+                . $extension
+            );
 
             return [
                 'success' => false,
                 'message' => 'Format image non autorisé',
-                'status' => 422
+                'status' => 422,
             ];
         }
 
@@ -195,9 +251,12 @@ public function isTestUploadMode(): bool
 
         if (
             $mimeType === null
-            || !in_array($mimeType, UploadConfig::allowedMimeTypes(), true)
-        )
-        {
+            || !in_array(
+                $mimeType,
+                UploadConfig::allowedMimeTypes(),
+                true
+            )
+        ) {
             Logger::error(
                 'Upload manga: MIME non autorisé. MIME reçu: '
                 . ($mimeType ?? 'null')
@@ -206,7 +265,7 @@ public function isTestUploadMode(): bool
             return [
                 'success' => false,
                 'message' => 'Type MIME image non autorisé',
-                'status' => 422
+                'status' => 422,
             ];
         }
 
@@ -214,69 +273,92 @@ public function isTestUploadMode(): bool
 
         if (!$this->isValidTmpFile($tmpName))
         {
-            Logger::error('Upload manga: fichier temporaire invalide.');
+            Logger::error(
+                'Upload manga: fichier temporaire invalide.'
+            );
 
             return [
                 'success' => false,
                 'message' => 'Fichier temporaire introuvable',
-                'status' => 422
+                'status' => 422,
             ];
         }
 
-        $thumbnail = Str::thumbnailName($livre, $numero);
+        $thumbnail = Str::thumbnailName(
+            $livre,
+            $numero
+        );
 
         if ($thumbnail === '')
         {
-            Logger::error('Upload manga: nom thumbnail invalide.');
+            Logger::error(
+                'Upload manga: nom thumbnail invalide.'
+            );
 
             return [
                 'success' => false,
                 'message' => 'Nom de fichier invalide',
-                'status' => 422
+                'status' => 422,
             ];
         }
 
         $directory = $this->uploadDirectory();
 
-        if (!$this->ensureDirectoryExists($directory))
-        {
-            Logger::error('Upload manga: dossier impossible à créer : ' . $directory);
+        if (
+            !$this->ensureDirectoryExists($directory)
+        ) {
+            Logger::error(
+                'Upload manga: dossier impossible à créer : '
+                . $directory
+            );
 
             return [
                 'success' => false,
                 'message' => 'Dossier image introuvable',
-                'status' => 500
+                'status' => 500,
             ];
         }
 
-        $destination = $directory . $thumbnail . '.' . $extension;
+        $destination = $directory
+            . $thumbnail
+            . '.'
+            . $extension;
 
         if (is_file($destination))
         {
-            if ($this->isTestUploadMode()) {
+            if ($this->isTestUploadMode())
+            {
                 unlink($destination);
-            } else {
+            }
+            else
+            {
                 Logger::error(
-                    'Upload manga: fichier déjà existant : ' . $destination
+                    'Upload manga: fichier déjà existant : '
+                    . $destination
                 );
 
                 return [
                     'success' => false,
                     'message' => 'Une image avec ce nom existe déjà',
-                    'status' => 409
+                    'status' => 409,
                 ];
             }
         }
 
         $moved = $this->isTestUploadMode()
-            ? copy((string) $tmpName, $destination)
-            : move_uploaded_file((string) $tmpName, $destination);
+            ? copy($tmpName, $destination)
+            : move_uploaded_file(
+                $tmpName,
+                $destination
+            );
 
-        if (!$moved || !is_file($destination))
-        {
+        if (
+            !$moved
+            || !is_file($destination)
+        ) {
             Logger::error(
                 'Upload manga: fichier non enregistré. tmp='
-                . (string) $tmpName
+                . $tmpName
                 . ' destination='
                 . $destination
             );
@@ -284,7 +366,7 @@ public function isTestUploadMode(): bool
             return [
                 'success' => false,
                 'message' => 'Image non enregistrée sur le disque',
-                'status' => 500
+                'status' => 500,
             ];
         }
 
@@ -292,12 +374,13 @@ public function isTestUploadMode(): bool
             'success' => true,
             'thumbnail' => $thumbnail,
             'extension' => $extension,
-            'destination' => $destination
+            'destination' => $destination,
         ];
     }
 
-    public function removeFileIfExists(string $path): void
-    {
+    public function removeFileIfExists(
+        string $path
+    ): void {
         if (is_file($path))
         {
             unlink($path);

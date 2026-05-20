@@ -10,6 +10,7 @@ use App\Core\Support\Str;
 use App\Models\Manga;
 use App\Models\Model;
 use LogicException;
+use stdClass;
 
 final class MangaRepository extends Model
 {
@@ -39,6 +40,9 @@ final class MangaRepository extends Model
         return $jacquette + $livreNote;
     }
 
+    /**
+     * @param array<string, mixed> $params
+     */
     private function fetchSingleValue(
         string $sql,
         string $field,
@@ -50,8 +54,14 @@ final class MangaRepository extends Model
             $params
         );
 
-        return $result->{$field}
-            ?? $default;
+        if (!$result instanceof stdClass)
+        {
+            return $default;
+        }
+
+        return property_exists($result, $field)
+            ? $result->{$field}
+            : $default;
     }
 
     /**
@@ -367,6 +377,9 @@ final class MangaRepository extends Model
         );
     }
 
+    /**
+     * @param array<string, mixed> $datas
+     */
     public function insert(
         array $datas
     ): bool {

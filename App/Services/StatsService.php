@@ -14,17 +14,17 @@ final class StatsService
 
     public function totalTomes(): int
     {
-        return (int) $this->repository->countAllTomes();
+        return $this->repository->countAllTomes();
     }
 
     public function totalSeries(): int
     {
-        return (int) $this->repository->countSeries();
+        return $this->repository->countSeries();
     }
 
     public function totalRead(): int
     {
-        return (int) $this->repository->countRead();
+        return $this->repository->countRead();
     }
 
     public function totalUnread(): int
@@ -48,11 +48,7 @@ final class StatsService
 
     public function averageNote(): ?float
     {
-        $value = $this->repository->averageNote();
-
-        return $value !== null
-            ? (float) $value
-            : null;
+        return $this->repository->averageNote();
     }
 
     public function lastTome(): ?object
@@ -65,6 +61,9 @@ final class StatsService
         return $this->repository->findLongestSeries();
     }
 
+    /**
+     * @return array<int, object>
+     */
     public function topLongestSeries(
         int $limit = 5
     ): array {

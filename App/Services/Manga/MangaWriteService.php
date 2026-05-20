@@ -22,6 +22,9 @@ final class MangaWriteService
         private readonly MangaCacheService $cacheService
     ) {}
 
+    /**
+     * @param array<string, mixed> $data
+     */
     private function success(
         string $message,
         array $data = [],
@@ -35,6 +38,9 @@ final class MangaWriteService
         );
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     private function error(
         string $message,
         int $status = 500,
@@ -71,6 +77,9 @@ final class MangaWriteService
         );
     }
 
+    /**
+     * @param array<string, mixed> $files
+     */
     public function create(
         MangaCreateDTO $dto,
         array $files
@@ -82,13 +91,15 @@ final class MangaWriteService
             return $this->blockedWriteResponse();
         }
 
+        $existingManga = $this->mangaRepository
+            ->findOneBySlugAndNumero(
+                $dto->slug,
+                $dto->numero
+            );
+
         if (
             !$this->uploadService->isTestUploadMode()
-            && $this->mangaRepository
-                ->findOneBySlugAndNumero(
-                    $dto->slug,
-                    $dto->numero
-                )
+            && $existingManga !== null
         ) {
             return $this->error(
                 'Ce manga existe déjà',
@@ -104,11 +115,11 @@ final class MangaWriteService
                 'image'
             );
 
-        if (!$upload['success'])
+        if (($upload['success'] ?? false) !== true)
         {
             return $this->error(
-                (string) $upload['message'],
-                (int) $upload['status']
+                (string) ($upload['message'] ?? ''),
+                (int) ($upload['status'] ?? 500)
             );
         }
 
@@ -118,7 +129,7 @@ final class MangaWriteService
                 'Upload test OK',
                 [
                     'file' => basename(
-                        (string) $upload['destination']
+                        (string) ($upload['destination'] ?? '')
                     ),
                 ]
             );
@@ -138,11 +149,11 @@ final class MangaWriteService
             'commentaire' => $dto->commentaire,
         ]);
 
-        if (!$inserted)
+        if ($inserted === false)
         {
             $this->uploadService
                 ->removeFileIfExists(
-                    (string) $upload['destination']
+                    (string) ($upload['destination'] ?? '')
                 );
 
             $this->logFailure(
@@ -163,6 +174,9 @@ final class MangaWriteService
         );
     }
 
+    /**
+     * @param array<string, mixed> $files
+     */
     public function update(
         string $slug,
         int $numero,
@@ -185,7 +199,7 @@ final class MangaWriteService
                 $dto->commentaire
             );
 
-        if (!$updated)
+        if ($updated === false)
         {
             $this->logFailure(
                 'Update manga',
@@ -223,7 +237,7 @@ final class MangaWriteService
                 $dto->livreNote
             );
 
-        if (!$updated)
+        if ($updated === false)
         {
             $this->logFailure(
                 'Update note',
@@ -291,7 +305,7 @@ final class MangaWriteService
                 $lu === 1
             );
 
-        if (!$updated)
+        if ($updated === false)
         {
             $this->logFailure(
                 'Update lu',
@@ -345,7 +359,7 @@ final class MangaWriteService
                 $numero
             );
 
-        if (!$deleted)
+        if ($deleted === false)
         {
             $this->logFailure(
                 'Delete manga',
@@ -369,16 +383,12 @@ final class MangaWriteService
 
         $this->cacheService->clear();
 
-        /*
-        |--------------------------------------------------------------------------
-        | Vérifie si la série existe encore
-        |--------------------------------------------------------------------------
-        */
-
         $remainingMangas = $this->mangaRepository
             ->findBySlug($manga->slug);
 
-        $redirect = !empty($remainingMangas)
+        $hasRemainingMangas = $remainingMangas !== [];
+
+        $redirect = $hasRemainingMangas
             ? base_path()
                 . '/manga/series/'
                 . rawurlencode($manga->slug)
