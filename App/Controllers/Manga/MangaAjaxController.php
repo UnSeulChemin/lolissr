@@ -54,10 +54,15 @@ final class MangaAjaxController extends Controller
         array $payload,
         int $status = 400
     ): never {
-        $this->json([
+        $response = [
             'success' => false,
             ...$payload,
-        ], $status);
+        ];
+
+        $this->json(
+            $response,
+            $status
+        );
     }
 
     public function seriesPage(
@@ -143,11 +148,19 @@ final class MangaAjaxController extends Controller
                 $request->dto()
             );
 
-        $this->json([
+        /**
+         * @var array<string, mixed> $response
+         */
+        $response = [
             'success' => $result->success,
             'message' => $result->message,
-            'data' => $result->data,
-        ], $result->status);
+            ...$result->data,
+        ];
+
+        $this->json(
+            $response,
+            $result->status
+        );
     }
 
     public function updateLu(
@@ -238,10 +251,18 @@ final class MangaAjaxController extends Controller
                 $numero
             );
 
-        $this->json([
+        /**
+         * @var array<string, mixed> $response
+         */
+        $response = [
             'success' => $result->success,
             'message' => $result->message,
-            'data' => $result->data,
-        ], $result->status);
+            ...$result->data,
+        ];
+
+        $this->json(
+            $response,
+            $result->status
+        );
     }
 }
