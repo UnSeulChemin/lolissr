@@ -1,7 +1,8 @@
 {
     "require-dev": {
         "phpunit/phpunit": "^12.5",
-        "phpstan/phpstan": "^2.1"
+        "phpstan/phpstan": "^2.1",
+        "phpstan/phpstan-strict-rules": "^2.0"
     },
 
     "autoload": {

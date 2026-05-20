@@ -1,5 +1,8 @@
+includes:
+    - vendor/phpstan/phpstan-strict-rules/rules.neon
+
 parameters:
-    level: 5
+    level: 6
 
     paths:
         - App
@@ -9,3 +12,5 @@ parameters:
 
     bootstrapFiles:
         - phpstan-bootstrap.php
+
+    checkUninitializedProperties: true
