@@ -12,7 +12,7 @@ use Throwable;
 
 abstract class Model
 {
-    protected string $table;
+    protected string $table = '';
 
     protected PDO $db;
 
@@ -24,11 +24,19 @@ abstract class Model
 
     protected function table(): string
     {
-        return preg_replace(
+        $table = preg_replace(
             '/[^a-zA-Z0-9_]/',
             '',
             $this->table
         ) ?? '';
+
+        if ($table === '') {
+            throw new RuntimeException(
+                'Nom de table invalide.'
+            );
+        }
+
+        return $table;
     }
 
     protected function getTable(): string
@@ -143,7 +151,10 @@ abstract class Model
             );
         }
 
-        return $statement->fetchAll();
+        /** @var array<int, object> $results */
+        $results = $statement->fetchAll();
+
+        return $results;
     }
 
     /**

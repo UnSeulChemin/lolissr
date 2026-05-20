@@ -6,19 +6,19 @@ namespace App\Models;
 
 final class ChinoisVocabulaire
 {
-    public int $id;
+    public ?int $id = null;
 
-    public string $langue;
+    public ?string $langue = null;
 
-    public string $mot;
+    public ?string $mot = null;
 
-    public string $pinyin;
+    public ?string $pinyin = null;
 
-    public string $type;
+    public ?string $type = null;
 
-    public string $traduction;
+    public ?string $traduction = null;
 
-    public string $exemple;
+    public ?string $exemple = null;
 
-    public string $created_at;
+    public ?string $created_at = null;
 }
