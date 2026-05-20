@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Core\Database\Database;
+use Framework\Database\Database;
 use PDO;
 use PDOStatement;
 use RuntimeException;

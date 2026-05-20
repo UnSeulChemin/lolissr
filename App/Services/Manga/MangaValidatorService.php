@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Manga;
 
 use App\Core\Config\UploadConfig;
-use App\Core\Validation\Validator;
+use Framework\Validation\Validator;
 
 final class MangaValidatorService
 {

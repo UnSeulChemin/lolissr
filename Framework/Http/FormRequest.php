@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Framework\Http;
 
-use App\Core\Validation\Validator;
+use Framework\Validation\Validator;
 
 abstract class FormRequest
 {
