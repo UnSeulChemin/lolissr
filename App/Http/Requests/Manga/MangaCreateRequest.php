@@ -6,7 +6,7 @@ namespace App\Http\Requests\Manga;
 
 use App\Core\Config\UploadConfig;
 use App\Core\Http\FormRequest;
-use App\DTO\Manga\MangaCreateDTO;
+use App\DTO\Manga\Inputs\MangaCreateDTO;
 
 final class MangaCreateRequest extends FormRequest
 {

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests\Manga;
 
 use App\Core\Http\FormRequest;
-use App\DTO\Manga\MangaUpdateDTO;
+use App\DTO\Manga\Inputs\MangaUpdateDTO;
 
 final class MangaUpdateRequest extends FormRequest
 {
