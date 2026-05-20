@@ -70,19 +70,16 @@ final class Router
     ): void {
         $uri = '/' . trim($uri, '/');
 
-        if ($uri === '//')
-        {
+        if ($uri === '//') {
             $uri = '/';
         }
 
         $pattern = preg_replace_callback(
             '#\{([a-zA-Z0-9_]+)(?::([a-zA-Z]+))?\}#',
-            static function (array $matches): string
-            {
+            static function (array $matches): string {
                 $type = $matches[2] ?? 'string';
 
-                return match ($type)
-                {
+                return match ($type) {
                     'int' => '([0-9]+)',
                     default => '([^/]+)',
                 };
@@ -112,8 +109,7 @@ final class Router
 
         $methodNotAllowed = false;
 
-        foreach ($this->routes as $route)
-        {
+        foreach ($this->routes as $route) {
             if (
                 !preg_match(
                     $route['pattern'],
@@ -124,8 +120,7 @@ final class Router
                 continue;
             }
 
-            if ($method !== $route['method'])
-            {
+            if ($method !== $route['method']) {
                 $methodNotAllowed = true;
 
                 continue;
@@ -138,8 +133,7 @@ final class Router
                 $request
             );
 
-            if ($route['action'] instanceof Closure)
-            {
+            if ($route['action'] instanceof Closure) {
                 ($route['action'])(...$matches);
 
                 return;
@@ -188,8 +182,7 @@ final class Router
     private function resolveAction(
         array|string $action
     ): array {
-        if (is_string($action))
-        {
+        if (is_string($action)) {
             [
                 $controller,
                 $method,
@@ -198,9 +191,7 @@ final class Router
             $controller =
                 'App\\Controllers\\'
                 . $controller;
-        }
-        else
-        {
+        } else {
             [
                 $controller,
                 $method,
@@ -220,10 +211,8 @@ final class Router
         array $middlewares,
         Request $request
     ): void {
-        foreach ($middlewares as $middlewareClass)
-        {
-            if (!class_exists($middlewareClass))
-            {
+        foreach ($middlewares as $middlewareClass) {
+            if (!class_exists($middlewareClass)) {
                 throw new RuntimeException(
                     "Middleware introuvable : {$middlewareClass}"
                 );
@@ -265,8 +254,7 @@ final class Router
         $routeIndex = 0;
 
         foreach (
-            $reflection->getParameters()
-            as $parameter
+            $reflection->getParameters() as $parameter
         ) {
             $type = $parameter->getType();
 
@@ -276,8 +264,7 @@ final class Router
             ) {
                 $typeName = $type->getName();
 
-                if ($typeName === Request::class)
-                {
+                if ($typeName === Request::class) {
                     $dependencies[] = $request;
 
                     continue;
@@ -301,8 +288,7 @@ final class Router
                 continue;
             }
 
-            if (isset($routeParameters[$routeIndex]))
-            {
+            if (isset($routeParameters[$routeIndex])) {
                 $value =
                     $routeParameters[$routeIndex++];
 
@@ -315,8 +301,7 @@ final class Router
                     );
                 }
 
-                if ($value === null)
-                {
+                if ($value === null) {
                     abort(404);
                 }
 
@@ -325,8 +310,7 @@ final class Router
                 continue;
             }
 
-            if ($parameter->isDefaultValueAvailable())
-            {
+            if ($parameter->isDefaultValueAvailable()) {
                 $dependencies[] =
                     $parameter->getDefaultValue();
 
@@ -346,8 +330,7 @@ final class Router
         string $value,
         string $type
     ): mixed {
-        return match ($type)
-        {
+        return match ($type) {
             'int' => ctype_digit($value)
                 ? (int) $value
                 : null,

@@ -11,5 +11,6 @@ final readonly class MangaShowData
     public function __construct(
         public Manga $manga,
         public string $canonicalSlug,
-    ) {}
+    ) {
+    }
 }

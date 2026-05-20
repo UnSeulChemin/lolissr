@@ -21,8 +21,7 @@ $basePath = rtrim(
 
 $sections = [];
 
-foreach ($grammaires as $grammaire)
-{
+foreach ($grammaires as $grammaire) {
     $section = (string) $grammaire->section;
 
     $categorie = (string) $grammaire->categorie;

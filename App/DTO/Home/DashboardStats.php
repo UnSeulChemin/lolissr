@@ -25,5 +25,6 @@ final class DashboardStats
         public array $lowRatedMangas,
         public array $lowJacquetteMangas,
         public array $lowLivreStateMangas,
-    ) {}
+    ) {
+    }
 }

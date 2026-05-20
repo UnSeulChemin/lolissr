@@ -22,22 +22,19 @@ final class Config
     ): mixed {
         $segments = self::segments($key);
 
-        if ($segments === [])
-        {
+        if ($segments === []) {
             return $default;
         }
 
         $file = array_shift($segments);
 
-        if ($file === '')
-        {
+        if ($file === '') {
             return $default;
         }
 
         $config = self::load($file);
 
-        if ($segments === [])
-        {
+        if ($segments === []) {
             return $config !== []
                 ? $config
                 : $default;
@@ -57,22 +54,19 @@ final class Config
     {
         $segments = self::segments($key);
 
-        if ($segments === [])
-        {
+        if ($segments === []) {
             return false;
         }
 
         $file = array_shift($segments);
 
-        if ($file === '')
-        {
+        if ($file === '') {
             return false;
         }
 
         $config = self::load($file);
 
-        if ($segments === [])
-        {
+        if ($segments === []) {
             return $config !== [];
         }
 
@@ -99,8 +93,7 @@ final class Config
     {
         $key = trim($key);
 
-        if ($key === '')
-        {
+        if ($key === '') {
             return [];
         }
 
@@ -127,8 +120,7 @@ final class Config
     ): mixed {
         $value = $items;
 
-        foreach ($segments as $segment)
-        {
+        foreach ($segments as $segment) {
             if (
                 !is_array($value)
                 || !array_key_exists($segment, $value)
@@ -154,8 +146,7 @@ final class Config
     ): bool {
         $value = $items;
 
-        foreach ($segments as $segment)
-        {
+        foreach ($segments as $segment) {
             if (
                 !is_array($value)
                 || !array_key_exists($segment, $value)
@@ -176,8 +167,7 @@ final class Config
      */
     private static function load(string $file): array
     {
-        if (isset(self::$items[$file]))
-        {
+        if (isset(self::$items[$file])) {
             return self::$items[$file];
         }
 
@@ -185,8 +175,7 @@ final class Config
             'Config/' . $file . '.php'
         );
 
-        if (!is_file($path))
-        {
+        if (!is_file($path)) {
             self::$items[$file] = [];
 
             return self::$items[$file];
@@ -194,8 +183,7 @@ final class Config
 
         $config = require $path;
 
-        if (!is_array($config))
-        {
+        if (!is_array($config)) {
             $config = [];
         }
 

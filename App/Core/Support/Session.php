@@ -10,8 +10,7 @@ final class Session
 {
     private static function ensureStarted(): void
     {
-        if (session_status() === PHP_SESSION_ACTIVE)
-        {
+        if (session_status() === PHP_SESSION_ACTIVE) {
             return;
         }
 
@@ -123,8 +122,7 @@ final class Session
     ): void {
         self::ensureStarted();
 
-        foreach ($keys as $key)
-        {
+        foreach ($keys as $key) {
             unset($_SESSION[$key]);
         }
     }
@@ -166,8 +164,7 @@ final class Session
 
         $_SESSION = [];
 
-        if (ini_get('session.use_cookies') !== false)
-        {
+        if (ini_get('session.use_cookies') !== false) {
             $params = session_get_cookie_params();
 
             setcookie(

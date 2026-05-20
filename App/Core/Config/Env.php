@@ -22,13 +22,11 @@ final class Env
     ): mixed {
         $key = trim($key);
 
-        if ($key === '')
-        {
+        if ($key === '') {
             return $default;
         }
 
-        if (array_key_exists($key, self::$items))
-        {
+        if (array_key_exists($key, self::$items)) {
             return self::$items[$key];
         }
 
@@ -36,8 +34,7 @@ final class Env
             ?? $_SERVER[$key]
             ?? null;
 
-        if ($value === null)
-        {
+        if ($value === null) {
             $env = getenv($key);
 
             $value = $env !== false
@@ -45,15 +42,13 @@ final class Env
                 : null;
         }
 
-        if ($value === null)
-        {
+        if ($value === null) {
             self::$items[$key] = $default;
 
             return self::$items[$key];
         }
 
-        if (is_string($value))
-        {
+        if (is_string($value)) {
             $value = self::cast(
                 trim($value)
             );
@@ -76,18 +71,15 @@ final class Env
             $default
         );
 
-        if (is_bool($value))
-        {
+        if (is_bool($value)) {
             return $value;
         }
 
-        if (is_int($value))
-        {
+        if (is_int($value)) {
             return $value === 1;
         }
 
-        if (!is_string($value))
-        {
+        if (!is_string($value)) {
             return $default;
         }
 
@@ -107,8 +99,7 @@ final class Env
     {
         $key = trim($key);
 
-        if ($key === '')
-        {
+        if ($key === '') {
             return false;
         }
 
@@ -116,8 +107,7 @@ final class Env
             ?? $_SERVER[$key]
             ?? null;
 
-        if ($value !== null)
-        {
+        if ($value !== null) {
             return true;
         }
 
@@ -138,8 +128,7 @@ final class Env
     private static function cast(
         string $value
     ): mixed {
-        return match (strtolower($value))
-        {
+        return match (strtolower($value)) {
             'true', '(true)' => true,
             'false', '(false)' => false,
             'null', '(null)' => null,

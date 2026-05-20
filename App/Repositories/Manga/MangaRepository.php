@@ -17,8 +17,7 @@ final class MangaRepository extends Model
 
     private function guardWrite(): void
     {
-        if (App::isReadOnly())
-        {
+        if (App::isReadOnly()) {
             throw new LogicException(
                 'Écriture en base interdite en mode test.'
             );

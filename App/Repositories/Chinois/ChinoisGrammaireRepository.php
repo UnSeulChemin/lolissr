@@ -44,15 +44,14 @@ final class ChinoisGrammaireRepository extends Model
             [$niveau]
         );
 
-        if (!$query)
-        {
+        if (!$query) {
             return [];
         }
 
         $results = $query->fetchAll();
 
         return array_map(
-            static fn(object $row): ChinoisGrammaireDTO => new ChinoisGrammaireDTO(
+            static fn (object $row): ChinoisGrammaireDTO => new ChinoisGrammaireDTO(
                 id: (int) $row->id,
                 niveau: (string) $row->niveau,
                 section: (string) $row->section,
@@ -75,11 +74,11 @@ final class ChinoisGrammaireRepository extends Model
     public function toggleMaitrise(int $id): int
     {
         $this->requete(
-            "
+            '
             UPDATE chinois_grammaire
             SET maitrise = NOT maitrise
             WHERE id = ?
-            ",
+            ',
             [$id]
         );
 

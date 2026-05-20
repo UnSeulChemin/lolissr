@@ -31,8 +31,7 @@ final class ChinoisAjaxController
         |--------------------------------------------------------------------------
         */
 
-        if ($id <= 0)
-        {
+        if ($id <= 0) {
             json([
                 'success' => false,
                 'message' => 'ID invalide',

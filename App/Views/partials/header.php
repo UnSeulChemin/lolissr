@@ -23,8 +23,7 @@ if (
     $cleanBasePath !== ''
     && $cleanBasePath !== '/'
     && str_starts_with($currentPath, $cleanBasePath)
-)
-{
+) {
     $currentPath = substr(
         $currentPath,
         strlen($cleanBasePath)
@@ -73,8 +72,7 @@ if (
         $currentPath,
         '/manga/recherche/'
     )
-)
-{
+) {
     $searchSlug = substr(
         $currentPath,
         strlen('/manga/recherche/')

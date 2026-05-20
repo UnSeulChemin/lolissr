@@ -10,7 +10,8 @@ final class StatsService
 {
     public function __construct(
         private readonly MangaStatsRepository $repository
-    ) {}
+    ) {
+    }
 
     public function totalTomes(): int
     {

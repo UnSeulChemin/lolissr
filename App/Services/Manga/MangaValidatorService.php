@@ -266,8 +266,7 @@ final class MangaValidatorService
         array $errors,
         string $fallback = 'Le formulaire contient des erreurs.'
     ): string {
-        foreach ($errors as $messages)
-        {
+        foreach ($errors as $messages) {
             if (
                 is_array($messages)
                 && $messages !== []

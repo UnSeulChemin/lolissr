@@ -18,8 +18,7 @@ final class UploadConfig
     {
         $extensions = config('upload.allowed_extensions', []);
 
-        if (!is_array($extensions))
-        {
+        if (!is_array($extensions)) {
             return [];
         }
 
@@ -43,8 +42,7 @@ final class UploadConfig
     {
         $mimeTypes = config('upload.allowed_mime', []);
 
-        if (!is_array($mimeTypes))
-        {
+        if (!is_array($mimeTypes)) {
             return [];
         }
 

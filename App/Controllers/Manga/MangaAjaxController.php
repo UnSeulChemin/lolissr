@@ -24,8 +24,7 @@ final class MangaAjaxController extends Controller
     private function ensureAjax(
         Request $request
     ): void {
-        if ($request->isAjax())
-        {
+        if ($request->isAjax()) {
             return;
         }
 
@@ -55,8 +54,7 @@ final class MangaAjaxController extends Controller
             'message' => $message,
         ];
 
-        if ($redirect !== null)
-        {
+        if ($redirect !== null) {
             $response['redirect'] = $redirect;
         }
 
@@ -89,8 +87,7 @@ final class MangaAjaxController extends Controller
         $data = $this->mangaReadService
             ->series($page);
 
-        if ($data === null)
-        {
+        if ($data === null) {
             $this->error(
                 'Page introuvable',
                 404
@@ -136,16 +133,14 @@ final class MangaAjaxController extends Controller
                 $numero
             );
 
-        if ($data === null)
-        {
+        if ($data === null) {
             $this->error(
                 'Manga introuvable',
                 404
             );
         }
 
-        if ($slug !== $data->canonicalSlug)
-        {
+        if ($slug !== $data->canonicalSlug) {
             $this->error(
                 'URL non canonique',
                 409,
@@ -184,16 +179,14 @@ final class MangaAjaxController extends Controller
                 $numero
             );
 
-        if ($data === null)
-        {
+        if ($data === null) {
             $this->error(
                 'Manga introuvable',
                 404
             );
         }
 
-        if ($slug !== $data->canonicalSlug)
-        {
+        if ($slug !== $data->canonicalSlug) {
             $this->error(
                 'URL non canonique',
                 409,
@@ -232,16 +225,14 @@ final class MangaAjaxController extends Controller
                 $numero
             );
 
-        if ($data === null)
-        {
+        if ($data === null) {
             $this->error(
                 'Manga introuvable',
                 404
             );
         }
 
-        if ($slug !== $data->canonicalSlug)
-        {
+        if ($slug !== $data->canonicalSlug) {
             $this->error(
                 'URL non canonique',
                 409,

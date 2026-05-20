@@ -14,17 +14,14 @@ $flashToast = null;
 $success = Session::get('success');
 $error = Session::get('error');
 
-if (is_string($success) && $success !== '')
-{
+if (is_string($success) && $success !== '') {
     $flashToast = [
         'message' => $success,
         'type' => 'success',
     ];
 
     Session::remove('success');
-}
-elseif (is_string($error) && $error !== '')
-{
+} elseif (is_string($error) && $error !== '') {
     $flashToast = [
         'message' => $error,
         'type' => 'error',

@@ -8,12 +8,12 @@ use App\Core\Application\App;
 use App\Core\Config\UploadConfig;
 use App\Core\Support\Logger;
 use App\DTO\Common\ServiceResultData;
-use App\DTO\Manga\Results\DeleteResultData;
 use App\DTO\Manga\Inputs\MangaCreateDTO;
 use App\DTO\Manga\Inputs\MangaUpdateDTO;
 use App\DTO\Manga\Inputs\MangaUpdateNoteDTO;
-use App\DTO\Manga\Results\UpdateNoteData;
+use App\DTO\Manga\Results\DeleteResultData;
 use App\DTO\Manga\Results\UpdateLuResultData;
+use App\DTO\Manga\Results\UpdateNoteData;
 use App\DTO\Upload\UploadThumbnailData;
 use App\Repositories\Manga\MangaRepository;
 use App\Services\UploadService;
@@ -24,7 +24,8 @@ final class MangaWriteService
         private readonly MangaRepository $mangaRepository,
         private readonly UploadService $uploadService,
         private readonly MangaCacheService $cacheService
-    ) {}
+    ) {
+    }
 
     /**
      * @param array<string, mixed> $data
@@ -119,8 +120,7 @@ final class MangaWriteService
                 'image'
             );
 
-        if (!$upload->success)
-        {
+        if (!$upload->success) {
             return $this->error(
                 $upload->message,
                 $upload->status
@@ -129,15 +129,13 @@ final class MangaWriteService
 
         $uploadData = $upload->data;
 
-        if (!$uploadData instanceof UploadThumbnailData)
-        {
+        if (!$uploadData instanceof UploadThumbnailData) {
             return $this->error(
                 'Upload invalide'
             );
         }
 
-        if ($this->uploadService->isTestUploadMode())
-        {
+        if ($this->uploadService->isTestUploadMode()) {
             return $this->success(
                 'Upload test OK',
                 [
@@ -163,8 +161,7 @@ final class MangaWriteService
                 'commentaire' => $dto->commentaire,
             ]);
 
-        if ($inserted === false)
-        {
+        if ($inserted === false) {
             $this->uploadService
                 ->removeFileIfExists(
                     $uploadData->destination
@@ -197,8 +194,7 @@ final class MangaWriteService
         MangaUpdateDTO $dto,
         array $files
     ): ServiceResultData {
-        if ($this->isReadOnlyMode())
-        {
+        if ($this->isReadOnlyMode()) {
             return $this->blockedWriteResponse();
         }
 
@@ -213,8 +209,7 @@ final class MangaWriteService
                 $dto->commentaire
             );
 
-        if ($updated === false)
-        {
+        if ($updated === false) {
             $this->logFailure(
                 'Update manga',
                 $slug,
@@ -238,8 +233,7 @@ final class MangaWriteService
         int $numero,
         MangaUpdateNoteDTO $dto
     ): ServiceResultData {
-        if ($this->isReadOnlyMode())
-        {
+        if ($this->isReadOnlyMode()) {
             return $this->blockedWriteResponse();
         }
 
@@ -251,8 +245,7 @@ final class MangaWriteService
                 $dto->livreNote
             );
 
-        if ($updated === false)
-        {
+        if ($updated === false) {
             $this->logFailure(
                 'Update note',
                 $slug,
@@ -272,8 +265,7 @@ final class MangaWriteService
                 $numero
             );
 
-        if ($manga === null)
-        {
+        if ($manga === null) {
             return $this->error(
                 'Manga introuvable',
                 404
@@ -301,8 +293,7 @@ final class MangaWriteService
         int $numero,
         int $lu
     ): UpdateLuResultData {
-        if ($this->isReadOnlyMode())
-        {
+        if ($this->isReadOnlyMode()) {
             return new UpdateLuResultData(
                 success: false,
                 message: 'Écriture en base désactivée en mode test',
@@ -311,8 +302,7 @@ final class MangaWriteService
             );
         }
 
-        if (!in_array($lu, [0, 1], true))
-        {
+        if (!in_array($lu, [0, 1], true)) {
             return new UpdateLuResultData(
                 success: false,
                 message: 'Statut de lecture invalide',
@@ -328,8 +318,7 @@ final class MangaWriteService
                 $lu === 1
             );
 
-        if ($updated === false)
-        {
+        if ($updated === false) {
             $this->logFailure(
                 'Update lu',
                 $slug,
@@ -360,8 +349,7 @@ final class MangaWriteService
         string $slug,
         int $numero
     ): DeleteResultData {
-        if ($this->isReadOnlyMode())
-        {
+        if ($this->isReadOnlyMode()) {
             return new DeleteResultData(
                 success: false,
                 message: 'Écriture en base désactivée en mode test',
@@ -375,8 +363,7 @@ final class MangaWriteService
                 $numero
             );
 
-        if ($manga === null)
-        {
+        if ($manga === null) {
             return new DeleteResultData(
                 success: false,
                 message: 'Manga introuvable',
@@ -390,8 +377,7 @@ final class MangaWriteService
                 $numero
             );
 
-        if ($deleted === false)
-        {
+        if ($deleted === false) {
             $this->logFailure(
                 'Delete manga',
                 $slug,

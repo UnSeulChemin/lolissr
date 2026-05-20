@@ -14,5 +14,6 @@ final readonly class MangaSeriesData
         public ?int $compteur,
         public ?string $slugFilter,
         public int $currentPage,
-    ) {}
+    ) {
+    }
 }

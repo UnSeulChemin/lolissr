@@ -10,5 +10,6 @@ final readonly class DeleteResultData
         public bool $success,
         public string $message,
         public int $status,
-    ) {}
+    ) {
+    }
 }

@@ -10,5 +10,6 @@ final readonly class UpdateNoteData
         public int $jacquette,
         public int $livreNote,
         public int $note,
-    ) {}
+    ) {
+    }
 }

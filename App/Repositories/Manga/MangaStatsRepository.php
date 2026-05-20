@@ -25,8 +25,7 @@ final class MangaStatsRepository extends Model
             $params
         );
 
-        if (!$result instanceof stdClass)
-        {
+        if (!$result instanceof stdClass) {
             return $default;
         }
 

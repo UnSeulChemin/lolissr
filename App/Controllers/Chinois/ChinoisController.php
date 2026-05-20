@@ -92,8 +92,7 @@ final class ChinoisController extends Controller
 
         $allowedLevels = ['1', '2', '3', '4'];
 
-        if (!in_array($level, $allowedLevels, true))
-        {
+        if (!in_array($level, $allowedLevels, true)) {
             abort(404);
         }
 

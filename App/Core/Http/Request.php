@@ -17,7 +17,8 @@ final class Request
         private readonly array $post = [],
         private readonly array $files = [],
         private readonly array $server = []
-    ) {}
+    ) {
+    }
 
     /**
      * Retourne une valeur des headers HTTP.
@@ -146,8 +147,7 @@ final class Request
     {
         $data = [];
 
-        foreach ($keys as $key)
-        {
+        foreach ($keys as $key) {
             $data[$key] = $this->input($key);
         }
 

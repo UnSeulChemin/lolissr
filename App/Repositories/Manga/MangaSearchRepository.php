@@ -26,8 +26,7 @@ final class MangaSearchRepository extends Model
             ) ?? ''
         );
 
-        if ($search === '')
-        {
+        if ($search === '') {
             return [];
         }
 
@@ -44,8 +43,7 @@ final class MangaSearchRepository extends Model
 
             $numero = (int) $matches[2];
 
-            if ($titlePart !== '')
-            {
+            if ($titlePart !== '') {
                 return $this->fetchAll(
                     "SELECT *
                     FROM {$this->getTable()}

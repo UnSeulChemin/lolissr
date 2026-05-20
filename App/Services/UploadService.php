@@ -83,8 +83,7 @@ final class UploadService
     ): ?string {
         $name = $this->originalFilename($file);
 
-        if ($name === null)
-        {
+        if ($name === null) {
             return null;
         }
 
@@ -95,8 +94,7 @@ final class UploadService
             )
         );
 
-        if ($extension === '')
-        {
+        if ($extension === '') {
             return null;
         }
 
@@ -131,8 +129,7 @@ final class UploadService
     ): ?string {
         $tmpName = $this->tmpName($file);
 
-        if ($tmpName === null)
-        {
+        if ($tmpName === null) {
             return null;
         }
 
@@ -143,15 +140,13 @@ final class UploadService
             return null;
         }
 
-        if (!is_file($tmpName))
-        {
+        if (!is_file($tmpName)) {
             return null;
         }
 
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
 
-        if ($finfo === false)
-        {
+        if ($finfo === false) {
             return null;
         }
 
@@ -170,8 +165,7 @@ final class UploadService
     private function isValidTmpFile(
         ?string $tmpName
     ): bool {
-        if ($tmpName === null)
-        {
+        if ($tmpName === null) {
             return false;
         }
 
@@ -183,8 +177,7 @@ final class UploadService
     private function ensureDirectoryExists(
         string $directory
     ): bool {
-        if (is_dir($directory))
-        {
+        if (is_dir($directory)) {
             return true;
         }
 
@@ -237,8 +230,7 @@ final class UploadService
             $fileKey
         );
 
-        if ($file === null)
-        {
+        if ($file === null) {
             Logger::error(
                 'Upload manga: fichier introuvable.'
             );
@@ -251,8 +243,7 @@ final class UploadService
 
         $extension = $this->fileExtension($file);
 
-        if ($extension === null)
-        {
+        if ($extension === null) {
             Logger::error(
                 'Upload manga: extension introuvable.'
             );
@@ -304,8 +295,7 @@ final class UploadService
 
         $tmpName = $this->tmpName($file);
 
-        if (!$this->isValidTmpFile($tmpName))
-        {
+        if (!$this->isValidTmpFile($tmpName)) {
             Logger::error(
                 'Upload manga: fichier temporaire invalide.'
             );
@@ -321,8 +311,7 @@ final class UploadService
             $numero
         );
 
-        if ($thumbnail === '')
-        {
+        if ($thumbnail === '') {
             Logger::error(
                 'Upload manga: nom thumbnail invalide.'
             );
@@ -354,14 +343,10 @@ final class UploadService
             . '.'
             . $extension;
 
-        if (is_file($destination))
-        {
-            if ($this->isTestUploadMode())
-            {
+        if (is_file($destination)) {
+            if ($this->isTestUploadMode()) {
                 unlink($destination);
-            }
-            else
-            {
+            } else {
                 Logger::error(
                     'Upload manga: fichier déjà existant : '
                     . $destination
@@ -411,8 +396,7 @@ final class UploadService
     public function removeFileIfExists(
         string $path
     ): void {
-        if (is_file($path))
-        {
+        if (is_file($path)) {
             unlink($path);
         }
     }

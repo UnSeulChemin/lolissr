@@ -22,8 +22,7 @@ final class Database extends PDO
             DatabaseConfig::charset()
         );
 
-        try
-        {
+        try {
             parent::__construct(
                 $dsn,
                 DatabaseConfig::user(),
@@ -44,9 +43,7 @@ final class Database extends PDO
                 PDO::ATTR_EMULATE_PREPARES,
                 false
             );
-        }
-        catch (PDOException $exception)
-        {
+        } catch (PDOException $exception) {
             Logger::exception(
                 $exception,
                 [

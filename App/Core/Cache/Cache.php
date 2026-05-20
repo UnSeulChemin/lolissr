@@ -57,17 +57,14 @@ final class Cache
             return null;
         }
 
-        try
-        {
+        try {
             $payload = json_decode(
                 $content,
                 false,
                 512,
                 JSON_THROW_ON_ERROR
             );
-        }
-        catch (\JsonException $exception)
-        {
+        } catch (\JsonException $exception) {
             @unlink($path);
 
             Logger::warning('Cache corrupted JSON', [
@@ -91,8 +88,7 @@ final class Cache
             return null;
         }
 
-        if (($payload->expires_at ?? 0) < time())
-        {
+        if (($payload->expires_at ?? 0) < time()) {
             @unlink($path);
 
             Logger::debug('Cache expired', [
@@ -134,16 +130,13 @@ final class Cache
             'value' => $value,
         ];
 
-        try
-        {
+        try {
             $json = json_encode(
                 $payload,
                 JSON_UNESCAPED_UNICODE
                 | JSON_THROW_ON_ERROR
             );
-        }
-        catch (\JsonException $exception)
-        {
+        } catch (\JsonException $exception) {
             Logger::warning('Cache encoding failed', [
                 'key' => $key,
                 'error' => $exception->getMessage(),
@@ -158,8 +151,7 @@ final class Cache
             LOCK_EX
         );
 
-        if ($written === false)
-        {
+        if ($written === false) {
             Logger::warning('Cache write failed', [
                 'key' => $key,
             ]);
@@ -241,13 +233,11 @@ final class Cache
 
         $files = glob($directory . '/*.cache');
 
-        if ($files === false)
-        {
+        if ($files === false) {
             $files = [];
         }
 
-        foreach ($files as $file)
-        {
+        foreach ($files as $file) {
             if (is_file($file)) {
                 @unlink($file);
             }

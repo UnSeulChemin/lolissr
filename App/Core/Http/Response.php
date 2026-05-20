@@ -11,8 +11,7 @@ final class Response
     private static function sendContentType(
         string $contentType
     ): void {
-        if (!headers_sent())
-        {
+        if (!headers_sent()) {
             header(
                 "Content-Type: {$contentType}; charset=UTF-8"
             );
@@ -47,17 +46,14 @@ final class Response
             'application/json'
         );
 
-        try
-        {
+        try {
             echo json_encode(
                 $data,
                 JSON_UNESCAPED_UNICODE
                 | JSON_UNESCAPED_SLASHES
                 | JSON_THROW_ON_ERROR
             );
-        }
-        catch (JsonException)
-        {
+        } catch (JsonException) {
             http_response_code(500);
 
             echo json_encode(
@@ -79,8 +75,7 @@ final class Response
     ): never {
         http_response_code($statusCode);
 
-        if (!headers_sent())
-        {
+        if (!headers_sent()) {
             header(
                 'Location: ' . $url
             );

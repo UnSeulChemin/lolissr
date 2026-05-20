@@ -25,8 +25,7 @@ final class MangaController extends Controller
         string $pathPrefix,
         ?int $numero = null
     ): void {
-        if ($requestedSlug === $canonicalSlug)
-        {
+        if ($requestedSlug === $canonicalSlug) {
             return;
         }
 
@@ -34,8 +33,7 @@ final class MangaController extends Controller
             . '/'
             . rawurlencode($canonicalSlug);
 
-        if ($numero !== null)
-        {
+        if ($numero !== null) {
             $location .= '/' . $numero;
         }
 
@@ -62,8 +60,7 @@ final class MangaController extends Controller
         $data = $this->mangaReadService
             ->series($page);
 
-        if ($data === null)
-        {
+        if ($data === null) {
             $this->notFound(
                 'Page introuvable'
             );
@@ -71,8 +68,7 @@ final class MangaController extends Controller
 
         $this->title = 'Manga | Series';
 
-        if ($data->currentPage > 1)
-        {
+        if ($data->currentPage > 1) {
             $this->title .=
                 ' - Page '
                 . $data->currentPage;
@@ -111,8 +107,7 @@ final class MangaController extends Controller
         $data = $this->mangaReadService
             ->serie($requestedSlug);
 
-        if ($data === null)
-        {
+        if ($data === null) {
             $this->notFound(
                 'Manga introuvable'
             );
@@ -146,8 +141,7 @@ final class MangaController extends Controller
                 $numero
             );
 
-        if ($data === null)
-        {
+        if ($data === null) {
             $this->notFound(
                 'Manga introuvable'
             );
@@ -186,8 +180,7 @@ final class MangaController extends Controller
                 $numero
             );
 
-        if ($data === null)
-        {
+        if ($data === null) {
             $this->notFound(
                 'Manga introuvable'
             );
@@ -210,8 +203,7 @@ final class MangaController extends Controller
     public function ajouterTraitement(
         MangaCreateRequest $request
     ): never {
-        if ($request->fails())
-        {
+        if ($request->fails()) {
             json([
                 'success' => false,
                 'status' => 422,
@@ -245,10 +237,8 @@ final class MangaController extends Controller
                 $numero
             );
 
-        if ($data === null)
-        {
-            if ($isAjax)
-            {
+        if ($data === null) {
+            if ($isAjax) {
                 json([
                     'success' => false,
                     'message' => 'Manga introuvable',
@@ -260,8 +250,7 @@ final class MangaController extends Controller
             );
         }
 
-        if ($slug !== $data->canonicalSlug)
-        {
+        if ($slug !== $data->canonicalSlug) {
             $redirect = $this->basePath
                 . 'manga/series/modifier/'
                 . rawurlencode(
@@ -270,8 +259,7 @@ final class MangaController extends Controller
                 . '/'
                 . $numero;
 
-            if ($isAjax)
-            {
+            if ($isAjax) {
                 json([
                     'success' => false,
                     'message' => 'URL non canonique',
@@ -295,10 +283,8 @@ final class MangaController extends Controller
             . '/'
             . $numero;
 
-        if ($request->fails())
-        {
-            if ($isAjax)
-            {
+        if ($request->fails()) {
+            if ($isAjax) {
                 json([
                     'success' => false,
                     'message' => 'Formulaire invalide',
@@ -320,16 +306,14 @@ final class MangaController extends Controller
                 $request->files()
             );
 
-        if ($isAjax)
-        {
+        if ($isAjax) {
             json(
                 $result->toArray(),
                 $result->status
             );
         }
 
-        if (!$result->success)
-        {
+        if (!$result->success) {
             $this->redirectWithError(
                 $redirectPath,
                 $result->message

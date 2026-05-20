@@ -12,5 +12,6 @@ final readonly class MangaSearchData
     public function __construct(
         public array $mangas,
         public string $search,
-    ) {}
+    ) {
+    }
 }

@@ -25,8 +25,7 @@ final class UploadedFile
      */
     public function name(string $key): ?string
     {
-        if (!$this->exists($key))
-        {
+        if (!$this->exists($key)) {
             return null;
         }
 
@@ -40,8 +39,7 @@ final class UploadedFile
      */
     public function tmp(string $key): ?string
     {
-        if (!$this->exists($key))
-        {
+        if (!$this->exists($key)) {
             return null;
         }
 
@@ -55,8 +53,7 @@ final class UploadedFile
      */
     public function error(string $key): ?int
     {
-        if (!$this->request->hasFile($key))
-        {
+        if (!$this->request->hasFile($key)) {
             return null;
         }
 
@@ -68,8 +65,7 @@ final class UploadedFile
      */
     public function size(string $key): ?int
     {
-        if (!$this->exists($key))
-        {
+        if (!$this->exists($key)) {
             return null;
         }
 
@@ -83,8 +79,7 @@ final class UploadedFile
     {
         $name = $this->name($key);
 
-        if ($name === null)
-        {
+        if ($name === null) {
             return null;
         }
 
@@ -102,15 +97,13 @@ final class UploadedFile
     {
         $tmpName = $this->tmp($key);
 
-        if ($tmpName === null || !is_file($tmpName))
-        {
+        if ($tmpName === null || !is_file($tmpName)) {
             return null;
         }
 
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
 
-        if ($finfo === false)
-        {
+        if ($finfo === false) {
             return null;
         }
 

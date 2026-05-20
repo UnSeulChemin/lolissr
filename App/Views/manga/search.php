@@ -91,23 +91,18 @@ $basePath = rtrim(
                     || $thumbnail === ''
                     || $extension === ''
                     || $livre === ''
-                )
-                {
+                ) {
                     continue;
                 }
 
                 $noteClass = 'collection-note-mid';
 
-                if ($note !== null)
-                {
+                if ($note !== null) {
                     $noteValue = (int) $note;
 
-                    if ($noteValue >= 8)
-                    {
+                    if ($noteValue >= 8) {
                         $noteClass = 'collection-note-good';
-                    }
-                    elseif ($noteValue <= 4)
-                    {
+                    } elseif ($noteValue <= 4) {
                         $noteClass = 'collection-note-low';
                     }
                 }

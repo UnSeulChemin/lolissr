@@ -73,8 +73,7 @@ abstract class Model
             $statement->execute($params);
 
             return $statement;
-        }
-        catch (Throwable $e) {
+        } catch (Throwable $e) {
             throw new RuntimeException(
                 $e->getMessage(),
                 previous: $e
@@ -198,8 +197,7 @@ abstract class Model
 
         $values = [];
 
-        foreach ($where as $field => $value)
-        {
+        foreach ($where as $field => $value) {
             $field = $this->clean($field);
 
             if ($field === '') {
@@ -265,8 +263,7 @@ abstract class Model
 
         $values = [];
 
-        foreach ($data as $field => $value)
-        {
+        foreach ($data as $field => $value) {
             $field = $this->clean($field);
 
             if ($field === '') {
@@ -306,13 +303,13 @@ abstract class Model
         return $this->execute(
             "INSERT INTO {$this->table()} ("
             . implode(', ', $built['fields'])
-            . ")
-            VALUES ("
+            . ')
+            VALUES ('
             . implode(
                 ', ',
                 $built['placeholders']
             )
-            . ")",
+            . ')',
             $built['values']
         );
     }
@@ -336,8 +333,7 @@ abstract class Model
 
         $values = [];
 
-        foreach ($data as $field => $value)
-        {
+        foreach ($data as $field => $value) {
             $field = $this->clean($field);
 
             if ($field === '') {
@@ -364,8 +360,8 @@ abstract class Model
             "UPDATE {$this->table()}
             SET "
             . implode(', ', $fields)
-            . "
-            WHERE "
+            . '
+            WHERE '
             . implode(
                 ' AND ',
                 $builtWhere['conditions']

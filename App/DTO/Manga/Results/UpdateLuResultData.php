@@ -11,5 +11,6 @@ final readonly class UpdateLuResultData
         public string $message,
         public int $status,
         public int $lu,
-    ) {}
+    ) {
+    }
 }

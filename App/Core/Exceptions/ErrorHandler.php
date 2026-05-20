@@ -74,8 +74,7 @@ final class ErrorHandler
             ]
         );
 
-        if (App::debug())
-        {
+        if (App::debug()) {
             self::renderDebug(
                 $exception
             );
@@ -88,8 +87,7 @@ final class ErrorHandler
     {
         $error = error_get_last();
 
-        if ($error === null)
-        {
+        if ($error === null) {
             return;
         }
 
@@ -120,8 +118,7 @@ final class ErrorHandler
             ]
         );
 
-        if (App::debug())
-        {
+        if (App::debug()) {
             http_response_code(500);
 
             echo '<pre>';
@@ -147,7 +144,7 @@ final class ErrorHandler
     private static function renderHttpException(
         HttpException $exception
     ): never {
-        $controller = new class extends Controller {};
+        $controller = new class () extends Controller {};
 
         match ($exception->getStatusCode()) {
 
@@ -167,7 +164,7 @@ final class ErrorHandler
 
     private static function render500(): never
     {
-        $controller = new class extends Controller {};
+        $controller = new class () extends Controller {};
 
         $controller->renderServerErrorPage(
             'Erreur interne du serveur.'

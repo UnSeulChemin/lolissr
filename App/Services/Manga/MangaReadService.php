@@ -8,8 +8,8 @@ use App\Core\Application\App;
 use App\Core\Support\Str;
 use App\DTO\Manga\Responses\MangaSearchData;
 use App\DTO\Manga\Responses\MangaSearchItemData;
-use App\DTO\Manga\Responses\MangaShowData;
 use App\DTO\Manga\Responses\MangaSeriesData;
+use App\DTO\Manga\Responses\MangaShowData;
 use App\Repositories\Manga\MangaRepository;
 use App\Repositories\Manga\MangaSearchRepository;
 
@@ -18,7 +18,8 @@ final class MangaReadService
     public function __construct(
         private readonly MangaRepository $mangaRepository,
         private readonly MangaSearchRepository $searchRepository,
-    ) {}
+    ) {
+    }
 
     public function repository(): MangaRepository
     {
@@ -48,15 +49,13 @@ final class MangaReadService
     public function series(
         string $page = '1'
     ): ?MangaSeriesData {
-        if (!ctype_digit($page))
-        {
+        if (!ctype_digit($page)) {
             return null;
         }
 
         $currentPage = (int) $page;
 
-        if ($currentPage < 1)
-        {
+        if ($currentPage < 1) {
             return null;
         }
 
@@ -96,8 +95,7 @@ final class MangaReadService
             $query
         );
 
-        if ($search === '')
-        {
+        if ($search === '') {
             return new MangaSearchData(
                 mangas: [],
                 search: '',
@@ -123,8 +121,7 @@ final class MangaReadService
             $query
         );
 
-        if ($search === '')
-        {
+        if ($search === '') {
             return [];
         }
 
@@ -153,8 +150,7 @@ final class MangaReadService
         $mangas = $this->mangaRepository
             ->findBySlug($normalizedSlug);
 
-        if ($mangas === [])
-        {
+        if ($mangas === []) {
             return null;
         }
 
@@ -178,8 +174,7 @@ final class MangaReadService
                 $numero
             );
 
-        if ($manga === null)
-        {
+        if ($manga === null) {
             return null;
         }
 

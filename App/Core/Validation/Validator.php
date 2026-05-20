@@ -115,8 +115,7 @@ final class Validator
         string $field,
         ?string $message = null
     ): self {
-        if ($this->hasError($field))
-        {
+        if ($this->hasError($field)) {
             return $this;
         }
 
@@ -124,8 +123,7 @@ final class Validator
             (string) ($this->data[$field] ?? '')
         );
 
-        if ($value === '')
-        {
+        if ($value === '') {
             $this->errors[$field] =
                 $message
                 ?? "Le champ {$field} est obligatoire.";
@@ -138,15 +136,13 @@ final class Validator
         string $field,
         ?string $message = null
     ): self {
-        if ($this->shouldSkip($field))
-        {
+        if ($this->shouldSkip($field)) {
             return $this;
         }
 
         $value = $this->data[$field] ?? null;
 
-        if (!is_string($value))
-        {
+        if (!is_string($value)) {
             $this->errors[$field] =
                 $message
                 ?? "Le champ {$field} doit être une chaîne.";
@@ -159,8 +155,7 @@ final class Validator
         string $field,
         ?string $message = null
     ): self {
-        if ($this->shouldSkip($field))
-        {
+        if ($this->shouldSkip($field)) {
             return $this;
         }
 
@@ -185,8 +180,7 @@ final class Validator
         int $min,
         ?string $message = null
     ): self {
-        if ($this->shouldSkip($field))
-        {
+        if ($this->shouldSkip($field)) {
             return $this;
         }
 
@@ -212,8 +206,7 @@ final class Validator
         int $max,
         ?string $message = null
     ): self {
-        if ($this->shouldSkip($field))
-        {
+        if ($this->shouldSkip($field)) {
             return $this;
         }
 
@@ -239,8 +232,7 @@ final class Validator
         int $max,
         ?string $message = null
     ): self {
-        if ($this->shouldSkip($field))
-        {
+        if ($this->shouldSkip($field)) {
             return $this;
         }
 
@@ -248,8 +240,7 @@ final class Validator
             (string) ($this->data[$field] ?? '')
         );
 
-        if (mb_strlen($value) > $max)
-        {
+        if (mb_strlen($value) > $max) {
             $this->errors[$field] =
                 $message
                 ?? "Le champ {$field} ne doit pas dépasser {$max} caractères.";
@@ -266,8 +257,7 @@ final class Validator
         array $allowedValues,
         ?string $message = null
     ): self {
-        if ($this->shouldSkip($field))
-        {
+        if ($this->shouldSkip($field)) {
             return $this;
         }
 
@@ -292,13 +282,11 @@ final class Validator
         string $field,
         ?string $message = null
     ): self {
-        if ($this->hasError($field))
-        {
+        if ($this->hasError($field)) {
             return $this;
         }
 
-        if (!$this->hasUploadedFile($field))
-        {
+        if (!$this->hasUploadedFile($field)) {
             $this->errors[$field] =
                 $message
                 ?? "Le fichier {$field} est obligatoire.";
@@ -311,20 +299,17 @@ final class Validator
         string $field,
         ?string $message = null
     ): self {
-        if ($this->hasError($field))
-        {
+        if ($this->hasError($field)) {
             return $this;
         }
 
-        if (!$this->hasUploadedFile($field))
-        {
+        if (!$this->hasUploadedFile($field)) {
             return $this;
         }
 
         $error = $this->files[$field]['error'] ?? null;
 
-        if ($error !== UPLOAD_ERR_OK)
-        {
+        if ($error !== UPLOAD_ERR_OK) {
             $this->errors[$field] =
                 $message
                 ?? "Erreur lors de l'envoi du fichier {$field}.";
@@ -341,15 +326,13 @@ final class Validator
         array $allowedExtensions,
         ?string $message = null
     ): self {
-        if ($this->shouldSkipFile($field))
-        {
+        if ($this->shouldSkipFile($field)) {
             return $this;
         }
 
         $name = $this->files[$field]['name'] ?? null;
 
-        if (!is_string($name) || $name === '')
-        {
+        if (!is_string($name) || $name === '') {
             $this->errors[$field] =
                 $message
                 ?? "Extension invalide pour {$field}.";
@@ -364,8 +347,7 @@ final class Validator
             )
         );
 
-        if ($extension === 'jpeg')
-        {
+        if ($extension === 'jpeg') {
             $extension = 'jpg';
         }
 
@@ -392,8 +374,7 @@ final class Validator
         array $allowedMimeTypes,
         ?string $message = null
     ): self {
-        if ($this->shouldSkipFile($field))
-        {
+        if ($this->shouldSkipFile($field)) {
             return $this;
         }
 
@@ -413,8 +394,7 @@ final class Validator
 
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
 
-        if ($finfo === false)
-        {
+        if ($finfo === false) {
             $this->errors[$field] =
                 $message
                 ?? "Impossible de vérifier le type MIME de {$field}.";
@@ -450,8 +430,7 @@ final class Validator
         int $maxBytes,
         ?string $message = null
     ): self {
-        if ($this->shouldSkipFile($field))
-        {
+        if ($this->shouldSkipFile($field)) {
             return $this;
         }
 
@@ -468,8 +447,7 @@ final class Validator
             return $this;
         }
 
-        if ((int) $size > $maxBytes)
-        {
+        if ((int) $size > $maxBytes) {
             $this->errors[$field] =
                 $message
                 ?? "Le fichier {$field} dépasse la taille autorisée.";

@@ -55,8 +55,7 @@ abstract class Controller
             $file
         );
 
-        if ($file === null)
-        {
+        if ($file === null) {
             $file = '';
         }
 
@@ -84,15 +83,13 @@ abstract class Controller
     ): never {
         $viewPath = $this->viewPath($file);
 
-        if (!is_file($viewPath))
-        {
+        if (!is_file($viewPath)) {
             throw new NotFoundException(
                 'Vue introuvable : ' . $file
             );
         }
 
-        if (is_object($data))
-        {
+        if (is_object($data)) {
             $data = (array) $data;
         }
 
@@ -112,15 +109,13 @@ abstract class Controller
 
         $content = ob_get_clean();
 
-        if ($content === false)
-        {
+        if ($content === false) {
             $content = '';
         }
 
         $templatePath = $this->templatePath();
 
-        if (!is_file($templatePath))
-        {
+        if (!is_file($templatePath)) {
             throw new \RuntimeException(
                 'Template introuvable : '
                 . $this->template
@@ -133,8 +128,7 @@ abstract class Controller
 
         $html = ob_get_clean();
 
-        if ($html === false)
-        {
+        if ($html === false) {
             $html = '';
         }
 
@@ -152,8 +146,7 @@ abstract class Controller
     ): never {
         $viewPath = $this->viewPath($file);
 
-        if (!is_file($viewPath))
-        {
+        if (!is_file($viewPath)) {
             throw new NotFoundException(
                 'Vue partielle introuvable : '
                 . $file
@@ -176,8 +169,7 @@ abstract class Controller
 
         $html = ob_get_clean();
 
-        if ($html === false)
-        {
+        if ($html === false) {
             $html = '';
         }
 
@@ -196,8 +188,7 @@ abstract class Controller
     ): never {
         $viewPath = $this->errorViewPath($file);
 
-        if (!is_file($viewPath))
-        {
+        if (!is_file($viewPath)) {
             Response::html(
                 'Vue erreur introuvable : ' . $file,
                 500
@@ -220,15 +211,13 @@ abstract class Controller
 
         $content = ob_get_clean();
 
-        if ($content === false)
-        {
+        if ($content === false) {
             $content = '';
         }
 
         $templatePath = $this->templatePath();
 
-        if (!is_file($templatePath))
-        {
+        if (!is_file($templatePath)) {
             Response::html(
                 'Template introuvable : '
                 . $this->template,
@@ -242,8 +231,7 @@ abstract class Controller
 
         $html = ob_get_clean();
 
-        if ($html === false)
-        {
+        if ($html === false) {
             $html = '';
         }
 
@@ -287,8 +275,7 @@ abstract class Controller
         string $message,
         bool $withOld = true
     ): never {
-        if ($withOld)
-        {
+        if ($withOld) {
             Session::set(
                 'old',
                 app(Request::class)->all()
@@ -462,8 +449,7 @@ abstract class Controller
         callable $ajax,
         callable $html
     ): void {
-        if ($this->isAjax($request))
-        {
+        if ($this->isAjax($request)) {
             $ajax();
 
             return;

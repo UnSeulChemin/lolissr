@@ -11,5 +11,6 @@ final readonly class UploadThumbnailResultData
         public string $message,
         public int $status,
         public ?UploadThumbnailData $data = null,
-    ) {}
+    ) {
+    }
 }

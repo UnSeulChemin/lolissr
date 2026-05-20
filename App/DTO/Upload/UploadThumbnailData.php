@@ -10,5 +10,6 @@ final readonly class UploadThumbnailData
         public string $thumbnail,
         public string $extension,
         public string $destination,
-    ) {}
+    ) {
+    }
 }

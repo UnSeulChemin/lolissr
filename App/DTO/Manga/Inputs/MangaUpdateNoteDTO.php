@@ -11,7 +11,8 @@ final class MangaUpdateNoteDTO
     public function __construct(
         public readonly ?int $jacquette,
         public readonly ?int $livreNote
-    ) {}
+    ) {
+    }
 
     /**
      * @param array<string, mixed> $data
@@ -23,7 +24,6 @@ final class MangaUpdateNoteDTO
             jacquette: MangaNoteNormalizer::normalize(
                 $data['jacquette'] ?? null
             ),
-
             livreNote: MangaNoteNormalizer::normalize(
                 $data['livre_note'] ?? null
             )

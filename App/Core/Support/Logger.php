@@ -32,8 +32,7 @@ final class Logger
     {
         $directory = self::directory();
 
-        if (is_dir($directory))
-        {
+        if (is_dir($directory)) {
             return true;
         }
 
@@ -52,8 +51,7 @@ final class Logger
         string $message,
         array $context = []
     ): void {
-        if (!self::enabled())
-        {
+        if (!self::enabled()) {
             return;
         }
 
@@ -64,8 +62,7 @@ final class Logger
             return;
         }
 
-        if (!self::ensureDirectory())
-        {
+        if (!self::ensureDirectory()) {
             return;
         }
 
@@ -81,17 +78,14 @@ final class Logger
             ],
         ];
 
-        try
-        {
+        try {
             $content = json_encode(
                 $payload,
                 JSON_UNESCAPED_UNICODE
                 | JSON_UNESCAPED_SLASHES
                 | JSON_THROW_ON_ERROR
             );
-        }
-        catch (JsonException)
-        {
+        } catch (JsonException) {
             return;
         }
 

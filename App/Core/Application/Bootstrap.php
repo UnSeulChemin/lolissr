@@ -44,8 +44,7 @@ final class Bootstrap
             'Config/routes.php'
         );
 
-        if (is_callable($routes))
-        {
+        if (is_callable($routes)) {
             $routes($router);
         }
 
@@ -57,8 +56,7 @@ final class Bootstrap
     private static function loadEnvironment(
         string $envFile
     ): void {
-        if (!is_file($envFile))
-        {
+        if (!is_file($envFile)) {
             return;
         }
 
@@ -68,13 +66,11 @@ final class Bootstrap
             | FILE_SKIP_EMPTY_LINES
         );
 
-        if ($lines === false)
-        {
+        if ($lines === false) {
             return;
         }
 
-        foreach ($lines as $line)
-        {
+        foreach ($lines as $line) {
             $line = trim($line);
 
             if (
@@ -93,8 +89,7 @@ final class Bootstrap
 
             $name = trim($name);
 
-            if ($name === '')
-            {
+            if ($name === '') {
                 continue;
             }
 
@@ -116,8 +111,7 @@ final class Bootstrap
     ): string {
         $length = strlen($value);
 
-        if ($length >= 2)
-        {
+        if ($length >= 2) {
             $first = $value[0];
             $last = $value[$length - 1];
 

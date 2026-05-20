@@ -25,8 +25,7 @@ final class Str
      */
     public static function nullableTrim(?string $value): ?string
     {
-        if ($value === null)
-        {
+        if ($value === null) {
             return null;
         }
 
@@ -42,8 +41,7 @@ final class Str
     {
         $thumbnail = self::slug($livre);
 
-        if ($thumbnail === '' || $numero <= 0)
-        {
+        if ($thumbnail === '' || $numero <= 0) {
             return '';
         }
 

@@ -11,7 +11,8 @@ final class ChinoisReadService
 {
     public function __construct(
         private readonly ChinoisVocabulaireRepository $chinoisRepository
-    ) {}
+    ) {
+    }
 
     /**
      * @return list<ChinoisVocabulaire>

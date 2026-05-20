@@ -17,8 +17,7 @@ use App\Core\Support\Session;
 |--------------------------------------------------------------------------
 */
 
-if (!function_exists('app'))
-{
+if (!function_exists('app')) {
     function app(?string $abstract = null): mixed
     {
         $container = AppContainer::get();
@@ -35,12 +34,10 @@ if (!function_exists('app'))
 |--------------------------------------------------------------------------
 */
 
-if (!function_exists('dump'))
-{
+if (!function_exists('dump')) {
     function dump(mixed ...$vars): void
     {
-        if (!env_bool('APP_DEBUG'))
-        {
+        if (!env_bool('APP_DEBUG')) {
             return;
         }
 
@@ -55,8 +52,7 @@ if (!function_exists('dump'))
             border-radius:8px;
         ">';
 
-        foreach ($vars as $var)
-        {
+        foreach ($vars as $var) {
             var_dump($var);
         }
 
@@ -70,12 +66,10 @@ if (!function_exists('dump'))
 |--------------------------------------------------------------------------
 */
 
-if (!function_exists('dd'))
-{
+if (!function_exists('dd')) {
     function dd(mixed ...$vars): never
     {
-        if (!env_bool('APP_DEBUG'))
-        {
+        if (!env_bool('APP_DEBUG')) {
             http_response_code(500);
 
             exit;
@@ -93,16 +87,14 @@ if (!function_exists('dd'))
 |--------------------------------------------------------------------------
 */
 
-if (!function_exists('base_path'))
-{
+if (!function_exists('base_path')) {
     function base_path(): string
     {
         return App::basePath();
     }
 }
 
-if (!function_exists('app_path'))
-{
+if (!function_exists('app_path')) {
     function app_path(string $path = ''): string
     {
         return rtrim(ROOT, DIRECTORY_SEPARATOR)
@@ -114,8 +106,7 @@ if (!function_exists('app_path'))
     }
 }
 
-if (!function_exists('view_path'))
-{
+if (!function_exists('view_path')) {
     function view_path(string $view = ''): string
     {
         return app_path('App/Views')
@@ -133,16 +124,14 @@ if (!function_exists('view_path'))
 |--------------------------------------------------------------------------
 */
 
-if (!function_exists('abort'))
-{
+if (!function_exists('abort')) {
     function abort(int $code = 404): never
     {
         $controller = app(
             ErrorController::class
         );
 
-        match ($code)
-        {
+        match ($code) {
             404 => $controller->notFound(),
             405 => $controller->methodNotAllowed(),
             419 => $controller->renderCsrfExpiredPage(),
@@ -159,8 +148,7 @@ if (!function_exists('abort'))
 |--------------------------------------------------------------------------
 */
 
-if (!function_exists('redirect'))
-{
+if (!function_exists('redirect')) {
     function redirect(
         string $path = '',
         int $status = 302
@@ -192,8 +180,7 @@ if (!function_exists('redirect'))
 |--------------------------------------------------------------------------
 */
 
-if (!function_exists('json'))
-{
+if (!function_exists('json')) {
     /**
      * @param array<string, mixed> $data
      */
@@ -211,8 +198,7 @@ if (!function_exists('json'))
 |--------------------------------------------------------------------------
 */
 
-if (!function_exists('view'))
-{
+if (!function_exists('view')) {
     /**
      * @param array<string, mixed> $data
      */
@@ -233,16 +219,14 @@ if (!function_exists('view'))
             'layouts/base.php'
         );
 
-        if (!is_file($viewPath))
-        {
+        if (!is_file($viewPath)) {
             throw new \RuntimeException(
                 'Vue introuvable : '
                 . $viewFile
             );
         }
 
-        if (!is_file($layoutPath))
-        {
+        if (!is_file($layoutPath)) {
             throw new \RuntimeException(
                 'Layout introuvable : layouts/base'
             );
@@ -254,8 +238,7 @@ if (!function_exists('view'))
 
         $content = ob_get_clean();
 
-        if ($content === false)
-        {
+        if ($content === false) {
             $content = '';
         }
 
@@ -265,8 +248,7 @@ if (!function_exists('view'))
 
         $html = ob_get_clean();
 
-        if ($html === false)
-        {
+        if ($html === false) {
             $html = '';
         }
 
@@ -280,8 +262,7 @@ if (!function_exists('view'))
 |--------------------------------------------------------------------------
 */
 
-if (!function_exists('env'))
-{
+if (!function_exists('env')) {
     function env(
         string $key,
         mixed $default = null
@@ -293,8 +274,7 @@ if (!function_exists('env'))
     }
 }
 
-if (!function_exists('env_bool'))
-{
+if (!function_exists('env_bool')) {
     function env_bool(
         string $key,
         bool $default = false
@@ -306,8 +286,7 @@ if (!function_exists('env_bool'))
     }
 }
 
-if (!function_exists('env_int'))
-{
+if (!function_exists('env_int')) {
     function env_int(
         string $key,
         int $default = 0
@@ -325,8 +304,7 @@ if (!function_exists('env_int'))
 |--------------------------------------------------------------------------
 */
 
-if (!function_exists('config'))
-{
+if (!function_exists('config')) {
     function config(
         string $key,
         mixed $default = null
@@ -344,8 +322,7 @@ if (!function_exists('config'))
 |--------------------------------------------------------------------------
 */
 
-if (!function_exists('e'))
-{
+if (!function_exists('e')) {
     function e(
         mixed $value
     ): string {
@@ -363,8 +340,7 @@ if (!function_exists('e'))
 |--------------------------------------------------------------------------
 */
 
-if (!function_exists('is_ajax'))
-{
+if (!function_exists('is_ajax')) {
     function is_ajax(): bool
     {
         return app(Request::class)
@@ -378,12 +354,10 @@ if (!function_exists('is_ajax'))
 |--------------------------------------------------------------------------
 */
 
-if (!function_exists('csrf_token'))
-{
+if (!function_exists('csrf_token')) {
     function csrf_token(): string
     {
-        if (!Session::has('csrf_token'))
-        {
+        if (!Session::has('csrf_token')) {
             Session::set(
                 'csrf_token',
                 bin2hex(random_bytes(32))
@@ -396,8 +370,7 @@ if (!function_exists('csrf_token'))
     }
 }
 
-if (!function_exists('csrf_field'))
-{
+if (!function_exists('csrf_field')) {
     function csrf_field(): string
     {
         return '<input type="hidden" name="csrf_token" value="'
@@ -406,8 +379,7 @@ if (!function_exists('csrf_field'))
     }
 }
 
-if (!function_exists('csrf_meta_tag'))
-{
+if (!function_exists('csrf_meta_tag')) {
     function csrf_meta_tag(): string
     {
         return '<meta name="csrf-token" content="'
@@ -416,14 +388,12 @@ if (!function_exists('csrf_meta_tag'))
     }
 }
 
-if (!function_exists('csrf_verify'))
-{
+if (!function_exists('csrf_verify')) {
     function csrf_verify(): void
     {
         $request = app(Request::class);
 
-        if (!$request->isPost())
-        {
+        if (!$request->isPost()) {
             return;
         }
 
@@ -445,13 +415,11 @@ if (!function_exists('csrf_verify'))
                 $token
             );
 
-        if ($validToken)
-        {
+        if ($validToken) {
             return;
         }
 
-        if ($request->isAjax())
-        {
+        if ($request->isAjax()) {
             json([
                 'success' => false,
                 'message' => 'Session expirée, recharge la page.',

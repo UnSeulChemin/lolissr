@@ -15,7 +15,8 @@ final class MangaUpdateDTO
         public readonly ?int $jacquette,
         public readonly ?int $livreNote,
         public readonly ?string $commentaire
-    ) {}
+    ) {
+    }
 
     /**
      * @param array<string, mixed> $data
@@ -27,22 +28,18 @@ final class MangaUpdateDTO
             editeur: Str::nullableTrim(
                 $data['editeur'] ?? null
             ),
-
             statut: trim(
                 (string) (
                     $data['statut']
                     ?? 'en_cours'
                 )
             ),
-
             jacquette: MangaNoteNormalizer::normalize(
                 $data['jacquette'] ?? null
             ),
-
             livreNote: MangaNoteNormalizer::normalize(
                 $data['livre_note'] ?? null
             ),
-
             commentaire: Str::nullableTrim(
                 $data['commentaire'] ?? null
             )

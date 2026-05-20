@@ -9,8 +9,7 @@ class HttpException extends \Exception
     public function __construct(
         string $message = 'Erreur HTTP',
         private readonly int $statusCode = 500
-    )
-    {
+    ) {
         parent::__construct($message, $statusCode);
     }
 

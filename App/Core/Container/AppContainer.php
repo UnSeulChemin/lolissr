@@ -17,8 +17,7 @@ final class AppContainer
 
     public static function get(): Container
     {
-        if (self::$container === null)
-        {
+        if (self::$container === null) {
             throw new RuntimeException('Container non initialisé.');
         }
 

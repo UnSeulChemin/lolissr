@@ -46,8 +46,7 @@ final class Container
     public function get(
         string $abstract
     ): object {
-        if (isset($this->instances[$abstract]))
-        {
+        if (isset($this->instances[$abstract])) {
             return $this->instances[$abstract];
         }
 
@@ -61,8 +60,7 @@ final class Container
             $binding['concrete']
         );
 
-        if ($binding['singleton'])
-        {
+        if ($binding['singleton']) {
             $this->instances[$abstract] = $object;
         }
 
@@ -72,13 +70,11 @@ final class Container
     private function resolve(
         callable|string $concrete
     ): object {
-        if (is_callable($concrete))
-        {
+        if (is_callable($concrete)) {
             return $concrete($this);
         }
 
-        if (!class_exists($concrete))
-        {
+        if (!class_exists($concrete)) {
             throw new RuntimeException(
                 "Classe introuvable : {$concrete}"
             );
@@ -88,8 +84,7 @@ final class Container
             $concrete
         );
 
-        if (!$reflection->isInstantiable())
-        {
+        if (!$reflection->isInstantiable()) {
             throw new RuntimeException(
                 "Classe non instanciable : {$concrete}"
             );
@@ -97,16 +92,14 @@ final class Container
 
         $constructor = $reflection->getConstructor();
 
-        if ($constructor === null)
-        {
+        if ($constructor === null) {
             return new $concrete();
         }
 
         $dependencies = [];
 
         foreach (
-            $constructor->getParameters()
-            as $parameter
+            $constructor->getParameters() as $parameter
         ) {
             $type = $parameter->getType();
 
@@ -114,8 +107,7 @@ final class Container
                 !$type instanceof ReflectionNamedType
                 || $type->isBuiltin()
             ) {
-                if ($parameter->isDefaultValueAvailable())
-                {
+                if ($parameter->isDefaultValueAvailable()) {
                     $dependencies[] =
                         $parameter->getDefaultValue();
 

@@ -14,7 +14,8 @@ final readonly class ServiceResultData
         public int $status,
         public string $message,
         public array $data = [],
-    ) {}
+    ) {
+    }
 
     /**
      * @return array<string, mixed>
