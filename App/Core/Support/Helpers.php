@@ -6,7 +6,7 @@ use App\Controllers\ErrorController;
 use App\Core\Application\App;
 use App\Core\Config\Config;
 use App\Core\Config\Env;
-use App\Core\Container\AppContainer;
+use Framework\Container\AppContainer;
 use Framework\Http\Request;
 use Framework\Http\Response;
 use App\Core\Support\Session;

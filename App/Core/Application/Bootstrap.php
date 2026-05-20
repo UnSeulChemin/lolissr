@@ -6,8 +6,8 @@ namespace App\Core\Application;
 
 use App\Core\Config\Config;
 use App\Core\Config\Env;
-use App\Core\Container\AppContainer;
-use App\Core\Container\Container;
+use Framework\Container\AppContainer;
+use Framework\Container\Container;
 use App\Core\Exceptions\ErrorHandler;
 use Framework\Http\Request;
 use Framework\Http\Router;

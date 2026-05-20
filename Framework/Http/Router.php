@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Framework\Http;
 
-use App\Core\Container\AppContainer;
+use Framework\Container\AppContainer;
 use Framework\Http\Middleware\MiddlewareInterface;
 use Closure;
 use ReflectionMethod;
