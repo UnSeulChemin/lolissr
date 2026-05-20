@@ -8,9 +8,11 @@ use App\Core\Application\App;
 use App\Core\Config\UploadConfig;
 use App\Core\Support\Logger;
 use App\DTO\Http\ServiceResult;
+use App\DTO\Manga\DeleteResultDTO;
 use App\DTO\Manga\MangaCreateDTO;
 use App\DTO\Manga\MangaUpdateDTO;
 use App\DTO\Manga\MangaUpdateNoteDTO;
+use App\DTO\Manga\UpdateLuResultDTO;
 use App\Repositories\Manga\MangaRepository;
 use App\Services\UploadService;
 
@@ -135,19 +137,20 @@ final class MangaWriteService
             );
         }
 
-        $inserted = $this->mangaRepository->insert([
-            'thumbnail' => $upload['thumbnail'],
-            'extension' => $upload['extension'],
-            'slug' => $dto->slug,
-            'livre' => $dto->livre,
-            'editeur' => $dto->editeur,
-            'numero' => $dto->numero,
-            'lu' => 0,
-            'statut' => $dto->statut,
-            'jacquette' => null,
-            'livre_note' => null,
-            'commentaire' => $dto->commentaire,
-        ]);
+        $inserted = $this->mangaRepository
+            ->insert([
+                'thumbnail' => $upload['thumbnail'],
+                'extension' => $upload['extension'],
+                'slug' => $dto->slug,
+                'livre' => $dto->livre,
+                'editeur' => $dto->editeur,
+                'numero' => $dto->numero,
+                'lu' => 0,
+                'statut' => $dto->statut,
+                'jacquette' => null,
+                'livre_note' => null,
+                'commentaire' => $dto->commentaire,
+            ]);
 
         if ($inserted === false)
         {
@@ -284,17 +287,24 @@ final class MangaWriteService
         string $slug,
         int $numero,
         int $lu
-    ): ServiceResult {
+    ): UpdateLuResultDTO {
         if ($this->isReadOnlyMode())
         {
-            return $this->blockedWriteResponse();
+            return new UpdateLuResultDTO(
+                success: false,
+                message: 'Écriture en base désactivée en mode test',
+                status: 403,
+                lu: $lu
+            );
         }
 
         if (!in_array($lu, [0, 1], true))
         {
-            return $this->error(
-                'Statut de lecture invalide',
-                422
+            return new UpdateLuResultDTO(
+                success: false,
+                message: 'Statut de lecture invalide',
+                status: 422,
+                lu: $lu
             );
         }
 
@@ -313,30 +323,37 @@ final class MangaWriteService
                 $numero
             );
 
-            return $this->error(
-                'Erreur lors de la mise à jour'
+            return new UpdateLuResultDTO(
+                success: false,
+                message: 'Erreur lors de la mise à jour',
+                status: 500,
+                lu: $lu
             );
         }
 
         $this->cacheService->clear();
 
-        return $this->success(
-            $lu === 1
+        return new UpdateLuResultDTO(
+            success: true,
+            message: $lu === 1
                 ? 'Manga marqué comme lu'
                 : 'Manga marqué comme non lu',
-            [
-                'lu' => $lu,
-            ]
+            status: 200,
+            lu: $lu
         );
     }
 
     public function delete(
         string $slug,
         int $numero
-    ): ServiceResult {
+    ): DeleteResultDTO {
         if ($this->isReadOnlyMode())
         {
-            return $this->blockedWriteResponse();
+            return new DeleteResultDTO(
+                success: false,
+                message: 'Écriture en base désactivée en mode test',
+                status: 403
+            );
         }
 
         $manga = $this->mangaRepository
@@ -347,9 +364,10 @@ final class MangaWriteService
 
         if ($manga === null)
         {
-            return $this->error(
-                'Manga introuvable',
-                404
+            return new DeleteResultDTO(
+                success: false,
+                message: 'Manga introuvable',
+                status: 404
             );
         }
 
@@ -367,8 +385,10 @@ final class MangaWriteService
                 $numero
             );
 
-            return $this->error(
-                'Erreur lors de la suppression'
+            return new DeleteResultDTO(
+                success: false,
+                message: 'Erreur lors de la suppression',
+                status: 500
             );
         }
 
@@ -383,23 +403,10 @@ final class MangaWriteService
 
         $this->cacheService->clear();
 
-        $remainingMangas = $this->mangaRepository
-            ->findBySlug($manga->slug);
-
-        $hasRemainingMangas = $remainingMangas !== [];
-
-        $redirect = $hasRemainingMangas
-            ? base_path()
-                . '/manga/series/'
-                . rawurlencode($manga->slug)
-            : base_path()
-                . '/manga/series';
-
-        return $this->success(
-            'Manga supprimé avec succès',
-            [
-                'redirect' => $redirect,
-            ]
+        return new DeleteResultDTO(
+            success: true,
+            message: 'Manga supprimé avec succès',
+            status: 200
         );
     }
 }

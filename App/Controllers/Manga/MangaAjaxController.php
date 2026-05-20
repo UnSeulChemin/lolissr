@@ -29,12 +29,10 @@ final class MangaAjaxController extends Controller
             return;
         }
 
-        $userAgent = $request->userAgent();
-
         if (
             App::isTesting()
             && str_contains(
-                $userAgent,
+                $request->userAgent(),
                 'LoliSSR-TestRunner'
             )
         ) {
@@ -47,22 +45,39 @@ final class MangaAjaxController extends Controller
         ], 400);
     }
 
-    /**
-     * @param array<string, mixed> $payload
-     */
     private function error(
-        array $payload,
-        int $status = 400
+        string $message,
+        int $status = 400,
+        ?string $redirect = null
     ): never {
         $response = [
             'success' => false,
-            ...$payload,
+            'message' => $message,
         ];
+
+        if ($redirect !== null)
+        {
+            $response['redirect'] = $redirect;
+        }
 
         $this->json(
             $response,
             $status
         );
+    }
+
+    private function canonicalRedirect(
+        string $action,
+        string $slug,
+        int $numero
+    ): string {
+        return $this->basePath
+            . 'manga/ajax/'
+            . $action
+            . '/'
+            . rawurlencode($slug)
+            . '/'
+            . $numero;
     }
 
     public function seriesPage(
@@ -76,9 +91,10 @@ final class MangaAjaxController extends Controller
 
         if ($data === null)
         {
-            $this->error([
-                'message' => 'Page introuvable',
-            ], 404);
+            $this->error(
+                'Page introuvable',
+                404
+            );
         }
 
         $this->renderPartial(
@@ -122,23 +138,23 @@ final class MangaAjaxController extends Controller
 
         if ($data === null)
         {
-            $this->error([
-                'message' => 'Manga introuvable',
-            ], 404);
+            $this->error(
+                'Manga introuvable',
+                404
+            );
         }
 
         if ($slug !== $data->canonicalSlug)
         {
-            $this->error([
-                'message' => 'URL non canonique',
-                'redirect' => $this->basePath
-                    . 'manga/ajax/update-note/'
-                    . rawurlencode(
-                        $data->canonicalSlug
-                    )
-                    . '/'
-                    . $numero,
-            ], 409);
+            $this->error(
+                'URL non canonique',
+                409,
+                $this->canonicalRedirect(
+                    'update-note',
+                    $data->canonicalSlug,
+                    $numero
+                )
+            );
         }
 
         $result = $this->mangaWriteService
@@ -148,19 +164,11 @@ final class MangaAjaxController extends Controller
                 $request->dto()
             );
 
-        /**
-         * @var array<string, mixed> $response
-         */
-        $response = [
+        $this->json([
             'success' => $result->success,
             'message' => $result->message,
             ...$result->data,
-        ];
-
-        $this->json(
-            $response,
-            $result->status
-        );
+        ], $result->status);
     }
 
     public function updateLu(
@@ -178,23 +186,23 @@ final class MangaAjaxController extends Controller
 
         if ($data === null)
         {
-            $this->error([
-                'message' => 'Manga introuvable',
-            ], 404);
+            $this->error(
+                'Manga introuvable',
+                404
+            );
         }
 
         if ($slug !== $data->canonicalSlug)
         {
-            $this->error([
-                'message' => 'URL non canonique',
-                'redirect' => $this->basePath
-                    . 'manga/ajax/update-lu/'
-                    . rawurlencode(
-                        $data->canonicalSlug
-                    )
-                    . '/'
-                    . $numero,
-            ], 409);
+            $this->error(
+                'URL non canonique',
+                409,
+                $this->canonicalRedirect(
+                    'update-lu',
+                    $data->canonicalSlug,
+                    $numero
+                )
+            );
         }
 
         $result = $this->mangaWriteService
@@ -207,7 +215,7 @@ final class MangaAjaxController extends Controller
         $this->json([
             'success' => $result->success,
             'message' => $result->message,
-            'lu' => $result->data['lu'] ?? null,
+            'lu' => $result->lu,
         ], $result->status);
     }
 
@@ -226,23 +234,23 @@ final class MangaAjaxController extends Controller
 
         if ($data === null)
         {
-            $this->error([
-                'message' => 'Manga introuvable',
-            ], 404);
+            $this->error(
+                'Manga introuvable',
+                404
+            );
         }
 
         if ($slug !== $data->canonicalSlug)
         {
-            $this->error([
-                'message' => 'URL non canonique',
-                'redirect' => $this->basePath
-                    . 'manga/ajax/delete/'
-                    . rawurlencode(
-                        $data->canonicalSlug
-                    )
-                    . '/'
-                    . $numero,
-            ], 409);
+            $this->error(
+                'URL non canonique',
+                409,
+                $this->canonicalRedirect(
+                    'delete',
+                    $data->canonicalSlug,
+                    $numero
+                )
+            );
         }
 
         $result = $this->mangaWriteService
@@ -251,18 +259,9 @@ final class MangaAjaxController extends Controller
                 $numero
             );
 
-        /**
-         * @var array<string, mixed> $response
-         */
-        $response = [
+        $this->json([
             'success' => $result->success,
             'message' => $result->message,
-            ...$result->data,
-        ];
-
-        $this->json(
-            $response,
-            $result->status
-        );
+        ], $result->status);
     }
 }
