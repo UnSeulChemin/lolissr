@@ -13,6 +13,21 @@ final class Request
         private readonly array $server = []
     ) {}
 
+    /**
+     * Retourne une valeur des headers HTTP.
+     */
+    public function header(
+        string $key,
+        mixed $default = null
+    ): mixed {
+        $serverKey = 'HTTP_' . strtoupper(
+            str_replace('-', '_', $key)
+        );
+
+        return $this->server[$serverKey]
+            ?? $default;
+    }
+
     public static function capture(): self
     {
         return new self(
@@ -128,6 +143,12 @@ final class Request
         );
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Files
+    |--------------------------------------------------------------------------
+    */
+
     public function file(string $key): ?array
     {
         $file = $this->files[$key] ?? null;
@@ -137,23 +158,78 @@ final class Request
             : null;
     }
 
+    /**
+     * Vérifie si un fichier existe.
+     */
     public function hasFile(string $key): bool
     {
         $file = $this->file($key);
 
-        return $file !== null
-            && isset($file['tmp_name'])
-            && $file['tmp_name'] !== '';
+        return $file !== null;
     }
 
+    /**
+     * Vérifie si un fichier uploadé est valide.
+     */
     public function hasValidFile(string $key): bool
+    {
+        return $this->fileError($key)
+            === UPLOAD_ERR_OK;
+    }
+
+    /**
+     * Retourne le nom original du fichier.
+     */
+    public function fileName(string $key): string
     {
         $file = $this->file($key);
 
-        return $file !== null
-            && ($file['error'] ?? UPLOAD_ERR_NO_FILE)
-                === UPLOAD_ERR_OK;
+        return isset($file['name'])
+            ? (string) $file['name']
+            : '';
     }
+
+    /**
+     * Retourne le chemin temporaire du fichier.
+     */
+    public function fileTmpPath(string $key): string
+    {
+        $file = $this->file($key);
+
+        return isset($file['tmp_name'])
+            ? (string) $file['tmp_name']
+            : '';
+    }
+
+    /**
+     * Retourne le code d'erreur du fichier.
+     */
+    public function fileError(string $key): int
+    {
+        $file = $this->file($key);
+
+        return isset($file['error'])
+            ? (int) $file['error']
+            : UPLOAD_ERR_NO_FILE;
+    }
+
+    /**
+     * Retourne la taille du fichier.
+     */
+    public function fileSize(string $key): int
+    {
+        $file = $this->file($key);
+
+        return isset($file['size'])
+            ? (int) $file['size']
+            : 0;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | HTTP
+    |--------------------------------------------------------------------------
+    */
 
     public function method(): string
     {
