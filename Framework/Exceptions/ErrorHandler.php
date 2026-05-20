@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Core\Exceptions;
+namespace Framework\Exceptions;
 
 use App\Controllers\Controller;
 use App\Core\Application\App;

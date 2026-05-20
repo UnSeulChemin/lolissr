@@ -8,7 +8,7 @@ use App\Core\Config\Config;
 use App\Core\Config\Env;
 use Framework\Container\AppContainer;
 use Framework\Container\Container;
-use App\Core\Exceptions\ErrorHandler;
+use Framework\Exceptions\ErrorHandler;
 use Framework\Http\Request;
 use Framework\Routing\Router;
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Core\Exceptions;
+namespace Framework\Exceptions;
 
 class HttpException extends \Exception
 {

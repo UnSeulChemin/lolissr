@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\Application\App;
-use App\Core\Exceptions\MethodNotAllowedException;
-use App\Core\Exceptions\NotFoundException;
+use Framework\Exceptions\MethodNotAllowedException;
+use Framework\Exceptions\NotFoundException;
 use Framework\Http\Request;
 use Framework\Http\Response;
 use App\Core\Support\Session;
