@@ -38,8 +38,7 @@ notes.txt
 # BACKUPS
 #################################
 
-/storage/backups/*
-!/storage/backups/.gitkeep
+/storage/backups/
 
 #################################
 # UPLOADS
