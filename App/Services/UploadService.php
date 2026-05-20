@@ -8,7 +8,8 @@ use App\Core\Application\App;
 use App\Core\Config\UploadConfig;
 use App\Core\Support\Logger;
 use App\Core\Support\Str;
-use App\DTO\Upload\UploadResultDTO;
+use App\DTO\Upload\UploadThumbnailData;
+use App\DTO\Upload\UploadThumbnailResultData;
 
 final class UploadService
 {
@@ -197,14 +198,11 @@ final class UploadService
     private function failure(
         string $message,
         int $status
-    ): UploadResultDTO {
-        return new UploadResultDTO(
+    ): UploadThumbnailResultData {
+        return new UploadThumbnailResultData(
             success: false,
             message: $message,
             status: $status,
-            thumbnail: null,
-            extension: null,
-            destination: null
         );
     }
 
@@ -212,14 +210,16 @@ final class UploadService
         string $thumbnail,
         string $extension,
         string $destination
-    ): UploadResultDTO {
-        return new UploadResultDTO(
+    ): UploadThumbnailResultData {
+        return new UploadThumbnailResultData(
             success: true,
             message: 'Upload réussi',
             status: 200,
-            thumbnail: $thumbnail,
-            extension: $extension,
-            destination: $destination
+            data: new UploadThumbnailData(
+                thumbnail: $thumbnail,
+                extension: $extension,
+                destination: $destination,
+            )
         );
     }
 
@@ -231,7 +231,7 @@ final class UploadService
         int $numero,
         array $files,
         string $fileKey = 'image'
-    ): UploadResultDTO {
+    ): UploadThumbnailResultData {
         $file = $this->fileData(
             $files,
             $fileKey
