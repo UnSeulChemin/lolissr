@@ -15,16 +15,11 @@ final class Config
 
     /**
      * Retourne une valeur de configuration.
-     *
-     * Exemples :
-     * - Config::get('app.name')
-     * - Config::get('database.host')
-     * - Config::get('upload.allowed_extensions', [])
-     *
-     * @param mixed $default
      */
-    public static function get(string $key, mixed $default = null): mixed
-    {
+    public static function get(
+        string $key,
+        mixed $default = null
+    ): mixed {
         $segments = self::segments($key);
 
         if ($segments === [])
@@ -34,7 +29,7 @@ final class Config
 
         $file = array_shift($segments);
 
-        if ($file === null || $file === '')
+        if ($file === '')
         {
             return $default;
         }
@@ -43,10 +38,16 @@ final class Config
 
         if ($segments === [])
         {
-            return $config !== [] ? $config : $default;
+            return $config !== []
+                ? $config
+                : $default;
         }
 
-        return self::arrayGet($config, $segments, $default);
+        return self::arrayGet(
+            $config,
+            $segments,
+            $default
+        );
     }
 
     /**
@@ -63,7 +64,7 @@ final class Config
 
         $file = array_shift($segments);
 
-        if ($file === null || $file === '')
+        if ($file === '')
         {
             return false;
         }
@@ -75,7 +76,10 @@ final class Config
             return $config !== [];
         }
 
-        return self::arrayHas($config, $segments);
+        return self::arrayHas(
+            $config,
+            $segments
+        );
     }
 
     /**
@@ -102,12 +106,12 @@ final class Config
 
         $segments = explode('.', $key);
 
-        $segments = array_values(array_filter(
-            $segments,
-            static fn (string $segment): bool => $segment !== ''
-        ));
-
-        return $segments;
+        return array_values(
+            array_filter(
+                $segments,
+                static fn (string $segment): bool => $segment !== ''
+            )
+        );
     }
 
     /**
@@ -115,16 +119,20 @@ final class Config
      *
      * @param array<string, mixed> $items
      * @param string[] $segments
-     * @param mixed $default
      */
-    private static function arrayGet(array $items, array $segments, mixed $default = null): mixed
-    {
+    private static function arrayGet(
+        array $items,
+        array $segments,
+        mixed $default = null
+    ): mixed {
         $value = $items;
 
         foreach ($segments as $segment)
         {
-            if (!is_array($value) || !array_key_exists($segment, $value))
-            {
+            if (
+                !is_array($value)
+                || !array_key_exists($segment, $value)
+            ) {
                 return $default;
             }
 
@@ -140,14 +148,18 @@ final class Config
      * @param array<string, mixed> $items
      * @param string[] $segments
      */
-    private static function arrayHas(array $items, array $segments): bool
-    {
+    private static function arrayHas(
+        array $items,
+        array $segments
+    ): bool {
         $value = $items;
 
         foreach ($segments as $segment)
         {
-            if (!is_array($value) || !array_key_exists($segment, $value))
-            {
+            if (
+                !is_array($value)
+                || !array_key_exists($segment, $value)
+            ) {
                 return false;
             }
 
@@ -169,11 +181,14 @@ final class Config
             return self::$items[$file];
         }
 
-        $path = app_path('Config/' . $file . '.php');
+        $path = app_path(
+            'Config/' . $file . '.php'
+        );
 
         if (!is_file($path))
         {
             self::$items[$file] = [];
+
             return self::$items[$file];
         }
 

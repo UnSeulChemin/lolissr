@@ -50,6 +50,8 @@ final class Bootstrap
         }
 
         $router->dispatch();
+
+        exit;
     }
 
     private static function loadEnvironment(
