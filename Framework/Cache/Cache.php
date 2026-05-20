@@ -4,24 +4,32 @@ declare(strict_types=1);
 
 namespace Framework\Cache;
 
-use Framework\Config\Env;
 use Framework\Support\Logger;
 
 final class Cache
 {
     private static function enabled(): bool
     {
-        return Env::get('CACHE_ENABLED', false) === true;
+        return env_bool(
+            'CACHE_ENABLED',
+            false,
+        );
     }
 
     private static function directory(): string
     {
-        return ROOT . '/storage/cache';
+        return base_path(
+            'storage/cache',
+        );
     }
 
-    private static function path(string $key): string
-    {
-        return self::directory() . '/' . sha1($key) . '.cache';
+    private static function path(
+        string $key,
+    ): string {
+        return self::directory()
+            . '/'
+            . sha1($key)
+            . '.cache';
     }
 
     private static function ensureDirectory(): bool
@@ -29,14 +37,19 @@ final class Cache
         $directory = self::directory();
 
         return is_dir($directory)
-            || mkdir($directory, 0755, true);
+            || mkdir(
+                $directory,
+                0755,
+                true,
+            );
     }
 
     /**
      * GET CACHE
      */
-    public static function get(string $key): mixed
-    {
+    public static function get(
+        string $key,
+    ): mixed {
         if (!self::enabled()) {
             return null;
         }
@@ -50,9 +63,12 @@ final class Cache
         $content = file_get_contents($path);
 
         if ($content === false) {
-            Logger::warning('Cache unreadable', [
-                'key' => $key,
-            ]);
+            Logger::warning(
+                'Cache unreadable',
+                [
+                    'key' => $key,
+                ],
+            );
 
             return null;
         }
@@ -65,42 +81,66 @@ final class Cache
                 JSON_THROW_ON_ERROR,
             );
         } catch (\JsonException $exception) {
-            @unlink($path);
+            if (is_file($path)) {
+                unlink($path);
+            }
 
-            Logger::warning('Cache corrupted JSON', [
-                'key' => $key,
-                'error' => $exception->getMessage(),
-            ]);
+            Logger::warning(
+                'Cache corrupted JSON',
+                [
+                    'key' => $key,
+                    'error' => $exception->getMessage(),
+                ],
+            );
 
             return null;
         }
 
         if (
             !is_object($payload)
-            || !property_exists($payload, 'value')
+            || !property_exists(
+                $payload,
+                'value',
+            )
         ) {
-            @unlink($path);
+            if (is_file($path)) {
+                unlink($path);
+            }
 
-            Logger::warning('Cache invalid payload', [
-                'key' => $key,
-            ]);
-
-            return null;
-        }
-
-        if (($payload->expires_at ?? 0) < time()) {
-            @unlink($path);
-
-            Logger::debug('Cache expired', [
-                'key' => $key,
-            ]);
+            Logger::warning(
+                'Cache invalid payload',
+                [
+                    'key' => $key,
+                ],
+            );
 
             return null;
         }
 
-        Logger::debug('Cache hit', [
-            'key' => $key,
-        ]);
+        if (
+            ($payload->expires_at ?? 0)
+            < time()
+        ) {
+            if (is_file($path)) {
+                unlink($path);
+            }
+
+            Logger::debug(
+                'Cache expired',
+                [
+                    'key' => $key,
+                ],
+            );
+
+            return null;
+        }
+
+        Logger::debug(
+            'Cache hit',
+            [
+                'key' => $key,
+            ],
+        );
 
         return $payload->value;
     }
@@ -118,12 +158,17 @@ final class Cache
         }
 
         if (!self::ensureDirectory()) {
-            Logger::warning('Cache directory unavailable');
+            Logger::warning(
+                'Cache directory unavailable',
+            );
 
             return;
         }
 
-        $ttl ??= (int) Env::get('CACHE_TTL', 300);
+        $ttl ??= env_int(
+            'CACHE_TTL',
+            300,
+        );
 
         $payload = [
             'expires_at' => time() + $ttl,
@@ -137,10 +182,13 @@ final class Cache
                 | JSON_THROW_ON_ERROR,
             );
         } catch (\JsonException $exception) {
-            Logger::warning('Cache encoding failed', [
-                'key' => $key,
-                'error' => $exception->getMessage(),
-            ]);
+            Logger::warning(
+                'Cache encoding failed',
+                [
+                    'key' => $key,
+                    'error' => $exception->getMessage(),
+                ],
+            );
 
             return;
         }
@@ -152,17 +200,23 @@ final class Cache
         );
 
         if ($written === false) {
-            Logger::warning('Cache write failed', [
-                'key' => $key,
-            ]);
+            Logger::warning(
+                'Cache write failed',
+                [
+                    'key' => $key,
+                ],
+            );
 
             return;
         }
 
-        Logger::debug('Cache stored', [
-            'key' => $key,
-            'ttl' => $ttl,
-        ]);
+        Logger::debug(
+            'Cache stored',
+            [
+                'key' => $key,
+                'ttl' => $ttl,
+            ],
+        );
     }
 
     /**
@@ -183,13 +237,20 @@ final class Cache
             return $cached;
         }
 
-        Logger::debug('Cache miss', [
-            'key' => $key,
-        ]);
+        Logger::debug(
+            'Cache miss',
+            [
+                'key' => $key,
+            ],
+        );
 
         $value = $callback();
 
-        self::put($key, $value, $ttl);
+        self::put(
+            $key,
+            $value,
+            $ttl,
+        );
 
         return $value;
     }
@@ -197,27 +258,30 @@ final class Cache
     /**
      * CHECK CACHE
      */
-    public static function has(string $key): bool
-    {
-        return is_file(
-            self::path($key),
-        );
+    public static function has(
+        string $key,
+    ): bool {
+        return self::get($key) !== null;
     }
 
     /**
      * DELETE CACHE
      */
-    public static function forget(string $key): void
-    {
+    public static function forget(
+        string $key,
+    ): void {
         $path = self::path($key);
 
         if (is_file($path)) {
-            @unlink($path);
+            unlink($path);
         }
 
-        Logger::debug('Cache deleted', [
-            'key' => $key,
-        ]);
+        Logger::debug(
+            'Cache deleted',
+            [
+                'key' => $key,
+            ],
+        );
     }
 
     /**
@@ -231,18 +295,17 @@ final class Cache
             return;
         }
 
-        $files = glob($directory . '/*.cache');
-
-        if ($files === false) {
-            $files = [];
-        }
-
-        foreach ($files as $file) {
+        foreach (
+            glob($directory . '/*.cache') ?: []
+            as $file
+        ) {
             if (is_file($file)) {
-                @unlink($file);
+                unlink($file);
             }
         }
 
-        Logger::info('Cache cleared');
+        Logger::info(
+            'Cache cleared',
+        );
     }
 }

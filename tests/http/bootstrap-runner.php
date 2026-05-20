@@ -7,9 +7,7 @@ if (!defined('ROOT'))
     define('ROOT', dirname(__DIR__, 2));
 }
 
-require_once ROOT . '/Autoloader.php';
-
-\App\Autoloader::register();
+require_once ROOT . '/vendor/autoload.php';
 
 /*
 |--------------------------------------------------------------------------
@@ -30,11 +28,15 @@ require_once ROOT . '/Framework/Support/helpers.php';
 |--------------------------------------------------------------------------
 */
 
-$envFile = app_path('.env');
+$envFile = base_path('.env');
 
 if (is_file($envFile))
 {
-    $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: [];
+    $lines = file(
+        $envFile,
+        FILE_IGNORE_NEW_LINES
+        | FILE_SKIP_EMPTY_LINES,
+    ) ?: [];
 
     foreach ($lines as $line)
     {
@@ -56,6 +58,7 @@ if (is_file($envFile))
 
         $_ENV[$name] = $value;
         $_SERVER[$name] = $value;
+
         putenv($name . '=' . $value);
     }
 }
@@ -66,7 +69,9 @@ if (is_file($envFile))
 |--------------------------------------------------------------------------
 */
 
-$config = require app_path('tests/Http/config.php');
+$config = require base_path(
+    'tests/Http/config.php',
+);
 
 $base = (string) ($config['base'] ?? '');
 $realSlug = (string) ($config['realSlug'] ?? '');

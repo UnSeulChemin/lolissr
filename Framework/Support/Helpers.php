@@ -88,16 +88,21 @@ if (!function_exists('dd')) {
 */
 
 if (!function_exists('base_path')) {
-    function base_path(): string
+    function base_path(string $path = ''): string
     {
-        return App::basePath();
+        return rtrim(ROOT, DIRECTORY_SEPARATOR)
+            . (
+                $path !== ''
+                    ? DIRECTORY_SEPARATOR . ltrim($path, '/\\')
+                    : ''
+            );
     }
 }
 
 if (!function_exists('app_path')) {
     function app_path(string $path = ''): string
     {
-        return rtrim(ROOT, DIRECTORY_SEPARATOR)
+        return base_path('App')
             . (
                 $path !== ''
                     ? DIRECTORY_SEPARATOR . ltrim($path, '/\\')
@@ -109,7 +114,7 @@ if (!function_exists('app_path')) {
 if (!function_exists('view_path')) {
     function view_path(string $view = ''): string
     {
-        return app_path('App/Views')
+        return app_path('Views')
             . (
                 $view !== ''
                     ? DIRECTORY_SEPARATOR . ltrim($view, '/\\')
@@ -220,14 +225,14 @@ if (!function_exists('view')) {
         );
 
         if (!is_file($viewPath)) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 'Vue introuvable : '
                 . $viewFile,
             );
         }
 
         if (!is_file($layoutPath)) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 'Layout introuvable : layouts/base',
             );
         }

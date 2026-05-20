@@ -19,7 +19,9 @@ final class Logger
 
     private static function directory(): string
     {
-        return ROOT . '/storage/logs';
+        return base_path(
+            'storage/logs',
+        );
     }
 
     private static function file(): string
@@ -89,11 +91,15 @@ final class Logger
             return;
         }
 
-        file_put_contents(
+        $written = file_put_contents(
             self::file(),
             $content . PHP_EOL,
             FILE_APPEND | LOCK_EX,
         );
+
+        if ($written === false) {
+            return;
+        }
     }
 
     /**

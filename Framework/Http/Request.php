@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Framework\Http;
 
+use Framework\Application\App;
+
 final class Request
 {
     /**
@@ -302,7 +304,7 @@ final class Request
         }
 
         $basePath = rtrim(
-            base_path(),
+            App::basePath(),
             '/',
         );
 

@@ -13,7 +13,11 @@ use Framework\Application\App;
 | false = aucun test exécuté
 |
 */
-$testsEnabled = env_bool('TESTS_ENABLED', true);
+
+$testsEnabled = env_bool(
+    'TESTS_ENABLED',
+    true,
+);
 
 /*
 |--------------------------------------------------------------------------
@@ -24,6 +28,7 @@ $testsEnabled = env_bool('TESTS_ENABLED', true);
 | est explicitement en environnement "testing".
 |
 */
+
 $isTestingAppEnv = App::isTesting();
 
 /*
@@ -31,13 +36,17 @@ $isTestingAppEnv = App::isTesting();
 | DIRECTORIES
 |--------------------------------------------------------------------------
 */
-$httpRoot = app_path('tests/Http');
+
+$httpRoot = base_path(
+    'tests/Http',
+);
 
 /*
 |--------------------------------------------------------------------------
 | CONFIG
 |--------------------------------------------------------------------------
 */
+
 return [
 
     /*
@@ -45,26 +54,48 @@ return [
     | BASE URL
     |--------------------------------------------------------------------------
     */
-    'base' => rtrim('http://localhost' . base_path(), '/'),
+
+    'base' => rtrim(
+        'http://localhost',
+        '/',
+    ),
 
     /*
     |--------------------------------------------------------------------------
     | PATHS
     |--------------------------------------------------------------------------
     */
+
     'httpRoot' => $httpRoot,
-    'casesDirectory' => app_path('tests/Http/cases'),
-    'fixturesDirectory' => app_path('tests/Http/fixtures'),
-    'tmpUploadsDirectory' => app_path(
-        trim((string) env('TEST_UPLOAD_DIR', 'tests/Http/tmp-uploads'), '/')
+
+    'casesDirectory' => base_path(
+        'tests/Http/cases',
     ),
-    'exportDirectory' => app_path('tests/Http/reports'),
+
+    'fixturesDirectory' => base_path(
+        'tests/Http/fixtures',
+    ),
+
+    'tmpUploadsDirectory' => base_path(
+        trim(
+            (string) env(
+                'TEST_UPLOAD_DIR',
+                'tests/Http/tmp-uploads',
+            ),
+            '/',
+        ),
+    ),
+
+    'exportDirectory' => base_path(
+        'tests/Http/reports',
+    ),
 
     /*
     |--------------------------------------------------------------------------
     | CONFIG DONNÉES
     |--------------------------------------------------------------------------
     */
+
     'realSlug' => 'one-piece',
     'realNumero' => 1,
     'nonCanonicalSlug' => 'One-Piece',
@@ -74,7 +105,9 @@ return [
     | INFOS ENV
     |--------------------------------------------------------------------------
     */
+
     'testsEnabled' => $testsEnabled,
+
     'isTestingAppEnv' => $isTestingAppEnv,
 
     /*
@@ -82,43 +115,67 @@ return [
     | OPTIONS TESTS
     |--------------------------------------------------------------------------
     */
+
     'testCanonicalRedirect' =>
-        $testsEnabled && env_bool('TEST_CANONICAL_REDIRECT', true),
+        $testsEnabled
+        && env_bool(
+            'TEST_CANONICAL_REDIRECT',
+            true,
+        ),
 
     'testPostAjouter' =>
         $testsEnabled
         && $isTestingAppEnv
-        && env_bool('TEST_POST_AJOUTER', false),
+        && env_bool(
+            'TEST_POST_AJOUTER',
+            false,
+        ),
 
     'testPostUpdate' =>
         $testsEnabled
         && $isTestingAppEnv
-        && env_bool('TEST_POST_UPDATE', true),
+        && env_bool(
+            'TEST_POST_UPDATE',
+            true,
+        ),
 
     'testAjaxUpdate' =>
         $testsEnabled
         && $isTestingAppEnv
-        && env_bool('TEST_AJAX_UPDATE', false),
+        && env_bool(
+            'TEST_AJAX_UPDATE',
+            false,
+        ),
 
     'testUploadDuplicateSlugNumero' =>
         $testsEnabled
         && $isTestingAppEnv
-        && env_bool('TEST_UPLOAD_DUPLICATE_SLUG_NUMERO', true),
+        && env_bool(
+            'TEST_UPLOAD_DUPLICATE_SLUG_NUMERO',
+            true,
+        ),
 
     'testUploadInvalidImage' =>
         $testsEnabled
         && $isTestingAppEnv
-        && env_bool('TEST_UPLOAD_INVALID_IMAGE', true),
+        && env_bool(
+            'TEST_UPLOAD_INVALID_IMAGE',
+            true,
+        ),
 
     'testUploadMaxSize' =>
         $testsEnabled
         && $isTestingAppEnv
-        && env_bool('TEST_UPLOAD_MAX_SIZE', true),
+        && env_bool(
+            'TEST_UPLOAD_MAX_SIZE',
+            true,
+        ),
 
     /*
     |--------------------------------------------------------------------------
     | EXPORT
     |--------------------------------------------------------------------------
     */
+
     'exportEnabled' => $testsEnabled,
 ];

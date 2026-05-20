@@ -2,13 +2,16 @@
 
 declare(strict_types=1);
 
-define('ROOT', dirname(__DIR__));
+if (!defined('ROOT'))
+{
+    define(
+        'ROOT',
+        dirname(__DIR__),
+    );
+}
 
-require ROOT . '/Autoloader.php';
-
-\App\Autoloader::register();
-
-require_once app_path('Framework/Support/helpers.php');
+require_once ROOT . '/vendor/autoload.php';
+require_once ROOT . '/Framework/Support/helpers.php';
 
 /*
 |--------------------------------------------------------------------------
@@ -16,11 +19,15 @@ require_once app_path('Framework/Support/helpers.php');
 |--------------------------------------------------------------------------
 */
 
-$envFile = app_path('.env');
+$envFile = base_path('.env');
 
 if (is_file($envFile))
 {
-    $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) ?: [];
+    $lines = file(
+        $envFile,
+        FILE_IGNORE_NEW_LINES
+        | FILE_SKIP_EMPTY_LINES,
+    ) ?: [];
 
     foreach ($lines as $line)
     {
@@ -35,14 +42,21 @@ if (is_file($envFile))
             continue;
         }
 
-        [$name, $value] = explode('=', $line, 2);
+        [$name, $value] = explode(
+            '=',
+            $line,
+            2,
+        );
 
         $name = trim($name);
         $value = trim($value);
 
         $_ENV[$name] = $value;
         $_SERVER[$name] = $value;
-        putenv($name . '=' . $value);
+
+        putenv(
+            $name . '=' . $value,
+        );
     }
 }
 
@@ -58,6 +72,7 @@ if (is_file($envFile))
 
 $_ENV['APP_ENV'] = 'testing';
 $_SERVER['APP_ENV'] = 'testing';
+
 putenv('APP_ENV=testing');
 
 /*
@@ -68,24 +83,30 @@ putenv('APP_ENV=testing');
 
 $_ENV['TESTS_ENABLED'] = 'true';
 $_SERVER['TESTS_ENABLED'] = 'true';
+
 putenv('TESTS_ENABLED=true');
 
 $_ENV['TEST_UPLOAD_MODE'] = 'true';
 $_SERVER['TEST_UPLOAD_MODE'] = 'true';
+
 putenv('TEST_UPLOAD_MODE=true');
 
 $_ENV['TEST_UPLOAD_REAL'] = 'false';
 $_SERVER['TEST_UPLOAD_REAL'] = 'false';
+
 putenv('TEST_UPLOAD_REAL=false');
 
 $_ENV['TEST_POST_AJOUTER'] = 'false';
 $_SERVER['TEST_POST_AJOUTER'] = 'false';
+
 putenv('TEST_POST_AJOUTER=false');
 
 $_ENV['TEST_POST_UPDATE'] = 'false';
 $_SERVER['TEST_POST_UPDATE'] = 'false';
+
 putenv('TEST_POST_UPDATE=false');
 
 $_ENV['TEST_AJAX_UPDATE'] = 'false';
 $_SERVER['TEST_AJAX_UPDATE'] = 'false';
+
 putenv('TEST_AJAX_UPDATE=false');

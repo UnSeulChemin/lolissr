@@ -30,7 +30,7 @@ final class UploadService
         );
 
         return rtrim(
-            app_path($directory),
+            base_path($directory),
             '/\\',
         ) . DIRECTORY_SEPARATOR;
     }

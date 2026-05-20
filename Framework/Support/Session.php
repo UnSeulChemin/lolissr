@@ -14,11 +14,17 @@ final class Session
             return;
         }
 
-        $directory = ROOT . '/storage/sessions';
+        $directory = base_path(
+            'storage/sessions',
+        );
 
         if (
             !is_dir($directory)
-            && !mkdir($directory, 0755, true)
+            && !mkdir(
+                $directory,
+                0755,
+                true,
+            )
             && !is_dir($directory)
         ) {
             throw new RuntimeException(
@@ -26,7 +32,9 @@ final class Session
             );
         }
 
-        session_save_path($directory);
+        session_save_path(
+            $directory,
+        );
 
         session_name(
             (string) env(
@@ -49,14 +57,31 @@ final class Session
                 === 'https'
             );
 
-        ini_set('session.use_strict_mode', '1');
-        ini_set('session.use_only_cookies', '1');
-        ini_set('session.use_trans_sid', '0');
-        ini_set('session.cookie_httponly', '1');
+        ini_set(
+            'session.use_strict_mode',
+            '1',
+        );
+
+        ini_set(
+            'session.use_only_cookies',
+            '1',
+        );
+
+        ini_set(
+            'session.use_trans_sid',
+            '0',
+        );
+
+        ini_set(
+            'session.cookie_httponly',
+            '1',
+        );
 
         ini_set(
             'session.cookie_secure',
-            $secure ? '1' : '0',
+            $secure
+                ? '1'
+                : '0',
         );
 
         session_set_cookie_params([

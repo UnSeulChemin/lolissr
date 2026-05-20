@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace App\Controllers\Chinois;
 
-use Framework\Http\Request;
+use App\Controllers\Controller;
 use App\Repositories\Chinois\ChinoisGrammaireRepository;
+use Framework\Http\Request;
 
-final class ChinoisAjaxController
+final class ChinoisAjaxController extends Controller
 {
     public function __construct(
         private readonly ChinoisGrammaireRepository $repository,
     ) {
+        parent::__construct();
     }
 
     /*
@@ -23,6 +25,13 @@ final class ChinoisAjaxController
     public function toggleGrammaireMaitrise(
         Request $request,
     ): never {
+        if (!$this->isAjax($request)) {
+            $this->json([
+                'success' => false,
+                'message' => 'Requête AJAX requise',
+            ], 400);
+        }
+
         $id = $request->integer('id');
 
         /*
@@ -32,7 +41,7 @@ final class ChinoisAjaxController
         */
 
         if ($id <= 0) {
-            json([
+            $this->json([
                 'success' => false,
                 'message' => 'ID invalide',
             ], 422);
@@ -53,7 +62,7 @@ final class ChinoisAjaxController
         |--------------------------------------------------------------------------
         */
 
-        json([
+        $this->json([
             'success' => true,
             'maitrise' => $maitrise,
         ]);

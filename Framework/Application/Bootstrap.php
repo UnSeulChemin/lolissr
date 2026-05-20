@@ -17,7 +17,7 @@ final class Bootstrap
     public static function run(): never
     {
         self::loadEnvironment(
-            ROOT . '/.env',
+            base_path('.env'),
         );
 
         Env::clear();
@@ -40,7 +40,7 @@ final class Bootstrap
 
         $router = new Router();
 
-        $routes = require app_path(
+        $routes = require base_path(
             'Config/routes.php',
         );
 

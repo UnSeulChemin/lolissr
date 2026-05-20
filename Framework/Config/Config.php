@@ -50,8 +50,9 @@ final class Config
     /**
      * Vérifie si une clé de configuration existe.
      */
-    public static function has(string $key): bool
-    {
+    public static function has(
+        string $key,
+    ): bool {
         $segments = self::segments($key);
 
         if ($segments === []) {
@@ -89,8 +90,9 @@ final class Config
      *
      * @return string[]
      */
-    private static function segments(string $key): array
-    {
+    private static function segments(
+        string $key,
+    ): array {
         $key = trim($key);
 
         if ($key === '') {
@@ -102,7 +104,9 @@ final class Config
         return array_values(
             array_filter(
                 $segments,
-                static fn (string $segment): bool => $segment !== '',
+                static fn (
+                    string $segment,
+                ): bool => $segment !== '',
             ),
         );
     }
@@ -165,13 +169,14 @@ final class Config
      *
      * @return array<string, mixed>
      */
-    private static function load(string $file): array
-    {
+    private static function load(
+        string $file,
+    ): array {
         if (isset(self::$items[$file])) {
             return self::$items[$file];
         }
 
-        $path = app_path(
+        $path = base_path(
             'Config/' . $file . '.php',
         );
 

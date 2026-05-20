@@ -9,6 +9,7 @@ use App\Http\Requests\Manga\MangaCreateRequest;
 use App\Http\Requests\Manga\MangaUpdateRequest;
 use App\Services\Manga\MangaReadService;
 use App\Services\Manga\MangaWriteService;
+use Framework\Http\Request;
 
 final class MangaController extends Controller
 {
@@ -29,29 +30,42 @@ final class MangaController extends Controller
             return;
         }
 
-        $location = trim($pathPrefix, '/')
-            . '/'
-            . rawurlencode($canonicalSlug);
+        $location = trim(
+            $pathPrefix,
+            '/',
+        ) . '/'
+            . rawurlencode(
+                $canonicalSlug,
+            );
 
         if ($numero !== null) {
-            $location .= '/' . $numero;
+            $location .= '/'
+                . $numero;
         }
 
-        $this->redirect($location, 301);
+        $this->redirect(
+            $location,
+            301,
+        );
     }
 
     public function index(): never
     {
         $this->title = 'Manga';
 
-        $this->render('manga/index');
+        $this->render(
+            'manga/index',
+        );
     }
 
     public function lien(): never
     {
-        $this->title = 'Manga | Lien';
+        $this->title =
+            'Manga | Lien';
 
-        $this->render('manga/lien');
+        $this->render(
+            'manga/lien',
+        );
     }
 
     public function series(
@@ -66,7 +80,8 @@ final class MangaController extends Controller
             );
         }
 
-        $this->title = 'Manga | Series';
+        $this->title =
+            'Manga | Series';
 
         if ($data->currentPage > 1) {
             $this->title .=
@@ -74,12 +89,15 @@ final class MangaController extends Controller
                 . $data->currentPage;
         }
 
-        $this->render('manga/series', [
-            'mangas' => $data->mangas,
-            'compteur' => $data->compteur,
-            'slugFilter' => $data->slugFilter,
-            'currentPage' => $data->currentPage,
-        ]);
+        $this->render(
+            'manga/series',
+            [
+                'mangas' => $data->mangas,
+                'compteur' => $data->compteur,
+                'slugFilter' => $data->slugFilter,
+                'currentPage' => $data->currentPage,
+            ],
+        );
     }
 
     public function recherche(
@@ -88,15 +106,19 @@ final class MangaController extends Controller
         $data = $this->mangaReadService
             ->search($query);
 
-        $this->title = $data->search !== ''
-            ? 'Manga | Recherche : '
-                . $data->search
-            : 'Manga | Recherche';
+        $this->title =
+            $data->search !== ''
+                ? 'Manga | Recherche : '
+                    . $data->search
+                : 'Manga | Recherche';
 
-        $this->render('manga/search', [
-            'mangas' => $data->mangas,
-            'search' => $data->search,
-        ]);
+        $this->render(
+            'manga/search',
+            [
+                'mangas' => $data->mangas,
+                'search' => $data->search,
+            ],
+        );
     }
 
     public function serie(
@@ -123,12 +145,15 @@ final class MangaController extends Controller
             'Manga | '
             . $data->mangas[0]->livre;
 
-        $this->render('manga/series', [
-            'mangas' => $data->mangas,
-            'compteur' => $data->compteur,
-            'slugFilter' => $data->slugFilter,
-            'currentPage' => $data->currentPage,
-        ]);
+        $this->render(
+            'manga/series',
+            [
+                'mangas' => $data->mangas,
+                'compteur' => $data->compteur,
+                'slugFilter' => $data->slugFilter,
+                'currentPage' => $data->currentPage,
+            ],
+        );
     }
 
     public function show(
@@ -158,16 +183,22 @@ final class MangaController extends Controller
             'Manga | '
             . $data->manga->livre;
 
-        $this->render('manga/livre', [
-            'manga' => $data->manga,
-        ]);
+        $this->render(
+            'manga/livre',
+            [
+                'manga' => $data->manga,
+            ],
+        );
     }
 
     public function ajouter(): never
     {
-        $this->title = 'Manga | Ajouter';
+        $this->title =
+            'Manga | Ajouter';
 
-        $this->render('manga/ajouter');
+        $this->render(
+            'manga/ajouter',
+        );
     }
 
     public function modifier(
@@ -193,18 +224,22 @@ final class MangaController extends Controller
             $numero,
         );
 
-        $this->title = 'Manga | Modifier';
+        $this->title =
+            'Manga | Modifier';
 
-        $this->render('manga/modifier', [
-            'manga' => $data->manga,
-        ]);
+        $this->render(
+            'manga/modifier',
+            [
+                'manga' => $data->manga,
+            ],
+        );
     }
 
     public function ajouterTraitement(
         MangaCreateRequest $request,
     ): never {
         if ($request->fails()) {
-            json([
+            $this->json([
                 'success' => false,
                 'status' => 422,
                 'message' => 'Formulaire invalide',
@@ -218,7 +253,7 @@ final class MangaController extends Controller
                 $request->files(),
             );
 
-        json(
+        $this->json(
             $result->toArray(),
             $result->status,
         );
@@ -229,7 +264,9 @@ final class MangaController extends Controller
         string $slug,
         int $numero,
     ): never {
-        $isAjax = is_ajax();
+        $isAjax = $this->isAjax(
+            $request,
+        );
 
         $data = $this->mangaReadService
             ->one(
@@ -239,7 +276,7 @@ final class MangaController extends Controller
 
         if ($data === null) {
             if ($isAjax) {
-                json([
+                $this->json([
                     'success' => false,
                     'message' => 'Manga introuvable',
                 ], 404);
@@ -260,7 +297,7 @@ final class MangaController extends Controller
                 . $numero;
 
             if ($isAjax) {
-                json([
+                $this->json([
                     'success' => false,
                     'message' => 'URL non canonique',
                     'redirect' => $redirect,
@@ -285,7 +322,7 @@ final class MangaController extends Controller
 
         if ($request->fails()) {
             if ($isAjax) {
-                json([
+                $this->json([
                     'success' => false,
                     'message' => 'Formulaire invalide',
                     'errors' => $request->errors(),
@@ -307,7 +344,7 @@ final class MangaController extends Controller
             );
 
         if ($isAjax) {
-            json(
+            $this->json(
                 $result->toArray(),
                 $result->status,
             );

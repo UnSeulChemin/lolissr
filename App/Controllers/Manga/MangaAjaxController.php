@@ -5,18 +5,17 @@ declare(strict_types=1);
 namespace App\Controllers\Manga;
 
 use App\Controllers\Controller;
-use Framework\Application\App;
-use Framework\Http\Request;
 use App\Http\Requests\Manga\MangaUpdateNoteRequest;
 use App\Services\Manga\MangaReadService;
 use App\Services\Manga\MangaWriteService;
+use Framework\Application\App;
+use Framework\Http\Request;
 
 final class MangaAjaxController extends Controller
 {
     public function __construct(
         protected MangaReadService $mangaReadService,
         protected MangaWriteService $mangaWriteService,
-        protected Request $request,
     ) {
         parent::__construct();
     }
@@ -24,7 +23,7 @@ final class MangaAjaxController extends Controller
     private function ensureAjax(
         Request $request,
     ): void {
-        if ($request->isAjax()) {
+        if ($this->isAjax($request)) {
             return;
         }
 
@@ -38,10 +37,10 @@ final class MangaAjaxController extends Controller
             return;
         }
 
-        $this->json([
-            'success' => false,
-            'message' => 'Requête AJAX requise',
-        ], 400);
+        $this->error(
+            'Requête AJAX requise',
+            400,
+        );
     }
 
     private function error(
@@ -125,7 +124,7 @@ final class MangaAjaxController extends Controller
         string $slug,
         int $numero,
     ): never {
-        $this->ensureAjax($this->request);
+        $this->ensureAjax($request);
 
         $data = $this->mangaReadService
             ->one(
@@ -202,7 +201,10 @@ final class MangaAjaxController extends Controller
             ->updateLu(
                 $data->canonicalSlug,
                 $numero,
-                $request->integer('lu', 0),
+                $request->integer(
+                    'lu',
+                    0,
+                ),
             );
 
         $this->json([

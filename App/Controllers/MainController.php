@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use Framework\Cache\Cache;
-use Framework\Http\Request;
 use App\Services\StatsService;
+use Framework\Cache\Cache;
 
 final class MainController extends Controller
 {
@@ -16,18 +15,22 @@ final class MainController extends Controller
         parent::__construct();
     }
 
-    public function index(Request $request): never
+    public function index(): never
     {
         $this->title = 'Accueil';
 
         $stats = Cache::remember(
             'home.dashboard',
             300,
-            fn () => $this->statsService->dashboard(),
+            fn () => $this->statsService
+                ->dashboard(),
         );
 
-        $this->render('main/index', [
-            'stats' => $stats,
-        ]);
+        $this->render(
+            'main/index',
+            [
+                'stats' => $stats,
+            ],
+        );
     }
 }

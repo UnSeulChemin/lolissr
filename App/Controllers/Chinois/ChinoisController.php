@@ -27,7 +27,9 @@ final class ChinoisController extends Controller
     {
         $this->title = 'Chinois';
 
-        $this->render('chinois/index');
+        $this->render(
+            'chinois/index',
+        );
     }
 
     /*
@@ -38,11 +40,17 @@ final class ChinoisController extends Controller
 
     public function mandarin(): never
     {
-        $this->title = 'Chinois | Mandarin';
+        $this->title =
+            'Chinois | Mandarin';
 
-        $this->render('chinois/mandarin', [
-            'vocabulaires' => $this->chinoisReadService->mandarin(),
-        ]);
+        $this->render(
+            'chinois/mandarin',
+            [
+                'vocabulaires' => $this
+                    ->chinoisReadService
+                    ->mandarin(),
+            ],
+        );
     }
 
     /*
@@ -53,11 +61,17 @@ final class ChinoisController extends Controller
 
     public function jinyu(): never
     {
-        $this->title = 'Chinois | 晋语';
+        $this->title =
+            'Chinois | 晋语';
 
-        $this->render('chinois/jinyu', [
-            'vocabulaires' => $this->chinoisReadService->jinyu(),
-        ]);
+        $this->render(
+            'chinois/jinyu',
+            [
+                'vocabulaires' => $this
+                    ->chinoisReadService
+                    ->jinyu(),
+            ],
+        );
     }
 
     /*
@@ -68,9 +82,12 @@ final class ChinoisController extends Controller
 
     public function grammaire(): never
     {
-        $this->title = 'Chinois | Grammaire';
+        $this->title =
+            'Chinois | Grammaire';
 
-        $this->render('chinois/grammaire');
+        $this->render(
+            'chinois/grammaire',
+        );
     }
 
     /*
@@ -82,55 +99,41 @@ final class ChinoisController extends Controller
     public function hsk(
         string $level,
     ): never {
-        /*
-        |--------------------------------------------------------------------------
-        | Vérifie le niveau
-        |--------------------------------------------------------------------------
-        */
+        $allowedLevels = [
+            '1',
+            '2',
+            '3',
+            '4',
+        ];
 
-        $allowedLevels = ['1', '2', '3', '4'];
-
-        if (!in_array($level, $allowedLevels, true)) {
-            abort(404);
+        if (
+            !in_array(
+                $level,
+                $allowedLevels,
+                true,
+            )
+        ) {
+            $this->notFound();
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Prépare le niveau HSK
-        |--------------------------------------------------------------------------
-        */
+        $hskLevel =
+            'HSK' . $level;
 
-        $hskLevel = 'HSK' . $level;
-
-        /*
-        |--------------------------------------------------------------------------
-        | Récupère les règles de grammaire
-        |--------------------------------------------------------------------------
-        */
-
-        $grammaires = $this->chinoisGrammaireRepository
+        $grammaires = $this
+            ->chinoisGrammaireRepository
             ->findByLevel($hskLevel);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Meta
-        |--------------------------------------------------------------------------
-        */
 
         $this->title =
             'Chinois | Grammaire '
             . $hskLevel;
 
-        /*
-        |--------------------------------------------------------------------------
-        | Render
-        |--------------------------------------------------------------------------
-        */
-
-        $this->render('chinois/hsk', [
-            'grammaires' => $grammaires,
-            'level' => $level,
-        ]);
+        $this->render(
+            'chinois/hsk',
+            [
+                'grammaires' => $grammaires,
+                'level' => $level,
+            ],
+        );
     }
 
     /*
@@ -141,9 +144,12 @@ final class ChinoisController extends Controller
 
     public function flashcards(): never
     {
-        $this->title = 'Chinois | Flashcards';
+        $this->title =
+            'Chinois | Flashcards';
 
-        $this->render('chinois/flashcards');
+        $this->render(
+            'chinois/flashcards',
+        );
     }
 
     /*
@@ -154,8 +160,11 @@ final class ChinoisController extends Controller
 
     public function ajouter(): never
     {
-        $this->title = 'Chinois | Ajouter';
+        $this->title =
+            'Chinois | Ajouter';
 
-        $this->render('chinois/ajouter');
+        $this->render(
+            'chinois/ajouter',
+        );
     }
 }

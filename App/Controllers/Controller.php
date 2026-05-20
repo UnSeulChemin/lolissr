@@ -10,6 +10,7 @@ use Framework\Exceptions\NotFoundException;
 use Framework\Http\Request;
 use Framework\Http\Response;
 use Framework\Support\Session;
+use RuntimeException;
 
 abstract class Controller
 {
@@ -40,7 +41,9 @@ abstract class Controller
     protected function viewPath(
         string $file,
     ): string {
-        return view_path($file . '.php');
+        return view_path(
+            $file . '.php',
+        );
     }
 
     /**
@@ -75,13 +78,59 @@ abstract class Controller
     }
 
     /**
+     * Capture le rendu d'un fichier PHP.
+     *
+     * @param array<string, mixed> $variables
+     */
+    private function renderPhp(
+        string $path,
+        array $variables = [],
+    ): string {
+        extract(
+            $variables,
+            EXTR_SKIP,
+        );
+
+        ob_start();
+
+        require $path;
+
+        $content = ob_get_clean();
+
+        return is_string($content)
+            ? $content
+            : '';
+    }
+
+    /**
+     * Variables communes aux vues.
+     *
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
+     */
+    private function sharedViewVariables(
+        array $data = [],
+    ): array {
+        return [
+            'view' => $data,
+            'title' => $this->title,
+            'basePath' => $this->basePath,
+            'currentPath' => app(
+                Request::class,
+            )->path(),
+        ];
+    }
+
+    /**
      * @param array<string, mixed>|object $data
      */
     protected function render(
         string $file,
         array|object $data = [],
     ): never {
-        $viewPath = $this->viewPath($file);
+        $viewPath = $this->viewPath(
+            $file,
+        );
 
         if (!is_file($viewPath)) {
             throw new NotFoundException(
@@ -93,44 +142,33 @@ abstract class Controller
             $data = (array) $data;
         }
 
-        $view = $data;
+        $variables = $this->sharedViewVariables(
+            $data,
+        );
 
-        $title = $this->title;
-
-        $basePath = $this->basePath;
-
-        $currentPath = app(
-            Request::class,
-        )->path();
-
-        ob_start();
-
-        require $viewPath;
-
-        $content = ob_get_clean();
-
-        if ($content === false) {
-            $content = '';
-        }
+        $content = $this->renderPhp(
+            $viewPath,
+            $variables,
+        );
 
         $templatePath = $this->templatePath();
 
         if (!is_file($templatePath)) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 'Template introuvable : '
                 . $this->template,
             );
         }
 
-        ob_start();
-
-        require $templatePath;
-
-        $html = ob_get_clean();
-
-        if ($html === false) {
-            $html = '';
-        }
+        $html = $this->renderPhp(
+            $templatePath,
+            array_merge(
+                $variables,
+                [
+                    'content' => $content,
+                ],
+            ),
+        );
 
         Response::html($html);
     }
@@ -144,7 +182,9 @@ abstract class Controller
         string $file,
         array $data = [],
     ): never {
-        $viewPath = $this->viewPath($file);
+        $viewPath = $this->viewPath(
+            $file,
+        );
 
         if (!is_file($viewPath)) {
             throw new NotFoundException(
@@ -153,25 +193,12 @@ abstract class Controller
             );
         }
 
-        $view = $data;
-
-        $title = $this->title;
-
-        $basePath = $this->basePath;
-
-        $currentPath = app(
-            Request::class,
-        )->path();
-
-        ob_start();
-
-        require $viewPath;
-
-        $html = ob_get_clean();
-
-        if ($html === false) {
-            $html = '';
-        }
+        $html = $this->renderPhp(
+            $viewPath,
+            $this->sharedViewVariables(
+                $data,
+            ),
+        );
 
         Response::html($html);
     }
@@ -186,34 +213,26 @@ abstract class Controller
         int $statusCode,
         array $data = [],
     ): never {
-        $viewPath = $this->errorViewPath($file);
+        $viewPath = $this->errorViewPath(
+            $file,
+        );
 
         if (!is_file($viewPath)) {
             Response::html(
-                'Vue erreur introuvable : ' . $file,
+                'Vue erreur introuvable : '
+                . $file,
                 500,
             );
         }
 
-        $view = $data;
+        $variables = $this->sharedViewVariables(
+            $data,
+        );
 
-        $title = $this->title;
-
-        $basePath = $this->basePath;
-
-        $currentPath = app(
-            Request::class,
-        )->path();
-
-        ob_start();
-
-        require $viewPath;
-
-        $content = ob_get_clean();
-
-        if ($content === false) {
-            $content = '';
-        }
+        $content = $this->renderPhp(
+            $viewPath,
+            $variables,
+        );
 
         $templatePath = $this->templatePath();
 
@@ -225,15 +244,15 @@ abstract class Controller
             );
         }
 
-        ob_start();
-
-        require $templatePath;
-
-        $html = ob_get_clean();
-
-        if ($html === false) {
-            $html = '';
-        }
+        $html = $this->renderPhp(
+            $templatePath,
+            array_merge(
+                $variables,
+                [
+                    'content' => $content,
+                ],
+            ),
+        );
 
         Response::html(
             $html,
@@ -359,7 +378,7 @@ abstract class Controller
     public function serverError(
         string $message = 'Erreur interne du serveur',
     ): never {
-        throw new \RuntimeException(
+        throw new RuntimeException(
             $message,
         );
     }
