@@ -10,7 +10,7 @@ use Framework\Container\AppContainer;
 use Framework\Container\Container;
 use App\Core\Exceptions\ErrorHandler;
 use Framework\Http\Request;
-use Framework\Http\Router;
+use Framework\Routing\Router;
 
 final class Bootstrap
 {

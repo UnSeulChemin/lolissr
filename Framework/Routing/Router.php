@@ -2,10 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Framework\Http;
+namespace Framework\Routing;
 
 use Framework\Container\AppContainer;
+use Framework\Http\FormRequest;
 use Framework\Http\Middleware\MiddlewareInterface;
+use Framework\Http\Request;
 use Closure;
 use ReflectionMethod;
 use ReflectionNamedType;

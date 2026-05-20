@@ -14,7 +14,7 @@ use Framework\Http\Middleware\AjaxOnlyMiddleware;
 use Framework\Http\Middleware\CsrfMiddleware;
 use Framework\Http\Middleware\PostOnlyMiddleware;
 
-use Framework\Http\Router;
+use Framework\Routing\Router;
 
 return static function (Router $router): void {
 
