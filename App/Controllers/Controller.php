@@ -37,19 +37,32 @@ abstract class Controller
     /**
      * Retourne le chemin complet d'une vue standard.
      */
-    protected function viewPath(string $file): string
-    {
+    protected function viewPath(
+        string $file
+    ): string {
         return view_path($file . '.php');
     }
 
     /**
      * Retourne le chemin complet d'une vue d'erreur.
      */
-    protected function errorViewPath(string $file): string
-    {
-        $file = preg_replace('#^errors/#', '', $file);
+    protected function errorViewPath(
+        string $file
+    ): string {
+        $file = preg_replace(
+            '#^errors/#',
+            '',
+            $file
+        );
 
-        return view_path('errors/' . $file . '.php');
+        if ($file === null)
+        {
+            $file = '';
+        }
+
+        return view_path(
+            'errors/' . $file . '.php'
+        );
     }
 
     /**
@@ -57,12 +70,12 @@ abstract class Controller
      */
     protected function templatePath(): string
     {
-        return view_path($this->template . '.php');
+        return view_path(
+            $this->template . '.php'
+        );
     }
 
     /**
-     * Affiche une vue standard.
-     *
      * @param array<string, mixed>|object $data
      */
     protected function render(
@@ -86,14 +99,23 @@ abstract class Controller
         $view = $data;
 
         $title = $this->title;
+
         $basePath = $this->basePath;
-        $currentPath = app(Request::class)->path();
+
+        $currentPath = app(
+            Request::class
+        )->path();
 
         ob_start();
 
         require $viewPath;
 
-        $content = ob_get_clean() ?: '';
+        $content = ob_get_clean();
+
+        if ($content === false)
+        {
+            $content = '';
+        }
 
         $templatePath = $this->templatePath();
 
@@ -109,7 +131,12 @@ abstract class Controller
 
         require $templatePath;
 
-        $html = ob_get_clean() ?: '';
+        $html = ob_get_clean();
+
+        if ($html === false)
+        {
+            $html = '';
+        }
 
         Response::html($html);
     }
@@ -136,14 +163,23 @@ abstract class Controller
         $view = $data;
 
         $title = $this->title;
+
         $basePath = $this->basePath;
-        $currentPath = app(Request::class)->path();
+
+        $currentPath = app(
+            Request::class
+        )->path();
 
         ob_start();
 
         require $viewPath;
 
-        $html = ob_get_clean() ?: '';
+        $html = ob_get_clean();
+
+        if ($html === false)
+        {
+            $html = '';
+        }
 
         Response::html($html);
     }
@@ -171,14 +207,23 @@ abstract class Controller
         $view = $data;
 
         $title = $this->title;
+
         $basePath = $this->basePath;
-        $currentPath = app(Request::class)->path();
+
+        $currentPath = app(
+            Request::class
+        )->path();
 
         ob_start();
 
         require $viewPath;
 
-        $content = ob_get_clean() ?: '';
+        $content = ob_get_clean();
+
+        if ($content === false)
+        {
+            $content = '';
+        }
 
         $templatePath = $this->templatePath();
 
@@ -195,9 +240,17 @@ abstract class Controller
 
         require $templatePath;
 
-        $html = ob_get_clean() ?: '';
+        $html = ob_get_clean();
 
-        Response::html($html, $statusCode);
+        if ($html === false)
+        {
+            $html = '';
+        }
+
+        Response::html(
+            $html,
+            $statusCode
+        );
     }
 
     /**
@@ -207,13 +260,21 @@ abstract class Controller
         string $url,
         int $statusCode = 302
     ): never {
-        if (preg_match('#^https?://#i', $url) === 1)
-        {
-            Response::redirect($url, $statusCode);
+        if (
+            preg_match(
+                '#^https?://#i',
+                $url
+            ) === 1
+        ) {
+            Response::redirect(
+                $url,
+                $statusCode
+            );
         }
 
         Response::redirect(
-            $this->basePath . ltrim($url, '/'),
+            $this->basePath
+            . ltrim($url, '/'),
             $statusCode
         );
     }
@@ -234,14 +295,15 @@ abstract class Controller
             );
         }
 
-        Session::set('error', $message);
+        Session::set(
+            'error',
+            $message
+        );
 
         $this->redirect($url);
     }
 
     /**
-     * Redirection avec erreurs de validation.
-     *
      * @param array<string, mixed> $errors
      */
     protected function redirectWithValidationErrors(
@@ -249,14 +311,20 @@ abstract class Controller
         array $errors,
         string $message = 'Le formulaire contient des erreurs.'
     ): never {
-        Session::set('errors', $errors);
+        Session::set(
+            'errors',
+            $errors
+        );
 
         Session::set(
             'old',
             app(Request::class)->all()
         );
 
-        Session::set('error', $message);
+        Session::set(
+            'error',
+            $message
+        );
 
         $this->redirect($url);
     }
@@ -268,7 +336,10 @@ abstract class Controller
         string $url,
         string $message
     ): never {
-        Session::set('success', $message);
+        Session::set(
+            'success',
+            $message
+        );
 
         $this->redirect($url);
     }
@@ -279,7 +350,9 @@ abstract class Controller
     public function notFound(
         string $message = 'Page introuvable'
     ): never {
-        throw new NotFoundException($message);
+        throw new NotFoundException(
+            $message
+        );
     }
 
     /**
@@ -288,7 +361,9 @@ abstract class Controller
     public function methodNotAllowed(
         string $message = 'Méthode non autorisée'
     ): never {
-        throw new MethodNotAllowedException($message);
+        throw new MethodNotAllowedException(
+            $message
+        );
     }
 
     /**
@@ -297,7 +372,9 @@ abstract class Controller
     public function serverError(
         string $message = 'Erreur interne du serveur'
     ): never {
-        throw new \RuntimeException($message);
+        throw new \RuntimeException(
+            $message
+        );
     }
 
     /**
@@ -306,7 +383,8 @@ abstract class Controller
     public function renderNotFoundPage(
         string $message = 'Page introuvable'
     ): never {
-        $this->title = '404 | Page introuvable';
+        $this->title =
+            '404 | Page introuvable';
 
         $this->renderError(
             '404',
@@ -323,7 +401,8 @@ abstract class Controller
     public function renderMethodNotAllowedPage(
         string $message = 'Méthode non autorisée'
     ): never {
-        $this->title = '405 | Méthode non autorisée';
+        $this->title =
+            '405 | Méthode non autorisée';
 
         $this->renderError(
             '405',
@@ -340,7 +419,8 @@ abstract class Controller
     public function renderServerErrorPage(
         string $message = 'Erreur interne du serveur'
     ): never {
-        $this->title = '500 | Erreur serveur';
+        $this->title =
+            '500 | Erreur serveur';
 
         $this->renderError(
             '500',
@@ -351,20 +431,30 @@ abstract class Controller
         );
     }
 
-    protected function isAjax(Request $request): bool
-    {
+    protected function isAjax(
+        Request $request
+    ): bool {
         return $request->isAjax()
             || str_contains(
-                $request->server('HTTP_ACCEPT', ''),
+                $request->server(
+                    'HTTP_ACCEPT',
+                    ''
+                ),
                 'application/json'
             );
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     protected function json(
         array $data,
         int $status = 200
     ): never {
-        Response::json($data, $status);
+        Response::json(
+            $data,
+            $status
+        );
     }
 
     protected function ajaxOrHtml(

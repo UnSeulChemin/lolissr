@@ -239,7 +239,14 @@ final class Cache
             return;
         }
 
-        foreach (glob($directory . '/*.cache') ?: [] as $file)
+        $files = glob($directory . '/*.cache');
+
+        if ($files === false)
+        {
+            $files = [];
+        }
+
+        foreach ($files as $file)
         {
             if (is_file($file)) {
                 @unlink($file);

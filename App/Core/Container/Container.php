@@ -10,8 +10,17 @@ use RuntimeException;
 
 final class Container
 {
+    /**
+     * @var array<string, array{
+     *     concrete: callable|string,
+     *     singleton: bool
+     * }>
+     */
     private array $bindings = [];
 
+    /**
+     * @var array<string, object>
+     */
     private array $instances = [];
 
     public function bind(
@@ -34,17 +43,19 @@ final class Container
         ];
     }
 
-    public function get(string $abstract): object
-    {
+    public function get(
+        string $abstract
+    ): object {
         if (isset($this->instances[$abstract]))
         {
             return $this->instances[$abstract];
         }
 
-        $binding = $this->bindings[$abstract] ?? [
-            'concrete' => $abstract,
-            'singleton' => false,
-        ];
+        $binding = $this->bindings[$abstract]
+            ?? [
+                'concrete' => $abstract,
+                'singleton' => false,
+            ];
 
         $object = $this->resolve(
             $binding['concrete']

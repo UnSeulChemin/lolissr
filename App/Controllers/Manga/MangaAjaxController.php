@@ -47,6 +47,9 @@ final class MangaAjaxController extends Controller
         ], 400);
     }
 
+    /**
+     * @param array<string, mixed> $payload
+     */
     private function error(
         array $payload,
         int $status = 400
@@ -90,10 +93,13 @@ final class MangaAjaxController extends Controller
     ): never {
         $this->ensureAjax($request);
 
-        $this->json(
-            $this->mangaReadService
-                ->searchAjax($query)
-        );
+        $results = $this->mangaReadService
+            ->searchAjax($query);
+
+        $this->json([
+            'success' => true,
+            'results' => $results,
+        ]);
     }
 
     public function updateNote(
@@ -140,7 +146,7 @@ final class MangaAjaxController extends Controller
         $this->json([
             'success' => $result->success,
             'message' => $result->message,
-            ...$result->data,
+            'data' => $result->data,
         ], $result->status);
     }
 
@@ -235,7 +241,7 @@ final class MangaAjaxController extends Controller
         $this->json([
             'success' => $result->success,
             'message' => $result->message,
-            ...$result->data,
+            'data' => $result->data,
         ], $result->status);
     }
 }
