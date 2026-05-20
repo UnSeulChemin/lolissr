@@ -4,6 +4,7 @@
 
 .env
 .env.*
+!.env.example
 
 #################################
 # NOTES / TEMP
@@ -73,3 +74,18 @@ tests/reports/
 
 .DS_Store
 Thumbs.db
+
+#################################
+# FRONT
+#################################
+
+node_modules/
+dist/
+build/
+
+#################################
+# OUTILS
+#################################
+
+.php-cs-fixer.cache
+.phpstan/cache/
