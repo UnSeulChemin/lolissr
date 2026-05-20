@@ -157,13 +157,13 @@ export function initUpdateNote()
             }
 
             noteState.jacquette =
-                data.jacquette !== undefined
-                    ? Number(data.jacquette)
+                data.notes?.jacquette !== undefined
+                    ? Number(data.notes.jacquette)
                     : noteState.jacquette;
 
             noteState.livre_note =
-                data.livre_note !== undefined
-                    ? Number(data.livre_note)
+                data.notes?.livreNote !== undefined
+                    ? Number(data.notes.livreNote)
                     : noteState.livre_note;
 
             mangaDetailCard.dataset.jacquette =
@@ -175,8 +175,8 @@ export function initUpdateNote()
             if (totalNoteElement)
             {
                 totalNoteElement.textContent =
-                    data.note !== null
-                        ? `${data.note}/10`
+                    data.notes?.note !== null
+                        ? `${data.notes.note}/10`
                         : 'Non calculée';
             }
 

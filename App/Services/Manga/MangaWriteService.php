@@ -12,6 +12,7 @@ use App\DTO\Manga\DeleteResultData;
 use App\DTO\Manga\MangaCreateDTO;
 use App\DTO\Manga\MangaUpdateDTO;
 use App\DTO\Manga\MangaUpdateNoteDTO;
+use App\DTO\Manga\Results\UpdateNoteData;
 use App\DTO\Manga\UpdateLuResultData;
 use App\DTO\Upload\UploadThumbnailData;
 use App\Repositories\Manga\MangaRepository;
@@ -282,13 +283,15 @@ final class MangaWriteService
         return $this->success(
             'Notes mises à jour',
             [
-                'jacquette' => $dto->jacquette,
-                'livre_note' => $dto->livreNote,
-                'note' => $manga->note
-                    ?? (
-                        $dto->jacquette
-                        + $dto->livreNote
-                    ),
+                'notes' => new UpdateNoteData(
+                    jacquette: $dto->jacquette,
+                    livreNote: $dto->livreNote,
+                    note: $manga->note
+                        ?? (
+                            $dto->jacquette
+                            + $dto->livreNote
+                        ),
+                ),
             ]
         );
     }
