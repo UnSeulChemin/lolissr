@@ -9,7 +9,7 @@ use App\Core\Config\Env;
 use Framework\Container\AppContainer;
 use Framework\Http\Request;
 use Framework\Http\Response;
-use App\Core\Support\Session;
+use Framework\Support\Session;
 
 /*
 |--------------------------------------------------------------------------

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Core\Support;
+namespace Framework\Support;
 
 final class MangaNoteNormalizer
 {

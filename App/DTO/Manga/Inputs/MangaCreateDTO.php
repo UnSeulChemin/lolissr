@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\DTO\Manga\Inputs;
 
-use App\Core\Support\Str;
+use Framework\Support\Str;
 
 final class MangaCreateDTO
 {

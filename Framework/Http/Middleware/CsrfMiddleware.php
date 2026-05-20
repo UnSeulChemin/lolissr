@@ -6,7 +6,7 @@ namespace Framework\Http\Middleware;
 
 use App\Core\Application\App;
 use Framework\Http\Request;
-use App\Core\Support\Session;
+use Framework\Support\Session;
 
 final class CsrfMiddleware implements MiddlewareInterface
 {

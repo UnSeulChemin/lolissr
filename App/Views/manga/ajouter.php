@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Core\Support\Session;
+use Framework\Support\Session;
 
 $errors = Session::get('errors', []);
 $old = Session::get('old', []);

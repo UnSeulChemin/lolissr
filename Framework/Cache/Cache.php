@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Framework\Cache;
 
 use App\Core\Config\Env;
-use App\Core\Support\Logger;
+use Framework\Support\Logger;
 
 final class Cache
 {

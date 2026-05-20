@@ -9,7 +9,7 @@ use Framework\Exceptions\MethodNotAllowedException;
 use Framework\Exceptions\NotFoundException;
 use Framework\Http\Request;
 use Framework\Http\Response;
-use App\Core\Support\Session;
+use Framework\Support\Session;
 
 abstract class Controller
 {

@@ -6,8 +6,8 @@ namespace App\Services;
 
 use App\Core\Application\App;
 use App\Core\Config\UploadConfig;
-use App\Core\Support\Logger;
-use App\Core\Support\Str;
+use Framework\Support\Logger;
+use Framework\Support\Str;
 use App\DTO\Upload\UploadThumbnailData;
 use App\DTO\Upload\UploadThumbnailResultData;
 

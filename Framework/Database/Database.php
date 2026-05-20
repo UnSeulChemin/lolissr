@@ -6,7 +6,7 @@ namespace Framework\Database;
 
 use App\Core\Application\App;
 use App\Core\Config\DatabaseConfig;
-use App\Core\Support\Logger;
+use Framework\Support\Logger;
 use PDO;
 use PDOException;
 use RuntimeException;

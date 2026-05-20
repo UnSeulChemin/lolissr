@@ -22,7 +22,7 @@ require_once ROOT . '/Autoloader.php';
 |
 */
 
-require_once ROOT . '/App/Core/Support/helpers.php';
+require_once ROOT . '/Framework/Support/helpers.php';
 
 /*
 |--------------------------------------------------------------------------

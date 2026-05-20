@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Manga;
 
 use App\Core\Application\App;
-use App\Core\Support\Str;
+use Framework\Support\Str;
 use App\DTO\Manga\Responses\MangaSearchData;
 use App\DTO\Manga\Responses\MangaSearchItemData;
 use App\DTO\Manga\Responses\MangaSeriesData;

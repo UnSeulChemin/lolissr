@@ -950,7 +950,7 @@ final class TestableMangaController extends MangaController
         int $numero,
         bool $ajax = false
     ): string {
-        $canonicalSlug = \App\Core\Support\Str::slug((string) $manga->slug);
+        $canonicalSlug = \Framework\Support\Str::slug((string) $manga->slug);
         $redirect = $this->basePath . 'manga/modifier/' . rawurlencode($canonicalSlug) . '/' . $numero;
 
         if ($requestedSlug === $canonicalSlug)

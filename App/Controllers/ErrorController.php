@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use Framework\Http\Request;
-use App\Core\Support\Logger;
+use Framework\Support\Logger;
 
 final class ErrorController extends Controller
 {

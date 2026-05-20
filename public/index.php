@@ -7,13 +7,13 @@ use App\Core\Application\Bootstrap;
 
 define(
     'ROOT',
-    dirname(__DIR__)
+    dirname(__DIR__),
 );
 
 require_once ROOT . '/Autoloader.php';
 
 Autoloader::register();
 
-require_once ROOT . '/App/Core/Support/helpers.php';
+require_once ROOT . '/Framework/Support/helpers.php';
 
 Bootstrap::run();

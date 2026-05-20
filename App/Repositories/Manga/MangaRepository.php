@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Repositories\Manga;
 
 use App\Core\Application\App;
-use App\Core\Support\MangaNoteNormalizer;
-use App\Core\Support\Str;
+use Framework\Support\MangaNoteNormalizer;
+use Framework\Support\Str;
 use App\Models\Manga;
 use App\Models\Model;
 use LogicException;

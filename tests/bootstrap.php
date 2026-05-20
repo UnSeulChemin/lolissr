@@ -8,7 +8,7 @@ require ROOT . '/Autoloader.php';
 
 \App\Autoloader::register();
 
-require_once app_path('App/Core/Support/helpers.php');
+require_once app_path('Framework/Support/helpers.php');
 
 /*
 |--------------------------------------------------------------------------
