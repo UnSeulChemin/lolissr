@@ -93,16 +93,26 @@ final class Bootstrap
                 continue;
             }
 
+            $value = preg_replace(
+                '/\s+#.*$/',
+                '',
+                $value,
+            );
+
+            $value = trim($value);
+
             $value = self::normalizeEnvValue(
-                trim($value),
+                $value,
             );
 
             $_ENV[$name] = $value;
             $_SERVER[$name] = $value;
 
-            putenv(
-                "{$name}={$value}",
-            );
+            if ($value !== '') {
+                putenv(
+                    "{$name}={$value}",
+                );
+            }
         }
     }
 
