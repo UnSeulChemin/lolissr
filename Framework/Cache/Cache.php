@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Core\Cache;
+namespace Framework\Cache;
 
 use App\Core\Config\Env;
 use App\Core\Support\Logger;

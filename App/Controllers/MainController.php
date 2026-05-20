@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Core\Cache\Cache;
+use Framework\Cache\Cache;
 use Framework\Http\Request;
 use App\Services\StatsService;
 

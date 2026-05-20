@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Manga;
 
-use App\Core\Cache\Cache;
+use Framework\Cache\Cache;
 
 final class MangaCacheService
 {
