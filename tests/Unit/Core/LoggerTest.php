@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Core\Config\Env;
+use Framework\Config\Env;
 use Framework\Support\Logger;
 use PHPUnit\Framework\TestCase;
 

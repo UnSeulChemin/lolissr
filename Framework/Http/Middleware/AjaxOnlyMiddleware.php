@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Framework\Http\Middleware;
 
-use App\Core\Application\App;
+use Framework\Application\App;
 use Framework\Http\Request;
 
 final class AjaxOnlyMiddleware implements MiddlewareInterface

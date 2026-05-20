@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Manga;
 
-use App\Core\Config\UploadConfig;
+use Framework\Config\UploadConfig;
 use Framework\Http\FormRequest;
 use App\DTO\Manga\Inputs\MangaCreateDTO;
 

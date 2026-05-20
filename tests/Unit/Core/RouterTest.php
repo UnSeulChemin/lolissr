@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\Controllers\TestRouterController;
-use App\Core\Application\App;
+use Framework\Application\App;
 use App\Core\Http\Router;
 use PHPUnit\Framework\TestCase;
 

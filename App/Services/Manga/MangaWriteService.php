@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Manga;
 
-use App\Core\Application\App;
-use App\Core\Config\UploadConfig;
+use Framework\Application\App;
+use Framework\Config\UploadConfig;
 use Framework\Support\Logger;
 use App\DTO\Common\ServiceResultData;
 use App\DTO\Manga\Inputs\MangaCreateDTO;

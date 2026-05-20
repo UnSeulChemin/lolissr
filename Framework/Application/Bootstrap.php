@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Core\Application;
+namespace Framework\Application;
 
-use App\Core\Config\Config;
-use App\Core\Config\Env;
+use Framework\Config\Config;
+use Framework\Config\Env;
 use Framework\Container\AppContainer;
 use Framework\Container\Container;
 use Framework\Exceptions\ErrorHandler;

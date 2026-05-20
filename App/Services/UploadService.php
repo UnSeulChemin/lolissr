@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Core\Application\App;
-use App\Core\Config\UploadConfig;
+use Framework\Application\App;
+use Framework\Config\UploadConfig;
 use Framework\Support\Logger;
 use Framework\Support\Str;
 use App\DTO\Upload\UploadThumbnailData;

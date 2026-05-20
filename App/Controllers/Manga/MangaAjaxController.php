@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers\Manga;
 
 use App\Controllers\Controller;
-use App\Core\Application\App;
+use Framework\Application\App;
 use Framework\Http\Request;
 use App\Http\Requests\Manga\MangaUpdateNoteRequest;
 use App\Services\Manga\MangaReadService;

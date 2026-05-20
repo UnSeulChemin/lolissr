@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\Autoloader;
-use App\Core\Application\Bootstrap;
+use Framework\Application\Bootstrap;
 
 define(
     'ROOT',

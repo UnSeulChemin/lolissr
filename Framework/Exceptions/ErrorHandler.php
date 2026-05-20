@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Framework\Exceptions;
 
 use App\Controllers\Controller;
-use App\Core\Application\App;
+use Framework\Application\App;
 use Framework\Support\Logger;
 use ErrorException;
 use Throwable;

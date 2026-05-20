@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Framework\Database;
 
-use App\Core\Application\App;
-use App\Core\Config\DatabaseConfig;
+use Framework\Application\App;
+use Framework\Config\DatabaseConfig;
 use Framework\Support\Logger;
 use PDO;
 use PDOException;

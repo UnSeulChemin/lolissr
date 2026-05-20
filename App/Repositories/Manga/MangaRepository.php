@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories\Manga;
 
-use App\Core\Application\App;
+use Framework\Application\App;
 use Framework\Support\MangaNoteNormalizer;
 use Framework\Support\Str;
 use App\Models\Manga;

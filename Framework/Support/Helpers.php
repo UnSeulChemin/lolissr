@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 use App\Controllers\ErrorController;
-use App\Core\Application\App;
-use App\Core\Config\Config;
-use App\Core\Config\Env;
+use Framework\Application\App;
+use Framework\Config\Config;
+use Framework\Config\Env;
 use Framework\Container\AppContainer;
 use Framework\Http\Request;
 use Framework\Http\Response;
