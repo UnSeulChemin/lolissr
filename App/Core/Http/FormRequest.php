@@ -35,21 +35,33 @@ abstract class FormRequest
         return $this->validator->fails();
     }
 
+    /**
+     * @return array<string, string>
+     */
     final public function errors(): array
     {
         return $this->validator->errors();
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     final public function validated(): array
     {
         return $this->request->postAll();
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     final public function files(): array
     {
         return $this->request->files();
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     final public function all(): array
     {
         return $this->request->all();

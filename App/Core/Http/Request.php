@@ -6,6 +6,12 @@ namespace App\Core\Http;
 
 final class Request
 {
+    /**
+     * @param array<string, mixed> $get
+     * @param array<string, mixed> $post
+     * @param array<string, mixed> $files
+     * @param array<string, mixed> $server
+     */
     public function __construct(
         private readonly array $get = [],
         private readonly array $post = [],
@@ -38,6 +44,9 @@ final class Request
         );
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function all(): array
     {
         return [
@@ -46,11 +55,17 @@ final class Request
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function postAll(): array
     {
         return $this->post;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function files(): array
     {
         return $this->files;
@@ -123,6 +138,10 @@ final class Request
         return $this->string($key) !== '';
     }
 
+    /**
+     * @param list<string> $keys
+     * @return array<string, mixed>
+     */
     public function only(array $keys): array
     {
         $data = [];
@@ -135,6 +154,10 @@ final class Request
         return $data;
     }
 
+    /**
+     * @param list<string> $keys
+     * @return array<string, mixed>
+     */
     public function except(array $keys): array
     {
         return array_diff_key(
@@ -149,6 +172,9 @@ final class Request
     |--------------------------------------------------------------------------
     */
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function file(string $key): ?array
     {
         $file = $this->files[$key] ?? null;

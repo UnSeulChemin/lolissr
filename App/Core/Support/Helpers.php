@@ -23,12 +23,9 @@ if (!function_exists('app'))
     {
         $container = AppContainer::get();
 
-        if ($abstract === null)
-        {
-            return $container;
-        }
-
-        return $container->get($abstract);
+        return $abstract !== null
+            ? $container->get($abstract)
+            : $container;
     }
 }
 
@@ -197,6 +194,9 @@ if (!function_exists('redirect'))
 
 if (!function_exists('json'))
 {
+    /**
+     * @param array<string, mixed> $data
+     */
     function json(
         array $data,
         int $status = 200
@@ -216,6 +216,9 @@ if (!function_exists('json'))
 
 if (!function_exists('view'))
 {
+    /**
+     * @param array<string, mixed> $data
+     */
     function view(
         string $viewFile,
         array $data = [],
@@ -252,13 +255,23 @@ if (!function_exists('view'))
 
         require $viewPath;
 
-        $content = ob_get_clean() ?: '';
+        $content = ob_get_clean();
+
+        if ($content === false)
+        {
+            $content = '';
+        }
 
         ob_start();
 
         require $layoutPath;
 
-        $html = ob_get_clean() ?: '';
+        $html = ob_get_clean();
+
+        if ($html === false)
+        {
+            $html = '';
+        }
 
         Response::html($html);
     }

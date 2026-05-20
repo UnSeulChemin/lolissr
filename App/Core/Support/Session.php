@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Core\Support;
 
+use RuntimeException;
+
 final class Session
 {
-    /**
-     * Démarre la session si nécessaire.
-     */
     private static function ensureStarted(): void
     {
         if (session_status() === PHP_SESSION_ACTIVE)
@@ -23,7 +22,7 @@ final class Session
             && !mkdir($directory, 0755, true)
             && !is_dir($directory)
         ) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 'Impossible de créer le dossier de session.'
             );
         }
@@ -37,16 +36,19 @@ final class Session
             )
         );
 
+        $https = $_SERVER['HTTPS'] ?? null;
+
         $secure =
             (
-                !empty($_SERVER['HTTPS'])
-                && $_SERVER['HTTPS'] !== 'off'
+                is_string($https)
+                && $https !== ''
+                && $https !== 'off'
             )
             || (int) ($_SERVER['SERVER_PORT'] ?? 0) === 443
             || (
-                $_SERVER['HTTP_X_FORWARDED_PROTO']
-                ?? ''
-            ) === 'https';
+                ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '')
+                === 'https'
+            );
 
         ini_set('session.use_strict_mode', '1');
         ini_set('session.use_only_cookies', '1');
@@ -77,9 +79,6 @@ final class Session
         ]);
     }
 
-    /**
-     * Enregistre une valeur.
-     */
     public static function set(
         string $key,
         mixed $value
@@ -89,9 +88,6 @@ final class Session
         $_SESSION[$key] = $value;
     }
 
-    /**
-     * Récupère une valeur.
-     */
     public static function get(
         string $key,
         mixed $default = null
@@ -102,9 +98,6 @@ final class Session
             ?? $default;
     }
 
-    /**
-     * Vérifie l'existence d'une clé.
-     */
     public static function has(
         string $key
     ): bool {
@@ -116,9 +109,6 @@ final class Session
         );
     }
 
-    /**
-     * Supprime une clé.
-     */
     public static function remove(
         string $key
     ): void {
@@ -126,7 +116,7 @@ final class Session
     }
 
     /**
-     * Supprime plusieurs clés.
+     * @param list<string> $keys
      */
     public static function forget(
         array $keys
@@ -139,9 +129,6 @@ final class Session
         }
     }
 
-    /**
-     * Récupère puis supprime.
-     */
     public static function pull(
         string $key,
         mixed $default = null
@@ -156,9 +143,6 @@ final class Session
         return $value;
     }
 
-    /**
-     * Flash message.
-     */
     public static function flash(
         string $key,
         mixed $value
@@ -169,9 +153,6 @@ final class Session
         );
     }
 
-    /**
-     * Regénère l'ID de session.
-     */
     public static function regenerate(): void
     {
         self::ensureStarted();
@@ -179,16 +160,13 @@ final class Session
         session_regenerate_id(true);
     }
 
-    /**
-     * Détruit complètement la session.
-     */
     public static function destroy(): void
     {
         self::ensureStarted();
 
         $_SESSION = [];
 
-        if (ini_get('session.use_cookies'))
+        if (ini_get('session.use_cookies') !== false)
         {
             $params = session_get_cookie_params();
 

@@ -34,6 +34,9 @@ final class Response
         exit;
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public static function json(
         array $data,
         int $statusCode = 200

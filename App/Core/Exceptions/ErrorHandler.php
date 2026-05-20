@@ -34,7 +34,7 @@ final class ErrorHandler
         int $line
     ): bool {
         if (
-            !(error_reporting() & $severity)
+            (error_reporting() & $severity) === 0
         ) {
             return false;
         }

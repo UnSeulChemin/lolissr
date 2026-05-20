@@ -13,8 +13,21 @@ use RuntimeException;
 
 final class Router
 {
+    /**
+     * @var list<array{
+     *     method: string,
+     *     uri: string,
+     *     pattern: string,
+     *     action: array<int, string>|string|Closure,
+     *     middlewares: list<class-string>
+     * }>
+     */
     private array $routes = [];
 
+    /**
+     * @param array<int, string>|string|Closure $action
+     * @param list<class-string> $middlewares
+     */
     public function get(
         string $uri,
         array|string|Closure $action,
@@ -28,6 +41,10 @@ final class Router
         );
     }
 
+    /**
+     * @param array<int, string>|string|Closure $action
+     * @param list<class-string> $middlewares
+     */
     public function post(
         string $uri,
         array|string|Closure $action,
@@ -41,6 +58,10 @@ final class Router
         );
     }
 
+    /**
+     * @param array<int, string>|string|Closure $action
+     * @param list<class-string> $middlewares
+     */
     private function addRoute(
         string $method,
         string $uri,
@@ -80,9 +101,13 @@ final class Router
 
     public function dispatch(): void
     {
-        $request = $this->resolve(Request::class);
+        /** @var Request $request */
+        $request = $this->resolve(
+            Request::class
+        );
 
         $method = $request->method();
+
         $uri = $request->path();
 
         $methodNotAllowed = false;
@@ -115,15 +140,17 @@ final class Router
 
             if ($route['action'] instanceof Closure)
             {
-                $route['action'](...$matches);
+                ($route['action'])(...$matches);
 
                 return;
             }
 
-            [$controller, $controllerMethod] =
-                $this->resolveAction(
-                    $route['action']
-                );
+            [
+                $controller,
+                $controllerMethod,
+            ] = $this->resolveAction(
+                $route['action']
+            );
 
             $parameters =
                 $this->resolveMethodDependencies(
@@ -133,23 +160,40 @@ final class Router
                     $request
                 );
 
-            $controller->{$controllerMethod}(
-                ...$parameters
-            );
+            /** @var callable $callable */
+            $callable = [
+                $controller,
+                $controllerMethod,
+            ];
+
+            $callable(...$parameters);
 
             return;
         }
 
-        abort($methodNotAllowed ? 405 : 404);
+        abort(
+            $methodNotAllowed
+                ? 405
+                : 404
+        );
     }
 
+    /**
+     * @param array<int, string>|string $action
+     * @return array{
+     *     0: object,
+     *     1: string
+     * }
+     */
     private function resolveAction(
         array|string $action
     ): array {
         if (is_string($action))
         {
-            [$controller, $method] =
-                explode('@', $action);
+            [
+                $controller,
+                $method,
+            ] = explode('@', $action);
 
             $controller =
                 'App\\Controllers\\'
@@ -157,7 +201,10 @@ final class Router
         }
         else
         {
-            [$controller, $method] = $action;
+            [
+                $controller,
+                $method,
+            ] = $action;
         }
 
         return [
@@ -166,6 +213,9 @@ final class Router
         ];
     }
 
+    /**
+     * @param list<class-string> $middlewares
+     */
     private function runMiddlewares(
         array $middlewares,
         Request $request
@@ -195,6 +245,10 @@ final class Router
         }
     }
 
+    /**
+     * @param list<string> $routeParameters
+     * @return list<mixed>
+     */
     private function resolveMethodDependencies(
         object $controller,
         string $method,

@@ -44,6 +44,9 @@ final class Logger
         ) || is_dir($directory);
     }
 
+    /**
+     * @param array<string, mixed> $context
+     */
     private static function write(
         string $level,
         string $message,
@@ -53,12 +56,6 @@ final class Logger
         {
             return;
         }
-
-        /*
-        |-----------------------------------------
-        | Désactive DEBUG en production
-        |-----------------------------------------
-        */
 
         if (
             strtoupper($level) === 'DEBUG'
@@ -105,6 +102,9 @@ final class Logger
         );
     }
 
+    /**
+     * @param array<string, mixed> $context
+     */
     public static function debug(
         string $message,
         array $context = []
@@ -116,6 +116,9 @@ final class Logger
         );
     }
 
+    /**
+     * @param array<string, mixed> $context
+     */
     public static function info(
         string $message,
         array $context = []
@@ -127,6 +130,9 @@ final class Logger
         );
     }
 
+    /**
+     * @param array<string, mixed> $context
+     */
     public static function warning(
         string $message,
         array $context = []
@@ -138,6 +144,9 @@ final class Logger
         );
     }
 
+    /**
+     * @param array<string, mixed> $context
+     */
     public static function error(
         string $message,
         array $context = []
@@ -149,18 +158,24 @@ final class Logger
         );
     }
 
+    /**
+     * @param array<string, mixed> $context
+     */
     public static function exception(
         Throwable $exception,
         array $context = []
     ): void {
         self::error(
             $exception->getMessage(),
-            array_merge($context, [
-                'exception' => $exception::class,
-                'file' => $exception->getFile(),
-                'line' => $exception->getLine(),
-                'trace' => $exception->getTraceAsString(),
-            ])
+            array_merge(
+                $context,
+                [
+                    'exception' => $exception::class,
+                    'file' => $exception->getFile(),
+                    'line' => $exception->getLine(),
+                    'trace' => $exception->getTraceAsString(),
+                ]
+            )
         );
     }
 }
