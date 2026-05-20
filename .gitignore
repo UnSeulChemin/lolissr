@@ -45,9 +45,11 @@ notes.txt
 # UPLOADS
 #################################
 
-/public/images/
+/public/images/*
+!/public/images/.gitkeep
 
-/tests/tmp-uploads/
+/tests/Http/tmp-uploads/*
+!/tests/Http/tmp-uploads/.gitkeep
 
 #################################
 # DEPENDANCES
