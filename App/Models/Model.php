@@ -207,6 +207,7 @@ abstract class Model
     }
 
     /**
+     * @param array<string, mixed> $where
      * @return array<int, object>
      */
     public function findBy(
@@ -305,6 +306,10 @@ abstract class Model
         );
     }
 
+    /**
+     * @param array<string, mixed> $data
+     * @param array<string, mixed> $where
+     */
     public function update(
         array $data,
         array $where
@@ -361,6 +366,9 @@ abstract class Model
         );
     }
 
+    /**
+     * @param array<string, mixed> $where
+     */
     public function delete(
         array $where
     ): bool {

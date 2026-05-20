@@ -4,79 +4,81 @@ declare(strict_types=1);
 
 namespace App\Core\Validation;
 
-class Validator
+final class Validator
 {
     /**
-     * Données à valider.
+     * @var array<string, mixed>
      */
     private array $data;
 
     /**
-     * Fichiers à valider.
+     * @var array<string, array<string, mixed>>
      */
     private array $files;
 
     /**
-     * Liste des erreurs.
+     * @var array<string, string>
      */
     private array $errors = [];
 
     /**
-     * Champs autorisés à être vides.
+     * @var list<string>
      */
     private array $nullable = [];
 
-    public function __construct(array $data, array $files = [])
-    {
+    /**
+     * @param array<string, mixed> $data
+     * @param array<string, array<string, mixed>> $files
+     */
+    public function __construct(
+        array $data,
+        array $files = []
+    ) {
         $this->data = $data;
         $this->files = $files;
     }
 
-    /**
-     * Vérifie si un champ a déjà une erreur.
-     */
-    private function hasError(string $field): bool
-    {
+    private function hasError(
+        string $field
+    ): bool {
         return isset($this->errors[$field]);
     }
 
-    /**
-     * Vérifie si un champ nullable est vide.
-     */
-    private function isNullableAndEmpty(string $field): bool
-    {
-        if (!in_array($field, $this->nullable, true))
-        {
+    private function isNullableAndEmpty(
+        string $field
+    ): bool {
+        if (
+            !in_array(
+                $field,
+                $this->nullable,
+                true
+            )
+        ) {
             return false;
         }
 
-        $value = trim((string) ($this->data[$field] ?? ''));
+        $value = trim(
+            (string) ($this->data[$field] ?? '')
+        );
 
         return $value === '';
     }
 
-    /**
-     * Vérifie si une validation texte doit être ignorée.
-     */
-    private function shouldSkip(string $field): bool
-    {
-        return $this->hasError($field) || $this->isNullableAndEmpty($field);
+    private function shouldSkip(
+        string $field
+    ): bool {
+        return $this->hasError($field)
+            || $this->isNullableAndEmpty($field);
     }
 
-    /**
-     * Vérifie si un fichier a été envoyé.
-     */
-    private function hasUploadedFile(string $field): bool
-    {
+    private function hasUploadedFile(
+        string $field
+    ): bool {
         if (!isset($this->files[$field])) {
             return false;
         }
 
         $file = $this->files[$field];
-
-        if (!is_array($file)) {
-            return false;
-        }
 
         if (!isset($file['tmp_name'])) {
             return false;
@@ -86,52 +88,56 @@ class Validator
             && $file['tmp_name'] !== '';
     }
 
-    /**
-     * Vérifie si une validation fichier doit être ignorée.
-     */
-    private function shouldSkipFile(string $field): bool
-    {
-        return $this->hasError($field) || !$this->hasUploadedFile($field);
+    private function shouldSkipFile(
+        string $field
+    ): bool {
+        return $this->hasError($field)
+            || !$this->hasUploadedFile($field);
     }
 
-    /**
-     * Autorise un champ vide.
-     */
-    public function nullable(string $field): self
-    {
-        if (!in_array($field, $this->nullable, true))
-        {
+    public function nullable(
+        string $field
+    ): self {
+        if (
+            !in_array(
+                $field,
+                $this->nullable,
+                true
+            )
+        ) {
             $this->nullable[] = $field;
         }
 
         return $this;
     }
 
-    /**
-     * Champ obligatoire.
-     */
-    public function required(string $field, ?string $message = null): self
-    {
+    public function required(
+        string $field,
+        ?string $message = null
+    ): self {
         if ($this->hasError($field))
         {
             return $this;
         }
 
-        $value = trim((string) ($this->data[$field] ?? ''));
+        $value = trim(
+            (string) ($this->data[$field] ?? '')
+        );
 
         if ($value === '')
         {
-            $this->errors[$field] = $message ?? "Le champ {$field} est obligatoire.";
+            $this->errors[$field] =
+                $message
+                ?? "Le champ {$field} est obligatoire.";
         }
 
         return $this;
     }
 
-    /**
-     * Vérifie que c'est une chaîne.
-     */
-    public function string(string $field, ?string $message = null): self
-    {
+    public function string(
+        string $field,
+        ?string $message = null
+    ): self {
         if ($this->shouldSkip($field))
         {
             return $this;
@@ -141,17 +147,18 @@ class Validator
 
         if (!is_string($value))
         {
-            $this->errors[$field] = $message ?? "Le champ {$field} doit être une chaîne.";
+            $this->errors[$field] =
+                $message
+                ?? "Le champ {$field} doit être une chaîne.";
         }
 
         return $this;
     }
 
-    /**
-     * Entier valide.
-     */
-    public function integer(string $field, ?string $message = null): self
-    {
+    public function integer(
+        string $field,
+        ?string $message = null
+    ): self {
         if ($this->shouldSkip($field))
         {
             return $this;
@@ -159,19 +166,25 @@ class Validator
 
         $value = $this->data[$field] ?? null;
 
-        if (filter_var($value, FILTER_VALIDATE_INT) === false)
-        {
-            $this->errors[$field] = $message ?? "Le champ {$field} doit être un entier.";
+        if (
+            filter_var(
+                $value,
+                FILTER_VALIDATE_INT
+            ) === false
+        ) {
+            $this->errors[$field] =
+                $message
+                ?? "Le champ {$field} doit être un entier.";
         }
 
         return $this;
     }
 
-    /**
-     * Valeur minimale.
-     */
-    public function min(string $field, int $min, ?string $message = null): self
-    {
+    public function min(
+        string $field,
+        int $min,
+        ?string $message = null
+    ): self {
         if ($this->shouldSkip($field))
         {
             return $this;
@@ -179,19 +192,26 @@ class Validator
 
         $value = $this->data[$field] ?? null;
 
-        if (filter_var($value, FILTER_VALIDATE_INT) === false || (int) $value < $min)
-        {
-            $this->errors[$field] = $message ?? "Le champ {$field} doit être supérieur ou égal à {$min}.";
+        if (
+            filter_var(
+                $value,
+                FILTER_VALIDATE_INT
+            ) === false
+            || (int) $value < $min
+        ) {
+            $this->errors[$field] =
+                $message
+                ?? "Le champ {$field} doit être supérieur ou égal à {$min}.";
         }
 
         return $this;
     }
 
-    /**
-     * Valeur maximale.
-     */
-    public function max(string $field, int $max, ?string $message = null): self
-    {
+    public function max(
+        string $field,
+        int $max,
+        ?string $message = null
+    ): self {
         if ($this->shouldSkip($field))
         {
             return $this;
@@ -199,39 +219,53 @@ class Validator
 
         $value = $this->data[$field] ?? null;
 
-        if (filter_var($value, FILTER_VALIDATE_INT) === false || (int) $value > $max)
-        {
-            $this->errors[$field] = $message ?? "Le champ {$field} doit être inférieur ou égal à {$max}.";
+        if (
+            filter_var(
+                $value,
+                FILTER_VALIDATE_INT
+            ) === false
+            || (int) $value > $max
+        ) {
+            $this->errors[$field] =
+                $message
+                ?? "Le champ {$field} doit être inférieur ou égal à {$max}.";
         }
 
         return $this;
     }
 
-    /**
-     * Longueur maximale.
-     */
-    public function maxLength(string $field, int $max, ?string $message = null): self
-    {
+    public function maxLength(
+        string $field,
+        int $max,
+        ?string $message = null
+    ): self {
         if ($this->shouldSkip($field))
         {
             return $this;
         }
 
-        $value = trim((string) ($this->data[$field] ?? ''));
+        $value = trim(
+            (string) ($this->data[$field] ?? '')
+        );
 
         if (mb_strlen($value) > $max)
         {
-            $this->errors[$field] = $message ?? "Le champ {$field} ne doit pas dépasser {$max} caractères.";
+            $this->errors[$field] =
+                $message
+                ?? "Le champ {$field} ne doit pas dépasser {$max} caractères.";
         }
 
         return $this;
     }
 
     /**
-     * Vérifie qu'une valeur fait partie d'une liste autorisée.
+     * @param list<string> $allowedValues
      */
-    public function in(string $field, array $allowedValues, ?string $message = null): self
-    {
+    public function in(
+        string $field,
+        array $allowedValues,
+        ?string $message = null
+    ): self {
         if ($this->shouldSkip($field))
         {
             return $this;
@@ -239,19 +273,25 @@ class Validator
 
         $value = $this->data[$field] ?? null;
 
-        if (!in_array($value, $allowedValues, true))
-        {
-            $this->errors[$field] = $message ?? "Valeur invalide pour {$field}.";
+        if (
+            !in_array(
+                $value,
+                $allowedValues,
+                true
+            )
+        ) {
+            $this->errors[$field] =
+                $message
+                ?? "Valeur invalide pour {$field}.";
         }
 
         return $this;
     }
 
-    /**
-     * Vérifie qu'un fichier a été envoyé.
-     */
-    public function fileRequired(string $field, ?string $message = null): self
-    {
+    public function fileRequired(
+        string $field,
+        ?string $message = null
+    ): self {
         if ($this->hasError($field))
         {
             return $this;
@@ -259,17 +299,18 @@ class Validator
 
         if (!$this->hasUploadedFile($field))
         {
-            $this->errors[$field] = $message ?? "Le fichier {$field} est obligatoire.";
+            $this->errors[$field] =
+                $message
+                ?? "Le fichier {$field} est obligatoire.";
         }
 
         return $this;
     }
 
-    /**
-     * Vérifie que l'upload du fichier s'est bien passé.
-     */
-    public function fileOk(string $field, ?string $message = null): self
-    {
+    public function fileOk(
+        string $field,
+        ?string $message = null
+    ): self {
         if ($this->hasError($field))
         {
             return $this;
@@ -280,19 +321,26 @@ class Validator
             return $this;
         }
 
-        if ($this->files[$field]['error'] !== UPLOAD_ERR_OK)
+        $error = $this->files[$field]['error'] ?? null;
+
+        if ($error !== UPLOAD_ERR_OK)
         {
-            $this->errors[$field] = $message ?? "Erreur lors de l'envoi du fichier {$field}.";
+            $this->errors[$field] =
+                $message
+                ?? "Erreur lors de l'envoi du fichier {$field}.";
         }
 
         return $this;
     }
 
     /**
-     * Vérifie l'extension d'une image.
+     * @param list<string> $allowedExtensions
      */
-    public function imageExtension(string $field, array $allowedExtensions, ?string $message = null): self
-    {
+    public function imageExtension(
+        string $field,
+        array $allowedExtensions,
+        ?string $message = null
+    ): self {
         if ($this->shouldSkipFile($field))
         {
             return $this;
@@ -302,30 +350,48 @@ class Validator
 
         if (!is_string($name) || $name === '')
         {
-            $this->errors[$field] = $message ?? "Extension invalide pour {$field}.";
+            $this->errors[$field] =
+                $message
+                ?? "Extension invalide pour {$field}.";
+
             return $this;
         }
 
-        $extension = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+        $extension = strtolower(
+            pathinfo(
+                $name,
+                PATHINFO_EXTENSION
+            )
+        );
 
         if ($extension === 'jpeg')
         {
             $extension = 'jpg';
         }
 
-        if (!in_array($extension, $allowedExtensions, true))
-        {
-            $this->errors[$field] = $message ?? "Format de fichier non autorisé pour {$field}.";
+        if (
+            !in_array(
+                $extension,
+                $allowedExtensions,
+                true
+            )
+        ) {
+            $this->errors[$field] =
+                $message
+                ?? "Format de fichier non autorisé pour {$field}.";
         }
 
         return $this;
     }
 
     /**
-     * Vérifie le vrai type MIME de l'image.
+     * @param list<string> $allowedMimeTypes
      */
-    public function imageMime(string $field, array $allowedMimeTypes, ?string $message = null): self
-    {
+    public function imageMime(
+        string $field,
+        array $allowedMimeTypes,
+        ?string $message = null
+    ): self {
         if ($this->shouldSkipFile($field))
         {
             return $this;
@@ -333,9 +399,15 @@ class Validator
 
         $tmpName = $this->files[$field]['tmp_name'] ?? null;
 
-        if (!is_string($tmpName) || $tmpName === '' || !is_file($tmpName))
-        {
-            $this->errors[$field] = $message ?? "Fichier temporaire invalide pour {$field}.";
+        if (
+            !is_string($tmpName)
+            || $tmpName === ''
+            || !is_file($tmpName)
+        ) {
+            $this->errors[$field] =
+                $message
+                ?? "Fichier temporaire invalide pour {$field}.";
+
             return $this;
         }
 
@@ -343,26 +415,41 @@ class Validator
 
         if ($finfo === false)
         {
-            $this->errors[$field] = $message ?? "Impossible de vérifier le type MIME de {$field}.";
+            $this->errors[$field] =
+                $message
+                ?? "Impossible de vérifier le type MIME de {$field}.";
+
             return $this;
         }
 
-        $mimeType = finfo_file($finfo, $tmpName);
+        $mimeType = finfo_file(
+            $finfo,
+            $tmpName
+        );
+
         finfo_close($finfo);
 
-        if ($mimeType === false || !in_array($mimeType, $allowedMimeTypes, true))
-        {
-            $this->errors[$field] = $message ?? "Type MIME non autorisé pour {$field}.";
+        if (
+            $mimeType === false
+            || !in_array(
+                $mimeType,
+                $allowedMimeTypes,
+                true
+            )
+        ) {
+            $this->errors[$field] =
+                $message
+                ?? "Type MIME non autorisé pour {$field}.";
         }
 
         return $this;
     }
 
-    /**
-     * Vérifie la taille maximale d'un fichier.
-     */
-    public function maxFileSize(string $field, int $maxBytes, ?string $message = null): self
-    {
+    public function maxFileSize(
+        string $field,
+        int $maxBytes,
+        ?string $message = null
+    ): self {
         if ($this->shouldSkipFile($field))
         {
             return $this;
@@ -370,33 +457,37 @@ class Validator
 
         $size = $this->files[$field]['size'] ?? null;
 
-        if (!is_int($size) && !ctype_digit((string) $size))
-        {
-            $this->errors[$field] = $message ?? "Taille invalide pour {$field}.";
+        if (
+            !is_int($size)
+            && !ctype_digit((string) $size)
+        ) {
+            $this->errors[$field] =
+                $message
+                ?? "Taille invalide pour {$field}.";
+
             return $this;
         }
 
         if ((int) $size > $maxBytes)
         {
-            $this->errors[$field] = $message ?? "Le fichier {$field} dépasse la taille autorisée.";
+            $this->errors[$field] =
+                $message
+                ?? "Le fichier {$field} dépasse la taille autorisée.";
         }
 
         return $this;
     }
 
     /**
-     * Retourne toutes les erreurs.
+     * @return array<string, string>
      */
     public function errors(): array
     {
         return $this->errors;
     }
 
-    /**
-     * Indique si la validation a échoué.
-     */
     public function fails(): bool
     {
-        return !empty($this->errors);
+        return $this->errors !== [];
     }
 }

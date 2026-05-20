@@ -6,6 +6,12 @@ namespace App\DTO\Home;
 
 final class DashboardStats
 {
+    /**
+     * @param array<int, object> $topLongestSeries
+     * @param array<int, object> $lowRatedMangas
+     * @param array<int, object> $lowJacquetteMangas
+     * @param array<int, object> $lowLivreStateMangas
+     */
     public function __construct(
         public int $totalTomes,
         public int $totalSeries,

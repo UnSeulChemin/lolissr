@@ -6,6 +6,9 @@ namespace App\DTO\Http;
 
 final readonly class ServiceResult
 {
+    /**
+     * @param array<string, mixed> $data
+     */
     public function __construct(
         public bool $success,
         public int $status,
@@ -13,6 +16,9 @@ final readonly class ServiceResult
         public array $data = [],
     ) {}
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(): array
     {
         return [

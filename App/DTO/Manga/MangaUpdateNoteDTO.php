@@ -13,6 +13,9 @@ final class MangaUpdateNoteDTO
         public readonly ?int $livreNote
     ) {}
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public static function fromArray(
         array $data
     ): self {
@@ -27,6 +30,9 @@ final class MangaUpdateNoteDTO
         );
     }
 
+    /**
+     * @param array<string, mixed> $post
+     */
     public static function fromPost(
         array $post
     ): self {
