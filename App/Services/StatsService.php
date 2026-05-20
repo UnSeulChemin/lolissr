@@ -4,34 +4,38 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Repositories\Manga\MangaRepository;
+use App\Repositories\Manga\MangaStatsRepository;
 
 final class StatsService
 {
     public function __construct(
-        private readonly MangaRepository $repository
+        private readonly MangaStatsRepository $repository
     ) {}
 
     public function totalTomes(): int
     {
-        return $this->repository->countAllTomes();
+        return $this->repository
+            ->countAllTomes();
     }
 
     public function totalSeries(): int
     {
-        return $this->repository->countSeries();
+        return $this->repository
+            ->countSeries();
     }
 
     public function totalRead(): int
     {
-        return $this->repository->countRead();
+        return $this->repository
+            ->countRead();
     }
 
     public function totalUnread(): int
     {
         return max(
             0,
-            $this->totalTomes() - $this->totalRead()
+            $this->totalTomes()
+            - $this->totalRead()
         );
     }
 
@@ -41,24 +45,28 @@ final class StatsService
 
         return $total > 0
             ? (int) round(
-                ($this->totalRead() / $total) * 100
+                ($this->totalRead() / $total)
+                * 100
             )
             : 0;
     }
 
     public function averageNote(): ?float
     {
-        return $this->repository->averageNote();
+        return $this->repository
+            ->averageNote();
     }
 
     public function lastTome(): ?object
     {
-        return $this->repository->findLastAdded();
+        return $this->repository
+            ->findLastAdded();
     }
 
     public function longestSeries(): ?object
     {
-        return $this->repository->findLongestSeries();
+        return $this->repository
+            ->findLongestSeries();
     }
 
     /**

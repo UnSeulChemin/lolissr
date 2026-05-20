@@ -7,14 +7,16 @@ namespace App\Services\Manga;
 use App\Core\Application\App;
 use App\Core\Support\Str;
 use App\DTO\Manga\Responses\MangaSearchData;
-use App\DTO\Manga\Responses\MangaSeriesData;
 use App\DTO\Manga\Responses\MangaShowData;
+use App\DTO\Manga\Responses\MangaSeriesData;
 use App\Repositories\Manga\MangaRepository;
+use App\Repositories\Manga\MangaSearchRepository;
 
 final class MangaReadService
 {
     public function __construct(
-        private readonly MangaRepository $mangaRepository
+        private readonly MangaRepository $mangaRepository,
+        private readonly MangaSearchRepository $searchRepository,
     ) {}
 
     public function repository(): MangaRepository
@@ -59,7 +61,7 @@ final class MangaReadService
 
         $pagination = App::pagination();
 
-        $compteur = $this->mangaRepository
+        $compteur = $this->searchRepository
             ->countFirstTomesPaginate(
                 $pagination
             );
@@ -71,7 +73,7 @@ final class MangaReadService
             return null;
         }
 
-        $mangas = $this->mangaRepository
+        $mangas = $this->searchRepository
             ->findAllFirstTomes(
                 'id DESC',
                 $pagination,
@@ -101,7 +103,7 @@ final class MangaReadService
             );
         }
 
-        $mangas = $this->mangaRepository
+        $mangas = $this->searchRepository
             ->searchMangas($search);
 
         return new MangaSearchData(
@@ -132,7 +134,7 @@ final class MangaReadService
             return [];
         }
 
-        $mangas = $this->mangaRepository
+        $mangas = $this->searchRepository
             ->searchMangas($search);
 
         $results = [];
