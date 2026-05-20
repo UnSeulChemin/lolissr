@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace Framework\Exceptions;
 
 use App\Controllers\Controller;
-use Framework\Application\App;
-use Framework\Support\Logger;
 use ErrorException;
+use Framework\Application\App;
+use Framework\Http\Request;
+use Framework\Support\Logger;
 use Throwable;
 
 final class ErrorHandler
@@ -51,36 +52,44 @@ final class ErrorHandler
     public static function handleException(
         Throwable $exception,
     ): never {
-        if (
-            $exception instanceof HttpException
-        ) {
-            Logger::warning(
-                'HTTP Exception',
+        try {
+            if (
+                $exception instanceof HttpException
+            ) {
+                Logger::warning(
+                    'HTTP Exception',
+                    [
+                        'status' => $exception->getStatusCode(),
+                        'message' => $exception->getMessage(),
+                    ],
+                );
+
+                self::renderHttpException(
+                    $exception,
+                );
+            }
+
+            Logger::exception(
+                $exception,
                 [
-                    'status' => $exception->getStatusCode(),
-                    'message' => $exception->getMessage(),
+                    'type' => 'uncaught_exception',
                 ],
             );
 
-            self::renderHttpException(
-                $exception,
+            if (App::debug()) {
+                self::renderDebug(
+                    $exception,
+                );
+            }
+
+            self::render500();
+        } catch (Throwable) {
+            http_response_code(500);
+
+            exit(
+                'Critical framework error.'
             );
         }
-
-        Logger::exception(
-            $exception,
-            [
-                'type' => 'uncaught_exception',
-            ],
-        );
-
-        if (App::debug()) {
-            self::renderDebug(
-                $exception,
-            );
-        }
-
-        self::render500();
     }
 
     public static function handleShutdown(): void
@@ -141,10 +150,18 @@ final class ErrorHandler
         self::render500();
     }
 
+    private static function controller(): Controller
+    {
+        return new class (
+            Request::capture(),
+        ) extends Controller {
+        };
+    }
+
     private static function renderHttpException(
         HttpException $exception,
     ): never {
-        $controller = new class () extends Controller {};
+        $controller = self::controller();
 
         match ($exception->getStatusCode()) {
 
@@ -164,11 +181,10 @@ final class ErrorHandler
 
     private static function render500(): never
     {
-        $controller = new class () extends Controller {};
-
-        $controller->renderServerErrorPage(
-            'Erreur interne du serveur.',
-        );
+        self::controller()
+            ->renderServerErrorPage(
+                'Erreur interne du serveur.',
+            );
     }
 
     private static function renderDebug(

@@ -213,10 +213,9 @@ abstract class Controller
         );
 
         if (!is_file($viewPath)) {
-            Response::html(
+            throw new RuntimeException(
                 'Vue erreur introuvable : '
                 . $file,
-                500,
             );
         }
 
@@ -232,10 +231,9 @@ abstract class Controller
         $templatePath = $this->templatePath();
 
         if (!is_file($templatePath)) {
-            Response::html(
+            throw new RuntimeException(
                 'Template introuvable : '
                 . $this->template,
-                500,
             );
         }
 
