@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers\Chinois;
 
-use App\Core\Http\Request;
+use Framework\Http\Request;
 use App\Repositories\Chinois\ChinoisGrammaireRepository;
 
 final class ChinoisAjaxController

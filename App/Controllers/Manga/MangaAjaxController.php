@@ -6,7 +6,7 @@ namespace App\Controllers\Manga;
 
 use App\Controllers\Controller;
 use App\Core\Application\App;
-use App\Core\Http\Request;
+use Framework\Http\Request;
 use App\Http\Requests\Manga\MangaUpdateNoteRequest;
 use App\Services\Manga\MangaReadService;
 use App\Services\Manga\MangaWriteService;

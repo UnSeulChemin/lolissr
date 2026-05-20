@@ -9,8 +9,8 @@ use App\Core\Config\Env;
 use App\Core\Container\AppContainer;
 use App\Core\Container\Container;
 use App\Core\Exceptions\ErrorHandler;
-use App\Core\Http\Request;
-use App\Core\Http\Router;
+use Framework\Http\Request;
+use Framework\Http\Router;
 
 final class Bootstrap
 {

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Controllers\Chinois;
 
 use App\Controllers\Controller;
-use App\Core\Http\Request;
 use App\Repositories\Chinois\ChinoisGrammaireRepository;
 use App\Services\Chinois\ChinoisReadService;
 
@@ -24,7 +23,7 @@ final class ChinoisController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function index(Request $request): never
+    public function index(): never
     {
         $this->title = 'Chinois';
 
@@ -37,7 +36,7 @@ final class ChinoisController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function mandarin(Request $request): never
+    public function mandarin(): never
     {
         $this->title = 'Chinois | Mandarin';
 
@@ -52,7 +51,7 @@ final class ChinoisController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function jinyu(Request $request): never
+    public function jinyu(): never
     {
         $this->title = 'Chinois | 晋语';
 
@@ -67,7 +66,7 @@ final class ChinoisController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function grammaire(Request $request): never
+    public function grammaire(): never
     {
         $this->title = 'Chinois | Grammaire';
 
@@ -81,7 +80,6 @@ final class ChinoisController extends Controller
     */
 
     public function hsk(
-        Request $request,
         string $level,
     ): never {
         /*
@@ -141,7 +139,7 @@ final class ChinoisController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function flashcards(Request $request): never
+    public function flashcards(): never
     {
         $this->title = 'Chinois | Flashcards';
 
@@ -154,7 +152,7 @@ final class ChinoisController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function ajouter(Request $request): never
+    public function ajouter(): never
     {
         $this->title = 'Chinois | Ajouter';
 

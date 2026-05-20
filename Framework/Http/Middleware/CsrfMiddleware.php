@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Core\Http\Middleware;
+namespace Framework\Http\Middleware;
 
 use App\Core\Application\App;
-use App\Core\Http\Request;
+use Framework\Http\Request;
 use App\Core\Support\Session;
 
 final class CsrfMiddleware implements MiddlewareInterface

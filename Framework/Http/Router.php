@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Core\Http;
+namespace Framework\Http;
 
 use App\Core\Container\AppContainer;
-use App\Core\Http\Middleware\MiddlewareInterface;
+use Framework\Http\Middleware\MiddlewareInterface;
 use Closure;
 use ReflectionMethod;
 use ReflectionNamedType;

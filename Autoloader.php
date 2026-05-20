@@ -15,36 +15,46 @@ class Autoloader
     }
 
     /**
-     * Charge automatiquement les classes du namespace App.
+     * Charge automatiquement les classes.
      */
     public static function autoload(string $class): void
     {
-        if (!str_starts_with($class, 'App\\'))
+        $prefixes = [
+            'App\\' => 'App',
+            'Framework\\' => 'Framework',
+        ];
+
+        foreach ($prefixes as $prefix => $baseDir)
         {
+            if (!str_starts_with($class, $prefix))
+            {
+                continue;
+            }
+
+            $relativeClass = substr(
+                $class,
+                strlen($prefix)
+            );
+
+            $relativeClass = str_replace(
+                '\\',
+                DIRECTORY_SEPARATOR,
+                $relativeClass
+            );
+
+            $file = ROOT
+                . DIRECTORY_SEPARATOR
+                . $baseDir
+                . DIRECTORY_SEPARATOR
+                . $relativeClass
+                . '.php';
+
+            if (is_file($file))
+            {
+                require_once $file;
+            }
+
             return;
-        }
-
-        // Supprime "App\"
-        $relativeClass = substr($class, 4);
-
-        // Convertit namespace en chemin
-        $relativeClass = str_replace(
-            '\\',
-            DIRECTORY_SEPARATOR,
-            $relativeClass
-        );
-
-        // Chemin vers App/
-        $file = ROOT
-            . DIRECTORY_SEPARATOR
-            . 'App'
-            . DIRECTORY_SEPARATOR
-            . $relativeClass
-            . '.php';
-
-        if (is_file($file))
-        {
-            require_once $file;
         }
     }
 }

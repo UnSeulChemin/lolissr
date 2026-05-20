@@ -10,11 +10,11 @@ use App\Controllers\Manga\MangaController;
 use App\Controllers\Chinois\ChinoisAjaxController;
 use App\Controllers\Chinois\ChinoisController;
 
-use App\Core\Http\Middleware\AjaxOnlyMiddleware;
-use App\Core\Http\Middleware\CsrfMiddleware;
-use App\Core\Http\Middleware\PostOnlyMiddleware;
+use Framework\Http\Middleware\AjaxOnlyMiddleware;
+use Framework\Http\Middleware\CsrfMiddleware;
+use Framework\Http\Middleware\PostOnlyMiddleware;
 
-use App\Core\Http\Router;
+use Framework\Http\Router;
 
 return static function (Router $router): void {
 

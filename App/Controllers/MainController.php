@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\Cache\Cache;
-use App\Core\Http\Request;
+use Framework\Http\Request;
 use App\Services\StatsService;
 
 final class MainController extends Controller

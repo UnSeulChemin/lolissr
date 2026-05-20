@@ -7,8 +7,8 @@ namespace App\Controllers;
 use App\Core\Application\App;
 use App\Core\Exceptions\MethodNotAllowedException;
 use App\Core\Exceptions\NotFoundException;
-use App\Core\Http\Request;
-use App\Core\Http\Response;
+use Framework\Http\Request;
+use Framework\Http\Response;
 use App\Core\Support\Session;
 
 abstract class Controller

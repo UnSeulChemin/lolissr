@@ -7,8 +7,8 @@ use App\Core\Application\App;
 use App\Core\Config\Config;
 use App\Core\Config\Env;
 use App\Core\Container\AppContainer;
-use App\Core\Http\Request;
-use App\Core\Http\Response;
+use Framework\Http\Request;
+use Framework\Http\Response;
 use App\Core\Support\Session;
 
 /*
