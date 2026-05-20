@@ -25,37 +25,37 @@ abstract class FormRequest
 
     abstract public function dto(): object;
 
-    public function passes(): bool
+    final public function passes(): bool
     {
         return !$this->fails();
     }
 
-    public function fails(): bool
+    final public function fails(): bool
     {
         return $this->validator->fails();
     }
 
-    public function errors(): array
+    final public function errors(): array
     {
         return $this->validator->errors();
     }
 
-    public function validated(): array
+    final public function validated(): array
     {
         return $this->request->postAll();
     }
 
-    public function files(): array
+    final public function files(): array
     {
         return $this->request->files();
     }
 
-    public function all(): array
+    final public function all(): array
     {
         return $this->request->all();
     }
 
-    protected function input(
+    final protected function input(
         string $key,
         mixed $default = null
     ): mixed {

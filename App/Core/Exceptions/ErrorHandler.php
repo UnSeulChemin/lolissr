@@ -50,7 +50,7 @@ final class ErrorHandler
 
     public static function handleException(
         Throwable $exception
-    ): void {
+    ): never {
         if (
             $exception instanceof HttpException
         ) {
@@ -65,8 +65,6 @@ final class ErrorHandler
             self::renderHttpException(
                 $exception
             );
-
-            exit;
         }
 
         Logger::exception(
@@ -165,8 +163,6 @@ final class ErrorHandler
                 $exception->getMessage()
             ),
         };
-
-        exit;
     }
 
     private static function render500(): never
@@ -176,8 +172,6 @@ final class ErrorHandler
         $controller->renderServerErrorPage(
             'Erreur interne du serveur.'
         );
-
-        exit;
     }
 
     private static function renderDebug(

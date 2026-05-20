@@ -230,6 +230,14 @@ final class Request
             ?? $default;
     }
 
+    public function userAgent(): string
+    {
+        return (string) $this->server(
+            'HTTP_USER_AGENT',
+            ''
+        );
+    }
+
     public function isAjax(): bool
     {
         return strtolower(

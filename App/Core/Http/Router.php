@@ -78,7 +78,7 @@ final class Router
         ];
     }
 
-    public function dispatch(): never
+    public function dispatch(): void
     {
         $request = $this->resolve(Request::class);
 
@@ -116,6 +116,8 @@ final class Router
             if ($route['action'] instanceof Closure)
             {
                 $route['action'](...$matches);
+
+                return;
             }
 
             [$controller, $controllerMethod] =
@@ -134,6 +136,8 @@ final class Router
             $controller->{$controllerMethod}(
                 ...$parameters
             );
+
+            return;
         }
 
         abort($methodNotAllowed ? 405 : 404);
