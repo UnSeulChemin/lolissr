@@ -31,9 +31,13 @@ $basePath = rtrim(
 
     <div class="collection-ajax-container is-loading">
 
-        <div class="collection-scroll-anchor" aria-hidden="true"></div>
+        <div
+            class="collection-scroll-anchor"
+            aria-hidden="true"></div>
 
-        <div class="collection-skeleton" aria-hidden="true">
+        <div
+            class="collection-skeleton"
+            aria-hidden="true">
 
             <?php for ($i = 1; $i <= 8; $i++): ?>
 
@@ -66,51 +70,45 @@ $basePath = rtrim(
                     <?php foreach ($mangas as $manga): ?>
 
                         <?php
-                        $slug = isset($manga->slug)
-                            ? (string) $manga->slug
-                            : '';
+                        $slug = (string) ($manga->slug ?? '');
+                        $numero = (int) ($manga->numero ?? 0);
+                        $livre = (string) ($manga->livre ?? '');
 
-                        $numero = isset($manga->numero)
-                            ? (int) $manga->numero
-                            : 0;
+                        $thumbnail = $manga->thumbnail ?? null;
+                        $extension = $manga->extension ?? null;
 
-                        $thumbnail = isset($manga->thumbnail)
-                            ? (string) $manga->thumbnail
-                            : '';
+                        $statut = (string) (
+                            $manga->statut
+                            ?? 'en_cours'
+                        );
 
-                        $extension = isset($manga->extension)
-                            ? (string) $manga->extension
-                            : '';
+                        $note = $manga->note ?? null;
 
-                        $livre = isset($manga->livre)
-                            ? (string) $manga->livre
-                            : '';
+                        $averageNote = $manga->averageNote
+                            ?? $manga->average_note
+                            ?? null;
 
-                        $statut = isset($manga->statut)
-                            ? (string) $manga->statut
-                            : 'en_cours';
+                        $total = (int) (
+                            $manga->total
+                            ?? 0
+                        );
 
-                        $note = $isSerieView
-                            ? ($manga->note ?? null)
-                            : ($manga->average_note ?? null);
+                        $totalLu = (int) (
+                            $manga->totalLu
+                            ?? $manga->total_lu
+                            ?? 0
+                        );
 
-                        $total = isset($manga->total)
-                            ? (int) $manga->total
-                            : 0;
-
-                        $totalLu = isset($manga->total_lu)
-                            ? (int) $manga->total_lu
-                            : 0;
-
-                        $lu = isset($manga->lu)
-                            ? (int) $manga->lu
-                            : 0;
+                        $lu = (int) (
+                            $manga->lu
+                            ?? 0
+                        );
 
                         if (
                             $slug === ''
-                            || $thumbnail === ''
-                            || $extension === ''
                             || $livre === ''
+                            || $thumbnail === null
+                            || $extension === null
                         ) {
                             continue;
                         }
@@ -125,14 +123,18 @@ $basePath = rtrim(
                                 . 'manga/series/'
                                 . rawurlencode($slug);
 
+                        $displayNote = $isSerieView
+                            ? $note
+                            : $averageNote;
+
                         $noteClass = 'collection-note-mid';
 
-                        if ($note !== null) {
-                            $noteValue = (float) $note;
+                        if ($displayNote !== null) {
+                            $displayNote = (float) $displayNote;
 
-                            if ($noteValue >= 8) {
+                            if ($displayNote >= 8) {
                                 $noteClass = 'collection-note-good';
-                            } elseif ($noteValue <= 4) {
+                            } elseif ($displayNote <= 4) {
                                 $noteClass = 'collection-note-low';
                             }
                         }
@@ -156,14 +158,18 @@ $basePath = rtrim(
                                     : 'Série non terminée'
                             );
 
-                        $noteLabel = $isSerieView
-                            ? (string) (int) $note
-                            : number_format(
-                                (float) $note,
-                                1,
-                                ',',
-                                '',
-                            );
+                        $noteLabel = '0';
+
+                        if ($displayNote !== null) {
+                            $noteLabel = $isSerieView
+                                ? (string) (int) $displayNote
+                                : number_format(
+                                    $displayNote,
+                                    1,
+                                    ',',
+                                    '',
+                                );
+                        }
 
                         $statutLabel = $statut === 'termine'
                             ? 'Terminé'
@@ -198,9 +204,7 @@ $basePath = rtrim(
                             <span
                                 class="collection-card-badge <?= e($noteClass) ?>">
 
-                                ⭐ <?= $note !== null
-                                    ? e($noteLabel)
-                                    : '0' ?>/10
+                                ⭐ <?= e($noteLabel) ?>/10
 
                             </span>
 
@@ -239,7 +243,12 @@ $basePath = rtrim(
 
                                 <?php if ($isSerieView): ?>
 
-                                    Tome <?= str_pad((string) $numero, 2, '0', STR_PAD_LEFT) ?>
+                                    Tome <?= str_pad(
+                                        (string) $numero,
+                                        2,
+                                        '0',
+                                        STR_PAD_LEFT,
+                                    ) ?>
 
                                 <?php else: ?>
 
@@ -257,17 +266,24 @@ $basePath = rtrim(
 
             <?php endif; ?>
 
-            <?php if (!$isSerieView && $compteur > 1): ?>
+            <?php if (
+                !$isSerieView
+                && $compteur > 1
+            ): ?>
 
                 <nav class="collection-pagination">
 
-                    <?php for ($getId = 1; $getId <= $compteur; $getId++): ?>
+                    <?php for (
+                        $page = 1;
+                        $page <= $compteur;
+                        $page++
+                    ): ?>
 
                         <a
-                            class="collection-pagination-link <?= $currentPage === $getId ? 'active' : '' ?>"
-                            href="<?= e($basePath) ?>manga/series/page/<?= $getId ?>">
+                            class="collection-pagination-link <?= $currentPage === $page ? 'active' : '' ?>"
+                            href="<?= e($basePath) ?>manga/series/page/<?= $page ?>">
 
-                            <?= $getId ?>
+                            <?= $page ?>
 
                         </a>
 

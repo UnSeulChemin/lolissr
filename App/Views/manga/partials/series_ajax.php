@@ -40,51 +40,57 @@ $basePath = rtrim(
         <?php foreach ($mangas as $manga): ?>
 
             <?php
-            $slug = isset($manga->slug)
-                ? (string) $manga->slug
-                : '';
+            $slug = (string) ($manga->slug ?? '');
 
-            $numero = isset($manga->numero)
-                ? (int) $manga->numero
-                : 0;
+            $numero = (int) (
+                $manga->numero
+                ?? 0
+            );
 
-            $thumbnail = isset($manga->thumbnail)
-                ? (string) $manga->thumbnail
-                : '';
+            $thumbnail = $manga->thumbnail
+                ?? null;
 
-            $extension = isset($manga->extension)
-                ? (string) $manga->extension
-                : '';
+            $extension = $manga->extension
+                ?? null;
 
-            $livre = isset($manga->livre)
-                ? (string) $manga->livre
-                : '';
+            $livre = (string) (
+                $manga->livre
+                ?? ''
+            );
 
-            $statut = isset($manga->statut)
-                ? (string) $manga->statut
-                : 'en_cours';
+            $statut = (string) (
+                $manga->statut
+                ?? 'en_cours'
+            );
 
-            $note = $isSerieView
-                ? ($manga->note ?? null)
-                : ($manga->average_note ?? null);
+            $note = $manga->note
+                ?? null;
 
-            $total = isset($manga->total)
-                ? (int) $manga->total
-                : 0;
+            $averageNote = $manga->averageNote
+                ?? $manga->average_note
+                ?? null;
 
-            $totalLu = isset($manga->total_lu)
-                ? (int) $manga->total_lu
-                : 0;
+            $total = (int) (
+                $manga->total
+                ?? 0
+            );
 
-            $lu = isset($manga->lu)
-                ? (int) $manga->lu
-                : 0;
+            $totalLu = (int) (
+                $manga->totalLu
+                ?? $manga->total_lu
+                ?? 0
+            );
+
+            $lu = (int) (
+                $manga->lu
+                ?? 0
+            );
 
             if (
                 $slug === ''
-                || $thumbnail === ''
-                || $extension === ''
                 || $livre === ''
+                || $thumbnail === null
+                || $extension === null
             ) {
                 continue;
             }
@@ -105,14 +111,18 @@ $basePath = rtrim(
                 . '.'
                 . $extension;
 
+            $displayNote = $isSerieView
+                ? $note
+                : $averageNote;
+
             $noteClass = 'collection-note-mid';
 
-            if ($note !== null) {
-                $noteValue = (float) $note;
+            if ($displayNote !== null) {
+                $displayNote = (float) $displayNote;
 
-                if ($noteValue >= 8) {
+                if ($displayNote >= 8) {
                     $noteClass = 'collection-note-good';
-                } elseif ($noteValue <= 4) {
+                } elseif ($displayNote <= 4) {
                     $noteClass = 'collection-note-low';
                 }
             }
@@ -136,14 +146,18 @@ $basePath = rtrim(
                         : 'Série non terminée'
                 );
 
-            $noteLabel = $isSerieView
-                ? (string) (int) $note
-                : number_format(
-                    (float) $note,
-                    1,
-                    ',',
-                    '',
-                );
+            $noteLabel = '0';
+
+            if ($displayNote !== null) {
+                $noteLabel = $isSerieView
+                    ? (string) (int) $displayNote
+                    : number_format(
+                        $displayNote,
+                        1,
+                        ',',
+                        '',
+                    );
+            }
 
             $statutLabel = $statut === 'termine'
                 ? 'Terminé'
@@ -160,7 +174,8 @@ $basePath = rtrim(
 
                 <?php if (!$isSerieView): ?>
 
-                    <span class="collection-status-badge <?= e($statutClass) ?>">
+                    <span
+                        class="collection-status-badge <?= e($statutClass) ?>">
 
                         <?= e($statutLabel) ?>
 
@@ -168,11 +183,10 @@ $basePath = rtrim(
 
                 <?php endif; ?>
 
-                <span class="collection-card-badge <?= e($noteClass) ?>">
+                <span
+                    class="collection-card-badge <?= e($noteClass) ?>">
 
-                    ⭐ <?= $note !== null
-                        ? e($noteLabel)
-                        : '0' ?>/10
+                    ⭐ <?= e($noteLabel) ?>/10
 
                 </span>
 
@@ -211,7 +225,12 @@ $basePath = rtrim(
 
                     <?php if ($isSerieView): ?>
 
-                        Tome <?= str_pad((string) $numero, 2, '0', STR_PAD_LEFT) ?>
+                        Tome <?= str_pad(
+                            (string) $numero,
+                            2,
+                            '0',
+                            STR_PAD_LEFT,
+                        ) ?>
 
                     <?php else: ?>
 
@@ -229,17 +248,24 @@ $basePath = rtrim(
 
 <?php endif; ?>
 
-<?php if (!$isSerieView && $compteur > 1): ?>
+<?php if (
+    !$isSerieView
+    && $compteur > 1
+): ?>
 
     <nav class="collection-pagination">
 
-        <?php for ($getId = 1; $getId <= $compteur; $getId++): ?>
+        <?php for (
+            $page = 1;
+            $page <= $compteur;
+            $page++
+        ): ?>
 
             <a
-                class="collection-pagination-link <?= $currentPage === $getId ? 'active' : '' ?>"
-                href="<?= e($basePath) ?>manga/series/page/<?= $getId ?>">
+                class="collection-pagination-link <?= $currentPage === $page ? 'active' : '' ?>"
+                href="<?= e($basePath) ?>manga/series/page/<?= $page ?>">
 
-                <?= $getId ?>
+                <?= $page ?>
 
             </a>
 
@@ -255,7 +281,7 @@ $basePath = rtrim(
 
         <a
             class="form-submit collection-back-button"
-            href="<?= e($basePath) ?>manga/series/page/1">
+            href="<?= e($basePath) ?>manga/series">
 
             Retour
 
