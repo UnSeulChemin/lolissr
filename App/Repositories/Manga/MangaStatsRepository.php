@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories\Manga;
 
+use App\Models\Manga;
 use App\Models\Model;
 use stdClass;
 
@@ -29,7 +30,10 @@ final class MangaStatsRepository extends Model
             return $default;
         }
 
-        return property_exists($result, $field)
+        return property_exists(
+            $result,
+            $field,
+        )
             ? $result->{$field}
             : $default;
     }
@@ -46,7 +50,7 @@ final class MangaStatsRepository extends Model
     public function countSeries(): int
     {
         return (int) $this->fetchSingleValue(
-            "SELECT COUNT(DISTINCT livre) AS total
+            "SELECT COUNT(DISTINCT slug) AS total
             FROM {$this->getTable()}",
             'total',
         );
@@ -65,8 +69,12 @@ final class MangaStatsRepository extends Model
     public function averageNote(): ?float
     {
         $average = $this->fetchSingleValue(
-            "SELECT AVG(COALESCE(note, 0)) AS moyenne
-            FROM {$this->getTable()}",
+            "SELECT ROUND(
+                AVG(note),
+                1
+            ) AS moyenne
+            FROM {$this->getTable()}
+            WHERE note IS NOT NULL",
             'moyenne',
             [],
             null,
@@ -77,64 +85,101 @@ final class MangaStatsRepository extends Model
             : null;
     }
 
-    public function findLastAdded(): ?object
+    public function findLastAdded(): ?Manga
     {
-        return $this->fetchOne(
+        /** @var Manga|null $manga */
+        $manga = $this->fetchOne(
             "SELECT *
             FROM {$this->getTable()}
             ORDER BY id DESC
             LIMIT 1",
+            [],
+            Manga::class,
         );
+
+        return $manga;
     }
 
-    public function findLongestSeries(): ?object
+    public function findLongestSeries(): ?Manga
     {
-        return $this->fetchOne(
-            "SELECT m1.slug,
-                    m1.livre,
-                    m1.thumbnail,
-                    m1.extension,
-                    counts.total
-            FROM {$this->getTable()} m1
+        /** @var Manga|null $manga */
+        $manga = $this->fetchOne(
+            "SELECT
+                m.*,
+                stats.total
+
+            FROM {$this->getTable()} m
+
             INNER JOIN (
-                SELECT slug,
-                       COUNT(*) AS total
+                SELECT
+                    slug,
+                    COUNT(*) AS total
+
                 FROM {$this->getTable()}
+
                 GROUP BY slug
+
                 ORDER BY total DESC
+
                 LIMIT 1
-            ) counts ON counts.slug = m1.slug
-            WHERE m1.numero = 1
+
+            ) stats
+                ON stats.slug = m.slug
+
+            WHERE m.numero = 1
+
             LIMIT 1",
+            [],
+            Manga::class,
         );
+
+        return $manga;
     }
 
     /**
-     * @return array<int, object>
+     * @return list<Manga>
      */
     public function topLongestSeries(
         int $limit = 5,
     ): array {
-        $limit = max(1, $limit);
-
-        return $this->fetchAll(
-            "SELECT m1.slug,
-                    m1.livre,
-                    m1.thumbnail,
-                    m1.extension,
-                    counts.total
-            FROM {$this->getTable()} m1
-            INNER JOIN (
-                SELECT slug,
-                       COUNT(*) AS total
-                FROM {$this->getTable()}
-                GROUP BY slug
-                ORDER BY total DESC
-                LIMIT {$limit}
-            ) counts ON counts.slug = m1.slug
-            WHERE m1.numero = 1
-            ORDER BY counts.total DESC,
-                     m1.livre ASC",
+        $limit = max(
+            1,
+            $limit,
         );
+
+        /** @var list<Manga> $mangas */
+        $mangas = $this->fetchAll(
+            "SELECT
+                m.*,
+                stats.total
+
+            FROM {$this->getTable()} m
+
+            INNER JOIN (
+                SELECT
+                    slug,
+                    COUNT(*) AS total
+
+                FROM {$this->getTable()}
+
+                GROUP BY slug
+
+                ORDER BY total DESC
+
+                LIMIT {$limit}
+
+            ) stats
+                ON stats.slug = m.slug
+
+            WHERE m.numero = 1
+
+            ORDER BY
+                stats.total DESC,
+                m.livre ASC",
+            [],
+            Manga::class,
+        );
+
+        return $mangas;
     }
 }
