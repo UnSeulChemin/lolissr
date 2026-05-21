@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Services\Manga;
 
-use Framework\Application\App;
-use Framework\Support\Str;
 use App\DTO\Manga\Responses\MangaSearchData;
 use App\DTO\Manga\Responses\MangaSearchItemData;
 use App\DTO\Manga\Responses\MangaSeriesData;
 use App\DTO\Manga\Responses\MangaShowData;
 use App\Repositories\Manga\MangaRepository;
 use App\Repositories\Manga\MangaSearchRepository;
+use Framework\Application\App;
+use Framework\Support\Str;
 
 final class MangaReadService
 {

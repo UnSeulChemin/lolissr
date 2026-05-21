@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace App\Services\Manga;
 
-use Framework\Application\App;
-use Framework\Config\UploadConfig;
-use Framework\Support\Logger;
 use App\DTO\Common\ServiceResultData;
 use App\DTO\Manga\Inputs\MangaCreateDTO;
 use App\DTO\Manga\Inputs\MangaUpdateDTO;
@@ -17,6 +14,9 @@ use App\DTO\Manga\Results\UpdateNoteData;
 use App\DTO\Upload\UploadThumbnailData;
 use App\Repositories\Manga\MangaRepository;
 use App\Services\UploadService;
+use Framework\Application\App;
+use Framework\Config\UploadConfig;
+use Framework\Support\Logger;
 
 final class MangaWriteService
 {

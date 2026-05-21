@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Repositories\Manga;
 
-use Framework\Support\Str;
 use App\Models\Manga;
 use App\Models\Model;
+use Framework\Support\Str;
 
 final class MangaSearchRepository extends Model
 {

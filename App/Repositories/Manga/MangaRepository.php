@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Repositories\Manga;
 
+use App\Models\Manga;
+use App\Models\Model;
 use Framework\Application\App;
 use Framework\Support\MangaNoteNormalizer;
 use Framework\Support\Str;
-use App\Models\Manga;
-use App\Models\Model;
 use LogicException;
 
 final class MangaRepository extends Model

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Manga;
 
-use Framework\Http\FormRequest;
 use App\DTO\Manga\Inputs\MangaUpdateDTO;
+use Framework\Http\FormRequest;
 
 final class MangaUpdateRequest extends FormRequest
 {
