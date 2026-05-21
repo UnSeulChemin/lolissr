@@ -42,26 +42,6 @@ return static function (Router $router): void {
 
     /*
     |--------------------------------------------------------------------------
-    | Anciennes URLs -> Redirections SEO
-    |--------------------------------------------------------------------------
-    */
-
-    $router->get('/manga/collection', function (): void {
-        redirect('manga/series', 301);
-    });
-
-    $router->get(
-        '/manga/collection/{page}',
-        function (string $page): void {
-            redirect(
-                'manga/series/page/' . rawurlencode($page),
-                301
-            );
-        }
-    );
-
-    /*
-    |--------------------------------------------------------------------------
     | Manga - Series
     |--------------------------------------------------------------------------
     */

@@ -241,9 +241,30 @@ abstract class Controller
             );
         }
 
+        if (
+            str_starts_with(
+                $url,
+                $this->basePath,
+            )
+        ) {
+            Response::redirect(
+                $url,
+                $statusCode,
+            );
+        }
+
+        $location = rtrim(
+            $this->basePath,
+            '/',
+        )
+        . '/'
+        . ltrim(
+            $url,
+            '/',
+        );
+
         Response::redirect(
-            $this->basePath
-            . ltrim($url, '/'),
+            $location,
             $statusCode,
         );
     }

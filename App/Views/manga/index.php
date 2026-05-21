@@ -31,12 +31,12 @@ $basePath = rtrim(
 
         <a
             class="dashboard-card"
-            href="<?= e($basePath) ?>manga/collection">
+            href="<?= e($basePath) ?>manga/series">
 
             <span class="dashboard-card-icon" aria-hidden="true">📚</span>
 
             <span class="dashboard-card-title">
-                Collection
+                Series
             </span>
 
             <span class="dashboard-card-description">

@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace App\DTO\Home;
 
-final class DashboardStats
+use App\DTO\Manga\MangaDTO;
+use App\DTO\Manga\TomeDTO;
+
+final readonly class DashboardStats
 {
     /**
-     * @param array<int, object> $topLongestSeries
-     * @param array<int, object> $lowRatedMangas
-     * @param array<int, object> $lowJacquetteMangas
-     * @param array<int, object> $lowLivreStateMangas
+     * @param list<MangaDTO> $topLongestSeries
+     * @param list<MangaDTO> $lowRatedMangas
+     * @param list<MangaDTO> $lowJacquetteMangas
+     * @param list<MangaDTO> $lowLivreStateMangas
      */
     public function __construct(
         public int $totalTomes,
@@ -19,8 +22,8 @@ final class DashboardStats
         public int $totalUnread,
         public int $readingProgress,
         public ?float $averageNote,
-        public ?object $lastTome,
-        public ?object $longestSeries,
+        public ?TomeDTO $lastTome,
+        public ?MangaDTO $longestSeries,
         public array $topLongestSeries,
         public array $lowRatedMangas,
         public array $lowJacquetteMangas,

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Manga;
 
-use App\DTO\Common\ServiceResultData;
+use App\DTO\Common\ServiceResult;
 use App\DTO\Manga\Inputs\MangaCreateDTO;
 use App\DTO\Manga\Inputs\MangaUpdateDTO;
 use App\DTO\Manga\Inputs\MangaUpdateNoteDTO;
@@ -34,12 +34,11 @@ final class MangaWriteService
         string $message,
         array $data = [],
         int $status = 200,
-    ): ServiceResultData {
-        return new ServiceResultData(
-            true,
-            $status,
-            $message,
-            $data,
+    ): ServiceResult {
+        return ServiceResult::success(
+            message: $message,
+            data: $data,
+            status: $status,
         );
     }
 
@@ -50,12 +49,11 @@ final class MangaWriteService
         string $message,
         int $status = 500,
         array $data = [],
-    ): ServiceResultData {
-        return new ServiceResultData(
-            false,
-            $status,
-            $message,
-            $data,
+    ): ServiceResult {
+        return ServiceResult::error(
+            message: $message,
+            data: $data,
+            status: $status,
         );
     }
 
@@ -64,7 +62,7 @@ final class MangaWriteService
         return App::isReadOnly();
     }
 
-    private function blockedWriteResponse(): ServiceResultData
+    private function blockedWriteResponse(): ServiceResult
     {
         return $this->error(
             'Écriture en base désactivée en mode test',
@@ -88,7 +86,7 @@ final class MangaWriteService
     public function create(
         MangaCreateDTO $dto,
         array $files,
-    ): ServiceResultData {
+    ): ServiceResult {
         if (
             $this->isReadOnlyMode()
             && !$this->uploadService->isTestUploadMode()
@@ -148,7 +146,7 @@ final class MangaWriteService
 
         $inserted = $this->mangaRepository
             ->insert([
-                'thumbnail' => $uploadData->thumbnail,
+                'thumbnail' => $uploadData->thumbnailPath,
                 'extension' => $uploadData->extension,
                 'slug' => $dto->slug,
                 'livre' => $dto->livre,
@@ -193,7 +191,7 @@ final class MangaWriteService
         int $numero,
         MangaUpdateDTO $dto,
         array $files,
-    ): ServiceResultData {
+    ): ServiceResult {
         if ($this->isReadOnlyMode()) {
             return $this->blockedWriteResponse();
         }
@@ -232,7 +230,7 @@ final class MangaWriteService
         string $slug,
         int $numero,
         MangaUpdateNoteDTO $dto,
-    ): ServiceResultData {
+    ): ServiceResult {
         if ($this->isReadOnlyMode()) {
             return $this->blockedWriteResponse();
         }

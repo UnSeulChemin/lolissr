@@ -156,14 +156,16 @@ export function initUpdateNote()
                 );
             }
 
+            const notes = data.data?.notes ?? null;
+
             noteState.jacquette =
-                data.notes?.jacquette !== undefined
-                    ? Number(data.notes.jacquette)
+                notes?.jacquette !== undefined
+                    ? Number(notes.jacquette)
                     : noteState.jacquette;
 
             noteState.livre_note =
-                data.notes?.livreNote !== undefined
-                    ? Number(data.notes.livreNote)
+                notes?.livreNote !== undefined
+                    ? Number(notes.livreNote)
                     : noteState.livre_note;
 
             mangaDetailCard.dataset.jacquette =
@@ -175,22 +177,23 @@ export function initUpdateNote()
             if (totalNoteElement)
             {
                 totalNoteElement.textContent =
-                    data.notes?.note !== null
-                        ? `${data.notes.note}/10`
+                    notes?.note !== null
+                        && notes?.note !== undefined
+                        ? `${notes.note}/10`
                         : 'Non calculée';
             }
 
             refreshNoteButtonsState();
 
             showToast(
-                '✓ Sauvegardé',
+                data.message ?? '✓ Sauvegardé',
                 'success'
             );
         }
         catch (error)
         {
             showToast(
-                error.message ?? 'Erreur',
+                error?.message ?? 'Erreur',
                 'error'
             );
         }

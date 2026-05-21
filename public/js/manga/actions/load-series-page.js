@@ -2,6 +2,11 @@ import { showToast } from '../../core/toast.js';
 
 const seriesPageCache = new Map();
 
+const basePath = (
+    document.body.dataset.basePath
+    ?? '/'
+).replace(/\/+$/, '/');
+
 function getSeriesPaginationLink(target)
 {
     return target?.closest(
@@ -27,7 +32,7 @@ function scrollSeriesToTop()
 {
     window.scrollTo({
         top: 0,
-        behavior: 'smooth'
+        behavior: 'smooth',
     });
 }
 
@@ -37,7 +42,7 @@ function isSeriesPage()
         /\/manga\/series$/.test(
             window.location.pathname
         )
-        || /\/manga\/series\/\d+$/.test(
+        || /\/manga\/series\/page\/\d+$/.test(
             window.location.pathname
         )
     );
@@ -50,15 +55,36 @@ function buildSeriesAjaxUrl(link)
         window.location.origin
     );
 
-    url.pathname = url.pathname.replace(
-        '/manga/series/',
-        '/manga/ajax/series/'
+    /*
+    |------------------------------------------------------------------
+    | /manga/series/page/2
+    | -> /manga/ajax/series/page/2
+    |------------------------------------------------------------------
+    */
+
+    const match = url.pathname.match(
+        /\/manga\/series\/page\/(\d+)$/
     );
+
+    if (match)
+    {
+        url.pathname =
+            `${basePath}manga/ajax/series/page/${match[1]}`;
+
+        return url.toString();
+    }
+
+    /*
+    |------------------------------------------------------------------
+    | /manga/series
+    | -> /manga/ajax/series/page/1
+    |------------------------------------------------------------------
+    */
 
     if (/\/manga\/series$/.test(url.pathname))
     {
         url.pathname =
-            '/manga/ajax/series/1';
+            `${basePath}manga/ajax/series/page/1`;
     }
 
     return url.toString();
@@ -70,18 +96,32 @@ function getCurrentSeriesAjaxUrl()
         window.location.href
     );
 
-    if (/\/manga\/series$/.test(url.pathname))
+    const match = url.pathname.match(
+        /\/manga\/series\/page\/(\d+)$/
+    );
+
+    /*
+    |------------------------------------------------------------------
+    | Page courante pagination
+    |------------------------------------------------------------------
+    */
+
+    if (match)
     {
         url.pathname =
-            '/manga/ajax/series/1';
+            `${basePath}manga/ajax/series/page/${match[1]}`;
 
         return url.toString();
     }
 
-    url.pathname = url.pathname.replace(
-        '/manga/series/',
-        '/manga/ajax/series/'
-    );
+    /*
+    |------------------------------------------------------------------
+    | Première page
+    |------------------------------------------------------------------
+    */
+
+    url.pathname =
+        `${basePath}manga/ajax/series/page/1`;
 
     return url.toString();
 }
@@ -104,8 +144,8 @@ async function prefetchSeriesPage(ajaxUrl)
                 headers:
                 {
                     'X-Requested-With':
-                        'XMLHttpRequest'
-                }
+                        'XMLHttpRequest',
+                },
             }
         );
 
@@ -114,7 +154,8 @@ async function prefetchSeriesPage(ajaxUrl)
             return;
         }
 
-        const html = await response.text();
+        const html =
+            await response.text();
 
         seriesPageCache.set(
             ajaxUrl,
@@ -123,7 +164,11 @@ async function prefetchSeriesPage(ajaxUrl)
     }
     catch
     {
-        // preload silencieux
+        /*
+        |--------------------------------------------------------------
+        | Prefetch silencieux
+        |--------------------------------------------------------------
+        */
     }
 }
 
@@ -164,7 +209,9 @@ function prefetchNextSeriesPage()
             nextPaginationLink
         );
 
-    prefetchSeriesPage(nextAjaxUrl);
+    prefetchSeriesPage(
+        nextAjaxUrl
+    );
 }
 
 async function fetchSeriesHtml(ajaxUrl)
@@ -183,8 +230,8 @@ async function fetchSeriesHtml(ajaxUrl)
             headers:
             {
                 'X-Requested-With':
-                    'XMLHttpRequest'
-            }
+                    'XMLHttpRequest',
+            },
         }
     );
 
@@ -195,7 +242,8 @@ async function fetchSeriesHtml(ajaxUrl)
         );
     }
 
-    const html = await response.text();
+    const html =
+        await response.text();
 
     seriesPageCache.set(
         ajaxUrl,
@@ -240,7 +288,8 @@ async function loadSeriesContent(
                 ajaxUrl
             );
 
-        seriesContent.innerHTML = html;
+        seriesContent.innerHTML =
+            html;
 
         prefetchNextSeriesPage();
 
@@ -284,6 +333,12 @@ export function initLoadSeriesPage()
         return;
     }
 
+    /*
+    |------------------------------------------------------------------
+    | Sécurité double init
+    |------------------------------------------------------------------
+    */
+
     if (
         document.body.dataset
             .loadSeriesPageInit === 'true'
@@ -294,6 +349,12 @@ export function initLoadSeriesPage()
 
     document.body.dataset
         .loadSeriesPageInit = 'true';
+
+    /*
+    |------------------------------------------------------------------
+    | Prefetch hover souris
+    |------------------------------------------------------------------
+    */
 
     document.addEventListener(
         'pointerover',
@@ -328,6 +389,12 @@ export function initLoadSeriesPage()
         }
     );
 
+    /*
+    |------------------------------------------------------------------
+    | Focus clavier
+    |------------------------------------------------------------------
+    */
+
     document.addEventListener(
         'focusin',
         (event) =>
@@ -353,6 +420,12 @@ export function initLoadSeriesPage()
         }
     );
 
+    /*
+    |------------------------------------------------------------------
+    | Pagination AJAX
+    |------------------------------------------------------------------
+    */
+
     document.addEventListener(
         'click',
         async (event) =>
@@ -367,12 +440,8 @@ export function initLoadSeriesPage()
                 return;
             }
 
-            const seriesContainer =
-                getSeriesContainer();
-
             if (
-                !seriesContainer
-                || !seriesContainer.contains(
+                !seriesContainer.contains(
                     paginationLink
                 )
             )
@@ -404,13 +473,19 @@ export function initLoadSeriesPage()
                 {
                     ajaxUrl,
                     pageUrl:
-                        paginationLink.href
+                        paginationLink.href,
                 },
                 '',
                 paginationLink.href
             );
         }
     );
+
+    /*
+    |------------------------------------------------------------------
+    | Navigation navigateur
+    |------------------------------------------------------------------
+    */
 
     window.addEventListener(
         'popstate',
@@ -423,7 +498,7 @@ export function initLoadSeriesPage()
 
             const pageMatch =
                 window.location.pathname.match(
-                    /\/manga\/series\/(\d+)$/
+                    /\/manga\/series\/page\/(\d+)$/
                 );
 
             const currentPageNumber =
@@ -440,5 +515,24 @@ export function initLoadSeriesPage()
         }
     );
 
+    /*
+    |------------------------------------------------------------------
+    | Prefetch page suivante
+    |------------------------------------------------------------------
+    */
+
     prefetchNextSeriesPage();
+
+    /*
+    |------------------------------------------------------------------
+    | Remove skeleton initial
+    |------------------------------------------------------------------
+    */
+
+    requestAnimationFrame(() =>
+    {
+        seriesContainer.classList.remove(
+            'is-loading'
+        );
+    });
 }

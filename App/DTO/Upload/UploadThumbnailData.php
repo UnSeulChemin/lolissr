@@ -7,7 +7,7 @@ namespace App\DTO\Upload;
 final readonly class UploadThumbnailData
 {
     public function __construct(
-        public string $thumbnail,
+        public string $thumbnailPath,
         public string $extension,
         public string $destination,
     ) {

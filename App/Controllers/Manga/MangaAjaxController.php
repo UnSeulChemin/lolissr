@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers\Manga;
 
 use App\Controllers\Controller;
+use App\DTO\Common\ServiceResult;
 use App\Http\Requests\Manga\MangaUpdateNoteRequest;
 use App\Services\Manga\MangaReadService;
 use App\Services\Manga\MangaWriteService;
@@ -25,15 +26,10 @@ final class MangaAjaxController extends Controller
 
     private function ensureAjax(): void
     {
-        // Correction :
-        // utilise maintenant le helper global isAjax()
-        // pour garder une logique AJAX unique dans tout le projet.
         if ($this->isAjax()) {
             return;
         }
 
-        // Très bonne idée déjà présente :
-        // bypass spécial pour les tests automatisés.
         if (
             App::isTesting()
             && str_contains(
@@ -55,19 +51,18 @@ final class MangaAjaxController extends Controller
         int $status = 400,
         ?string $redirect = null,
     ): never {
-        $response = [
-            'success' => false,
-            'message' => $message,
-        ];
+        $data = [];
 
-        // Très bon pattern :
-        // redirect optionnel seulement quand nécessaire.
         if ($redirect !== null) {
-            $response['redirect'] = $redirect;
+            $data['redirect'] = $redirect;
         }
 
         $this->json(
-            $response,
+            ServiceResult::error(
+                message: $message,
+                data: $data,
+                status: $status,
+            )->toArray(),
             $status,
         );
     }
@@ -78,14 +73,16 @@ final class MangaAjaxController extends Controller
     private function validationError(
         array $errors,
     ): never {
-        // Correction :
-        // centralise les erreurs de validation AJAX.
-        // Tu garantis une API uniforme partout.
-        $this->json([
-            'success' => false,
-            'message' => 'Formulaire invalide',
-            'errors' => $errors,
-        ], 422);
+        $this->json(
+            ServiceResult::error(
+                message: 'Formulaire invalide',
+                data: [
+                    'errors' => $errors,
+                ],
+                status: 422,
+            )->toArray(),
+            422,
+        );
     }
 
     private function canonicalRedirect(
@@ -93,8 +90,6 @@ final class MangaAjaxController extends Controller
         string $slug,
         int $numero,
     ): string {
-        // Correction :
-        // suppression du hardcoded path.
         return $this->basePath
             . self::AJAX_PATH
             . $action
@@ -105,15 +100,16 @@ final class MangaAjaxController extends Controller
     }
 
     /**
-     * Résout un manga ou retourne une erreur AJAX.
+     * @return object{
+     *     manga: object,
+     *     canonicalSlug: string
+     * }
      */
     private function resolveMangaOrFail(
         string $action,
         string $slug,
         int $numero,
     ): object {
-        // Correction importante :
-        // toute cette logique était répétée 3x.
         $data = $this->mangaReadService
             ->one(
                 $slug,
@@ -127,8 +123,6 @@ final class MangaAjaxController extends Controller
             );
         }
 
-        // Très bon comportement déjà existant :
-        // gestion des URLs canoniques même en AJAX.
         if ($slug !== $data->canonicalSlug) {
             $this->error(
                 'URL non canonique',
@@ -178,10 +172,13 @@ final class MangaAjaxController extends Controller
         $results = $this->mangaReadService
             ->searchAjax($query);
 
-        $this->json([
-            'success' => true,
-            'results' => $results,
-        ]);
+        $this->json(
+            ServiceResult::success(
+                data: [
+                    'results' => $results,
+                ],
+            )->toArray(),
+        );
     }
 
     public function updateNote(
@@ -191,8 +188,6 @@ final class MangaAjaxController extends Controller
     ): never {
         $this->ensureAjax();
 
-        // Correction :
-        // factorisation du fetch + canonical check.
         $data = $this->resolveMangaOrFail(
             'update-note',
             $slug,
@@ -212,11 +207,10 @@ final class MangaAjaxController extends Controller
                 $request->dto(),
             );
 
-        $this->json([
-            'success' => $result->success,
-            'message' => $result->message,
-            ...$result->data,
-        ], $result->status);
+        $this->json(
+            $result->toArray(),
+            $result->status,
+        );
     }
 
     public function updateLu(
@@ -225,7 +219,6 @@ final class MangaAjaxController extends Controller
     ): never {
         $this->ensureAjax();
 
-        // Même logique factorisée ici.
         $data = $this->resolveMangaOrFail(
             'update-lu',
             $slug,
@@ -242,11 +235,10 @@ final class MangaAjaxController extends Controller
                 ),
             );
 
-        $this->json([
-            'success' => $result->success,
-            'message' => $result->message,
-            'lu' => $result->lu,
-        ], $result->status);
+        $this->json(
+            $result->toArray(),
+            $result->status,
+        );
     }
 
     public function delete(
@@ -255,7 +247,6 @@ final class MangaAjaxController extends Controller
     ): never {
         $this->ensureAjax();
 
-        // Même logique factorisée ici aussi.
         $data = $this->resolveMangaOrFail(
             'delete',
             $slug,
@@ -268,9 +259,9 @@ final class MangaAjaxController extends Controller
                 $numero,
             );
 
-        $this->json([
-            'success' => $result->success,
-            'message' => $result->message,
-        ], $result->status);
+        $this->json(
+            $result->toArray(),
+            $result->status,
+        );
     }
 }

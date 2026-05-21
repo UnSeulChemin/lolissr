@@ -50,7 +50,12 @@ final readonly class ServiceResult
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array{
+     *     success: bool,
+     *     status: int,
+     *     message: string,
+     *     data: array<string, mixed>
+     * }
      */
     public function toArray(): array
     {

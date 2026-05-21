@@ -19,14 +19,14 @@ const linkHoverTimers = new WeakMap();
 
 function canPrefetchLink(link)
 {
-    if (!link || !link.href)
+    if (!link?.href)
     {
         return false;
     }
 
     /*
     |------------------------------------------------------------------
-    | Liens déjà gérés ailleurs
+    | Liens AJAX déjà gérés ailleurs
     |------------------------------------------------------------------
     */
 
@@ -75,8 +75,11 @@ function canPrefetchLink(link)
         window.location.origin
     );
 
-    const absoluteUrl =
-        url.toString();
+    /*
+    |------------------------------------------------------------------
+    | Même domaine uniquement
+    |------------------------------------------------------------------
+    */
 
     if (
         url.origin
@@ -85,6 +88,41 @@ function canPrefetchLink(link)
     {
         return false;
     }
+
+    /*
+    |------------------------------------------------------------------
+    | Ignore routes AJAX
+    |------------------------------------------------------------------
+    */
+
+    if (
+        url.pathname.includes('/ajax/')
+    )
+    {
+        return false;
+    }
+
+    /*
+    |------------------------------------------------------------------
+    | Ignore page manga index
+    |------------------------------------------------------------------
+    */
+
+    if (
+        url.pathname.endsWith('/manga')
+    )
+    {
+        return false;
+    }
+
+    const absoluteUrl =
+        url.toString();
+
+    /*
+    |------------------------------------------------------------------
+    | Déjà chargé / déjà en cours
+    |------------------------------------------------------------------
+    */
 
     if (
         linkPrefetchCache.has(
@@ -127,13 +165,14 @@ async function prefetchLink(url)
 
     try
     {
-        const response =
-            await fetch(url,
+        const response = await fetch(
+            url,
             {
                 method: 'GET',
                 credentials:
                     'same-origin'
-            });
+            }
+        );
 
         if (!response.ok)
         {
@@ -144,7 +183,11 @@ async function prefetchLink(url)
     }
     catch
     {
-        // silencieux
+        /*
+        |--------------------------------------------------------------
+        | Prefetch silencieux
+        |--------------------------------------------------------------
+        */
     }
     finally
     {
@@ -208,7 +251,7 @@ export function initPrefetchLinks()
 {
     /*
     |------------------------------------------------------------------
-    | Sécurité
+    | Économie de données
     |------------------------------------------------------------------
     */
 
@@ -216,6 +259,12 @@ export function initPrefetchLinks()
     {
         return;
     }
+
+    /*
+    |------------------------------------------------------------------
+    | Sécurité double init
+    |------------------------------------------------------------------
+    */
 
     if (
         document.body.dataset
@@ -257,7 +306,7 @@ export function initPrefetchLinks()
 
             /*
             |--------------------------------------------------------------
-            | Ignore les mouvements internes au même lien
+            | Ignore mouvements internes
             |--------------------------------------------------------------
             */
 
@@ -288,7 +337,7 @@ export function initPrefetchLinks()
 
             /*
             |--------------------------------------------------------------
-            | N'annule que si on quitte réellement le lien
+            | Ignore mouvements internes
             |--------------------------------------------------------------
             */
 

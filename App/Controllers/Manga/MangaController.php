@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers\Manga;
 
 use App\Controllers\Controller;
+use App\DTO\Common\ServiceResult;
 use App\Http\Requests\Manga\MangaCreateRequest;
 use App\Http\Requests\Manga\MangaUpdateRequest;
 use App\Services\Manga\MangaReadService;
@@ -31,16 +32,45 @@ final class MangaController extends Controller
         string $pathPrefix,
         ?int $numero = null,
     ): void {
-        if ($requestedSlug === $canonicalSlug) {
+        $requestedSlug = trim(
+            $requestedSlug,
+        );
+
+        $canonicalSlug = trim(
+            $canonicalSlug,
+        );
+
+        if (
+            $canonicalSlug === ''
+            || $requestedSlug === $canonicalSlug
+        ) {
             return;
         }
 
-        $location = trim($pathPrefix, '/')
-            . '/'
-            . rawurlencode($canonicalSlug);
+        $location = trim(
+            $pathPrefix,
+            '/',
+        )
+        . '/'
+        . rawurlencode(
+            $canonicalSlug,
+        );
 
         if ($numero !== null) {
-            $location .= '/' . $numero;
+            $location .= '/'
+                . $numero;
+        }
+
+        $currentPath = trim(
+            $this->request->path(),
+            '/',
+        );
+
+        if (
+            trim($location, '/')
+            === $currentPath
+        ) {
+            return;
         }
 
         $this->redirect(
@@ -77,12 +107,16 @@ final class MangaController extends Controller
     private function validationErrorResponse(
         array $errors,
     ): never {
-        $this->json([
-            'success' => false,
-            'status' => 422,
-            'message' => 'Formulaire invalide',
-            'errors' => $errors,
-        ], 422);
+        $this->json(
+            ServiceResult::error(
+                message: 'Formulaire invalide',
+                data: [
+                    'errors' => $errors,
+                ],
+                status: 422,
+            )->toArray(),
+            422,
+        );
     }
 
     public function index(): never
@@ -149,7 +183,9 @@ final class MangaController extends Controller
     public function serie(
         string $slug,
     ): never {
-        $requestedSlug = trim($slug);
+        $requestedSlug = trim(
+            $slug,
+        );
 
         $data = $this->mangaReadService
             ->serie($requestedSlug);
@@ -160,11 +196,16 @@ final class MangaController extends Controller
             );
         }
 
-        $this->redirectToCanonicalUrl(
-            $requestedSlug,
-            $data->slugFilter ?? '',
-            self::SERIES_PATH,
-        );
+        if (
+            isset($data->slugFilter)
+            && $data->slugFilter !== ''
+        ) {
+            $this->redirectToCanonicalUrl(
+                $requestedSlug,
+                $data->slugFilter,
+                self::SERIES_PATH,
+            );
+        }
 
         $this->title =
             'Manga | '
@@ -286,10 +327,13 @@ final class MangaController extends Controller
 
         if ($data === null) {
             if ($isAjax) {
-                $this->json([
-                    'success' => false,
-                    'message' => 'Manga introuvable',
-                ], 404);
+                $this->json(
+                    ServiceResult::error(
+                        message: 'Manga introuvable',
+                        status: 404,
+                    )->toArray(),
+                    404,
+                );
             }
 
             $this->notFound(
@@ -298,8 +342,7 @@ final class MangaController extends Controller
         }
 
         if ($slug !== $data->canonicalSlug) {
-            $redirect = $this->basePath
-                . self::EDIT_PATH
+            $redirect = self::EDIT_PATH
                 . '/'
                 . rawurlencode(
                     $data->canonicalSlug,
@@ -308,11 +351,16 @@ final class MangaController extends Controller
                 . $numero;
 
             if ($isAjax) {
-                $this->json([
-                    'success' => false,
-                    'message' => 'URL non canonique',
-                    'redirect' => $redirect,
-                ], 409);
+                $this->json(
+                    ServiceResult::error(
+                        message: 'URL non canonique',
+                        data: [
+                            'redirect' => $redirect,
+                        ],
+                        status: 409,
+                    )->toArray(),
+                    409,
+                );
             }
 
             $this->redirectToCanonicalUrl(
