@@ -7,10 +7,10 @@ namespace App\Services\Chinois;
 use App\Models\ChinoisVocabulaire;
 use App\Repositories\Chinois\ChinoisVocabulaireRepository;
 
-final class ChinoisReadService
+final readonly class ChinoisReadService
 {
     public function __construct(
-        private readonly ChinoisVocabulaireRepository $chinoisRepository,
+        private ChinoisVocabulaireRepository $chinoisRepository,
     ) {
     }
 
@@ -19,8 +19,9 @@ final class ChinoisReadService
      */
     public function mandarin(): array
     {
-        return $this->chinoisRepository
-            ->findByLangue('mandarin');
+        return $this->findByLangue(
+            'mandarin',
+        );
     }
 
     /**
@@ -28,7 +29,18 @@ final class ChinoisReadService
      */
     public function jinyu(): array
     {
+        return $this->findByLangue(
+            'jinyu',
+        );
+    }
+
+    /**
+     * @return list<ChinoisVocabulaire>
+     */
+    private function findByLangue(
+        string $langue,
+    ): array {
         return $this->chinoisRepository
-            ->findByLangue('jinyu');
+            ->findByLangue($langue);
     }
 }

@@ -18,7 +18,8 @@ final class ChinoisVocabulaireRepository extends Model
     public function findByLangue(
         string $langue,
     ): array {
-        return $this->fetchAll(
+        /** @var list<ChinoisVocabulaire> $vocabulaire */
+        $vocabulaire = $this->fetchAll(
             "SELECT
                 id,
                 langue,
@@ -28,11 +29,16 @@ final class ChinoisVocabulaireRepository extends Model
                 traduction,
                 exemple,
                 created_at
+
             FROM {$this->getTable()}
+
             WHERE langue = ?
+
             ORDER BY id DESC",
             [$langue],
             ChinoisVocabulaire::class,
         );
+
+        return $vocabulaire;
     }
 }

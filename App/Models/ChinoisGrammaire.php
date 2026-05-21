@@ -6,33 +6,33 @@ namespace App\Models;
 
 final class ChinoisGrammaire
 {
-    public ?int $id = null;
+    public int $id = 0;
 
-    public ?string $niveau = null;
+    public string $niveau = '';
 
-    public ?string $titre = null;
+    public string $titre = '';
 
-    public ?string $structure = null;
+    public string $structure = '';
 
-    public ?string $phrase = null;
+    public string $phrase = '';
 
     public ?string $pinyin = null;
 
-    public ?string $traduction = null;
+    public string $traduction = '';
 
     public ?string $explication = null;
 
-    public ?int $maitrise = null;
+    public int $maitrise = 0;
 
-    public ?string $section = null;
+    public string $section = '';
 
-    public ?int $section_position = null;
+    public int $section_position = 0;
 
-    public ?string $categorie = null;
+    public string $categorie = '';
 
-    public ?int $categorie_position = null;
+    public int $categorie_position = 0;
 
-    public ?int $position = null;
+    public int $position = 0;
 
-    public ?string $created_at = null;
+    public string $created_at = '';
 }

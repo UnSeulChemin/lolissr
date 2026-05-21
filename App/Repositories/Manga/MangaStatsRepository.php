@@ -6,7 +6,6 @@ namespace App\Repositories\Manga;
 
 use App\Models\Manga;
 use App\Models\Model;
-use stdClass;
 
 final class MangaStatsRepository extends Model
 {
@@ -26,16 +25,14 @@ final class MangaStatsRepository extends Model
             $params,
         );
 
-        if (!$result instanceof stdClass) {
+        if (
+            $result === null
+            || !property_exists($result, $field)
+        ) {
             return $default;
         }
 
-        return property_exists(
-            $result,
-            $field,
-        )
-            ? $result->{$field}
-            : $default;
+        return $result->{$field};
     }
 
     public function countAllTomes(): int
