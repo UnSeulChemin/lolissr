@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\DTO\Home\DashboardStats;
-use App\Services\StatsService;
+use App\Services\Stats\StatsService;
 use Framework\Cache\Cache;
 use Framework\Http\Request;
 
