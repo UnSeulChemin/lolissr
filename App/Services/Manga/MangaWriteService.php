@@ -10,18 +10,19 @@ use App\DTO\Manga\Inputs\MangaUpdateDTO;
 use App\DTO\Manga\Inputs\MangaUpdateNoteDTO;
 use App\DTO\Manga\Results\UpdateNoteResultData;
 use App\DTO\Upload\UploadThumbnailData;
+use App\Models\Manga;
 use App\Repositories\Manga\MangaRepository;
 use App\Services\UploadService;
 use Framework\Application\App;
 use Framework\Config\UploadConfig;
 use Framework\Support\Logger;
 
-final class MangaWriteService
+final readonly class MangaWriteService
 {
     public function __construct(
-        private readonly MangaRepository $mangaRepository,
-        private readonly UploadService $uploadService,
-        private readonly MangaCacheService $cacheService,
+        private MangaRepository $mangaRepository,
+        private UploadService $uploadService,
+        private MangaCacheService $cacheService,
     ) {
     }
 
@@ -83,6 +84,39 @@ final class MangaWriteService
         );
     }
 
+    private function writeFailed(
+        bool $result,
+        string $action,
+        string $slug,
+        int $numero,
+        string $message,
+    ): ?ServiceResult {
+        if ($result) {
+            return null;
+        }
+
+        $this->logFailure(
+            $action,
+            $slug,
+            $numero,
+        );
+
+        return $this->error($message);
+    }
+
+    private function removeThumbnail(
+        Manga $manga,
+    ): void {
+        $path =
+            UploadConfig::mangaThumbnailDirectory()
+            . $manga->thumbnail
+            . '.'
+            . $manga->extension;
+
+        $this->uploadService
+            ->removeFileIfExists($path);
+    }
+
     /**
      * @param array<string, mixed> $files
      */
@@ -118,7 +152,6 @@ final class MangaWriteService
                 $dto->livre,
                 $dto->numero,
                 $files,
-                'image',
             );
 
         if (!$upload->success) {
@@ -149,34 +182,31 @@ final class MangaWriteService
 
         $inserted = $this->mangaRepository
             ->insert([
-                'thumbnail' => $uploadData->thumbnailPath,
+                'thumbnail' => $uploadData->thumbnail,
                 'extension' => $uploadData->extension,
                 'slug' => $dto->slug,
                 'livre' => $dto->livre,
                 'editeur' => $dto->editeur,
                 'numero' => $dto->numero,
-                'lu' => 0,
                 'statut' => $dto->statut,
-                'jacquette' => null,
-                'livre_note' => null,
                 'commentaire' => $dto->commentaire,
             ]);
 
-        if ($inserted === false) {
+        $failure = $this->writeFailed(
+            $inserted,
+            'Insertion manga',
+            $dto->slug,
+            $dto->numero,
+            'Erreur lors de l’enregistrement',
+        );
+
+        if ($failure !== null) {
             $this->uploadService
                 ->removeFileIfExists(
                     $uploadData->destination,
                 );
 
-            $this->logFailure(
-                'Insertion manga',
-                $dto->slug,
-                $dto->numero,
-            );
-
-            return $this->error(
-                'Erreur lors de l’enregistrement',
-            );
+            return $failure;
         }
 
         $this->clearCache();
@@ -186,14 +216,10 @@ final class MangaWriteService
         );
     }
 
-    /**
-     * @param array<string, mixed> $files
-     */
     public function update(
         string $slug,
         int $numero,
         MangaUpdateDTO $dto,
-        array $files,
     ): ServiceResult {
         if ($this->isReadOnlyMode()) {
             return $this->blockedWriteResponse();
@@ -210,16 +236,16 @@ final class MangaWriteService
                 $dto->commentaire,
             );
 
-        if ($updated === false) {
-            $this->logFailure(
-                'Update manga',
-                $slug,
-                $numero,
-            );
+        $failure = $this->writeFailed(
+            $updated,
+            'Update manga',
+            $slug,
+            $numero,
+            'Erreur lors de la mise à jour',
+        );
 
-            return $this->error(
-                'Erreur lors de la mise à jour',
-            );
+        if ($failure !== null) {
+            return $failure;
         }
 
         $this->clearCache();
@@ -246,16 +272,16 @@ final class MangaWriteService
                 $dto->livreNote,
             );
 
-        if ($updated === false) {
-            $this->logFailure(
-                'Update note',
-                $slug,
-                $numero,
-            );
+        $failure = $this->writeFailed(
+            $updated,
+            'Update note',
+            $slug,
+            $numero,
+            'Erreur lors de la mise à jour des notes',
+        );
 
-            return $this->error(
-                'Erreur lors de la mise à jour des notes',
-            );
+        if ($failure !== null) {
+            return $failure;
         }
 
         $this->clearCache();
@@ -312,16 +338,16 @@ final class MangaWriteService
                 $lu === 1,
             );
 
-        if ($updated === false) {
-            $this->logFailure(
-                'Update lu',
-                $slug,
-                $numero,
-            );
+        $failure = $this->writeFailed(
+            $updated,
+            'Update lu',
+            $slug,
+            $numero,
+            'Erreur lors de la mise à jour',
+        );
 
-            return $this->error(
-                'Erreur lors de la mise à jour',
-            );
+        if ($failure !== null) {
+            return $failure;
         }
 
         $this->clearCache();
@@ -363,28 +389,19 @@ final class MangaWriteService
                 $numero,
             );
 
-        if ($deleted === false) {
-            $this->logFailure(
-                'Delete manga',
-                $slug,
-                $numero,
-            );
+        $failure = $this->writeFailed(
+            $deleted,
+            'Delete manga',
+            $slug,
+            $numero,
+            'Erreur lors de la suppression',
+        );
 
-            return $this->error(
-                'Erreur lors de la suppression',
-            );
+        if ($failure !== null) {
+            return $failure;
         }
 
-        $imagePath =
-            UploadConfig::mangaThumbnailDirectory()
-            . $manga->thumbnail
-            . '.'
-            . $manga->extension;
-
-        $this->uploadService
-            ->removeFileIfExists(
-                $imagePath,
-            );
+        $this->removeThumbnail($manga);
 
         $this->clearCache();
 
