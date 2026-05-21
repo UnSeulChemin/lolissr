@@ -8,9 +8,7 @@ use App\DTO\Common\ServiceResult;
 use App\DTO\Manga\Inputs\MangaCreateDTO;
 use App\DTO\Manga\Inputs\MangaUpdateDTO;
 use App\DTO\Manga\Inputs\MangaUpdateNoteDTO;
-use App\DTO\Manga\Results\DeleteResultData;
-use App\DTO\Manga\Results\UpdateLuResultData;
-use App\DTO\Manga\Results\UpdateNoteData;
+use App\DTO\Manga\Results\UpdateNoteResultData;
 use App\DTO\Upload\UploadThumbnailData;
 use App\Repositories\Manga\MangaRepository;
 use App\Services\UploadService;
@@ -68,6 +66,11 @@ final class MangaWriteService
             'Écriture en base désactivée en mode test',
             403,
         );
+    }
+
+    private function clearCache(): void
+    {
+        $this->cacheService->clear();
     }
 
     private function logFailure(
@@ -176,7 +179,7 @@ final class MangaWriteService
             );
         }
 
-        $this->cacheService->clear();
+        $this->clearCache();
 
         return $this->success(
             'Manga ajouté avec succès',
@@ -219,7 +222,7 @@ final class MangaWriteService
             );
         }
 
-        $this->cacheService->clear();
+        $this->clearCache();
 
         return $this->success(
             'Manga mis à jour avec succès',
@@ -251,11 +254,11 @@ final class MangaWriteService
             );
 
             return $this->error(
-                'Erreur update note',
+                'Erreur lors de la mise à jour des notes',
             );
         }
 
-        $this->cacheService->clear();
+        $this->clearCache();
 
         $manga = $this->mangaRepository
             ->findOneBySlugAndNumero(
@@ -273,13 +276,13 @@ final class MangaWriteService
         return $this->success(
             'Notes mises à jour',
             [
-                'notes' => new UpdateNoteData(
-                    jacquette: $dto->jacquette,
-                    livreNote: $dto->livreNote,
+                'notes' => new UpdateNoteResultData(
+                    jacquette: $dto->jacquette ?? 0,
+                    livreNote: $dto->livreNote ?? 0,
                     note: $manga->note
                         ?? (
-                            $dto->jacquette
-                            + $dto->livreNote
+                            ($dto->jacquette ?? 0)
+                            + ($dto->livreNote ?? 0)
                         ),
                 ),
             ],
@@ -290,22 +293,15 @@ final class MangaWriteService
         string $slug,
         int $numero,
         int $lu,
-    ): UpdateLuResultData {
+    ): ServiceResult {
         if ($this->isReadOnlyMode()) {
-            return new UpdateLuResultData(
-                success: false,
-                message: 'Écriture en base désactivée en mode test',
-                status: 403,
-                lu: $lu,
-            );
+            return $this->blockedWriteResponse();
         }
 
         if (!in_array($lu, [0, 1], true)) {
-            return new UpdateLuResultData(
-                success: false,
-                message: 'Statut de lecture invalide',
-                status: 422,
-                lu: $lu,
+            return $this->error(
+                'Statut de lecture invalide',
+                422,
             );
         }
 
@@ -323,36 +319,29 @@ final class MangaWriteService
                 $numero,
             );
 
-            return new UpdateLuResultData(
-                success: false,
-                message: 'Erreur lors de la mise à jour',
-                status: 500,
-                lu: $lu,
+            return $this->error(
+                'Erreur lors de la mise à jour',
             );
         }
 
-        $this->cacheService->clear();
+        $this->clearCache();
 
-        return new UpdateLuResultData(
-            success: true,
-            message: $lu === 1
+        return $this->success(
+            $lu === 1
                 ? 'Manga marqué comme lu'
                 : 'Manga marqué comme non lu',
-            status: 200,
-            lu: $lu,
+            [
+                'lu' => $lu,
+            ],
         );
     }
 
     public function delete(
         string $slug,
         int $numero,
-    ): DeleteResultData {
+    ): ServiceResult {
         if ($this->isReadOnlyMode()) {
-            return new DeleteResultData(
-                success: false,
-                message: 'Écriture en base désactivée en mode test',
-                status: 403,
-            );
+            return $this->blockedWriteResponse();
         }
 
         $manga = $this->mangaRepository
@@ -362,10 +351,9 @@ final class MangaWriteService
             );
 
         if ($manga === null) {
-            return new DeleteResultData(
-                success: false,
-                message: 'Manga introuvable',
-                status: 404,
+            return $this->error(
+                'Manga introuvable',
+                404,
             );
         }
 
@@ -382,10 +370,8 @@ final class MangaWriteService
                 $numero,
             );
 
-            return new DeleteResultData(
-                success: false,
-                message: 'Erreur lors de la suppression',
-                status: 500,
+            return $this->error(
+                'Erreur lors de la suppression',
             );
         }
 
@@ -396,14 +382,14 @@ final class MangaWriteService
             . $manga->extension;
 
         $this->uploadService
-            ->removeFileIfExists($imagePath);
+            ->removeFileIfExists(
+                $imagePath,
+            );
 
-        $this->cacheService->clear();
+        $this->clearCache();
 
-        return new DeleteResultData(
-            success: true,
-            message: 'Manga supprimé avec succès',
-            status: 200,
+        return $this->success(
+            'Manga supprimé avec succès',
         );
     }
 }
