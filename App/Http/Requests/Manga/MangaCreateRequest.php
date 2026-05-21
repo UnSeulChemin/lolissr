@@ -10,20 +10,34 @@ use Framework\Http\FormRequest;
 
 final class MangaCreateRequest extends FormRequest
 {
+    private const STATUTS = [
+        'en_cours',
+        'termine',
+    ];
+
     protected function validate(): void
     {
         $this->validator
             ->required('livre')
             ->string('livre')
-            ->maxLength('livre', 255)
+            ->maxLength('livre', 150)
+
+            ->nullable('editeur')
+            ->string('editeur')
+            ->maxLength('editeur', 100)
+
+            ->required('statut')
+            ->string('statut')
+            ->in('statut', self::STATUTS)
 
             ->required('slug')
             ->string('slug')
-            ->maxLength('slug', 255)
+            ->maxLength('slug', 150)
 
             ->required('numero')
             ->integer('numero')
             ->min('numero', 1)
+            ->max('numero', 999)
 
             ->nullable('commentaire')
             ->string('commentaire')
@@ -31,9 +45,18 @@ final class MangaCreateRequest extends FormRequest
 
             ->fileRequired('image')
             ->fileOk('image')
-            ->imageExtension('image', UploadConfig::allowedExtensions())
-            ->imageMime('image', UploadConfig::allowedMimeTypes())
-            ->maxFileSize('image', UploadConfig::maxSize());
+            ->imageExtension(
+                'image',
+                UploadConfig::allowedExtensions(),
+            )
+            ->imageMime(
+                'image',
+                UploadConfig::allowedMimeTypes(),
+            )
+            ->maxFileSize(
+                'image',
+                UploadConfig::maxSize(),
+            );
     }
 
     public function dto(): MangaCreateDTO

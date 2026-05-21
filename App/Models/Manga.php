@@ -16,13 +16,13 @@ final class Manga
 
     public string $livre = '';
 
-    public string $editeur = '';
+    public ?string $editeur = null;
 
     public int $numero = 0;
 
     public int $lu = 0;
 
-    public string $statut = '';
+    public string $statut = 'en_cours';
 
     public ?int $jacquette = null;
 

@@ -24,11 +24,9 @@ abstract class Model
 
     protected function table(): string
     {
-        $table = preg_replace(
-            '/[^a-zA-Z0-9_]/',
-            '',
+        $table = $this->sanitizeIdentifier(
             $this->table,
-        ) ?? '';
+        );
 
         if ($table === '') {
             throw new RuntimeException(
@@ -44,14 +42,18 @@ abstract class Model
         return $this->table();
     }
 
-    protected function clean(
-        string $field,
+    protected function sanitizeIdentifier(
+        string $value,
     ): string {
-        return preg_replace(
+        $cleaned = preg_replace(
             '/[^a-zA-Z0-9_]/',
             '',
-            $field,
-        ) ?? '';
+            $value,
+        );
+
+        return is_string($cleaned)
+            ? $cleaned
+            : '';
     }
 
     /**
@@ -73,25 +75,13 @@ abstract class Model
             $statement->execute($params);
 
             return $statement;
-        } catch (Throwable $e) {
+        } catch (Throwable $exception) {
             throw new RuntimeException(
-                $e->getMessage(),
-                previous: $e,
+                'Erreur SQL : '
+                . $exception->getMessage(),
+                previous: $exception,
             );
         }
-    }
-
-    /**
-     * @param array<int|string, mixed> $params
-     */
-    protected function requete(
-        string $sql,
-        array $params = [],
-    ): PDOStatement|false {
-        return $this->query(
-            $sql,
-            $params,
-        );
     }
 
     /**
@@ -198,7 +188,9 @@ abstract class Model
         $values = [];
 
         foreach ($where as $field => $value) {
-            $field = $this->clean($field);
+            $field = $this->sanitizeIdentifier(
+                $field,
+            );
 
             if ($field === '') {
                 continue;
@@ -227,9 +219,11 @@ abstract class Model
             return [];
         }
 
-        $built = $this->buildWhere($where);
+        $builtWhere = $this->buildWhere(
+            $where,
+        );
 
-        if ($built['conditions'] === []) {
+        if ($builtWhere['conditions'] === []) {
             return [];
         }
 
@@ -239,9 +233,9 @@ abstract class Model
             WHERE "
             . implode(
                 ' AND ',
-                $built['conditions'],
+                $builtWhere['conditions'],
             ),
-            $built['values'],
+            $builtWhere['values'],
             $class,
         );
     }
@@ -264,7 +258,9 @@ abstract class Model
         $values = [];
 
         foreach ($data as $field => $value) {
-            $field = $this->clean($field);
+            $field = $this->sanitizeIdentifier(
+                $field,
+            );
 
             if ($field === '') {
                 continue;
@@ -294,23 +290,28 @@ abstract class Model
             return false;
         }
 
-        $built = $this->buildInsert($data);
+        $builtInsert = $this->buildInsert(
+            $data,
+        );
 
-        if ($built['fields'] === []) {
+        if ($builtInsert['fields'] === []) {
             return false;
         }
 
         return $this->execute(
             "INSERT INTO {$this->table()} ("
-            . implode(', ', $built['fields'])
+            . implode(
+                ', ',
+                $builtInsert['fields'],
+            )
             . ')
             VALUES ('
             . implode(
                 ', ',
-                $built['placeholders'],
+                $builtInsert['placeholders'],
             )
             . ')',
-            $built['values'],
+            $builtInsert['values'],
         );
     }
 
@@ -334,7 +335,9 @@ abstract class Model
         $values = [];
 
         foreach ($data as $field => $value) {
-            $field = $this->clean($field);
+            $field = $this->sanitizeIdentifier(
+                $field,
+            );
 
             if ($field === '') {
                 continue;
@@ -383,9 +386,11 @@ abstract class Model
             return false;
         }
 
-        $built = $this->buildWhere($where);
+        $builtWhere = $this->buildWhere(
+            $where,
+        );
 
-        if ($built['conditions'] === []) {
+        if ($builtWhere['conditions'] === []) {
             return false;
         }
 
@@ -394,9 +399,9 @@ abstract class Model
             WHERE "
             . implode(
                 ' AND ',
-                $built['conditions'],
+                $builtWhere['conditions'],
             ),
-            $built['values'],
+            $builtWhere['values'],
         );
     }
 }

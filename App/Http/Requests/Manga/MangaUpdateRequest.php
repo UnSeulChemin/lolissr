@@ -9,9 +9,22 @@ use Framework\Http\FormRequest;
 
 final class MangaUpdateRequest extends FormRequest
 {
+    private const STATUTS = [
+        'en_cours',
+        'termine',
+    ];
+
     protected function validate(): void
     {
         $this->validator
+            ->nullable('editeur')
+            ->string('editeur')
+            ->maxLength('editeur', 100)
+
+            ->required('statut')
+            ->string('statut')
+            ->in('statut', self::STATUTS)
+
             ->nullable('commentaire')
             ->string('commentaire')
             ->maxLength('commentaire', 1000)
