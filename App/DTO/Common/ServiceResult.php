@@ -21,7 +21,7 @@ final readonly class ServiceResult
      * @param array<string, mixed> $data
      */
     public static function success(
-        string $message = 'Success',
+        string $message = 'Succès',
         array $data = [],
         int $status = 200,
     ): self {
@@ -37,7 +37,7 @@ final readonly class ServiceResult
      * @param array<string, mixed> $data
      */
     public static function error(
-        string $message = 'Error',
+        string $message = 'Erreur',
         array $data = [],
         int $status = 400,
     ): self {

@@ -7,14 +7,14 @@ namespace App\DTO\Manga\Inputs;
 use Framework\Support\MangaNoteNormalizer;
 use Framework\Support\Str;
 
-final class MangaUpdateDTO
+final readonly class MangaUpdateDTO
 {
     public function __construct(
-        public readonly ?string $editeur,
-        public readonly string $statut,
-        public readonly ?int $jacquette,
-        public readonly ?int $livreNote,
-        public readonly ?string $commentaire,
+        public ?string $editeur,
+        public string $statut,
+        public ?int $jacquette,
+        public ?int $livreNote,
+        public ?string $commentaire,
     ) {
     }
 

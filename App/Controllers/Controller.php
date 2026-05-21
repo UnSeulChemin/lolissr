@@ -15,19 +15,10 @@ use Throwable;
 
 abstract class Controller
 {
-    /**
-     * Template principal.
-     */
     protected string $template = 'layouts/base';
 
-    /**
-     * Titre de la page.
-     */
     protected string $title;
 
-    /**
-     * Chemin de base.
-     */
     protected string $basePath;
 
     public function __construct(
@@ -37,9 +28,6 @@ abstract class Controller
         $this->basePath = App::basePath();
     }
 
-    /**
-     * Retourne le chemin complet d'une vue standard.
-     */
     protected function viewPath(
         string $file,
     ): string {
@@ -48,9 +36,6 @@ abstract class Controller
         );
     }
 
-    /**
-     * Retourne le chemin complet d'une vue d'erreur.
-     */
     protected function errorViewPath(
         string $file,
     ): string {
@@ -65,9 +50,6 @@ abstract class Controller
         );
     }
 
-    /**
-     * Retourne le chemin complet du template.
-     */
     protected function templatePath(): string
     {
         return view_path(
@@ -76,8 +58,6 @@ abstract class Controller
     }
 
     /**
-     * Capture le rendu d'un fichier PHP.
-     *
      * @param array<string, mixed> $variables
      */
     private function renderPhp(
@@ -103,8 +83,6 @@ abstract class Controller
     }
 
     /**
-     * Variables communes aux vues.
-     *
      * @param array<string, mixed> $data
      * @return array<string, mixed>
      */
@@ -119,9 +97,24 @@ abstract class Controller
         ];
     }
 
+    private function ensureViewExists(
+        string $path,
+        string $type,
+    ): void {
+        if (is_file($path)) {
+            return;
+        }
+
+        throw new RuntimeException(
+            sprintf(
+                '%s introuvable : %s',
+                $type,
+                $path,
+            ),
+        );
+    }
+
     /**
-     * Pipeline central de rendu HTML.
-     *
      * @param array<string, mixed> $data
      */
     private function renderView(
@@ -130,14 +123,10 @@ abstract class Controller
         array $data = [],
         bool $withTemplate = true,
     ): never {
-        // Correction importante :
-        // une vue manquante = erreur serveur,
-        // PAS une 404 HTTP.
-        if (!is_file($viewPath)) {
-            throw new RuntimeException(
-                'Vue introuvable : ' . $viewPath,
-            );
-        }
+        $this->ensureViewExists(
+            $viewPath,
+            'Vue',
+        );
 
         $variables = $this->sharedViewVariables(
             $data,
@@ -148,9 +137,6 @@ abstract class Controller
             $variables,
         );
 
-        // Correction importante :
-        // Response::html() termine probablement le script.
-        // Donc il faut return explicitement.
         if (!$withTemplate) {
             Response::html(
                 $content,
@@ -160,12 +146,10 @@ abstract class Controller
 
         $templatePath = $this->templatePath();
 
-        if (!is_file($templatePath)) {
-            throw new RuntimeException(
-                'Template introuvable : '
-                . $this->template,
-            );
-        }
+        $this->ensureViewExists(
+            $templatePath,
+            'Template',
+        );
 
         $html = $this->renderPhp(
             $templatePath,
@@ -253,14 +237,16 @@ abstract class Controller
             );
         }
 
-        $location = rtrim(
-            $this->basePath,
-            '/',
-        )
-        . '/'
-        . ltrim(
-            $url,
-            '/',
+        $location = sprintf(
+            '%s/%s',
+            rtrim(
+                $this->basePath,
+                '/',
+            ),
+            ltrim(
+                $url,
+                '/',
+            ),
         );
 
         Response::redirect(
@@ -353,14 +339,19 @@ abstract class Controller
 
     protected function isAjax(): bool
     {
-        return $this->request->isAjax()
-            || str_contains(
+        if ($this->request->isAjax()) {
+            return true;
+        }
+
+        return str_contains(
+            strtolower(
                 $this->request->server(
                     'HTTP_ACCEPT',
                     '',
                 ),
-                'application/json',
-            );
+            ),
+            'application/json',
+        );
     }
 
     /**

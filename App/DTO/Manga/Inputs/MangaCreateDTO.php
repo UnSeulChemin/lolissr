@@ -6,15 +6,15 @@ namespace App\DTO\Manga\Inputs;
 
 use Framework\Support\Str;
 
-final class MangaCreateDTO
+final readonly class MangaCreateDTO
 {
     public function __construct(
-        public readonly string $livre,
-        public readonly ?string $editeur,
-        public readonly string $statut,
-        public readonly string $slug,
-        public readonly int $numero,
-        public readonly ?string $commentaire,
+        public string $livre,
+        public ?string $editeur,
+        public string $statut,
+        public string $slug,
+        public int $numero,
+        public ?string $commentaire,
     ) {
     }
 
