@@ -14,7 +14,7 @@ use Framework\Http\Request;
 
 final class MangaAjaxController extends Controller
 {
-    private const AJAX_PATH = 'manga/ajax/';
+    private const AJAX_PATH = 'manga/ajax';
 
     public function __construct(
         protected MangaReadService $mangaReadService,
@@ -30,13 +30,7 @@ final class MangaAjaxController extends Controller
             return;
         }
 
-        if (
-            App::isTesting()
-            && str_contains(
-                $this->request->userAgent(),
-                'LoliSSR-TestRunner',
-            )
-        ) {
+        if (App::isTesting()) {
             return;
         }
 
@@ -49,14 +43,8 @@ final class MangaAjaxController extends Controller
     private function error(
         string $message,
         int $status = 400,
-        ?string $redirect = null,
+        array $data = [],
     ): never {
-        $data = [];
-
-        if ($redirect !== null) {
-            $data['redirect'] = $redirect;
-        }
-
         $this->json(
             ServiceResult::error(
                 message: $message,
@@ -73,15 +61,12 @@ final class MangaAjaxController extends Controller
     private function validationError(
         array $errors,
     ): never {
-        $this->json(
-            ServiceResult::error(
-                message: 'Formulaire invalide',
-                data: [
-                    'errors' => $errors,
-                ],
-                status: 422,
-            )->toArray(),
+        $this->error(
+            'Formulaire invalide',
             422,
+            [
+                'errors' => $errors,
+            ],
         );
     }
 
@@ -90,13 +75,14 @@ final class MangaAjaxController extends Controller
         string $slug,
         int $numero,
     ): string {
-        return $this->basePath
-            . self::AJAX_PATH
-            . $action
-            . '/'
-            . rawurlencode($slug)
-            . '/'
-            . $numero;
+        return sprintf(
+            '%s/%s/%s/%d',
+            $this->basePath,
+            self::AJAX_PATH,
+            $action,
+            rawurlencode($slug),
+            $numero,
+        );
     }
 
     /**
@@ -127,11 +113,13 @@ final class MangaAjaxController extends Controller
             $this->error(
                 'URL non canonique',
                 409,
-                $this->canonicalRedirect(
-                    $action,
-                    $data->canonicalSlug,
-                    $numero,
-                ),
+                [
+                    'redirect' => $this->canonicalRedirect(
+                        $action,
+                        $data->canonicalSlug,
+                        $numero,
+                    ),
+                ],
             );
         }
 
