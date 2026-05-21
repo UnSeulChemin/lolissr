@@ -4,17 +4,49 @@ declare(strict_types=1);
 
 namespace App\DTO\Common;
 
-final readonly class ServiceResultData
+final readonly class ServiceResult
 {
     /**
      * @param array<string, mixed> $data
      */
-    public function __construct(
+    private function __construct(
         public bool $success,
         public int $status,
         public string $message,
         public array $data = [],
     ) {
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    public static function success(
+        string $message = 'Success',
+        array $data = [],
+        int $status = 200,
+    ): self {
+        return new self(
+            success: true,
+            status: $status,
+            message: $message,
+            data: $data,
+        );
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    public static function error(
+        string $message = 'Error',
+        array $data = [],
+        int $status = 400,
+    ): self {
+        return new self(
+            success: false,
+            status: $status,
+            message: $message,
+            data: $data,
+        );
     }
 
     /**
@@ -26,7 +58,7 @@ final readonly class ServiceResultData
             'success' => $this->success,
             'status' => $this->status,
             'message' => $this->message,
-            ...$this->data,
+            'data' => $this->data,
         ];
     }
 }

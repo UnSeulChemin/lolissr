@@ -18,7 +18,7 @@ final readonly class ChinoisGrammaireDTO
         public string $phrase,
         public string $pinyin,
         public string $traduction,
-        public string $explication,
+        public ?string $explication,
         public int $position,
         public bool $maitrise,
     ) {
