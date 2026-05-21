@@ -16,7 +16,10 @@ final class UploadService
     public function isTestUploadMode(): bool
     {
         return App::isTesting()
-            && env_bool('TEST_UPLOAD_MODE', false);
+            && env_bool(
+                'TEST_UPLOAD_MODE',
+                false,
+            );
     }
 
     public function testUploadDirectory(): string
@@ -144,7 +147,9 @@ final class UploadService
             return null;
         }
 
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $finfo = finfo_open(
+            FILEINFO_MIME_TYPE,
+        );
 
         if ($finfo === false) {
             return null;
@@ -183,9 +188,24 @@ final class UploadService
 
         return mkdir(
             $directory,
-            0777,
+            0755,
             true,
         ) || is_dir($directory);
+    }
+
+    private function removeFile(
+        string $path,
+    ): void {
+        if (!is_file($path)) {
+            return;
+        }
+
+        if (!unlink($path)) {
+            Logger::error(
+                'Impossible de supprimer le fichier : '
+                . $path,
+            );
+        }
     }
 
     private function failure(
@@ -325,7 +345,9 @@ final class UploadService
         $directory = $this->uploadDirectory();
 
         if (
-            !$this->ensureDirectoryExists($directory)
+            !$this->ensureDirectoryExists(
+                $directory,
+            )
         ) {
             Logger::error(
                 'Upload manga: dossier impossible à créer : '
@@ -345,7 +367,9 @@ final class UploadService
 
         if (is_file($destination)) {
             if ($this->isTestUploadMode()) {
-                unlink($destination);
+                $this->removeFile(
+                    $destination,
+                );
             } else {
                 Logger::error(
                     'Upload manga: fichier déjà existant : '
@@ -396,8 +420,6 @@ final class UploadService
     public function removeFileIfExists(
         string $path,
     ): void {
-        if (is_file($path)) {
-            unlink($path);
-        }
+        $this->removeFile($path);
     }
 }

@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Repositories\Manga\MangaStatsRepository;
+use stdClass;
 
-final class StatsService
+final readonly class StatsService
 {
     public function __construct(
-        private readonly MangaStatsRepository $repository,
+        private MangaStatsRepository $repository,
     ) {
     }
 
@@ -33,23 +34,29 @@ final class StatsService
 
     public function totalUnread(): int
     {
+        $totalTomes = $this->totalTomes();
+        $totalRead = $this->totalRead();
+
         return max(
             0,
-            $this->totalTomes()
-            - $this->totalRead(),
+            $totalTomes - $totalRead,
         );
     }
 
     public function readingProgress(): int
     {
-        $total = $this->totalTomes();
+        $totalTomes = $this->totalTomes();
 
-        return $total > 0
-            ? (int) round(
-                ($this->totalRead() / $total)
-                * 100,
-            )
-            : 0;
+        if ($totalTomes <= 0) {
+            return 0;
+        }
+
+        return (int) round(
+            (
+                $this->totalRead()
+                / $totalTomes
+            ) * 100,
+        );
     }
 
     public function averageNote(): ?float
@@ -71,7 +78,7 @@ final class StatsService
     }
 
     /**
-     * @return array<int, object>
+     * @return list<object>
      */
     public function topLongestSeries(
         int $limit = 5,
@@ -82,33 +89,36 @@ final class StatsService
 
     public function dashboard(): object
     {
+        $totalTomes = $this->totalTomes();
+
+        $totalRead = $this->totalRead();
+
         return (object) [
-            'totalTomes' =>
-                $this->totalTomes(),
+            'totalTomes' => $totalTomes,
 
-            'totalSeries' =>
-                $this->totalSeries(),
+            'totalSeries' => $this->totalSeries(),
 
-            'totalRead' =>
-                $this->totalRead(),
+            'totalRead' => $totalRead,
 
-            'totalUnread' =>
-                $this->totalUnread(),
+            'totalUnread' => max(
+                0,
+                $totalTomes - $totalRead,
+            ),
 
-            'readingProgress' =>
-                $this->readingProgress(),
+            'readingProgress' => $totalTomes > 0
+                ? (int) round(
+                    ($totalRead / $totalTomes)
+                    * 100,
+                )
+                : 0,
 
-            'averageNote' =>
-                $this->averageNote(),
+            'averageNote' => $this->averageNote(),
 
-            'lastTome' =>
-                $this->lastTome(),
+            'lastTome' => $this->lastTome(),
 
-            'longestSeries' =>
-                $this->longestSeries(),
+            'longestSeries' => $this->longestSeries(),
 
-            'topLongestSeries' =>
-                $this->topLongestSeries(),
+            'topLongestSeries' => $this->topLongestSeries(),
         ];
     }
 }

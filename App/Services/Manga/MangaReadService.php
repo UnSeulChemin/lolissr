@@ -25,8 +25,6 @@ final readonly class MangaReadService
     private function normalizeSearchQuery(
         string $query,
     ): string {
-        $query = urldecode($query);
-
         return trim(
             preg_replace(
                 '/\s+/',
@@ -58,12 +56,18 @@ final readonly class MangaReadService
         object $manga,
     ): MangaSearchItemData {
         return new MangaSearchItemData(
-            slug: $manga->slug,
-            numero: $manga->numero,
-            livre: $manga->livre,
-            thumbnailPath: $manga->thumbnail,
-            thumbnailExtension: $manga->extension,
-            note: $manga->note,
+            slug: (string) $manga->slug,
+            numero: (int) $manga->numero,
+            livre: (string) $manga->livre,
+            thumbnail: isset($manga->thumbnail)
+                ? (string) $manga->thumbnail
+                : null,
+            extension: isset($manga->extension)
+                ? (string) $manga->extension
+                : null,
+            note: isset($manga->note)
+                ? (int) $manga->note
+                : null,
         );
     }
 
@@ -71,21 +75,44 @@ final readonly class MangaReadService
         object $manga,
     ): MangaSeriesItemData {
         return new MangaSeriesItemData(
-            slug: $manga->slug,
-            numero: $manga->numero,
-            livre: $manga->livre,
-            thumbnail: $manga->thumbnail,
-            extension: $manga->extension,
-            statut: $manga->statut ?? 'en_cours',
+            slug: (string) $manga->slug,
+            numero: (int) $manga->numero,
+            livre: (string) $manga->livre,
+
+            thumbnail: isset($manga->thumbnail)
+                ? (string) $manga->thumbnail
+                : null,
+
+            extension: isset($manga->extension)
+                ? (string) $manga->extension
+                : null,
+
+            statut: isset($manga->statut)
+                ? (string) $manga->statut
+                : 'en_cours',
+
             note: isset($manga->note)
                 ? (float) $manga->note
                 : null,
+
             averageNote: isset($manga->average_note)
                 ? (float) $manga->average_note
                 : null,
-            total: (int) ($manga->total ?? 0),
-            totalLu: (int) ($manga->total_lu ?? 0),
-            lu: (int) ($manga->lu ?? 0),
+
+            total: (int) (
+                $manga->total
+                ?? 0
+            ),
+
+            totalLu: (int) (
+                $manga->total_lu
+                ?? 0
+            ),
+
+            lu: (int) (
+                $manga->lu
+                ?? 0
+            ),
         );
     }
 
