@@ -10,8 +10,8 @@ final readonly class MangaSearchItemData
         public string $slug,
         public int $numero,
         public string $livre,
-        public ?string $thumbnailPath,
-        public ?string $thumbnailExtension,
+        public ?string $thumbnail,
+        public ?string $extension,
         public ?int $note,
     ) {
     }
