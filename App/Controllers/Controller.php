@@ -11,6 +11,7 @@ use Framework\Http\Request;
 use Framework\Http\Response;
 use Framework\Support\Session;
 use RuntimeException;
+use Throwable;
 
 abstract class Controller
 {
@@ -59,12 +60,8 @@ abstract class Controller
             $file,
         );
 
-        if ($file === null) {
-            $file = '';
-        }
-
         return view_path(
-            'errors/' . $file . '.php',
+            'errors/' . ($file ?? '') . '.php',
         );
     }
 
@@ -94,13 +91,15 @@ abstract class Controller
 
         ob_start();
 
-        require $path;
+        try {
+            require $path;
 
-        $content = ob_get_clean();
+            return (string) ob_get_clean();
+        } catch (Throwable $exception) {
+            ob_end_clean();
 
-        return is_string($content)
-            ? $content
-            : '';
+            throw $exception;
+        }
     }
 
     /**
@@ -121,24 +120,23 @@ abstract class Controller
     }
 
     /**
-     * @param array<string, mixed>|object $data
+     * Pipeline central de rendu HTML.
+     *
+     * @param array<string, mixed> $data
      */
-    protected function render(
-        string $file,
-        array|object $data = [],
+    private function renderView(
+        string $viewPath,
+        int $statusCode = 200,
+        array $data = [],
+        bool $withTemplate = true,
     ): never {
-        $viewPath = $this->viewPath(
-            $file,
-        );
-
+        // Correction importante :
+        // une vue manquante = erreur serveur,
+        // PAS une 404 HTTP.
         if (!is_file($viewPath)) {
-            throw new NotFoundException(
-                'Vue introuvable : ' . $file,
+            throw new RuntimeException(
+                'Vue introuvable : ' . $viewPath,
             );
-        }
-
-        if (is_object($data)) {
-            $data = (array) $data;
         }
 
         $variables = $this->sharedViewVariables(
@@ -150,83 +148,15 @@ abstract class Controller
             $variables,
         );
 
-        $templatePath = $this->templatePath();
-
-        if (!is_file($templatePath)) {
-            throw new RuntimeException(
-                'Template introuvable : '
-                . $this->template,
+        // Correction importante :
+        // Response::html() termine probablement le script.
+        // Donc il faut return explicitement.
+        if (!$withTemplate) {
+            Response::html(
+                $content,
+                $statusCode,
             );
         }
-
-        $html = $this->renderPhp(
-            $templatePath,
-            array_merge(
-                $variables,
-                [
-                    'content' => $content,
-                ],
-            ),
-        );
-
-        Response::html($html);
-    }
-
-    /**
-     * @param array<string, mixed> $data
-     */
-    protected function renderPartial(
-        string $file,
-        array $data = [],
-    ): never {
-        $viewPath = $this->viewPath(
-            $file,
-        );
-
-        if (!is_file($viewPath)) {
-            throw new NotFoundException(
-                'Vue partielle introuvable : '
-                . $file,
-            );
-        }
-
-        $html = $this->renderPhp(
-            $viewPath,
-            $this->sharedViewVariables(
-                $data,
-            ),
-        );
-
-        Response::html($html);
-    }
-
-    /**
-     * @param array<string, mixed> $data
-     */
-    protected function renderError(
-        string $file,
-        int $statusCode,
-        array $data = [],
-    ): never {
-        $viewPath = $this->errorViewPath(
-            $file,
-        );
-
-        if (!is_file($viewPath)) {
-            throw new RuntimeException(
-                'Vue erreur introuvable : '
-                . $file,
-            );
-        }
-
-        $variables = $this->sharedViewVariables(
-            $data,
-        );
-
-        $content = $this->renderPhp(
-            $viewPath,
-            $variables,
-        );
 
         $templatePath = $this->templatePath();
 
@@ -250,6 +180,48 @@ abstract class Controller
         Response::html(
             $html,
             $statusCode,
+        );
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    protected function render(
+        string $file,
+        array $data = [],
+    ): never {
+        $this->renderView(
+            viewPath: $this->viewPath($file),
+            data: $data,
+        );
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    protected function renderPartial(
+        string $file,
+        array $data = [],
+    ): never {
+        $this->renderView(
+            viewPath: $this->viewPath($file),
+            data: $data,
+            withTemplate: false,
+        );
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    protected function renderError(
+        string $file,
+        int $statusCode,
+        array $data = [],
+    ): never {
+        $this->renderView(
+            viewPath: $this->errorViewPath($file),
+            statusCode: $statusCode,
+            data: $data,
         );
     }
 
@@ -355,51 +327,6 @@ abstract class Controller
     ): never {
         throw new RuntimeException(
             $message,
-        );
-    }
-
-    public function renderNotFoundPage(
-        string $message = 'Page introuvable',
-    ): never {
-        $this->title =
-            '404 | Page introuvable';
-
-        $this->renderError(
-            '404',
-            404,
-            [
-                'message' => $message,
-            ],
-        );
-    }
-
-    public function renderMethodNotAllowedPage(
-        string $message = 'Méthode non autorisée',
-    ): never {
-        $this->title =
-            '405 | Méthode non autorisée';
-
-        $this->renderError(
-            '405',
-            405,
-            [
-                'message' => $message,
-            ],
-        );
-    }
-
-    public function renderServerErrorPage(
-        string $message = 'Erreur interne du serveur',
-    ): never {
-        $this->title =
-            '500 | Erreur serveur';
-
-        $this->renderError(
-            '500',
-            500,
-            [
-                'message' => $message,
-            ],
         );
     }
 

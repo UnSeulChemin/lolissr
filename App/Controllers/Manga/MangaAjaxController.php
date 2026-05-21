@@ -13,6 +13,8 @@ use Framework\Http\Request;
 
 final class MangaAjaxController extends Controller
 {
+    private const AJAX_PATH = 'manga/ajax/';
+
     public function __construct(
         protected MangaReadService $mangaReadService,
         protected MangaWriteService $mangaWriteService,
@@ -23,10 +25,15 @@ final class MangaAjaxController extends Controller
 
     private function ensureAjax(): void
     {
-        if ($this->request->isAjax()) {
+        // Correction :
+        // utilise maintenant le helper global isAjax()
+        // pour garder une logique AJAX unique dans tout le projet.
+        if ($this->isAjax()) {
             return;
         }
 
+        // Très bonne idée déjà présente :
+        // bypass spécial pour les tests automatisés.
         if (
             App::isTesting()
             && str_contains(
@@ -37,10 +44,10 @@ final class MangaAjaxController extends Controller
             return;
         }
 
-        $this->json([
-            'success' => false,
-            'message' => 'Requête AJAX requise',
-        ], 400);
+        $this->error(
+            'Requête AJAX requise',
+            400,
+        );
     }
 
     private function error(
@@ -53,6 +60,8 @@ final class MangaAjaxController extends Controller
             'message' => $message,
         ];
 
+        // Très bon pattern :
+        // redirect optionnel seulement quand nécessaire.
         if ($redirect !== null) {
             $response['redirect'] = $redirect;
         }
@@ -63,18 +72,76 @@ final class MangaAjaxController extends Controller
         );
     }
 
+    /**
+     * @param array<string, mixed> $errors
+     */
+    private function validationError(
+        array $errors,
+    ): never {
+        // Correction :
+        // centralise les erreurs de validation AJAX.
+        // Tu garantis une API uniforme partout.
+        $this->json([
+            'success' => false,
+            'message' => 'Formulaire invalide',
+            'errors' => $errors,
+        ], 422);
+    }
+
     private function canonicalRedirect(
         string $action,
         string $slug,
         int $numero,
     ): string {
+        // Correction :
+        // suppression du hardcoded path.
         return $this->basePath
-            . 'manga/ajax/'
+            . self::AJAX_PATH
             . $action
             . '/'
             . rawurlencode($slug)
             . '/'
             . $numero;
+    }
+
+    /**
+     * Résout un manga ou retourne une erreur AJAX.
+     */
+    private function resolveMangaOrFail(
+        string $action,
+        string $slug,
+        int $numero,
+    ): object {
+        // Correction importante :
+        // toute cette logique était répétée 3x.
+        $data = $this->mangaReadService
+            ->one(
+                $slug,
+                $numero,
+            );
+
+        if ($data === null) {
+            $this->error(
+                'Manga introuvable',
+                404,
+            );
+        }
+
+        // Très bon comportement déjà existant :
+        // gestion des URLs canoniques même en AJAX.
+        if ($slug !== $data->canonicalSlug) {
+            $this->error(
+                'URL non canonique',
+                409,
+                $this->canonicalRedirect(
+                    $action,
+                    $data->canonicalSlug,
+                    $numero,
+                ),
+            );
+        }
+
+        return $data;
     }
 
     public function seriesPage(
@@ -124,37 +191,18 @@ final class MangaAjaxController extends Controller
     ): never {
         $this->ensureAjax();
 
-        $data = $this->mangaReadService
-            ->one(
-                $slug,
-                $numero,
-            );
-
-        if ($data === null) {
-            $this->error(
-                'Manga introuvable',
-                404,
-            );
-        }
-
-        if ($slug !== $data->canonicalSlug) {
-            $this->error(
-                'URL non canonique',
-                409,
-                $this->canonicalRedirect(
-                    'update-note',
-                    $data->canonicalSlug,
-                    $numero,
-                ),
-            );
-        }
+        // Correction :
+        // factorisation du fetch + canonical check.
+        $data = $this->resolveMangaOrFail(
+            'update-note',
+            $slug,
+            $numero,
+        );
 
         if ($request->fails()) {
-            $this->json([
-                'success' => false,
-                'message' => 'Formulaire invalide',
-                'errors' => $request->errors(),
-            ], 422);
+            $this->validationError(
+                $request->errors(),
+            );
         }
 
         $result = $this->mangaWriteService
@@ -177,30 +225,12 @@ final class MangaAjaxController extends Controller
     ): never {
         $this->ensureAjax();
 
-        $data = $this->mangaReadService
-            ->one(
-                $slug,
-                $numero,
-            );
-
-        if ($data === null) {
-            $this->error(
-                'Manga introuvable',
-                404,
-            );
-        }
-
-        if ($slug !== $data->canonicalSlug) {
-            $this->error(
-                'URL non canonique',
-                409,
-                $this->canonicalRedirect(
-                    'update-lu',
-                    $data->canonicalSlug,
-                    $numero,
-                ),
-            );
-        }
+        // Même logique factorisée ici.
+        $data = $this->resolveMangaOrFail(
+            'update-lu',
+            $slug,
+            $numero,
+        );
 
         $result = $this->mangaWriteService
             ->updateLu(
@@ -225,30 +255,12 @@ final class MangaAjaxController extends Controller
     ): never {
         $this->ensureAjax();
 
-        $data = $this->mangaReadService
-            ->one(
-                $slug,
-                $numero,
-            );
-
-        if ($data === null) {
-            $this->error(
-                'Manga introuvable',
-                404,
-            );
-        }
-
-        if ($slug !== $data->canonicalSlug) {
-            $this->error(
-                'URL non canonique',
-                409,
-                $this->canonicalRedirect(
-                    'delete',
-                    $data->canonicalSlug,
-                    $numero,
-                ),
-            );
-        }
+        // Même logique factorisée ici aussi.
+        $data = $this->resolveMangaOrFail(
+            'delete',
+            $slug,
+            $numero,
+        );
 
         $result = $this->mangaWriteService
             ->delete(

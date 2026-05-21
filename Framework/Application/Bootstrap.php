@@ -16,12 +16,14 @@ final class Bootstrap
 {
     public static function run(): never
     {
+        // Correction :
+        // clear avant reload.
+        Env::clear();
+        Config::clear();
+
         self::loadEnvironment(
             base_path('.env'),
         );
-
-        Env::clear();
-        Config::clear();
 
         self::configureDebug();
 

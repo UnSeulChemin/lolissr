@@ -11,6 +11,16 @@ use Framework\Http\Request;
 
 final class ChinoisController extends Controller
 {
+    // Correction :
+    // constante métier centralisée.
+    // Évite les valeurs hardcodées répétées.
+    private const HSK_LEVELS = [
+        '1',
+        '2',
+        '3',
+        '4',
+    ];
+
     public function __construct(
         private readonly ChinoisReadService $chinoisReadService,
         private readonly ChinoisGrammaireRepository $chinoisGrammaireRepository,
@@ -18,12 +28,6 @@ final class ChinoisController extends Controller
     ) {
         parent::__construct($request);
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Accueil
-    |--------------------------------------------------------------------------
-    */
 
     public function index(): never
     {
@@ -34,16 +38,11 @@ final class ChinoisController extends Controller
         );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Mandarin
-    |--------------------------------------------------------------------------
-    */
-
     public function mandarin(): never
     {
-        $this->title =
-            'Chinois | Mandarin';
+        // Correction :
+        // suppression multiline inutile.
+        $this->title = 'Chinois | Mandarin';
 
         $this->render(
             'chinois/mandarin',
@@ -55,16 +54,9 @@ final class ChinoisController extends Controller
         );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | 晋语
-    |--------------------------------------------------------------------------
-    */
-
     public function jinyu(): never
     {
-        $this->title =
-            'Chinois | 晋语';
+        $this->title = 'Chinois | 晋语';
 
         $this->render(
             'chinois/jinyu',
@@ -76,50 +68,34 @@ final class ChinoisController extends Controller
         );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Grammaire
-    |--------------------------------------------------------------------------
-    */
-
     public function grammaire(): never
     {
-        $this->title =
-            'Chinois | Grammaire';
+        $this->title = 'Chinois | Grammaire';
 
         $this->render(
             'chinois/grammaire',
         );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | HSK
-    |--------------------------------------------------------------------------
-    */
-
     public function hsk(
         string $level,
     ): never {
-        $allowedLevels = [
-            '1',
-            '2',
-            '3',
-            '4',
-        ];
-
+        // Correction :
+        // utilisation de la constante centralisée.
+        // Plus maintenable si tu ajoutes HSK5/6 plus tard.
         if (
             !in_array(
                 $level,
-                $allowedLevels,
+                self::HSK_LEVELS,
                 true,
             )
         ) {
             $this->notFound();
         }
 
-        $hskLevel =
-            'HSK' . $level;
+        // Très bon code déjà présent :
+        // flow ultra lisible et simple.
+        $hskLevel = 'HSK' . $level;
 
         $grammaires = $this
             ->chinoisGrammaireRepository
@@ -138,32 +114,18 @@ final class ChinoisController extends Controller
         );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Flashcards
-    |--------------------------------------------------------------------------
-    */
-
     public function flashcards(): never
     {
-        $this->title =
-            'Chinois | Flashcards';
+        $this->title = 'Chinois | Flashcards';
 
         $this->render(
             'chinois/flashcards',
         );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Ajouter
-    |--------------------------------------------------------------------------
-    */
-
     public function ajouter(): never
     {
-        $this->title =
-            'Chinois | Ajouter';
+        $this->title = 'Chinois | Ajouter';
 
         $this->render(
             'chinois/ajouter',

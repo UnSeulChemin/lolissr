@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Framework\Exceptions;
 
-use App\Controllers\Controller;
+use App\Controllers\ErrorController;
 use ErrorException;
 use Framework\Application\App;
 use Framework\Http\Request;
@@ -53,6 +53,7 @@ final class ErrorHandler
         Throwable $exception,
     ): never {
         try {
+            // Gestion des erreurs HTTP.
             if (
                 $exception instanceof HttpException
             ) {
@@ -69,6 +70,7 @@ final class ErrorHandler
                 );
             }
 
+            // Toutes les autres erreurs.
             Logger::exception(
                 $exception,
                 [
@@ -76,14 +78,20 @@ final class ErrorHandler
                 ],
             );
 
+            // DEV :
+            // stacktrace complète.
             if (App::debug()) {
                 self::renderDebug(
                     $exception,
                 );
             }
 
+            // PROD :
+            // page 500 propre.
             self::render500();
         } catch (Throwable) {
+            // Fallback ultime si le système
+            // d'erreur plante lui-même.
             http_response_code(500);
 
             exit(
@@ -127,6 +135,8 @@ final class ErrorHandler
             ],
         );
 
+        // DEV :
+        // affichage du fatal error.
         if (App::debug()) {
             http_response_code(500);
 
@@ -147,15 +157,19 @@ final class ErrorHandler
             exit;
         }
 
+        // PROD :
+        // page 500 propre.
         self::render500();
     }
 
-    private static function controller(): Controller
+    /**
+     * Vrai controller d'erreurs.
+     */
+    private static function controller(): ErrorController
     {
-        return new class (
+        return new ErrorController(
             Request::capture(),
-        ) extends Controller {
-        };
+        );
     }
 
     private static function renderHttpException(
@@ -165,15 +179,15 @@ final class ErrorHandler
 
         match ($exception->getStatusCode()) {
 
-            404 => $controller->renderNotFoundPage(
+            404 => $controller->notFound(
                 $exception->getMessage(),
             ),
 
-            405 => $controller->renderMethodNotAllowedPage(
+            405 => $controller->methodNotAllowed(
                 $exception->getMessage(),
             ),
 
-            default => $controller->renderServerErrorPage(
+            default => $controller->serverError(
                 $exception->getMessage(),
             ),
         };
@@ -182,7 +196,7 @@ final class ErrorHandler
     private static function render500(): never
     {
         self::controller()
-            ->renderServerErrorPage(
+            ->serverError(
                 'Erreur interne du serveur.',
             );
     }

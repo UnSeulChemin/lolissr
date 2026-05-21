@@ -17,14 +17,14 @@ final class ChinoisAjaxController extends Controller
         parent::__construct($request);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Toggle maîtrise grammaire
-    |--------------------------------------------------------------------------
-    */
-
     public function toggleGrammaireMaitrise(): never
     {
+        // Correction :
+        // suppression du gros commentaire de section.
+        // Le nom de la méthode explique déjà parfaitement le rôle.
+
+        // Très bon réflexe déjà présent :
+        // protection AJAX stricte.
         if (!$this->isAjax()) {
             $this->json([
                 'success' => false,
@@ -34,6 +34,8 @@ final class ChinoisAjaxController extends Controller
 
         $id = $this->request->integer('id');
 
+        // Très bon contrôle ici :
+        // évite les IDs invalides avant accès DB.
         if ($id <= 0) {
             $this->json([
                 'success' => false,
@@ -44,6 +46,8 @@ final class ChinoisAjaxController extends Controller
         $maitrise = $this->repository
             ->toggleMaitrise($id);
 
+        // Très bonne réponse API :
+        // simple, cohérente, minimale.
         $this->json([
             'success' => true,
             'maitrise' => $maitrise,

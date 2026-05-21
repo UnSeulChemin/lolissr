@@ -22,10 +22,9 @@ final class MainController extends Controller
         $this->title = 'Accueil';
 
         $stats = Cache::remember(
-            'home.dashboard',
-            300,
-            fn () => $this->statsService
-                ->dashboard(),
+            key: 'home.dashboard',
+            ttl: 300,
+            callback: fn () => $this->statsService->dashboard(),
         );
 
         $this->render(
