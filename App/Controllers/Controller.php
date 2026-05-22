@@ -19,13 +19,13 @@ abstract class Controller
 
     protected string $title;
 
-    protected string $basePath;
+    protected string $baseUri;
 
     public function __construct(
         protected Request $request,
     ) {
         $this->title = App::siteName();
-        $this->basePath = App::basePath();
+        $this->baseUri = App::baseUri();
     }
 
     protected function viewPath(
@@ -92,7 +92,7 @@ abstract class Controller
         return [
             'view' => $data,
             'title' => $this->title,
-            'basePath' => $this->basePath,
+            'baseUri' => $this->baseUri,
             'currentPath' => $this->request->path(),
         ];
     }
@@ -228,7 +228,7 @@ abstract class Controller
         if (
             str_starts_with(
                 $url,
-                $this->basePath,
+                $this->baseUri,
             )
         ) {
             Response::redirect(
@@ -237,17 +237,19 @@ abstract class Controller
             );
         }
 
-        $location = sprintf(
-            '%s/%s',
-            rtrim(
-                $this->basePath,
+        $baseUri = $this->baseUri === '/'
+            ? ''
+            : rtrim(
+                $this->baseUri,
                 '/',
-            ),
-            ltrim(
+            );
+
+        $location = $baseUri
+            . '/'
+            . ltrim(
                 $url,
                 '/',
-            ),
-        );
+            );
 
         Response::redirect(
             $location,
@@ -339,19 +341,16 @@ abstract class Controller
 
     protected function isAjax(): bool
     {
-        if ($this->request->isAjax()) {
-            return true;
-        }
-
-        return str_contains(
-            strtolower(
-                $this->request->server(
-                    'HTTP_ACCEPT',
-                    '',
+        return $this->request->isAjax()
+            || str_contains(
+                strtolower(
+                    $this->request->server(
+                        'HTTP_ACCEPT',
+                        '',
+                    ),
                 ),
-            ),
-            'application/json',
-        );
+                'application/json',
+            );
     }
 
     /**

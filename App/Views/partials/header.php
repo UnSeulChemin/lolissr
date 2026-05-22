@@ -11,12 +11,12 @@ declare(strict_types=1);
 $currentPath ??= '/';
 
 /* Base path toujours propre */
-$basePath = rtrim(
-    (string) ($basePath ?? ''),
+$baseUri = rtrim(
+    (string) ($baseUri ?? ''),
     '/',
 ) . '/';
 
-$cleanBasePath = rtrim($basePath, '/');
+$cleanBasePath = rtrim($baseUri, '/');
 
 /* Retire le basePath si présent */
 if (
@@ -93,7 +93,7 @@ if (
 
         <a
             class="site-logo"
-            href="<?= e($basePath) ?>"
+            href="<?= e($baseUri) ?>"
             title="Accueil">
 
             <span class="site-logo-loli">Loli</span>
@@ -108,7 +108,7 @@ if (
 
                 <a
                     class="nav-link-icon <?= e($activeHome) ?>"
-                    href="<?= e($basePath) ?>"
+                    href="<?= e($baseUri) ?>"
                     title="Accueil">
 
                     🏠
@@ -121,7 +121,7 @@ if (
 
                 <a
                     class="nav-link-icon <?= e($activeManga) ?>"
-                    href="<?= e($basePath) ?>manga"
+                    href="<?= e($baseUri) ?>manga"
                     title="Manga">
 
                     📚
@@ -134,7 +134,7 @@ if (
 
                 <a
                     class="nav-link-icon <?= e($activeChinois) ?>"
-                    href="<?= e($basePath) ?>chinois"
+                    href="<?= e($baseUri) ?>chinois"
                     title="Chinois">
 
                     ⛩️
@@ -149,7 +149,7 @@ if (
 
             <form
                 class="header-search js-header-search"
-                data-base-path="<?= e($basePath) ?>">
+                data-base-path="<?= e($baseUri) ?>">
 
                 <input
                     id="header-search-input"

@@ -104,7 +104,10 @@ final class Request
         string $default = '',
     ): string {
         return trim(
-            (string) $this->input($key, $default),
+            (string) $this->input(
+                $key,
+                $default,
+            ),
         );
     }
 
@@ -112,7 +115,11 @@ final class Request
         string $key,
         int $default = 0,
     ): int {
-        return (int) $this->input($key, $default);
+        $value = $this->input($key);
+
+        return is_numeric($value)
+            ? (int) $value
+            : $default;
     }
 
     public function boolean(
@@ -120,7 +127,10 @@ final class Request
         bool $default = false,
     ): bool {
         $value = filter_var(
-            $this->input($key, $default),
+            $this->input(
+                $key,
+                $default,
+            ),
             FILTER_VALIDATE_BOOLEAN,
             FILTER_NULL_ON_FAILURE,
         );
@@ -179,7 +189,8 @@ final class Request
      */
     public function file(string $key): ?array
     {
-        $file = $this->files[$key] ?? null;
+        $file = $this->files[$key]
+            ?? null;
 
         return is_array($file)
             ? $file
@@ -191,9 +202,9 @@ final class Request
      */
     public function hasFile(string $key): bool
     {
-        $file = $this->file($key);
-
-        return $file !== null;
+        return $this->file($key) !== null
+            && $this->fileError($key)
+                !== UPLOAD_ERR_NO_FILE;
     }
 
     /**
@@ -303,19 +314,22 @@ final class Request
             return '/';
         }
 
-        $basePath = rtrim(
-            App::basePath(),
+        $baseUri = rtrim(
+            App::baseUri(),
             '/',
         );
 
         if (
-            $basePath !== ''
-            && $basePath !== '/'
-            && str_starts_with($path, $basePath)
+            $baseUri !== ''
+            && $baseUri !== '/'
+            && str_starts_with(
+                $path,
+                $baseUri,
+            )
         ) {
             $path = substr(
                 $path,
-                strlen($basePath),
+                strlen($baseUri),
             );
         }
 

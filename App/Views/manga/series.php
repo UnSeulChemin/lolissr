@@ -20,8 +20,8 @@ $slugFilter = $view['slugFilter'] ?? null;
 $isSerieView = is_string($slugFilter)
     && trim($slugFilter) !== '';
 
-$basePath = rtrim(
-    (string) ($basePath ?? ''),
+$baseUri = rtrim(
+    (string) ($baseUri ?? ''),
     '/',
 ) . '/';
 
@@ -114,12 +114,12 @@ $basePath = rtrim(
                         }
 
                         $href = $isSerieView
-                            ? $basePath
+                            ? $baseUri
                                 . 'manga/series/'
                                 . rawurlencode($slug)
                                 . '/'
                                 . $numero
-                            : $basePath
+                            : $baseUri
                                 . 'manga/series/'
                                 . rawurlencode($slug);
 
@@ -179,7 +179,7 @@ $basePath = rtrim(
                             ? 'collection-status-finished'
                             : 'collection-status-progress';
 
-                        $thumbnailPath = $basePath
+                        $thumbnailPath = $baseUri
                             . 'public/images/mangas/thumbnail/'
                             . $thumbnail
                             . '.'
@@ -281,7 +281,7 @@ $basePath = rtrim(
 
                         <a
                             class="collection-pagination-link <?= $currentPage === $page ? 'active' : '' ?>"
-                            href="<?= e($basePath) ?>manga/series/page/<?= $page ?>">
+                            href="<?= e($baseUri) ?>manga/series/page/<?= $page ?>">
 
                             <?= $page ?>
 
@@ -299,7 +299,7 @@ $basePath = rtrim(
 
                     <a
                         class="form-submit collection-back-button"
-                        href="<?= e($basePath) ?>manga/series">
+                        href="<?= e($baseUri) ?>manga/series">
 
                         Retour
 

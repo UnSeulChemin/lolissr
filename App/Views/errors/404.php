@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-$basePath = rtrim(
-    (string) ($basePath ?? ''),
+$baseUri = rtrim(
+    (string) ($baseUri ?? ''),
     '/',
 ) . '/';
 
@@ -30,7 +30,7 @@ $message = isset($view['message'])
 
                 <a
                     class="form-submit form-submit-secondary"
-                    href="<?= e($basePath) ?>">
+                    href="<?= e($baseUri) ?>">
 
                     Retour à l’accueil
 

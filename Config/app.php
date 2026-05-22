@@ -5,9 +5,12 @@ declare(strict_types=1);
 return [
 
     'name' => env('APP_NAME', 'Site'),
-    'base_path' => env('APP_BASE_PATH', '/'),
+    'base_uri' => env('APP_BASE_URI', '/'),
     'env' => env('APP_ENV', 'local'),
     'debug' => env_bool('APP_DEBUG', false),
-    'pagination' => max(1, (int) env('APP_PAGINATION', 8)),
+    'pagination' => max(
+        1,
+        env_int('APP_PAGINATION', 8),
+    ),
 
 ];

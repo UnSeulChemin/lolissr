@@ -7,8 +7,8 @@ use Framework\Support\Session;
 $errors = Session::get('errors', []);
 $old = Session::get('old', []);
 
-$basePath = rtrim(
-    (string) ($basePath ?? ''),
+$baseUri = rtrim(
+    (string) ($baseUri ?? ''),
     '/',
 ) . '/';
 
@@ -19,9 +19,9 @@ $statutOptions = [
     'termine' => 'Terminé',
 ];
 
-$formAction = $basePath . 'manga/ajouter';
+$formAction = $baseUri . 'manga/ajouter';
 
-$returnUrl = $basePath . 'manga';
+$returnUrl = $baseUri . 'manga';
 
 ?>
 

@@ -10,6 +10,7 @@ use Framework\Container\AppContainer;
 use Framework\Http\Request;
 use Framework\Http\Response;
 use Framework\Support\Session;
+use RuntimeException;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,9 +23,11 @@ if (!function_exists('app')) {
     {
         $container = AppContainer::get();
 
-        return $abstract !== null
-            ? $container->get($abstract)
-            : $container;
+        if ($abstract === null) {
+            return $container;
+        }
+
+        return $container->get($abstract);
     }
 }
 
@@ -37,11 +40,12 @@ if (!function_exists('app')) {
 if (!function_exists('dump')) {
     function dump(mixed ...$vars): void
     {
-        if (!env_bool('APP_DEBUG')) {
+        if (!config('app.debug')) {
             return;
         }
 
-        echo '<pre style="
+        echo '
+        <pre style="
             background:#222;
             color:#fff;
             padding:15px;
@@ -50,7 +54,8 @@ if (!function_exists('dump')) {
             overflow:auto;
             white-space:pre-wrap;
             border-radius:8px;
-        ">';
+        ">
+        ';
 
         foreach ($vars as $var) {
             var_dump($var);
@@ -69,7 +74,7 @@ if (!function_exists('dump')) {
 if (!function_exists('dd')) {
     function dd(mixed ...$vars): never
     {
-        if (!env_bool('APP_DEBUG')) {
+        if (!config('app.debug')) {
             http_response_code(500);
 
             exit;
@@ -90,36 +95,48 @@ if (!function_exists('dd')) {
 if (!function_exists('base_path')) {
     function base_path(string $path = ''): string
     {
-        return rtrim(ROOT, DIRECTORY_SEPARATOR)
-            . (
-                $path !== ''
-                    ? DIRECTORY_SEPARATOR . ltrim($path, '/\\')
-                    : ''
-            );
+        $base = rtrim(
+            ROOT,
+            DIRECTORY_SEPARATOR,
+        );
+
+        if ($path === '') {
+            return $base;
+        }
+
+        return $base
+            . DIRECTORY_SEPARATOR
+            . ltrim($path, '/\\');
     }
 }
 
 if (!function_exists('app_path')) {
     function app_path(string $path = ''): string
     {
-        return base_path('App')
-            . (
-                $path !== ''
-                    ? DIRECTORY_SEPARATOR . ltrim($path, '/\\')
-                    : ''
-            );
+        $base = base_path('App');
+
+        if ($path === '') {
+            return $base;
+        }
+
+        return $base
+            . DIRECTORY_SEPARATOR
+            . ltrim($path, '/\\');
     }
 }
 
 if (!function_exists('view_path')) {
-    function view_path(string $view = ''): string
+    function view_path(string $path = ''): string
     {
-        return app_path('Views')
-            . (
-                $view !== ''
-                    ? DIRECTORY_SEPARATOR . ltrim($view, '/\\')
-                    : ''
-            );
+        $base = app_path('Views');
+
+        if ($path === '') {
+            return $base;
+        }
+
+        return $base
+            . DIRECTORY_SEPARATOR
+            . ltrim($path, '/\\');
     }
 }
 
@@ -167,10 +184,14 @@ if (!function_exists('redirect')) {
             );
         }
 
-        $url = rtrim(
-            base_path(),
+        $baseUri = rtrim(
+            config('app.base_uri', '/'),
             '/',
-        ) . '/' . ltrim($path, '/');
+        );
+
+        $url = $baseUri
+            . '/'
+            . ltrim($path, '/');
 
         Response::redirect(
             $url,
@@ -193,7 +214,10 @@ if (!function_exists('json')) {
         array $data,
         int $status = 200,
     ): never {
-        Response::json($data, $status);
+        Response::json(
+            $data,
+            $status,
+        );
     }
 }
 
@@ -215,6 +239,12 @@ if (!function_exists('view')) {
         $title ??= App::siteName();
 
         $view = $data;
+
+        $baseUri = App::baseUri();
+
+        $currentPath = app(
+            Request::class,
+        )->path();
 
         $viewPath = view_path(
             $viewFile . '.php',
@@ -241,21 +271,13 @@ if (!function_exists('view')) {
 
         require $viewPath;
 
-        $content = ob_get_clean();
-
-        if ($content === false) {
-            $content = '';
-        }
+        $content = ob_get_clean() ?: '';
 
         ob_start();
 
         require $layoutPath;
 
-        $html = ob_get_clean();
-
-        if ($html === false) {
-            $html = '';
-        }
+        $html = ob_get_clean() ?: '';
 
         Response::html($html);
     }
@@ -296,10 +318,14 @@ if (!function_exists('env_int')) {
         string $key,
         int $default = 0,
     ): int {
-        return (int) Env::get(
+        $value = Env::get(
             $key,
             $default,
         );
+
+        return is_numeric($value)
+            ? (int) $value
+            : $default;
     }
 }
 

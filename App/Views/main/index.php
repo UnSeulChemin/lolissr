@@ -10,8 +10,8 @@ if ($stats === null) {
     );
 }
 
-$basePath = rtrim(
-    (string) ($basePath ?? ''),
+$baseUri = rtrim(
+    (string) ($baseUri ?? ''),
     '/',
 ) . '/';
 
@@ -33,11 +33,11 @@ $hasTopLongestSeries = is_iterable($stats->topLongestSeries)
             <?php
             $serie = $stats->longestSeries;
 
-            $href = $basePath
+            $href = $baseUri
                 . 'manga/series/'
                 . rawurlencode((string) $serie->slug);
 
-            $thumbnailPath = $basePath
+            $thumbnailPath = $baseUri
                 . 'public/images/mangas/thumbnail/'
                 . $serie->thumbnail
                 . '.'
@@ -100,13 +100,13 @@ $hasTopLongestSeries = is_iterable($stats->topLongestSeries)
             <?php
             $tome = $stats->lastTome;
 
-            $href = $basePath
+            $href = $baseUri
                 . 'manga/series/'
                 . rawurlencode((string) $tome->slug)
                 . '/'
                 . (int) $tome->numero;
 
-            $thumbnailPath = $basePath
+            $thumbnailPath = $baseUri
                 . 'public/images/mangas/thumbnail/'
                 . $tome->thumbnail
                 . '.'
@@ -235,11 +235,11 @@ $hasTopLongestSeries = is_iterable($stats->topLongestSeries)
             <?php foreach ($stats->topLongestSeries as $index => $serie): ?>
 
                 <?php
-                $href = $basePath
+                $href = $baseUri
                     . 'manga/series/'
                     . rawurlencode((string) $serie->slug);
 
-                $thumbnailPath = $basePath
+                $thumbnailPath = $baseUri
                     . 'public/images/mangas/thumbnail/'
                     . $serie->thumbnail
                     . '.'

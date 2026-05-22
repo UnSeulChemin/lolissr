@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-$basePath = rtrim(
-    (string) ($basePath ?? ''),
+$baseUri = rtrim(
+    (string) ($baseUri ?? ''),
     '/',
 ) . '/';
 
@@ -31,7 +31,7 @@ $basePath = rtrim(
 
         <a
             class="dashboard-card"
-            href="<?= e($basePath) ?>manga/series">
+            href="<?= e($baseUri) ?>manga/series">
 
             <span class="dashboard-card-icon" aria-hidden="true">📚</span>
 
@@ -47,7 +47,7 @@ $basePath = rtrim(
 
         <a
             class="dashboard-card"
-            href="<?= e($basePath) ?>manga/ajouter">
+            href="<?= e($baseUri) ?>manga/ajouter">
 
             <span class="dashboard-card-icon" aria-hidden="true">➕</span>
 
@@ -63,7 +63,7 @@ $basePath = rtrim(
 
         <a
             class="dashboard-card"
-            href="<?= e($basePath) ?>manga/lien">
+            href="<?= e($baseUri) ?>manga/lien">
 
             <span class="dashboard-card-icon" aria-hidden="true">🔗</span>
 

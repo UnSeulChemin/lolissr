@@ -12,8 +12,8 @@ if ($manga === null) {
     );
 }
 
-$basePath = rtrim(
-    $basePath ?? '',
+$baseUri = rtrim(
+    (string) ($baseUri ?? ''),
     '/',
 ) . '/';
 
@@ -40,13 +40,13 @@ $statutOptions = [
     'termine' => 'Terminé',
 ];
 
-$formAction = $basePath
+$formAction = $baseUri
     . 'manga/series/modifier/'
     . rawurlencode((string) $manga->slug)
     . '/'
     . (int) $manga->numero;
 
-$cancelUrl = $basePath
+$cancelUrl = $baseUri
     . 'manga/series/'
     . rawurlencode((string) $manga->slug)
     . '/'

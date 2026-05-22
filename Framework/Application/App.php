@@ -6,24 +6,24 @@ namespace Framework\Application;
 
 final class App
 {
-    public static function basePath(): string
+    public static function baseUri(): string
     {
-        $basePath = trim(
+        $baseUri = trim(
             (string) config(
-                'app.base_path',
+                'app.base_uri',
                 '/',
             ),
         );
 
         if (
-            $basePath === ''
-            || $basePath === '/'
+            $baseUri === ''
+            || $baseUri === '/'
         ) {
             return '/';
         }
 
         return '/'
-            . trim($basePath, '/')
+            . trim($baseUri, '/')
             . '/';
     }
 

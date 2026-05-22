@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 use Framework\Support\Session;
 
-$basePath = rtrim(
-    (string) ($basePath ?? ''),
+$baseUri = rtrim(
+    (string) ($baseUri ?? ''),
     '/',
 ) . '/';
 
@@ -49,15 +49,15 @@ if (is_string($success) && $success !== '') {
 
     <link
         rel="shortcut icon"
-        href="<?= e($basePath) ?>public/images/favicon/favicon.png">
+        href="<?= e($baseUri) ?>public/images/favicon/favicon.png">
 
     <link
         rel="stylesheet"
-        href="<?= e($basePath) ?>public/css/app.css">
+        href="<?= e($baseUri) ?>public/css/app.css">
 
 </head>
 
-<body data-base-path="<?= e($basePath) ?>">
+<body data-base-uri="<?= e($baseUri) ?>">
 
     <?php require_once view_path('partials/header.php'); ?>
 
@@ -93,7 +93,7 @@ if (is_string($success) && $success !== '') {
 
     <script
         type="module"
-        src="<?= e($basePath) ?>public/js/core/app.js"></script>
+        src="<?= e($baseUri) ?>public/js/core/app.js"></script>
 
 </body>
 

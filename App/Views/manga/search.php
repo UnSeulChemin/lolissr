@@ -11,8 +11,8 @@ $mangas = isset($view['mangas'])
         ? $view['mangas']
         : [];
 
-$basePath = rtrim(
-    (string) ($basePath ?? ''),
+$baseUri = rtrim(
+    (string) ($baseUri ?? ''),
     '/',
 ) . '/';
 
@@ -107,13 +107,13 @@ $basePath = rtrim(
                     }
                 }
 
-                $href = $basePath
+                $href = $baseUri
                     . 'manga/series/'
                     . rawurlencode($slug)
                     . '/'
                     . $numero;
 
-                $thumbnailPath = $basePath
+                $thumbnailPath = $baseUri
                     . 'public/images/mangas/thumbnail/'
                     . $thumbnail
                     . '.'

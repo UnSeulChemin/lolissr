@@ -14,8 +14,8 @@ $level = isset($view['level'])
     ? (string) $view['level']
     : '1';
 
-$basePath = rtrim(
-    (string) ($basePath ?? ''),
+$baseUri = rtrim(
+    (string) ($baseUri ?? ''),
     '/',
 ) . '/';
 
@@ -177,7 +177,7 @@ $sourceDescription = $sourceDescriptions[$level]
                                 <button
                                     class="grammar-mastered <?= $isMaitrise ? 'active' : '' ?>"
                                     data-id="<?= (int) $grammaire->id ?>"
-                                    data-url="<?= e($basePath) ?>chinois/ajax/toggle-grammaire-maitrise"
+                                    data-url="<?= e($baseUri) ?>chinois/ajax/toggle-grammaire-maitrise"
                                     data-maitrise="<?= $isMaitrise ? '1' : '0' ?>"
                                     type="button"
                                     aria-label="Marquer comme maîtrisé">

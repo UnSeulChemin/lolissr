@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-$basePath = rtrim(
-    (string) ($basePath ?? ''),
+$baseUri = rtrim(
+    (string) ($baseUri ?? ''),
     '/',
 ) . '/';
 
@@ -31,7 +31,7 @@ $basePath = rtrim(
 
         <a
             class="dashboard-card"
-            href="<?= e($basePath) ?>chinois/mandarin">
+            href="<?= e($baseUri) ?>chinois/mandarin">
 
             <span class="dashboard-card-icon" aria-hidden="true">中文</span>
 
@@ -47,7 +47,7 @@ $basePath = rtrim(
 
         <a
             class="dashboard-card"
-            href="<?= e($basePath) ?>chinois/jinyu">
+            href="<?= e($baseUri) ?>chinois/jinyu">
 
             <span class="dashboard-card-icon" aria-hidden="true">晋语</span>
 
@@ -63,7 +63,7 @@ $basePath = rtrim(
 
         <a
             class="dashboard-card"
-            href="<?= e($basePath) ?>chinois/ajouter">
+            href="<?= e($baseUri) ?>chinois/ajouter">
 
             <span class="dashboard-card-icon" aria-hidden="true">➕</span>
 
@@ -79,7 +79,7 @@ $basePath = rtrim(
 
         <a
             class="dashboard-card"
-            href="<?= e($basePath) ?>chinois/grammaire">
+            href="<?= e($baseUri) ?>chinois/grammaire">
 
             <span class="dashboard-card-icon" aria-hidden="true">📖</span>
 
@@ -95,7 +95,7 @@ $basePath = rtrim(
 
         <a
             class="dashboard-card"
-            href="<?= e($basePath) ?>chinois/flashcards">
+            href="<?= e($baseUri) ?>chinois/flashcards">
 
             <span class="dashboard-card-icon" aria-hidden="true">🧠</span>
 

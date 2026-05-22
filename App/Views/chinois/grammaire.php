@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-$basePath = rtrim(
-    (string) ($basePath ?? ''),
+$baseUri = rtrim(
+    (string) ($baseUri ?? ''),
     '/',
 ) . '/';
 
@@ -15,7 +15,7 @@ $basePath = rtrim(
 
         <a
             class="dashboard-card"
-            href="<?= e($basePath) ?>chinois/grammaire/hsk1">
+            href="<?= e($baseUri) ?>chinois/grammaire/hsk1">
 
             <span class="dashboard-card-icon" aria-hidden="true">一</span>
 
@@ -31,7 +31,7 @@ $basePath = rtrim(
 
         <a
             class="dashboard-card"
-            href="<?= e($basePath) ?>chinois/grammaire/hsk2">
+            href="<?= e($baseUri) ?>chinois/grammaire/hsk2">
 
             <span class="dashboard-card-icon" aria-hidden="true">二</span>
 
@@ -47,7 +47,7 @@ $basePath = rtrim(
 
         <a
             class="dashboard-card"
-            href="<?= e($basePath) ?>chinois/grammaire/hsk3">
+            href="<?= e($baseUri) ?>chinois/grammaire/hsk3">
 
             <span class="dashboard-card-icon" aria-hidden="true">三</span>
 
@@ -63,7 +63,7 @@ $basePath = rtrim(
 
         <a
             class="dashboard-card"
-            href="<?= e($basePath) ?>chinois/grammaire/hsk4">
+            href="<?= e($baseUri) ?>chinois/grammaire/hsk4">
 
             <span class="dashboard-card-icon" aria-hidden="true">四</span>
 

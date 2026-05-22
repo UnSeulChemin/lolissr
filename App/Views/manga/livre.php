@@ -10,8 +10,8 @@ if ($manga === null) {
     );
 }
 
-$basePath = rtrim(
-    (string) ($basePath ?? ''),
+$baseUri = rtrim(
+    (string) ($baseUri ?? ''),
     '/',
 ) . '/';
 
@@ -19,29 +19,29 @@ $slug = rawurlencode((string) $manga->slug);
 
 $numero = (int) $manga->numero;
 
-$thumbnailPath = $basePath
+$thumbnailPath = $baseUri
     . 'public/images/mangas/thumbnail/'
     . $manga->thumbnail
     . '.'
     . $manga->extension;
 
-$modifierUrl = $basePath
+$modifierUrl = $baseUri
     . 'manga/series/modifier/'
     . $slug
     . '/'
     . $numero;
 
-$deleteUrl = $basePath
+$deleteUrl = $baseUri
     . 'manga/series/supprimer/'
     . $slug
     . '/'
     . $numero;
 
-$redirectUrl = $basePath
+$redirectUrl = $baseUri
     . 'manga/series/'
     . $slug;
 
-$updateLuUrl = $basePath
+$updateLuUrl = $baseUri
     . 'manga/ajax/update-lu/'
     . $slug
     . '/'
@@ -79,7 +79,7 @@ $hasEditeur = $manga->editeur !== null
         class="detail-card animate-fade-up js-detail-card"
         data-slug="<?= e($slug) ?>"
         data-numero="<?= $numero ?>"
-        data-base-path="<?= e($basePath) ?>"
+        data-base-path="<?= e($baseUri) ?>"
         data-jacquette="<?= $manga->jacquette !== null ? (int) $manga->jacquette : '' ?>"
         data-livre-note="<?= $manga->livre_note !== null ? (int) $manga->livre_note : '' ?>">
 
