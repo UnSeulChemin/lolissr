@@ -24,19 +24,6 @@ $baseUri = rtrim(
         🔎 Résultats de recherche
     </h1>
 
-    <?php if ($search !== ''): ?>
-
-        <p
-            class="home-empty"
-            style="text-align:center;margin-bottom:10px;">
-
-            Résultats pour :
-            <strong><?= e($search) ?></strong>
-
-        </p>
-
-    <?php endif; ?>
-
     <?php if ($search === ''): ?>
 
         <p
