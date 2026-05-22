@@ -227,16 +227,16 @@ final class MangaRepository extends Model
         );
     }
 
-    public function updateLu(
+    public function updateReadStatus(
         string $slug,
         int $numero,
-        bool $lu,
+        bool $readStatus,
     ): bool {
         $this->guardWrite();
 
         return $this->update(
             [
-                'lu' => $lu ? 1 : 0,
+                'lu' => (int) $readStatus,
             ],
             [
                 'slug' => $this->normalizeSlug(

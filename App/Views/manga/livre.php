@@ -41,15 +41,15 @@ $redirectUrl = $baseUri
     . 'manga/series/'
     . $slug;
 
-$updateLuUrl = $baseUri
-    . 'manga/ajax/update-lu/'
+$updateReadStatusUrl = $baseUri
+    . 'manga/ajax/update-read-status/'
     . $slug
     . '/'
     . $numero;
 
 $isLu = (int) ($manga->lu ?? 0) === 1;
 
-$luLabel = $isLu
+$readStatusLabel = $isLu
     ? 'Marquer comme non lu'
     : 'Marquer comme lu';
 
@@ -257,10 +257,10 @@ $hasEditeur = $manga->editeur !== null
                     <button
                         type="button"
                         class="ajax-lu-button <?= $isLu ? 'active' : '' ?>"
-                        data-url="<?= e($updateLuUrl) ?>"
-                        data-lu="<?= $isLu ? '1' : '0' ?>"
-                        title="<?= e($luLabel) ?>"
-                        aria-label="<?= e($luLabel) ?>">
+                        data-url="<?= e($updateReadStatusUrl) ?>"
+                        data-read-status="<?= $isLu ? '1' : '0' ?>"
+                        title="<?= e($readStatusLabel) ?>"
+                        aria-label="<?= e($readStatusLabel) ?>">
 
                         <svg
                             class="lu-icon"

@@ -201,24 +201,24 @@ final class MangaAjaxController extends Controller
         );
     }
 
-    public function updateLu(
+    public function updateReadStatus(
         string $slug,
         int $numero,
     ): never {
         $this->ensureAjax();
 
         $data = $this->resolveMangaOrFail(
-            'update-lu',
+            'update-read-status',
             $slug,
             $numero,
         );
 
         $result = $this->mangaWriteService
-            ->updateLu(
+            ->updateReadStatus(
                 $data->canonicalSlug,
                 $numero,
                 $this->request->integer(
-                    'lu',
+                    'readStatus',
                     0,
                 ),
             );

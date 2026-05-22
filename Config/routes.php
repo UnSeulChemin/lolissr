@@ -2,17 +2,14 @@
 
 declare(strict_types=1);
 
+use App\Controllers\Chinois\ChinoisAjaxController;
+use App\Controllers\Chinois\ChinoisController;
 use App\Controllers\MainController;
-
 use App\Controllers\Manga\MangaAjaxController;
 use App\Controllers\Manga\MangaController;
 
-use App\Controllers\Chinois\ChinoisAjaxController;
-use App\Controllers\Chinois\ChinoisController;
-
 use Framework\Http\Middleware\AjaxOnlyMiddleware;
 use Framework\Http\Middleware\CsrfMiddleware;
-use Framework\Http\Middleware\PostOnlyMiddleware;
 
 use Framework\Routing\Router;
 
@@ -44,14 +41,14 @@ return static function (Router $router): void {
     |--------------------------------------------------------------------------
     | Manga - Series
     |--------------------------------------------------------------------------
-    */
-
-    /*
-    |--------------------------------------------------------------------------
-    | IMPORTANT :
-    | Les routes spécifiques DOIVENT être déclarées
-    | avant les routes dynamiques {slug}
-    |--------------------------------------------------------------------------
+    |
+    | IMPORTANT:
+    | Specific routes MUST be declared before dynamic routes.
+    |
+    | Correct order:
+    | - /manga/series/page/{page}
+    | - /manga/series/{slug}
+    |
     */
 
     $router->get('/manga/series', [
@@ -64,27 +61,15 @@ return static function (Router $router): void {
         'series',
     ]);
 
-    $router->get('/manga/lien', [
-        MangaController::class,
-        'lien',
-    ]);
-
-    $router->get('/manga/ajouter', [
-        MangaController::class,
-        'ajouter',
-    ]);
-
-    $router->post(
-        '/manga/ajouter',
-        [
-            MangaController::class,
-            'ajouterTraitement',
-        ],
-        [
-            PostOnlyMiddleware::class,
-            CsrfMiddleware::class,
-        ]
-    );
+    /*
+    |--------------------------------------------------------------------------
+    | Manga - Search
+    |--------------------------------------------------------------------------
+    |
+    | Example:
+    | /manga/recherche/berserk
+    |
+    */
 
     $router->get('/manga/recherche', [
         MangaController::class,
@@ -98,7 +83,29 @@ return static function (Router $router): void {
 
     /*
     |--------------------------------------------------------------------------
-    | Manga - Modifier
+    | Manga - Create
+    |--------------------------------------------------------------------------
+    */
+
+    $router->get('/manga/ajouter', [
+        MangaController::class,
+        'ajouter',
+    ]);
+
+    $router->post(
+        '/manga/ajouter',
+        [
+            MangaController::class,
+            'ajouterTraitement',
+        ],
+        [
+            CsrfMiddleware::class,
+        ]
+    );
+
+    /*
+    |--------------------------------------------------------------------------
+    | Manga - Update
     |--------------------------------------------------------------------------
     */
 
@@ -117,7 +124,6 @@ return static function (Router $router): void {
             'update',
         ],
         [
-            PostOnlyMiddleware::class,
             CsrfMiddleware::class,
         ]
     );
@@ -135,11 +141,21 @@ return static function (Router $router): void {
             'delete',
         ],
         [
-            PostOnlyMiddleware::class,
             AjaxOnlyMiddleware::class,
             CsrfMiddleware::class,
         ]
     );
+
+    /*
+    |--------------------------------------------------------------------------
+    | Manga - Misc
+    |--------------------------------------------------------------------------
+    */
+
+    $router->get('/manga/lien', [
+        MangaController::class,
+        'lien',
+    ]);
 
     /*
     |--------------------------------------------------------------------------
@@ -174,8 +190,18 @@ return static function (Router $router): void {
         ]
     );
 
+    /*
+    |--------------------------------------------------------------------------
+    | Manga AJAX - Search
+    |--------------------------------------------------------------------------
+    |
+    | Example:
+    | /manga/ajax/recherche/berserk
+    |
+    */
+
     $router->get(
-        '/manga/ajax/search/{query}',
+        '/manga/ajax/recherche/{query}',
         [
             MangaAjaxController::class,
             'search',
@@ -192,20 +218,18 @@ return static function (Router $router): void {
             'updateNote',
         ],
         [
-            PostOnlyMiddleware::class,
             AjaxOnlyMiddleware::class,
             CsrfMiddleware::class,
         ]
     );
 
     $router->post(
-        '/manga/ajax/update-lu/{slug}/{numero}',
+        '/manga/ajax/update-read-status/{slug}/{numero}',
         [
             MangaAjaxController::class,
-            'updateLu',
+            'updateReadStatus',
         ],
         [
-            PostOnlyMiddleware::class,
             AjaxOnlyMiddleware::class,
             CsrfMiddleware::class,
         ]
@@ -286,7 +310,6 @@ return static function (Router $router): void {
             'toggleGrammaireMaitrise',
         ],
         [
-            PostOnlyMiddleware::class,
             AjaxOnlyMiddleware::class,
             CsrfMiddleware::class,
         ]

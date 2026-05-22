@@ -3,8 +3,86 @@ import { showToast } from '../../core/toast.js';
 function getCsrfToken()
 {
     return document
-        .querySelector('meta[name="csrf-token"]')
-        ?.getAttribute('content') ?? '';
+        .querySelector(
+            'meta[name="csrf-token"]'
+        )
+        ?.getAttribute('content')
+        ?? '';
+}
+
+function updateButtonState(
+    button,
+    readStatus,
+)
+{
+    button.dataset.readStatus =
+        String(readStatus);
+
+    button.classList.toggle(
+        'active',
+        readStatus === 1,
+    );
+
+    const label =
+        readStatus === 1
+            ? 'Marquer comme non lu'
+            : 'Marquer comme lu';
+
+    button.title = label;
+
+    button.setAttribute(
+        'aria-label',
+        label,
+    );
+}
+
+async function sendReadStatusRequest(
+    url,
+    readStatus,
+)
+{
+    const formData =
+        new FormData();
+
+    formData.append(
+        'readStatus',
+        String(readStatus),
+    );
+
+    const csrfToken =
+        getCsrfToken();
+
+    if (csrfToken !== '')
+    {
+        formData.append(
+            'csrf_token',
+            csrfToken,
+        );
+    }
+
+    const response =
+        await fetch(url, {
+            method: 'POST',
+
+            headers:
+            {
+                'X-Requested-With':
+                    'XMLHttpRequest',
+
+                'Accept':
+                    'application/json',
+            },
+
+            body: formData,
+        });
+
+    const data =
+        await response.json();
+
+    return {
+        response,
+        data,
+    };
 }
 
 export function initUpdateReadStatus()
@@ -15,7 +93,7 @@ export function initUpdateReadStatus()
         {
             const button =
                 event.target.closest(
-                    '.ajax-lu-button'
+                    '.ajax-lu-button',
                 );
 
             if (
@@ -33,60 +111,33 @@ export function initUpdateReadStatus()
             {
                 showToast(
                     'URL de mise à jour manquante',
-                    'error'
+                    'error',
                 );
 
                 return;
             }
 
-            const currentLu =
-                button.dataset.lu === '1';
+            const currentReadStatus =
+                button.dataset
+                    .readStatus === '1';
 
-            const nextLu =
-                currentLu ? 0 : 1;
-
-            const formData =
-                new FormData();
-
-            formData.append(
-                'lu',
-                String(nextLu)
-            );
-
-            const csrfToken =
-                getCsrfToken();
-
-            if (csrfToken !== '')
-            {
-                formData.append(
-                    'csrf_token',
-                    csrfToken
-                );
-            }
+            const nextReadStatus =
+                currentReadStatus
+                    ? 0
+                    : 1;
 
             button.disabled = true;
 
             try
             {
-                const response =
-                    await fetch(url,
-                    {
-                        method: 'POST',
-
-                        headers:
-                        {
-                            'X-Requested-With':
-                                'XMLHttpRequest',
-
-                            'Accept':
-                                'application/json'
-                        },
-
-                        body: formData
-                    });
-
-                const data =
-                    await response.json();
+                const {
+                    response,
+                    data,
+                } =
+                    await sendReadStatusRequest(
+                        url,
+                        nextReadStatus,
+                    );
 
                 if (
                     !response.ok
@@ -96,52 +147,39 @@ export function initUpdateReadStatus()
                     showToast(
                         data.message
                             ?? 'Erreur lors de la mise à jour',
-                        'error'
+                        'error',
                     );
 
                     return;
                 }
 
-                const lu =
-                    Number(data.lu);
+                const readStatus =
+                    Number(
+                        data.readStatus,
+                    );
 
-                button.dataset.lu =
-                    String(lu);
-
-                button.classList.toggle(
-                    'active',
-                    lu === 1
-                );
-
-                const label =
-                    lu === 1
-                        ? 'Marquer comme non lu'
-                        : 'Marquer comme lu';
-
-                button.title = label;
-
-                button.setAttribute(
-                    'aria-label',
-                    label
+                updateButtonState(
+                    button,
+                    readStatus,
                 );
 
                 showToast(
                     data.message
                         ?? 'Statut mis à jour',
-                    'success'
+                    'success',
                 );
             }
             catch
             {
                 showToast(
                     'Erreur réseau',
-                    'error'
+                    'error',
                 );
             }
             finally
             {
                 button.disabled = false;
             }
-        }
+        },
     );
 }

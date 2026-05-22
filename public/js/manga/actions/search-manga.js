@@ -413,18 +413,18 @@ export function initSearchManga()
 
             const response =
                 await fetch(
-                `${basePath}manga/ajax/search/${encodeURIComponent(normalizedValue)}`,
-                {
-                    signal:
-                        searchAbortController.signal,
-
-                    headers:
+                    `${basePath}manga/ajax/recherche/${encodeURIComponent(normalizedValue)}`,
                     {
-                        'X-Requested-With':
-                            'XMLHttpRequest'
+                        signal:
+                            searchAbortController.signal,
+
+                        headers:
+                        {
+                            'X-Requested-With':
+                                'XMLHttpRequest'
+                        }
                     }
-                }
-            );
+                );
 
             if (!response.ok)
             {
@@ -433,12 +433,15 @@ export function initSearchManga()
                 );
             }
 
-            const data =
+            const responseData =
                 await response.json();
 
+            const results =
+                responseData.data?.results
+                ?? [];
+
             if (
-                (!Array.isArray(data)
-                || data.length === 0)
+                results.length === 0
                 && shortcuts.length === 0
             )
             {
@@ -447,7 +450,7 @@ export function initSearchManga()
                 return;
             }
 
-            data.forEach((manga) =>
+            results.forEach((manga) =>
             {
                 mangaSearchResults.appendChild(
                     buildMangaSearchResult(
@@ -531,122 +534,6 @@ export function initSearchManga()
 
             window.location.href =
                 `${basePath}manga/recherche/${encodeURIComponent(value)}`;
-        }
-    );
-
-    mangaSearchInput.addEventListener(
-        'input',
-        () =>
-        {
-            clearTimeout(
-                searchDebounceTimer
-            );
-
-            searchDebounceTimer =
-                setTimeout(() =>
-            {
-                fetchSearchResults(
-                    mangaSearchInput.value.trim()
-                );
-            }, 250);
-        }
-    );
-
-    mangaSearchInput.addEventListener(
-        'keydown',
-        (event) =>
-        {
-            const items =
-                getSearchResultItems();
-
-            if (event.key === 'Escape')
-            {
-                event.preventDefault();
-
-                closeSearchDropdown();
-
-                return;
-            }
-
-            if (
-                !mangaSearchDropdown
-                    .classList.contains(
-                        'has-results'
-                    )
-                || items.length === 0
-            )
-            {
-                return;
-            }
-
-            if (event.key === 'ArrowDown')
-            {
-                event.preventDefault();
-
-                activeResultIndex =
-                    activeResultIndex
-                        < items.length - 1
-                            ? activeResultIndex + 1
-                            : 0;
-
-                updateActiveSearchResult();
-
-                return;
-            }
-
-            if (event.key === 'ArrowUp')
-            {
-                event.preventDefault();
-
-                activeResultIndex =
-                    activeResultIndex > 0
-                        ? activeResultIndex - 1
-                        : items.length - 1;
-
-                updateActiveSearchResult();
-
-                return;
-            }
-
-            if (
-                event.key === 'Enter'
-                && activeResultIndex >= 0
-                && items[
-                    activeResultIndex
-                ]
-            )
-            {
-                event.preventDefault();
-
-                window.location.href =
-                    items[
-                        activeResultIndex
-                    ].href;
-            }
-        }
-    );
-
-    document.addEventListener(
-        'click',
-        (event) =>
-        {
-            const clickedInsideForm =
-                event.target.closest(
-                    '.js-header-search'
-                );
-
-            const clickedInsideDropdown =
-                event.target.closest(
-                    '.js-header-search-dropdown'
-                );
-
-            if (
-                !clickedInsideForm
-                && !clickedInsideDropdown
-            )
-            {
-                closeSearchDropdown();
-            }
         }
     );
 }

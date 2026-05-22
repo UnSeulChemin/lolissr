@@ -315,16 +315,16 @@ final readonly class MangaWriteService
         );
     }
 
-    public function updateLu(
+    public function updateReadStatus(
         string $slug,
         int $numero,
-        int $lu,
+        int $readStatus,
     ): ServiceResult {
         if ($this->isReadOnlyMode()) {
             return $this->blockedWriteResponse();
         }
 
-        if (!in_array($lu, [0, 1], true)) {
+        if (!in_array($readStatus, [0, 1], true)) {
             return $this->error(
                 'Statut de lecture invalide',
                 422,
@@ -332,15 +332,15 @@ final readonly class MangaWriteService
         }
 
         $updated = $this->mangaRepository
-            ->updateLu(
+            ->updateReadStatus(
                 $slug,
                 $numero,
-                $lu === 1,
+                $readStatus === 1,
             );
 
         $failure = $this->writeFailed(
             $updated,
-            'Update lu',
+            'Update read status',
             $slug,
             $numero,
             'Erreur lors de la mise à jour',
@@ -353,11 +353,11 @@ final readonly class MangaWriteService
         $this->clearCache();
 
         return $this->success(
-            $lu === 1
+            $readStatus === 1
                 ? 'Manga marqué comme lu'
                 : 'Manga marqué comme non lu',
             [
-                'lu' => $lu,
+                'readStatus' => $readStatus,
             ],
         );
     }
