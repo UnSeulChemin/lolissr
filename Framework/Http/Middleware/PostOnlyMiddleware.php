@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Framework\Http\Middleware;
 
+use Framework\Exceptions\MethodNotAllowedException;
 use Framework\Http\Request;
 
-final class PostOnlyMiddleware implements MiddlewareInterface
+final class PostOnlyMiddleware
+    implements MiddlewareInterface
 {
     public function handle(
         Request $request,
@@ -15,6 +17,6 @@ final class PostOnlyMiddleware implements MiddlewareInterface
             return;
         }
 
-        abort(405);
+        throw new MethodNotAllowedException();
     }
 }

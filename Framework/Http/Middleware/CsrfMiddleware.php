@@ -26,15 +26,20 @@ final class CsrfMiddleware implements MiddlewareInterface
             'X-CSRF-TOKEN',
         );
 
-        if (
-            !is_string($sessionToken)
-            || !is_string($postedToken)
-            || !hash_equals(
+        $validToken =
+            is_string($sessionToken)
+            && $sessionToken !== ''
+            && is_string($postedToken)
+            && $postedToken !== ''
+            && hash_equals(
                 $sessionToken,
                 $postedToken,
-            )
-        ) {
-            throw new CsrfException();
+            );
+
+        if ($validToken) {
+            return;
         }
+
+        throw new CsrfException();
     }
 }

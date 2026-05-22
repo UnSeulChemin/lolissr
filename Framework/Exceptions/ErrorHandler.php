@@ -53,6 +53,27 @@ final class ErrorHandler
         Throwable $exception,
     ): never {
         try {
+
+            /*
+            |--------------------------------------------------------------------------
+            | JSON RESPONSE EXCEPTION
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                $exception instanceof JsonResponseException
+            ) {
+                $exception
+                    ->response()
+                    ->send();
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | HTTP EXCEPTIONS
+            |--------------------------------------------------------------------------
+            */
+
             if (
                 $exception instanceof HttpException
             ) {
@@ -69,6 +90,12 @@ final class ErrorHandler
                 );
             }
 
+            /*
+            |--------------------------------------------------------------------------
+            | UNCAUGHT EXCEPTION
+            |--------------------------------------------------------------------------
+            */
+
             Logger::exception(
                 $exception,
                 [
@@ -83,7 +110,9 @@ final class ErrorHandler
             }
 
             self::render500();
+
         } catch (Throwable $fallbackException) {
+
             Logger::exception(
                 $fallbackException,
                 [

@@ -4,37 +4,24 @@ declare(strict_types=1);
 
 namespace Framework\Http\Middleware;
 
-use Framework\Application\App;
+use Framework\Exceptions\JsonResponseException;
+use Framework\Http\JsonResponse;
 use Framework\Http\Request;
 
 final class AjaxOnlyMiddleware implements MiddlewareInterface
 {
-    private const TEST_USER_AGENT =
-        'LoliSSR-TestRunner';
-
     public function handle(
         Request $request,
     ): void {
-        if (
-            $request->isAjax()
-            || $this->isTestRunner($request)
-        ) {
+        if ($request->isAjax()) {
             return;
         }
 
-        json([
-            'success' => false,
-            'message' => 'Requête AJAX requise',
-        ], 400);
-    }
-
-    private function isTestRunner(
-        Request $request,
-    ): bool {
-        return App::isTesting()
-            && str_contains(
-                $request->userAgent(),
-                self::TEST_USER_AGENT,
-            );
+        throw new JsonResponseException(
+            JsonResponse::error(
+                'Requête AJAX requise',
+                400,
+            ),
+        );
     }
 }
