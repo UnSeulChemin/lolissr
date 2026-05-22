@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Framework\Application;
 
-use Framework\Http\Request;
 use Framework\Routing\Router;
 use Framework\Support\Session;
 
@@ -24,19 +23,18 @@ final readonly class AppKernel
         );
     }
 
-    public function handle(
-        Request $request,
-    ): void {
+    public function handle(): void
+    {
         $this->router->dispatch();
     }
 
     public function terminate(): void
     {
         //
-        // futur:
+        // futur :
         // logs
-        // events
         // queues
+        // events
         // metrics
         //
     }
