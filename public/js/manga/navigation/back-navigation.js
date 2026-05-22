@@ -1,25 +1,153 @@
-/**
-* Vérifie si l'utilisateur tape dans un champ éditable.
+/*
+|------------------------------------------------------------------
+| Typing Context
+|------------------------------------------------------------------
 */
-function isTypingTarget(target) {
-return target?.isContentEditable
-|| ['INPUT', 'TEXTAREA', 'SELECT'].includes(target?.tagName);
+
+function isTypingTarget(
+    target,
+)
+{
+    if (!target) {
+        return false;
+    }
+
+    /*
+    |--------------------------------------------------------------
+    | Content editable
+    |--------------------------------------------------------------
+    */
+
+    if (
+        target.isContentEditable
+    ) {
+        return true;
+    }
+
+    /*
+    |--------------------------------------------------------------
+    | Native inputs
+    |--------------------------------------------------------------
+    */
+
+    return [
+        'INPUT',
+        'TEXTAREA',
+        'SELECT',
+    ].includes(
+        target.tagName,
+    );
 }
-/**
-* Active la navigation "Backspace" pour revenir à la page précédente.
-* Ignore les champs de saisie pour éviter de supprimer du texte.
+
+/*
+|------------------------------------------------------------------
+| Init
+|------------------------------------------------------------------
 */
-export function initBackNavigation() {
-document.addEventListener('keydown', (event) => {
-if (event.key !== 'Backspace') return;
-if (isTypingTarget(event.target)) return;
-event.preventDefault();
-// Utilise history.back() si possible
-if (window.history.length > 1) {
-window.history.back();
-} else {
-// Fallback : revenir à /lolissr/manga si aucune page précédente
-window.location.href = '/lolissr/manga';
-}
-});
+
+export function initBackNavigation()
+{
+    /*
+    |--------------------------------------------------------------
+    | Anti double init
+    |--------------------------------------------------------------
+    */
+
+    if (
+        document.body.dataset
+            .backNavigationInit
+        === 'true'
+    ) {
+        return;
+    }
+
+    document.body.dataset
+        .backNavigationInit =
+            'true';
+
+    /*
+    |--------------------------------------------------------------
+    | Keyboard back
+    |--------------------------------------------------------------
+    */
+
+    document.addEventListener(
+        'keydown',
+        event =>
+        {
+            /*
+            |------------------------------------------------------
+            | Backspace only
+            |------------------------------------------------------
+            */
+
+            if (
+                event.key
+                !== 'Backspace'
+            ) {
+                return;
+            }
+
+            /*
+            |------------------------------------------------------
+            | Ignore typing fields
+            |------------------------------------------------------
+            */
+
+            if (
+                isTypingTarget(
+                    event.target,
+                )
+            ) {
+                return;
+            }
+
+            /*
+            |------------------------------------------------------
+            | Ignore modifiers
+            |------------------------------------------------------
+            */
+
+            if (
+                event.ctrlKey
+                || event.metaKey
+                || event.altKey
+                || event.shiftKey
+            ) {
+                return;
+            }
+
+            /*
+            |------------------------------------------------------
+            | Prevent browser weird behavior
+            |------------------------------------------------------
+            */
+
+            event.preventDefault();
+
+            /*
+            |------------------------------------------------------
+            | Back navigation
+            |------------------------------------------------------
+            */
+
+            if (
+                window.history.length > 1
+            ) {
+
+                window.history.back();
+
+                return;
+            }
+
+            /*
+            |------------------------------------------------------
+            | Fallback
+            |------------------------------------------------------
+            */
+
+            window.location.href =
+                '/lolissr/manga';
+        },
+    );
 }

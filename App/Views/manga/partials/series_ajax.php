@@ -5,21 +5,25 @@ if (empty($mangas)) {
     echo '<p class="collection-empty">Aucun manga trouvé.</p>';
     return;
 }
+
+$baseUri = $baseUri ?? '';
+$isSerieView = $isSerieView ?? false;
 ?>
 
 <section class="collection-grid animate-fade-up-stagger">
+
 <?php foreach ($mangas as $manga):
-    $slug       = (string)($manga->slug ?? '');
-    $numero     = (int)($manga->numero ?? 0);
-    $livre      = (string)($manga->livre ?? '');
+    $slug       = (string) ($manga->slug ?? '');
+    $numero     = (int) ($manga->numero ?? 0);
+    $livre      = (string) ($manga->livre ?? '');
     $thumbnail  = $manga->thumbnail ?? null;
     $extension  = $manga->extension ?? null;
-    $statut     = (string)($manga->statut ?? 'en_cours');
+    $statut     = (string) ($manga->statut ?? 'en_cours');
     $note       = $manga->note ?? null;
     $averageNote= $manga->averageNote ?? $manga->average_note ?? null;
-    $total      = (int)($manga->total ?? 0);
-    $totalLu    = (int)($manga->totalLu ?? 0);
-    $lu         = (int)($manga->lu ?? 0);
+    $total      = (int) ($manga->total ?? 0);
+    $totalLu    = (int) ($manga->totalLu ?? 0);
+    $lu         = (int) ($manga->lu ?? 0);
 
     if (!$slug || !$livre || !$thumbnail || !$extension) continue;
 
@@ -30,9 +34,9 @@ if (empty($mangas)) {
     $thumbnailPath = "{$baseUri}images/mangas/thumbnail/{$thumbnail}.{$extension}";
 
     $displayNote = $isSerieView ? $note : $averageNote;
-    $noteClass   = 'collection-note-mid';
+    $noteClass = 'collection-note-mid';
     if ($displayNote !== null) {
-        $displayNote = (float)$displayNote;
+        $displayNote = (float) $displayNote;
         if ($displayNote >= 8) $noteClass = 'collection-note-good';
         elseif ($displayNote <= 4) $noteClass = 'collection-note-low';
     }
@@ -41,14 +45,16 @@ if (empty($mangas)) {
         : '0';
 
     $readBadgeActive = $isSerieView ? $lu === 1 : ($total > 0 && $totalLu >= $total);
-    $readBadgeTitle  = $isSerieView
+    $readBadgeTitle = $isSerieView
         ? ($readBadgeActive ? 'Tome lu' : 'Tome non lu')
         : ($readBadgeActive ? 'Série lue' : 'Série non terminée');
 
     $statutLabel = $statut === 'termine' ? 'Terminé' : 'En cours';
     $statutClass = $statut === 'termine' ? 'collection-status-finished' : 'collection-status-progress';
 ?>
+
 <a class="card card-link collection-card-link" href="<?= e($href) ?>">
+
     <?php if (!$isSerieView): ?>
     <span class="collection-status-badge <?= e($statutClass) ?>"><?= e($statutLabel) ?></span>
     <?php endif; ?>
@@ -56,8 +62,8 @@ if (empty($mangas)) {
     <span class="collection-card-badge <?= e($noteClass) ?>">⭐ <?= e($noteLabel) ?>/10</span>
 
     <span class="collection-read-badge <?= $readBadgeActive ? 'active' : '' ?>"
-        title="<?= e($readBadgeTitle) ?>"
-        aria-label="<?= e($readBadgeTitle) ?>">
+          title="<?= e($readBadgeTitle) ?>"
+          aria-label="<?= e($readBadgeTitle) ?>">
         <svg class="collection-read-icon" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M7 3C6.45 3 6 3.45 6 4V21L12 17L18 21V4C18 3.45 17.55 3 17 3H7Z"/>
         </svg>
@@ -72,12 +78,12 @@ if (empty($mangas)) {
         <?= $isSerieView ? 'Tome ' . str_pad((string)$numero, 2, '0', STR_PAD_LEFT) : $total . ' tomes' ?>
     </p>
 </a>
+
 <?php endforeach; ?>
 </section>
 
 <script>
-    // Réinitialiser les classes CSS et badges après AJAX
-    document.querySelectorAll('.collection-read-badge').forEach(b => {
-        b.style.display = 'inline-block';
-    });
+document.querySelectorAll('.collection-read-badge').forEach(b => {
+    b.style.display = 'inline-block';
+});
 </script>

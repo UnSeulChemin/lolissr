@@ -60,13 +60,16 @@ final readonly class MangaReadService
 
         // nombre total de séries
         $totalSeries = $this->searchRepository->countFirstTomes(); 
-
         if ($totalSeries === 0) return null;
 
         $totalPages = (int) ceil($totalSeries / $perPage);
         if ($page > $totalPages) $page = $totalPages;
 
-        $mangas = $this->searchRepository->findAllFirstTomes('id DESC', $perPage, $page);
+        // Calcul correct de l'offset
+        $offset = ($page - 1) * $perPage;
+
+        // Récupère les mangas avec LIMIT et OFFSET
+        $mangas = $this->searchRepository->findAllFirstTomes('id DESC', $perPage, $offset);
 
         return new MangaSeriesData(
             mangas: array_map($this->mapSeriesItem(...), $mangas),

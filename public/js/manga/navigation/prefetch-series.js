@@ -1,53 +1,333 @@
-function normalizeUrl(url) {
-    // Supprime '/public' ou '/lolissr' au début
-    return url.replace(/^\/(public|lolissr)/, '');
+// ==============================================
+// Prefetch Series
+// ==============================================
+
+const prefetchedPages =
+    new Map();
+
+const prefetchedImages =
+    new Set();
+
+/*
+|------------------------------------------------------------------
+| Helpers
+|------------------------------------------------------------------
+*/
+
+function getBasePath()
+{
+    return '/lolissr';
 }
 
-export function buildAjaxUrl(link) {
-    const url = new URL(normalizeUrl(link.href), window.location.origin);
-    const match = url.pathname.match(/\/manga\/series\/page\/(\d+)$/);
-    const page = match ? Math.max(1, parseInt(match[1], 10)) : 1;
-    url.pathname = `/manga/ajax/series/page/${page}`;
+function normalizeUrl(
+    url,
+)
+{
+    return url;
+}
+
+function isElement(
+    target,
+)
+{
+    return (
+        target
+        instanceof Element
+    );
+}
+
+/*
+|------------------------------------------------------------------
+| Build AJAX URL
+|------------------------------------------------------------------
+*/
+
+export function buildAjaxUrl(
+    link,
+)
+{
+    const url =
+        new URL(
+            link.href,
+            window.location.origin,
+        );
+
+    const match =
+        url.pathname.match(
+            /\/manga\/series\/page\/(\d+)$/,
+        );
+
+    const page =
+        match
+            ? Math.max(
+                1,
+                parseInt(
+                    match[1],
+                    10,
+                ),
+            )
+            : 1;
+
+    url.pathname =
+        `${getBasePath()}/manga/ajax/series/page/${page}`;
+
     return url.toString();
 }
 
-async function prefetchLink(url) {
-    url = normalizeUrl(url);
-    if (!url) return;
-    try {
-        const res = await fetch(url, {
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+/*
+|------------------------------------------------------------------
+| Prefetch HTML
+|------------------------------------------------------------------
+*/
+
+export async function prefetchSeriesPage(
+    url,
+)
+{
+    const ajaxUrl =
+        buildAjaxUrl({
+            href: url,
         });
-        if (res.ok) {
-            const html = await res.text();
-            console.log('Prefetched:', url);
-        } else {
-            console.warn('404 prefetch:', url);
+
+    if (
+        prefetchedPages.has(
+            ajaxUrl,
+        )
+    ) {
+        return prefetchedPages.get(
+            ajaxUrl,
+        );
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                ajaxUrl,
+                {
+                    headers:
+                    {
+                        'X-Requested-With':
+                            'XMLHttpRequest',
+                    },
+                },
+            );
+
+        if (
+            !response.ok
+        ) {
+
+            console.warn(
+                'Prefetch failed:',
+                ajaxUrl,
+            );
+
+            return null;
         }
-    } catch (err) {
-        console.error('Prefetch failed:', err);
+
+        const html =
+            await response.text();
+
+        prefetchedPages.set(
+            ajaxUrl,
+            html,
+        );
+
+        return html;
+
+    } catch (error) {
+
+        console.error(
+            'Prefetch failed:',
+            error,
+        );
+
+        return null;
     }
 }
 
-// Pour les cards
-function setupCardPrefetch(card) {
-    card.addEventListener('pointerenter', () => prefetchLink(card.href));
-    card.addEventListener('focus', () => prefetchLink(card.href));
-}
+/*
+|------------------------------------------------------------------
+| Prefetch images
+|------------------------------------------------------------------
+*/
 
-// Pagination
-function setupPaginationPrefetch() {
-    const active = document.querySelector('.collection-pagination-link.active');
-    if (!active) return;
-    const next = active.nextElementSibling;
-    if (next?.classList.contains('collection-pagination-link')) {
-        prefetchLink(next.href);
+export function prefetchSeriesImage(
+    url,
+)
+{
+    if (
+        !url
+        || prefetchedImages.has(
+            url,
+        )
+    ) {
+        return;
     }
+
+    prefetchedImages.add(
+        url,
+    );
+
+    const image =
+        new Image();
+
+    image.src =
+        normalizeUrl(
+            url,
+        );
 }
 
-// Initialisation
-export function initPrefetchSeries() {
-    const cards = document.querySelectorAll('.collection-card-link');
-    cards.forEach(setupCardPrefetch);
-    setupPaginationPrefetch();
+/*
+|------------------------------------------------------------------
+| Cache
+|------------------------------------------------------------------
+*/
+
+export function getPrefetchedPage(
+    url,
+)
+{
+    return prefetchedPages.get(
+        url,
+    );
+}
+
+/*
+|------------------------------------------------------------------
+| Bind cards
+|------------------------------------------------------------------
+*/
+
+function bindCards()
+{
+    const cards =
+        document.querySelectorAll(
+            '.collection-card-link',
+        );
+
+    cards.forEach(
+        card =>
+        {
+            if (
+                card.dataset
+                    .prefetchBound
+                === 'true'
+            ) {
+                return;
+            }
+
+            card.dataset
+                .prefetchBound =
+                    'true';
+
+            const prefetch =
+                () =>
+                {
+                    prefetchSeriesPage(
+                        card.href,
+                    );
+
+                    const image =
+                        card.querySelector(
+                            '.card-image-portrait',
+                        );
+
+                    if (image) {
+
+                        prefetchSeriesImage(
+                            image.src,
+                        );
+                    }
+                };
+
+            card.addEventListener(
+                'pointerenter',
+                prefetch,
+            );
+
+            card.addEventListener(
+                'focus',
+                prefetch,
+            );
+        },
+    );
+}
+
+/*
+|------------------------------------------------------------------
+| Init
+|------------------------------------------------------------------
+*/
+
+export function initPrefetchSeries()
+{
+    if (
+        document.body.dataset
+            .prefetchSeriesInit
+        === 'true'
+    ) {
+        return;
+    }
+
+    document.body.dataset
+        .prefetchSeriesInit =
+            'true';
+
+    bindCards();
+
+    document.addEventListener(
+        'ajax:series-loaded',
+        () =>
+        {
+            bindCards();
+        },
+    );
+
+    /*
+    |--------------------------------------------------------------
+    | Global hover prefetch
+    |--------------------------------------------------------------
+    */
+
+    document.addEventListener(
+        'pointerenter',
+        event =>
+        {
+            if (
+                !isElement(
+                    event.target,
+                )
+            ) {
+                return;
+            }
+
+            const card =
+                event.target.closest(
+                    '.collection-card-link',
+                );
+
+            if (!card) {
+                return;
+            }
+
+            prefetchSeriesPage(
+                card.href,
+            );
+
+            const image =
+                card.querySelector(
+                    '.card-image-portrait',
+                );
+
+            if (image) {
+
+                prefetchSeriesImage(
+                    image.src,
+                );
+            }
+
+        },
+        true,
+    );
 }

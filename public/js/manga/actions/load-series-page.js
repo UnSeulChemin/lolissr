@@ -1,172 +1,379 @@
-import { prefetchedPages } from '../navigation/prefetch-links.js';
+import {
+    buildAjaxUrl,
+    getPrefetchedPage,
+    prefetchSeriesPage,
+} from '../navigation/prefetch-series.js';
 
-const seriesPageCache = new Map();
-const cache = {
-    links: new Set(),
-    linksPending: new Set(),
-    seriesImages: new Set(),
-    hoverTimers: new WeakMap(),
-};
+/*
+|------------------------------------------------------------------
+| Selectors
+|------------------------------------------------------------------
+*/
 
-const containerSelector = '.collection-ajax-container';
-const contentSelector = '.collection-ajax-content';
+const containerSelector =
+    '.collection-ajax-container';
 
-const getContainer = () => document.querySelector(containerSelector);
-const getContent = () => document.querySelector(contentSelector);
-const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' });
-const isSeriesPage = () => /\/manga\/series($|\/page\/\d+$)/.test(window.location.pathname);
+const contentSelector =
+    '.collection-ajax-content';
 
-function normalizeUrl(url) {
-    // Supprime '/public' ou '/lolissr' si présent au début
-    return url.replace(/^\/(public|lolissr)/, '');
+/*
+|------------------------------------------------------------------
+| Helpers
+|------------------------------------------------------------------
+*/
+
+function getContainer()
+{
+    return document.querySelector(
+        containerSelector,
+    );
 }
 
-export function buildAjaxUrl(link) {
-    const url = new URL(normalizeUrl(link.href), window.location.origin);
-    const match = url.pathname.match(/\/manga\/series\/page\/(\d+)$/);
-    const page = match ? Math.max(1, parseInt(match[1], 10)) : 1;
-    url.pathname = `/manga/ajax/series/page/${page}`;
-    return url.toString();
+function getContent()
+{
+    return document.querySelector(
+        contentSelector,
+    );
 }
 
-async function prefetchLink(url) {
-    url = normalizeUrl(url);
-    if (!url || cache.links.has(url) || cache.linksPending.has(url)) return;
-    cache.linksPending.add(url);
-    console.log('Prefetch URL:', url);
-    try {
-        const res = await fetch(url, {
-            method: 'GET',
-            credentials: 'same-origin',
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        });
-        if (res.ok) {
-            const html = await res.text();
-            seriesPageCache.set(url, html);
-            cache.links.add(url);
-        }
-    } catch (err) {
-        console.error('Prefetch failed:', err);
-    } finally {
-        cache.linksPending.delete(url);
-    }
+function isSeriesPageUrl(
+    url,
+)
+{
+    return /\/manga\/series($|\/page\/\d+$)/
+        .test(
+            url.pathname,
+        );
 }
 
-function scheduleSeriesCardPrefetch(card) {
-    const existing = cache.hoverTimers.get(card);
-    if (existing) clearTimeout(existing);
-    const timer = setTimeout(() => {
-        prefetchLink(card.href);
-        const img = card.querySelector('.card-image-portrait');
-        if (img) prefetchSeriesImage(img.src);
-        cache.hoverTimers.delete(card);
-    }, 120);
-    cache.hoverTimers.set(card, timer);
-}
-
-function cancelSeriesCardPrefetch(card) {
-    const timer = cache.hoverTimers.get(card);
-    if (!timer) return;
-    clearTimeout(timer);
-    cache.hoverTimers.delete(card);
-}
-
-export function prefetchSeriesImage(url) {
-    if (!url || cache.seriesImages.has(url)) return;
-    cache.seriesImages.add(url);
-    const img = new Image();
-    img.src = normalizeUrl(url);
-}
-
-async function fetchHtml(url) {
-    url = normalizeUrl(url);
-    if (seriesPageCache.has(url)) return seriesPageCache.get(url);
-    if (prefetchedPages.has(url)) return prefetchedPages.get(url);
-    const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
-    if (!res.ok) throw new Error('Erreur AJAX');
-    const html = await res.text();
-    seriesPageCache.set(url, html);
-    return html;
-}
-
-async function loadSeries(url, fallback) {
-    const container = getContainer();
-    const content = getContent();
-    if (!container || !content) return;
-    container.classList.add('is-loading');
-    try {
-        const html = await fetchHtml(url);
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        const newContent = doc.querySelector(contentSelector);
-        if (!newContent) throw new Error('Contenu AJAX introuvable');
-        content.replaceWith(newContent);
-        document.dispatchEvent(new CustomEvent('ajax:series-loaded'));
-        scrollToTop();
-        requestAnimationFrame(() => prefetchNextPaginationPage());
-    } catch (err) {
-        console.error(err);
-        window.location.href = fallback;
-    } finally {
-        container.classList.remove('is-loading');
-    }
-}
-
-export function initLoadSeriesPage() {
-    const container = getContainer();
-    if (!container) return;
-    prefetchNextPaginationPage();
-
-    document.addEventListener('click', async e => {
-        const link = e.target.closest('.collection-pagination-link');
-        if (!link || !container.contains(link)) return;
-        e.preventDefault();
-        const ajaxUrl = buildAjaxUrl(link);
-        await loadSeries(ajaxUrl, link.href);
-        history.pushState({ ajaxUrl }, '', link.href);
-    });
-
-    window.addEventListener('popstate', async () => {
-        if (!isSeriesPage()) return;
-        const fakeLink = { href: window.location.href };
-        await loadSeries(buildAjaxUrl(fakeLink), window.location.href);
+function scrollToTop()
+{
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth',
     });
 }
 
-export function prefetchNextPaginationPage() {
-    const active = document.querySelector('.collection-pagination-link.active');
-    if (!active) return;
-    const next = active.nextElementSibling;
-    if (!next?.classList.contains('collection-pagination-link')) return;
-    prefetchLink(buildAjaxUrl(next));
+/*
+|------------------------------------------------------------------
+| Fetch HTML
+|------------------------------------------------------------------
+*/
+
+async function fetchHtml(
+    ajaxUrl,
+)
+{
+    const cached =
+        getPrefetchedPage(
+            ajaxUrl,
+        );
+
+    if (cached) {
+        return cached;
+    }
+
+    const response =
+        await fetch(
+            ajaxUrl,
+            {
+                headers:
+                {
+                    'X-Requested-With':
+                        'XMLHttpRequest',
+                },
+            },
+        );
+
+    if (
+        !response.ok
+    ) {
+        throw new Error(
+            'Erreur AJAX',
+        );
+    }
+
+    return await response.text();
 }
 
-export function initPrefetchSeries() {
-    if (document.body.dataset.prefetchSeriesInit === 'true') return;
-    document.body.dataset.prefetchSeriesInit = 'true';
+/*
+|------------------------------------------------------------------
+| Replace content
+|------------------------------------------------------------------
+*/
 
-    const bindCards = () => {
-        const cards = document.querySelectorAll('.collection-card-link');
-        cards.forEach(card => {
-            if (card.dataset.prefetchBound === 'true') return;
-            card.dataset.prefetchBound = 'true';
-            card.addEventListener('pointerenter', () => scheduleSeriesCardPrefetch(card));
-            card.addEventListener('pointerleave', () => cancelSeriesCardPrefetch(card));
-            card.addEventListener('focus', () => {
-                prefetchLink(card.href);
-                const img = card.querySelector('.card-image-portrait');
-                if (img) prefetchSeriesImage(img.src);
+async function loadSeriesPage(
+    url,
+    pushState = true,
+)
+{
+    const container =
+        getContainer();
+
+    const currentContent =
+        getContent();
+
+    if (
+        !container
+        || !currentContent
+    ) {
+        return;
+    }
+
+    container.classList.add(
+        'is-loading',
+    );
+
+    try {
+
+        const ajaxUrl =
+            buildAjaxUrl({
+                href: url.href,
             });
-        });
-    };
 
-    bindCards();
-    document.addEventListener('ajax:series-loaded', bindCards);
+        const html =
+            await fetchHtml(
+                ajaxUrl,
+            );
+
+        const parser =
+            new DOMParser();
+
+        const documentHtml =
+            parser.parseFromString(
+                html,
+                'text/html',
+            );
+
+        const newContent =
+            documentHtml.querySelector(
+                contentSelector,
+            );
+
+        if (!newContent) {
+            throw new Error(
+                'Contenu AJAX introuvable',
+            );
+        }
+
+        /*
+        |----------------------------------------------------------
+        | Replace node
+        |----------------------------------------------------------
+        */
+
+        currentContent.replaceWith(
+            newContent,
+        );
+
+        /*
+        |----------------------------------------------------------
+        | History
+        |----------------------------------------------------------
+        */
+
+        if (pushState) {
+
+            window.history.pushState(
+                {},
+                '',
+                url.href,
+            );
+        }
+
+        /*
+        |----------------------------------------------------------
+        | Events
+        |----------------------------------------------------------
+        */
+
+        document.dispatchEvent(
+            new CustomEvent(
+                'ajax:series-loaded',
+            ),
+        );
+
+        scrollToTop();
+
+        prefetchNextPage();
+
+    } catch (error) {
+
+        console.error(
+            error,
+        );
+
+        window.location.href =
+            url.href;
+
+    } finally {
+
+        container.classList.remove(
+            'is-loading',
+        );
+    }
 }
 
-// Expose pour debug
-if (typeof window !== 'undefined') {
-    window.initPrefetchSeries = initPrefetchSeries;
-    window.prefetchSeriesImage = prefetchSeriesImage;
-    window.prefetchNextPaginationPage = prefetchNextPaginationPage;
+/*
+|------------------------------------------------------------------
+| Prefetch next page
+|------------------------------------------------------------------
+*/
+
+function prefetchNextPage()
+{
+    const active =
+        document.querySelector(
+            '.collection-pagination-link.active',
+        );
+
+    if (!active) {
+        return;
+    }
+
+    const next =
+        active.nextElementSibling;
+
+    if (
+        !next
+        || !next.classList.contains(
+            'collection-pagination-link',
+        )
+    ) {
+        return;
+    }
+
+    prefetchSeriesPage(
+        next.href,
+    );
+}
+
+/*
+|------------------------------------------------------------------
+| Click navigation
+|------------------------------------------------------------------
+*/
+
+async function handleClick(
+    event,
+)
+{
+    const target =
+        event.target;
+
+    if (
+        !(target instanceof Element)
+    ) {
+        return;
+    }
+
+    const link =
+        target.closest(
+            'a',
+        );
+
+    if (!link) {
+        return;
+    }
+
+    const url =
+        new URL(
+            link.href,
+        );
+
+    if (
+        !isSeriesPageUrl(
+            url,
+        )
+    ) {
+        return;
+    }
+
+    /*
+    |--------------------------------------------------------------
+    | Ignore detail pages
+    |--------------------------------------------------------------
+    */
+
+    if (
+        /\/manga\/series\/[^/]+\/\d+$/
+            .test(
+                url.pathname,
+            )
+    ) {
+        return;
+    }
+
+    event.preventDefault();
+
+    await loadSeriesPage(
+        url,
+    );
+}
+
+/*
+|------------------------------------------------------------------
+| Browser navigation
+|------------------------------------------------------------------
+*/
+
+async function handlePopState()
+{
+    const url =
+        new URL(
+            window.location.href,
+        );
+
+    if (
+        !isSeriesPageUrl(
+            url,
+        )
+    ) {
+        return;
+    }
+
+    await loadSeriesPage(
+        url,
+        false,
+    );
+}
+
+/*
+|------------------------------------------------------------------
+| Init
+|------------------------------------------------------------------
+*/
+
+export function initLoadSeriesPage()
+{
+    if (
+        document.body.dataset
+            .loadSeriesPageInit
+        === 'true'
+    ) {
+        return;
+    }
+
+    document.body.dataset
+        .loadSeriesPageInit =
+            'true';
+
+    const container =
+        getContainer();
+
+    if (!container) {
+        return;
+    }
+
+    prefetchNextPage();
+
+    document.addEventListener(
+        'click',
+        handleClick,
+    );
+
+    window.addEventListener(
+        'popstate',
+        handlePopState,
+    );
 }
