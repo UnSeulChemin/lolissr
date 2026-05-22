@@ -62,12 +62,17 @@ final readonly class MangaReadService
             slug: $manga->slug,
             numero: $manga->numero,
             livre: $manga->livre,
-            thumbnail: $manga->thumbnail !== ''
-                ? $manga->thumbnail
-                : null,
-            extension: $manga->extension !== ''
-                ? $manga->extension
-                : null,
+
+            thumbnail:
+                $manga->thumbnail !== ''
+                    ? $manga->thumbnail
+                    : null,
+
+            extension:
+                $manga->extension !== ''
+                    ? $manga->extension
+                    : null,
+
             note: $manga->note,
         );
     }
@@ -80,29 +85,37 @@ final readonly class MangaReadService
             numero: $manga->numero,
             livre: $manga->livre,
 
-            thumbnail: $manga->thumbnail !== ''
-                ? $manga->thumbnail
-                : null,
+            thumbnail:
+                $manga->thumbnail !== ''
+                    ? $manga->thumbnail
+                    : null,
 
-            extension: $manga->extension !== ''
-                ? $manga->extension
-                : null,
+            extension:
+                $manga->extension !== ''
+                    ? $manga->extension
+                    : null,
 
-            statut: $manga->statut !== ''
-                ? $manga->statut
-                : 'en_cours',
+            statut:
+                $manga->statut !== ''
+                    ? $manga->statut
+                    : 'en_cours',
 
-            note: $manga->note !== null
-                ? (float) $manga->note
-                : null,
+            note:
+                $manga->note !== null
+                    ? (float) $manga->note
+                    : null,
 
-            averageNote: $manga->average_note,
+            averageNote:
+                $manga->average_note,
 
-            total: $manga->total ?? 0,
+            total:
+                $manga->total ?? 0,
 
-            totalLu: $manga->total_lu ?? 0,
+            totalLu:
+                $manga->total_lu ?? 0,
 
-            lu: $manga->lu,
+            lu:
+                $manga->lu,
         );
     }
 
@@ -113,18 +126,21 @@ final readonly class MangaReadService
             return null;
         }
 
-        $currentPage = (int) $page;
+        $currentPage =
+            (int) $page;
 
         if ($currentPage < 1) {
             return null;
         }
 
-        $pagination = App::pagination();
+        $pagination =
+            App::pagination();
 
-        $totalPages = $this->searchRepository
-            ->countFirstTomesPaginate(
-                $pagination,
-            );
+        $totalPages =
+            $this->searchRepository
+                ->countFirstTomesPaginate(
+                    $pagination,
+                );
 
         if (
             $totalPages > 0
@@ -155,9 +171,10 @@ final readonly class MangaReadService
     public function search(
         string $query = '',
     ): MangaSearchData {
-        $search = $this->normalizeSearchQuery(
-            $query,
-        );
+        $search =
+            $this->normalizeSearchQuery(
+                $query,
+            );
 
         if ($search === '') {
             return new MangaSearchData(
@@ -169,7 +186,9 @@ final readonly class MangaReadService
         return new MangaSearchData(
             mangas: array_map(
                 $this->mapSearchItem(...),
-                $this->findSearchResults($search),
+                $this->findSearchResults(
+                    $search,
+                ),
             ),
 
             search: $search,
@@ -179,26 +198,32 @@ final readonly class MangaReadService
     /**
      * @return list<MangaSearchItemData>
      */
-    public function searchAjax(
+    public function searchResults(
         string $query = '',
     ): array {
         return array_slice(
             array_map(
                 $this->mapSearchItem(...),
-                $this->findSearchResults($query),
+                $this->findSearchResults(
+                    $query,
+                ),
             ),
             0,
             6,
         );
     }
 
-    public function serie(
+    public function showSeries(
         string $slug,
     ): ?MangaSeriesData {
-        $normalizedSlug = Str::slug($slug);
+        $normalizedSlug =
+            Str::slug($slug);
 
-        $mangas = $this->mangaRepository
-            ->findBySlug($normalizedSlug);
+        $mangas =
+            $this->mangaRepository
+                ->findBySlug(
+                    $normalizedSlug,
+                );
 
         if ($mangas === []) {
             return null;
@@ -212,7 +237,8 @@ final readonly class MangaReadService
 
             compteur: null,
 
-            slugFilter: $normalizedSlug,
+            slugFilter:
+                $normalizedSlug,
 
             currentPage: 1,
         );
@@ -222,13 +248,15 @@ final readonly class MangaReadService
         string $slug,
         int $numero,
     ): ?MangaShowData {
-        $normalizedSlug = Str::slug($slug);
+        $normalizedSlug =
+            Str::slug($slug);
 
-        $manga = $this->mangaRepository
-            ->findOneBySlugAndNumero(
-                $normalizedSlug,
-                $numero,
-            );
+        $manga =
+            $this->mangaRepository
+                ->findOneBySlugAndNumero(
+                    $normalizedSlug,
+                    $numero,
+                );
 
         if ($manga === null) {
             return null;
@@ -236,7 +264,8 @@ final readonly class MangaReadService
 
         return new MangaShowData(
             manga: $manga,
-            canonicalSlug: $normalizedSlug,
+            canonicalSlug:
+                $normalizedSlug,
         );
     }
 }

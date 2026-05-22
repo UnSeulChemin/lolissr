@@ -73,12 +73,12 @@ return static function (Router $router): void {
 
     $router->get('/manga/recherche', [
         MangaController::class,
-        'recherche',
+        'search',
     ]);
 
     $router->get('/manga/recherche/{query}', [
         MangaController::class,
-        'recherche',
+        'search',
     ]);
 
     /*
@@ -89,18 +89,18 @@ return static function (Router $router): void {
 
     $router->get('/manga/ajouter', [
         MangaController::class,
-        'ajouter',
+        'create',
     ]);
 
     $router->post(
         '/manga/ajouter',
         [
             MangaController::class,
-            'ajouterTraitement',
+            'store',
         ],
         [
             CsrfMiddleware::class,
-        ]
+        ],
     );
 
     /*
@@ -113,8 +113,8 @@ return static function (Router $router): void {
         '/manga/series/modifier/{slug}/{numero}',
         [
             MangaController::class,
-            'modifier',
-        ]
+            'edit',
+        ],
     );
 
     $router->post(
@@ -125,7 +125,7 @@ return static function (Router $router): void {
         ],
         [
             CsrfMiddleware::class,
-        ]
+        ],
     );
 
     /*
@@ -143,7 +143,7 @@ return static function (Router $router): void {
         [
             AjaxOnlyMiddleware::class,
             CsrfMiddleware::class,
-        ]
+        ],
     );
 
     /*
@@ -154,7 +154,7 @@ return static function (Router $router): void {
 
     $router->get('/manga/lien', [
         MangaController::class,
-        'lien',
+        'links',
     ]);
 
     /*
@@ -170,7 +170,7 @@ return static function (Router $router): void {
 
     $router->get('/manga/series/{slug}', [
         MangaController::class,
-        'serie',
+        'showSeries',
     ]);
 
     /*
@@ -187,7 +187,7 @@ return static function (Router $router): void {
         ],
         [
             AjaxOnlyMiddleware::class,
-        ]
+        ],
     );
 
     /*
@@ -208,7 +208,7 @@ return static function (Router $router): void {
         ],
         [
             AjaxOnlyMiddleware::class,
-        ]
+        ],
     );
 
     $router->post(
@@ -220,7 +220,7 @@ return static function (Router $router): void {
         [
             AjaxOnlyMiddleware::class,
             CsrfMiddleware::class,
-        ]
+        ],
     );
 
     $router->post(
@@ -232,7 +232,7 @@ return static function (Router $router): void {
         [
             AjaxOnlyMiddleware::class,
             CsrfMiddleware::class,
-        ]
+        ],
     );
 
     /*
@@ -278,7 +278,7 @@ return static function (Router $router): void {
         [
             ChinoisController::class,
             'hsk',
-        ]
+        ],
     );
 
     /*
@@ -312,6 +312,6 @@ return static function (Router $router): void {
         [
             AjaxOnlyMiddleware::class,
             CsrfMiddleware::class,
-        ]
+        ],
     );
 };

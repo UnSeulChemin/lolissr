@@ -14,9 +14,11 @@ use Framework\Http\Request;
 
 final class MangaController extends Controller
 {
-    private const SERIES_PATH = 'manga/series';
+    private const SERIES_PATH =
+        'manga/series';
 
-    private const EDIT_PATH = 'manga/series/modifier';
+    private const EDIT_PATH =
+        'manga/series/modifier';
 
     public function __construct(
         protected MangaReadService $mangaReadService,
@@ -32,8 +34,11 @@ final class MangaController extends Controller
         string $pathPrefix,
         ?int $numero = null,
     ): void {
-        $requestedSlug = trim($requestedSlug);
-        $canonicalSlug = trim($canonicalSlug);
+        $requestedSlug =
+            trim($requestedSlug);
+
+        $canonicalSlug =
+            trim($canonicalSlug);
 
         if (
             $canonicalSlug === ''
@@ -49,7 +54,8 @@ final class MangaController extends Controller
         );
 
         if ($numero !== null) {
-            $location .= '/' . $numero;
+            $location .= '/'
+                . $numero;
         }
 
         $currentPath = trim(
@@ -70,7 +76,7 @@ final class MangaController extends Controller
         );
     }
 
-    private function editPath(
+    private function buildEditPath(
         string $slug,
         int $numero,
     ): string {
@@ -97,6 +103,9 @@ final class MangaController extends Controller
         );
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     private function jsonError(
         string $message,
         int $status,
@@ -143,9 +152,10 @@ final class MangaController extends Controller
         );
     }
 
-    public function lien(): never
+    public function links(): never
     {
-        $this->title = 'Manga | Lien';
+        $this->title =
+            'Manga | Lien';
 
         $this->render(
             'manga/lien',
@@ -164,7 +174,8 @@ final class MangaController extends Controller
             );
         }
 
-        $this->title = 'Manga | Series';
+        $this->title =
+            'Manga | Series';
 
         if ($data->currentPage > 1) {
             $this->title .= sprintf(
@@ -176,16 +187,17 @@ final class MangaController extends Controller
         $this->renderSeriesPage($data);
     }
 
-    public function recherche(
+    public function search(
         string $query = '',
     ): never {
         $data = $this->mangaReadService
             ->search($query);
 
-        $this->title = $data->search !== ''
-            ? 'Manga | Recherche : '
-                . $data->search
-            : 'Manga | Recherche';
+        $this->title =
+            $data->search !== ''
+                ? 'Manga | Recherche : '
+                    . $data->search
+                : 'Manga | Recherche';
 
         $this->render(
             'manga/search',
@@ -196,13 +208,14 @@ final class MangaController extends Controller
         );
     }
 
-    public function serie(
+    public function showSeries(
         string $slug,
     ): never {
-        $requestedSlug = trim($slug);
+        $requestedSlug =
+            trim($slug);
 
         $data = $this->mangaReadService
-            ->serie($requestedSlug);
+            ->showSeries($requestedSlug);
 
         if ($data === null) {
             $this->notFound(
@@ -269,16 +282,17 @@ final class MangaController extends Controller
         );
     }
 
-    public function ajouter(): never
+    public function create(): never
     {
-        $this->title = 'Manga | Ajouter';
+        $this->title =
+            'Manga | Ajouter';
 
         $this->render(
             'manga/ajouter',
         );
     }
 
-    public function modifier(
+    public function edit(
         string $slug,
         int $numero,
     ): never {
@@ -301,7 +315,8 @@ final class MangaController extends Controller
             $numero,
         );
 
-        $this->title = 'Manga | Modifier';
+        $this->title =
+            'Manga | Modifier';
 
         $this->render(
             'manga/modifier',
@@ -311,7 +326,7 @@ final class MangaController extends Controller
         );
     }
 
-    public function ajouterTraitement(
+    public function store(
         MangaCreateRequest $request,
     ): never {
         if ($request->fails()) {
@@ -337,7 +352,8 @@ final class MangaController extends Controller
         string $slug,
         int $numero,
     ): never {
-        $isAjax = $this->isAjax();
+        $isAjax =
+            $this->isAjax();
 
         $data = $this->mangaReadService
             ->one(
@@ -358,10 +374,11 @@ final class MangaController extends Controller
             );
         }
 
-        $redirectPath = $this->editPath(
-            $data->canonicalSlug,
-            $numero,
-        );
+        $redirectPath =
+            $this->buildEditPath(
+                $data->canonicalSlug,
+                $numero,
+            );
 
         if ($slug !== $data->canonicalSlug) {
             if ($isAjax) {
@@ -400,7 +417,6 @@ final class MangaController extends Controller
                 $data->canonicalSlug,
                 $numero,
                 $request->dto(),
-                $request->files(),
             );
 
         if ($isAjax) {
@@ -421,7 +437,9 @@ final class MangaController extends Controller
             sprintf(
                 '%s/%s/%d',
                 self::SERIES_PATH,
-                rawurlencode($data->canonicalSlug),
+                rawurlencode(
+                    $data->canonicalSlug,
+                ),
                 $numero,
             ),
             $result->message,

@@ -33,7 +33,7 @@ final class MangaControllerTest extends TestCase
     {
         $controller = $this->makeController();
 
-        $controller->ajouter();
+        $controller->create();
 
         $this->assertSame('Manga | Ajouter', $controller->exposedTitle());
         $this->assertSame('manga/ajouter', $controller->renderedView);
@@ -134,7 +134,7 @@ final class MangaControllerTest extends TestCase
 
         $controller = $this->makeController($readService);
 
-        $controller->recherche('');
+        $controller->search('');
 
         $this->assertSame('Manga | Recherche', $controller->exposedTitle());
         $this->assertSame('manga/search', $controller->renderedView);
@@ -160,7 +160,7 @@ final class MangaControllerTest extends TestCase
 
         $controller = $this->makeController($readService);
 
-        $controller->recherche('one-piece');
+        $controller->search('one-piece');
 
         $this->assertSame('Manga | Recherche : one piece', $controller->exposedTitle());
         $this->assertSame('manga/search', $controller->renderedView);
@@ -175,7 +175,7 @@ final class MangaControllerTest extends TestCase
 
         $controller = $this->makeController($readService);
 
-        $controller->searchAjax('');
+        $controller->searchResults('');
 
         $this->assertSame(200, $controller->jsonStatus);
         $this->assertSame([], $controller->jsonData);
@@ -199,7 +199,7 @@ final class MangaControllerTest extends TestCase
 
         $controller = $this->makeController($readService);
 
-        $controller->searchAjax('one-piece');
+        $controller->searchResults('one-piece');
 
         $this->assertSame(200, $controller->jsonStatus);
         $this->assertSame($results, $controller->jsonData);
@@ -212,7 +212,7 @@ final class MangaControllerTest extends TestCase
 
         $controller = $this->makeController($readService);
 
-        $controller->serie('unknown-slug');
+        $controller->showSeries('unknown-slug');
 
         $this->assertSame('Manga introuvable', $controller->notFoundMessage);
         $this->assertNull($controller->renderedView);
@@ -236,7 +236,7 @@ final class MangaControllerTest extends TestCase
 
         $controller = $this->makeController($readService);
 
-        $controller->serie('One Piece');
+        $controller->showSeries('One Piece');
 
         $this->assertSame('manga/serie/one-piece', $controller->redirectPath);
     }
@@ -264,7 +264,7 @@ final class MangaControllerTest extends TestCase
 
         $controller = $this->makeController($readService);
 
-        $controller->serie('one-piece');
+        $controller->showSeries('one-piece');
 
         $this->assertSame('Manga | One Piece', $controller->exposedTitle());
         $this->assertSame('manga/collection', $controller->renderedView);
@@ -338,7 +338,7 @@ final class MangaControllerTest extends TestCase
 
         $controller = $this->makeController($readService);
 
-        $controller->modifier('one-piece', '20');
+        $controller->edit('one-piece', '20');
 
         $this->assertSame('Manga introuvable', $controller->notFoundMessage);
         $this->assertNull($controller->renderedView);
@@ -360,7 +360,7 @@ final class MangaControllerTest extends TestCase
 
         $controller = $this->makeController($readService);
 
-        $controller->modifier('One Piece', '20');
+        $controller->edit('One Piece', '20');
 
         $this->assertSame('manga/modifier/one-piece/20', $controller->redirectPath);
     }
@@ -381,7 +381,7 @@ final class MangaControllerTest extends TestCase
 
         $controller = $this->makeController($readService);
 
-        $controller->modifier('one-piece', '20');
+        $controller->edit('one-piece', '20');
 
         $this->assertSame('Manga | Modifier', $controller->exposedTitle());
         $this->assertSame('manga/modifier', $controller->renderedView);
