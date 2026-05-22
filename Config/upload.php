@@ -4,16 +4,63 @@ declare(strict_types=1);
 
 return [
 
-    'max_size' => max(1, env_int('UPLOAD_MAX_SIZE', 5242880)),
+    /*
+    |--------------------------------------------------------------------------
+    | Upload limits
+    |--------------------------------------------------------------------------
+    */
 
-    'allowed_extensions' => array_values(array_filter(array_map(
-        static fn (string $extension): string => strtolower(trim($extension)),
-        explode(',', (string) env('UPLOAD_ALLOWED_EXT', 'jpg,jpeg,png,webp'))
-    ))),
+    'max_size' => max(
+        1,
+        env_int(
+            'UPLOAD_MAX_SIZE',
+            5242880,
+        ),
+    ),
 
-    'allowed_mime' => array_values(array_filter(array_map(
-        static fn (string $mime): string => strtolower(trim($mime)),
-        explode(',', (string) env('UPLOAD_ALLOWED_MIME', 'image/jpeg,image/png,image/webp'))
-    ))),
+    /*
+    |--------------------------------------------------------------------------
+    | Allowed file extensions
+    |--------------------------------------------------------------------------
+    */
 
+    'allowed_extensions' => array_values(
+        array_filter(
+            array_map(
+                static fn (string $extension): string => strtolower(
+                    trim($extension),
+                ),
+                explode(
+                    ',',
+                    (string) env(
+                        'UPLOAD_ALLOWED_EXT',
+                        'jpg,jpeg,png,webp',
+                    ),
+                ),
+            ),
+        ),
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Allowed MIME types
+    |--------------------------------------------------------------------------
+    */
+
+    'allowed_mime_types' => array_values(
+        array_filter(
+            array_map(
+                static fn (string $mime): string => strtolower(
+                    trim($mime),
+                ),
+                explode(
+                    ',',
+                    (string) env(
+                        'UPLOAD_ALLOWED_MIME',
+                        'image/jpeg,image/png,image/webp',
+                    ),
+                ),
+            ),
+        ),
+    ),
 ];

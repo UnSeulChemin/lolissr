@@ -56,7 +56,7 @@ return static function (Router $router): void {
         'series',
     ]);
 
-    $router->get('/manga/series/page/{page}', [
+    $router->get('/manga/series/page/{page:int}', [
         MangaController::class,
         'series',
     ]);
@@ -110,7 +110,7 @@ return static function (Router $router): void {
     */
 
     $router->get(
-        '/manga/series/modifier/{slug}/{numero}',
+        '/manga/series/modifier/{slug}/{numero:int}',
         [
             MangaController::class,
             'edit',
@@ -118,7 +118,7 @@ return static function (Router $router): void {
     );
 
     $router->post(
-        '/manga/series/modifier/{slug}/{numero}',
+        '/manga/series/modifier/{slug}/{numero:int}',
         [
             MangaController::class,
             'update',
@@ -135,7 +135,7 @@ return static function (Router $router): void {
     */
 
     $router->post(
-        '/manga/series/supprimer/{slug}/{numero}',
+        '/manga/series/supprimer/{slug}/{numero:int}',
         [
             MangaAjaxController::class,
             'delete',
@@ -163,7 +163,7 @@ return static function (Router $router): void {
     |--------------------------------------------------------------------------
     */
 
-    $router->get('/manga/series/{slug}/{numero}', [
+    $router->get('/manga/series/{slug}/{numero:int}', [
         MangaController::class,
         'show',
     ]);
@@ -180,7 +180,7 @@ return static function (Router $router): void {
     */
 
     $router->get(
-        '/manga/ajax/series/page/{page}',
+        '/manga/ajax/series/page/{page:int}',
         [
             MangaAjaxController::class,
             'seriesPage',
@@ -212,7 +212,7 @@ return static function (Router $router): void {
     );
 
     $router->post(
-        '/manga/ajax/update-note/{slug}/{numero}',
+        '/manga/ajax/update-note/{slug}/{numero:int}',
         [
             MangaAjaxController::class,
             'updateNote',
@@ -224,7 +224,7 @@ return static function (Router $router): void {
     );
 
     $router->post(
-        '/manga/ajax/update-read-status/{slug}/{numero}',
+        '/manga/ajax/update-read-status/{slug}/{numero:int}',
         [
             MangaAjaxController::class,
             'updateReadStatus',
@@ -274,7 +274,7 @@ return static function (Router $router): void {
     ]);
 
     $router->get(
-        '/chinois/grammaire/hsk{level}',
+        '/chinois/grammaire/hsk{level:int}',
         [
             ChinoisController::class,
             'hsk',

@@ -31,22 +31,6 @@ final class UploadConfig
             return [];
         }
 
-        $extensions = array_map(
-            static fn (
-                mixed $extension,
-            ): string => strtolower(
-                trim((string) $extension),
-            ),
-            $extensions,
-        );
-
-        $extensions = array_filter(
-            $extensions,
-            static fn (
-                string $extension,
-            ): bool => $extension !== '',
-        );
-
         return array_values(
             array_unique($extensions),
         );
@@ -58,29 +42,13 @@ final class UploadConfig
     public static function allowedMimeTypes(): array
     {
         $mimeTypes = config(
-            'upload.allowed_mime',
+            'upload.allowed_mime_types',
             [],
         );
 
         if (!is_array($mimeTypes)) {
             return [];
         }
-
-        $mimeTypes = array_map(
-            static fn (
-                mixed $mimeType,
-            ): string => strtolower(
-                trim((string) $mimeType),
-            ),
-            $mimeTypes,
-        );
-
-        $mimeTypes = array_filter(
-            $mimeTypes,
-            static fn (
-                string $mimeType,
-            ): bool => $mimeType !== '',
-        );
 
         return array_values(
             array_unique($mimeTypes),
