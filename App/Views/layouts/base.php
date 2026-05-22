@@ -57,7 +57,7 @@ if (is_string($success) && $success !== '') {
 
 </head>
 
-<body data-base-uri="<?= e($baseUri) ?>">
+<body>
 
     <?php require_once view_path('partials/header.php'); ?>
 

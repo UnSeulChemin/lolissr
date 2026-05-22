@@ -1,297 +1,140 @@
 /*
 |------------------------------------------------------------------
-| Cache mémoire
+| Prefetch pour pages et images des séries manga
 |------------------------------------------------------------------
 */
 
-const seriesPagePrefetchCache = new Set();
+const cache = {
+    seriesPages: new Set(),
+    seriesPagesPending: new Set(),
+    seriesImages: new Set(),
+    hoverTimers: new WeakMap(),
+};
 
-const seriesPagePrefetchPending = new Set();
-
-const seriesImagePrefetchCache = new Set();
-
-const seriesCardHoverTimers = new WeakMap();
-
-
-/*
-|------------------------------------------------------------------
-| Vérifications
-|------------------------------------------------------------------
-*/
-
-function canPrefetchSeriesUrl(url)
-{
-    return Boolean(url)
-        && !seriesPagePrefetchCache.has(url)
-        && !seriesPagePrefetchPending.has(url);
+/**
+ * Vérifie si une URL de page série peut être préfetchée.
+ */
+function canPrefetchSeriesUrl(url) {
+    if (!url) return false;
+    const normalizedUrl = new URL(url, window.location.origin).toString();
+    return !cache.seriesPages.has(normalizedUrl) && !cache.seriesPagesPending.has(normalizedUrl);
 }
 
-function canPrefetchSeriesImage(url)
-{
-    return Boolean(url)
-        && !seriesImagePrefetchCache.has(url);
+/**
+ * Vérifie si une URL d'image peut être préfetchée.
+ */
+function canPrefetchSeriesImage(url) {
+    return Boolean(url) && !cache.seriesImages.has(url);
 }
 
+/**
+ * Prefetch d'une page série.
+ */
+export function prefetchSeriesPage(url) {
+    if (!canPrefetchSeriesUrl(url)) return;
 
-/*
-|------------------------------------------------------------------
-| Prefetch page manga
-|------------------------------------------------------------------
-*/
+    const normalizedUrl = new URL(url, window.location.origin).toString();
+    cache.seriesPagesPending.add(normalizedUrl);
 
-export function prefetchSeriesPage(url)
-{
-    if (!canPrefetchSeriesUrl(url))
-    {
-        return;
-    }
-
-    seriesPagePrefetchPending.add(url);
-
-    fetch(url,
-    {
-        method: 'GET',
-        credentials: 'same-origin'
-    })
-    .then((response) =>
-    {
-        if (!response.ok)
-        {
-            return;
-        }
-
-        seriesPagePrefetchCache.add(url);
-    })
-    .catch(() =>
-    {
-        // silence volontaire
-    })
-    .finally(() =>
-    {
-        seriesPagePrefetchPending.delete(url);
-    });
+    fetch(normalizedUrl, { method: 'GET', credentials: 'same-origin' })
+        .then((res) => {
+            if (res.ok) cache.seriesPages.add(normalizedUrl);
+        })
+        .catch(() => {
+            // silence volontaire si prefetch échoue
+        })
+        .finally(() => {
+            cache.seriesPagesPending.delete(normalizedUrl);
+        });
 }
 
+/**
+ * Prefetch d'une image.
+ */
+export function prefetchSeriesImage(url) {
+    if (!canPrefetchSeriesImage(url)) return;
 
-/*
-|------------------------------------------------------------------
-| Prefetch image
-|------------------------------------------------------------------
-*/
+    cache.seriesImages.add(url);
 
-export function prefetchSeriesImage(url)
-{
-    if (!canPrefetchSeriesImage(url))
-    {
-        return;
-    }
-
-    seriesImagePrefetchCache.add(url);
-
-    const image = new Image();
-
-    image.src = url;
+    const img = new Image();
+    img.src = url;
 }
 
-
-/*
-|------------------------------------------------------------------
-| Utilitaire
-|------------------------------------------------------------------
-*/
-
-function getSeriesCardLinkFromEventTarget(target)
-{
-    return target?.closest(
-        '.collection-card-link'
-    ) ?? null;
+/**
+ * Récupère le lien de la card série depuis l'event target.
+ */
+function getSeriesCardLinkFromEventTarget(target) {
+    return target?.closest('.collection-card-link') ?? null;
 }
 
+/**
+ * Programme le prefetch d'une card série avec delay.
+ */
+function scheduleSeriesCardPrefetch(cardLink) {
+    const existingTimer = cache.hoverTimers.get(cardLink);
+    if (existingTimer) clearTimeout(existingTimer);
 
-/*
-|------------------------------------------------------------------
-| Hover
-|------------------------------------------------------------------
-*/
-
-function scheduleSeriesCardPrefetch(cardLink)
-{
-    const existingTimer =
-        seriesCardHoverTimers.get(cardLink);
-
-    if (existingTimer)
-    {
-        clearTimeout(existingTimer);
-    }
-
-    const hoverTimer = setTimeout(() =>
-    {
+    const timer = setTimeout(() => {
         prefetchSeriesPage(cardLink.href);
 
-        const image = cardLink.querySelector(
-            '.card-image-portrait'
-        );
+        const image = cardLink.querySelector('.card-image-portrait');
+        if (image) prefetchSeriesImage(image.src);
 
-        if (image)
-        {
-            prefetchSeriesImage(image.src);
-        }
-
-        seriesCardHoverTimers.delete(cardLink);
+        cache.hoverTimers.delete(cardLink);
     }, 120);
 
-    seriesCardHoverTimers.set(
-        cardLink,
-        hoverTimer
-    );
+    cache.hoverTimers.set(cardLink, timer);
 }
 
-function cancelSeriesCardPrefetchHover(cardLink)
-{
-    const hoverTimer =
-        seriesCardHoverTimers.get(cardLink);
+/**
+ * Annule le prefetch d'une card série si hover interrompu.
+ */
+function cancelSeriesCardPrefetchHover(cardLink) {
+    const timer = cache.hoverTimers.get(cardLink);
+    if (!timer) return;
 
-    if (!hoverTimer)
-    {
-        return;
-    }
-
-    clearTimeout(hoverTimer);
-
-    seriesCardHoverTimers.delete(cardLink);
+    clearTimeout(timer);
+    cache.hoverTimers.delete(cardLink);
 }
 
+/**
+ * Initialise les listeners hover/focus pour le prefetch des séries.
+ */
+export function initPrefetchSeries() {
+    if (document.body.dataset.prefetchSeriesInit === 'true') return;
+    document.body.dataset.prefetchSeriesInit = 'true';
 
-/*
-|------------------------------------------------------------------
-| Initialisation globale
-|------------------------------------------------------------------
-*/
+    // Hover souris
+    document.addEventListener('pointerover', (event) => {
+        if (event.pointerType && event.pointerType !== 'mouse') return;
 
-export function initPrefetchSeries()
-{
-    if (
-        document.body.dataset
-            .prefetchSeriesInit === 'true'
-    )
-    {
-        return;
-    }
+        const cardLink = getSeriesCardLinkFromEventTarget(event.target);
+        if (!cardLink) return;
 
-    document.body.dataset
-        .prefetchSeriesInit = 'true';
+        const previousCardLink = getSeriesCardLinkFromEventTarget(event.relatedTarget);
+        if (previousCardLink === cardLink) return;
 
-    /*
-    |--------------------------------------------------------------
-    | Hover souris
-    |--------------------------------------------------------------
-    */
+        scheduleSeriesCardPrefetch(cardLink);
+    });
 
-    document.addEventListener(
-        'pointerover',
-        (event) =>
-        {
-            if (
-                event.pointerType
-                && event.pointerType !== 'mouse'
-            )
-            {
-                return;
-            }
+    document.addEventListener('pointerout', (event) => {
+        const cardLink = getSeriesCardLinkFromEventTarget(event.target);
+        if (!cardLink) return;
 
-            const cardLink =
-                getSeriesCardLinkFromEventTarget(
-                    event.target
-                );
+        const nextCardLink = getSeriesCardLinkFromEventTarget(event.relatedTarget);
+        if (nextCardLink === cardLink) return;
 
-            if (!cardLink)
-            {
-                return;
-            }
+        cancelSeriesCardPrefetchHover(cardLink);
+    });
 
-            const previousCardLink =
-                getSeriesCardLinkFromEventTarget(
-                    event.relatedTarget
-                );
+    // Focus clavier
+    document.addEventListener('focusin', (event) => {
+        const cardLink = getSeriesCardLinkFromEventTarget(event.target);
+        if (!cardLink) return;
 
-            if (
-                previousCardLink === cardLink
-            )
-            {
-                return;
-            }
+        prefetchSeriesPage(cardLink.href);
 
-            scheduleSeriesCardPrefetch(
-                cardLink
-            );
-        }
-    );
-
-    document.addEventListener(
-        'pointerout',
-        (event) =>
-        {
-            const cardLink =
-                getSeriesCardLinkFromEventTarget(
-                    event.target
-                );
-
-            if (!cardLink)
-            {
-                return;
-            }
-
-            const nextCardLink =
-                getSeriesCardLinkFromEventTarget(
-                    event.relatedTarget
-                );
-
-            if (nextCardLink === cardLink)
-            {
-                return;
-            }
-
-            cancelSeriesCardPrefetchHover(
-                cardLink
-            );
-        }
-    );
-
-    /*
-    |--------------------------------------------------------------
-    | Navigation clavier (focus)
-    |--------------------------------------------------------------
-    */
-
-    document.addEventListener(
-        'focusin',
-        (event) =>
-        {
-            const cardLink =
-                getSeriesCardLinkFromEventTarget(
-                    event.target
-                );
-
-            if (!cardLink)
-            {
-                return;
-            }
-
-            prefetchSeriesPage(
-                cardLink.href
-            );
-
-            const image =
-                cardLink.querySelector(
-                    '.card-image-portrait'
-                );
-
-            if (image)
-            {
-                prefetchSeriesImage(
-                    image.src
-                );
-            }
-        }
-    );
+        const image = cardLink.querySelector('.card-image-portrait');
+        if (image) prefetchSeriesImage(image.src);
+    });
 }

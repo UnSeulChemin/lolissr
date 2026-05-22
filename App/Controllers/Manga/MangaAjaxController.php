@@ -14,6 +14,9 @@ use Framework\Exceptions\NotFoundException;
 use Framework\Exceptions\ValidationException;
 use Framework\Http\Request;
 
+/**
+ * Controller pour toutes les actions AJAX liées aux mangas.
+ */
 final class MangaAjaxController extends Controller
 {
     private const AJAX_PATH = 'manga/ajax';
@@ -27,7 +30,9 @@ final class MangaAjaxController extends Controller
     }
 
     /**
-     * Vérifie que la requête est bien AJAX ou test.
+     * Vérifie que la requête est AJAX ou en test.
+     *
+     * @throws BaseHttpException
      */
     private function ensureAjax(): void
     {
@@ -42,7 +47,7 @@ final class MangaAjaxController extends Controller
     }
 
     /**
-     * Retourne l'URL canonique pour redirection si nécessaire.
+     * Génère l'URL de redirection canonique pour les opérations AJAX.
      */
     private function canonicalRedirect(string $action, string $slug, int $numero): string
     {
@@ -57,7 +62,10 @@ final class MangaAjaxController extends Controller
     }
 
     /**
-     * Récupère le manga ou lance une exception.
+     * Récupère un manga ou lève une exception si non trouvé ou URL non canonique.
+     *
+     * @throws NotFoundException
+     * @throws BaseHttpException
      */
     private function resolveMangaOrFail(string $action, string $slug, int $numero): object
     {
@@ -80,12 +88,16 @@ final class MangaAjaxController extends Controller
         return $data;
     }
 
-    public function seriesPage(string $page = '1'): never
+    /**
+     * Retourne une page de séries en HTML partiel (AJAX).
+     *
+     * @throws NotFoundException
+     */
+    public function seriesPage(string $page = '1'): void
     {
         $this->ensureAjax();
 
         $data = $this->mangaReadService->series($page);
-
         if ($data === null) {
             throw new NotFoundException('Page introuvable');
         }
@@ -98,6 +110,9 @@ final class MangaAjaxController extends Controller
         ]);
     }
 
+    /**
+     * Retourne les résultats de recherche au format JSON.
+     */
     public function search(string $query = ''): never
     {
         $this->ensureAjax();
@@ -110,10 +125,14 @@ final class MangaAjaxController extends Controller
         ]);
     }
 
+    /**
+     * Met à jour la note d'un manga via AJAX.
+     *
+     * @throws ValidationException
+     */
     public function updateNote(MangaUpdateNoteRequest $request, string $slug, int $numero): never
     {
         $this->ensureAjax();
-
         $data = $this->resolveMangaOrFail('update-note', $slug, $numero);
 
         if ($request->fails()) {
@@ -121,14 +140,15 @@ final class MangaAjaxController extends Controller
         }
 
         $result = $this->mangaWriteService->updateNote($data->canonicalSlug, $numero, $request->dto());
-
         $this->json($result->toArray(), $result->status);
     }
 
+    /**
+     * Met à jour le statut "lu" d'un manga via AJAX.
+     */
     public function updateReadStatus(string $slug, int $numero): never
     {
         $this->ensureAjax();
-
         $data = $this->resolveMangaOrFail('update-read-status', $slug, $numero);
 
         $result = $this->mangaWriteService->updateReadStatus(
@@ -140,14 +160,15 @@ final class MangaAjaxController extends Controller
         $this->json($result->toArray(), $result->status);
     }
 
+    /**
+     * Supprime un manga via AJAX.
+     */
     public function delete(string $slug, int $numero): never
     {
         $this->ensureAjax();
-
         $data = $this->resolveMangaOrFail('delete', $slug, $numero);
 
         $result = $this->mangaWriteService->delete($data->canonicalSlug, $numero);
-
         $this->json($result->toArray(), $result->status);
     }
 }

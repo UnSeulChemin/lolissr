@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace Framework\Http\Middleware;
@@ -10,18 +9,18 @@ use Framework\Http\Request;
 
 final class AjaxOnlyMiddleware implements MiddlewareInterface
 {
-    public function handle(
-        Request $request,
-    ): void {
+    public function handle(Request $request): void
+    {
         if ($request->isAjax()) {
             return;
         }
 
+        // Lance l’exception JSON compatible
         throw new JsonResponseException(
-            JsonResponse::error(
-                'Requête AJAX requise',
-                400,
-            ),
+            new JsonResponse([
+                'success' => false,
+                'message' => 'Requête AJAX requise'
+            ], 400)
         );
     }
 }
