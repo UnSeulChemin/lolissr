@@ -6,14 +6,14 @@ namespace Framework\Exceptions;
 
 use Exception;
 
-class HttpException extends Exception
+class BaseHttpException extends Exception
 {
     /**
      * @param array<string, mixed> $data
      * @param array<string, string> $headers
      */
     public function __construct(
-        string $message = 'Erreur HTTP',
+        string $message = 'HTTP Error',
         private readonly int $statusCode = 500,
         private readonly array $data = [],
         private readonly array $headers = [],

@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Controllers\Manga;
 
 use App\Controllers\Controller;
-use App\DTO\Common\ServiceResult;
 use App\Http\Requests\Manga\MangaUpdateNoteRequest;
 use App\Services\Manga\MangaReadService;
 use App\Services\Manga\MangaWriteService;
 use Framework\Application\App;
+use Framework\Exceptions\BaseHttpException;
+use Framework\Exceptions\NotFoundException;
+use Framework\Exceptions\ValidationException;
 use Framework\Http\Request;
 
 final class MangaAjaxController extends Controller
@@ -26,230 +28,125 @@ final class MangaAjaxController extends Controller
 
     private function ensureAjax(): void
     {
-        if ($this->isAjax()) {
+        if ($this->isAjax() || App::isTesting()) {
             return;
         }
 
-        if (App::isTesting()) {
-            return;
-        }
-
-        $this->error(
-            'Requête AJAX requise',
-            400,
+        throw new BaseHttpException(
+            message: 'Requête AJAX requise',
+            statusCode: 400
         );
     }
 
-    private function error(
-        string $message,
-        int $status = 400,
-        array $data = [],
-    ): never {
-        $this->json(
-            ServiceResult::error(
-                message: $message,
-                data: $data,
-                status: $status,
-            )->toArray(),
-            $status,
-        );
-    }
-
-    /**
-     * @param array<string, mixed> $errors
-     */
-    private function validationError(
-        array $errors,
-    ): never {
-        $this->error(
-            'Formulaire invalide',
-            422,
-            [
-                'errors' => $errors,
-            ],
-        );
-    }
-
-    private function canonicalRedirect(
-        string $action,
-        string $slug,
-        int $numero,
-    ): string {
+    private function canonicalRedirect(string $action, string $slug, int $numero): string
+    {
         return sprintf(
-            '%s/%s/%s/%d',
-            $this->basePath,
+            '%s/%s/%s/%s/%d',
+            $this->baseUri,
             self::AJAX_PATH,
             $action,
             rawurlencode($slug),
-            $numero,
+            $numero
         );
     }
 
-    /**
-     * @return object{
-     *     manga: object,
-     *     canonicalSlug: string
-     * }
-     */
-    private function resolveMangaOrFail(
-        string $action,
-        string $slug,
-        int $numero,
-    ): object {
-        $data = $this->mangaReadService
-            ->one(
-                $slug,
-                $numero,
-            );
+    private function resolveMangaOrFail(string $action, string $slug, int $numero): object
+    {
+        $data = $this->mangaReadService->one($slug, $numero);
 
         if ($data === null) {
-            $this->error(
-                'Manga introuvable',
-                404,
-            );
+            throw new NotFoundException('Manga introuvable');
         }
 
         if ($slug !== $data->canonicalSlug) {
-            $this->error(
-                'URL non canonique',
-                409,
-                [
+            throw new BaseHttpException(
+                message: 'URL non canonique',
+                statusCode: 409,
+                data: [
                     'redirect' => $this->canonicalRedirect(
                         $action,
                         $data->canonicalSlug,
-                        $numero,
+                        $numero
                     ),
-                ],
+                ]
             );
         }
 
         return $data;
     }
 
-    public function seriesPage(
-        string $page = '1',
-    ): never {
+    public function seriesPage(string $page = '1'): never
+    {
         $this->ensureAjax();
 
-        $data = $this->mangaReadService
-            ->series($page);
+        $data = $this->mangaReadService->series($page);
 
         if ($data === null) {
-            $this->error(
-                'Page introuvable',
-                404,
-            );
+            throw new NotFoundException('Page introuvable');
         }
 
-        $this->renderPartial(
-            'manga/partials/series_ajax',
-            [
-                'mangas' => $data->mangas,
-                'compteur' => $data->compteur,
-                'currentPage' => $data->currentPage,
-                'slugFilter' => $data->slugFilter,
-            ],
-        );
+        $this->renderPartial('manga/partials/series_ajax', [
+            'mangas' => $data->mangas,
+            'compteur' => $data->compteur,
+            'currentPage' => $data->currentPage,
+            'slugFilter' => $data->slugFilter,
+        ]);
     }
 
-    public function search(
-        string $query = '',
-    ): never {
+    public function search(string $query = ''): never
+    {
         $this->ensureAjax();
 
-        $results = $this->mangaReadService
-            ->searchResults($query);
+        $results = $this->mangaReadService->searchResults($query);
 
-        $this->json(
-            ServiceResult::success(
-                data: [
-                    'results' => $results,
-                ],
-            )->toArray(),
-        );
+        $this->json([
+            'success' => true,
+            'data' => ['results' => $results],
+        ]);
     }
 
-    public function updateNote(
-        MangaUpdateNoteRequest $request,
-        string $slug,
-        int $numero,
-    ): never {
+    public function updateNote(MangaUpdateNoteRequest $request, string $slug, int $numero): never
+    {
         $this->ensureAjax();
 
-        $data = $this->resolveMangaOrFail(
-            'update-note',
-            $slug,
-            $numero,
-        );
+        $data = $this->resolveMangaOrFail('update-note', $slug, $numero);
 
         if ($request->fails()) {
-            $this->validationError(
-                $request->errors(),
-            );
+            throw new ValidationException($request->errors());
         }
 
-        $result = $this->mangaWriteService
-            ->updateNote(
-                $data->canonicalSlug,
-                $numero,
-                $request->dto(),
-            );
-
-        $this->json(
-            $result->toArray(),
-            $result->status,
+        $result = $this->mangaWriteService->updateNote(
+            $data->canonicalSlug,
+            $numero,
+            $request->dto()
         );
+
+        $this->json($result->toArray(), $result->status);
     }
 
-    public function updateReadStatus(
-        string $slug,
-        int $numero,
-    ): never {
+    public function updateReadStatus(string $slug, int $numero): never
+    {
         $this->ensureAjax();
 
-        $data = $this->resolveMangaOrFail(
-            'update-read-status',
-            $slug,
+        $data = $this->resolveMangaOrFail('update-read-status', $slug, $numero);
+
+        $result = $this->mangaWriteService->updateReadStatus(
+            $data->canonicalSlug,
             $numero,
+            $this->request->integer('readStatus', 0)
         );
 
-        $result = $this->mangaWriteService
-            ->updateReadStatus(
-                $data->canonicalSlug,
-                $numero,
-                $this->request->integer(
-                    'readStatus',
-                    0,
-                ),
-            );
-
-        $this->json(
-            $result->toArray(),
-            $result->status,
-        );
+        $this->json($result->toArray(), $result->status);
     }
 
-    public function delete(
-        string $slug,
-        int $numero,
-    ): never {
+    public function delete(string $slug, int $numero): never
+    {
         $this->ensureAjax();
 
-        $data = $this->resolveMangaOrFail(
-            'delete',
-            $slug,
-            $numero,
-        );
+        $data = $this->resolveMangaOrFail('delete', $slug, $numero);
 
-        $result = $this->mangaWriteService
-            ->delete(
-                $data->canonicalSlug,
-                $numero,
-            );
+        $result = $this->mangaWriteService->delete($data->canonicalSlug, $numero);
 
-        $this->json(
-            $result->toArray(),
-            $result->status,
-        );
+        $this->json($result->toArray(), $result->status);
     }
 }

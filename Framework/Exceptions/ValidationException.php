@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Framework\Exceptions;
 
-final class ValidationException extends HttpException
+final class ValidationException
+    extends BaseHttpException
 {
     /**
      * @param array<string, string> $errors

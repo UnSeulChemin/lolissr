@@ -354,6 +354,8 @@ abstract class Controller
     }
 
     /**
+     * SUCCESS JSON ONLY
+     *
      * @param array<string, mixed> $data
      */
     protected function json(
@@ -364,18 +366,5 @@ abstract class Controller
             $data,
             $status,
         );
-    }
-
-    protected function ajaxOrHtml(
-        callable $ajax,
-        callable $html,
-    ): void {
-        if ($this->isAjax()) {
-            $ajax();
-
-            return;
-        }
-
-        $html();
     }
 }
