@@ -6,11 +6,17 @@ namespace Framework\Exceptions;
 
 use Exception;
 
-final class HttpException extends Exception
+class HttpException extends Exception
 {
+    /**
+     * @param array<string, mixed> $data
+     * @param array<string, string> $headers
+     */
     public function __construct(
         string $message = 'Erreur HTTP',
         private readonly int $statusCode = 500,
+        private readonly array $data = [],
+        private readonly array $headers = [],
     ) {
         parent::__construct(
             $message,
@@ -21,5 +27,21 @@ final class HttpException extends Exception
     public function getStatusCode(): int
     {
         return $this->statusCode;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function getData(): array
+    {
+        return $this->data;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function getHeaders(): array
+    {
+        return $this->headers;
     }
 }

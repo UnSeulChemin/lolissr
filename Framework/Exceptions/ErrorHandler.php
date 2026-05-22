@@ -77,12 +77,8 @@ final class ErrorHandler
             if (
                 $exception instanceof HttpException
             ) {
-                Logger::warning(
-                    'HTTP Exception',
-                    [
-                        'status' => $exception->getStatusCode(),
-                        'message' => $exception->getMessage(),
-                    ],
+                self::logHttpException(
+                    $exception,
                 );
 
                 self::renderHttpException(
@@ -170,6 +166,19 @@ final class ErrorHandler
         self::render500();
     }
 
+    private static function logHttpException(
+        HttpException $exception,
+    ): void {
+        Logger::warning(
+            'HTTP Exception',
+            [
+                'status' => $exception->getStatusCode(),
+                'message' => $exception->getMessage(),
+                'data' => $exception->getData(),
+            ],
+        );
+    }
+
     private static function controller(): ErrorController
     {
         return new ErrorController(
@@ -180,9 +189,27 @@ final class ErrorHandler
     private static function renderHttpException(
         HttpException $exception,
     ): never {
+        $request = Request::capture();
+
+        if ($request->isAjax()) {
+            json([
+                'success' => false,
+                'message' => $exception->getMessage(),
+                'data' => $exception->getData(),
+            ], $exception->getStatusCode());
+        }
+
         $controller = self::controller();
 
         match ($exception->getStatusCode()) {
+
+            401 => $controller->serverError(
+                $exception->getMessage(),
+            ),
+
+            403 => $controller->serverError(
+                $exception->getMessage(),
+            ),
 
             404 => $controller->notFound(
                 $exception->getMessage(),
@@ -193,6 +220,10 @@ final class ErrorHandler
             ),
 
             419 => $controller->renderCsrfExpiredPage(),
+
+            422 => $controller->serverError(
+                $exception->getMessage(),
+            ),
 
             default => $controller->serverError(
                 $exception->getMessage(),
@@ -217,7 +248,7 @@ final class ErrorHandler
 
         echo htmlspecialchars(
             sprintf(
-                "%s\n\n%s in %s on line %d",
+                "%s\n\n%s\n\nFile: %s\nLine: %d",
                 $exception::class,
                 $exception->getMessage(),
                 $exception->getFile(),
@@ -256,7 +287,7 @@ final class ErrorHandler
 
         echo htmlspecialchars(
             sprintf(
-                "Fatal error\n\n%s in %s on line %d",
+                "Fatal error\n\n%s\n\nFile: %s\nLine: %d",
                 $error['message'],
                 $error['file'],
                 $error['line'],

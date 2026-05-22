@@ -7,11 +7,11 @@ namespace Framework\Exceptions;
 final class CsrfException extends HttpException
 {
     public function __construct(
-        string $message = 'Token CSRF invalide',
+        string $message = 'Session expirée ou token CSRF invalide',
     ) {
         parent::__construct(
-            $message,
-            419,
+            message: $message,
+            statusCode: 419,
         );
     }
 }

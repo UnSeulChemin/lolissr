@@ -14,8 +14,11 @@ final class ValidationException extends HttpException
         string $message = 'Erreur de validation',
     ) {
         parent::__construct(
-            $message,
-            422,
+            message: $message,
+            statusCode: 422,
+            data: [
+                'errors' => $errors,
+            ],
         );
     }
 
