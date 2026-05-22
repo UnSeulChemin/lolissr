@@ -119,10 +119,12 @@ if (!function_exists('app_path')) {
     ): string {
         return base_path(
             'App'
-            . ($path !== ''
-                ? DIRECTORY_SEPARATOR
-                    . ltrim($path, '/\\')
-                : ''),
+            . (
+                $path !== ''
+                    ? DIRECTORY_SEPARATOR
+                        . ltrim($path, '/\\')
+                    : ''
+            ),
         );
     }
 }
@@ -133,37 +135,13 @@ if (!function_exists('view_path')) {
     ): string {
         return app_path(
             'Views'
-            . ($path !== ''
-                ? DIRECTORY_SEPARATOR
-                    . ltrim($path, '/\\')
-                : ''),
+            . (
+                $path !== ''
+                    ? DIRECTORY_SEPARATOR
+                        . ltrim($path, '/\\')
+                    : ''
+            ),
         );
-    }
-}
-
-/*
-|--------------------------------------------------------------------------
-| abort()
-|--------------------------------------------------------------------------
-*/
-
-if (!function_exists('abort')) {
-    function abort(
-        int $code = 404,
-    ): never {
-        /** @var ErrorController $controller */
-        $controller = app(
-            ErrorController::class,
-        );
-
-        match ($code) {
-            404 => $controller->notFound(),
-            405 => $controller->methodNotAllowed(),
-            419 => $controller->renderCsrfExpiredPage(),
-            default => $controller->serverError(),
-        };
-
-        exit;
     }
 }
 
@@ -262,17 +240,22 @@ if (!function_exists('view')) {
         );
 
         if (!is_file($viewPath)) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 'Vue introuvable : '
                 . $viewFile,
             );
         }
 
         if (!is_file($layoutPath)) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 'Layout introuvable : layouts/base',
             );
         }
+
+        extract(
+            $view,
+            EXTR_SKIP,
+        );
 
         ob_start();
 
@@ -426,48 +409,5 @@ if (!function_exists('csrf_meta_tag')) {
             '<meta name="csrf-token" content="%s">',
             e(csrf_token()),
         );
-    }
-}
-
-if (!function_exists('csrf_verify')) {
-    function csrf_verify(): void
-    {
-        /** @var Request $request */
-        $request = app(Request::class);
-
-        if (!$request->isPost()) {
-            return;
-        }
-
-        $token = $request->post(
-            'csrf_token',
-        );
-
-        $sessionToken = Session::get(
-            'csrf_token',
-        );
-
-        $validToken =
-            is_string($token)
-            && $token !== ''
-            && is_string($sessionToken)
-            && $sessionToken !== ''
-            && hash_equals(
-                $sessionToken,
-                $token,
-            );
-
-        if ($validToken) {
-            return;
-        }
-
-        if ($request->isAjax()) {
-            json([
-                'success' => false,
-                'message' => 'Session expirée, recharge la page.',
-            ], 419);
-        }
-
-        abort(419);
     }
 }
