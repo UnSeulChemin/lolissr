@@ -21,11 +21,14 @@ final class MangaAjaxController extends Controller
     public function __construct(
         protected MangaReadService $mangaReadService,
         protected MangaWriteService $mangaWriteService,
-        Request $request,
+        Request $request
     ) {
         parent::__construct($request);
     }
 
+    /**
+     * Vérifie que la requête est bien AJAX ou test.
+     */
     private function ensureAjax(): void
     {
         if ($this->isAjax() || App::isTesting()) {
@@ -38,6 +41,9 @@ final class MangaAjaxController extends Controller
         );
     }
 
+    /**
+     * Retourne l'URL canonique pour redirection si nécessaire.
+     */
     private function canonicalRedirect(string $action, string $slug, int $numero): string
     {
         return sprintf(
@@ -50,6 +56,9 @@ final class MangaAjaxController extends Controller
         );
     }
 
+    /**
+     * Récupère le manga ou lance une exception.
+     */
     private function resolveMangaOrFail(string $action, string $slug, int $numero): object
     {
         $data = $this->mangaReadService->one($slug, $numero);
@@ -63,11 +72,7 @@ final class MangaAjaxController extends Controller
                 message: 'URL non canonique',
                 statusCode: 409,
                 data: [
-                    'redirect' => $this->canonicalRedirect(
-                        $action,
-                        $data->canonicalSlug,
-                        $numero
-                    ),
+                    'redirect' => $this->canonicalRedirect($action, $data->canonicalSlug, $numero)
                 ]
             );
         }
@@ -101,7 +106,7 @@ final class MangaAjaxController extends Controller
 
         $this->json([
             'success' => true,
-            'data' => ['results' => $results],
+            'data' => ['results' => $results]
         ]);
     }
 
@@ -115,11 +120,7 @@ final class MangaAjaxController extends Controller
             throw new ValidationException($request->errors());
         }
 
-        $result = $this->mangaWriteService->updateNote(
-            $data->canonicalSlug,
-            $numero,
-            $request->dto()
-        );
+        $result = $this->mangaWriteService->updateNote($data->canonicalSlug, $numero, $request->dto());
 
         $this->json($result->toArray(), $result->status);
     }

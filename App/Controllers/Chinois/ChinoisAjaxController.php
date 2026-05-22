@@ -12,11 +12,9 @@ use Framework\Http\Request;
 
 final class ChinoisAjaxController extends Controller
 {
-    private const AJAX_PATH = 'chinois/ajax';
-
     public function __construct(
         private readonly ChinoisGrammaireRepository $repository,
-        Request $request,
+        Request $request
     ) {
         parent::__construct($request);
     }
@@ -39,16 +37,14 @@ final class ChinoisAjaxController extends Controller
 
         $maitrise = $this->repository->toggleMaitrise($id);
 
-        // Retourne exactement ce que le JS attend
+        // Retourne directement { success, maitrise } pour correspondre au JS
         $this->json([
             'success' => true,
             'maitrise' => $maitrise,
+            'message' => 'Statut mis à jour'
         ]);
     }
 
-    /**
-     * Vérifie que la requête est bien AJAX ou test.
-     */
     private function ensureAjax(): void
     {
         if ($this->isAjax() || \Framework\Application\App::isTesting()) {
@@ -57,7 +53,7 @@ final class ChinoisAjaxController extends Controller
 
         throw new BaseHttpException(
             message: 'Requête AJAX requise',
-            statusCode: 400,
+            statusCode: 400
         );
     }
 }
