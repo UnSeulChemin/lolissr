@@ -101,7 +101,7 @@ $baseUri = rtrim(
                     . $numero;
 
                 $thumbnailPath = $baseUri
-                    . 'public/images/mangas/thumbnail/'
+                    . 'images/mangas/thumbnail/'
                     . $thumbnail
                     . '.'
                     . $extension;

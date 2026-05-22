@@ -168,31 +168,15 @@ final class MangaSearchRepository extends Model
         );
     }
 
-    public function countFirstTomesPaginate(
-        int $eachPerPage,
-    ): int {
-        $eachPerPage = max(
-            1,
-            $eachPerPage,
-        );
-
+    public function countFirstTomes(): int
+    {
         $result = $this->fetchOne(
             "SELECT COUNT(*) AS total
             FROM {$this->getTable()}
-            WHERE numero = 1",
+            WHERE numero = 1"
         );
 
-        $total = (int) (
-            $result->total
-            ?? 0
-        );
-
-        return max(
-            1,
-            (int) ceil(
-                $total / $eachPerPage,
-            ),
-        );
+        return (int) ($result->total ?? 0);
     }
 
     /**

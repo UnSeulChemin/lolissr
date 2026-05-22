@@ -49,11 +49,11 @@ if (is_string($success) && $success !== '') {
 
     <link
         rel="shortcut icon"
-        href="<?= e($baseUri) ?>public/images/favicon/favicon.png">
+        href="<?= e($baseUri) ?>images/favicon/favicon.png">
 
     <link
         rel="stylesheet"
-        href="<?= e($baseUri) ?>public/css/app.css">
+        href="<?= e($baseUri) ?>css/app.css">
 
 </head>
 
@@ -92,8 +92,8 @@ if (is_string($success) && $success !== '') {
     <?php endif; ?>
 
     <script
-        type="module"
-        src="<?= e($baseUri) ?>public/js/core/app.js"></script>
+    type="module"
+    src="<?= e($baseUri) ?>js/core/app.js"></script>
 
 </body>
 

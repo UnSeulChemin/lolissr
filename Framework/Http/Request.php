@@ -8,33 +8,21 @@ use Framework\Application\App;
 
 final class Request
 {
-    /**
-     * @param array<string, mixed> $get
-     * @param array<string, mixed> $post
-     * @param array<string, mixed> $files
-     * @param array<string, mixed> $server
-     */
+    private array $get;
+    private array $post;
+    private array $files;
+    private array $server;
+
     public function __construct(
-        private readonly array $get = [],
-        private readonly array $post = [],
-        private readonly array $files = [],
-        private readonly array $server = [],
+        array $get = [],
+        array $post = [],
+        array $files = [],
+        array $server = [],
     ) {
-    }
-
-    /**
-     * Retourne une valeur des headers HTTP.
-     */
-    public function header(
-        string $key,
-        mixed $default = null,
-    ): mixed {
-        $serverKey = 'HTTP_' . strtoupper(
-            str_replace('-', '_', $key),
-        );
-
-        return $this->server[$serverKey]
-            ?? $default;
+        $this->get = $get;
+        $this->post = $post;
+        $this->files = $files;
+        $this->server = $server;
     }
 
     public static function capture(): self
@@ -47,244 +35,11 @@ final class Request
         );
     }
 
-    /**
-     * @return array<string, mixed>
-     */
-    public function all(): array
-    {
-        return [
-            ...$this->get,
-            ...$this->post,
-        ];
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    public function postAll(): array
-    {
-        return $this->post;
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    public function files(): array
-    {
-        return $this->files;
-    }
-
-    public function input(
-        string $key,
-        mixed $default = null,
-    ): mixed {
-        return $this->post[$key]
-            ?? $this->get[$key]
-            ?? $default;
-    }
-
-    public function query(
-        string $key,
-        mixed $default = null,
-    ): mixed {
-        return $this->get[$key]
-            ?? $default;
-    }
-
-    public function post(
-        string $key,
-        mixed $default = null,
-    ): mixed {
-        return $this->post[$key]
-            ?? $default;
-    }
-
-    public function string(
-        string $key,
-        string $default = '',
-    ): string {
-        return trim(
-            (string) $this->input(
-                $key,
-                $default,
-            ),
-        );
-    }
-
-    public function integer(
-        string $key,
-        int $default = 0,
-    ): int {
-        $value = filter_var(
-            $this->input($key),
-            FILTER_VALIDATE_INT,
-        );
-
-        return $value !== false
-            ? $value
-            : $default;
-    }
-
-    public function boolean(
-        string $key,
-        bool $default = false,
-    ): bool {
-        $value = filter_var(
-            $this->input(
-                $key,
-                $default,
-            ),
-            FILTER_VALIDATE_BOOLEAN,
-            FILTER_NULL_ON_FAILURE,
-        );
-
-        return $value ?? $default;
-    }
-
-    public function has(string $key): bool
-    {
-        return array_key_exists(
-            $key,
-            $this->post,
-        ) || array_key_exists(
-            $key,
-            $this->get,
-        );
-    }
-
-    public function filled(string $key): bool
-    {
-        return $this->string($key) !== '';
-    }
-
-    /**
-     * @param list<string> $keys
-     * @return array<string, mixed>
-     */
-    public function only(array $keys): array
-    {
-        $data = [];
-
-        foreach ($keys as $key) {
-            $data[$key] = $this->input($key);
-        }
-
-        return $data;
-    }
-
-    /**
-     * @param list<string> $keys
-     * @return array<string, mixed>
-     */
-    public function except(array $keys): array
-    {
-        return array_diff_key(
-            $this->all(),
-            array_flip($keys),
-        );
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Files
-    |--------------------------------------------------------------------------
-    */
-
-    /**
-     * @return array<string, mixed>|null
-     */
-    public function file(string $key): ?array
-    {
-        $file = $this->files[$key]
-            ?? null;
-
-        return is_array($file)
-            ? $file
-            : null;
-    }
-
-    /**
-     * Vérifie si un fichier existe.
-     */
-    public function hasFile(string $key): bool
-    {
-        return $this->file($key) !== null
-            && $this->fileError($key)
-                !== UPLOAD_ERR_NO_FILE;
-    }
-
-    /**
-     * Vérifie si un fichier uploadé est valide.
-     */
-    public function hasValidFile(string $key): bool
-    {
-        return $this->fileError($key)
-            === UPLOAD_ERR_OK;
-    }
-
-    /**
-     * Retourne le nom original du fichier.
-     */
-    public function fileName(string $key): string
-    {
-        $file = $this->file($key);
-
-        return isset($file['name'])
-            ? (string) $file['name']
-            : '';
-    }
-
-    /**
-     * Retourne le chemin temporaire du fichier.
-     */
-    public function fileTmpPath(string $key): string
-    {
-        $file = $this->file($key);
-
-        return isset($file['tmp_name'])
-            ? (string) $file['tmp_name']
-            : '';
-    }
-
-    /**
-     * Retourne le code d'erreur du fichier.
-     */
-    public function fileError(string $key): int
-    {
-        $file = $this->file($key);
-
-        return isset($file['error'])
-            ? (int) $file['error']
-            : UPLOAD_ERR_NO_FILE;
-    }
-
-    /**
-     * Retourne la taille du fichier.
-     */
-    public function fileSize(string $key): int
-    {
-        $file = $this->file($key);
-
-        return isset($file['size'])
-            ? (int) $file['size']
-            : 0;
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | HTTP
-    |--------------------------------------------------------------------------
-    */
-
     public function method(): string
     {
         return strtoupper(
-            trim(
-                (string) (
-                    $this->server['REQUEST_METHOD']
-                    ?? 'GET'
-                ),
-            ),
+            $this->server['REQUEST_METHOD']
+            ?? 'GET',
         );
     }
 
@@ -296,6 +51,14 @@ final class Request
     public function isPost(): bool
     {
         return $this->method() === 'POST';
+    }
+
+    public function isAjax(): bool
+    {
+        return strtolower(
+            $this->header('X-Requested-With')
+            ?? '',
+        ) === 'xmlhttprequest';
     }
 
     public function uri(): string
@@ -311,14 +74,7 @@ final class Request
         $path = parse_url(
             $this->uri(),
             PHP_URL_PATH,
-        );
-
-        if (
-            !is_string($path)
-            || $path === ''
-        ) {
-            return '/';
-        }
+        ) ?: '/';
 
         $baseUri = rtrim(
             App::baseUri(),
@@ -328,10 +84,7 @@ final class Request
         if (
             $baseUri !== ''
             && $baseUri !== '/'
-            && str_starts_with(
-                $path,
-                $baseUri,
-            )
+            && str_starts_with($path, $baseUri)
         ) {
             $path = substr(
                 $path,
@@ -346,29 +99,46 @@ final class Request
             : '/' . $path;
     }
 
-    public function server(
+    public function header(string $key): ?string
+    {
+        $serverKey = 'HTTP_' . strtoupper(
+            str_replace(
+                '-',
+                '_',
+                $key,
+            ),
+        );
+
+        return $this->server[$serverKey]
+            ?? null;
+    }
+
+    public function input(
         string $key,
         mixed $default = null,
     ): mixed {
-        return $this->server[$key]
+        return $this->post[$key]
+            ?? $this->get[$key]
             ?? $default;
     }
 
-    public function userAgent(): string
+    public function all(): array
     {
-        return (string) $this->server(
-            'HTTP_USER_AGENT',
-            '',
+        return array_merge(
+            $this->get,
+            $this->post,
         );
     }
 
-    public function isAjax(): bool
+    public function files(): array
     {
-        return strtolower(
-            (string) $this->server(
-                'HTTP_X_REQUESTED_WITH',
-                '',
-            ),
-        ) === 'xmlhttprequest';
+        return $this->files;
+    }
+
+    public function file(
+        string $key,
+    ): mixed {
+        return $this->files[$key]
+            ?? null;
     }
 }

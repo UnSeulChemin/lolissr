@@ -404,11 +404,22 @@
     width: 19px;
     height: 19px;
 
+    position: relative;
+    bottom: -5px;
+
     fill: none;
     stroke: currentColor;
 
     stroke-width: 2.4;
     stroke-linejoin: round;
+}
+
+.collection-pagination-wrapper
+{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
 }
 
 .collection-read-badge.active

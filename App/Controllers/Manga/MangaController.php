@@ -5,14 +5,13 @@ declare(strict_types=1);
 namespace App\Controllers\Manga;
 
 use App\Controllers\Controller;
-use App\DTO\Common\ServiceResult;
 use App\Http\Requests\Manga\MangaCreateRequest;
 use App\Http\Requests\Manga\MangaUpdateRequest;
 use App\Services\Manga\MangaReadService;
 use App\Services\Manga\MangaWriteService;
-use Framework\Exceptions\BaseHttpException;
 use Framework\Exceptions\NotFoundException;
 use Framework\Exceptions\ValidationException;
+use Framework\Application\App; // ← Important
 use Framework\Http\Request;
 
 final class MangaController extends Controller
@@ -80,20 +79,25 @@ final class MangaController extends Controller
         $this->render('manga/lien');
     }
 
-    public function series(string $page = '1'): never
+    /**
+     * Affiche la liste des séries avec pagination.
+     */
+    public function series(int|string $page = 1): never
     {
         $data = $this->mangaReadService->series($page);
-
-        if ($data === null) {
-            throw new NotFoundException('Page introuvable');
-        }
+        if ($data === null) throw new NotFoundException('Page introuvable');
 
         $this->title = 'Manga | Series';
-        if ($data->currentPage > 1) {
-            $this->title .= sprintf(' - Page %d', $data->currentPage);
-        }
+        if ($data->currentPage > 1) $this->title .= ' - Page ' . $data->currentPage;
 
-        $this->renderSeriesPage($data);
+        $this->render('manga/series', [
+            'mangas'      => $data->mangas,
+            'currentPage' => $data->currentPage,
+            'compteur'    => $data->compteur,
+            'totalSeries' => $data->totalSeries,
+            'perPage'     => $data->perPage,
+            'slugFilter'  => $data->slugFilter
+        ]);
     }
 
     public function search(string $query = ''): never
@@ -109,21 +113,25 @@ final class MangaController extends Controller
         ]);
     }
 
+    /**
+     * Affiche une série spécifique selon le slug.
+     * La pagination est remplacée par un compteur de 1 seule page.
+     */
     public function showSeries(string $slug): never
     {
-        $requestedSlug = trim($slug);
-        $data = $this->mangaReadService->showSeries($requestedSlug);
-
-        if ($data === null || !isset($data->mangas[0])) {
-            throw new NotFoundException('Manga introuvable');
-        }
-
-        if (!empty($data->slugFilter) && $requestedSlug !== $data->slugFilter) {
-            $this->redirectToCanonicalUrl($requestedSlug, $data->slugFilter, self::SERIES_PATH);
-        }
+        $data = $this->mangaReadService->showSeries($slug);
+        if ($data === null || empty($data->mangas)) throw new NotFoundException('Manga introuvable');
 
         $this->title = 'Manga | ' . $data->mangas[0]->livre;
-        $this->renderSeriesPage($data);
+
+        $this->render('manga/series', [
+            'mangas'      => $data->mangas,
+            'currentPage' => 1,
+            'compteur'    => 1,
+            'totalSeries' => $data->totalSeries,
+            'perPage'     => $data->perPage,
+            'slugFilter'  => $data->slugFilter
+        ]);
     }
 
     public function show(string $slug, int $numero): never

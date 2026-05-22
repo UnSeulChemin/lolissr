@@ -1,110 +1,68 @@
+// ==================================================
+// Main App Initialization
+// ==================================================
 import { showToast } from './toast.js';
 
+// Pages
+import { initAjouterPage } from '../manga/pages/ajouter.js';
+import { initModifierPage } from '../manga/pages/modifier.js';
+
+// Manga Actions AJAX
 import { initLoadSeriesPage } from '../manga/actions/load-series-page.js';
 import { initUpdateNote } from '../manga/actions/update-note.js';
 import { initDeleteManga } from '../manga/actions/delete-manga.js';
 import { initUpdateReadStatus } from '../manga/actions/update-read-status.js';
 import { initSearchManga } from '../manga/actions/search-manga.js';
 
+// Prefetch & Navigation
 import { initPrefetchSeries } from '../manga/navigation/prefetch-series.js';
 import { initPrefetchLinks } from '../manga/navigation/prefetch-links.js';
 import { initSeriesKeyboardNavigation } from '../manga/navigation/series-keyboard-navigation.js';
 import { initBackNavigation } from '../manga/navigation/back-navigation.js';
 
-import { initAjouterPage } from '../manga/pages/ajouter.js';
-import { initModifierPage } from '../manga/pages/modifier.js';
-
+// Chinois Actions
 import { initToggleGrammaireMaitrise } from '../chinois/actions/toggle-grammar-mastery.js';
 
-/*
-|--------------------------------------------------------------------------
-| Toast flash injecté côté PHP
-|--------------------------------------------------------------------------
-*/
-
-function initFlashToast()
-{
-    if (!window.flashToast?.message)
-    {
-        return;
-    }
+// --------------------------------------------------
+// Flash toast injecté depuis PHP
+// --------------------------------------------------
+function initFlashToast() {
+    if (!window.flashToast?.message) return;
 
     showToast(
         window.flashToast.message,
-        window.flashToast.type || 'success'
+        window.flashToast.type || 'success',
     );
 }
 
-/*
-|--------------------------------------------------------------------------
-| Initialisation app
-|--------------------------------------------------------------------------
-*/
+// --------------------------------------------------
+// Initialisation de l'app
+// --------------------------------------------------
+document.addEventListener('DOMContentLoaded', () => {
+    // Pages
+    initAjouterPage();
+    initModifierPage();
 
-document.addEventListener(
-    'DOMContentLoaded',
-    () =>
-    {
-        /*
-        |------------------------------------------------------------------
-        | Pages
-        |------------------------------------------------------------------
-        */
+    // Manga AJAX actions
+    initLoadSeriesPage();
+    initUpdateNote();
+    initDeleteManga();
+    initUpdateReadStatus();
 
-        initAjouterPage();
-        initModifierPage();
+    // Chinois AJAX
+    initToggleGrammaireMaitrise();
 
-        /*
-        |------------------------------------------------------------------
-        | AJAX
-        |------------------------------------------------------------------
-        */
+    // Navigation globale
+    initSeriesKeyboardNavigation();
+    initBackNavigation();
 
-        initLoadSeriesPage();
-        initUpdateNote();
-        initDeleteManga();
-        initUpdateReadStatus();
+    // Prefetch
+    initPrefetchSeries();
+    initPrefetchLinks();
 
-        /*
-        |------------------------------------------------------------------
-        | Chinois AJAX
-        |------------------------------------------------------------------
-        */
+    // Recherche
+    initSearchManga();
 
-        initToggleGrammaireMaitrise();
-
-        /*
-        |------------------------------------------------------------------
-        | Navigation
-        |------------------------------------------------------------------
-        */
-
-        initSeriesKeyboardNavigation();
-        initBackNavigation();
-
-        /*
-        |------------------------------------------------------------------
-        | Prefetch
-        |------------------------------------------------------------------
-        */
-
-        initPrefetchSeries();
-        initPrefetchLinks();
-
-        /*
-        |------------------------------------------------------------------
-        | Recherche
-        |------------------------------------------------------------------
-        */
-
-        initSearchManga();
-
-        /*
-        |------------------------------------------------------------------
-        | Toast
-        |------------------------------------------------------------------
-        */
-
-        initFlashToast();
-    }
-);
+    // Flash toast
+    initFlashToast();
+});

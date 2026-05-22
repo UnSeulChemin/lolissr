@@ -1,396 +1,91 @@
 <?php
-
 declare(strict_types=1);
 
 namespace Framework\Routing;
 
 use Closure;
-use Framework\Container\AppContainer;
-use Framework\Exceptions\MethodNotAllowedException;
-use Framework\Exceptions\NotFoundException;
-use Framework\Http\FormRequest;
-use Framework\Http\Middleware\MiddlewareInterface;
 use Framework\Http\Request;
-use ReflectionMethod;
-use ReflectionNamedType;
+use Framework\Http\Middleware\MiddlewareInterface;
+use Framework\Container\AppContainer;
 use RuntimeException;
 
 final class Router
 {
-    /**
-     * @var list<array{
-     *     method: string,
-     *     uri: string,
-     *     pattern: string,
-     *     action: array<int, string>|string|Closure,
-     *     middlewares: list<class-string>
-     * }>
-     */
-    private array $routes = [];
+    private RouteCollection $collection;
+    private array $groupPrefixes = [];
+    private array $groupMiddlewares = [];
 
-    /**
-     * @param array<int, string>|string|Closure $action
-     * @param list<class-string> $middlewares
-     */
-    public function get(
-        string $uri,
-        array|string|Closure $action,
-        array $middlewares = [],
-    ): void {
-        $this->addRoute(
-            'GET',
-            $uri,
-            $action,
-            $middlewares,
-        );
+    public function __construct(RouteCollection $collection)
+    {
+        $this->collection = $collection;
     }
 
-    /**
-     * @param array<int, string>|string|Closure $action
-     * @param list<class-string> $middlewares
-     */
-    public function post(
-        string $uri,
-        array|string|Closure $action,
-        array $middlewares = [],
-    ): void {
-        $this->addRoute(
-            'POST',
-            $uri,
-            $action,
-            $middlewares,
-        );
+    public function prefix(string $prefix): self
+    {
+        $clone = clone $this;
+        $clone->groupPrefixes[] = trim($prefix, '/');
+        return $clone;
     }
 
-    /**
-     * @param array<int, string>|string|Closure $action
-     * @param list<class-string> $middlewares
-     */
-    private function addRoute(
-        string $method,
-        string $uri,
-        array|string|Closure $action,
-        array $middlewares,
-    ): void {
-        $uri = '/' . trim($uri, '/');
+    public function middleware(array|string $middleware): self
+    {
+        $clone = clone $this;
+        $clone->groupMiddlewares = array_merge($clone->groupMiddlewares, (array)$middleware);
+        return $clone;
+    }
 
-        if ($uri === '//') {
-            $uri = '/';
-        }
+    public function group(Closure $callback): void { $callback($this); }
+    public function get(string $path, array|string|Closure $action, array $middlewares = []): void
+    {
+        $this->addRoute('GET', $path, $action, $middlewares);
+    }
+    public function post(string $path, array|string|Closure $action, array $middlewares = []): void
+    {
+        $this->addRoute('POST', $path, $action, $middlewares);
+    }
 
-        $pattern = preg_replace_callback(
-            '#\{([a-zA-Z0-9_]+)(?::([a-zA-Z]+))?\}#',
-            static function (
-                array $matches,
-            ): string {
-                return match (
-                    $matches[2] ?? 'string'
-                ) {
-                    'int' => '([0-9]+)',
-                    default => '([^/]+)',
-                };
-            },
-            $uri,
-        );
-
-        $this->routes[] = [
-            'method' => strtoupper($method),
-            'uri' => $uri,
-            'pattern' => '#^' . $pattern . '$#',
-            'action' => $action,
-            'middlewares' => $middlewares,
-        ];
+    private function addRoute(string $method, string $path, array|string|Closure $action, array $middlewares): void
+    {
+        $fullPath = '/' . implode('/', array_merge($this->groupPrefixes, [trim($path, '/')]));
+        $fullMiddlewares = array_merge($this->groupMiddlewares, $middlewares);
+        $route = new Route($method, $fullPath, $action, $fullMiddlewares);
+        $this->collection->add($route);
     }
 
     public function dispatch(): void
     {
-        /** @var Request $request */
-        $request = $this->resolve(
-            Request::class,
-        );
-
-        $method = $request->method();
+        $request = AppContainer::get()->get(Request::class);
         $uri = $request->path();
+        $method = $request->method();
 
-        $methodNotAllowed = false;
+        foreach ($this->collection->all() as $route) {
+            if ($route->getMethod() !== $method) continue;
+            if (!preg_match($route->pattern, $uri, $matches)) continue;
 
-        foreach ($this->routes as $route) {
-            if (
-                !preg_match(
-                    $route['pattern'],
-                    $uri,
-                    $matches,
-                )
-            ) {
-                continue;
+            array_shift($matches); // remove full match
+
+            // Run middlewares
+            foreach ($route->getMiddlewares() as $middlewareClass) {
+                $middleware = AppContainer::get()->get($middlewareClass);
+                if (!$middleware instanceof MiddlewareInterface) {
+                    throw new RuntimeException("Middleware invalide : {$middlewareClass}");
+                }
+                $middleware->handle($request);
             }
 
-            if ($method !== $route['method']) {
-                $methodNotAllowed = true;
-
-                continue;
+            $action = $route->getAction();
+            if ($action instanceof Closure) {
+                $action(...$matches);
+                return;
             }
 
-            array_shift($matches);
-
-            $this->runMiddlewares(
-                $route['middlewares'],
-                $request,
-            );
-
-            $this->dispatchAction(
-                $route['action'],
-                $matches,
-                $request,
-            );
-
+            [$controllerClass, $methodName] = is_array($action) ? $action : explode('@', $action);
+            $controller = AppContainer::get()->get($controllerClass);
+            $controller->{$methodName}(...$matches);
             return;
         }
 
-        throw (
-            $methodNotAllowed
-                ? new MethodNotAllowedException()
-                : new NotFoundException()
-        );
-    }
-
-    /**
-     * @param list<string> $matches
-     * @param array<int, string>|string|Closure $action
-     */
-    private function dispatchAction(
-        array|string|Closure $action,
-        array $matches,
-        Request $request,
-    ): void {
-        if ($action instanceof Closure) {
-            $action(...$matches);
-
-            return;
-        }
-
-        [
-            $controller,
-            $controllerMethod,
-        ] = $this->resolveAction($action);
-
-        $parameters =
-            $this->resolveMethodDependencies(
-                $controller,
-                $controllerMethod,
-                $matches,
-                $request,
-            );
-
-        /** @var callable $callable */
-        $callable = [
-            $controller,
-            $controllerMethod,
-        ];
-
-        $callable(...$parameters);
-    }
-
-    /**
-     * @param array<int, string>|string $action
-     * @return array{
-     *     0: object,
-     *     1: string
-     * }
-     */
-    private function resolveAction(
-        array|string $action,
-    ): array {
-        if (is_string($action)) {
-            $parts = explode('@', $action);
-
-            if (count($parts) !== 2) {
-                throw new RuntimeException(
-                    "Action invalide : {$action}",
-                );
-            }
-
-            [
-                $controller,
-                $method,
-            ] = $parts;
-
-            $controller =
-                'App\\Controllers\\'
-                . $controller;
-
-            return [
-                $this->resolve($controller),
-                $method,
-            ];
-        }
-
-        [
-            $controller,
-            $method,
-        ] = $action;
-
-        return [
-            $this->resolve($controller),
-            $method,
-        ];
-    }
-
-    /**
-     * @param list<class-string> $middlewares
-     */
-    private function runMiddlewares(
-        array $middlewares,
-        Request $request,
-    ): void {
-        foreach ($middlewares as $middlewareClass) {
-            if (!class_exists($middlewareClass)) {
-                throw new RuntimeException(
-                    "Middleware introuvable : {$middlewareClass}",
-                );
-            }
-
-            $middleware = $this->resolve(
-                $middlewareClass,
-            );
-
-            if (
-                !$middleware instanceof MiddlewareInterface
-            ) {
-                throw new RuntimeException(
-                    "Middleware invalide : {$middlewareClass}",
-                );
-            }
-
-            $middleware->handle($request);
-        }
-    }
-
-    /**
-     * @param list<string> $routeParameters
-     * @return list<mixed>
-     */
-    private function resolveMethodDependencies(
-        object $controller,
-        string $method,
-        array $routeParameters,
-        Request $request,
-    ): array {
-        $reflection = new ReflectionMethod(
-            $controller,
-            $method,
-        );
-
-        $dependencies = [];
-
-        $routeIndex = 0;
-
-        foreach (
-            $reflection->getParameters() as $parameter
-        ) {
-            $type = $parameter->getType();
-
-            if (
-                $type instanceof ReflectionNamedType
-                && !$type->isBuiltin()
-            ) {
-                $dependencies[] =
-                    $this->resolveClassDependency(
-                        $type->getName(),
-                        $request,
-                    );
-
-                continue;
-            }
-
-            if (isset($routeParameters[$routeIndex])) {
-                $value =
-                    $routeParameters[$routeIndex++];
-
-                if (
-                    $type instanceof ReflectionNamedType
-                ) {
-                    $value = $this->castRouteParameter(
-                        $value,
-                        $type->getName(),
-                    );
-                }
-
-                if ($value === null) {
-                    throw new NotFoundException();
-                }
-
-                $dependencies[] = $value;
-
-                continue;
-            }
-
-            if ($parameter->isDefaultValueAvailable()) {
-                $dependencies[] =
-                    $parameter->getDefaultValue();
-
-                continue;
-            }
-
-            throw new RuntimeException(
-                'Impossible de résoudre le paramètre : '
-                . $parameter->getName(),
-            );
-        }
-
-        return $dependencies;
-    }
-
-    private function resolveClassDependency(
-        string $typeName,
-        Request $request,
-    ): mixed {
-        if ($typeName === Request::class) {
-            return $request;
-        }
-
-        if (
-            is_subclass_of(
-                $typeName,
-                FormRequest::class,
-            )
-        ) {
-            return new $typeName($request);
-        }
-
-        return $this->resolve($typeName);
-    }
-
-    private function castRouteParameter(
-        string $value,
-        string $type,
-    ): mixed {
-        return match ($type) {
-
-            'int' => ctype_digit($value)
-                ? (int) $value
-                : null,
-
-            'float' => is_numeric($value)
-                ? (float) $value
-                : null,
-
-            'bool' => filter_var(
-                $value,
-                FILTER_VALIDATE_BOOL,
-                FILTER_NULL_ON_FAILURE,
-            ),
-
-            'string' => $value,
-
-            default => $value,
-        };
-    }
-
-    private function resolve(
-        string $class,
-    ): object {
-        return AppContainer::get()
-            ->get($class);
+        http_response_code(404);
+        echo 'Route non trouvée : ' . htmlspecialchars($uri);
     }
 }

@@ -20,7 +20,7 @@ $slug = rawurlencode((string) $manga->slug);
 $numero = (int) $manga->numero;
 
 $thumbnailPath = $baseUri
-    . 'public/images/mangas/thumbnail/'
+    . 'images/mangas/thumbnail/'
     . $manga->thumbnail
     . '.'
     . $manga->extension;
