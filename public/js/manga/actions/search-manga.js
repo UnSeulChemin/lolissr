@@ -24,7 +24,7 @@ function escapeRegExp(value)
 {
     return value.replace(
         /[.*+?^${}()|[\]\\]/g,
-        '\\$&'
+        '\\$&',
     );
 }
 
@@ -33,7 +33,7 @@ function escapeRegExp(value)
  */
 function highlightSearchTerm(
     text,
-    rawQuery
+    rawQuery,
 )
 {
     const safeText =
@@ -60,12 +60,12 @@ function highlightSearchTerm(
 
     const regex = new RegExp(
         `(${queryParts.join('|')})`,
-        'ig'
+        'ig',
     );
 
     return safeText.replace(
         regex,
-        '<mark class="search-highlight">$1</mark>'
+        '<mark class="search-highlight">$1</mark>',
     );
 }
 
@@ -79,22 +79,22 @@ export function initSearchManga()
 
     const mangaSearchForm =
         document.querySelector(
-            '.js-header-search'
+            '.js-header-search',
         );
 
     const mangaSearchInput =
         document.getElementById(
-            'header-search-input'
+            'header-search-input',
         );
 
     const mangaSearchResults =
         document.getElementById(
-            'header-search-results'
+            'header-search-results',
         );
 
     const mangaSearchDropdown =
         document.querySelector(
-            '.js-header-search-dropdown'
+            '.js-header-search-dropdown',
         );
 
     if (
@@ -140,18 +140,21 @@ export function initSearchManga()
     |------------------------------------------------------------------
     */
 
-    let searchDebounceTimer = null;
+    let searchDebounceTimer =
+        null;
 
-    let searchAbortController = null;
+    let searchAbortController =
+        null;
 
-    let activeResultIndex = -1;
+    let activeResultIndex =
+        -1;
 
     function getSearchResultItems()
     {
         return Array.from(
             mangaSearchResults.querySelectorAll(
-                '.search-result-item'
-            )
+                '.search-result-item',
+            ),
         );
     }
 
@@ -163,7 +166,7 @@ export function initSearchManga()
             .forEach((item) =>
         {
             item.classList.remove(
-                'is-active'
+                'is-active',
             );
         });
     }
@@ -178,7 +181,7 @@ export function initSearchManga()
         {
             item.classList.toggle(
                 'is-active',
-                index === activeResultIndex
+                index === activeResultIndex,
             );
         });
 
@@ -190,7 +193,7 @@ export function initSearchManga()
             items[
                 activeResultIndex
             ].scrollIntoView({
-                block: 'nearest'
+                block: 'nearest',
             });
         }
     }
@@ -215,7 +218,7 @@ export function initSearchManga()
     function openSearchDropdown()
     {
         mangaSearchDropdown.classList.add(
-            'has-results'
+            'has-results',
         );
     }
 
@@ -225,7 +228,7 @@ export function initSearchManga()
 
         mangaSearchDropdown.classList.remove(
             'is-loading',
-            'has-results'
+            'has-results',
         );
 
         if (searchAbortController)
@@ -239,24 +242,24 @@ export function initSearchManga()
     }
 
     function setSearchLoadingState(
-        isLoading
+        isLoading,
     )
     {
         mangaSearchDropdown.classList.toggle(
             'is-loading',
-            isLoading
+            isLoading,
         );
 
         if (isLoading)
         {
             mangaSearchDropdown.classList.remove(
-                'has-results'
+                'has-results',
             );
         }
     }
 
     function renderSearchEmptyState(
-        message = 'Aucun résultat trouvé'
+        message = 'Aucun résultat trouvé',
     )
     {
         mangaSearchResults.innerHTML = `
@@ -272,7 +275,7 @@ export function initSearchManga()
 
     function buildMangaSearchResult(
         manga,
-        rawValue
+        rawValue,
     )
     {
         const resultLink =
@@ -293,7 +296,7 @@ export function initSearchManga()
                 <strong class="search-result-title">
                     ${highlightSearchTerm(
                         manga.livre,
-                        rawValue
+                        rawValue,
                     )}
                 </strong>
 
@@ -320,7 +323,7 @@ export function initSearchManga()
     }
 
     function buildShortcutSearchResult(
-        shortcut
+        shortcut,
     )
     {
         const resultLink =
@@ -365,7 +368,7 @@ export function initSearchManga()
     }
 
     async function fetchSearchResults(
-        rawValue
+        rawValue,
     )
     {
         if (searchAbortController)
@@ -375,7 +378,7 @@ export function initSearchManga()
 
         const normalizedValue =
             normalizeSearchQuery(
-                rawValue
+                rawValue,
             );
 
         if (
@@ -400,14 +403,16 @@ export function initSearchManga()
             resetActiveSearchResult();
 
             const shortcuts =
-                findSearchShortcuts(rawValue);
+                findSearchShortcuts(
+                    rawValue,
+                );
 
             shortcuts.forEach((shortcut) =>
             {
                 mangaSearchResults.appendChild(
                     buildShortcutSearchResult(
-                        shortcut
-                    )
+                        shortcut,
+                    ),
                 );
             });
 
@@ -421,15 +426,15 @@ export function initSearchManga()
                         headers:
                         {
                             'X-Requested-With':
-                                'XMLHttpRequest'
-                        }
-                    }
+                                'XMLHttpRequest',
+                        },
+                    },
                 );
 
             if (!response.ok)
             {
                 throw new Error(
-                    'Erreur recherche live'
+                    'Erreur recherche live',
                 );
             }
 
@@ -439,6 +444,15 @@ export function initSearchManga()
             const results =
                 responseData.data?.results
                 ?? [];
+
+            if (
+                !Array.isArray(results)
+            )
+            {
+                throw new Error(
+                    'Résultats invalides',
+                );
+            }
 
             if (
                 results.length === 0
@@ -455,8 +469,8 @@ export function initSearchManga()
                 mangaSearchResults.appendChild(
                     buildMangaSearchResult(
                         manga,
-                        rawValue
-                    )
+                        rawValue,
+                    ),
                 );
             });
 
@@ -472,8 +486,10 @@ export function initSearchManga()
             )
             {
                 renderSearchEmptyState(
-                    'Erreur de chargement'
+                    'Erreur de chargement',
                 );
+
+                console.error(error);
             }
         }
         finally
@@ -524,7 +540,7 @@ export function initSearchManga()
 
             value =
                 normalizeSearchQuery(
-                    value
+                    value,
                 );
 
             if (value === '')
@@ -534,6 +550,122 @@ export function initSearchManga()
 
             window.location.href =
                 `${basePath}manga/recherche/${encodeURIComponent(value)}`;
-        }
+        },
+    );
+
+    mangaSearchInput.addEventListener(
+        'input',
+        () =>
+        {
+            clearTimeout(
+                searchDebounceTimer,
+            );
+
+            searchDebounceTimer =
+                setTimeout(() =>
+            {
+                fetchSearchResults(
+                    mangaSearchInput.value.trim(),
+                );
+            }, 250);
+        },
+    );
+
+    mangaSearchInput.addEventListener(
+        'keydown',
+        (event) =>
+        {
+            const items =
+                getSearchResultItems();
+
+            if (event.key === 'Escape')
+            {
+                event.preventDefault();
+
+                closeSearchDropdown();
+
+                return;
+            }
+
+            if (
+                !mangaSearchDropdown
+                    .classList.contains(
+                        'has-results',
+                    )
+                || items.length === 0
+            )
+            {
+                return;
+            }
+
+            if (event.key === 'ArrowDown')
+            {
+                event.preventDefault();
+
+                activeResultIndex =
+                    activeResultIndex
+                        < items.length - 1
+                            ? activeResultIndex + 1
+                            : 0;
+
+                updateActiveSearchResult();
+
+                return;
+            }
+
+            if (event.key === 'ArrowUp')
+            {
+                event.preventDefault();
+
+                activeResultIndex =
+                    activeResultIndex > 0
+                        ? activeResultIndex - 1
+                        : items.length - 1;
+
+                updateActiveSearchResult();
+
+                return;
+            }
+
+            if (
+                event.key === 'Enter'
+                && activeResultIndex >= 0
+                && items[
+                    activeResultIndex
+                ]
+            )
+            {
+                event.preventDefault();
+
+                window.location.href =
+                    items[
+                        activeResultIndex
+                    ].href;
+            }
+        },
+    );
+
+    document.addEventListener(
+        'click',
+        (event) =>
+        {
+            const clickedInsideForm =
+                event.target.closest(
+                    '.js-header-search',
+                );
+
+            const clickedInsideDropdown =
+                event.target.closest(
+                    '.js-header-search-dropdown',
+                );
+
+            if (
+                !clickedInsideForm
+                && !clickedInsideDropdown
+            )
+            {
+                closeSearchDropdown();
+            }
+        },
     );
 }
