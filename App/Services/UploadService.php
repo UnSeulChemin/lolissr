@@ -14,27 +14,36 @@ use Framework\Support\Str;
 
 final readonly class UploadService
 {
+    private finfo $finfo;
+
+    public function __construct()
+    {
+        $this->finfo = new finfo(
+            FILEINFO_MIME_TYPE,
+        );
+    }
+
     public function isTestUploadMode(): bool
     {
         return App::isTesting()
-            && env_bool(
-                'TEST_UPLOAD_MODE',
+            && config(
+                'tests.upload_mode',
                 false,
             );
     }
 
-    public function testUploadDirectory(): string
+    private function testUploadDirectory(): string
     {
-        $directory = trim(
-            (string) env(
-                'TEST_UPLOAD_DIR',
-                'tests/Http/tmp-uploads',
-            ),
-            '/\\',
-        );
-
         return rtrim(
-            base_path($directory),
+            base_path(
+                trim(
+                    (string) config(
+                        'tests.upload_dir',
+                        'tests/Http/tmp-uploads',
+                    ),
+                    '/\\',
+                ),
+            ),
             '/\\',
         ) . DIRECTORY_SEPARATOR;
     }
@@ -151,11 +160,7 @@ final readonly class UploadService
             return null;
         }
 
-        $finfo = new finfo(
-            FILEINFO_MIME_TYPE,
-        );
-
-        $mimeType = $finfo->file(
+        $mimeType = $this->finfo->file(
             $tmpName,
         );
 
