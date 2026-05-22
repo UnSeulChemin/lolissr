@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Framework\Validation;
 
+use finfo;
+
 final class Validator
 {
     /**
@@ -26,6 +28,8 @@ final class Validator
      */
     private array $nullable = [];
 
+    private finfo $finfo;
+
     /**
      * @param array<string, mixed> $data
      * @param array<string, array<string, mixed>> $files
@@ -36,6 +40,10 @@ final class Validator
     ) {
         $this->data = $data;
         $this->files = $files;
+
+        $this->finfo = new finfo(
+            FILEINFO_MIME_TYPE,
+        );
     }
 
     private function hasError(
@@ -392,27 +400,14 @@ final class Validator
             return $this;
         }
 
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-
-        if ($finfo === false) {
-            $this->errors[$field] =
-                $message
-                ?? "Impossible de vérifier le type MIME de {$field}.";
-
-            return $this;
-        }
-
-        $mimeType = finfo_file(
-            $finfo,
+        $mimeType = $this->finfo->file(
             $tmpName,
         );
 
-        finfo_close($finfo);
-
         if (
-            $mimeType === false
+            !is_string($mimeType)
             || !in_array(
-                $mimeType,
+                strtolower($mimeType),
                 $allowedMimeTypes,
                 true,
             )

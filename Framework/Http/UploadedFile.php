@@ -4,55 +4,63 @@ declare(strict_types=1);
 
 namespace Framework\Http;
 
-final class UploadedFile
+use finfo;
+
+final readonly class UploadedFile
 {
+    private finfo $finfo;
+
     public function __construct(
         private Request $request,
     ) {
+        $this->finfo = new finfo(
+            FILEINFO_MIME_TYPE,
+        );
     }
 
-    /**
-     * Vérifie si un fichier uploadé existe.
-     */
-    public function exists(string $key): bool
-    {
-        return $this->request->hasFile($key)
-            && $this->request->fileError($key) !== UPLOAD_ERR_NO_FILE;
+    public function exists(
+        string $key,
+    ): bool {
+        return $this->request->hasValidFile(
+            $key,
+        );
     }
 
-    /**
-     * Retourne le nom original du fichier.
-     */
-    public function name(string $key): ?string
-    {
+    public function name(
+        string $key,
+    ): ?string {
         if (!$this->exists($key)) {
             return null;
         }
 
-        $name = $this->request->fileName($key);
+        $name = trim(
+            $this->request->fileName($key),
+        );
 
-        return $name !== '' ? $name : null;
+        return $name !== ''
+            ? $name
+            : null;
     }
 
-    /**
-     * Retourne le chemin temporaire du fichier.
-     */
-    public function tmp(string $key): ?string
-    {
+    public function tmp(
+        string $key,
+    ): ?string {
         if (!$this->exists($key)) {
             return null;
         }
 
-        $tmp = $this->request->fileTmpPath($key);
+        $tmp = trim(
+            $this->request->fileTmpPath($key),
+        );
 
-        return $tmp !== '' ? $tmp : null;
+        return $tmp !== ''
+            ? $tmp
+            : null;
     }
 
-    /**
-     * Retourne le code d'erreur du fichier.
-     */
-    public function error(string $key): ?int
-    {
+    public function error(
+        string $key,
+    ): ?int {
         if (!$this->request->hasFile($key)) {
             return null;
         }
@@ -60,11 +68,9 @@ final class UploadedFile
         return $this->request->fileError($key);
     }
 
-    /**
-     * Retourne la taille du fichier.
-     */
-    public function size(string $key): ?int
-    {
+    public function size(
+        string $key,
+    ): ?int {
         if (!$this->exists($key)) {
             return null;
         }
@@ -72,47 +78,50 @@ final class UploadedFile
         return $this->request->fileSize($key);
     }
 
-    /**
-     * Retourne l'extension du fichier.
-     */
-    public function extension(string $key): ?string
-    {
+    public function extension(
+        string $key,
+    ): ?string {
         $name = $this->name($key);
 
         if ($name === null) {
             return null;
         }
 
-        $extension = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+        $extension = strtolower(
+            pathinfo(
+                $name,
+                PATHINFO_EXTENSION,
+            ),
+        );
 
-        return $extension !== ''
-            ? $extension
-            : null;
+        if ($extension === '') {
+            return null;
+        }
+
+        return $extension === 'jpeg'
+            ? 'jpg'
+            : $extension;
     }
 
-    /**
-     * Retourne le type MIME réel du fichier.
-     */
-    public function mimeType(string $key): ?string
-    {
+    public function mimeType(
+        string $key,
+    ): ?string {
         $tmpName = $this->tmp($key);
 
-        if ($tmpName === null || !is_file($tmpName)) {
+        if (
+            $tmpName === null
+            || !is_file($tmpName)
+        ) {
             return null;
         }
 
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mimeType = $this->finfo->file(
+            $tmpName,
+        );
 
-        if ($finfo === false) {
-            return null;
-        }
-
-        $mimeType = finfo_file($finfo, $tmpName);
-
-        finfo_close($finfo);
-
-        return is_string($mimeType) && $mimeType !== ''
-            ? strtolower($mimeType)
-            : null;
+        return is_string($mimeType)
+            && $mimeType !== ''
+                ? strtolower($mimeType)
+                : null;
     }
 }

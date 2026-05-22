@@ -35,9 +35,7 @@ final class Config
         $config = self::load($file);
 
         if ($segments === []) {
-            return $config !== []
-                ? $config
-                : $default;
+            return $config;
         }
 
         return self::arrayGet(

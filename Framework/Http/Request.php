@@ -115,10 +115,13 @@ final class Request
         string $key,
         int $default = 0,
     ): int {
-        $value = $this->input($key);
+        $value = filter_var(
+            $this->input($key),
+            FILTER_VALIDATE_INT,
+        );
 
-        return is_numeric($value)
-            ? (int) $value
+        return $value !== false
+            ? $value
             : $default;
     }
 
@@ -142,7 +145,10 @@ final class Request
     {
         return array_key_exists(
             $key,
-            $this->all(),
+            $this->post,
+        ) || array_key_exists(
+            $key,
+            $this->get,
         );
     }
 

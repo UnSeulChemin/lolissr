@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Framework\Exceptions;
 
-final class MethodNotAllowedException extends HttpException
+final class CsrfException extends HttpException
 {
     public function __construct(
-        string $message = 'Méthode non autorisée',
+        string $message = 'Token CSRF invalide',
     ) {
         parent::__construct(
             $message,
-            405,
+            419,
         );
     }
 }

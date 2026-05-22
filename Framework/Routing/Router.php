@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Framework\Routing;
 
+use Closure;
 use Framework\Container\AppContainer;
+use Framework\Exceptions\MethodNotAllowedException;
+use Framework\Exceptions\NotFoundException;
 use Framework\Http\FormRequest;
 use Framework\Http\Middleware\MiddlewareInterface;
 use Framework\Http\Request;
-use Closure;
 use ReflectionMethod;
 use ReflectionNamedType;
 use RuntimeException;
@@ -78,10 +80,12 @@ final class Router
 
         $pattern = preg_replace_callback(
             '#\{([a-zA-Z0-9_]+)(?::([a-zA-Z]+))?\}#',
-            static function (array $matches): string {
-                $type = $matches[2] ?? 'string';
-
-                return match ($type) {
+            static function (
+                array $matches,
+            ): string {
+                return match (
+                    $matches[2] ?? 'string'
+                ) {
                     'int' => '([0-9]+)',
                     default => '([^/]+)',
                 };
@@ -106,7 +110,6 @@ final class Router
         );
 
         $method = $request->method();
-
         $uri = $request->path();
 
         $methodNotAllowed = false;
@@ -135,43 +138,57 @@ final class Router
                 $request,
             );
 
-            if ($route['action'] instanceof Closure) {
-                ($route['action'])(...$matches);
-
-                return;
-            }
-
-            [
-                $controller,
-                $controllerMethod,
-            ] = $this->resolveAction(
+            $this->dispatchAction(
                 $route['action'],
+                $matches,
+                $request,
             );
-
-            $parameters =
-                $this->resolveMethodDependencies(
-                    $controller,
-                    $controllerMethod,
-                    $matches,
-                    $request,
-                );
-
-            /** @var callable $callable */
-            $callable = [
-                $controller,
-                $controllerMethod,
-            ];
-
-            $callable(...$parameters);
 
             return;
         }
 
-        abort(
+        throw (
             $methodNotAllowed
-                ? 405
-                : 404,
+                ? new MethodNotAllowedException()
+                : new NotFoundException()
         );
+    }
+
+    /**
+     * @param list<string> $matches
+     * @param array<int, string>|string|Closure $action
+     */
+    private function dispatchAction(
+        array|string|Closure $action,
+        array $matches,
+        Request $request,
+    ): void {
+        if ($action instanceof Closure) {
+            $action(...$matches);
+
+            return;
+        }
+
+        [
+            $controller,
+            $controllerMethod,
+        ] = $this->resolveAction($action);
+
+        $parameters =
+            $this->resolveMethodDependencies(
+                $controller,
+                $controllerMethod,
+                $matches,
+                $request,
+            );
+
+        /** @var callable $callable */
+        $callable = [
+            $controller,
+            $controllerMethod,
+        ];
+
+        $callable(...$parameters);
     }
 
     /**
@@ -185,20 +202,33 @@ final class Router
         array|string $action,
     ): array {
         if (is_string($action)) {
+            $parts = explode('@', $action);
+
+            if (count($parts) !== 2) {
+                throw new RuntimeException(
+                    "Action invalide : {$action}",
+                );
+            }
+
             [
                 $controller,
                 $method,
-            ] = explode('@', $action);
+            ] = $parts;
 
             $controller =
                 'App\\Controllers\\'
                 . $controller;
-        } else {
-            [
-                $controller,
+
+            return [
+                $this->resolve($controller),
                 $method,
-            ] = $action;
+            ];
         }
+
+        [
+            $controller,
+            $method,
+        ] = $action;
 
         return [
             $this->resolve($controller),
@@ -264,28 +294,11 @@ final class Router
                 $type instanceof ReflectionNamedType
                 && !$type->isBuiltin()
             ) {
-                $typeName = $type->getName();
-
-                if ($typeName === Request::class) {
-                    $dependencies[] = $request;
-
-                    continue;
-                }
-
-                if (
-                    is_subclass_of(
-                        $typeName,
-                        FormRequest::class,
-                    )
-                ) {
-                    $dependencies[] =
-                        new $typeName($request);
-
-                    continue;
-                }
-
                 $dependencies[] =
-                    $this->resolve($typeName);
+                    $this->resolveClassDependency(
+                        $type->getName(),
+                        $request,
+                    );
 
                 continue;
             }
@@ -304,7 +317,7 @@ final class Router
                 }
 
                 if ($value === null) {
-                    abort(404);
+                    throw new NotFoundException();
                 }
 
                 $dependencies[] = $value;
@@ -328,11 +341,32 @@ final class Router
         return $dependencies;
     }
 
+    private function resolveClassDependency(
+        string $typeName,
+        Request $request,
+    ): mixed {
+        if ($typeName === Request::class) {
+            return $request;
+        }
+
+        if (
+            is_subclass_of(
+                $typeName,
+                FormRequest::class,
+            )
+        ) {
+            return new $typeName($request);
+        }
+
+        return $this->resolve($typeName);
+    }
+
     private function castRouteParameter(
         string $value,
         string $type,
     ): mixed {
         return match ($type) {
+
             'int' => ctype_digit($value)
                 ? (int) $value
                 : null,

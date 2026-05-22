@@ -9,50 +9,81 @@ final class Str
     /**
      * Normalise une chaîne en slug.
      */
-    public static function slug(string $value): string
-    {
-        $value = mb_strtolower(trim($value), 'UTF-8');
-        $value = preg_replace('/[^\p{L}\p{N}\s-]/u', '', $value) ?? '';
-        $value = preg_replace('/[\s-]+/u', '-', $value) ?? '';
-        $value = trim($value, '-');
+    public static function slug(
+        string $value,
+    ): string {
+        $value = mb_strtolower(
+            trim($value),
+            'UTF-8',
+        );
 
-        return $value;
+        $value = preg_replace(
+            '/[^\p{L}\p{N}\s-]/u',
+            '',
+            $value,
+        ) ?? '';
+
+        $value = preg_replace(
+            '/[\s-]+/u',
+            '-',
+            $value,
+        ) ?? '';
+
+        return trim(
+            $value,
+            '-',
+        );
     }
 
     /**
      * Trim une chaîne nullable.
-     * Retourne null si la valeur est vide.
+     * Retourne null si vide.
      */
-    public static function nullableTrim(?string $value): ?string
-    {
+    public static function nullableTrim(
+        ?string $value,
+    ): ?string {
         if ($value === null) {
             return null;
         }
 
         $value = trim($value);
 
-        return $value === '' ? null : $value;
+        return $value !== ''
+            ? $value
+            : null;
     }
 
     /**
-     * Génère un nom de thumbnail propre.
+     * Vérifie si une chaîne est vide.
      */
-    public static function thumbnailName(string $livre, int $numero): string
-    {
+    public static function isBlank(
+        ?string $value,
+    ): bool {
+        return self::nullableTrim(
+            $value,
+        ) === null;
+    }
+
+    /**
+     * Génère un nom de thumbnail.
+     */
+    public static function thumbnailName(
+        string $livre,
+        int $numero,
+    ): string {
         $thumbnail = self::slug($livre);
 
-        if ($thumbnail === '' || $numero <= 0) {
+        if (
+            $thumbnail === ''
+            || $numero <= 0
+        ) {
             return '';
         }
 
-        return $thumbnail . '-' . str_pad((string) $numero, 2, '0', STR_PAD_LEFT);
-    }
-
-    /**
-     * Vérifie si une chaîne est vide après trim.
-     */
-    public static function isBlank(?string $value): bool
-    {
-        return self::nullableTrim($value) === null;
+        return sprintf(
+            '%s-%02d',
+            $thumbnail,
+            $numero,
+        );
     }
 }

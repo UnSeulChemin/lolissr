@@ -10,7 +10,7 @@ final class UploadConfig
     {
         return max(
             1,
-            (int) config(
+            config_int(
                 'upload.max_size',
                 5242880,
             ),
@@ -18,40 +18,28 @@ final class UploadConfig
     }
 
     /**
-     * @return string[]
+     * @return list<string>
      */
     public static function allowedExtensions(): array
     {
-        $extensions = config(
-            'upload.allowed_extensions',
-            [],
-        );
-
-        if (!is_array($extensions)) {
-            return [];
-        }
-
-        return array_values(
-            array_unique($extensions),
+        return self::normalizedList(
+            config(
+                'upload.allowed_extensions',
+                [],
+            ),
         );
     }
 
     /**
-     * @return string[]
+     * @return list<string>
      */
     public static function allowedMimeTypes(): array
     {
-        $mimeTypes = config(
-            'upload.allowed_mime_types',
-            [],
-        );
-
-        if (!is_array($mimeTypes)) {
-            return [];
-        }
-
-        return array_values(
-            array_unique($mimeTypes),
+        return self::normalizedList(
+            config(
+                'upload.allowed_mime_types',
+                [],
+            ),
         );
     }
 
@@ -63,5 +51,35 @@ final class UploadConfig
             ),
             '/\\',
         ) . DIRECTORY_SEPARATOR;
+    }
+
+    /**
+     * @param mixed $values
+     * @return list<string>
+     */
+    private static function normalizedList(
+        mixed $values,
+    ): array {
+        if (!is_array($values)) {
+            return [];
+        }
+
+        $values = array_map(
+            static fn (mixed $value): string => strtolower(
+                trim((string) $value),
+            ),
+            $values,
+        );
+
+        $values = array_filter(
+            $values,
+            static fn (
+                string $value,
+            ): bool => $value !== '',
+        );
+
+        return array_values(
+            array_unique($values),
+        );
     }
 }

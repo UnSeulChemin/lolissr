@@ -9,17 +9,15 @@ use Framework\Http\Request;
 
 final class AjaxOnlyMiddleware implements MiddlewareInterface
 {
-    public function handle(Request $request): void
-    {
-        if ($request->isAjax()) {
-            return;
-        }
+    private const TEST_USER_AGENT =
+        'LoliSSR-TestRunner';
 
-        $userAgent = $request->userAgent();
-
+    public function handle(
+        Request $request,
+    ): void {
         if (
-            App::isTesting()
-            && str_contains($userAgent, 'LoliSSR-TestRunner')
+            $request->isAjax()
+            || $this->isTestRunner($request)
         ) {
             return;
         }
@@ -28,5 +26,15 @@ final class AjaxOnlyMiddleware implements MiddlewareInterface
             'success' => false,
             'message' => 'Requête AJAX requise',
         ], 400);
+    }
+
+    private function isTestRunner(
+        Request $request,
+    ): bool {
+        return App::isTesting()
+            && str_contains(
+                $request->userAgent(),
+                self::TEST_USER_AGENT,
+            );
     }
 }

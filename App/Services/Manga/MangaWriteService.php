@@ -64,7 +64,7 @@ final readonly class MangaWriteService
     private function blockedWriteResponse(): ServiceResult
     {
         return $this->error(
-            'Écriture en base désactivée en mode test',
+            'Écriture en base désactivée en mode lecture seule',
             403,
         );
     }
@@ -114,7 +114,7 @@ final readonly class MangaWriteService
             . $manga->extension;
 
         $this->uploadService
-            ->removeFileIfExists($path);
+            ->removeFile($path);
     }
 
     /**
@@ -202,7 +202,7 @@ final readonly class MangaWriteService
 
         if ($failure !== null) {
             $this->uploadService
-                ->removeFileIfExists(
+                ->removeFile(
                     $uploadData->destination,
                 );
 

@@ -71,7 +71,15 @@ final class Container
         callable|string $concrete,
     ): object {
         if (is_callable($concrete)) {
-            return $concrete($this);
+            $object = $concrete($this);
+
+            if (!is_object($object)) {
+                throw new RuntimeException(
+                    'Le container doit retourner un objet.',
+                );
+            }
+
+            return $object;
         }
 
         if (!class_exists($concrete)) {
@@ -93,7 +101,7 @@ final class Container
         $constructor = $reflection->getConstructor();
 
         if ($constructor === null) {
-            return new $concrete();
+            return $reflection->newInstance();
         }
 
         $dependencies = [];

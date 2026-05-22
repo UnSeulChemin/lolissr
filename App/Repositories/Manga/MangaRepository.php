@@ -22,7 +22,7 @@ final class MangaRepository extends Model
         }
 
         throw new LogicException(
-            'Écriture en base interdite en mode test.',
+            'Écriture en base interdite en mode lecture seule.',
         );
     }
 

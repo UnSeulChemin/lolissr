@@ -13,7 +13,15 @@ final class MangaNoteNormalizer
             return null;
         }
 
-        $value = trim((string) $value);
+        if (is_int($value)) {
+            return self::normalizeInteger(
+                $value,
+            );
+        }
+
+        $value = trim(
+            (string) $value,
+        );
 
         if (
             $value === ''
@@ -22,12 +30,16 @@ final class MangaNoteNormalizer
             return null;
         }
 
-        $note = (int) $value;
+        return self::normalizeInteger(
+            (int) $value,
+        );
+    }
 
-        if ($note < 1 || $note > 5) {
-            return null;
-        }
-
-        return $note;
+    private static function normalizeInteger(
+        int $note,
+    ): ?int {
+        return ($note >= 1 && $note <= 5)
+            ? $note
+            : null;
     }
 }

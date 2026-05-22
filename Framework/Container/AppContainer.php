@@ -10,17 +10,30 @@ final class AppContainer
 {
     private static ?Container $container = null;
 
-    public static function set(Container $container): void
-    {
+    public static function set(
+        Container $container,
+    ): void {
         self::$container = $container;
     }
 
     public static function get(): Container
     {
-        if (self::$container === null) {
-            throw new RuntimeException('Container non initialisé.');
+        if (self::$container !== null) {
+            return self::$container;
         }
 
-        return self::$container;
+        throw new RuntimeException(
+            'Container non initialisé.',
+        );
+    }
+
+    public static function has(): bool
+    {
+        return self::$container !== null;
+    }
+
+    public static function clear(): void
+    {
+        self::$container = null;
     }
 }

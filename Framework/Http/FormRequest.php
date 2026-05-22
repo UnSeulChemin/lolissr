@@ -44,9 +44,11 @@ abstract class FormRequest
     }
 
     /**
+     * Retourne les données POST brutes.
+     *
      * @return array<string, mixed>
      */
-    final public function validated(): array
+    final public function data(): array
     {
         return $this->request->postAll();
     }

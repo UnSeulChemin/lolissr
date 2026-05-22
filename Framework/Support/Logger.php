@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Framework\Support;
 
+use Framework\Application\App;
 use JsonException;
 use Throwable;
 
@@ -27,7 +28,8 @@ final class Logger
     private static function file(): string
     {
         return self::directory()
-            . '/app.log';
+            . DIRECTORY_SEPARATOR
+            . 'app.log';
     }
 
     private static function ensureDirectory(): bool
@@ -46,6 +48,23 @@ final class Logger
     }
 
     /**
+     * @return array<string, mixed>
+     */
+    private static function requestContext(): array
+    {
+        return [
+            'method' => $_SERVER['REQUEST_METHOD']
+                ?? null,
+
+            'uri' => $_SERVER['REQUEST_URI']
+                ?? null,
+
+            'ip' => $_SERVER['REMOTE_ADDR']
+                ?? null,
+        ];
+    }
+
+    /**
      * @param array<string, mixed> $context
      */
     private static function write(
@@ -59,7 +78,7 @@ final class Logger
 
         if (
             strtoupper($level) === 'DEBUG'
-            && !env_bool('APP_DEBUG')
+            && !App::debug()
         ) {
             return;
         }
@@ -70,14 +89,14 @@ final class Logger
 
         $payload = [
             'date' => date('Y-m-d H:i:s'),
+
             'level' => strtoupper($level),
-            'message' => $message,
+
+            'message' => trim($message),
+
             'context' => $context,
-            'request' => [
-                'method' => $_SERVER['REQUEST_METHOD'] ?? null,
-                'uri' => $_SERVER['REQUEST_URI'] ?? null,
-                'ip' => $_SERVER['REMOTE_ADDR'] ?? null,
-            ],
+
+            'request' => self::requestContext(),
         ];
 
         try {
@@ -91,15 +110,15 @@ final class Logger
             return;
         }
 
-        $written = file_put_contents(
+        if ($content === false) {
+            return;
+        }
+
+        file_put_contents(
             self::file(),
             $content . PHP_EOL,
             FILE_APPEND | LOCK_EX,
         );
-
-        if ($written === false) {
-            return;
-        }
     }
 
     /**
@@ -171,8 +190,11 @@ final class Logger
                 $context,
                 [
                     'exception' => $exception::class,
+
                     'file' => $exception->getFile(),
+
                     'line' => $exception->getLine(),
+
                     'trace' => $exception->getTraceAsString(),
                 ],
             ),

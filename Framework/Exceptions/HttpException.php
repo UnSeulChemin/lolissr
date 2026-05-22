@@ -6,7 +6,7 @@ namespace Framework\Exceptions;
 
 use Exception;
 
-class HttpException extends Exception
+final class HttpException extends Exception
 {
     public function __construct(
         string $message = 'Erreur HTTP',

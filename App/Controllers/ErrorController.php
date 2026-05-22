@@ -52,10 +52,11 @@ final class ErrorController extends Controller
         );
     }
 
-    public function renderCsrfExpiredPage(): never
-    {
+    public function csrfExpired(
+        string $message = 'Session expirée ou requête invalide.',
+    ): never {
         Logger::warning(
-            '419 CSRF expired',
+            '419 CSRF Expired',
             [
                 'uri' => $this->request->uri(),
             ],
@@ -65,7 +66,43 @@ final class ErrorController extends Controller
             view: '419',
             status: 419,
             title: '419 | Session expirée',
-            message: 'Session expirée ou requête invalide.',
+            message: $message,
+        );
+    }
+
+    public function forbidden(
+        string $message = 'Accès interdit',
+    ): never {
+        Logger::warning(
+            '403 Forbidden',
+            [
+                'uri' => $this->request->uri(),
+            ],
+        );
+
+        $this->renderErrorPage(
+            view: '403',
+            status: 403,
+            title: '403 | Accès interdit',
+            message: $message,
+        );
+    }
+
+    public function unauthorized(
+        string $message = 'Non authentifié',
+    ): never {
+        Logger::warning(
+            '401 Unauthorized',
+            [
+                'uri' => $this->request->uri(),
+            ],
+        );
+
+        $this->renderErrorPage(
+            view: '401',
+            status: 401,
+            title: '401 | Non authentifié',
+            message: $message,
         );
     }
 

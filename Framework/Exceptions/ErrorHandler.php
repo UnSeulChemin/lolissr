@@ -53,7 +53,6 @@ final class ErrorHandler
         Throwable $exception,
     ): never {
         try {
-            // Gestion des erreurs HTTP.
             if (
                 $exception instanceof HttpException
             ) {
@@ -70,7 +69,6 @@ final class ErrorHandler
                 );
             }
 
-            // Toutes les autres erreurs.
             Logger::exception(
                 $exception,
                 [
@@ -78,25 +76,24 @@ final class ErrorHandler
                 ],
             );
 
-            // DEV :
-            // stacktrace complète.
             if (App::debug()) {
                 self::renderDebug(
                     $exception,
                 );
             }
 
-            // PROD :
-            // page 500 propre.
             self::render500();
-        } catch (Throwable) {
-            // Fallback ultime si le système
-            // d'erreur plante lui-même.
+        } catch (Throwable $fallbackException) {
+            Logger::exception(
+                $fallbackException,
+                [
+                    'type' => 'error_handler_failure',
+                ],
+            );
+
             http_response_code(500);
 
-            exit(
-                'Critical framework error.'
-            );
+            exit('Critical framework error.');
         }
     }
 
@@ -135,36 +132,15 @@ final class ErrorHandler
             ],
         );
 
-        // DEV :
-        // affichage du fatal error.
         if (App::debug()) {
-            http_response_code(500);
-
-            echo '<pre>';
-
-            echo htmlspecialchars(
-                $error['message']
-                . ' in '
-                . $error['file']
-                . ' on line '
-                . $error['line'],
-                ENT_QUOTES,
-                'UTF-8',
+            self::renderFatalDebug(
+                $error,
             );
-
-            echo '</pre>';
-
-            exit;
         }
 
-        // PROD :
-        // page 500 propre.
         self::render500();
     }
 
-    /**
-     * Vrai controller d'erreurs.
-     */
     private static function controller(): ErrorController
     {
         return new ErrorController(
@@ -186,6 +162,8 @@ final class ErrorHandler
             405 => $controller->methodNotAllowed(
                 $exception->getMessage(),
             ),
+
+            419 => $controller->renderCsrfExpiredPage(),
 
             default => $controller->serverError(
                 $exception->getMessage(),
@@ -209,11 +187,13 @@ final class ErrorHandler
         echo '<pre>';
 
         echo htmlspecialchars(
-            $exception->getMessage()
-            . ' in '
-            . $exception->getFile()
-            . ' on line '
-            . $exception->getLine(),
+            sprintf(
+                "%s\n\n%s in %s on line %d",
+                $exception::class,
+                $exception->getMessage(),
+                $exception->getFile(),
+                $exception->getLine(),
+            ),
             ENT_QUOTES,
             'UTF-8',
         );
@@ -222,6 +202,36 @@ final class ErrorHandler
 
         echo htmlspecialchars(
             $exception->getTraceAsString(),
+            ENT_QUOTES,
+            'UTF-8',
+        );
+
+        echo '</pre>';
+
+        exit;
+    }
+
+    /**
+     * @param array{
+     *     message: string,
+     *     file: string,
+     *     line: int
+     * } $error
+     */
+    private static function renderFatalDebug(
+        array $error,
+    ): never {
+        http_response_code(500);
+
+        echo '<pre>';
+
+        echo htmlspecialchars(
+            sprintf(
+                "Fatal error\n\n%s in %s on line %d",
+                $error['message'],
+                $error['file'],
+                $error['line'],
+            ),
             ENT_QUOTES,
             'UTF-8',
         );

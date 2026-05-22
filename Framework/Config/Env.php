@@ -7,15 +7,10 @@ namespace Framework\Config;
 final class Env
 {
     /**
-     * Cache mémoire des variables déjà lues.
-     *
      * @var array<string, mixed>
      */
     private static array $items = [];
 
-    /**
-     * Retourne une variable d'environnement.
-     */
     public static function get(
         string $key,
         mixed $default = null,
@@ -45,7 +40,7 @@ final class Env
         if ($value === null) {
             self::$items[$key] = $default;
 
-            return self::$items[$key];
+            return $default;
         }
 
         if (is_string($value)) {
@@ -56,12 +51,9 @@ final class Env
 
         self::$items[$key] = $value;
 
-        return self::$items[$key];
+        return $value;
     }
 
-    /**
-     * Retourne une variable d'environnement en booléen strict.
-     */
     public static function bool(
         string $key,
         bool $default = false,
@@ -75,14 +67,6 @@ final class Env
             return $value;
         }
 
-        if (is_int($value)) {
-            return $value === 1;
-        }
-
-        if (!is_string($value)) {
-            return $default;
-        }
-
         $result = filter_var(
             $value,
             FILTER_VALIDATE_BOOL,
@@ -92,39 +76,40 @@ final class Env
         return $result ?? $default;
     }
 
-    /**
-     * Vérifie si une variable d'environnement existe.
-     */
-    public static function has(string $key): bool
-    {
+    public static function int(
+        string $key,
+        int $default = 0,
+    ): int {
+        $value = self::get(
+            $key,
+            $default,
+        );
+
+        return filter_var(
+            $value,
+            FILTER_VALIDATE_INT,
+        ) !== false
+            ? (int) $value
+            : $default;
+    }
+
+    public static function has(
+        string $key,
+    ): bool {
         $key = trim($key);
 
         if ($key === '') {
             return false;
         }
 
-        $value = $_ENV[$key]
-            ?? $_SERVER[$key]
-            ?? null;
-
-        if ($value !== null) {
-            return true;
-        }
-
-        return getenv($key) !== false;
+        return self::get($key) !== null;
     }
 
-    /**
-     * Vide le cache mémoire local.
-     */
     public static function clear(): void
     {
         self::$items = [];
     }
 
-    /**
-     * Convertit une valeur texte en type PHP cohérent.
-     */
     private static function cast(
         string $value,
     ): mixed {

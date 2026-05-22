@@ -10,9 +10,20 @@ final class Cache
 {
     private static function enabled(): bool
     {
-        return env_bool(
-            'CACHE_ENABLED',
+        return (bool) config(
+            'cache.enabled',
             false,
+        );
+    }
+
+    private static function ttl(): int
+    {
+        return max(
+            1,
+            (int) config(
+                'cache.ttl',
+                300,
+            ),
         );
     }
 
@@ -27,7 +38,7 @@ final class Cache
         string $key,
     ): string {
         return self::directory()
-            . '/'
+            . DIRECTORY_SEPARATOR
             . sha1($key)
             . '.cache';
     }
@@ -42,6 +53,14 @@ final class Cache
                 0755,
                 true,
             );
+    }
+
+    private static function deleteFile(
+        string $path,
+    ): void {
+        if (is_file($path)) {
+            unlink($path);
+        }
     }
 
     /**
@@ -81,9 +100,7 @@ final class Cache
                 JSON_THROW_ON_ERROR,
             );
         } catch (\JsonException $exception) {
-            if (is_file($path)) {
-                unlink($path);
-            }
+            self::deleteFile($path);
 
             Logger::warning(
                 'Cache corrupted JSON',
@@ -103,9 +120,7 @@ final class Cache
                 'value',
             )
         ) {
-            if (is_file($path)) {
-                unlink($path);
-            }
+            self::deleteFile($path);
 
             Logger::warning(
                 'Cache invalid payload',
@@ -121,9 +136,7 @@ final class Cache
             ($payload->expires_at ?? 0)
             < time()
         ) {
-            if (is_file($path)) {
-                unlink($path);
-            }
+            self::deleteFile($path);
 
             Logger::debug(
                 'Cache expired',
@@ -165,10 +178,7 @@ final class Cache
             return;
         }
 
-        $ttl ??= env_int(
-            'CACHE_TTL',
-            300,
-        );
+        $ttl ??= self::ttl();
 
         $payload = [
             'expires_at' => time() + $ttl,
@@ -270,11 +280,9 @@ final class Cache
     public static function forget(
         string $key,
     ): void {
-        $path = self::path($key);
-
-        if (is_file($path)) {
-            unlink($path);
-        }
+        self::deleteFile(
+            self::path($key),
+        );
 
         Logger::debug(
             'Cache deleted',
@@ -296,12 +304,14 @@ final class Cache
         }
 
         foreach (
-            glob($directory . '/*.cache') ?: []
+            glob(
+                $directory
+                . DIRECTORY_SEPARATOR
+                . '*.cache',
+            ) ?: []
             as $file
         ) {
-            if (is_file($file)) {
-                unlink($file);
-            }
+            self::deleteFile($file);
         }
 
         Logger::info(

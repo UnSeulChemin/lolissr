@@ -10,7 +10,6 @@ use Framework\Container\AppContainer;
 use Framework\Http\Request;
 use Framework\Http\Response;
 use Framework\Support\Session;
-use RuntimeException;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,8 +18,9 @@ use RuntimeException;
 */
 
 if (!function_exists('app')) {
-    function app(?string $abstract = null): mixed
-    {
+    function app(
+        ?string $abstract = null,
+    ): mixed {
         $container = AppContainer::get();
 
         if ($abstract === null) {
@@ -38,9 +38,10 @@ if (!function_exists('app')) {
 */
 
 if (!function_exists('dump')) {
-    function dump(mixed ...$vars): void
-    {
-        if (!config('app.debug')) {
+    function dump(
+        mixed ...$vars,
+    ): void {
+        if (!App::debug()) {
             return;
         }
 
@@ -72,9 +73,10 @@ if (!function_exists('dump')) {
 */
 
 if (!function_exists('dd')) {
-    function dd(mixed ...$vars): never
-    {
-        if (!config('app.debug')) {
+    function dd(
+        mixed ...$vars,
+    ): never {
+        if (!App::debug()) {
             http_response_code(500);
 
             exit;
@@ -93,8 +95,9 @@ if (!function_exists('dd')) {
 */
 
 if (!function_exists('base_path')) {
-    function base_path(string $path = ''): string
-    {
+    function base_path(
+        string $path = '',
+    ): string {
         $base = rtrim(
             ROOT,
             DIRECTORY_SEPARATOR,
@@ -111,32 +114,30 @@ if (!function_exists('base_path')) {
 }
 
 if (!function_exists('app_path')) {
-    function app_path(string $path = ''): string
-    {
-        $base = base_path('App');
-
-        if ($path === '') {
-            return $base;
-        }
-
-        return $base
-            . DIRECTORY_SEPARATOR
-            . ltrim($path, '/\\');
+    function app_path(
+        string $path = '',
+    ): string {
+        return base_path(
+            'App'
+            . ($path !== ''
+                ? DIRECTORY_SEPARATOR
+                    . ltrim($path, '/\\')
+                : ''),
+        );
     }
 }
 
 if (!function_exists('view_path')) {
-    function view_path(string $path = ''): string
-    {
-        $base = app_path('Views');
-
-        if ($path === '') {
-            return $base;
-        }
-
-        return $base
-            . DIRECTORY_SEPARATOR
-            . ltrim($path, '/\\');
+    function view_path(
+        string $path = '',
+    ): string {
+        return app_path(
+            'Views'
+            . ($path !== ''
+                ? DIRECTORY_SEPARATOR
+                    . ltrim($path, '/\\')
+                : ''),
+        );
     }
 }
 
@@ -147,8 +148,10 @@ if (!function_exists('view_path')) {
 */
 
 if (!function_exists('abort')) {
-    function abort(int $code = 404): never
-    {
+    function abort(
+        int $code = 404,
+    ): never {
+        /** @var ErrorController $controller */
         $controller = app(
             ErrorController::class,
         );
@@ -176,7 +179,10 @@ if (!function_exists('redirect')) {
         int $status = 302,
     ): never {
         if (
-            preg_match('#^https?://#i', $path) === 1
+            preg_match(
+                '#^https?://#i',
+                $path,
+            ) === 1
         ) {
             Response::redirect(
                 $path,
@@ -185,7 +191,7 @@ if (!function_exists('redirect')) {
         }
 
         $baseUri = rtrim(
-            config('app.base_uri', '/'),
+            App::baseUri(),
             '/',
         );
 
@@ -242,9 +248,10 @@ if (!function_exists('view')) {
 
         $baseUri = App::baseUri();
 
-        $currentPath = app(
-            Request::class,
-        )->path();
+        /** @var Request $request */
+        $request = app(Request::class);
+
+        $currentPath = $request->path();
 
         $viewPath = view_path(
             $viewFile . '.php',
@@ -255,14 +262,14 @@ if (!function_exists('view')) {
         );
 
         if (!is_file($viewPath)) {
-            throw new RuntimeException(
+            throw new \RuntimeException(
                 'Vue introuvable : '
                 . $viewFile,
             );
         }
 
         if (!is_file($layoutPath)) {
-            throw new RuntimeException(
+            throw new \RuntimeException(
                 'Layout introuvable : layouts/base',
             );
         }
@@ -318,14 +325,10 @@ if (!function_exists('env_int')) {
         string $key,
         int $default = 0,
     ): int {
-        $value = Env::get(
+        return Env::int(
             $key,
             $default,
         );
-
-        return is_numeric($value)
-            ? (int) $value
-            : $default;
     }
 }
 
@@ -359,7 +362,8 @@ if (!function_exists('e')) {
     ): string {
         return htmlspecialchars(
             (string) $value,
-            ENT_QUOTES | ENT_SUBSTITUTE,
+            ENT_QUOTES
+            | ENT_SUBSTITUTE,
             'UTF-8',
         );
     }
@@ -374,8 +378,10 @@ if (!function_exists('e')) {
 if (!function_exists('is_ajax')) {
     function is_ajax(): bool
     {
-        return app(Request::class)
-            ->isAjax();
+        /** @var Request $request */
+        $request = app(Request::class);
+
+        return $request->isAjax();
     }
 }
 
@@ -391,7 +397,9 @@ if (!function_exists('csrf_token')) {
         if (!Session::has('csrf_token')) {
             Session::set(
                 'csrf_token',
-                bin2hex(random_bytes(32)),
+                bin2hex(
+                    random_bytes(32),
+                ),
             );
         }
 
@@ -404,24 +412,27 @@ if (!function_exists('csrf_token')) {
 if (!function_exists('csrf_field')) {
     function csrf_field(): string
     {
-        return '<input type="hidden" name="csrf_token" value="'
-            . e(csrf_token())
-            . '">';
+        return sprintf(
+            '<input type="hidden" name="csrf_token" value="%s">',
+            e(csrf_token()),
+        );
     }
 }
 
 if (!function_exists('csrf_meta_tag')) {
     function csrf_meta_tag(): string
     {
-        return '<meta name="csrf-token" content="'
-            . e(csrf_token())
-            . '">';
+        return sprintf(
+            '<meta name="csrf-token" content="%s">',
+            e(csrf_token()),
+        );
     }
 }
 
 if (!function_exists('csrf_verify')) {
     function csrf_verify(): void
     {
+        /** @var Request $request */
         $request = app(Request::class);
 
         if (!$request->isPost()) {

@@ -8,9 +8,16 @@ use RuntimeException;
 
 final class Session
 {
+    private static bool $started = false;
+
     private static function ensureStarted(): void
     {
-        if (session_status() === PHP_SESSION_ACTIVE) {
+        if (
+            self::$started
+            || session_status() === PHP_SESSION_ACTIVE
+        ) {
+            self::$started = true;
+
             return;
         }
 
@@ -43,19 +50,7 @@ final class Session
             ),
         );
 
-        $https = $_SERVER['HTTPS'] ?? null;
-
-        $secure =
-            (
-                is_string($https)
-                && $https !== ''
-                && $https !== 'off'
-            )
-            || (int) ($_SERVER['SERVER_PORT'] ?? 0) === 443
-            || (
-                ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '')
-                === 'https'
-            );
+        $secure = self::isHttps();
 
         ini_set(
             'session.use_strict_mode',
@@ -101,6 +96,24 @@ final class Session
             'cookie_secure' => $secure,
             'cookie_samesite' => 'Lax',
         ]);
+
+        self::$started = true;
+    }
+
+    private static function isHttps(): bool
+    {
+        $https = $_SERVER['HTTPS'] ?? null;
+
+        return (
+            is_string($https)
+            && $https !== ''
+            && strtolower($https) !== 'off'
+        )
+        || (int) ($_SERVER['SERVER_PORT'] ?? 0) === 443
+        || (
+            ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '')
+            === 'https'
+        );
     }
 
     public static function set(
@@ -189,7 +202,7 @@ final class Session
 
         $_SESSION = [];
 
-        if (ini_get('session.use_cookies') !== false) {
+        if (ini_get('session.use_cookies')) {
             $params = session_get_cookie_params();
 
             setcookie(
@@ -201,11 +214,14 @@ final class Session
                     'domain' => $params['domain'],
                     'secure' => $params['secure'],
                     'httponly' => $params['httponly'],
-                    'samesite' => $params['samesite'],
+                    'samesite' => $params['samesite']
+                        ?? 'Lax',
                 ],
             );
         }
 
         session_destroy();
+
+        self::$started = false;
     }
 }

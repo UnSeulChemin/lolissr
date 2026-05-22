@@ -5,17 +5,20 @@ declare(strict_types=1);
 namespace Framework\Http;
 
 use JsonException;
+use Framework\Support\Logger;
 
 final class Response
 {
     private static function sendContentType(
         string $contentType,
     ): void {
-        if (!headers_sent()) {
-            header(
-                "Content-Type: {$contentType}; charset=UTF-8",
-            );
+        if (headers_sent()) {
+            return;
         }
+
+        header(
+            "Content-Type: {$contentType}; charset=UTF-8",
+        );
     }
 
     public static function html(
@@ -40,20 +43,29 @@ final class Response
         array $data,
         int $statusCode = 200,
     ): never {
-        http_response_code($statusCode);
-
         self::sendContentType(
             'application/json',
         );
 
         try {
-            echo json_encode(
+            $json = json_encode(
                 $data,
                 JSON_UNESCAPED_UNICODE
                 | JSON_UNESCAPED_SLASHES
                 | JSON_THROW_ON_ERROR,
             );
-        } catch (JsonException) {
+
+            http_response_code($statusCode);
+
+            echo $json;
+        } catch (JsonException $exception) {
+            Logger::exception(
+                $exception,
+                [
+                    'type' => 'json_encode',
+                ],
+            );
+
             http_response_code(500);
 
             echo json_encode(
@@ -73,9 +85,9 @@ final class Response
         string $url,
         int $statusCode = 302,
     ): never {
-        http_response_code($statusCode);
-
         if (!headers_sent()) {
+            http_response_code($statusCode);
+
             header(
                 'Location: ' . $url,
             );

@@ -16,8 +16,9 @@ final class Database extends PDO
     public function __construct()
     {
         $dsn = sprintf(
-            'mysql:host=%s;dbname=%s;charset=%s',
+            'mysql:host=%s;port=%d;dbname=%s;charset=%s',
             DatabaseConfig::host(),
+            DatabaseConfig::port(),
             DatabaseConfig::name(),
             DatabaseConfig::charset(),
         );
@@ -27,21 +28,11 @@ final class Database extends PDO
                 $dsn,
                 DatabaseConfig::user(),
                 DatabaseConfig::pass(),
-            );
-
-            $this->setAttribute(
-                PDO::ATTR_DEFAULT_FETCH_MODE,
-                PDO::FETCH_OBJ,
-            );
-
-            $this->setAttribute(
-                PDO::ATTR_ERRMODE,
-                PDO::ERRMODE_EXCEPTION,
-            );
-
-            $this->setAttribute(
-                PDO::ATTR_EMULATE_PREPARES,
-                false,
+                [
+                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,
+                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                    PDO::ATTR_EMULATE_PREPARES => false,
+                ],
             );
         } catch (PDOException $exception) {
             Logger::exception(
@@ -55,6 +46,7 @@ final class Database extends PDO
                 App::debug()
                     ? $exception->getMessage()
                     : 'Erreur de connexion à la base de données.',
+                previous: $exception,
             );
         }
     }

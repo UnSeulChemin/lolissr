@@ -16,8 +16,6 @@ final class Bootstrap
 {
     public static function run(): never
     {
-        // Correction :
-        // clear avant reload.
         Env::clear();
         Config::clear();
 
@@ -95,12 +93,6 @@ final class Bootstrap
                 continue;
             }
 
-            $value = preg_replace(
-                '/\s+#.*$/',
-                '',
-                $value,
-            );
-
             $value = trim($value);
 
             $value = self::normalizeEnvValue(
@@ -110,11 +102,9 @@ final class Bootstrap
             $_ENV[$name] = $value;
             $_SERVER[$name] = $value;
 
-            if ($value !== '') {
-                putenv(
-                    "{$name}={$value}",
-                );
-            }
+            putenv(
+                "{$name}={$value}",
+            );
         }
     }
 

@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Framework\Exceptions;
 
-final class MethodNotAllowedException extends HttpException
+final class ForbiddenException extends HttpException
 {
     public function __construct(
-        string $message = 'Méthode non autorisée',
+        string $message = 'Accès interdit',
     ) {
         parent::__construct(
             $message,
-            405,
+            403,
         );
     }
 }
