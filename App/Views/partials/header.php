@@ -149,6 +149,8 @@ if (
 
             <form
                 class="header-search js-header-search"
+                method="GET"
+                action="<?= e($baseUri) ?>manga/recherche"
                 data-base-path="<?= e($baseUri) ?>">
 
                 <input
@@ -162,46 +164,47 @@ if (
 
                 <button
                     type="submit"
-                    title="Rechercher">
+                    title="Rechercher"
+                    aria-label="Rechercher">
 
                     🔎
 
                 </button>
 
-            </form>
+                <div class="header-search-dropdown js-header-search-dropdown">
 
-            <div class="header-search-dropdown js-header-search-dropdown">
+                    <div
+                        class="header-search-skeleton"
+                        aria-hidden="true">
 
-                <div
-                    class="header-search-skeleton"
-                    aria-hidden="true">
+                        <?php for ($i = 1; $i <= 5; $i++): ?>
 
-                    <?php for ($i = 1; $i <= 5; $i++): ?>
+                            <div class="header-search-skeleton-item">
 
-                        <div class="header-search-skeleton-item">
+                                <div class="header-search-skeleton-thumb"></div>
 
-                            <div class="header-search-skeleton-thumb"></div>
+                                <div class="header-search-skeleton-texts">
 
-                            <div class="header-search-skeleton-texts">
+                                    <div class="header-search-skeleton-line header-search-skeleton-line-title"></div>
 
-                                <div class="header-search-skeleton-line header-search-skeleton-line-title"></div>
+                                    <div class="header-search-skeleton-line header-search-skeleton-line-subtitle"></div>
 
-                                <div class="header-search-skeleton-line header-search-skeleton-line-subtitle"></div>
+                                </div>
 
                             </div>
 
-                        </div>
+                        <?php endfor; ?>
 
-                    <?php endfor; ?>
+                    </div>
+
+                    <div
+                        class="header-search-results"
+                        id="header-search-results">
+                    </div>
 
                 </div>
 
-                <div
-                    class="header-search-results"
-                    id="header-search-results">
-                </div>
-
-            </div>
+            </form>
 
         </div>
 

@@ -33,7 +33,8 @@ export function findSearchShortcuts(query)
     const normalized =
         query
             .trim()
-            .toLowerCase();
+            .toLowerCase()
+            .replace(/\s+/g, '');
 
     if (normalized === '')
     {
@@ -44,6 +45,7 @@ export function findSearchShortcuts(query)
     {
         return shortcut.title
             .toLowerCase()
+            .replace(/\s+/g, '')
             .includes(normalized);
     });
 }

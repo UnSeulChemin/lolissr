@@ -510,26 +510,6 @@ export function initSearchManga()
         {
             event.preventDefault();
 
-            if (activeResultIndex >= 0)
-            {
-                const items =
-                    getSearchResultItems();
-
-                if (
-                    items[
-                        activeResultIndex
-                    ]
-                )
-                {
-                    window.location.href =
-                        items[
-                            activeResultIndex
-                        ].href;
-
-                    return;
-                }
-            }
-
             let value =
                 mangaSearchInput.value.trim();
 
@@ -548,6 +528,8 @@ export function initSearchManga()
                 return;
             }
 
+            closeSearchDropdown();
+
             window.location.href =
                 `${basePath}manga/recherche/${encodeURIComponent(value)}`;
         },
@@ -560,6 +542,8 @@ export function initSearchManga()
             clearTimeout(
                 searchDebounceTimer,
             );
+
+            resetActiveSearchResult();
 
             searchDebounceTimer =
                 setTimeout(() =>
@@ -627,20 +611,24 @@ export function initSearchManga()
                 return;
             }
 
-            if (
-                event.key === 'Enter'
-                && activeResultIndex >= 0
-                && items[
-                    activeResultIndex
-                ]
-            )
+            if (event.key === 'Enter')
             {
-                event.preventDefault();
-
-                window.location.href =
-                    items[
+                if (
+                    activeResultIndex >= 0
+                    && items[
                         activeResultIndex
-                    ].href;
+                    ]
+                )
+                {
+                    event.preventDefault();
+
+                    window.location.href =
+                        items[
+                            activeResultIndex
+                        ].href;
+
+                    return;
+                }
             }
         },
     );
