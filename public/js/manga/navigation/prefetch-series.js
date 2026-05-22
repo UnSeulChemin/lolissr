@@ -1,9 +1,4 @@
-/*
-|------------------------------------------------------------------
-| Prefetch pour pages et images des séries manga
-|------------------------------------------------------------------
-*/
-
+// Cache mémoire pour les préfetchs
 const cache = {
     seriesPages: new Set(),
     seriesPagesPending: new Set(),
@@ -37,15 +32,9 @@ export function prefetchSeriesPage(url) {
     cache.seriesPagesPending.add(normalizedUrl);
 
     fetch(normalizedUrl, { method: 'GET', credentials: 'same-origin' })
-        .then((res) => {
-            if (res.ok) cache.seriesPages.add(normalizedUrl);
-        })
-        .catch(() => {
-            // silence volontaire si prefetch échoue
-        })
-        .finally(() => {
-            cache.seriesPagesPending.delete(normalizedUrl);
-        });
+        .then(res => { if (res.ok) cache.seriesPages.add(normalizedUrl); })
+        .catch(() => {})
+        .finally(() => { cache.seriesPagesPending.delete(normalizedUrl); });
 }
 
 /**
@@ -55,7 +44,6 @@ export function prefetchSeriesImage(url) {
     if (!canPrefetchSeriesImage(url)) return;
 
     cache.seriesImages.add(url);
-
     const img = new Image();
     img.src = url;
 }
@@ -76,11 +64,10 @@ function scheduleSeriesCardPrefetch(cardLink) {
 
     const timer = setTimeout(() => {
         prefetchSeriesPage(cardLink.href);
-
         const image = cardLink.querySelector('.card-image-portrait');
         if (image) prefetchSeriesImage(image.src);
-
         cache.hoverTimers.delete(cardLink);
+        console.log('Prefetch triggered for:', cardLink.href);
     }, 120);
 
     cache.hoverTimers.set(cardLink, timer);
@@ -92,7 +79,6 @@ function scheduleSeriesCardPrefetch(cardLink) {
 function cancelSeriesCardPrefetchHover(cardLink) {
     const timer = cache.hoverTimers.get(cardLink);
     if (!timer) return;
-
     clearTimeout(timer);
     cache.hoverTimers.delete(cardLink);
 }
@@ -105,9 +91,8 @@ export function initPrefetchSeries() {
     document.body.dataset.prefetchSeriesInit = 'true';
 
     // Hover souris
-    document.addEventListener('pointerover', (event) => {
-        if (event.pointerType && event.pointerType !== 'mouse') return;
-
+    document.addEventListener('pointerover', event => {
+        // On ignore pas les touchs, pour que ça marche sur tactile aussi
         const cardLink = getSeriesCardLinkFromEventTarget(event.target);
         if (!cardLink) return;
 
@@ -117,7 +102,7 @@ export function initPrefetchSeries() {
         scheduleSeriesCardPrefetch(cardLink);
     });
 
-    document.addEventListener('pointerout', (event) => {
+    document.addEventListener('pointerout', event => {
         const cardLink = getSeriesCardLinkFromEventTarget(event.target);
         if (!cardLink) return;
 
@@ -128,13 +113,19 @@ export function initPrefetchSeries() {
     });
 
     // Focus clavier
-    document.addEventListener('focusin', (event) => {
+    document.addEventListener('focusin', event => {
         const cardLink = getSeriesCardLinkFromEventTarget(event.target);
         if (!cardLink) return;
 
         prefetchSeriesPage(cardLink.href);
-
         const image = cardLink.querySelector('.card-image-portrait');
         if (image) prefetchSeriesImage(image.src);
     });
+}
+
+// Expose les fonctions pour debug / console
+if (typeof window !== 'undefined') {
+    window.initPrefetchSeries = initPrefetchSeries;
+    window.prefetchSeriesPage = prefetchSeriesPage;
+    window.prefetchSeriesImage = prefetchSeriesImage;
 }
