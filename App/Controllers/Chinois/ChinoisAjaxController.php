@@ -16,7 +16,7 @@ final class ChinoisAjaxController extends Controller
         private readonly ChinoisGrammaireRepository $repository,
         Request $request
     ) {
-        parent::__construct($request);
+        parent::__construct($request); // <- Obligatoire pour ton Controller parent
     }
 
     /**
@@ -27,7 +27,8 @@ final class ChinoisAjaxController extends Controller
     {
         $this->ensureAjax();
 
-        $id = $this->request->integer('id');
+        // Récupère l'ID depuis POST via le tableau global
+        $id = (int) ($_POST['id'] ?? 0);
 
         if ($id <= 0) {
             throw new ValidationException([
@@ -37,7 +38,6 @@ final class ChinoisAjaxController extends Controller
 
         $maitrise = $this->repository->toggleMaitrise($id);
 
-        // Retourne directement { success, maitrise } pour correspondre au JS
         $this->json([
             'success' => true,
             'maitrise' => $maitrise,
