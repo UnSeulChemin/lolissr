@@ -10,6 +10,7 @@ use Framework\Application\App;
 use Framework\Exceptions\BaseHttpException;
 use Framework\Exceptions\NotFoundException;
 use Framework\Http\Request;
+use App\DTO\Manga\Inputs\MangaUpdateNoteDTO;
 
 final class MangaAjaxController extends Controller
 {
@@ -79,23 +80,42 @@ final class MangaAjaxController extends Controller
 
         $data = $this->resolveMangaOrFail('update-note', $slug, $numero);
 
-        // Récupère directement les champs POST
+        // Récupération des champs POST
         $jacquette = (int)$this->request->input('jacquette', 0);
         $livreNote = (int)$this->request->input('livre_note', 0);
 
         // Validation simple
-        if ($jacquette < 0 || $jacquette > 10 || $livreNote < 0 || $livreNote > 10) {
+        if ($jacquette < 1 || $jacquette > 5 || $livreNote < 1 || $livreNote > 5) {
             $this->json(['success' => false, 'message' => 'Valeurs invalides'], 400);
             return;
         }
 
+        // Calcul note totale
+        $noteTotale = $jacquette + $livreNote;
+
+        // Création du DTO
+        $dto = MangaUpdateNoteDTO::fromArray([
+            'jacquette' => $jacquette,
+            'livre_note' => $livreNote,
+        ]);
+
+        // Appel du service
         $result = $this->mangaWriteService->updateNote(
             $data->canonicalSlug,
             $numero,
-            compact('jacquette','livreNote')
+            $dto,
+            $noteTotale
         );
 
-        $this->json($result->toArray(), $result->status);
+        // Préparer la réponse pour le front-end
+        $response = $result->toArray();
+        $response['data']['notes'] = [
+            'jacquette' => $jacquette,
+            'livreNote' => $livreNote,
+            'note' => $noteTotale
+        ];
+
+        $this->json($response, $result->status);
     }
 
     // -----------------------------

@@ -1,6 +1,3 @@
-// ======================================================
-// update-note.js
-// ======================================================
 import { showToast } from '../../core/toast.js';
 
 function getCsrfToken() {
@@ -14,6 +11,7 @@ export function initUpdateNote() {
     let isSavingNotes = false;
 
     const getDetailCard = () => document.querySelector('.js-detail-card');
+    const totalNoteEl = document.getElementById('ajax-note-total');
 
     const refreshNoteButtonsState = () => {
         const card = getDetailCard();
@@ -36,7 +34,6 @@ export function initUpdateNote() {
         const slug = card.dataset.slug;
         const numero = card.dataset.numero;
         const basePath = card.dataset.basePath;
-        const totalNoteEl = document.getElementById('ajax-note-total');
 
         const formData = new FormData();
         formData.append('jacquette', fieldName === 'jacquette' ? value : card.dataset.jacquette || '0');
@@ -63,7 +60,11 @@ export function initUpdateNote() {
             if (notes.jacquette !== undefined) card.dataset.jacquette = String(notes.jacquette);
             if (notes.livreNote !== undefined) card.dataset.livreNote = String(notes.livreNote);
 
-            if (totalNoteEl) totalNoteEl.textContent = (notes.note !== undefined && notes.note !== null) ? `${notes.note}/10` : 'Non calculée';
+            // Mettre à jour la note totale
+            if (totalNoteEl) {
+                const total = Number(card.dataset.jacquette ?? 0) + Number(card.dataset.livreNote ?? 0);
+                totalNoteEl.textContent = `${total}/10`;
+            }
 
             refreshNoteButtonsState();
             showToast(data.message ?? '✓ Sauvegardé', 'success');
@@ -90,9 +91,7 @@ export function initUpdateNote() {
         if (!fieldName) return;
 
         const value = Number(button.dataset.value);
-
-        if (fieldName === 'jacquette') card.dataset.jacquette = String(value);
-        if (fieldName === 'livreNote') card.dataset.livreNote = String(value);
+        card.dataset[fieldName] = String(value);
 
         refreshNoteButtonsState();
         await saveNotes(fieldName, value);
@@ -102,5 +101,4 @@ export function initUpdateNote() {
     document.addEventListener('ajax:series-loaded', refreshNoteButtonsState);
 }
 
-// Auto-init
 document.addEventListener('DOMContentLoaded', () => initUpdateNote());
