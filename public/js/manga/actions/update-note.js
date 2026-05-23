@@ -1,411 +1,106 @@
-import { showToast }
-    from '../../core/toast.js';
+// ======================================================
+// update-note.js
+// ======================================================
+import { showToast } from '../../core/toast.js';
 
-/*
-|------------------------------------------------------------------
-| CSRF
-|------------------------------------------------------------------
-*/
-
-function getCsrfToken()
-{
-    return document
-        .querySelector(
-            'meta[name="csrf-token"]',
-        )
-        ?.getAttribute(
-            'content',
-        )
-        ?? '';
+function getCsrfToken() {
+    return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
 }
 
-/*
-|------------------------------------------------------------------
-| Init
-|------------------------------------------------------------------
-*/
+export function initUpdateNote() {
+    if (document.body.dataset.updateNoteInit === 'true') return;
+    document.body.dataset.updateNoteInit = 'true';
 
-export function initUpdateNote()
-{
-    /*
-    |--------------------------------------------------------------
-    | Anti double init global
-    |--------------------------------------------------------------
-    */
+    let isSavingNotes = false;
 
-    if (
-        document.body.dataset
-            .updateNoteInit
-        === 'true'
-    ) {
-        return;
-    }
+    const getDetailCard = () => document.querySelector('.js-detail-card');
 
-    document.body.dataset
-        .updateNoteInit =
-            'true';
+    const refreshNoteButtonsState = () => {
+        const card = getDetailCard();
+        if (!card) return;
+        card.querySelectorAll('.ajax-note-group').forEach(group => {
+            const fieldName = group.dataset.field;
+            const currentValue = Number(card.dataset[fieldName] ?? '');
+            group.querySelectorAll('.ajax-note-button').forEach(button => {
+                const btnValue = Number(button.dataset.value);
+                button.classList.toggle('active', currentValue === btnValue);
+                button.disabled = isSavingNotes;
+            });
+        });
+    };
 
-    /*
-    |--------------------------------------------------------------
-    | State
-    |--------------------------------------------------------------
-    */
+    const saveNotes = async (fieldName, value) => {
+        const card = getDetailCard();
+        if (!card) return;
 
-    let isSavingNotes =
-        false;
+        const slug = card.dataset.slug;
+        const numero = card.dataset.numero;
+        const basePath = card.dataset.basePath;
+        const totalNoteEl = document.getElementById('ajax-note-total');
 
-    /*
-    |--------------------------------------------------------------
-    | Helpers
-    |--------------------------------------------------------------
-    */
+        const formData = new FormData();
+        formData.append('jacquette', fieldName === 'jacquette' ? value : card.dataset.jacquette || '0');
+        formData.append('livre_note', fieldName === 'livreNote' ? value : card.dataset.livreNote || '0');
 
-    function getDetailCard()
-    {
-        return document.querySelector(
-            '.js-detail-card',
-        );
-    }
-
-    function refreshNoteButtonsState()
-    {
-        const mangaDetailCard =
-            getDetailCard();
-
-        if (!mangaDetailCard) {
-            return;
-        }
-
-        const noteGroups =
-            mangaDetailCard.querySelectorAll(
-                '.ajax-note-group',
-            );
-
-        noteGroups.forEach(
-            group =>
-            {
-                const fieldName =
-                    group.dataset.field;
-
-                const currentValue =
-                    Number(
-                        mangaDetailCard.dataset[
-                            fieldName
-                        ] ?? '',
-                    );
-
-                group
-                    .querySelectorAll(
-                        '.ajax-note-button',
-                    )
-                    .forEach(
-                        button =>
-                        {
-                            const buttonValue =
-                                Number(
-                                    button.dataset.value,
-                                );
-
-                            button.classList.toggle(
-                                'active',
-                                currentValue
-                                === buttonValue,
-                            );
-
-                            button.disabled =
-                                isSavingNotes;
-                        },
-                    );
-            },
-        );
-    }
-
-    async function saveNotes(
-        fieldName,
-        value,
-    )
-    {
-        const mangaDetailCard =
-            getDetailCard();
-
-        if (!mangaDetailCard) {
-            return;
-        }
-
-        const mangaSlug =
-            mangaDetailCard.dataset.slug;
-
-        const mangaNumero =
-            mangaDetailCard.dataset.numero;
-
-        const basePath =
-            mangaDetailCard.dataset.basePath;
-
-        const totalNoteElement =
-            document.getElementById(
-                'ajax-note-total',
-            );
-
-        const formData =
-            new FormData();
-
-        /*
-        |----------------------------------------------------------
-        | Existing values
-        |----------------------------------------------------------
-        */
-
-        const currentJacquette =
-            mangaDetailCard.dataset.jacquette
-            || '0';
-
-        const currentLivreNote =
-            mangaDetailCard.dataset.livreNote
-            || '0';
-
-        formData.append(
-            'jacquette',
-            fieldName === 'jacquette'
-                ? String(value)
-                : currentJacquette,
-        );
-
-        formData.append(
-            'livre_note',
-            fieldName === 'livreNote'
-                ? String(value)
-                : currentLivreNote,
-        );
-
-        /*
-        |----------------------------------------------------------
-        | CSRF
-        |----------------------------------------------------------
-        */
-
-        const csrfToken =
-            getCsrfToken();
-
-        if (csrfToken !== '') {
-            formData.append(
-                'csrf_token',
-                csrfToken,
-            );
-        }
+        const csrf = getCsrfToken();
+        if (csrf) formData.append('csrf_token', csrf);
 
         try {
-
             isSavingNotes = true;
-
             refreshNoteButtonsState();
 
-            const response =
-                await fetch(
-                    `${basePath}manga/ajax/update-note/${mangaSlug}/${mangaNumero}`,
-                    {
-                        method: 'POST',
+            const res = await fetch(`${basePath}manga/ajax/update-note/${slug}/${numero}`, {
+                method: 'POST',
+                headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                body: formData
+            });
 
-                        headers:
-                        {
-                            'Accept':
-                                'application/json',
+            const data = await res.json();
 
-                            'X-Requested-With':
-                                'XMLHttpRequest',
-                        },
+            if (!res.ok || !data.success) throw new Error(data.message ?? 'Erreur');
 
-                        body: formData,
-                    },
-                );
+            const notes = data.data?.notes ?? {};
+            if (notes.jacquette !== undefined) card.dataset.jacquette = String(notes.jacquette);
+            if (notes.livreNote !== undefined) card.dataset.livreNote = String(notes.livreNote);
 
-            const data =
-                await response.json();
-
-            if (
-                !response.ok
-                || !data.success
-            ) {
-                throw new Error(
-                    data.message
-                    ?? 'Erreur',
-                );
-            }
-
-            /*
-            |------------------------------------------------------
-            | Update dataset
-            |------------------------------------------------------
-            */
-
-            const notes =
-                data.data?.notes
-                ?? null;
-
-            if (
-                notes?.jacquette
-                !== undefined
-            ) {
-                mangaDetailCard.dataset.jacquette =
-                    String(
-                        notes.jacquette,
-                    );
-            }
-
-            if (
-                notes?.livreNote
-                !== undefined
-            ) {
-                mangaDetailCard.dataset.livreNote =
-                    String(
-                        notes.livreNote,
-                    );
-            }
-
-            /*
-            |------------------------------------------------------
-            | Update total
-            |------------------------------------------------------
-            */
-
-            if (
-                totalNoteElement
-            ) {
-                totalNoteElement.textContent =
-                    notes?.note !== null
-                    && notes?.note !== undefined
-                        ? `${notes.note}/10`
-                        : 'Non calculée';
-            }
+            if (totalNoteEl) totalNoteEl.textContent = (notes.note !== undefined && notes.note !== null) ? `${notes.note}/10` : 'Non calculée';
 
             refreshNoteButtonsState();
+            showToast(data.message ?? '✓ Sauvegardé', 'success');
 
-            showToast(
-                data.message
-                ?? '✓ Sauvegardé',
-                'success',
-            );
-
-        } catch (error) {
-
-            console.error(
-                error,
-            );
-
-            showToast(
-                error?.message
-                ?? 'Erreur',
-                'error',
-            );
-
+        } catch (err) {
+            console.error(err);
+            showToast(err?.message ?? 'Erreur', 'error');
         } finally {
-
             isSavingNotes = false;
-
             refreshNoteButtonsState();
         }
-    }
+    };
 
-    /*
-    |--------------------------------------------------------------
-    | Delegation click
-    |--------------------------------------------------------------
-    */
+    document.addEventListener('click', async e => {
+        const button = e.target.closest('.ajax-note-button');
+        if (!button) return;
+        const card = getDetailCard();
+        if (!card || isSavingNotes) return;
 
-    document.addEventListener(
-        'click',
-        async event =>
-        {
-            const button =
-                event.target.closest(
-                    '.ajax-note-button',
-                );
+        const group = button.closest('.ajax-note-group');
+        if (!group) return;
 
-            if (!button) {
-                return;
-            }
+        const fieldName = group.dataset.field;
+        if (!fieldName) return;
 
-            const mangaDetailCard =
-                getDetailCard();
+        const value = Number(button.dataset.value);
 
-            if (!mangaDetailCard) {
-                return;
-            }
+        if (fieldName === 'jacquette') card.dataset.jacquette = String(value);
+        if (fieldName === 'livreNote') card.dataset.livreNote = String(value);
 
-            if (isSavingNotes) {
-                return;
-            }
-
-            const noteGroup =
-                button.closest(
-                    '.ajax-note-group',
-                );
-
-            if (!noteGroup) {
-                return;
-            }
-
-            const fieldName =
-                noteGroup.dataset.field;
-
-            if (!fieldName) {
-                return;
-            }
-
-            const value =
-                Number(
-                    button.dataset.value,
-                );
-
-            /*
-            |------------------------------------------------------
-            | Local update
-            |------------------------------------------------------
-            */
-
-            if (
-                fieldName
-                === 'jacquette'
-            ) {
-                mangaDetailCard.dataset.jacquette =
-                    String(value);
-            }
-
-            if (
-                fieldName
-                === 'livreNote'
-            ) {
-                mangaDetailCard.dataset.livreNote =
-                    String(value);
-            }
-
-            refreshNoteButtonsState();
-
-            await saveNotes(
-                fieldName,
-                value,
-            );
-        },
-    );
-
-    /*
-    |--------------------------------------------------------------
-    | Initial state
-    |--------------------------------------------------------------
-    */
+        refreshNoteButtonsState();
+        await saveNotes(fieldName, value);
+    });
 
     refreshNoteButtonsState();
-
-    /*
-    |--------------------------------------------------------------
-    | Re-sync after AJAX
-    |--------------------------------------------------------------
-    */
-
-    document.addEventListener(
-        'ajax:series-loaded',
-        () =>
-        {
-            refreshNoteButtonsState();
-        },
-    );
+    document.addEventListener('ajax:series-loaded', refreshNoteButtonsState);
 }
+
+// Auto-init
+document.addEventListener('DOMContentLoaded', () => initUpdateNote());

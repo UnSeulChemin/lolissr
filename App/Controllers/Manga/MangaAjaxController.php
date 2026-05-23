@@ -4,13 +4,11 @@ declare(strict_types=1);
 namespace App\Controllers\Manga;
 
 use App\Controllers\Controller;
-use App\Http\Requests\Manga\MangaUpdateNoteRequest;
 use App\Services\Manga\MangaReadService;
 use App\Services\Manga\MangaWriteService;
 use Framework\Application\App;
 use Framework\Exceptions\BaseHttpException;
 use Framework\Exceptions\NotFoundException;
-use Framework\Exceptions\ValidationException;
 use Framework\Http\Request;
 
 final class MangaAjaxController extends Controller
@@ -20,7 +18,7 @@ final class MangaAjaxController extends Controller
     public function __construct(
         protected MangaReadService $mangaReadService,
         protected MangaWriteService $mangaWriteService,
-        Request $request,
+        Request $request
     ) {
         parent::__construct($request);
     }
@@ -37,23 +35,17 @@ final class MangaAjaxController extends Controller
     public function search(string $query = ''): never
     {
         $this->ensureAjax();
-
         try {
             $searchData = $this->mangaReadService->search($query);
             $results = $searchData->mangas ?? [];
 
             $this->json([
                 'success' => true,
-                'data' => [
-                    'results' => $results,
-                ],
+                'data' => ['results' => $results],
             ]);
         } catch (\Throwable $e) {
             http_response_code(500);
-            $this->json([
-                'success' => false,
-                'error' => $e->getMessage(),
-            ]);
+            $this->json(['success' => false, 'error' => $e->getMessage()]);
         }
     }
 
@@ -63,63 +55,79 @@ final class MangaAjaxController extends Controller
     public function seriesPage(string|int $page = 1): void
     {
         $this->ensureAjax();
-        $page = max(1, (int) $page);
+        $page = max(1, (int)$page);
         $data = $this->mangaReadService->series($page);
 
         if ($data === null) throw new NotFoundException('Page introuvable');
 
-        $this->renderPartial(
-            'manga/partials/series_page_ajax',
-            [
-                'mangas' => $data->mangas,
-                'currentPage' => $data->currentPage,
-                'totalPages' => $data->compteur,
-                'slugFilter' => $data->slugFilter,
-                'isSerieView' => $data->slugFilter !== null,
-                'baseUri' => $this->baseUri,
-            ]
-        );
+        $this->renderPartial('manga/partials/series_page_ajax', [
+            'mangas' => $data->mangas,
+            'currentPage' => $data->currentPage,
+            'totalPages' => $data->compteur,
+            'slugFilter' => $data->slugFilter,
+            'isSerieView' => $data->slugFilter !== null,
+            'baseUri' => $this->baseUri,
+        ]);
     }
 
     // -----------------------------
     // Update note
     // -----------------------------
-    public function updateNote(MangaUpdateNoteRequest $request, string $slug, int $numero): never
+    public function updateNote(string $slug, int $numero): void
     {
         $this->ensureAjax();
+
         $data = $this->resolveMangaOrFail('update-note', $slug, $numero);
 
-        if ($request->fails()) throw new ValidationException($request->errors());
+        // Récupère directement les champs POST
+        $jacquette = (int)$this->request->input('jacquette', 0);
+        $livreNote = (int)$this->request->input('livre_note', 0);
 
-        $result = $this->mangaWriteService->updateNote($data->canonicalSlug, $numero, $request->dto());
+        // Validation simple
+        if ($jacquette < 0 || $jacquette > 10 || $livreNote < 0 || $livreNote > 10) {
+            $this->json(['success' => false, 'message' => 'Valeurs invalides'], 400);
+            return;
+        }
+
+        $result = $this->mangaWriteService->updateNote(
+            $data->canonicalSlug,
+            $numero,
+            compact('jacquette','livreNote')
+        );
+
         $this->json($result->toArray(), $result->status);
     }
 
     // -----------------------------
     // Update read status
     // -----------------------------
-    public function updateReadStatus(string $slug, int $numero): never
+    public function updateReadStatus(string $slug, int $numero): void
     {
         $this->ensureAjax();
+
         $data = $this->resolveMangaOrFail('update-read-status', $slug, $numero);
+        $readStatus = (int)$this->request->input('readStatus', 0);
 
         $result = $this->mangaWriteService->updateReadStatus(
             $data->canonicalSlug,
             $numero,
-            $this->request->integer('readStatus', 0)
+            $readStatus
         );
+
         $this->json($result->toArray(), $result->status);
     }
 
     // -----------------------------
     // Delete manga
     // -----------------------------
-    public function delete(string $slug, int $numero): never
+    public function delete(string $slug, int $numero): void
     {
         $this->ensureAjax();
+
         $data = $this->resolveMangaOrFail('delete', $slug, $numero);
 
         $result = $this->mangaWriteService->delete($data->canonicalSlug, $numero);
+
         $this->json($result->toArray(), $result->status);
     }
 
