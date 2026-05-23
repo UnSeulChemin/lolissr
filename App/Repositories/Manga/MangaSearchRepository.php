@@ -38,8 +38,7 @@ final class MangaSearchRepository extends Model
      */
     private function extractSearchNumero(
         string $search,
-    ): ?array
-    {
+    ): ?array {
         $pattern = '
             /^
             (.*?)
@@ -117,11 +116,13 @@ final class MangaSearchRepository extends Model
         ];
 
         if ($numero !== null) {
+
             $sql .= '
                 AND numero = :numero
             ';
 
-            $params['numero'] = $numero;
+            $params['numero'] =
+                $numero;
         }
 
         $sql .= '
@@ -157,6 +158,7 @@ final class MangaSearchRepository extends Model
         );
 
         if ($searchNumero !== null) {
+
             return $this->fetchSearchResults(
                 $searchNumero['title'],
                 $searchNumero['numero'],
@@ -170,11 +172,11 @@ final class MangaSearchRepository extends Model
 
     public function countFirstTomes(): int
     {
-        $result = $this->fetchOne(
-            "SELECT COUNT(*) AS total
+        $result = $this->fetchOne("
+            SELECT COUNT(*) AS total
             FROM {$this->getTable()}
-            WHERE numero = 1"
-        );
+            WHERE numero = 1
+        ");
 
         return (int) ($result->total ?? 0);
     }
@@ -182,101 +184,40 @@ final class MangaSearchRepository extends Model
     /**
      * @return list<Manga>
      */
-    public function findAllFirstTomes(
-        string $orderBy,
-        int $eachPerPage,
-        int $page,
-    ): array {
-        $page = max(
-            1,
-            $page,
-        );
+    public function findAllFirstTomes(string $orderBy, int $perPage, int $page): array
+    {
+        $page = max(1, $page);
+        $perPage = max(1, $perPage);
+        $offset = ($page - 1) * $perPage;
 
-        $eachPerPage = max(
-            1,
-            $eachPerPage,
-        );
+        $allowedOrderBy = ['id DESC', 'id ASC'];
+        if (!in_array($orderBy, $allowedOrderBy, true)) $orderBy = 'id DESC';
 
-        $offset =
-            ($page - 1)
-            * $eachPerPage;
-
-        $allowedOrderBy = [
-            'id DESC',
-            'id ASC',
-        ];
-
-        if (
-            !in_array(
-                $orderBy,
-                $allowedOrderBy,
-                true,
-            )
-        ) {
-            $orderBy = 'id DESC';
-        }
-
-        /** @var list<Manga> $mangas */
-        $mangas = $this->fetchAll(
-            "SELECT
+        $sql = "
+            SELECT
                 m.*,
                 stats.total,
                 stats.total_lu,
                 stats.average_note
-
             FROM {$this->getTable()} m
-
             INNER JOIN (
                 SELECT
                     slug,
-
                     COUNT(*) AS total,
-
-                    SUM(
-                        CASE
-                            WHEN lu = 1
-                            THEN 1
-                            ELSE 0
-                        END
-                    ) AS total_lu,
-
-                    ROUND(
-                        AVG(
-                            COALESCE(note, 0)
-                        ),
-                        1
-                    ) AS average_note
-
+                    SUM(CASE WHEN lu = 1 THEN 1 ELSE 0 END) AS total_lu,
+                    ROUND(AVG(COALESCE(note,0)),1) AS average_note
                 FROM {$this->getTable()}
-
                 GROUP BY slug
-
-            ) stats
-                ON stats.slug = m.slug
-
+            ) stats ON stats.slug = m.slug
             WHERE m.numero = 1
-
             ORDER BY
-                CASE
-                    WHEN stats.total_lu < stats.total
-                    THEN 0
-                    ELSE 1
-                END ASC,
-
-                CASE
-                    WHEN m.statut = 'termine'
-                    THEN 1
-                    ELSE 0
-                END ASC,
-
+                CASE WHEN stats.total_lu < stats.total THEN 0 ELSE 1 END ASC,
+                CASE WHEN m.statut='termine' THEN 1 ELSE 0 END ASC,
                 stats.average_note ASC,
                 {$orderBy}
+            LIMIT {$perPage} OFFSET {$offset}
+        ";
 
-            LIMIT {$offset}, {$eachPerPage}",
-            [],
-            Manga::class,
-        );
-
-        return $mangas;
+        return $this->fetchAll($sql, [], Manga::class);
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Services\Manga;
@@ -34,12 +35,13 @@ final readonly class MangaReadService
             averageNote: $manga->average_note ?? null,
             total: $manga->total ?? 0,
             totalLu: $manga->total_lu ?? 0,
-            lu: $manga->lu ?? 0
+            lu: $manga->lu ?? 0,
         );
     }
 
-    private function mapSearchItem(Manga $manga): MangaSearchItemData
-    {
+    private function mapSearchItem(
+        Manga $manga,
+    ): MangaSearchItemData {
         return new MangaSearchItemData(
             slug: $manga->slug,
             numero: $manga->numero,
@@ -58,18 +60,13 @@ final readonly class MangaReadService
         $page = max(1, (int)$page);
         $perPage = App::pagination();
 
-        // nombre total de séries
-        $totalSeries = $this->searchRepository->countFirstTomes(); 
+        $totalSeries = $this->searchRepository->countFirstTomes();
         if ($totalSeries === 0) return null;
 
         $totalPages = (int) ceil($totalSeries / $perPage);
         if ($page > $totalPages) $page = $totalPages;
 
-        // Calcul correct de l'offset
-        $offset = ($page - 1) * $perPage;
-
-        // Récupère les mangas avec LIMIT et OFFSET
-        $mangas = $this->searchRepository->findAllFirstTomes('id DESC', $perPage, $offset);
+        $mangas = $this->searchRepository->findAllFirstTomes('id DESC', $perPage, $page);
 
         return new MangaSeriesData(
             mangas: array_map($this->mapSeriesItem(...), $mangas),
@@ -77,46 +74,97 @@ final readonly class MangaReadService
             currentPage: $page,
             slugFilter: null,
             totalSeries: $totalSeries,
-            perPage: $perPage
+            perPage: $perPage,
         );
     }
 
-    public function search(string $query = ''): MangaSearchData
-    {
-        $results = $this->searchRepository->searchMangas(trim($query));
+    public function search(
+        string $query = '',
+    ): MangaSearchData {
+
+        $results =
+            $this->searchRepository
+                ->searchMangas(
+                    trim($query),
+                );
+
         return new MangaSearchData(
-            mangas: array_map($this->mapSearchItem(...), $results),
-            search: $query
+            mangas: array_map(
+                $this->mapSearchItem(...),
+                $results,
+            ),
+
+            search:
+                $query,
         );
     }
 
-    public function showSeries(string $slug): ?MangaSeriesData
-    {
-        $normalizedSlug = Str::slug($slug);
-        $mangas = $this->mangaRepository->findBySlug($normalizedSlug);
-        if (empty($mangas)) return null;
+    public function showSeries(
+        string $slug,
+    ): ?MangaSeriesData {
 
-        $totalItems = count($mangas);
+        $normalizedSlug =
+            Str::slug($slug);
+
+        $mangas =
+            $this->mangaRepository
+                ->findBySlug(
+                    $normalizedSlug,
+                );
+
+        if (empty($mangas)) {
+            return null;
+        }
+
+        $totalItems =
+            count($mangas);
 
         return new MangaSeriesData(
-            mangas: array_map($this->mapSeriesItem(...), $mangas),
+            mangas: array_map(
+                $this->mapSeriesItem(...),
+                $mangas,
+            ),
+
             compteur: 1,
+
             currentPage: 1,
-            slugFilter: $normalizedSlug,
-            totalSeries: $totalItems,
-            perPage: $totalItems
+
+            slugFilter:
+                $normalizedSlug,
+
+            totalSeries:
+                $totalItems,
+
+            perPage:
+                $totalItems,
         );
     }
 
-    public function one(string $slug, int $numero): ?MangaShowData
-    {
-        $normalizedSlug = Str::slug($slug);
-        $manga = $this->mangaRepository->findOneBySlugAndNumero($normalizedSlug, $numero);
-        if ($manga === null) return null;
+    public function one(
+        string $slug,
+        int $numero,
+    ): ?MangaShowData {
+
+        $normalizedSlug =
+            Str::slug($slug);
+
+        $manga =
+            $this->mangaRepository
+                ->findOneBySlugAndNumero(
+                    $normalizedSlug,
+                    $numero,
+                );
+
+        if ($manga === null) {
+            return null;
+        }
 
         return new MangaShowData(
-            manga: $manga,
-            canonicalSlug: $normalizedSlug
+            manga:
+                $manga,
+
+            canonicalSlug:
+                $normalizedSlug,
         );
     }
 }

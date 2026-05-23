@@ -7,57 +7,34 @@ $totalSeries = (int) ($view['totalSeries'] ?? 0);
 $perPage     = (int) ($view['perPage'] ?? 10);
 $slugFilter  = $view['slugFilter'] ?? null;
 
-$isSerieView = is_string($slugFilter)
-    && trim($slugFilter) !== '';
+$isSerieView = is_string($slugFilter) && trim($slugFilter) !== '';
 
-$baseUri = rtrim(
-    (string) ($baseUri ?? ''),
-    '/',
-) . '/';
+$baseUri = rtrim((string) ($baseUri ?? ''), '/') . '/';
 
-$totalPages = max(
-    1,
-    (int) ceil($totalSeries / $perPage),
-);
+$totalPages = max(1, (int) ceil($totalSeries / $perPage));
 ?>
 
 <section class="layout-container dashboard-page">
 
     <div class="collection-ajax-container">
 
-        <div
-            class="collection-scroll-anchor"
-            aria-hidden="true"
-        ></div>
+        <div class="collection-scroll-anchor" aria-hidden="true"></div>
 
+        <!-- Conteneur AJAX -->
         <div class="collection-ajax-content">
 
             <?php include __DIR__ . '/partials/series_ajax.php'; ?>
 
-            <?php if (
-                !$isSerieView
-                && $totalPages > 1
-            ): ?>
-
-            <nav class="collection-pagination-wrapper">
-
-                <?php for (
-                    $i = 1;
-                    $i <= $totalPages;
-                    $i++
-                ): ?>
-
-                <a
-                    class="collection-pagination-link <?= $currentPage === $i ? 'active' : '' ?>"
-                    href="<?= $baseUri ?>manga/series/page/<?= $i ?>"
-                >
-                    <?= $i ?>
-                </a>
-
-                <?php endfor; ?>
-
-            </nav>
-
+            <!-- Pagination -->
+            <?php if (!$isSerieView && $totalPages > 1): ?>
+                <nav class="collection-pagination-wrapper">
+                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                        <a class="collection-pagination-link <?= $currentPage === $i ? 'active' : '' ?>"
+                           href="<?= $baseUri ?>manga/series/page/<?= $i ?>">
+                            <?= $i ?>
+                        </a>
+                    <?php endfor; ?>
+                </nav>
             <?php endif; ?>
 
         </div>

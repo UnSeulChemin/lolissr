@@ -1,379 +1,104 @@
-import {
-    buildAjaxUrl,
-    getPrefetchedPage,
-    prefetchSeriesPage,
-} from '../navigation/prefetch-series.js';
+import { buildAjaxUrl, getPrefetchedPage, prefetchSeriesPage } from '../navigation/prefetch-series.js';
 
-/*
-|------------------------------------------------------------------
-| Selectors
-|------------------------------------------------------------------
-*/
+const containerSelector = '.collection-ajax-container';
+const contentSelector = '.collection-ajax-content';
 
-const containerSelector =
-    '.collection-ajax-container';
-
-const contentSelector =
-    '.collection-ajax-content';
-
-/*
-|------------------------------------------------------------------
-| Helpers
-|------------------------------------------------------------------
-*/
-
-function getContainer()
-{
-    return document.querySelector(
-        containerSelector,
-    );
+function getContainer() {
+    return document.querySelector(containerSelector);
 }
 
-function getContent()
-{
-    return document.querySelector(
-        contentSelector,
-    );
+function getContent() {
+    return document.querySelector(contentSelector);
 }
 
-function isSeriesPageUrl(
-    url,
-)
-{
-    return /\/manga\/series($|\/page\/\d+$)/
-        .test(
-            url.pathname,
-        );
+function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function scrollToTop()
-{
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth',
+function isSeriesPageUrl(url) {
+    const pathname = typeof url === 'string' ? new URL(url).pathname : url.pathname;
+    return /\/manga\/series($|\/page\/\d+$)/.test(pathname);
+}
+
+async function fetchHtml(ajaxUrl) {
+    const cached = getPrefetchedPage(ajaxUrl);
+    if (cached) return cached;
+
+    const response = await fetch(`${ajaxUrl}?t=${Date.now()}`, {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
     });
-}
 
-/*
-|------------------------------------------------------------------
-| Fetch HTML
-|------------------------------------------------------------------
-*/
-
-async function fetchHtml(
-    ajaxUrl,
-)
-{
-    const cached =
-        getPrefetchedPage(
-            ajaxUrl,
-        );
-
-    if (cached) {
-        return cached;
-    }
-
-    const response =
-        await fetch(
-            ajaxUrl,
-            {
-                headers:
-                {
-                    'X-Requested-With':
-                        'XMLHttpRequest',
-                },
-            },
-        );
-
-    if (
-        !response.ok
-    ) {
-        throw new Error(
-            'Erreur AJAX',
-        );
-    }
-
+    if (!response.ok) throw new Error('Erreur AJAX');
     return await response.text();
 }
 
-/*
-|------------------------------------------------------------------
-| Replace content
-|------------------------------------------------------------------
-*/
+export async function loadSeriesPage(href, pushState = true) {
+    const container = getContainer();
+    const content = getContent();
+    if (!container || !content) return;
 
-async function loadSeriesPage(
-    url,
-    pushState = true,
-)
-{
-    const container =
-        getContainer();
-
-    const currentContent =
-        getContent();
-
-    if (
-        !container
-        || !currentContent
-    ) {
-        return;
-    }
-
-    container.classList.add(
-        'is-loading',
-    );
+    container.classList.add('is-loading');
 
     try {
+        const ajaxUrl = buildAjaxUrl(href);
+        const html = await fetchHtml(ajaxUrl);
 
-        const ajaxUrl =
-            buildAjaxUrl({
-                href: url.href,
-            });
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const newContent = doc.querySelector(contentSelector);
 
-        const html =
-            await fetchHtml(
-                ajaxUrl,
-            );
+        if (!newContent) throw new Error('[AJAX] New content not found');
 
-        const parser =
-            new DOMParser();
+        // Remplace uniquement le HTML
+        content.innerHTML = newContent.innerHTML;
 
-        const documentHtml =
-            parser.parseFromString(
-                html,
-                'text/html',
-            );
+        if (pushState) window.history.pushState({}, '', href);
 
-        const newContent =
-            documentHtml.querySelector(
-                contentSelector,
-            );
-
-        if (!newContent) {
-            throw new Error(
-                'Contenu AJAX introuvable',
-            );
-        }
-
-        /*
-        |----------------------------------------------------------
-        | Replace node
-        |----------------------------------------------------------
-        */
-
-        currentContent.replaceWith(
-            newContent,
-        );
-
-        /*
-        |----------------------------------------------------------
-        | History
-        |----------------------------------------------------------
-        */
-
-        if (pushState) {
-
-            window.history.pushState(
-                {},
-                '',
-                url.href,
-            );
-        }
-
-        /*
-        |----------------------------------------------------------
-        | Events
-        |----------------------------------------------------------
-        */
-
-        document.dispatchEvent(
-            new CustomEvent(
-                'ajax:series-loaded',
-            ),
-        );
-
+        document.dispatchEvent(new CustomEvent('ajax:series-loaded'));
         scrollToTop();
 
-        prefetchNextPage();
+        // Préfetch page suivante
+        const active = document.querySelector('.collection-pagination-link.active');
+        const next = active?.nextElementSibling;
+        if (next?.classList.contains('collection-pagination-link')) {
+            prefetchSeriesPage(next.href);
+        }
 
     } catch (error) {
-
-        console.error(
-            error,
-        );
-
-        window.location.href =
-            url.href;
-
+        console.error('[AJAX] loadSeriesPage failed', error);
     } finally {
-
-        container.classList.remove(
-            'is-loading',
-        );
+        container.classList.remove('is-loading');
     }
 }
 
-/*
-|------------------------------------------------------------------
-| Prefetch next page
-|------------------------------------------------------------------
-*/
+async function handleClick(e) {
+    const target = e.target;
+    if (!(target instanceof Element)) return;
 
-function prefetchNextPage()
-{
-    const active =
-        document.querySelector(
-            '.collection-pagination-link.active',
-        );
+    const link = target.closest('a.collection-pagination-link, a.collection-card-link');
+    if (!link) return;
+    if (link.target === '_blank' || e.ctrlKey || e.metaKey || e.shiftKey) return;
 
-    if (!active) {
-        return;
-    }
-
-    const next =
-        active.nextElementSibling;
-
-    if (
-        !next
-        || !next.classList.contains(
-            'collection-pagination-link',
-        )
-    ) {
-        return;
-    }
-
-    prefetchSeriesPage(
-        next.href,
-    );
+    e.preventDefault();
+    await loadSeriesPage(link.href);
 }
 
-/*
-|------------------------------------------------------------------
-| Click navigation
-|------------------------------------------------------------------
-*/
-
-async function handleClick(
-    event,
-)
-{
-    const target =
-        event.target;
-
-    if (
-        !(target instanceof Element)
-    ) {
-        return;
-    }
-
-    const link =
-        target.closest(
-            'a',
-        );
-
-    if (!link) {
-        return;
-    }
-
-    const url =
-        new URL(
-            link.href,
-        );
-
-    if (
-        !isSeriesPageUrl(
-            url,
-        )
-    ) {
-        return;
-    }
-
-    /*
-    |--------------------------------------------------------------
-    | Ignore detail pages
-    |--------------------------------------------------------------
-    */
-
-    if (
-        /\/manga\/series\/[^/]+\/\d+$/
-            .test(
-                url.pathname,
-            )
-    ) {
-        return;
-    }
-
-    event.preventDefault();
-
-    await loadSeriesPage(
-        url,
-    );
+async function handlePopState() {
+    const href = window.location.href;
+    if (!isSeriesPageUrl(href)) return;
+    await loadSeriesPage(href, false);
 }
 
-/*
-|------------------------------------------------------------------
-| Browser navigation
-|------------------------------------------------------------------
-*/
+export function initLoadSeriesPage() {
+    if (document.body.dataset.loadSeriesPageInit === 'true') return;
+    document.body.dataset.loadSeriesPageInit = 'true';
 
-async function handlePopState()
-{
-    const url =
-        new URL(
-            window.location.href,
-        );
+    if (!getContainer()) return;
 
-    if (
-        !isSeriesPageUrl(
-            url,
-        )
-    ) {
-        return;
+    document.addEventListener('click', handleClick);
+    window.addEventListener('popstate', handlePopState);
+
+    if (isSeriesPageUrl(window.location.href)) {
+        loadSeriesPage(window.location.href, false);
     }
-
-    await loadSeriesPage(
-        url,
-        false,
-    );
-}
-
-/*
-|------------------------------------------------------------------
-| Init
-|------------------------------------------------------------------
-*/
-
-export function initLoadSeriesPage()
-{
-    if (
-        document.body.dataset
-            .loadSeriesPageInit
-        === 'true'
-    ) {
-        return;
-    }
-
-    document.body.dataset
-        .loadSeriesPageInit =
-            'true';
-
-    const container =
-        getContainer();
-
-    if (!container) {
-        return;
-    }
-
-    prefetchNextPage();
-
-    document.addEventListener(
-        'click',
-        handleClick,
-    );
-
-    window.addEventListener(
-        'popstate',
-        handlePopState,
-    );
 }

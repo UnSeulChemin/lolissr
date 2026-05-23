@@ -22,8 +22,6 @@ $isSerieView = $isSerieView ?? false;
     $note       = $manga->note ?? null;
     $averageNote= $manga->averageNote ?? $manga->average_note ?? null;
     $total      = (int) ($manga->total ?? 0);
-    $totalLu    = (int) ($manga->totalLu ?? 0);
-    $lu         = (int) ($manga->lu ?? 0);
 
     if (!$slug || !$livre || !$thumbnail || !$extension) continue;
 
@@ -44,11 +42,6 @@ $isSerieView = $isSerieView ?? false;
         ? ($isSerieView ? (string)(int)$displayNote : number_format($displayNote, 1, ',', ''))
         : '0';
 
-    $readBadgeActive = $isSerieView ? $lu === 1 : ($total > 0 && $totalLu >= $total);
-    $readBadgeTitle = $isSerieView
-        ? ($readBadgeActive ? 'Tome lu' : 'Tome non lu')
-        : ($readBadgeActive ? 'Série lue' : 'Série non terminée');
-
     $statutLabel = $statut === 'termine' ? 'Terminé' : 'En cours';
     $statutClass = $statut === 'termine' ? 'collection-status-finished' : 'collection-status-progress';
 ?>
@@ -56,14 +49,13 @@ $isSerieView = $isSerieView ?? false;
 <a class="card card-link collection-card-link" href="<?= e($href) ?>">
 
     <?php if (!$isSerieView): ?>
-    <span class="collection-status-badge <?= e($statutClass) ?>"><?= e($statutLabel) ?></span>
+        <span class="collection-status-badge <?= e($statutClass) ?>"><?= e($statutLabel) ?></span>
     <?php endif; ?>
 
     <span class="collection-card-badge <?= e($noteClass) ?>">⭐ <?= e($noteLabel) ?>/10</span>
 
-    <span class="collection-read-badge <?= $readBadgeActive ? 'active' : '' ?>"
-          title="<?= e($readBadgeTitle) ?>"
-          aria-label="<?= e($readBadgeTitle) ?>">
+    <!-- SVG statique, pas de JS -->
+    <span class="collection-read-badge">
         <svg class="collection-read-icon" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M7 3C6.45 3 6 3.45 6 4V21L12 17L18 21V4C18 3.45 17.55 3 17 3H7Z"/>
         </svg>
@@ -81,9 +73,3 @@ $isSerieView = $isSerieView ?? false;
 
 <?php endforeach; ?>
 </section>
-
-<script>
-document.querySelectorAll('.collection-read-badge').forEach(b => {
-    b.style.display = 'inline-block';
-});
-</script>

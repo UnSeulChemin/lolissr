@@ -162,8 +162,11 @@ final class MangaAjaxController extends Controller
 
                 'isSerieView' =>
                     $data->slugFilter !== null,
+
+                'baseUri' =>
+                    $this->baseUri,
             ],
-        );
+);
     }
 
     /*
