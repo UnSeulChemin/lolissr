@@ -7,12 +7,21 @@ use Framework\Http\JsonResponse;
 
 final class JsonResponseException extends \Exception
 {
-    public function __construct(private JsonResponse $response)
+    private JsonResponse $response;
+
+    public function __construct(JsonResponse $response)
     {
+        $this->response = $response;
         parent::__construct($response->data()['message'] ?? 'Erreur JSON', $response->getStatusCode());
     }
 
     public function getResponse(): JsonResponse
+    {
+        return $this->response;
+    }
+
+    // 🔧 Méthode manquante pour ErrorHandler
+    public function response(): JsonResponse
     {
         return $this->response;
     }

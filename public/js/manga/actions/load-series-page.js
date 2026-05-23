@@ -58,9 +58,11 @@ export async function loadSeriesPage(href, pushState = true) {
         scrollToTop();
 
         // Préfetch page suivante
-        const active = document.querySelector('.collection-pagination-link.active');
+        const active = document.querySelector('.collection-pagination-link.active') 
+                       || document.querySelector('.collection-pagination-link');
         const next = active?.nextElementSibling;
         if (next?.classList.contains('collection-pagination-link')) {
+            console.log('[PREFETCH] Préchargement pour:', next.href);
             prefetchSeriesPage(next.href);
         }
 
@@ -93,12 +95,18 @@ export function initLoadSeriesPage() {
     if (document.body.dataset.loadSeriesPageInit === 'true') return;
     document.body.dataset.loadSeriesPageInit = 'true';
 
-    if (!getContainer()) return;
+    const container = getContainer();
+    if (!container) return;
 
     document.addEventListener('click', handleClick);
     window.addEventListener('popstate', handlePopState);
 
+    // Charger la page si URL correspond à une page de série
     if (isSeriesPageUrl(window.location.href)) {
-        loadSeriesPage(window.location.href, false);
+        // Timeout pour s'assurer que DOM est complètement chargé
+        setTimeout(() => loadSeriesPage(window.location.href, false), 50);
     }
 }
+
+// Assure que le script se lance après le DOM
+document.addEventListener('DOMContentLoaded', () => initLoadSeriesPage());
