@@ -50,8 +50,11 @@ final class ChinoisController extends Controller
         $this->render('chinois/grammaire');
     }
 
-    public function hsk(string $level): never
+    // Correction : accepter int ou string
+    public function hsk(int|string $level): never
     {
+        $level = (string)$level; // Toujours travailler avec string
+
         if (!in_array($level, self::HSK_LEVELS, true)) {
             throw new NotFoundException();
         }

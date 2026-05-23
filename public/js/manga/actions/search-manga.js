@@ -44,9 +44,18 @@ export function initSearchManga() {
 
     const getItems = () => Array.from(results.querySelectorAll('.search-result-item'));
     const resetActive = () => { activeIndex = -1; getItems().forEach(i => i.classList.remove('is-active')); };
-    const updateActive = () => { const items = getItems(); items.forEach((i, idx) => i.classList.toggle('is-active', idx === activeIndex)); if(items[activeIndex]) items[activeIndex].scrollIntoView({block:'nearest'}); };
+    const updateActive = () => {
+        const items = getItems();
+        items.forEach((i, idx) => i.classList.toggle('is-active', idx === activeIndex));
+        if (items[activeIndex]) items[activeIndex].scrollIntoView({block:'nearest'});
+    };
     const openDropdown = () => dropdown.classList.add('has-results');
-    const closeDropdown = () => { results.innerHTML=''; dropdown.classList.remove('is-loading','has-results'); if(abortController){abortController.abort(); abortController=null;} resetActive(); };
+    const closeDropdown = () => {
+        results.innerHTML='';
+        dropdown.classList.remove('is-loading','has-results');
+        if (abortController){ abortController.abort(); abortController=null; }
+        resetActive();
+    };
     const setLoading = isLoading => { dropdown.classList.toggle('is-loading', isLoading); if(isLoading) dropdown.classList.remove('has-results'); };
     const emptyState = (msg='Aucun résultat trouvé') => { results.innerHTML=`<div class="search-result-empty">${msg}</div>`; openDropdown(); resetActive(); };
 
@@ -54,7 +63,11 @@ export function initSearchManga() {
         const a = document.createElement('a');
         a.href = `${basePath}manga/series/${encodeURIComponent(manga.slug)}/${manga.numero}`;
         a.className = 'search-result-item';
-        a.innerHTML = `<img src="${basePath}images/mangas/thumbnail/${manga.thumbnail}.${manga.extension}" alt="${escapeHtml(manga.livre)}"><span class="search-result-content"><strong class="search-result-title">${highlightSearchTerm(manga.livre, rawValue)}</strong><small class="search-result-meta">Tome ${String(manga.numero).padStart(2,'0')}</small></span>`;
+        a.innerHTML = `<img src="${basePath}images/mangas/thumbnail/${manga.thumbnail}.${manga.extension}" alt="${escapeHtml(manga.livre)}">
+        <span class="search-result-content">
+            <strong class="search-result-title">${highlightSearchTerm(manga.livre, rawValue)}</strong>
+            <small class="search-result-meta">Tome ${String(manga.numero).padStart(2,'0')}</small>
+        </span>`;
         return a;
     };
 
@@ -62,7 +75,11 @@ export function initSearchManga() {
         const a = document.createElement('a');
         a.href = `${basePath}${shortcut.url}`;
         a.className = 'search-result-item';
-        a.innerHTML = `<span class="search-result-icon">${escapeHtml(shortcut.symbol)}</span><span class="search-result-content"><strong class="search-result-title">${escapeHtml(shortcut.title)}</strong><small class="search-result-meta">${escapeHtml(shortcut.description)}</small></span>`;
+        a.innerHTML = `<span class="search-result-icon">${escapeHtml(shortcut.symbol)}</span>
+        <span class="search-result-content">
+            <strong class="search-result-title">${escapeHtml(shortcut.title)}</strong>
+            <small class="search-result-meta">${escapeHtml(shortcut.description)}</small>
+        </span>`;
         return a;
     };
 
@@ -95,6 +112,15 @@ export function initSearchManga() {
             openDropdown();
             activeIndex = 0;
             updateActive();
+
+            // Ajout : survol souris met à jour activeIndex
+            getItems().forEach((item, idx) => {
+                item.addEventListener('mouseenter', () => {
+                    activeIndex = idx;
+                    updateActive();
+                });
+            });
+
         } catch (e) {
             if (e.name !== 'AbortError') { emptyState('Erreur de chargement'); console.error(e); }
         } finally { setLoading(false); }
@@ -123,7 +149,12 @@ export function initSearchManga() {
 
         if (e.key === 'ArrowDown') { e.preventDefault(); activeIndex = activeIndex < items.length-1 ? activeIndex+1 : 0; updateActive(); return; }
         if (e.key === 'ArrowUp') { e.preventDefault(); activeIndex = activeIndex>0 ? activeIndex-1 : items.length-1; updateActive(); return; }
-        if (e.key === 'Enter') { const item = items[activeIndex]; if (!item) return; e.preventDefault(); window.location.href=item.href; }
+        if (e.key === 'Enter') { 
+            const item = items[activeIndex]; 
+            if (!item) return; 
+            e.preventDefault(); 
+            window.location.href=item.href; 
+        }
     });
 
     document.addEventListener('click', e => {
