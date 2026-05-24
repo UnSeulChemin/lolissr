@@ -78,6 +78,13 @@ final readonly class MangaReadService
         );
     }
 
+    public function seriesExists(
+        string $slug,
+    ): bool {
+        return $this->mangaRepository
+            ->seriesExists($slug);
+    }
+
     public function search(
         string $query = '',
     ): MangaSearchData {

@@ -102,8 +102,24 @@ final class Request
             : '/' . $path;
     }
 
-    public function header(string $key): ?string
-    {
+    /**
+     * @return array<string, mixed>|mixed
+     */
+    public function server(
+        ?string $key = null,
+        mixed $default = null,
+    ): mixed {
+        if ($key === null) {
+            return $this->server;
+        }
+
+        return $this->server[$key]
+            ?? $default;
+    }
+
+    public function header(
+        string $key,
+    ): ?string {
         $serverKey = 'HTTP_' . strtoupper(
             str_replace(
                 '-',

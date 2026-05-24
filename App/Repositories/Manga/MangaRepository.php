@@ -301,4 +301,22 @@ final class MangaRepository extends Model
             ],
         );
     }
+
+    public function seriesExists(
+        string $slug,
+    ): bool {
+        $result = $this->fetchOne(
+            "SELECT 1
+            FROM {$this->getTable()}
+            WHERE slug = :slug
+            LIMIT 1",
+            [
+                'slug' => $this->normalizeSlug(
+                    $slug,
+                ),
+            ],
+        );
+
+        return $result !== null;
+    }
 }

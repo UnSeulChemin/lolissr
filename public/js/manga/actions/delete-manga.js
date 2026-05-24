@@ -227,7 +227,7 @@ export function initDeleteManga()
                 */
 
                 window.location.href =
-                    data.redirect
+                    data?.data?.redirect
                     || redirectUrl
                     || '/';
 

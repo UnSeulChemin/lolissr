@@ -20,22 +20,28 @@ final class Router
 
     private array $groupMiddlewares = [];
 
-    public function __construct(RouteCollection $collection)
-    {
+    public function __construct(
+        RouteCollection $collection,
+    ) {
         $this->collection = $collection;
     }
 
-    public function prefix(string $prefix): self
-    {
+    public function prefix(
+        string $prefix,
+    ): self {
         $clone = clone $this;
 
-        $clone->groupPrefixes[] = trim($prefix, '/');
+        $clone->groupPrefixes[] = trim(
+            $prefix,
+            '/',
+        );
 
         return $clone;
     }
 
-    public function middleware(array|string $middleware): self
-    {
+    public function middleware(
+        array|string $middleware,
+    ): self {
         $clone = clone $this;
 
         $clone->groupMiddlewares = array_merge(
@@ -46,8 +52,9 @@ final class Router
         return $clone;
     }
 
-    public function group(Closure $callback): void
-    {
+    public function group(
+        Closure $callback,
+    ): void {
         $callback($this);
     }
 
@@ -108,36 +115,59 @@ final class Router
 
     public function dispatch(): void
     {
-        $request = AppContainer::get()->get(Request::class);
+        $request = AppContainer::get()->get(
+            Request::class,
+        );
 
         $uri = $request->path();
+
         $method = $request->method();
 
         foreach ($this->collection->all() as $route) {
-            if ($route->getMethod() !== $method) {
+            if (
+                $route->getMethod()
+                !== $method
+            ) {
                 continue;
             }
 
-            if (!preg_match($route->pattern, $uri, $matches)) {
+            if (
+                !preg_match(
+                    $route->pattern,
+                    $uri,
+                    $matches,
+                )
+            ) {
                 continue;
             }
 
             array_shift($matches);
 
-            foreach ($route->getMiddlewares() as $middlewareClass) {
-                $middleware = AppContainer::get()->get($middlewareClass);
+            foreach (
+                $route->getMiddlewares()
+                as $middlewareClass
+            ) {
+                $middleware = AppContainer::get()
+                    ->get($middlewareClass);
 
-                if (!$middleware instanceof MiddlewareInterface) {
+                if (
+                    !$middleware
+                    instanceof MiddlewareInterface
+                ) {
                     throw new RuntimeException(
                         "Middleware invalide : {$middlewareClass}",
                     );
                 }
 
-                $middleware->handle($request);
+                $middleware->handle(
+                    $request,
+                );
             }
 
             $params = array_map(
-                static function (string $value): string|int {
+                static function (
+                    string $value,
+                ): string|int {
                     return ctype_digit($value)
                         ? (int) $value
                         : $value;
@@ -153,11 +183,15 @@ final class Router
                 return;
             }
 
-            [$controllerClass, $methodName] = is_array($action)
+            [
+                $controllerClass,
+                $methodName,
+            ] = is_array($action)
                 ? $action
                 : explode('@', $action);
 
-            $controller = AppContainer::get()->get($controllerClass);
+            $controller = AppContainer::get()
+                ->get($controllerClass);
 
             $reflection = new ReflectionMethod(
                 $controller,
@@ -168,7 +202,10 @@ final class Router
 
             $routeParams = $params;
 
-            foreach ($reflection->getParameters() as $parameter) {
+            foreach (
+                $reflection->getParameters()
+                as $parameter
+            ) {
                 $type = $parameter->getType();
 
                 if (
@@ -177,18 +214,44 @@ final class Router
                 ) {
                     $className = $type->getName();
 
-                    if (is_a($className, Request::class, true)) {
-                        $arguments[] = AppContainer::get()->get($className);
+                    if (
+                        is_a(
+                            $className,
+                            Request::class,
+                            true,
+                        )
+                    ) {
+                        $arguments[] = AppContainer::get()
+                            ->get($className);
 
                         continue;
                     }
 
-                    $arguments[] = AppContainer::get()->get($className);
+                    $arguments[] = AppContainer::get()
+                        ->get($className);
 
                     continue;
                 }
 
-                $arguments[] = array_shift($routeParams);
+                if (!empty($routeParams)) {
+                    $arguments[] = array_shift(
+                        $routeParams,
+                    );
+
+                    continue;
+                }
+
+                if (
+                    $parameter
+                        ->isDefaultValueAvailable()
+                ) {
+                    $arguments[] = $parameter
+                        ->getDefaultValue();
+
+                    continue;
+                }
+
+                $arguments[] = null;
             }
 
             $reflection->invokeArgs(
