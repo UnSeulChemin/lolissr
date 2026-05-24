@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\DTO\Common\ServiceResult;
 use App\DTO\Upload\UploadThumbnailData;
-use App\DTO\Upload\UploadThumbnailResultData;
 use finfo;
 use Framework\Application\App;
 use Framework\Config\UploadConfig;
@@ -201,9 +201,8 @@ final readonly class UploadService
     private function failure(
         string $message,
         int $status,
-    ): UploadThumbnailResultData {
-        return new UploadThumbnailResultData(
-            success: false,
+    ): ServiceResult {
+        return ServiceResult::error(
             message: $message,
             status: $status,
         );
@@ -213,16 +212,17 @@ final readonly class UploadService
         string $thumbnail,
         string $extension,
         string $destination,
-    ): UploadThumbnailResultData {
-        return new UploadThumbnailResultData(
-            success: true,
+    ): ServiceResult {
+        return ServiceResult::success(
             message: 'Upload réussi',
+            data: [
+                'upload' => new UploadThumbnailData(
+                    thumbnailPath: $thumbnail,
+                    extension: $extension,
+                    destinationPath: $destination,
+                ),
+            ],
             status: 200,
-            data: new UploadThumbnailData(
-                thumbnail: $thumbnail,
-                extension: $extension,
-                destination: $destination,
-            ),
         );
     }
 
@@ -230,7 +230,7 @@ final readonly class UploadService
         string $logMessage,
         string $message,
         int $status,
-    ): UploadThumbnailResultData {
+    ): ServiceResult {
         Logger::error($logMessage);
 
         return $this->failure(
@@ -282,7 +282,7 @@ final readonly class UploadService
         int $numero,
         array $files,
         string $fileKey = 'image',
-    ): UploadThumbnailResultData {
+    ): ServiceResult {
         $file = $this->uploadedFile(
             $files,
             $fileKey,
@@ -323,6 +323,20 @@ final readonly class UploadService
             );
         }
 
+        $tmpName = $this->tmpName($file);
+
+        if (
+            !$this->isValidTmpFile(
+                $tmpName,
+            )
+        ) {
+            return $this->failUpload(
+                'Upload manga: fichier temporaire invalide.',
+                'Fichier temporaire introuvable',
+                422,
+            );
+        }
+
         $mimeType = $this->fileMimeType(
             $file,
         );
@@ -339,20 +353,6 @@ final readonly class UploadService
                 'Upload manga: MIME non autorisé. MIME reçu: '
                 . ($mimeType ?? 'null'),
                 'Type MIME image non autorisé',
-                422,
-            );
-        }
-
-        $tmpName = $this->tmpName($file);
-
-        if (
-            !$this->isValidTmpFile(
-                $tmpName,
-            )
-        ) {
-            return $this->failUpload(
-                'Upload manga: fichier temporaire invalide.',
-                'Fichier temporaire introuvable',
                 422,
             );
         }

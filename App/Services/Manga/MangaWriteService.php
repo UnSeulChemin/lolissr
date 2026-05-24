@@ -161,7 +161,7 @@ final readonly class MangaWriteService
             );
         }
 
-        $uploadData = $upload->data;
+        $uploadData = $upload->data['upload'] ?? null;
 
         if (!$uploadData instanceof UploadThumbnailData) {
             return $this->error(
@@ -174,7 +174,7 @@ final readonly class MangaWriteService
                 'Upload test OK',
                 [
                     'file' => basename(
-                        $uploadData->destination,
+                        $uploadData->destinationPath,
                     ),
                 ],
             );
@@ -182,7 +182,7 @@ final readonly class MangaWriteService
 
         $inserted = $this->mangaRepository
             ->insert([
-                'thumbnail' => $uploadData->thumbnail,
+                'thumbnail' => $uploadData->thumbnailPath,
                 'extension' => $uploadData->extension,
                 'slug' => $dto->slug,
                 'livre' => $dto->livre,
@@ -203,7 +203,7 @@ final readonly class MangaWriteService
         if ($failure !== null) {
             $this->uploadService
                 ->removeFile(
-                    $uploadData->destination,
+                    $uploadData->destinationPath,
                 );
 
             return $failure;

@@ -10,7 +10,7 @@ final class UploadConfig
     {
         return max(
             1,
-            config_int(
+            (int) config(
                 'upload.max_size',
                 5242880,
             ),
