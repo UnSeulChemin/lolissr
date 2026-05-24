@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Framework\Exceptions;
+namespace Framework\Http;
 
 use App\Controllers\ErrorController;
 use ErrorException;
