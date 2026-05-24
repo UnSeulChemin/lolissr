@@ -15,7 +15,9 @@ use App\Repositories\Manga\MangaRepository;
 use App\Services\UploadService;
 use Framework\Application\App;
 use Framework\Config\UploadConfig;
+use Framework\Database\Database;
 use Framework\Support\Logger;
+use Throwable;
 
 final readonly class MangaWriteService
 {
@@ -23,6 +25,7 @@ final readonly class MangaWriteService
         private MangaRepository $mangaRepository,
         private UploadService $uploadService,
         private MangaCacheService $cacheService,
+        private Database $database,
     ) {
     }
 
@@ -91,6 +94,7 @@ final readonly class MangaWriteService
         int $numero,
         string $message,
     ): ?ServiceResult {
+
         if ($result) {
             return null;
         }
@@ -107,6 +111,14 @@ final readonly class MangaWriteService
     private function removeThumbnail(
         Manga $manga,
     ): void {
+
+        if (
+            $manga->thumbnail === ''
+            || $manga->extension === ''
+        ) {
+            return;
+        }
+
         $path =
             UploadConfig::mangaThumbnailDirectory()
             . $manga->thumbnail
@@ -124,21 +136,23 @@ final readonly class MangaWriteService
         MangaCreateDTO $dto,
         array $files,
     ): ServiceResult {
+
         if (
             $this->isReadOnlyMode()
-            && !$this->uploadService->isTestUploadMode()
+            && ! $this->uploadService->isTestUploadMode()
         ) {
             return $this->blockedWriteResponse();
         }
 
-        $existingManga = $this->mangaRepository
-            ->findOneBySlugAndNumero(
-                $dto->slug,
-                $dto->numero,
-            );
+        $existingManga =
+            $this->mangaRepository
+                ->findOneBySlugAndNumero(
+                    $dto->slug,
+                    $dto->numero,
+                );
 
         if (
-            !$this->uploadService->isTestUploadMode()
+            ! $this->uploadService->isTestUploadMode()
             && $existingManga !== null
         ) {
             return $this->error(
@@ -147,72 +161,103 @@ final readonly class MangaWriteService
             );
         }
 
-        $upload = $this->uploadService
-            ->uploadThumbnail(
-                $dto->livre,
-                $dto->numero,
+        return $this->database->transaction(
+            function () use (
+                $dto,
                 $files,
-            );
+            ): ServiceResult {
 
-        if (!$upload->success) {
-            return $this->error(
-                $upload->message,
-                $upload->status,
-            );
-        }
+                $upload =
+                    $this->uploadService
+                        ->uploadThumbnail(
+                            $dto->livre,
+                            $dto->numero,
+                            $files,
+                        );
 
-        $uploadData = $upload->data['upload'] ?? null;
+                if (! $upload->success) {
+                    return $this->error(
+                        $upload->message,
+                        $upload->status,
+                    );
+                }
 
-        if (!$uploadData instanceof UploadThumbnailData) {
-            return $this->error(
-                'Upload invalide',
-            );
-        }
+                $uploadData =
+                    $upload->data['upload']
+                    ?? null;
 
-        if ($this->uploadService->isTestUploadMode()) {
-            return $this->success(
-                'Upload test OK',
-                [
-                    'file' => basename(
-                        $uploadData->destinationPath,
-                    ),
-                ],
-            );
-        }
+                if (
+                    ! $uploadData instanceof UploadThumbnailData
+                ) {
+                    return $this->error(
+                        'Upload invalide',
+                    );
+                }
 
-        $inserted = $this->mangaRepository
-            ->insert([
-                'thumbnail' => $uploadData->thumbnailPath,
-                'extension' => $uploadData->extension,
-                'slug' => $dto->slug,
-                'livre' => $dto->livre,
-                'editeur' => $dto->editeur,
-                'numero' => $dto->numero,
-                'statut' => $dto->statut,
-                'commentaire' => $dto->commentaire,
-            ]);
+                if (
+                    $this->uploadService
+                        ->isTestUploadMode()
+                ) {
+                    return $this->success(
+                        'Upload test OK',
+                        [
+                            'file' => basename(
+                                $uploadData->destinationPath,
+                            ),
+                        ],
+                    );
+                }
 
-        $failure = $this->writeFailed(
-            $inserted,
-            'Insertion manga',
-            $dto->slug,
-            $dto->numero,
-            'Erreur lors de l’enregistrement',
-        );
+                try {
 
-        if ($failure !== null) {
-            $this->uploadService
-                ->removeFile(
-                    $uploadData->destinationPath,
-                );
+                    $inserted =
+                        $this->mangaRepository
+                            ->insert([
+                                'thumbnail' => $uploadData->thumbnailPath,
+                                'extension' => $uploadData->extension,
+                                'slug' => $dto->slug,
+                                'livre' => $dto->livre,
+                                'editeur' => $dto->editeur,
+                                'numero' => $dto->numero,
+                                'statut' => $dto->statut,
+                                'commentaire' => $dto->commentaire,
+                            ]);
 
-            return $failure;
-        }
+                    $failure =
+                        $this->writeFailed(
+                            $inserted,
+                            'Insertion manga',
+                            $dto->slug,
+                            $dto->numero,
+                            'Erreur lors de l’enregistrement',
+                        );
 
-        $this->clearCache();
+                    if ($failure !== null) {
 
-        return $this->success(
-            'Manga ajouté avec succès',
+                        $this->uploadService
+                            ->removeFile(
+                                $uploadData->destinationPath,
+                            );
+
+                        return $failure;
+                    }
+
+                    $this->clearCache();
+
+                    return $this->success(
+                        'Manga ajouté avec succès',
+                    );
+
+                } catch (Throwable $exception) {
+
+                    $this->uploadService
+                        ->removeFile(
+                            $uploadData->destinationPath,
+                        );
+
+                    throw $exception;
+                }
+            },
         );
     }
 
@@ -221,37 +266,49 @@ final readonly class MangaWriteService
         int $numero,
         MangaUpdateDTO $dto,
     ): ServiceResult {
+
         if ($this->isReadOnlyMode()) {
             return $this->blockedWriteResponse();
         }
 
-        $updated = $this->mangaRepository
-            ->updateManga(
+        return $this->database->transaction(
+            function () use (
                 $slug,
                 $numero,
-                $dto->editeur,
-                $dto->statut,
-                $dto->jacquette,
-                $dto->livreNote,
-                $dto->commentaire,
-            );
+                $dto,
+            ): ServiceResult {
 
-        $failure = $this->writeFailed(
-            $updated,
-            'Update manga',
-            $slug,
-            $numero,
-            'Erreur lors de la mise à jour',
-        );
+                $updated =
+                    $this->mangaRepository
+                        ->updateManga(
+                            $slug,
+                            $numero,
+                            $dto->editeur,
+                            $dto->statut,
+                            $dto->jacquette,
+                            $dto->livreNote,
+                            $dto->commentaire,
+                        );
 
-        if ($failure !== null) {
-            return $failure;
-        }
+                $failure =
+                    $this->writeFailed(
+                        $updated,
+                        'Update manga',
+                        $slug,
+                        $numero,
+                        'Erreur lors de la mise à jour',
+                    );
 
-        $this->clearCache();
+                if ($failure !== null) {
+                    return $failure;
+                }
 
-        return $this->success(
-            'Manga mis à jour avec succès',
+                $this->clearCache();
+
+                return $this->success(
+                    'Manga mis à jour avec succès',
+                );
+            },
         );
     }
 
@@ -260,58 +317,76 @@ final readonly class MangaWriteService
         int $numero,
         MangaUpdateNoteDTO $dto,
     ): ServiceResult {
+
         if ($this->isReadOnlyMode()) {
             return $this->blockedWriteResponse();
         }
 
-        $updated = $this->mangaRepository
-            ->updateNote(
+        return $this->database->transaction(
+            function () use (
                 $slug,
                 $numero,
-                $dto->jacquette,
-                $dto->livreNote,
-            );
+                $dto,
+            ): ServiceResult {
 
-        $failure = $this->writeFailed(
-            $updated,
-            'Update note',
-            $slug,
-            $numero,
-            'Erreur lors de la mise à jour des notes',
-        );
+                $updated =
+                    $this->mangaRepository
+                        ->updateNote(
+                            $slug,
+                            $numero,
+                            $dto->jacquette,
+                            $dto->livreNote,
+                        );
 
-        if ($failure !== null) {
-            return $failure;
-        }
+                $failure =
+                    $this->writeFailed(
+                        $updated,
+                        'Update note',
+                        $slug,
+                        $numero,
+                        'Erreur lors de la mise à jour des notes',
+                    );
 
-        $this->clearCache();
+                if ($failure !== null) {
+                    return $failure;
+                }
 
-        $manga = $this->mangaRepository
-            ->findOneBySlugAndNumero(
-                $slug,
-                $numero,
-            );
+                $this->clearCache();
 
-        if ($manga === null) {
-            return $this->error(
-                'Manga introuvable',
-                404,
-            );
-        }
+                $manga =
+                    $this->mangaRepository
+                        ->findOneBySlugAndNumero(
+                            $slug,
+                            $numero,
+                        );
 
-        return $this->success(
-            'Notes mises à jour',
-            [
-                'notes' => new UpdateNoteResultData(
-                    jacquette: $dto->jacquette ?? 0,
-                    livreNote: $dto->livreNote ?? 0,
-                    note: $manga->note
-                        ?? (
-                            ($dto->jacquette ?? 0)
-                            + ($dto->livreNote ?? 0)
+                if ($manga === null) {
+                    return $this->error(
+                        'Manga introuvable',
+                        404,
+                    );
+                }
+
+                return $this->success(
+                    'Notes mises à jour',
+                    [
+                        'notes' => new UpdateNoteResultData(
+                            jacquette:
+                                $dto->jacquette ?? 0,
+
+                            livreNote:
+                                $dto->livreNote ?? 0,
+
+                            note:
+                                $manga->note
+                                ?? (
+                                    ($dto->jacquette ?? 0)
+                                    + ($dto->livreNote ?? 0)
+                                ),
                         ),
-                ),
-            ],
+                    ],
+                );
+            },
         );
     }
 
@@ -320,45 +395,57 @@ final readonly class MangaWriteService
         int $numero,
         int $readStatus,
     ): ServiceResult {
+
         if ($this->isReadOnlyMode()) {
             return $this->blockedWriteResponse();
         }
 
-        if (!in_array($readStatus, [0, 1], true)) {
+        if (! in_array($readStatus, [0, 1], true)) {
             return $this->error(
                 'Statut de lecture invalide',
                 422,
             );
         }
 
-        $updated = $this->mangaRepository
-            ->updateReadStatus(
+        return $this->database->transaction(
+            function () use (
                 $slug,
                 $numero,
-                $readStatus === 1,
-            );
+                $readStatus,
+            ): ServiceResult {
 
-        $failure = $this->writeFailed(
-            $updated,
-            'Update read status',
-            $slug,
-            $numero,
-            'Erreur lors de la mise à jour',
-        );
+                $updated =
+                    $this->mangaRepository
+                        ->updateReadStatus(
+                            $slug,
+                            $numero,
+                            $readStatus === 1,
+                        );
 
-        if ($failure !== null) {
-            return $failure;
-        }
+                $failure =
+                    $this->writeFailed(
+                        $updated,
+                        'Update read status',
+                        $slug,
+                        $numero,
+                        'Erreur lors de la mise à jour',
+                    );
 
-        $this->clearCache();
+                if ($failure !== null) {
+                    return $failure;
+                }
 
-        return $this->success(
-            $readStatus === 1
-                ? 'Manga marqué comme lu'
-                : 'Manga marqué comme non lu',
-            [
-                'readStatus' => $readStatus,
-            ],
+                $this->clearCache();
+
+                return $this->success(
+                    $readStatus === 1
+                        ? 'Manga marqué comme lu'
+                        : 'Manga marqué comme non lu',
+                    [
+                        'readStatus' => $readStatus,
+                    ],
+                );
+            },
         );
     }
 
@@ -366,47 +453,59 @@ final readonly class MangaWriteService
         string $slug,
         int $numero,
     ): ServiceResult {
+
         if ($this->isReadOnlyMode()) {
             return $this->blockedWriteResponse();
         }
 
-        $manga = $this->mangaRepository
-            ->findOneBySlugAndNumero(
+        return $this->database->transaction(
+            function () use (
                 $slug,
                 $numero,
-            );
+            ): ServiceResult {
 
-        if ($manga === null) {
-            return $this->error(
-                'Manga introuvable',
-                404,
-            );
-        }
+                $manga =
+                    $this->mangaRepository
+                        ->findOneBySlugAndNumero(
+                            $slug,
+                            $numero,
+                        );
 
-        $deleted = $this->mangaRepository
-            ->deleteBySlugAndNumero(
-                $slug,
-                $numero,
-            );
+                if ($manga === null) {
+                    return $this->error(
+                        'Manga introuvable',
+                        404,
+                    );
+                }
 
-        $failure = $this->writeFailed(
-            $deleted,
-            'Delete manga',
-            $slug,
-            $numero,
-            'Erreur lors de la suppression',
-        );
+                $deleted =
+                    $this->mangaRepository
+                        ->deleteBySlugAndNumero(
+                            $slug,
+                            $numero,
+                        );
 
-        if ($failure !== null) {
-            return $failure;
-        }
+                $failure =
+                    $this->writeFailed(
+                        $deleted,
+                        'Delete manga',
+                        $slug,
+                        $numero,
+                        'Erreur lors de la suppression',
+                    );
 
-        $this->removeThumbnail($manga);
+                if ($failure !== null) {
+                    return $failure;
+                }
 
-        $this->clearCache();
+                $this->removeThumbnail($manga);
 
-        return $this->success(
-            'Manga supprimé avec succès',
+                $this->clearCache();
+
+                return $this->success(
+                    'Manga supprimé avec succès',
+                );
+            },
         );
     }
 }

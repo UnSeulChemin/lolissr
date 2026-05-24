@@ -10,6 +10,7 @@ use Framework\Support\Logger;
 use PDO;
 use PDOException;
 use RuntimeException;
+use Throwable;
 
 final class Database extends PDO
 {
@@ -48,6 +49,51 @@ final class Database extends PDO
                     : 'Erreur de connexion à la base de données.',
                 previous: $exception,
             );
+        }
+    }
+
+    public function begin(): void
+    {
+        if ($this->inTransaction()) {
+            return;
+        }
+
+        $this->beginTransaction();
+    }
+
+    public function commitTransaction(): void
+    {
+        if (! $this->inTransaction()) {
+            return;
+        }
+
+        $this->commit();
+    }
+
+    public function rollbackTransaction(): void
+    {
+        if (! $this->inTransaction()) {
+            return;
+        }
+
+        $this->rollBack();
+    }
+
+    public function transaction(
+        callable $callback,
+    ): mixed {
+        $this->begin();
+
+        try {
+            $result = $callback();
+
+            $this->commitTransaction();
+
+            return $result;
+        } catch (Throwable $exception) {
+            $this->rollbackTransaction();
+
+            throw $exception;
         }
     }
 }
