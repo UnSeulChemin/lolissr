@@ -7,6 +7,7 @@ namespace Framework\Container;
 use ReflectionClass;
 use ReflectionNamedType;
 use RuntimeException;
+use Throwable;
 
 final class Container
 {
@@ -23,10 +24,21 @@ final class Container
      */
     private array $instances = [];
 
+    /**
+     * @var array<string, bool>
+     */
+    private array $resolving = [];
+
+    /**
+     * @var array<string, ReflectionClass<object>>
+     */
+    private array $reflections = [];
+
     public function bind(
         string $abstract,
         callable|string|null $concrete = null,
     ): void {
+
         $this->bindings[$abstract] = [
             'concrete' => $concrete ?? $abstract,
             'singleton' => false,
@@ -37,6 +49,7 @@ final class Container
         string $abstract,
         callable|string|null $concrete = null,
     ): void {
+
         $this->bindings[$abstract] = [
             'concrete' => $concrete ?? $abstract,
             'singleton' => true,
@@ -46,19 +59,22 @@ final class Container
     public function get(
         string $abstract,
     ): object {
+
         if (isset($this->instances[$abstract])) {
             return $this->instances[$abstract];
         }
 
-        $binding = $this->bindings[$abstract]
+        $binding =
+            $this->bindings[$abstract]
             ?? [
                 'concrete' => $abstract,
                 'singleton' => false,
             ];
 
-        $object = $this->resolve(
-            $binding['concrete'],
-        );
+        $object =
+            $this->resolve(
+                $binding['concrete'],
+            );
 
         if ($binding['singleton']) {
             $this->instances[$abstract] = $object;
@@ -70,10 +86,14 @@ final class Container
     private function resolve(
         callable|string $concrete,
     ): object {
-        if (is_callable($concrete)) {
-            $object = $concrete($this);
 
-            if (!is_object($object)) {
+        // Factory callable
+        if (is_callable($concrete)) {
+
+            $object =
+                $concrete($this);
+
+            if (! is_object($object)) {
                 throw new RuntimeException(
                     'Le container doit retourner un objet.',
                 );
@@ -82,58 +102,99 @@ final class Container
             return $object;
         }
 
-        if (!class_exists($concrete)) {
+        // Missing class
+        if (! class_exists($concrete)) {
             throw new RuntimeException(
                 "Classe introuvable : {$concrete}",
             );
         }
 
-        $reflection = new ReflectionClass(
-            $concrete,
-        );
-
-        if (!$reflection->isInstantiable()) {
+        // Circular dependency detection
+        if (isset($this->resolving[$concrete])) {
             throw new RuntimeException(
-                "Classe non instanciable : {$concrete}",
+                "Dépendance circulaire détectée : {$concrete}",
             );
         }
 
-        $constructor = $reflection->getConstructor();
+        $this->resolving[$concrete] = true;
 
-        if ($constructor === null) {
-            return $reflection->newInstance();
-        }
+        try {
 
-        $dependencies = [];
+            // Reflection cache
+            $reflection =
+                $this->reflections[$concrete]
+                ??= new ReflectionClass(
+                    $concrete,
+                );
 
-        foreach (
-            $constructor->getParameters() as $parameter
-        ) {
-            $type = $parameter->getType();
-
-            if (
-                !$type instanceof ReflectionNamedType
-                || $type->isBuiltin()
-            ) {
-                if ($parameter->isDefaultValueAvailable()) {
-                    $dependencies[] =
-                        $parameter->getDefaultValue();
-
-                    continue;
-                }
-
+            // Non instantiable
+            if (! $reflection->isInstantiable()) {
                 throw new RuntimeException(
-                    "Impossible de résoudre {$concrete}::\${$parameter->getName()}",
+                    "Classe non instanciable : {$concrete}",
                 );
             }
 
-            $dependencies[] = $this->get(
-                $type->getName(),
+            $constructor =
+                $reflection->getConstructor();
+
+            // No constructor
+            if ($constructor === null) {
+                return $reflection->newInstance();
+            }
+
+            $dependencies = [];
+
+            foreach (
+                $constructor->getParameters()
+                as $parameter
+            ) {
+
+                $type =
+                    $parameter->getType();
+
+                // Primitive / unsupported type
+                if (
+                    ! $type instanceof ReflectionNamedType
+                    || $type->isBuiltin()
+                ) {
+
+                    if (
+                        $parameter->isDefaultValueAvailable()
+                    ) {
+                        $dependencies[] =
+                            $parameter->getDefaultValue();
+
+                        continue;
+                    }
+
+                    throw new RuntimeException(
+                        sprintf(
+                            'Impossible de résoudre %s::$%s',
+                            $concrete,
+                            $parameter->getName(),
+                        ),
+                    );
+                }
+
+                $dependencies[] =
+                    $this->get(
+                        $type->getName(),
+                    );
+            }
+
+            return $reflection->newInstanceArgs(
+                $dependencies,
+            );
+
+        } catch (Throwable $exception) {
+
+            throw $exception;
+
+        } finally {
+
+            unset(
+                $this->resolving[$concrete],
             );
         }
-
-        return $reflection->newInstanceArgs(
-            $dependencies,
-        );
     }
 }
