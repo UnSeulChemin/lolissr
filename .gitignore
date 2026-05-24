@@ -11,12 +11,14 @@
 #################################
 
 notes.txt
+*.tmp
+*.temp
 
 #################################
 # LOGS
 #################################
 
-/storage/logs/*
+/storage/logs/**
 !/storage/logs/.gitkeep
 
 *.log
@@ -25,37 +27,52 @@ notes.txt
 # CACHE
 #################################
 
-/storage/cache/*
+/storage/cache/**
 !/storage/cache/.gitkeep
 
 #################################
 # SESSIONS
 #################################
 
-/storage/sessions/*
+/storage/sessions/**
 !/storage/sessions/.gitkeep
 
 #################################
 # BACKUPS
 #################################
 
-/storage/backups/
+/storage/backups/**
 
 #################################
 # UPLOADS
 #################################
 
-/public/images/*
+/public/images/**
 !/public/images/.gitkeep
 
-/tests/Http/tmp-uploads/*
+/tests/Http/tmp-uploads/**
 !/tests/Http/tmp-uploads/.gitkeep
+
+#################################
+# DATABASES
+#################################
+
+*.sqlite
+*.db
 
 #################################
 # DEPENDANCES
 #################################
 
 /vendor/
+node_modules/
+
+#################################
+# BUILD / FRONT
+#################################
+
+dist/
+build/
 
 #################################
 # TESTS / COVERAGE
@@ -68,6 +85,29 @@ coverage/
 tests/reports/
 
 #################################
+# PHPSTAN
+#################################
+
+.phpstan/cache/
+/phpstan.neon.tmp
+
+#################################
+# OUTILS
+#################################
+
+.php-cs-fixer.cache
+
+#################################
+# EXPORTS / ARCHIVES
+#################################
+
+*.zip
+*.tar
+*.gz
+*.rar
+*.7z
+
+#################################
 # IDE / OS
 #################################
 
@@ -76,18 +116,3 @@ tests/reports/
 
 .DS_Store
 Thumbs.db
-
-#################################
-# FRONT
-#################################
-
-node_modules/
-dist/
-build/
-
-#################################
-# OUTILS
-#################################
-
-.php-cs-fixer.cache
-.phpstan/cache/
