@@ -40,7 +40,7 @@ button.classList.toggle('active', mastered === 1);
 const label = mastered === 1 ? 'Retirer la maîtrise' : 'Marquer comme maîtrisé';
 button.title = label;
 button.setAttribute('aria-label', label);
-showToast(data.message ?? 'Statut mis à jour', 'success');
+showToast(data.message ?? 'Grammaire marquée comme maîtrisée', 'success');
 } catch {
 showToast('Erreur réseau', 'error');
 } finally {

@@ -41,7 +41,7 @@ final class ChinoisAjaxController extends Controller
         $this->json([
             'success' => true,
             'maitrise' => $maitrise,
-            'message' => 'Statut mis à jour'
+            'message' => 'Grammaire marquée comme maîtrisée'
         ]);
     }
 

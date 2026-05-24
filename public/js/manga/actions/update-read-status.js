@@ -255,7 +255,7 @@ export function initUpdateReadStatus()
 
                 showToast(
                     data.message
-                    ?? 'Statut mis à jour',
+                    ?? 'Grammaire marquée comme maîtrisée',
                     'success',
                 );
 
