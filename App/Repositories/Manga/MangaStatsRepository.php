@@ -25,14 +25,17 @@ final class MangaStatsRepository extends Model
             $params,
         );
 
-        if (
-            $result === null
-            || !property_exists($result, $field)
-        ) {
+        if ($result === null) {
             return $default;
         }
 
-        return $result->{$field};
+        $resultArray = (array) $result;
+
+        if (!array_key_exists($field, $resultArray)) {
+            return $default;
+        }
+
+        return $resultArray[$field];
     }
 
     public function countAllTomes(): int

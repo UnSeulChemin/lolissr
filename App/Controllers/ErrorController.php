@@ -73,13 +73,17 @@ final class ErrorController extends Controller
         $this->json(['success' => false, 'message' => $message], $status);
     }
 
-    private function ajaxOrHtml(callable $ajax, callable $html): void
-    {
+    private function ajaxOrHtml(
+        callable $ajax,
+        callable $html,
+    ): never {
         if ($this->isAjax()) {
             $ajax();
-            return;
+            exit;
         }
+
         $html();
+        exit;
     }
 
     private function logWarning(string $msg): void

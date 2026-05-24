@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-if (empty($mangas)) {
+/** @var array<int, object> $mangas */
+
+if ($mangas === []) {
 
     echo '
         <p class="collection-empty">
@@ -12,6 +14,16 @@ if (empty($mangas)) {
 
     return;
 }
+
+$isSerieView =
+    isset($isSerieView)
+        ? (bool) $isSerieView
+        : false;
+
+$baseUri =
+    isset($baseUri)
+        ? (string) $baseUri
+        : '';
 
 ?>
 
@@ -25,49 +37,68 @@ if (empty($mangas)) {
 <?php foreach ($mangas as $manga):
 
     $slug =
-        (string) ($manga->slug ?? '');
+        isset($manga->slug)
+            ? (string) $manga->slug
+            : '';
 
     $numero =
-        (int) ($manga->numero ?? 0);
+        isset($manga->numero)
+            ? (int) $manga->numero
+            : 0;
 
     $livre =
-        (string) ($manga->livre ?? '');
+        isset($manga->livre)
+            ? (string) $manga->livre
+            : '';
 
     $thumbnail =
-        $manga->thumbnail ?? null;
+        isset($manga->thumbnail)
+            ? (string) $manga->thumbnail
+            : '';
 
     $extension =
-        $manga->extension ?? null;
+        isset($manga->extension)
+            ? (string) $manga->extension
+            : '';
 
     $statut =
-        (string) (
-            $manga->statut
-            ?? 'en_cours'
-        );
+        isset($manga->statut)
+            ? (string) $manga->statut
+            : 'en_cours';
 
     $note =
-        $manga->note ?? null;
+        isset($manga->note)
+            ? (float) $manga->note
+            : null;
 
     $averageNote =
-        $manga->averageNote
-        ?? $manga->average_note
-        ?? null;
+        isset($manga->averageNote)
+            ? (float) $manga->averageNote
+            : (
+                isset($manga->average_note)
+                    ? (float) $manga->average_note
+                    : null
+            );
 
     $total =
-        (int) ($manga->total ?? 0);
+        isset($manga->total)
+            ? (int) $manga->total
+            : 0;
 
     $totalLu =
-        (int) ($manga->totalLu ?? 0);
+        isset($manga->totalLu)
+            ? (int) $manga->totalLu
+            : 0;
 
     $isFullyRead =
         $total > 0
         && $totalLu >= $total;
 
     if (
-        !$slug
-        || !$livre
-        || !$thumbnail
-        || !$extension
+        $slug === ''
+        || $livre === ''
+        || $thumbnail === ''
+        || $extension === ''
     ) {
         continue;
     }
@@ -89,9 +120,6 @@ if (empty($mangas)) {
         'collection-note-mid';
 
     if ($displayNote !== null) {
-
-        $displayNote =
-            (float) $displayNote;
 
         if ($displayNote >= 8) {
 
@@ -140,7 +168,7 @@ if (empty($mangas)) {
     href="<?= e($href) ?>"
 >
 
-    <?php if (!$isSerieView): ?>
+    <?php if ($isSerieView === false): ?>
 
         <span
             class="

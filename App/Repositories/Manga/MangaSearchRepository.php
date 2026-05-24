@@ -60,24 +60,21 @@ final class MangaSearchRepository extends Model
             /ixu
         ';
 
-        if (
-            !preg_match(
-                $pattern,
-                $search,
-                $matches,
-            )
-        ) {
+        $matched = preg_match(
+            $pattern,
+            $search,
+            $matches,
+        );
+
+        if ($matched !== 1) {
             return null;
         }
 
         $title = trim(
-            $matches[1] ?? '',
+            $matches[1],
         );
 
-        $numero = (int) (
-            $matches[2]
-            ?? 0
-        );
+        $numero = (int) $matches[2];
 
         if (
             $title === ''

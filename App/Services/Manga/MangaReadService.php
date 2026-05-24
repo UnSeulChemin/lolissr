@@ -28,14 +28,38 @@ final readonly class MangaReadService
             slug: $manga->slug,
             numero: $manga->numero,
             livre: $manga->livre,
-            thumbnail: $manga->thumbnail ?: null,
-            extension: $manga->extension ?: null,
-            statut: $manga->statut ?: 'en_cours',
-            note: $manga->note !== null ? (float)$manga->note : null,
-            averageNote: $manga->average_note ?? null,
-            total: $manga->total ?? 0,
-            totalLu: $manga->total_lu ?? 0,
-            lu: $manga->lu ?? 0,
+
+            thumbnail:
+                $manga->thumbnail !== ''
+                    ? $manga->thumbnail
+                    : null,
+
+            extension:
+                $manga->extension !== ''
+                    ? $manga->extension
+                    : null,
+
+            statut:
+                $manga->statut !== ''
+                    ? $manga->statut
+                    : 'en_cours',
+
+            note:
+                $manga->note !== null
+                    ? (float) $manga->note
+                    : null,
+
+            averageNote:
+                $manga->average_note,
+
+            total:
+                $manga->total,
+
+            totalLu:
+                $manga->total_lu,
+
+            lu:
+                $manga->lu,
         );
     }
 
@@ -46,8 +70,17 @@ final readonly class MangaReadService
             slug: $manga->slug,
             numero: $manga->numero,
             livre: $manga->livre,
-            thumbnail: $manga->thumbnail ?: null,
-            extension: $manga->extension ?: null,
+
+            thumbnail:
+                $manga->thumbnail !== ''
+                    ? $manga->thumbnail
+                    : null,
+
+            extension:
+                $manga->extension !== ''
+                    ? $manga->extension
+                    : null,
+
             note: $manga->note,
         );
     }
@@ -119,7 +152,7 @@ final readonly class MangaReadService
                     $normalizedSlug,
                 );
 
-        if (empty($mangas)) {
+        if ($mangas === []) {
             return null;
         }
 

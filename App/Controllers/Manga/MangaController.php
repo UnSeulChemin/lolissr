@@ -246,7 +246,7 @@ final class MangaController extends Controller
 
         if (
             $data === null
-            || empty($data->mangas)
+            || $data->mangas === []
         ) {
 
             throw new NotFoundException(

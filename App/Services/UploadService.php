@@ -25,11 +25,13 @@ final readonly class UploadService
 
     public function isTestUploadMode(): bool
     {
+        $uploadMode = config(
+            'tests.upload_mode',
+            false,
+        );
+
         return App::isTesting()
-            && config(
-                'tests.upload_mode',
-                false,
-            );
+            && $uploadMode === true;
     }
 
     private function testUploadDirectory(): string
