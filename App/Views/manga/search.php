@@ -108,7 +108,7 @@ $baseUri = rtrim(
                 ?>
 
                 <a
-                    class="collection-card-link"
+                    class="card card-link collection-card-link"
                     href="<?= e($href) ?>">
 
                     <article class="card collection-card">

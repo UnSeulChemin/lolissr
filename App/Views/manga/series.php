@@ -1,40 +1,87 @@
 <?php
+
 declare(strict_types=1);
 
-$mangas      = $view['mangas'] ?? [];
-$currentPage = (int) ($view['currentPage'] ?? 1);
-$totalSeries = (int) ($view['totalSeries'] ?? 0);
-$perPage     = (int) ($view['perPage'] ?? 10);
-$slugFilter  = $view['slugFilter'] ?? null;
+$mangas =
+    $view['mangas'] ?? [];
 
-$isSerieView = is_string($slugFilter) && trim($slugFilter) !== '';
+$currentPage =
+    (int) ($view['currentPage'] ?? 1);
 
-$baseUri = rtrim((string) ($baseUri ?? ''), '/') . '/';
+$totalSeries =
+    (int) ($view['totalSeries'] ?? 0);
 
-$totalPages = max(1, (int) ceil($totalSeries / $perPage));
+$perPage =
+    (int) ($view['perPage'] ?? 10);
+
+$slugFilter =
+    $view['slugFilter'] ?? null;
+
+$isSerieView =
+    is_string($slugFilter)
+    && trim($slugFilter) !== '';
+
+$baseUri =
+    rtrim(
+        (string) ($baseUri ?? ''),
+        '/',
+    ) . '/';
+
+$totalPages =
+    max(
+        1,
+        (int) ceil(
+            $totalSeries / $perPage,
+        ),
+    );
+
 ?>
 
 <section class="layout-container dashboard-page">
 
     <div class="collection-ajax-container">
 
-        <div class="collection-scroll-anchor" aria-hidden="true"></div>
+        <div
+            class="collection-ajax-content"
+        >
 
-        <!-- Conteneur AJAX -->
-        <div class="collection-ajax-content">
+            <?php require __DIR__
+                . '/partials/series_ajax.php'; ?>
 
-            <?php include __DIR__ . '/partials/series_ajax.php'; ?>
+            <?php if (
+                !$isSerieView
+                && $totalPages > 1
+            ): ?>
 
-            <!-- Pagination -->
-            <?php if (!$isSerieView && $totalPages > 1): ?>
-                <nav class="collection-pagination-wrapper">
-                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                        <a class="collection-pagination-link <?= $currentPage === $i ? 'active' : '' ?>"
-                           href="<?= $baseUri ?>manga/series/page/<?= $i ?>">
+                <nav
+                    class="
+                        collection-pagination-wrapper
+                    "
+                >
+
+                    <?php for (
+                        $i = 1;
+                        $i <= $totalPages;
+                        $i++
+                    ): ?>
+
+                        <a
+                            class="
+                                collection-pagination-link
+                                <?= $currentPage === $i
+                                    ? 'active'
+                                    : ''
+                                ?>
+                            "
+                            href="<?= $baseUri ?>manga/series/page/<?= $i ?>"
+                        >
                             <?= $i ?>
                         </a>
+
                     <?php endfor; ?>
+
                 </nav>
+
             <?php endif; ?>
 
         </div>

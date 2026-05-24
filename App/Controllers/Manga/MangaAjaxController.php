@@ -94,7 +94,7 @@ final class MangaAjaxController extends Controller
         }
 
         $this->renderPartial(
-            'manga/partials/series_page_ajax',
+            'manga/partials/series_ajax',
             [
                 'mangas' => $data->mangas,
                 'currentPage' => $data->currentPage,

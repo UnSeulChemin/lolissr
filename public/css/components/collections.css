@@ -5,12 +5,24 @@
 .collection-grid
 {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, var(--width-collection-card)));
+
+    grid-template-columns:
+        repeat(
+            4,
+            minmax(
+                0,
+                var(--width-collection-card)
+            )
+        );
+
     justify-content: center;
+
     gap: var(--gap-grid-collection);
 
     max-width: 1320px;
+
     margin: 40px auto;
+
     padding: 0 40px;
 }
 
@@ -29,10 +41,13 @@
     position: relative;
     z-index: 1;
 
-    transition: opacity 0.20s ease, transform 0.20s ease;
+    transition:
+        opacity 0.20s ease,
+        transform 0.20s ease;
 }
 
-.collection-ajax-container.is-loading .collection-ajax-content
+.collection-ajax-container.is-loading
+.collection-ajax-content
 {
     opacity: 0.18;
 
@@ -49,11 +64,22 @@
 {
     position: absolute;
     inset: 0;
+
     z-index: 10;
 
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, var(--width-collection-card)));
+
+    grid-template-columns:
+        repeat(
+            4,
+            minmax(
+                0,
+                var(--width-collection-card)
+            )
+        );
+
     justify-content: center;
+
     gap: var(--gap-grid-collection);
 
     padding: 40px 40px 0;
@@ -63,10 +89,13 @@
 
     pointer-events: none;
 
-    transition: opacity 0.20s ease, visibility 0.20s ease;
+    transition:
+        opacity 0.20s ease,
+        visibility 0.20s ease;
 }
 
-.collection-ajax-container.is-loading .collection-skeleton
+.collection-ajax-container.is-loading
+.collection-skeleton
 {
     opacity: 1;
     visibility: visible;
@@ -81,24 +110,29 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+
     gap: 14px;
 
     padding: 44px 16px 18px;
+
     margin-bottom: 2px;
 
     box-sizing: border-box;
 
     background: var(--color-surface);
+
     border: 1px solid var(--color-border-light);
     border-radius: var(--radius-card-lg);
 
-    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.04);
+    box-shadow:
+        0 8px 22px rgba(0, 0, 0, 0.04);
 }
 
 .collection-skeleton-image,
 .collection-skeleton-line
 {
     position: relative;
+
     overflow: hidden;
 
     background: linear-gradient(
@@ -109,7 +143,10 @@
     );
 
     background-size: 200% 100%;
-    animation: collection-skeleton-shimmer 1.2s linear infinite;
+
+    animation:
+        collection-skeleton-shimmer
+        1.2s linear infinite;
 }
 
 .collection-skeleton-image
@@ -157,8 +194,6 @@
 
 .collection-card-link
 {
-    position: relative;
-
     width: 100%;
     max-width: var(--width-collection-card);
     min-height: var(--height-collection-card);
@@ -166,17 +201,6 @@
     justify-content: flex-start;
 
     padding: 44px 16px 18px;
-
-    box-sizing: border-box;
-
-    border: 1px solid transparent;
-    border-radius: var(--radius-card-lg);
-}
-
-.collection-card-link:focus,
-.collection-card-link:focus-visible
-{
-    outline: none;
 }
 
 .collection-card-link .card-image-box-portrait
@@ -225,6 +249,7 @@
     color: var(--color-text);
 
     font-size: var(--font-size-md);
+
     text-align: center;
 
     opacity: 0.9;
@@ -279,7 +304,8 @@
         var(--color-gold-soft-2)
     );
 
-    box-shadow: 0 3px 8px var(--color-gold-shadow);
+    box-shadow:
+        0 3px 8px var(--color-gold-shadow);
 }
 
 .collection-status-badge
@@ -288,6 +314,7 @@
     left: var(--offset-card-corner);
 
     height: 30px;
+
     padding: 0 11px;
 
     font-size: 0.78rem;
@@ -307,26 +334,38 @@
 {
     color: #ffffff;
 
-    border-color: rgba(88, 39, 196, 0.55);
+    border-color:
+        rgba(88, 39, 196, 0.55);
 
-    background: linear-gradient(135deg, #7b2cff, #9150ff);
+    background:
+        linear-gradient(
+            135deg,
+            #7b2cff,
+            #9150ff
+        );
 
-    box-shadow: 0 3px 8px rgba(123, 44, 255, 0.16);
+    box-shadow:
+        0 3px 8px
+        rgba(123, 44, 255, 0.16);
 }
 
 .collection-note-low
 {
     color: var(--color-gold-text);
 
-    border-color: var(--color-gold-border);
+    border-color:
+        var(--color-gold-border);
 
-    background: linear-gradient(
-        135deg,
-        var(--color-gold-soft),
-        var(--color-gold-soft-2)
-    );
+    background:
+        linear-gradient(
+            135deg,
+            var(--color-gold-soft),
+            var(--color-gold-soft-2)
+        );
 
-    box-shadow: 0 3px 8px var(--color-gold-shadow);
+    box-shadow:
+        0 3px 8px
+        var(--color-gold-shadow);
 }
 
 .collection-note-good
@@ -335,35 +374,48 @@
 
     border-color: #cc2e2e;
 
-    background: linear-gradient(135deg, #ff4a4a, #ff7a7a);
+    background:
+        linear-gradient(
+            135deg,
+            #ff4a4a,
+            #ff7a7a
+        );
 
-    box-shadow: 0 3px 8px rgba(255, 74, 74, 0.18);
+    box-shadow:
+        0 3px 8px
+        rgba(255, 74, 74, 0.18);
 }
 
 .collection-status-progress
 {
     color: #ffffff;
 
-    background: linear-gradient(
-        180deg,
-        rgba(123, 44, 255, 0.88),
-        rgba(94, 23, 235, 0.88)
-    );
+    background:
+        linear-gradient(
+            180deg,
+            rgba(123, 44, 255, 0.88),
+            rgba(94, 23, 235, 0.88)
+        );
 
-    border: 1px solid rgba(255,255,255,0.12);
+    border:
+        1px solid
+        rgba(255,255,255,0.12);
 }
 
 .collection-status-finished
 {
     color: #ffffff;
 
-    background: linear-gradient(
-        180deg,
-        rgba(0, 255, 170, 0.88),
-        rgba(0, 214, 143, 0.88)
-    );
+    background:
+        linear-gradient(
+            180deg,
+            rgba(0, 255, 170, 0.88),
+            rgba(0, 214, 143, 0.88)
+        );
 
-    border: 1px solid rgba(255,255,255,0.12);
+    border:
+        1px solid
+        rgba(255,255,255,0.12);
 }
 
 
@@ -411,39 +463,18 @@
     stroke-linejoin: round;
 }
 
-.collection-pagination-wrapper
-{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-}
-
-.collection-read-badge.active
-{
-    background: #4f63ff;
-    color: #ffffff;
-}
-
-.collection-read-badge.active .collection-read-icon
-{
-    fill: currentColor;
-    stroke: currentColor;
-}
-
 
 /* =========================================
    PAGINATION
 ========================================= */
 
-.collection-pagination
+.collection-pagination-wrapper
 {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: var(--space-lg);
 
-    margin-top: var(--space-xl);
+    gap: 15px;
 }
 
 .collection-pagination-link
@@ -460,6 +491,7 @@
     color: var(--color-title);
 
     font-weight: 600;
+
     text-decoration: none;
 
     background-color: var(--color-surface);
@@ -480,12 +512,15 @@
 {
     transform: translateY(-2px);
 
-    border-color: rgba(123, 44, 255, 0.25);
+    border-color:
+        rgba(123, 44, 255, 0.25);
 }
 
 .collection-pagination-link:focus-visible
 {
-    box-shadow: 0 0 0 3px rgba(123, 44, 255, 0.18);
+    box-shadow:
+        0 0 0 3px
+        rgba(123, 44, 255, 0.18);
 }
 
 .collection-pagination-link.active
@@ -513,48 +548,6 @@
 .collection-back-button
 {
     font-family: inherit;
+
     text-decoration: none;
-}
-
-/* =========================================
-   KEYBOARD ACTIVE STATE
-========================================= */
-
-.collection-card-link.is-active
-{
-    transform: translateY(-4px);
-
-    border-color: rgba(123, 44, 255, 0.45);
-
-    box-shadow:
-        0 0 0 3px rgba(123, 44, 255, 0.18),
-        0 12px 24px rgba(123, 44, 255, 0.16);
-
-    transition:
-        transform 0.15s ease,
-        border-color 0.15s ease,
-        box-shadow 0.15s ease;
-}
-
-/*
-|------------------------------------------------------------------
-| Keep hover working
-|------------------------------------------------------------------
-*/
-
-.collection-card-link:hover
-{
-    transform: translateY(-4px);
-}
-
-/*
-|------------------------------------------------------------------
-| Prevent ugly browser outline
-|------------------------------------------------------------------
-*/
-
-.collection-card-link:focus,
-.collection-card-link:focus-visible
-{
-    outline: none;
 }

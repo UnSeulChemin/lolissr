@@ -3,18 +3,23 @@
 declare(strict_types=1);
 
 if (empty($mangas)) {
-    echo '<p class="collection-empty">Aucun manga trouvé.</p>';
+
+    echo '
+        <p class="collection-empty">
+            Aucun manga trouvé.
+        </p>
+    ';
+
     return;
 }
-
-$baseUri = $baseUri ?? '';
-$isSerieView = $isSerieView ?? false;
 
 ?>
 
 <section
-    class="collection-grid animate-fade-up-stagger"
-    data-series-navigation="true"
+    class="
+        collection-grid
+        animate-fade-up-stagger
+    "
 >
 
 <?php foreach ($mangas as $manga):
@@ -35,7 +40,10 @@ $isSerieView = $isSerieView ?? false;
         $manga->extension ?? null;
 
     $statut =
-        (string) ($manga->statut ?? 'en_cours');
+        (string) (
+            $manga->statut
+            ?? 'en_cours'
+        );
 
     $note =
         $manga->note ?? null;
@@ -57,9 +65,10 @@ $isSerieView = $isSerieView ?? false;
         continue;
     }
 
-    $href = $isSerieView
-        ? "{$baseUri}manga/series/{$slug}/{$numero}"
-        : "{$baseUri}manga/series/{$slug}";
+    $href =
+        $isSerieView
+            ? "{$baseUri}manga/series/{$slug}/{$numero}"
+            : "{$baseUri}manga/series/{$slug}";
 
     $thumbnailPath =
         "{$baseUri}images/mangas/thumbnail/{$thumbnail}.{$extension}";
@@ -93,7 +102,7 @@ $isSerieView = $isSerieView ?? false;
         $displayNote !== null
             ? (
                 $isSerieView
-                    ? (string) (int) $displayNote
+                    ? (string) ((int) $displayNote)
                     : number_format(
                         $displayNote,
                         1,
@@ -103,12 +112,12 @@ $isSerieView = $isSerieView ?? false;
             )
             : '0';
 
-    $statutLabel =
+    $statusLabel =
         $statut === 'termine'
             ? 'Terminé'
             : 'En cours';
 
-    $statutClass =
+    $statusClass =
         $statut === 'termine'
             ? 'collection-status-finished'
             : 'collection-status-progress';
@@ -116,9 +125,12 @@ $isSerieView = $isSerieView ?? false;
 ?>
 
 <a
-    class="card card-link collection-card-link"
+    class="
+        card
+        card-link
+        collection-card-link
+    "
     href="<?= e($href) ?>"
-    tabindex="-1"
 >
 
     <?php if (!$isSerieView): ?>
@@ -126,10 +138,10 @@ $isSerieView = $isSerieView ?? false;
         <span
             class="
                 collection-status-badge
-                <?= e($statutClass) ?>
+                <?= e($statusClass) ?>
             "
         >
-            <?= e($statutLabel) ?>
+            <?= e($statusLabel) ?>
         </span>
 
     <?php endif; ?>
@@ -143,7 +155,9 @@ $isSerieView = $isSerieView ?? false;
         ⭐ <?= e($noteLabel) ?>/10
     </span>
 
-    <span class="collection-read-badge">
+    <span
+        class="collection-read-badge"
+    >
 
         <svg
             class="collection-read-icon"
@@ -155,7 +169,9 @@ $isSerieView = $isSerieView ?? false;
 
     </span>
 
-    <div class="card-image-box-portrait">
+    <div
+        class="card-image-box-portrait"
+    >
 
         <img
             class="card-image-portrait"
@@ -174,12 +190,13 @@ $isSerieView = $isSerieView ?? false;
     <p class="collection-card-subtitle">
 
         <?= $isSerieView
-            ? 'Tome ' . str_pad(
-                (string) $numero,
-                2,
-                '0',
-                STR_PAD_LEFT,
-            )
+            ? 'Tome '
+                . str_pad(
+                    (string) $numero,
+                    2,
+                    '0',
+                    STR_PAD_LEFT,
+                )
             : $total . ' tomes'
         ?>
 
