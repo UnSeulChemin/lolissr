@@ -10,6 +10,7 @@ use Framework\Container\AppContainer;
 use Framework\Http\Request;
 use Framework\Http\Response;
 use Framework\Support\Session;
+use App\DTO\Common\ServiceResult;
 
 /*
 |--------------------------------------------------------------------------
@@ -190,17 +191,15 @@ if (!function_exists('redirect')) {
 |--------------------------------------------------------------------------
 */
 
-if (!function_exists('json')) {
-    /**
-     * @param array<string, mixed> $data
-     */
+if (! function_exists('json')) {
+
     function json(
-        array $data,
-        int $status = 200,
+        ServiceResult $result,
     ): never {
+
         Response::json(
-            $data,
-            $status,
+            $result->toArray(),
+            $result->status,
         );
     }
 }

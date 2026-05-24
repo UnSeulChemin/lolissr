@@ -61,7 +61,6 @@ final readonly class ServiceResult
     {
         return [
             'success' => $this->success,
-            'status' => $this->status,
             'message' => $this->message,
             'data' => $this->data,
         ];

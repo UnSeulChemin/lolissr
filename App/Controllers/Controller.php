@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\DTO\Common\ServiceResult;
 use Framework\Application\App;
 use Framework\Exceptions\MethodNotAllowedException;
 use Framework\Exceptions\NotFoundException;
@@ -39,6 +40,7 @@ abstract class Controller
     protected function errorViewPath(
         string $file,
     ): string {
+
         $file = preg_replace(
             '#^errors/#',
             '',
@@ -46,7 +48,9 @@ abstract class Controller
         );
 
         return view_path(
-            'errors/' . ($file ?? '') . '.php',
+            'errors/'
+            . ($file ?? '')
+            . '.php',
         );
     }
 
@@ -64,6 +68,7 @@ abstract class Controller
         string $path,
         array $variables = [],
     ): string {
+
         extract(
             $variables,
             EXTR_SKIP,
@@ -72,10 +77,13 @@ abstract class Controller
         ob_start();
 
         try {
+
             require $path;
 
             return (string) ob_get_clean();
+
         } catch (Throwable $exception) {
+
             ob_end_clean();
 
             throw $exception;
@@ -89,6 +97,7 @@ abstract class Controller
     private function sharedViewVariables(
         array $data = [],
     ): array {
+
         return [
             'view' => $data,
             'title' => $this->title,
@@ -101,6 +110,7 @@ abstract class Controller
         string $path,
         string $type,
     ): void {
+
         if (is_file($path)) {
             return;
         }
@@ -123,43 +133,48 @@ abstract class Controller
         array $data = [],
         bool $withTemplate = true,
     ): never {
+
         $this->ensureViewExists(
             $viewPath,
             'Vue',
         );
 
-        $variables = $this->sharedViewVariables(
-            $data,
-        );
+        $variables =
+            $this->sharedViewVariables(
+                $data,
+            );
 
-        $content = $this->renderPhp(
-            $viewPath,
-            $variables,
-        );
+        $content =
+            $this->renderPhp(
+                $viewPath,
+                $variables,
+            );
 
-        if (!$withTemplate) {
+        if (! $withTemplate) {
             Response::html(
                 $content,
                 $statusCode,
             );
         }
 
-        $templatePath = $this->templatePath();
+        $templatePath =
+            $this->templatePath();
 
         $this->ensureViewExists(
             $templatePath,
             'Template',
         );
 
-        $html = $this->renderPhp(
-            $templatePath,
-            array_merge(
-                $variables,
-                [
-                    'content' => $content,
-                ],
-            ),
-        );
+        $html =
+            $this->renderPhp(
+                $templatePath,
+                array_merge(
+                    $variables,
+                    [
+                        'content' => $content,
+                    ],
+                ),
+            );
 
         Response::html(
             $html,
@@ -174,9 +189,13 @@ abstract class Controller
         string $file,
         array $data = [],
     ): never {
+
         $this->renderView(
-            viewPath: $this->viewPath($file),
-            data: $data,
+            viewPath:
+                $this->viewPath($file),
+
+            data:
+                $data,
         );
     }
 
@@ -187,10 +206,16 @@ abstract class Controller
         string $file,
         array $data = [],
     ): never {
+
         $this->renderView(
-            viewPath: $this->viewPath($file),
-            data: $data,
-            withTemplate: false,
+            viewPath:
+                $this->viewPath($file),
+
+            data:
+                $data,
+
+            withTemplate:
+                false,
         );
     }
 
@@ -202,10 +227,16 @@ abstract class Controller
         int $statusCode,
         array $data = [],
     ): never {
+
         $this->renderView(
-            viewPath: $this->errorViewPath($file),
-            statusCode: $statusCode,
-            data: $data,
+            viewPath:
+                $this->errorViewPath($file),
+
+            statusCode:
+                $statusCode,
+
+            data:
+                $data,
         );
     }
 
@@ -213,6 +244,7 @@ abstract class Controller
         string $url,
         int $statusCode = 302,
     ): never {
+
         if (
             preg_match(
                 '#^https?://#i',
@@ -237,14 +269,16 @@ abstract class Controller
             );
         }
 
-        $baseUri = $this->baseUri === '/'
-            ? ''
-            : rtrim(
-                $this->baseUri,
-                '/',
-            );
+        $baseUri =
+            $this->baseUri === '/'
+                ? ''
+                : rtrim(
+                    $this->baseUri,
+                    '/',
+                );
 
-        $location = $baseUri
+        $location =
+            $baseUri
             . '/'
             . ltrim(
                 $url,
@@ -262,6 +296,7 @@ abstract class Controller
         string $message,
         bool $withOld = true,
     ): never {
+
         if ($withOld) {
             Session::set(
                 'old',
@@ -285,6 +320,7 @@ abstract class Controller
         array $errors,
         string $message = 'Le formulaire contient des erreurs.',
     ): never {
+
         Session::set(
             'errors',
             $errors,
@@ -307,6 +343,7 @@ abstract class Controller
         string $url,
         string $message,
     ): never {
+
         Session::set(
             'success',
             $message,
@@ -318,6 +355,7 @@ abstract class Controller
     public function notFound(
         string $message = 'Page introuvable',
     ): never {
+
         throw new NotFoundException(
             $message,
         );
@@ -326,6 +364,7 @@ abstract class Controller
     public function methodNotAllowed(
         string $message = 'Méthode non autorisée',
     ): never {
+
         throw new MethodNotAllowedException(
             $message,
         );
@@ -334,6 +373,7 @@ abstract class Controller
     public function serverError(
         string $message = 'Erreur interne du serveur',
     ): never {
+
         throw new RuntimeException(
             $message,
         );
@@ -353,18 +393,13 @@ abstract class Controller
             );
     }
 
-    /**
-     * SUCCESS JSON ONLY
-     *
-     * @param array<string, mixed> $data
-     */
     protected function json(
-        array $data,
-        int $status = 200,
+        ServiceResult $result,
     ): never {
+
         Response::json(
-            $data,
-            $status,
+            $result->toArray(),
+            $result->status,
         );
     }
 }
