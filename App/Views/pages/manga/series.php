@@ -45,11 +45,12 @@ $totalPages =
             class="collection-ajax-content"
         >
 
-            <?php require __DIR__
-                . '/partials/series_ajax.php'; ?>
+            <?php require view_path(
+                'components/manga/series_ajax.php',
+            ); ?>
 
             <?php if (
-                !$isSerieView
+                ! $isSerieView
                 && $totalPages > 1
             ): ?>
 
@@ -73,7 +74,7 @@ $totalPages =
                                     : ''
                                 ?>
                             "
-                            href="<?= $baseUri ?>manga/series/page/<?= $i ?>"
+                            href="<?= e($baseUri) ?>manga/series/page/<?= $i ?>"
                         >
                             <?= $i ?>
                         </a>

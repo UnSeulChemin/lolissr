@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers\Manga;
 
 use App\Controllers\Controller;
+use App\DTO\Common\ServiceResult;
 use App\DTO\Manga\Inputs\MangaUpdateNoteDTO;
 use App\Services\Manga\MangaReadService;
 use App\Services\Manga\MangaWriteService;
@@ -12,10 +13,12 @@ use Framework\Application\App;
 use Framework\Exceptions\BaseHttpException;
 use Framework\Exceptions\NotFoundException;
 use Framework\Http\Request;
+use Throwable;
 
 final class MangaAjaxController extends Controller
 {
-    private const AJAX_PATH = 'manga/ajax';
+    private const AJAX_PATH =
+        'manga/ajax';
 
     public function __construct(
         protected MangaReadService $mangaReadService,
@@ -46,27 +49,34 @@ final class MangaAjaxController extends Controller
     public function search(
         string $query = '',
     ): never {
+
         $this->ensureAjax();
 
         try {
-            $searchData = $this->mangaReadService
-                ->search($query);
 
-            $results = $searchData->mangas;
+            $searchData =
+                $this->mangaReadService
+                    ->search($query);
 
-            $this->json([
-                'success' => true,
-                'data' => [
-                    'results' => $results,
-                ],
-            ]);
-        } catch (\Throwable $exception) {
-            http_response_code(500);
+            $this->json(
+                ServiceResult::success(
+                    data: [
+                        'results' => $searchData->mangas,
+                    ],
+                ),
+            );
 
-            $this->json([
-                'success' => false,
-                'error' => $exception->getMessage(),
-            ]);
+        } catch (Throwable $exception) {
+
+            $this->json(
+                ServiceResult::error(
+                    message:
+                        $exception->getMessage(),
+
+                    status:
+                        500,
+                ),
+            );
         }
     }
 
@@ -75,7 +85,8 @@ final class MangaAjaxController extends Controller
     // -----------------------------
     public function seriesPage(
         string|int $page = 1,
-    ): void {
+    ): never {
+
         $this->ensureAjax();
 
         $page = max(
@@ -83,8 +94,9 @@ final class MangaAjaxController extends Controller
             (int) $page,
         );
 
-        $data = $this->mangaReadService
-            ->series($page);
+        $data =
+            $this->mangaReadService
+                ->series($page);
 
         if ($data === null) {
             throw new NotFoundException(
@@ -93,14 +105,25 @@ final class MangaAjaxController extends Controller
         }
 
         $this->renderPartial(
-            'manga/partials/series_ajax',
+            'components/manga/series_ajax',
             [
-                'mangas' => $data->mangas,
-                'currentPage' => $data->currentPage,
-                'totalPages' => $data->compteur,
-                'slugFilter' => $data->slugFilter,
-                'isSerieView' => $data->slugFilter !== null,
-                'baseUri' => $this->baseUri,
+                'mangas' =>
+                    $data->mangas,
+
+                'currentPage' =>
+                    $data->currentPage,
+
+                'totalPages' =>
+                    $data->compteur,
+
+                'slugFilter' =>
+                    $data->slugFilter,
+
+                'isSerieView' =>
+                    $data->slugFilter !== null,
+
+                'baseUri' =>
+                    $this->baseUri,
             ],
         );
     }
@@ -111,25 +134,29 @@ final class MangaAjaxController extends Controller
     public function updateNote(
         string $slug,
         int $numero,
-    ): void {
+    ): never {
+
         $this->ensureAjax();
 
-        $data = $this->resolveMangaOrFail(
-            $slug,
-            $numero,
-        );
-
-        $jacquette = (int) $this->request
-            ->input(
-                'jacquette',
-                0,
+        $data =
+            $this->resolveMangaOrFail(
+                $slug,
+                $numero,
             );
 
-        $livreNote = (int) $this->request
-            ->input(
-                'livre_note',
-                0,
-            );
+        $jacquette =
+            (int) $this->request
+                ->input(
+                    'jacquette',
+                    0,
+                );
+
+        $livreNote =
+            (int) $this->request
+                ->input(
+                    'livre_note',
+                    0,
+                );
 
         if (
             $jacquette < 1
@@ -137,41 +164,52 @@ final class MangaAjaxController extends Controller
             || $livreNote < 1
             || $livreNote > 5
         ) {
+
             $this->json(
-                [
-                    'success' => false,
-                    'message' => 'Valeurs invalides',
-                ],
-                400,
+                ServiceResult::error(
+                    message:
+                        'Valeurs invalides',
+
+                    status:
+                        400,
+                ),
             );
         }
 
-        $noteTotale =
-            $jacquette + $livreNote;
+        $dto =
+            MangaUpdateNoteDTO::fromArray([
+                'jacquette' => $jacquette,
+                'livre_note' => $livreNote,
+            ]);
 
-        $dto = MangaUpdateNoteDTO::fromArray([
-            'jacquette' => $jacquette,
-            'livre_note' => $livreNote,
-        ]);
+        $result =
+            $this->mangaWriteService
+                ->updateNote(
+                    $data->canonicalSlug,
+                    $numero,
+                    $dto,
+                );
 
-        $result = $this->mangaWriteService
-            ->updateNote(
-                $data->canonicalSlug,
-                $numero,
-                $dto,
-            );
+        $responseData =
+            $result->data;
 
-        $response = $result->toArray();
-
-        $response['data']['notes'] = [
+        $responseData['notes'] = [
             'jacquette' => $jacquette,
             'livreNote' => $livreNote,
-            'note' => $noteTotale,
+            'note' => $jacquette + $livreNote,
         ];
 
         $this->json(
-            $response,
-            $result->status,
+            ServiceResult::success(
+                message:
+                    $result->message,
+
+                data:
+                    $responseData,
+
+                status:
+                    $result->status,
+            ),
         );
     }
 
@@ -181,31 +219,32 @@ final class MangaAjaxController extends Controller
     public function updateReadStatus(
         string $slug,
         int $numero,
-    ): void {
+    ): never {
+
         $this->ensureAjax();
 
-        $data = $this->resolveMangaOrFail(
-            $slug,
-            $numero,
-        );
-
-        $readStatus = (int) $this->request
-            ->input(
-                'readStatus',
-                0,
-            );
-
-        $result = $this->mangaWriteService
-            ->updateReadStatus(
-                $data->canonicalSlug,
+        $data =
+            $this->resolveMangaOrFail(
+                $slug,
                 $numero,
-                $readStatus,
             );
 
-        $this->json(
-            $result->toArray(),
-            $result->status,
-        );
+        $readStatus =
+            (int) $this->request
+                ->input(
+                    'readStatus',
+                    0,
+                );
+
+        $result =
+            $this->mangaWriteService
+                ->updateReadStatus(
+                    $data->canonicalSlug,
+                    $numero,
+                    $readStatus,
+                );
+
+        $this->json($result);
     }
 
     // -----------------------------
@@ -214,52 +253,66 @@ final class MangaAjaxController extends Controller
     public function delete(
         string $slug,
         int $numero,
-    ): void {
+    ): never {
+
         $this->ensureAjax();
 
-        $data = $this->resolveMangaOrFail(
-            $slug,
-            $numero,
-        );
-
-        $result = $this->mangaWriteService
-            ->delete(
-                $data->canonicalSlug,
+        $data =
+            $this->resolveMangaOrFail(
+                $slug,
                 $numero,
             );
 
-        $seriesStillExists = $this
-            ->mangaReadService
-            ->seriesExists(
-                $data->canonicalSlug,
-            );
-
-        $baseUri = rtrim(
-            $this->baseUri,
-            '/',
-        );
-
-        $redirect = $seriesStillExists
-            ? sprintf(
-                '%s/manga/series/%s',
-                $baseUri,
-                rawurlencode(
+        $result =
+            $this->mangaWriteService
+                ->delete(
                     $data->canonicalSlug,
-                ),
-            )
-            : sprintf(
-                '%s/manga/series',
-                $baseUri,
+                    $numero,
+                );
+
+        $seriesStillExists =
+            $this->mangaReadService
+                ->seriesExists(
+                    $data->canonicalSlug,
+                );
+
+        $baseUri =
+            rtrim(
+                $this->baseUri,
+                '/',
             );
 
-        $response = $result->toArray();
+        $redirect =
+            $seriesStillExists
+                ? sprintf(
+                    '%s/manga/series/%s',
+                    $baseUri,
+                    rawurlencode(
+                        $data->canonicalSlug,
+                    ),
+                )
+                : sprintf(
+                    '%s/manga/series',
+                    $baseUri,
+                );
 
-        $response['data']['redirect']
+        $responseData =
+            $result->data;
+
+        $responseData['redirect']
             = $redirect;
 
         $this->json(
-            $response,
-            $result->status,
+            ServiceResult::success(
+                message:
+                    $result->message,
+
+                data:
+                    $responseData,
+
+                status:
+                    $result->status,
+            ),
         );
     }
 
@@ -270,11 +323,13 @@ final class MangaAjaxController extends Controller
         string $slug,
         int $numero,
     ): object {
-        $data = $this->mangaReadService
-            ->one(
-                $slug,
-                $numero,
-            );
+
+        $data =
+            $this->mangaReadService
+                ->one(
+                    $slug,
+                    $numero,
+                );
 
         if ($data === null) {
             throw new NotFoundException(
@@ -287,8 +342,12 @@ final class MangaAjaxController extends Controller
             !== $data->canonicalSlug
         ) {
             throw new BaseHttpException(
-                message: 'URL non canonique',
-                statusCode: 409,
+                message:
+                    'URL non canonique',
+
+                statusCode:
+                    409,
+
                 data: [
                     'redirect' => sprintf(
                         '%s/%s/%s/%d',

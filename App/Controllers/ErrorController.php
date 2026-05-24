@@ -4,95 +4,167 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\DTO\Common\ServiceResult;
 use Framework\Http\Request;
-use Framework\Http\Response;
 use Framework\Support\Logger;
 
 final class ErrorController extends Controller
 {
-    public function __construct(Request $request)
-    {
+    public function __construct(
+        Request $request,
+    ) {
         parent::__construct($request);
     }
 
-    public function notFound(string $message = 'Page introuvable'): never
-    {
-        $this->logWarning('404 Not Found');
-        $this->respond('404', 404, '404 | Page introuvable', $message);
-    }
+    public function notFound(
+        string $message = 'Page introuvable',
+    ): never {
 
-    public function methodNotAllowed(string $message = 'Méthode non autorisée'): never
-    {
-        $this->logWarning('405 Method Not Allowed');
-        $this->respond('405', 405, '405 | Méthode non autorisée', $message);
-    }
+        $this->logWarning(
+            '404 Not Found',
+        );
 
-    public function csrfExpired(string $message = 'Session expirée ou requête invalide.'): never
-    {
-        $this->logWarning('419 CSRF Expired');
-        $this->respond('419', 419, '419 | Session expirée', $message);
-    }
-
-    public function forbidden(string $message = 'Accès interdit'): never
-    {
-        $this->logWarning('403 Forbidden');
-        $this->respond('403', 403, '403 | Accès interdit', $message);
-    }
-
-    public function unauthorized(string $message = 'Non authentifié'): never
-    {
-        $this->logWarning('401 Unauthorized');
-        $this->respond('401', 401, '401 | Non authentifié', $message);
-    }
-
-    public function serverError(string $message = 'Erreur interne du serveur'): never
-    {
-        $this->logError('500 Internal Server Error');
-        $this->respond('500', 500, '500 | Erreur serveur', $message);
-    }
-
-    /**
-     * Réponse uniforme : JSON si AJAX, HTML sinon
-     */
-    private function respond(string $view, int $status, string $title, string $message): never
-    {
-        $this->ajaxOrHtml(
-            fn () => $this->jsonError($message, $status),
-            fn () => $this->renderErrorPage($view, $status, $title, $message)
+        $this->respond(
+            view: '404',
+            status: 404,
+            title: '404 | Page introuvable',
+            message: $message,
         );
     }
 
-    private function renderErrorPage(string $view, int $status, string $title, string $message): never
-    {
-        $this->title = $title;
-        $this->renderError($view, $status, ['message' => $message]);
-    }
-
-    private function jsonError(string $message, int $status = 400): never
-    {
-        $this->json(['success' => false, 'message' => $message], $status);
-    }
-
-    private function ajaxOrHtml(
-        callable $ajax,
-        callable $html,
+    public function methodNotAllowed(
+        string $message = 'Méthode non autorisée',
     ): never {
+
+        $this->logWarning(
+            '405 Method Not Allowed',
+        );
+
+        $this->respond(
+            view: '405',
+            status: 405,
+            title: '405 | Méthode non autorisée',
+            message: $message,
+        );
+    }
+
+    public function csrfExpired(
+        string $message = 'Session expirée ou requête invalide.',
+    ): never {
+
+        $this->logWarning(
+            '419 CSRF Expired',
+        );
+
+        $this->respond(
+            view: '419',
+            status: 419,
+            title: '419 | Session expirée',
+            message: $message,
+        );
+    }
+
+    public function forbidden(
+        string $message = 'Accès interdit',
+    ): never {
+
+        $this->logWarning(
+            '403 Forbidden',
+        );
+
+        $this->respond(
+            view: '403',
+            status: 403,
+            title: '403 | Accès interdit',
+            message: $message,
+        );
+    }
+
+    public function unauthorized(
+        string $message = 'Non authentifié',
+    ): never {
+
+        $this->logWarning(
+            '401 Unauthorized',
+        );
+
+        $this->respond(
+            view: '401',
+            status: 401,
+            title: '401 | Non authentifié',
+            message: $message,
+        );
+    }
+
+    public function serverError(
+        string $message = 'Erreur interne du serveur',
+    ): never {
+
+        $this->logError(
+            '500 Internal Server Error',
+        );
+
+        $this->respond(
+            view: '500',
+            status: 500,
+            title: '500 | Erreur serveur',
+            message: $message,
+        );
+    }
+
+    private function respond(
+        string $view,
+        int $status,
+        string $title,
+        string $message,
+    ): never {
+
         if ($this->isAjax()) {
-            $ajax();
-            exit;
+
+            $result =
+                ServiceResult::error(
+                    message: $message,
+                    status: $status,
+                );
+
+            $this->json(
+                $result->toArray(),
+                $result->status,
+            );
         }
 
-        $html();
-        exit;
+        $this->title = $title;
+
+        $this->renderError(
+            $view,
+            $status,
+            [
+                'message' => $message,
+            ],
+        );
     }
 
-    private function logWarning(string $msg): void
-    {
-        Logger::warning($msg, ['uri' => $this->request->uri()]);
+    private function logWarning(
+        string $message,
+    ): void {
+
+        Logger::warning(
+            $message,
+            [
+                'uri' => $this->request->uri(),
+            ],
+        );
     }
 
-    private function logError(string $msg): void
-    {
-        Logger::error($msg, ['uri' => $this->request->uri()]);
+    private function logError(
+        string $message,
+    ): void {
+
+        Logger::error(
+            $message,
+            [
+                'uri' => $this->request->uri(),
+            ],
+        );
     }
 }

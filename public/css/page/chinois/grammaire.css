@@ -467,11 +467,6 @@
    MAÎTRISE
 ========================================= */
 
-.grammar-item
-{
-    position: relative;
-}
-
 .grammar-mastered
 {
     position: absolute;
@@ -521,7 +516,8 @@
     border-color: rgba(34, 197, 94, 0.34);
 }
 
-.grammar-mastered.active
+.grammar-mastered.active,
+.grammar-mastered[aria-pressed="true"]
 {
     color: #ffffff;
 
@@ -537,15 +533,25 @@
         0 8px 18px rgba(34, 197, 94, 0.22);
 }
 
-.grammar-mastered i
-{
-    line-height: 1;
-}
-
 .grammar-mastered-icon
 {
     width: 19px;
     height: 19px;
 
     flex-shrink: 0;
+
+    pointer-events: none;
+}
+
+.grammar-mastered-icon path
+{
+    stroke: currentColor;
+
+    transition:
+        stroke var(--transition-fast);
+}
+
+.grammar-mastered *
+{
+    pointer-events: none;
 }

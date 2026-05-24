@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Controllers\Chinois;
 
 use App\Controllers\Controller;
+use App\DTO\Common\ServiceResult;
 use App\Repositories\Chinois\ChinoisGrammaireRepository;
+use Framework\Application\App;
 use Framework\Exceptions\BaseHttpException;
 use Framework\Exceptions\ValidationException;
 use Framework\Http\Request;
@@ -14,46 +16,77 @@ final class ChinoisAjaxController extends Controller
 {
     public function __construct(
         private readonly ChinoisGrammaireRepository $repository,
-        Request $request
+        Request $request,
     ) {
-        parent::__construct($request); // <- Obligatoire pour ton Controller parent
+        parent::__construct($request);
     }
 
-    /**
-     * Toggle la maîtrise d'une règle de grammaire.
-     * Répond uniquement en AJAX.
-     */
+    /*
+    |--------------------------------------------------------------
+    | Toggle grammaire maîtrise
+    |--------------------------------------------------------------
+    */
+
     public function toggleGrammaireMaitrise(): never
     {
         $this->ensureAjax();
 
-        // Récupère l'ID depuis POST via le tableau global
-        $id = (int) ($_POST['id'] ?? 0);
+        $id =
+            (int) $this->request
+                ->input(
+                    'id',
+                    0,
+                );
 
         if ($id <= 0) {
+
             throw new ValidationException([
                 'id' => 'ID invalide',
             ]);
         }
 
-        $maitrise = $this->repository->toggleMaitrise($id);
+        $maitrise =
+            (int) $this->repository
+                ->toggleMaitrise($id);
 
-        $this->json([
-            'success' => true,
-            'maitrise' => $maitrise,
-            'message' => 'Grammaire marquée comme maîtrisée'
-        ]);
+        $message =
+            $maitrise === 1
+                ? 'Grammaire marquée comme maîtrisée'
+                : 'Grammaire marquée comme non maîtrisée';
+
+        $result =
+            ServiceResult::success(
+                message: $message,
+
+                data: [
+                    'maitrise' => $maitrise,
+                ],
+            );
+
+        $this->json($result);
     }
+
+    /*
+    |--------------------------------------------------------------
+    | Ensure AJAX request
+    |--------------------------------------------------------------
+    */
 
     private function ensureAjax(): void
     {
-        if ($this->isAjax() || \Framework\Application\App::isTesting()) {
+        if (
+            $this->isAjax()
+            || App::isTesting()
+        ) {
             return;
         }
 
         throw new BaseHttpException(
-            message: 'Requête AJAX requise',
-            statusCode: 400
+            message:
+                'Requête AJAX requise',
+
+            statusCode:
+                400,
         );
     }
 }

@@ -29,6 +29,6 @@ final class MainController extends Controller
             callback: fn (): DashboardStats => $this->statsService->dashboard()
         );
 
-        $this->render('main/index', ['stats' => $stats]);
+        $this->render('pages/main/index', ['stats' => $stats]);
     }
 }

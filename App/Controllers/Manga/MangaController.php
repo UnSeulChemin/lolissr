@@ -27,7 +27,6 @@ final class MangaController extends Controller
         protected MangaWriteService $mangaWriteService,
         Request $request,
     ) {
-
         parent::__construct(
             $request,
         );
@@ -69,7 +68,6 @@ final class MangaController extends Controller
             );
 
         if ($numero !== null) {
-
             $location .=
                 '/' . $numero;
         }
@@ -104,7 +102,9 @@ final class MangaController extends Controller
         return sprintf(
             '%s/%s/%d',
             self::EDIT_PATH,
-            rawurlencode($slug),
+            rawurlencode(
+                $slug,
+            ),
             $numero,
         );
     }
@@ -121,7 +121,7 @@ final class MangaController extends Controller
             'Manga';
 
         $this->render(
-            'manga/index',
+            'pages/manga/index',
         );
     }
 
@@ -137,7 +137,7 @@ final class MangaController extends Controller
             'Manga | Lien';
 
         $this->render(
-            'manga/lien',
+            'pages/manga/lien',
         );
     }
 
@@ -156,7 +156,6 @@ final class MangaController extends Controller
                 ->series($page);
 
         if ($data === null) {
-
             throw new NotFoundException(
                 'Page introuvable',
             );
@@ -168,14 +167,13 @@ final class MangaController extends Controller
         if (
             $data->currentPage > 1
         ) {
-
             $this->title .=
                 ' - Page '
                 . $data->currentPage;
         }
 
         $this->render(
-            'manga/series',
+            'pages/manga/series',
             [
                 'mangas' =>
                     $data->mangas,
@@ -219,7 +217,7 @@ final class MangaController extends Controller
                 : 'Manga | Recherche';
 
         $this->render(
-            'manga/search',
+            'pages/manga/search',
             [
                 'mangas' =>
                     $data->mangas,
@@ -248,7 +246,6 @@ final class MangaController extends Controller
             $data === null
             || $data->mangas === []
         ) {
-
             throw new NotFoundException(
                 'Manga introuvable',
             );
@@ -259,7 +256,7 @@ final class MangaController extends Controller
             . $data->mangas[0]->livre;
 
         $this->render(
-            'manga/series',
+            'pages/manga/series',
             [
                 'mangas' =>
                     $data->mangas,
@@ -301,7 +298,6 @@ final class MangaController extends Controller
                 );
 
         if ($data === null) {
-
             throw new NotFoundException(
                 'Manga introuvable',
             );
@@ -319,7 +315,7 @@ final class MangaController extends Controller
             . $data->manga->livre;
 
         $this->render(
-            'manga/livre',
+            'pages/manga/livre',
             [
                 'manga' =>
                     $data->manga,
@@ -339,7 +335,7 @@ final class MangaController extends Controller
             'Manga | Ajouter';
 
         $this->render(
-            'manga/ajouter',
+            'pages/manga/ajouter',
         );
     }
 
@@ -362,7 +358,6 @@ final class MangaController extends Controller
                 );
 
         if ($data === null) {
-
             throw new NotFoundException(
                 'Manga introuvable',
             );
@@ -379,7 +374,7 @@ final class MangaController extends Controller
             'Manga | Modifier';
 
         $this->render(
-            'manga/modifier',
+            'pages/manga/modifier',
             [
                 'manga' =>
                     $data->manga,
@@ -398,7 +393,6 @@ final class MangaController extends Controller
     ): never {
 
         if ($request->fails()) {
-
             throw new ValidationException(
                 $request->errors(),
             );
@@ -411,10 +405,7 @@ final class MangaController extends Controller
                     $request->files(),
                 );
 
-        $this->json(
-            $result->toArray(),
-            $result->status,
-        );
+        $this->json($result);
     }
 
     /*
@@ -437,7 +428,6 @@ final class MangaController extends Controller
                 );
 
         if ($data === null) {
-
             throw new NotFoundException(
                 'Manga introuvable',
             );
@@ -453,12 +443,12 @@ final class MangaController extends Controller
             $slug !==
             $data->canonicalSlug
         ) {
-
             throw new BaseHttpException(
                 message:
                     'URL non canonique',
 
-                statusCode: 409,
+                statusCode:
+                    409,
 
                 data: [
                     'redirect' =>
@@ -468,7 +458,6 @@ final class MangaController extends Controller
         }
 
         if ($request->fails()) {
-
             throw new ValidationException(
                 $request->errors(),
             );
@@ -482,13 +471,15 @@ final class MangaController extends Controller
                     $request->dto(),
                 );
 
-        if (!$result->success) {
-
+        if (! $result->success) {
             throw new BaseHttpException(
                 message:
                     $result->message,
 
-                statusCode: 422,
+                statusCode:
+                    422,
+
+                data: $result->data,
             );
         }
 

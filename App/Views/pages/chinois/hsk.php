@@ -22,11 +22,15 @@ $baseUri = rtrim(
 $sections = [];
 
 foreach ($grammaires as $grammaire) {
-    $section = (string) $grammaire->section;
 
-    $categorie = (string) $grammaire->categorie;
+    $section =
+        (string) $grammaire->section;
 
-    $sections[$section][$categorie][] = $grammaire;
+    $categorie =
+        (string) $grammaire->categorie;
+
+    $sections[$section][$categorie][]
+        = $grammaire;
 }
 
 $descriptions = [
@@ -50,20 +54,28 @@ $sourceDescriptions = [
     '4' => 'Références, structures et exemples de grammaire chinoise avancée.',
 ];
 
-$description = $descriptions[$level]
+$description =
+    $descriptions[$level]
     ?? $descriptions['1'];
 
-$sourceUrl = $sources[$level]
+$sourceUrl =
+    $sources[$level]
     ?? $sources['1'];
 
-$sourceDescription = $sourceDescriptions[$level]
+$sourceDescription =
+    $sourceDescriptions[$level]
     ?? $sourceDescriptions['1'];
 
 ?>
 
 <section class="layout-container dashboard-page">
 
-    <section class="grammar-hero animate-fade-up">
+    <section
+        class="
+            grammar-hero
+            animate-fade-up
+        "
+    >
 
         <div class="grammar-hero-main">
 
@@ -99,10 +111,9 @@ $sourceDescription = $sourceDescriptions[$level]
                 class="grammar-source-link"
                 href="<?= e($sourceUrl) ?>"
                 target="_blank"
-                rel="noopener noreferrer">
-
+                rel="noopener noreferrer"
+            >
                 Ouvrir
-
             </a>
 
         </div>
@@ -111,7 +122,12 @@ $sourceDescription = $sourceDescriptions[$level]
 
     <?php foreach ($sections as $section => $categories): ?>
 
-        <section class="grammar-main-section">
+        <section
+            class="
+                grammar-main-section
+                animate-fade-up
+            "
+        >
 
             <h2 class="grammar-section-title">
 
@@ -123,7 +139,12 @@ $sourceDescription = $sourceDescriptions[$level]
 
             <?php foreach ($categories as $categorie => $items): ?>
 
-                <section class="grammar-category">
+                <section
+                    class="
+                        grammar-category
+                        animate-fade-up
+                    "
+                >
 
                     <h3 class="grammar-category-title">
 
@@ -133,59 +154,112 @@ $sourceDescription = $sourceDescriptions[$level]
 
                     </h3>
 
-                    <section class="grammar-list">
+                    <section
+                        class="
+                            grammar-list
+                            animate-fade-up-stagger
+                        "
+                    >
 
                         <?php foreach ($items as $grammaire): ?>
 
                             <?php
-                            $hasExplication = $grammaire->explication !== null
-                                && trim((string) $grammaire->explication) !== '';
 
-                            $isMaitrise = (int) ($grammaire->maitrise ?? 0) === 1;
+                            $hasExplication =
+                                $grammaire->explication !== null
+                                && trim(
+                                    (string) $grammaire->explication,
+                                ) !== '';
+
+                            $isMaitrise =
+                                (int) (
+                                    $grammaire->maitrise
+                                    ?? 0
+                                ) === 1;
+
                             ?>
 
-                            <article class="grammar-item">
+                            <article
+                                class="
+                                    grammar-item
+                                    animate-fade-up
+                                "
+                            >
 
                                 <h4 class="grammar-topic">
-                                    <?= e((string) $grammaire->titre) ?>
+                                    <?= e(
+                                        (string) $grammaire->titre,
+                                    ) ?>
                                 </h4>
 
                                 <div class="grammar-structure">
-                                    <?= e((string) $grammaire->structure) ?>
+                                    <?= e(
+                                        (string) $grammaire->structure,
+                                    ) ?>
                                 </div>
 
                                 <div class="grammar-example">
-                                    <?= e((string) $grammaire->phrase) ?>
+                                    <?= e(
+                                        (string) $grammaire->phrase,
+                                    ) ?>
                                 </div>
 
                                 <div class="grammar-pinyin">
-                                    <?= e((string) $grammaire->pinyin) ?>
+                                    <?= e(
+                                        (string) $grammaire->pinyin,
+                                    ) ?>
                                 </div>
 
                                 <div class="grammar-translation">
-                                    <?= e((string) $grammaire->traduction) ?>
+                                    <?= e(
+                                        (string) $grammaire->traduction,
+                                    ) ?>
                                 </div>
 
                                 <?php if ($hasExplication): ?>
 
                                     <div class="grammar-explanation">
-                                        <?= e((string) $grammaire->explication) ?>
+                                        <?= e(
+                                            (string) $grammaire->explication,
+                                        ) ?>
                                     </div>
 
                                 <?php endif; ?>
 
                                 <button
-                                    class="grammar-mastered <?= $isMaitrise ? 'active' : '' ?>"
+                                    class="
+                                        grammar-mastered
+                                        <?= $isMaitrise
+                                            ? 'active'
+                                            : ''
+                                        ?>
+                                    "
                                     data-id="<?= (int) $grammaire->id ?>"
                                     data-url="<?= e($baseUri) ?>chinois/ajax/toggle-grammaire-maitrise"
-                                    data-maitrise="<?= $isMaitrise ? '1' : '0' ?>"
+                                    data-maitrise="<?= $isMaitrise
+                                        ? '1'
+                                        : '0'
+                                    ?>"
                                     type="button"
-                                    aria-label="Marquer comme maîtrisé">
+                                    aria-pressed="<?= $isMaitrise
+                                        ? 'true'
+                                        : 'false'
+                                    ?>"
+                                    aria-label="<?= $isMaitrise
+                                        ? 'Retirer la maîtrise'
+                                        : 'Marquer comme maîtrisé'
+                                    ?>"
+                                    title="<?= $isMaitrise
+                                        ? 'Retirer la maîtrise'
+                                        : 'Marquer comme maîtrisé'
+                                    ?>"
+                                >
 
                                     <svg
                                         class="grammar-mastered-icon"
                                         viewBox="0 0 24 24"
-                                        aria-hidden="true">
+                                        aria-hidden="true"
+                                    >
 
                                         <path
                                             d="M20 6L9 17L4 12"
@@ -193,7 +267,8 @@ $sourceDescription = $sourceDescriptions[$level]
                                             stroke="currentColor"
                                             stroke-width="3"
                                             stroke-linecap="round"
-                                            stroke-linejoin="round" />
+                                            stroke-linejoin="round"
+                                        />
 
                                     </svg>
 
