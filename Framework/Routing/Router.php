@@ -8,6 +8,8 @@ use Closure;
 use Framework\Container\AppContainer;
 use Framework\Http\Middleware\MiddlewareInterface;
 use Framework\Http\Request;
+use ReflectionMethod;
+use ReflectionNamedType;
 use RuntimeException;
 
 final class Router
@@ -135,8 +137,7 @@ final class Router
             }
 
             $params = array_map(
-                static function (string $value): string|int
-                {
+                static function (string $value): string|int {
                     return ctype_digit($value)
                         ? (int) $value
                         : $value;
@@ -158,7 +159,42 @@ final class Router
 
             $controller = AppContainer::get()->get($controllerClass);
 
-            $controller->{$methodName}(...$params);
+            $reflection = new ReflectionMethod(
+                $controller,
+                $methodName,
+            );
+
+            $arguments = [];
+
+            $routeParams = $params;
+
+            foreach ($reflection->getParameters() as $parameter) {
+                $type = $parameter->getType();
+
+                if (
+                    $type instanceof ReflectionNamedType
+                    && !$type->isBuiltin()
+                ) {
+                    $className = $type->getName();
+
+                    if (is_a($className, Request::class, true)) {
+                        $arguments[] = AppContainer::get()->get($className);
+
+                        continue;
+                    }
+
+                    $arguments[] = AppContainer::get()->get($className);
+
+                    continue;
+                }
+
+                $arguments[] = array_shift($routeParams);
+            }
+
+            $reflection->invokeArgs(
+                $controller,
+                $arguments,
+            );
 
             return;
         }

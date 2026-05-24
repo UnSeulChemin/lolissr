@@ -9,8 +9,11 @@ use Framework\Application\App;
 final class Request
 {
     private array $get;
+
     private array $post;
+
     private array $files;
+
     private array $server;
 
     public function __construct(
@@ -128,6 +131,16 @@ final class Request
             $this->get,
             $this->post,
         );
+    }
+
+    public function postAll(): array
+    {
+        return $this->post;
+    }
+
+    public function queryAll(): array
+    {
+        return $this->get;
     }
 
     public function files(): array
