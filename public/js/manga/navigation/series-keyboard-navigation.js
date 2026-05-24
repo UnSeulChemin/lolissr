@@ -48,7 +48,9 @@ function getGridColumns()
     }
 
     return window
-        .getComputedStyle(grid)
+        .getComputedStyle(
+            grid,
+        )
         .gridTemplateColumns
         .split(' ')
         .filter(Boolean)
@@ -89,6 +91,8 @@ function clearActiveState()
             card.classList.remove(
                 'is-active',
             );
+
+            card.blur();
         },
     );
 }
@@ -141,6 +145,16 @@ function syncActiveState()
 
     /*
     |--------------------------------------------------------------
+    | Focus
+    |--------------------------------------------------------------
+    */
+
+    activeCard.focus({
+        preventScroll: true,
+    });
+
+    /*
+    |--------------------------------------------------------------
     | Scroll
     |--------------------------------------------------------------
     */
@@ -153,7 +167,7 @@ function syncActiveState()
 
     /*
     |--------------------------------------------------------------
-    | Prefetch
+    | Prefetch next page
     |--------------------------------------------------------------
     */
 
@@ -172,95 +186,6 @@ function syncActiveState()
 
 /*
 |------------------------------------------------------------------
-| Navigation
-|------------------------------------------------------------------
-*/
-
-function openActiveCard()
-{
-    const cards =
-        getCards();
-
-    const activeCard =
-        cards[activeIndex];
-
-    if (!activeCard) {
-        return;
-    }
-
-    window.location.href =
-        activeCard.href;
-}
-
-function handleBackNavigation()
-{
-    const pathname =
-        window.location.pathname;
-
-    /*
-    |--------------------------------------------------------------
-    | Detail page
-    |--------------------------------------------------------------
-    */
-
-    if (
-        /^\/lolissr\/manga\/series\/[^/]+$/.test(
-            pathname,
-        )
-    ) {
-
-        window.location.href =
-            '/lolissr/manga/series';
-
-        return;
-    }
-
-    /*
-    |--------------------------------------------------------------
-    | Series page
-    |--------------------------------------------------------------
-    */
-
-    if (
-        pathname ===
-        '/lolissr/manga/series'
-    ) {
-
-        window.location.href =
-            '/lolissr/manga';
-
-        return;
-    }
-
-    /*
-    |--------------------------------------------------------------
-    | Pagination
-    |--------------------------------------------------------------
-    */
-
-    if (
-        /^\/lolissr\/manga\/series\/page\/\d+$/.test(
-            pathname,
-        )
-    ) {
-
-        window.location.href =
-            '/lolissr/manga';
-
-        return;
-    }
-
-    /*
-    |--------------------------------------------------------------
-    | Fallback
-    |--------------------------------------------------------------
-    */
-
-    window.history.back();
-}
-
-/*
-|------------------------------------------------------------------
 | Keyboard
 |------------------------------------------------------------------
 */
@@ -269,7 +194,7 @@ function handleKeyboard(event)
 {
     /*
     |--------------------------------------------------------------
-    | Only collection pages
+    | Only collection page
     |--------------------------------------------------------------
     */
 
@@ -407,7 +332,15 @@ function handleKeyboard(event)
 
             event.preventDefault();
 
-            openActiveCard();
+            if (
+                activeIndex === -1
+            ) {
+                return;
+            }
+
+            cards[
+                activeIndex
+            ]?.click();
 
             break;
 
@@ -422,20 +355,6 @@ function handleKeyboard(event)
             event.preventDefault();
 
             clearActiveState();
-
-            break;
-
-        /*
-        |----------------------------------------------------------
-        | BACKSPACE
-        |----------------------------------------------------------
-        */
-
-        case 'Backspace':
-
-            event.preventDefault();
-
-            handleBackNavigation();
 
             break;
 

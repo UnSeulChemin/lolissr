@@ -2,8 +2,9 @@
 // App Initialization
 // ==================================================
 
-import { showToast }
-    from './toast.js';
+import {
+    showToast,
+} from './toast.js';
 
 /*
 |------------------------------------------------------------------
@@ -21,7 +22,7 @@ import {
 
 /*
 |------------------------------------------------------------------
-| Manga AJAX
+| Manga Actions
 |------------------------------------------------------------------
 */
 
@@ -58,6 +59,10 @@ import {
 import {
     initSeriesKeyboardNavigation,
 } from '../manga/navigation/series-keyboard-navigation.js';
+
+import {
+    initGlobalBackNavigation,
+} from '../manga/navigation/global-back-navigation.js';
 
 /*
 |------------------------------------------------------------------
@@ -166,7 +171,7 @@ function initApp()
 
     /*
     |--------------------------------------------------------------
-    | Manga AJAX
+    | Manga Actions
     |--------------------------------------------------------------
     */
 
@@ -211,6 +216,11 @@ function initApp()
         'initSeriesKeyboardNavigation',
     );
 
+    safeInit(
+        initGlobalBackNavigation,
+        'initGlobalBackNavigation',
+    );
+
     /*
     |--------------------------------------------------------------
     | Chinois
@@ -248,10 +258,13 @@ if (
     document.readyState
     === 'loading'
 ) {
+
     document.addEventListener(
         'DOMContentLoaded',
         initApp,
     );
+
 } else {
+
     initApp();
 }
