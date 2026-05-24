@@ -1,219 +1,49 @@
 // ==================================================
-// Series Keyboard Navigation
+// App Initialization
 // ==================================================
 
+import { showToast }
+    from './toast.js';
+
+/*
+|------------------------------------------------------------------
+| Pages
+|------------------------------------------------------------------
+*/
+
 import {
-    prefetchSeriesPage,
-} from './prefetch-series.js';
+    initAjouterPage,
+} from '../manga/pages/ajouter.js';
+
+import {
+    initModifierPage,
+} from '../manga/pages/modifier.js';
 
 /*
 |------------------------------------------------------------------
-| State
+| Manga AJAX
 |------------------------------------------------------------------
 */
 
-let initialized = false;
+import {
+    initLoadSeriesPage,
+} from '../manga/actions/load-series-page.js';
 
-let activeIndex = -1;
+import {
+    initUpdateNote,
+} from '../manga/actions/update-note.js';
 
-/*
-|------------------------------------------------------------------
-| Helpers
-|------------------------------------------------------------------
-*/
+import {
+    initDeleteManga,
+} from '../manga/actions/delete-manga.js';
 
-function getCards()
-{
-    return Array.from(
-        document.querySelectorAll(
-            '.collection-card-link',
-        ),
-    );
-}
+import {
+    initUpdateReadStatus,
+} from '../manga/actions/update-read-status.js';
 
-function getGrid()
-{
-    return document.querySelector(
-        '.collection-grid',
-    );
-}
-
-function getGridColumns()
-{
-    const grid =
-        getGrid();
-
-    if (!grid) {
-        return 1;
-    }
-
-    const styles =
-        window.getComputedStyle(
-            grid,
-        );
-
-    return styles
-        .gridTemplateColumns
-        .split(' ')
-        .filter(Boolean)
-        .length;
-}
-
-function isTypingContext(target)
-{
-    if (!target) {
-        return false;
-    }
-
-    return Boolean(
-        target.closest(
-            `
-            input,
-            textarea,
-            select,
-            [contenteditable="true"]
-            `,
-        ),
-    );
-}
-
-function focusCard(card)
-{
-    if (!card) {
-        return;
-    }
-
-    card.focus({
-        preventScroll: true,
-    });
-}
-
-function blurCurrentFocus()
-{
-    if (
-        document.activeElement
-        instanceof HTMLElement
-    ) {
-
-        document.activeElement.blur();
-    }
-}
-
-/*
-|------------------------------------------------------------------
-| Active State
-|------------------------------------------------------------------
-*/
-
-function clearActiveState()
-{
-    activeIndex = -1;
-
-    blurCurrentFocus();
-
-    getCards().forEach(
-        card =>
-        {
-            card.classList.remove(
-                'is-active',
-            );
-        },
-    );
-}
-
-function syncActiveState()
-{
-    const cards =
-        getCards();
-
-    if (!cards.length) {
-        return;
-    }
-
-    /*
-    |--------------------------------------------------------------
-    | Clamp
-    |--------------------------------------------------------------
-    */
-
-    if (
-        activeIndex < 0
-    ) {
-
-        activeIndex = 0;
-    }
-
-    if (
-        activeIndex >= cards.length
-    ) {
-
-        activeIndex =
-            cards.length - 1;
-    }
-
-    /*
-    |--------------------------------------------------------------
-    | Active class
-    |--------------------------------------------------------------
-    */
-
-    cards.forEach(
-        (card, index) =>
-        {
-            card.classList.toggle(
-                'is-active',
-                index === activeIndex,
-            );
-        },
-    );
-
-    const activeCard =
-        cards[activeIndex];
-
-    if (!activeCard) {
-        return;
-    }
-
-    /*
-    |--------------------------------------------------------------
-    | Native focus
-    |--------------------------------------------------------------
-    */
-
-    focusCard(
-        activeCard,
-    );
-
-    /*
-    |--------------------------------------------------------------
-    | Scroll
-    |--------------------------------------------------------------
-    */
-
-    activeCard.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center',
-        inline: 'nearest',
-    });
-
-    /*
-    |--------------------------------------------------------------
-    | Prefetch
-    |--------------------------------------------------------------
-    */
-
-    const nextPagination =
-        document.querySelector(
-            '.collection-pagination-link.active + .collection-pagination-link',
-        );
-
-    if (nextPagination) {
-
-        prefetchSeriesPage(
-            nextPagination.href,
-        );
-    }
-}
+import {
+    initSearchManga,
+} from '../manga/actions/search-manga.js';
 
 /*
 |------------------------------------------------------------------
@@ -221,326 +51,207 @@ function syncActiveState()
 |------------------------------------------------------------------
 */
 
-function openActiveCard()
+import {
+    initPrefetchSeries,
+} from '../manga/navigation/prefetch-series.js';
+
+import {
+    initSeriesKeyboardNavigation,
+} from '../manga/navigation/series-keyboard-navigation.js';
+
+/*
+|------------------------------------------------------------------
+| Chinois
+|------------------------------------------------------------------
+*/
+
+import {
+    initToggleGrammaireMaitrise,
+} from '../chinois/actions/toggle-grammar-mastery.js';
+
+/*
+|------------------------------------------------------------------
+| Flash Toast
+|------------------------------------------------------------------
+*/
+
+function initFlashToast()
 {
-    const cards =
-        getCards();
-
-    const activeCard =
-        cards[activeIndex];
-
-    if (!activeCard) {
-        return;
-    }
-
-    /*
-    |--------------------------------------------------------------
-    | Native navigation
-    |--------------------------------------------------------------
-    */
-
-    window.location.href =
-        activeCard.href;
-}
-
-function navigateBack()
-{
-    const pathname =
-        window.location.pathname;
-
-    /*
-    |--------------------------------------------------------------
-    | Manga detail
-    |--------------------------------------------------------------
-    */
-
     if (
-        /^\/lolissr\/manga\/series\/[^/]+$/.test(
-            pathname,
-        )
+        !window.flashToast?.message
     ) {
-
-        window.location.href =
-            '/lolissr/manga/series';
-
         return;
     }
 
-    /*
-    |--------------------------------------------------------------
-    | Series list
-    |--------------------------------------------------------------
-    */
-
-    if (
-        pathname ===
-        '/lolissr/manga/series'
-    ) {
-
-        window.location.href =
-            '/lolissr/manga';
-
-        return;
-    }
-
-    /*
-    |--------------------------------------------------------------
-    | Pagination
-    |--------------------------------------------------------------
-    */
-
-    if (
-        /^\/lolissr\/manga\/series\/page\/\d+$/.test(
-            pathname,
-        )
-    ) {
-
-        window.location.href =
-            '/lolissr/manga';
-
-        return;
-    }
-
-    /*
-    |--------------------------------------------------------------
-    | Fallback
-    |--------------------------------------------------------------
-    */
-
-    window.history.back();
+    showToast(
+        window.flashToast.message,
+        window.flashToast.type
+        || 'success',
+    );
 }
 
 /*
 |------------------------------------------------------------------
-| Keyboard
+| Safe Init
 |------------------------------------------------------------------
 */
 
-function handleKeyboard(event)
+function safeInit(
+    callback,
+    label,
+)
 {
-    if (
-        isTypingContext(
-            event.target,
-        )
-    ) {
-        return;
-    }
+    try {
 
-    /*
-    |--------------------------------------------------------------
-    | Global
-    |--------------------------------------------------------------
-    */
+        callback();
 
-    if (
-        event.key === 'Backspace'
-    ) {
+        console.log(
+            `✅ ${label}`,
+        );
 
-        navigateBack();
+    } catch (error) {
 
-        return;
-    }
-
-    if (
-        event.key === 'Escape'
-    ) {
-
-        clearActiveState();
-
-        return;
-    }
-
-    const cards =
-        getCards();
-
-    if (!cards.length) {
-        return;
-    }
-
-    switch (event.key) {
-
-        /*
-        |----------------------------------------------------------
-        | TAB
-        |----------------------------------------------------------
-        */
-
-        case 'Tab':
-
-            event.preventDefault();
-
-            if (
-                activeIndex === -1
-            ) {
-
-                activeIndex = 0;
-
-            } else if (
-                event.shiftKey
-            ) {
-
-                activeIndex =
-                    Math.max(
-                        activeIndex - 1,
-                        0,
-                    );
-
-            } else {
-
-                activeIndex =
-                    Math.min(
-                        activeIndex + 1,
-                        cards.length - 1,
-                    );
-            }
-
-            syncActiveState();
-
-            break;
-
-        /*
-        |----------------------------------------------------------
-        | RIGHT
-        |----------------------------------------------------------
-        */
-
-        case 'ArrowRight':
-
-            event.preventDefault();
-
-            activeIndex =
-                Math.min(
-                    activeIndex + 1,
-                    cards.length - 1,
-                );
-
-            syncActiveState();
-
-            break;
-
-        /*
-        |----------------------------------------------------------
-        | LEFT
-        |----------------------------------------------------------
-        */
-
-        case 'ArrowLeft':
-
-            event.preventDefault();
-
-            activeIndex =
-                Math.max(
-                    activeIndex - 1,
-                    0,
-                );
-
-            syncActiveState();
-
-            break;
-
-        /*
-        |----------------------------------------------------------
-        | DOWN
-        |----------------------------------------------------------
-        */
-
-        case 'ArrowDown':
-
-            event.preventDefault();
-
-            activeIndex =
-                Math.min(
-                    activeIndex
-                    + getGridColumns(),
-                    cards.length - 1,
-                );
-
-            syncActiveState();
-
-            break;
-
-        /*
-        |----------------------------------------------------------
-        | UP
-        |----------------------------------------------------------
-        */
-
-        case 'ArrowUp':
-
-            event.preventDefault();
-
-            activeIndex =
-                Math.max(
-                    activeIndex
-                    - getGridColumns(),
-                    0,
-                );
-
-            syncActiveState();
-
-            break;
-
-        /*
-        |----------------------------------------------------------
-        | ENTER
-        |----------------------------------------------------------
-        */
-
-        case 'Enter':
-
-            openActiveCard();
-
-            break;
-
-        default:
-            break;
+        console.error(
+            `❌ ${label}`,
+            error,
+        );
     }
 }
 
 /*
 |------------------------------------------------------------------
-| Init
+| App Init
 |------------------------------------------------------------------
 */
 
-export function initSeriesKeyboardNavigation()
+function initApp()
 {
-    if (initialized) {
+    /*
+    |--------------------------------------------------------------
+    | Prevent double init
+    |--------------------------------------------------------------
+    */
+
+    if (
+        document.body.dataset
+            .appInitialized
+        === 'true'
+    ) {
         return;
     }
 
-    initialized = true;
+    document.body.dataset
+        .appInitialized =
+            'true';
+
+    console.log(
+        '🚀 APP INIT',
+    );
 
     /*
     |--------------------------------------------------------------
-    | Keyboard
+    | Pages
     |--------------------------------------------------------------
     */
 
+    safeInit(
+        initAjouterPage,
+        'initAjouterPage',
+    );
+
+    safeInit(
+        initModifierPage,
+        'initModifierPage',
+    );
+
+    /*
+    |--------------------------------------------------------------
+    | Manga AJAX
+    |--------------------------------------------------------------
+    */
+
+    safeInit(
+        initLoadSeriesPage,
+        'initLoadSeriesPage',
+    );
+
+    safeInit(
+        initUpdateNote,
+        'initUpdateNote',
+    );
+
+    safeInit(
+        initDeleteManga,
+        'initDeleteManga',
+    );
+
+    safeInit(
+        initUpdateReadStatus,
+        'initUpdateReadStatus',
+    );
+
+    safeInit(
+        initSearchManga,
+        'initSearchManga',
+    );
+
+    /*
+    |--------------------------------------------------------------
+    | Navigation
+    |--------------------------------------------------------------
+    */
+
+    safeInit(
+        initPrefetchSeries,
+        'initPrefetchSeries',
+    );
+
+    safeInit(
+        initSeriesKeyboardNavigation,
+        'initSeriesKeyboardNavigation',
+    );
+
+    /*
+    |--------------------------------------------------------------
+    | Chinois
+    |--------------------------------------------------------------
+    */
+
+    safeInit(
+        initToggleGrammaireMaitrise,
+        'initToggleGrammaireMaitrise',
+    );
+
+    /*
+    |--------------------------------------------------------------
+    | Toast
+    |--------------------------------------------------------------
+    */
+
+    safeInit(
+        initFlashToast,
+        'initFlashToast',
+    );
+
+    console.log(
+        '✅ APP READY',
+    );
+}
+
+/*
+|------------------------------------------------------------------
+| DOM Ready
+|------------------------------------------------------------------
+*/
+
+if (
+    document.readyState
+    === 'loading'
+) {
     document.addEventListener(
-        'keyup',
-        handleKeyboard,
+        'DOMContentLoaded',
+        initApp,
     );
-
-    /*
-    |--------------------------------------------------------------
-    | AJAX reset
-    |--------------------------------------------------------------
-    */
-
-    document.addEventListener(
-        'ajax:series-loaded',
-        clearActiveState,
-    );
-
-    /*
-    |--------------------------------------------------------------
-    | Browser cache restore
-    |--------------------------------------------------------------
-    */
-
-    window.addEventListener(
-        'pageshow',
-        clearActiveState,
-    );
+} else {
+    initApp();
 }

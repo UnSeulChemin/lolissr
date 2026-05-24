@@ -22,6 +22,14 @@ const contentSelector =
 
 /*
 |------------------------------------------------------------------
+| State
+|------------------------------------------------------------------
+*/
+
+let initialized = false;
+
+/*
+|------------------------------------------------------------------
 | Helpers
 |------------------------------------------------------------------
 */
@@ -52,7 +60,10 @@ function isSeriesPageUrl(url)
 {
     const pathname =
         typeof url === 'string'
-            ? new URL(url).pathname
+            ? new URL(
+                url,
+                window.location.origin,
+            ).pathname
             : url.pathname;
 
     return /\/manga\/series($|\/page\/\d+$)/.test(
@@ -81,7 +92,7 @@ async function fetchHtml(
 
     const response =
         await fetch(
-            `${ajaxUrl}?t=${Date.now()}`,
+            ajaxUrl,
             {
                 headers: {
                     'X-Requested-With':
@@ -98,28 +109,6 @@ async function fetchHtml(
     }
 
     return await response.text();
-}
-
-/*
-|------------------------------------------------------------------
-| Prefetch next page
-|------------------------------------------------------------------
-*/
-
-function prefetchNextPage()
-{
-    const nextPage =
-        document.querySelector(
-            '.collection-pagination-link.active + .collection-pagination-link',
-        );
-
-    if (!nextPage) {
-        return;
-    }
-
-    prefetchSeriesPage(
-        nextPage.href,
-    );
 }
 
 /*
@@ -166,7 +155,29 @@ function replaceContent(
 
 /*
 |------------------------------------------------------------------
-| Load page
+| Prefetch
+|------------------------------------------------------------------
+*/
+
+function prefetchNextPage()
+{
+    const nextPage =
+        document.querySelector(
+            '.collection-pagination-link.active + .collection-pagination-link',
+        );
+
+    if (!nextPage) {
+        return;
+    }
+
+    prefetchSeriesPage(
+        nextPage.href,
+    );
+}
+
+/*
+|------------------------------------------------------------------
+| Load
 |------------------------------------------------------------------
 */
 
@@ -224,7 +235,7 @@ export async function loadSeriesPage(
     } catch (error) {
 
         console.error(
-            '[AJAX] loadSeriesPage failed',
+            '[AJAX]',
             error,
         );
 
@@ -260,13 +271,24 @@ async function handleClick(
             '.collection-pagination-link',
         );
 
-    if (!link) {
+    if (
+        !link
+        || !(link instanceof HTMLAnchorElement)
+    ) {
+        return;
+    }
+
+    if (
+        !isSeriesPageUrl(
+            link.href,
+        )
+    ) {
         return;
     }
 
     /*
     |--------------------------------------------------------------
-    | Native browser behaviors
+    | Native browser behavior
     |--------------------------------------------------------------
     */
 
@@ -289,7 +311,7 @@ async function handleClick(
 
 /*
 |------------------------------------------------------------------
-| Browser navigation
+| Browser Navigation
 |------------------------------------------------------------------
 */
 
@@ -320,17 +342,11 @@ async function handlePopState()
 
 export function initLoadSeriesPage()
 {
-    if (
-        document.body.dataset
-            .seriesAjaxInitialized
-        === 'true'
-    ) {
+    if (initialized) {
         return;
     }
 
-    document.body.dataset
-        .seriesAjaxInitialized =
-            'true';
+    initialized = true;
 
     const container =
         getContainer();
@@ -351,14 +367,3 @@ export function initLoadSeriesPage()
 
     prefetchNextPage();
 }
-
-/*
-|------------------------------------------------------------------
-| DOM Ready
-|------------------------------------------------------------------
-*/
-
-document.addEventListener(
-    'DOMContentLoaded',
-    initLoadSeriesPage,
-);

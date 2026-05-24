@@ -1,21 +1,18 @@
 // ==================================================
-// Series Keyboard Navigation
+// Prefetch Series
 // ==================================================
-
-import {
-    prefetchSeriesPage,
-} from './prefetch-series.js';
 
 /*
 |------------------------------------------------------------------
-| State
+| Cache
 |------------------------------------------------------------------
 */
 
-let seriesKeyboardNavigationInitialized =
-    false;
+const prefetchedPages =
+    new Map();
 
-let seriesActiveCardIndex = -1;
+const pendingRequests =
+    new Set();
 
 /*
 |------------------------------------------------------------------
@@ -23,277 +20,187 @@ let seriesActiveCardIndex = -1;
 |------------------------------------------------------------------
 */
 
-function getSeriesGrid()
+export function buildAjaxUrl(
+    href,
+)
 {
-    return document.querySelector(
-        '.collection-grid',
-    );
-}
-
-function getSeriesCardLinks()
-{
-    return Array.from(
-        document.querySelectorAll(
-            '.collection-card-link',
-        ),
-    );
-}
-
-function getSeriesGridColumnCount()
-{
-    const grid =
-        getSeriesGrid();
-
-    if (!grid) {
-        return 1;
-    }
-
-    const styles =
-        window.getComputedStyle(
-            grid,
+    const url =
+        new URL(
+            href,
+            window.location.origin,
         );
 
-    const columns =
-        styles.gridTemplateColumns
-            .split(' ')
-            .filter(Boolean);
-
-    return columns.length || 1;
+    return url.pathname;
 }
 
-function isTypingContext(target)
+export function getPrefetchedPage(
+    url,
+)
 {
-    if (!target) {
-        return false;
-    }
-
-    return Boolean(
-        target.closest(
-            `
-            input,
-            textarea,
-            select,
-            [contenteditable="true"]
-            `,
-        ),
+    return (
+        prefetchedPages.get(url)
+        || null
     );
 }
 
-function blurActiveElement()
+function storePrefetchedPage(
+    url,
+    html,
+)
 {
-    if (
-        document.activeElement
-        instanceof HTMLElement
-    ) {
+    prefetchedPages.set(
+        url,
+        html,
+    );
+}
 
-        document.activeElement.blur();
+/*
+|------------------------------------------------------------------
+| Prefetch
+|------------------------------------------------------------------
+*/
+
+export async function prefetchSeriesPage(
+    href,
+)
+{
+    try {
+
+        const ajaxUrl =
+            buildAjaxUrl(
+                href,
+            );
+
+        /*
+        |----------------------------------------------------------
+        | Already cached
+        |----------------------------------------------------------
+        */
+
+        if (
+            prefetchedPages.has(
+                ajaxUrl,
+            )
+        ) {
+            return;
+        }
+
+        /*
+        |----------------------------------------------------------
+        | Already fetching
+        |----------------------------------------------------------
+        */
+
+        if (
+            pendingRequests.has(
+                ajaxUrl,
+            )
+        ) {
+            return;
+        }
+
+        pendingRequests.add(
+            ajaxUrl,
+        );
+
+        const response =
+            await fetch(
+                ajaxUrl,
+                {
+                    headers: {
+                        'X-Requested-With':
+                            'XMLHttpRequest',
+                    },
+                },
+            );
+
+        if (!response.ok) {
+
+            pendingRequests.delete(
+                ajaxUrl,
+            );
+
+            return;
+        }
+
+        const html =
+            await response.text();
+
+        storePrefetchedPage(
+            ajaxUrl,
+            html,
+        );
+
+        pendingRequests.delete(
+            ajaxUrl,
+        );
+
+        console.log(
+            '[PREFETCH]',
+            ajaxUrl,
+        );
+
+    } catch (error) {
+
+        console.error(
+            '[PREFETCH]',
+            error,
+        );
     }
 }
 
 /*
 |------------------------------------------------------------------
-| Active State
+| Next Page
 |------------------------------------------------------------------
 */
 
-function clearSeriesActiveState()
+function prefetchNextPaginationPage()
 {
-    seriesActiveCardIndex = -1;
-
-    blurActiveElement();
-
-    getSeriesCardLinks().forEach(
-        card =>
-        {
-            card.classList.remove(
-                'is-active',
-            );
-
-            card.blur();
-        },
-    );
-}
-
-function syncSeriesActiveState()
-{
-    const cards =
-        getSeriesCardLinks();
-
-    if (!cards.length) {
-
-        seriesActiveCardIndex = -1;
-
-        return;
-    }
-
-    /*
-    |--------------------------------------------------------------
-    | Clamp index
-    |--------------------------------------------------------------
-    */
-
-    if (
-        seriesActiveCardIndex
-        >= cards.length
-    ) {
-        seriesActiveCardIndex =
-            cards.length - 1;
-    }
-
-    if (
-        seriesActiveCardIndex < 0
-    ) {
-        seriesActiveCardIndex = 0;
-    }
-
-    const activeCard =
-        cards[
-            seriesActiveCardIndex
-        ];
-
-    if (!activeCard) {
-        return;
-    }
-
-    /*
-    |--------------------------------------------------------------
-    | Smart scroll
-    |--------------------------------------------------------------
-    */
-
-    const rect =
-        activeCard.getBoundingClientRect();
-
-    const viewportPadding =
-        120;
-
-    if (
-        rect.bottom
-            > window.innerHeight
-                - viewportPadding
-        || rect.top
-            < viewportPadding
-    ) {
-
-        activeCard.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center',
-            inline: 'nearest',
-        });
-    }
-
-    /*
-    |--------------------------------------------------------------
-    | Prefetch pagination only
-    |--------------------------------------------------------------
-    */
-
     const nextPagination =
         document.querySelector(
             '.collection-pagination-link.active + .collection-pagination-link',
         );
 
-    if (nextPagination) {
-
-        prefetchSeriesPage(
-            nextPagination.href,
-        );
+    if (!nextPagination) {
+        return;
     }
+
+    prefetchSeriesPage(
+        nextPagination.href,
+    );
 }
 
 /*
 |------------------------------------------------------------------
-| Navigation
+| Hover
 |------------------------------------------------------------------
 */
 
-function openActiveSeriesCard()
+function bindHoverPrefetch()
 {
-    const cards =
-        getSeriesCardLinks();
-
-    const activeCard =
-        cards[
-            seriesActiveCardIndex
-        ];
-
-    if (!activeCard) {
-        return;
-    }
-
-    blurActiveElement();
-
-    window.location.href =
-        activeCard.href;
-}
-
-function moveSeriesActiveIndexToNext(
-    cards,
-)
-{
-    seriesActiveCardIndex =
-        seriesActiveCardIndex
-            < cards.length - 1
-            ? seriesActiveCardIndex + 1
-            : 0;
-}
-
-function moveSeriesActiveIndexToPrevious(
-    cards,
-)
-{
-    seriesActiveCardIndex =
-        seriesActiveCardIndex > 0
-            ? seriesActiveCardIndex - 1
-            : cards.length - 1;
-}
-
-function moveSeriesActiveIndexDown(
-    cards,
-)
-{
-    const columnCount =
-        getSeriesGridColumnCount();
-
-    if (
-        seriesActiveCardIndex
-        === -1
-    ) {
-
-        seriesActiveCardIndex = 0;
-
-        return;
-    }
-
-    seriesActiveCardIndex =
-        Math.min(
-            seriesActiveCardIndex
-                + columnCount,
-            cards.length - 1,
+    const links =
+        document.querySelectorAll(
+            '.collection-pagination-link',
         );
-}
 
-function moveSeriesActiveIndexUp()
-{
-    const columnCount =
-        getSeriesGridColumnCount();
-
-    if (
-        seriesActiveCardIndex
-        === -1
-    ) {
-
-        seriesActiveCardIndex = 0;
-
-        return;
-    }
-
-    seriesActiveCardIndex =
-        Math.max(
-            seriesActiveCardIndex
-                - columnCount,
-            0,
-        );
+    links.forEach(
+        link =>
+        {
+            link.addEventListener(
+                'mouseenter',
+                () =>
+                {
+                    prefetchSeriesPage(
+                        link.href,
+                    );
+                },
+                {
+                    passive: true,
+                },
+            );
+        },
+    );
 }
 
 /*
@@ -302,20 +209,27 @@ function moveSeriesActiveIndexUp()
 |------------------------------------------------------------------
 */
 
-export function initSeriesKeyboardNavigation()
+export function initPrefetchSeries()
 {
-    if (
-        seriesKeyboardNavigationInitialized
-    ) {
-        return;
-    }
+    /*
+    |--------------------------------------------------------------
+    | First page
+    |--------------------------------------------------------------
+    */
 
-    seriesKeyboardNavigationInitialized =
-        true;
+    prefetchNextPaginationPage();
 
     /*
     |--------------------------------------------------------------
-    | Reset after AJAX
+    | Hover links
+    |--------------------------------------------------------------
+    */
+
+    bindHoverPrefetch();
+
+    /*
+    |--------------------------------------------------------------
+    | After AJAX reload
     |--------------------------------------------------------------
     */
 
@@ -323,142 +237,9 @@ export function initSeriesKeyboardNavigation()
         'ajax:series-loaded',
         () =>
         {
-            clearSeriesActiveState();
-        },
-    );
+            prefetchNextPaginationPage();
 
-    /*
-    |--------------------------------------------------------------
-    | Keyboard navigation
-    |--------------------------------------------------------------
-    */
-
-    document.addEventListener(
-        'keydown',
-        event =>
-        {
-            if (
-                isTypingContext(
-                    event.target,
-                )
-            ) {
-                return;
-            }
-
-            const cards =
-                getSeriesCardLinks();
-
-            if (!cards.length) {
-                return;
-            }
-
-            switch (event.key) {
-
-                case 'Tab':
-
-                    event.preventDefault();
-
-                    if (
-                        seriesActiveCardIndex
-                        === -1
-                    ) {
-
-                        seriesActiveCardIndex = 0;
-
-                    } else if (
-                        event.shiftKey
-                    ) {
-
-                        moveSeriesActiveIndexToPrevious(
-                            cards,
-                        );
-
-                    } else {
-
-                        moveSeriesActiveIndexToNext(
-                            cards,
-                        );
-                    }
-
-                    syncSeriesActiveState();
-
-                    break;
-
-                case 'ArrowRight':
-
-                    event.preventDefault();
-
-                    moveSeriesActiveIndexToNext(
-                        cards,
-                    );
-
-                    syncSeriesActiveState();
-
-                    break;
-
-                case 'ArrowLeft':
-
-                    event.preventDefault();
-
-                    moveSeriesActiveIndexToPrevious(
-                        cards,
-                    );
-
-                    syncSeriesActiveState();
-
-                    break;
-
-                case 'ArrowDown':
-
-                    event.preventDefault();
-
-                    moveSeriesActiveIndexDown(
-                        cards,
-                    );
-
-                    syncSeriesActiveState();
-
-                    break;
-
-                case 'ArrowUp':
-
-                    event.preventDefault();
-
-                    moveSeriesActiveIndexUp();
-
-                    syncSeriesActiveState();
-
-                    break;
-
-                case 'Enter':
-
-                    event.preventDefault();
-
-                    openActiveSeriesCard();
-
-                    break;
-
-                case 'Escape':
-
-                    event.preventDefault();
-
-                    clearSeriesActiveState();
-
-                    break;
-
-                case 'Backspace':
-
-                    event.preventDefault();
-
-                    blurActiveElement();
-
-                    window.history.back();
-
-                    break;
-
-                default:
-                    break;
-            }
+            bindHoverPrefetch();
         },
     );
 }
