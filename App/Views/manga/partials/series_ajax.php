@@ -56,6 +56,13 @@ if (empty($mangas)) {
     $total =
         (int) ($manga->total ?? 0);
 
+    $totalLu =
+        (int) ($manga->totalLu ?? 0);
+
+    $isFullyRead =
+        $total > 0
+        && $totalLu >= $total;
+
     if (
         !$slug
         || !$livre
@@ -156,7 +163,13 @@ if (empty($mangas)) {
     </span>
 
     <span
-        class="collection-read-badge"
+        class="
+            collection-read-badge
+            <?= $isFullyRead
+                ? 'active'
+                : ''
+            ?>
+        "
     >
 
         <svg
