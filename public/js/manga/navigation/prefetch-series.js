@@ -1,5 +1,5 @@
 // ==================================================
-// Prefetch Series
+// Global Prefetch Navigation
 // ==================================================
 
 /*
@@ -14,13 +14,39 @@ const prefetchedPages =
 const pendingRequests =
     new Set();
 
+const recentPrefetches =
+    new Map();
+
+/*
+|------------------------------------------------------------------
+| State
+|------------------------------------------------------------------
+*/
+
+let initialized =
+    false;
+
+/*
+|------------------------------------------------------------------
+| Selectors
+|------------------------------------------------------------------
+*/
+
+const linkSelector =
+    `
+    a.card-link,
+    a.dashboard-card,
+    a.nav-link-icon,
+    a.collection-pagination-link
+    `;
+
 /*
 |------------------------------------------------------------------
 | Helpers
 |------------------------------------------------------------------
 */
 
-export function buildAjaxUrl(
+function normalizeUrl(
     href,
 )
 {
@@ -30,15 +56,25 @@ export function buildAjaxUrl(
             window.location.origin,
         );
 
-    return url.pathname;
+    return (
+        url.pathname
+        + url.search
+    );
 }
 
 export function getPrefetchedPage(
-    url,
+    href,
 )
 {
+    const normalizedUrl =
+        normalizeUrl(
+            href,
+        );
+
     return (
-        prefetchedPages.get(url)
+        prefetchedPages.get(
+            normalizedUrl,
+        )
         || null
     );
 }
@@ -54,22 +90,138 @@ function storePrefetchedPage(
     );
 }
 
+function shouldIgnoreLink(
+    link,
+)
+{
+    if (
+        !(link instanceof HTMLAnchorElement)
+    ) {
+        return true;
+    }
+
+    if (!link.href) {
+        return true;
+    }
+
+    const url =
+        new URL(
+            link.href,
+            window.location.origin,
+        );
+
+    /*
+    |--------------------------------------------------------------
+    | External
+    |--------------------------------------------------------------
+    */
+
+    if (
+        url.origin
+        !== window.location.origin
+    ) {
+        return true;
+    }
+
+    /*
+    |--------------------------------------------------------------
+    | Same page hash
+    |--------------------------------------------------------------
+    */
+
+    if (
+        url.hash
+        && url.pathname
+            === window.location.pathname
+    ) {
+        return true;
+    }
+
+    /*
+    |--------------------------------------------------------------
+    | Blank target
+    |--------------------------------------------------------------
+    */
+
+    if (
+        link.target
+        === '_blank'
+    ) {
+        return true;
+    }
+
+    /*
+    |--------------------------------------------------------------
+    | Download
+    |--------------------------------------------------------------
+    */
+
+    if (
+        link.hasAttribute(
+            'download',
+        )
+    ) {
+        return true;
+    }
+
+    /*
+    |--------------------------------------------------------------
+    | Static files
+    |--------------------------------------------------------------
+    */
+
+    if (
+        /\.(jpg|jpeg|png|gif|webp|svg|pdf|zip)$/i
+            .test(url.pathname)
+    ) {
+        return true;
+    }
+
+    return false;
+}
+
 /*
 |------------------------------------------------------------------
 | Prefetch
 |------------------------------------------------------------------
 */
 
-export async function prefetchSeriesPage(
+export async function prefetchPage(
     href,
 )
 {
     try {
 
-        const ajaxUrl =
-            buildAjaxUrl(
+        const normalizedUrl =
+            normalizeUrl(
                 href,
             );
+
+        /*
+        |----------------------------------------------------------
+        | Anti spam
+        |----------------------------------------------------------
+        */
+
+        const now =
+            Date.now();
+
+        const lastPrefetch =
+            recentPrefetches.get(
+                normalizedUrl,
+            );
+
+        if (
+            lastPrefetch
+            && now - lastPrefetch < 3000
+        ) {
+            return;
+        }
+
+        recentPrefetches.set(
+            normalizedUrl,
+            now,
+        );
 
         /*
         |----------------------------------------------------------
@@ -79,7 +231,7 @@ export async function prefetchSeriesPage(
 
         if (
             prefetchedPages.has(
-                ajaxUrl,
+                normalizedUrl,
             )
         ) {
             return;
@@ -87,25 +239,25 @@ export async function prefetchSeriesPage(
 
         /*
         |----------------------------------------------------------
-        | Already fetching
+        | Already pending
         |----------------------------------------------------------
         */
 
         if (
             pendingRequests.has(
-                ajaxUrl,
+                normalizedUrl,
             )
         ) {
             return;
         }
 
         pendingRequests.add(
-            ajaxUrl,
+            normalizedUrl,
         );
 
         const response =
             await fetch(
-                ajaxUrl,
+                normalizedUrl,
                 {
                     headers: {
                         'X-Requested-With':
@@ -114,12 +266,11 @@ export async function prefetchSeriesPage(
                 },
             );
 
+        pendingRequests.delete(
+            normalizedUrl,
+        );
+
         if (!response.ok) {
-
-            pendingRequests.delete(
-                ajaxUrl,
-            );
-
             return;
         }
 
@@ -127,17 +278,13 @@ export async function prefetchSeriesPage(
             await response.text();
 
         storePrefetchedPage(
-            ajaxUrl,
+            normalizedUrl,
             html,
-        );
-
-        pendingRequests.delete(
-            ajaxUrl,
         );
 
         console.log(
             '[PREFETCH]',
-            ajaxUrl,
+            normalizedUrl,
         );
 
     } catch (error) {
@@ -151,29 +298,7 @@ export async function prefetchSeriesPage(
 
 /*
 |------------------------------------------------------------------
-| Next Page
-|------------------------------------------------------------------
-*/
-
-function prefetchNextPaginationPage()
-{
-    const nextPagination =
-        document.querySelector(
-            '.collection-pagination-link.active + .collection-pagination-link',
-        );
-
-    if (!nextPagination) {
-        return;
-    }
-
-    prefetchSeriesPage(
-        nextPagination.href,
-    );
-}
-
-/*
-|------------------------------------------------------------------
-| Hover
+| Hover / Focus Prefetch
 |------------------------------------------------------------------
 */
 
@@ -181,17 +306,95 @@ function bindHoverPrefetch()
 {
     const links =
         document.querySelectorAll(
-            '.collection-pagination-link',
+            linkSelector,
         );
 
     links.forEach(
         link =>
         {
+            if (
+                shouldIgnoreLink(
+                    link,
+                )
+            ) {
+                return;
+            }
+
+            /*
+            |------------------------------------------------------
+            | Prevent duplicate binding
+            |------------------------------------------------------
+            */
+
+            if (
+                link.dataset.prefetchBound
+                === 'true'
+            ) {
+                return;
+            }
+
+            link.dataset.prefetchBound =
+                'true';
+
+            let hoverTimeout =
+                null;
+
+            /*
+            |------------------------------------------------------
+            | Hover
+            |------------------------------------------------------
+            */
+
             link.addEventListener(
                 'mouseenter',
                 () =>
                 {
-                    prefetchSeriesPage(
+                    hoverTimeout =
+                        window.setTimeout(
+                            () =>
+                            {
+                                prefetchPage(
+                                    link.href,
+                                );
+                            },
+                            100,
+                        );
+                },
+                {
+                    passive: true,
+                },
+            );
+
+            /*
+            |------------------------------------------------------
+            | Cancel hover
+            |------------------------------------------------------
+            */
+
+            link.addEventListener(
+                'mouseleave',
+                () =>
+                {
+                    clearTimeout(
+                        hoverTimeout,
+                    );
+                },
+                {
+                    passive: true,
+                },
+            );
+
+            /*
+            |------------------------------------------------------
+            | Keyboard focus
+            |------------------------------------------------------
+            */
+
+            link.addEventListener(
+                'focus',
+                () =>
+                {
+                    prefetchPage(
                         link.href,
                     );
                 },
@@ -199,7 +402,52 @@ function bindHoverPrefetch()
                     passive: true,
                 },
             );
+
+            /*
+            |------------------------------------------------------
+            | Mobile touch
+            |------------------------------------------------------
+            */
+
+            link.addEventListener(
+                'touchstart',
+                () =>
+                {
+                    prefetchPage(
+                        link.href,
+                    );
+                },
+                {
+                    passive: true,
+                    once: true,
+                },
+            );
         },
+    );
+}
+
+/*
+|------------------------------------------------------------------
+| Auto preload next pagination page
+|------------------------------------------------------------------
+*/
+
+function prefetchNextSeriesPage()
+{
+    const nextPage =
+        document.querySelector(
+            '.collection-pagination-link.active + .collection-pagination-link',
+        );
+
+    if (
+        !nextPage
+        || !(nextPage instanceof HTMLAnchorElement)
+    ) {
+        return;
+    }
+
+    prefetchPage(
+        nextPage.href,
     );
 }
 
@@ -209,19 +457,18 @@ function bindHoverPrefetch()
 |------------------------------------------------------------------
 */
 
-export function initPrefetchSeries()
+export function initPrefetchNavigation()
 {
+    if (initialized) {
+        return;
+    }
+
+    initialized =
+        true;
+
     /*
     |--------------------------------------------------------------
-    | First page
-    |--------------------------------------------------------------
-    */
-
-    prefetchNextPaginationPage();
-
-    /*
-    |--------------------------------------------------------------
-    | Hover links
+    | Hover / Focus prefetch
     |--------------------------------------------------------------
     */
 
@@ -229,7 +476,15 @@ export function initPrefetchSeries()
 
     /*
     |--------------------------------------------------------------
-    | After AJAX reload
+    | Auto preload next pagination page
+    |--------------------------------------------------------------
+    */
+
+    prefetchNextSeriesPage();
+
+    /*
+    |--------------------------------------------------------------
+    | Rebind after AJAX
     |--------------------------------------------------------------
     */
 
@@ -237,9 +492,9 @@ export function initPrefetchSeries()
         'ajax:series-loaded',
         () =>
         {
-            prefetchNextPaginationPage();
-
             bindHoverPrefetch();
+
+            prefetchNextSeriesPage();
         },
     );
 }

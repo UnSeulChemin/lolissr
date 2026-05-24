@@ -3,7 +3,7 @@
 // ==================================================
 
 import {
-    prefetchSeriesPage,
+    prefetchPage,
 } from './prefetch-series.js';
 
 /*
@@ -12,9 +12,11 @@ import {
 |------------------------------------------------------------------
 */
 
-let initialized = false;
+let initialized =
+    false;
 
-let activeIndex = -1;
+let activeIndex =
+    -1;
 
 /*
 |------------------------------------------------------------------
@@ -57,7 +59,9 @@ function getGridColumns()
         .length;
 }
 
-function isTypingContext(target)
+function isTypingContext(
+    target,
+)
 {
     if (!target) {
         return false;
@@ -112,13 +116,20 @@ function syncActiveState()
     |--------------------------------------------------------------
     */
 
-    activeIndex = Math.max(
-        0,
-        Math.min(
-            activeIndex,
-            cards.length - 1,
-        ),
-    );
+    if (
+        activeIndex < 0
+    ) {
+
+        activeIndex =
+            cards.length - 1;
+    }
+
+    if (
+        activeIndex >= cards.length
+    ) {
+
+        activeIndex = 0;
+    }
 
     /*
     |--------------------------------------------------------------
@@ -127,7 +138,10 @@ function syncActiveState()
     */
 
     cards.forEach(
-        (card, index) =>
+        (
+            card,
+            index,
+        ) =>
         {
             card.classList.toggle(
                 'is-active',
@@ -178,7 +192,7 @@ function syncActiveState()
 
     if (nextPagination) {
 
-        prefetchSeriesPage(
+        prefetchPage(
             nextPagination.href,
         );
     }
@@ -190,11 +204,13 @@ function syncActiveState()
 |------------------------------------------------------------------
 */
 
-function handleKeyboard(event)
+function handleKeyboard(
+    event,
+)
 {
     /*
     |--------------------------------------------------------------
-    | Only collection page
+    | Only collection pages
     |--------------------------------------------------------------
     */
 
@@ -245,17 +261,11 @@ function handleKeyboard(event)
                 event.shiftKey
             ) {
 
-                activeIndex =
-                    activeIndex > 0
-                        ? activeIndex - 1
-                        : cards.length - 1;
+                activeIndex--;
 
             } else {
 
-                activeIndex =
-                    activeIndex < cards.length - 1
-                        ? activeIndex + 1
-                        : 0;
+                activeIndex++;
             }
 
             syncActiveState();
@@ -272,10 +282,7 @@ function handleKeyboard(event)
 
             event.preventDefault();
 
-            activeIndex =
-                activeIndex < cards.length - 1
-                    ? activeIndex + 1
-                    : 0;
+            activeIndex++;
 
             syncActiveState();
 
@@ -291,10 +298,7 @@ function handleKeyboard(event)
 
             event.preventDefault();
 
-            activeIndex =
-                activeIndex > 0
-                    ? activeIndex - 1
-                    : cards.length - 1;
+            activeIndex--;
 
             syncActiveState();
 
@@ -313,14 +317,6 @@ function handleKeyboard(event)
             activeIndex +=
                 getGridColumns();
 
-            if (
-                activeIndex >= cards.length
-            ) {
-
-                activeIndex =
-                    activeIndex % cards.length;
-            }
-
             syncActiveState();
 
             break;
@@ -337,14 +333,6 @@ function handleKeyboard(event)
 
             activeIndex -=
                 getGridColumns();
-
-            if (
-                activeIndex < 0
-            ) {
-
-                activeIndex =
-                    cards.length + activeIndex;
-            }
 
             syncActiveState();
 

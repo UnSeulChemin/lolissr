@@ -1,12 +1,20 @@
 // ==================================================
-// Load Series Page
+// AJAX Navigation
 // ==================================================
 
 import {
-    buildAjaxUrl,
     getPrefetchedPage,
-    prefetchSeriesPage,
-} from '../navigation/prefetch-series.js';
+    prefetchPage,
+} from './prefetch-series.js';
+
+/*
+|------------------------------------------------------------------
+| State
+|------------------------------------------------------------------
+*/
+
+let initialized =
+    false;
 
 /*
 |------------------------------------------------------------------
@@ -20,13 +28,8 @@ const containerSelector =
 const contentSelector =
     '.collection-ajax-content';
 
-/*
-|------------------------------------------------------------------
-| State
-|------------------------------------------------------------------
-*/
-
-let initialized = false;
+const paginationSelector =
+    '.collection-pagination-link';
 
 /*
 |------------------------------------------------------------------
@@ -48,6 +51,54 @@ function getContent()
     );
 }
 
+function isPaginationLink(
+    link,
+)
+{
+    return (
+        link instanceof HTMLAnchorElement
+        && link.matches(
+            paginationSelector,
+        )
+    );
+}
+
+function replaceContent(
+    html,
+)
+{
+    const parser =
+        new DOMParser();
+
+    const documentHtml =
+        parser.parseFromString(
+            html,
+            'text/html',
+        );
+
+    const newContent =
+        documentHtml.querySelector(
+            contentSelector,
+        );
+
+    if (!newContent) {
+
+        throw new Error(
+            '[AJAX] Missing content',
+        );
+    }
+
+    const currentContent =
+        getContent();
+
+    if (!currentContent) {
+        return;
+    }
+
+    currentContent.innerHTML =
+        newContent.innerHTML;
+}
+
 function scrollToTop()
 {
     window.scrollTo({
@@ -56,34 +107,13 @@ function scrollToTop()
     });
 }
 
-function isSeriesPageUrl(url)
-{
-    const pathname =
-        typeof url === 'string'
-            ? new URL(
-                url,
-                window.location.origin,
-            ).pathname
-            : url.pathname;
-
-    return /\/manga\/series($|\/page\/\d+$)/.test(
-        pathname,
-    );
-}
-
-/*
-|------------------------------------------------------------------
-| Fetch
-|------------------------------------------------------------------
-*/
-
-async function fetchHtml(
-    ajaxUrl,
+async function fetchPageHtml(
+    href,
 )
 {
     const cached =
         getPrefetchedPage(
-            ajaxUrl,
+            href,
         );
 
     if (cached) {
@@ -92,7 +122,7 @@ async function fetchHtml(
 
     const response =
         await fetch(
-            ajaxUrl,
+            href,
             {
                 headers: {
                     'X-Requested-With':
@@ -104,7 +134,7 @@ async function fetchHtml(
     if (!response.ok) {
 
         throw new Error(
-            '[AJAX] Failed request',
+            '[AJAX] Request failed',
         );
     }
 
@@ -113,75 +143,11 @@ async function fetchHtml(
 
 /*
 |------------------------------------------------------------------
-| Replace content
+| Load Page
 |------------------------------------------------------------------
 */
 
-function replaceContent(
-    html,
-)
-{
-    const parser =
-        new DOMParser();
-
-    const doc =
-        parser.parseFromString(
-            html,
-            'text/html',
-        );
-
-    const newContent =
-        doc.querySelector(
-            contentSelector,
-        );
-
-    if (!newContent) {
-
-        throw new Error(
-            '[AJAX] Missing new content',
-        );
-    }
-
-    const content =
-        getContent();
-
-    if (!content) {
-        return;
-    }
-
-    content.innerHTML =
-        newContent.innerHTML;
-}
-
-/*
-|------------------------------------------------------------------
-| Prefetch
-|------------------------------------------------------------------
-*/
-
-function prefetchNextPage()
-{
-    const nextPage =
-        document.querySelector(
-            '.collection-pagination-link.active + .collection-pagination-link',
-        );
-
-    if (!nextPage) {
-        return;
-    }
-
-    prefetchSeriesPage(
-        nextPage.href,
-    );
-}
-
-/*
-|------------------------------------------------------------------
-| Load
-|------------------------------------------------------------------
-*/
-
-export async function loadSeriesPage(
+export async function loadAjaxPage(
     href,
     pushState = true,
 )
@@ -199,14 +165,9 @@ export async function loadSeriesPage(
 
     try {
 
-        const ajaxUrl =
-            buildAjaxUrl(
-                href,
-            );
-
         const html =
-            await fetchHtml(
-                ajaxUrl,
+            await fetchPageHtml(
+                href,
             );
 
         replaceContent(
@@ -222,15 +183,17 @@ export async function loadSeriesPage(
             );
         }
 
+        scrollToTop();
+
         document.dispatchEvent(
             new CustomEvent(
                 'ajax:series-loaded',
             ),
         );
 
-        scrollToTop();
-
-        prefetchNextPage();
+        prefetchPage(
+            href,
+        );
 
     } catch (error) {
 
@@ -249,7 +212,7 @@ export async function loadSeriesPage(
 
 /*
 |------------------------------------------------------------------
-| Click
+| Click Navigation
 |------------------------------------------------------------------
 */
 
@@ -268,19 +231,12 @@ async function handleClick(
 
     const link =
         target.closest(
-            '.collection-pagination-link',
+            paginationSelector,
         );
 
     if (
-        !link
-        || !(link instanceof HTMLAnchorElement)
-    ) {
-        return;
-    }
-
-    if (
-        !isSeriesPageUrl(
-            link.href,
+        !isPaginationLink(
+            link,
         )
     ) {
         return;
@@ -293,18 +249,18 @@ async function handleClick(
     */
 
     if (
-        link.target === '_blank'
-        || event.ctrlKey
+        event.ctrlKey
         || event.metaKey
         || event.shiftKey
         || event.button === 1
+        || link.target === '_blank'
     ) {
         return;
     }
 
     event.preventDefault();
 
-    await loadSeriesPage(
+    await loadAjaxPage(
         link.href,
     );
 }
@@ -317,19 +273,8 @@ async function handleClick(
 
 async function handlePopState()
 {
-    const href =
-        window.location.href;
-
-    if (
-        !isSeriesPageUrl(
-            href,
-        )
-    ) {
-        return;
-    }
-
-    await loadSeriesPage(
-        href,
+    await loadAjaxPage(
+        window.location.href,
         false,
     );
 }
@@ -340,7 +285,7 @@ async function handlePopState()
 |------------------------------------------------------------------
 */
 
-export function initLoadSeriesPage()
+export function initAjaxNavigation()
 {
     if (initialized) {
         return;
@@ -348,10 +293,7 @@ export function initLoadSeriesPage()
 
     initialized = true;
 
-    const container =
-        getContainer();
-
-    if (!container) {
+    if (!getContainer()) {
         return;
     }
 
@@ -364,6 +306,4 @@ export function initLoadSeriesPage()
         'popstate',
         handlePopState,
     );
-
-    prefetchNextPage();
 }

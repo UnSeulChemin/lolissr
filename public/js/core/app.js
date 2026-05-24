@@ -8,6 +8,34 @@ import {
 
 /*
 |------------------------------------------------------------------
+| Debug
+|------------------------------------------------------------------
+*/
+
+const DEBUG =
+    window.location.hostname
+    === 'localhost';
+
+function debugLog(...args)
+{
+    if (!DEBUG) {
+        return;
+    }
+
+    console.log(...args);
+}
+
+function debugError(...args)
+{
+    if (!DEBUG) {
+        return;
+    }
+
+    console.error(...args);
+}
+
+/*
+|------------------------------------------------------------------
 | Pages
 |------------------------------------------------------------------
 */
@@ -25,10 +53,6 @@ import {
 | Manga Actions
 |------------------------------------------------------------------
 */
-
-import {
-    initLoadSeriesPage,
-} from '../manga/actions/load-series-page.js';
 
 import {
     initUpdateNote,
@@ -53,7 +77,11 @@ import {
 */
 
 import {
-    initPrefetchSeries,
+    initAjaxNavigation,
+} from '../manga/navigation/ajax-navigation.js';
+
+import {
+    initPrefetchNavigation,
 } from '../manga/navigation/prefetch-series.js';
 
 import {
@@ -110,13 +138,13 @@ function safeInit(
 
         callback();
 
-        console.log(
+        debugLog(
             `✅ ${label}`,
         );
 
     } catch (error) {
 
-        console.error(
+        debugError(
             `❌ ${label}`,
             error,
         );
@@ -131,12 +159,6 @@ function safeInit(
 
 function initApp()
 {
-    /*
-    |--------------------------------------------------------------
-    | Prevent double init
-    |--------------------------------------------------------------
-    */
-
     if (
         document.body.dataset
             .appInitialized
@@ -149,7 +171,7 @@ function initApp()
         .appInitialized =
             'true';
 
-    console.log(
+    debugLog(
         '🚀 APP INIT',
     );
 
@@ -174,11 +196,6 @@ function initApp()
     | Manga Actions
     |--------------------------------------------------------------
     */
-
-    safeInit(
-        initLoadSeriesPage,
-        'initLoadSeriesPage',
-    );
 
     safeInit(
         initUpdateNote,
@@ -207,8 +224,13 @@ function initApp()
     */
 
     safeInit(
-        initPrefetchSeries,
-        'initPrefetchSeries',
+        initAjaxNavigation,
+        'initAjaxNavigation',
+    );
+
+    safeInit(
+        initPrefetchNavigation,
+        'initPrefetchNavigation',
     );
 
     safeInit(
@@ -243,7 +265,7 @@ function initApp()
         'initFlashToast',
     );
 
-    console.log(
+    debugLog(
         '✅ APP READY',
     );
 }
