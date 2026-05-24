@@ -36,68 +36,6 @@ function isTypingContext(target)
 
 function navigateBack()
 {
-    const pathname =
-        window.location.pathname;
-
-    /*
-    |--------------------------------------------------------------
-    | Manga detail
-    |--------------------------------------------------------------
-    */
-
-    if (
-        /^\/lolissr\/manga\/series\/[^/]+$/.test(
-            pathname,
-        )
-    ) {
-
-        window.location.href =
-            '/lolissr/manga/series';
-
-        return;
-    }
-
-    /*
-    |--------------------------------------------------------------
-    | Series list
-    |--------------------------------------------------------------
-    */
-
-    if (
-        pathname ===
-        '/lolissr/manga/series'
-    ) {
-
-        window.location.href =
-            '/lolissr/manga';
-
-        return;
-    }
-
-    /*
-    |--------------------------------------------------------------
-    | Pagination
-    |--------------------------------------------------------------
-    */
-
-    if (
-        /^\/lolissr\/manga\/series\/page\/\d+$/.test(
-            pathname,
-        )
-    ) {
-
-        window.location.href =
-            '/lolissr/manga';
-
-        return;
-    }
-
-    /*
-    |--------------------------------------------------------------
-    | Fallback
-    |--------------------------------------------------------------
-    */
-
     window.history.back();
 }
 
@@ -115,10 +53,31 @@ function handleKeyboard(event)
         return;
     }
 
+    /*
+    |--------------------------------------------------------------
+    | Ignore typing
+    |--------------------------------------------------------------
+    */
+
     if (
         isTypingContext(
             event.target,
         )
+    ) {
+        return;
+    }
+
+    /*
+    |--------------------------------------------------------------
+    | Ignore modifier keys
+    |--------------------------------------------------------------
+    */
+
+    if (
+        event.ctrlKey
+        || event.metaKey
+        || event.altKey
+        || event.shiftKey
     ) {
         return;
     }

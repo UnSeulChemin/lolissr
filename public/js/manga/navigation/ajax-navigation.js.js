@@ -149,7 +149,7 @@ async function fetchPageHtml(
 
 export async function loadAjaxPage(
     href,
-    pushState = true,
+    updateHistory = true,
 )
 {
     const container =
@@ -174,9 +174,15 @@ export async function loadAjaxPage(
             html,
         );
 
-        if (pushState) {
+        /*
+        |--------------------------------------------------------------
+        | History
+        |--------------------------------------------------------------
+        */
 
-            window.history.pushState(
+        if (updateHistory) {
+
+            window.history.replaceState(
                 {},
                 '',
                 href,
@@ -190,6 +196,12 @@ export async function loadAjaxPage(
                 'ajax:series-loaded',
             ),
         );
+
+        /*
+        |--------------------------------------------------------------
+        | Prefetch next
+        |--------------------------------------------------------------
+        */
 
         prefetchPage(
             href,
