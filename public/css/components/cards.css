@@ -59,7 +59,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-isolation: isolate;
+
     gap: 6px;
 
     width: 100%;
@@ -94,8 +94,6 @@ isolation: isolate;
     content: "";
 
     position: absolute;
-
-    inset: 1px;
 
     border-radius: inherit;
 
