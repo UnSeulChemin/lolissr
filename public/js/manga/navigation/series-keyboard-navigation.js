@@ -245,11 +245,17 @@ function handleKeyboard(event)
                 event.shiftKey
             ) {
 
-                activeIndex--;
+                activeIndex =
+                    activeIndex > 0
+                        ? activeIndex - 1
+                        : cards.length - 1;
 
             } else {
 
-                activeIndex++;
+                activeIndex =
+                    activeIndex < cards.length - 1
+                        ? activeIndex + 1
+                        : 0;
             }
 
             syncActiveState();
@@ -266,7 +272,10 @@ function handleKeyboard(event)
 
             event.preventDefault();
 
-            activeIndex++;
+            activeIndex =
+                activeIndex < cards.length - 1
+                    ? activeIndex + 1
+                    : 0;
 
             syncActiveState();
 
@@ -282,7 +291,10 @@ function handleKeyboard(event)
 
             event.preventDefault();
 
-            activeIndex--;
+            activeIndex =
+                activeIndex > 0
+                    ? activeIndex - 1
+                    : cards.length - 1;
 
             syncActiveState();
 
@@ -301,6 +313,14 @@ function handleKeyboard(event)
             activeIndex +=
                 getGridColumns();
 
+            if (
+                activeIndex >= cards.length
+            ) {
+
+                activeIndex =
+                    activeIndex % cards.length;
+            }
+
             syncActiveState();
 
             break;
@@ -317,6 +337,14 @@ function handleKeyboard(event)
 
             activeIndex -=
                 getGridColumns();
+
+            if (
+                activeIndex < 0
+            ) {
+
+                activeIndex =
+                    cards.length + activeIndex;
+            }
 
             syncActiveState();
 
