@@ -1,130 +1,464 @@
 // ==================================================
-// Prefetch Series
+// Series Keyboard Navigation
 // ==================================================
 
-const prefetchedPages = new Map();
+import {
+    prefetchSeriesPage,
+} from './prefetch-series.js';
 
-/* ----------------- Helpers ----------------- */
+/*
+|------------------------------------------------------------------
+| State
+|------------------------------------------------------------------
+*/
 
-function getBasePath() {
-    return '/lolissr';
+let seriesKeyboardNavigationInitialized =
+    false;
+
+let seriesActiveCardIndex = -1;
+
+/*
+|------------------------------------------------------------------
+| Helpers
+|------------------------------------------------------------------
+*/
+
+function getSeriesGrid()
+{
+    return document.querySelector(
+        '.collection-grid',
+    );
 }
 
-/* ----------------- Build AJAX URL ----------------- */
-
-export function buildAjaxUrl(link) {
-
-    const href = link.href ?? link;
-
-    const url = new URL(
-        href,
-        window.location.origin
+function getSeriesCardLinks()
+{
+    return Array.from(
+        document.querySelectorAll(
+            '.collection-card-link',
+        ),
     );
-
-    const match = url.pathname.match(
-        /\/manga\/series\/page\/(\d+)$/
-    );
-
-    const page = match
-        ? Math.max(
-            1,
-            parseInt(match[1], 10)
-        )
-        : 1;
-
-    url.pathname =
-        `${getBasePath()}/manga/ajax/series/page/${page}`;
-
-    return url.toString();
 }
 
-/* ----------------- Prefetch HTML ----------------- */
+function getSeriesGridColumnCount()
+{
+    const grid =
+        getSeriesGrid();
 
-export async function prefetchSeriesPage(url) {
-
-    const ajaxUrl = buildAjaxUrl(url);
-
-    if (prefetchedPages.has(ajaxUrl)) {
-        return prefetchedPages.get(ajaxUrl);
+    if (!grid) {
+        return 1;
     }
 
-    try {
-
-        const response = await fetch(
-            ajaxUrl,
-            {
-                headers: {
-                    'X-Requested-With':
-                        'XMLHttpRequest'
-                }
-            }
+    const styles =
+        window.getComputedStyle(
+            grid,
         );
 
-        if (!response.ok) {
-            return null;
-        }
+    const columns =
+        styles.gridTemplateColumns
+            .split(' ')
+            .filter(Boolean);
 
-        const html = await response.text();
+    return columns.length || 1;
+}
 
-        prefetchedPages.set(
-            ajaxUrl,
-            html
-        );
+function isTypingContext(target)
+{
+    if (!target) {
+        return false;
+    }
 
-        return html;
+    return Boolean(
+        target.closest(
+            `
+            input,
+            textarea,
+            select,
+            [contenteditable="true"]
+            `,
+        ),
+    );
+}
 
-    } catch (error) {
+function blurActiveElement()
+{
+    if (
+        document.activeElement
+        instanceof HTMLElement
+    ) {
 
-        console.error(
-            '[PREFETCH] failed',
-            error
-        );
-
-        return null;
+        document.activeElement.blur();
     }
 }
 
-/* ----------------- Cache ----------------- */
+/*
+|------------------------------------------------------------------
+| Active State
+|------------------------------------------------------------------
+*/
 
-export function getPrefetchedPage(url) {
+function clearSeriesActiveState()
+{
+    seriesActiveCardIndex = -1;
 
-    return prefetchedPages.get(url);
+    blurActiveElement();
+
+    getSeriesCardLinks().forEach(
+        card =>
+        {
+            card.classList.remove(
+                'is-active',
+            );
+
+            card.blur();
+        },
+    );
 }
 
-/* ----------------- Init ----------------- */
+function syncSeriesActiveState()
+{
+    const cards =
+        getSeriesCardLinks();
 
-export function initPrefetchSeries() {
+    if (!cards.length) {
+
+        seriesActiveCardIndex = -1;
+
+        return;
+    }
+
+    /*
+    |--------------------------------------------------------------
+    | Clamp index
+    |--------------------------------------------------------------
+    */
 
     if (
-        document.body.dataset
-            .prefetchSeriesInit === 'true'
+        seriesActiveCardIndex
+        >= cards.length
+    ) {
+        seriesActiveCardIndex =
+            cards.length - 1;
+    }
+
+    if (
+        seriesActiveCardIndex < 0
+    ) {
+        seriesActiveCardIndex = 0;
+    }
+
+    const activeCard =
+        cards[
+            seriesActiveCardIndex
+        ];
+
+    if (!activeCard) {
+        return;
+    }
+
+    /*
+    |--------------------------------------------------------------
+    | Smart scroll
+    |--------------------------------------------------------------
+    */
+
+    const rect =
+        activeCard.getBoundingClientRect();
+
+    const viewportPadding =
+        120;
+
+    if (
+        rect.bottom
+            > window.innerHeight
+                - viewportPadding
+        || rect.top
+            < viewportPadding
+    ) {
+
+        activeCard.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+            inline: 'nearest',
+        });
+    }
+
+    /*
+    |--------------------------------------------------------------
+    | Prefetch pagination only
+    |--------------------------------------------------------------
+    */
+
+    const nextPagination =
+        document.querySelector(
+            '.collection-pagination-link.active + .collection-pagination-link',
+        );
+
+    if (nextPagination) {
+
+        prefetchSeriesPage(
+            nextPagination.href,
+        );
+    }
+}
+
+/*
+|------------------------------------------------------------------
+| Navigation
+|------------------------------------------------------------------
+*/
+
+function openActiveSeriesCard()
+{
+    const cards =
+        getSeriesCardLinks();
+
+    const activeCard =
+        cards[
+            seriesActiveCardIndex
+        ];
+
+    if (!activeCard) {
+        return;
+    }
+
+    blurActiveElement();
+
+    window.location.href =
+        activeCard.href;
+}
+
+function moveSeriesActiveIndexToNext(
+    cards,
+)
+{
+    seriesActiveCardIndex =
+        seriesActiveCardIndex
+            < cards.length - 1
+            ? seriesActiveCardIndex + 1
+            : 0;
+}
+
+function moveSeriesActiveIndexToPrevious(
+    cards,
+)
+{
+    seriesActiveCardIndex =
+        seriesActiveCardIndex > 0
+            ? seriesActiveCardIndex - 1
+            : cards.length - 1;
+}
+
+function moveSeriesActiveIndexDown(
+    cards,
+)
+{
+    const columnCount =
+        getSeriesGridColumnCount();
+
+    if (
+        seriesActiveCardIndex
+        === -1
+    ) {
+
+        seriesActiveCardIndex = 0;
+
+        return;
+    }
+
+    seriesActiveCardIndex =
+        Math.min(
+            seriesActiveCardIndex
+                + columnCount,
+            cards.length - 1,
+        );
+}
+
+function moveSeriesActiveIndexUp()
+{
+    const columnCount =
+        getSeriesGridColumnCount();
+
+    if (
+        seriesActiveCardIndex
+        === -1
+    ) {
+
+        seriesActiveCardIndex = 0;
+
+        return;
+    }
+
+    seriesActiveCardIndex =
+        Math.max(
+            seriesActiveCardIndex
+                - columnCount,
+            0,
+        );
+}
+
+/*
+|------------------------------------------------------------------
+| Init
+|------------------------------------------------------------------
+*/
+
+export function initSeriesKeyboardNavigation()
+{
+    if (
+        seriesKeyboardNavigationInitialized
     ) {
         return;
     }
 
-    document.body.dataset
-        .prefetchSeriesInit = 'true';
+    seriesKeyboardNavigationInitialized =
+        true;
 
-    // Préfetch pagination hover
+    /*
+    |--------------------------------------------------------------
+    | Reset after AJAX
+    |--------------------------------------------------------------
+    */
+
     document.addEventListener(
-        'pointerenter',
-        event => {
-
-            if (!(event.target instanceof Element)) {
-                return;
-            }
-
-            const link = event.target.closest(
-                '.collection-pagination-link'
-            );
-
-            if (!link) {
-                return;
-            }
-
-            prefetchSeriesPage(link.href);
-
+        'ajax:series-loaded',
+        () =>
+        {
+            clearSeriesActiveState();
         },
-        true
+    );
+
+    /*
+    |--------------------------------------------------------------
+    | Keyboard navigation
+    |--------------------------------------------------------------
+    */
+
+    document.addEventListener(
+        'keydown',
+        event =>
+        {
+            if (
+                isTypingContext(
+                    event.target,
+                )
+            ) {
+                return;
+            }
+
+            const cards =
+                getSeriesCardLinks();
+
+            if (!cards.length) {
+                return;
+            }
+
+            switch (event.key) {
+
+                case 'Tab':
+
+                    event.preventDefault();
+
+                    if (
+                        seriesActiveCardIndex
+                        === -1
+                    ) {
+
+                        seriesActiveCardIndex = 0;
+
+                    } else if (
+                        event.shiftKey
+                    ) {
+
+                        moveSeriesActiveIndexToPrevious(
+                            cards,
+                        );
+
+                    } else {
+
+                        moveSeriesActiveIndexToNext(
+                            cards,
+                        );
+                    }
+
+                    syncSeriesActiveState();
+
+                    break;
+
+                case 'ArrowRight':
+
+                    event.preventDefault();
+
+                    moveSeriesActiveIndexToNext(
+                        cards,
+                    );
+
+                    syncSeriesActiveState();
+
+                    break;
+
+                case 'ArrowLeft':
+
+                    event.preventDefault();
+
+                    moveSeriesActiveIndexToPrevious(
+                        cards,
+                    );
+
+                    syncSeriesActiveState();
+
+                    break;
+
+                case 'ArrowDown':
+
+                    event.preventDefault();
+
+                    moveSeriesActiveIndexDown(
+                        cards,
+                    );
+
+                    syncSeriesActiveState();
+
+                    break;
+
+                case 'ArrowUp':
+
+                    event.preventDefault();
+
+                    moveSeriesActiveIndexUp();
+
+                    syncSeriesActiveState();
+
+                    break;
+
+                case 'Enter':
+
+                    event.preventDefault();
+
+                    openActiveSeriesCard();
+
+                    break;
+
+                case 'Escape':
+
+                    event.preventDefault();
+
+                    clearSeriesActiveState();
+
+                    break;
+
+                case 'Backspace':
+
+                    event.preventDefault();
+
+                    blurActiveElement();
+
+                    window.history.back();
+
+                    break;
+
+                default:
+                    break;
+            }
+        },
     );
 }

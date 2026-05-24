@@ -1,49 +1,219 @@
 // ==================================================
-// App Initialization
+// Series Keyboard Navigation
 // ==================================================
 
-import { showToast }
-    from './toast.js';
+import {
+    prefetchSeriesPage,
+} from './prefetch-series.js';
 
 /*
 |------------------------------------------------------------------
-| Pages
+| State
 |------------------------------------------------------------------
 */
 
-import {
-    initAjouterPage,
-} from '../manga/pages/ajouter.js';
+let initialized = false;
 
-import {
-    initModifierPage,
-} from '../manga/pages/modifier.js';
+let activeIndex = -1;
 
 /*
 |------------------------------------------------------------------
-| Manga AJAX
+| Helpers
 |------------------------------------------------------------------
 */
 
-import {
-    initLoadSeriesPage,
-} from '../manga/actions/load-series-page.js';
+function getCards()
+{
+    return Array.from(
+        document.querySelectorAll(
+            '.collection-card-link',
+        ),
+    );
+}
 
-import {
-    initUpdateNote,
-} from '../manga/actions/update-note.js';
+function getGrid()
+{
+    return document.querySelector(
+        '.collection-grid',
+    );
+}
 
-import {
-    initDeleteManga,
-} from '../manga/actions/delete-manga.js';
+function getGridColumns()
+{
+    const grid =
+        getGrid();
 
-import {
-    initUpdateReadStatus,
-} from '../manga/actions/update-read-status.js';
+    if (!grid) {
+        return 1;
+    }
 
-import {
-    initSearchManga,
-} from '../manga/actions/search-manga.js';
+    const styles =
+        window.getComputedStyle(
+            grid,
+        );
+
+    return styles
+        .gridTemplateColumns
+        .split(' ')
+        .filter(Boolean)
+        .length;
+}
+
+function isTypingContext(target)
+{
+    if (!target) {
+        return false;
+    }
+
+    return Boolean(
+        target.closest(
+            `
+            input,
+            textarea,
+            select,
+            [contenteditable="true"]
+            `,
+        ),
+    );
+}
+
+function focusCard(card)
+{
+    if (!card) {
+        return;
+    }
+
+    card.focus({
+        preventScroll: true,
+    });
+}
+
+function blurCurrentFocus()
+{
+    if (
+        document.activeElement
+        instanceof HTMLElement
+    ) {
+
+        document.activeElement.blur();
+    }
+}
+
+/*
+|------------------------------------------------------------------
+| Active State
+|------------------------------------------------------------------
+*/
+
+function clearActiveState()
+{
+    activeIndex = -1;
+
+    blurCurrentFocus();
+
+    getCards().forEach(
+        card =>
+        {
+            card.classList.remove(
+                'is-active',
+            );
+        },
+    );
+}
+
+function syncActiveState()
+{
+    const cards =
+        getCards();
+
+    if (!cards.length) {
+        return;
+    }
+
+    /*
+    |--------------------------------------------------------------
+    | Clamp
+    |--------------------------------------------------------------
+    */
+
+    if (
+        activeIndex < 0
+    ) {
+
+        activeIndex = 0;
+    }
+
+    if (
+        activeIndex >= cards.length
+    ) {
+
+        activeIndex =
+            cards.length - 1;
+    }
+
+    /*
+    |--------------------------------------------------------------
+    | Active class
+    |--------------------------------------------------------------
+    */
+
+    cards.forEach(
+        (card, index) =>
+        {
+            card.classList.toggle(
+                'is-active',
+                index === activeIndex,
+            );
+        },
+    );
+
+    const activeCard =
+        cards[activeIndex];
+
+    if (!activeCard) {
+        return;
+    }
+
+    /*
+    |--------------------------------------------------------------
+    | Native focus
+    |--------------------------------------------------------------
+    */
+
+    focusCard(
+        activeCard,
+    );
+
+    /*
+    |--------------------------------------------------------------
+    | Scroll
+    |--------------------------------------------------------------
+    */
+
+    activeCard.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'nearest',
+    });
+
+    /*
+    |--------------------------------------------------------------
+    | Prefetch
+    |--------------------------------------------------------------
+    */
+
+    const nextPagination =
+        document.querySelector(
+            '.collection-pagination-link.active + .collection-pagination-link',
+        );
+
+    if (nextPagination) {
+
+        prefetchSeriesPage(
+            nextPagination.href,
+        );
+    }
+}
 
 /*
 |------------------------------------------------------------------
@@ -51,216 +221,326 @@ import {
 |------------------------------------------------------------------
 */
 
-import {
-    initPrefetchSeries,
-} from '../manga/navigation/prefetch-series.js';
-
-import {
-    initSeriesKeyboardNavigation,
-} from '../manga/navigation/series-keyboard-navigation.js';
-
-import {
-    initBackNavigation,
-} from '../manga/navigation/back-navigation.js';
-
-/*
-|------------------------------------------------------------------
-| Chinois
-|------------------------------------------------------------------
-*/
-
-import {
-    initToggleGrammaireMaitrise,
-} from '../chinois/actions/toggle-grammar-mastery.js';
-
-/*
-|------------------------------------------------------------------
-| Flash Toast
-|------------------------------------------------------------------
-*/
-
-function initFlashToast()
+function openActiveCard()
 {
-    if (
-        !window.flashToast?.message
-    ) {
+    const cards =
+        getCards();
+
+    const activeCard =
+        cards[activeIndex];
+
+    if (!activeCard) {
         return;
     }
 
-    showToast(
-        window.flashToast.message,
-        window.flashToast.type
-        || 'success',
-    );
-}
-
-/*
-|------------------------------------------------------------------
-| Safe Init
-|------------------------------------------------------------------
-*/
-
-function safeInit(
-    callback,
-    label,
-)
-{
-    try {
-
-        callback();
-
-        console.log(
-            `✅ ${label}`,
-        );
-
-    } catch (error) {
-
-        console.error(
-            `❌ ${label}`,
-            error,
-        );
-    }
-}
-
-/*
-|------------------------------------------------------------------
-| App Init
-|------------------------------------------------------------------
-*/
-
-function initApp()
-{
     /*
     |--------------------------------------------------------------
-    | Prevent double init
+    | Native navigation
+    |--------------------------------------------------------------
+    */
+
+    window.location.href =
+        activeCard.href;
+}
+
+function navigateBack()
+{
+    const pathname =
+        window.location.pathname;
+
+    /*
+    |--------------------------------------------------------------
+    | Manga detail
     |--------------------------------------------------------------
     */
 
     if (
-        document.body.dataset
-            .appInitialized
-        === 'true'
+        /^\/lolissr\/manga\/series\/[^/]+$/.test(
+            pathname,
+        )
     ) {
+
+        window.location.href =
+            '/lolissr/manga/series';
+
         return;
     }
 
-    document.body.dataset
-        .appInitialized =
-            'true';
-
-    console.log(
-        '🚀 APP INIT',
-    );
-
     /*
     |--------------------------------------------------------------
-    | Pages
+    | Series list
     |--------------------------------------------------------------
     */
 
-    safeInit(
-        initAjouterPage,
-        'initAjouterPage',
-    );
+    if (
+        pathname ===
+        '/lolissr/manga/series'
+    ) {
 
-    safeInit(
-        initModifierPage,
-        'initModifierPage',
-    );
+        window.location.href =
+            '/lolissr/manga';
 
-    /*
-    |--------------------------------------------------------------
-    | Manga AJAX
-    |--------------------------------------------------------------
-    */
-
-    safeInit(
-        initLoadSeriesPage,
-        'initLoadSeriesPage',
-    );
-
-    safeInit(
-        initUpdateNote,
-        'initUpdateNote',
-    );
-
-    safeInit(
-        initDeleteManga,
-        'initDeleteManga',
-    );
-
-    safeInit(
-        initUpdateReadStatus,
-        'initUpdateReadStatus',
-    );
-
-    safeInit(
-        initSearchManga,
-        'initSearchManga',
-    );
+        return;
+    }
 
     /*
     |--------------------------------------------------------------
-    | Navigation
+    | Pagination
     |--------------------------------------------------------------
     */
 
-    safeInit(
-        initPrefetchSeries,
-        'initPrefetchSeries',
-    );
+    if (
+        /^\/lolissr\/manga\/series\/page\/\d+$/.test(
+            pathname,
+        )
+    ) {
 
-    safeInit(
-        initSeriesKeyboardNavigation,
-        'initSeriesKeyboardNavigation',
-    );
+        window.location.href =
+            '/lolissr/manga';
 
-    safeInit(
-        initBackNavigation,
-        'initBackNavigation',
-    );
+        return;
+    }
 
     /*
     |--------------------------------------------------------------
-    | Chinois
+    | Fallback
     |--------------------------------------------------------------
     */
 
-    safeInit(
-        initToggleGrammaireMaitrise,
-        'initToggleGrammaireMaitrise',
-    );
-
-    /*
-    |--------------------------------------------------------------
-    | Toast
-    |--------------------------------------------------------------
-    */
-
-    safeInit(
-        initFlashToast,
-        'initFlashToast',
-    );
-
-    console.log(
-        '✅ APP READY',
-    );
+    window.history.back();
 }
 
 /*
 |------------------------------------------------------------------
-| DOM Ready
+| Keyboard
 |------------------------------------------------------------------
 */
 
-if (
-    document.readyState
-    === 'loading'
-) {
+function handleKeyboard(event)
+{
+    if (
+        isTypingContext(
+            event.target,
+        )
+    ) {
+        return;
+    }
+
+    /*
+    |--------------------------------------------------------------
+    | Global
+    |--------------------------------------------------------------
+    */
+
+    if (
+        event.key === 'Backspace'
+    ) {
+
+        navigateBack();
+
+        return;
+    }
+
+    if (
+        event.key === 'Escape'
+    ) {
+
+        clearActiveState();
+
+        return;
+    }
+
+    const cards =
+        getCards();
+
+    if (!cards.length) {
+        return;
+    }
+
+    switch (event.key) {
+
+        /*
+        |----------------------------------------------------------
+        | TAB
+        |----------------------------------------------------------
+        */
+
+        case 'Tab':
+
+            event.preventDefault();
+
+            if (
+                activeIndex === -1
+            ) {
+
+                activeIndex = 0;
+
+            } else if (
+                event.shiftKey
+            ) {
+
+                activeIndex =
+                    Math.max(
+                        activeIndex - 1,
+                        0,
+                    );
+
+            } else {
+
+                activeIndex =
+                    Math.min(
+                        activeIndex + 1,
+                        cards.length - 1,
+                    );
+            }
+
+            syncActiveState();
+
+            break;
+
+        /*
+        |----------------------------------------------------------
+        | RIGHT
+        |----------------------------------------------------------
+        */
+
+        case 'ArrowRight':
+
+            event.preventDefault();
+
+            activeIndex =
+                Math.min(
+                    activeIndex + 1,
+                    cards.length - 1,
+                );
+
+            syncActiveState();
+
+            break;
+
+        /*
+        |----------------------------------------------------------
+        | LEFT
+        |----------------------------------------------------------
+        */
+
+        case 'ArrowLeft':
+
+            event.preventDefault();
+
+            activeIndex =
+                Math.max(
+                    activeIndex - 1,
+                    0,
+                );
+
+            syncActiveState();
+
+            break;
+
+        /*
+        |----------------------------------------------------------
+        | DOWN
+        |----------------------------------------------------------
+        */
+
+        case 'ArrowDown':
+
+            event.preventDefault();
+
+            activeIndex =
+                Math.min(
+                    activeIndex
+                    + getGridColumns(),
+                    cards.length - 1,
+                );
+
+            syncActiveState();
+
+            break;
+
+        /*
+        |----------------------------------------------------------
+        | UP
+        |----------------------------------------------------------
+        */
+
+        case 'ArrowUp':
+
+            event.preventDefault();
+
+            activeIndex =
+                Math.max(
+                    activeIndex
+                    - getGridColumns(),
+                    0,
+                );
+
+            syncActiveState();
+
+            break;
+
+        /*
+        |----------------------------------------------------------
+        | ENTER
+        |----------------------------------------------------------
+        */
+
+        case 'Enter':
+
+            openActiveCard();
+
+            break;
+
+        default:
+            break;
+    }
+}
+
+/*
+|------------------------------------------------------------------
+| Init
+|------------------------------------------------------------------
+*/
+
+export function initSeriesKeyboardNavigation()
+{
+    if (initialized) {
+        return;
+    }
+
+    initialized = true;
+
+    /*
+    |--------------------------------------------------------------
+    | Keyboard
+    |--------------------------------------------------------------
+    */
+
     document.addEventListener(
-        'DOMContentLoaded',
-        initApp,
+        'keyup',
+        handleKeyboard,
     );
-} else {
-    initApp();
+
+    /*
+    |--------------------------------------------------------------
+    | AJAX reset
+    |--------------------------------------------------------------
+    */
+
+    document.addEventListener(
+        'ajax:series-loaded',
+        clearActiveState,
+    );
+
+    /*
+    |--------------------------------------------------------------
+    | Browser cache restore
+    |--------------------------------------------------------------
+    */
+
+    window.addEventListener(
+        'pageshow',
+        clearActiveState,
+    );
 }

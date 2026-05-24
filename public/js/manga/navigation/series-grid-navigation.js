@@ -1,5 +1,5 @@
 // ==================================================
-// Series Keyboard Navigation
+// Series Grid Navigation
 // ==================================================
 
 import {
@@ -89,6 +89,8 @@ function clearActiveState()
             card.classList.remove(
                 'is-active',
             );
+
+            card.blur();
         },
     );
 }
@@ -108,13 +110,20 @@ function syncActiveState()
     |--------------------------------------------------------------
     */
 
-    activeIndex = Math.max(
-        0,
-        Math.min(
-            activeIndex,
-            cards.length - 1,
-        ),
-    );
+    if (
+        activeIndex < 0
+    ) {
+
+        activeIndex = 0;
+    }
+
+    if (
+        activeIndex >= cards.length
+    ) {
+
+        activeIndex =
+            cards.length - 1;
+    }
 
     /*
     |--------------------------------------------------------------
@@ -138,6 +147,16 @@ function syncActiveState()
     if (!activeCard) {
         return;
     }
+
+    /*
+    |--------------------------------------------------------------
+    | Focus
+    |--------------------------------------------------------------
+    */
+
+    activeCard.focus({
+        preventScroll: true,
+    });
 
     /*
     |--------------------------------------------------------------
@@ -172,95 +191,6 @@ function syncActiveState()
 
 /*
 |------------------------------------------------------------------
-| Navigation
-|------------------------------------------------------------------
-*/
-
-function openActiveCard()
-{
-    const cards =
-        getCards();
-
-    const activeCard =
-        cards[activeIndex];
-
-    if (!activeCard) {
-        return;
-    }
-
-    window.location.href =
-        activeCard.href;
-}
-
-function handleBackNavigation()
-{
-    const pathname =
-        window.location.pathname;
-
-    /*
-    |--------------------------------------------------------------
-    | Detail page
-    |--------------------------------------------------------------
-    */
-
-    if (
-        /^\/lolissr\/manga\/series\/[^/]+$/.test(
-            pathname,
-        )
-    ) {
-
-        window.location.href =
-            '/lolissr/manga/series';
-
-        return;
-    }
-
-    /*
-    |--------------------------------------------------------------
-    | Series page
-    |--------------------------------------------------------------
-    */
-
-    if (
-        pathname ===
-        '/lolissr/manga/series'
-    ) {
-
-        window.location.href =
-            '/lolissr/manga';
-
-        return;
-    }
-
-    /*
-    |--------------------------------------------------------------
-    | Pagination
-    |--------------------------------------------------------------
-    */
-
-    if (
-        /^\/lolissr\/manga\/series\/page\/\d+$/.test(
-            pathname,
-        )
-    ) {
-
-        window.location.href =
-            '/lolissr/manga';
-
-        return;
-    }
-
-    /*
-    |--------------------------------------------------------------
-    | Fallback
-    |--------------------------------------------------------------
-    */
-
-    window.history.back();
-}
-
-/*
-|------------------------------------------------------------------
 | Keyboard
 |------------------------------------------------------------------
 */
@@ -269,19 +199,13 @@ function handleKeyboard(event)
 {
     /*
     |--------------------------------------------------------------
-    | Only collection pages
+    | Only collection page
     |--------------------------------------------------------------
     */
 
     if (!getGrid()) {
         return;
     }
-
-    /*
-    |--------------------------------------------------------------
-    | Ignore typing
-    |--------------------------------------------------------------
-    */
 
     if (
         isTypingContext(
@@ -320,11 +244,19 @@ function handleKeyboard(event)
                 event.shiftKey
             ) {
 
-                activeIndex--;
+                activeIndex =
+                    Math.max(
+                        activeIndex - 1,
+                        0,
+                    );
 
             } else {
 
-                activeIndex++;
+                activeIndex =
+                    Math.min(
+                        activeIndex + 1,
+                        cards.length - 1,
+                    );
             }
 
             syncActiveState();
@@ -341,7 +273,11 @@ function handleKeyboard(event)
 
             event.preventDefault();
 
-            activeIndex++;
+            activeIndex =
+                Math.min(
+                    activeIndex + 1,
+                    cards.length - 1,
+                );
 
             syncActiveState();
 
@@ -357,7 +293,11 @@ function handleKeyboard(event)
 
             event.preventDefault();
 
-            activeIndex--;
+            activeIndex =
+                Math.max(
+                    activeIndex - 1,
+                    0,
+                );
 
             syncActiveState();
 
@@ -373,8 +313,12 @@ function handleKeyboard(event)
 
             event.preventDefault();
 
-            activeIndex +=
-                getGridColumns();
+            activeIndex =
+                Math.min(
+                    activeIndex
+                    + getGridColumns(),
+                    cards.length - 1,
+                );
 
             syncActiveState();
 
@@ -390,8 +334,12 @@ function handleKeyboard(event)
 
             event.preventDefault();
 
-            activeIndex -=
-                getGridColumns();
+            activeIndex =
+                Math.max(
+                    activeIndex
+                    - getGridColumns(),
+                    0,
+                );
 
             syncActiveState();
 
@@ -405,9 +353,15 @@ function handleKeyboard(event)
 
         case 'Enter':
 
-            event.preventDefault();
+            if (
+                activeIndex === -1
+            ) {
+                return;
+            }
 
-            openActiveCard();
+            cards[
+                activeIndex
+            ]?.click();
 
             break;
 
@@ -419,23 +373,7 @@ function handleKeyboard(event)
 
         case 'Escape':
 
-            event.preventDefault();
-
             clearActiveState();
-
-            break;
-
-        /*
-        |----------------------------------------------------------
-        | BACKSPACE
-        |----------------------------------------------------------
-        */
-
-        case 'Backspace':
-
-            event.preventDefault();
-
-            handleBackNavigation();
 
             break;
 
@@ -450,7 +388,7 @@ function handleKeyboard(event)
 |------------------------------------------------------------------
 */
 
-export function initSeriesKeyboardNavigation()
+export function initSeriesGridNavigation()
 {
     if (initialized) {
         return;
@@ -465,11 +403,6 @@ export function initSeriesKeyboardNavigation()
 
     document.addEventListener(
         'ajax:series-loaded',
-        clearActiveState,
-    );
-
-    window.addEventListener(
-        'pageshow',
         clearActiveState,
     );
 }
