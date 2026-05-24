@@ -1,6 +1,5 @@
 import {
     prefetchSeriesPage,
-    prefetchSeriesImage,
 } from './prefetch-series.js';
 
 /*
@@ -86,6 +85,8 @@ function clearSeriesActiveState()
 {
     seriesActiveCardIndex = -1;
 
+    document.activeElement?.blur?.();
+
     getSeriesCardLinks().forEach(
         card =>
         {
@@ -104,6 +105,7 @@ function syncSeriesActiveState()
         getSeriesCardLinks();
 
     if (!cards.length) {
+
         seriesActiveCardIndex = -1;
 
         return;
@@ -131,7 +133,7 @@ function syncSeriesActiveState()
 
     /*
     |--------------------------------------------------------------
-    | Active class
+    | Active class only
     |--------------------------------------------------------------
     */
 
@@ -157,16 +159,6 @@ function syncSeriesActiveState()
 
     /*
     |--------------------------------------------------------------
-    | Focus
-    |--------------------------------------------------------------
-    */
-
-    activeCard.focus({
-        preventScroll: true,
-    });
-
-    /*
-    |--------------------------------------------------------------
     | Smart scroll
     |--------------------------------------------------------------
     */
@@ -184,6 +176,7 @@ function syncSeriesActiveState()
         || rect.top
             < viewportPadding
     ) {
+
         activeCard.scrollIntoView({
             behavior: 'smooth',
             block: 'center',
@@ -193,22 +186,19 @@ function syncSeriesActiveState()
 
     /*
     |--------------------------------------------------------------
-    | Prefetch
+    | Prefetch pagination only
     |--------------------------------------------------------------
     */
 
-    prefetchSeriesPage(
-        activeCard.href,
-    );
-
-    const image =
-        activeCard.querySelector(
-            '.card-image-portrait',
+    const nextPagination =
+        document.querySelector(
+            '.collection-pagination-link.active + .collection-pagination-link',
         );
 
-    if (image) {
-        prefetchSeriesImage(
-            image.src,
+    if (nextPagination) {
+
+        prefetchSeriesPage(
+            nextPagination.href,
         );
     }
 }
@@ -269,6 +259,7 @@ function moveSeriesActiveIndexDown(
         seriesActiveCardIndex
         === -1
     ) {
+
         seriesActiveCardIndex = 0;
 
         return;
@@ -291,6 +282,7 @@ function moveSeriesActiveIndexUp()
         seriesActiveCardIndex
         === -1
     ) {
+
         seriesActiveCardIndex = 0;
 
         return;
@@ -306,17 +298,86 @@ function moveSeriesActiveIndexUp()
 
 function handleSeriesBackNavigation()
 {
+    const pathname =
+        window.location.pathname;
+
+    /*
+    |--------------------------------------------------------------
+    | Fiche série
+    |--------------------------------------------------------------
+    */
+
+    if (
+        /^\/lolissr\/manga\/series\/[^/]+$/.test(
+            pathname,
+        )
+    ) {
+
+        window.location.href =
+            '/lolissr/manga/series';
+
+        return;
+    }
+
+    /*
+    |--------------------------------------------------------------
+    | Liste séries
+    |--------------------------------------------------------------
+    */
+
+    if (
+        pathname ===
+        '/lolissr/manga/series'
+    ) {
+
+        window.location.href =
+            '/lolissr/manga';
+
+        return;
+    }
+
+    /*
+    |--------------------------------------------------------------
+    | Pagination séries
+    |--------------------------------------------------------------
+    */
+
+    if (
+        /^\/lolissr\/manga\/series\/page\/\d+$/.test(
+            pathname,
+        )
+    ) {
+
+        window.location.href =
+            '/lolissr/manga';
+
+        return;
+    }
+
+    /*
+    |--------------------------------------------------------------
+    | Bouton retour custom
+    |--------------------------------------------------------------
+    */
+
     const backButton =
         document.querySelector(
             '.collection-back-button',
         );
 
     if (backButton) {
+
         window.location.href =
             backButton.href;
 
         return;
     }
+
+    /*
+    |--------------------------------------------------------------
+    | Fallback
+    |--------------------------------------------------------------
+    */
 
     window.history.back();
 }
@@ -348,8 +409,17 @@ export function initSeriesKeyboardNavigation()
         'click',
         event =>
         {
+            const target =
+                event.target;
+
+            if (
+                !(target instanceof Element)
+            ) {
+                return;
+            }
+
             const clickedCard =
-                event.target.closest(
+                target.closest(
                     '.collection-card-link',
                 );
 
@@ -428,14 +498,19 @@ export function initSeriesKeyboardNavigation()
                         seriesActiveCardIndex
                         === -1
                     ) {
+
                         seriesActiveCardIndex = 0;
+
                     } else if (
                         event.shiftKey
                     ) {
+
                         moveSeriesActiveIndexToPrevious(
                             cards,
                         );
+
                     } else {
+
                         moveSeriesActiveIndexToNext(
                             cards,
                         );
