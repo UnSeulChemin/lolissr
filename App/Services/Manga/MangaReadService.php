@@ -53,13 +53,13 @@ final readonly class MangaReadService
                 $manga->average_note,
 
             total:
-                $manga->total,
+                (int) ($manga->total ?? 0),
 
             totalLu:
-                $manga->total_lu,
+                (int) ($manga->total_lu ?? 0),
 
             lu:
-                $manga->lu,
+                (int) ($manga->lu ?? 0),
         );
     }
 
