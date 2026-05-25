@@ -19,9 +19,6 @@ let initialized =
 let currentRequestId =
     0;
 
-let isNavigating =
-    false;
-
 /*
 |------------------------------------------------------------------
 | Selectors
@@ -360,19 +357,6 @@ export async function loadAjaxPage(
     updateHistory = true,
 )
 {
-    /*
-    |--------------------------------------------------------------
-    | Prevent spam navigation
-    |--------------------------------------------------------------
-    */
-
-    if (isNavigating) {
-        return;
-    }
-
-    isNavigating =
-        true;
-
     const requestId =
         ++currentRequestId;
 
@@ -380,10 +364,6 @@ export async function loadAjaxPage(
         getContainer();
 
     if (!container) {
-
-        isNavigating =
-            false;
-
         return;
     }
 
@@ -515,16 +495,13 @@ export async function loadAjaxPage(
 
         if (
             requestId
-            === currentRequestId
+           === currentRequestId
         ) {
 
             hideLoadingState(
                 container,
             );
         }
-
-        isNavigating =
-            false;
     }
 }
 

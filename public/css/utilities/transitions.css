@@ -168,6 +168,4 @@
 .transition-card
 {
     backface-visibility: hidden;
-
-    transform-style: preserve-3d;
 }
