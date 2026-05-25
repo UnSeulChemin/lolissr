@@ -63,10 +63,21 @@ function isPaginationLink(
     );
 }
 
+/*
+|------------------------------------------------------------------
+| Animations
+|------------------------------------------------------------------
+*/
+
 async function animateContentOut(
     content,
 )
 {
+    content.classList.remove(
+        'page-transition-in',
+        'page-transition-visible',
+    );
+
     content.classList.add(
         'page-transition-out',
     );
@@ -76,7 +87,7 @@ async function animateContentOut(
         {
             window.setTimeout(
                 resolve,
-                180,
+                160,
             );
         },
     );
@@ -86,6 +97,10 @@ async function animateContentIn(
     content,
 )
 {
+    content.classList.remove(
+        'page-transition-out',
+    );
+
     content.classList.add(
         'page-transition-in',
     );
@@ -114,6 +129,12 @@ async function animateContentIn(
         'page-transition-visible',
     );
 }
+
+/*
+|------------------------------------------------------------------
+| Replace Content
+|------------------------------------------------------------------
+*/
 
 async function replaceContent(
     html,
@@ -166,6 +187,12 @@ function scrollToTop()
         behavior: 'smooth',
     });
 }
+
+/*
+|------------------------------------------------------------------
+| Fetch
+|------------------------------------------------------------------
+*/
 
 async function fetchPageHtml(
     href,
@@ -242,14 +269,26 @@ export async function loadAjaxPage(
 
         if (updateHistory) {
 
-            window.history.replaceState(
+            window.history.pushState(
                 {},
                 '',
                 href,
             );
         }
 
+        /*
+        |--------------------------------------------------------------
+        | Scroll
+        |--------------------------------------------------------------
+        */
+
         scrollToTop();
+
+        /*
+        |--------------------------------------------------------------
+        | Events
+        |--------------------------------------------------------------
+        */
 
         document.dispatchEvent(
             new CustomEvent(
@@ -259,7 +298,7 @@ export async function loadAjaxPage(
 
         /*
         |--------------------------------------------------------------
-        | Prefetch next
+        | Prefetch
         |--------------------------------------------------------------
         */
 

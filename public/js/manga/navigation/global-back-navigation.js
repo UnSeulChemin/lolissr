@@ -2,7 +2,8 @@
 // Global Back Navigation
 // ==================================================
 
-let initialized = false;
+let initialized =
+    false;
 
 /*
 |------------------------------------------------------------------
@@ -10,9 +11,13 @@ let initialized = false;
 |------------------------------------------------------------------
 */
 
-function isTypingContext(target)
+function isTypingContext(
+    target,
+)
 {
-    if (!target) {
+    if (
+        !(target instanceof Element)
+    ) {
         return false;
     }
 
@@ -36,6 +41,18 @@ function isTypingContext(target)
 
 function navigateBack()
 {
+    /*
+    |--------------------------------------------------------------
+    | Prevent empty history issue
+    |--------------------------------------------------------------
+    */
+
+    if (
+        window.history.length <= 1
+    ) {
+        return;
+    }
+
     window.history.back();
 }
 
@@ -45,7 +62,9 @@ function navigateBack()
 |------------------------------------------------------------------
 */
 
-function handleKeyboard(event)
+function handleKeyboard(
+    event,
+)
 {
     if (
         event.key !== 'Backspace'
