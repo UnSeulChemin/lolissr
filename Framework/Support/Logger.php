@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Framework\Support;
 
 use Framework\Application\App;
+use Framework\Container\AppContainer;
+use Framework\Http\Request;
 use JsonException;
 use Throwable;
 
@@ -12,8 +14,8 @@ final class Logger
 {
     private static function enabled(): bool
     {
-        return env_bool(
-            'LOG_ENABLED',
+        return (bool) config(
+            'log.enabled',
             true,
         );
     }
@@ -48,20 +50,34 @@ final class Logger
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed>|null
      */
-    private static function requestContext(): array
+    private static function requestContext(): ?array
     {
-        return [
-            'method' => $_SERVER['REQUEST_METHOD']
-                ?? null,
+        try {
 
-            'uri' => $_SERVER['REQUEST_URI']
-                ?? null,
+            if (!AppContainer::has()) {
+                return null;
+            }
 
-            'ip' => $_SERVER['REMOTE_ADDR']
-                ?? null,
-        ];
+            /** @var Request|null $request */
+            $request = app(Request::class);
+
+            if (!$request instanceof Request) {
+                return null;
+            }
+
+            return [
+                'method' => $request->method(),
+                'uri' => $request->uri(),
+                'ip' => $request->server(
+                    'REMOTE_ADDR',
+                ),
+            ];
+
+        } catch (Throwable) {
+            return null;
+        }
     }
 
     /**
@@ -72,6 +88,7 @@ final class Logger
         string $message,
         array $context = [],
     ): void {
+
         if (!self::enabled()) {
             return;
         }
@@ -100,12 +117,14 @@ final class Logger
         ];
 
         try {
+
             $content = json_encode(
                 $payload,
                 JSON_UNESCAPED_UNICODE
                 | JSON_UNESCAPED_SLASHES
                 | JSON_THROW_ON_ERROR,
             );
+
         } catch (JsonException) {
             return;
         }
@@ -184,6 +203,7 @@ final class Logger
         Throwable $exception,
         array $context = [],
     ): void {
+
         self::error(
             $exception->getMessage(),
             array_merge(
