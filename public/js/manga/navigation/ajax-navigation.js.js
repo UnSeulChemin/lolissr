@@ -19,6 +19,9 @@ let initialized =
 let currentRequestId =
     0;
 
+let isNavigating =
+    false;
+
 /*
 |------------------------------------------------------------------
 | Selectors
@@ -91,13 +94,13 @@ function scrollToTop()
 {
     window.scrollTo({
         top: 0,
-        behavior: 'instant',
+        behavior: 'auto',
     });
 }
 
 /*
 |------------------------------------------------------------------
-| Skeleton
+| Loading
 |------------------------------------------------------------------
 */
 
@@ -139,7 +142,7 @@ async function animateContentOut(
     );
 
     await delay(
-        120,
+        90,
     );
 }
 
@@ -165,7 +168,7 @@ async function animateContentIn(
     );
 
     await delay(
-        220,
+        140,
     );
 
     content.classList.remove(
@@ -225,6 +228,7 @@ function updateDocumentTitle(
         title
         && title.textContent
     ) {
+
         document.title =
             title.textContent;
     }
@@ -280,7 +284,7 @@ async function replaceContent(
 
     /*
     |--------------------------------------------------------------
-    | Scroll reset
+    | Scroll
     |--------------------------------------------------------------
     */
 
@@ -356,6 +360,19 @@ export async function loadAjaxPage(
     updateHistory = true,
 )
 {
+    /*
+    |--------------------------------------------------------------
+    | Prevent spam navigation
+    |--------------------------------------------------------------
+    */
+
+    if (isNavigating) {
+        return;
+    }
+
+    isNavigating =
+        true;
+
     const requestId =
         ++currentRequestId;
 
@@ -363,6 +380,10 @@ export async function loadAjaxPage(
         getContainer();
 
     if (!container) {
+
+        isNavigating =
+            false;
+
         return;
     }
 
@@ -414,7 +435,7 @@ export async function loadAjaxPage(
 
         /*
         |--------------------------------------------------------------
-        | Replace
+        | Replace content
         |--------------------------------------------------------------
         */
 
@@ -457,7 +478,7 @@ export async function loadAjaxPage(
 
         /*
         |--------------------------------------------------------------
-        | Prefetch visible links
+        | Prefetch
         |--------------------------------------------------------------
         */
 
@@ -488,7 +509,7 @@ export async function loadAjaxPage(
 
         /*
         |--------------------------------------------------------------
-        | Remove loading
+        | Cleanup
         |--------------------------------------------------------------
         */
 
@@ -501,6 +522,9 @@ export async function loadAjaxPage(
                 container,
             );
         }
+
+        isNavigating =
+            false;
     }
 }
 
@@ -625,7 +649,8 @@ export function initAjaxNavigation()
         return;
     }
 
-    initialized = true;
+    initialized =
+        true;
 
     if (!getContainer()) {
         return;
