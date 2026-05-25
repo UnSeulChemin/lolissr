@@ -63,7 +63,9 @@ function isTypingContext(
     target,
 )
 {
-    if (!target) {
+    if (
+        !(target instanceof Element)
+    ) {
         return false;
     }
 
@@ -87,7 +89,8 @@ function isTypingContext(
 
 function clearActiveState()
 {
-    activeIndex = -1;
+    activeIndex =
+        -1;
 
     getCards().forEach(
         card =>
@@ -107,6 +110,9 @@ function syncActiveState()
         getCards();
 
     if (!cards.length) {
+
+        clearActiveState();
+
         return;
     }
 
@@ -181,7 +187,7 @@ function syncActiveState()
 
     /*
     |--------------------------------------------------------------
-    | Prefetch next page
+    | Prefetch next pagination page
     |--------------------------------------------------------------
     */
 
@@ -190,7 +196,10 @@ function syncActiveState()
             '.collection-pagination-link.active + .collection-pagination-link',
         );
 
-    if (nextPagination) {
+    if (
+        nextPagination
+        instanceof HTMLAnchorElement
+    ) {
 
         prefetchPage(
             nextPagination.href,
@@ -346,13 +355,13 @@ function handleKeyboard(
 
         case 'Enter':
 
-            event.preventDefault();
-
             if (
                 activeIndex === -1
             ) {
                 return;
             }
+
+            event.preventDefault();
 
             cards[
                 activeIndex
@@ -391,7 +400,8 @@ export function initSeriesKeyboardNavigation()
         return;
     }
 
-    initialized = true;
+    initialized =
+        true;
 
     document.addEventListener(
         'keydown',

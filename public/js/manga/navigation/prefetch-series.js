@@ -282,11 +282,6 @@ export async function prefetchPage(
             html,
         );
 
-        console.log(
-            '[PREFETCH]',
-            normalizedUrl,
-        );
-
     } catch (error) {
 
         console.error(
@@ -357,7 +352,7 @@ function bindHoverPrefetch()
                                     link.href,
                                 );
                             },
-                            100,
+                            80,
                         );
                 },
                 {
