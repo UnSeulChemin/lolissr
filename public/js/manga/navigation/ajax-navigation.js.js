@@ -63,7 +63,59 @@ function isPaginationLink(
     );
 }
 
-function replaceContent(
+async function animateContentOut(
+    content,
+)
+{
+    content.classList.add(
+        'page-transition-out',
+    );
+
+    await new Promise(
+        (resolve) =>
+        {
+            window.setTimeout(
+                resolve,
+                180,
+            );
+        },
+    );
+}
+
+async function animateContentIn(
+    content,
+)
+{
+    content.classList.add(
+        'page-transition-in',
+    );
+
+    requestAnimationFrame(
+        () =>
+        {
+            content.classList.add(
+                'page-transition-visible',
+            );
+        },
+    );
+
+    await new Promise(
+        (resolve) =>
+        {
+            window.setTimeout(
+                resolve,
+                220,
+            );
+        },
+    );
+
+    content.classList.remove(
+        'page-transition-in',
+        'page-transition-visible',
+    );
+}
+
+async function replaceContent(
     html,
 )
 {
@@ -95,8 +147,16 @@ function replaceContent(
         return;
     }
 
+    await animateContentOut(
+        currentContent,
+    );
+
     currentContent.innerHTML =
         newContent.innerHTML;
+
+    await animateContentIn(
+        currentContent,
+    );
 }
 
 function scrollToTop()
@@ -170,7 +230,7 @@ export async function loadAjaxPage(
                 href,
             );
 
-        replaceContent(
+        await replaceContent(
             html,
         );
 

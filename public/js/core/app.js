@@ -8,6 +8,16 @@ import {
 
 /*
 |------------------------------------------------------------------
+| Page Transition
+|------------------------------------------------------------------
+*/
+
+import {
+    initPageTransitions,
+} from './page-transition.js';
+
+/*
+|------------------------------------------------------------------
 | Debug
 |------------------------------------------------------------------
 */
@@ -16,22 +26,30 @@ const DEBUG =
     window.location.hostname
     === 'localhost';
 
-function debugLog(...args)
+function debugLog(
+    ...args
+)
 {
     if (!DEBUG) {
         return;
     }
 
-    console.log(...args);
+    console.log(
+        ...args,
+    );
 }
 
-function debugError(...args)
+function debugError(
+    ...args
+)
 {
     if (!DEBUG) {
         return;
     }
 
-    console.error(...args);
+    console.error(
+        ...args,
+    );
 }
 
 /*
@@ -110,16 +128,20 @@ import {
 
 function initFlashToast()
 {
+    const flashToast =
+        window.flashToast;
+
     if (
-        !window.flashToast?.message
+        !flashToast
+        || !flashToast.message
     ) {
         return;
     }
 
     showToast(
-        window.flashToast.message,
-        window.flashToast.type
-        || 'success',
+        flashToast.message,
+        flashToast.type
+            || 'success',
     );
 }
 
@@ -173,6 +195,17 @@ function initApp()
 
     debugLog(
         '🚀 APP INIT',
+    );
+
+    /*
+    |--------------------------------------------------------------
+    | Core
+    |--------------------------------------------------------------
+    */
+
+    safeInit(
+        initPageTransitions,
+        'initPageTransitions',
     );
 
     /*
