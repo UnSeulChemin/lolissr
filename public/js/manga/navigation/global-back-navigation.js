@@ -15,9 +15,7 @@ function isTypingContext(
     target,
 )
 {
-    if (
-        !(target instanceof Element)
-    ) {
+    if (!target) {
         return false;
     }
 
@@ -33,6 +31,25 @@ function isTypingContext(
     );
 }
 
+function isInteractiveElement(
+    target,
+)
+{
+    if (!target) {
+        return false;
+    }
+
+    return Boolean(
+        target.closest(
+            `
+            a,
+            button,
+            [role="button"]
+            `,
+        ),
+    );
+}
+
 /*
 |------------------------------------------------------------------
 | Navigation
@@ -41,19 +58,17 @@ function isTypingContext(
 
 function navigateBack()
 {
-    /*
-    |--------------------------------------------------------------
-    | Prevent empty history issue
-    |--------------------------------------------------------------
-    */
-
     if (
-        window.history.length <= 1
+        window.history.length > 1
     ) {
+
+        window.history.back();
+
         return;
     }
 
-    window.history.back();
+    window.location.href =
+        '/lolissr/';
 }
 
 /*
@@ -88,7 +103,21 @@ function handleKeyboard(
 
     /*
     |--------------------------------------------------------------
-    | Ignore modifier keys
+    | Ignore interactive
+    |--------------------------------------------------------------
+    */
+
+    if (
+        isInteractiveElement(
+            event.target,
+        )
+    ) {
+        return;
+    }
+
+    /*
+    |--------------------------------------------------------------
+    | Ignore modifiers
     |--------------------------------------------------------------
     */
 

@@ -175,24 +175,10 @@ async function replaceContent(
     currentContent.innerHTML =
         newContent.innerHTML;
 
-    /*
-    |--------------------------------------------------------------
-    | Force reflow
-    |--------------------------------------------------------------
-    */
-
-    void currentContent.offsetHeight;
-
     await animateContentIn(
         currentContent,
     );
 }
-
-/*
-|------------------------------------------------------------------
-| Scroll
-|------------------------------------------------------------------
-*/
 
 function scrollToTop()
 {
@@ -260,12 +246,6 @@ export async function loadAjaxPage(
         return;
     }
 
-    /*
-    |--------------------------------------------------------------
-    | Loading
-    |--------------------------------------------------------------
-    */
-
     container.classList.add(
         'is-loading',
     );
@@ -289,7 +269,7 @@ export async function loadAjaxPage(
 
         if (updateHistory) {
 
-            window.history.pushState(
+            window.history.replaceState(
                 {},
                 '',
                 href,
