@@ -517,30 +517,15 @@ function prefetchVisibleLinks()
             paginationSelector,
         );
 
-    if (links.length === 0) {
-        return;
-    }
-
-    const currentUrl =
-        window.location.href;
-
     for (const link of links) {
 
         if (
-            !(link instanceof HTMLAnchorElement)
-        ) {
-            continue;
-        }
-
-        if (
-            link.href !== currentUrl
+            link instanceof HTMLAnchorElement
         ) {
 
             prefetchPage(
                 link.href,
             );
-
-            break;
         }
     }
 }
