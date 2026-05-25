@@ -2,22 +2,33 @@
 
 declare(strict_types=1);
 
-$baseUri = rtrim(
-    (string) ($baseUri ?? ''),
-    '/',
-) . '/';
+$baseUri =
+    rtrim(
+        (string) ($baseUri ?? ''),
+        '/',
+    ) . '/';
 
 ?>
 
 <section class="layout-container dashboard-page">
 
-    <section class="dashboard-grid animate-fade-up-stagger">
+    <section class="dashboard-grid">
 
         <a
-            class="dashboard-card"
-            href="<?= e($baseUri) ?>chinois/grammaire/hsk1">
+            class="
+                card
+                transition-card
+                dashboard-card
+            "
+            href="<?= e($baseUri) ?>chinois/grammaire/hsk1"
+        >
 
-            <span class="dashboard-card-icon" aria-hidden="true">一</span>
+            <span
+                class="dashboard-card-icon"
+                aria-hidden="true"
+            >
+                一
+            </span>
 
             <span class="dashboard-card-title">
                 HSK1
@@ -30,10 +41,20 @@ $baseUri = rtrim(
         </a>
 
         <a
-            class="dashboard-card"
-            href="<?= e($baseUri) ?>chinois/grammaire/hsk2">
+            class="
+                card
+                transition-card
+                dashboard-card
+            "
+            href="<?= e($baseUri) ?>chinois/grammaire/hsk2"
+        >
 
-            <span class="dashboard-card-icon" aria-hidden="true">二</span>
+            <span
+                class="dashboard-card-icon"
+                aria-hidden="true"
+            >
+                二
+            </span>
 
             <span class="dashboard-card-title">
                 HSK2
@@ -46,10 +67,20 @@ $baseUri = rtrim(
         </a>
 
         <a
-            class="dashboard-card"
-            href="<?= e($baseUri) ?>chinois/grammaire/hsk3">
+            class="
+                card
+                transition-card
+                dashboard-card
+            "
+            href="<?= e($baseUri) ?>chinois/grammaire/hsk3"
+        >
 
-            <span class="dashboard-card-icon" aria-hidden="true">三</span>
+            <span
+                class="dashboard-card-icon"
+                aria-hidden="true"
+            >
+                三
+            </span>
 
             <span class="dashboard-card-title">
                 HSK3
@@ -62,10 +93,20 @@ $baseUri = rtrim(
         </a>
 
         <a
-            class="dashboard-card"
-            href="<?= e($baseUri) ?>chinois/grammaire/hsk4">
+            class="
+                card
+                transition-card
+                dashboard-card
+            "
+            href="<?= e($baseUri) ?>chinois/grammaire/hsk4"
+        >
 
-            <span class="dashboard-card-icon" aria-hidden="true">四</span>
+            <span
+                class="dashboard-card-icon"
+                aria-hidden="true"
+            >
+                四
+            </span>
 
             <span class="dashboard-card-title">
                 HSK4

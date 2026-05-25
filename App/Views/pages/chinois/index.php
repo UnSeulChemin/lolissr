@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-$baseUri = rtrim(
-    (string) ($baseUri ?? ''),
-    '/',
-) . '/';
+$baseUri =
+    rtrim(
+        (string) ($baseUri ?? ''),
+        '/',
+    ) . '/';
 
 ?>
 
@@ -13,7 +14,12 @@ $baseUri = rtrim(
 
     <section class="dashboard-header">
 
-        <div class="dashboard-title-box animate-fade-up">
+        <div
+            class="
+                dashboard-title-box
+                transition-card
+            "
+        >
 
             <h1 class="dashboard-title">
                 ⛩️ Chinois
@@ -27,13 +33,23 @@ $baseUri = rtrim(
 
     </section>
 
-    <section class="dashboard-grid animate-fade-up-stagger">
+    <section class="dashboard-grid">
 
         <a
-            class="dashboard-card"
-            href="<?= e($baseUri) ?>chinois/mandarin">
+            class="
+                card
+                transition-card
+                dashboard-card
+            "
+            href="<?= e($baseUri) ?>chinois/mandarin"
+        >
 
-            <span class="dashboard-card-icon" aria-hidden="true">中文</span>
+            <span
+                class="dashboard-card-icon"
+                aria-hidden="true"
+            >
+                中文
+            </span>
 
             <span class="dashboard-card-title">
                 Mandarin
@@ -46,10 +62,20 @@ $baseUri = rtrim(
         </a>
 
         <a
-            class="dashboard-card"
-            href="<?= e($baseUri) ?>chinois/jinyu">
+            class="
+                card
+                transition-card
+                dashboard-card
+            "
+            href="<?= e($baseUri) ?>chinois/jinyu"
+        >
 
-            <span class="dashboard-card-icon" aria-hidden="true">晋语</span>
+            <span
+                class="dashboard-card-icon"
+                aria-hidden="true"
+            >
+                晋语
+            </span>
 
             <span class="dashboard-card-title">
                 JinYu
@@ -62,10 +88,20 @@ $baseUri = rtrim(
         </a>
 
         <a
-            class="dashboard-card"
-            href="<?= e($baseUri) ?>chinois/ajouter">
+            class="
+                card
+                transition-card
+                dashboard-card
+            "
+            href="<?= e($baseUri) ?>chinois/ajouter"
+        >
 
-            <span class="dashboard-card-icon" aria-hidden="true">➕</span>
+            <span
+                class="dashboard-card-icon"
+                aria-hidden="true"
+            >
+                ➕
+            </span>
 
             <span class="dashboard-card-title">
                 Ajouter
@@ -78,10 +114,20 @@ $baseUri = rtrim(
         </a>
 
         <a
-            class="dashboard-card"
-            href="<?= e($baseUri) ?>chinois/grammaire">
+            class="
+                card
+                transition-card
+                dashboard-card
+            "
+            href="<?= e($baseUri) ?>chinois/grammaire"
+        >
 
-            <span class="dashboard-card-icon" aria-hidden="true">📖</span>
+            <span
+                class="dashboard-card-icon"
+                aria-hidden="true"
+            >
+                📖
+            </span>
 
             <span class="dashboard-card-title">
                 Grammaire
@@ -94,10 +140,20 @@ $baseUri = rtrim(
         </a>
 
         <a
-            class="dashboard-card"
-            href="<?= e($baseUri) ?>chinois/flashcards">
+            class="
+                card
+                transition-card
+                dashboard-card
+            "
+            href="<?= e($baseUri) ?>chinois/flashcards"
+        >
 
-            <span class="dashboard-card-icon" aria-hidden="true">🧠</span>
+            <span
+                class="dashboard-card-icon"
+                aria-hidden="true"
+            >
+                🧠
+            </span>
 
             <span class="dashboard-card-title">
                 Flashcards

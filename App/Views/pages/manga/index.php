@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-$baseUri = rtrim(
-    (string) ($baseUri ?? ''),
-    '/',
-) . '/';
+$baseUri =
+    rtrim(
+        (string) ($baseUri ?? ''),
+        '/',
+    ) . '/';
 
 ?>
 
@@ -13,7 +14,12 @@ $baseUri = rtrim(
 
     <section class="dashboard-header">
 
-        <div class="dashboard-title-box animate-fade-up">
+        <div
+            class="
+                dashboard-title-box
+                transition-card
+            "
+        >
 
             <h1 class="dashboard-title">
                 📚 Manga
@@ -27,13 +33,23 @@ $baseUri = rtrim(
 
     </section>
 
-    <section class="dashboard-grid animate-fade-up-stagger">
+    <section class="dashboard-grid">
 
         <a
-            class="dashboard-card"
-            href="<?= e($baseUri) ?>manga/series">
+            class="
+                card
+                transition-card
+                dashboard-card
+            "
+            href="<?= e($baseUri) ?>manga/series"
+        >
 
-            <span class="dashboard-card-icon" aria-hidden="true">📚</span>
+            <span
+                class="dashboard-card-icon"
+                aria-hidden="true"
+            >
+                📚
+            </span>
 
             <span class="dashboard-card-title">
                 Series
@@ -46,10 +62,20 @@ $baseUri = rtrim(
         </a>
 
         <a
-            class="dashboard-card"
-            href="<?= e($baseUri) ?>manga/ajouter">
+            class="
+                card
+                transition-card
+                dashboard-card
+            "
+            href="<?= e($baseUri) ?>manga/ajouter"
+        >
 
-            <span class="dashboard-card-icon" aria-hidden="true">➕</span>
+            <span
+                class="dashboard-card-icon"
+                aria-hidden="true"
+            >
+                ➕
+            </span>
 
             <span class="dashboard-card-title">
                 Ajouter
@@ -62,10 +88,20 @@ $baseUri = rtrim(
         </a>
 
         <a
-            class="dashboard-card"
-            href="<?= e($baseUri) ?>manga/lien">
+            class="
+                card
+                transition-card
+                dashboard-card
+            "
+            href="<?= e($baseUri) ?>manga/lien"
+        >
 
-            <span class="dashboard-card-icon" aria-hidden="true">🔗</span>
+            <span
+                class="dashboard-card-icon"
+                aria-hidden="true"
+            >
+                🔗
+            </span>
 
             <span class="dashboard-card-title">
                 Liens utiles

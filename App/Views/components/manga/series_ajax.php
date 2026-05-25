@@ -22,17 +22,12 @@ $isSerieView =
 
 $baseUri =
     isset($baseUri)
-        ? (string) $baseUri
+        ? rtrim((string) $baseUri, '/') . '/'
         : '';
 
 ?>
 
-<section
-    class="
-        collection-grid
-        animate-fade-up-stagger
-    "
->
+<section class="collection-grid">
 
 <?php foreach ($mangas as $manga):
 
@@ -162,6 +157,7 @@ $baseUri =
 <a
     class="
         card
+        transition-card
         card-link
         collection-card
         collection-card-link
@@ -211,9 +207,7 @@ $baseUri =
 
     </span>
 
-    <div
-        class="card-image-box-portrait"
-    >
+    <div class="card-image-box-portrait">
 
         <img
             class="card-image-portrait"

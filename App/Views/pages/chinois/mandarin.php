@@ -2,7 +2,8 @@
 
 declare(strict_types=1);
 
-$vocabulaires = isset($view['vocabulaires'])
+$vocabulaires =
+    isset($view['vocabulaires'])
     && is_array($view['vocabulaires'])
         ? $view['vocabulaires']
         : [];
@@ -11,7 +12,12 @@ $vocabulaires = isset($view['vocabulaires'])
 
 <section class="layout-container dashboard-page">
 
-    <section class="chinois-vocab-panel animate-fade-up">
+    <section
+        class="
+            chinois-vocab-panel
+            transition-card
+        "
+    >
 
         <div class="chinois-vocab-header">
 
@@ -65,7 +71,7 @@ $vocabulaires = isset($view['vocabulaires'])
 
                         <?php foreach ($vocabulaires as $vocabulaire): ?>
 
-                            <tr>
+                            <tr class="transition-card">
 
                                 <td>
 

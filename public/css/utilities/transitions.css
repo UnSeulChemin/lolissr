@@ -17,7 +17,7 @@
 {
     opacity: 0;
 
-    transform: translateY(10px);
+    transform: translateY(12px);
 }
 
 .page-transition-in.page-transition-visible
@@ -33,11 +33,123 @@
 
 
 /* =========================================
-   AJAX LOADING
+   GLOBAL ANIMATIONS
 ========================================= */
 
-.collection-ajax-container.is-loading
-.collection-ajax-content
+@keyframes fadeUpSoft
+{
+    from
+    {
+        opacity: 0;
+
+        transform: translateY(18px);
+    }
+
+    to
+    {
+        opacity: 1;
+
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInSoft
+{
+    from
+    {
+        opacity: 0;
+    }
+
+    to
+    {
+        opacity: 1;
+    }
+}
+
+@keyframes scaleSoft
+{
+    from
+    {
+        opacity: 0;
+
+        transform: scale(0.96);
+    }
+
+    to
+    {
+        opacity: 1;
+
+        transform: scale(1);
+    }
+}
+
+
+/* =========================================
+   ANIMATION UTILITIES
+========================================= */
+
+.animate-fade-up
+{
+    animation:
+        fadeUpSoft
+        0.5s ease
+        both;
+}
+
+.animate-fade-up-stagger > *
+{
+    animation:
+        fadeUpSoft
+        0.5s ease
+        both;
+}
+
+.animate-fade-up-stagger > *:nth-child(1)
+{
+    animation-delay: 0.05s;
+}
+
+.animate-fade-up-stagger > *:nth-child(2)
+{
+    animation-delay: 0.08s;
+}
+
+.animate-fade-up-stagger > *:nth-child(3)
+{
+    animation-delay: 0.11s;
+}
+
+.animate-fade-up-stagger > *:nth-child(4)
+{
+    animation-delay: 0.14s;
+}
+
+.animate-fade-up-stagger > *:nth-child(5)
+{
+    animation-delay: 0.17s;
+}
+
+.animate-fade-up-stagger > *:nth-child(6)
+{
+    animation-delay: 0.20s;
+}
+
+.animate-fade-up-stagger > *:nth-child(7)
+{
+    animation-delay: 0.23s;
+}
+
+.animate-fade-up-stagger > *:nth-child(8)
+{
+    animation-delay: 0.26s;
+}
+
+
+/* =========================================
+   CONTENT LOADING
+========================================= */
+
+.is-loading
 {
     pointer-events: none;
 
@@ -46,19 +158,88 @@
 
 
 /* =========================================
+   CARD TRANSITIONS
+========================================= */
+
+.transition-card
+{
+    opacity: 0;
+
+    transform:
+        translateY(18px)
+        scale(0.98);
+
+    animation:
+        transition-card-enter
+        420ms cubic-bezier(0.22, 1, 0.36, 1)
+        forwards;
+}
+
+.transition-card:nth-child(1)
+{
+    animation-delay: 0.02s;
+}
+
+.transition-card:nth-child(2)
+{
+    animation-delay: 0.05s;
+}
+
+.transition-card:nth-child(3)
+{
+    animation-delay: 0.08s;
+}
+
+.transition-card:nth-child(4)
+{
+    animation-delay: 0.11s;
+}
+
+.transition-card:nth-child(5)
+{
+    animation-delay: 0.14s;
+}
+
+.transition-card:nth-child(6)
+{
+    animation-delay: 0.17s;
+}
+
+.transition-card:nth-child(7)
+{
+    animation-delay: 0.20s;
+}
+
+.transition-card:nth-child(8)
+{
+    animation-delay: 0.23s;
+}
+
+@keyframes transition-card-enter
+{
+    to
+    {
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+
+/* =========================================
    CARD SHIMMER
 ========================================= */
 
-.collection-ajax-container.is-loading
-.card
+.is-loading .card
 {
     position: relative;
 
     overflow: hidden;
 }
 
-.collection-ajax-container.is-loading
-.card::after
+.is-loading .card::after
 {
     content: "";
 
@@ -68,20 +249,20 @@
     background: linear-gradient(
         90deg,
         rgba(255,255,255,0) 0%,
-        rgba(255,255,255,0.24) 50%,
+        rgba(255,255,255,0.20) 50%,
         rgba(255,255,255,0) 100%
     );
 
     transform: translateX(-100%);
 
     animation:
-        collection-card-shimmer
+        card-shimmer
         1.2s linear infinite;
 
     pointer-events: none;
 }
 
-@keyframes collection-card-shimmer
+@keyframes card-shimmer
 {
     100%
     {

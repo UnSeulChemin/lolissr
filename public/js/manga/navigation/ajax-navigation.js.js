@@ -16,6 +16,9 @@ import {
 let initialized =
     false;
 
+let currentRequestId =
+    0;
+
 /*
 |------------------------------------------------------------------
 | Selectors
@@ -63,6 +66,35 @@ function isPaginationLink(
     );
 }
 
+function delay(
+    duration,
+)
+{
+    return new Promise(
+        (resolve) =>
+        {
+            window.setTimeout(
+                resolve,
+                duration,
+            );
+        },
+    );
+}
+
+/*
+|------------------------------------------------------------------
+| Scroll
+|------------------------------------------------------------------
+*/
+
+function scrollToTop()
+{
+    window.scrollTo({
+        top: 0,
+        behavior: 'instant',
+    });
+}
+
 /*
 |------------------------------------------------------------------
 | Animations
@@ -82,14 +114,8 @@ async function animateContentOut(
         'page-transition-out',
     );
 
-    await new Promise(
-        (resolve) =>
-        {
-            window.setTimeout(
-                resolve,
-                140,
-            );
-        },
+    await delay(
+        160,
     );
 }
 
@@ -114,14 +140,8 @@ async function animateContentIn(
         },
     );
 
-    await new Promise(
-        (resolve) =>
-        {
-            window.setTimeout(
-                resolve,
-                220,
-            );
-        },
+    await delay(
+        240,
     );
 
     content.classList.remove(
@@ -132,11 +152,11 @@ async function animateContentIn(
 
 /*
 |------------------------------------------------------------------
-| Replace Content
+| HTML
 |------------------------------------------------------------------
 */
 
-async function replaceContent(
+function extractNewContent(
     html,
 )
 {
@@ -149,9 +169,58 @@ async function replaceContent(
             'text/html',
         );
 
-    const newContent =
+    return documentHtml.querySelector(
+        contentSelector,
+    );
+}
+
+function updateDocumentTitle(
+    html,
+)
+{
+    const parser =
+        new DOMParser();
+
+    const documentHtml =
+        parser.parseFromString(
+            html,
+            'text/html',
+        );
+
+    const title =
         documentHtml.querySelector(
-            contentSelector,
+            'title',
+        );
+
+    if (
+        title
+        && title.textContent
+    ) {
+        document.title =
+            title.textContent;
+    }
+}
+
+/*
+|------------------------------------------------------------------
+| Replace Content
+|------------------------------------------------------------------
+*/
+
+async function replaceContent(
+    html,
+)
+{
+    const currentContent =
+        getContent();
+
+    if (!currentContent) {
+        return;
+    }
+
+    const newContent =
+        extractNewContent(
+            html,
         );
 
     if (!newContent) {
@@ -161,13 +230,6 @@ async function replaceContent(
         );
     }
 
-    const currentContent =
-        getContent();
-
-    if (!currentContent) {
-        return;
-    }
-
     await animateContentOut(
         currentContent,
     );
@@ -175,17 +237,11 @@ async function replaceContent(
     currentContent.innerHTML =
         newContent.innerHTML;
 
+    scrollToTop();
+
     await animateContentIn(
         currentContent,
     );
-}
-
-function scrollToTop()
-{
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth',
-    });
 }
 
 /*
@@ -239,6 +295,9 @@ export async function loadAjaxPage(
     updateHistory = true,
 )
 {
+    const requestId =
+        ++currentRequestId;
+
     const container =
         getContainer();
 
@@ -257,6 +316,23 @@ export async function loadAjaxPage(
                 href,
             );
 
+        /*
+        |--------------------------------------------------------------
+        | Ignore old requests
+        |--------------------------------------------------------------
+        */
+
+        if (
+            requestId
+            !== currentRequestId
+        ) {
+            return;
+        }
+
+        updateDocumentTitle(
+            html,
+        );
+
         await replaceContent(
             html,
         );
@@ -269,7 +345,7 @@ export async function loadAjaxPage(
 
         if (updateHistory) {
 
-            window.history.replaceState(
+            window.history.pushState(
                 {},
                 '',
                 href,
@@ -278,17 +354,15 @@ export async function loadAjaxPage(
 
         /*
         |--------------------------------------------------------------
-        | Scroll
-        |--------------------------------------------------------------
-        */
-
-        scrollToTop();
-
-        /*
-        |--------------------------------------------------------------
         | Events
         |--------------------------------------------------------------
         */
+
+        document.dispatchEvent(
+            new CustomEvent(
+                'ajax:page-loaded',
+            ),
+        );
 
         document.dispatchEvent(
             new CustomEvent(
@@ -302,8 +376,11 @@ export async function loadAjaxPage(
         |--------------------------------------------------------------
         */
 
-        prefetchPage(
-            href,
+        requestAnimationFrame(
+            () =>
+            {
+                prefetchVisibleLinks();
+            },
         );
 
     } catch (error) {
@@ -313,11 +390,44 @@ export async function loadAjaxPage(
             error,
         );
 
+        window.location.href =
+            href;
+
     } finally {
 
-        container.classList.remove(
-            'is-loading',
+        if (
+            requestId
+            === currentRequestId
+        ) {
+            container.classList.remove(
+                'is-loading',
+            );
+        }
+    }
+}
+
+/*
+|------------------------------------------------------------------
+| Prefetch
+|------------------------------------------------------------------
+*/
+
+function prefetchVisibleLinks()
+{
+    const links =
+        document.querySelectorAll(
+            paginationSelector,
         );
+
+    for (const link of links) {
+
+        if (
+            link instanceof HTMLAnchorElement
+        ) {
+            prefetchPage(
+                link.href,
+            );
+        }
     }
 }
 
@@ -363,8 +473,22 @@ async function handleClick(
         event.ctrlKey
         || event.metaKey
         || event.shiftKey
+        || event.altKey
         || event.button === 1
         || link.target === '_blank'
+    ) {
+        return;
+    }
+
+    /*
+    |--------------------------------------------------------------
+    | Same URL
+    |--------------------------------------------------------------
+    */
+
+    if (
+        link.href
+        === window.location.href
     ) {
         return;
     }
@@ -416,5 +540,12 @@ export function initAjaxNavigation()
     window.addEventListener(
         'popstate',
         handlePopState,
+    );
+
+    requestAnimationFrame(
+        () =>
+        {
+            prefetchVisibleLinks();
+        },
     );
 }

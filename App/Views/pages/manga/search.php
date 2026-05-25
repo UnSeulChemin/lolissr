@@ -2,33 +2,45 @@
 
 declare(strict_types=1);
 
-$search = isset($view['search'])
-    ? (string) $view['search']
-    : '';
+$search =
+    isset($view['search'])
+        ? (string) $view['search']
+        : '';
 
-$mangas = isset($view['mangas'])
+$mangas =
+    isset($view['mangas'])
     && is_array($view['mangas'])
         ? $view['mangas']
         : [];
 
-$baseUri = rtrim(
-    (string) ($baseUri ?? ''),
-    '/',
-) . '/';
+$baseUri =
+    rtrim(
+        (string) ($baseUri ?? ''),
+        '/',
+    ) . '/';
 
 ?>
 
 <section class="layout-container">
 
-    <h1 class="home-section-title">
+    <h1
+        class="
+            home-section-title
+            transition-card
+        "
+    >
         🔎 Résultats de recherche
     </h1>
 
     <?php if ($search === ''): ?>
 
         <p
-            class="home-empty"
-            style="text-align:center;">
+            class="
+                home-empty
+                transition-card
+            "
+            style="text-align:center;"
+        >
 
             Saisissez un titre dans la barre de recherche.
 
@@ -37,8 +49,12 @@ $baseUri = rtrim(
     <?php elseif ($mangas === []): ?>
 
         <p
-            class="home-empty"
-            style="text-align:center;">
+            class="
+                home-empty
+                transition-card
+            "
+            style="text-align:center;"
+        >
 
             Aucun manga trouvé.
 
@@ -46,32 +62,40 @@ $baseUri = rtrim(
 
     <?php else: ?>
 
-        <section class="collection-grid animate-fade-up-stagger">
+        <section class="collection-grid">
 
             <?php foreach ($mangas as $manga): ?>
 
                 <?php
-                $slug = isset($manga->slug)
-                    ? (string) $manga->slug
-                    : '';
 
-                $numero = isset($manga->numero)
-                    ? (int) $manga->numero
-                    : 0;
+                $slug =
+                    isset($manga->slug)
+                        ? (string) $manga->slug
+                        : '';
 
-                $thumbnail = isset($manga->thumbnail)
-                    ? (string) $manga->thumbnail
-                    : '';
+                $numero =
+                    isset($manga->numero)
+                        ? (int) $manga->numero
+                        : 0;
 
-                $extension = isset($manga->extension)
-                    ? (string) $manga->extension
-                    : '';
+                $thumbnail =
+                    isset($manga->thumbnail)
+                        ? (string) $manga->thumbnail
+                        : '';
 
-                $livre = isset($manga->livre)
-                    ? (string) $manga->livre
-                    : '';
+                $extension =
+                    isset($manga->extension)
+                        ? (string) $manga->extension
+                        : '';
 
-                $note = $manga->note ?? null;
+                $livre =
+                    isset($manga->livre)
+                        ? (string) $manga->livre
+                        : '';
+
+                $note =
+                    $manga->note
+                    ?? null;
 
                 if (
                     $slug === ''
@@ -82,43 +106,71 @@ $baseUri = rtrim(
                     continue;
                 }
 
-                $noteClass = 'collection-note-mid';
+                $noteClass =
+                    'collection-note-mid';
 
                 if ($note !== null) {
-                    $noteValue = (int) $note;
+
+                    $noteValue =
+                        (int) $note;
 
                     if ($noteValue >= 8) {
-                        $noteClass = 'collection-note-good';
+
+                        $noteClass =
+                            'collection-note-good';
+
                     } elseif ($noteValue <= 4) {
-                        $noteClass = 'collection-note-low';
+
+                        $noteClass =
+                            'collection-note-low';
                     }
                 }
 
-                $href = $baseUri
+                $href =
+                    $baseUri
                     . 'manga/series/'
                     . rawurlencode($slug)
                     . '/'
                     . $numero;
 
-                $thumbnailPath = $baseUri
+                $thumbnailPath =
+                    $baseUri
                     . 'images/mangas/thumbnail/'
                     . $thumbnail
                     . '.'
                     . $extension;
+
                 ?>
 
                 <a
-                    class="card card-link collection-card-link"
-                    href="<?= e($href) ?>">
+                    class="
+                        card
+                        transition-card
+                        card-link
+                        collection-card-link
+                    "
+                    href="<?= e($href) ?>"
+                >
 
-                    <article class="card collection-card">
+                    <article
+                        class="
+                            card
+                            collection-card
+                        "
+                    >
 
                         <div class="card-image-box-portrait">
 
                             <img
-                                class="card-image-portrait card-image"
+                                class="
+                                    card-image-portrait
+                                    card-image
+                                "
                                 src="<?= e($thumbnailPath) ?>"
-                                alt="<?= e($livre) ?>">
+                                alt="<?= e($livre) ?>"
+                                loading="lazy"
+                                draggable="false"
+                            >
 
                         </div>
 
@@ -137,7 +189,12 @@ $baseUri = rtrim(
                         <?php if ($note !== null): ?>
 
                             <span
-                                class="collection-card-badge collection-card-badge-note <?= e($noteClass) ?>">
+                                class="
+                                    collection-card-badge
+                                    collection-card-badge-note
+                                    <?= e($noteClass) ?>
+                                "
+                            >
 
                                 ⭐ <?= (int) $note ?>
 

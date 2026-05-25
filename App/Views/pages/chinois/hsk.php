@@ -6,18 +6,22 @@ declare(strict_types=1);
  * @var array<string, mixed> $view
  */
 
-$grammaires = isset($view['grammaires']) && is_array($view['grammaires'])
-    ? $view['grammaires']
-    : [];
+$grammaires =
+    isset($view['grammaires'])
+    && is_array($view['grammaires'])
+        ? $view['grammaires']
+        : [];
 
-$level = isset($view['level'])
-    ? (string) $view['level']
-    : '1';
+$level =
+    isset($view['level'])
+        ? (string) $view['level']
+        : '1';
 
-$baseUri = rtrim(
-    (string) ($baseUri ?? ''),
-    '/',
-) . '/';
+$baseUri =
+    rtrim(
+        (string) ($baseUri ?? ''),
+        '/',
+    ) . '/';
 
 $sections = [];
 
@@ -70,12 +74,7 @@ $sourceDescription =
 
 <section class="layout-container dashboard-page">
 
-    <section
-        class="
-            grammar-hero
-            animate-fade-up
-        "
-    >
+    <section class="grammar-hero transition-card">
 
         <div class="grammar-hero-main">
 
@@ -122,12 +121,7 @@ $sourceDescription =
 
     <?php foreach ($sections as $section => $categories): ?>
 
-        <section
-            class="
-                grammar-main-section
-                animate-fade-up
-            "
-        >
+        <section class="grammar-main-section transition-card">
 
             <h2 class="grammar-section-title">
 
@@ -139,12 +133,7 @@ $sourceDescription =
 
             <?php foreach ($categories as $categorie => $items): ?>
 
-                <section
-                    class="
-                        grammar-category
-                        animate-fade-up
-                    "
-                >
+                <section class="grammar-category transition-card">
 
                     <h3 class="grammar-category-title">
 
@@ -154,12 +143,7 @@ $sourceDescription =
 
                     </h3>
 
-                    <section
-                        class="
-                            grammar-list
-                            animate-fade-up-stagger
-                        "
-                    >
+                    <section class="grammar-list">
 
                         <?php foreach ($items as $grammaire): ?>
 
@@ -182,7 +166,7 @@ $sourceDescription =
                             <article
                                 class="
                                     grammar-item
-                                    animate-fade-up
+                                    transition-card
                                 "
                             >
 

@@ -4,35 +4,47 @@ declare(strict_types=1);
 
 use Framework\Support\Session;
 
-$manga = $view['manga'] ?? null;
+$manga =
+    $view['manga']
+    ?? null;
 
 if ($manga === null) {
+
     throw new \RuntimeException(
         'Manga manquant dans la vue.',
     );
 }
 
-$baseUri = rtrim(
-    (string) ($baseUri ?? ''),
-    '/',
-) . '/';
+$baseUri =
+    rtrim(
+        (string) ($baseUri ?? ''),
+        '/',
+    ) . '/';
 
-$errors = Session::get('errors', []);
-$old = Session::get('old', []);
+$errors =
+    Session::get('errors', []);
 
-$editeurValue = $old['editeur']
+$old =
+    Session::get('old', []);
+
+$editeurValue =
+    $old['editeur']
     ?? ($manga->editeur ?? '');
 
-$statutValue = $old['statut']
+$statutValue =
+    $old['statut']
     ?? ($manga->statut ?? 'en_cours');
 
-$jacquetteValue = $old['jacquette']
+$jacquetteValue =
+    $old['jacquette']
     ?? ($manga->jacquette ?? '');
 
-$livreNoteValue = $old['livre_note']
+$livreNoteValue =
+    $old['livre_note']
     ?? ($manga->livre_note ?? '');
 
-$commentaireValue = $old['commentaire']
+$commentaireValue =
+    $old['commentaire']
     ?? ($manga->commentaire ?? '');
 
 $statutOptions = [
@@ -40,27 +52,39 @@ $statutOptions = [
     'termine' => 'Terminé',
 ];
 
-$formAction = $baseUri
+$formAction =
+    $baseUri
     . 'manga/series/modifier/'
-    . rawurlencode((string) $manga->slug)
+    . rawurlencode(
+        (string) $manga->slug,
+    )
     . '/'
     . (int) $manga->numero;
 
-$cancelUrl = $baseUri
+$cancelUrl =
+    $baseUri
     . 'manga/series/'
-    . rawurlencode((string) $manga->slug)
+    . rawurlencode(
+        (string) $manga->slug,
+    )
     . '/'
     . (int) $manga->numero;
 
-$noteTotal = $manga->note !== null
-    ? (int) $manga->note . '/10'
-    : 'Non calculée';
+$noteTotal =
+    $manga->note !== null
+        ? (int) $manga->note . '/10'
+        : 'Non calculée';
 
 ?>
 
 <section class="layout-container dashboard-page">
 
-    <section class="form-page animate-fade-up">
+    <section
+        class="
+            form-page
+            transition-card
+        "
+    >
 
         <section class="form-card">
 
@@ -68,36 +92,49 @@ $noteTotal = $manga->note !== null
                 class="form-layout"
                 data-form-page="modifier"
                 action="<?= e($formAction) ?>"
-                method="post">
+                method="post"
+            >
 
                 <?= csrf_field() ?>
+
 
                 <div class="form-group">
 
                     <label
                         class="form-label"
-                        for="jacquette">
+                        for="jacquette"
+                    >
 
                         Note jacquette
 
                     </label>
 
                     <select
-                        class="form-input form-select"
+                        class="
+                            form-input
+                            form-select
+                        "
                         name="jacquette"
-                        id="jacquette">
+                        id="jacquette"
+                    >
 
                         <option value="">
                             Choisir
                         </option>
 
-                        <?php for ($i = 1; $i <= 5; $i++): ?>
+                        <?php for (
+                            $i = 1;
+                            $i <= 5;
+                            $i++
+                        ): ?>
 
                             <option
                                 value="<?= $i ?>"
                                 <?= (string) $jacquetteValue === (string) $i
                                     ? 'selected'
-                                    : '' ?>>
+                                    : ''
+                                ?>
+                            >
 
                                 <?= $i ?>
 
@@ -122,32 +159,44 @@ $noteTotal = $manga->note !== null
 
                 </div>
 
+
                 <div class="form-group">
 
                     <label
                         class="form-label"
-                        for="livre_note">
+                        for="livre_note"
+                    >
 
                         Note livre
 
                     </label>
 
                     <select
-                        class="form-input form-select"
+                        class="
+                            form-input
+                            form-select
+                        "
                         name="livre_note"
-                        id="livre_note">
+                        id="livre_note"
+                    >
 
                         <option value="">
                             Choisir
                         </option>
 
-                        <?php for ($i = 1; $i <= 5; $i++): ?>
+                        <?php for (
+                            $i = 1;
+                            $i <= 5;
+                            $i++
+                        ): ?>
 
                             <option
                                 value="<?= $i ?>"
                                 <?= (string) $livreNoteValue === (string) $i
                                     ? 'selected'
-                                    : '' ?>>
+                                    : ''
+                                ?>
+                            >
 
                                 <?= $i ?>
 
@@ -172,11 +221,13 @@ $noteTotal = $manga->note !== null
 
                 </div>
 
+
                 <div class="form-group">
 
                     <label
                         class="form-label"
-                        for="editeur">
+                        for="editeur"
+                    >
 
                         Éditeur
 
@@ -190,7 +241,8 @@ $noteTotal = $manga->note !== null
                         placeholder="Ex : Delcourt/Tonkam"
                         value="<?= e($editeurValue) ?>"
                         maxlength="100"
-                        required>
+                        required
+                    >
 
                     <?php if (
                         isset($errors['editeur'])
@@ -207,29 +259,40 @@ $noteTotal = $manga->note !== null
 
                 </div>
 
+
                 <div class="form-group">
 
                     <label
                         class="form-label"
-                        for="statut">
+                        for="statut"
+                    >
 
                         Statut
 
                     </label>
 
                     <select
-                        class="form-input form-select"
+                        class="
+                            form-input
+                            form-select
+                        "
                         name="statut"
                         id="statut"
-                        required>
+                        required
+                    >
 
-                        <?php foreach ($statutOptions as $value => $label): ?>
+                        <?php foreach (
+                            $statutOptions
+                            as $value => $label
+                        ): ?>
 
                             <option
                                 value="<?= e($value) ?>"
                                 <?= (string) $statutValue === $value
                                     ? 'selected'
-                                    : '' ?>>
+                                    : ''
+                                ?>
+                            >
 
                                 <?= e($label) ?>
 
@@ -254,11 +317,13 @@ $noteTotal = $manga->note !== null
 
                 </div>
 
+
                 <div class="form-group">
 
                     <label
                         class="form-label"
-                        for="commentaire">
+                        for="commentaire"
+                    >
 
                         Commentaire
 
@@ -270,7 +335,8 @@ $noteTotal = $manga->note !== null
                         id="commentaire"
                         rows="5"
                         maxlength="1000"
-                        placeholder="Ex : défaut en haut de la jacquette"><?= e($commentaireValue) ?></textarea>
+                        placeholder="Ex : défaut en haut de la jacquette"
+                    ><?= e($commentaireValue) ?></textarea>
 
                     <?php if (
                         isset($errors['commentaire'])
@@ -287,11 +353,13 @@ $noteTotal = $manga->note !== null
 
                 </div>
 
+
                 <div class="form-group">
 
                     <label
                         class="form-label"
-                        for="note-total">
+                        for="note-total"
+                    >
 
                         Note totale actuelle
 
@@ -302,23 +370,30 @@ $noteTotal = $manga->note !== null
                         type="text"
                         id="note-total"
                         value="<?= e($noteTotal) ?>"
-                        readonly>
+                        readonly
+                    >
 
                 </div>
+
 
                 <div class="form-actions">
 
                     <button
                         type="submit"
-                        class="form-submit">
+                        class="form-submit"
+                    >
 
                         Enregistrer
 
                     </button>
 
                     <a
-                        class="form-submit form-submit-secondary"
-                        href="<?= e($cancelUrl) ?>">
+                        class="
+                            form-submit
+                            form-submit-secondary
+                        "
+                        href="<?= e($cancelUrl) ?>"
+                    >
 
                         Annuler
 
@@ -334,4 +409,11 @@ $noteTotal = $manga->note !== null
 
 </section>
 
-<?php Session::forget(['errors', 'old']); ?>
+<?php
+
+Session::forget([
+    'errors',
+    'old',
+]);
+
+?>

@@ -4,30 +4,47 @@ declare(strict_types=1);
 
 use Framework\Support\Session;
 
-$errors = Session::get('errors', []);
-$old = Session::get('old', []);
+$errors =
+    Session::get('errors', []);
 
-$baseUri = rtrim(
-    (string) ($baseUri ?? ''),
-    '/',
-) . '/';
+$old =
+    Session::get('old', []);
 
-$statutValue = (string) ($old['statut'] ?? 'en_cours');
+$baseUri =
+    rtrim(
+        (string) ($baseUri ?? ''),
+        '/',
+    ) . '/';
+
+$statutValue =
+    (string) (
+        $old['statut']
+        ?? 'en_cours'
+    );
 
 $statutOptions = [
     'en_cours' => 'En cours',
     'termine' => 'Terminé',
 ];
 
-$formAction = $baseUri . 'manga/ajouter';
+$formAction =
+    $baseUri
+    . 'manga/ajouter';
 
-$returnUrl = $baseUri . 'manga';
+$returnUrl =
+    $baseUri
+    . 'manga';
 
 ?>
 
 <section class="layout-container dashboard-page">
 
-    <section class="form-page animate-fade-up">
+    <section
+        class="
+            form-page
+            transition-card
+        "
+    >
 
         <section class="form-card">
 
@@ -36,7 +53,8 @@ $returnUrl = $baseUri . 'manga';
                 data-form-page="ajouter"
                 action="<?= e($formAction) ?>"
                 method="post"
-                enctype="multipart/form-data">
+                enctype="multipart/form-data"
+            >
 
                 <?= csrf_field() ?>
 
@@ -44,7 +62,8 @@ $returnUrl = $baseUri . 'manga';
 
                     <label
                         class="form-label"
-                        for="livre">
+                        for="livre"
+                    >
 
                         Livre
 
@@ -58,9 +77,13 @@ $returnUrl = $baseUri . 'manga';
                         placeholder="Ex : To Love Ru"
                         value="<?= e((string) ($old['livre'] ?? '')) ?>"
                         autofocus
-                        required>
+                        required
+                    >
 
-                    <?php if (isset($errors['livre']) && $errors['livre'] !== ''): ?>
+                    <?php if (
+                        isset($errors['livre'])
+                        && $errors['livre'] !== ''
+                    ): ?>
 
                         <p class="form-error">
 
@@ -72,11 +95,13 @@ $returnUrl = $baseUri . 'manga';
 
                 </div>
 
+
                 <div class="form-group">
 
                     <label
                         class="form-label"
-                        for="slug">
+                        for="slug"
+                    >
 
                         Slug
 
@@ -89,9 +114,13 @@ $returnUrl = $baseUri . 'manga';
                         id="slug"
                         placeholder="Ex : to-love-ru"
                         value="<?= e((string) ($old['slug'] ?? '')) ?>"
-                        required>
+                        required
+                    >
 
-                    <?php if (isset($errors['slug']) && $errors['slug'] !== ''): ?>
+                    <?php if (
+                        isset($errors['slug'])
+                        && $errors['slug'] !== ''
+                    ): ?>
 
                         <p class="form-error">
 
@@ -103,11 +132,13 @@ $returnUrl = $baseUri . 'manga';
 
                 </div>
 
+
                 <div class="form-group">
 
                     <label
                         class="form-label"
-                        for="editeur">
+                        for="editeur"
+                    >
 
                         Éditeur
 
@@ -121,9 +152,13 @@ $returnUrl = $baseUri . 'manga';
                         placeholder="Ex : Delcourt/Tonkam"
                         value="<?= e((string) ($old['editeur'] ?? '')) ?>"
                         maxlength="100"
-                        required>
+                        required
+                    >
 
-                    <?php if (isset($errors['editeur']) && $errors['editeur'] !== ''): ?>
+                    <?php if (
+                        isset($errors['editeur'])
+                        && $errors['editeur'] !== ''
+                    ): ?>
 
                         <p class="form-error">
 
@@ -135,29 +170,39 @@ $returnUrl = $baseUri . 'manga';
 
                 </div>
 
+
                 <div class="form-group">
 
                     <label
                         class="form-label"
-                        for="statut">
+                        for="statut"
+                    >
 
                         Statut
 
                     </label>
 
                     <select
-                        class="form-input form-select"
+                        class="
+                            form-input
+                            form-select
+                        "
                         name="statut"
                         id="statut"
-                        required>
+                        required
+                    >
 
-                        <?php foreach ($statutOptions as $value => $label): ?>
+                        <?php foreach (
+                            $statutOptions
+                            as $value => $label
+                        ): ?>
 
                             <option
                                 value="<?= e($value) ?>"
                                 <?= $statutValue === $value
                                     ? 'selected'
-                                    : '' ?>>
+                                    : '' ?>
+                            >
 
                                 <?= e($label) ?>
 
@@ -167,7 +212,10 @@ $returnUrl = $baseUri . 'manga';
 
                     </select>
 
-                    <?php if (isset($errors['statut']) && $errors['statut'] !== ''): ?>
+                    <?php if (
+                        isset($errors['statut'])
+                        && $errors['statut'] !== ''
+                    ): ?>
 
                         <p class="form-error">
 
@@ -179,11 +227,13 @@ $returnUrl = $baseUri . 'manga';
 
                 </div>
 
+
                 <div class="form-group">
 
                     <label
                         class="form-label"
-                        for="numero">
+                        for="numero"
+                    >
 
                         Numéro
 
@@ -197,9 +247,13 @@ $returnUrl = $baseUri . 'manga';
                         min="1"
                         placeholder="Ex : 1"
                         value="<?= e((string) ($old['numero'] ?? '')) ?>"
-                        required>
+                        required
+                    >
 
-                    <?php if (isset($errors['numero']) && $errors['numero'] !== ''): ?>
+                    <?php if (
+                        isset($errors['numero'])
+                        && $errors['numero'] !== ''
+                    ): ?>
 
                         <p class="form-error">
 
@@ -211,11 +265,13 @@ $returnUrl = $baseUri . 'manga';
 
                 </div>
 
+
                 <div class="form-group">
 
                     <label
                         class="form-label"
-                        for="image">
+                        for="image"
+                    >
 
                         Image
 
@@ -223,7 +279,8 @@ $returnUrl = $baseUri . 'manga';
 
                     <label
                         class="form-upload"
-                        for="image">
+                        for="image"
+                    >
 
                         <input
                             class="form-file"
@@ -231,7 +288,8 @@ $returnUrl = $baseUri . 'manga';
                             name="image"
                             id="image"
                             accept=".jpg,.jpeg,.png,.webp"
-                            required>
+                            required
+                        >
 
                         <span class="form-upload-text">
                             Choisir une image
@@ -239,7 +297,10 @@ $returnUrl = $baseUri . 'manga';
 
                     </label>
 
-                    <?php if (isset($errors['image']) && $errors['image'] !== ''): ?>
+                    <?php if (
+                        isset($errors['image'])
+                        && $errors['image'] !== ''
+                    ): ?>
 
                         <p class="form-error">
 
@@ -251,11 +312,13 @@ $returnUrl = $baseUri . 'manga';
 
                 </div>
 
+
                 <div class="form-group">
 
                     <label
                         class="form-label"
-                        for="commentaire">
+                        for="commentaire"
+                    >
 
                         Commentaire
 
@@ -267,9 +330,13 @@ $returnUrl = $baseUri . 'manga';
                         id="commentaire"
                         rows="4"
                         maxlength="1000"
-                        placeholder="Ex : défaut en haut de la jacquette"><?= e((string) ($old['commentaire'] ?? '')) ?></textarea>
+                        placeholder="Ex : défaut en haut de la jacquette"
+                    ><?= e((string) ($old['commentaire'] ?? '')) ?></textarea>
 
-                    <?php if (isset($errors['commentaire']) && $errors['commentaire'] !== ''): ?>
+                    <?php if (
+                        isset($errors['commentaire'])
+                        && $errors['commentaire'] !== ''
+                    ): ?>
 
                         <p class="form-error">
 
@@ -281,19 +348,25 @@ $returnUrl = $baseUri . 'manga';
 
                 </div>
 
+
                 <div class="form-actions">
 
                     <button
                         type="submit"
-                        class="form-submit">
+                        class="form-submit"
+                    >
 
                         Ajouter
 
                     </button>
 
                     <a
-                        class="form-submit form-submit-secondary"
-                        href="<?= e($returnUrl) ?>">
+                        class="
+                            form-submit
+                            form-submit-secondary
+                        "
+                        href="<?= e($returnUrl) ?>"
+                    >
 
                         Retour
 
@@ -309,4 +382,11 @@ $returnUrl = $baseUri . 'manga';
 
 </section>
 
-<?php Session::forget(['errors', 'old']); ?>
+<?php
+
+Session::forget([
+    'errors',
+    'old',
+]);
+
+?>
