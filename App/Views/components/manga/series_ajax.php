@@ -163,6 +163,7 @@ $baseUri =
     class="
         card
         card-link
+        collection-card
         collection-card-link
     "
     href="<?= e($href) ?>"

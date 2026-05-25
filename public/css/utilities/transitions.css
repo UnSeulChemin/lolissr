@@ -1,0 +1,90 @@
+/* =========================================
+   PAGE TRANSITIONS
+========================================= */
+
+.page-transition-out
+{
+    opacity: 0;
+
+    transform: translateY(8px);
+
+    transition:
+        opacity 160ms ease,
+        transform 160ms ease;
+}
+
+.page-transition-in
+{
+    opacity: 0;
+
+    transform: translateY(10px);
+}
+
+.page-transition-in.page-transition-visible
+{
+    opacity: 1;
+
+    transform: translateY(0);
+
+    transition:
+        opacity 220ms ease,
+        transform 220ms ease;
+}
+
+
+/* =========================================
+   AJAX LOADING
+========================================= */
+
+.collection-ajax-container.is-loading
+.collection-ajax-content
+{
+    pointer-events: none;
+
+    user-select: none;
+}
+
+
+/* =========================================
+   CARD SHIMMER
+========================================= */
+
+.collection-ajax-container.is-loading
+.card
+{
+    position: relative;
+
+    overflow: hidden;
+}
+
+.collection-ajax-container.is-loading
+.card::after
+{
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background: linear-gradient(
+        90deg,
+        rgba(255,255,255,0) 0%,
+        rgba(255,255,255,0.24) 50%,
+        rgba(255,255,255,0) 100%
+    );
+
+    transform: translateX(-100%);
+
+    animation:
+        collection-card-shimmer
+        1.2s linear infinite;
+
+    pointer-events: none;
+}
+
+@keyframes collection-card-shimmer
+{
+    100%
+    {
+        transform: translateX(100%);
+    }
+}

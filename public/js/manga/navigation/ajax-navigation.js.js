@@ -65,11 +65,11 @@ function isPaginationLink(
 
 /*
 |------------------------------------------------------------------
-| Content Transition
+| Animations
 |------------------------------------------------------------------
 */
 
-function animateContent(
+async function animateContentOut(
     content,
 )
 {
@@ -82,29 +82,51 @@ function animateContent(
         'page-transition-out',
     );
 
+    await new Promise(
+        (resolve) =>
+        {
+            window.setTimeout(
+                resolve,
+                140,
+            );
+        },
+    );
+}
+
+async function animateContentIn(
+    content,
+)
+{
+    content.classList.remove(
+        'page-transition-out',
+    );
+
+    content.classList.add(
+        'page-transition-in',
+    );
+
     requestAnimationFrame(
         () =>
         {
-            content.classList.remove(
-                'page-transition-out',
-            );
-
             content.classList.add(
-                'page-transition-in',
                 'page-transition-visible',
             );
+        },
+    );
 
+    await new Promise(
+        (resolve) =>
+        {
             window.setTimeout(
-                () =>
-                {
-                    content.classList.remove(
-                        'page-transition-in',
-                        'page-transition-visible',
-                    );
-                },
-                180,
+                resolve,
+                220,
             );
         },
+    );
+
+    content.classList.remove(
+        'page-transition-in',
+        'page-transition-visible',
     );
 }
 
@@ -114,7 +136,7 @@ function animateContent(
 |------------------------------------------------------------------
 */
 
-function replaceContent(
+async function replaceContent(
     html,
 )
 {
@@ -146,10 +168,22 @@ function replaceContent(
         return;
     }
 
+    await animateContentOut(
+        currentContent,
+    );
+
     currentContent.innerHTML =
         newContent.innerHTML;
 
-    animateContent(
+    /*
+    |--------------------------------------------------------------
+    | Force reflow
+    |--------------------------------------------------------------
+    */
+
+    void currentContent.offsetHeight;
+
+    await animateContentIn(
         currentContent,
     );
 }
@@ -164,7 +198,7 @@ function scrollToTop()
 {
     window.scrollTo({
         top: 0,
-        behavior: 'auto',
+        behavior: 'smooth',
     });
 }
 
@@ -210,50 +244,6 @@ async function fetchPageHtml(
 
 /*
 |------------------------------------------------------------------
-| History
-|------------------------------------------------------------------
-*/
-
-function updateBrowserHistory(
-    href,
-)
-{
-    const currentUrl =
-        window.location.pathname
-        + window.location.search;
-
-    const nextUrl =
-        new URL(
-            href,
-            window.location.origin,
-        );
-
-    const normalizedNextUrl =
-        nextUrl.pathname
-        + nextUrl.search;
-
-    if (
-        currentUrl
-        === normalizedNextUrl
-    ) {
-        return;
-    }
-
-    /*
-    |--------------------------------------------------------------
-    | Replace instead of push
-    |--------------------------------------------------------------
-    */
-
-    window.history.replaceState(
-        {},
-        '',
-        normalizedNextUrl,
-    );
-}
-
-/*
-|------------------------------------------------------------------
 | Load Page
 |------------------------------------------------------------------
 */
@@ -270,15 +260,11 @@ export async function loadAjaxPage(
         return;
     }
 
-    if (
-        container.dataset.loading
-        === '1'
-    ) {
-        return;
-    }
-
-    container.dataset.loading =
-        '1';
+    /*
+    |--------------------------------------------------------------
+    | Loading
+    |--------------------------------------------------------------
+    */
 
     container.classList.add(
         'is-loading',
@@ -291,7 +277,7 @@ export async function loadAjaxPage(
                 href,
             );
 
-        replaceContent(
+        await replaceContent(
             html,
         );
 
@@ -303,7 +289,9 @@ export async function loadAjaxPage(
 
         if (updateHistory) {
 
-            updateBrowserHistory(
+            window.history.pushState(
+                {},
+                '',
                 href,
             );
         }
@@ -346,8 +334,6 @@ export async function loadAjaxPage(
         );
 
     } finally {
-
-        delete container.dataset.loading;
 
         container.classList.remove(
             'is-loading',

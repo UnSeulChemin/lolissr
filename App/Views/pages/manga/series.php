@@ -41,6 +41,50 @@ $totalPages =
 
     <div class="collection-ajax-container">
 
+        <!-- =====================================
+             Skeleton Loader
+        ====================================== -->
+
+        <div class="collection-skeleton">
+
+            <?php for (
+                $i = 0;
+                $i < 8;
+                $i++
+            ): ?>
+
+                <div
+                    class="collection-skeleton-card"
+                >
+
+                    <div
+                        class="collection-skeleton-image"
+                    ></div>
+
+                    <div
+                        class="
+                            collection-skeleton-line
+                            collection-skeleton-line-title
+                        "
+                    ></div>
+
+                    <div
+                        class="
+                            collection-skeleton-line
+                            collection-skeleton-line-subtitle
+                        "
+                    ></div>
+
+                </div>
+
+            <?php endfor; ?>
+
+        </div>
+
+        <!-- =====================================
+             AJAX Content
+        ====================================== -->
+
         <div
             class="collection-ajax-content"
         >

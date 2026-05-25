@@ -39,152 +39,8 @@
 .collection-ajax-content
 {
     position: relative;
+
     z-index: 1;
-
-    transition:
-        opacity 0.20s ease,
-        transform 0.20s ease;
-}
-
-.collection-ajax-container.is-loading
-.collection-ajax-content
-{
-    opacity: 0.18;
-
-    pointer-events: none;
-    user-select: none;
-}
-
-
-/* =========================================
-   SKELETON LOADER
-========================================= */
-
-.collection-skeleton
-{
-    position: absolute;
-    inset: 0;
-
-    z-index: 10;
-
-    display: grid;
-
-    grid-template-columns:
-        repeat(
-            4,
-            minmax(
-                0,
-                var(--width-collection-card)
-            )
-        );
-
-    justify-content: center;
-
-    gap: var(--gap-grid-collection);
-
-    padding: 40px 40px 0;
-
-    opacity: 0;
-    visibility: hidden;
-
-    pointer-events: none;
-
-    transition:
-        opacity 0.20s ease,
-        visibility 0.20s ease;
-}
-
-.collection-ajax-container.is-loading
-.collection-skeleton
-{
-    opacity: 1;
-    visibility: visible;
-}
-
-.collection-skeleton-card
-{
-    width: 100%;
-    max-width: var(--width-collection-card);
-    min-height: var(--height-collection-card);
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-    gap: 14px;
-
-    padding: 44px 16px 18px;
-
-    margin-bottom: 2px;
-
-    box-sizing: border-box;
-
-    background: var(--color-surface);
-
-    border: 1px solid var(--color-border-light);
-    border-radius: var(--radius-card-lg);
-
-    box-shadow:
-        0 8px 22px rgba(0, 0, 0, 0.04);
-}
-
-.collection-skeleton-image,
-.collection-skeleton-line
-{
-    position: relative;
-
-    overflow: hidden;
-
-    background: linear-gradient(
-        90deg,
-        rgba(123, 44, 255, 0.06) 0%,
-        rgba(123, 44, 255, 0.14) 50%,
-        rgba(123, 44, 255, 0.06) 100%
-    );
-
-    background-size: 200% 100%;
-
-    animation:
-        collection-skeleton-shimmer
-        1.2s linear infinite;
-}
-
-.collection-skeleton-image
-{
-    width: 100%;
-    height: 240px;
-
-    border-radius: var(--radius-image);
-}
-
-.collection-skeleton-line
-{
-    border-radius: 999px;
-}
-
-.collection-skeleton-line-title
-{
-    width: 78%;
-    height: 18px;
-}
-
-.collection-skeleton-line-subtitle
-{
-    width: 48%;
-    height: 14px;
-}
-
-@keyframes collection-skeleton-shimmer
-{
-    0%
-    {
-        background-position: 200% 0;
-    }
-
-    100%
-    {
-        background-position: -200% 0;
-    }
 }
 
 
@@ -264,6 +120,7 @@
 .collection-status-badge
 {
     position: absolute;
+
     z-index: 2;
 
     display: inline-flex;
