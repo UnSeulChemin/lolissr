@@ -97,6 +97,30 @@ function scrollToTop()
 
 /*
 |------------------------------------------------------------------
+| Skeleton
+|------------------------------------------------------------------
+*/
+
+function showLoadingState(
+    container,
+)
+{
+    container.classList.add(
+        'is-loading',
+    );
+}
+
+function hideLoadingState(
+    container,
+)
+{
+    container.classList.remove(
+        'is-loading',
+    );
+}
+
+/*
+|------------------------------------------------------------------
 | Animations
 |------------------------------------------------------------------
 */
@@ -115,7 +139,7 @@ async function animateContentOut(
     );
 
     await delay(
-        160,
+        120,
     );
 }
 
@@ -141,7 +165,7 @@ async function animateContentIn(
     );
 
     await delay(
-        240,
+        220,
     );
 
     content.classList.remove(
@@ -156,17 +180,26 @@ async function animateContentIn(
 |------------------------------------------------------------------
 */
 
-function extractNewContent(
+function parseHtml(
     html,
 )
 {
     const parser =
         new DOMParser();
 
+    return parser.parseFromString(
+        html,
+        'text/html',
+    );
+}
+
+function extractNewContent(
+    html,
+)
+{
     const documentHtml =
-        parser.parseFromString(
+        parseHtml(
             html,
-            'text/html',
         );
 
     return documentHtml.querySelector(
@@ -178,13 +211,9 @@ function updateDocumentTitle(
     html,
 )
 {
-    const parser =
-        new DOMParser();
-
     const documentHtml =
-        parser.parseFromString(
+        parseHtml(
             html,
-            'text/html',
         );
 
     const title =
@@ -230,14 +259,46 @@ async function replaceContent(
         );
     }
 
+    /*
+    |--------------------------------------------------------------
+    | Fade out
+    |--------------------------------------------------------------
+    */
+
     await animateContentOut(
         currentContent,
     );
 
+    /*
+    |--------------------------------------------------------------
+    | Replace DOM
+    |--------------------------------------------------------------
+    */
+
     currentContent.innerHTML =
         newContent.innerHTML;
 
+    /*
+    |--------------------------------------------------------------
+    | Scroll reset
+    |--------------------------------------------------------------
+    */
+
     scrollToTop();
+
+    /*
+    |--------------------------------------------------------------
+    | Force repaint
+    |--------------------------------------------------------------
+    */
+
+    currentContent.offsetHeight;
+
+    /*
+    |--------------------------------------------------------------
+    | Fade in
+    |--------------------------------------------------------------
+    */
 
     await animateContentIn(
         currentContent,
@@ -305,11 +366,23 @@ export async function loadAjaxPage(
         return;
     }
 
-    container.classList.add(
-        'is-loading',
+    /*
+    |--------------------------------------------------------------
+    | Loading
+    |--------------------------------------------------------------
+    */
+
+    showLoadingState(
+        container,
     );
 
     try {
+
+        /*
+        |--------------------------------------------------------------
+        | Fetch
+        |--------------------------------------------------------------
+        */
 
         const html =
             await fetchPageHtml(
@@ -318,7 +391,7 @@ export async function loadAjaxPage(
 
         /*
         |--------------------------------------------------------------
-        | Ignore old requests
+        | Ignore old request
         |--------------------------------------------------------------
         */
 
@@ -329,9 +402,21 @@ export async function loadAjaxPage(
             return;
         }
 
+        /*
+        |--------------------------------------------------------------
+        | Title
+        |--------------------------------------------------------------
+        */
+
         updateDocumentTitle(
             html,
         );
+
+        /*
+        |--------------------------------------------------------------
+        | Replace
+        |--------------------------------------------------------------
+        */
 
         await replaceContent(
             html,
@@ -372,7 +457,7 @@ export async function loadAjaxPage(
 
         /*
         |--------------------------------------------------------------
-        | Prefetch
+        | Prefetch visible links
         |--------------------------------------------------------------
         */
 
@@ -390,17 +475,30 @@ export async function loadAjaxPage(
             error,
         );
 
+        /*
+        |--------------------------------------------------------------
+        | Fallback
+        |--------------------------------------------------------------
+        */
+
         window.location.href =
             href;
 
     } finally {
 
+        /*
+        |--------------------------------------------------------------
+        | Remove loading
+        |--------------------------------------------------------------
+        */
+
         if (
             requestId
             === currentRequestId
         ) {
-            container.classList.remove(
-                'is-loading',
+
+            hideLoadingState(
+                container,
             );
         }
     }
@@ -419,14 +517,30 @@ function prefetchVisibleLinks()
             paginationSelector,
         );
 
+    if (links.length === 0) {
+        return;
+    }
+
+    const currentUrl =
+        window.location.href;
+
     for (const link of links) {
 
         if (
-            link instanceof HTMLAnchorElement
+            !(link instanceof HTMLAnchorElement)
         ) {
+            continue;
+        }
+
+        if (
+            link.href !== currentUrl
+        ) {
+
             prefetchPage(
                 link.href,
             );
+
+            break;
         }
     }
 }
