@@ -31,7 +31,10 @@ export function shouldIgnoreLink(link)
     if (link.hasAttribute('download')) return true;
     if (link.dataset.noAjax !== undefined) return true;
 
-    if (url.hash && normalizeUrl(url.href) === normalizeUrl(location.href)) {
+    if (
+        url.hash &&
+        url.pathname === location.pathname
+    ) {
         return true;
     }
 

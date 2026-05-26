@@ -1,8 +1,8 @@
 // =========================================
-// AJAX NAVIGATION (FINAL CLEAN SPA)
+// AJAX NAVIGATION (SPA CORE CLEAN)
 // =========================================
 
-import { getPrefetchedPage, prefetchPage } from './prefetch.js';
+import { getPrefetchedPage } from './prefetch.js';
 import { normalizeUrl } from '../core/navigation.js';
 import { fetchPageHtml } from './ajax-fetch.js';
 import { replaceContent } from './ajax-dom.js';
@@ -18,55 +18,44 @@ let controller = null;
 let lock = false;
 
 // =========================
-// ACTIVE NAVIGATION
+// ACTIVE NAV (HEADER UPDATE)
 // =========================
 
 function updateActiveNavigation()
 {
-    const currentPath = new URL(location.href).pathname.replace(/\/+$/, '/');
-
+    const current = new URL(location.href).pathname.replace(/\/+$/, '/');
     const links = document.querySelectorAll('.nav-link-icon');
 
     for (const link of links)
     {
         if (!(link instanceof HTMLAnchorElement)) continue;
 
-        const hrefPath = new URL(link.href).pathname.replace(/\/+$/, '/');
+        const href = new URL(link.href).pathname.replace(/\/+$/, '/');
 
         link.classList.remove('active');
 
-        // =========================
-        // HOME STRICT ONLY
-        // =========================
-        if (hrefPath === '/') {
-            if (currentPath === '/') {
-                link.classList.add('active');
-            }
+        if (href === '/') {
+            if (current === '/') link.classList.add('active');
             continue;
         }
 
-        // =========================
-        // OTHER ROUTES ONLY
-        // =========================
-        if (
-            currentPath === hrefPath ||
-            currentPath.startsWith(hrefPath + '/')
-        ) {
+        if (current === href || current.startsWith(href + '/')) {
             link.classList.add('active');
         }
     }
 }
 
 // =========================
-// PREFETCH VISIBLES
+// PREFETCH TRIGGER
 // =========================
 
 function prefetchVisible()
 {
-    if (lock) return;
+    const root = document.querySelector('.ajax-content');
+    if (!root) return;
 
-    const links = document.querySelectorAll(
-        'a.card-link, a.dashboard-card, a.collection-pagination-link, a[data-prefetch="true"]'
+    const links = root.querySelectorAll(
+        'a[href], a.nav-link-icon'
     );
 
     for (const link of links)
@@ -74,7 +63,7 @@ function prefetchVisible()
         if (!(link instanceof HTMLAnchorElement)) continue;
         if (!link.href) continue;
 
-        prefetchPage(link.href);
+        window.__prefetchPage?.(link.href);
     }
 }
 
@@ -84,6 +73,8 @@ function prefetchVisible()
 
 export async function navigateTo(href, options = {})
 {
+    if (lock) return;
+
     const currentId = ++id;
 
     const target = normalizeUrl(href);
@@ -99,10 +90,6 @@ export async function navigateTo(href, options = {})
 
     try {
 
-        // =========================
-        // CACHE FIRST
-        // =========================
-
         let html = getPrefetchedPage(target);
 
         if (!html) {
@@ -115,17 +102,7 @@ export async function navigateTo(href, options = {})
 
         if (currentId !== id) return;
 
-        // =========================
-        // HISTORY
-        // =========================
-
-        if (options.updateHistory !== false) {
-            history.pushState({}, '', target);
-        }
-
-        // =========================
-        // TRANSITION + DOM SWAP
-        // =========================
+        history.pushState({}, '', target);
 
         await runPageTransition(() =>
         {
@@ -135,29 +112,13 @@ export async function navigateTo(href, options = {})
             updateActiveNavigation();
         });
 
-        if (currentId !== id) return;
-
-        // =========================
-        // SCROLL
-        // =========================
-
         if (options.scrollTop !== false) {
             scrollTop(false);
         }
 
-        // =========================
-        // EVENT
-        // =========================
+        document.dispatchEvent(new CustomEvent('ajax:page-loaded'));
 
-        document.dispatchEvent(
-            new CustomEvent('ajax:page-loaded')
-        );
-
-        // =========================
-        // PREFETCH NEXT
-        // =========================
-
-        prefetchVisible();
+        requestAnimationFrame(prefetchVisible);
 
         debug('AJAX', 'done', target);
 
@@ -166,7 +127,6 @@ export async function navigateTo(href, options = {})
         if (e?.name !== 'AbortError') {
             debugError('AJAX', e);
         }
-
     } finally {
 
         if (currentId === id) {
@@ -204,10 +164,9 @@ export function initAjaxNavigation()
         });
     });
 
-    // initial active state
     updateActiveNavigation();
 
-    setTimeout(prefetchVisible, 300);
+    setTimeout(prefetchVisible, 200);
 
     debug('AJAX', 'SPA ready');
 }
