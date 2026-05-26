@@ -1,8 +1,27 @@
-// ==================================================
-// Slug
-// ==================================================
+// =========================================
+// SLUG
+// =========================================
 
-function normalizeBase(
+const ACCENT_REGEX =
+    /[\u0300-\u036f]/g;
+
+const INVALID_SLUG_REGEX =
+    /[^a-z0-9\s-]/g;
+
+const MULTIPLE_SPACES_REGEX =
+    /\s+/g;
+
+const MULTIPLE_DASHES_REGEX =
+    /-+/g;
+
+const TRIM_DASHES_REGEX =
+    /^-+|-+$/g;
+
+// =========================================
+// Normalize Base
+// =========================================
+
+export function normalizeBase(
     value,
 )
 {
@@ -13,14 +32,14 @@ function normalizeBase(
             'NFD',
         )
         .replace(
-            /[\u0300-\u036f]/g,
+            ACCENT_REGEX,
             '',
         );
 }
 
-// ==================================================
+// =========================================
 // Generate Slug
-// ==================================================
+// =========================================
 
 export function generateSlug(
     value,
@@ -29,34 +48,30 @@ export function generateSlug(
     return normalizeBase(
         value,
     )
-        // caractères autorisés
         .replace(
-            /[^a-z0-9\s-]/g,
+            INVALID_SLUG_REGEX,
             '',
         )
 
-        // espaces -> tirets
         .replace(
-            /\s+/g,
+            MULTIPLE_SPACES_REGEX,
             '-',
         )
 
-        // tirets multiples
         .replace(
-            /-+/g,
+            MULTIPLE_DASHES_REGEX,
             '-',
         )
 
-        // trim tirets
         .replace(
-            /^-+|-+$/g,
+            TRIM_DASHES_REGEX,
             '',
         );
 }
 
-// ==================================================
+// =========================================
 // Normalize Search Query
-// ==================================================
+// =========================================
 
 export function normalizeSearchQuery(
     value,

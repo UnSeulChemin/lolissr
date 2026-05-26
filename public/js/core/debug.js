@@ -1,39 +1,99 @@
-// ==================================================
-// Debug
-// ==================================================
+// =========================================
+// DEBUG
+// =========================================
 
 import {
-    state,
-} from './state.js';
+    config,
+} from './config.js';
 
-// ==================================================
+// =========================================
+// Styles
+// =========================================
+
+const styles =
+{
+    log:
+    `
+    color:#9b5cff;
+    font-weight:bold;
+    `,
+
+    warn:
+    `
+    color:#ffb84d;
+    font-weight:bold;
+    `,
+
+    error:
+    `
+    color:#ff4d6d;
+    font-weight:bold;
+    `,
+};
+
+// =========================================
+// Helpers
+// =========================================
+
+function canDebug()
+{
+    return config.debug;
+}
+
+function print(
+    type,
+    scope,
+    ...args
+)
+{
+    if (
+        !canDebug()
+    ) {
+        return;
+    }
+
+    console[type](
+        `%c[${scope}]`,
+        styles[type],
+        ...args,
+    );
+}
+
+// =========================================
 // Debug
-// ==================================================
+// =========================================
 
 export function debug(
     scope,
     ...args
 )
 {
-    if (
-        !state.debug
-    ) {
-        return;
-    }
-
-    console.log(
-        `%c[${scope}]`,
-        `
-        color:#9b5cff;
-        font-weight:bold;
-        `,
+    print(
+        'log',
+        scope,
         ...args,
     );
 }
 
-// ==================================================
+// =========================================
+// Debug Warn
+// =========================================
+
+export function debugWarn(
+    scope,
+    ...args
+)
+{
+    print(
+        'warn',
+        scope,
+        ...args,
+    );
+}
+
+// =========================================
 // Debug Error
-// ==================================================
+// =========================================
 
 export function debugError(
     scope,
@@ -41,44 +101,10 @@ export function debugError(
     ...args
 )
 {
-    if (
-        !state.debug
-    ) {
-        return;
-    }
-
-    console.error(
-        `%c[${scope}]`,
-        `
-        color:#ff4d6d;
-        font-weight:bold;
-        `,
+    print(
+        'error',
+        scope,
         error,
-        ...args,
-    );
-}
-
-// ==================================================
-// Debug Warn
-// ==================================================
-
-export function debugWarn(
-    scope,
-    ...args
-)
-{
-    if (
-        !state.debug
-    ) {
-        return;
-    }
-
-    console.warn(
-        `%c[${scope}]`,
-        `
-        color:#ffb84d;
-        font-weight:bold;
-        `,
         ...args,
     );
 }

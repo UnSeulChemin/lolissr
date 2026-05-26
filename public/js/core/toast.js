@@ -1,33 +1,70 @@
-// ==================================================
-// Toast
-// ==================================================
+// =========================================
+// TOAST
+// =========================================
+
+import {
+    $,
+} from './dom.js';
 
 import {
     debug,
 } from './debug.js';
 
-// ==================================================
+import {
+    config,
+} from './config.js';
+
+// =========================================
 // Config
-// ==================================================
+// =========================================
 
 const TOAST_DURATION =
-    2400;
+    config.toast?.duration
+    ?? 2400;
 
-// ==================================================
+// =========================================
 // State
-// ==================================================
+// =========================================
 
 let toastHideTimeout =
     null;
 
-// ==================================================
+// =========================================
+// Constants
+// =========================================
+
+const toastIcons =
+{
+    success:
+        '✓',
+
+    error:
+        '✕',
+
+    info:
+        '✦',
+};
+
+const toastClasses =
+{
+    success:
+        'toast-success',
+
+    error:
+        'toast-error',
+
+    info:
+        'toast-info',
+};
+
+// =========================================
 // Helpers
-// ==================================================
+// =========================================
 
 function getToastElement()
 {
-    return document.getElementById(
-        'toast',
+    return $(
+        '#toast',
     );
 }
 
@@ -35,34 +72,20 @@ function getToastIcon(
     type,
 )
 {
-    switch (type) {
-
-        case 'error':
-            return '✕';
-
-        case 'info':
-            return '✦';
-
-        default:
-            return '✓';
-    }
+    return (
+        toastIcons[type]
+        || toastIcons.success
+    );
 }
 
 function getToastClass(
     type,
 )
 {
-    switch (type) {
-
-        case 'error':
-            return 'toast-error';
-
-        case 'info':
-            return 'toast-info';
-
-        default:
-            return 'toast-success';
-    }
+    return (
+        toastClasses[type]
+        || toastClasses.success
+    );
 }
 
 function clearToastState(
@@ -115,21 +138,22 @@ function restartAnimation(
 function clearHideTimeout()
 {
     if (
-        toastHideTimeout
+        !toastHideTimeout
     ) {
-
-        clearTimeout(
-            toastHideTimeout,
-        );
-
-        toastHideTimeout =
-            null;
+        return;
     }
+
+    clearTimeout(
+        toastHideTimeout,
+    );
+
+    toastHideTimeout =
+        null;
 }
 
-// ==================================================
+// =========================================
 // Public API
-// ==================================================
+// =========================================
 
 export function showToast(
     message =
@@ -157,9 +181,9 @@ export function showToast(
         message,
     );
 
-    // ==============================================
+    // =====================================
     // Reset
-    // ==============================================
+    // =====================================
 
     clearHideTimeout();
 
@@ -167,9 +191,9 @@ export function showToast(
         toastElement,
     );
 
-    // ==============================================
+    // =====================================
     // Type
-    // ==============================================
+    // =====================================
 
     toastElement.classList.add(
         getToastClass(
@@ -177,9 +201,9 @@ export function showToast(
         ),
     );
 
-    // ==============================================
+    // =====================================
     // Content
-    // ==============================================
+    // =====================================
 
     renderToastContent(
         toastElement,
@@ -187,25 +211,25 @@ export function showToast(
         type,
     );
 
-    // ==============================================
-    // Restart animation
-    // ==============================================
+    // =====================================
+    // Restart Animation
+    // =====================================
 
     restartAnimation(
         toastElement,
     );
 
-    // ==============================================
+    // =====================================
     // Show
-    // ==============================================
+    // =====================================
 
     toastElement.classList.add(
         'show',
     );
 
-    // ==============================================
-    // Auto hide
-    // ==============================================
+    // =====================================
+    // Auto Hide
+    // =====================================
 
     toastHideTimeout =
         window.setTimeout(

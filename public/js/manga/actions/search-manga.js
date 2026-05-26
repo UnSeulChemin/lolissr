@@ -1,6 +1,11 @@
-// ======================================================
-// Search Manga
-// ======================================================
+// =========================================
+// SEARCH MANGA
+// =========================================
+
+import {
+    $,
+    $$,
+} from '../../core/dom.js';
 
 import {
     normalizeSearchQuery,
@@ -11,13 +16,22 @@ import {
 } from '../../core/keyboard/search-shortcuts.js';
 
 import {
+    fetchSearchResults,
+} from '../search/search-api.js';
+
+import {
+    buildMangaSearchResult,
+    buildShortcutSearchResult,
+} from '../search/search-builders.js';
+
+import {
     debug,
     debugError,
 } from '../../core/debug.js';
 
-// ======================================================
+// =========================================
 // Config
-// ======================================================
+// =========================================
 
 const SEARCH_DEBOUNCE =
     250;
@@ -25,108 +39,16 @@ const SEARCH_DEBOUNCE =
 const MIN_SEARCH_LENGTH =
     2;
 
-// ======================================================
+// =========================================
 // State
-// ======================================================
+// =========================================
 
 let initialized =
     false;
 
-// ======================================================
-// Utils
-// ======================================================
-
-function escapeHtml(
-    value,
-)
-{
-    return String(
-        value,
-    )
-        .replaceAll(
-            '&',
-            '&amp;',
-        )
-        .replaceAll(
-            '<',
-            '&lt;',
-        )
-        .replaceAll(
-            '>',
-            '&gt;',
-        )
-        .replaceAll(
-            '"',
-            '&quot;',
-        )
-        .replaceAll(
-            "'",
-            '&#039;',
-        );
-}
-
-function escapeRegExp(
-    value,
-)
-{
-    return value.replace(
-        /[.*+?^${}()|[\]\\]/g,
-        '\\$&',
-    );
-}
-
-function highlightSearchTerm(
-    text,
-    rawQuery,
-)
-{
-    const safeText =
-        escapeHtml(
-            text,
-        );
-
-    const trimmedQuery =
-        rawQuery.trim();
-
-    if (
-        trimmedQuery === ''
-    ) {
-        return safeText;
-    }
-
-    const queryParts =
-        trimmedQuery
-            .split(
-                /\s+/,
-            )
-            .filter(
-                Boolean,
-            )
-            .map(
-                escapeRegExp,
-            );
-
-    if (
-        !queryParts.length
-    ) {
-        return safeText;
-    }
-
-    const regex =
-        new RegExp(
-            `(${queryParts.join('|')})`,
-            'ig',
-        );
-
-    return safeText.replace(
-        regex,
-        '<mark class="search-highlight">$1</mark>',
-    );
-}
-
-// ======================================================
+// =========================================
 // Init
-// ======================================================
+// =========================================
 
 export function initSearchManga()
 {
@@ -138,22 +60,22 @@ export function initSearchManga()
         true;
 
     const form =
-        document.querySelector(
+        $(
             '.js-header-search',
         );
 
     const input =
-        document.getElementById(
-            'header-search-input',
+        $(
+            '#header-search-input',
         );
 
     const results =
-        document.getElementById(
-            'header-search-results',
+        $(
+            '#header-search-results',
         );
 
     const dropdown =
-        document.querySelector(
+        $(
             '.js-header-search-dropdown',
         );
 
@@ -185,16 +107,15 @@ export function initSearchManga()
     let activeIndex =
         -1;
 
-    // ==================================================
+    // =====================================
     // Helpers
-    // ==================================================
+    // =====================================
 
     function getItems()
     {
-        return Array.from(
-            results.querySelectorAll(
-                '.search-result-item',
-            ),
+        return $$(
+            '.search-result-item',
+            results,
         );
     }
 
@@ -238,13 +159,10 @@ export function initSearchManga()
                 activeIndex
             ];
 
-        if (activeItem) {
-
-            activeItem.scrollIntoView({
-                block:
-                    'nearest',
-            });
-        }
+        activeItem?.scrollIntoView({
+            block:
+                'nearest',
+        });
     }
 
     function openDropdown()
@@ -264,15 +182,10 @@ export function initSearchManga()
             'has-results',
         );
 
-        if (
-            abortController
-        ) {
+        abortController?.abort();
 
-            abortController.abort();
-
-            abortController =
-                null;
-        }
+        abortController =
+            null;
 
         resetActive();
     }
@@ -302,7 +215,7 @@ export function initSearchManga()
         results.innerHTML =
         `
             <div class="search-result-empty">
-                ${escapeHtml(message)}
+                ${message}
             </div>
         `;
 
@@ -311,114 +224,15 @@ export function initSearchManga()
         resetActive();
     }
 
-    // ==================================================
-    // Builders
-    // ==================================================
+    // =====================================
+    // Search
+    // =====================================
 
-    function buildMangaSearchResult(
-        manga,
+    async function performSearch(
         rawValue,
     )
     {
-        const item =
-            document.createElement(
-                'a',
-            );
-
-        item.href =
-            `${basePath}manga/series/${encodeURIComponent(manga.slug)}/${manga.numero}`;
-
-        item.className =
-            'search-result-item';
-
-        item.innerHTML =
-        `
-            <img
-                src="${basePath}images/mangas/thumbnail/${manga.thumbnail}.${manga.extension}"
-                alt="${escapeHtml(manga.livre)}"
-            >
-
-            <span class="search-result-content">
-
-                <strong class="search-result-title">
-                    ${highlightSearchTerm(
-                        manga.livre,
-                        rawValue,
-                    )}
-                </strong>
-
-                <small class="search-result-meta">
-                    Tome ${String(
-                        manga.numero,
-                    ).padStart(
-                        2,
-                        '0',
-                    )}
-                </small>
-
-            </span>
-        `;
-
-        return item;
-    }
-
-    function buildShortcutSearchResult(
-        shortcut,
-    )
-    {
-        const item =
-            document.createElement(
-                'a',
-            );
-
-        item.href =
-            `${basePath}${shortcut.url}`;
-
-        item.className =
-            'search-result-item';
-
-        item.innerHTML =
-        `
-            <span class="search-result-icon">
-                ${escapeHtml(
-                    shortcut.symbol,
-                )}
-            </span>
-
-            <span class="search-result-content">
-
-                <strong class="search-result-title">
-                    ${escapeHtml(
-                        shortcut.title,
-                    )}
-                </strong>
-
-                <small class="search-result-meta">
-                    ${escapeHtml(
-                        shortcut.description,
-                    )}
-                </small>
-
-            </span>
-        `;
-
-        return item;
-    }
-
-    // ==================================================
-    // Fetch
-    // ==================================================
-
-    async function fetchSearchResults(
-        rawValue,
-    )
-    {
-        if (
-            abortController
-        ) {
-
-            abortController.abort();
-        }
+        abortController?.abort();
 
         const normalized =
             normalizeSearchQuery(
@@ -459,9 +273,9 @@ export function initSearchManga()
 
             resetActive();
 
-            // ======================================
+            // =============================
             // Shortcuts
-            // ======================================
+            // =============================
 
             const shortcuts =
                 findSearchShortcuts(
@@ -476,50 +290,21 @@ export function initSearchManga()
                     results.appendChild(
                         buildShortcutSearchResult(
                             shortcut,
+                            basePath,
                         ),
                     );
                 },
             );
 
-            // ======================================
-            // Fetch API
-            // ======================================
-
-            const response =
-                await fetch(
-                    `${basePath}manga/ajax/recherche/${encodeURIComponent(normalized)}?t=${Date.now()}`,
-                    {
-                        signal:
-                            currentController.signal,
-
-                        credentials:
-                            'same-origin',
-
-                        headers:
-                        {
-                            'X-Requested-With':
-                                'XMLHttpRequest',
-
-                            'X-Partial':
-                                'true',
-
-                            'Accept':
-                                'application/json',
-                        },
-                    },
-                );
-
-            if (
-                !response.ok
-            ) {
-
-                throw new Error(
-                    'Erreur recherche live',
-                );
-            }
+            // =============================
+            // API
+            // =============================
 
             const data =
-                await response.json();
+                await fetchSearchResults(
+                    `${basePath}manga/ajax/recherche/${encodeURIComponent(normalized)}?t=${Date.now()}`,
+                    currentController.signal,
+                );
 
             const items =
                 data.data?.results
@@ -544,6 +329,7 @@ export function initSearchManga()
                         buildMangaSearchResult(
                             manga,
                             rawValue,
+                            basePath,
                         ),
                     );
                 },
@@ -589,9 +375,9 @@ export function initSearchManga()
         }
     }
 
-    // ==================================================
+    // =====================================
     // Submit
-    // ==================================================
+    // =====================================
 
     form.addEventListener(
         'submit',
@@ -628,9 +414,9 @@ export function initSearchManga()
         },
     );
 
-    // ==================================================
+    // =====================================
     // Input
-    // ==================================================
+    // =====================================
 
     input.addEventListener(
         'input',
@@ -646,7 +432,7 @@ export function initSearchManga()
                 window.setTimeout(
                     () =>
                     {
-                        fetchSearchResults(
+                        performSearch(
                             input.value.trim(),
                         );
                     },
@@ -655,9 +441,9 @@ export function initSearchManga()
         },
     );
 
-    // ==================================================
+    // =====================================
     // Keyboard
-    // ==================================================
+    // =====================================
 
     input.addEventListener(
         'keydown',
@@ -689,9 +475,7 @@ export function initSearchManga()
                 return;
             }
 
-            // ======================================
             // DOWN
-            // ======================================
 
             if (
                 event.key
@@ -711,9 +495,7 @@ export function initSearchManga()
                 return;
             }
 
-            // ======================================
             // UP
-            // ======================================
 
             if (
                 event.key
@@ -732,9 +514,7 @@ export function initSearchManga()
                 return;
             }
 
-            // ======================================
             // ENTER
-            // ======================================
 
             if (
                 event.key
@@ -758,9 +538,9 @@ export function initSearchManga()
         },
     );
 
-    // ==================================================
+    // =====================================
     // Mouse Hover
-    // ==================================================
+    // =====================================
 
     results.addEventListener(
         'mouseover',
@@ -807,9 +587,9 @@ export function initSearchManga()
         },
     );
 
-    // ==================================================
+    // =====================================
     // Outside Click
-    // ==================================================
+    // =====================================
 
     document.addEventListener(
         'click',
@@ -826,13 +606,10 @@ export function initSearchManga()
                 return;
             }
 
-            const clickedInside =
-                target.closest(
-                    '.js-header-search',
-                );
-
             if (
-                !clickedInside
+                !target.closest(
+                    '.js-header-search',
+                )
             ) {
 
                 closeDropdown();

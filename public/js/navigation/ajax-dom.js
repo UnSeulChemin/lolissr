@@ -1,29 +1,26 @@
-// ==================================================
+// =========================================
 // AJAX DOM
-// ==================================================
+// =========================================
+
+import {
+    $,
+} from '../core/dom.js';
 
 import {
     debug,
     debugError,
 } from '../core/debug.js';
 
-// ==================================================
+// =========================================
 // Config
-// ==================================================
+// =========================================
 
 const AJAX_CONTAINER_SELECTOR =
     '.ajax-content';
 
-// ==================================================
+// =========================================
 // Helpers
-// ==================================================
-
-function getCurrentContent()
-{
-    return document.querySelector(
-        AJAX_CONTAINER_SELECTOR,
-    );
-}
+// =========================================
 
 function parseHtml(
     html,
@@ -36,49 +33,52 @@ function parseHtml(
         );
 }
 
-function extractNewContent(
-    documentHtml,
+function getAjaxContent(
+    parent = document,
 )
 {
-    return documentHtml.querySelector(
+    return $(
         AJAX_CONTAINER_SELECTOR,
+        parent,
     );
 }
 
-function updateDocumentTitle(
+function updateDocumentMetadata(
     documentHtml,
 )
 {
+    // =====================================
+    // Title
+    // =====================================
+
     const title =
-        documentHtml.querySelector(
+        $(
             'title',
+            documentHtml,
         );
 
     if (
-        !title?.textContent
+        title?.textContent
     ) {
-        return;
+
+        document.title =
+            title.textContent;
     }
 
-    document.title =
-        title.textContent;
-}
+    // =====================================
+    // Language
+    // =====================================
 
-function updateDocumentLanguage(
-    documentHtml,
-)
-{
     const html =
         documentHtml.documentElement;
 
     if (
-        !html?.lang
+        html?.lang
     ) {
-        return;
-    }
 
-    document.documentElement.lang =
-        html.lang;
+        document.documentElement.lang =
+            html.lang;
+    }
 }
 
 function validateAjaxResponse(
@@ -86,15 +86,15 @@ function validateAjaxResponse(
 )
 {
     return Boolean(
-        extractNewContent(
+        getAjaxContent(
             documentHtml,
         ),
     );
 }
 
-// ==================================================
+// =========================================
 // Replace Content
-// ==================================================
+// =========================================
 
 export function replaceContent(
     html,
@@ -102,18 +102,18 @@ export function replaceContent(
 {
     try {
 
-        // ==========================================
+        // =================================
         // Parse
-        // ==========================================
+        // =================================
 
         const documentHtml =
             parseHtml(
                 html,
             );
 
-        // ==========================================
+        // =================================
         // Validate
-        // ==========================================
+        // =================================
 
         if (
             !validateAjaxResponse(
@@ -126,12 +126,12 @@ export function replaceContent(
             );
         }
 
-        // ==========================================
-        // Current content
-        // ==========================================
+        // =================================
+        // Current Content
+        // =================================
 
         const currentContent =
-            getCurrentContent();
+            getAjaxContent();
 
         if (
             !currentContent
@@ -143,37 +143,33 @@ export function replaceContent(
             );
         }
 
-        // ==========================================
-        // New content
-        // ==========================================
+        // =================================
+        // New Content
+        // =================================
 
         const newContent =
-            extractNewContent(
+            getAjaxContent(
                 documentHtml,
             );
 
-        if (!newContent) {
-
+        if (!newContent)
+        {
             throw new Error(
                 'New AJAX content not found',
             );
         }
 
-        // ==========================================
+        // =================================
         // Metadata
-        // ==========================================
+        // =================================
 
-        updateDocumentTitle(
+        updateDocumentMetadata(
             documentHtml,
         );
 
-        updateDocumentLanguage(
-            documentHtml,
-        );
-
-        // ==========================================
+        // =================================
         // Replace
-        // ==========================================
+        // =================================
 
         currentContent.replaceWith(
             newContent.cloneNode(

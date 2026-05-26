@@ -1,22 +1,37 @@
-// ==================================================
-// Global Back Navigation
-// ==================================================
+// =========================================
+// GLOBAL BACK NAVIGATION
+// =========================================
 
 import {
     config,
 } from '../core/config.js';
 
-// ==================================================
+// =========================================
 // Config
-// ==================================================
+// =========================================
 
 const BACK_LOCK_DURATION =
     config.navigation
         .backLockDuration;
 
-// ==================================================
+const typingSelector =
+`
+input,
+textarea,
+select,
+[contenteditable="true"]
+`;
+
+const interactiveSelector =
+`
+a,
+button,
+[role="button"]
+`;
+
+// =========================================
 // State
-// ==================================================
+// =========================================
 
 let initialized =
     false;
@@ -24,29 +39,32 @@ let initialized =
 let locked =
     false;
 
-// ==================================================
+// =========================================
 // Helpers
-// ==================================================
+// =========================================
+
+function hasClosest(
+    target,
+    selector,
+)
+{
+    return (
+        target instanceof Element
+        && Boolean(
+            target.closest(
+                selector,
+            ),
+        )
+    );
+}
 
 function isTypingContext(
     target,
 )
 {
-    if (
-        !(target instanceof Element)
-    ) {
-        return false;
-    }
-
-    return Boolean(
-        target.closest(
-            `
-            input,
-            textarea,
-            select,
-            [contenteditable="true"]
-            `,
-        ),
+    return hasClosest(
+        target,
+        typingSelector,
     );
 }
 
@@ -54,20 +72,9 @@ function isInteractiveElement(
     target,
 )
 {
-    if (
-        !(target instanceof Element)
-    ) {
-        return false;
-    }
-
-    return Boolean(
-        target.closest(
-            `
-            a,
-            button,
-            [role="button"]
-            `,
-        ),
+    return hasClosest(
+        target,
+        interactiveSelector,
     );
 }
 
@@ -86,9 +93,9 @@ function lockNavigation()
     );
 }
 
-// ==================================================
+// =========================================
 // Navigation
-// ==================================================
+// =========================================
 
 function navigateBack()
 {
@@ -107,18 +114,18 @@ function navigateBack()
         return;
     }
 
-    // ==============================================
+    // =====================================
     // Hard fallback
-    // ==============================================
+    // =====================================
 
     window.location.assign(
         config.baseUrl,
     );
 }
 
-// ==================================================
+// =========================================
 // Keyboard
-// ==================================================
+// =========================================
 
 function handleKeyboard(
     event,
@@ -141,7 +148,18 @@ function handleKeyboard(
         return;
     }
 
-    // Ignore typing fields
+    // Ignore modifiers
+
+    if (
+        event.ctrlKey
+        || event.metaKey
+        || event.altKey
+        || event.shiftKey
+    ) {
+        return;
+    }
+
+    // Ignore forms
 
     if (
         isTypingContext(
@@ -161,25 +179,14 @@ function handleKeyboard(
         return;
     }
 
-    // Ignore modifiers
-
-    if (
-        event.ctrlKey
-        || event.metaKey
-        || event.altKey
-        || event.shiftKey
-    ) {
-        return;
-    }
-
     event.preventDefault();
 
     navigateBack();
 }
 
-// ==================================================
+// =========================================
 // Init
-// ==================================================
+// =========================================
 
 export function initGlobalBackNavigation()
 {

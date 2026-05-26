@@ -79,12 +79,104 @@ const APP_READY_ATTRIBUTE =
     'appInitialized';
 
 // ==================================================
+// Initializers
+// ==================================================
+
+const INITIALIZERS = [
+
+    // =============================================
+    // Core
+    // =============================================
+
+    [
+        'PageTransitions',
+        initPageTransitions,
+    ],
+
+    // =============================================
+    // Navigation
+    // =============================================
+
+    [
+        'AjaxNavigation',
+        initAjaxNavigation,
+    ],
+
+    [
+        'PrefetchNavigation',
+        initPrefetchNavigation,
+    ],
+
+    [
+        'GlobalBackNavigation',
+        initGlobalBackNavigation,
+    ],
+
+    // =============================================
+    // Manga Pages
+    // =============================================
+
+    [
+        'AjouterPage',
+        initAjouterPage,
+    ],
+
+    [
+        'ModifierPage',
+        initModifierPage,
+    ],
+
+    // =============================================
+    // Manga Actions
+    // =============================================
+
+    [
+        'UpdateNote',
+        initUpdateNote,
+    ],
+
+    [
+        'DeleteManga',
+        initDeleteManga,
+    ],
+
+    [
+        'UpdateReadStatus',
+        initUpdateReadStatus,
+    ],
+
+    [
+        'SearchManga',
+        initSearchManga,
+    ],
+
+    // =============================================
+    // Keyboard
+    // =============================================
+
+    [
+        'SeriesKeyboardNavigation',
+        initSeriesKeyboardNavigation,
+    ],
+
+    // =============================================
+    // Chinois
+    // =============================================
+
+    [
+        'ToggleGrammaireMaitrise',
+        initToggleGrammaireMaitrise,
+    ],
+
+];
+
+// ==================================================
 // Helpers
 // ==================================================
 
 function safeInit(
-    callback,
     label,
+    callback,
 )
 {
     try {
@@ -111,8 +203,7 @@ function initFlashToast()
         window.flashToast;
 
     if (
-        !flashToast
-        || !flashToast.message
+        !flashToast?.message
     ) {
         return;
     }
@@ -141,6 +232,22 @@ function setAppInitialized()
     ] = 'true';
 }
 
+function runInitializers()
+{
+    for (
+        const [
+            label,
+            initializer,
+        ] of INITIALIZERS
+    ) {
+
+        safeInit(
+            label,
+            initializer,
+        );
+    }
+}
+
 // ==================================================
 // App
 // ==================================================
@@ -160,97 +267,11 @@ function initApp()
         '🚀 Boot',
     );
 
-    // ==============================================
-    // Core
-    // ==============================================
+    runInitializers();
 
     safeInit(
-        initPageTransitions,
-        'PageTransitions',
-    );
-
-    // ==============================================
-    // Navigation
-    // ==============================================
-
-    safeInit(
-        initAjaxNavigation,
-        'AjaxNavigation',
-    );
-
-    safeInit(
-        initPrefetchNavigation,
-        'PrefetchNavigation',
-    );
-
-    safeInit(
-        initGlobalBackNavigation,
-        'GlobalBackNavigation',
-    );
-
-    // ==============================================
-    // Manga Pages
-    // ==============================================
-
-    safeInit(
-        initAjouterPage,
-        'AjouterPage',
-    );
-
-    safeInit(
-        initModifierPage,
-        'ModifierPage',
-    );
-
-    // ==============================================
-    // Manga Actions
-    // ==============================================
-
-    safeInit(
-        initUpdateNote,
-        'UpdateNote',
-    );
-
-    safeInit(
-        initDeleteManga,
-        'DeleteManga',
-    );
-
-    safeInit(
-        initUpdateReadStatus,
-        'UpdateReadStatus',
-    );
-
-    safeInit(
-        initSearchManga,
-        'SearchManga',
-    );
-
-    // ==============================================
-    // Manga Keyboard
-    // ==============================================
-
-    safeInit(
-        initSeriesKeyboardNavigation,
-        'SeriesKeyboardNavigation',
-    );
-
-    // ==============================================
-    // Chinois
-    // ==============================================
-
-    safeInit(
-        initToggleGrammaireMaitrise,
-        'ToggleGrammaireMaitrise',
-    );
-
-    // ==============================================
-    // Toast
-    // ==============================================
-
-    safeInit(
-        initFlashToast,
         'FlashToast',
+        initFlashToast,
     );
 
     debug(

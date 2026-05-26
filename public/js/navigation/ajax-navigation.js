@@ -1,6 +1,15 @@
-// ==================================================
-// AJAX Navigation
-// ==================================================
+// =========================================
+// AJAX NAVIGATION
+// =========================================
+
+import {
+    $$,
+} from '../core/dom.js';
+
+import {
+    normalizeUrl,
+    shouldIgnoreLink,
+} from '../core/navigation.js';
 
 import {
     fetchPageHtml,
@@ -28,16 +37,23 @@ import {
     config,
 } from '../core/config.js';
 
-// ==================================================
+// =========================================
 // Config
-// ==================================================
+// =========================================
 
 const PREFETCH_DELAY =
     800;
 
-// ==================================================
+const navigationSelector =
+`
+a[href]:not(
+    [data-no-ajax]
+)
+`;
+
+// =========================================
 // State
-// ==================================================
+// =========================================
 
 let initialized =
     false;
@@ -51,141 +67,9 @@ let currentNavigationId =
 let transitionLock =
     false;
 
-// ==================================================
-// Selectors
-// ==================================================
-
-const navigationSelector =
-`
-a[href]:not(
-    [data-no-ajax]
-)
-`;
-
-// ==================================================
+// =========================================
 // Helpers
-// ==================================================
-
-function normalizeUrl(
-    href,
-)
-{
-    const url =
-        new URL(
-            href,
-            window.location.origin,
-        );
-
-    let pathname =
-        url.pathname;
-
-    if (
-        !pathname.endsWith('/')
-        && !pathname.includes('.')
-    ) {
-
-        pathname += '/';
-    }
-
-    return (
-        pathname
-        + url.search
-    );
-}
-
-function shouldIgnoreLink(
-    link,
-)
-{
-    if (
-        !(link instanceof HTMLAnchorElement)
-    ) {
-        return true;
-    }
-
-    if (!link.href) {
-        return true;
-    }
-
-    const url =
-        new URL(
-            link.href,
-            window.location.origin,
-        );
-
-    // ==============================================
-    // External
-    // ==============================================
-
-    if (
-        url.origin
-        !== window.location.origin
-    ) {
-        return true;
-    }
-
-    // ==============================================
-    // Same-page hash
-    // ==============================================
-
-    if (
-        url.hash
-        && normalizeUrl(
-            url.href,
-        ) === normalizeUrl(
-            window.location.href,
-        )
-    ) {
-        return true;
-    }
-
-    // ==============================================
-    // New tab
-    // ==============================================
-
-    if (
-        link.target
-        === '_blank'
-    ) {
-        return true;
-    }
-
-    // ==============================================
-    // Download
-    // ==============================================
-
-    if (
-        link.hasAttribute(
-            'download',
-        )
-    ) {
-        return true;
-    }
-
-    // ==============================================
-    // AJAX opt-out
-    // ==============================================
-
-    if (
-        link.dataset.noAjax
-        !== undefined
-    ) {
-        return true;
-    }
-
-    // ==============================================
-    // Static files
-    // ==============================================
-
-    if (
-        /\.(jpg|jpeg|png|gif|webp|svg|pdf|zip)$/i
-            .test(url.pathname)
-    ) {
-        return true;
-    }
-
-    return false;
-}
+// =========================================
 
 function isNavigationValid(
     navigationId,
@@ -224,9 +108,9 @@ function schedulePrefetch(
     );
 }
 
-// ==================================================
+// =========================================
 // Active Navigation
-// ==================================================
+// =========================================
 
 function updateActiveNavigation()
 {
@@ -236,12 +120,12 @@ function updateActiveNavigation()
         );
 
     const links =
-        document.querySelectorAll(
+        $$(
             '.nav-link-icon',
         );
 
-    for (const link of links) {
-
+    for (const link of links)
+    {
         if (
             !(link instanceof HTMLAnchorElement)
         ) {
@@ -257,9 +141,9 @@ function updateActiveNavigation()
                 link.pathname,
             );
 
-        // ==========================================
+        // =====================================
         // Home
-        // ==========================================
+        // =====================================
 
         if (
             linkPath === config.baseUrl
@@ -274,9 +158,9 @@ function updateActiveNavigation()
             continue;
         }
 
-        // ==========================================
+        // =====================================
         // Sections
-        // ==========================================
+        // =====================================
 
         if (
             linkPath !== config.baseUrl
@@ -292,9 +176,9 @@ function updateActiveNavigation()
     }
 }
 
-// ==================================================
+// =========================================
 // Prefetch
-// ==================================================
+// =========================================
 
 function prefetchVisibleLinks()
 {
@@ -303,7 +187,7 @@ function prefetchVisibleLinks()
     }
 
     const links =
-        document.querySelectorAll(
+        $$(
             `
             a.card-link,
             a.dashboard-card,
@@ -312,8 +196,8 @@ function prefetchVisibleLinks()
             `,
         );
 
-    for (const link of links) {
-
+    for (const link of links)
+    {
         if (
             shouldIgnoreLink(
                 link,
@@ -328,9 +212,9 @@ function prefetchVisibleLinks()
     }
 }
 
-// ==================================================
+// =========================================
 // Navigation
-// ==================================================
+// =========================================
 
 export async function navigateTo(
     href,
@@ -350,9 +234,9 @@ export async function navigateTo(
             window.location.href,
         );
 
-    // ==============================================
+    // =====================================
     // Prevent duplicate navigation
-    // ==============================================
+    // =====================================
 
     if (
         normalizedTarget
@@ -374,9 +258,9 @@ export async function navigateTo(
             window.location.origin,
         );
 
-    // ==============================================
+    // =====================================
     // Abort previous navigation
-    // ==============================================
+    // =====================================
 
     currentController?.abort();
 
@@ -400,9 +284,9 @@ export async function navigateTo(
 
     try {
 
-        // ==========================================
+        // =================================
         // Fetch
-        // ==========================================
+        // =================================
 
         const html =
             await fetchPageHtml(
@@ -421,9 +305,9 @@ export async function navigateTo(
             return;
         }
 
-        // ==========================================
+        // =================================
         // History
-        // ==========================================
+        // =================================
 
         if (
             options.updateHistory
@@ -437,9 +321,9 @@ export async function navigateTo(
             );
         }
 
-        // ==========================================
+        // =================================
         // Transition
-        // ==========================================
+        // =================================
 
         await runPageTransition(
             () =>
@@ -470,9 +354,9 @@ export async function navigateTo(
             return;
         }
 
-        // ==========================================
+        // =================================
         // Scroll
-        // ==========================================
+        // =================================
 
         if (
             options.scrollTop
@@ -484,9 +368,9 @@ export async function navigateTo(
             );
         }
 
-        // ==========================================
+        // =================================
         // Events
-        // ==========================================
+        // =================================
 
         document.dispatchEvent(
             new CustomEvent(
@@ -494,9 +378,9 @@ export async function navigateTo(
             ),
         );
 
-        // ==========================================
+        // =================================
         // Prefetch
-        // ==========================================
+        // =================================
 
         schedulePrefetch(
             () =>
@@ -540,9 +424,9 @@ export async function navigateTo(
             error,
         );
 
-        // ==========================================
+        // =================================
         // Hard fallback
-        // ==========================================
+        // =================================
 
         window.location.assign(
             url.href,
@@ -565,9 +449,9 @@ export async function navigateTo(
     }
 }
 
-// ==================================================
-// Click
-// ==================================================
+// =========================================
+// Events
+// =========================================
 
 function handleClick(
     event,
@@ -575,26 +459,8 @@ function handleClick(
 {
     if (
         event.defaultPrevented
-    ) {
-        return;
-    }
-
-    // ==============================================
-    // Left click only
-    // ==============================================
-
-    if (
-        event.button !== 0
-    ) {
-        return;
-    }
-
-    // ==============================================
-    // Ignore modifiers
-    // ==============================================
-
-    if (
-        event.ctrlKey
+        || event.button !== 0
+        || event.ctrlKey
         || event.metaKey
         || event.shiftKey
         || event.altKey
@@ -631,10 +497,6 @@ function handleClick(
     );
 }
 
-// ==================================================
-// Popstate
-// ==================================================
-
 function handlePopState()
 {
     void navigateTo(
@@ -649,9 +511,9 @@ function handlePopState()
     );
 }
 
-// ==================================================
+// =========================================
 // Init
-// ==================================================
+// =========================================
 
 export function initAjaxNavigation()
 {
@@ -673,10 +535,6 @@ export function initAjaxNavigation()
         'popstate',
         handlePopState,
     );
-
-    // ==============================================
-    // Initial prefetch
-    // ==============================================
 
     window.setTimeout(
         () =>

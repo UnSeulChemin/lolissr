@@ -1,6 +1,11 @@
-// ==================================================
-// Series Keyboard Navigation
-// ==================================================
+// =========================================
+// SERIES KEYBOARD NAVIGATION
+// =========================================
+
+import {
+    $,
+    $$,
+} from '../../core/dom.js';
 
 import {
     prefetchPage,
@@ -10,9 +15,9 @@ import {
     debug,
 } from '../../core/debug.js';
 
-// ==================================================
+// =========================================
 // Config
-// ==================================================
+// =========================================
 
 const GRID_SELECTOR =
     '.collection-grid';
@@ -26,9 +31,17 @@ const ACTIVE_CLASS =
 const SCROLL_THROTTLE =
     80;
 
-// ==================================================
+const TYPING_SELECTOR =
+`
+input,
+textarea,
+select,
+[contenteditable="true"]
+`;
+
+// =========================================
 // State
-// ==================================================
+// =========================================
 
 let initialized =
     false;
@@ -42,23 +55,21 @@ let cachedColumns =
 let lastScrollTime =
     0;
 
-// ==================================================
+// =========================================
 // Helpers
-// ==================================================
+// =========================================
 
 function getGrid()
 {
-    return document.querySelector(
+    return $(
         GRID_SELECTOR,
     );
 }
 
 function getCards()
 {
-    return Array.from(
-        document.querySelectorAll(
-            CARD_SELECTOR,
-        ),
+    return $$(
+        CARD_SELECTOR,
     );
 }
 
@@ -66,21 +77,13 @@ function isTypingContext(
     target,
 )
 {
-    if (
-        !(target instanceof Element)
-    ) {
-        return false;
-    }
-
-    return Boolean(
-        target.closest(
-            `
-            input,
-            textarea,
-            select,
-            [contenteditable="true"]
-            `,
-        ),
+    return (
+        target instanceof Element
+        && Boolean(
+            target.closest(
+                TYPING_SELECTOR,
+            ),
+        )
     );
 }
 
@@ -137,7 +140,7 @@ function updateGridColumns()
 function getNextPaginationLink()
 {
     const link =
-        document.querySelector(
+        $(
             '.collection-pagination-link.active + .collection-pagination-link',
         );
 
@@ -149,32 +152,33 @@ function getNextPaginationLink()
         : null;
 }
 
-// ==================================================
+// =========================================
 // Active State
-// ==================================================
+// =========================================
 
 function clearActiveState()
 {
     activeIndex =
         -1;
 
-    const cards =
-        getCards();
+    getCards().forEach(
+        (
+            card,
+        ) =>
+        {
+            card.classList.remove(
+                ACTIVE_CLASS,
+            );
 
-    for (const card of cards) {
+            if (
+                document.activeElement
+                === card
+            ) {
 
-        card.classList.remove(
-            ACTIVE_CLASS,
-        );
-
-        if (
-            document.activeElement
-            === card
-        ) {
-
-            card.blur();
-        }
-    }
+                card.blur();
+            }
+        },
+    );
 }
 
 function updateCardsState(
@@ -239,18 +243,22 @@ function prefetchNearbyCards(
             ],
         ];
 
-    for (const card of nearbyCards) {
+    nearbyCards.forEach(
+        (
+            card,
+        ) =>
+        {
+            if (
+                card
+                instanceof HTMLAnchorElement
+            ) {
 
-        if (
-            card
-            instanceof HTMLAnchorElement
-        ) {
-
-            prefetchPage(
-                card.href,
-            );
-        }
-    }
+                prefetchPage(
+                    card.href,
+                );
+            }
+        },
+    );
 
     const nextPagination =
         getNextPaginationLink();
@@ -308,9 +316,9 @@ function syncActiveState()
     );
 }
 
-// ==================================================
+// =========================================
 // Navigation
-// ==================================================
+// =========================================
 
 function moveHorizontal(
     direction,
@@ -333,9 +341,9 @@ function moveVertical(
     syncActiveState();
 }
 
-// ==================================================
+// =========================================
 // Keyboard
-// ==================================================
+// =========================================
 
 function handleKeyboard(
     event,
@@ -376,10 +384,6 @@ function handleKeyboard(
 
     switch (event.key) {
 
-        // ==========================================
-        // TAB
-        // ==========================================
-
         case 'Tab':
 
             event.preventDefault();
@@ -403,10 +407,6 @@ function handleKeyboard(
 
             break;
 
-        // ==========================================
-        // RIGHT
-        // ==========================================
-
         case 'ArrowRight':
 
             event.preventDefault();
@@ -416,10 +416,6 @@ function handleKeyboard(
             );
 
             break;
-
-        // ==========================================
-        // LEFT
-        // ==========================================
 
         case 'ArrowLeft':
 
@@ -431,10 +427,6 @@ function handleKeyboard(
 
             break;
 
-        // ==========================================
-        // DOWN
-        // ==========================================
-
         case 'ArrowDown':
 
             event.preventDefault();
@@ -445,10 +437,6 @@ function handleKeyboard(
 
             break;
 
-        // ==========================================
-        // UP
-        // ==========================================
-
         case 'ArrowUp':
 
             event.preventDefault();
@@ -458,10 +446,6 @@ function handleKeyboard(
             );
 
             break;
-
-        // ==========================================
-        // HOME
-        // ==========================================
 
         case 'Home':
 
@@ -474,10 +458,6 @@ function handleKeyboard(
 
             break;
 
-        // ==========================================
-        // END
-        // ==========================================
-
         case 'End':
 
             event.preventDefault();
@@ -488,10 +468,6 @@ function handleKeyboard(
             syncActiveState();
 
             break;
-
-        // ==========================================
-        // ENTER
-        // ==========================================
 
         case 'Enter':
 
@@ -509,10 +485,6 @@ function handleKeyboard(
 
             break;
 
-        // ==========================================
-        // ESCAPE
-        // ==========================================
-
         case 'Escape':
 
             event.preventDefault();
@@ -526,18 +498,18 @@ function handleKeyboard(
     }
 }
 
-// ==================================================
+// =========================================
 // Resize
-// ==================================================
+// =========================================
 
 function handleResize()
 {
     updateGridColumns();
 }
 
-// ==================================================
+// =========================================
 // Init
-// ==================================================
+// =========================================
 
 export function initSeriesKeyboardNavigation()
 {

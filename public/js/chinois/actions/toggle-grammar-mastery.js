@@ -1,6 +1,14 @@
-// ==================================================
-// Toggle Grammar Mastery
-// ==================================================
+// =========================================
+// TOGGLE GRAMMAR MASTERY
+// =========================================
+
+import {
+    post,
+} from '../../core/http.js';
+
+import {
+    delegate,
+} from '../../core/dom.js';
 
 import {
     showToast,
@@ -10,28 +18,16 @@ import {
     debugError,
 } from '../../core/debug.js';
 
-// ==================================================
+// =========================================
 // State
-// ==================================================
+// =========================================
 
 let initialized =
     false;
 
-// ==================================================
+// =========================================
 // Helpers
-// ==================================================
-
-function getCsrfToken()
-{
-    return document
-        .querySelector(
-            'meta[name="csrf-token"]',
-        )
-        ?.getAttribute(
-            'content',
-        )
-        ?? '';
-}
+// =========================================
 
 function isValidButton(
     button,
@@ -48,8 +44,8 @@ function setLoading(
     state,
 )
 {
-    if (state) {
-
+    if (state)
+    {
         button.dataset.loading =
             '1';
 
@@ -101,6 +97,10 @@ function updateButtonState(
     );
 }
 
+// =========================================
+// Toggle
+// =========================================
+
 async function toggleMastery(
     button,
 )
@@ -108,34 +108,14 @@ async function toggleMastery(
     const url =
         button.dataset.url;
 
-    if (!url) {
-
+    if (!url)
+    {
         showToast(
             'URL manquante',
             'error',
         );
 
         return;
-    }
-
-    const formData =
-        new FormData();
-
-    formData.append(
-        'id',
-        button.dataset.id
-            ?? '',
-    );
-
-    const csrfToken =
-        getCsrfToken();
-
-    if (csrfToken) {
-
-        formData.append(
-            'csrf_token',
-            csrfToken,
-        );
     }
 
     setLoading(
@@ -145,43 +125,31 @@ async function toggleMastery(
 
     try {
 
-        const response =
-            await fetch(
+        const data =
+            await post(
                 url,
                 {
-                    method:
-                        'POST',
-
-                    credentials:
-                        'same-origin',
-
-                    headers:
-                    {
-                        'X-Requested-With':
-                            'XMLHttpRequest',
-
+                    id:
+                        button.dataset.id
+                        ?? '',
+                },
+                {
+                    headers: {
                         'X-Partial':
                             'true',
 
                         'Accept':
                             'application/json',
                     },
-
-                    body:
-                        formData,
                 },
             );
 
-        const data =
-            await response.json();
-
         if (
-            !response.ok
-            || !data.success
+            !data?.success
         ) {
 
             showToast(
-                data.message
+                data?.message
                     ?? 'Erreur lors de la mise à jour',
                 'error',
             );
@@ -235,51 +203,9 @@ async function toggleMastery(
     }
 }
 
-// ==================================================
-// Events
-// ==================================================
-
-function handleClick(
-    event,
-)
-{
-    const target =
-        event.target;
-
-    if (
-        !(target instanceof Element)
-    ) {
-        return;
-    }
-
-    const button =
-        target.closest(
-            '.grammar-mastered',
-        );
-
-    if (
-        !isValidButton(
-            button,
-        )
-    ) {
-        return;
-    }
-
-    if (
-        button.dataset.loading
-        === '1'
-    ) {
-        return;
-    }
-
-    void toggleMastery(
-        button,
-    );
-}
-
-// ==================================================
+// =========================================
 // Init
-// ==================================================
+// =========================================
 
 export function initToggleGrammaireMaitrise()
 {
@@ -290,8 +216,33 @@ export function initToggleGrammaireMaitrise()
     initialized =
         true;
 
-    document.addEventListener(
+    delegate(
+        document,
         'click',
-        handleClick,
+        '.grammar-mastered',
+        (
+            _,
+            button,
+        ) =>
+        {
+            if (
+                !isValidButton(
+                    button,
+                )
+            ) {
+                return;
+            }
+
+            if (
+                button.dataset.loading
+                === '1'
+            ) {
+                return;
+            }
+
+            void toggleMastery(
+                button,
+            );
+        },
     );
 }

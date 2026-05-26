@@ -1,6 +1,14 @@
-// ==================================================
-// AJAX Fetch
-// ==================================================
+// =========================================
+// AJAX FETCH
+// =========================================
+
+import {
+    request,
+} from '../core/http.js';
+
+import {
+    normalizeUrl,
+} from '../core/navigation.js';
 
 import {
     getPrefetchedPage,
@@ -15,9 +23,9 @@ import {
     config,
 } from '../core/config.js';
 
-// ==================================================
+// =========================================
 // Config
-// ==================================================
+// =========================================
 
 const AJAX_CONTAINER_SELECTOR =
     '.ajax-content';
@@ -25,50 +33,20 @@ const AJAX_CONTAINER_SELECTOR =
 const FETCH_TIMEOUT =
     config.ajax.timeout;
 
-// ==================================================
+// =========================================
 // Helpers
-// ==================================================
-
-function normalizeUrl(
-    href,
-)
-{
-    const url =
-        new URL(
-            href,
-            window.location.origin,
-        );
-
-    let pathname =
-        url.pathname;
-
-    if (
-        !pathname.endsWith('/')
-        && !pathname.includes('.')
-    ) {
-
-        pathname += '/';
-    }
-
-    return (
-        pathname
-        + url.search
-    );
-}
+// =========================================
 
 function isValidHtmlResponse(
     html,
 )
 {
-    if (
+    return (
         typeof html
-        !== 'string'
-    ) {
-        return false;
-    }
-
-    return html.includes(
-        AJAX_CONTAINER_SELECTOR,
+            === 'string'
+        && html.includes(
+            AJAX_CONTAINER_SELECTOR,
+        )
     );
 }
 
@@ -91,8 +69,8 @@ function createTimeoutSignal(
             timeout,
         );
 
-    if (signal) {
-
+    if (signal)
+    {
         signal.addEventListener(
             'abort',
             () =>
@@ -119,9 +97,9 @@ function createTimeoutSignal(
     };
 }
 
-// ==================================================
+// =========================================
 // Fetch Page HTML
-// ==================================================
+// =========================================
 
 export async function fetchPageHtml(
     href,
@@ -133,9 +111,9 @@ export async function fetchPageHtml(
             href,
         );
 
-    // ==============================================
-    // Prefetch cache
-    // ==============================================
+    // =====================================
+    // Prefetch Cache
+    // =====================================
 
     const cachedPage =
         getPrefetchedPage(
@@ -157,9 +135,9 @@ export async function fetchPageHtml(
         return cachedPage;
     }
 
-    // ==============================================
-    // Timeout signal
-    // ==============================================
+    // =====================================
+    // Timeout Signal
+    // =====================================
 
     const {
         signal,
@@ -176,19 +154,16 @@ export async function fetchPageHtml(
             normalizedUrl,
         );
 
-        const response =
-            await fetch(
+        const html =
+            await request(
                 normalizedUrl,
                 {
+                    responseType:
+                        'text',
+
                     signal,
 
-                    credentials:
-                        'same-origin',
-
                     headers: {
-                        'X-Requested-With':
-                            'XMLHttpRequest',
-
                         'X-Partial':
                             'true',
 
@@ -197,16 +172,6 @@ export async function fetchPageHtml(
                     },
                 },
             );
-
-        if (!response.ok) {
-
-            throw new Error(
-                `[AJAX] HTTP ${response.status}`,
-            );
-        }
-
-        const html =
-            await response.text();
 
         if (
             !isValidHtmlResponse(

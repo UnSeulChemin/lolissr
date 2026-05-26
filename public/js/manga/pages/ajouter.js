@@ -1,6 +1,14 @@
-// ==================================================
-// Ajouter Page
-// ==================================================
+// =========================================
+// AJOUTER PAGE
+// =========================================
+
+import {
+    request,
+} from '../../core/http.js';
+
+import {
+    $,
+} from '../../core/dom.js';
 
 import {
     showToast,
@@ -15,31 +23,16 @@ import {
     generateSlug,
 } from '../utils/slug.js';
 
-// ==================================================
+// =========================================
 // Config
-// ==================================================
+// =========================================
 
 const FORM_SELECTOR =
     '.form-layout[data-form-page="ajouter"]';
 
-// ==================================================
+// =========================================
 // Helpers
-// ==================================================
-
-function getCsrfToken()
-{
-    return (
-        window.csrfToken
-        || document
-            .querySelector(
-                'meta[name="csrf-token"]',
-            )
-            ?.getAttribute(
-                'content',
-            )
-        || ''
-    );
-}
+// =========================================
 
 function updateUploadText(
     input,
@@ -52,18 +45,18 @@ function updateUploadText(
             : 'Choisir une image';
 }
 
-// ==================================================
+// =========================================
 // Init
-// ==================================================
+// =========================================
 
 export function initAjouterPage()
 {
-    // ==============================================
+    // =====================================
     // Form
-    // ==============================================
+    // =====================================
 
     const form =
-        document.querySelector(
+        $(
             FORM_SELECTOR,
         );
 
@@ -76,9 +69,9 @@ export function initAjouterPage()
         return;
     }
 
-    // ==============================================
-    // Prevent double init
-    // ==============================================
+    // =====================================
+    // Prevent Double Init
+    // =====================================
 
     if (
         form.dataset.ajouterPageInitialized
@@ -90,33 +83,33 @@ export function initAjouterPage()
     form.dataset.ajouterPageInitialized =
         'true';
 
-    // ==============================================
+    // =====================================
     // Inputs
-    // ==============================================
+    // =====================================
 
     const livreInput =
-        document.getElementById(
-            'livre',
+        $(
+            '#livre',
         );
 
     const slugInput =
-        document.getElementById(
-            'slug',
+        $(
+            '#slug',
         );
 
     const imageInput =
-        document.getElementById(
-            'image',
+        $(
+            '#image',
         );
 
     const uploadText =
-        document.querySelector(
+        $(
             '.form-upload-text',
         );
 
-    // ==============================================
-    // Auto slug
-    // ==============================================
+    // =====================================
+    // Auto Slug
+    // =====================================
 
     let slugEditedManually =
         false;
@@ -161,9 +154,9 @@ export function initAjouterPage()
         );
     }
 
-    // ==============================================
-    // Upload preview
-    // ==============================================
+    // =====================================
+    // Upload Preview
+    // =====================================
 
     if (
         imageInput
@@ -183,9 +176,9 @@ export function initAjouterPage()
         );
     }
 
-    // ==============================================
+    // =====================================
     // Submit
-    // ==============================================
+    // =====================================
 
     form.addEventListener(
         'submit',
@@ -209,23 +202,6 @@ export function initAjouterPage()
                     true;
             }
 
-            const formData =
-                new FormData(
-                    form,
-                );
-
-            if (
-                !formData.has(
-                    'csrf_token',
-                )
-            ) {
-
-                formData.append(
-                    'csrf_token',
-                    getCsrfToken(),
-                );
-            }
-
             try {
 
                 debug(
@@ -233,57 +209,32 @@ export function initAjouterPage()
                     'submit',
                 );
 
-                const response =
-                    await fetch(
+                const data =
+                    await request(
                         form.action,
                         {
                             method:
                                 'POST',
 
-                            credentials:
-                                'same-origin',
-
                             headers:
                             {
-                                'X-Requested-With':
-                                    'XMLHttpRequest',
-
                                 'Accept':
                                     'application/json',
                             },
 
                             body:
-                                formData,
+                                new FormData(
+                                    form,
+                                ),
                         },
                     );
 
-                const contentType =
-                    response.headers.get(
-                        'content-type',
-                    )
-                    || '';
-
                 if (
-                    !contentType.includes(
-                        'application/json',
-                    )
-                ) {
-
-                    throw new Error(
-                        'Réponse serveur invalide',
-                    );
-                }
-
-                const data =
-                    await response.json();
-
-                if (
-                    !response.ok
-                    || !data.success
+                    !data?.success
                 ) {
 
                     showToast(
-                        data.message
+                        data?.message
                         || 'Une erreur est survenue',
                         'error',
                     );
