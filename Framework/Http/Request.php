@@ -59,9 +59,23 @@ final class Request
     public function isAjax(): bool
     {
         return strtolower(
-            $this->header('X-Requested-With')
-            ?? '',
+            $this->header(
+                'X-Requested-With',
+            ) ?? '',
         ) === 'xmlhttprequest';
+    }
+
+    public function expectsJson(): bool
+    {
+        return $this->isAjax()
+            || str_contains(
+                strtolower(
+                    $this->header(
+                        'Accept',
+                    ) ?? '',
+                ),
+                'application/json',
+            );
     }
 
     public function uri(): string
@@ -87,7 +101,10 @@ final class Request
         if (
             $baseUri !== ''
             && $baseUri !== '/'
-            && str_starts_with($path, $baseUri)
+            && str_starts_with(
+                $path,
+                $baseUri,
+            )
         ) {
             $path = substr(
                 $path,
@@ -95,7 +112,10 @@ final class Request
             );
         }
 
-        $path = trim($path, '/');
+        $path = trim(
+            $path,
+            '/',
+        );
 
         return $path === ''
             ? '/'
@@ -109,6 +129,7 @@ final class Request
         ?string $key = null,
         mixed $default = null,
     ): mixed {
+
         if ($key === null) {
             return $this->server;
         }
@@ -120,13 +141,16 @@ final class Request
     public function header(
         string $key,
     ): ?string {
-        $serverKey = 'HTTP_' . strtoupper(
-            str_replace(
-                '-',
-                '_',
-                $key,
-            ),
-        );
+
+        $serverKey =
+            'HTTP_'
+            . strtoupper(
+                str_replace(
+                    '-',
+                    '_',
+                    $key,
+                ),
+            );
 
         return $this->server[$serverKey]
             ?? null;
@@ -136,6 +160,7 @@ final class Request
         string $key,
         mixed $default = null,
     ): mixed {
+
         return $this->post[$key]
             ?? $this->get[$key]
             ?? $default;
@@ -167,6 +192,7 @@ final class Request
     public function file(
         string $key,
     ): mixed {
+
         return $this->files[$key]
             ?? null;
     }

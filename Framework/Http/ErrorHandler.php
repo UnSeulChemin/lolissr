@@ -7,6 +7,7 @@ namespace Framework\Http;
 use App\Controllers\ErrorController;
 use ErrorException;
 use Framework\Application\App;
+use Framework\Exceptions\BaseHttpException;
 use Framework\Http\Request;
 use Framework\Http\Response;
 use Framework\Support\Logger;
@@ -70,6 +71,7 @@ final class ErrorHandler
             if (
                 $exception instanceof BaseHttpException
             ) {
+
                 self::logHttpException(
                     $exception,
                 );
@@ -83,11 +85,13 @@ final class ErrorHandler
             Logger::exception(
                 $exception,
                 [
-                    'type' => 'uncaught_exception',
+                    'type' =>
+                        'uncaught_exception',
                 ],
             );
 
             if (App::debug()) {
+
                 self::renderDebug(
                     $exception,
                 );
@@ -100,7 +104,8 @@ final class ErrorHandler
             Logger::exception(
                 $fallbackException,
                 [
-                    'type' => 'error_handler_failure',
+                    'type' =>
+                        'error_handler_failure',
                 ],
             );
 
@@ -140,13 +145,19 @@ final class ErrorHandler
         Logger::error(
             'Fatal Error',
             [
-                'message' => $error['message'],
-                'file' => $error['file'],
-                'line' => $error['line'],
+                'message' =>
+                    $error['message'],
+
+                'file' =>
+                    $error['file'],
+
+                'line' =>
+                    $error['line'],
             ],
         );
 
         if (App::debug()) {
+
             self::renderFatalDebug(
                 $error,
             );
@@ -162,9 +173,14 @@ final class ErrorHandler
         Logger::warning(
             'HTTP Exception',
             [
-                'status' => $exception->getStatusCode(),
-                'message' => $exception->getMessage(),
-                'data' => $exception->getData(),
+                'status' =>
+                    $exception->getStatusCode(),
+
+                'message' =>
+                    $exception->getMessage(),
+
+                'data' =>
+                    $exception->getData(),
             ],
         );
     }
@@ -183,8 +199,20 @@ final class ErrorHandler
         $request =
             Request::capture();
 
+        $expectsJson =
+            $request->isAjax()
+            || str_contains(
+                strtolower(
+                    $request->server(
+                        'HTTP_ACCEPT',
+                        '',
+                    ),
+                ),
+                'application/json',
+            );
+
         // AJAX / JSON
-        if ($request->isAjax()) {
+        if ($expectsJson) {
 
             foreach (
                 $exception->getHeaders()
@@ -213,10 +241,13 @@ final class ErrorHandler
             $exception->getStatusCode()
         ) {
 
-            401,
-            403,
-            422
-                => $controller->serverError(
+            401
+                => $controller->unauthorized(
+                    $exception->getMessage(),
+                ),
+
+            403
+                => $controller->forbidden(
                     $exception->getMessage(),
                 ),
 
@@ -231,7 +262,9 @@ final class ErrorHandler
                 ),
 
             419
-                => $controller->renderCsrfExpiredPage(),
+                => $controller->csrfExpired(
+                    $exception->getMessage(),
+                ),
 
             default
                 => $controller->serverError(

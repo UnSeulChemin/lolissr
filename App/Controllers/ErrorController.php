@@ -20,13 +20,9 @@ final class ErrorController extends Controller
         string $message = 'Page introuvable',
     ): never {
 
-        $this->logWarning(
-            '404 Not Found',
-        );
-
-        $this->respond(
-            view: '404',
+        $this->error(
             status: 404,
+            view: '404',
             title: '404 | Page introuvable',
             message: $message,
         );
@@ -36,13 +32,9 @@ final class ErrorController extends Controller
         string $message = 'Méthode non autorisée',
     ): never {
 
-        $this->logWarning(
-            '405 Method Not Allowed',
-        );
-
-        $this->respond(
-            view: '405',
+        $this->error(
             status: 405,
+            view: '405',
             title: '405 | Méthode non autorisée',
             message: $message,
         );
@@ -52,13 +44,9 @@ final class ErrorController extends Controller
         string $message = 'Session expirée ou requête invalide.',
     ): never {
 
-        $this->logWarning(
-            '419 CSRF Expired',
-        );
-
-        $this->respond(
-            view: '419',
+        $this->error(
             status: 419,
+            view: '419',
             title: '419 | Session expirée',
             message: $message,
         );
@@ -68,13 +56,9 @@ final class ErrorController extends Controller
         string $message = 'Accès interdit',
     ): never {
 
-        $this->logWarning(
-            '403 Forbidden',
-        );
-
-        $this->respond(
-            view: '403',
+        $this->error(
             status: 403,
+            view: '403',
             title: '403 | Accès interdit',
             message: $message,
         );
@@ -84,13 +68,9 @@ final class ErrorController extends Controller
         string $message = 'Non authentifié',
     ): never {
 
-        $this->logWarning(
-            '401 Unauthorized',
-        );
-
-        $this->respond(
-            view: '401',
+        $this->error(
             status: 401,
+            view: '401',
             title: '401 | Non authentifié',
             message: $message,
         );
@@ -100,36 +80,49 @@ final class ErrorController extends Controller
         string $message = 'Erreur interne du serveur',
     ): never {
 
-        $this->logError(
-            '500 Internal Server Error',
-        );
-
-        $this->respond(
-            view: '500',
+        $this->error(
             status: 500,
+            view: '500',
             title: '500 | Erreur serveur',
             message: $message,
+            critical: true,
         );
     }
 
-    private function respond(
-        string $view,
+    private function error(
         int $status,
+        string $view,
         string $title,
         string $message,
+        bool $critical = false,
     ): never {
 
-        if ($this->isAjax()) {
+        $context = [
+            'uri' => $this->request->uri(),
+        ];
 
-            $result =
+        if ($critical) {
+
+            Logger::error(
+                $title,
+                $context,
+            );
+
+        } else {
+
+            Logger::warning(
+                $title,
+                $context,
+            );
+        }
+
+        if ($this->expectsJson()) {
+
+            $this->jsonResult(
                 ServiceResult::error(
                     message: $message,
                     status: $status,
-                );
-
-            $this->json(
-                $result->toArray(),
-                $result->status,
+                ),
             );
         }
 
@@ -140,30 +133,6 @@ final class ErrorController extends Controller
             $status,
             [
                 'message' => $message,
-            ],
-        );
-    }
-
-    private function logWarning(
-        string $message,
-    ): void {
-
-        Logger::warning(
-            $message,
-            [
-                'uri' => $this->request->uri(),
-            ],
-        );
-    }
-
-    private function logError(
-        string $message,
-    ): void {
-
-        Logger::error(
-            $message,
-            [
-                'uri' => $this->request->uri(),
             ],
         );
     }

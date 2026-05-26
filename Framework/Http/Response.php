@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace Framework\Http;
 
-use JsonException;
 use Framework\Support\Logger;
+use JsonException;
 
 final class Response
 {
     private static function sendContentType(
         string $contentType,
     ): void {
+
         if (headers_sent()) {
             return;
         }
@@ -25,7 +26,10 @@ final class Response
         string $content,
         int $statusCode = 200,
     ): never {
-        http_response_code($statusCode);
+
+        if (! headers_sent()) {
+            http_response_code($statusCode);
+        }
 
         self::sendContentType(
             'text/html',
@@ -43,22 +47,26 @@ final class Response
         array $data,
         int $statusCode = 200,
     ): never {
+
+        if (! headers_sent()) {
+            http_response_code($statusCode);
+        }
+
         self::sendContentType(
             'application/json',
         );
 
         try {
-            $json = json_encode(
+
+            echo json_encode(
                 $data,
                 JSON_UNESCAPED_UNICODE
                 | JSON_UNESCAPED_SLASHES
                 | JSON_THROW_ON_ERROR,
             );
 
-            http_response_code($statusCode);
-
-            echo $json;
         } catch (JsonException $exception) {
+
             Logger::exception(
                 $exception,
                 [
@@ -66,16 +74,11 @@ final class Response
                 ],
             );
 
-            http_response_code(500);
+            if (! headers_sent()) {
+                http_response_code(500);
+            }
 
-            echo json_encode(
-                [
-                    'success' => false,
-                    'message' => 'JSON encode error',
-                ],
-                JSON_UNESCAPED_UNICODE
-                | JSON_UNESCAPED_SLASHES,
-            );
+            echo '{"success":false,"message":"JSON encode error"}';
         }
 
         exit;
@@ -85,7 +88,9 @@ final class Response
         string $url,
         int $statusCode = 302,
     ): never {
-        if (!headers_sent()) {
+
+        if (! headers_sent()) {
+
             http_response_code($statusCode);
 
             header(

@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Controllers\ErrorController;
 use Framework\Application\App;
 use Framework\Config\Config;
 use Framework\Config\Env;
@@ -10,7 +9,7 @@ use Framework\Container\AppContainer;
 use Framework\Http\Request;
 use Framework\Http\Response;
 use Framework\Support\Session;
-use App\DTO\Common\ServiceResult;
+use RuntimeException;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,17 +17,22 @@ use App\DTO\Common\ServiceResult;
 |--------------------------------------------------------------------------
 */
 
-if (!function_exists('app')) {
+if (! function_exists('app')) {
+
     function app(
         ?string $abstract = null,
     ): mixed {
-        $container = AppContainer::get();
+
+        $container =
+            AppContainer::get();
 
         if ($abstract === null) {
             return $container;
         }
 
-        return $container->get($abstract);
+        return $container->get(
+            $abstract,
+        );
     }
 }
 
@@ -38,11 +42,13 @@ if (!function_exists('app')) {
 |--------------------------------------------------------------------------
 */
 
-if (!function_exists('dump')) {
+if (! function_exists('dump')) {
+
     function dump(
         mixed ...$vars,
     ): void {
-        if (!App::debug()) {
+
+        if (! App::debug()) {
             return;
         }
 
@@ -73,11 +79,14 @@ if (!function_exists('dump')) {
 |--------------------------------------------------------------------------
 */
 
-if (!function_exists('dd')) {
+if (! function_exists('dd')) {
+
     function dd(
         mixed ...$vars,
     ): never {
-        if (!App::debug()) {
+
+        if (! App::debug()) {
+
             http_response_code(500);
 
             exit;
@@ -95,10 +104,12 @@ if (!function_exists('dd')) {
 |--------------------------------------------------------------------------
 */
 
-if (!function_exists('base_path')) {
+if (! function_exists('base_path')) {
+
     function base_path(
         string $path = '',
     ): string {
+
         $base = rtrim(
             ROOT,
             DIRECTORY_SEPARATOR,
@@ -110,36 +121,49 @@ if (!function_exists('base_path')) {
 
         return $base
             . DIRECTORY_SEPARATOR
-            . ltrim($path, '/\\');
+            . ltrim(
+                $path,
+                '/\\',
+            );
     }
 }
 
-if (!function_exists('app_path')) {
+if (! function_exists('app_path')) {
+
     function app_path(
         string $path = '',
     ): string {
+
         return base_path(
             'App'
             . (
                 $path !== ''
                     ? DIRECTORY_SEPARATOR
-                        . ltrim($path, '/\\')
+                        . ltrim(
+                            $path,
+                            '/\\',
+                        )
                     : ''
             ),
         );
     }
 }
 
-if (!function_exists('view_path')) {
+if (! function_exists('view_path')) {
+
     function view_path(
         string $path = '',
     ): string {
+
         return app_path(
             'Views'
             . (
                 $path !== ''
                     ? DIRECTORY_SEPARATOR
-                        . ltrim($path, '/\\')
+                        . ltrim(
+                            $path,
+                            '/\\',
+                        )
                     : ''
             ),
         );
@@ -152,11 +176,13 @@ if (!function_exists('view_path')) {
 |--------------------------------------------------------------------------
 */
 
-if (!function_exists('redirect')) {
+if (! function_exists('redirect')) {
+
     function redirect(
         string $path = '',
         int $status = 302,
     ): never {
+
         if (
             preg_match(
                 '#^https?://#i',
@@ -174,9 +200,13 @@ if (!function_exists('redirect')) {
             '/',
         );
 
-        $url = $baseUri
+        $url =
+            $baseUri
             . '/'
-            . ltrim($path, '/');
+            . ltrim(
+                $path,
+                '/',
+            );
 
         Response::redirect(
             $url,
@@ -187,102 +217,17 @@ if (!function_exists('redirect')) {
 
 /*
 |--------------------------------------------------------------------------
-| json()
-|--------------------------------------------------------------------------
-*/
-
-if (! function_exists('json')) {
-
-    function json(
-        ServiceResult $result,
-    ): never {
-
-        Response::json(
-            $result->toArray(),
-            $result->status,
-        );
-    }
-}
-
-/*
-|--------------------------------------------------------------------------
-| view()
-|--------------------------------------------------------------------------
-*/
-
-if (!function_exists('view')) {
-    /**
-     * @param array<string, mixed> $data
-     */
-    function view(
-        string $viewFile,
-        array $data = [],
-        ?string $title = null,
-    ): never {
-        $title ??= App::siteName();
-
-        $view = $data;
-
-        $baseUri = App::baseUri();
-
-        /** @var Request $request */
-        $request = app(Request::class);
-
-        $currentPath = $request->path();
-
-        $viewPath = view_path(
-            $viewFile . '.php',
-        );
-
-        $layoutPath = view_path(
-            'layouts/base.php',
-        );
-
-        if (!is_file($viewPath)) {
-            throw new RuntimeException(
-                'Vue introuvable : '
-                . $viewFile,
-            );
-        }
-
-        if (!is_file($layoutPath)) {
-            throw new RuntimeException(
-                'Layout introuvable : layouts/base',
-            );
-        }
-
-        extract(
-            $view,
-            EXTR_SKIP,
-        );
-
-        ob_start();
-
-        require $viewPath;
-
-        $content = ob_get_clean() ?: '';
-
-        ob_start();
-
-        require $layoutPath;
-
-        $html = ob_get_clean() ?: '';
-
-        Response::html($html);
-    }
-}
-
-/*
-|--------------------------------------------------------------------------
 | env()
 |--------------------------------------------------------------------------
 */
 
-if (!function_exists('env')) {
+if (! function_exists('env')) {
+
     function env(
         string $key,
         mixed $default = null,
     ): mixed {
+
         return Env::get(
             $key,
             $default,
@@ -290,11 +235,13 @@ if (!function_exists('env')) {
     }
 }
 
-if (!function_exists('env_bool')) {
+if (! function_exists('env_bool')) {
+
     function env_bool(
         string $key,
         bool $default = false,
     ): bool {
+
         return Env::bool(
             $key,
             $default,
@@ -302,11 +249,13 @@ if (!function_exists('env_bool')) {
     }
 }
 
-if (!function_exists('env_int')) {
+if (! function_exists('env_int')) {
+
     function env_int(
         string $key,
         int $default = 0,
     ): int {
+
         return Env::int(
             $key,
             $default,
@@ -320,11 +269,13 @@ if (!function_exists('env_int')) {
 |--------------------------------------------------------------------------
 */
 
-if (!function_exists('config')) {
+if (! function_exists('config')) {
+
     function config(
         string $key,
         mixed $default = null,
     ): mixed {
+
         return Config::get(
             $key,
             $default,
@@ -338,10 +289,12 @@ if (!function_exists('config')) {
 |--------------------------------------------------------------------------
 */
 
-if (!function_exists('e')) {
+if (! function_exists('e')) {
+
     function e(
         mixed $value,
     ): string {
+
         return htmlspecialchars(
             (string) $value,
             ENT_QUOTES
@@ -353,30 +306,18 @@ if (!function_exists('e')) {
 
 /*
 |--------------------------------------------------------------------------
-| AJAX
-|--------------------------------------------------------------------------
-*/
-
-if (!function_exists('is_ajax')) {
-    function is_ajax(): bool
-    {
-        /** @var Request $request */
-        $request = app(Request::class);
-
-        return $request->isAjax();
-    }
-}
-
-/*
-|--------------------------------------------------------------------------
 | CSRF
 |--------------------------------------------------------------------------
 */
 
-if (!function_exists('csrf_token')) {
+if (! function_exists('csrf_token')) {
+
     function csrf_token(): string
     {
-        if (!Session::has('csrf_token')) {
+        if (! Session::has(
+            'csrf_token',
+        )) {
+
             Session::set(
                 'csrf_token',
                 bin2hex(
@@ -385,28 +326,35 @@ if (!function_exists('csrf_token')) {
             );
         }
 
-        return (string) Session::get(
-            'csrf_token',
-        );
+        return (string)
+            Session::get(
+                'csrf_token',
+            );
     }
 }
 
-if (!function_exists('csrf_field')) {
+if (! function_exists('csrf_field')) {
+
     function csrf_field(): string
     {
         return sprintf(
             '<input type="hidden" name="csrf_token" value="%s">',
-            e(csrf_token()),
+            e(
+                csrf_token(),
+            ),
         );
     }
 }
 
-if (!function_exists('csrf_meta_tag')) {
+if (! function_exists('csrf_meta_tag')) {
+
     function csrf_meta_tag(): string
     {
         return sprintf(
             '<meta name="csrf-token" content="%s">',
-            e(csrf_token()),
+            e(
+                csrf_token(),
+            ),
         );
     }
 }

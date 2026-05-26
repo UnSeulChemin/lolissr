@@ -29,8 +29,6 @@ final class ChinoisAjaxController extends Controller
 
     public function toggleGrammaireMaitrise(): never
     {
-        $this->ensureAjax();
-
         $id =
             (int) $this->request
                 ->input(
@@ -63,30 +61,6 @@ final class ChinoisAjaxController extends Controller
                 ],
             );
 
-        $this->json($result);
-    }
-
-    /*
-    |--------------------------------------------------------------
-    | Ensure AJAX request
-    |--------------------------------------------------------------
-    */
-
-    private function ensureAjax(): void
-    {
-        if (
-            $this->isAjax()
-            || App::isTesting()
-        ) {
-            return;
-        }
-
-        throw new BaseHttpException(
-            message:
-                'Requête AJAX requise',
-
-            statusCode:
-                400,
-        );
+        $this->jsonResult($result);
     }
 }
