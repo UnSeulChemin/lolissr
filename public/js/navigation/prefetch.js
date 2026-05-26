@@ -1,30 +1,109 @@
-import { request } from '../core/http.js';
-import { normalizeUrl } from '../core/navigation.js';
-import { debug, debugError } from '../core/debug.js';
+// =========================================
+// PREFETCH SYSTEM (SMART HOVER)
+// =========================================
 
-const cache = new Map();
-const inFlight = new Set();
+import {
+    request,
+} from '../core/http.js';
 
-// =========================
+import {
+    normalizeUrl,
+} from '../core/navigation.js';
+
+import {
+    debug,
+    debugError,
+} from '../core/debug.js';
+
+// =========================================
+// CONFIG
+// =========================================
+
+const CACHE_DURATION =
+    10000;
+
+const HOVER_DELAY =
+    60;
+
+// =========================================
+// STATE
+// =========================================
+
+const cache =
+    new Map();
+
+const inFlight =
+    new Set();
+
+const prefetched =
+    new Set();
+
+const hoverTimers =
+    new WeakMap();
+
+// =========================================
 // CACHE GET
-// =========================
+// =========================================
 
-export function getPrefetchedPage(url)
+export function getPrefetchedPage(
+    url,
+)
 {
-    return cache.get(normalizeUrl(url)) || null;
+    const normalized =
+        normalizeUrl(
+            url,
+        );
+
+    const cached =
+        cache.get(
+            normalized,
+        );
+
+    if (!cached) {
+        return null;
+    }
+
+    // =====================================
+    // CACHE EXPIRED
+    // =====================================
+
+    if (
+        Date.now()
+        - cached.timestamp
+        > CACHE_DURATION
+    ) {
+
+        cache.delete(
+            normalized,
+        );
+
+        prefetched.delete(
+            normalized,
+        );
+
+        return null;
+    }
+
+    return cached.html;
 }
 
-// =========================
+// =========================================
 // PREFETCH CORE
-// =========================
+// =========================================
 
-export async function prefetchPage(url)
+export async function prefetchPage(
+    url,
+)
 {
     const parsed =
         new URL(
             url,
             window.location.origin,
         );
+
+    // =====================================
+    // SAME ORIGIN
+    // =====================================
 
     if (
         parsed.origin
@@ -33,6 +112,10 @@ export async function prefetchPage(url)
         return;
     }
 
+    // =====================================
+    // ONLY HTTP
+    // =====================================
+
     if (
         parsed.protocol !== 'http:'
         && parsed.protocol !== 'https:'
@@ -40,58 +123,296 @@ export async function prefetchPage(url)
         return;
     }
 
+    // =====================================
+    // SKIP SEARCH PARAMS
+    // =====================================
+
+    if (
+        parsed.search
+    ) {
+        return;
+    }
+
+    // =====================================
+    // SKIP HASH
+    // =====================================
+
+    if (
+        parsed.hash
+    ) {
+        return;
+    }
+
     const normalized =
-        normalizeUrl(url);
+        normalizeUrl(
+            url,
+        );
 
-    if (cache.has(normalized)) return;
-    if (inFlight.has(normalized)) return;
+    // =====================================
+    // ALREADY PREFETCHED
+    // =====================================
 
-    inFlight.add(normalized);
+    if (
+        prefetched.has(
+            normalized,
+        )
+    ) {
+        return;
+    }
 
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 4000);
+    // =====================================
+    // CACHE
+    // =====================================
+
+    const existing =
+        getPrefetchedPage(
+            normalized,
+        );
+
+    if (existing) {
+        return;
+    }
+
+    // =====================================
+    // IN FLIGHT
+    // =====================================
+
+    if (
+        inFlight.has(
+            normalized,
+        )
+    ) {
+        return;
+    }
+
+    inFlight.add(
+        normalized,
+    );
+
+    const controller =
+        new AbortController();
+
+    const timeout =
+        setTimeout(
+            () =>
+            {
+                controller.abort();
+            },
+            4000,
+        );
 
     try {
 
-        const html = await request(normalized, {
-            responseType: 'text',
-            signal: controller.signal,
-            headers: {
-                'X-Prefetch': '1',
-                Accept: 'text/html',
-            },
-        });
+        const html =
+            await request(
+                normalized,
+                {
+                    responseType:
+                        'text',
 
-        if (typeof html === 'string' && html.length > 0) {
-            cache.set(normalized, html);
-            debug('PREFETCH', 'cached', normalized);
+                    signal:
+                        controller.signal,
+
+                    headers: {
+                        'X-Prefetch':
+                            '1',
+
+                        Accept:
+                            'text/html',
+                    },
+                },
+            );
+
+        // =================================
+        // VALID HTML
+        // =================================
+
+        if (
+            typeof html === 'string'
+            && html.length > 0
+        ) {
+
+            cache.set(
+                normalized,
+                {
+                    html,
+                    timestamp:
+                        Date.now(),
+                },
+            );
+
+            prefetched.add(
+                normalized,
+            );
+
+            debug(
+                'PREFETCH',
+                'cached',
+                normalized,
+            );
         }
 
-    } catch (e) {
+    } catch (error) {
 
-        if (e?.name !== 'AbortError') {
-            debugError('PREFETCH', e);
+        if (
+            error?.name
+            !== 'AbortError'
+        ) {
+
+            debugError(
+                'PREFETCH',
+                error,
+            );
         }
 
     } finally {
 
-        clearTimeout(timeout);
-        inFlight.delete(normalized);
+        clearTimeout(
+            timeout,
+        );
+
+        inFlight.delete(
+            normalized,
+        );
     }
 }
 
-// =========================
-// GLOBAL ACCESS (IMPORTANT)
-// =========================
+// =========================================
+// HOVER PREFETCH
+// =========================================
 
-window.__prefetchPage = prefetchPage;
+function bindHoverPrefetch()
+{
+    document.addEventListener(
+        'mouseenter',
+        (event) =>
+        {
+            const target =
+                event.target;
+
+            if (
+                !(
+                    target
+                    instanceof Element
+                )
+            ) {
+                return;
+            }
+
+            const link =
+                target.closest(
+                    'a[href]',
+                );
+
+            if (
+                !(
+                    link
+                    instanceof HTMLAnchorElement
+                )
+            ) {
+                return;
+            }
+
+            // =============================
+            // NO AJAX
+            // =============================
+
+            if (
+                link.dataset.noAjax
+                !== undefined
+            ) {
+                return;
+            }
+
+            // =============================
+            // NO PREFETCH
+            // =============================
+
+            if (
+                link.dataset.noPrefetch
+                !== undefined
+            ) {
+                return;
+            }
+
+            // =============================
+            // NEW TAB
+            // =============================
+
+            if (
+                link.target
+                === '_blank'
+            ) {
+                return;
+            }
+
+            // =============================
+            // DOWNLOAD
+            // =============================
+
+            if (
+                link.hasAttribute(
+                    'download',
+                )
+            ) {
+                return;
+            }
+
+            // =============================
+            // RESET TIMER
+            // =============================
+
+            clearTimeout(
+                hoverTimers.get(
+                    link,
+                ),
+            );
+
+            // =============================
+            // DELAY
+            // =============================
+
+            const timer =
+                setTimeout(
+                    () =>
+                    {
+                        hoverTimers.delete(
+                            link,
+                        );
+
+                        void prefetchPage(
+                            link.href,
+                        );
+                    },
+                    HOVER_DELAY,
+                );
+
+            hoverTimers.set(
+                link,
+                timer,
+            );
+        },
+        true,
+    );
+}
 
 // =========================================
-// INIT PREFETCH (OBLIGATOIRE POUR APP.JS)
+// GLOBAL
+// =========================================
+
+window.__prefetchPage =
+    prefetchPage;
+
+// =========================================
+// INIT
 // =========================================
 
 export function initPrefetch()
 {
-    // IMPORTANT : gardé pour éviter ton crash app.js
-    debug('PREFETCH', 'ready');
+    bindHoverPrefetch();
+
+    debug(
+        'PREFETCH',
+        'hover ready',
+    );
 }

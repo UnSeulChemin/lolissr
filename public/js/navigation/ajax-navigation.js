@@ -110,47 +110,6 @@ function updateActiveNavigation()
 }
 
 // =========================================
-// PREFETCH VISIBLE LINKS
-// =========================================
-
-function prefetchVisible()
-{
-    const root =
-        document.querySelector(
-            '.ajax-content',
-        );
-
-    if (!root) {
-        return;
-    }
-
-    const links =
-        root.querySelectorAll(
-            'a[href]',
-        );
-
-    for (const link of links)
-    {
-        if (
-            !(
-                link
-                instanceof HTMLAnchorElement
-            )
-        ) {
-            continue;
-        }
-
-        if (!link.href) {
-            continue;
-        }
-
-        window.__prefetchPage?.(
-            link.href,
-        );
-    }
-}
-
-// =========================================
 // NAVIGATION CORE
 // =========================================
 
@@ -283,7 +242,7 @@ export async function navigateTo(
         }
 
         // =================================
-        // FAST DOM SWAP
+        // DOM SWAP
         // =================================
 
         if (instant) {
@@ -339,13 +298,11 @@ export async function navigateTo(
             ),
         );
 
-        requestAnimationFrame(
-            prefetchVisible,
-        );
-
         debug(
             'AJAX',
-            'done',
+            instant
+                ? 'instant'
+                : 'fetched',
             target,
         );
 
@@ -381,22 +338,11 @@ export async function navigateTo(
 }
 
 // =========================================
-// INIT
+// CLICK INTERCEPT
 // =========================================
 
-export function initAjaxNavigation()
+function bindNavigation()
 {
-    if (window.__SPA__) {
-        return;
-    }
-
-    window.__SPA__ =
-        true;
-
-    // =====================================
-    // CLICK NAVIGATION
-    // =====================================
-
     document.addEventListener(
         'click',
         (event) =>
@@ -460,7 +406,8 @@ export function initAjaxNavigation()
             // =================================
 
             if (
-                link.target === '_blank'
+                link.target
+                === '_blank'
             ) {
                 return;
             }
@@ -496,11 +443,14 @@ export function initAjaxNavigation()
             );
         },
     );
+}
 
-    // =====================================
-    // BROWSER HISTORY
-    // =====================================
+// =========================================
+// POPSTATE
+// =========================================
 
+function bindPopstate()
+{
     window.addEventListener(
         'popstate',
         async () =>
@@ -517,10 +467,18 @@ export function initAjaxNavigation()
 
             try {
 
-                const html =
-                    await fetchPageHtml(
+                let html =
+                    getPrefetchedPage(
                         location.href,
                     );
+
+                if (!html) {
+
+                    html =
+                        await fetchPageHtml(
+                            location.href,
+                        );
+                }
 
                 if (
                     typeof html !== 'string'
@@ -541,10 +499,6 @@ export function initAjaxNavigation()
                     ),
                 );
 
-                requestAnimationFrame(
-                    prefetchVisible,
-                );
-
             } catch (error) {
 
                 debugError(
@@ -554,17 +508,26 @@ export function initAjaxNavigation()
             }
         },
     );
+}
 
-    // =====================================
-    // INIT
-    // =====================================
+// =========================================
+// INIT
+// =========================================
+
+export function initAjaxNavigation()
+{
+    if (window.__SPA__) {
+        return;
+    }
+
+    window.__SPA__ =
+        true;
+
+    bindNavigation();
+
+    bindPopstate();
 
     updateActiveNavigation();
-
-    setTimeout(
-        prefetchVisible,
-        200,
-    );
 
     debug(
         'AJAX',
