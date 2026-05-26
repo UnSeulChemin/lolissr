@@ -14,7 +14,7 @@ abstract class Model
 {
     protected string $table = '';
 
-    protected PDO $db;
+    protected Database $db;
 
     public function __construct(
         Database $database,

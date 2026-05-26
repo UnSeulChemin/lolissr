@@ -38,14 +38,17 @@ export function delegate(
 {
     parent.addEventListener(eventType, (event) =>
     {
-        const target = event.target.closest(selector);
+        const element =
+            event.target instanceof Element
+                ? event.target.closest(selector)
+                : null;
 
-        if (!target)
+        if (!element)
         {
             return;
         }
 
-        callback(event, target);
+        callback(event, element);
     });
 }
 

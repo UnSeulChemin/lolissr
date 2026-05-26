@@ -16,7 +16,7 @@ final class CsrfMiddleware implements MiddlewareInterface
             return;
         }
 
-        $sessionToken = Session::pull(
+        $sessionToken = Session::get(
             'csrf_token',
         );
 

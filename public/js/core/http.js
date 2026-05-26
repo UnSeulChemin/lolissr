@@ -7,11 +7,7 @@
  */
 function getCsrfToken()
 {
-    return document
-        .querySelector(
-            'meta[name="csrf-token"]',
-        )
-        ?.content ?? '';
+    return window.csrfToken || '';
 }
 
 /**
@@ -125,11 +121,11 @@ export function post(
         method: 'POST',
 
         body:
-            JSON.stringify(body),
+            new URLSearchParams(body),
 
         headers: {
             'Content-Type':
-                'application/json',
+                'application/x-www-form-urlencoded',
         },
 
         ...options,
