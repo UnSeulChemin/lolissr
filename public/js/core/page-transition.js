@@ -2,21 +2,75 @@
 // Page Transition
 // ==================================================
 
+let transitionId =
+    0;
+
+/*
+|------------------------------------------------------------------
+| Run Page Transition
+|------------------------------------------------------------------
+*/
+
 export async function runPageTransition(
     callback,
 )
 {
+    const currentId =
+        ++transitionId;
+
+    // ==============================================
+    // View Transition API
+    // ==============================================
+
     if (
-        typeof document.startViewTransition
+        typeof document
+            .startViewTransition
         === 'function'
     ) {
 
-        return document
-            .startViewTransition(
-                callback,
-            )
-            .finished;
+        let transition;
+
+        try {
+
+            transition =
+                document
+                    .startViewTransition(
+                        async () =>
+                        {
+                            if (
+                                currentId
+                                !== transitionId
+                            ) {
+                                return;
+                            }
+
+                            await callback();
+                        },
+                    );
+
+        } catch {
+
+            await callback();
+
+            return;
+        }
+
+        try {
+
+            await transition.finished;
+
+        } catch {
+
+            // Browser aborted transition
+            // Ignore silently
+        }
+
+        return;
     }
+
+    // ==============================================
+    // Fallback
+    // ==============================================
 
     await callback();
 }
@@ -29,13 +83,20 @@ export function transitionOut(
     element,
 )
 {
-    if (! element) {
+    if (
+        !element
+        || !element.isConnected
+    ) {
         return;
     }
 
     element.classList.remove(
         'page-transition-enter',
     );
+
+    // Force reflow
+
+    void element.offsetWidth;
 
     element.classList.add(
         'page-transitioning',
@@ -50,7 +111,10 @@ export function transitionIn(
     element,
 )
 {
-    if (! element) {
+    if (
+        !element
+        || !element.isConnected
+    ) {
         return;
     }
 
@@ -58,31 +122,78 @@ export function transitionIn(
         'page-transitioning',
     );
 
+    // Force reflow
+
+    void element.offsetWidth;
+
     element.classList.add(
         'page-transition-enter',
     );
 
-    const cleanup = (
-        event,
-    ) =>
-    {
-        if (event.target !== element) {
-            return;
-        }
+    let cleaned =
+        false;
 
-        element.classList.remove(
-            'page-transition-enter',
-        );
+    const cleanup =
+        (
+            event,
+        ) =>
+        {
+            if (cleaned) {
+                return;
+            }
 
-        element.removeEventListener(
-            'transitionend',
+            if (
+                event
+                && event.target
+                    !== element
+            ) {
+                return;
+            }
+
+            cleaned =
+                true;
+
+            if (
+                !element.isConnected
+            ) {
+                return;
+            }
+
+            element.classList.remove(
+                'page-transition-enter',
+            );
+
+            element.removeEventListener(
+                'transitionend',
+                cleanup,
+            );
+        };
+
+    // Fallback timeout
+
+    const timeout =
+        window.setTimeout(
             cleanup,
+            250,
         );
-    };
 
     element.addEventListener(
         'transitionend',
-        cleanup,
+        (
+            event,
+        ) =>
+        {
+            clearTimeout(
+                timeout,
+            );
+
+            cleanup(
+                event,
+            );
+        },
+        {
+            once: true,
+        },
     );
 }
 
@@ -91,9 +202,17 @@ export function transitionIn(
 // ==================================================
 
 export function scrollTop(
-    smooth = true,
+    smooth = false,
 )
 {
+    if (
+        document.body.dataset
+            .ajaxNavigating
+        === 'true'
+    ) {
+        return;
+    }
+
     window.scrollTo({
         top: 0,
         behavior:
@@ -109,12 +228,28 @@ export function scrollTop(
 
 export function initPageTransitions()
 {
-    requestAnimationFrame(
+    // Prevent first paint transition bugs
+
+    window.addEventListener(
+        'load',
         () =>
         {
-            document.body.classList.add(
-                'page-ready',
+            requestAnimationFrame(
+                () =>
+                {
+                    requestAnimationFrame(
+                        () =>
+                        {
+                            document.body.classList.add(
+                                'page-ready',
+                            );
+                        },
+                    );
+                },
             );
+        },
+        {
+            once: true,
         },
     );
 }

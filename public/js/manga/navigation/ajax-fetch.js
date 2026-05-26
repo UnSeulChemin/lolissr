@@ -26,11 +26,9 @@ function normalizeUrl(
     );
 }
 
-/*
-|------------------------------------------------------------------
-| Fetch Page HTML
-|------------------------------------------------------------------
-*/
+// ==================================================
+// Fetch Page HTML
+// ==================================================
 
 export async function fetchPageHtml(
     href,
@@ -52,40 +50,63 @@ export async function fetchPageHtml(
         );
 
     if (cached) {
-
         return cached;
     }
 
     // ==============================================
-    // Fetch
+    // Timeout
     // ==============================================
 
-    const response =
-        await fetch(
-            normalizedUrl,
+    const timeoutController =
+        new AbortController();
+
+    const timeout =
+        setTimeout(
+            () =>
             {
-                signal:
-                    options.signal,
-
-                headers: {
-                    'X-Requested-With':
-                        'XMLHttpRequest',
-
-                    'X-Partial':
-                        'true',
-
-                    'Accept':
-                        'text/html',
-                },
+                timeoutController.abort();
             },
+            10000,
         );
 
-    if (! response.ok) {
+    const signal =
+        options.signal
+            ?? timeoutController.signal;
 
-        throw new Error(
-            '[AJAX] Request failed',
+    try {
+
+        const response =
+            await fetch(
+                normalizedUrl,
+                {
+                    signal,
+
+                    headers: {
+                        'X-Requested-With':
+                            'XMLHttpRequest',
+
+                        'X-Partial':
+                            'true',
+
+                        'Accept':
+                            'text/html',
+                    },
+                },
+            );
+
+        if (!response.ok) {
+
+            throw new Error(
+                `[AJAX] ${response.status}`,
+            );
+        }
+
+        return await response.text();
+
+    } finally {
+
+        clearTimeout(
+            timeout,
         );
     }
-
-    return await response.text();
 }

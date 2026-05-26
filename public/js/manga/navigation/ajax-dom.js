@@ -2,10 +2,6 @@
 // AJAX DOM
 // ==================================================
 
-// ==================================================
-// Selectors
-// ==================================================
-
 const contentSelector =
     '.collection-ajax-content';
 
@@ -58,14 +54,6 @@ function updateDocumentTitle(
     }
 }
 
-function resetScroll()
-{
-    window.scrollTo({
-        top: 0,
-        behavior: 'auto',
-    });
-}
-
 // ==================================================
 // Replace Content
 // ==================================================
@@ -74,16 +62,6 @@ export async function replaceContent(
     html,
 )
 {
-    const currentContent =
-        getContent();
-
-    if (! currentContent) {
-
-        throw new Error(
-            '[AJAX DOM] Missing current content',
-        );
-    }
-
     // ==============================================
     // Parse
     // ==============================================
@@ -94,6 +72,45 @@ export async function replaceContent(
         );
 
     // ==============================================
+    // Validate response
+    // ==============================================
+
+    const newContent =
+        extractNewContent(
+            documentHtml,
+        );
+
+    // Invalid AJAX response
+    // Full reload fallback
+
+    if (!newContent) {
+
+        const redirectUrl =
+            documentHtml.location?.href
+            || window.location.href;
+
+        window.location.assign(
+            redirectUrl,
+        );
+
+        return;
+    }
+
+    // ==============================================
+    // Current content
+    // ==============================================
+
+    const currentContent =
+        getContent();
+
+    if (
+        !currentContent
+        || !currentContent.isConnected
+    ) {
+        return;
+    }
+
+    // ==============================================
     // Title
     // ==============================================
 
@@ -102,50 +119,25 @@ export async function replaceContent(
     );
 
     // ==============================================
-    // Extract
-    // ==============================================
-
-    const newContent =
-        extractNewContent(
-            documentHtml,
-        );
-
-    if (! newContent) {
-
-        throw new Error(
-            '[AJAX DOM] Missing new content',
-        );
-    }
-
-    // ==============================================
-    // Detached guard
-    // ==============================================
-
-    if (
-        !document.body.contains(
-            currentContent,
-        )
-    ) {
-        return;
-    }
-
-    // ==============================================
     // Build fragment
     // ==============================================
 
     const fragment =
         document.createDocumentFragment();
 
-    fragment.append(
-        ...Array.from(
+    const nodes =
+        Array.from(
             newContent.childNodes,
-        ).map(
-            (node) =>
-                node.cloneNode(
-                    true,
-                ),
-        ),
-    );
+        );
+
+    for (const node of nodes) {
+
+        fragment.appendChild(
+            node.cloneNode(
+                true,
+            ),
+        );
+    }
 
     // ==============================================
     // Replace
@@ -154,10 +146,4 @@ export async function replaceContent(
     currentContent.replaceChildren(
         fragment,
     );
-
-    // ==============================================
-    // Scroll
-    // ==============================================
-
-    resetScroll();
 }

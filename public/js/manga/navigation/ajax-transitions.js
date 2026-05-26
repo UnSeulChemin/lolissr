@@ -2,16 +2,62 @@
 // AJAX Transitions
 // ==================================================
 
-function delay(
-    duration,
+function waitTransitionEnd(
+    element,
+    timeout = 250,
 )
 {
     return new Promise(
         (resolve) =>
         {
-            window.setTimeout(
-                resolve,
-                duration,
+            let resolved =
+                false;
+
+            const cleanup =
+                () =>
+                {
+                    if (resolved) {
+                        return;
+                    }
+
+                    resolved = true;
+
+                    element.removeEventListener(
+                        'transitionend',
+                        handleEnd,
+                    );
+
+                    clearTimeout(
+                        fallback,
+                    );
+
+                    resolve();
+                };
+
+            const handleEnd =
+                (
+                    event,
+                ) =>
+                {
+                    if (
+                        event.target
+                        !== element
+                    ) {
+                        return;
+                    }
+
+                    cleanup();
+                };
+
+            const fallback =
+                window.setTimeout(
+                    cleanup,
+                    timeout,
+                );
+
+            element.addEventListener(
+                'transitionend',
+                handleEnd,
             );
         },
     );
@@ -32,12 +78,15 @@ export async function animateContentOut(
         'page-transition-visible',
     );
 
+    // Force reflow
+    void content.offsetWidth;
+
     content.classList.add(
         'page-transition-out',
     );
 
-    await delay(
-        90,
+    await waitTransitionEnd(
+        content,
     );
 }
 
@@ -59,6 +108,9 @@ export async function animateContentIn(
         'page-transition-in',
     );
 
+    // Force reflow
+    void content.offsetWidth;
+
     requestAnimationFrame(
         () =>
         {
@@ -68,8 +120,8 @@ export async function animateContentIn(
         },
     );
 
-    await delay(
-        140,
+    await waitTransitionEnd(
+        content,
     );
 
     content.classList.remove(

@@ -22,6 +22,9 @@ const recentPrefetches =
 let initialized =
     false;
 
+let hoverTimeout =
+    null;
+
 // ==================================================
 // Config
 // ==================================================
@@ -34,6 +37,9 @@ const PREFETCH_COOLDOWN =
 
 const PREFETCH_CACHE_LIMIT =
     50;
+
+const PREFETCH_TIMEOUT =
+    8000;
 
 // ==================================================
 // Selectors
@@ -70,20 +76,20 @@ function normalizeUrl(
 
 function cleanupOldCache()
 {
-    if (
+    while (
         prefetchedPages.size
-        < PREFETCH_CACHE_LIMIT
+        >= PREFETCH_CACHE_LIMIT
     ) {
-        return;
-    }
 
-    const oldestKey =
-        prefetchedPages
-            .keys()
-            .next()
-            .value;
+        const oldestKey =
+            prefetchedPages
+                .keys()
+                .next()
+                .value;
 
-    if (oldestKey) {
+        if (!oldestKey) {
+            break;
+        }
 
         prefetchedPages.delete(
             oldestKey,
@@ -95,14 +101,11 @@ export function getPrefetchedPage(
     href,
 )
 {
-    const normalizedUrl =
-        normalizeUrl(
-            href,
-        );
-
     return (
         prefetchedPages.get(
-            normalizedUrl,
+            normalizeUrl(
+                href,
+            ),
         )
         || null
     );
@@ -131,7 +134,7 @@ function shouldIgnoreLink(
         return true;
     }
 
-    if (! link.href) {
+    if (!link.href) {
         return true;
     }
 
@@ -141,20 +144,12 @@ function shouldIgnoreLink(
             window.location.origin,
         );
 
-    // ==============================================
-    // External
-    // ==============================================
-
     if (
         url.origin
         !== window.location.origin
     ) {
         return true;
     }
-
-    // ==============================================
-    // Same page hash
-    // ==============================================
 
     if (
         url.hash
@@ -164,20 +159,11 @@ function shouldIgnoreLink(
         return true;
     }
 
-    // ==============================================
-    // Blank target
-    // ==============================================
-
     if (
-        link.target
-        === '_blank'
+        link.target === '_blank'
     ) {
         return true;
     }
-
-    // ==============================================
-    // Download
-    // ==============================================
 
     if (
         link.hasAttribute(
@@ -187,20 +173,11 @@ function shouldIgnoreLink(
         return true;
     }
 
-    // ==============================================
-    // AJAX opt-out
-    // ==============================================
-
     if (
-        link.dataset.ajax
-        === 'false'
+        link.dataset.ajax === 'false'
     ) {
         return true;
     }
-
-    // ==============================================
-    // Static files
-    // ==============================================
 
     if (
         /\.(jpg|jpeg|png|gif|webp|svg|pdf|zip)$/i
@@ -210,6 +187,24 @@ function shouldIgnoreLink(
     }
 
     return false;
+}
+
+function isRecentlyPrefetched(
+    normalizedUrl,
+)
+{
+    const last =
+        recentPrefetches.get(
+            normalizedUrl,
+        );
+
+    return (
+        last
+        && (
+            performance.now()
+            - last
+        ) < PREFETCH_COOLDOWN
+    );
 }
 
 // ==================================================
@@ -225,36 +220,6 @@ export async function prefetchPage(
             href,
         );
 
-    // ==============================================
-    // Anti spam
-    // ==============================================
-
-    const now =
-        Date.now();
-
-    const lastPrefetch =
-        recentPrefetches.get(
-            normalizedUrl,
-        );
-
-    if (
-        lastPrefetch
-        && (
-            now - lastPrefetch
-        ) < PREFETCH_COOLDOWN
-    ) {
-        return;
-    }
-
-    recentPrefetches.set(
-        normalizedUrl,
-        now,
-    );
-
-    // ==============================================
-    // Already cached
-    // ==============================================
-
     if (
         prefetchedPages.has(
             normalizedUrl,
@@ -262,10 +227,6 @@ export async function prefetchPage(
     ) {
         return;
     }
-
-    // ==============================================
-    // Already pending
-    // ==============================================
 
     if (
         pendingRequests.has(
@@ -275,6 +236,19 @@ export async function prefetchPage(
         return;
     }
 
+    if (
+        isRecentlyPrefetched(
+            normalizedUrl,
+        )
+    ) {
+        return;
+    }
+
+    recentPrefetches.set(
+        normalizedUrl,
+        performance.now(),
+    );
+
     const controller =
         new AbortController();
 
@@ -282,6 +256,15 @@ export async function prefetchPage(
         normalizedUrl,
         controller,
     );
+
+    const timeout =
+        window.setTimeout(
+            () =>
+            {
+                controller.abort();
+            },
+            PREFETCH_TIMEOUT,
+        );
 
     try {
 
@@ -311,7 +294,7 @@ export async function prefetchPage(
                 },
             );
 
-        if (! response.ok) {
+        if (!response.ok) {
             return;
         }
 
@@ -339,6 +322,10 @@ export async function prefetchPage(
 
     } finally {
 
+        clearTimeout(
+            timeout,
+        );
+
         pendingRequests.delete(
             normalizedUrl,
         );
@@ -346,120 +333,117 @@ export async function prefetchPage(
 }
 
 // ==================================================
-// Hover / Focus Prefetch
+// Delegated Hover Prefetch
 // ==================================================
 
-function bindHoverPrefetch()
+function handlePointerEnter(
+    event,
+)
 {
-    const links =
-        document.querySelectorAll(
+    const target =
+        event.target;
+
+    if (
+        !(target instanceof Element)
+    ) {
+        return;
+    }
+
+    const link =
+        target.closest(
             linkSelector,
         );
 
-    links.forEach(
-        (link) =>
-        {
-            if (
-                shouldIgnoreLink(
-                    link,
-                )
-            ) {
-                return;
-            }
+    if (
+        shouldIgnoreLink(
+            link,
+        )
+    ) {
+        return;
+    }
 
-            // ==========================================
-            // Prevent duplicate binding
-            // ==========================================
+    clearTimeout(
+        hoverTimeout,
+    );
 
-            if (
-                link.dataset.prefetchBound
-                === 'true'
-            ) {
-                return;
-            }
+    hoverTimeout =
+        window.setTimeout(
+            () =>
+            {
+                prefetchPage(
+                    link.href,
+                );
+            },
+            PREFETCH_DELAY,
+        );
+}
 
-            link.dataset.prefetchBound =
-                'true';
+function handlePointerLeave()
+{
+    clearTimeout(
+        hoverTimeout,
+    );
+}
 
-            let hoverTimeout =
-                null;
+function handleFocus(
+    event,
+)
+{
+    const target =
+        event.target;
 
-            // ==========================================
-            // Hover
-            // ==========================================
+    if (
+        !(target instanceof Element)
+    ) {
+        return;
+    }
 
-            link.addEventListener(
-                'mouseenter',
-                () =>
-                {
-                    hoverTimeout =
-                        window.setTimeout(
-                            () =>
-                            {
-                                prefetchPage(
-                                    link.href,
-                                );
-                            },
-                            PREFETCH_DELAY,
-                        );
-                },
-                {
-                    passive: true,
-                },
-            );
+    const link =
+        target.closest(
+            linkSelector,
+        );
 
-            // ==========================================
-            // Cancel hover
-            // ==========================================
+    if (
+        shouldIgnoreLink(
+            link,
+        )
+    ) {
+        return;
+    }
 
-            link.addEventListener(
-                'mouseleave',
-                () =>
-                {
-                    clearTimeout(
-                        hoverTimeout,
-                    );
-                },
-                {
-                    passive: true,
-                },
-            );
+    prefetchPage(
+        link.href,
+    );
+}
 
-            // ==========================================
-            // Keyboard focus
-            // ==========================================
+function handleTouchStart(
+    event,
+)
+{
+    const target =
+        event.target;
 
-            link.addEventListener(
-                'focus',
-                () =>
-                {
-                    prefetchPage(
-                        link.href,
-                    );
-                },
-                {
-                    passive: true,
-                },
-            );
+    if (
+        !(target instanceof Element)
+    ) {
+        return;
+    }
 
-            // ==========================================
-            // Mobile touch
-            // ==========================================
+    const link =
+        target.closest(
+            linkSelector,
+        );
 
-            link.addEventListener(
-                'touchstart',
-                () =>
-                {
-                    prefetchPage(
-                        link.href,
-                    );
-                },
-                {
-                    passive: true,
-                    once: true,
-                },
-            );
-        },
+    if (
+        shouldIgnoreLink(
+            link,
+        )
+    ) {
+        return;
+    }
+
+    prefetchPage(
+        link.href,
     );
 }
 
@@ -475,8 +459,7 @@ function prefetchNextSeriesPage()
         );
 
     if (
-        ! nextPage
-        || !(
+        !(
             nextPage
             instanceof HTMLAnchorElement
         )
@@ -502,7 +485,30 @@ export function initPrefetchNavigation()
     initialized =
         true;
 
-    bindHoverPrefetch();
+    document.addEventListener(
+        'pointerenter',
+        handlePointerEnter,
+        true,
+    );
+
+    document.addEventListener(
+        'pointerleave',
+        handlePointerLeave,
+        true,
+    );
+
+    document.addEventListener(
+        'focusin',
+        handleFocus,
+    );
+
+    document.addEventListener(
+        'touchstart',
+        handleTouchStart,
+        {
+            passive: true,
+        },
+    );
 
     prefetchNextSeriesPage();
 
@@ -510,9 +516,12 @@ export function initPrefetchNavigation()
         'ajax:page-loaded',
         () =>
         {
-            bindHoverPrefetch();
-
-            prefetchNextSeriesPage();
+            queueMicrotask(
+                () =>
+                {
+                    prefetchNextSeriesPage();
+                },
+            );
         },
     );
 }

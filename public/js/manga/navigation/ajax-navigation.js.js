@@ -32,6 +32,9 @@ let currentController =
 let currentNavigationId =
     0;
 
+let transitionLock =
+    false;
+
 // ==================================================
 // Selectors
 // ==================================================
@@ -57,7 +60,7 @@ function shouldIgnoreLink(
         return true;
     }
 
-    if (! link.href) {
+    if (!link.href) {
         return true;
     }
 
@@ -67,16 +70,12 @@ function shouldIgnoreLink(
             window.location.origin,
         );
 
-    // External
-
     if (
         url.origin
         !== window.location.origin
     ) {
         return true;
     }
-
-    // Same page hash
 
     if (
         url.hash
@@ -86,16 +85,11 @@ function shouldIgnoreLink(
         return true;
     }
 
-    // Blank target
-
     if (
-        link.target
-        === '_blank'
+        link.target === '_blank'
     ) {
         return true;
     }
-
-    // Download
 
     if (
         link.hasAttribute(
@@ -105,16 +99,12 @@ function shouldIgnoreLink(
         return true;
     }
 
-    // Opt out
-
     if (
         link.dataset.ajax
         === 'false'
     ) {
         return true;
     }
-
-    // Static files
 
     if (
         /\.(jpg|jpeg|png|gif|webp|svg|pdf|zip)$/i
@@ -126,33 +116,72 @@ function shouldIgnoreLink(
     return false;
 }
 
+function isNavigationValid(
+    navigationId,
+    signal,
+)
+{
+    return (
+        !signal.aborted
+        && navigationId
+            === currentNavigationId
+    );
+}
+
+function schedulePrefetch(
+    callback,
+)
+{
+    if (
+        'requestIdleCallback'
+        in window
+    ) {
+
+        window.requestIdleCallback(
+            callback,
+            {
+                timeout: 500,
+            },
+        );
+
+        return;
+    }
+
+    window.setTimeout(
+        callback,
+        150,
+    );
+}
+
 // ==================================================
 // Prefetch
 // ==================================================
 
 function prefetchVisibleLinks()
 {
+    if (transitionLock) {
+        return;
+    }
+
     const links =
         document.querySelectorAll(
             navigationSelector,
         );
 
-    links.forEach(
-        (link) =>
-        {
-            if (
-                shouldIgnoreLink(
-                    link,
-                )
-            ) {
-                return;
-            }
+    for (const link of links) {
 
-            prefetchPage(
-                link.href,
-            );
-        },
-    );
+        if (
+            shouldIgnoreLink(
+                link,
+            )
+        ) {
+            continue;
+        }
+
+        prefetchPage(
+            link.href,
+        );
+    }
 }
 
 // ==================================================
@@ -177,16 +206,19 @@ export async function navigateTo(
     // Abort previous
     // ==============================================
 
-    if (currentController) {
-
-        currentController.abort();
-    }
+    currentController?.abort();
 
     currentController =
         new AbortController();
 
     const signal =
         currentController.signal;
+
+    transitionLock =
+        true;
+
+    document.body.dataset.ajaxNavigating =
+        'true';
 
     try {
 
@@ -203,9 +235,10 @@ export async function navigateTo(
             );
 
         if (
-            signal.aborted
-            || navigationId
-                !== currentNavigationId
+            !isNavigationValid(
+                navigationId,
+                signal,
+            )
         ) {
             return;
         }
@@ -218,23 +251,26 @@ export async function navigateTo(
             async () =>
             {
                 if (
-                    signal.aborted
-                    || navigationId
-                        !== currentNavigationId
+                    !isNavigationValid(
+                        navigationId,
+                        signal,
+                    )
                 ) {
                     return;
                 }
 
                 await replaceContent(
                     html,
+                    navigationId,
                 );
             },
         );
 
         if (
-            signal.aborted
-            || navigationId
-                !== currentNavigationId
+            !isNavigationValid(
+                navigationId,
+                signal,
+            )
         ) {
             return;
         }
@@ -265,8 +301,20 @@ export async function navigateTo(
             !== false
         ) {
 
-            scrollTop(
-                false,
+            requestAnimationFrame(
+                () =>
+                {
+                    if (
+                        navigationId
+                        !== currentNavigationId
+                    ) {
+                        return;
+                    }
+
+                    scrollTop(
+                        false,
+                    );
+                },
             );
         }
 
@@ -284,9 +332,16 @@ export async function navigateTo(
         // Prefetch
         // ==========================================
 
-        requestAnimationFrame(
+        schedulePrefetch(
             () =>
             {
+                if (
+                    navigationId
+                    !== currentNavigationId
+                ) {
+                    return;
+                }
+
                 prefetchVisibleLinks();
             },
         );
@@ -295,8 +350,10 @@ export async function navigateTo(
 
         if (
             error instanceof Error
-            && error.name
+            && (
+                error.name
                 === 'AbortError'
+            )
         ) {
             return;
         }
@@ -309,6 +366,21 @@ export async function navigateTo(
         window.location.assign(
             url.href,
         );
+
+    } finally {
+
+        if (
+            navigationId
+            === currentNavigationId
+        ) {
+
+            transitionLock =
+                false;
+
+            delete document.body
+                .dataset
+                .ajaxNavigating;
+        }
     }
 }
 
@@ -320,6 +392,12 @@ function handleClick(
     event,
 )
 {
+    if (
+        event.defaultPrevented
+    ) {
+        return;
+    }
+
     const target =
         event.target;
 
@@ -342,8 +420,6 @@ function handleClick(
         return;
     }
 
-    // Native browser behavior
-
     if (
         event.ctrlKey
         || event.metaKey
@@ -353,8 +429,6 @@ function handleClick(
     ) {
         return;
     }
-
-    // Same URL
 
     if (
         link.href
@@ -408,7 +482,7 @@ export function initAjaxNavigation()
         handlePopState,
     );
 
-    requestAnimationFrame(
+    schedulePrefetch(
         () =>
         {
             prefetchVisibleLinks();

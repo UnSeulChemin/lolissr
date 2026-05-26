@@ -5,6 +5,9 @@
 let initialized =
     false;
 
+let locked =
+    false;
+
 /*
 |------------------------------------------------------------------
 | Helpers
@@ -58,17 +61,31 @@ function isInteractiveElement(
 
 function navigateBack()
 {
+    if (locked) {
+        return;
+    }
+
+    locked = true;
+
     if (
         window.history.length > 1
     ) {
 
         window.history.back();
 
-        return;
+    } else {
+
+        window.location.href =
+            '/lolissr/';
     }
 
-    window.location.href =
-        '/lolissr/';
+    window.setTimeout(
+        () =>
+        {
+            locked = false;
+        },
+        350,
+    );
 }
 
 /*
@@ -87,11 +104,13 @@ function handleKeyboard(
         return;
     }
 
-    /*
-    |--------------------------------------------------------------
-    | Ignore typing
-    |--------------------------------------------------------------
-    */
+    // Prevent key repeat spam
+
+    if (
+        event.repeat
+    ) {
+        return;
+    }
 
     if (
         isTypingContext(
@@ -101,12 +120,6 @@ function handleKeyboard(
         return;
     }
 
-    /*
-    |--------------------------------------------------------------
-    | Ignore interactive
-    |--------------------------------------------------------------
-    */
-
     if (
         isInteractiveElement(
             event.target,
@@ -114,12 +127,6 @@ function handleKeyboard(
     ) {
         return;
     }
-
-    /*
-    |--------------------------------------------------------------
-    | Ignore modifiers
-    |--------------------------------------------------------------
-    */
 
     if (
         event.ctrlKey
