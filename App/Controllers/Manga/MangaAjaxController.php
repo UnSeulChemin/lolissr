@@ -19,12 +19,17 @@ final class MangaAjaxController extends Controller
     private const AJAX_PATH =
         'manga/ajax';
 
+    private const SERIES_PATH =
+        'manga/series';
+
     public function __construct(
         private readonly MangaReadService $mangaReadService,
         private readonly MangaWriteService $mangaWriteService,
         Request $request,
     ) {
-        parent::__construct($request);
+        parent::__construct(
+            $request,
+        );
     }
 
     /*
@@ -206,7 +211,9 @@ final class MangaAjaxController extends Controller
                     $readStatus,
                 );
 
-        $this->jsonResult($result);
+        $this->jsonResult(
+            $result,
+        );
     }
 
     /*
@@ -242,15 +249,17 @@ final class MangaAjaxController extends Controller
         $redirect =
             $seriesStillExists
                 ? sprintf(
-                    '%s/manga/series/%s',
+                    '%s/%s/%s',
                     $this->baseUri,
+                    self::SERIES_PATH,
                     rawurlencode(
                         $manga->canonicalSlug,
                     ),
                 )
                 : sprintf(
-                    '%s/manga/series',
+                    '%s/%s',
                     $this->baseUri,
+                    self::SERIES_PATH,
                 );
 
         $this->jsonResult(
@@ -331,8 +340,8 @@ final class MangaAjaxController extends Controller
         }
 
         if (
-            $slug
-            !== $manga->canonicalSlug
+            $slug !==
+            $manga->canonicalSlug
         ) {
 
             throw new BaseHttpException(
@@ -343,14 +352,14 @@ final class MangaAjaxController extends Controller
                     409,
 
                 data: [
-                'redirect' => sprintf(
-                    '%s/%s/%d',
-                    self::SERIES_PATH,
-                    rawurlencode(
-                        $manga->canonicalSlug,
+                    'redirect' => sprintf(
+                        '%s/%s/%d',
+                        self::SERIES_PATH,
+                        rawurlencode(
+                            $manga->canonicalSlug,
+                        ),
+                        $numero,
                     ),
-                    $numero,
-                ),
                 ],
             );
         }

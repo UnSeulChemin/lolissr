@@ -14,6 +14,9 @@ export async function fetchSearchResults(
     return get(
         url,
         {
+            responseType:
+                'json',
+
             signal,
 
             headers:

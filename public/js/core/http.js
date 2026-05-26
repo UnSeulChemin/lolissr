@@ -31,47 +31,52 @@ function buildHeaders(
 /**
  * SAFE RESPONSE PARSER
  */
+/**
+ * SAFE RESPONSE PARSER
+ */
 async function parseResponse(
     res,
     type = 'text',
 )
 {
+    // =============================
+    // TEXT
+    // =============================
+
+    if (type === 'text') {
+
+        return await res.text();
+    }
+
+    // =============================
+    // JSON
+    // =============================
+
+    const text =
+        await res.text();
+
+    if (
+        text.trim() === ''
+    ) {
+        return null;
+    }
+
     try {
 
-        // =============================
-        // TEXT
-        // =============================
+        return JSON.parse(
+            text,
+        );
 
-        if (type === 'text') {
+    } catch (error) {
 
-            return await res.text();
-        }
+        console.error(
+            'Invalid JSON response:',
+            text,
+        );
 
-        // =============================
-        // JSON
-        // =============================
-
-        const text =
-            await res.text();
-
-        if (text === '') {
-            return null;
-        }
-
-        try {
-
-            return JSON.parse(
-                text,
-            );
-
-        } catch {
-
-            return null;
-        }
-
-    } catch {
-
-        return null;
+        throw new Error(
+            'Invalid JSON response',
+        );
     }
 }
 
