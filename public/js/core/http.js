@@ -13,11 +13,17 @@ function getCsrfToken()
 /**
  * BUILD HEADERS
  */
-function buildHeaders(custom = {})
+function buildHeaders(
+    custom = {},
+)
 {
     return {
-        'X-Requested-With': 'XMLHttpRequest',
-        'X-CSRF-TOKEN': getCsrfToken(),
+        'X-Requested-With':
+            'XMLHttpRequest',
+
+        'X-CSRF-TOKEN':
+            getCsrfToken(),
+
         ...custom,
     };
 }
@@ -25,25 +31,46 @@ function buildHeaders(custom = {})
 /**
  * SAFE RESPONSE PARSER
  */
-async function parseResponse(res, type = 'text')
+async function parseResponse(
+    res,
+    type = 'text',
+)
 {
     try {
 
-        // TEXT MODE
+        // =============================
+        // TEXT
+        // =============================
+
         if (type === 'text') {
+
             return await res.text();
         }
 
-        // JSON MODE SAFE
-        const text = await res.text();
+        // =============================
+        // JSON
+        // =============================
+
+        const text =
+            await res.text();
+
+        if (text === '') {
+            return null;
+        }
 
         try {
-            return JSON.parse(text);
+
+            return JSON.parse(
+                text,
+            );
+
         } catch {
+
             return null;
         }
 
     } catch {
+
         return null;
     }
 }
@@ -51,22 +78,47 @@ async function parseResponse(res, type = 'text')
 /**
  * MAIN REQUEST
  */
-export async function request(url, options = {})
+export async function request(
+    url,
+    options = {},
+)
 {
-    const res = await fetch(url, {
-        credentials: 'same-origin',
-        ...options,
-        headers: buildHeaders(options.headers),
-    });
+    const responseType =
+        options.responseType
+        || 'text';
 
-    const data = await parseResponse(
-        res,
-        options.responseType || 'text'
-    );
+    const res =
+        await fetch(
+            url,
+            {
+                credentials:
+                    'same-origin',
+
+                ...options,
+
+                headers:
+                    buildHeaders(
+                        options.headers,
+                    ),
+            },
+        );
+
+    const data =
+        await parseResponse(
+            res,
+            responseType,
+        );
+
+    // =============================
+    // HTTP ERROR
+    // =============================
 
     if (!res.ok) {
+
         throw {
-            status: res.status,
+            status:
+                res.status,
+
             data,
         };
     }
@@ -77,16 +129,24 @@ export async function request(url, options = {})
 /**
  * GET
  */
-export function get(url, options = {})
+export function get(
+    url,
+    options = {},
+)
 {
-    return request(url, {
-        method: 'GET',
-        ...options,
-    });
+    return request(
+        url,
+        {
+            method:
+                'GET',
+
+            ...options,
+        },
+    );
 }
 
 /**
- * POST (IMPORTANT POUR TON PROJET)
+ * POST
  */
 export function post(
     url,
@@ -97,7 +157,8 @@ export function post(
     return request(
         url,
         {
-            method: 'POST',
+            method:
+                'POST',
 
             responseType:
                 'json',

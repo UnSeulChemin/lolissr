@@ -22,10 +22,12 @@ const TRIM_DASHES_REGEX =
 // =========================================
 
 export function normalizeBase(
-    value,
+    value = '',
 )
 {
-    return value
+    return String(
+        value,
+    )
         .toLowerCase()
         .trim()
         .normalize(
@@ -42,7 +44,7 @@ export function normalizeBase(
 // =========================================
 
 export function generateSlug(
-    value,
+    value = '',
 )
 {
     return normalizeBase(
@@ -74,7 +76,7 @@ export function generateSlug(
 // =========================================
 
 export function normalizeSearchQuery(
-    value,
+    value = '',
 )
 {
     return generateSlug(

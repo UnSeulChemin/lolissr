@@ -51,10 +51,6 @@ function updateUploadText(
 
 export function initAjouterPage()
 {
-    // =====================================
-    // Form
-    // =====================================
-
     const form =
         $(
             FORM_SELECTOR,
@@ -88,24 +84,16 @@ export function initAjouterPage()
     // =====================================
 
     const livreInput =
-        $(
-            '#livre',
-        );
+        $('#livre');
 
     const slugInput =
-        $(
-            '#slug',
-        );
+        $('#slug');
 
     const imageInput =
-        $(
-            '#image',
-        );
+        $('#image');
 
     const uploadText =
-        $(
-            '.form-upload-text',
-        );
+        $('.form-upload-text');
 
     // =====================================
     // Auto Slug
@@ -216,6 +204,9 @@ export function initAjouterPage()
                             method:
                                 'POST',
 
+                            responseType:
+                                'json',
+
                             headers:
                             {
                                 'Accept':
@@ -229,6 +220,15 @@ export function initAjouterPage()
                         },
                     );
 
+                debug(
+                    'AJOUTER',
+                    data,
+                );
+
+                // =============================
+                // Error
+                // =============================
+
                 if (
                     !data?.success
                 ) {
@@ -241,6 +241,10 @@ export function initAjouterPage()
 
                     return;
                 }
+
+                // =============================
+                // Success
+                // =============================
 
                 showToast(
                     data.message
@@ -278,9 +282,9 @@ export function initAjouterPage()
                 );
 
                 showToast(
-                    error instanceof Error
-                        ? error.message
-                        : 'Erreur serveur',
+                    error?.data?.message
+                    || error.message
+                    || 'Erreur serveur',
                     'error',
                 );
 

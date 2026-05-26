@@ -405,7 +405,21 @@ final class MangaController extends Controller
                     $request->files(),
                 );
 
-        $this->json($result);
+        $slug =
+            rawurlencode(
+                $request->dto()->slug,
+            );
+
+        $this->json([
+            'success' =>
+                $result->success,
+
+            'message' =>
+                $result->message,
+
+            'data' =>
+                $result->data,
+        ]);
     }
 
     /*

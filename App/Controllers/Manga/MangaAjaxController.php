@@ -343,15 +343,14 @@ final class MangaAjaxController extends Controller
                     409,
 
                 data: [
-                    'redirect' => sprintf(
-                        '%s/%s/%s/%d',
-                        $this->baseUri,
-                        self::AJAX_PATH,
-                        rawurlencode(
-                            $manga->canonicalSlug,
-                        ),
-                        $numero,
+                'redirect' => sprintf(
+                    '%s/%s/%d',
+                    self::SERIES_PATH,
+                    rawurlencode(
+                        $manga->canonicalSlug,
                     ),
+                    $numero,
+                ),
                 ],
             );
         }
