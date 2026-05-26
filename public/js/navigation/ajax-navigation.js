@@ -12,12 +12,17 @@ import {
 
 import {
     prefetchPage,
-} from './prefetch-series.js';
+} from './prefetch.js';
 
 import {
     runPageTransition,
     scrollTop,
-} from '../../core/page-transition.js';
+} from '../core/page-transition.js';
+
+import {
+    debug,
+    debugError,
+} from '../core/debug.js';
 
 // ==================================================
 // Config
@@ -104,9 +109,7 @@ function shouldIgnoreLink(
             window.location.origin,
         );
 
-    // ==============================================
     // External
-    // ==============================================
 
     if (
         url.origin
@@ -115,9 +118,7 @@ function shouldIgnoreLink(
         return true;
     }
 
-    // ==============================================
-    // Same page hash
-    // ==============================================
+    // Same-page hash
 
     if (
         url.hash
@@ -130,9 +131,7 @@ function shouldIgnoreLink(
         return true;
     }
 
-    // ==============================================
     // New tab
-    // ==============================================
 
     if (
         link.target
@@ -141,9 +140,7 @@ function shouldIgnoreLink(
         return true;
     }
 
-    // ==============================================
     // Download
-    // ==============================================
 
     if (
         link.hasAttribute(
@@ -153,9 +150,7 @@ function shouldIgnoreLink(
         return true;
     }
 
-    // ==============================================
     // Opt-out
-    // ==============================================
 
     if (
         link.dataset.ajax
@@ -164,9 +159,7 @@ function shouldIgnoreLink(
         return true;
     }
 
-    // ==============================================
     // Static files
-    // ==============================================
 
     if (
         /\.(jpg|jpeg|png|gif|webp|svg|pdf|zip)$/i
@@ -223,7 +216,7 @@ function updateActiveNavigation()
 {
     const path =
         normalizeUrl(
-            window.location.pathname,
+            window.location.href,
         );
 
     const links =
@@ -245,7 +238,7 @@ function updateActiveNavigation()
 
         const href =
             normalizeUrl(
-                link.pathname,
+                link.href,
             );
 
         // ==========================================
@@ -270,8 +263,11 @@ function updateActiveNavigation()
 
         if (
             href !== '/lolissr/'
-            && path.startsWith(
-                href,
+            && (
+                path === href
+                || path.startsWith(
+                    href,
+                )
             )
         ) {
 
@@ -340,13 +336,11 @@ export async function navigateTo(
             window.location.href,
         );
 
-    // ==============================================
     // Prevent duplicate navigation
-    // ==============================================
 
     if (
         normalizedTarget
-        === normalizedCurrent
+       === normalizedCurrent
     ) {
         return;
     }
@@ -374,6 +368,12 @@ export async function navigateTo(
 
     document.body.dataset.ajaxNavigating =
         'true';
+
+    debug(
+        'AJAX',
+        '➡️ Navigate',
+        normalizedTarget,
+    );
 
     try {
 
@@ -499,14 +499,12 @@ export async function navigateTo(
             return;
         }
 
-        console.error(
-            '[AJAX NAV]',
+        debugError(
+            'AJAX NAV',
             error,
         );
 
-        // ==========================================
         // Hard fallback
-        // ==========================================
 
         window.location.assign(
             url.href,
@@ -543,9 +541,7 @@ function handleClick(
         return;
     }
 
-    // ==============================================
     // Left click only
-    // ==============================================
 
     if (
         event.button !== 0
@@ -553,9 +549,7 @@ function handleClick(
         return;
     }
 
-    // ==============================================
     // Ignore modifiers
-    // ==============================================
 
     if (
         event.ctrlKey
@@ -638,9 +632,7 @@ export function initAjaxNavigation()
         handlePopState,
     );
 
-    // ==============================================
     // Initial delayed prefetch
-    // ==============================================
 
     window.setTimeout(
         () =>
@@ -648,5 +640,10 @@ export function initAjaxNavigation()
             prefetchVisibleLinks();
         },
         PREFETCH_DELAY,
+    );
+
+    debug(
+        'AJAX',
+        '✅ Navigation initialized',
     );
 }

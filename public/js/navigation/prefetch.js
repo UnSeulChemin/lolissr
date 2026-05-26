@@ -1,13 +1,18 @@
 // ==================================================
-// Global Prefetch Navigation
+// Prefetch Navigation
 // ==================================================
+
+import {
+    debug,
+    debugError,
+} from '../core/debug.js';
 
 // ==================================================
 // Config
 // ==================================================
 
-const AJAX_CONTAINER_CLASS =
-    'ajax-content';
+const AJAX_CONTAINER_SELECTOR =
+    '.ajax-content';
 
 const PREFETCH_DELAY =
     80;
@@ -91,12 +96,15 @@ function isValidHtmlResponse(
     html,
 )
 {
-    return (
+    if (
         typeof html
-            === 'string'
-        && html.includes(
-            AJAX_CONTAINER_CLASS,
-        )
+        !== 'string'
+    ) {
+        return false;
+    }
+
+    return html.includes(
+        'ajax-content',
     );
 }
 
@@ -143,20 +151,12 @@ function shouldIgnoreLink(
             window.location.origin,
         );
 
-    // ==============================================
-    // External
-    // ==============================================
-
     if (
         url.origin
         !== window.location.origin
     ) {
         return true;
     }
-
-    // ==============================================
-    // Same-page hash
-    // ==============================================
 
     if (
         url.hash
@@ -166,20 +166,12 @@ function shouldIgnoreLink(
         return true;
     }
 
-    // ==============================================
-    // New tab
-    // ==============================================
-
     if (
         link.target
         === '_blank'
     ) {
         return true;
     }
-
-    // ==============================================
-    // Download
-    // ==============================================
 
     if (
         link.hasAttribute(
@@ -189,20 +181,12 @@ function shouldIgnoreLink(
         return true;
     }
 
-    // ==============================================
-    // Opt-out
-    // ==============================================
-
     if (
         link.dataset.ajax
         === 'false'
     ) {
         return true;
     }
-
-    // ==============================================
-    // Static files
-    // ==============================================
 
     if (
         /\.(jpg|jpeg|png|gif|webp|svg|pdf|zip)$/i
@@ -251,6 +235,12 @@ function storePrefetchedPage(
         url,
         html,
     );
+
+    debug(
+        'PREFETCH',
+        'cached',
+        url,
+    );
 }
 
 // ==================================================
@@ -284,10 +274,6 @@ export async function prefetchPage(
             href,
         );
 
-    // ==============================================
-    // Cache
-    // ==============================================
-
     if (
         prefetchedPages.has(
             normalizedUrl,
@@ -296,10 +282,6 @@ export async function prefetchPage(
         return;
     }
 
-    // ==============================================
-    // Pending
-    // ==============================================
-
     if (
         pendingRequests.has(
             normalizedUrl,
@@ -307,10 +289,6 @@ export async function prefetchPage(
     ) {
         return;
     }
-
-    // ==============================================
-    // Cooldown
-    // ==============================================
 
     if (
         isRecentlyPrefetched(
@@ -324,10 +302,6 @@ export async function prefetchPage(
         normalizedUrl,
         performance.now(),
     );
-
-    // ==============================================
-    // Controller
-    // ==============================================
 
     const controller =
         new AbortController();
@@ -347,6 +321,12 @@ export async function prefetchPage(
         );
 
     try {
+
+        debug(
+            'PREFETCH',
+            'fetch',
+            normalizedUrl,
+        );
 
         const response =
             await fetch(
@@ -384,14 +364,6 @@ export async function prefetchPage(
         const html =
             await response.text();
 
-        if (
-            !isValidHtmlResponse(
-                html,
-            )
-        ) {
-            return;
-        }
-
         storePrefetchedPage(
             normalizedUrl,
             html,
@@ -407,8 +379,8 @@ export async function prefetchPage(
             return;
         }
 
-        console.error(
-            '[PREFETCH]',
+        debugError(
+            'PREFETCH',
             error,
         );
 
@@ -425,7 +397,7 @@ export async function prefetchPage(
 }
 
 // ==================================================
-// Hover Prefetch
+// Hover
 // ==================================================
 
 function handlePointerEnter(
@@ -508,62 +480,6 @@ function handleFocus(
     );
 }
 
-function handleTouchStart(
-    event,
-)
-{
-    const target =
-        event.target;
-
-    if (
-        !(target instanceof Element)
-    ) {
-        return;
-    }
-
-    const link =
-        target.closest(
-            linkSelector,
-        );
-
-    if (
-        shouldIgnoreLink(
-            link,
-        )
-    ) {
-        return;
-    }
-
-    prefetchPage(
-        link.href,
-    );
-}
-
-// ==================================================
-// Auto preload next pagination page
-// ==================================================
-
-function prefetchNextSeriesPage()
-{
-    const nextPage =
-        document.querySelector(
-            '.collection-pagination-link.active + .collection-pagination-link',
-        );
-
-    if (
-        !(
-            nextPage
-            instanceof HTMLAnchorElement
-        )
-    ) {
-        return;
-    }
-
-    prefetchPage(
-        nextPage.href,
-    );
-}
-
 // ==================================================
 // Init
 // ==================================================
@@ -594,40 +510,8 @@ export function initPrefetchNavigation()
         handleFocus,
     );
 
-    document.addEventListener(
-        'touchstart',
-        handleTouchStart,
-        {
-            passive: true,
-        },
-    );
-
-    // ==============================================
-    // Initial delayed preload
-    // ==============================================
-
-    window.setTimeout(
-        () =>
-        {
-            prefetchNextSeriesPage();
-        },
-        500,
-    );
-
-    // ==============================================
-    // AJAX page loaded
-    // ==============================================
-
-    document.addEventListener(
-        'ajax:page-loaded',
-        () =>
-        {
-            queueMicrotask(
-                () =>
-                {
-                    prefetchNextSeriesPage();
-                },
-            );
-        },
+    debug(
+        'PREFETCH',
+        'initialized',
     );
 }

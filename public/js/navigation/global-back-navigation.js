@@ -2,6 +2,10 @@
 // Global Back Navigation
 // ==================================================
 
+import {
+    config,
+} from '../core/config.js';
+
 const BACK_LOCK_DURATION =
     350;
 
@@ -103,7 +107,7 @@ function navigateBack()
     // ==============================================
 
     window.location.assign(
-        '/lolissr/',
+        config.baseUrl,
     );
 }
 

@@ -4,7 +4,7 @@
 
 import {
     prefetchPage,
-} from './prefetch-series.js';
+} from '../../navigation/prefetch.js';
 
 // ==================================================
 // Config

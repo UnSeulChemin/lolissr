@@ -8,7 +8,7 @@ import {
 
 import {
     findSearchShortcuts,
-} from '../../navigation/search-shortcuts.js';
+} from '../../core/keyboard/search-shortcuts.js';
 
 // ======================================================
 // Utils
