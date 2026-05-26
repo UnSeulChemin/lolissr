@@ -6,8 +6,13 @@ import {
     config,
 } from '../core/config.js';
 
+// ==================================================
+// Config
+// ==================================================
+
 const BACK_LOCK_DURATION =
-    350;
+    config.navigation
+        .backLockDuration;
 
 // ==================================================
 // State
@@ -119,9 +124,7 @@ function handleKeyboard(
     event,
 )
 {
-    // ==============================================
     // Backspace only
-    // ==============================================
 
     if (
         event.key
@@ -130,9 +133,7 @@ function handleKeyboard(
         return;
     }
 
-    // ==============================================
     // Prevent repeat spam
-    // ==============================================
 
     if (
         event.repeat
@@ -140,9 +141,7 @@ function handleKeyboard(
         return;
     }
 
-    // ==============================================
     // Ignore typing fields
-    // ==============================================
 
     if (
         isTypingContext(
@@ -152,9 +151,7 @@ function handleKeyboard(
         return;
     }
 
-    // ==============================================
     // Ignore buttons / links
-    // ==============================================
 
     if (
         isInteractiveElement(
@@ -164,9 +161,7 @@ function handleKeyboard(
         return;
     }
 
-    // ==============================================
     // Ignore modifiers
-    // ==============================================
 
     if (
         event.ctrlKey

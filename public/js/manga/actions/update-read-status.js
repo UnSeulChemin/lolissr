@@ -1,29 +1,40 @@
-import { showToast }
-    from '../../core/toast.js';
+// ==================================================
+// Update Read Status
+// ==================================================
 
-/*
-|------------------------------------------------------------------
-| CSRF
-|------------------------------------------------------------------
-*/
+import {
+    showToast,
+} from '../../core/toast.js';
+
+import {
+    debug,
+    debugError,
+} from '../../core/debug.js';
+
+// ==================================================
+// Selectors
+// ==================================================
+
+const BUTTON_SELECTOR =
+    '.ajax-lu-button';
+
+// ==================================================
+// Helpers
+// ==================================================
 
 function getCsrfToken()
 {
-    return document
-        .querySelector(
-            'meta[name="csrf-token"]',
-        )
-        ?.getAttribute(
-            'content',
-        )
-        ?? '';
+    return (
+        document
+            .querySelector(
+                'meta[name="csrf-token"]',
+            )
+            ?.getAttribute(
+                'content',
+            )
+        || ''
+    );
 }
-
-/*
-|------------------------------------------------------------------
-| UI
-|------------------------------------------------------------------
-*/
 
 function updateButtonState(
     button,
@@ -31,10 +42,14 @@ function updateButtonState(
 )
 {
     const isRead =
-        readStatus === 1;
+        Number(
+            readStatus,
+        ) === 1;
 
     button.dataset.readStatus =
-        String(readStatus);
+        String(
+            readStatus,
+        );
 
     button.classList.toggle(
         'active',
@@ -53,13 +68,14 @@ function updateButtonState(
         'aria-label',
         label,
     );
-}
 
-/*
-|------------------------------------------------------------------
-| Request
-|------------------------------------------------------------------
-*/
+    button.setAttribute(
+        'aria-pressed',
+        isRead
+            ? 'true'
+            : 'false',
+    );
+}
 
 async function sendReadStatusRequest(
     url,
@@ -71,13 +87,16 @@ async function sendReadStatusRequest(
 
     formData.append(
         'readStatus',
-        String(readStatus),
+        String(
+            readStatus,
+        ),
     );
 
     const csrfToken =
         getCsrfToken();
 
-    if (csrfToken !== '') {
+    if (csrfToken) {
+
         formData.append(
             'csrf_token',
             csrfToken,
@@ -88,7 +107,11 @@ async function sendReadStatusRequest(
         await fetch(
             url,
             {
-                method: 'POST',
+                method:
+                    'POST',
+
+                credentials:
+                    'same-origin',
 
                 headers:
                 {
@@ -99,7 +122,8 @@ async function sendReadStatusRequest(
                         'application/json',
                 },
 
-                body: formData,
+                body:
+                    formData,
             },
         );
 
@@ -112,52 +136,64 @@ async function sendReadStatusRequest(
     };
 }
 
-/*
-|------------------------------------------------------------------
-| Init
-|------------------------------------------------------------------
-*/
+// ==================================================
+// Init
+// ==================================================
 
 export function initUpdateReadStatus()
 {
-    /*
-    |--------------------------------------------------------------
-    | Anti double init
-    |--------------------------------------------------------------
-    */
+    // ==============================================
+    // Prevent double init
+    // ==============================================
 
     if (
         document.body.dataset
-            .updateReadStatusInit
+            .updateReadStatusInitialized
         === 'true'
     ) {
         return;
     }
 
     document.body.dataset
-        .updateReadStatusInit =
+        .updateReadStatusInitialized =
             'true';
 
-    /*
-    |--------------------------------------------------------------
-    | Delegation globale
-    |--------------------------------------------------------------
-    */
+    // ==============================================
+    // Click delegation
+    // ==============================================
 
     document.addEventListener(
         'click',
-        async event =>
+        async (
+            event,
+        ) =>
         {
-            const button =
-                event.target.closest(
-                    '.ajax-lu-button',
-                );
+            const target =
+                event.target;
 
-            if (!button) {
+            if (
+                !(target instanceof Element)
+            ) {
                 return;
             }
 
-            if (button.disabled) {
+            const button =
+                target.closest(
+                    BUTTON_SELECTOR,
+                );
+
+            if (
+                !(
+                    button
+                    instanceof HTMLButtonElement
+                )
+            ) {
+                return;
+            }
+
+            if (
+                button.disabled
+            ) {
                 return;
             }
 
@@ -167,42 +203,38 @@ export function initUpdateReadStatus()
             if (!url) {
 
                 showToast(
-                    'URL de mise à jour manquante',
+                    'URL manquante',
                     'error',
                 );
 
                 return;
             }
 
-            /*
-            |------------------------------------------------------
-            | Current state
-            |------------------------------------------------------
-            */
+            // ======================================
+            // Current state
+            // ======================================
 
             const currentReadStatus =
-                button.dataset.readStatus
-                === '1';
+                Number(
+                    button.dataset.readStatus
+                    ?? 0,
+                );
 
             const nextReadStatus =
-                currentReadStatus
+                currentReadStatus === 1
                     ? 0
                     : 1;
 
-            /*
-            |------------------------------------------------------
-            | Disable button
-            |------------------------------------------------------
-            */
+            // ======================================
+            // Disable
+            // ======================================
 
             button.disabled =
                 true;
 
-            /*
-            |------------------------------------------------------
-            | Optimistic UI
-            |------------------------------------------------------
-            */
+            // ======================================
+            // Optimistic UI
+            // ======================================
 
             updateButtonState(
                 button,
@@ -210,6 +242,12 @@ export function initUpdateReadStatus()
             );
 
             try {
+
+                debug(
+                    'READ_STATUS',
+                    'update',
+                    nextReadStatus,
+                );
 
                 const {
                     response,
@@ -224,19 +262,14 @@ export function initUpdateReadStatus()
                     !response.ok
                     || !data.success
                 ) {
+
                     throw new Error(
                         data.message
-                        ?? 'Erreur lors de la mise à jour',
+                        || 'Erreur lors de la mise à jour',
                     );
                 }
 
-                /*
-                |--------------------------------------------------
-                | Final server state
-                |--------------------------------------------------
-                */
-
-                const readStatus =
+                const finalStatus =
                     Number(
                         data.readStatus
                         ?? nextReadStatus,
@@ -244,43 +277,35 @@ export function initUpdateReadStatus()
 
                 updateButtonState(
                     button,
-                    readStatus,
+                    finalStatus,
                 );
-
-                /*
-                |--------------------------------------------------
-                | Toast
-                |--------------------------------------------------
-                */
 
                 showToast(
                     data.message
-                    ?? 'Grammaire marquée comme maîtrisée',
+                    || 'Mise à jour effectuée',
                     'success',
                 );
 
             } catch (error) {
 
-                console.error(
+                debugError(
+                    'READ_STATUS',
                     error,
                 );
 
-                /*
-                |--------------------------------------------------
-                | Rollback
-                |--------------------------------------------------
-                */
+                // ==================================
+                // Rollback
+                // ==================================
 
                 updateButtonState(
                     button,
-                    currentReadStatus
-                        ? 1
-                        : 0,
+                    currentReadStatus,
                 );
 
                 showToast(
-                    error?.message
-                    ?? 'Erreur réseau',
+                    error instanceof Error
+                        ? error.message
+                        : 'Erreur réseau',
                     'error',
                 );
 
@@ -292,35 +317,46 @@ export function initUpdateReadStatus()
         },
     );
 
-    /*
-    |--------------------------------------------------------------
-    | Re-sync after AJAX
-    |--------------------------------------------------------------
-    */
+    // ==============================================
+    // AJAX refresh
+    // ==============================================
 
     document.addEventListener(
-        'ajax:series-loaded',
+        'ajax:page-loaded',
         () =>
         {
             document
                 .querySelectorAll(
-                    '.ajax-lu-button',
+                    BUTTON_SELECTOR,
                 )
                 .forEach(
-                    button =>
+                    (
+                        button,
+                    ) =>
                     {
-                        const readStatus =
-                            Number(
-                                button.dataset.readStatus
-                                ?? 0,
-                            );
+                        if (
+                            !(
+                                button
+                                instanceof HTMLButtonElement
+                            )
+                        ) {
+                            return;
+                        }
 
                         updateButtonState(
                             button,
-                            readStatus,
+                            Number(
+                                button.dataset.readStatus
+                                ?? 0,
+                            ),
                         );
                     },
                 );
         },
+    );
+
+    debug(
+        'READ_STATUS',
+        'initialized',
     );
 }

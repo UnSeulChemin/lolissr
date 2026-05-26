@@ -1,11 +1,26 @@
-import { showToast }
-    from '../../core/toast.js';
+// ==================================================
+// Delete Manga
+// ==================================================
 
-/*
-|------------------------------------------------------------------
-| CSRF
-|------------------------------------------------------------------
-*/
+import {
+    showToast,
+} from '../../core/toast.js';
+
+import {
+    debug,
+    debugError,
+} from '../../core/debug.js';
+
+// ==================================================
+// State
+// ==================================================
+
+let initialized =
+    false;
+
+// ==================================================
+// CSRF
+// ==================================================
 
 function getCsrfToken()
 {
@@ -19,11 +34,9 @@ function getCsrfToken()
         ?? '';
 }
 
-/*
-|------------------------------------------------------------------
-| Delete request
-|------------------------------------------------------------------
-*/
+// ==================================================
+// Request
+// ==================================================
 
 async function sendDeleteRequest(
     url,
@@ -35,7 +48,10 @@ async function sendDeleteRequest(
     const csrfToken =
         getCsrfToken();
 
-    if (csrfToken !== '') {
+    if (
+        csrfToken !== ''
+    ) {
+
         formData.append(
             'csrf_token',
             csrfToken,
@@ -46,18 +62,26 @@ async function sendDeleteRequest(
         await fetch(
             url,
             {
-                method: 'POST',
+                method:
+                    'POST',
+
+                credentials:
+                    'same-origin',
 
                 headers:
                 {
                     'X-Requested-With':
                         'XMLHttpRequest',
 
+                    'X-Partial':
+                        'true',
+
                     'Accept':
                         'application/json',
                 },
 
-                body: formData,
+                body:
+                    formData,
             },
         );
 
@@ -70,95 +94,105 @@ async function sendDeleteRequest(
     };
 }
 
-/*
-|------------------------------------------------------------------
-| Init
-|------------------------------------------------------------------
-*/
+// ==================================================
+// UI
+// ==================================================
+
+function setLoadingState(
+    button,
+    isLoading,
+)
+{
+    button.disabled =
+        isLoading;
+
+    button.textContent =
+        isLoading
+            ? 'Suppression...'
+            : (
+                button.dataset.originalText
+                || 'Supprimer'
+            );
+}
+
+// ==================================================
+// Init
+// ==================================================
 
 export function initDeleteManga()
 {
-    /*
-    |--------------------------------------------------------------
-    | Anti double init
-    |--------------------------------------------------------------
-    */
-
-    if (
-        document.body.dataset
-            .deleteMangaInit
-        === 'true'
-    ) {
+    if (initialized) {
         return;
     }
 
-    document.body.dataset
-        .deleteMangaInit =
-            'true';
-
-    /*
-    |--------------------------------------------------------------
-    | Global delegation
-    |--------------------------------------------------------------
-    */
+    initialized =
+        true;
 
     document.addEventListener(
         'click',
-        async event =>
+        async (
+            event,
+        ) =>
         {
-            const deleteButton =
-                event.target.closest(
-                    '.js-delete-manga',
-                );
-
-            if (!deleteButton) {
-                return;
-            }
-
-            /*
-            |------------------------------------------------------
-            | Prevent double click
-            |------------------------------------------------------
-            */
+            const target =
+                event.target;
 
             if (
-                deleteButton.disabled
+                !(target instanceof Element)
             ) {
                 return;
             }
 
-            /*
-            |------------------------------------------------------
-            | Confirm
-            |------------------------------------------------------
-            */
-
-            const confirmed =
-                window.confirm(
-                    `
-                    Supprimer ce manga ?
-                    Cette action est irréversible.
-                    `,
+            const button =
+                target.closest(
+                    '.js-delete-manga',
                 );
 
-            if (!confirmed) {
+            if (
+                !button
+                || !(
+                    button
+                    instanceof HTMLButtonElement
+                )
+            ) {
                 return;
             }
 
-            /*
-            |------------------------------------------------------
-            | Data
-            |------------------------------------------------------
-            */
+            // ======================================
+            // Prevent double click
+            // ======================================
+
+            if (
+                button.disabled
+            ) {
+                return;
+            }
+
+            // ======================================
+            // Confirm
+            // ======================================
+
+            const confirmed =
+                window.confirm(
+                    'Supprimer ce manga ?\nCette action est irréversible.',
+                );
+
+            if (
+                !confirmed
+            ) {
+                return;
+            }
+
+            // ======================================
+            // Data
+            // ======================================
 
             const url =
-                deleteButton.dataset.url;
+                button.dataset.url;
 
             const redirectUrl =
-                deleteButton.dataset.redirect;
-
-            const originalText =
-                deleteButton.textContent;
+                button.dataset.redirect
+                || '/';
 
             if (!url) {
 
@@ -170,17 +204,33 @@ export function initDeleteManga()
                 return;
             }
 
-            /*
-            |------------------------------------------------------
-            | Loading state
-            |------------------------------------------------------
-            */
+            // ======================================
+            // Store original label
+            // ======================================
 
-            deleteButton.disabled =
-                true;
+            if (
+                !button.dataset.originalText
+            ) {
 
-            deleteButton.textContent =
-                'Suppression...';
+                button.dataset.originalText =
+                    button.textContent
+                    || 'Supprimer';
+            }
+
+            // ======================================
+            // Loading
+            // ======================================
+
+            setLoadingState(
+                button,
+                true,
+            );
+
+            debug(
+                'DELETE',
+                'request',
+                url,
+            );
 
             try {
 
@@ -192,27 +242,24 @@ export function initDeleteManga()
                         url,
                     );
 
-                /*
-                |--------------------------------------------------
-                | Server error
-                |--------------------------------------------------
-                */
+                // ==================================
+                // Server error
+                // ==================================
 
                 if (
                     !response.ok
                     || !data.success
                 ) {
+
                     throw new Error(
                         data.message
                         ?? 'Erreur lors de la suppression.',
                     );
                 }
 
-                /*
-                |--------------------------------------------------
-                | Success
-                |--------------------------------------------------
-                */
+                // ==================================
+                // Success
+                // ==================================
 
                 showToast(
                     data.message
@@ -220,41 +267,48 @@ export function initDeleteManga()
                     'success',
                 );
 
-                /*
-                |--------------------------------------------------
-                | Redirect
-                |--------------------------------------------------
-                */
+                debug(
+                    'DELETE',
+                    'success',
+                    url,
+                );
+
+                // ==================================
+                // Redirect
+                // ==================================
 
                 window.location.href =
-                    data?.data?.redirect
-                    || redirectUrl
-                    || '/';
+                    data.data?.redirect
+                    || redirectUrl;
 
             } catch (error) {
 
-                console.error(
+                debugError(
+                    'DELETE',
                     error,
                 );
 
                 showToast(
-                    error?.message
-                    ?? 'Erreur réseau lors de la suppression.',
+                    error instanceof Error
+                        ? error.message
+                        : 'Erreur réseau lors de la suppression.',
                     'error',
                 );
 
-                /*
-                |--------------------------------------------------
-                | Restore button
-                |--------------------------------------------------
-                */
+                // ==================================
+                // Restore
+                // ==================================
 
-                deleteButton.disabled =
-                    false;
-
-                deleteButton.textContent =
-                    originalText;
+                setLoadingState(
+                    button,
+                    false,
+                );
             }
         },
+    );
+
+    debug(
+        'DELETE',
+        'initialized',
     );
 }

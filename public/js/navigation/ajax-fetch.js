@@ -6,15 +6,24 @@ import {
     getPrefetchedPage,
 } from './prefetch.js';
 
+import {
+    debug,
+    debugError,
+} from '../core/debug.js';
+
+import {
+    config,
+} from '../core/config.js';
+
 // ==================================================
 // Config
 // ==================================================
 
-const AJAX_CONTAINER_CLASS =
-    'ajax-content';
+const AJAX_CONTAINER_SELECTOR =
+    '.ajax-content';
 
 const FETCH_TIMEOUT =
-    10000;
+    config.ajax.timeout;
 
 // ==================================================
 // Helpers
@@ -51,12 +60,15 @@ function isValidHtmlResponse(
     html,
 )
 {
-    return (
+    if (
         typeof html
-            === 'string'
-        && html.includes(
-            AJAX_CONTAINER_CLASS,
-        )
+        !== 'string'
+    ) {
+        return false;
+    }
+
+    return html.includes(
+        AJAX_CONTAINER_SELECTOR,
     );
 }
 
@@ -125,18 +137,24 @@ export async function fetchPageHtml(
     // Prefetch cache
     // ==============================================
 
-    const cached =
+    const cachedPage =
         getPrefetchedPage(
             normalizedUrl,
         );
 
     if (
         isValidHtmlResponse(
-            cached,
+            cachedPage,
         )
     ) {
 
-        return cached;
+        debug(
+            'FETCH',
+            'cache-hit',
+            normalizedUrl,
+        );
+
+        return cachedPage;
     }
 
     // ==============================================
@@ -151,6 +169,12 @@ export async function fetchPageHtml(
     );
 
     try {
+
+        debug(
+            'FETCH',
+            'request',
+            normalizedUrl,
+        );
 
         const response =
             await fetch(
@@ -177,7 +201,7 @@ export async function fetchPageHtml(
         if (!response.ok) {
 
             throw new Error(
-                `[AJAX] ${response.status}`,
+                `[AJAX] HTTP ${response.status}`,
             );
         }
 
@@ -195,7 +219,37 @@ export async function fetchPageHtml(
             );
         }
 
+        debug(
+            'FETCH',
+            'success',
+            normalizedUrl,
+        );
+
         return html;
+
+    } catch (error) {
+
+        if (
+            error instanceof Error
+            && error.name
+                === 'AbortError'
+        ) {
+
+            debug(
+                'FETCH',
+                'aborted',
+                normalizedUrl,
+            );
+
+            throw error;
+        }
+
+        debugError(
+            'FETCH',
+            error,
+        );
+
+        throw error;
 
     } finally {
 

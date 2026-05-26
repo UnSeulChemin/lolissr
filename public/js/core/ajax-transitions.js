@@ -2,6 +2,14 @@
 // AJAX Transitions
 // ==================================================
 
+import {
+    debug,
+} from '../core/debug.js';
+
+// ==================================================
+// Config
+// ==================================================
+
 const TRANSITION_TIMEOUT =
     250;
 
@@ -9,13 +17,23 @@ const TRANSITION_TIMEOUT =
 // Helpers
 // ==================================================
 
+function forceReflow(
+    element,
+)
+{
+    void element.offsetWidth;
+}
+
 function waitTransitionEnd(
     element,
-    timeout = TRANSITION_TIMEOUT,
+    timeout =
+        TRANSITION_TIMEOUT,
 )
 {
     return new Promise(
-        (resolve) =>
+        (
+            resolve,
+        ) =>
         {
             if (
                 !element
@@ -33,7 +51,9 @@ function waitTransitionEnd(
             const cleanup =
                 () =>
                 {
-                    if (resolved) {
+                    if (
+                        resolved
+                    ) {
                         return;
                     }
 
@@ -46,7 +66,7 @@ function waitTransitionEnd(
                     );
 
                     clearTimeout(
-                        fallback,
+                        fallbackTimeout,
                     );
 
                     resolve();
@@ -67,7 +87,7 @@ function waitTransitionEnd(
                     cleanup();
                 };
 
-            const fallback =
+            const fallbackTimeout =
                 window.setTimeout(
                     cleanup,
                     timeout,
@@ -77,18 +97,12 @@ function waitTransitionEnd(
                 'transitionend',
                 handleEnd,
                 {
-                    once: true,
+                    once:
+                        true,
                 },
             );
         },
     );
-}
-
-function forceReflow(
-    element,
-)
-{
-    void element.offsetWidth;
 }
 
 // ==================================================
@@ -105,6 +119,11 @@ export async function animateContentOut(
     ) {
         return;
     }
+
+    debug(
+        'TRANSITION',
+        'animate out',
+    );
 
     content.classList.remove(
         'page-transition-in',
@@ -138,6 +157,11 @@ export async function animateContentIn(
     ) {
         return;
     }
+
+    debug(
+        'TRANSITION',
+        'animate in',
+    );
 
     content.classList.remove(
         'page-transition-out',
@@ -180,4 +204,48 @@ export async function animateContentIn(
         'page-transition-in',
         'page-transition-visible',
     );
+}
+
+// ==================================================
+// View Transition API
+// ==================================================
+
+export async function runViewTransition(
+    callback,
+)
+{
+    if (
+        typeof document.startViewTransition
+        !== 'function'
+    ) {
+
+        await callback();
+
+        return;
+    }
+
+    try {
+
+        const transition =
+            document.startViewTransition(
+                async () =>
+                {
+                    await callback();
+                },
+            );
+
+        await transition.finished;
+
+    } catch (
+        error
+    ) {
+
+        debug(
+            'TRANSITION',
+            'fallback',
+            error,
+        );
+
+        await callback();
+    }
 }

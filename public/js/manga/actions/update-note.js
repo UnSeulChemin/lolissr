@@ -1,19 +1,261 @@
+// ==================================================
+// Update Note
+// ==================================================
+
 import {
     showToast,
 } from '../../core/toast.js';
 
+import {
+    debug,
+    debugError,
+} from '../../core/debug.js';
+
 // ==================================================
-// CSRF
+// State
+// ==================================================
+
+let initialized =
+    false;
+
+let isSavingNotes =
+    false;
+
+// ==================================================
+// Helpers
 // ==================================================
 
 function getCsrfToken()
 {
-    return document
-        .querySelector(
-            'meta[name="csrf-token"]',
+    return (
+        document
+            .querySelector(
+                'meta[name="csrf-token"]',
+            )
+            ?.getAttribute(
+                'content',
+            )
+        || ''
+    );
+}
+
+function getDetailCard()
+{
+    return document.querySelector(
+        '.js-detail-card',
+    );
+}
+
+function getTotalNoteElement()
+{
+    return document.getElementById(
+        'ajax-note-total',
+    );
+}
+
+function refreshNoteButtonsState()
+{
+    const card =
+        getDetailCard();
+
+    if (!card) {
+        return;
+    }
+
+    card.querySelectorAll(
+        '.ajax-note-group',
+    ).forEach(
+        (
+            group,
+        ) =>
+        {
+            const fieldName =
+                group.dataset.field;
+
+            if (!fieldName) {
+                return;
+            }
+
+            const currentValue =
+                Number(
+                    card.dataset[
+                        fieldName
+                    ] ?? 0,
+                );
+
+            group.querySelectorAll(
+                '.ajax-note-button',
+            ).forEach(
+                (
+                    button,
+                ) =>
+                {
+                    if (
+                        !(
+                            button
+                            instanceof HTMLButtonElement
+                        )
+                    ) {
+                        return;
+                    }
+
+                    const buttonValue =
+                        Number(
+                            button.dataset.value,
+                        );
+
+                    button.classList.toggle(
+                        'active',
+                        currentValue
+                        === buttonValue,
+                    );
+
+                    button.disabled =
+                        isSavingNotes;
+                },
+            );
+        },
+    );
+}
+
+function updateTotalNote()
+{
+    const card =
+        getDetailCard();
+
+    const totalNoteEl =
+        getTotalNoteElement();
+
+    if (
+        !card
+        || !totalNoteEl
+    ) {
+        return;
+    }
+
+    const total =
+        Number(
+            card.dataset.jacquette
+            ?? 0,
         )
-        ?.getAttribute('content')
-        ?? '';
+        + Number(
+            card.dataset.livreNote
+            ?? 0,
+        );
+
+    totalNoteEl.textContent =
+        `${total}/10`;
+}
+
+async function saveNotes(
+    fieldName,
+    value,
+)
+{
+    const card =
+        getDetailCard();
+
+    if (!card) {
+        return;
+    }
+
+    const slug =
+        card.dataset.slug;
+
+    const numero =
+        card.dataset.numero;
+
+    const basePath =
+        card.dataset.basePath;
+
+    if (
+        !slug
+        || !numero
+        || !basePath
+    ) {
+
+        throw new Error(
+            'Informations manga manquantes',
+        );
+    }
+
+    const formData =
+        new FormData();
+
+    formData.append(
+        'jacquette',
+        fieldName === 'jacquette'
+            ? String(
+                value,
+            )
+            : (
+                card.dataset.jacquette
+                || '0'
+            ),
+    );
+
+    formData.append(
+        'livre_note',
+        fieldName === 'livreNote'
+            ? String(
+                value,
+            )
+            : (
+                card.dataset.livreNote
+                || '0'
+            ),
+    );
+
+    const csrfToken =
+        getCsrfToken();
+
+    if (csrfToken) {
+
+        formData.append(
+            'csrf_token',
+            csrfToken,
+        );
+    }
+
+    const response =
+        await fetch(
+            `${basePath}manga/ajax/update-note/${slug}/${numero}`,
+            {
+                method:
+                    'POST',
+
+                credentials:
+                    'same-origin',
+
+                headers:
+                {
+                    'X-Requested-With':
+                        'XMLHttpRequest',
+
+                    'Accept':
+                        'application/json',
+                },
+
+                body:
+                    formData,
+            },
+        );
+
+    const data =
+        await response.json();
+
+    if (
+        !response.ok
+        || !data.success
+    ) {
+
+        throw new Error(
+            data.message
+            || 'Erreur',
+        );
+    }
+
+    return data;
 }
 
 // ==================================================
@@ -22,291 +264,56 @@ function getCsrfToken()
 
 export function initUpdateNote()
 {
-    if (
-        document.body.dataset
-            .updateNoteInit
-        === 'true'
-    ) {
+    if (initialized) {
         return;
     }
 
-    document.body.dataset
-        .updateNoteInit = 'true';
+    initialized =
+        true;
 
-    let isSavingNotes =
-        false;
+    // ==============================================
+    // Click
+    // ==============================================
 
-    // ==================================================
-    // Elements
-    // ==================================================
-
-    const getDetailCard = () =>
-    {
-        return document.querySelector(
-            '.js-detail-card',
-        );
-    };
-
-    const totalNoteEl =
-        document.getElementById(
-            'ajax-note-total',
-        );
-
-    // ==================================================
-    // UI
-    // ==================================================
-
-    const refreshNoteButtonsState = () =>
-    {
-        const card =
-            getDetailCard();
-
-        if (! card) {
-            return;
-        }
-
-        card.querySelectorAll(
-            '.ajax-note-group',
-        ).forEach(
-            (group) =>
-            {
-                const fieldName =
-                    group.dataset.field;
-
-                const currentValue =
-                    Number(
-                        card.dataset[
-                            fieldName
-                        ] ?? '',
-                    );
-
-                group.querySelectorAll(
-                    '.ajax-note-button',
-                ).forEach(
-                    (button) =>
-                    {
-                        const buttonValue =
-                            Number(
-                                button.dataset.value,
-                            );
-
-                        button.classList.toggle(
-                            'active',
-                            currentValue
-                            === buttonValue,
-                        );
-
-                        button.disabled =
-                            isSavingNotes;
-                    },
-                );
-            },
-        );
-    };
-
-    // ==================================================
-    // Save
-    // ==================================================
-
-    const saveNotes = async (
-        fieldName,
-        value,
-    ) =>
-    {
-        const card =
-            getDetailCard();
-
-        if (! card) {
-            return;
-        }
-
-        const slug =
-            card.dataset.slug;
-
-        const numero =
-            card.dataset.numero;
-
-        const basePath =
-            card.dataset.basePath;
-
-        const formData =
-            new FormData();
-
-        formData.append(
-            'jacquette',
-            fieldName === 'jacquette'
-                ? value
-                : card.dataset.jacquette
-                    || '0',
-        );
-
-        formData.append(
-            'livre_note',
-            fieldName === 'livreNote'
-                ? value
-                : card.dataset.livreNote
-                    || '0',
-        );
-
-        const csrf =
-            getCsrfToken();
-
-        if (csrf !== '') {
-
-            formData.append(
-                'csrf_token',
-                csrf,
-            );
-        }
-
-        try {
-
-            isSavingNotes =
-                true;
-
-            refreshNoteButtonsState();
-
-            const response =
-                await fetch(
-                    `${basePath}manga/ajax/update-note/${slug}/${numero}`,
-                    {
-                        method: 'POST',
-
-                        headers: {
-                            'X-Requested-With':
-                                'XMLHttpRequest',
-
-                            'X-Partial':
-                                'true',
-
-                            'Accept':
-                                'application/json',
-                        },
-
-                        body: formData,
-                    },
-                );
-
-            const data =
-                await response.json();
+    document.addEventListener(
+        'click',
+        async (
+            event,
+        ) =>
+        {
+            const target =
+                event.target;
 
             if (
-                ! response.ok
-                || ! data.success
-            ) {
-
-                throw new Error(
-                    data.message
-                    ?? 'Erreur',
-                );
-            }
-
-            const notes =
-                data.data?.notes
-                ?? {};
-
-            if (
-                notes.jacquette
-                !== undefined
-            ) {
-
-                card.dataset.jacquette =
-                    String(
-                        notes.jacquette,
-                    );
-            }
-
-            if (
-                notes.livreNote
-                !== undefined
-            ) {
-
-                card.dataset.livreNote =
-                    String(
-                        notes.livreNote,
-                    );
-            }
-
-            // ==========================================
-            // Total
-            // ==========================================
-
-            if (totalNoteEl) {
-
-                const total =
-                    Number(
-                        card.dataset.jacquette
-                        ?? 0,
-                    )
-                    + Number(
-                        card.dataset.livreNote
-                        ?? 0,
-                    );
-
-                totalNoteEl.textContent =
-                    `${total}/10`;
-            }
-
-            refreshNoteButtonsState();
-
-            showToast(
-                data.message
-                ?? '✓ Sauvegardé',
-                'success',
-            );
-
-        } catch (error) {
-
-            if (
-                error.name
-                === 'AbortError'
+                !(target instanceof Element)
             ) {
                 return;
             }
 
-            console.error(
-                error,
-            );
-
-            showToast(
-                error?.message
-                ?? 'Erreur',
-                'error',
-            );
-
-        } finally {
-
-            isSavingNotes =
-                false;
-
-            refreshNoteButtonsState();
-        }
-    };
-
-    // ==================================================
-    // Click
-    // ==================================================
-
-    document.addEventListener(
-        'click',
-        async (event) =>
-        {
             const button =
-                event.target.closest(
+                target.closest(
                     '.ajax-note-button',
                 );
 
-            if (! button) {
+            if (
+                !(
+                    button
+                    instanceof HTMLButtonElement
+                )
+            ) {
+                return;
+            }
+
+            if (
+                isSavingNotes
+            ) {
                 return;
             }
 
             const card =
                 getDetailCard();
 
-            if (
-                ! card
-                || isSavingNotes
-            ) {
+            if (!card) {
                 return;
             }
 
@@ -315,50 +322,157 @@ export function initUpdateNote()
                     '.ajax-note-group',
                 );
 
-            if (! group) {
+            if (
+                !group
+            ) {
                 return;
             }
 
             const fieldName =
                 group.dataset.field;
 
-            if (! fieldName) {
+            if (!fieldName) {
                 return;
             }
+
+            const previousValue =
+                card.dataset[
+                    fieldName
+                ] || '0';
 
             const value =
                 Number(
                     button.dataset.value,
                 );
 
-            card.dataset[fieldName] =
-                String(value);
+            // ======================================
+            // Optimistic UI
+            // ======================================
+
+            card.dataset[
+                fieldName
+            ] =
+                String(
+                    value,
+                );
 
             refreshNoteButtonsState();
 
-            await saveNotes(
-                fieldName,
-                value,
-            );
+            updateTotalNote();
+
+            try {
+
+                isSavingNotes =
+                    true;
+
+                refreshNoteButtonsState();
+
+                debug(
+                    'NOTE',
+                    'save',
+                    fieldName,
+                    value,
+                );
+
+                const data =
+                    await saveNotes(
+                        fieldName,
+                        value,
+                    );
+
+                const notes =
+                    data.data?.notes
+                    ?? {};
+
+                if (
+                    notes.jacquette
+                    !== undefined
+                ) {
+
+                    card.dataset.jacquette =
+                        String(
+                            notes.jacquette,
+                        );
+                }
+
+                if (
+                    notes.livreNote
+                    !== undefined
+                ) {
+
+                    card.dataset.livreNote =
+                        String(
+                            notes.livreNote,
+                        );
+                }
+
+                updateTotalNote();
+
+                refreshNoteButtonsState();
+
+                showToast(
+                    data.message
+                    || '✓ Sauvegardé',
+                    'success',
+                );
+
+            } catch (error) {
+
+                debugError(
+                    'NOTE',
+                    error,
+                );
+
+                // ==================================
+                // Rollback
+                // ==================================
+
+                card.dataset[
+                    fieldName
+                ] =
+                    previousValue;
+
+                updateTotalNote();
+
+                refreshNoteButtonsState();
+
+                showToast(
+                    error instanceof Error
+                        ? error.message
+                        : 'Erreur',
+                    'error',
+                );
+
+            } finally {
+
+                isSavingNotes =
+                    false;
+
+                refreshNoteButtonsState();
+            }
         },
     );
 
-    // ==================================================
-    // Init
-    // ==================================================
+    // ==============================================
+    // Sync after AJAX
+    // ==============================================
+
+    document.addEventListener(
+        'ajax:page-loaded',
+        () =>
+        {
+            refreshNoteButtonsState();
+
+            updateTotalNote();
+        },
+    );
 
     refreshNoteButtonsState();
 
-    document.addEventListener(
-        'ajax:series-loaded',
-        refreshNoteButtonsState,
+    updateTotalNote();
+
+    debug(
+        'NOTE',
+        'initialized',
     );
 }
-
-document.addEventListener(
-    'DOMContentLoaded',
-    () =>
-    {
-        initUpdateNote();
-    },
-);

@@ -6,9 +6,22 @@ import {
     prefetchPage,
 } from '../../navigation/prefetch.js';
 
+import {
+    debug,
+} from '../../core/debug.js';
+
 // ==================================================
 // Config
 // ==================================================
+
+const GRID_SELECTOR =
+    '.collection-grid';
+
+const CARD_SELECTOR =
+    '.collection-card-link';
+
+const ACTIVE_CLASS =
+    'is-active';
 
 const SCROLL_THROTTLE =
     80;
@@ -36,7 +49,7 @@ let lastScrollTime =
 function getGrid()
 {
     return document.querySelector(
-        '.collection-grid',
+        GRID_SELECTOR,
     );
 }
 
@@ -44,39 +57,9 @@ function getCards()
 {
     return Array.from(
         document.querySelectorAll(
-            '.collection-card-link',
+            CARD_SELECTOR,
         ),
     );
-}
-
-function updateGridColumns()
-{
-    const grid =
-        getGrid();
-
-    if (!grid) {
-
-        cachedColumns =
-            1;
-
-        return;
-    }
-
-    const columns =
-        window
-            .getComputedStyle(
-                grid,
-            )
-            .gridTemplateColumns
-            .split(' ')
-            .filter(Boolean)
-            .length;
-
-    cachedColumns =
-        Math.max(
-            1,
-            columns,
-        );
 }
 
 function isTypingContext(
@@ -121,21 +104,49 @@ function clampIndex(
     return index;
 }
 
+function updateGridColumns()
+{
+    const grid =
+        getGrid();
+
+    if (!grid) {
+
+        cachedColumns =
+            1;
+
+        return;
+    }
+
+    const columns =
+        window
+            .getComputedStyle(
+                grid,
+            )
+            .gridTemplateColumns
+            .split(' ')
+            .filter(Boolean)
+            .length;
+
+    cachedColumns =
+        Math.max(
+            1,
+            columns,
+        );
+}
+
 function getNextPaginationLink()
 {
-    const next =
+    const link =
         document.querySelector(
             '.collection-pagination-link.active + .collection-pagination-link',
         );
 
-    if (
-        next
+    return (
+        link
         instanceof HTMLAnchorElement
-    ) {
-        return next;
-    }
-
-    return null;
+    )
+        ? link
+        : null;
 }
 
 // ==================================================
@@ -153,7 +164,7 @@ function clearActiveState()
     for (const card of cards) {
 
         card.classList.remove(
-            'is-active',
+            ACTIVE_CLASS,
         );
 
         if (
@@ -170,19 +181,18 @@ function updateCardsState(
     cards,
 )
 {
-    for (
-        let index = 0;
-        index < cards.length;
-        index++
-    ) {
-
-        cards[
-            index
-        ].classList.toggle(
-            'is-active',
-            index === activeIndex,
-        );
-    }
+    cards.forEach(
+        (
+            card,
+            index,
+        ) =>
+        {
+            card.classList.toggle(
+                ACTIVE_CLASS,
+                index === activeIndex,
+            );
+        },
+    );
 }
 
 function scrollCardIntoView(
@@ -218,34 +228,28 @@ function prefetchNearbyCards(
     cards,
 )
 {
-    const nextCard =
-        cards[
-            activeIndex + 1
+    const nearbyCards =
+        [
+            cards[
+                activeIndex - 1
+            ],
+
+            cards[
+                activeIndex + 1
+            ],
         ];
 
-    const previousCard =
-        cards[
-            activeIndex - 1
-        ];
+    for (const card of nearbyCards) {
 
-    if (
-        nextCard
-        instanceof HTMLAnchorElement
-    ) {
+        if (
+            card
+            instanceof HTMLAnchorElement
+        ) {
 
-        prefetchPage(
-            nextCard.href,
-        );
-    }
-
-    if (
-        previousCard
-        instanceof HTMLAnchorElement
-    ) {
-
-        prefetchPage(
-            previousCard.href,
-        );
+            prefetchPage(
+                card.href,
+            );
+        }
     }
 
     const nextPagination =
@@ -578,5 +582,10 @@ export function initSeriesKeyboardNavigation()
     window.addEventListener(
         'pageshow',
         clearActiveState,
+    );
+
+    debug(
+        'KEYBOARD',
+        'initialized',
     );
 }

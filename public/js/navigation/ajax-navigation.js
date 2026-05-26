@@ -1,5 +1,5 @@
 // ==================================================
-// Global AJAX Navigation
+// AJAX Navigation
 // ==================================================
 
 import {
@@ -23,6 +23,10 @@ import {
     debug,
     debugError,
 } from '../core/debug.js';
+
+import {
+    config,
+} from '../core/config.js';
 
 // ==================================================
 // Config
@@ -109,7 +113,9 @@ function shouldIgnoreLink(
             window.location.origin,
         );
 
+    // ==============================================
     // External
+    // ==============================================
 
     if (
         url.origin
@@ -118,7 +124,9 @@ function shouldIgnoreLink(
         return true;
     }
 
+    // ==============================================
     // Same-page hash
+    // ==============================================
 
     if (
         url.hash
@@ -131,7 +139,9 @@ function shouldIgnoreLink(
         return true;
     }
 
+    // ==============================================
     // New tab
+    // ==============================================
 
     if (
         link.target
@@ -140,7 +150,9 @@ function shouldIgnoreLink(
         return true;
     }
 
+    // ==============================================
     // Download
+    // ==============================================
 
     if (
         link.hasAttribute(
@@ -150,16 +162,20 @@ function shouldIgnoreLink(
         return true;
     }
 
-    // Opt-out
+    // ==============================================
+    // AJAX opt-out
+    // ==============================================
 
     if (
-        link.dataset.ajax
-        === 'false'
+        link.dataset.noAjax
+        !== undefined
     ) {
         return true;
     }
 
+    // ==============================================
     // Static files
+    // ==============================================
 
     if (
         /\.(jpg|jpeg|png|gif|webp|svg|pdf|zip)$/i
@@ -214,9 +230,9 @@ function schedulePrefetch(
 
 function updateActiveNavigation()
 {
-    const path =
+    const currentPath =
         normalizeUrl(
-            window.location.href,
+            window.location.pathname,
         );
 
     const links =
@@ -236,9 +252,9 @@ function updateActiveNavigation()
             'active',
         );
 
-        const href =
+        const linkPath =
             normalizeUrl(
-                link.href,
+                link.pathname,
             );
 
         // ==========================================
@@ -246,8 +262,9 @@ function updateActiveNavigation()
         // ==========================================
 
         if (
-            href === '/lolissr/'
-            && path === '/lolissr/'
+            linkPath === config.baseUrl
+            && currentPath
+                === config.baseUrl
         ) {
 
             link.classList.add(
@@ -262,12 +279,9 @@ function updateActiveNavigation()
         // ==========================================
 
         if (
-            href !== '/lolissr/'
-            && (
-                path === href
-                || path.startsWith(
-                    href,
-                )
+            linkPath !== config.baseUrl
+            && currentPath.startsWith(
+                linkPath,
             )
         ) {
 
@@ -336,12 +350,21 @@ export async function navigateTo(
             window.location.href,
         );
 
+    // ==============================================
     // Prevent duplicate navigation
+    // ==============================================
 
     if (
         normalizedTarget
-       === normalizedCurrent
+        === normalizedCurrent
     ) {
+
+        debug(
+            'AJAX',
+            'skip-same-url',
+            normalizedTarget,
+        );
+
         return;
     }
 
@@ -371,7 +394,7 @@ export async function navigateTo(
 
     debug(
         'AJAX',
-        '➡️ Navigate',
+        'navigate',
         normalizedTarget,
     );
 
@@ -489,6 +512,12 @@ export async function navigateTo(
             },
         );
 
+        debug(
+            'AJAX',
+            'done',
+            normalizedTarget,
+        );
+
     } catch (error) {
 
         if (
@@ -496,15 +525,24 @@ export async function navigateTo(
             && error.name
                 === 'AbortError'
         ) {
+
+            debug(
+                'AJAX',
+                'aborted',
+                normalizedTarget,
+            );
+
             return;
         }
 
         debugError(
-            'AJAX NAV',
+            'AJAX',
             error,
         );
 
+        // ==========================================
         // Hard fallback
+        // ==========================================
 
         window.location.assign(
             url.href,
@@ -541,7 +579,9 @@ function handleClick(
         return;
     }
 
+    // ==============================================
     // Left click only
+    // ==============================================
 
     if (
         event.button !== 0
@@ -549,7 +589,9 @@ function handleClick(
         return;
     }
 
+    // ==============================================
     // Ignore modifiers
+    // ==============================================
 
     if (
         event.ctrlKey
@@ -632,7 +674,9 @@ export function initAjaxNavigation()
         handlePopState,
     );
 
-    // Initial delayed prefetch
+    // ==============================================
+    // Initial prefetch
+    // ==============================================
 
     window.setTimeout(
         () =>
@@ -644,6 +688,6 @@ export function initAjaxNavigation()
 
     debug(
         'AJAX',
-        '✅ Navigation initialized',
+        'initialized',
     );
 }

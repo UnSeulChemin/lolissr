@@ -7,6 +7,10 @@ import {
     debugError,
 } from '../core/debug.js';
 
+import {
+    config,
+} from '../core/config.js';
+
 // ==================================================
 // Config
 // ==================================================
@@ -14,17 +18,12 @@ import {
 const AJAX_CONTAINER_SELECTOR =
     '.ajax-content';
 
-const PREFETCH_DELAY =
-    80;
-
-const PREFETCH_COOLDOWN =
-    3000;
-
-const PREFETCH_CACHE_LIMIT =
-    50;
-
-const PREFETCH_TIMEOUT =
-    8000;
+const {
+    delay: PREFETCH_DELAY,
+    cooldown: PREFETCH_COOLDOWN,
+    timeout: PREFETCH_TIMEOUT,
+    cacheLimit: PREFETCH_CACHE_LIMIT = 50,
+} = config.prefetch;
 
 // ==================================================
 // Cache
@@ -104,7 +103,7 @@ function isValidHtmlResponse(
     }
 
     return html.includes(
-        'ajax-content',
+        AJAX_CONTAINER_SELECTOR,
     );
 }
 
@@ -151,6 +150,10 @@ function shouldIgnoreLink(
             window.location.origin,
         );
 
+    // ==============================================
+    // External
+    // ==============================================
+
     if (
         url.origin
         !== window.location.origin
@@ -158,13 +161,24 @@ function shouldIgnoreLink(
         return true;
     }
 
+    // ==============================================
+    // Same page hash
+    // ==============================================
+
     if (
         url.hash
-        && url.pathname
-            === window.location.pathname
+        && normalizeUrl(
+            url.href,
+        ) === normalizeUrl(
+            window.location.href,
+        )
     ) {
         return true;
     }
+
+    // ==============================================
+    // New tab
+    // ==============================================
 
     if (
         link.target
@@ -172,6 +186,10 @@ function shouldIgnoreLink(
     ) {
         return true;
     }
+
+    // ==============================================
+    // Download
+    // ==============================================
 
     if (
         link.hasAttribute(
@@ -181,12 +199,20 @@ function shouldIgnoreLink(
         return true;
     }
 
+    // ==============================================
+    // AJAX opt-out
+    // ==============================================
+
     if (
-        link.dataset.ajax
-        === 'false'
+        link.dataset.noAjax
+        !== undefined
     ) {
         return true;
     }
+
+    // ==============================================
+    // Static files
+    // ==============================================
 
     if (
         /\.(jpg|jpeg|png|gif|webp|svg|pdf|zip)$/i
@@ -202,16 +228,17 @@ function isRecentlyPrefetched(
     normalizedUrl,
 )
 {
-    const last =
+    const lastPrefetch =
         recentPrefetches.get(
             normalizedUrl,
         );
 
     return (
-        last
+        typeof lastPrefetch
+            === 'number'
         && (
             performance.now()
-            - last
+            - lastPrefetch
         ) < PREFETCH_COOLDOWN
     );
 }
@@ -226,6 +253,13 @@ function storePrefetchedPage(
             html,
         )
     ) {
+
+        debug(
+            'PREFETCH',
+            'invalid-html',
+            url,
+        );
+
         return;
     }
 
@@ -274,13 +308,28 @@ export async function prefetchPage(
             href,
         );
 
+    // ==============================================
+    // Cache
+    // ==============================================
+
     if (
         prefetchedPages.has(
             normalizedUrl,
         )
     ) {
+
+        debug(
+            'PREFETCH',
+            'cache-hit',
+            normalizedUrl,
+        );
+
         return;
     }
+
+    // ==============================================
+    // Pending request
+    // ==============================================
 
     if (
         pendingRequests.has(
@@ -289,6 +338,10 @@ export async function prefetchPage(
     ) {
         return;
     }
+
+    // ==============================================
+    // Cooldown
+    // ==============================================
 
     if (
         isRecentlyPrefetched(
@@ -302,6 +355,10 @@ export async function prefetchPage(
         normalizedUrl,
         performance.now(),
     );
+
+    // ==============================================
+    // Controller
+    // ==============================================
 
     const controller =
         new AbortController();
@@ -358,6 +415,14 @@ export async function prefetchPage(
             );
 
         if (!response.ok) {
+
+            debug(
+                'PREFETCH',
+                'http-error',
+                response.status,
+                normalizedUrl,
+            );
+
             return;
         }
 
@@ -376,6 +441,13 @@ export async function prefetchPage(
             && error.name
                 === 'AbortError'
         ) {
+
+            debug(
+                'PREFETCH',
+                'aborted',
+                normalizedUrl,
+            );
+
             return;
         }
 

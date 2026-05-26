@@ -2,17 +2,26 @@
 // AJAX DOM
 // ==================================================
 
-const contentSelector =
+import {
+    debug,
+    debugError,
+} from '../core/debug.js';
+
+// ==================================================
+// Config
+// ==================================================
+
+const AJAX_CONTAINER_SELECTOR =
     '.ajax-content';
 
 // ==================================================
 // Helpers
 // ==================================================
 
-function getContent()
+function getCurrentContent()
 {
     return document.querySelector(
-        contentSelector,
+        AJAX_CONTAINER_SELECTOR,
     );
 }
 
@@ -32,7 +41,7 @@ function extractNewContent(
 )
 {
     return documentHtml.querySelector(
-        contentSelector,
+        AJAX_CONTAINER_SELECTOR,
     );
 }
 
@@ -46,15 +55,33 @@ function updateDocumentTitle(
         );
 
     if (
-        title?.textContent
+        !title?.textContent
     ) {
-
-        document.title =
-            title.textContent;
+        return;
     }
+
+    document.title =
+        title.textContent;
 }
 
-function isValidAjaxResponse(
+function updateDocumentLanguage(
+    documentHtml,
+)
+{
+    const html =
+        documentHtml.documentElement;
+
+    if (
+        !html?.lang
+    ) {
+        return;
+    }
+
+    document.documentElement.lang =
+        html.lang;
+}
+
+function validateAjaxResponse(
     documentHtml,
 )
 {
@@ -73,48 +100,99 @@ export function replaceContent(
     html,
 )
 {
-    const documentHtml =
-        parseHtml(
-            html,
-        );
+    try {
 
-    if (
-        !isValidAjaxResponse(
+        // ==========================================
+        // Parse
+        // ==========================================
+
+        const documentHtml =
+            parseHtml(
+                html,
+            );
+
+        // ==========================================
+        // Validate
+        // ==========================================
+
+        if (
+            !validateAjaxResponse(
+                documentHtml,
+            )
+        ) {
+
+            throw new Error(
+                'Invalid AJAX response',
+            );
+        }
+
+        // ==========================================
+        // Current content
+        // ==========================================
+
+        const currentContent =
+            getCurrentContent();
+
+        if (
+            !currentContent
+            || !currentContent.isConnected
+        ) {
+
+            throw new Error(
+                'Current AJAX container not found',
+            );
+        }
+
+        // ==========================================
+        // New content
+        // ==========================================
+
+        const newContent =
+            extractNewContent(
+                documentHtml,
+            );
+
+        if (!newContent) {
+
+            throw new Error(
+                'New AJAX content not found',
+            );
+        }
+
+        // ==========================================
+        // Metadata
+        // ==========================================
+
+        updateDocumentTitle(
             documentHtml,
-        )
-    ) {
-
-        console.warn(
-            '[AJAX DOM] Invalid AJAX response',
         );
 
-        return;
-    }
-
-    const currentContent =
-        getContent();
-
-    if (
-        !currentContent
-        || !currentContent.isConnected
-    ) {
-        return;
-    }
-
-    const newContent =
-        extractNewContent(
+        updateDocumentLanguage(
             documentHtml,
         );
 
-    if (!newContent) {
-        return;
+        // ==========================================
+        // Replace
+        // ==========================================
+
+        currentContent.replaceWith(
+            newContent.cloneNode(
+                true,
+            ),
+        );
+
+        debug(
+            'DOM',
+            'content replaced',
+        );
+
+    } catch (error) {
+
+        debugError(
+            'DOM',
+            error,
+        );
+
+        throw error;
     }
-
-    updateDocumentTitle(
-        documentHtml,
-    );
-
-    currentContent.replaceWith(
-        newContent.cloneNode(true),
-    );
 }

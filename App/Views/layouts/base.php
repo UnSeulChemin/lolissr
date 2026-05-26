@@ -117,7 +117,7 @@ if (
 
     <script
         type="module"
-        src="<?= e($baseUri) ?>js/core/app.js">
+        src="<?= e($baseUri) ?>js/app.js">
     </script>
 
 </body>

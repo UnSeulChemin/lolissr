@@ -4,18 +4,34 @@
 
 export const state =
 {
+    // ==============================================
+    // Navigation
+    // ==============================================
+
     navigating:
         false,
 
     currentUrl:
         window.location.href,
 
-    cache:
+    // ==============================================
+    // Cache
+    // ==============================================
+
+    prefetchedPages:
         new Map(),
 
-    prefetched:
+    pendingRequests:
         new Map(),
+
+    recentPrefetches:
+        new Map(),
+
+    // ==============================================
+    // Debug
+    // ==============================================
 
     debug:
-        true,
+        window.location.hostname
+            === 'localhost',
 };

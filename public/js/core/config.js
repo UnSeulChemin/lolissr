@@ -2,13 +2,24 @@
 // App Config
 // ==================================================
 
+const basePath =
+    window.location.pathname
+        .startsWith('/lolissr/')
+        ? '/lolissr/'
+        : '/';
+
+// ==================================================
+// Config
+// ==================================================
+
 export const config =
 {
     debug:
-        true,
+        window.location.hostname
+            === 'localhost',
 
     baseUrl:
-        '/lolissr/',
+        basePath,
 
     ajax:
     {
@@ -26,11 +37,23 @@ export const config =
 
         cooldown:
             3000,
+
+        cacheLimit:
+            50,
     },
 
     transitions:
     {
         duration:
             250,
+    },
+
+    navigation:
+    {
+        backLockDuration:
+            350,
+
+        initialPrefetchDelay:
+            800,
     },
 };

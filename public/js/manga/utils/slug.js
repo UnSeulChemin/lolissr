@@ -1,31 +1,68 @@
-/**
-* Génère un slug propre à partir d'un texte.
-*/
-export function generateSlug(value)
+// ==================================================
+// Slug
+// ==================================================
+
+function normalizeBase(
+    value,
+)
 {
-return value
-.toLowerCase()
-.trim()
-/* Supprime caractères non autorisés */
-.replace(/[^a-z0-9\s-]/g, '')
-/* Espaces → tirets */
-.replace(/\s+/g, '-')
-/* Tirets multiples */
-.replace(/-+/g, '-')
-/* Tirets début / fin */
-.replace(/^-+|-+$/g, '');
+    return value
+        .toLowerCase()
+        .trim()
+        .normalize(
+            'NFD',
+        )
+        .replace(
+            /[\u0300-\u036f]/g,
+            '',
+        );
 }
-/**
-* Normalise une valeur de recherche pour l'URL.
-*/
-export function normalizeSearchQuery(value)
+
+// ==================================================
+// Generate Slug
+// ==================================================
+
+export function generateSlug(
+    value,
+)
 {
-return value
-.toLowerCase()
-.normalize('NFD')
-.replace(/[\u0300-\u036f]/g, '')
-.replace(/[^a-z0-9\s-]/g, '')
-.replace(/\s+/g, '-')
-.replace(/-+/g, '-')
-.replace(/^-+|-+$/g, '');
+    return normalizeBase(
+        value,
+    )
+        // caractères autorisés
+        .replace(
+            /[^a-z0-9\s-]/g,
+            '',
+        )
+
+        // espaces -> tirets
+        .replace(
+            /\s+/g,
+            '-',
+        )
+
+        // tirets multiples
+        .replace(
+            /-+/g,
+            '-',
+        )
+
+        // trim tirets
+        .replace(
+            /^-+|-+$/g,
+            '',
+        );
+}
+
+// ==================================================
+// Normalize Search Query
+// ==================================================
+
+export function normalizeSearchQuery(
+    value,
+)
+{
+    return generateSlug(
+        value,
+    );
 }

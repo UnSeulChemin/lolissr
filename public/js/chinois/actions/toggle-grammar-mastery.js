@@ -1,6 +1,25 @@
+// ==================================================
+// Toggle Grammar Mastery
+// ==================================================
+
 import {
     showToast,
 } from '../../core/toast.js';
+
+import {
+    debugError,
+} from '../../core/debug.js';
+
+// ==================================================
+// State
+// ==================================================
+
+let initialized =
+    false;
+
+// ==================================================
+// Helpers
+// ==================================================
 
 function getCsrfToken()
 {
@@ -8,168 +27,271 @@ function getCsrfToken()
         .querySelector(
             'meta[name="csrf-token"]',
         )
-        ?.getAttribute('content')
+        ?.getAttribute(
+            'content',
+        )
         ?? '';
 }
 
-export function initToggleGrammaireMaitrise()
+function isValidButton(
+    button,
+)
 {
-    document.addEventListener(
-        'click',
-        async (event) =>
-        {
-            const target =
-                event.target;
+    return (
+        button
+        instanceof HTMLButtonElement
+    );
+}
 
-            if (!(target instanceof Element)) {
-                return;
-            }
+function setLoading(
+    button,
+    state,
+)
+{
+    if (state) {
 
-            const button =
-                target.closest(
-                    '.grammar-mastered',
-                );
+        button.dataset.loading =
+            '1';
 
-            if (!button) {
-                return;
-            }
+        button.disabled =
+            true;
 
-            if (
-                button.dataset.loading === '1'
-            ) {
-                return;
-            }
+        return;
+    }
 
-            const url =
-                button.dataset.url;
+    delete button.dataset.loading;
 
-            if (!url) {
+    button.disabled =
+        false;
+}
 
-                showToast(
-                    'URL de mise à jour manquante',
-                    'error',
-                );
+function updateButtonState(
+    button,
+    mastered,
+)
+{
+    button.dataset.maitrise =
+        mastered
+            ? '1'
+            : '0';
 
-                return;
-            }
+    button.classList.toggle(
+        'active',
+        mastered,
+    );
 
-            button.dataset.loading = '1';
+    button.setAttribute(
+        'aria-pressed',
+        mastered
+            ? 'true'
+            : 'false',
+    );
 
-            const formData =
-                new FormData();
+    const label =
+        mastered
+            ? 'Retirer la maîtrise'
+            : 'Marquer comme maîtrisé';
 
-            formData.append(
-                'id',
-                button.dataset.id ?? '',
+    button.title =
+        label;
+
+    button.setAttribute(
+        'aria-label',
+        label,
+    );
+}
+
+async function toggleMastery(
+    button,
+)
+{
+    const url =
+        button.dataset.url;
+
+    if (!url) {
+
+        showToast(
+            'URL manquante',
+            'error',
+        );
+
+        return;
+    }
+
+    const formData =
+        new FormData();
+
+    formData.append(
+        'id',
+        button.dataset.id
+            ?? '',
+    );
+
+    const csrfToken =
+        getCsrfToken();
+
+    if (csrfToken) {
+
+        formData.append(
+            'csrf_token',
+            csrfToken,
+        );
+    }
+
+    setLoading(
+        button,
+        true,
+    );
+
+    try {
+
+        const response =
+            await fetch(
+                url,
+                {
+                    method:
+                        'POST',
+
+                    credentials:
+                        'same-origin',
+
+                    headers:
+                    {
+                        'X-Requested-With':
+                            'XMLHttpRequest',
+
+                        'X-Partial':
+                            'true',
+
+                        'Accept':
+                            'application/json',
+                    },
+
+                    body:
+                        formData,
+                },
             );
 
-            const csrfToken =
-                getCsrfToken();
+        const data =
+            await response.json();
 
-            if (csrfToken !== '') {
+        if (
+            !response.ok
+            || !data.success
+        ) {
 
-                formData.append(
-                    'csrf_token',
-                    csrfToken,
-                );
-            }
+            showToast(
+                data.message
+                    ?? 'Erreur lors de la mise à jour',
+                'error',
+            );
 
-            try {
+            return;
+        }
 
-                const response =
-                    await fetch(
-                        url,
-                        {
-                            method: 'POST',
+        const mastered =
+            Number(
+                data.data?.maitrise
+                    ?? 0,
+            ) === 1;
 
-                            headers: {
-                                'X-Requested-With':
-                                    'XMLHttpRequest',
+        updateButtonState(
+            button,
+            mastered,
+        );
 
-                                'X-Partial':
-                                    'true',
+        showToast(
+            data.message
+                ?? 'Mise à jour effectuée',
+            'success',
+        );
 
-                                'Accept':
-                                    'application/json',
-                            },
+    } catch (error) {
 
-                            body: formData,
-                        },
-                    );
+        if (
+            error instanceof Error
+            && error.name
+                === 'AbortError'
+        ) {
+            return;
+        }
 
-                const data =
-                    await response.json();
+        debugError(
+            'ToggleGrammarMastery',
+            error,
+        );
 
-                if (
-                    !response.ok
-                    || !data.success
-                ) {
+        showToast(
+            'Erreur réseau',
+            'error',
+        );
 
-                    showToast(
-                        data.message
-                            ?? 'Erreur lors de la mise à jour',
-                        'error',
-                    );
+    } finally {
 
-                    return;
-                }
+        setLoading(
+            button,
+            false,
+        );
+    }
+}
 
-                const mastered =
-                    Number(
-                        data.data?.maitrise ?? 0,
-                    ) === 1;
+// ==================================================
+// Events
+// ==================================================
 
-                button.dataset.maitrise =
-                    mastered
-                        ? '1'
-                        : '0';
+function handleClick(
+    event,
+)
+{
+    const target =
+        event.target;
 
-                button.classList.toggle(
-                    'active',
-                    mastered,
-                );
+    if (
+        !(target instanceof Element)
+    ) {
+        return;
+    }
 
-                button.setAttribute(
-                    'aria-pressed',
-                    mastered
-                        ? 'true'
-                        : 'false',
-                );
+    const button =
+        target.closest(
+            '.grammar-mastered',
+        );
 
-                const label =
-                    mastered
-                        ? 'Retirer la maîtrise'
-                        : 'Marquer comme maîtrisé';
+    if (
+        !isValidButton(
+            button,
+        )
+    ) {
+        return;
+    }
 
-                button.title =
-                    label;
+    if (
+        button.dataset.loading
+        === '1'
+    ) {
+        return;
+    }
 
-                button.setAttribute(
-                    'aria-label',
-                    label,
-                );
+    void toggleMastery(
+        button,
+    );
+}
 
-                showToast(
-                    data.message
-                        ?? 'Mise à jour effectuée',
-                    'success',
-                );
+// ==================================================
+// Init
+// ==================================================
 
-            } catch (error) {
+export function initToggleGrammaireMaitrise()
+{
+    if (initialized) {
+        return;
+    }
 
-                if (error.name === 'AbortError') {
-                    return;
-                }
+    initialized =
+        true;
 
-                showToast(
-                    'Erreur réseau',
-                    'error',
-                );
-
-            } finally {
-
-                delete button.dataset.loading;
-            }
-        },
+    document.addEventListener(
+        'click',
+        handleClick,
     );
 }

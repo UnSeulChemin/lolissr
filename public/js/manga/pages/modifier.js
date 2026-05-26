@@ -1,40 +1,74 @@
+// ==================================================
+// Modifier Page
+// ==================================================
+
+import {
+    debug,
+} from '../../core/debug.js';
+
+// ==================================================
+// Config
+// ==================================================
+
+const FORM_SELECTOR =
+    '.form-layout[data-form-page="modifier"]';
+
+// ==================================================
+// Helpers
+// ==================================================
+
+function getNumberValue(
+    input,
+)
+{
+    return Number(
+        input.value || 0,
+    );
+}
+
+function formatNote(
+    value,
+)
+{
+    return `${value}/10`;
+}
+
+// ==================================================
+// Init
+// ==================================================
+
 export function initModifierPage()
 {
-    /*
-    |------------------------------------------------------------------
-    | Éléments
-    |------------------------------------------------------------------
-    */
+    // ==============================================
+    // Form
+    // ==============================================
 
-    const form = document.querySelector(
-        '.form-layout[data-form-page="modifier"]',
-    );
+    const form =
+        document.querySelector(
+            FORM_SELECTOR,
+        );
 
     if (!form) {
         return;
     }
 
-    /*
-    |------------------------------------------------------------------
-    | Sécurité anti double init
-    |------------------------------------------------------------------
-    */
+    // ==============================================
+    // Prevent double init
+    // ==============================================
 
     if (
-        form.dataset.modifierPageInit
+        form.dataset.modifierPageInitialized
         === 'true'
     ) {
         return;
     }
 
-    form.dataset.modifierPageInit =
+    form.dataset.modifierPageInitialized =
         'true';
 
-    /*
-    |------------------------------------------------------------------
-    | Champs
-    |------------------------------------------------------------------
-    */
+    // ==============================================
+    // Inputs
+    // ==============================================
 
     const jacquetteInput =
         document.getElementById(
@@ -52,31 +86,39 @@ export function initModifierPage()
         );
 
     if (
-        !jacquetteInput
-        || !livreNoteInput
-        || !totalNoteInput
+        !(
+            jacquetteInput
+            instanceof HTMLInputElement
+        )
+        || !(
+            livreNoteInput
+            instanceof HTMLInputElement
+        )
+        || !(
+            totalNoteInput
+            instanceof HTMLInputElement
+        )
     ) {
+
+        debug(
+            'MODIFIER',
+            'missing inputs',
+        );
+
         return;
     }
 
-    /*
-    |------------------------------------------------------------------
-    | Calcul note totale
-    |------------------------------------------------------------------
-    */
+    // ==============================================
+    // Update total note
+    // ==============================================
 
-    function updateTotalNotePreview()
+    function updateTotalNote()
     {
-        const jacquetteValue =
-            jacquetteInput.value;
-
-        const livreValue =
-            livreNoteInput.value;
-
         if (
-            jacquetteValue === ''
-            || livreValue === ''
+            jacquetteInput.value === ''
+            || livreNoteInput.value === ''
         ) {
+
             totalNoteInput.value =
                 'Non calculée';
 
@@ -84,26 +126,41 @@ export function initModifierPage()
         }
 
         const total =
-            Number(
-                jacquetteValue,
+            getNumberValue(
+                jacquetteInput,
             )
-            + Number(
-                livreValue,
+            + getNumberValue(
+                livreNoteInput,
             );
 
         totalNoteInput.value =
-            `${total}/10`;
+            formatNote(
+                total,
+            );
     }
+
+    // ==============================================
+    // Events
+    // ==============================================
 
     jacquetteInput.addEventListener(
         'input',
-        updateTotalNotePreview,
+        updateTotalNote,
     );
 
     livreNoteInput.addEventListener(
         'input',
-        updateTotalNotePreview,
+        updateTotalNote,
     );
 
-    updateTotalNotePreview();
+    // ==============================================
+    // Initial state
+    // ==============================================
+
+    updateTotalNote();
+
+    debug(
+        'MODIFIER',
+        'initialized',
+    );
 }

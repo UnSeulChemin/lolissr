@@ -2,6 +2,14 @@
 // Page Transition
 // ==================================================
 
+import {
+    debug,
+} from './debug.js';
+
+// ==================================================
+// Config
+// ==================================================
+
 const TRANSITION_TIMEOUT =
     250;
 
@@ -18,11 +26,14 @@ function forceReflow(
 
 function waitTransitionEnd(
     element,
-    timeout = TRANSITION_TIMEOUT,
+    timeout =
+        TRANSITION_TIMEOUT,
 )
 {
     return new Promise(
-        (resolve) =>
+        (
+            resolve,
+        ) =>
         {
             if (
                 !element
@@ -40,7 +51,9 @@ function waitTransitionEnd(
             const cleanup =
                 () =>
                 {
-                    if (resolved) {
+                    if (
+                        resolved
+                    ) {
                         return;
                     }
 
@@ -84,7 +97,8 @@ function waitTransitionEnd(
                 'transitionend',
                 handleEnd,
                 {
-                    once: true,
+                    once:
+                        true,
                 },
             );
         },
@@ -92,39 +106,53 @@ function waitTransitionEnd(
 }
 
 // ==================================================
-// Run Page Transition
+// Run View Transition
 // ==================================================
 
 export async function runPageTransition(
     callback,
 )
 {
+    // ==============================================
+    // Native View Transition
+    // ==============================================
+
     if (
         typeof document.startViewTransition
-        !== 'function'
+        === 'function'
     ) {
 
-        callback();
+        try {
 
-        return;
-    }
+            const transition =
+                document.startViewTransition(
+                    async () =>
+                    {
+                        await callback();
+                    },
+                );
 
-    try {
+            await transition.finished;
 
-        const transition =
-            document.startViewTransition(
-                async () =>
-                {
-                    await callback();
-                },
+            return;
+
+        } catch (
+            error
+        ) {
+
+            debug(
+                'TRANSITION',
+                'view-transition fallback',
+                error,
             );
-
-        await transition.finished;
-
-    } catch {
-
-        await callback();
+        }
     }
+
+    // ==============================================
+    // Fallback
+    // ==============================================
+
+    await callback();
 }
 
 // ==================================================
@@ -144,6 +172,7 @@ export async function transitionOut(
 
     element.classList.remove(
         'page-transition-enter',
+        'page-transition-visible',
     );
 
     forceReflow(
@@ -222,7 +251,8 @@ export async function transitionIn(
 // ==================================================
 
 export function scrollTop(
-    smooth = false,
+    smooth =
+        false,
 )
 {
     if (
@@ -234,7 +264,9 @@ export function scrollTop(
     }
 
     window.scrollTo({
-        top: 0,
+        top:
+            0,
+
         behavior:
             smooth
                 ? 'smooth'
@@ -243,7 +275,7 @@ export function scrollTop(
 }
 
 // ==================================================
-// Page Ready
+// Init
 // ==================================================
 
 export function initPageTransitions()
@@ -261,13 +293,19 @@ export function initPageTransitions()
                             document.body.classList.add(
                                 'page-ready',
                             );
+
+                            debug(
+                                'TRANSITION',
+                                'initialized',
+                            );
                         },
                     );
                 },
             );
         },
         {
-            once: true,
+            once:
+                true,
         },
     );
 }

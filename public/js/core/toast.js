@@ -1,77 +1,96 @@
+// ==================================================
+// Toast
+// ==================================================
+
+import {
+    debug,
+} from './debug.js';
+
+// ==================================================
+// Config
+// ==================================================
+
+const TOAST_DURATION =
+    2400;
+
+// ==================================================
+// State
+// ==================================================
+
 let toastHideTimeout =
     null;
 
-/**
- * Affiche un toast premium.
- */
-export function showToast(
-    message = 'Sauvegardé',
-    type = 'success',
+// ==================================================
+// Helpers
+// ==================================================
+
+function getToastElement()
+{
+    return document.getElementById(
+        'toast',
+    );
+}
+
+function getToastIcon(
+    type,
 )
 {
-    const toastElement =
-        document.getElementById(
-            'toast',
-        );
+    switch (type) {
 
-    if (!toastElement) {
+        case 'error':
+            return '✕';
 
-        console.warn(
-            'Toast introuvable (#toast)',
-        );
+        case 'info':
+            return '✦';
 
-        return;
+        default:
+            return '✓';
     }
+}
 
-    /*
-    |--------------------------------------------------------------
-    | Reset
-    |--------------------------------------------------------------
-    */
+function getToastClass(
+    type,
+)
+{
+    switch (type) {
 
+        case 'error':
+            return 'toast-error';
+
+        case 'info':
+            return 'toast-info';
+
+        default:
+            return 'toast-success';
+    }
+}
+
+function clearToastState(
+    toastElement,
+)
+{
     toastElement.classList.remove(
         'toast-success',
         'toast-error',
+        'toast-info',
         'show',
     );
+}
 
-    /*
-    |--------------------------------------------------------------
-    | Type
-    |--------------------------------------------------------------
-    */
-
-    const toastTypeClass =
-        type === 'error'
-            ? 'toast-error'
-            : type === 'info'
-                ? 'toast-info'
-                : 'toast-success';
-
-    toastElement.classList.add(
-        toastTypeClass,
-    );
-
-    /*
-    |--------------------------------------------------------------
-    | Content
-    |--------------------------------------------------------------
-    */
-
-    const icon =
-        type === 'error'
-            ? '✕'
-            : type === 'info'
-                ? '✦'
-                : '✓';
-
-    toastElement.innerHTML = `
+function renderToastContent(
+    toastElement,
+    message,
+    type,
+)
+{
+    toastElement.innerHTML =
+    `
         <span class="toast-wing toast-wing-left"></span>
 
         <div class="toast-content">
 
             <span class="toast-icon">
-                ${icon}
+                ${getToastIcon(type)}
             </span>
 
             <span class="toast-message">
@@ -84,46 +103,118 @@ export function showToast(
 
         <span class="toast-shine"></span>
     `;
+}
 
-    /*
-    |--------------------------------------------------------------
-    | Restart animation
-    |--------------------------------------------------------------
-    */
-
+function restartAnimation(
+    toastElement,
+)
+{
     void toastElement.offsetWidth;
+}
+
+function clearHideTimeout()
+{
+    if (
+        toastHideTimeout
+    ) {
+
+        clearTimeout(
+            toastHideTimeout,
+        );
+
+        toastHideTimeout =
+            null;
+    }
+}
+
+// ==================================================
+// Public API
+// ==================================================
+
+export function showToast(
+    message =
+        'Sauvegardé',
+    type =
+        'success',
+)
+{
+    const toastElement =
+        getToastElement();
+
+    if (!toastElement) {
+
+        debug(
+            'TOAST',
+            '#toast introuvable',
+        );
+
+        return;
+    }
+
+    debug(
+        'TOAST',
+        type,
+        message,
+    );
+
+    // ==============================================
+    // Reset
+    // ==============================================
+
+    clearHideTimeout();
+
+    clearToastState(
+        toastElement,
+    );
+
+    // ==============================================
+    // Type
+    // ==============================================
+
+    toastElement.classList.add(
+        getToastClass(
+            type,
+        ),
+    );
+
+    // ==============================================
+    // Content
+    // ==============================================
+
+    renderToastContent(
+        toastElement,
+        message,
+        type,
+    );
+
+    // ==============================================
+    // Restart animation
+    // ==============================================
+
+    restartAnimation(
+        toastElement,
+    );
+
+    // ==============================================
+    // Show
+    // ==============================================
 
     toastElement.classList.add(
         'show',
     );
 
-    /*
-    |--------------------------------------------------------------
-    | Clear previous timer
-    |--------------------------------------------------------------
-    */
-
-    if (toastHideTimeout) {
-
-        clearTimeout(
-            toastHideTimeout,
-        );
-    }
-
-    /*
-    |--------------------------------------------------------------
-    | Auto hide
-    |--------------------------------------------------------------
-    */
+    // ==============================================
+    // Auto hide
+    // ==============================================
 
     toastHideTimeout =
-        setTimeout(
+        window.setTimeout(
             () =>
             {
                 toastElement.classList.remove(
                     'show',
                 );
             },
-            2400,
+            TOAST_DURATION,
         );
 }

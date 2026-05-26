@@ -1,45 +1,116 @@
-export const searchShortcuts = [
-{
-symbol: '一',
-title: 'HSK1',
-description: 'Débutant total',
-url: 'chinois/grammaire/hsk1',
-},
-{
-symbol: '二',
-title: 'HSK2',
-description: 'Bases simples',
-url: 'chinois/grammaire/hsk2',
-},
-{
-symbol: '三',
-title: 'HSK3',
-description: 'Intermédiaire débutant',
-url: 'chinois/grammaire/hsk3',
-},
-{
-symbol: '四',
-title: 'HSK4',
-description: 'Intermédiaire solide',
-url: 'chinois/grammaire/hsk4',
-},
+// ======================================================
+// Search Shortcuts
+// ======================================================
+
+export const searchShortcuts =
+[
+    {
+        symbol:
+            '一',
+
+        title:
+            'HSK1',
+
+        description:
+            'Débutant total',
+
+        url:
+            'chinois/grammaire/hsk1',
+    },
+
+    {
+        symbol:
+            '二',
+
+        title:
+            'HSK2',
+
+        description:
+            'Bases simples',
+
+        url:
+            'chinois/grammaire/hsk2',
+    },
+
+    {
+        symbol:
+            '三',
+
+        title:
+            'HSK3',
+
+        description:
+            'Intermédiaire débutant',
+
+        url:
+            'chinois/grammaire/hsk3',
+    },
+
+    {
+        symbol:
+            '四',
+
+        title:
+            'HSK4',
+
+        description:
+            'Intermédiaire solide',
+
+        url:
+            'chinois/grammaire/hsk4',
+    },
 ];
-export function findSearchShortcuts(query)
+
+// ======================================================
+// Helpers
+// ======================================================
+
+function normalizeShortcutValue(
+    value,
+)
 {
-const normalized =
-query
-.trim()
-.toLowerCase()
-.replace(/\s+/g, '');
-if (normalized === '')
-{
-return [];
+    return value
+        .trim()
+        .toLowerCase()
+        .replace(
+            /\s+/g,
+            '',
+        );
 }
-return searchShortcuts.filter((shortcut) =>
+
+// ======================================================
+// Search
+// ======================================================
+
+export function findSearchShortcuts(
+    query,
+)
 {
-return shortcut.title
-.toLowerCase()
-.replace(/\s+/g, '')
-.includes(normalized);
-});
+    const normalizedQuery =
+        normalizeShortcutValue(
+            query,
+        );
+
+    if (
+        normalizedQuery
+        === ''
+    ) {
+        return [];
+    }
+
+    return searchShortcuts.filter(
+        (
+            shortcut,
+        ) =>
+        {
+            const normalizedTitle =
+                normalizeShortcutValue(
+                    shortcut.title,
+                );
+
+            return normalizedTitle.includes(
+                normalizedQuery,
+            );
+        },
+    );
 }

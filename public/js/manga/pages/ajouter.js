@@ -1,31 +1,98 @@
-import { showToast } from '../../core/toast.js';
-import { generateSlug } from '../utils/slug.js';
+// ==================================================
+// Ajouter Page
+// ==================================================
+
+import {
+    showToast,
+} from '../../core/toast.js';
+
+import {
+    debug,
+    debugError,
+} from '../../core/debug.js';
+
+import {
+    generateSlug,
+} from '../utils/slug.js';
+
+// ==================================================
+// Config
+// ==================================================
+
+const FORM_SELECTOR =
+    '.form-layout[data-form-page="ajouter"]';
+
+// ==================================================
+// Helpers
+// ==================================================
+
+function getCsrfToken()
+{
+    return (
+        window.csrfToken
+        || document
+            .querySelector(
+                'meta[name="csrf-token"]',
+            )
+            ?.getAttribute(
+                'content',
+            )
+        || ''
+    );
+}
+
+function updateUploadText(
+    input,
+    textElement,
+)
+{
+    textElement.textContent =
+        input.files?.length
+            ? input.files[0].name
+            : 'Choisir une image';
+}
+
+// ==================================================
+// Init
+// ==================================================
 
 export function initAjouterPage()
 {
-    const form = document.querySelector(
-        '.form-layout[data-form-page="ajouter"]',
-    );
+    // ==============================================
+    // Form
+    // ==============================================
 
-    if (!form) {
+    const form =
+        document.querySelector(
+            FORM_SELECTOR,
+        );
+
+    if (
+        !(
+            form
+            instanceof HTMLFormElement
+        )
+    ) {
         return;
     }
 
+    // ==============================================
+    // Prevent double init
+    // ==============================================
+
     if (
-        form.dataset.ajouterPageInit
+        form.dataset.ajouterPageInitialized
         === 'true'
     ) {
         return;
     }
 
-    form.dataset.ajouterPageInit =
+    form.dataset.ajouterPageInitialized =
         'true';
 
-    /*
-    |------------------------------------------------------------------
-    | Champs
-    |------------------------------------------------------------------
-    */
+    // ==============================================
+    // Inputs
+    // ==============================================
 
     const livreInput =
         document.getElementById(
@@ -47,21 +114,23 @@ export function initAjouterPage()
             '.form-upload-text',
         );
 
-    /*
-    |------------------------------------------------------------------
-    | Auto slug
-    |------------------------------------------------------------------
-    */
+    // ==============================================
+    // Auto slug
+    // ==============================================
 
-    let slugWasEditedManually =
+    let slugEditedManually =
         false;
 
-    if (slugInput) {
+    if (
+        slugInput
+        instanceof HTMLInputElement
+    ) {
+
         slugInput.addEventListener(
             'input',
             () =>
             {
-                slugWasEditedManually =
+                slugEditedManually =
                     true;
             },
         );
@@ -69,14 +138,17 @@ export function initAjouterPage()
 
     if (
         livreInput
+        instanceof HTMLInputElement
         && slugInput
+        instanceof HTMLInputElement
     ) {
+
         livreInput.addEventListener(
             'input',
             () =>
             {
                 if (
-                    slugWasEditedManually
+                    slugEditedManually
                 ) {
                     return;
                 }
@@ -89,40 +161,37 @@ export function initAjouterPage()
         );
     }
 
-    /*
-    |------------------------------------------------------------------
-    | Preview upload
-    |------------------------------------------------------------------
-    */
+    // ==============================================
+    // Upload preview
+    // ==============================================
 
     if (
         imageInput
+        instanceof HTMLInputElement
         && uploadText
     ) {
+
         imageInput.addEventListener(
             'change',
             () =>
             {
-                uploadText.textContent =
-                    imageInput.files
-                        .length > 0
-                        ? imageInput
-                            .files[0]
-                            .name
-                        : 'Choisir une image';
+                updateUploadText(
+                    imageInput,
+                    uploadText,
+                );
             },
         );
     }
 
-    /*
-    |------------------------------------------------------------------
-    | Soumission AJAX
-    |------------------------------------------------------------------
-    */
+    // ==============================================
+    // Submit
+    // ==============================================
 
     form.addEventListener(
         'submit',
-        async event =>
+        async (
+            event,
+        ) =>
         {
             event.preventDefault();
 
@@ -131,7 +200,11 @@ export function initAjouterPage()
                     '[type="submit"]',
                 );
 
-            if (submitButton) {
+            if (
+                submitButton
+                instanceof HTMLButtonElement
+            ) {
+
                 submitButton.disabled =
                     true;
             }
@@ -146,14 +219,20 @@ export function initAjouterPage()
                     'csrf_token',
                 )
             ) {
+
                 formData.append(
                     'csrf_token',
-                    window.csrfToken
-                    || '',
+                    getCsrfToken(),
                 );
             }
 
             try {
+
+                debug(
+                    'AJOUTER',
+                    'submit',
+                );
+
                 const response =
                     await fetch(
                         form.action,
@@ -161,12 +240,15 @@ export function initAjouterPage()
                             method:
                                 'POST',
 
+                            credentials:
+                                'same-origin',
+
                             headers:
                             {
                                 'X-Requested-With':
                                     'XMLHttpRequest',
 
-                                Accept:
+                                'Accept':
                                     'application/json',
                             },
 
@@ -186,8 +268,9 @@ export function initAjouterPage()
                         'application/json',
                     )
                 ) {
+
                     throw new Error(
-                        'Réponse serveur non JSON',
+                        'Réponse serveur invalide',
                     );
                 }
 
@@ -198,6 +281,7 @@ export function initAjouterPage()
                     !response.ok
                     || !data.success
                 ) {
+
                     showToast(
                         data.message
                         || 'Une erreur est survenue',
@@ -215,31 +299,56 @@ export function initAjouterPage()
 
                 form.reset();
 
-                slugWasEditedManually =
+                slugEditedManually =
                     false;
 
-                if (uploadText) {
-                    uploadText.textContent =
-                        'Choisir une image';
+                if (
+                    imageInput
+                    instanceof HTMLInputElement
+                    && uploadText
+                ) {
+
+                    updateUploadText(
+                        imageInput,
+                        uploadText,
+                    );
                 }
+
+                debug(
+                    'AJOUTER',
+                    'success',
+                );
+
             } catch (error) {
-                console.error(
+
+                debugError(
+                    'AJOUTER',
                     error,
                 );
 
                 showToast(
-                    error.message
-                    || 'Erreur serveur',
+                    error instanceof Error
+                        ? error.message
+                        : 'Erreur serveur',
                     'error',
                 );
+
             } finally {
+
                 if (
                     submitButton
+                    instanceof HTMLButtonElement
                 ) {
+
                     submitButton.disabled =
                         false;
                 }
             }
         },
+    );
+
+    debug(
+        'AJOUTER',
+        'initialized',
     );
 }

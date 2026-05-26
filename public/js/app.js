@@ -72,6 +72,13 @@ import {
 } from './chinois/actions/toggle-grammar-mastery.js';
 
 // ==================================================
+// Config
+// ==================================================
+
+const APP_READY_ATTRIBUTE =
+    'appInitialized';
+
+// ==================================================
 // Helpers
 // ==================================================
 
@@ -117,6 +124,23 @@ function initFlashToast()
     );
 }
 
+function isAppInitialized()
+{
+    return (
+        document.body.dataset[
+            APP_READY_ATTRIBUTE
+        ]
+        === 'true'
+    );
+}
+
+function setAppInitialized()
+{
+    document.body.dataset[
+        APP_READY_ATTRIBUTE
+    ] = 'true';
+}
+
 // ==================================================
 // App
 // ==================================================
@@ -124,16 +148,12 @@ function initFlashToast()
 function initApp()
 {
     if (
-        document.body.dataset
-            .appInitialized
-        === 'true'
+        isAppInitialized()
     ) {
         return;
     }
 
-    document.body.dataset
-        .appInitialized =
-            'true';
+    setAppInitialized();
 
     debug(
         'APP',
@@ -251,6 +271,9 @@ if (
     document.addEventListener(
         'DOMContentLoaded',
         initApp,
+        {
+            once: true,
+        },
     );
 
 } else {
