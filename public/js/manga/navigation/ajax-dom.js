@@ -3,7 +3,7 @@
 // ==================================================
 
 const contentSelector =
-    '.collection-ajax-content';
+    '.ajax-content';
 
 // ==================================================
 // Helpers
@@ -54,51 +54,42 @@ function updateDocumentTitle(
     }
 }
 
+function isValidAjaxResponse(
+    documentHtml,
+)
+{
+    return Boolean(
+        extractNewContent(
+            documentHtml,
+        ),
+    );
+}
+
 // ==================================================
 // Replace Content
 // ==================================================
 
-export async function replaceContent(
+export function replaceContent(
     html,
 )
 {
-    // ==============================================
-    // Parse
-    // ==============================================
-
     const documentHtml =
         parseHtml(
             html,
         );
 
-    // ==============================================
-    // Validate response
-    // ==============================================
-
-    const newContent =
-        extractNewContent(
+    if (
+        !isValidAjaxResponse(
             documentHtml,
-        );
+        )
+    ) {
 
-    // Invalid AJAX response
-    // Full reload fallback
-
-    if (!newContent) {
-
-        const redirectUrl =
-            documentHtml.location?.href
-            || window.location.href;
-
-        window.location.assign(
-            redirectUrl,
+        console.warn(
+            '[AJAX DOM] Invalid AJAX response',
         );
 
         return;
     }
-
-    // ==============================================
-    // Current content
-    // ==============================================
 
     const currentContent =
         getContent();
@@ -110,40 +101,20 @@ export async function replaceContent(
         return;
     }
 
-    // ==============================================
-    // Title
-    // ==============================================
+    const newContent =
+        extractNewContent(
+            documentHtml,
+        );
+
+    if (!newContent) {
+        return;
+    }
 
     updateDocumentTitle(
         documentHtml,
     );
 
-    // ==============================================
-    // Build fragment
-    // ==============================================
-
-    const fragment =
-        document.createDocumentFragment();
-
-    const nodes =
-        Array.from(
-            newContent.childNodes,
-        );
-
-    for (const node of nodes) {
-
-        fragment.appendChild(
-            node.cloneNode(
-                true,
-            ),
-        );
-    }
-
-    // ==============================================
-    // Replace
-    // ==============================================
-
-    currentContent.replaceChildren(
-        fragment,
+    currentContent.replaceWith(
+        newContent.cloneNode(true),
     );
 }

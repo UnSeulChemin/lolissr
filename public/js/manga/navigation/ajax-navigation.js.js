@@ -20,6 +20,13 @@ import {
 } from '../../core/page-transition.js';
 
 // ==================================================
+// Config
+// ==================================================
+
+const PREFETCH_DELAY =
+    800;
+
+// ==================================================
 // State
 // ==================================================
 
@@ -40,15 +47,42 @@ let transitionLock =
 // ==================================================
 
 const navigationSelector =
-    `
-    a[href]:not(
-        [data-no-ajax]
-    )
-    `;
+`
+a[href]:not(
+    [data-no-ajax]
+)
+`;
 
 // ==================================================
 // Helpers
 // ==================================================
+
+function normalizeUrl(
+    href,
+)
+{
+    const url =
+        new URL(
+            href,
+            window.location.origin,
+        );
+
+    let pathname =
+        url.pathname;
+
+    if (
+        !pathname.endsWith('/')
+        && !pathname.includes('.')
+    ) {
+
+        pathname += '/';
+    }
+
+    return (
+        pathname
+        + url.search
+    );
+}
 
 function shouldIgnoreLink(
     link,
@@ -70,6 +104,10 @@ function shouldIgnoreLink(
             window.location.origin,
         );
 
+    // ==============================================
+    // External
+    // ==============================================
+
     if (
         url.origin
         !== window.location.origin
@@ -77,19 +115,35 @@ function shouldIgnoreLink(
         return true;
     }
 
+    // ==============================================
+    // Same page hash
+    // ==============================================
+
     if (
         url.hash
-        && url.pathname
-            === window.location.pathname
+        && normalizeUrl(
+            url.href,
+        ) === normalizeUrl(
+            window.location.href,
+        )
     ) {
         return true;
     }
 
+    // ==============================================
+    // New tab
+    // ==============================================
+
     if (
-        link.target === '_blank'
+        link.target
+        === '_blank'
     ) {
         return true;
     }
+
+    // ==============================================
+    // Download
+    // ==============================================
 
     if (
         link.hasAttribute(
@@ -99,12 +153,20 @@ function shouldIgnoreLink(
         return true;
     }
 
+    // ==============================================
+    // Opt-out
+    // ==============================================
+
     if (
         link.dataset.ajax
         === 'false'
     ) {
         return true;
     }
+
+    // ==============================================
+    // Static files
+    // ==============================================
 
     if (
         /\.(jpg|jpeg|png|gif|webp|svg|pdf|zip)$/i
@@ -140,7 +202,7 @@ function schedulePrefetch(
         window.requestIdleCallback(
             callback,
             {
-                timeout: 500,
+                timeout: 400,
             },
         );
 
@@ -149,8 +211,75 @@ function schedulePrefetch(
 
     window.setTimeout(
         callback,
-        150,
+        120,
     );
+}
+
+// ==================================================
+// Active Navigation
+// ==================================================
+
+function updateActiveNavigation()
+{
+    const path =
+        normalizeUrl(
+            window.location.pathname,
+        );
+
+    const links =
+        document.querySelectorAll(
+            '.nav-link-icon',
+        );
+
+    for (const link of links) {
+
+        if (
+            !(link instanceof HTMLAnchorElement)
+        ) {
+            continue;
+        }
+
+        link.classList.remove(
+            'active',
+        );
+
+        const href =
+            normalizeUrl(
+                link.pathname,
+            );
+
+        // ==========================================
+        // Home
+        // ==========================================
+
+        if (
+            href === '/lolissr/'
+            && path === '/lolissr/'
+        ) {
+
+            link.classList.add(
+                'active',
+            );
+
+            continue;
+        }
+
+        // ==========================================
+        // Sections
+        // ==========================================
+
+        if (
+            href !== '/lolissr/'
+            && path.startsWith(
+                href,
+            )
+        ) {
+
+            link.classList.add(
+                'active',
+            );
+        }
+    }
 }
 
 // ==================================================
@@ -165,7 +294,12 @@ function prefetchVisibleLinks()
 
     const links =
         document.querySelectorAll(
-            navigationSelector,
+            `
+            a.card-link,
+            a.dashboard-card,
+            a.collection-pagination-link,
+            a[data-prefetch="true"]
+            `,
         );
 
     for (const link of links) {
@@ -196,6 +330,27 @@ export async function navigateTo(
     const navigationId =
         ++currentNavigationId;
 
+    const normalizedTarget =
+        normalizeUrl(
+            href,
+        );
+
+    const normalizedCurrent =
+        normalizeUrl(
+            window.location.href,
+        );
+
+    // ==============================================
+    // Prevent duplicate navigation
+    // ==============================================
+
+    if (
+        normalizedTarget
+        === normalizedCurrent
+    ) {
+        return;
+    }
+
     const url =
         new URL(
             href,
@@ -203,7 +358,7 @@ export async function navigateTo(
         );
 
     // ==============================================
-    // Abort previous
+    // Abort previous navigation
     // ==============================================
 
     currentController?.abort();
@@ -244,11 +399,27 @@ export async function navigateTo(
         }
 
         // ==========================================
+        // History
+        // ==========================================
+
+        if (
+            options.updateHistory
+            !== false
+        ) {
+
+            window.history.pushState(
+                {},
+                '',
+                normalizedTarget,
+            );
+        }
+
+        // ==========================================
         // Transition
         // ==========================================
 
         await runPageTransition(
-            async () =>
+            () =>
             {
                 if (
                     !isNavigationValid(
@@ -259,10 +430,11 @@ export async function navigateTo(
                     return;
                 }
 
-                await replaceContent(
+                replaceContent(
                     html,
-                    navigationId,
                 );
+
+                updateActiveNavigation();
             },
         );
 
@@ -276,23 +448,6 @@ export async function navigateTo(
         }
 
         // ==========================================
-        // History
-        // ==========================================
-
-        if (
-            options.updateHistory
-            !== false
-        ) {
-
-            window.history.pushState(
-                {},
-                '',
-                url.pathname
-                + url.search,
-            );
-        }
-
-        // ==========================================
         // Scroll
         // ==========================================
 
@@ -301,20 +456,8 @@ export async function navigateTo(
             !== false
         ) {
 
-            requestAnimationFrame(
-                () =>
-                {
-                    if (
-                        navigationId
-                        !== currentNavigationId
-                    ) {
-                        return;
-                    }
-
-                    scrollTop(
-                        false,
-                    );
-                },
+            scrollTop(
+                false,
             );
         }
 
@@ -350,10 +493,8 @@ export async function navigateTo(
 
         if (
             error instanceof Error
-            && (
-                error.name
+            && error.name
                 === 'AbortError'
-            )
         ) {
             return;
         }
@@ -362,6 +503,10 @@ export async function navigateTo(
             '[AJAX NAV]',
             error,
         );
+
+        // ==========================================
+        // Hard fallback
+        // ==========================================
 
         window.location.assign(
             url.href,
@@ -398,6 +543,29 @@ function handleClick(
         return;
     }
 
+    // ==============================================
+    // Left click only
+    // ==============================================
+
+    if (
+        event.button !== 0
+    ) {
+        return;
+    }
+
+    // ==============================================
+    // Ignore modifiers
+    // ==============================================
+
+    if (
+        event.ctrlKey
+        || event.metaKey
+        || event.shiftKey
+        || event.altKey
+    ) {
+        return;
+    }
+
     const target =
         event.target;
 
@@ -420,23 +588,6 @@ function handleClick(
         return;
     }
 
-    if (
-        event.ctrlKey
-        || event.metaKey
-        || event.shiftKey
-        || event.altKey
-        || event.button === 1
-    ) {
-        return;
-    }
-
-    if (
-        link.href
-        === window.location.href
-    ) {
-        return;
-    }
-
     event.preventDefault();
 
     void navigateTo(
@@ -453,8 +604,11 @@ function handlePopState()
     void navigateTo(
         window.location.href,
         {
-            updateHistory: false,
-            scrollTop: false,
+            updateHistory:
+                false,
+
+            scrollTop:
+                false,
         },
     );
 }
@@ -472,6 +626,8 @@ export function initAjaxNavigation()
     initialized =
         true;
 
+    updateActiveNavigation();
+
     document.addEventListener(
         'click',
         handleClick,
@@ -482,10 +638,15 @@ export function initAjaxNavigation()
         handlePopState,
     );
 
-    schedulePrefetch(
+    // ==============================================
+    // Initial delayed prefetch
+    // ==============================================
+
+    window.setTimeout(
         () =>
         {
             prefetchVisibleLinks();
         },
+        PREFETCH_DELAY,
     );
 }

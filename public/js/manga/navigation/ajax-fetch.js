@@ -7,6 +7,16 @@ import {
 } from './prefetch-series.js';
 
 // ==================================================
+// Config
+// ==================================================
+
+const AJAX_CONTAINER_CLASS =
+    'ajax-content';
+
+const FETCH_TIMEOUT =
+    10000;
+
+// ==================================================
 // Helpers
 // ==================================================
 
@@ -20,10 +30,81 @@ function normalizeUrl(
             window.location.origin,
         );
 
+    let pathname =
+        url.pathname;
+
+    if (
+        !pathname.endsWith('/')
+        && !pathname.includes('.')
+    ) {
+
+        pathname += '/';
+    }
+
     return (
-        url.pathname
+        pathname
         + url.search
     );
+}
+
+function isValidHtmlResponse(
+    html,
+)
+{
+    return (
+        typeof html
+            === 'string'
+        && html.includes(
+            AJAX_CONTAINER_CLASS,
+        )
+    );
+}
+
+function createTimeoutSignal(
+    signal,
+    timeout = FETCH_TIMEOUT,
+)
+{
+    const controller =
+        new AbortController();
+
+    const timeoutId =
+        window.setTimeout(
+            () =>
+            {
+                controller.abort(
+                    'timeout',
+                );
+            },
+            timeout,
+        );
+
+    if (signal) {
+
+        signal.addEventListener(
+            'abort',
+            () =>
+            {
+                controller.abort();
+            },
+            {
+                once: true,
+            },
+        );
+    }
+
+    return {
+        signal:
+            controller.signal,
+
+        cleanup:
+            () =>
+            {
+                clearTimeout(
+                    timeoutId,
+                );
+            },
+    };
 }
 
 // ==================================================
@@ -41,7 +122,7 @@ export async function fetchPageHtml(
         );
 
     // ==============================================
-    // Cache
+    // Prefetch cache
     // ==============================================
 
     const cached =
@@ -49,29 +130,25 @@ export async function fetchPageHtml(
             normalizedUrl,
         );
 
-    if (cached) {
+    if (
+        isValidHtmlResponse(
+            cached,
+        )
+    ) {
+
         return cached;
     }
 
     // ==============================================
-    // Timeout
+    // Timeout signal
     // ==============================================
 
-    const timeoutController =
-        new AbortController();
-
-    const timeout =
-        setTimeout(
-            () =>
-            {
-                timeoutController.abort();
-            },
-            10000,
-        );
-
-    const signal =
-        options.signal
-            ?? timeoutController.signal;
+    const {
+        signal,
+        cleanup,
+    } = createTimeoutSignal(
+        options.signal,
+    );
 
     try {
 
@@ -80,6 +157,9 @@ export async function fetchPageHtml(
                 normalizedUrl,
                 {
                     signal,
+
+                    credentials:
+                        'same-origin',
 
                     headers: {
                         'X-Requested-With':
@@ -101,12 +181,24 @@ export async function fetchPageHtml(
             );
         }
 
-        return await response.text();
+        const html =
+            await response.text();
+
+        if (
+            !isValidHtmlResponse(
+                html,
+            )
+        ) {
+
+            throw new Error(
+                '[AJAX] Invalid HTML response',
+            );
+        }
+
+        return html;
 
     } finally {
 
-        clearTimeout(
-            timeout,
-        );
+        cleanup();
     }
 }

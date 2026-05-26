@@ -2,84 +2,136 @@
 // Page Transition
 // ==================================================
 
-let transitionId =
-    0;
+const TRANSITION_TIMEOUT =
+    250;
 
-/*
-|------------------------------------------------------------------
-| Run Page Transition
-|------------------------------------------------------------------
-*/
+// ==================================================
+// Helpers
+// ==================================================
+
+function forceReflow(
+    element,
+)
+{
+    void element.offsetWidth;
+}
+
+function waitTransitionEnd(
+    element,
+    timeout = TRANSITION_TIMEOUT,
+)
+{
+    return new Promise(
+        (resolve) =>
+        {
+            if (
+                !element
+                || !element.isConnected
+            ) {
+
+                resolve();
+
+                return;
+            }
+
+            let resolved =
+                false;
+
+            const cleanup =
+                () =>
+                {
+                    if (resolved) {
+                        return;
+                    }
+
+                    resolved =
+                        true;
+
+                    element.removeEventListener(
+                        'transitionend',
+                        handleEnd,
+                    );
+
+                    clearTimeout(
+                        fallbackTimeout,
+                    );
+
+                    resolve();
+                };
+
+            const handleEnd =
+                (
+                    event,
+                ) =>
+                {
+                    if (
+                        event.target
+                        !== element
+                    ) {
+                        return;
+                    }
+
+                    cleanup();
+                };
+
+            const fallbackTimeout =
+                window.setTimeout(
+                    cleanup,
+                    timeout,
+                );
+
+            element.addEventListener(
+                'transitionend',
+                handleEnd,
+                {
+                    once: true,
+                },
+            );
+        },
+    );
+}
+
+// ==================================================
+// Run Page Transition
+// ==================================================
 
 export async function runPageTransition(
     callback,
 )
 {
-    const currentId =
-        ++transitionId;
-
-    // ==============================================
-    // View Transition API
-    // ==============================================
-
     if (
-        typeof document
-            .startViewTransition
-        === 'function'
+        typeof document.startViewTransition
+        !== 'function'
     ) {
 
-        let transition;
-
-        try {
-
-            transition =
-                document
-                    .startViewTransition(
-                        async () =>
-                        {
-                            if (
-                                currentId
-                                !== transitionId
-                            ) {
-                                return;
-                            }
-
-                            await callback();
-                        },
-                    );
-
-        } catch {
-
-            await callback();
-
-            return;
-        }
-
-        try {
-
-            await transition.finished;
-
-        } catch {
-
-            // Browser aborted transition
-            // Ignore silently
-        }
+        callback();
 
         return;
     }
 
-    // ==============================================
-    // Fallback
-    // ==============================================
+    try {
 
-    await callback();
+        const transition =
+            document.startViewTransition(
+                async () =>
+                {
+                    await callback();
+                },
+            );
+
+        await transition.finished;
+
+    } catch {
+
+        await callback();
+    }
 }
 
 // ==================================================
 // Transition Out
 // ==================================================
 
-export function transitionOut(
+export async function transitionOut(
     element,
 )
 {
@@ -94,12 +146,16 @@ export function transitionOut(
         'page-transition-enter',
     );
 
-    // Force reflow
-
-    void element.offsetWidth;
+    forceReflow(
+        element,
+    );
 
     element.classList.add(
         'page-transitioning',
+    );
+
+    await waitTransitionEnd(
+        element,
     );
 }
 
@@ -107,7 +163,7 @@ export function transitionOut(
 // Transition In
 // ==================================================
 
-export function transitionIn(
+export async function transitionIn(
     element,
 )
 {
@@ -122,78 +178,42 @@ export function transitionIn(
         'page-transitioning',
     );
 
-    // Force reflow
-
-    void element.offsetWidth;
+    forceReflow(
+        element,
+    );
 
     element.classList.add(
         'page-transition-enter',
     );
 
-    let cleaned =
-        false;
-
-    const cleanup =
-        (
-            event,
-        ) =>
+    requestAnimationFrame(
+        () =>
         {
-            if (cleaned) {
-                return;
-            }
-
-            if (
-                event
-                && event.target
-                    !== element
-            ) {
-                return;
-            }
-
-            cleaned =
-                true;
-
             if (
                 !element.isConnected
             ) {
                 return;
             }
 
-            element.classList.remove(
-                'page-transition-enter',
-            );
-
-            element.removeEventListener(
-                'transitionend',
-                cleanup,
-            );
-        };
-
-    // Fallback timeout
-
-    const timeout =
-        window.setTimeout(
-            cleanup,
-            250,
-        );
-
-    element.addEventListener(
-        'transitionend',
-        (
-            event,
-        ) =>
-        {
-            clearTimeout(
-                timeout,
-            );
-
-            cleanup(
-                event,
+            element.classList.add(
+                'page-transition-visible',
             );
         },
-        {
-            once: true,
-        },
+    );
+
+    await waitTransitionEnd(
+        element,
+    );
+
+    if (
+        !element.isConnected
+    ) {
+        return;
+    }
+
+    element.classList.remove(
+        'page-transition-enter',
+        'page-transition-visible',
     );
 }
 
@@ -228,8 +248,6 @@ export function scrollTop(
 
 export function initPageTransitions()
 {
-    // Prevent first paint transition bugs
-
     window.addEventListener(
         'load',
         () =>

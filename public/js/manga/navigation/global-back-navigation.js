@@ -2,23 +2,30 @@
 // Global Back Navigation
 // ==================================================
 
+const BACK_LOCK_DURATION =
+    350;
+
+// ==================================================
+// State
+// ==================================================
+
 let initialized =
     false;
 
 let locked =
     false;
 
-/*
-|------------------------------------------------------------------
-| Helpers
-|------------------------------------------------------------------
-*/
+// ==================================================
+// Helpers
+// ==================================================
 
 function isTypingContext(
     target,
 )
 {
-    if (!target) {
+    if (
+        !(target instanceof Element)
+    ) {
         return false;
     }
 
@@ -38,7 +45,9 @@ function isInteractiveElement(
     target,
 )
 {
-    if (!target) {
+    if (
+        !(target instanceof Element)
+    ) {
         return false;
     }
 
@@ -53,11 +62,24 @@ function isInteractiveElement(
     );
 }
 
-/*
-|------------------------------------------------------------------
-| Navigation
-|------------------------------------------------------------------
-*/
+function lockNavigation()
+{
+    locked =
+        true;
+
+    window.setTimeout(
+        () =>
+        {
+            locked =
+                false;
+        },
+        BACK_LOCK_DURATION,
+    );
+}
+
+// ==================================================
+// Navigation
+// ==================================================
 
 function navigateBack()
 {
@@ -65,7 +87,7 @@ function navigateBack()
         return;
     }
 
-    locked = true;
+    lockNavigation();
 
     if (
         window.history.length > 1
@@ -73,44 +95,50 @@ function navigateBack()
 
         window.history.back();
 
-    } else {
-
-        window.location.href =
-            '/lolissr/';
+        return;
     }
 
-    window.setTimeout(
-        () =>
-        {
-            locked = false;
-        },
-        350,
+    // ==============================================
+    // Hard fallback
+    // ==============================================
+
+    window.location.assign(
+        '/lolissr/',
     );
 }
 
-/*
-|------------------------------------------------------------------
-| Keyboard
-|------------------------------------------------------------------
-*/
+// ==================================================
+// Keyboard
+// ==================================================
 
 function handleKeyboard(
     event,
 )
 {
+    // ==============================================
+    // Backspace only
+    // ==============================================
+
     if (
-        event.key !== 'Backspace'
+        event.key
+        !== 'Backspace'
     ) {
         return;
     }
 
-    // Prevent key repeat spam
+    // ==============================================
+    // Prevent repeat spam
+    // ==============================================
 
     if (
         event.repeat
     ) {
         return;
     }
+
+    // ==============================================
+    // Ignore typing fields
+    // ==============================================
 
     if (
         isTypingContext(
@@ -120,6 +148,10 @@ function handleKeyboard(
         return;
     }
 
+    // ==============================================
+    // Ignore buttons / links
+    // ==============================================
+
     if (
         isInteractiveElement(
             event.target,
@@ -127,6 +159,10 @@ function handleKeyboard(
     ) {
         return;
     }
+
+    // ==============================================
+    // Ignore modifiers
+    // ==============================================
 
     if (
         event.ctrlKey
@@ -142,11 +178,9 @@ function handleKeyboard(
     navigateBack();
 }
 
-/*
-|------------------------------------------------------------------
-| Init
-|------------------------------------------------------------------
-*/
+// ==================================================
+// Init
+// ==================================================
 
 export function initGlobalBackNavigation()
 {
@@ -154,7 +188,8 @@ export function initGlobalBackNavigation()
         return;
     }
 
-    initialized = true;
+    initialized =
+        true;
 
     document.addEventListener(
         'keydown',

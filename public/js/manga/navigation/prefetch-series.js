@@ -3,6 +3,25 @@
 // ==================================================
 
 // ==================================================
+// Config
+// ==================================================
+
+const AJAX_CONTAINER_CLASS =
+    'ajax-content';
+
+const PREFETCH_DELAY =
+    80;
+
+const PREFETCH_COOLDOWN =
+    3000;
+
+const PREFETCH_CACHE_LIMIT =
+    50;
+
+const PREFETCH_TIMEOUT =
+    8000;
+
+// ==================================================
 // Cache
 // ==================================================
 
@@ -26,33 +45,16 @@ let hoverTimeout =
     null;
 
 // ==================================================
-// Config
-// ==================================================
-
-const PREFETCH_DELAY =
-    80;
-
-const PREFETCH_COOLDOWN =
-    3000;
-
-const PREFETCH_CACHE_LIMIT =
-    50;
-
-const PREFETCH_TIMEOUT =
-    8000;
-
-// ==================================================
 // Selectors
 // ==================================================
 
 const linkSelector =
-    `
-    a.card-link,
-    a.dashboard-card,
-    a.nav-link-icon,
-    a.collection-pagination-link,
-    a[data-prefetch="true"]
-    `;
+`
+a.card-link,
+a.dashboard-card,
+a.collection-pagination-link,
+a[data-prefetch="true"]
+`;
 
 // ==================================================
 // Helpers
@@ -68,9 +70,33 @@ function normalizeUrl(
             window.location.origin,
         );
 
+    let pathname =
+        url.pathname;
+
+    if (
+        !pathname.endsWith('/')
+        && !pathname.includes('.')
+    ) {
+
+        pathname += '/';
+    }
+
     return (
-        url.pathname
+        pathname
         + url.search
+    );
+}
+
+function isValidHtmlResponse(
+    html,
+)
+{
+    return (
+        typeof html
+            === 'string'
+        && html.includes(
+            AJAX_CONTAINER_CLASS,
+        )
     );
 }
 
@@ -97,33 +123,6 @@ function cleanupOldCache()
     }
 }
 
-export function getPrefetchedPage(
-    href,
-)
-{
-    return (
-        prefetchedPages.get(
-            normalizeUrl(
-                href,
-            ),
-        )
-        || null
-    );
-}
-
-function storePrefetchedPage(
-    url,
-    html,
-)
-{
-    cleanupOldCache();
-
-    prefetchedPages.set(
-        url,
-        html,
-    );
-}
-
 function shouldIgnoreLink(
     link,
 )
@@ -144,12 +143,20 @@ function shouldIgnoreLink(
             window.location.origin,
         );
 
+    // ==============================================
+    // External
+    // ==============================================
+
     if (
         url.origin
         !== window.location.origin
     ) {
         return true;
     }
+
+    // ==============================================
+    // Same-page hash
+    // ==============================================
 
     if (
         url.hash
@@ -159,11 +166,20 @@ function shouldIgnoreLink(
         return true;
     }
 
+    // ==============================================
+    // New tab
+    // ==============================================
+
     if (
-        link.target === '_blank'
+        link.target
+        === '_blank'
     ) {
         return true;
     }
+
+    // ==============================================
+    // Download
+    // ==============================================
 
     if (
         link.hasAttribute(
@@ -173,11 +189,20 @@ function shouldIgnoreLink(
         return true;
     }
 
+    // ==============================================
+    // Opt-out
+    // ==============================================
+
     if (
-        link.dataset.ajax === 'false'
+        link.dataset.ajax
+        === 'false'
     ) {
         return true;
     }
+
+    // ==============================================
+    // Static files
+    // ==============================================
 
     if (
         /\.(jpg|jpeg|png|gif|webp|svg|pdf|zip)$/i
@@ -207,6 +232,45 @@ function isRecentlyPrefetched(
     );
 }
 
+function storePrefetchedPage(
+    url,
+    html,
+)
+{
+    if (
+        !isValidHtmlResponse(
+            html,
+        )
+    ) {
+        return;
+    }
+
+    cleanupOldCache();
+
+    prefetchedPages.set(
+        url,
+        html,
+    );
+}
+
+// ==================================================
+// Public API
+// ==================================================
+
+export function getPrefetchedPage(
+    href,
+)
+{
+    return (
+        prefetchedPages.get(
+            normalizeUrl(
+                href,
+            ),
+        )
+        || null
+    );
+}
+
 // ==================================================
 // Prefetch
 // ==================================================
@@ -220,6 +284,10 @@ export async function prefetchPage(
             href,
         );
 
+    // ==============================================
+    // Cache
+    // ==============================================
+
     if (
         prefetchedPages.has(
             normalizedUrl,
@@ -228,6 +296,10 @@ export async function prefetchPage(
         return;
     }
 
+    // ==============================================
+    // Pending
+    // ==============================================
+
     if (
         pendingRequests.has(
             normalizedUrl,
@@ -235,6 +307,10 @@ export async function prefetchPage(
     ) {
         return;
     }
+
+    // ==============================================
+    // Cooldown
+    // ==============================================
 
     if (
         isRecentlyPrefetched(
@@ -249,6 +325,10 @@ export async function prefetchPage(
         performance.now(),
     );
 
+    // ==============================================
+    // Controller
+    // ==============================================
+
     const controller =
         new AbortController();
 
@@ -257,7 +337,7 @@ export async function prefetchPage(
         controller,
     );
 
-    const timeout =
+    const timeoutId =
         window.setTimeout(
             () =>
             {
@@ -274,6 +354,9 @@ export async function prefetchPage(
                 {
                     signal:
                         controller.signal,
+
+                    credentials:
+                        'same-origin',
 
                     headers: {
                         'X-Requested-With':
@@ -301,6 +384,14 @@ export async function prefetchPage(
         const html =
             await response.text();
 
+        if (
+            !isValidHtmlResponse(
+                html,
+            )
+        ) {
+            return;
+        }
+
         storePrefetchedPage(
             normalizedUrl,
             html,
@@ -309,8 +400,9 @@ export async function prefetchPage(
     } catch (error) {
 
         if (
-            error?.name
-            === 'AbortError'
+            error instanceof Error
+            && error.name
+                === 'AbortError'
         ) {
             return;
         }
@@ -323,7 +415,7 @@ export async function prefetchPage(
     } finally {
 
         clearTimeout(
-            timeout,
+            timeoutId,
         );
 
         pendingRequests.delete(
@@ -333,7 +425,7 @@ export async function prefetchPage(
 }
 
 // ==================================================
-// Delegated Hover Prefetch
+// Hover Prefetch
 // ==================================================
 
 function handlePointerEnter(
@@ -510,7 +602,21 @@ export function initPrefetchNavigation()
         },
     );
 
-    prefetchNextSeriesPage();
+    // ==============================================
+    // Initial delayed preload
+    // ==============================================
+
+    window.setTimeout(
+        () =>
+        {
+            prefetchNextSeriesPage();
+        },
+        500,
+    );
+
+    // ==============================================
+    // AJAX page loaded
+    // ==============================================
 
     document.addEventListener(
         'ajax:page-loaded',

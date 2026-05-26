@@ -4,16 +4,19 @@ declare(strict_types=1);
 
 /** @var array<int, object> $mangas */
 
-if ($mangas === []) {
+?>
 
-    echo '
-        <p class="collection-empty">
-            Aucun manga trouvé.
-        </p>
-    ';
+<div class="collection-ajax-content">
 
-    return;
-}
+<?php if ($mangas === []): ?>
+
+    <p class="collection-empty">
+        Aucun manga trouvé.
+    </p>
+
+</div>
+
+<?php return; endif;
 
 $isSerieView =
     isset($isSerieView)
@@ -243,3 +246,5 @@ $baseUri =
 <?php endforeach; ?>
 
 </section>
+
+</div>

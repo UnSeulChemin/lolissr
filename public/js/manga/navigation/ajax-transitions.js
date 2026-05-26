@@ -2,14 +2,31 @@
 // AJAX Transitions
 // ==================================================
 
+const TRANSITION_TIMEOUT =
+    250;
+
+// ==================================================
+// Helpers
+// ==================================================
+
 function waitTransitionEnd(
     element,
-    timeout = 250,
+    timeout = TRANSITION_TIMEOUT,
 )
 {
     return new Promise(
         (resolve) =>
         {
+            if (
+                !element
+                || !element.isConnected
+            ) {
+
+                resolve();
+
+                return;
+            }
+
             let resolved =
                 false;
 
@@ -20,7 +37,8 @@ function waitTransitionEnd(
                         return;
                     }
 
-                    resolved = true;
+                    resolved =
+                        true;
 
                     element.removeEventListener(
                         'transitionend',
@@ -58,28 +76,44 @@ function waitTransitionEnd(
             element.addEventListener(
                 'transitionend',
                 handleEnd,
+                {
+                    once: true,
+                },
             );
         },
     );
 }
 
-/*
-|------------------------------------------------------------------
-| Animate Out
-|------------------------------------------------------------------
-*/
+function forceReflow(
+    element,
+)
+{
+    void element.offsetWidth;
+}
+
+// ==================================================
+// Animate Out
+// ==================================================
 
 export async function animateContentOut(
     content,
 )
 {
+    if (
+        !content
+        || !content.isConnected
+    ) {
+        return;
+    }
+
     content.classList.remove(
         'page-transition-in',
         'page-transition-visible',
     );
 
-    // Force reflow
-    void content.offsetWidth;
+    forceReflow(
+        content,
+    );
 
     content.classList.add(
         'page-transition-out',
@@ -90,16 +124,21 @@ export async function animateContentOut(
     );
 }
 
-/*
-|------------------------------------------------------------------
-| Animate In
-|------------------------------------------------------------------
-*/
+// ==================================================
+// Animate In
+// ==================================================
 
 export async function animateContentIn(
     content,
 )
 {
+    if (
+        !content
+        || !content.isConnected
+    ) {
+        return;
+    }
+
     content.classList.remove(
         'page-transition-out',
     );
@@ -108,12 +147,19 @@ export async function animateContentIn(
         'page-transition-in',
     );
 
-    // Force reflow
-    void content.offsetWidth;
+    forceReflow(
+        content,
+    );
 
     requestAnimationFrame(
         () =>
         {
+            if (
+                !content.isConnected
+            ) {
+                return;
+            }
+
             content.classList.add(
                 'page-transition-visible',
             );
@@ -123,6 +169,12 @@ export async function animateContentIn(
     await waitTransitionEnd(
         content,
     );
+
+    if (
+        !content.isConnected
+    ) {
+        return;
+    }
 
     content.classList.remove(
         'page-transition-in',

@@ -7,6 +7,13 @@ import {
 } from './prefetch-series.js';
 
 // ==================================================
+// Config
+// ==================================================
+
+const SCROLL_THROTTLE =
+    80;
+
+// ==================================================
 // State
 // ==================================================
 
@@ -21,13 +28,6 @@ let cachedColumns =
 
 let lastScrollTime =
     0;
-
-// ==================================================
-// Config
-// ==================================================
-
-const SCROLL_THROTTLE =
-    80;
 
 // ==================================================
 // Helpers
@@ -56,7 +56,8 @@ function updateGridColumns()
 
     if (!grid) {
 
-        cachedColumns = 1;
+        cachedColumns =
+            1;
 
         return;
     }
@@ -159,6 +160,7 @@ function clearActiveState()
             document.activeElement
             === card
         ) {
+
             card.blur();
         }
     }
@@ -201,9 +203,14 @@ function scrollCardIntoView(
         now;
 
     card.scrollIntoView({
-        behavior: 'instant',
-        block: 'center',
-        inline: 'nearest',
+        behavior:
+            'smooth',
+
+        block:
+            'center',
+
+        inline:
+            'nearest',
     });
 }
 
@@ -284,7 +291,8 @@ function syncActiveState()
     }
 
     activeCard.focus({
-        preventScroll: true,
+        preventScroll:
+            true,
     });
 
     scrollCardIntoView(
@@ -376,7 +384,8 @@ function handleKeyboard(
                 activeIndex === -1
             ) {
 
-                activeIndex = 0;
+                activeIndex =
+                    0;
 
             } else {
 
@@ -454,7 +463,8 @@ function handleKeyboard(
 
             event.preventDefault();
 
-            activeIndex = 0;
+            activeIndex =
+                0;
 
             syncActiveState();
 
@@ -540,7 +550,8 @@ export function initSeriesKeyboardNavigation()
         'resize',
         handleResize,
         {
-            passive: true,
+            passive:
+                true,
         },
     );
 

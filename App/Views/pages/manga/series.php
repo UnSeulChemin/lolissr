@@ -85,51 +85,45 @@ $totalPages =
              AJAX Content
         ====================================== -->
 
-        <div
-            class="collection-ajax-content"
-        >
+        <?php require view_path(
+            'components/manga/series_ajax.php',
+        ); ?>
 
-            <?php require view_path(
-                'components/manga/series_ajax.php',
-            ); ?>
+        <?php if (
+            ! $isSerieView
+            && $totalPages > 1
+        ): ?>
 
-            <?php if (
-                ! $isSerieView
-                && $totalPages > 1
-            ): ?>
+            <nav
+                class="
+                    collection-pagination-wrapper
+                "
+            >
 
-                <nav
-                    class="
-                        collection-pagination-wrapper
-                    "
-                >
+                <?php for (
+                    $i = 1;
+                    $i <= $totalPages;
+                    $i++
+                ): ?>
 
-                    <?php for (
-                        $i = 1;
-                        $i <= $totalPages;
-                        $i++
-                    ): ?>
+                    <a
+                        class="
+                            collection-pagination-link
+                            <?= $currentPage === $i
+                                ? 'active'
+                                : ''
+                            ?>
+                        "
+                        href="<?= e($baseUri) ?>manga/series/page/<?= $i ?>"
+                    >
+                        <?= $i ?>
+                    </a>
 
-                        <a
-                            class="
-                                collection-pagination-link
-                                <?= $currentPage === $i
-                                    ? 'active'
-                                    : ''
-                                ?>
-                            "
-                            href="<?= e($baseUri) ?>manga/series/page/<?= $i ?>"
-                        >
-                            <?= $i ?>
-                        </a>
+                <?php endfor; ?>
 
-                    <?php endfor; ?>
+            </nav>
 
-                </nav>
-
-            <?php endif; ?>
-
-        </div>
+        <?php endif; ?>
 
     </div>
 

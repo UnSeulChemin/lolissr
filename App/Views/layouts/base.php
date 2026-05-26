@@ -78,10 +78,10 @@ if (
         'components/layouts/header.php',
     ); ?>
 
-    <main>
-        <?= $content ?? '' ?>
+    <main class="ajax-content">
+        <?= $content ?>
     </main>
-
+    
     <div
         id="toast"
         class="toast"
