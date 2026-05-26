@@ -1,106 +1,27 @@
 /* =========================================
-   KEYFRAMES : CARDS
+   KEYFRAMES
 ========================================= */
 
-@keyframes transition-card-enter
-{
-    to
-    {
-        opacity: 1;
-
-        transform:
-            translateY(0)
-            scale(1);
-    }
-}
-
-
-/* =========================================
-   KEYFRAMES : SHARED GLOW
-========================================= */
-
-@keyframes badge-glow-shared
-{
-    0%
-    {
-        transform: scale(0.88);
-        opacity: 0.42;
-    }
-
-    50%
-    {
-        transform: scale(1.16);
-        opacity: 1;
-    }
-
-    100%
-    {
-        transform: scale(0.88);
-        opacity: 0.42;
-    }
-}
-
-
-/* =========================================
-   KEYFRAMES : PURPLE GLOW
-========================================= */
-
-@keyframes badge-glow-purple
-{
-    0%
-    {
-        transform: scale(0.94);
-        opacity: 0.34;
-    }
-
-    50%
-    {
-        transform: scale(1.06);
-        opacity: 0.58;
-    }
-
-    100%
-    {
-        transform: scale(0.94);
-        opacity: 0.34;
-    }
-}
-
-
-/* =========================================
-   KEYFRAMES : GOLD GLOW
-========================================= */
-
-@keyframes badge-glow-gold
-{
-    0%
-    {
-        transform: scale(0.95);
-        opacity: 0.28;
-    }
-
-    50%
-    {
-        transform: scale(1.04);
-        opacity: 0.52;
-    }
-
-    100%
-    {
-        transform: scale(0.95);
-        opacity: 0.28;
-    }
-}
-
-
-/* =========================================
-   KEYFRAMES : SHIMMER
-========================================= */
-
-@keyframes card-shimmer
-{
-    100%
-    {
+@keyframes card-shimmer {
+    100% {
         transform: translateX(100%);
     }
+}
+
+@keyframes badge-glow-shared {
+    0% { transform: scale(0.88); opacity: 0.42; }
+    50% { transform: scale(1.16); opacity: 1; }
+    100% { transform: scale(0.88); opacity: 0.42; }
+}
+
+@keyframes badge-glow-purple {
+    0% { transform: scale(0.94); opacity: 0.34; }
+    50% { transform: scale(1.06); opacity: 0.58; }
+    100% { transform: scale(0.94); opacity: 0.34; }
+}
+
+@keyframes badge-glow-gold {
+    0% { transform: scale(0.95); opacity: 0.28; }
+    50% { transform: scale(1.04); opacity: 0.52; }
+    100% { transform: scale(0.95); opacity: 0.28; }
 }

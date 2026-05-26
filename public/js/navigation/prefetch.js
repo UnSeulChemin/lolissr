@@ -1,416 +1,120 @@
 // =========================================
-// PREFETCH NAVIGATION
+// PREFETCH SYSTEM (PAGE ONLY CLEAN)
 // =========================================
 
-import {
-    request,
-} from '../core/http.js';
-
-import {
-    normalizeUrl,
-    shouldIgnoreLink,
-} from '../core/navigation.js';
-
-import {
-    delegate,
-} from '../core/dom.js';
-
-import {
-    debug,
-    debugError,
-} from '../core/debug.js';
-
-import {
-    config,
-} from '../core/config.js';
-
-// =========================================
-// Config
-// =========================================
-
-const AJAX_CONTAINER_SELECTOR =
-    '.ajax-content';
+import { request } from '../core/http.js';
+import { normalizeUrl } from '../core/navigation.js';
+import { debug, debugError } from '../core/debug.js';
+import { config } from '../core/config.js';
 
 const {
-    delay: PREFETCH_DELAY,
-    cooldown: PREFETCH_COOLDOWN,
-    timeout: PREFETCH_TIMEOUT,
-    cacheLimit:
-        PREFETCH_CACHE_LIMIT = 50,
+    cooldown = 800,
+    timeout = 4000,
+    cacheLimit = 50,
 } = config.prefetch;
 
-// =========================================
-// State
-// =========================================
+// =========================
+// STATE
+// =========================
 
-const prefetchedPages =
-    new Map();
+const cache = new Map();
+const pending = new Map();
+const last = new Map();
 
-const pendingRequests =
-    new Map();
+let initialized = false;
 
-const recentPrefetches =
-    new Map();
+// =========================
+// CLEAN CACHE
+// =========================
 
-let initialized =
-    false;
-
-let hoverTimeout =
-    null;
-
-// =========================================
-// Selectors
-// =========================================
-
-const linkSelector =
-`
-a.card-link,
-a.dashboard-card,
-a.collection-pagination-link,
-a[data-prefetch="true"]
-`;
-
-// =========================================
-// Helpers
-// =========================================
-
-function isValidHtmlResponse(
-    html,
-)
+function cleanup()
 {
-    return (
-        typeof html
-            === 'string'
-        && html.includes(
-            AJAX_CONTAINER_SELECTOR,
-        )
-    );
-}
-
-function cleanupOldCache()
-{
-    while (
-        prefetchedPages.size
-        >= PREFETCH_CACHE_LIMIT
-    ) {
-
-        const oldestKey =
-            prefetchedPages
-                .keys()
-                .next()
-                .value;
-
-        if (!oldestKey) {
-            break;
-        }
-
-        prefetchedPages.delete(
-            oldestKey,
-        );
+    while (cache.size > cacheLimit) {
+        const key = cache.keys().next().value;
+        cache.delete(key);
     }
 }
 
-function isRecentlyPrefetched(
-    normalizedUrl,
-)
-{
-    const lastPrefetch =
-        recentPrefetches.get(
-            normalizedUrl,
-        );
+// =========================
+// COOLDOWN
+// =========================
 
-    return (
-        typeof lastPrefetch
-            === 'number'
-        && (
-            performance.now()
-            - lastPrefetch
-        ) < PREFETCH_COOLDOWN
-    );
+function isCooldown(url)
+{
+    const t = last.get(url);
+    return t && (performance.now() - t) < cooldown;
 }
 
-function storePrefetchedPage(
-    url,
-    html,
-)
+// =========================
+// PUBLIC CACHE
+// =========================
+
+export function getPrefetchedPage(url)
 {
-    if (
-        !isValidHtmlResponse(
-            html,
-        )
-    ) {
-
-        debug(
-            'PREFETCH',
-            'invalid-html',
-            url,
-        );
-
-        return;
-    }
-
-    cleanupOldCache();
-
-    prefetchedPages.set(
-        url,
-        html,
-    );
-
-    debug(
-        'PREFETCH',
-        'cached',
-        url,
-    );
+    return cache.get(normalizeUrl(url)) || null;
 }
 
-// =========================================
-// Public API
-// =========================================
+// =========================
+// PREFETCH CORE
+// =========================
 
-export function getPrefetchedPage(
-    href,
-)
+export async function prefetchPage(url)
 {
-    return (
-        prefetchedPages.get(
-            normalizeUrl(href),
-        )
-        || null
-    );
-}
+    const normalized = normalizeUrl(url);
 
-// =========================================
-// Prefetch
-// =========================================
+    if (!normalized) return;
+    if (cache.has(normalized)) return;
+    if (pending.has(normalized)) return;
+    if (isCooldown(normalized)) return;
 
-export async function prefetchPage(
-    href,
-)
-{
-    const normalizedUrl =
-        normalizeUrl(href);
+    last.set(normalized, performance.now());
 
-    // Cache
+    const controller = new AbortController();
+    pending.set(normalized, controller);
 
-    if (
-        prefetchedPages.has(
-            normalizedUrl,
-        )
-    ) {
-
-        debug(
-            'PREFETCH',
-            'cache-hit',
-            normalizedUrl,
-        );
-
-        return;
-    }
-
-    // Pending
-
-    if (
-        pendingRequests.has(
-            normalizedUrl,
-        )
-    ) {
-        return;
-    }
-
-    // Cooldown
-
-    if (
-        isRecentlyPrefetched(
-            normalizedUrl,
-        )
-    ) {
-        return;
-    }
-
-    recentPrefetches.set(
-        normalizedUrl,
-        performance.now(),
-    );
-
-    const controller =
-        new AbortController();
-
-    pendingRequests.set(
-        normalizedUrl,
-        controller,
-    );
-
-    const timeoutId =
-        window.setTimeout(
-            () =>
-            {
-                controller.abort();
-            },
-            PREFETCH_TIMEOUT,
-        );
+    const timer = setTimeout(() =>
+    {
+        controller.abort();
+    }, timeout);
 
     try {
 
-        debug(
-            'PREFETCH',
-            'fetch',
-            normalizedUrl,
-        );
+        const html = await request(normalized, {
+            responseType: 'text',
+            signal: controller.signal,
+            headers: {
+                'X-Prefetch': '1',
+                Accept: 'text/html',
+            },
+        });
 
-        const html =
-            await request(
-                normalizedUrl,
-                {
-                    responseType:
-                        'text',
-
-                    signal:
-                        controller.signal,
-
-                    headers: {
-                        'X-Partial':
-                            'true',
-
-                        'X-Prefetch':
-                            'true',
-
-                        'Purpose':
-                            'prefetch',
-
-                        'Accept':
-                            'text/html',
-                    },
-                },
-            );
-
-        storePrefetchedPage(
-            normalizedUrl,
-            html,
-        );
-
-    } catch (error) {
-
-        if (
-            error instanceof Error
-            && error.name
-                === 'AbortError'
-        ) {
-
-            debug(
-                'PREFETCH',
-                'aborted',
-                normalizedUrl,
-            );
-
-            return;
+        if (typeof html === 'string' && html.length > 0) {
+            cleanup();
+            cache.set(normalized, html);
+            debug('PREFETCH', 'cached', normalized);
         }
 
-        debugError(
-            'PREFETCH',
-            error,
-        );
+    } catch (e) {
+
+        if (e?.name !== 'AbortError') {
+            debugError('PREFETCH', e);
+        }
 
     } finally {
 
-        clearTimeout(
-            timeoutId,
-        );
-
-        pendingRequests.delete(
-            normalizedUrl,
-        );
+        clearTimeout(timer);
+        pending.delete(normalized);
     }
 }
 
-// =========================================
-// Events
-// =========================================
+// =========================
+// INIT (NO EVENTS)
+// =========================
 
-function handlePointerEnter(
-    _,
-    link,
-)
+export function initPrefetch()
 {
-    if (
-        shouldIgnoreLink(link)
-    ) {
-        return;
-    }
+    if (initialized) return;
+    initialized = true;
 
-    clearTimeout(
-        hoverTimeout,
-    );
-
-    hoverTimeout =
-        window.setTimeout(
-            () =>
-            {
-                prefetchPage(
-                    link.href,
-                );
-            },
-            PREFETCH_DELAY,
-        );
-}
-
-function handlePointerLeave()
-{
-    clearTimeout(
-        hoverTimeout,
-    );
-}
-
-function handleFocus(
-    _,
-    link,
-)
-{
-    if (
-        shouldIgnoreLink(link)
-    ) {
-        return;
-    }
-
-    prefetchPage(
-        link.href,
-    );
-}
-
-// =========================================
-// Init
-// =========================================
-
-export function initPrefetchNavigation()
-{
-    if (initialized) {
-        return;
-    }
-
-    initialized =
-        true;
-
-    delegate(
-        document,
-        'pointerenter',
-        linkSelector,
-        handlePointerEnter,
-    );
-
-    delegate(
-        document,
-        'focusin',
-        linkSelector,
-        handleFocus,
-    );
-
-    document.addEventListener(
-        'pointerleave',
-        handlePointerLeave,
-        true,
-    );
-
-    debug(
-        'PREFETCH',
-        'initialized',
-    );
+    debug('PREFETCH', 'ready (page-only mode)');
 }

@@ -1,194 +1,57 @@
 // =========================================
-// AJAX DOM
+// AJAX DOM (STABLE SPA SWAP)
 // =========================================
 
-import {
-    $,
-} from '../core/dom.js';
+import { $ } from '../core/dom.js';
+import { debug, debugError } from '../core/debug.js';
 
-import {
-    debug,
-    debugError,
-} from '../core/debug.js';
+const SELECTOR = '.ajax-content';
 
-// =========================================
-// Config
-// =========================================
-
-const AJAX_CONTAINER_SELECTOR =
-    '.ajax-content';
-
-// =========================================
-// Helpers
-// =========================================
-
-function parseHtml(
-    html,
-)
+function parseHtml(html)
 {
-    return new DOMParser()
-        .parseFromString(
-            html,
-            'text/html',
-        );
-}
+    const doc = new DOMParser().parseFromString(html, 'text/html');
 
-function getAjaxContent(
-    parent = document,
-)
-{
-    return $(
-        AJAX_CONTAINER_SELECTOR,
-        parent,
-    );
-}
-
-function updateDocumentMetadata(
-    documentHtml,
-)
-{
-    // =====================================
-    // Title
-    // =====================================
-
-    const title =
-        $(
-            'title',
-            documentHtml,
-        );
-
-    if (
-        title?.textContent
-    ) {
-
-        document.title =
-            title.textContent;
+    if (!doc.querySelector(SELECTOR)) {
+        throw new Error('Invalid SPA HTML (missing container)');
     }
 
-    // =====================================
-    // Language
-    // =====================================
-
-    const html =
-        documentHtml.documentElement;
-
-    if (
-        html?.lang
-    ) {
-
-        document.documentElement.lang =
-            html.lang;
-    }
+    return doc;
 }
 
-function validateAjaxResponse(
-    documentHtml,
-)
+function getContainer(root)
 {
-    return Boolean(
-        getAjaxContent(
-            documentHtml,
-        ),
-    );
+    return root.querySelector(SELECTOR);
 }
 
-// =========================================
-// Replace Content
-// =========================================
+function updateMeta(doc)
+{
+    const title = doc.querySelector('title');
+    if (title) document.title = title.textContent;
 
-export function replaceContent(
-    html,
-)
+    const html = doc.documentElement;
+    if (html?.lang) document.documentElement.lang = html.lang;
+}
+
+export function replaceContent(html)
 {
     try {
+        const doc = parseHtml(html);
 
-        // =================================
-        // Parse
-        // =================================
+        const current = document.querySelector(SELECTOR);
+        const next = getContainer(doc);
 
-        const documentHtml =
-            parseHtml(
-                html,
-            );
-
-        // =================================
-        // Validate
-        // =================================
-
-        if (
-            !validateAjaxResponse(
-                documentHtml,
-            )
-        ) {
-
-            throw new Error(
-                'Invalid AJAX response',
-            );
+        if (!current || !next) {
+            throw new Error('Missing SPA container');
         }
 
-        // =================================
-        // Current Content
-        // =================================
+        updateMeta(doc);
 
-        const currentContent =
-            getAjaxContent();
+        // ⚡ IMPORTANT FIX: replace INNER ONLY (SAFE HEADER PERSIST)
+        current.innerHTML = next.innerHTML;
 
-        if (
-            !currentContent
-            || !currentContent.isConnected
-        ) {
+        debug('DOM', 'swapped');
 
-            throw new Error(
-                'Current AJAX container not found',
-            );
-        }
-
-        // =================================
-        // New Content
-        // =================================
-
-        const newContent =
-            getAjaxContent(
-                documentHtml,
-            );
-
-        if (!newContent)
-        {
-            throw new Error(
-                'New AJAX content not found',
-            );
-        }
-
-        // =================================
-        // Metadata
-        // =================================
-
-        updateDocumentMetadata(
-            documentHtml,
-        );
-
-        // =================================
-        // Replace
-        // =================================
-
-        currentContent.replaceWith(
-            newContent.cloneNode(
-                true,
-            ),
-        );
-
-        debug(
-            'DOM',
-            'content replaced',
-        );
-
-    } catch (error) {
-
-        debugError(
-            'DOM',
-            error,
-        );
-
-        throw error;
+    } catch (e) {
+        debugError('DOM', e);
     }
 }

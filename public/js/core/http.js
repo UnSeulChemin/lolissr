@@ -3,7 +3,7 @@
 // =========================================
 
 /**
- * CSRF Token
+ * CSRF TOKEN
  */
 function getCsrfToken()
 {
@@ -11,82 +11,62 @@ function getCsrfToken()
 }
 
 /**
- * Build Headers
+ * BUILD HEADERS
  */
-function buildHeaders(
-    customHeaders = {},
-)
+function buildHeaders(custom = {})
 {
     return {
-        'X-Requested-With':
-            'XMLHttpRequest',
-
-        'X-CSRF-TOKEN':
-            getCsrfToken(),
-
-        ...customHeaders,
+        'X-Requested-With': 'XMLHttpRequest',
+        'X-CSRF-TOKEN': getCsrfToken(),
+        ...custom,
     };
 }
 
 /**
- * Parse Response
+ * SAFE RESPONSE PARSER
  */
-async function parseResponse(
-    response,
-    responseType = 'json',
-)
+async function parseResponse(res, type = 'text')
 {
     try {
 
-        if (
-            responseType
-            === 'text'
-        ) {
-
-            return await response.text();
+        // TEXT MODE
+        if (type === 'text') {
+            return await res.text();
         }
 
-        return await response.json();
+        // JSON MODE SAFE
+        const text = await res.text();
+
+        try {
+            return JSON.parse(text);
+        } catch {
+            return null;
+        }
 
     } catch {
-
         return null;
     }
 }
 
 /**
- * Main Request
+ * MAIN REQUEST
  */
-export async function request(
-    url,
-    options = {},
-)
+export async function request(url, options = {})
 {
-    const response =
-        await fetch(url, {
-            credentials:
-                'same-origin',
+    const res = await fetch(url, {
+        credentials: 'same-origin',
+        ...options,
+        headers: buildHeaders(options.headers),
+    });
 
-            ...options,
+    const data = await parseResponse(
+        res,
+        options.responseType || 'text'
+    );
 
-            headers:
-                buildHeaders(
-                    options.headers,
-                ),
-        });
-
-    const data =
-        await parseResponse(
-            response,
-            options.responseType,
-        );
-
-    if (!response.ok)
-    {
+    if (!res.ok) {
         throw {
-            status:
-                response.status,
-
+            status: res.status,
             data,
         };
     }
@@ -97,10 +77,7 @@ export async function request(
 /**
  * GET
  */
-export function get(
-    url,
-    options = {},
-)
+export function get(url, options = {})
 {
     return request(url, {
         method: 'GET',
@@ -109,25 +86,17 @@ export function get(
 }
 
 /**
- * POST
+ * POST (IMPORTANT POUR TON PROJET)
  */
-export function post(
-    url,
-    body = {},
-    options = {},
-)
+export function post(url, body = {}, options = {})
 {
     return request(url, {
         method: 'POST',
-
-        body:
-            new URLSearchParams(body),
-
+        body: JSON.stringify(body),
         headers: {
-            'Content-Type':
-                'application/x-www-form-urlencoded',
+            'Content-Type': 'application/json',
+            ...(options.headers || {}),
         },
-
         ...options,
     });
 }

@@ -2,127 +2,40 @@
 // CORE : NAVIGATION
 // =========================================
 
-/**
- * Normalize URL
- */
-export function normalizeUrl(
-    href,
-)
+export function normalizeUrl(href)
 {
-    const url =
-        new URL(
-            href,
-            window.location.origin,
-        );
+    const url = new URL(href, window.location.origin);
 
-    let pathname =
-        url.pathname;
+    let pathname = url.pathname;
 
-    if (
-        !pathname.endsWith('/')
-        && !pathname.includes('.')
-    ) {
-
+    // force trailing slash propre
+    if (!pathname.endsWith('/') && !pathname.includes('.')) {
         pathname += '/';
     }
 
-    return (
-        pathname
-        + url.search
-    );
+    // ignore hash (IMPORTANT SPA)
+    const search = url.search || '';
+
+    return pathname + search;
 }
 
-/**
- * Ignore Link
- */
-export function shouldIgnoreLink(
-    link,
-)
+export function shouldIgnoreLink(link)
 {
-    if (
-        !(link instanceof HTMLAnchorElement)
-    ) {
+    if (!(link instanceof HTMLAnchorElement)) return true;
+    if (!link.href) return true;
+
+    const url = new URL(link.href, window.location.origin);
+
+    if (url.origin !== window.location.origin) return true;
+    if (link.target === '_blank') return true;
+    if (link.hasAttribute('download')) return true;
+    if (link.dataset.noAjax !== undefined) return true;
+
+    if (url.hash && normalizeUrl(url.href) === normalizeUrl(location.href)) {
         return true;
     }
 
-    if (!link.href) {
-        return true;
-    }
-
-    const url =
-        new URL(
-            link.href,
-            window.location.origin,
-        );
-
-    // =====================================
-    // External
-    // =====================================
-
-    if (
-        url.origin
-        !== window.location.origin
-    ) {
-        return true;
-    }
-
-    // =====================================
-    // Same-page hash
-    // =====================================
-
-    if (
-        url.hash
-        && normalizeUrl(
-            url.href,
-        ) === normalizeUrl(
-            window.location.href,
-        )
-    ) {
-        return true;
-    }
-
-    // =====================================
-    // New tab
-    // =====================================
-
-    if (
-        link.target
-        === '_blank'
-    ) {
-        return true;
-    }
-
-    // =====================================
-    // Download
-    // =====================================
-
-    if (
-        link.hasAttribute(
-            'download',
-        )
-    ) {
-        return true;
-    }
-
-    // =====================================
-    // AJAX opt-out
-    // =====================================
-
-    if (
-        link.dataset.noAjax
-        !== undefined
-    ) {
-        return true;
-    }
-
-    // =====================================
-    // Static files
-    // =====================================
-
-    if (
-        /\.(jpg|jpeg|png|gif|webp|svg|pdf|zip)$/i
-            .test(url.pathname)
-    ) {
+    if (/\.(jpg|jpeg|png|gif|webp|svg|pdf|zip)$/i.test(url.pathname)) {
         return true;
     }
 

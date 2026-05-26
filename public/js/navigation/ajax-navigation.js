@@ -1,551 +1,213 @@
 // =========================================
-// AJAX NAVIGATION
+// AJAX NAVIGATION (FINAL CLEAN SPA)
 // =========================================
 
-import {
-    $$,
-} from '../core/dom.js';
+import { getPrefetchedPage, prefetchPage } from './prefetch.js';
+import { normalizeUrl } from '../core/navigation.js';
+import { fetchPageHtml } from './ajax-fetch.js';
+import { replaceContent } from './ajax-dom.js';
+import { runPageTransition, scrollTop } from '../core/page-transition.js';
+import { debug, debugError } from '../core/debug.js';
 
-import {
-    normalizeUrl,
-    shouldIgnoreLink,
-} from '../core/navigation.js';
+// =========================
+// STATE
+// =========================
 
-import {
-    fetchPageHtml,
-} from './ajax-fetch.js';
+let id = 0;
+let controller = null;
+let lock = false;
 
-import {
-    replaceContent,
-} from './ajax-dom.js';
-
-import {
-    prefetchPage,
-} from './prefetch.js';
-
-import {
-    runPageTransition,
-    scrollTop,
-} from '../core/page-transition.js';
-
-import {
-    debug,
-    debugError,
-} from '../core/debug.js';
-
-import {
-    config,
-} from '../core/config.js';
-
-// =========================================
-// Config
-// =========================================
-
-const PREFETCH_DELAY =
-    800;
-
-const navigationSelector =
-`
-a[href]:not(
-    [data-no-ajax]
-)
-`;
-
-// =========================================
-// State
-// =========================================
-
-let initialized =
-    false;
-
-let currentController =
-    null;
-
-let currentNavigationId =
-    0;
-
-let transitionLock =
-    false;
-
-// =========================================
-// Helpers
-// =========================================
-
-function isNavigationValid(
-    navigationId,
-    signal,
-)
-{
-    return (
-        !signal.aborted
-        && navigationId
-            === currentNavigationId
-    );
-}
-
-function schedulePrefetch(
-    callback,
-)
-{
-    if (
-        'requestIdleCallback'
-        in window
-    ) {
-
-        window.requestIdleCallback(
-            callback,
-            {
-                timeout: 400,
-            },
-        );
-
-        return;
-    }
-
-    window.setTimeout(
-        callback,
-        120,
-    );
-}
-
-// =========================================
-// Active Navigation
-// =========================================
+// =========================
+// ACTIVE NAVIGATION
+// =========================
 
 function updateActiveNavigation()
 {
-    const currentPath =
-        normalizeUrl(
-            window.location.pathname,
-        );
+    const currentPath = new URL(location.href).pathname.replace(/\/+$/, '/');
 
-    const links =
-        $$(
-            '.nav-link-icon',
-        );
+    const links = document.querySelectorAll('.nav-link-icon');
 
     for (const link of links)
     {
-        if (
-            !(link instanceof HTMLAnchorElement)
-        ) {
+        if (!(link instanceof HTMLAnchorElement)) continue;
+
+        const hrefPath = new URL(link.href).pathname.replace(/\/+$/, '/');
+
+        link.classList.remove('active');
+
+        // =========================
+        // HOME STRICT ONLY
+        // =========================
+        if (hrefPath === '/') {
+            if (currentPath === '/') {
+                link.classList.add('active');
+            }
             continue;
         }
 
-        link.classList.remove(
-            'active',
-        );
-
-        const linkPath =
-            normalizeUrl(
-                link.pathname,
-            );
-
-        // =====================================
-        // Home
-        // =====================================
-
+        // =========================
+        // OTHER ROUTES ONLY
+        // =========================
         if (
-            linkPath === config.baseUrl
-            && currentPath
-                === config.baseUrl
+            currentPath === hrefPath ||
+            currentPath.startsWith(hrefPath + '/')
         ) {
-
-            link.classList.add(
-                'active',
-            );
-
-            continue;
-        }
-
-        // =====================================
-        // Sections
-        // =====================================
-
-        if (
-            linkPath !== config.baseUrl
-            && currentPath.startsWith(
-                linkPath,
-            )
-        ) {
-
-            link.classList.add(
-                'active',
-            );
+            link.classList.add('active');
         }
     }
 }
 
-// =========================================
-// Prefetch
-// =========================================
+// =========================
+// PREFETCH VISIBLES
+// =========================
 
-function prefetchVisibleLinks()
+function prefetchVisible()
 {
-    if (transitionLock) {
-        return;
-    }
+    if (lock) return;
 
-    const links =
-        $$(
-            `
-            a.card-link,
-            a.dashboard-card,
-            a.collection-pagination-link,
-            a[data-prefetch="true"]
-            `,
-        );
-
-    for (const link of links)
-    {
-        if (
-            shouldIgnoreLink(
-                link,
-            )
-        ) {
-            continue;
-        }
-
-        prefetchPage(
-            link.href,
-        );
-    }
-}
-
-// =========================================
-// Navigation
-// =========================================
-
-export async function navigateTo(
-    href,
-    options = {},
-)
-{
-    const navigationId =
-        ++currentNavigationId;
-
-    const normalizedTarget =
-        normalizeUrl(
-            href,
-        );
-
-    const normalizedCurrent =
-        normalizeUrl(
-            window.location.href,
-        );
-
-    // =====================================
-    // Prevent duplicate navigation
-    // =====================================
-
-    if (
-        normalizedTarget
-        === normalizedCurrent
-    ) {
-
-        debug(
-            'AJAX',
-            'skip-same-url',
-            normalizedTarget,
-        );
-
-        return;
-    }
-
-    const url =
-        new URL(
-            href,
-            window.location.origin,
-        );
-
-    // =====================================
-    // Abort previous navigation
-    // =====================================
-
-    currentController?.abort();
-
-    currentController =
-        new AbortController();
-
-    const signal =
-        currentController.signal;
-
-    transitionLock =
-        true;
-
-    document.body.dataset.ajaxNavigating =
-        'true';
-
-    debug(
-        'AJAX',
-        'navigate',
-        normalizedTarget,
+    const links = document.querySelectorAll(
+        'a.card-link, a.dashboard-card, a.collection-pagination-link, a[data-prefetch="true"]'
     );
+
+    for (const link of links)
+    {
+        if (!(link instanceof HTMLAnchorElement)) continue;
+        if (!link.href) continue;
+
+        prefetchPage(link.href);
+    }
+}
+
+// =========================
+// NAVIGATION CORE
+// =========================
+
+export async function navigateTo(href, options = {})
+{
+    const currentId = ++id;
+
+    const target = normalizeUrl(href);
+    const current = normalizeUrl(location.href);
+
+    if (target === current) return;
+
+    controller?.abort();
+    controller = new AbortController();
+
+    lock = true;
+    document.body.dataset.ajaxNavigating = '1';
 
     try {
 
-        // =================================
-        // Fetch
-        // =================================
+        // =========================
+        // CACHE FIRST
+        // =========================
 
-        const html =
-            await fetchPageHtml(
-                url.href,
-                {
-                    signal,
-                },
-            );
+        let html = getPrefetchedPage(target);
 
-        if (
-            !isNavigationValid(
-                navigationId,
-                signal,
-            )
-        ) {
-            return;
+        if (!html) {
+            html = await fetchPageHtml(target, {
+                signal: controller.signal
+            });
         }
 
-        // =================================
-        // History
-        // =================================
+        if (!html) throw new Error('Empty HTML');
 
-        if (
-            options.updateHistory
-            !== false
-        ) {
+        if (currentId !== id) return;
 
-            window.history.pushState(
-                {},
-                '',
-                normalizedTarget,
-            );
+        // =========================
+        // HISTORY
+        // =========================
+
+        if (options.updateHistory !== false) {
+            history.pushState({}, '', target);
         }
 
-        // =================================
-        // Transition
-        // =================================
+        // =========================
+        // TRANSITION + DOM SWAP
+        // =========================
 
-        await runPageTransition(
-            () =>
-            {
-                if (
-                    !isNavigationValid(
-                        navigationId,
-                        signal,
-                    )
-                ) {
-                    return;
-                }
+        await runPageTransition(() =>
+        {
+            if (currentId !== id) return;
 
-                replaceContent(
-                    html,
-                );
+            replaceContent(html);
+            updateActiveNavigation();
+        });
 
-                updateActiveNavigation();
-            },
-        );
+        if (currentId !== id) return;
 
-        if (
-            !isNavigationValid(
-                navigationId,
-                signal,
-            )
-        ) {
-            return;
+        // =========================
+        // SCROLL
+        // =========================
+
+        if (options.scrollTop !== false) {
+            scrollTop(false);
         }
 
-        // =================================
-        // Scroll
-        // =================================
-
-        if (
-            options.scrollTop
-            !== false
-        ) {
-
-            scrollTop(
-                false,
-            );
-        }
-
-        // =================================
-        // Events
-        // =================================
+        // =========================
+        // EVENT
+        // =========================
 
         document.dispatchEvent(
-            new CustomEvent(
-                'ajax:page-loaded',
-            ),
+            new CustomEvent('ajax:page-loaded')
         );
 
-        // =================================
-        // Prefetch
-        // =================================
+        // =========================
+        // PREFETCH NEXT
+        // =========================
 
-        schedulePrefetch(
-            () =>
-            {
-                if (
-                    navigationId
-                    !== currentNavigationId
-                ) {
-                    return;
-                }
+        prefetchVisible();
 
-                prefetchVisibleLinks();
-            },
-        );
+        debug('AJAX', 'done', target);
 
-        debug(
-            'AJAX',
-            'done',
-            normalizedTarget,
-        );
+    } catch (e) {
 
-    } catch (error) {
-
-        if (
-            error instanceof Error
-            && error.name
-                === 'AbortError'
-        ) {
-
-            debug(
-                'AJAX',
-                'aborted',
-                normalizedTarget,
-            );
-
-            return;
+        if (e?.name !== 'AbortError') {
+            debugError('AJAX', e);
         }
-
-        debugError(
-            'AJAX',
-            error,
-        );
-
-        // =================================
-        // Hard fallback
-        // =================================
-
-        window.location.assign(
-            url.href,
-        );
 
     } finally {
 
-        if (
-            navigationId
-            === currentNavigationId
-        ) {
-
-            transitionLock =
-                false;
-
-            delete document.body
-                .dataset
-                .ajaxNavigating;
+        if (currentId === id) {
+            lock = false;
+            delete document.body.dataset.ajaxNavigating;
         }
     }
 }
 
-// =========================================
-// Events
-// =========================================
-
-function handleClick(
-    event,
-)
-{
-    if (
-        event.defaultPrevented
-        || event.button !== 0
-        || event.ctrlKey
-        || event.metaKey
-        || event.shiftKey
-        || event.altKey
-    ) {
-        return;
-    }
-
-    const target =
-        event.target;
-
-    if (
-        !(target instanceof Element)
-    ) {
-        return;
-    }
-
-    const link =
-        target.closest(
-            navigationSelector,
-        );
-
-    if (
-        shouldIgnoreLink(
-            link,
-        )
-    ) {
-        return;
-    }
-
-    event.preventDefault();
-
-    void navigateTo(
-        link.href,
-    );
-}
-
-function handlePopState()
-{
-    void navigateTo(
-        window.location.href,
-        {
-            updateHistory:
-                false,
-
-            scrollTop:
-                false,
-        },
-    );
-}
-
-// =========================================
-// Init
-// =========================================
+// =========================
+// INIT
+// =========================
 
 export function initAjaxNavigation()
 {
-    if (initialized) {
-        return;
-    }
+    if (window.__SPA__) return;
+    window.__SPA__ = true;
 
-    initialized =
-        true;
+    document.addEventListener('click', (e) =>
+    {
+        const link = e.target.closest('a[href]');
+        if (!link) return;
 
+        if (link.dataset.noAjax !== undefined) return;
+
+        e.preventDefault();
+        navigateTo(link.href);
+    });
+
+    window.addEventListener('popstate', () =>
+    {
+        navigateTo(location.href, {
+            updateHistory: false,
+            scrollTop: false,
+        });
+    });
+
+    // initial active state
     updateActiveNavigation();
 
-    document.addEventListener(
-        'click',
-        handleClick,
-    );
+    setTimeout(prefetchVisible, 300);
 
-    window.addEventListener(
-        'popstate',
-        handlePopState,
-    );
-
-    window.setTimeout(
-        () =>
-        {
-            prefetchVisibleLinks();
-        },
-        PREFETCH_DELAY,
-    );
-
-    debug(
-        'AJAX',
-        'initialized',
-    );
+    debug('AJAX', 'SPA ready');
 }

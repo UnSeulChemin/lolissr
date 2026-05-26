@@ -16,7 +16,7 @@ import {
 } from './core/toast.js';
 
 // ==================================================
-// Navigation
+// Navigation (SPA)
 // ==================================================
 
 import {
@@ -24,7 +24,7 @@ import {
 } from './navigation/ajax-navigation.js';
 
 import {
-    initPrefetchNavigation,
+    initPrefetch,
 } from './navigation/prefetch.js';
 
 import {
@@ -75,229 +75,119 @@ import {
 // Config
 // ==================================================
 
-const APP_READY_ATTRIBUTE =
-    'appInitialized';
+const APP_READY_ATTRIBUTE = 'appInitialized';
 
 // ==================================================
-// Initializers
+// SAFE INIT
 // ==================================================
 
-const INITIALIZERS = [
-
-    // =============================================
-    // Core
-    // =============================================
-
-    [
-        'PageTransitions',
-        initPageTransitions,
-    ],
-
-    // =============================================
-    // Navigation
-    // =============================================
-
-    [
-        'AjaxNavigation',
-        initAjaxNavigation,
-    ],
-
-    [
-        'PrefetchNavigation',
-        initPrefetchNavigation,
-    ],
-
-    [
-        'GlobalBackNavigation',
-        initGlobalBackNavigation,
-    ],
-
-    // =============================================
-    // Manga Pages
-    // =============================================
-
-    [
-        'AjouterPage',
-        initAjouterPage,
-    ],
-
-    [
-        'ModifierPage',
-        initModifierPage,
-    ],
-
-    // =============================================
-    // Manga Actions
-    // =============================================
-
-    [
-        'UpdateNote',
-        initUpdateNote,
-    ],
-
-    [
-        'DeleteManga',
-        initDeleteManga,
-    ],
-
-    [
-        'UpdateReadStatus',
-        initUpdateReadStatus,
-    ],
-
-    [
-        'SearchManga',
-        initSearchManga,
-    ],
-
-    // =============================================
-    // Keyboard
-    // =============================================
-
-    [
-        'SeriesKeyboardNavigation',
-        initSeriesKeyboardNavigation,
-    ],
-
-    // =============================================
-    // Chinois
-    // =============================================
-
-    [
-        'ToggleGrammaireMaitrise',
-        initToggleGrammaireMaitrise,
-    ],
-
-];
-
-// ==================================================
-// Helpers
-// ==================================================
-
-function safeInit(
-    label,
-    callback,
-)
+function safeInit(label, callback)
 {
     try {
-
         callback();
-
-        debug(
-            'INIT',
-            `✅ ${label}`,
-        );
-
+        debug('INIT', `✅ ${label}`);
     } catch (error) {
-
-        debugError(
-            label,
-            error,
-        );
+        debugError(label, error);
     }
 }
 
+// ==================================================
+// FLASH TOAST
+// ==================================================
+
 function initFlashToast()
 {
-    const flashToast =
-        window.flashToast;
+    const flashToast = window.flashToast;
 
-    if (
-        !flashToast?.message
-    ) {
+    if (!flashToast || !flashToast.message) {
         return;
     }
 
     showToast(
         flashToast.message,
-        flashToast.type
-            || 'success',
+        flashToast.type || 'success',
     );
 }
 
+// ==================================================
+// APP STATE
+// ==================================================
+
 function isAppInitialized()
 {
-    return (
-        document.body.dataset[
-            APP_READY_ATTRIBUTE
-        ]
-        === 'true'
-    );
+    return document.body.dataset[APP_READY_ATTRIBUTE] === 'true';
 }
 
 function setAppInitialized()
 {
-    document.body.dataset[
-        APP_READY_ATTRIBUTE
-    ] = 'true';
+    document.body.dataset[APP_READY_ATTRIBUTE] = 'true';
 }
+
+// ==================================================
+// INITIALIZERS
+// ==================================================
+
+const INITIALIZERS = [
+
+    ['PageTransitions', initPageTransitions],
+
+    ['AjaxNavigation', initAjaxNavigation],
+
+    ['Prefetch', initPrefetch],
+
+    ['GlobalBackNavigation', initGlobalBackNavigation],
+
+    ['AjouterPage', initAjouterPage],
+    ['ModifierPage', initModifierPage],
+
+    ['UpdateNote', initUpdateNote],
+    ['DeleteManga', initDeleteManga],
+    ['UpdateReadStatus', initUpdateReadStatus],
+    ['SearchManga', initSearchManga],
+
+    ['SeriesKeyboardNavigation', initSeriesKeyboardNavigation],
+
+    ['ToggleGrammaireMaitrise', initToggleGrammaireMaitrise],
+];
+
+// ==================================================
+// RUN
+// ==================================================
 
 function runInitializers()
 {
-    for (
-        const [
-            label,
-            initializer,
-        ] of INITIALIZERS
-    ) {
-
-        safeInit(
-            label,
-            initializer,
-        );
+    for (const [label, init] of INITIALIZERS) {
+        safeInit(label, init);
     }
 }
 
 // ==================================================
-// App
+// APP INIT
 // ==================================================
 
 function initApp()
 {
-    if (
-        isAppInitialized()
-    ) {
-        return;
-    }
+    if (isAppInitialized()) return;
 
     setAppInitialized();
 
-    debug(
-        'APP',
-        '🚀 Boot',
-    );
+    debug('APP', '🚀 Boot');
 
     runInitializers();
 
-    safeInit(
-        'FlashToast',
-        initFlashToast,
-    );
+    safeInit('FlashToast', initFlashToast);
 
-    debug(
-        'APP',
-        '✅ Ready',
-    );
+    debug('APP', '✅ Ready');
 }
 
 // ==================================================
-// Boot
+// BOOT
 // ==================================================
 
-if (
-    document.readyState
-    === 'loading'
-) {
-
-    document.addEventListener(
-        'DOMContentLoaded',
-        initApp,
-        {
-            once: true,
-        },
-    );
-
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp, {
+        once: true,
+    });
 } else {
-
     initApp();
 }

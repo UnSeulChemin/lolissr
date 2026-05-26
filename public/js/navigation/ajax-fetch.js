@@ -1,223 +1,54 @@
 // =========================================
-// AJAX FETCH
+// AJAX FETCH (CLEAN)
 // =========================================
 
-import {
-    request,
-} from '../core/http.js';
+import { request } from '../core/http.js';
+import { normalizeUrl } from '../core/navigation.js';
+import { getPrefetchedPage } from './prefetch.js';
+import { debug, debugError } from '../core/debug.js';
 
-import {
-    normalizeUrl,
-} from '../core/navigation.js';
+const SELECTOR = '.ajax-content';
 
-import {
-    getPrefetchedPage,
-} from './prefetch.js';
-
-import {
-    debug,
-    debugError,
-} from '../core/debug.js';
-
-import {
-    config,
-} from '../core/config.js';
-
-// =========================================
-// Config
-// =========================================
-
-const AJAX_CONTAINER_SELECTOR =
-    '.ajax-content';
-
-const FETCH_TIMEOUT =
-    config.ajax.timeout;
-
-// =========================================
-// Helpers
-// =========================================
-
-function isValidHtmlResponse(
-    html,
-)
+function isValid(html)
 {
-    return (
-        typeof html
-            === 'string'
-        && html.includes(
-            AJAX_CONTAINER_SELECTOR,
-        )
-    );
+    if (!html || typeof html !== 'string') return false;
+
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+
+    return !!doc.querySelector(SELECTOR);
 }
 
-function createTimeoutSignal(
-    signal,
-    timeout = FETCH_TIMEOUT,
-)
+export async function fetchPageHtml(href, options = {})
 {
-    const controller =
-        new AbortController();
+    const url = normalizeUrl(href);
 
-    const timeoutId =
-        window.setTimeout(
-            () =>
-            {
-                controller.abort(
-                    'timeout',
-                );
-            },
-            timeout,
-        );
+    const cached = getPrefetchedPage(url);
 
-    if (signal)
-    {
-        signal.addEventListener(
-            'abort',
-            () =>
-            {
-                controller.abort();
-            },
-            {
-                once: true,
-            },
-        );
+    if (typeof cached === 'string' && isValid(cached)) {
+        debug('FETCH', 'cache-hit', url);
+        return cached;
     }
-
-    return {
-        signal:
-            controller.signal,
-
-        cleanup:
-            () =>
-            {
-                clearTimeout(
-                    timeoutId,
-                );
-            },
-    };
-}
-
-// =========================================
-// Fetch Page HTML
-// =========================================
-
-export async function fetchPageHtml(
-    href,
-    options = {},
-)
-{
-    const normalizedUrl =
-        normalizeUrl(
-            href,
-        );
-
-    // =====================================
-    // Prefetch Cache
-    // =====================================
-
-    const cachedPage =
-        getPrefetchedPage(
-            normalizedUrl,
-        );
-
-    if (
-        isValidHtmlResponse(
-            cachedPage,
-        )
-    ) {
-
-        debug(
-            'FETCH',
-            'cache-hit',
-            normalizedUrl,
-        );
-
-        return cachedPage;
-    }
-
-    // =====================================
-    // Timeout Signal
-    // =====================================
-
-    const {
-        signal,
-        cleanup,
-    } = createTimeoutSignal(
-        options.signal,
-    );
 
     try {
 
-        debug(
-            'FETCH',
-            'request',
-            normalizedUrl,
-        );
+        const html = await request(url, {
+            responseType: 'text',
+            signal: options.signal,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'text/html',
+            },
+        });
 
-        const html =
-            await request(
-                normalizedUrl,
-                {
-                    responseType:
-                        'text',
-
-                    signal,
-
-                    headers: {
-                        'X-Partial':
-                            'true',
-
-                        'Accept':
-                            'text/html',
-                    },
-                },
-            );
-
-        if (
-            !isValidHtmlResponse(
-                html,
-            )
-        ) {
-
-            throw new Error(
-                '[AJAX] Invalid HTML response',
-            );
+        if (!isValid(html)) {
+            throw new Error('Invalid AJAX HTML');
         }
-
-        debug(
-            'FETCH',
-            'success',
-            normalizedUrl,
-        );
 
         return html;
 
-    } catch (error) {
+    } catch (e) {
 
-        if (
-            error instanceof Error
-            && error.name
-                === 'AbortError'
-        ) {
-
-            debug(
-                'FETCH',
-                'aborted',
-                normalizedUrl,
-            );
-
-            throw error;
-        }
-
-        debugError(
-            'FETCH',
-            error,
-        );
-
-        throw error;
-
-    } finally {
-
-        cleanup();
+        debugError('FETCH', e);
+        throw e;
     }
 }
