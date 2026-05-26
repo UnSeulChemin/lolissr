@@ -20,7 +20,28 @@ export function getPrefetchedPage(url)
 
 export async function prefetchPage(url)
 {
-    const normalized = normalizeUrl(url);
+    const parsed =
+        new URL(
+            url,
+            window.location.origin,
+        );
+
+    if (
+        parsed.origin
+        !== window.location.origin
+    ) {
+        return;
+    }
+
+    if (
+        parsed.protocol !== 'http:'
+        && parsed.protocol !== 'https:'
+    ) {
+        return;
+    }
+
+    const normalized =
+        normalizeUrl(url);
 
     if (cache.has(normalized)) return;
     if (inFlight.has(normalized)) return;

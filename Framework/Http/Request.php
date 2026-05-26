@@ -16,6 +16,11 @@ final class Request
 
     private array $server;
 
+    /**
+     * @var array<string, mixed>|null
+     */
+    private ?array $json = null;
+
     public function __construct(
         array $get = [],
         array $post = [],
@@ -130,6 +135,7 @@ final class Request
                 $baseUri,
             )
         ) {
+
             $path = substr(
                 $path,
                 strlen($baseUri),
@@ -166,9 +172,8 @@ final class Request
         string $key,
     ): ?string {
 
-        $serverKey =
-            'HTTP_'
-            . strtoupper(
+        $normalized =
+            strtoupper(
                 str_replace(
                     '-',
                     '_',
@@ -176,8 +181,47 @@ final class Request
                 ),
             );
 
-        return $this->server[$serverKey]
+        return $this->server[
+            'HTTP_' . $normalized
+        ]
+            ?? $this->server[
+                $normalized
+            ]
             ?? null;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function json(): array
+    {
+        if ($this->json !== null) {
+            return $this->json;
+        }
+
+        $raw =
+            file_get_contents(
+                'php://input',
+            );
+
+        if (
+            !is_string($raw)
+            || trim($raw) === ''
+        ) {
+
+            return $this->json = [];
+        }
+
+        $decoded =
+            json_decode(
+                $raw,
+                true,
+            );
+
+        return $this->json =
+            is_array($decoded)
+                ? $decoded
+                : [];
     }
 
     public function input(
@@ -185,29 +229,49 @@ final class Request
         mixed $default = null,
     ): mixed {
 
-        return $this->post[$key]
+        $json =
+            $this->json();
+
+        return $json[$key]
+            ?? $this->post[$key]
             ?? $this->get[$key]
             ?? $default;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function all(): array
     {
         return array_merge(
             $this->get,
             $this->post,
+            $this->json(),
         );
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function postAll(): array
     {
-        return $this->post;
+        return array_merge(
+            $this->post,
+            $this->json(),
+        );
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function queryAll(): array
     {
         return $this->get;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function files(): array
     {
         return $this->files;

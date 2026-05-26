@@ -188,16 +188,18 @@ async function saveNotes(
                 fieldName === 'jacquette'
                     ? value
                     : (
-                        card.dataset.jacquette
-                        || 0
+                        Number(
+                            card.dataset.jacquette,
+                        ) || 0
                     ),
 
             livre_note:
                 fieldName === 'livreNote'
                     ? value
                     : (
-                        card.dataset.livreNote
-                        || 0
+                        Number(
+                            card.dataset.livreNote,
+                        ) || 0
                     ),
         },
         {
@@ -324,7 +326,7 @@ async function updateNote(
 
         showToast(
             data?.message
-            || '✓ Sauvegardé',
+            || 'Sauvegardé',
             'success',
         );
 

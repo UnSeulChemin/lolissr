@@ -2,171 +2,572 @@
 // AJAX NAVIGATION (SPA CORE CLEAN)
 // =========================================
 
-import { getPrefetchedPage } from './prefetch.js';
-import { normalizeUrl } from '../core/navigation.js';
-import { fetchPageHtml } from './ajax-fetch.js';
-import { replaceContent } from './ajax-dom.js';
-import { runPageTransition, scrollTop } from '../core/page-transition.js';
-import { debug, debugError } from '../core/debug.js';
+import {
+    getPrefetchedPage,
+} from './prefetch.js';
 
-// =========================
+import {
+    normalizeUrl,
+} from '../core/navigation.js';
+
+import {
+    fetchPageHtml,
+} from './ajax-fetch.js';
+
+import {
+    replaceContent,
+} from './ajax-dom.js';
+
+import {
+    runPageTransition,
+    scrollTop,
+} from '../core/page-transition.js';
+
+import {
+    debug,
+    debugError,
+} from '../core/debug.js';
+
+// =========================================
 // STATE
-// =========================
+// =========================================
 
-let id = 0;
-let controller = null;
-let lock = false;
+let navigationId =
+    0;
 
-// =========================
-// ACTIVE NAV (HEADER UPDATE)
-// =========================
+let controller =
+    null;
+
+let locked =
+    false;
+
+// =========================================
+// ACTIVE NAVIGATION
+// =========================================
 
 function updateActiveNavigation()
 {
-    const current = new URL(location.href).pathname.replace(/\/+$/, '/');
-    const links = document.querySelectorAll('.nav-link-icon');
+    const current =
+        new URL(
+            location.href,
+        ).pathname.replace(
+            /\/+$/,
+            '/',
+        );
+
+    const links =
+        document.querySelectorAll(
+            '.nav-link-icon',
+        );
 
     for (const link of links)
     {
-        if (!(link instanceof HTMLAnchorElement)) continue;
-
-        const href = new URL(link.href).pathname.replace(/\/+$/, '/');
-
-        link.classList.remove('active');
-
-        if (href === '/') {
-            if (current === '/') link.classList.add('active');
+        if (
+            !(
+                link
+                instanceof HTMLAnchorElement
+            )
+        ) {
             continue;
         }
 
-        if (current === href || current.startsWith(href + '/')) {
-            link.classList.add('active');
+        const href =
+            new URL(
+                link.href,
+            ).pathname.replace(
+                /\/+$/,
+                '/',
+            );
+
+        link.classList.remove(
+            'active',
+        );
+
+        if (href === '/') {
+
+            if (current === '/') {
+
+                link.classList.add(
+                    'active',
+                );
+            }
+
+            continue;
+        }
+
+        if (
+            current === href
+            || current.startsWith(
+                href + '/',
+            )
+        ) {
+
+            link.classList.add(
+                'active',
+            );
         }
     }
 }
 
-// =========================
-// PREFETCH TRIGGER
-// =========================
+// =========================================
+// PREFETCH VISIBLE LINKS
+// =========================================
 
 function prefetchVisible()
 {
-    const root = document.querySelector('.ajax-content');
-    if (!root) return;
+    const root =
+        document.querySelector(
+            '.ajax-content',
+        );
 
-    const links = root.querySelectorAll(
-        'a[href], a.nav-link-icon'
-    );
+    if (!root) {
+        return;
+    }
+
+    const links =
+        root.querySelectorAll(
+            'a[href]',
+        );
 
     for (const link of links)
     {
-        if (!(link instanceof HTMLAnchorElement)) continue;
-        if (!link.href) continue;
+        if (
+            !(
+                link
+                instanceof HTMLAnchorElement
+            )
+        ) {
+            continue;
+        }
 
-        window.__prefetchPage?.(link.href);
+        if (!link.href) {
+            continue;
+        }
+
+        window.__prefetchPage?.(
+            link.href,
+        );
     }
 }
 
-// =========================
+// =========================================
 // NAVIGATION CORE
-// =========================
+// =========================================
 
-export async function navigateTo(href, options = {})
+export async function navigateTo(
+    href,
+    options = {},
+)
 {
-    if (lock) return;
+    // =====================================
+    // LOCK
+    // =====================================
 
-    const currentId = ++id;
+    if (
+        locked
+        && options.force !== true
+    ) {
+        return;
+    }
 
-    const target = normalizeUrl(href);
-    const current = normalizeUrl(location.href);
+    const currentId =
+        ++navigationId;
 
-    if (target === current) return;
+    const target =
+        normalizeUrl(
+            href,
+        );
+
+    const current =
+        normalizeUrl(
+            location.href,
+        );
+
+    // =====================================
+    // SAME URL
+    // =====================================
+
+    if (
+        target === current
+        && options.force !== true
+    ) {
+        return;
+    }
+
+    // =====================================
+    // ABORT PREVIOUS
+    // =====================================
 
     controller?.abort();
-    controller = new AbortController();
 
-    lock = true;
-    document.body.dataset.ajaxNavigating = '1';
+    controller =
+        new AbortController();
+
+    locked =
+        true;
+
+    document.body.dataset.ajaxNavigating =
+        '1';
 
     try {
 
-        let html = getPrefetchedPage(target);
+        // =================================
+        // PREFETCH CACHE
+        // =================================
+
+        let html =
+            getPrefetchedPage(
+                target,
+            );
+
+        const instant =
+            Boolean(
+                html,
+            );
+
+        // =================================
+        // FETCH
+        // =================================
 
         if (!html) {
-            html = await fetchPageHtml(target, {
-                signal: controller.signal
-            });
+
+            html =
+                await fetchPageHtml(
+                    target,
+                    {
+                        signal:
+                            controller.signal,
+                    },
+                );
         }
 
-        if (!html) throw new Error('Empty HTML');
+        // =================================
+        // VALIDATE
+        // =================================
 
-        if (currentId !== id) return;
+        if (
+            typeof html !== 'string'
+            || html.length === 0
+        ) {
 
-        history.pushState({}, '', target);
+            throw new Error(
+                'Empty HTML',
+            );
+        }
 
-        await runPageTransition(() =>
-        {
-            if (currentId !== id) return;
+        // =================================
+        // RACE CONDITION
+        // =================================
 
-            replaceContent(html);
+        if (
+            currentId
+            !== navigationId
+        ) {
+            return;
+        }
+
+        // =================================
+        // HISTORY
+        // =================================
+
+        if (
+            options.updateHistory
+            !== false
+        ) {
+
+            history.pushState(
+                {},
+                '',
+                target,
+            );
+        }
+
+        // =================================
+        // FAST DOM SWAP
+        // =================================
+
+        if (instant) {
+
+            replaceContent(
+                html,
+            );
+
             updateActiveNavigation();
-        });
 
-        if (options.scrollTop !== false) {
-            scrollTop(false);
+        } else {
+
+            await runPageTransition(
+                () =>
+                {
+                    if (
+                        currentId
+                        !== navigationId
+                    ) {
+                        return;
+                    }
+
+                    replaceContent(
+                        html,
+                    );
+
+                    updateActiveNavigation();
+                },
+            );
         }
 
-        document.dispatchEvent(new CustomEvent('ajax:page-loaded'));
+        // =================================
+        // SCROLL
+        // =================================
 
-        requestAnimationFrame(prefetchVisible);
+        if (
+            options.scrollTop
+            !== false
+        ) {
 
-        debug('AJAX', 'done', target);
-
-    } catch (e) {
-
-        if (e?.name !== 'AbortError') {
-            debugError('AJAX', e);
+            scrollTop(
+                false,
+            );
         }
+
+        // =================================
+        // EVENTS
+        // =================================
+
+        document.dispatchEvent(
+            new CustomEvent(
+                'ajax:page-loaded',
+            ),
+        );
+
+        requestAnimationFrame(
+            prefetchVisible,
+        );
+
+        debug(
+            'AJAX',
+            'done',
+            target,
+        );
+
+    } catch (error) {
+
+        if (
+            error?.name
+            !== 'AbortError'
+        ) {
+
+            debugError(
+                'AJAX',
+                error,
+            );
+        }
+
     } finally {
 
-        if (currentId === id) {
-            lock = false;
+        if (
+            currentId
+            === navigationId
+        ) {
+
+            locked =
+                false;
+
+            controller =
+                null;
+
             delete document.body.dataset.ajaxNavigating;
         }
     }
 }
 
-// =========================
+// =========================================
 // INIT
-// =========================
+// =========================================
 
 export function initAjaxNavigation()
 {
-    if (window.__SPA__) return;
-    window.__SPA__ = true;
+    if (window.__SPA__) {
+        return;
+    }
 
-    document.addEventListener('click', (e) =>
-    {
-        const link = e.target.closest('a[href]');
-        if (!link) return;
+    window.__SPA__ =
+        true;
 
-        if (link.dataset.noAjax !== undefined) return;
+    // =====================================
+    // CLICK NAVIGATION
+    // =====================================
 
-        e.preventDefault();
-        navigateTo(link.href);
-    });
+    document.addEventListener(
+        'click',
+        (event) =>
+        {
+            const target =
+                event.target;
 
-    window.addEventListener('popstate', () =>
-    {
-        navigateTo(location.href, {
-            updateHistory: false,
-            scrollTop: false,
-        });
-    });
+            if (
+                !(
+                    target
+                    instanceof Element
+                )
+            ) {
+                return;
+            }
+
+            const link =
+                target.closest(
+                    'a[href]',
+                );
+
+            if (
+                !(
+                    link
+                    instanceof HTMLAnchorElement
+                )
+            ) {
+                return;
+            }
+
+            // =================================
+            // NO AJAX
+            // =================================
+
+            if (
+                link.dataset.noAjax
+                !== undefined
+            ) {
+                return;
+            }
+
+            // =================================
+            // EXTERNAL
+            // =================================
+
+            const url =
+                new URL(
+                    link.href,
+                    window.location.origin,
+                );
+
+            if (
+                url.origin
+                !== window.location.origin
+            ) {
+                return;
+            }
+
+            // =================================
+            // NEW TAB
+            // =================================
+
+            if (
+                link.target === '_blank'
+            ) {
+                return;
+            }
+
+            // =================================
+            // DOWNLOAD
+            // =================================
+
+            if (
+                link.hasAttribute(
+                    'download',
+                )
+            ) {
+                return;
+            }
+
+            // =================================
+            // HASH ONLY
+            // =================================
+
+            if (
+                url.pathname
+                === location.pathname
+                && url.hash
+            ) {
+                return;
+            }
+
+            event.preventDefault();
+
+            void navigateTo(
+                link.href,
+            );
+        },
+    );
+
+    // =====================================
+    // BROWSER HISTORY
+    // =====================================
+
+    window.addEventListener(
+        'popstate',
+        async () =>
+        {
+            controller?.abort();
+
+            controller =
+                null;
+
+            locked =
+                false;
+
+            delete document.body.dataset.ajaxNavigating;
+
+            try {
+
+                const html =
+                    await fetchPageHtml(
+                        location.href,
+                    );
+
+                if (
+                    typeof html !== 'string'
+                    || html.length === 0
+                ) {
+                    return;
+                }
+
+                replaceContent(
+                    html,
+                );
+
+                updateActiveNavigation();
+
+                document.dispatchEvent(
+                    new CustomEvent(
+                        'ajax:page-loaded',
+                    ),
+                );
+
+                requestAnimationFrame(
+                    prefetchVisible,
+                );
+
+            } catch (error) {
+
+                debugError(
+                    'POPSTATE',
+                    error,
+                );
+            }
+        },
+    );
+
+    // =====================================
+    // INIT
+    // =====================================
 
     updateActiveNavigation();
 
-    setTimeout(prefetchVisible, 200);
+    setTimeout(
+        prefetchVisible,
+        200,
+    );
 
-    debug('AJAX', 'SPA ready');
+    debug(
+        'AJAX',
+        'SPA ready',
+    );
 }
