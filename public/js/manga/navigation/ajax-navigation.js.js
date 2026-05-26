@@ -3,7 +3,14 @@
 // ==================================================
 
 import {
-    getPrefetchedPage,
+    fetchPageHtml,
+} from './ajax-fetch.js';
+
+import {
+    replaceContent,
+} from './ajax-dom.js';
+
+import {
     prefetchPage,
 } from './prefetch-series.js';
 
@@ -28,9 +35,6 @@ let currentRequestId =
 const containerSelector =
     '.collection-ajax-container';
 
-const contentSelector =
-    '.collection-ajax-content';
-
 const paginationSelector =
     '.collection-pagination-link';
 
@@ -47,13 +51,6 @@ function getContainer()
     );
 }
 
-function getContent()
-{
-    return document.querySelector(
-        contentSelector,
-    );
-}
-
 function isPaginationLink(
     link,
 )
@@ -64,35 +61,6 @@ function isPaginationLink(
             paginationSelector,
         )
     );
-}
-
-function delay(
-    duration,
-)
-{
-    return new Promise(
-        (resolve) =>
-        {
-            window.setTimeout(
-                resolve,
-                duration,
-            );
-        },
-    );
-}
-
-/*
-|------------------------------------------------------------------
-| Scroll
-|------------------------------------------------------------------
-*/
-
-function scrollToTop()
-{
-    window.scrollTo({
-        top: 0,
-        behavior: 'auto',
-    });
 }
 
 /*
@@ -121,229 +89,28 @@ function hideLoadingState(
 
 /*
 |------------------------------------------------------------------
-| Animations
+| Prefetch
 |------------------------------------------------------------------
 */
 
-async function animateContentOut(
-    content,
-)
+function prefetchVisibleLinks()
 {
-    content.classList.remove(
-        'page-transition-in',
-        'page-transition-visible',
-    );
+    const links =
+        document.querySelectorAll(
+            paginationSelector,
+        );
 
-    content.classList.add(
-        'page-transition-out',
-    );
+    for (const link of links) {
 
-    await delay(
-        90,
-    );
-}
+        if (
+            link instanceof HTMLAnchorElement
+        ) {
 
-async function animateContentIn(
-    content,
-)
-{
-    content.classList.remove(
-        'page-transition-out',
-    );
-
-    content.classList.add(
-        'page-transition-in',
-    );
-
-    requestAnimationFrame(
-        () =>
-        {
-            content.classList.add(
-                'page-transition-visible',
+            prefetchPage(
+                link.href,
             );
-        },
-    );
-
-    await delay(
-        140,
-    );
-
-    content.classList.remove(
-        'page-transition-in',
-        'page-transition-visible',
-    );
-}
-
-/*
-|------------------------------------------------------------------
-| HTML
-|------------------------------------------------------------------
-*/
-
-function parseHtml(
-    html,
-)
-{
-    const parser =
-        new DOMParser();
-
-    return parser.parseFromString(
-        html,
-        'text/html',
-    );
-}
-
-function extractNewContent(
-    html,
-)
-{
-    const documentHtml =
-        parseHtml(
-            html,
-        );
-
-    return documentHtml.querySelector(
-        contentSelector,
-    );
-}
-
-function updateDocumentTitle(
-    html,
-)
-{
-    const documentHtml =
-        parseHtml(
-            html,
-        );
-
-    const title =
-        documentHtml.querySelector(
-            'title',
-        );
-
-    if (
-        title
-        && title.textContent
-    ) {
-
-        document.title =
-            title.textContent;
+        }
     }
-}
-
-/*
-|------------------------------------------------------------------
-| Replace Content
-|------------------------------------------------------------------
-*/
-
-async function replaceContent(
-    html,
-)
-{
-    const currentContent =
-        getContent();
-
-    if (!currentContent) {
-        return;
-    }
-
-    const newContent =
-        extractNewContent(
-            html,
-        );
-
-    if (!newContent) {
-
-        throw new Error(
-            '[AJAX] Missing content',
-        );
-    }
-
-    /*
-    |--------------------------------------------------------------
-    | Fade out
-    |--------------------------------------------------------------
-    */
-
-    await animateContentOut(
-        currentContent,
-    );
-
-    /*
-    |--------------------------------------------------------------
-    | Replace DOM
-    |--------------------------------------------------------------
-    */
-
-    currentContent.innerHTML =
-        newContent.innerHTML;
-
-    /*
-    |--------------------------------------------------------------
-    | Scroll
-    |--------------------------------------------------------------
-    */
-
-    scrollToTop();
-
-    /*
-    |--------------------------------------------------------------
-    | Force repaint
-    |--------------------------------------------------------------
-    */
-
-    currentContent.offsetHeight;
-
-    /*
-    |--------------------------------------------------------------
-    | Fade in
-    |--------------------------------------------------------------
-    */
-
-    await animateContentIn(
-        currentContent,
-    );
-}
-
-/*
-|------------------------------------------------------------------
-| Fetch
-|------------------------------------------------------------------
-*/
-
-async function fetchPageHtml(
-    href,
-)
-{
-    const cached =
-        getPrefetchedPage(
-            href,
-        );
-
-    if (cached) {
-        return cached;
-    }
-
-    const response =
-        await fetch(
-            href,
-            {
-                headers: {
-                    'X-Requested-With':
-                        'XMLHttpRequest',
-                },
-            },
-        );
-
-    if (!response.ok) {
-
-        throw new Error(
-            '[AJAX] Request failed',
-        );
-    }
-
-    return await response.text();
 }
 
 /*
@@ -367,23 +134,26 @@ export async function loadAjaxPage(
         return;
     }
 
-    /*
-    |--------------------------------------------------------------
-    | Loading
-    |--------------------------------------------------------------
-    */
-
     showLoadingState(
         container,
     );
 
-    try {
+    /*
+    |--------------------------------------------------------------
+    | Update URL immediately
+    |--------------------------------------------------------------
+    */
 
-        /*
-        |--------------------------------------------------------------
-        | Fetch
-        |--------------------------------------------------------------
-        */
+    if (updateHistory) {
+
+        window.history.pushState(
+            {},
+            '',
+            href,
+        );
+    }
+
+    try {
 
         const html =
             await fetchPageHtml(
@@ -405,16 +175,6 @@ export async function loadAjaxPage(
 
         /*
         |--------------------------------------------------------------
-        | Title
-        |--------------------------------------------------------------
-        */
-
-        updateDocumentTitle(
-            html,
-        );
-
-        /*
-        |--------------------------------------------------------------
         | Replace content
         |--------------------------------------------------------------
         */
@@ -422,21 +182,6 @@ export async function loadAjaxPage(
         await replaceContent(
             html,
         );
-
-        /*
-        |--------------------------------------------------------------
-        | History
-        |--------------------------------------------------------------
-        */
-
-        if (updateHistory) {
-
-            window.history.pushState(
-                {},
-                '',
-                href,
-            );
-        }
 
         /*
         |--------------------------------------------------------------
@@ -476,56 +221,18 @@ export async function loadAjaxPage(
             error,
         );
 
-        /*
-        |--------------------------------------------------------------
-        | Fallback
-        |--------------------------------------------------------------
-        */
-
         window.location.href =
             href;
 
     } finally {
 
-        /*
-        |--------------------------------------------------------------
-        | Cleanup
-        |--------------------------------------------------------------
-        */
-
         if (
             requestId
-           === currentRequestId
+            === currentRequestId
         ) {
 
             hideLoadingState(
                 container,
-            );
-        }
-    }
-}
-
-/*
-|------------------------------------------------------------------
-| Prefetch
-|------------------------------------------------------------------
-*/
-
-function prefetchVisibleLinks()
-{
-    const links =
-        document.querySelectorAll(
-            paginationSelector,
-        );
-
-    for (const link of links) {
-
-        if (
-            link instanceof HTMLAnchorElement
-        ) {
-
-            prefetchPage(
-                link.href,
             );
         }
     }
@@ -565,7 +272,7 @@ async function handleClick(
 
     /*
     |--------------------------------------------------------------
-    | Native browser behavior
+    | Native Browser Behavior
     |--------------------------------------------------------------
     */
 
