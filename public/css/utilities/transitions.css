@@ -58,15 +58,67 @@
         translateY(6px)
         scale(0.992);
 
+    transform-origin: center;
+
     will-change:
-        opacity,
-        transform;
+        transform,
+        opacity;
 
     animation:
         transition-card-enter
         180ms ease-out
         forwards;
+
+    backface-visibility: hidden;
 }
+
+
+/* =========================================
+   CARD HOVER ANIMATION
+========================================= */
+
+.transition-card:hover,
+.transition-card:focus-visible,
+.transition-card.is-active
+{
+    transform:
+        translateY(-6px)
+        scale(1.012);
+}
+
+
+/* =========================================
+   CARD SHINE TRANSITION
+========================================= */
+
+.transition-card::before
+{
+    opacity: 0.78;
+
+    transform:
+        translateX(-10px)
+        translateY(-10px);
+
+    transition:
+        transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 220ms ease;
+}
+
+.transition-card:hover::before,
+.transition-card:focus-visible::before,
+.transition-card.is-active::before
+{
+    opacity: 1;
+
+    transform:
+        translateX(0)
+        translateY(0);
+}
+
+
+/* =========================================
+   CARD ENTER STAGGER
+========================================= */
 
 .transition-card:nth-child(1)
 {
@@ -107,6 +159,11 @@
 {
     animation-delay: 0.15s;
 }
+
+
+/* =========================================
+   CARD ENTER KEYFRAMES
+========================================= */
 
 @keyframes transition-card-enter
 {
@@ -162,6 +219,11 @@
         transform: translateX(100%);
     }
 }
+
+
+/* =========================================
+   PERFORMANCE
+========================================= */
 
 .page-transition-out,
 .page-transition-in,

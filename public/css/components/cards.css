@@ -23,8 +23,8 @@
     border-radius: var(--radius-image);
 
     transition:
-        transform var(--transition-normal),
-        box-shadow var(--transition-normal);
+        transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 260ms ease;
 }
 
 .card-image-portrait
@@ -42,8 +42,8 @@
     box-shadow: var(--shadow-image);
 
     transition:
-        transform var(--transition-normal),
-        box-shadow var(--transition-normal);
+        transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 260ms ease;
 }
 
 
@@ -71,7 +71,7 @@
     color: inherit;
     text-align: center;
     text-decoration: none;
-    
+
     border-radius: var(--radius-card-lg);
 
     background: linear-gradient(
@@ -83,10 +83,10 @@
     box-shadow: var(--shadow-card);
 
     transition:
-        transform var(--transition-normal),
-        border-color var(--transition-normal),
-        box-shadow var(--transition-normal),
-        background var(--transition-normal);
+        transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+        border-color 180ms ease,
+        box-shadow 220ms cubic-bezier(0.22, 1, 0.36, 1),
+        background 220ms ease;
 }
 
 .card::before
@@ -94,6 +94,7 @@
     content: "";
 
     position: absolute;
+    inset: 0;
 
     border-radius: inherit;
 
@@ -106,6 +107,7 @@
 
     pointer-events: none;
 }
+
 
 /* =========================================
    CARD STATES
@@ -121,8 +123,6 @@
 .card:focus-visible,
 .card.is-active
 {
-    transform: translateY(-6px);
-
     border-color: var(--color-violet-border);
 
     box-shadow: var(--shadow-card-hover);
