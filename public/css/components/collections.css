@@ -358,12 +358,6 @@
     box-shadow:
         0 2px 6px rgba(79, 99, 255, 0.12),
         inset 0 1px 1px rgba(255,255,255,0.25);
-
-    transition:
-        transform 0.18s ease,
-        background 0.18s ease,
-        color 0.18s ease,
-        box-shadow 0.18s ease;
 }
 
 .collection-read-badge::after
@@ -385,14 +379,6 @@
     transform-origin: center;
 
     filter: blur(14px);
-}
-
-.collection-read-badge:hover
-{
-    transform: translateY(-1px);
-
-    box-shadow:
-        0 3px 8px rgba(79, 99, 255, 0.16);
 }
 
 .collection-read-badge.active
@@ -430,18 +416,23 @@
     stroke: currentColor;
 }
 
-
 /* =========================================
    PAGINATION
 ========================================= */
 
 .collection-pagination-wrapper
 {
+    position: relative;
+
+    z-index: 2;
+
     display: flex;
     align-items: center;
     justify-content: center;
 
     gap: 15px;
+
+    margin-top: 40px;
 }
 
 .collection-pagination-link
@@ -497,24 +488,4 @@
     background: var(--gradient-violet);
 
     border-color: transparent;
-}
-
-
-/* =========================================
-   BACK BUTTON
-========================================= */
-
-.collection-back-wrapper
-{
-    display: flex;
-    justify-content: center;
-
-    margin-top: var(--space-xxl);
-}
-
-.collection-back-button
-{
-    font-family: inherit;
-
-    text-decoration: none;
 }

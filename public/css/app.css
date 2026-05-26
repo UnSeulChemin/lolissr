@@ -9,6 +9,7 @@
 
 /* UTILITIES */
 @import url('./utilities/transitions.css');
+@import url('./utilities/animations.css');
 
 /* COMPONENTS */
 @import url('./components/cards.css');

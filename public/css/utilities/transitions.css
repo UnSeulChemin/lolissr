@@ -6,43 +6,21 @@
 {
     opacity: 0;
 
-    transform: translateY(4px);
-
     transition:
-        opacity 90ms ease,
-        transform 90ms ease;
+        opacity 90ms ease;
 }
 
 .page-transition-in
 {
     opacity: 0;
-
-    transform: translateY(6px);
-
-    will-change:
-        opacity,
-        transform;
 }
 
 .page-transition-in.page-transition-visible
 {
     opacity: 1;
 
-    transform: translateY(0);
-
     transition:
-        opacity 120ms ease,
-        transform 120ms ease;
-}
-
-
-/* =========================================
-   CONTENT LOADING
-========================================= */
-
-.is-loading
-{
-    user-select: none;
+        opacity 120ms ease;
 }
 
 
@@ -64,17 +42,19 @@
         transform,
         opacity;
 
+    contain:
+        layout
+        paint;
+
     animation:
         transition-card-enter
         180ms ease-out
         forwards;
-
-    backface-visibility: hidden;
 }
 
 
 /* =========================================
-   CARD HOVER ANIMATION
+   CARD HOVER
 ========================================= */
 
 .transition-card:hover,
@@ -88,36 +68,29 @@
 
 
 /* =========================================
-   CARD SHINE TRANSITION
+   READ BADGE HOVER
 ========================================= */
 
-.transition-card::before
+.collection-read-badge
 {
-    opacity: 0.78;
-
-    transform:
-        translateX(-10px)
-        translateY(-10px);
-
     transition:
-        transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
-        opacity 220ms ease;
+        transform 0.18s ease,
+        background 0.18s ease,
+        color 0.18s ease,
+        box-shadow 0.18s ease;
 }
 
-.transition-card:hover::before,
-.transition-card:focus-visible::before,
-.transition-card.is-active::before
+.collection-read-badge:hover
 {
-    opacity: 1;
+    transform: translateY(-1px);
 
-    transform:
-        translateX(0)
-        translateY(0);
+    box-shadow:
+        0 3px 8px rgba(79, 99, 255, 0.16);
 }
 
 
 /* =========================================
-   COLLECTION BADGE GLOWS
+   GLOW EFFECTS
 ========================================= */
 
 .collection-note-good::after,
@@ -180,13 +153,13 @@
             rgba(123, 44, 255, 0) 72%
         );
 
+    opacity: 1;
+
     animation:
         badge-glow-purple
         3.2s
         ease-in-out
         infinite;
-
-    opacity: 1;
 }
 
 
@@ -203,159 +176,24 @@
             rgba(255, 208, 74, 0) 72%
         );
 
+    opacity: 1;
+
     animation:
         badge-glow-gold
         3.6s
         ease-in-out
         infinite;
-
-    opacity: 1;
 }
 
 
 /* =========================================
-   SHARED GLOW
+   CONTENT LOADING
 ========================================= */
 
-@keyframes badge-glow-shared
+.is-loading
 {
-    0%
-    {
-        transform: scale(0.88);
-        opacity: 0.42;
-    }
-
-    50%
-    {
-        transform: scale(1.16);
-        opacity: 1;
-    }
-
-    100%
-    {
-        transform: scale(0.88);
-        opacity: 0.42;
-    }
+    user-select: none;
 }
-
-
-/* =========================================
-   PURPLE GLOW
-========================================= */
-
-@keyframes badge-glow-purple
-{
-    0%
-    {
-        transform: scale(0.94);
-        opacity: 0.34;
-    }
-
-    50%
-    {
-        transform: scale(1.06);
-        opacity: 0.58;
-    }
-
-    100%
-    {
-        transform: scale(0.94);
-        opacity: 0.34;
-    }
-}
-
-
-/* =========================================
-   GOLD GLOW
-========================================= */
-
-@keyframes badge-glow-gold
-{
-    0%
-    {
-        transform: scale(0.95);
-        opacity: 0.28;
-    }
-
-    50%
-    {
-        transform: scale(1.04);
-        opacity: 0.52;
-    }
-
-    100%
-    {
-        transform: scale(0.95);
-        opacity: 0.28;
-    }
-}
-
-
-/* =========================================
-   CARD ENTER STAGGER
-========================================= */
-
-.transition-card:nth-child(1)
-{
-    animation-delay: 0.01s;
-}
-
-.transition-card:nth-child(2)
-{
-    animation-delay: 0.03s;
-}
-
-.transition-card:nth-child(3)
-{
-    animation-delay: 0.05s;
-}
-
-.transition-card:nth-child(4)
-{
-    animation-delay: 0.07s;
-}
-
-.transition-card:nth-child(5)
-{
-    animation-delay: 0.09s;
-}
-
-.transition-card:nth-child(6)
-{
-    animation-delay: 0.11s;
-}
-
-.transition-card:nth-child(7)
-{
-    animation-delay: 0.13s;
-}
-
-.transition-card:nth-child(8)
-{
-    animation-delay: 0.15s;
-}
-
-
-/* =========================================
-   CARD ENTER KEYFRAMES
-========================================= */
-
-@keyframes transition-card-enter
-{
-    to
-    {
-        opacity: 1;
-
-        transform:
-            translateY(0)
-            scale(1);
-    }
-}
-
-
-/* =========================================
-   CARD SHIMMER
-========================================= */
 
 .is-loading .card
 {
@@ -390,13 +228,19 @@
     pointer-events: none;
 }
 
-@keyframes card-shimmer
-{
-    100%
-    {
-        transform: translateX(100%);
-    }
-}
+
+/* =========================================
+   CARD STAGGER
+========================================= */
+
+.transition-card:nth-child(1) { animation-delay: 0.01s; }
+.transition-card:nth-child(2) { animation-delay: 0.03s; }
+.transition-card:nth-child(3) { animation-delay: 0.05s; }
+.transition-card:nth-child(4) { animation-delay: 0.07s; }
+.transition-card:nth-child(5) { animation-delay: 0.09s; }
+.transition-card:nth-child(6) { animation-delay: 0.11s; }
+.transition-card:nth-child(7) { animation-delay: 0.13s; }
+.transition-card:nth-child(8) { animation-delay: 0.15s; }
 
 
 /* =========================================
