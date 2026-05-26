@@ -83,3 +83,49 @@ export function normalizeSearchQuery(
         value,
     );
 }
+
+// =========================================
+// INIT AUTO SLUG
+// =========================================
+
+export function initAutoSlug()
+{
+    const sourceInput =
+        document.querySelector(
+            '[data-slug-source]',
+        );
+
+    const targetInput =
+        document.querySelector(
+            '[data-slug-target]',
+        );
+
+    if (
+        !sourceInput
+        || !targetInput
+    ) {
+
+        return;
+    }
+
+    const updateSlug =
+        () =>
+        {
+            targetInput.value =
+                generateSlug(
+                    sourceInput.value,
+                );
+        };
+
+    sourceInput.removeEventListener(
+        'input',
+        updateSlug,
+    );
+
+    sourceInput.addEventListener(
+        'input',
+        updateSlug,
+    );
+
+    updateSlug();
+}

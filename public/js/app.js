@@ -75,19 +75,33 @@ import {
 // Config
 // ==================================================
 
-const APP_READY_ATTRIBUTE = 'appInitialized';
+const APP_READY_ATTRIBUTE =
+    'appInitialized';
 
 // ==================================================
 // SAFE INIT
 // ==================================================
 
-function safeInit(label, callback)
+function safeInit(
+    label,
+    callback,
+)
 {
     try {
+
         callback();
-        debug('INIT', `✅ ${label}`);
+
+        debug(
+            'INIT',
+            `✅ ${label}`,
+        );
+
     } catch (error) {
-        debugError(label, error);
+
+        debugError(
+            label,
+            error,
+        );
     }
 }
 
@@ -97,15 +111,20 @@ function safeInit(label, callback)
 
 function initFlashToast()
 {
-    const flashToast = window.flashToast;
+    const flashToast =
+        window.flashToast;
 
-    if (!flashToast || !flashToast.message) {
+    if (
+        !flashToast
+        || !flashToast.message
+    ) {
         return;
     }
 
     showToast(
         flashToast.message,
-        flashToast.type || 'success',
+        flashToast.type
+        || 'success',
     );
 }
 
@@ -115,12 +134,18 @@ function initFlashToast()
 
 function isAppInitialized()
 {
-    return document.body.dataset[APP_READY_ATTRIBUTE] === 'true';
+    return (
+        document.body.dataset[
+            APP_READY_ATTRIBUTE
+        ] === 'true'
+    );
 }
 
 function setAppInitialized()
 {
-    document.body.dataset[APP_READY_ATTRIBUTE] = 'true';
+    document.body.dataset[
+        APP_READY_ATTRIBUTE
+    ] = 'true';
 }
 
 // ==================================================
@@ -138,11 +163,15 @@ const INITIALIZERS = [
     ['GlobalBackNavigation', initGlobalBackNavigation],
 
     ['AjouterPage', initAjouterPage],
+
     ['ModifierPage', initModifierPage],
 
     ['UpdateNote', initUpdateNote],
+
     ['DeleteManga', initDeleteManga],
+
     ['UpdateReadStatus', initUpdateReadStatus],
+
     ['SearchManga', initSearchManga],
 
     ['SeriesKeyboardNavigation', initSeriesKeyboardNavigation],
@@ -156,8 +185,17 @@ const INITIALIZERS = [
 
 function runInitializers()
 {
-    for (const [label, init] of INITIALIZERS) {
-        safeInit(label, init);
+    for (
+        const [
+            label,
+            init,
+        ] of INITIALIZERS
+    ) {
+
+        safeInit(
+            label,
+            init,
+        );
     }
 }
 
@@ -167,27 +205,67 @@ function runInitializers()
 
 function initApp()
 {
-    if (isAppInitialized()) return;
+    if (
+        isAppInitialized()
+    ) {
+        return;
+    }
 
     setAppInitialized();
 
-    debug('APP', '🚀 Boot');
+    debug(
+        'APP',
+        '🚀 Boot',
+    );
+
+    // =============================================
+    // FIRST LOAD
+    // =============================================
 
     runInitializers();
 
-    safeInit('FlashToast', initFlashToast);
+    // =============================================
+    // SPA RELOAD
+    // =============================================
 
-    debug('APP', '✅ Ready');
+    document.addEventListener(
+        'ajax:page-loaded',
+        runInitializers,
+    );
+
+    // =============================================
+    // FLASH
+    // =============================================
+
+    safeInit(
+        'FlashToast',
+        initFlashToast,
+    );
+
+    debug(
+        'APP',
+        '✅ Ready',
+    );
 }
 
 // ==================================================
 // BOOT
 // ==================================================
 
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initApp, {
-        once: true,
-    });
+if (
+    document.readyState
+    === 'loading'
+) {
+
+    document.addEventListener(
+        'DOMContentLoaded',
+        initApp,
+        {
+            once: true,
+        },
+    );
+
 } else {
+
     initApp();
 }

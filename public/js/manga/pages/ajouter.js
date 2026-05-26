@@ -31,7 +31,7 @@ const FORM_SELECTOR =
     '.form-layout[data-form-page="ajouter"]';
 
 // =========================================
-// Helpers
+// Upload Text
 // =========================================
 
 function updateUploadText(
@@ -70,13 +70,13 @@ export function initAjouterPage()
     // =====================================
 
     if (
-        form.dataset.ajouterPageInitialized
+        form.dataset.initialized
         === 'true'
     ) {
         return;
     }
 
-    form.dataset.ajouterPageInitialized =
+    form.dataset.initialized =
         'true';
 
     // =====================================
@@ -107,14 +107,12 @@ export function initAjouterPage()
         instanceof HTMLInputElement
     ) {
 
-        slugInput.addEventListener(
-            'input',
+        slugInput.oninput =
             () =>
             {
                 slugEditedManually =
                     true;
-            },
-        );
+            };
     }
 
     if (
@@ -124,8 +122,7 @@ export function initAjouterPage()
         instanceof HTMLInputElement
     ) {
 
-        livreInput.addEventListener(
-            'input',
+        livreInput.oninput =
             () =>
             {
                 if (
@@ -138,8 +135,7 @@ export function initAjouterPage()
                     generateSlug(
                         livreInput.value,
                     );
-            },
-        );
+            };
     }
 
     // =====================================
@@ -152,24 +148,21 @@ export function initAjouterPage()
         && uploadText
     ) {
 
-        imageInput.addEventListener(
-            'change',
+        imageInput.onchange =
             () =>
             {
                 updateUploadText(
                     imageInput,
                     uploadText,
                 );
-            },
-        );
+            };
     }
 
     // =====================================
     // Submit
     // =====================================
 
-    form.addEventListener(
-        'submit',
+    form.onsubmit =
         async (
             event,
         ) =>
@@ -209,7 +202,7 @@ export function initAjouterPage()
 
                             headers:
                             {
-                                'Accept':
+                                Accept:
                                     'application/json',
                             },
 
@@ -299,8 +292,7 @@ export function initAjouterPage()
                         false;
                 }
             }
-        },
-    );
+        };
 
     debug(
         'AJOUTER',
