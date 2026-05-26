@@ -10,6 +10,8 @@ final class Session
 {
     private static bool $started = false;
 
+    private const FLASH_KEY = '_flash';
+
     private static function ensureStarted(): void
     {
         if (
@@ -26,13 +28,13 @@ final class Session
         );
 
         if (
-            !is_dir($directory)
-            && !mkdir(
+            ! is_dir($directory)
+            && ! mkdir(
                 $directory,
                 0755,
                 true,
             )
-            && !is_dir($directory)
+            && ! is_dir($directory)
         ) {
             throw new RuntimeException(
                 'Impossible de créer le dossier de session.',
@@ -52,31 +54,13 @@ final class Session
 
         $secure = self::isHttps();
 
-        ini_set(
-            'session.use_strict_mode',
-            '1',
-        );
-
-        ini_set(
-            'session.use_only_cookies',
-            '1',
-        );
-
-        ini_set(
-            'session.use_trans_sid',
-            '0',
-        );
-
-        ini_set(
-            'session.cookie_httponly',
-            '1',
-        );
-
+        ini_set('session.use_strict_mode', '1');
+        ini_set('session.use_only_cookies', '1');
+        ini_set('session.use_trans_sid', '0');
+        ini_set('session.cookie_httponly', '1');
         ini_set(
             'session.cookie_secure',
-            $secure
-                ? '1'
-                : '0',
+            $secure ? '1' : '0',
         );
 
         session_set_cookie_params([
@@ -110,16 +94,14 @@ final class Session
             && strtolower($https) !== 'off'
         )
         || (int) ($_SERVER['SERVER_PORT'] ?? 0) === 443
-        || (
-            ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '')
-            === 'https'
-        );
+        || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https';
     }
 
     public static function set(
         string $key,
         mixed $value,
     ): void {
+
         self::ensureStarted();
 
         $_SESSION[$key] = $value;
@@ -129,6 +111,7 @@ final class Session
         string $key,
         mixed $default = null,
     ): mixed {
+
         self::ensureStarted();
 
         return $_SESSION[$key]
@@ -138,6 +121,7 @@ final class Session
     public static function has(
         string $key,
     ): bool {
+
         self::ensureStarted();
 
         return array_key_exists(
@@ -149,7 +133,10 @@ final class Session
     public static function remove(
         string $key,
     ): void {
-        self::forget([$key]);
+
+        self::ensureStarted();
+
+        unset($_SESSION[$key]);
     }
 
     /**
@@ -158,9 +145,11 @@ final class Session
     public static function forget(
         array $keys,
     ): void {
+
         self::ensureStarted();
 
         foreach ($keys as $key) {
+
             unset($_SESSION[$key]);
         }
     }
@@ -169,6 +158,7 @@ final class Session
         string $key,
         mixed $default = null,
     ): mixed {
+
         self::ensureStarted();
 
         $value = $_SESSION[$key]
@@ -183,17 +173,37 @@ final class Session
         string $key,
         mixed $value,
     ): void {
-        self::set(
-            $key,
-            $value,
+
+        self::ensureStarted();
+
+        $_SESSION[self::FLASH_KEY][$key] = $value;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public static function flashes(): array
+    {
+        self::ensureStarted();
+
+        $flash =
+            $_SESSION[self::FLASH_KEY]
+            ?? [];
+
+        unset(
+            $_SESSION[self::FLASH_KEY],
         );
+
+        return $flash;
     }
 
     public static function regenerate(): void
     {
         self::ensureStarted();
 
-        session_regenerate_id(true);
+        session_regenerate_id(
+            true,
+        );
     }
 
     public static function destroy(): void
@@ -203,7 +213,9 @@ final class Session
         $_SESSION = [];
 
         if (ini_get('session.use_cookies')) {
-            $params = session_get_cookie_params();
+
+            $params =
+                session_get_cookie_params();
 
             setcookie(
                 session_name(),
@@ -223,5 +235,10 @@ final class Session
         session_destroy();
 
         self::$started = false;
+    }
+
+    public static function start(): void
+    {
+        self::ensureStarted();
     }
 }

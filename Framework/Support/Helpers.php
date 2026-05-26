@@ -6,15 +6,13 @@ use Framework\Application\App;
 use Framework\Config\Config;
 use Framework\Config\Env;
 use Framework\Container\AppContainer;
-use Framework\Http\Request;
 use Framework\Http\Response;
 use Framework\Support\Session;
-use RuntimeException;
 
 /*
-|--------------------------------------------------------------------------
+|------------------------------------------------------------------
 | app()
-|--------------------------------------------------------------------------
+|------------------------------------------------------------------
 */
 
 if (! function_exists('app')) {
@@ -26,20 +24,16 @@ if (! function_exists('app')) {
         $container =
             AppContainer::get();
 
-        if ($abstract === null) {
-            return $container;
-        }
-
-        return $container->get(
-            $abstract,
-        );
+        return $abstract === null
+            ? $container
+            : $container->get($abstract);
     }
 }
 
 /*
-|--------------------------------------------------------------------------
+|------------------------------------------------------------------
 | dump()
-|--------------------------------------------------------------------------
+|------------------------------------------------------------------
 */
 
 if (! function_exists('dump')) {
@@ -74,9 +68,9 @@ if (! function_exists('dump')) {
 }
 
 /*
-|--------------------------------------------------------------------------
+|------------------------------------------------------------------
 | dd()
-|--------------------------------------------------------------------------
+|------------------------------------------------------------------
 */
 
 if (! function_exists('dd')) {
@@ -85,13 +79,6 @@ if (! function_exists('dd')) {
         mixed ...$vars,
     ): never {
 
-        if (! App::debug()) {
-
-            http_response_code(500);
-
-            exit;
-        }
-
         dump(...$vars);
 
         exit;
@@ -99,9 +86,9 @@ if (! function_exists('dd')) {
 }
 
 /*
-|--------------------------------------------------------------------------
+|------------------------------------------------------------------
 | Paths
-|--------------------------------------------------------------------------
+|------------------------------------------------------------------
 */
 
 if (! function_exists('base_path')) {
@@ -110,21 +97,17 @@ if (! function_exists('base_path')) {
         string $path = '',
     ): string {
 
-        $base = rtrim(
-            ROOT,
-            DIRECTORY_SEPARATOR,
-        );
-
-        if ($path === '') {
-            return $base;
-        }
-
-        return $base
-            . DIRECTORY_SEPARATOR
-            . ltrim(
-                $path,
-                '/\\',
+        $base =
+            rtrim(
+                ROOT,
+                DIRECTORY_SEPARATOR,
             );
+
+        return $path === ''
+            ? $base
+            : $base
+                . DIRECTORY_SEPARATOR
+                . ltrim($path, '/\\');
     }
 }
 
@@ -139,10 +122,7 @@ if (! function_exists('app_path')) {
             . (
                 $path !== ''
                     ? DIRECTORY_SEPARATOR
-                        . ltrim(
-                            $path,
-                            '/\\',
-                        )
+                        . ltrim($path, '/\\')
                     : ''
             ),
         );
@@ -160,10 +140,7 @@ if (! function_exists('view_path')) {
             . (
                 $path !== ''
                     ? DIRECTORY_SEPARATOR
-                        . ltrim(
-                            $path,
-                            '/\\',
-                        )
+                        . ltrim($path, '/\\')
                     : ''
             ),
         );
@@ -171,9 +148,9 @@ if (! function_exists('view_path')) {
 }
 
 /*
-|--------------------------------------------------------------------------
+|------------------------------------------------------------------
 | redirect()
-|--------------------------------------------------------------------------
+|------------------------------------------------------------------
 */
 
 if (! function_exists('redirect')) {
@@ -195,30 +172,25 @@ if (! function_exists('redirect')) {
             );
         }
 
-        $baseUri = rtrim(
-            App::baseUri(),
-            '/',
-        );
-
-        $url =
-            $baseUri
-            . '/'
-            . ltrim(
-                $path,
+        $baseUri =
+            rtrim(
+                App::baseUri(),
                 '/',
             );
 
         Response::redirect(
-            $url,
+            $baseUri
+            . '/'
+            . ltrim($path, '/'),
             $status,
         );
     }
 }
 
 /*
-|--------------------------------------------------------------------------
+|------------------------------------------------------------------
 | env()
-|--------------------------------------------------------------------------
+|------------------------------------------------------------------
 */
 
 if (! function_exists('env')) {
@@ -264,9 +236,9 @@ if (! function_exists('env_int')) {
 }
 
 /*
-|--------------------------------------------------------------------------
+|------------------------------------------------------------------
 | config()
-|--------------------------------------------------------------------------
+|------------------------------------------------------------------
 */
 
 if (! function_exists('config')) {
@@ -284,9 +256,9 @@ if (! function_exists('config')) {
 }
 
 /*
-|--------------------------------------------------------------------------
+|------------------------------------------------------------------
 | Escape HTML
-|--------------------------------------------------------------------------
+|------------------------------------------------------------------
 */
 
 if (! function_exists('e')) {
@@ -305,18 +277,16 @@ if (! function_exists('e')) {
 }
 
 /*
-|--------------------------------------------------------------------------
+|------------------------------------------------------------------
 | CSRF
-|--------------------------------------------------------------------------
+|------------------------------------------------------------------
 */
 
 if (! function_exists('csrf_token')) {
 
     function csrf_token(): string
     {
-        if (! Session::has(
-            'csrf_token',
-        )) {
+        if (! Session::has('csrf_token')) {
 
             Session::set(
                 'csrf_token',
@@ -339,9 +309,7 @@ if (! function_exists('csrf_field')) {
     {
         return sprintf(
             '<input type="hidden" name="csrf_token" value="%s">',
-            e(
-                csrf_token(),
-            ),
+            e(csrf_token()),
         );
     }
 }
@@ -352,9 +320,98 @@ if (! function_exists('csrf_meta_tag')) {
     {
         return sprintf(
             '<meta name="csrf-token" content="%s">',
-            e(
-                csrf_token(),
-            ),
+            e(csrf_token()),
         );
+    }
+}
+
+if (! function_exists('session')) {
+
+    function session(
+        string $key,
+        mixed $default = null,
+    ): mixed {
+
+        return Session::get(
+            $key,
+            $default,
+        );
+    }
+}
+
+if (! function_exists('old')) {
+
+    function old(
+        string $key,
+        mixed $default = '',
+    ): mixed {
+
+        $old =
+            Session::get(
+                'old',
+                [],
+            );
+
+        return $old[$key]
+            ?? $default;
+    }
+}
+
+if (! function_exists('errors')) {
+
+    function errors(
+        ?string $key = null,
+    ): mixed {
+
+        $errors =
+            Session::get(
+                'errors',
+                [],
+            );
+
+        if ($key === null) {
+            return $errors;
+        }
+
+        return $errors[$key]
+            ?? null;
+    }
+}
+
+if (! function_exists('has_error')) {
+
+    function has_error(
+        string $key,
+    ): bool {
+
+        return errors($key) !== null;
+    }
+}
+
+if (! function_exists('error_class')) {
+
+    function error_class(
+        string $key,
+        string $class = 'is-invalid',
+    ): string {
+
+        return has_error($key)
+            ? $class
+            : '';
+    }
+}
+
+if (! function_exists('base_uri')) {
+
+    function base_uri(): string
+    {
+        $baseUri = trim(
+            App::baseUri(),
+            '/',
+        );
+
+        return $baseUri !== ''
+            ? '/' . $baseUri
+            : '';
     }
 }

@@ -86,6 +86,9 @@ export function initToggleGrammaireMaitrise()
                                 'X-Requested-With':
                                     'XMLHttpRequest',
 
+                                'X-Partial':
+                                    'true',
+
                                 'Accept':
                                     'application/json',
                             },
@@ -152,7 +155,11 @@ export function initToggleGrammaireMaitrise()
                     'success',
                 );
 
-            } catch {
+            } catch (error) {
+
+                if (error.name === 'AbortError') {
+                    return;
+                }
 
                 showToast(
                     'Erreur réseau',

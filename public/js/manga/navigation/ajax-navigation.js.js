@@ -1,5 +1,5 @@
 // ==================================================
-// AJAX Navigation
+// Global AJAX Navigation
 // ==================================================
 
 import {
@@ -14,180 +14,265 @@ import {
     prefetchPage,
 } from './prefetch-series.js';
 
-/*
-|------------------------------------------------------------------
-| State
-|------------------------------------------------------------------
-*/
+import {
+    runPageTransition,
+    scrollTop,
+} from '../../core/page-transition.js';
+
+// ==================================================
+// State
+// ==================================================
 
 let initialized =
     false;
 
-let currentRequestId =
+let currentController =
+    null;
+
+let currentNavigationId =
     0;
 
-/*
-|------------------------------------------------------------------
-| Selectors
-|------------------------------------------------------------------
-*/
+// ==================================================
+// Selectors
+// ==================================================
 
-const containerSelector =
-    '.collection-ajax-container';
+const navigationSelector =
+    `
+    a[href]:not(
+        [data-no-ajax]
+    )
+    `;
 
-const paginationSelector =
-    '.collection-pagination-link';
+// ==================================================
+// Helpers
+// ==================================================
 
-/*
-|------------------------------------------------------------------
-| Helpers
-|------------------------------------------------------------------
-*/
-
-function getContainer()
-{
-    return document.querySelector(
-        containerSelector,
-    );
-}
-
-function isPaginationLink(
+function shouldIgnoreLink(
     link,
 )
 {
-    return (
-        link instanceof HTMLAnchorElement
-        && link.matches(
-            paginationSelector,
+    if (
+        !(link instanceof HTMLAnchorElement)
+    ) {
+        return true;
+    }
+
+    if (! link.href) {
+        return true;
+    }
+
+    const url =
+        new URL(
+            link.href,
+            window.location.origin,
+        );
+
+    // External
+
+    if (
+        url.origin
+        !== window.location.origin
+    ) {
+        return true;
+    }
+
+    // Same page hash
+
+    if (
+        url.hash
+        && url.pathname
+            === window.location.pathname
+    ) {
+        return true;
+    }
+
+    // Blank target
+
+    if (
+        link.target
+        === '_blank'
+    ) {
+        return true;
+    }
+
+    // Download
+
+    if (
+        link.hasAttribute(
+            'download',
         )
-    );
+    ) {
+        return true;
+    }
+
+    // Opt out
+
+    if (
+        link.dataset.ajax
+        === 'false'
+    ) {
+        return true;
+    }
+
+    // Static files
+
+    if (
+        /\.(jpg|jpeg|png|gif|webp|svg|pdf|zip)$/i
+            .test(url.pathname)
+    ) {
+        return true;
+    }
+
+    return false;
 }
 
-/*
-|------------------------------------------------------------------
-| Loading
-|------------------------------------------------------------------
-*/
-
-function showLoadingState(
-    container,
-)
-{
-    container.classList.add(
-        'is-loading',
-    );
-}
-
-function hideLoadingState(
-    container,
-)
-{
-    container.classList.remove(
-        'is-loading',
-    );
-}
-
-/*
-|------------------------------------------------------------------
-| Prefetch
-|------------------------------------------------------------------
-*/
+// ==================================================
+// Prefetch
+// ==================================================
 
 function prefetchVisibleLinks()
 {
     const links =
         document.querySelectorAll(
-            paginationSelector,
+            navigationSelector,
         );
 
-    for (const link of links) {
-
-        if (
-            link instanceof HTMLAnchorElement
-        ) {
+    links.forEach(
+        (link) =>
+        {
+            if (
+                shouldIgnoreLink(
+                    link,
+                )
+            ) {
+                return;
+            }
 
             prefetchPage(
                 link.href,
             );
-        }
-    }
+        },
+    );
 }
 
-/*
-|------------------------------------------------------------------
-| Load Page
-|------------------------------------------------------------------
-*/
+// ==================================================
+// Navigation
+// ==================================================
 
-export async function loadAjaxPage(
+export async function navigateTo(
     href,
-    updateHistory = true,
+    options = {},
 )
 {
-    const requestId =
-        ++currentRequestId;
+    const navigationId =
+        ++currentNavigationId;
 
-    const container =
-        getContainer();
-
-    if (!container) {
-        return;
-    }
-
-    showLoadingState(
-        container,
-    );
-
-    /*
-    |--------------------------------------------------------------
-    | Update URL immediately
-    |--------------------------------------------------------------
-    */
-
-    if (updateHistory) {
-
-        window.history.pushState(
-            {},
-            '',
+    const url =
+        new URL(
             href,
+            window.location.origin,
         );
+
+    // ==============================================
+    // Abort previous
+    // ==============================================
+
+    if (currentController) {
+
+        currentController.abort();
     }
+
+    currentController =
+        new AbortController();
+
+    const signal =
+        currentController.signal;
 
     try {
 
+        // ==========================================
+        // Fetch
+        // ==========================================
+
         const html =
             await fetchPageHtml(
-                href,
+                url.href,
+                {
+                    signal,
+                },
             );
 
-        /*
-        |--------------------------------------------------------------
-        | Ignore old request
-        |--------------------------------------------------------------
-        */
-
         if (
-            requestId
-            !== currentRequestId
+            signal.aborted
+            || navigationId
+                !== currentNavigationId
         ) {
             return;
         }
 
-        /*
-        |--------------------------------------------------------------
-        | Replace content
-        |--------------------------------------------------------------
-        */
+        // ==========================================
+        // Transition
+        // ==========================================
 
-        await replaceContent(
-            html,
+        await runPageTransition(
+            async () =>
+            {
+                if (
+                    signal.aborted
+                    || navigationId
+                        !== currentNavigationId
+                ) {
+                    return;
+                }
+
+                await replaceContent(
+                    html,
+                );
+            },
         );
 
-        /*
-        |--------------------------------------------------------------
-        | Events
-        |--------------------------------------------------------------
-        */
+        if (
+            signal.aborted
+            || navigationId
+                !== currentNavigationId
+        ) {
+            return;
+        }
+
+        // ==========================================
+        // History
+        // ==========================================
+
+        if (
+            options.updateHistory
+            !== false
+        ) {
+
+            window.history.pushState(
+                {},
+                '',
+                url.pathname
+                + url.search,
+            );
+        }
+
+        // ==========================================
+        // Scroll
+        // ==========================================
+
+        if (
+            options.scrollTop
+            !== false
+        ) {
+
+            scrollTop(
+                false,
+            );
+        }
+
+        // ==========================================
+        // Events
+        // ==========================================
 
         document.dispatchEvent(
             new CustomEvent(
@@ -195,17 +280,9 @@ export async function loadAjaxPage(
             ),
         );
 
-        document.dispatchEvent(
-            new CustomEvent(
-                'ajax:series-loaded',
-            ),
-        );
-
-        /*
-        |--------------------------------------------------------------
-        | Prefetch
-        |--------------------------------------------------------------
-        */
+        // ==========================================
+        // Prefetch
+        // ==========================================
 
         requestAnimationFrame(
             () =>
@@ -216,35 +293,30 @@ export async function loadAjaxPage(
 
     } catch (error) {
 
+        if (
+            error instanceof Error
+            && error.name
+                === 'AbortError'
+        ) {
+            return;
+        }
+
         console.error(
-            '[AJAX]',
+            '[AJAX NAV]',
             error,
         );
 
-        window.location.href =
-            href;
-
-    } finally {
-
-        if (
-            requestId
-            === currentRequestId
-        ) {
-
-            hideLoadingState(
-                container,
-            );
-        }
+        window.location.assign(
+            url.href,
+        );
     }
 }
 
-/*
-|------------------------------------------------------------------
-| Click Navigation
-|------------------------------------------------------------------
-*/
+// ==================================================
+// Click
+// ==================================================
 
-async function handleClick(
+function handleClick(
     event,
 )
 {
@@ -259,22 +331,18 @@ async function handleClick(
 
     const link =
         target.closest(
-            paginationSelector,
+            navigationSelector,
         );
 
     if (
-        !isPaginationLink(
+        shouldIgnoreLink(
             link,
         )
     ) {
         return;
     }
 
-    /*
-    |--------------------------------------------------------------
-    | Native Browser Behavior
-    |--------------------------------------------------------------
-    */
+    // Native browser behavior
 
     if (
         event.ctrlKey
@@ -282,16 +350,11 @@ async function handleClick(
         || event.shiftKey
         || event.altKey
         || event.button === 1
-        || link.target === '_blank'
     ) {
         return;
     }
 
-    /*
-    |--------------------------------------------------------------
-    | Same URL
-    |--------------------------------------------------------------
-    */
+    // Same URL
 
     if (
         link.href
@@ -302,30 +365,29 @@ async function handleClick(
 
     event.preventDefault();
 
-    await loadAjaxPage(
+    void navigateTo(
         link.href,
     );
 }
 
-/*
-|------------------------------------------------------------------
-| Browser Navigation
-|------------------------------------------------------------------
-*/
+// ==================================================
+// Popstate
+// ==================================================
 
-async function handlePopState()
+function handlePopState()
 {
-    await loadAjaxPage(
+    void navigateTo(
         window.location.href,
-        false,
+        {
+            updateHistory: false,
+            scrollTop: false,
+        },
     );
 }
 
-/*
-|------------------------------------------------------------------
-| Init
-|------------------------------------------------------------------
-*/
+// ==================================================
+// Init
+// ==================================================
 
 export function initAjaxNavigation()
 {
@@ -335,10 +397,6 @@ export function initAjaxNavigation()
 
     initialized =
         true;
-
-    if (!getContainer()) {
-        return;
-    }
 
     document.addEventListener(
         'click',

@@ -9,6 +9,18 @@ use JsonException;
 
 final class Response
 {
+    private static function setStatusCode(
+        int $statusCode,
+    ): void {
+
+        if (! headers_sent()) {
+
+            http_response_code(
+                $statusCode,
+            );
+        }
+    }
+
     private static function sendContentType(
         string $contentType,
     ): void {
@@ -27,9 +39,9 @@ final class Response
         int $statusCode = 200,
     ): never {
 
-        if (! headers_sent()) {
-            http_response_code($statusCode);
-        }
+        self::setStatusCode(
+            $statusCode,
+        );
 
         self::sendContentType(
             'text/html',
@@ -48,9 +60,9 @@ final class Response
         int $statusCode = 200,
     ): never {
 
-        if (! headers_sent()) {
-            http_response_code($statusCode);
-        }
+        self::setStatusCode(
+            $statusCode,
+        );
 
         self::sendContentType(
             'application/json',
@@ -74,11 +86,16 @@ final class Response
                 ],
             );
 
-            if (! headers_sent()) {
-                http_response_code(500);
-            }
+            self::setStatusCode(500);
 
-            echo '{"success":false,"message":"JSON encode error"}';
+            echo json_encode(
+                [
+                    'success' => false,
+                    'message' => 'JSON encode error',
+                ],
+                JSON_UNESCAPED_UNICODE
+                | JSON_UNESCAPED_SLASHES,
+            );
         }
 
         exit;
@@ -91,10 +108,10 @@ final class Response
 
         if (! headers_sent()) {
 
-            http_response_code($statusCode);
-
             header(
                 'Location: ' . $url,
+                true,
+                $statusCode,
             );
         }
 

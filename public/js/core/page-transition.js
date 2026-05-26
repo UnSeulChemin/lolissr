@@ -1,9 +1,14 @@
+// ==================================================
+// Page Transition
+// ==================================================
+
 export async function runPageTransition(
     callback,
 )
 {
     if (
-        document.startViewTransition
+        typeof document.startViewTransition
+        === 'function'
     ) {
 
         return document
@@ -16,24 +21,36 @@ export async function runPageTransition(
     await callback();
 }
 
+// ==================================================
+// Transition Out
+// ==================================================
+
 export function transitionOut(
     element,
 )
 {
-    if (!element) {
+    if (! element) {
         return;
     }
+
+    element.classList.remove(
+        'page-transition-enter',
+    );
 
     element.classList.add(
         'page-transitioning',
     );
 }
 
+// ==================================================
+// Transition In
+// ==================================================
+
 export function transitionIn(
     element,
 )
 {
-    if (!element) {
+    if (! element) {
         return;
     }
 
@@ -45,32 +62,59 @@ export function transitionIn(
         'page-transition-enter',
     );
 
-    setTimeout(
-        () =>
-        {
-            element.classList.remove(
-                'page-transition-enter',
-            );
-        },
-        220,
+    const cleanup = (
+        event,
+    ) =>
+    {
+        if (event.target !== element) {
+            return;
+        }
+
+        element.classList.remove(
+            'page-transition-enter',
+        );
+
+        element.removeEventListener(
+            'transitionend',
+            cleanup,
+        );
+    };
+
+    element.addEventListener(
+        'transitionend',
+        cleanup,
     );
 }
 
-export function smoothScrollTop()
+// ==================================================
+// Scroll
+// ==================================================
+
+export function scrollTop(
+    smooth = true,
+)
 {
     window.scrollTo({
         top: 0,
-        behavior: 'smooth',
+        behavior:
+            smooth
+                ? 'smooth'
+                : 'auto',
     });
 }
 
 // ==================================================
-// Page Transitions
+// Page Ready
 // ==================================================
 
 export function initPageTransitions()
 {
-    document.body.classList.add(
-        'page-ready',
+    requestAnimationFrame(
+        () =>
+        {
+            document.body.classList.add(
+                'page-ready',
+            );
+        },
     );
 }

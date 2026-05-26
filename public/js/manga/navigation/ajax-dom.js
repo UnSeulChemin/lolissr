@@ -2,25 +2,16 @@
 // AJAX DOM
 // ==================================================
 
-import {
-    animateContentIn,
-    animateContentOut,
-} from './ajax-transitions.js';
-
-/*
-|------------------------------------------------------------------
-| Selectors
-|------------------------------------------------------------------
-*/
+// ==================================================
+// Selectors
+// ==================================================
 
 const contentSelector =
     '.collection-ajax-content';
 
-/*
-|------------------------------------------------------------------
-| Helpers
-|------------------------------------------------------------------
-*/
+// ==================================================
+// Helpers
+// ==================================================
 
 function getContent()
 {
@@ -29,30 +20,23 @@ function getContent()
     );
 }
 
-function scrollToTop()
-{
-    window.scrollTo({
-        top: 0,
-        behavior: 'auto',
-    });
-}
-
-/*
-|------------------------------------------------------------------
-| HTML
-|------------------------------------------------------------------
-*/
-
 function parseHtml(
     html,
 )
 {
-    const parser =
-        new DOMParser();
+    return new DOMParser()
+        .parseFromString(
+            html,
+            'text/html',
+        );
+}
 
-    return parser.parseFromString(
-        html,
-        'text/html',
+function extractNewContent(
+    documentHtml,
+)
+{
+    return documentHtml.querySelector(
+        contentSelector,
     );
 }
 
@@ -66,8 +50,7 @@ function updateDocumentTitle(
         );
 
     if (
-        title
-        && title.textContent
+        title?.textContent
     ) {
 
         document.title =
@@ -75,20 +58,17 @@ function updateDocumentTitle(
     }
 }
 
-function extractNewContent(
-    documentHtml,
-)
+function resetScroll()
 {
-    return documentHtml.querySelector(
-        contentSelector,
-    );
+    window.scrollTo({
+        top: 0,
+        behavior: 'auto',
+    });
 }
 
-/*
-|------------------------------------------------------------------
-| Replace Content
-|------------------------------------------------------------------
-*/
+// ==================================================
+// Replace Content
+// ==================================================
 
 export async function replaceContent(
     html,
@@ -97,73 +77,87 @@ export async function replaceContent(
     const currentContent =
         getContent();
 
-    if (!currentContent) {
-        return;
+    if (! currentContent) {
+
+        throw new Error(
+            '[AJAX DOM] Missing current content',
+        );
     }
+
+    // ==============================================
+    // Parse
+    // ==============================================
 
     const documentHtml =
         parseHtml(
             html,
         );
 
+    // ==============================================
+    // Title
+    // ==============================================
+
     updateDocumentTitle(
         documentHtml,
     );
+
+    // ==============================================
+    // Extract
+    // ==============================================
 
     const newContent =
         extractNewContent(
             documentHtml,
         );
 
-    if (!newContent) {
+    if (! newContent) {
 
         throw new Error(
-            '[AJAX] Missing content',
+            '[AJAX DOM] Missing new content',
         );
     }
 
-    /*
-    |--------------------------------------------------------------
-    | Fade Out
-    |--------------------------------------------------------------
-    */
+    // ==============================================
+    // Detached guard
+    // ==============================================
 
-    await animateContentOut(
-        currentContent,
+    if (
+        !document.body.contains(
+            currentContent,
+        )
+    ) {
+        return;
+    }
+
+    // ==============================================
+    // Build fragment
+    // ==============================================
+
+    const fragment =
+        document.createDocumentFragment();
+
+    fragment.append(
+        ...Array.from(
+            newContent.childNodes,
+        ).map(
+            (node) =>
+                node.cloneNode(
+                    true,
+                ),
+        ),
     );
 
-    /*
-    |--------------------------------------------------------------
-    | Replace DOM
-    |--------------------------------------------------------------
-    */
+    // ==============================================
+    // Replace
+    // ==============================================
 
-    currentContent.innerHTML =
-        newContent.innerHTML;
-
-    /*
-    |--------------------------------------------------------------
-    | Scroll
-    |--------------------------------------------------------------
-    */
-
-    scrollToTop();
-
-    /*
-    |--------------------------------------------------------------
-    | Force Repaint
-    |--------------------------------------------------------------
-    */
-
-    currentContent.offsetHeight;
-
-    /*
-    |--------------------------------------------------------------
-    | Fade In
-    |--------------------------------------------------------------
-    */
-
-    await animateContentIn(
-        currentContent,
+    currentContent.replaceChildren(
+        fragment,
     );
+
+    // ==============================================
+    // Scroll
+    // ==============================================
+
+    resetScroll();
 }

@@ -22,10 +22,10 @@ $baseUri =
     ) . '/';
 
 $errors =
-    Session::get('errors', []);
+    Session::pull('errors', []);
 
 $old =
-    Session::get('old', []);
+    Session::pull('old', []);
 
 $editeurValue =
     $old['editeur']

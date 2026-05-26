@@ -6,6 +6,26 @@ import {
     getPrefetchedPage,
 } from './prefetch-series.js';
 
+// ==================================================
+// Helpers
+// ==================================================
+
+function normalizeUrl(
+    href,
+)
+{
+    const url =
+        new URL(
+            href,
+            window.location.origin,
+        );
+
+    return (
+        url.pathname
+        + url.search
+    );
+}
+
 /*
 |------------------------------------------------------------------
 | Fetch Page HTML
@@ -14,11 +34,21 @@ import {
 
 export async function fetchPageHtml(
     href,
+    options = {},
 )
 {
+    const normalizedUrl =
+        normalizeUrl(
+            href,
+        );
+
+    // ==============================================
+    // Cache
+    // ==============================================
+
     const cached =
         getPrefetchedPage(
-            href,
+            normalizedUrl,
         );
 
     if (cached) {
@@ -26,18 +56,31 @@ export async function fetchPageHtml(
         return cached;
     }
 
+    // ==============================================
+    // Fetch
+    // ==============================================
+
     const response =
         await fetch(
-            href,
+            normalizedUrl,
             {
+                signal:
+                    options.signal,
+
                 headers: {
                     'X-Requested-With':
                         'XMLHttpRequest',
+
+                    'X-Partial':
+                        'true',
+
+                    'Accept':
+                        'text/html',
                 },
             },
         );
 
-    if (!response.ok) {
+    if (! response.ok) {
 
         throw new Error(
             '[AJAX] Request failed',

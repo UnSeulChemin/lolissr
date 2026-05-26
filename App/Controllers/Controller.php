@@ -26,7 +26,7 @@ abstract class Controller
         protected Request $request,
     ) {
         $this->title = App::siteName();
-        $this->baseUri = App::baseUri();
+        $this->baseUri = base_uri();
     }
 
     protected function viewPath(
@@ -34,7 +34,8 @@ abstract class Controller
     ): string {
 
         return view_path(
-            $file . '.php',
+            ltrim($file, '/')
+            . '.php',
         );
     }
 
@@ -42,17 +43,15 @@ abstract class Controller
         string $file,
     ): string {
 
-        return view_path(
-            'errors/'
-            . ltrim($file, '/')
-            . '.php',
+        return $this->viewPath(
+            'errors/' . $file,
         );
     }
 
     protected function templatePath(): string
     {
-        return view_path(
-            $this->template . '.php',
+        return $this->viewPath(
+            $this->template,
         );
     }
 
@@ -85,11 +84,24 @@ abstract class Controller
         }
     }
 
+    private function ensureViewExists(
+        string $path,
+    ): void {
+
+        if (is_file($path)) {
+            return;
+        }
+
+        throw new RuntimeException(
+            "Vue introuvable : {$path}",
+        );
+    }
+
     /**
      * @param array<string, mixed> $data
      * @return array<string, mixed>
      */
-    private function buildViewVariables(
+    private function baseViewData(
         array $data = [],
     ): array {
 
@@ -101,28 +113,10 @@ abstract class Controller
         ];
     }
 
-    private function ensureViewExists(
-        string $path,
-        string $type,
-    ): void {
-
-        if (is_file($path)) {
-            return;
-        }
-
-        throw new RuntimeException(
-            sprintf(
-                '%s introuvable : %s',
-                $type,
-                $path,
-            ),
-        );
-    }
-
     /**
      * @param array<string, mixed> $data
      */
-    private function buildView(
+    private function renderContent(
         string $viewPath,
         array $data = [],
         bool $withTemplate = true,
@@ -130,11 +124,10 @@ abstract class Controller
 
         $this->ensureViewExists(
             $viewPath,
-            'Vue',
         );
 
         $variables =
-            $this->buildViewVariables(
+            $this->baseViewData(
                 $data,
             );
 
@@ -153,7 +146,6 @@ abstract class Controller
 
         $this->ensureViewExists(
             $templatePath,
-            'Template',
         );
 
         return $this->renderPhp(
@@ -168,7 +160,7 @@ abstract class Controller
     /**
      * @param array<string, mixed> $data
      */
-    private function renderView(
+    private function respondView(
         string $viewPath,
         int $statusCode = 200,
         array $data = [],
@@ -176,7 +168,7 @@ abstract class Controller
     ): never {
 
         Response::html(
-            $this->buildView(
+            $this->renderContent(
                 $viewPath,
                 $data,
                 $withTemplate,
@@ -193,12 +185,9 @@ abstract class Controller
         array $data = [],
     ): never {
 
-        $this->renderView(
-            viewPath:
-                $this->viewPath($file),
-
-            data:
-                $data,
+        $this->respondView(
+            viewPath: $this->viewPath($file),
+            data: $data,
         );
     }
 
@@ -210,15 +199,10 @@ abstract class Controller
         array $data = [],
     ): never {
 
-        $this->renderView(
-            viewPath:
-                $this->viewPath($file),
-
-            data:
-                $data,
-
-            withTemplate:
-                false,
+        $this->respondView(
+            viewPath: $this->viewPath($file),
+            data: $data,
+            withTemplate: false,
         );
     }
 
@@ -231,15 +215,10 @@ abstract class Controller
         array $data = [],
     ): never {
 
-        $this->renderView(
-            viewPath:
-                $this->errorViewPath($file),
-
-            statusCode:
-                $statusCode,
-
-            data:
-                $data,
+        $this->respondView(
+            viewPath: $this->errorViewPath($file),
+            statusCode: $statusCode,
+            data: $data,
         );
     }
 
@@ -248,33 +227,39 @@ abstract class Controller
         int $statusCode = 302,
     ): never {
 
-        if (
-            preg_match('#^https?://#i', $url)
-            || str_starts_with(
-                $url,
-                $this->baseUri,
-            )
-        ) {
+        if (preg_match('#^https?://#i', $url)) {
+
             Response::redirect(
                 $url,
                 $statusCode,
             );
         }
 
-        $baseUri =
-            $this->baseUri === '/'
-                ? ''
-                : rtrim(
-                    $this->baseUri,
-                    '/',
-                );
-
         Response::redirect(
-            $baseUri
+            $this->baseUri
             . '/'
             . ltrim($url, '/'),
             $statusCode,
         );
+    }
+
+    /**
+     * @param array<string, mixed> $session
+     */
+    protected function redirectWith(
+        string $url,
+        array $session,
+    ): never {
+
+        foreach ($session as $key => $value) {
+
+            Session::set(
+                $key,
+                $value,
+            );
+        }
+
+        $this->redirect($url);
     }
 
     protected function redirectWithError(
@@ -283,20 +268,20 @@ abstract class Controller
         bool $withOld = true,
     ): never {
 
+        $session = [
+            'error' => $message,
+        ];
+
         if ($withOld) {
 
-            Session::set(
-                'old',
-                $this->request->all(),
-            );
+            $session['old'] =
+                $this->request->all();
         }
 
-        Session::set(
-            'error',
-            $message,
+        $this->redirectWith(
+            $url,
+            $session,
         );
-
-        $this->redirect($url);
     }
 
     /**
@@ -308,22 +293,14 @@ abstract class Controller
         string $message = 'Le formulaire contient des erreurs.',
     ): never {
 
-        Session::set(
-            'errors',
-            $errors,
+        $this->redirectWith(
+            $url,
+            [
+                'errors' => $errors,
+                'old' => $this->request->all(),
+                'error' => $message,
+            ],
         );
-
-        Session::set(
-            'old',
-            $this->request->all(),
-        );
-
-        Session::set(
-            'error',
-            $message,
-        );
-
-        $this->redirect($url);
     }
 
     protected function redirectWithSuccess(
@@ -331,12 +308,12 @@ abstract class Controller
         string $message,
     ): never {
 
-        Session::set(
-            'success',
-            $message,
+        $this->redirectWith(
+            $url,
+            [
+                'success' => $message,
+            ],
         );
-
-        $this->redirect($url);
     }
 
     public function notFound(
@@ -373,14 +350,17 @@ abstract class Controller
 
     protected function expectsJson(): bool
     {
+        $accept =
+            strtolower(
+                $this->request->server(
+                    'HTTP_ACCEPT',
+                    '',
+                ),
+            );
+
         return $this->isAjax()
             || str_contains(
-                strtolower(
-                    $this->request->server(
-                        'HTTP_ACCEPT',
-                        '',
-                    ),
-                ),
+                $accept,
                 'application/json',
             );
     }

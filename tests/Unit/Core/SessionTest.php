@@ -62,7 +62,7 @@ final class SessionTest extends TestCase
     {
         Session::set('notice', 'Test');
 
-        Session::remove('notice');
+        Session::pull('notice');
 
         $this->assertFalse(Session::has('notice'));
     }

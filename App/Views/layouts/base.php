@@ -4,20 +4,23 @@ declare(strict_types=1);
 
 use Framework\Support\Session;
 
+$baseUri = trim(
+    (string) ($baseUri ?? ''),
+    '/',
+);
+
 $baseUri =
-    rtrim(
-        (string) ($baseUri ?? ''),
-        '/',
-    )
-    . '/';
+    $baseUri !== ''
+        ? '/' . $baseUri . '/'
+        : '/';
 
 $flashToast = null;
 
 $success =
-    Session::get('success');
+    Session::pull('success');
 
 $error =
-    Session::get('error');
+    Session::pull('error');
 
 if (
     is_string($success)
@@ -29,10 +32,6 @@ if (
         'type' => 'success',
     ];
 
-    Session::remove(
-        'success',
-    );
-
 } elseif (
     is_string($error)
     && $error !== ''
@@ -42,10 +41,6 @@ if (
         'message' => $error,
         'type' => 'error',
     ];
-
-    Session::remove(
-        'error',
-    );
 }
 
 ?>

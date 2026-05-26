@@ -16,7 +16,7 @@ final readonly class AppKernel
 
     public function boot(): void
     {
-        Session::get('__boot__');
+        Session::start();
 
         date_default_timezone_set(
             App::timezone(),

@@ -65,6 +65,30 @@ final class Request
         ) === 'xmlhttprequest';
     }
 
+    public function isPrefetch(): bool
+    {
+        return
+            strtolower(
+                $this->header(
+                    'Purpose',
+                ) ?? '',
+            ) === 'prefetch'
+            || strtolower(
+                $this->header(
+                    'X-Prefetch',
+                ) ?? '',
+            ) === 'true';
+    }
+
+    public function wantsPartial(): bool
+    {
+        return strtolower(
+            $this->header(
+                'X-Partial',
+            ) ?? '',
+        ) === 'true';
+    }
+
     public function expectsJson(): bool
     {
         return $this->isAjax()

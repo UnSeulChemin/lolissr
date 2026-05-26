@@ -5,10 +5,10 @@ declare(strict_types=1);
 use Framework\Support\Session;
 
 $errors =
-    Session::get('errors', []);
+    Session::pull('errors', []);
 
 $old =
-    Session::get('old', []);
+    Session::pull('old', []);
 
 $baseUri =
     rtrim(

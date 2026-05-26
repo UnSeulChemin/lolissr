@@ -7,8 +7,6 @@ namespace App\Controllers\Chinois;
 use App\Controllers\Controller;
 use App\DTO\Common\ServiceResult;
 use App\Repositories\Chinois\ChinoisGrammaireRepository;
-use Framework\Application\App;
-use Framework\Exceptions\BaseHttpException;
 use Framework\Exceptions\ValidationException;
 use Framework\Http\Request;
 
@@ -23,18 +21,17 @@ final class ChinoisAjaxController extends Controller
 
     /*
     |--------------------------------------------------------------
-    | Toggle grammaire maîtrise
+    | Toggle Grammaire Maîtrise
     |--------------------------------------------------------------
     */
 
     public function toggleGrammaireMaitrise(): never
     {
         $id =
-            (int) $this->request
-                ->input(
-                    'id',
-                    0,
-                );
+            (int) $this->request->input(
+                'id',
+                0,
+            );
 
         if ($id <= 0) {
 
@@ -47,20 +44,18 @@ final class ChinoisAjaxController extends Controller
             (int) $this->repository
                 ->toggleMaitrise($id);
 
-        $message =
-            $maitrise === 1
-                ? 'Grammaire marquée comme maîtrisée'
-                : 'Grammaire marquée comme non maîtrisée';
-
-        $result =
+        $this->jsonResult(
             ServiceResult::success(
-                message: $message,
+                message:
+                    $maitrise === 1
+                        ? 'Grammaire maîtrisée'
+                        : 'Grammaire non maîtrisée',
 
                 data: [
-                    'maitrise' => $maitrise,
+                    'maitrise' =>
+                        $maitrise,
                 ],
-            );
-
-        $this->jsonResult($result);
+            ),
+        );
     }
 }
