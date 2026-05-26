@@ -88,15 +88,34 @@ export function get(url, options = {})
 /**
  * POST (IMPORTANT POUR TON PROJET)
  */
-export function post(url, body = {}, options = {})
+export function post(
+    url,
+    body = {},
+    options = {},
+)
 {
-    return request(url, {
-        method: 'POST',
-        body: JSON.stringify(body),
-        headers: {
-            'Content-Type': 'application/json',
-            ...(options.headers || {}),
+    return request(
+        url,
+        {
+            method: 'POST',
+
+            responseType:
+                'json',
+
+            body:
+                JSON.stringify(
+                    body,
+                ),
+
+            headers:
+            {
+                'Content-Type':
+                    'application/json',
+
+                ...(options.headers || {}),
+            },
+
+            ...options,
         },
-        ...options,
-    });
+    );
 }

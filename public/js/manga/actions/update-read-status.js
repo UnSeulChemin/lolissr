@@ -73,6 +73,39 @@ function updateButtonState(
 }
 
 // =========================================
+// Refresh
+// =========================================
+
+function refreshButtons()
+{
+    $$(
+        BUTTON_SELECTOR,
+    ).forEach(
+        (
+            button,
+        ) =>
+        {
+            if (
+                !(
+                    button
+                    instanceof HTMLButtonElement
+                )
+            ) {
+                return;
+            }
+
+            updateButtonState(
+                button,
+                Number(
+                    button.dataset.readStatus
+                    ?? 0,
+                ),
+            );
+        },
+    );
+}
+
+// =========================================
 // API
 // =========================================
 
@@ -154,8 +187,18 @@ async function updateReadStatus(
                 },
             );
 
+        debug(
+            'READ_STATUS',
+            'response',
+            data,
+        );
+
+        // =================================
+        // Validation
+        // =================================
+
         if (
-            !data?.success
+            data?.success !== true
         ) {
 
             throw new Error(
@@ -164,11 +207,19 @@ async function updateReadStatus(
             );
         }
 
+        // =================================
+        // Backend Data
+        // =================================
+
         const finalStatus =
             Number(
-                data.readStatus
+                data?.data?.readStatus
                 ?? nextReadStatus,
             );
+
+        // =================================
+        // Sync UI
+        // =================================
 
         updateButtonState(
             button,
@@ -176,7 +227,7 @@ async function updateReadStatus(
         );
 
         showToast(
-            data.message
+            data?.message
             || 'Mise à jour effectuée',
             'success',
         );
@@ -209,39 +260,6 @@ async function updateReadStatus(
         button.disabled =
             false;
     }
-}
-
-// =========================================
-// Refresh
-// =========================================
-
-function refreshButtons()
-{
-    $$(
-        BUTTON_SELECTOR,
-    ).forEach(
-        (
-            button,
-        ) =>
-        {
-            if (
-                !(
-                    button
-                    instanceof HTMLButtonElement
-                )
-            ) {
-                return;
-            }
-
-            updateButtonState(
-                button,
-                Number(
-                    button.dataset.readStatus
-                    ?? 0,
-                ),
-            );
-        },
-    );
 }
 
 // =========================================
