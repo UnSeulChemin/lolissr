@@ -162,7 +162,7 @@ export function initSearchManga()
         activeItem?.scrollIntoView({
             block:
                 'nearest',
-        });
+            });
     }
 
     function openDropdown()
@@ -177,6 +177,9 @@ export function initSearchManga()
         results.innerHTML =
             '';
 
+        input.value =
+            '';
+
         dropdown.classList.remove(
             'is-loading',
             'has-results',
@@ -186,6 +189,9 @@ export function initSearchManga()
 
         abortController =
             null;
+
+        activeIndex =
+            -1;
 
         resetActive();
     }
@@ -306,12 +312,12 @@ export function initSearchManga()
                     currentController.signal,
                 );
 
-            const items =
-                data.data?.results
+            const mangas =
+                data?.data?.results
                 || [];
 
             if (
-                !items.length
+                !mangas.length
                 && !shortcuts.length
             ) {
 
@@ -320,7 +326,7 @@ export function initSearchManga()
                 return;
             }
 
-            items.forEach(
+            mangas.forEach(
                 (
                     manga,
                 ) =>
@@ -532,6 +538,8 @@ export function initSearchManga()
 
                 event.preventDefault();
 
+                closeDropdown();
+
                 window.location.href =
                     item.href;
             }
@@ -539,7 +547,7 @@ export function initSearchManga()
     );
 
     // =====================================
-    // Mouse Hover
+    // Hover
     // =====================================
 
     results.addEventListener(
@@ -584,6 +592,18 @@ export function initSearchManga()
                 index;
 
             updateActive();
+        },
+    );
+
+    // =====================================
+    // SPA Navigation
+    // =====================================
+
+    document.addEventListener(
+        'app:navigation-start',
+        () =>
+        {
+            closeDropdown();
         },
     );
 

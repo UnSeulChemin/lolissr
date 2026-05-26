@@ -110,6 +110,47 @@ function updateActiveNavigation()
 }
 
 // =========================================
+// PREFETCH VISIBLE LINKS
+// =========================================
+
+function prefetchVisible()
+{
+    const root =
+        document.querySelector(
+            '.ajax-content',
+        );
+
+    if (!root) {
+        return;
+    }
+
+    const links =
+        root.querySelectorAll(
+            'a[href]',
+        );
+
+    for (const link of links)
+    {
+        if (
+            !(
+                link
+                instanceof HTMLAnchorElement
+            )
+        ) {
+            continue;
+        }
+
+        if (!link.href) {
+            continue;
+        }
+
+        window.__prefetchPage?.(
+            link.href,
+        );
+    }
+}
+
+// =========================================
 // NAVIGATION CORE
 // =========================================
 
@@ -169,6 +210,16 @@ export async function navigateTo(
         '1';
 
     try {
+
+        // =================================
+        // SPA NAVIGATION START
+        // =================================
+
+        document.dispatchEvent(
+            new CustomEvent(
+                'app:navigation-start',
+            ),
+        );
 
         // =================================
         // PREFETCH CACHE
@@ -242,7 +293,7 @@ export async function navigateTo(
         }
 
         // =================================
-        // DOM SWAP
+        // FAST DOM SWAP
         // =================================
 
         if (instant) {
@@ -298,11 +349,13 @@ export async function navigateTo(
             ),
         );
 
+        requestAnimationFrame(
+            prefetchVisible,
+        );
+
         debug(
             'AJAX',
-            instant
-                ? 'instant'
-                : 'fetched',
+            'done',
             target,
         );
 
@@ -338,11 +391,22 @@ export async function navigateTo(
 }
 
 // =========================================
-// CLICK INTERCEPT
+// INIT
 // =========================================
 
-function bindNavigation()
+export function initAjaxNavigation()
 {
+    if (window.__SPA__) {
+        return;
+    }
+
+    window.__SPA__ =
+        true;
+
+    // =====================================
+    // CLICK NAVIGATION
+    // =====================================
+
     document.addEventListener(
         'click',
         (event) =>
@@ -406,8 +470,7 @@ function bindNavigation()
             // =================================
 
             if (
-                link.target
-                === '_blank'
+                link.target === '_blank'
             ) {
                 return;
             }
@@ -443,14 +506,11 @@ function bindNavigation()
             );
         },
     );
-}
 
-// =========================================
-// POPSTATE
-// =========================================
+    // =====================================
+    // BROWSER HISTORY
+    // =====================================
 
-function bindPopstate()
-{
     window.addEventListener(
         'popstate',
         async () =>
@@ -467,18 +527,16 @@ function bindPopstate()
 
             try {
 
-                let html =
-                    getPrefetchedPage(
+                document.dispatchEvent(
+                    new CustomEvent(
+                        'app:navigation-start',
+                    ),
+                );
+
+                const html =
+                    await fetchPageHtml(
                         location.href,
                     );
-
-                if (!html) {
-
-                    html =
-                        await fetchPageHtml(
-                            location.href,
-                        );
-                }
 
                 if (
                     typeof html !== 'string'
@@ -499,6 +557,10 @@ function bindPopstate()
                     ),
                 );
 
+                requestAnimationFrame(
+                    prefetchVisible,
+                );
+
             } catch (error) {
 
                 debugError(
@@ -508,26 +570,17 @@ function bindPopstate()
             }
         },
     );
-}
 
-// =========================================
-// INIT
-// =========================================
-
-export function initAjaxNavigation()
-{
-    if (window.__SPA__) {
-        return;
-    }
-
-    window.__SPA__ =
-        true;
-
-    bindNavigation();
-
-    bindPopstate();
+    // =====================================
+    // INIT
+    // =====================================
 
     updateActiveNavigation();
+
+    setTimeout(
+        prefetchVisible,
+        200,
+    );
 
     debug(
         'AJAX',
