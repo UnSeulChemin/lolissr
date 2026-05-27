@@ -3,11 +3,11 @@
 // =========================================
 
 // =========================================
-// STATE
+// DELEGATED EVENTS
 // =========================================
 
 const delegatedEvents =
-    new Set();
+    new WeakMap();
 
 // =========================================
 // QUERY
@@ -40,69 +40,19 @@ export function $$(
 }
 
 // =========================================
-// DELEGATE
+// EXISTS
 // =========================================
 
-export function delegate(
-    parent,
-    eventType,
+export function exists(
     selector,
-    callback,
+    parent = document,
 )
 {
-    // =====================================
-    // UNIQUE KEY
-    // =====================================
-
-    const key =
-        `${eventType}::${selector}`;
-
-    // =====================================
-    // ALREADY REGISTERED
-    // =====================================
-
-    if (
-        delegatedEvents.has(
-            key,
-        )
-    ) {
-        return;
-    }
-
-    delegatedEvents.add(
-        key,
-    );
-
-    parent.addEventListener(
-        eventType,
-        (event) =>
-        {
-            const target =
-                event.target;
-
-            if (
-                !(
-                    target
-                    instanceof Element
-                )
-            ) {
-                return;
-            }
-
-            const element =
-                target.closest(
-                    selector,
-                );
-
-            if (!element) {
-                return;
-            }
-
-            callback(
-                event,
-                element,
-            );
-        },
+    return Boolean(
+        $(
+            selector,
+            parent,
+        ),
     );
 }
 
@@ -136,18 +86,95 @@ export function setData(
 }
 
 // =========================================
-// EXISTS
+// DELEGATE
 // =========================================
 
-export function exists(
+export function delegate(
+    parent,
+    eventType,
     selector,
-    parent = document,
+    callback,
 )
 {
-    return Boolean(
-        $(
-            selector,
+    // =====================================
+    // PARENT STORE
+    // =====================================
+
+    if (
+        !delegatedEvents.has(
             parent,
-        ),
+        )
+    ) {
+
+        delegatedEvents.set(
+            parent,
+            new Set(),
+        );
+    }
+
+    const parentEvents =
+        delegatedEvents.get(
+            parent,
+        );
+
+    // =====================================
+    // UNIQUE KEY
+    // =====================================
+
+    const key =
+        `${eventType}::${selector}`;
+
+    // =====================================
+    // ALREADY REGISTERED
+    // =====================================
+
+    if (
+        parentEvents.has(
+            key,
+        )
+    ) {
+        return;
+    }
+
+    parentEvents.add(
+        key,
+    );
+
+    // =====================================
+    // LISTENER
+    // =====================================
+
+    parent.addEventListener(
+        eventType,
+        (
+            event,
+        ) =>
+        {
+            const target =
+                event.target;
+
+            if (
+                !(
+                    target
+                    instanceof Element
+                )
+            ) {
+                return;
+            }
+
+            const element =
+                target.closest(
+                    selector,
+                );
+
+            if (!element) {
+                return;
+            }
+
+            callback(
+                event,
+                element,
+            );
+        },
     );
 }

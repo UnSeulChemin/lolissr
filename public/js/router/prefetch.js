@@ -24,7 +24,10 @@ const HOVER_DELAY =
     220;
 
 const CACHE_DURATION =
-    10000;
+    60000;
+
+const MAX_CACHE_SIZE =
+    50;
 
 // =========================================
 // GLOBAL STATE
@@ -58,7 +61,44 @@ const hoverTimers =
     new Map();
 
 // =========================================
-// CACHE
+// CACHE HELPERS
+// =========================================
+
+function isExpired(
+    entry,
+)
+{
+    return (
+        Date.now()
+        - entry.timestamp
+        > CACHE_DURATION
+    );
+}
+
+function trimCache()
+{
+    while (
+        cache.size
+        > MAX_CACHE_SIZE
+    )
+    {
+        const oldestKey =
+            cache.keys()
+                .next()
+                .value;
+
+        if (!oldestKey) {
+            return;
+        }
+
+        cache.delete(
+            oldestKey,
+        );
+    }
+}
+
+// =========================================
+// GET CACHE
 // =========================================
 
 export function getPrefetchedPage(
@@ -83,12 +123,11 @@ export function getPrefetchedPage(
     // EXPIRED
     // =====================================
 
-    const expired =
-        Date.now()
-        - cached.timestamp
-        > CACHE_DURATION;
-
-    if (expired) {
+    if (
+        isExpired(
+            cached,
+        )
+    ) {
 
         cache.delete(
             url,
@@ -130,6 +169,12 @@ export function invalidatePrefetch(
     );
 
     inFlight.delete(
+        url,
+    );
+
+    debug(
+        'PREFETCH',
+        'invalidate',
         url,
     );
 }
@@ -246,11 +291,11 @@ export async function prefetchPage(
 
                             headers:
                             {
-                                'X-Prefetch':
-                                    '1',
-
                                 Accept:
                                     'text/html',
+
+                                'X-Prefetch':
+                                    '1',
                             },
                         },
                     );
@@ -263,13 +308,20 @@ export async function prefetchPage(
                 }
 
                 // =============================
-                // CACHE
+                // CACHE LIMIT
+                // =============================
+
+                trimCache();
+
+                // =============================
+                // STORE
                 // =============================
 
                 cache.set(
                     url,
                     {
                         html,
+
                         timestamp:
                             Date.now(),
                     },
@@ -309,7 +361,7 @@ export async function prefetchPage(
 }
 
 // =========================================
-// TIMERS
+// HOVER TIMERS
 // =========================================
 
 function clearHoverTimer(
@@ -340,7 +392,78 @@ function clearHoverTimer(
 }
 
 // =========================================
-// LINK
+// EVENTS
+// =========================================
+
+function handlePointerEnter(
+    link,
+)
+{
+    const url =
+        normalizeUrl(
+            link.href,
+        );
+
+    // =====================================
+    // CACHE
+    // =====================================
+
+    if (
+        getPrefetchedPage(
+            url,
+        )
+    ) {
+        return;
+    }
+
+    // =====================================
+    // IN FLIGHT
+    // =====================================
+
+    if (
+        inFlight.has(
+            url,
+        )
+    ) {
+        return;
+    }
+
+    clearHoverTimer(
+        url,
+    );
+
+    const timer =
+        window.setTimeout(
+            () =>
+            {
+                hoverTimers.delete(
+                    url,
+                );
+
+                void prefetchPage(
+                    url,
+                );
+            },
+            HOVER_DELAY,
+        );
+
+    hoverTimers.set(
+        url,
+        timer,
+    );
+}
+
+function handlePointerLeave(
+    link,
+)
+{
+    clearHoverTimer(
+        link.href,
+    );
+}
+
+// =========================================
+// BIND LINK
 // =========================================
 
 function bindLink(
@@ -394,57 +517,8 @@ function bindLink(
                 return;
             }
 
-            const url =
-                normalizeUrl(
-                    link.href,
-                );
-
-            // =============================
-            // CACHE
-            // =============================
-
-            if (
-                getPrefetchedPage(
-                    url,
-                )
-            ) {
-                return;
-            }
-
-            // =============================
-            // IN FLIGHT
-            // =============================
-
-            if (
-                inFlight.has(
-                    url,
-                )
-            ) {
-                return;
-            }
-
-            clearHoverTimer(
-                url,
-            );
-
-            const timer =
-                setTimeout(
-                    () =>
-                    {
-                        hoverTimers.delete(
-                            url,
-                        );
-
-                        void prefetchPage(
-                            url,
-                        );
-                    },
-                    HOVER_DELAY,
-                );
-
-            hoverTimers.set(
-                url,
-                timer,
+            handlePointerEnter(
+                link,
             );
         },
         {
@@ -461,12 +535,33 @@ function bindLink(
         'pointerleave',
         () =>
         {
-            clearHoverTimer(
+            handlePointerLeave(
+                link,
+            );
+        },
+        {
+            passive:
+                true,
+        },
+    );
+
+    // =====================================
+    // MOBILE PREFETCH
+    // =====================================
+
+    link.addEventListener(
+        'touchstart',
+        () =>
+        {
+            void prefetchPage(
                 link.href,
             );
         },
         {
             passive:
+                true,
+
+            once:
                 true,
         },
     );

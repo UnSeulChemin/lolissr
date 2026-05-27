@@ -5,6 +5,7 @@
 import {
     $,
     $$,
+    delegate,
 } from '../../core/dom.js';
 
 import {
@@ -432,6 +433,77 @@ function handleKeyboard(
 }
 
 // =========================================
+// GLOBAL LISTENERS
+// =========================================
+
+function initGlobalListeners()
+{
+    delegate(
+        document,
+        'click',
+        '.search-result-item',
+        (
+            event,
+            item,
+        ) =>
+        {
+            if (
+                !(
+                    item
+                    instanceof HTMLAnchorElement
+                )
+            ) {
+                return;
+            }
+
+            event.preventDefault();
+
+            closeDropdown();
+
+            void navigateTo(
+                item.href,
+            );
+        },
+    );
+
+    delegate(
+        document,
+        'click',
+        'body',
+        (
+            event,
+        ) =>
+        {
+            const target =
+                event.target;
+
+            if (
+                !(
+                    target
+                    instanceof Element
+                )
+            ) {
+                return;
+            }
+
+            if (
+                !target.closest(
+                    '.js-header-search',
+                )
+            ) {
+
+                closeDropdown();
+            }
+        },
+    );
+
+    document.addEventListener(
+        'router:start',
+        closeDropdown,
+    );
+}
+
+// =========================================
 // INIT
 // =========================================
 
@@ -459,22 +531,15 @@ export function initSearchManga()
     }
 
     // =====================================
-    // REBIND SAFE
+    // GLOBAL LISTENERS
     // =====================================
 
-    if (
-        initialized
-    ) {
-
-        debug(
-            'SEARCH',
-            'rebind',
-        );
-
-    } else {
+    if (!initialized) {
 
         initialized =
             true;
+
+        initGlobalListeners();
 
         debug(
             'SEARCH',
@@ -537,95 +602,9 @@ export function initSearchManga()
         };
 
     // =====================================
-    // CLICK
-    // =====================================
-
-    results.onclick =
-        (
-            event,
-        ) =>
-        {
-            const target =
-                event.target;
-
-            if (
-                !(
-                    target
-                    instanceof Element
-                )
-            ) {
-                return;
-            }
-
-            const item =
-                target.closest(
-                    '.search-result-item',
-                );
-
-            if (
-                !(
-                    item
-                    instanceof HTMLAnchorElement
-                )
-            ) {
-                return;
-            }
-
-            event.preventDefault();
-
-            closeDropdown();
-
-            void navigateTo(
-                item.href,
-            );
-        };
-
-    // =====================================
     // KEYBOARD
     // =====================================
 
     input.onkeydown =
         handleKeyboard;
-
-    // =====================================
-    // OUTSIDE
-    // =====================================
-
-    document.addEventListener(
-        'click',
-        (
-            event,
-        ) =>
-        {
-            const target =
-                event.target;
-
-            if (
-                !(
-                    target
-                    instanceof Element
-                )
-            ) {
-                return;
-            }
-
-            if (
-                !target.closest(
-                    '.js-header-search',
-                )
-            ) {
-
-                closeDropdown();
-            }
-        },
-    );
-
-    // =====================================
-    // NAVIGATION
-    // =====================================
-
-    document.addEventListener(
-        'app:navigation-start',
-        closeDropdown,
-    );
 }

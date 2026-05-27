@@ -12,6 +12,10 @@ import {
 } from '../../router/router.js';
 
 import {
+    registerCleanup,
+} from '../../router/router-cleanup.js';
+
+import {
     debug,
 } from '../../core/debug.js';
 
@@ -251,7 +255,7 @@ function syncActiveState()
 }
 
 // =========================================
-// NAVIGATION
+// MOVEMENT
 // =========================================
 
 function moveHorizontal(
@@ -456,6 +460,22 @@ function handleResize()
 }
 
 // =========================================
+// ROUTER LOADED
+// =========================================
+
+function handleRouteLoaded()
+{
+    clearActiveState();
+
+    queueMicrotask(
+        () =>
+        {
+            updateGridColumns();
+        },
+    );
+}
+
+// =========================================
 // INIT
 // =========================================
 
@@ -485,22 +505,11 @@ export function initSeriesKeyboardNavigation()
     );
 
     document.addEventListener(
-        'ajax:page-loaded',
-        () =>
-        {
-            clearActiveState();
-
-            queueMicrotask(
-                () =>
-                {
-                    updateGridColumns();
-                },
-            );
-        },
+        'router:loaded',
+        handleRouteLoaded,
     );
 
-    window.addEventListener(
-        'pageshow',
+    registerCleanup(
         clearActiveState,
     );
 

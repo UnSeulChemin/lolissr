@@ -156,7 +156,7 @@ export function shouldIgnoreLink(
     // =====================================
 
     if (
-        /\.(jpg|jpeg|png|gif|webp|svg|pdf|zip)$/i
+        /\.(jpg|jpeg|png|gif|webp|svg|pdf|zip|mp4|webm)$/i
             .test(
                 url.pathname,
             )

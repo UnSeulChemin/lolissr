@@ -1,15 +1,11 @@
 // ==================================================
-// CORE
+// APP
 // ==================================================
 
 import {
     debug,
     debugError,
 } from './core/debug.js';
-
-import {
-    initPageTransitions,
-} from './core/page-transition.js';
 
 import {
     showToast,
@@ -27,6 +23,10 @@ import {
     initPrefetch,
 } from './router/prefetch.js';
 
+import {
+    onRouteChange,
+} from './router/router-hooks.js';
+
 // ==================================================
 // NAVIGATION
 // ==================================================
@@ -36,7 +36,7 @@ import {
 } from './navigation/global-back-navigation.js';
 
 // ==================================================
-// MANGA
+// PAGES
 // ==================================================
 
 import {
@@ -46,6 +46,10 @@ import {
 import {
     initModifierPage,
 } from './manga/pages/modifier.js';
+
+// ==================================================
+// ACTIONS
+// ==================================================
 
 import {
     initUpdateNote,
@@ -112,8 +116,7 @@ function initFlashToast()
         window.flashToast;
 
     if (
-        !flashToast
-        || !flashToast.message
+        !flashToast?.message
     ) {
         return;
     }
@@ -131,8 +134,6 @@ function initFlashToast()
 
 const GLOBAL_INITIALIZERS = [
 
-    ['PageTransitions', initPageTransitions],
-
     ['Router', initRouter],
 
     ['Prefetch', initPrefetch],
@@ -141,30 +142,54 @@ const GLOBAL_INITIALIZERS = [
 ];
 
 // ==================================================
-// PAGE INITIALIZERS
+// ROUTES
 // ==================================================
 
-const PAGE_INITIALIZERS = [
+const ROUTE_INITIALIZERS = [
 
-    ['AjouterPage', initAjouterPage],
+    {
+        match:
+            /^\/lolissr\/manga\/ajouter\/?$/,
 
-    ['ModifierPage', initModifierPage],
+        initializers:
+        [
+            ['AjouterPage', initAjouterPage],
+        ],
+    },
 
-    ['UpdateNote', initUpdateNote],
+    {
+        match:
+            /^\/lolissr\/manga\/modifier\/.+/,
 
-    ['DeleteManga', initDeleteManga],
+        initializers:
+        [
+            ['ModifierPage', initModifierPage],
+        ],
+    },
 
-    ['UpdateReadStatus', initUpdateReadStatus],
+    {
+        match:
+            /^\/lolissr\/?/,
 
-    ['SearchManga', initSearchManga],
+        initializers:
+        [
+            ['UpdateNote', initUpdateNote],
 
-    ['SeriesKeyboardNavigation', initSeriesKeyboardNavigation],
+            ['DeleteManga', initDeleteManga],
 
-    ['ToggleGrammaireMaitrise', initToggleGrammaireMaitrise],
+            ['UpdateReadStatus', initUpdateReadStatus],
+
+            ['SearchManga', initSearchManga],
+
+            ['SeriesKeyboardNavigation', initSeriesKeyboardNavigation],
+
+            ['ToggleGrammaireMaitrise', initToggleGrammaireMaitrise],
+        ],
+    },
 ];
 
 // ==================================================
-// RUNNERS
+// GLOBAL
 // ==================================================
 
 function runGlobalInitializers()
@@ -173,9 +198,10 @@ function runGlobalInitializers()
         const [
             label,
             init,
-        ] of GLOBAL_INITIALIZERS
-    ) {
-
+        ]
+        of GLOBAL_INITIALIZERS
+    )
+    {
         safeInit(
             label,
             init,
@@ -183,19 +209,41 @@ function runGlobalInitializers()
     }
 }
 
-function runPageInitializers()
-{
-    for (
-        const [
-            label,
-            init,
-        ] of PAGE_INITIALIZERS
-    ) {
+// ==================================================
+// ROUTE
+// ==================================================
 
-        safeInit(
-            label,
-            init,
-        );
+function runRouteInitializers()
+{
+    const path =
+        location.pathname;
+
+    for (
+        const route
+        of ROUTE_INITIALIZERS
+    )
+    {
+        if (
+            !route.match.test(
+                path,
+            )
+        ) {
+            continue;
+        }
+
+        for (
+            const [
+                label,
+                init,
+            ]
+            of route.initializers
+        )
+        {
+            safeInit(
+                label,
+                init,
+            );
+        }
     }
 }
 
@@ -217,20 +265,19 @@ function initApp()
     runGlobalInitializers();
 
     // =============================================
-    // PAGE
+    // CURRENT ROUTE
     // =============================================
 
-    runPageInitializers();
+    runRouteInitializers();
 
     // =============================================
-    // ROUTER PAGE LOAD
+    // ROUTER HOOK
     // =============================================
 
-    document.addEventListener(
-        'router:loaded',
+    onRouteChange(
         () =>
         {
-            runPageInitializers();
+            runRouteInitializers();
         },
     );
 
@@ -262,7 +309,8 @@ if (
         'DOMContentLoaded',
         initApp,
         {
-            once: true,
+            once:
+                true,
         },
     );
 

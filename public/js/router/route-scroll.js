@@ -2,6 +2,14 @@
 // ROUTE SCROLL
 // =========================================
 
+import {
+    normalizeUrl,
+} from '../core/navigation.js';
+
+// =========================================
+// STATE
+// =========================================
+
 const scrollPositions =
     new Map();
 
@@ -13,8 +21,13 @@ export function saveScrollPosition(
     href,
 )
 {
+    const url =
+        normalizeUrl(
+            href,
+        );
+
     scrollPositions.set(
-        href,
+        url,
         {
             x:
                 window.scrollX,
@@ -33,9 +46,14 @@ export function restoreScrollPosition(
     href,
 )
 {
+    const url =
+        normalizeUrl(
+            href,
+        );
+
     const position =
         scrollPositions.get(
-            href,
+            url,
         );
 
     if (!position) {
@@ -48,9 +66,14 @@ export function restoreScrollPosition(
         return;
     }
 
-    window.scrollTo(
-        position.x,
-        position.y,
+    requestAnimationFrame(
+        () =>
+        {
+            window.scrollTo(
+                position.x,
+                position.y,
+            );
+        },
     );
 }
 
@@ -63,6 +86,8 @@ export function clearScrollPosition(
 )
 {
     scrollPositions.delete(
-        href,
+        normalizeUrl(
+            href,
+        ),
     );
 }

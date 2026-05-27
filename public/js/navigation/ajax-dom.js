@@ -10,11 +10,11 @@ import {
 // CONFIG
 // =========================================
 
-const SELECTOR =
+const CONTENT_SELECTOR =
     '.ajax-content';
 
 // =========================================
-// PARSE
+// PARSE HTML
 // =========================================
 
 function parseHtml(
@@ -30,7 +30,7 @@ function parseHtml(
 
     const container =
         doc.querySelector(
-            SELECTOR,
+            CONTENT_SELECTOR,
         );
 
     if (!container) {
@@ -47,7 +47,7 @@ function parseHtml(
 }
 
 // =========================================
-// META
+// UPDATE META
 // =========================================
 
 function updateMeta(
@@ -77,7 +77,7 @@ function updateMeta(
 }
 
 // =========================================
-// BODY ATTRIBUTES
+// SYNC BODY ATTRIBUTES
 // =========================================
 
 function syncBodyAttributes(
@@ -91,7 +91,7 @@ function syncBodyAttributes(
         return;
     }
 
-    const currentFlags =
+    const preservedDataset =
     {
         appInitialized:
             document.body.dataset
@@ -99,7 +99,7 @@ function syncBodyAttributes(
     };
 
     // =====================================
-    // CLEAR DATA ATTRIBUTES
+    // REMOVE OLD DATA ATTRIBUTES
     // =====================================
 
     document.body
@@ -123,7 +123,7 @@ function syncBodyAttributes(
         );
 
     // =====================================
-    // APPLY NEW ATTRIBUTES
+    // APPLY NEW DATA ATTRIBUTES
     // =====================================
 
     nextBody
@@ -139,12 +139,20 @@ function syncBodyAttributes(
                     )
                 ) {
 
-                    document.body.setAttribute(
-                        attribute,
+                    const value =
                         nextBody.getAttribute(
                             attribute,
-                        ),
-                    );
+                        );
+
+                    if (
+                        value !== null
+                    ) {
+
+                        document.body.setAttribute(
+                            attribute,
+                            value,
+                        );
+                    }
                 }
             },
         );
@@ -154,17 +162,17 @@ function syncBodyAttributes(
     // =====================================
 
     if (
-        currentFlags.appInitialized
+        preservedDataset.appInitialized
     ) {
 
         document.body.dataset
             .appInitialized =
-                currentFlags.appInitialized;
+                preservedDataset.appInitialized;
     }
 }
 
 // =========================================
-// SWAP
+// REPLACE CONTENT
 // =========================================
 
 export function replaceContent(
@@ -181,41 +189,29 @@ export function replaceContent(
                 html,
             );
 
-        const currentContent =
+        const currentContainer =
             document.querySelector(
-                SELECTOR,
+                CONTENT_SELECTOR,
             );
 
         if (
-            !currentContent
+            !currentContainer
         ) {
 
             throw new Error(
-                'Missing current container',
+                'Missing current AJAX container',
             );
         }
-
-        // =================================
-        // META
-        // =================================
 
         updateMeta(
             doc,
         );
 
-        // =================================
-        // BODY
-        // =================================
-
         syncBodyAttributes(
             doc,
         );
 
-        // =================================
-        // CONTENT
-        // =================================
-
-        currentContent.innerHTML =
+        currentContainer.innerHTML =
             container.innerHTML;
 
     } catch (error) {

@@ -7,7 +7,7 @@ import {
 } from '../../core/http.js';
 
 // =========================================
-// FETCH
+// FETCH SEARCH RESULTS
 // =========================================
 
 export async function fetchSearchResults(
@@ -18,18 +18,18 @@ export async function fetchSearchResults(
     return get(
         url,
         {
+            signal,
+
             responseType:
                 'json',
 
-            signal,
-
             headers:
             {
-                'X-Partial':
-                    'true',
-
                 Accept:
                     'application/json',
+
+                'X-Partial':
+                    'true',
             },
         },
     );

@@ -1,23 +1,68 @@
-const cleanupCallbacks = [];
+// =========================================
+// ROUTER CLEANUP
+// =========================================
+
+import {
+    debugError,
+} from '../core/debug.js';
+
+// =========================================
+// STATE
+// =========================================
+
+const cleanupCallbacks =
+    new Set();
+
+// =========================================
+// REGISTER
+// =========================================
 
 export function registerCleanup(
     callback,
 )
 {
-    cleanupCallbacks.push(
+    if (
+        typeof callback
+        !== 'function'
+    ) {
+        return () => {};
+    }
+
+    cleanupCallbacks.add(
         callback,
     );
+
+    return () =>
+    {
+        cleanupCallbacks.delete(
+            callback,
+        );
+    };
 }
+
+// =========================================
+// RUN
+// =========================================
 
 export function runCleanup()
 {
-    while (
-        cleanupCallbacks.length
+    for (
+        const callback
+        of cleanupCallbacks
     )
     {
-        const callback =
-            cleanupCallbacks.pop();
+        try {
 
-        callback?.();
+            callback();
+
+        } catch (error) {
+
+            debugError(
+                'ROUTER-CLEANUP',
+                error,
+            );
+        }
     }
+
+    cleanupCallbacks.clear();
 }

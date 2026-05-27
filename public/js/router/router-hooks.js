@@ -1,59 +1,115 @@
 // =========================================
-// ROUTE HOOKS
+// ROUTER HOOKS
 // =========================================
 
-const hooks =
-{
-    beforeEnter: [],
-    afterEnter: [],
-};
+import {
+    debugError,
+} from '../core/debug.js';
 
 // =========================================
-// REGISTER
+// STATE
+// =========================================
+
+const beforeRouteChangeCallbacks =
+    new Set();
+
+const routeChangeCallbacks =
+    new Set();
+
+// =========================================
+// REGISTER BEFORE
 // =========================================
 
 export function onBeforeRouteChange(
     callback,
 )
 {
-    hooks.beforeEnter.push(
+    beforeRouteChangeCallbacks.add(
         callback,
     );
+
+    return () =>
+    {
+        beforeRouteChangeCallbacks.delete(
+            callback,
+        );
+    };
 }
+
+// =========================================
+// REGISTER AFTER
+// =========================================
 
 export function onRouteChange(
     callback,
 )
 {
-    hooks.afterEnter.push(
+    routeChangeCallbacks.add(
         callback,
     );
+
+    return () =>
+    {
+        routeChangeCallbacks.delete(
+            callback,
+        );
+    };
 }
 
 // =========================================
-// TRIGGER
+// TRIGGER BEFORE
 // =========================================
 
 export async function triggerBeforeRouteChange(
     context,
 )
 {
-    for (const callback of hooks.beforeEnter)
+    for (
+        const callback
+        of beforeRouteChangeCallbacks
+    )
     {
-        await callback(
-            context,
-        );
+        try {
+
+            await callback(
+                context,
+            );
+
+        } catch (error) {
+
+            debugError(
+                'ROUTER-HOOK',
+                error,
+            );
+        }
     }
 }
+
+// =========================================
+// TRIGGER AFTER
+// =========================================
 
 export async function triggerRouteChange(
     context,
 )
 {
-    for (const callback of hooks.afterEnter)
+    for (
+        const callback
+        of routeChangeCallbacks
+    )
     {
-        await callback(
-            context,
-        );
+        try {
+
+            await callback(
+                context,
+            );
+
+        } catch (error) {
+
+            debugError(
+                'ROUTER-HOOK',
+                error,
+            );
+        }
     }
 }

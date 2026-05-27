@@ -2,13 +2,27 @@
 // CORE : HTTP
 // =========================================
 
+import {
+    debugError,
+} from './debug.js';
+
+// =========================================
+// CONFIG
+// =========================================
+
+const DEFAULT_TIMEOUT =
+    15000;
+
 // =========================================
 // CSRF
 // =========================================
 
 function getCsrfToken()
 {
-    return window.csrfToken || '';
+    return (
+        window.csrfToken
+        || ''
+    );
 }
 
 // =========================================
@@ -31,19 +45,55 @@ function buildHeaders(
 }
 
 // =========================================
-// RESPONSE PARSER
+// TIMEOUT
+// =========================================
+
+function createTimeoutController(
+    timeout,
+)
+{
+    const controller =
+        new AbortController();
+
+    const timer =
+        window.setTimeout(
+            () =>
+            {
+                controller.abort(
+                    'Request timeout',
+                );
+            },
+            timeout,
+        );
+
+    return {
+        controller,
+        clear:
+            () =>
+            {
+                clearTimeout(
+                    timer,
+                );
+            },
+    };
+}
+
+// =========================================
+// PARSE RESPONSE
 // =========================================
 
 async function parseResponse(
     response,
-    type = 'text',
+    type,
 )
 {
     // =====================================
     // TEXT
     // =====================================
 
-    if (type === 'text') {
+    if (
+        type === 'text'
+    ) {
 
         return response.text();
     }
@@ -56,8 +106,10 @@ async function parseResponse(
         await response.text();
 
     if (
-        text.trim() === ''
+        text.trim()
+        === ''
     ) {
+
         return null;
     }
 
@@ -76,6 +128,30 @@ async function parseResponse(
 }
 
 // =========================================
+// HTTP ERROR
+// =========================================
+
+function createHttpError(
+    response,
+    data,
+)
+{
+    const error =
+        new Error(
+            data?.message
+            || `HTTP ${response.status}`,
+        );
+
+    error.status =
+        response.status;
+
+    error.data =
+        data;
+
+    return error;
+}
+
+// =========================================
 // REQUEST
 // =========================================
 
@@ -88,50 +164,88 @@ export async function request(
         options.responseType
         || 'text';
 
-    const response =
-        await fetch(
-            url,
-            {
-                credentials:
-                    'same-origin',
+    const timeout =
+        options.timeout
+        || DEFAULT_TIMEOUT;
 
-                ...options,
-
-                headers:
-                    buildHeaders(
-                        options.headers,
-                    ),
-            },
+    const timeoutController =
+        createTimeoutController(
+            timeout,
         );
 
-    const data =
-        await parseResponse(
-            response,
-            responseType,
-        );
+    const signal =
+        options.signal
+            ? AbortSignal.any([
+                options.signal,
+                timeoutController.controller.signal,
+            ])
+            : timeoutController.controller.signal;
 
-    // =====================================
-    // HTTP ERROR
-    // =====================================
+    try {
 
-    if (!response.ok) {
+        const response =
+            await fetch(
+                url,
+                {
+                    credentials:
+                        'same-origin',
 
-        const error =
-            new Error(
-                data?.message
-                || `HTTP ${response.status}`,
+                    ...options,
+
+                    signal,
+
+                    headers:
+                        buildHeaders(
+                            options.headers,
+                        ),
+                },
             );
 
-        error.status =
-            response.status;
+        const data =
+            await parseResponse(
+                response,
+                responseType,
+            );
 
-        error.data =
-            data;
+        // =================================
+        // HTTP ERROR
+        // =================================
+
+        if (
+            !response.ok
+        ) {
+
+            throw createHttpError(
+                response,
+                data,
+            );
+        }
+
+        return data;
+
+    } catch (error) {
+
+        debugError(
+            'HTTP',
+            error,
+        );
+
+        if (
+            error?.name
+            === 'AbortError'
+        ) {
+
+            throw new Error(
+                'Request timeout',
+            );
+        }
 
         throw error;
-    }
 
-    return data;
+    } finally {
+
+        timeoutController.clear();
+    }
 }
 
 // =========================================

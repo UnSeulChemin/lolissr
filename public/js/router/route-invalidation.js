@@ -2,6 +2,14 @@
 // ROUTE INVALIDATION
 // =========================================
 
+import {
+    normalizeUrl,
+} from '../core/navigation.js';
+
+// =========================================
+// STATE
+// =========================================
+
 const invalidatedRoutes =
     new Set();
 
@@ -10,11 +18,13 @@ const invalidatedRoutes =
 // =========================================
 
 export function invalidateRoute(
-    route,
+    href,
 )
 {
     invalidatedRoutes.add(
-        route,
+        normalizeUrl(
+            href,
+        ),
     );
 }
 
@@ -23,11 +33,13 @@ export function invalidateRoute(
 // =========================================
 
 export function shouldRefreshRoute(
-    route,
+    href,
 )
 {
     return invalidatedRoutes.has(
-        route,
+        normalizeUrl(
+            href,
+        ),
     );
 }
 
@@ -36,10 +48,12 @@ export function shouldRefreshRoute(
 // =========================================
 
 export function clearInvalidatedRoute(
-    route,
+    href,
 )
 {
     invalidatedRoutes.delete(
-        route,
+        normalizeUrl(
+            href,
+        ),
     );
 }

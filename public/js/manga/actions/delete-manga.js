@@ -23,6 +23,10 @@ import {
     navigateTo,
 } from '../../router/router.js';
 
+import {
+    invalidateRoute,
+} from '../../router/route-invalidation.js';
+
 // =========================================
 // STATE
 // =========================================
@@ -120,9 +124,6 @@ async function deleteManga(
                 {
                     headers:
                     {
-                        'X-Partial':
-                            'true',
-
                         Accept:
                             'application/json',
                     },
@@ -130,7 +131,8 @@ async function deleteManga(
             );
 
         if (
-            !data?.success
+            data?.success
+            !== true
         ) {
 
             throw new Error(
@@ -138,6 +140,14 @@ async function deleteManga(
                 || 'Erreur suppression',
             );
         }
+
+        // =================================
+        // INVALIDATE
+        // =================================
+
+        invalidateRoute(
+            '/',
+        );
 
         showToast(
             data.message
@@ -161,8 +171,9 @@ async function deleteManga(
         );
 
         showToast(
-            error?.message
-            || 'Erreur réseau',
+            error instanceof Error
+                ? error.message
+                : 'Erreur réseau',
             'error',
         );
 

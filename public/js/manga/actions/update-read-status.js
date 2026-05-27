@@ -140,6 +140,10 @@ async function updateReadStatus(
             ? 0
             : 1;
 
+    // =====================================
+    // OPTIMISTIC UI
+    // =====================================
+
     button.disabled =
         true;
 
@@ -158,7 +162,8 @@ async function updateReadStatus(
                         nextReadStatus,
                 },
                 {
-                    headers: {
+                    headers:
+                    {
                         Accept:
                             'application/json',
                     },
@@ -166,7 +171,8 @@ async function updateReadStatus(
             );
 
         if (
-            data?.success !== true
+            data?.success
+            !== true
         ) {
 
             throw new Error(
@@ -253,10 +259,11 @@ export function initUpdateReadStatus()
     );
 
     document.addEventListener(
-        'ajax:page-loaded',
+        'router:loaded',
         refreshButtons,
         {
-            passive: true,
+            passive:
+                true,
         },
     );
 

@@ -179,7 +179,8 @@ async function saveNotes(
                     ) || 0,
         },
         {
-            headers: {
+            headers:
+            {
                 Accept:
                     'application/json',
             },
@@ -233,6 +234,10 @@ async function updateNote(
         Number(
             button.dataset.value,
         );
+
+    // =====================================
+    // OPTIMISTIC UPDATE
+    // =====================================
 
     card.dataset[
         fieldName
@@ -364,7 +369,7 @@ export function initUpdateNote()
     );
 
     document.addEventListener(
-        'ajax:page-loaded',
+        'router:loaded',
         () =>
         {
             refreshNoteButtonsState();
@@ -372,7 +377,8 @@ export function initUpdateNote()
             updateTotalNote();
         },
         {
-            passive: true,
+            passive:
+                true,
         },
     );
 

@@ -23,6 +23,10 @@ import {
 } from './router-hooks.js';
 
 import {
+    runCleanup,
+} from './router-cleanup.js';
+
+import {
     saveScrollPosition,
     restoreScrollPosition,
 } from './route-scroll.js';
@@ -37,7 +41,6 @@ import {
 
 import {
     runPageTransition,
-    scrollTop,
 } from '../core/page-transition.js';
 
 import {
@@ -86,13 +89,19 @@ function updateActiveNavigation()
                 }
 
                 const path =
-                    link.pathname;
+                    normalizeUrl(
+                        link.pathname,
+                    );
 
                 const active =
-                    path === '/lolissr/'
-                        ? currentPath === path
+                    path
+                    === normalizeUrl(
+                        '/lolissr/',
+                    )
+                        ? currentPath
+                            === link.pathname
                         : currentPath.startsWith(
-                            path,
+                            link.pathname,
                         );
 
                 link.classList.toggle(
@@ -101,6 +110,104 @@ function updateActiveNavigation()
                 );
             },
         );
+}
+
+// =========================================
+// EVENTS
+// =========================================
+
+function dispatchRouteLoaded(
+    target,
+)
+{
+    document.dispatchEvent(
+        new CustomEvent(
+            'router:loaded',
+            {
+                detail:
+                {
+                    href:
+                        target,
+                },
+            },
+        ),
+    );
+}
+
+function dispatchRouteStart(
+    target,
+)
+{
+    document.dispatchEvent(
+        new CustomEvent(
+            'router:start',
+            {
+                detail:
+                {
+                    href:
+                        target,
+                },
+            },
+        ),
+    );
+}
+
+// =========================================
+// FETCH HTML
+// =========================================
+
+async function resolvePageHtml(
+    target,
+    forceRefresh,
+    signal,
+)
+{
+    const cached =
+        !forceRefresh
+            ? getPrefetchedPage(
+                target,
+            )
+            : null;
+
+    if (cached) {
+
+        debug(
+            'ROUTER',
+            'cache-hit',
+            target,
+        );
+
+        return cached;
+    }
+
+    const inFlight =
+        getInFlightPrefetch(
+            target,
+        );
+
+    if (inFlight) {
+
+        debug(
+            'ROUTER',
+            'reuse-prefetch',
+            target,
+        );
+
+        return inFlight;
+    }
+
+    debug(
+        'ROUTER',
+        'fetch',
+        target,
+    );
+
+    return fetchPageHtml(
+        target,
+        {
+            signal,
+        },
+    );
 }
 
 // =========================================
@@ -151,11 +258,19 @@ export async function navigateTo(
         ++navigationId;
 
     // =====================================
-    // SAVE CURRENT SCROLL
+    // SAVE SCROLL
     // =====================================
 
     saveScrollPosition(
         current,
+    );
+
+    // =====================================
+    // START EVENT
+    // =====================================
+
+    dispatchRouteStart(
+        target,
     );
 
     // =====================================
@@ -170,7 +285,7 @@ export async function navigateTo(
     try {
 
         // =================================
-        // BEFORE ROUTE CHANGE
+        // BEFORE HOOKS
         // =================================
 
         await triggerBeforeRouteChange(
@@ -182,6 +297,12 @@ export async function navigateTo(
                     target,
             },
         );
+
+        // =================================
+        // CLEANUP
+        // =================================
+
+        runCleanup();
 
         // =================================
         // INVALIDATION
@@ -200,39 +321,20 @@ export async function navigateTo(
 
             debug(
                 'ROUTER',
-                'invalidate-refresh',
+                'invalidate',
                 target,
             );
         }
-
-        // =================================
-        // CACHE
-        // =================================
-
-        const cached =
-            !forceRefresh
-                ? getPrefetchedPage(
-                    target,
-                )
-                : null;
 
         // =================================
         // FETCH
         // =================================
 
         const html =
-            cached
-            ?? await (
-                getInFlightPrefetch(
-                    target,
-                )
-                ?? fetchPageHtml(
-                    target,
-                    {
-                        signal:
-                            controller.signal,
-                    },
-                )
+            await resolvePageHtml(
+                target,
+                forceRefresh,
+                controller.signal,
             );
 
         // =================================
@@ -256,7 +358,7 @@ export async function navigateTo(
         ) {
 
             throw new Error(
-                'Invalid HTML',
+                'Invalid HTML response',
             );
         }
 
@@ -296,24 +398,24 @@ export async function navigateTo(
         // =====================================
 
         if (
-            options.restoreScroll
+            options.scrollTop
             === true
         ) {
+
+            window.scrollTo(
+                0,
+                0,
+            );
+
+        } else {
 
             restoreScrollPosition(
                 target,
             );
-
-        } else if (
-            options.scrollTop
-            !== false
-        ) {
-
-            scrollTop();
         }
 
         // =================================
-        // AFTER ROUTE CHANGE
+        // AFTER HOOKS
         // =====================================
 
         await triggerRouteChange(
@@ -324,6 +426,14 @@ export async function navigateTo(
                 to:
                     target,
             },
+        );
+
+        // =================================
+        // EVENT
+        // =====================================
+
+        dispatchRouteLoaded(
+            target,
         );
 
         debug(
@@ -442,12 +552,6 @@ async function handlePopState()
         {
             updateHistory:
                 false,
-
-            scrollTop:
-                false,
-
-            restoreScroll:
-                true,
 
             force:
                 true,
