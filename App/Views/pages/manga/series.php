@@ -41,50 +41,6 @@ $totalPages =
 
     <div class="collection-ajax-container">
 
-        <!-- =====================================
-             Skeleton Loader
-        ====================================== -->
-
-        <div class="collection-skeleton">
-
-            <?php for (
-                $i = 0;
-                $i < 8;
-                $i++
-            ): ?>
-
-                <div
-                    class="collection-skeleton-card"
-                >
-
-                    <div
-                        class="collection-skeleton-image"
-                    ></div>
-
-                    <div
-                        class="
-                            collection-skeleton-line
-                            collection-skeleton-line-title
-                        "
-                    ></div>
-
-                    <div
-                        class="
-                            collection-skeleton-line
-                            collection-skeleton-line-subtitle
-                        "
-                    ></div>
-
-                </div>
-
-            <?php endfor; ?>
-
-        </div>
-
-        <!-- =====================================
-             AJAX Content
-        ====================================== -->
-
         <?php require view_path(
             'components/manga/series_ajax.php',
         ); ?>
@@ -94,11 +50,7 @@ $totalPages =
             && $totalPages > 1
         ): ?>
 
-            <nav
-                class="
-                    collection-pagination-wrapper
-                "
-            >
+            <nav class="collection-pagination-wrapper">
 
                 <?php for (
                     $i = 1;
@@ -111,8 +63,7 @@ $totalPages =
                             collection-pagination-link
                             <?= $currentPage === $i
                                 ? 'active'
-                                : ''
-                            ?>
+                                : '' ?>
                         "
                         href="<?= e($baseUri) ?>manga/series/page/<?= $i ?>"
                     >

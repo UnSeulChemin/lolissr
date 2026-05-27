@@ -28,23 +28,6 @@
 
 
 /* =========================================
-   AJAX CONTAINER
-========================================= */
-
-.collection-ajax-container
-{
-    position: relative;
-}
-
-.collection-ajax-content
-{
-    position: relative;
-
-    z-index: 1;
-}
-
-
-/* =========================================
    CARD LINK
 ========================================= */
 
@@ -179,27 +162,6 @@
         var(--color-gold-shadow);
 }
 
-.collection-card-badge::after
-{
-    content: "";
-
-    position: absolute;
-
-    inset: -4px;
-
-    z-index: -1;
-
-    border-radius: inherit;
-
-    opacity: 0;
-
-    pointer-events: none;
-
-    transform-origin: center;
-
-    filter: blur(14px);
-}
-
 
 /* =========================================
    STATUS BADGE
@@ -218,10 +180,6 @@
 
     font-size: 0.78rem;
     font-weight: 700;
-
-    box-shadow:
-        0 3px 10px rgba(0, 0, 0, 0.08),
-        inset 0 1px 1px rgba(255,255,255,0.18);
 }
 
 
@@ -242,10 +200,6 @@
             #7b2cff,
             #9150ff
         );
-
-    box-shadow:
-        0 3px 8px
-        rgba(123, 44, 255, 0.16);
 }
 
 .collection-note-low
@@ -261,10 +215,6 @@
             var(--color-gold-soft),
             var(--color-gold-soft-2)
         );
-
-    box-shadow:
-        0 3px 8px
-        var(--color-gold-shadow);
 }
 
 .collection-note-good
@@ -279,10 +229,6 @@
             #ff4a4a,
             #ff7a7a
         );
-
-    box-shadow:
-        0 3px 8px
-        rgba(255, 74, 74, 0.18);
 }
 
 
@@ -300,10 +246,6 @@
             rgba(123, 44, 255, 0.88),
             rgba(94, 23, 235, 0.88)
         );
-
-    border:
-        1px solid
-        rgba(255,255,255,0.12);
 }
 
 .collection-status-finished
@@ -316,10 +258,6 @@
             rgba(0, 255, 170, 0.88),
             rgba(0, 214, 143, 0.88)
         );
-
-    border:
-        1px solid
-        rgba(255,255,255,0.12);
 }
 
 
@@ -343,10 +281,6 @@
     align-items: center;
     justify-content: center;
 
-    overflow: visible;
-
-    isolation: isolate;
-
     border-radius: 50%;
 
     border: 2px solid #4f63ff;
@@ -354,31 +288,6 @@
     background: #ffffff;
 
     color: #4f63ff;
-
-    box-shadow:
-        0 2px 6px rgba(79, 99, 255, 0.12),
-        inset 0 1px 1px rgba(255,255,255,0.25);
-}
-
-.collection-read-badge::after
-{
-    content: "";
-
-    position: absolute;
-
-    inset: -4px;
-
-    z-index: -1;
-
-    border-radius: inherit;
-
-    opacity: 0;
-
-    pointer-events: none;
-
-    transform-origin: center;
-
-    filter: blur(14px);
 }
 
 .collection-read-badge.active
@@ -386,9 +295,6 @@
     background: #4f63ff;
 
     color: #ffffff;
-
-    box-shadow:
-        0 4px 12px rgba(79, 99, 255, 0.25);
 }
 
 
@@ -416,16 +322,13 @@
     stroke: currentColor;
 }
 
+
 /* =========================================
    PAGINATION
 ========================================= */
 
 .collection-pagination-wrapper
 {
-    position: relative;
-
-    z-index: 2;
-
     display: flex;
     align-items: center;
     justify-content: center;
@@ -461,8 +364,7 @@
         transform var(--transition-fast),
         background-color var(--transition-fast),
         color var(--transition-fast),
-        border-color var(--transition-fast),
-        box-shadow var(--transition-fast);
+        border-color var(--transition-fast);
 }
 
 .collection-pagination-link:hover,
@@ -472,13 +374,6 @@
 
     border-color:
         rgba(123, 44, 255, 0.25);
-}
-
-.collection-pagination-link:focus-visible
-{
-    box-shadow:
-        0 0 0 3px
-        rgba(123, 44, 255, 0.18);
 }
 
 .collection-pagination-link.active
