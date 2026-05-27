@@ -18,6 +18,11 @@ import {
 } from './route-invalidation.js';
 
 import {
+    triggerBeforeRouteChange,
+    triggerRouteChange,
+} from './router-hooks.js';
+
+import {
     fetchPageHtml,
 } from '../navigation/ajax-fetch.js';
 
@@ -94,28 +99,6 @@ function updateActiveNavigation()
 }
 
 // =========================================
-// EVENTS
-// =========================================
-
-function dispatchPageLoaded(
-    target,
-)
-{
-    document.dispatchEvent(
-        new CustomEvent(
-            'router:loaded',
-            {
-                detail:
-                {
-                    href:
-                        target,
-                },
-            },
-        ),
-    );
-}
-
-// =========================================
 // NAVIGATE
 // =========================================
 
@@ -163,23 +146,6 @@ export async function navigateTo(
         ++navigationId;
 
     // =====================================
-    // START EVENT
-    // =====================================
-
-    document.dispatchEvent(
-        new CustomEvent(
-            'router:start',
-            {
-                detail:
-                {
-                    href:
-                        target,
-                },
-            },
-        ),
-    );
-
-    // =====================================
     // ABORT PREVIOUS
     // =====================================
 
@@ -189,6 +155,20 @@ export async function navigateTo(
         new AbortController();
 
     try {
+
+        // =================================
+        // BEFORE ROUTE CHANGE
+        // =================================
+
+        await triggerBeforeRouteChange(
+            {
+                from:
+                    current,
+
+                to:
+                    target,
+            },
+        );
 
         // =================================
         // INVALIDATION
@@ -311,11 +291,17 @@ export async function navigateTo(
         }
 
         // =================================
-        // PAGE LOADED
+        // AFTER ROUTE CHANGE
         // =====================================
 
-        dispatchPageLoaded(
-            target,
+        await triggerRouteChange(
+            {
+                from:
+                    current,
+
+                to:
+                    target,
+            },
         );
 
         debug(

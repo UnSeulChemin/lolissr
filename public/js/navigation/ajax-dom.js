@@ -3,7 +3,6 @@
 // =========================================
 
 import {
-    debug,
     debugError,
 } from '../core/debug.js';
 
@@ -41,7 +40,10 @@ function parseHtml(
         );
     }
 
-    return doc;
+    return {
+        doc,
+        container,
+    };
 }
 
 // =========================================
@@ -89,23 +91,15 @@ function syncBodyAttributes(
         return;
     }
 
-    // =====================================
-    // KEEP SPA FLAGS
-    // =====================================
-
     const currentFlags =
     {
         appInitialized:
             document.body.dataset
                 .appInitialized,
-
-        ajaxNavigating:
-            document.body.dataset
-                .ajaxNavigating,
     };
 
     // =====================================
-    // RESET DATASET
+    // CLEAR DATA ATTRIBUTES
     // =====================================
 
     document.body
@@ -129,7 +123,7 @@ function syncBodyAttributes(
         );
 
     // =====================================
-    // APPLY NEW DATASET
+    // APPLY NEW ATTRIBUTES
     // =====================================
 
     nextBody
@@ -167,73 +161,70 @@ function syncBodyAttributes(
             .appInitialized =
                 currentFlags.appInitialized;
     }
-
-    if (
-        currentFlags.ajaxNavigating
-    ) {
-
-        document.body.dataset
-            .ajaxNavigating =
-                currentFlags.ajaxNavigating;
-    }
 }
 
 // =========================================
 // SWAP
 // =========================================
 
-// =========================================
-// AJAX DOM
-// =========================================
-
 export function replaceContent(
     html,
 )
 {
-    const parser =
-        new DOMParser();
+    try {
 
-    const documentHtml =
-        parser.parseFromString(
-            html,
-            'text/html',
+        const {
+            doc,
+            container,
+        } =
+            parseHtml(
+                html,
+            );
+
+        const currentContent =
+            document.querySelector(
+                SELECTOR,
+            );
+
+        if (
+            !currentContent
+        ) {
+
+            throw new Error(
+                'Missing current container',
+            );
+        }
+
+        // =================================
+        // META
+        // =================================
+
+        updateMeta(
+            doc,
         );
 
-    // =====================================
-    // NEW CONTENT
-    // =====================================
+        // =================================
+        // BODY
+        // =================================
 
-    const newContent =
-        documentHtml.querySelector(
-            '.ajax-content',
+        syncBodyAttributes(
+            doc,
         );
 
-    const currentContent =
-        document.querySelector(
-            '.ajax-content',
+        // =================================
+        // CONTENT
+        // =================================
+
+        currentContent.innerHTML =
+            container.innerHTML;
+
+    } catch (error) {
+
+        debugError(
+            'AJAX-DOM',
+            error,
         );
 
-    if (
-        !newContent
-        || !currentContent
-    ) {
-
-        throw new Error(
-            'Missing ajax content',
-        );
+        throw error;
     }
-
-    // =====================================
-    // REPLACE ONLY CONTENT
-    // =====================================
-
-    currentContent.innerHTML =
-        newContent.innerHTML;
-
-    // =====================================
-    // TITLE
-    // =====================================
-
-    document.title =
-        documentHtml.title;
 }
