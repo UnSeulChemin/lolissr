@@ -7,6 +7,13 @@ import {
 } from './debug.js';
 
 // =========================================
+// CONFIG
+// =========================================
+
+const TRANSITION_TIMEOUT =
+    350;
+
+// =========================================
 // STATE
 // =========================================
 
@@ -42,10 +49,94 @@ export function initPageTransitions()
 }
 
 // =========================================
+// HELPERS
+// =========================================
+
+function forceReflow(
+    element,
+)
+{
+    void element.offsetWidth;
+}
+
+function waitTransitionEnd(
+    element,
+    timeout =
+        TRANSITION_TIMEOUT,
+)
+{
+    return new Promise(
+        (
+            resolve,
+        ) =>
+        {
+            if (
+                !element
+                || !element.isConnected
+            ) {
+
+                resolve();
+
+                return;
+            }
+
+            let resolved =
+                false;
+
+            function cleanup()
+            {
+                if (resolved) {
+                    return;
+                }
+
+                resolved =
+                    true;
+
+                clearTimeout(
+                    fallbackTimeout,
+                );
+
+                element.removeEventListener(
+                    'transitionend',
+                    handleEnd,
+                );
+
+                resolve();
+            }
+
+            function handleEnd(
+                event,
+            )
+            {
+                if (
+                    event.target
+                    !== element
+                ) {
+                    return;
+                }
+
+                cleanup();
+            }
+
+            const fallbackTimeout =
+                window.setTimeout(
+                    cleanup,
+                    timeout,
+                );
+
+            element.addEventListener(
+                'transitionend',
+                handleEnd,
+            );
+        },
+    );
+}
+
+// =========================================
 // OUT
 // =========================================
 
-export function transitionOut(
+export async function transitionOut(
     element,
 )
 {
@@ -56,8 +147,26 @@ export function transitionOut(
         return;
     }
 
+    debug(
+        'TRANSITION',
+        'out',
+    );
+
+    element.classList.remove(
+        'page-transition-in',
+        'page-transition-visible',
+    );
+
+    forceReflow(
+        element,
+    );
+
     element.classList.add(
         'page-transition-out',
+    );
+
+    await waitTransitionEnd(
+        element,
     );
 }
 
@@ -65,7 +174,7 @@ export function transitionOut(
 // IN
 // =========================================
 
-export function transitionIn(
+export async function transitionIn(
     element,
 )
 {
@@ -76,20 +185,28 @@ export function transitionIn(
         return;
     }
 
+    debug(
+        'TRANSITION',
+        'in',
+    );
+
     element.classList.remove(
         'page-transition-out',
     );
 
     element.classList.add(
-        'page-transition-enter',
+        'page-transition-in',
+    );
+
+    forceReflow(
+        element,
     );
 
     requestAnimationFrame(
         () =>
         {
             if (
-                !element
-                || !element.isConnected
+                !element.isConnected
             ) {
                 return;
             }
@@ -99,19 +216,120 @@ export function transitionIn(
             );
         },
     );
+
+    await waitTransitionEnd(
+        element,
+    );
+
+    if (
+        !element.isConnected
+    ) {
+        return;
+    }
+
+    element.classList.remove(
+        'page-transition-in',
+        'page-transition-visible',
+    );
 }
 
 // =========================================
-// SPA WRAPPER
+// VIEW TRANSITION
+// =========================================
+
+async function runViewTransition(
+    callback,
+)
+{
+    if (
+        typeof document.startViewTransition
+        !== 'function'
+    ) {
+
+        await callback();
+
+        return;
+    }
+
+    try {
+
+        const transition =
+            document.startViewTransition(
+                () =>
+                    Promise.resolve(
+                        callback(),
+                    ),
+            );
+
+        await transition.finished;
+
+    } catch (
+        error
+    ) {
+
+        debug(
+            'TRANSITION',
+            'fallback',
+            error,
+        );
+
+        await callback();
+    }
+}
+
+// =========================================
+// PAGE WRAPPER
 // =========================================
 
 export async function runPageTransition(
     callback,
 )
 {
-    await Promise.resolve();
+    const content =
+        document.querySelector(
+            '.ajax-content',
+        );
 
-    callback();
+    // =====================================
+    // NO CONTENT
+    // =====================================
+
+    if (!content) {
+
+        await callback();
+
+        return;
+    }
+
+    // =====================================
+    // VIEW TRANSITION
+    // =====================================
+
+    if (
+        typeof document.startViewTransition
+        === 'function'
+    ) {
+
+        await runViewTransition(
+            callback,
+        );
+
+        return;
+    }
+
+    // =====================================
+    // FALLBACK
+    // =====================================
+
+    await transitionOut(
+        content,
+    );
+
+    await callback();
+
+    await transitionIn(
+        content,
+    );
 }
 
 // =========================================

@@ -33,7 +33,7 @@ import {
 
 import {
     initGlobalBackNavigation,
-} from './navigation/global-back-navigation.js';
+} from './history/global-back-navigation.js';
 
 // ==================================================
 // PAGES
@@ -65,7 +65,7 @@ import {
 
 import {
     initSearchManga,
-} from './manga/actions/search-manga.js';
+} from './manga/actions/search-controller.js';
 
 import {
     initSeriesKeyboardNavigation,

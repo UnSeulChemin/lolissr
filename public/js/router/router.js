@@ -37,7 +37,7 @@ import {
 
 import {
     replaceContent,
-} from '../navigation/ajax-dom.js';
+} from './router-dom.js';
 
 import {
     runPageTransition,
