@@ -8,7 +8,6 @@ import {
 } from '../core/navigation.js';
 
 import {
-    getPrefetchedPage,
     getInFlightPrefetch,
 } from './prefetch.js';
 
@@ -186,16 +185,44 @@ export async function navigateTo(
     try {
 
         // =================================
-        // CACHE / PREFETCH
+        // FORCE HOME REFRESH
+        // =================================
+
+        const isHome =
+            target
+            === normalizeUrl(
+                `${location.origin}/`,
+            );
+
+        const mustRefreshHome =
+            isHome
+            && sessionStorage.getItem(
+                'refresh-home',
+            ) === '1';
+
+        if (mustRefreshHome) {
+
+            sessionStorage.removeItem(
+                'refresh-home',
+            );
+
+            debug(
+                'AJAX',
+                'force-home-refresh',
+            );
+        }
+
+        // =================================
+        // FETCH
         // =================================
 
         const html =
-            getPrefetchedPage(
-                target,
-            )
-            ?? await (
-                getInFlightPrefetch(
-                    target,
+            await (
+                (
+                    !mustRefreshHome
+                    && getInFlightPrefetch(
+                        target,
+                    )
                 )
                 ?? fetchPageHtml(
                     target,

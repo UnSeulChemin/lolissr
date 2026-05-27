@@ -207,6 +207,10 @@ export function initAjouterPage()
                         },
                     );
 
+                // =============================
+                // ERROR
+                // =============================
+
                 if (
                     !data?.success
                 ) {
@@ -220,11 +224,28 @@ export function initAjouterPage()
                     return;
                 }
 
+                // =============================
+                // REFRESH HOME
+                // =============================
+
+                sessionStorage.setItem(
+                    'refresh-home',
+                    '1',
+                );
+
+                // =============================
+                // SUCCESS
+                // =============================
+
                 showToast(
                     data.message
                     || 'Manga ajouté avec succès',
                     'success',
                 );
+
+                // =============================
+                // RESET
+                // =============================
 
                 form.reset();
 
@@ -242,6 +263,11 @@ export function initAjouterPage()
                         uploadText,
                     );
                 }
+
+                debug(
+                    'AJOUTER',
+                    'success',
+                );
 
             } catch (error) {
 
