@@ -23,7 +23,7 @@ const CACHE_DURATION =
     10000;
 
 const HOVER_DELAY =
-    60;
+    180;
 
 // =========================================
 // STATE
