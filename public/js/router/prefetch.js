@@ -20,9 +20,6 @@ import {
 // CONFIG
 // =========================================
 
-const HOVER_DELAY =
-    220;
-
 const CACHE_DURATION =
     60000;
 
@@ -56,9 +53,6 @@ const cache =
 
 const inFlight =
     PREFETCH_STATE.inFlight;
-
-const hoverTimers =
-    new Map();
 
 // =========================================
 // CACHE HELPERS
@@ -114,6 +108,18 @@ export function getPrefetchedPage(
         cache.get(
             url,
         );
+
+    debug(
+        'PREFETCH',
+        'cache-check',
+        {
+            url,
+            hasCache:
+                Boolean(
+                    cached,
+                ),
+        },
+    );
 
     if (!cached) {
         return null;
@@ -187,11 +193,30 @@ export function getInFlightPrefetch(
     href,
 )
 {
-    return inFlight.get(
+    const url =
         normalizeUrl(
             href,
-        ),
+        );
+
+    const request =
+        inFlight.get(
+            url,
+        );
+
+    debug(
+        'PREFETCH',
+        'inflight-check',
+        {
+            url,
+
+            hasInFlight:
+                Boolean(
+                    request,
+                ),
+        },
     );
+
+    return request;
 }
 
 // =========================================
@@ -206,6 +231,12 @@ export async function prefetchPage(
         normalizeUrl(
             href,
         );
+
+    debug(
+        'PREFETCH',
+        'start',
+        url,
+    );
 
     // =====================================
     // CURRENT PAGE
@@ -307,15 +338,7 @@ export async function prefetchPage(
                     return null;
                 }
 
-                // =============================
-                // CACHE LIMIT
-                // =============================
-
                 trimCache();
-
-                // =============================
-                // STORE
-                // =============================
 
                 cache.set(
                     url,
@@ -330,7 +353,12 @@ export async function prefetchPage(
                 debug(
                     'PREFETCH',
                     'cached',
-                    url,
+                    {
+                        url,
+
+                        cacheSize:
+                            cache.size,
+                    },
                 );
 
                 return html;
@@ -346,11 +374,23 @@ export async function prefetchPage(
 
             } finally {
 
+                debug(
+                    'PREFETCH',
+                    'inflight-delete',
+                    url,
+                );
+
                 inFlight.delete(
                     url,
                 );
             }
         })();
+
+    debug(
+        'PREFETCH',
+        'inflight-set',
+        url,
+    );
 
     inFlight.set(
         url,
@@ -361,38 +401,7 @@ export async function prefetchPage(
 }
 
 // =========================================
-// HOVER TIMERS
-// =========================================
-
-function clearHoverTimer(
-    href,
-)
-{
-    const url =
-        normalizeUrl(
-            href,
-        );
-
-    const timer =
-        hoverTimers.get(
-            url,
-        );
-
-    if (!timer) {
-        return;
-    }
-
-    clearTimeout(
-        timer,
-    );
-
-    hoverTimers.delete(
-        url,
-    );
-}
-
-// =========================================
-// EVENTS
+// POINTER ENTER
 // =========================================
 
 function handlePointerEnter(
@@ -404,6 +413,12 @@ function handlePointerEnter(
             link.href,
         );
 
+    debug(
+        'PREFETCH',
+        'pointer-enter',
+        url,
+    );
+
     // =====================================
     // CACHE
     // =====================================
@@ -413,6 +428,13 @@ function handlePointerEnter(
             url,
         )
     ) {
+
+        debug(
+            'PREFETCH',
+            'skip-cache',
+            url,
+        );
+
         return;
     }
 
@@ -425,40 +447,45 @@ function handlePointerEnter(
             url,
         )
     ) {
+
+        debug(
+            'PREFETCH',
+            'skip-flight',
+            url,
+        );
+
         return;
     }
 
-    clearHoverTimer(
+    // =====================================
+    // DIRECT PREFETCH
+    // =====================================
+
+    debug(
+        'PREFETCH',
+        'hover-trigger',
         url,
     );
 
-    const timer =
-        window.setTimeout(
-            () =>
-            {
-                hoverTimers.delete(
-                    url,
-                );
-
-                void prefetchPage(
-                    url,
-                );
-            },
-            HOVER_DELAY,
-        );
-
-    hoverTimers.set(
+    void prefetchPage(
         url,
-        timer,
     );
 }
+
+// =========================================
+// POINTER LEAVE
+// =========================================
 
 function handlePointerLeave(
     link,
 )
 {
-    clearHoverTimer(
-        link.href,
+    debug(
+        'PREFETCH',
+        'pointer-leave',
+        normalizeUrl(
+            link.href,
+        ),
     );
 }
 
@@ -495,11 +522,26 @@ function bindLink(
         link.dataset.prefetchBound
         === 'true'
     ) {
+
+        debug(
+            'PREFETCH',
+            'already-bound',
+            link.href,
+        );
+
         return;
     }
 
     link.dataset.prefetchBound =
         'true';
+
+    debug(
+        'PREFETCH',
+        'bind-link',
+        normalizeUrl(
+            link.href,
+        ),
+    );
 
     // =====================================
     // POINTER ENTER
@@ -546,13 +588,21 @@ function bindLink(
     );
 
     // =====================================
-    // MOBILE PREFETCH
+    // MOBILE
     // =====================================
 
     link.addEventListener(
         'touchstart',
         () =>
         {
+            debug(
+                'PREFETCH',
+                'touch-prefetch',
+                normalizeUrl(
+                    link.href,
+                ),
+            );
+
             void prefetchPage(
                 link.href,
             );
@@ -578,6 +628,12 @@ function bindPrefetch()
             'a[data-prefetch]',
         );
 
+    debug(
+        'PREFETCH',
+        'bind-start',
+        links.length,
+    );
+
     for (const link of links)
     {
         bindLink(
@@ -587,7 +643,7 @@ function bindPrefetch()
 
     debug(
         'PREFETCH',
-        'bind',
+        'bind-done',
         links.length,
     );
 }
@@ -601,6 +657,12 @@ export function initPrefetch()
     if (
         PREFETCH_STATE.initialized
     ) {
+
+        debug(
+            'PREFETCH',
+            'already-init',
+        );
+
         return;
     }
 
@@ -611,7 +673,18 @@ export function initPrefetch()
 
     document.addEventListener(
         'router:loaded',
-        bindPrefetch,
+        (
+            event,
+        ) =>
+        {
+            debug(
+                'PREFETCH',
+                'router-loaded',
+                event.detail.href,
+            );
+
+            bindPrefetch();
+        },
     );
 
     debug(
