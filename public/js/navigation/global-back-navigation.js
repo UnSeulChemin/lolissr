@@ -7,12 +7,11 @@ import {
 } from '../core/config.js';
 
 // =========================================
-// Config
+// CONFIG
 // =========================================
 
 const BACK_LOCK_DURATION =
-    config.navigation
-        .backLockDuration;
+    120;
 
 const typingSelector =
 `
@@ -30,7 +29,7 @@ button,
 `;
 
 // =========================================
-// State
+// STATE
 // =========================================
 
 let initialized =
@@ -39,8 +38,11 @@ let initialized =
 let locked =
     false;
 
+let unlockTimer =
+    null;
+
 // =========================================
-// Helpers
+// HELPERS
 // =========================================
 
 function hasClosest(
@@ -78,23 +80,32 @@ function isInteractiveElement(
     );
 }
 
+// =========================================
+// LOCK
+// =========================================
+
 function lockNavigation()
 {
     locked =
         true;
 
-    window.setTimeout(
-        () =>
-        {
-            locked =
-                false;
-        },
-        BACK_LOCK_DURATION,
+    clearTimeout(
+        unlockTimer,
     );
+
+    unlockTimer =
+        window.setTimeout(
+            () =>
+            {
+                locked =
+                    false;
+            },
+            BACK_LOCK_DURATION,
+        );
 }
 
 // =========================================
-// Navigation
+// NAVIGATION
 // =========================================
 
 function navigateBack()
@@ -104,6 +115,10 @@ function navigateBack()
     }
 
     lockNavigation();
+
+    // =====================================
+    // HISTORY BACK
+    // =====================================
 
     if (
         window.history.length > 1
@@ -115,7 +130,7 @@ function navigateBack()
     }
 
     // =====================================
-    // Hard fallback
+    // HARD FALLBACK
     // =====================================
 
     window.location.assign(
@@ -124,14 +139,16 @@ function navigateBack()
 }
 
 // =========================================
-// Keyboard
+// KEYBOARD
 // =========================================
 
 function handleKeyboard(
     event,
 )
 {
-    // Backspace only
+    // =====================================
+    // BACKSPACE ONLY
+    // =====================================
 
     if (
         event.key
@@ -140,7 +157,9 @@ function handleKeyboard(
         return;
     }
 
-    // Prevent repeat spam
+    // =====================================
+    // IGNORE REPEAT
+    // =====================================
 
     if (
         event.repeat
@@ -148,7 +167,9 @@ function handleKeyboard(
         return;
     }
 
-    // Ignore modifiers
+    // =====================================
+    // IGNORE MODIFIERS
+    // =====================================
 
     if (
         event.ctrlKey
@@ -159,7 +180,9 @@ function handleKeyboard(
         return;
     }
 
-    // Ignore forms
+    // =====================================
+    // IGNORE INPUTS
+    // =====================================
 
     if (
         isTypingContext(
@@ -169,7 +192,9 @@ function handleKeyboard(
         return;
     }
 
-    // Ignore buttons / links
+    // =====================================
+    // IGNORE BUTTONS / LINKS
+    // =====================================
 
     if (
         isInteractiveElement(
@@ -185,7 +210,7 @@ function handleKeyboard(
 }
 
 // =========================================
-// Init
+// INIT
 // =========================================
 
 export function initGlobalBackNavigation()
