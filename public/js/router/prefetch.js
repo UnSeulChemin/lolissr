@@ -109,25 +109,9 @@ export function getPrefetchedPage(
             url,
         );
 
-    debug(
-        'PREFETCH',
-        'cache-check',
-        {
-            url,
-            hasCache:
-                Boolean(
-                    cached,
-                ),
-        },
-    );
-
     if (!cached) {
         return null;
     }
-
-    // =====================================
-    // EXPIRED
-    // =====================================
 
     if (
         isExpired(
@@ -136,12 +120,6 @@ export function getPrefetchedPage(
     ) {
 
         cache.delete(
-            url,
-        );
-
-        debug(
-            'PREFETCH',
-            'cache-expired',
             url,
         );
 
@@ -177,12 +155,6 @@ export function invalidatePrefetch(
     inFlight.delete(
         url,
     );
-
-    debug(
-        'PREFETCH',
-        'invalidate',
-        url,
-    );
 }
 
 // =========================================
@@ -193,30 +165,11 @@ export function getInFlightPrefetch(
     href,
 )
 {
-    const url =
+    return inFlight.get(
         normalizeUrl(
             href,
-        );
-
-    const request =
-        inFlight.get(
-            url,
-        );
-
-    debug(
-        'PREFETCH',
-        'inflight-check',
-        {
-            url,
-
-            hasInFlight:
-                Boolean(
-                    request,
-                ),
-        },
+        ),
     );
-
-    return request;
 }
 
 // =========================================
@@ -232,12 +185,6 @@ export async function prefetchPage(
             href,
         );
 
-    debug(
-        'PREFETCH',
-        'start',
-        url,
-    );
-
     // =====================================
     // CURRENT PAGE
     // =====================================
@@ -248,13 +195,6 @@ export async function prefetchPage(
             location.href,
         )
     ) {
-
-        debug(
-            'PREFETCH',
-            'skip-current',
-            url,
-        );
-
         return null;
     }
 
@@ -268,13 +208,6 @@ export async function prefetchPage(
         );
 
     if (cached) {
-
-        debug(
-            'PREFETCH',
-            'reuse-cache',
-            url,
-        );
-
         return cached;
     }
 
@@ -288,19 +221,8 @@ export async function prefetchPage(
         );
 
     if (existing) {
-
-        debug(
-            'PREFETCH',
-            'reuse-flight',
-            url,
-        );
-
         return existing;
     }
-
-    // =====================================
-    // FETCH
-    // =====================================
 
     debug(
         'PREFETCH',
@@ -350,17 +272,6 @@ export async function prefetchPage(
                     },
                 );
 
-                debug(
-                    'PREFETCH',
-                    'cached',
-                    {
-                        url,
-
-                        cacheSize:
-                            cache.size,
-                    },
-                );
-
                 return html;
 
             } catch (error) {
@@ -374,23 +285,11 @@ export async function prefetchPage(
 
             } finally {
 
-                debug(
-                    'PREFETCH',
-                    'inflight-delete',
-                    url,
-                );
-
                 inFlight.delete(
                     url,
                 );
             }
         })();
-
-    debug(
-        'PREFETCH',
-        'inflight-set',
-        url,
-    );
 
     inFlight.set(
         url,
@@ -398,95 +297,6 @@ export async function prefetchPage(
     );
 
     return promise;
-}
-
-// =========================================
-// POINTER ENTER
-// =========================================
-
-function handlePointerEnter(
-    link,
-)
-{
-    const url =
-        normalizeUrl(
-            link.href,
-        );
-
-    debug(
-        'PREFETCH',
-        'pointer-enter',
-        url,
-    );
-
-    // =====================================
-    // CACHE
-    // =====================================
-
-    if (
-        getPrefetchedPage(
-            url,
-        )
-    ) {
-
-        debug(
-            'PREFETCH',
-            'skip-cache',
-            url,
-        );
-
-        return;
-    }
-
-    // =====================================
-    // IN FLIGHT
-    // =====================================
-
-    if (
-        inFlight.has(
-            url,
-        )
-    ) {
-
-        debug(
-            'PREFETCH',
-            'skip-flight',
-            url,
-        );
-
-        return;
-    }
-
-    // =====================================
-    // DIRECT PREFETCH
-    // =====================================
-
-    debug(
-        'PREFETCH',
-        'hover-trigger',
-        url,
-    );
-
-    void prefetchPage(
-        url,
-    );
-}
-
-// =========================================
-// POINTER LEAVE
-// =========================================
-
-function handlePointerLeave(
-    link,
-)
-{
-    debug(
-        'PREFETCH',
-        'pointer-leave',
-        normalizeUrl(
-            link.href,
-        ),
-    );
 }
 
 // =========================================
@@ -514,37 +324,18 @@ function bindLink(
         return;
     }
 
-    // =====================================
-    // ALREADY BOUND
-    // =====================================
-
     if (
         link.dataset.prefetchBound
         === 'true'
     ) {
-
-        debug(
-            'PREFETCH',
-            'already-bound',
-            link.href,
-        );
-
         return;
     }
 
     link.dataset.prefetchBound =
         'true';
 
-    debug(
-        'PREFETCH',
-        'bind-link',
-        normalizeUrl(
-            link.href,
-        ),
-    );
-
     // =====================================
-    // POINTER ENTER
+    // HOVER
     // =====================================
 
     link.addEventListener(
@@ -559,8 +350,8 @@ function bindLink(
                 return;
             }
 
-            handlePointerEnter(
-                link,
+            void prefetchPage(
+                link.href,
             );
         },
         {
@@ -570,15 +361,15 @@ function bindLink(
     );
 
     // =====================================
-    // POINTER LEAVE
+    // POINTER DOWN
     // =====================================
 
     link.addEventListener(
-        'pointerleave',
+        'pointerdown',
         () =>
         {
-            handlePointerLeave(
-                link,
+            void prefetchPage(
+                link.href,
             );
         },
         {
@@ -595,14 +386,6 @@ function bindLink(
         'touchstart',
         () =>
         {
-            debug(
-                'PREFETCH',
-                'touch-prefetch',
-                normalizeUrl(
-                    link.href,
-                ),
-            );
-
             void prefetchPage(
                 link.href,
             );
@@ -628,24 +411,12 @@ function bindPrefetch()
             'a[data-prefetch]',
         );
 
-    debug(
-        'PREFETCH',
-        'bind-start',
-        links.length,
-    );
-
     for (const link of links)
     {
         bindLink(
             link,
         );
     }
-
-    debug(
-        'PREFETCH',
-        'bind-done',
-        links.length,
-    );
 }
 
 // =========================================
@@ -657,12 +428,6 @@ export function initPrefetch()
     if (
         PREFETCH_STATE.initialized
     ) {
-
-        debug(
-            'PREFETCH',
-            'already-init',
-        );
-
         return;
     }
 
@@ -673,18 +438,7 @@ export function initPrefetch()
 
     document.addEventListener(
         'router:loaded',
-        (
-            event,
-        ) =>
-        {
-            debug(
-                'PREFETCH',
-                'router-loaded',
-                event.detail.href,
-            );
-
-            bindPrefetch();
-        },
+        bindPrefetch,
     );
 
     debug(

@@ -40,10 +40,6 @@ import {
 } from './router-dom.js';
 
 import {
-    runPageTransition,
-} from '../core/page-transition.js';
-
-import {
     debug,
     debugError,
 } from '../core/debug.js';
@@ -54,9 +50,6 @@ import {
 
 let locked =
     false;
-
-let unlockFrame =
-    null;
 
 let navigationId =
     0;
@@ -214,18 +207,22 @@ async function resolvePageHtml(
         return inFlight;
     }
 
-    debug(
-        'ROUTER',
-        'fetch',
-        target,
-    );
-
     return fetchPageHtml(
         target,
         {
             signal,
         },
     );
+}
+
+// =========================================
+// UNLOCK
+// =========================================
+
+function unlockRouter()
+{
+    locked =
+        false;
 }
 
 // =========================================
@@ -275,25 +272,13 @@ export async function navigateTo(
     const currentNavigationId =
         ++navigationId;
 
-    // =====================================
-    // SAVE SCROLL
-    // =====================================
-
     saveScrollPosition(
         current,
     );
 
-    // =====================================
-    // START EVENT
-    // =====================================
-
     dispatchRouteStart(
         target,
     );
-
-    // =====================================
-    // ABORT PREVIOUS
-    // =====================================
 
     controller?.abort();
 
@@ -303,7 +288,7 @@ export async function navigateTo(
     try {
 
         // =================================
-        // BEFORE HOOKS
+        // BEFORE
         // =================================
 
         await triggerBeforeRouteChange(
@@ -336,12 +321,6 @@ export async function navigateTo(
             clearInvalidatedRoute(
                 target,
             );
-
-            debug(
-                'ROUTER',
-                'invalidate',
-                target,
-            );
         }
 
         // =================================
@@ -355,9 +334,9 @@ export async function navigateTo(
                 controller.signal,
             );
 
-        // =====================================
-        // RACE CONDITION
-        // =====================================
+        // =================================
+        // RACE
+        // =================================
 
         if (
             currentNavigationId
@@ -366,9 +345,9 @@ export async function navigateTo(
             return;
         }
 
-        // =====================================
+        // =================================
         // VALIDATION
-        // =====================================
+        // =================================
 
         if (
             typeof html
@@ -380,9 +359,9 @@ export async function navigateTo(
             );
         }
 
-        // =====================================
+        // =================================
         // HISTORY
-        // =====================================
+        // =================================
 
         if (
             options.updateHistory
@@ -396,26 +375,21 @@ export async function navigateTo(
             );
         }
 
-        // =====================================
-        // TRANSITION
-        // =====================================
+        // =================================
+        // DOM SWAP
+        // =================================
 
-        await runPageTransition(
-            async () =>
-            {
-                replaceContent(
-                    html,
-                );
-
-                updateActiveNavigation();
-
-                clearActiveFocus();
-            },
+        replaceContent(
+            html,
         );
 
-        // =====================================
+        updateActiveNavigation();
+
+        clearActiveFocus();
+
+        // =================================
         // SCROLL
-        // =====================================
+        // =================================
 
         if (
             options.scrollTop
@@ -434,43 +408,33 @@ export async function navigateTo(
             );
         }
 
-        // =====================================
-        // UNLOCK
-        // =====================================
+        // =================================
+        // INSTANT UNLOCK
+        // =================================
 
-        cancelAnimationFrame(
-            unlockFrame,
-        );
+        unlockRouter();
 
-        unlockFrame =
-            requestAnimationFrame(
-                () =>
-                {
-                    locked =
-                        false;
-                },
-            );
+        // =================================
+        // AFTER
+        // =================================
 
-        // =====================================
-        // AFTER HOOKS
-        // =====================================
-
-        triggerRouteChange(
+        queueMicrotask(
+            () =>
             {
-                from:
-                    current,
+                triggerRouteChange(
+                    {
+                        from:
+                            current,
 
-                to:
+                        to:
+                            target,
+                    },
+                );
+
+                dispatchRouteLoaded(
                     target,
+                );
             },
-        );
-
-        // =====================================
-        // EVENT
-        // =====================================
-
-        dispatchRouteLoaded(
-            target,
         );
 
         debug(
@@ -480,6 +444,8 @@ export async function navigateTo(
         );
 
     } catch (error) {
+
+        unlockRouter();
 
         if (
             error?.name
@@ -569,8 +535,6 @@ function handleClick(
     }
 
     event.preventDefault();
-
-    link.blur();
 
     clearActiveFocus();
 

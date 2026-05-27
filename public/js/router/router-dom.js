@@ -3,6 +3,7 @@
 // =========================================
 
 import {
+    debug,
     debugError,
 } from '../core/debug.js';
 
@@ -67,26 +68,39 @@ function updateDocumentMeta(
         title?.textContent
     ) {
 
-        document.title =
+        const nextTitle =
             title.textContent.trim();
+
+        if (
+            nextTitle
+            !== document.title
+        ) {
+
+            document.title =
+                nextTitle;
+        }
     }
 
     // =====================================
     // LANG
     // =====================================
 
-    const lang =
+    const nextLang =
         documentHtml.documentElement.lang;
 
-    if (lang) {
+    if (
+        nextLang
+        && nextLang
+        !== document.documentElement.lang
+    ) {
 
         document.documentElement.lang =
-            lang;
+            nextLang;
     }
 }
 
 // =========================================
-// SYNC BODY
+// SYNC BODY ATTRIBUTES
 // =========================================
 
 function syncBodyAttributes(
@@ -121,15 +135,16 @@ function syncBodyAttributes(
     )
     {
         if (
-            attribute.startsWith(
+            !attribute.startsWith(
                 'data-',
             )
         ) {
-
-            document.body.removeAttribute(
-                attribute,
-            );
+            continue;
         }
+
+        document.body.removeAttribute(
+            attribute,
+        );
     }
 
     // =====================================
@@ -155,14 +170,15 @@ function syncBodyAttributes(
             );
 
         if (
-            value !== null
+            value === null
         ) {
-
-            document.body.setAttribute(
-                attribute,
-                value,
-            );
+            continue;
         }
+
+        document.body.setAttribute(
+            attribute,
+            value,
+        );
     }
 
     // =====================================
@@ -180,6 +196,26 @@ function syncBodyAttributes(
 }
 
 // =========================================
+// REPLACE DOM CONTENT
+// =========================================
+
+function replaceDomContent(
+    currentContent,
+    nextContent,
+)
+{
+    // =====================================
+    // FAST DOM SWAP
+    // =====================================
+
+    currentContent.replaceChildren(
+        ...nextContent.cloneNode(
+            true,
+        ).childNodes,
+    );
+}
+
+// =========================================
 // REPLACE CONTENT
 // =========================================
 
@@ -189,6 +225,10 @@ export function replaceContent(
 {
     try {
 
+        // =================================
+        // PARSE
+        // =================================
+
         const {
             documentHtml,
             nextContent,
@@ -196,6 +236,10 @@ export function replaceContent(
             parseHtml(
                 html,
             );
+
+        // =================================
+        // CURRENT CONTENT
+        // =================================
 
         const currentContent =
             document.querySelector(
@@ -224,11 +268,18 @@ export function replaceContent(
         );
 
         // =================================
-        // CONTENT
+        // DOM SWAP
         // =================================
 
-        currentContent.innerHTML =
-            nextContent.innerHTML;
+        replaceDomContent(
+            currentContent,
+            nextContent,
+        );
+
+        debug(
+            'ROUTER_DOM',
+            'content-replaced',
+        );
 
     } catch (error) {
 
