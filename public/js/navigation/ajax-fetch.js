@@ -30,7 +30,9 @@ const SELECTOR =
 // VALIDATION
 // =========================================
 
-function isValidHtml(html)
+function isValidHtml(
+    html,
+)
 {
     if (
         typeof html
@@ -69,7 +71,7 @@ export async function fetchPageHtml(
         );
 
     // =====================================
-    // PREFETCH CACHE
+    // CACHE
     // =====================================
 
     const cached =
@@ -90,6 +92,12 @@ export async function fetchPageHtml(
 
     try {
 
+        debug(
+            'FETCH',
+            'network',
+            url,
+        );
+
         const html =
             await request(
                 url,
@@ -100,7 +108,8 @@ export async function fetchPageHtml(
                     signal:
                         options.signal,
 
-                    headers: {
+                    headers:
+                    {
                         'X-Requested-With':
                             'XMLHttpRequest',
 
@@ -120,6 +129,12 @@ export async function fetchPageHtml(
                 'Invalid AJAX HTML',
             );
         }
+
+        debug(
+            'FETCH',
+            'success',
+            url,
+        );
 
         return html;
 

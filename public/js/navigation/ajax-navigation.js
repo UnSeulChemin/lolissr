@@ -10,8 +10,6 @@ import {
 import {
     getPrefetchedPage,
     getInFlightPrefetch,
-    markNavigationPrefetch,
-    clearPrefetch,
 } from './prefetch.js';
 
 import {
@@ -113,10 +111,6 @@ export async function navigateTo(
     options = {},
 )
 {
-    // =====================================
-    // LOCK
-    // =====================================
-
     if (
         locked
         && options.force !== true
@@ -149,14 +143,6 @@ export async function navigateTo(
         ++navigationId;
 
     // =====================================
-    // PREVENT RE-PREFETCH
-    // =====================================
-
-    markNavigationPrefetch(
-        target,
-    );
-
-    // =====================================
     // ABORT PREVIOUS
     // =====================================
 
@@ -176,9 +162,6 @@ export async function navigateTo(
         let html =
             null;
 
-        let instant =
-            false;
-
         // =================================
         // CACHE
         // =================================
@@ -190,11 +173,14 @@ export async function navigateTo(
 
         if (cached) {
 
+            debug(
+                'AJAX',
+                'cache-hit',
+                target,
+            );
+
             html =
                 cached;
-
-            instant =
-                true;
 
         } else {
 
@@ -202,23 +188,26 @@ export async function navigateTo(
             // PREFETCH REUSE
             // =============================
 
-            const prefetchPromise =
+            const inFlight =
                 getInFlightPrefetch(
                     target,
                 );
 
-            if (prefetchPromise) {
+            if (inFlight) {
+
+                debug(
+                    'AJAX',
+                    'reuse-prefetch',
+                    target,
+                );
 
                 html =
-                    await prefetchPromise;
-
-                instant =
-                    true;
+                    await inFlight;
 
             } else {
 
                 // =========================
-                // FETCH
+                // NETWORK
                 // =========================
 
                 html =
@@ -302,14 +291,6 @@ export async function navigateTo(
                 false,
             );
         }
-
-        // =================================
-        // CLEAN PREFETCH
-        // =================================
-
-        clearPrefetch(
-            target,
-        );
 
         // =================================
         // EVENT
@@ -449,7 +430,7 @@ function handleClick(
     }
 
     // =====================================
-    // NAV LOCK
+    // LOCK
     // =====================================
 
     if (
