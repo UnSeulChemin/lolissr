@@ -60,16 +60,13 @@ export const config =
         prefetch:
         {
             delay:
-                80,
+                100,
 
             timeout:
-                8000,
+                5000,
 
-            cooldown:
-                3000,
-
-            cacheLimit:
-                50,
+            cacheDuration:
+                10000,
         },
 
         // =================================
@@ -89,9 +86,6 @@ export const config =
         navigation:
         {
             backLockDuration:
-                350,
-
-            initialPrefetchDelay:
-                800,
+                120,
         },
     });

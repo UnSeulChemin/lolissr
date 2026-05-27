@@ -34,17 +34,17 @@ import {
 // STATE
 // =========================================
 
+let initialized =
+    false;
+
+let locked =
+    false;
+
 let navigationId =
     0;
 
 let controller =
     null;
-
-let locked =
-    false;
-
-let initialized =
-    false;
 
 // =========================================
 // ACTIVE NAVIGATION
@@ -59,47 +59,62 @@ function updateActiveNavigation()
             ),
         ).pathname;
 
-    const links =
-        document.querySelectorAll(
+    const normalizedCurrent =
+        currentPath.endsWith('/')
+            ? currentPath
+            : `${currentPath}/`;
+
+    document
+        .querySelectorAll(
             '.nav-link-icon',
-        );
-
-    for (const link of links)
-    {
-        if (
-            !(
-                link
-                instanceof HTMLAnchorElement
-            )
-        ) {
-            continue;
-        }
-
-        const hrefPath =
-            new URL(
-                normalizeUrl(
-                    link.href,
-                ),
-            ).pathname;
-
-        const isRoot =
-            hrefPath === '/lolissr/';
-
-        const active =
-            isRoot
-                ? currentPath === hrefPath
-                : (
-                    currentPath === hrefPath
-                    || currentPath.startsWith(
-                        hrefPath,
+        )
+        .forEach(
+            (
+                link,
+            ) =>
+            {
+                if (
+                    !(
+                        link
+                        instanceof HTMLAnchorElement
                     )
-                );
+                ) {
+                    return;
+                }
 
-        link.classList.toggle(
-            'active',
-            active,
+                const path =
+                    new URL(
+                        normalizeUrl(
+                            link.href,
+                        ),
+                    ).pathname;
+
+                const normalizedPath =
+                    path.endsWith('/')
+                        ? path
+                        : `${path}/`;
+
+                const active =
+                    normalizedPath
+                    === '/lolissr/'
+                        ? (
+                            normalizedCurrent
+                            === normalizedPath
+                        )
+                        : (
+                            normalizedCurrent
+                                === normalizedPath
+                            || normalizedCurrent.startsWith(
+                                normalizedPath,
+                            )
+                        );
+
+                link.classList.toggle(
+                    'active',
+                    active,
+                );
+            },
         );
-    }
 }
 
 // =========================================
@@ -111,13 +126,6 @@ export async function navigateTo(
     options = {},
 )
 {
-    if (
-        locked
-        && options.force !== true
-    ) {
-        return;
-    }
-
     const target =
         normalizeUrl(
             href,
@@ -139,11 +147,42 @@ export async function navigateTo(
         return;
     }
 
-    const currentId =
+    // =====================================
+    // LOCK
+    // =====================================
+
+    if (
+        locked
+        && options.force !== true
+    ) {
+        return;
+    }
+
+    locked =
+        true;
+
+    const currentNavigationId =
         ++navigationId;
 
     // =====================================
-    // ABORT PREVIOUS
+    // EVENT START
+    // =====================================
+
+    document.dispatchEvent(
+        new CustomEvent(
+            'app:navigation-start',
+            {
+                detail:
+                {
+                    href:
+                        target,
+                },
+            },
+        ),
+    );
+
+    // =====================================
+    // ABORT
     // =====================================
 
     controller?.abort();
@@ -151,43 +190,19 @@ export async function navigateTo(
     controller =
         new AbortController();
 
-    locked =
-        true;
-
-    document.body.dataset.ajaxNavigating =
-        '1';
-
     try {
 
         let html =
-            null;
-
-        // =================================
-        // CACHE
-        // =================================
-
-        const cached =
             getPrefetchedPage(
                 target,
             );
 
-        if (cached) {
+        // =================================
+        // PREFETCH REUSE
+        // =================================
 
-            debug(
-                'AJAX',
-                'cache-hit',
-                target,
-            );
-
-            html =
-                cached;
-
-        } else {
-
-            // =============================
-            // PREFETCH REUSE
-            // =============================
-
+        if (!html)
+        {
             const inFlight =
                 getInFlightPrefetch(
                     target,
@@ -195,20 +210,10 @@ export async function navigateTo(
 
             if (inFlight) {
 
-                debug(
-                    'AJAX',
-                    'reuse-prefetch',
-                    target,
-                );
-
                 html =
                     await inFlight;
 
             } else {
-
-                // =========================
-                // NETWORK
-                // =========================
 
                 html =
                     await fetchPageHtml(
@@ -222,13 +227,23 @@ export async function navigateTo(
         }
 
         // =================================
-        // INVALID
+        // RACE CONDITION
+        // =================================
+
+        if (
+            currentNavigationId
+            !== navigationId
+        ) {
+            return;
+        }
+
+        // =================================
+        // VALIDATION
         // =================================
 
         if (
             typeof html
             !== 'string'
-            || html.length === 0
         ) {
 
             throw new Error(
@@ -237,18 +252,7 @@ export async function navigateTo(
         }
 
         // =================================
-        // RACE CONDITION
-        // =================================
-
-        if (
-            currentId
-            !== navigationId
-        ) {
-            return;
-        }
-
-        // =================================
-        // HISTORY
+        // TRANSITION
         // =================================
 
         if (
@@ -263,12 +267,8 @@ export async function navigateTo(
             );
         }
 
-        // =================================
-        // TRANSITION
-        // =================================
-
         await runPageTransition(
-            () =>
+            async () =>
             {
                 replaceContent(
                     html,
@@ -287,18 +287,23 @@ export async function navigateTo(
             !== false
         ) {
 
-            scrollTop(
-                false,
-            );
+            scrollTop();
         }
 
         // =================================
-        // EVENT
+        // EVENT LOADED
         // =================================
 
         document.dispatchEvent(
             new CustomEvent(
                 'ajax:page-loaded',
+                {
+                    detail:
+                    {
+                        href:
+                            target,
+                    },
+                },
             ),
         );
 
@@ -324,7 +329,7 @@ export async function navigateTo(
     } finally {
 
         if (
-            currentId
+            currentNavigationId
             === navigationId
         ) {
 
@@ -333,20 +338,24 @@ export async function navigateTo(
 
             controller =
                 null;
-
-            delete document.body.dataset.ajaxNavigating;
         }
     }
 }
 
 // =========================================
-// CLICK HANDLER
+// CLICK
 // =========================================
 
 function handleClick(
     event,
 )
 {
+    if (
+        event.defaultPrevented
+    ) {
+        return;
+    }
+
     // =====================================
     // LEFT CLICK ONLY
     // =====================================
@@ -358,12 +367,12 @@ function handleClick(
     }
 
     // =====================================
-    // MODIFIER KEYS
+    // MODIFIERS
     // =====================================
 
     if (
-        event.metaKey
-        || event.ctrlKey
+        event.ctrlKey
+        || event.metaKey
         || event.shiftKey
         || event.altKey
     ) {
@@ -408,44 +417,10 @@ function handleClick(
         return;
     }
 
-    const normalized =
-        normalizeUrl(
-            link.href,
-        );
-
-    // =====================================
-    // SAME URL
-    // =====================================
-
-    if (
-        normalized
-        === normalizeUrl(
-            location.href,
-        )
-    ) {
-
-        event.preventDefault();
-
-        return;
-    }
-
-    // =====================================
-    // LOCK
-    // =====================================
-
-    if (
-        locked
-    ) {
-
-        event.preventDefault();
-
-        return;
-    }
-
     event.preventDefault();
 
     void navigateTo(
-        normalized,
+        link.href,
     );
 }
 
@@ -455,32 +430,19 @@ function handleClick(
 
 async function handlePopState()
 {
-    try {
+    await navigateTo(
+        location.href,
+        {
+            updateHistory:
+                false,
 
-        const html =
-            await fetchPageHtml(
-                location.href,
-            );
+            scrollTop:
+                false,
 
-        replaceContent(
-            html,
-        );
-
-        updateActiveNavigation();
-
-        document.dispatchEvent(
-            new CustomEvent(
-                'ajax:page-loaded',
-            ),
-        );
-
-    } catch (error) {
-
-        debugError(
-            'POPSTATE',
-            error,
-        );
-    }
+            force:
+                true,
+        },
+    );
 }
 
 // =========================================

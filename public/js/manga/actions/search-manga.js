@@ -25,6 +25,10 @@ import {
 } from '../search/search-builders.js';
 
 import {
+    navigateTo,
+} from '../../navigation/ajax-navigation.js';
+
+import {
     debug,
     debugError,
 } from '../../core/debug.js';
@@ -138,7 +142,10 @@ function openDropdown()
 
 function closeDropdown()
 {
-    if (!results || !dropdown || !input) {
+    if (
+        !results
+        || !dropdown
+    ) {
         return;
     }
 
@@ -155,19 +162,16 @@ function closeDropdown()
     abortController =
         null;
 
-    activeIndex =
-        -1;
-
     resetActive();
 }
 
 function setLoading(
-    isLoading,
+    state,
 )
 {
     dropdown?.classList.toggle(
         'is-loading',
-        isLoading,
+        state,
     );
 }
 
@@ -231,10 +235,14 @@ async function performSearch(
 
         resetActive();
 
+        // =================================
+        // SHORTCUTS
+        // =================================
+
         const shortcuts =
             findSearchShortcuts(
                 rawValue,
-            ) || [];
+            );
 
         shortcuts.forEach(
             (
@@ -249,6 +257,10 @@ async function performSearch(
                 );
             },
         );
+
+        // =================================
+        // API
+        // =================================
 
         const data =
             await fetchSearchResults(
@@ -325,15 +337,106 @@ async function performSearch(
 }
 
 // =========================================
+// KEYBOARD
+// =========================================
+
+function handleKeyboard(
+    event,
+)
+{
+    if (
+        !dropdown?.classList.contains(
+            'has-results',
+        )
+    ) {
+        return;
+    }
+
+    const items =
+        getItems();
+
+    if (!items.length) {
+        return;
+    }
+
+    switch (event.key)
+    {
+        case 'ArrowDown':
+
+            event.preventDefault();
+
+            activeIndex =
+                Math.min(
+                    activeIndex + 1,
+                    items.length - 1,
+                );
+
+            updateActive();
+
+            break;
+
+        case 'ArrowUp':
+
+            event.preventDefault();
+
+            activeIndex =
+                Math.max(
+                    activeIndex - 1,
+                    0,
+                );
+
+            updateActive();
+
+            break;
+
+        case 'Enter':
+
+            if (
+                activeIndex < 0
+            ) {
+                return;
+            }
+
+            event.preventDefault();
+
+            {
+                const item =
+                    items[
+                        activeIndex
+                    ];
+
+                if (
+                    item
+                    instanceof HTMLAnchorElement
+                ) {
+
+                    closeDropdown();
+
+                    void navigateTo(
+                        item.href,
+                    );
+                }
+            }
+
+            break;
+
+        case 'Escape':
+
+            closeDropdown();
+
+            break;
+
+        default:
+            break;
+    }
+}
+
+// =========================================
 // INIT
 // =========================================
 
 export function initSearchManga()
 {
-    if (initialized) {
-        return;
-    }
-
     form =
         $('.js-header-search');
 
@@ -355,75 +458,137 @@ export function initSearchManga()
         return;
     }
 
-    initialized =
-        true;
+    // =====================================
+    // REBIND SAFE
+    // =====================================
+
+    if (
+        initialized
+    ) {
+
+        debug(
+            'SEARCH',
+            'rebind',
+        );
+
+    } else {
+
+        initialized =
+            true;
+
+        debug(
+            'SEARCH',
+            'initialized',
+        );
+    }
 
     basePath =
         form.dataset.basePath
         || '/';
 
     // =====================================
-    // SUBMIT
-    // =====================================
-
-    form.addEventListener(
-        'submit',
-        (
-            event,
-        ) =>
-        {
-            event.preventDefault();
-
-            let value =
-                input.value.trim();
-
-            if (!value) {
-                return;
-            }
-
-            value =
-                normalizeSearchQuery(
-                    value,
-                );
-
-            if (!value) {
-                return;
-            }
-
-            window.location.href =
-                `${basePath}manga/recherche/${encodeURIComponent(value)}`;
-        },
-    );
-
-    // =====================================
     // INPUT
     // =====================================
 
-    input.addEventListener(
-        'input',
+    input.oninput =
         () =>
         {
             clearTimeout(
                 debounceTimer,
             );
 
-            resetActive();
-
             debounceTimer =
                 window.setTimeout(
                     () =>
                     {
-                        performSearch(
+                        void performSearch(
                             input.value.trim(),
                         );
                     },
                     SEARCH_DEBOUNCE,
                 );
-        },
-    );
+        };
 
     // =====================================
-    // OUTSIDE CLICK
+    // SUBMIT
+    // =====================================
+
+    form.onsubmit =
+        (
+            event,
+        ) =>
+        {
+            event.preventDefault();
+
+            const value =
+                normalizeSearchQuery(
+                    input.value.trim(),
+                );
+
+            if (!value) {
+                return;
+            }
+
+            closeDropdown();
+
+            void navigateTo(
+                `${basePath}manga/recherche/${encodeURIComponent(value)}`,
+            );
+        };
+
+    // =====================================
+    // CLICK
+    // =====================================
+
+    results.onclick =
+        (
+            event,
+        ) =>
+        {
+            const target =
+                event.target;
+
+            if (
+                !(
+                    target
+                    instanceof Element
+                )
+            ) {
+                return;
+            }
+
+            const item =
+                target.closest(
+                    '.search-result-item',
+                );
+
+            if (
+                !(
+                    item
+                    instanceof HTMLAnchorElement
+                )
+            ) {
+                return;
+            }
+
+            event.preventDefault();
+
+            closeDropdown();
+
+            void navigateTo(
+                item.href,
+            );
+        };
+
+    // =====================================
+    // KEYBOARD
+    // =====================================
+
+    input.onkeydown =
+        handleKeyboard;
+
+    // =====================================
+    // OUTSIDE
     // =====================================
 
     document.addEventListener(
@@ -436,7 +601,10 @@ export function initSearchManga()
                 event.target;
 
             if (
-                !(target instanceof Element)
+                !(
+                    target
+                    instanceof Element
+                )
             ) {
                 return;
             }
@@ -456,41 +624,8 @@ export function initSearchManga()
     // NAVIGATION
     // =====================================
 
-    results.addEventListener(
-        'click',
-        (
-            event,
-        ) =>
-        {
-            const target =
-                event.target;
-
-            if (
-                !(target instanceof Element)
-            ) {
-                return;
-            }
-
-            const item =
-                target.closest(
-                    '.search-result-item',
-                );
-
-            if (!item) {
-                return;
-            }
-
-            closeDropdown();
-        },
-    );
-
     document.addEventListener(
         'app:navigation-start',
         closeDropdown,
-    );
-
-    debug(
-        'SEARCH',
-        'initialized',
     );
 }

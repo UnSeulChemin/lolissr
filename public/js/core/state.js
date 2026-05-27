@@ -4,10 +4,6 @@
 
 export const state =
 {
-    // =====================================
-    // NAVIGATION
-    // =====================================
-
     navigating:
         false,
 
@@ -16,17 +12,10 @@ export const state =
 
     previousUrl:
         null,
-
-    // =====================================
-    // PREFETCH
-    // =====================================
-
-    prefetching:
-        false,
 };
 
 // =========================================
-// HELPERS
+// NAVIGATION
 // =========================================
 
 export function setNavigating(
@@ -48,14 +37,4 @@ export function setCurrentUrl(
 
     state.currentUrl =
         url;
-}
-
-export function setPrefetching(
-    value,
-)
-{
-    state.prefetching =
-        Boolean(
-            value,
-        );
 }

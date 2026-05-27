@@ -37,11 +37,8 @@ export function normalizeUrl(
     url.pathname =
         pathname;
 
-    // =====================================
-    // REMOVE HASH
-    // =====================================
-
-    url.hash = '';
+    url.hash =
+        '';
 
     return url.toString();
 }
@@ -118,7 +115,7 @@ export function shouldIgnoreLink(
     }
 
     // =====================================
-    // SAME PAGE HASH
+    // HASH SAME PAGE
     // =====================================
 
     if (
@@ -130,7 +127,7 @@ export function shouldIgnoreLink(
     }
 
     // =====================================
-    // STATIC
+    // STATIC FILES
     // =====================================
 
     if (

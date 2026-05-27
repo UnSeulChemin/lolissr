@@ -6,12 +6,17 @@ import {
     config,
 } from '../core/config.js';
 
+import {
+    navigateTo,
+} from './ajax-navigation.js';
+
 // =========================================
 // CONFIG
 // =========================================
 
 const BACK_LOCK_DURATION =
-    120;
+    config.navigation
+        .backLockDuration;
 
 const typingSelector =
 `
@@ -105,7 +110,7 @@ function lockNavigation()
 }
 
 // =========================================
-// NAVIGATION
+// BACK
 // =========================================
 
 function navigateBack()
@@ -125,7 +130,7 @@ function navigateBack()
         return;
     }
 
-    window.location.assign(
+    void navigateTo(
         config.baseUrl,
     );
 }

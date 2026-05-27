@@ -8,8 +8,8 @@ import {
 } from '../../core/dom.js';
 
 import {
-    prefetchPage,
-} from '../../navigation/prefetch.js';
+    navigateTo,
+} from '../../navigation/ajax-navigation.js';
 
 import {
     debug,
@@ -137,25 +137,6 @@ function updateGridColumns()
         );
 }
 
-function getNextPaginationLink()
-{
-    const link =
-        $(
-            '.collection-pagination-link.active + .collection-pagination-link',
-        );
-
-    return (
-        link
-        instanceof HTMLAnchorElement
-    )
-        ? link
-        : null;
-}
-
-// =========================================
-// ACTIVE
-// =========================================
-
 function clearActiveState()
 {
     activeIndex =
@@ -228,49 +209,6 @@ function scrollCardIntoView(
     });
 }
 
-function prefetchNearbyCards(
-    cards,
-)
-{
-    const nearbyCards =
-        [
-            cards[
-                activeIndex - 1
-            ],
-
-            cards[
-                activeIndex + 1
-            ],
-        ];
-
-    nearbyCards.forEach(
-        (
-            card,
-        ) =>
-        {
-            if (
-                card
-                instanceof HTMLAnchorElement
-            ) {
-
-                void prefetchPage(
-                    card.href,
-                );
-            }
-        },
-    );
-
-    const nextPagination =
-        getNextPaginationLink();
-
-    if (nextPagination) {
-
-        void prefetchPage(
-            nextPagination.href,
-        );
-    }
-}
-
 function syncActiveState()
 {
     const cards =
@@ -309,10 +247,6 @@ function syncActiveState()
 
     scrollCardIntoView(
         activeCard,
-    );
-
-    prefetchNearbyCards(
-        cards,
     );
 }
 
@@ -382,8 +316,8 @@ function handleKeyboard(
         return;
     }
 
-    switch (event.key) {
-
+    switch (event.key)
+    {
         case 'Tab':
 
             event.preventDefault();
@@ -490,8 +424,9 @@ function handleKeyboard(
                     instanceof HTMLAnchorElement
                 ) {
 
-                    window.location.href =
-                        activeCard.href;
+                    void navigateTo(
+                        activeCard.href,
+                    );
                 }
             }
 
@@ -562,19 +497,11 @@ export function initSeriesKeyboardNavigation()
                 },
             );
         },
-        {
-            passive:
-                true,
-        },
     );
 
     window.addEventListener(
         'pageshow',
         clearActiveState,
-        {
-            passive:
-                true,
-        },
     );
 
     debug(

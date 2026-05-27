@@ -19,8 +19,12 @@ import {
     debugError,
 } from '../../core/debug.js';
 
+import {
+    navigateTo,
+} from '../../navigation/ajax-navigation.js';
+
 // =========================================
-// State
+// STATE
 // =========================================
 
 let initialized =
@@ -32,14 +36,14 @@ let initialized =
 
 function setLoadingState(
     button,
-    isLoading,
+    loading,
 )
 {
     button.disabled =
-        isLoading;
+        loading;
 
     button.textContent =
-        isLoading
+        loading
             ? 'Suppression...'
             : (
                 button.dataset.originalText
@@ -48,13 +52,19 @@ function setLoadingState(
 }
 
 // =========================================
-// Delete
+// DELETE
 // =========================================
 
 async function deleteManga(
     button,
 )
 {
+    if (
+        button.disabled
+    ) {
+        return;
+    }
+
     const url =
         button.dataset.url;
 
@@ -65,41 +75,21 @@ async function deleteManga(
     if (!url) {
 
         showToast(
-            'URL de suppression introuvable.',
+            'URL invalide',
             'error',
         );
 
         return;
     }
 
-    // =====================================
-    // Prevent double click
-    // =====================================
-
-    if (
-        button.disabled
-    ) {
-        return;
-    }
-
-    // =====================================
-    // Confirm
-    // =====================================
-
     const confirmed =
         window.confirm(
-            'Supprimer ce manga ?\nCette action est irréversible.',
+            'Supprimer ce manga ?',
         );
 
-    if (
-        !confirmed
-    ) {
+    if (!confirmed) {
         return;
     }
-
-    // =====================================
-    // Store label
-    // =====================================
 
     if (
         !button.dataset.originalText
@@ -110,22 +100,18 @@ async function deleteManga(
             || 'Supprimer';
     }
 
-    // =====================================
-    // Loading
-    // =====================================
-
     setLoadingState(
         button,
         true,
     );
 
-    debug(
-        'DELETE',
-        'request',
-        url,
-    );
-
     try {
+
+        debug(
+            'DELETE',
+            'request',
+            url,
+        );
 
         const data =
             await post(
@@ -137,15 +123,11 @@ async function deleteManga(
                         'X-Partial':
                             'true',
 
-                        'Accept':
+                        Accept:
                             'application/json',
                     },
                 },
             );
-
-        // =================================
-        // Server Error
-        // =================================
 
         if (
             !data?.success
@@ -153,33 +135,23 @@ async function deleteManga(
 
             throw new Error(
                 data?.message
-                ?? 'Erreur lors de la suppression.',
+                || 'Erreur suppression',
             );
         }
 
-        // =================================
-        // Success
-        // =================================
-
         showToast(
             data.message
-            ?? 'Manga supprimé avec succès.',
+            || 'Supprimé',
             'success',
         );
 
-        debug(
-            'DELETE',
-            'success',
-            url,
-        );
-
-        // =================================
-        // Redirect
-        // =================================
-
-        window.location.href =
+        const target =
             data.data?.redirect
             || redirectUrl;
+
+        await navigateTo(
+            target,
+        );
 
     } catch (error) {
 
@@ -189,15 +161,10 @@ async function deleteManga(
         );
 
         showToast(
-            error instanceof Error
-                ? error.message
-                : 'Erreur réseau lors de la suppression.',
+            error?.message
+            || 'Erreur réseau',
             'error',
         );
-
-        // =================================
-        // Restore
-        // =================================
 
         setLoadingState(
             button,
@@ -207,7 +174,7 @@ async function deleteManga(
 }
 
 // =========================================
-// Init
+// INIT
 // =========================================
 
 export function initDeleteManga()

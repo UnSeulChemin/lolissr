@@ -12,6 +12,10 @@ import {
 } from '../core/navigation.js';
 
 import {
+    config,
+} from '../core/config.js';
+
+import {
     debug,
     debugError,
 } from '../core/debug.js';
@@ -21,13 +25,12 @@ import {
 // =========================================
 
 const CACHE_DURATION =
-    10000;
+    config.prefetch
+        .cacheDuration;
 
 const HOVER_DELAY =
-    120;
-
-const REQUEST_TIMEOUT =
-    4000;
+    config.prefetch
+        .delay;
 
 // =========================================
 // STATE
@@ -57,18 +60,6 @@ function isExpired(
         Date.now()
         - entry.timestamp
         > CACHE_DURATION
-    );
-}
-
-function isHeaderLink(
-    link,
-)
-{
-    return (
-        link instanceof HTMLAnchorElement
-        && link.classList.contains(
-            'nav-link-icon',
-        )
     );
 }
 
@@ -130,37 +121,23 @@ export function getInFlightPrefetch(
 // =========================================
 
 export async function prefetchPage(
-    url,
+    href,
 )
 {
-    const normalized =
+    const url =
         normalizeUrl(
-            url,
+            href,
         );
-
-    debug(
-        'PREFETCH',
-        'start',
-        normalized,
-    );
 
     // =====================================
     // CURRENT PAGE
     // =====================================
 
     if (
-        normalized
-        === normalizeUrl(
+        url === normalizeUrl(
             location.href,
         )
     ) {
-
-        debug(
-            'PREFETCH',
-            'skip-current-page',
-            normalized,
-        );
-
         return null;
     }
 
@@ -170,7 +147,7 @@ export async function prefetchPage(
 
     const cached =
         getPrefetchedPage(
-            normalized,
+            url,
         );
 
     if (cached) {
@@ -178,19 +155,19 @@ export async function prefetchPage(
         debug(
             'PREFETCH',
             'cache-hit',
-            normalized,
+            url,
         );
 
         return cached;
     }
 
     // =====================================
-    // IN FLIGHT
+    // REUSE
     // =====================================
 
     const existing =
         getInFlightPrefetch(
-            normalized,
+            url,
         );
 
     if (existing) {
@@ -198,27 +175,15 @@ export async function prefetchPage(
         debug(
             'PREFETCH',
             'reuse',
-            normalized,
+            url,
         );
 
         return existing;
     }
 
     // =====================================
-    // REQUEST
+    // FETCH
     // =====================================
-
-    const controller =
-        new AbortController();
-
-    const timeout =
-        window.setTimeout(
-            () =>
-            {
-                controller.abort();
-            },
-            REQUEST_TIMEOUT,
-        );
 
     const promise =
         (async () =>
@@ -228,18 +193,15 @@ export async function prefetchPage(
                 debug(
                     'PREFETCH',
                     'fetch',
-                    normalized,
+                    url,
                 );
 
                 const html =
                     await request(
-                        normalized,
+                        url,
                         {
                             responseType:
                                 'text',
-
-                            signal:
-                                controller.signal,
 
                             headers:
                             {
@@ -255,14 +217,12 @@ export async function prefetchPage(
                 if (
                     typeof html
                     !== 'string'
-                    || html.length === 0
                 ) {
-
                     return null;
                 }
 
                 cache.set(
-                    normalized,
+                    url,
                     {
                         html,
                         timestamp:
@@ -273,40 +233,30 @@ export async function prefetchPage(
                 debug(
                     'PREFETCH',
                     'cached',
-                    normalized,
+                    url,
                 );
 
                 return html;
 
             } catch (error) {
 
-                if (
-                    error?.name
-                    !== 'AbortError'
-                ) {
-
-                    debugError(
-                        'PREFETCH',
-                        error,
-                    );
-                }
+                debugError(
+                    'PREFETCH',
+                    error,
+                );
 
                 return null;
 
             } finally {
 
-                clearTimeout(
-                    timeout,
-                );
-
                 inFlight.delete(
-                    normalized,
+                    url,
                 );
             }
         })();
 
     inFlight.set(
-        normalized,
+        url,
         promise,
     );
 
@@ -321,15 +271,11 @@ function bindHoverPrefetch()
 {
     const links =
         document.querySelectorAll(
-            'a[href]',
+            '.ajax-content a[href]',
         );
 
     for (const link of links)
     {
-        // =================================
-        // VALID
-        // =================================
-
         if (
             !(
                 link
@@ -339,10 +285,6 @@ function bindHoverPrefetch()
             continue;
         }
 
-        // =================================
-        // IGNORE
-        // =================================
-
         if (
             shouldIgnoreLink(
                 link,
@@ -350,22 +292,6 @@ function bindHoverPrefetch()
         ) {
             continue;
         }
-
-        // =================================
-        // HEADER NAV
-        // =================================
-
-        if (
-            isHeaderLink(
-                link,
-            )
-        ) {
-            continue;
-        }
-
-        // =================================
-        // ALREADY BINDED
-        // =================================
 
         if (
             link.dataset.prefetchBound
@@ -383,28 +309,27 @@ function bindHoverPrefetch()
 
         link.addEventListener(
             'pointerenter',
-            () =>
+            (
+                event,
+            ) =>
             {
-                // =========================
-                // ANTI DOUBLE TIMER
-                // =========================
-
                 if (
-                    hoverTimers.has(
-                        link,
-                    )
+                    event.pointerType
+                    === ''
                 ) {
                     return;
                 }
 
+                clearTimeout(
+                    hoverTimers.get(
+                        link,
+                    ),
+                );
+
                 const timer =
-                    window.setTimeout(
+                    setTimeout(
                         () =>
                         {
-                            hoverTimers.delete(
-                                link,
-                            );
-
                             void prefetchPage(
                                 link.href,
                             );
@@ -432,18 +357,9 @@ function bindHoverPrefetch()
                         link,
                     ),
                 );
-
-                hoverTimers.delete(
-                    link,
-                );
             },
         );
     }
-
-    debug(
-        'PREFETCH',
-        'bind-complete',
-    );
 }
 
 // =========================================
