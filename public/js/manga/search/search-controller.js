@@ -18,12 +18,12 @@ import {
 
 import {
     fetchSearchResults,
-} from '../search/search-api.js';
+} from './search-api.js';
 
 import {
     buildMangaSearchResult,
     buildShortcutSearchResult,
-} from '../search/search-builders.js';
+} from './search-builders.js';
 
 import {
     navigateTo,

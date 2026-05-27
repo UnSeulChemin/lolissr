@@ -25,7 +25,7 @@ import {
 // =========================================
 
 const BUTTON_SELECTOR =
-    '.ajax-lu-button';
+    '.js-read-status-button';
 
 // =========================================
 // STATE

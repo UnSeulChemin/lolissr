@@ -205,7 +205,7 @@ $hasEditeur =
                 <div class="detail-value detail-value-notes">
 
                     <div
-                        class="ajax-note-group"
+                        class="js-note-group"
                         data-field="jacquette"
                     >
 
@@ -217,7 +217,7 @@ $hasEditeur =
 
                             <button
                                 class="
-                                    ajax-note-button
+                                    js-note-button
                                     <?= ($manga->jacquette === $note)
                                         ? 'active'
                                         : ''
@@ -251,7 +251,7 @@ $hasEditeur =
                 <div class="detail-value detail-value-notes">
 
                     <div
-                        class="ajax-note-group"
+                        class="js-note-group"
                         data-field="livreNote"
                     >
 
@@ -263,7 +263,7 @@ $hasEditeur =
 
                             <button
                                 class="
-                                    ajax-note-button
+                                    js-note-button
                                     <?= ($manga->livre_note === $note)
                                         ? 'active'
                                         : ''
@@ -296,7 +296,7 @@ $hasEditeur =
 
                 <div
                     class="detail-value"
-                    id="ajax-note-total"
+                    id="js-note-total"
                 >
 
                     <?= ($manga->jacquette ?? 0)
@@ -348,7 +348,7 @@ $hasEditeur =
                     <button
                         type="button"
                         class="
-                            ajax-lu-button
+                            js-read-status-button
                             <?= $isLu
                                 ? 'active'
                                 : ''

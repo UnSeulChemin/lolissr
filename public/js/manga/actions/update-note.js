@@ -22,13 +22,26 @@ import {
 } from '../../core/debug.js';
 
 // =========================================
+// CONFIG
+// =========================================
+
+const NOTE_GROUP_SELECTOR =
+    '.js-note-group';
+
+const NOTE_BUTTON_SELECTOR =
+    '.js-note-button';
+
+const TOTAL_NOTE_SELECTOR =
+    '#js-note-total';
+
+// =========================================
 // STATE
 // =========================================
 
 let initialized =
     false;
 
-let isSavingNotes =
+let isSaving =
     false;
 
 // =========================================
@@ -45,11 +58,11 @@ function getDetailCard()
 function getTotalNoteElement()
 {
     return $(
-        '#ajax-note-total',
+        TOTAL_NOTE_SELECTOR,
     );
 }
 
-function refreshNoteButtonsState()
+function refreshButtons()
 {
     const card =
         getDetailCard();
@@ -59,7 +72,7 @@ function refreshNoteButtonsState()
     }
 
     $$(
-        '.ajax-note-group',
+        NOTE_GROUP_SELECTOR,
         card,
     ).forEach(
         (
@@ -81,7 +94,7 @@ function refreshNoteButtonsState()
                 );
 
             $$(
-                '.ajax-note-button',
+                NOTE_BUTTON_SELECTOR,
                 group,
             ).forEach(
                 (
@@ -109,7 +122,7 @@ function refreshNoteButtonsState()
                     );
 
                     button.disabled =
-                        isSavingNotes;
+                        isSaving;
                 },
             );
         },
@@ -121,12 +134,12 @@ function updateTotalNote()
     const card =
         getDetailCard();
 
-    const totalNoteEl =
+    const totalElement =
         getTotalNoteElement();
 
     if (
         !card
-        || !totalNoteEl
+        || !totalElement
     ) {
         return;
     }
@@ -141,7 +154,7 @@ function updateTotalNote()
             ?? 0,
         );
 
-    totalNoteEl.textContent =
+    totalElement.textContent =
         `${total}/10`;
 }
 
@@ -196,9 +209,7 @@ async function updateNote(
     button,
 )
 {
-    if (
-        isSavingNotes
-    ) {
+    if (isSaving) {
         return;
     }
 
@@ -211,7 +222,7 @@ async function updateNote(
 
     const group =
         button.closest(
-            '.ajax-note-group',
+            NOTE_GROUP_SELECTOR,
         );
 
     if (!group) {
@@ -246,16 +257,16 @@ async function updateNote(
             value,
         );
 
-    refreshNoteButtonsState();
+    refreshButtons();
 
     updateTotalNote();
 
     try {
 
-        isSavingNotes =
+        isSaving =
             true;
 
-        refreshNoteButtonsState();
+        refreshButtons();
 
         const data =
             await saveNotes(
@@ -291,7 +302,7 @@ async function updateNote(
 
         updateTotalNote();
 
-        refreshNoteButtonsState();
+        refreshButtons();
 
         showToast(
             data?.message
@@ -313,7 +324,7 @@ async function updateNote(
 
         updateTotalNote();
 
-        refreshNoteButtonsState();
+        refreshButtons();
 
         showToast(
             error instanceof Error
@@ -324,10 +335,10 @@ async function updateNote(
 
     } finally {
 
-        isSavingNotes =
+        isSaving =
             false;
 
-        refreshNoteButtonsState();
+        refreshButtons();
     }
 }
 
@@ -347,7 +358,7 @@ export function initUpdateNote()
     delegate(
         document,
         'click',
-        '.ajax-note-button',
+        NOTE_BUTTON_SELECTOR,
         (
             _,
             button,
@@ -372,7 +383,7 @@ export function initUpdateNote()
         'router:loaded',
         () =>
         {
-            refreshNoteButtonsState();
+            refreshButtons();
 
             updateTotalNote();
         },
@@ -382,7 +393,7 @@ export function initUpdateNote()
         },
     );
 
-    refreshNoteButtonsState();
+    refreshButtons();
 
     updateTotalNote();
 

@@ -134,7 +134,7 @@
     justify-content: center;
 }
 
-.ajax-note-group
+.js-note-group
 {
     display: flex;
     align-items: center;
@@ -145,7 +145,7 @@
     width: 100%;
 }
 
-.ajax-note-button
+.js-note-button
 {
     width: 34px;
     min-width: 34px;
@@ -176,7 +176,7 @@
         box-shadow var(--transition-fast);
 }
 
-.ajax-note-button:hover
+.js-note-button:hover
 {
     transform: translateY(-1px);
 
@@ -185,7 +185,7 @@
         0 6px 14px rgba(123, 44, 255, 0.12);
 }
 
-.ajax-note-button.active
+.js-note-button.active
 {
     color: var(--color-surface);
     background: var(--gradient-violet);
@@ -271,7 +271,7 @@
    LU / BOOKMARK AJAX
 ========================================= */
 
-.ajax-lu-button
+.js-read-status-button
 {
     width: 54px;
     height: 54px;
@@ -303,7 +303,7 @@
     margin-left: 6px;
 }
 
-.ajax-lu-button:hover
+.js-read-status-button:hover
 {
     transform: translateY(-1px);
 
@@ -311,7 +311,7 @@
         0 3px 8px rgba(79, 99, 255, 0.16);
 }
 
-.ajax-lu-button.active
+.js-read-status-button.active
 {
     background: #4f63ff;
     color: #ffffff;
@@ -320,7 +320,7 @@
         0 4px 12px rgba(79, 99, 255, 0.25);
 }
 
-.ajax-lu-button:disabled
+.js-read-status-button:disabled
 {
     opacity: 0.6;
     cursor: wait;
@@ -338,7 +338,7 @@
     stroke-linejoin: round;
 }
 
-.ajax-lu-button.active .lu-icon
+.js-read-status-button.active .lu-icon
 {
     fill: currentColor;
     stroke: currentColor;
