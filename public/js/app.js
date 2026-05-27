@@ -64,7 +64,7 @@ import {
 } from './manga/actions/update-read-status.js';
 
 import {
-    initSearchManga,
+    initSearchController,
 } from './manga/search/controller/search-controller.js';
 
 import {
@@ -179,7 +179,7 @@ const ROUTE_INITIALIZERS = [
 
             ['UpdateReadStatus', initUpdateReadStatus],
 
-            ['SearchManga', initSearchManga],
+            ['SearchManga', initSearchController],
 
             ['SeriesKeyboardNavigation', initSeriesKeyboardNavigation],
 

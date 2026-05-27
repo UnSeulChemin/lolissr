@@ -1,20 +1,15 @@
 // =========================================
-// SEARCH MANGA
+// SEARCH CONTROLLER
 // =========================================
 
 import {
     $,
     $$,
-    delegate,
 } from '../../../core/dom.js';
 
 import {
-    normalizeSearchQuery,
-} from '../utils/search-utils.js';
-
-import {
-    findSearchShortcuts,
-} from '../shortcuts/search-shortcuts.js';
+    navigateTo,
+} from '../../../router/router.js';
 
 import {
     fetchSearchResults,
@@ -26,30 +21,29 @@ import {
 } from '../ui/search-builders.js';
 
 import {
-    navigateTo,
-} from '../../../router/router.js';
+    findSearchShortcuts,
+} from '../shortcuts/search-shortcuts.js';
 
 import {
-    debug,
-    debugError,
-} from '../../../core/debug.js';
+    normalizeSearchQuery,
+} from '../utils/search-utils.js';
+
+import {
+    openSearchDropdown,
+    closeSearchDropdown,
+    clearSearchResults,
+} from '../ui/search-dropdown.js';
 
 // =========================================
 // CONFIG
 // =========================================
 
-const SEARCH_DEBOUNCE =
-    250;
-
-const MIN_SEARCH_LENGTH =
-    2;
+const SEARCH_DELAY =
+    150;
 
 // =========================================
 // STATE
 // =========================================
-
-let initialized =
-    false;
 
 let debounceTimer =
     null;
@@ -61,42 +55,434 @@ let activeIndex =
     -1;
 
 // =========================================
-// ELEMENTS
+// INIT
 // =========================================
 
-let form =
-    null;
-
-let input =
-    null;
-
-let results =
-    null;
-
-let dropdown =
-    null;
-
-let basePath =
-    '/';
-
-// =========================================
-// HELPERS
-// =========================================
-
-function getItems()
+export function initSearchController()
 {
-    return $$(
-        '.search-result-item',
-        results,
+    const searchInput =
+        $(
+            '[data-search-input]',
+        );
+
+    const searchResults =
+        $(
+            '[data-search-results]',
+        );
+
+    if (
+        !searchInput ||
+        !searchResults
+    ) {
+        return;
+    }
+
+    searchInput.addEventListener(
+        'input',
+        () =>
+        {
+            clearTimeout(
+                debounceTimer,
+            );
+
+            debounceTimer =
+                setTimeout(
+                    () =>
+                    {
+                        handleSearch(
+                            searchInput,
+                            searchResults,
+                        );
+                    },
+                    SEARCH_DELAY,
+                );
+        },
+    );
+
+    searchInput.addEventListener(
+        'keydown',
+        (
+            event,
+        ) =>
+        {
+            handleKeyboardNavigation(
+                event,
+                searchInput,
+                searchResults,
+            );
+        },
+    );
+
+    document.addEventListener(
+        'click',
+        (
+            event,
+        ) =>
+        {
+            if (
+                !event.target.closest(
+                    '[data-search]',
+                )
+            ) {
+                closeSearchDropdown(
+                    searchResults,
+                );
+            }
+        },
     );
 }
 
-function resetActive()
+// =========================================
+// HANDLE SEARCH
+// =========================================
+
+async function handleSearch(
+    searchInput,
+    searchResults,
+)
 {
+    const rawValue =
+        searchInput.value;
+
+    const query =
+        normalizeSearchQuery(
+            rawValue,
+        );
+
+    if (
+        query === ''
+    ) {
+        clearSearchResults(
+            searchResults,
+        );
+
+        closeSearchDropdown(
+            searchResults,
+        );
+
+        return;
+    }
+
+    abortController?.abort();
+
+    abortController =
+        new AbortController();
+
     activeIndex =
         -1;
 
-    getItems().forEach(
+    try {
+
+        const basePath =
+            document.body.dataset.basepath ??
+            '/';
+
+        const [
+            mangas,
+            shortcuts,
+        ] = await Promise.all([
+            fetchSearchResults(
+                `${basePath}search?q=${encodeURIComponent(query)}`,
+                abortController.signal,
+            ),
+
+            Promise.resolve(
+                findSearchShortcuts(
+                    query,
+                ),
+            ),
+        ]);
+
+        renderResults(
+            {
+                mangas,
+                shortcuts,
+                rawValue,
+                basePath,
+                searchInput,
+                searchResults,
+            },
+        );
+
+    } catch (error) {
+
+        if (
+            error?.name !==
+            'AbortError'
+        ) {
+            console.error(
+                '[SEARCH]',
+                error,
+            );
+        }
+    }
+}
+
+// =========================================
+// RENDER RESULTS
+// =========================================
+
+function renderResults(
+    {
+        mangas,
+        shortcuts,
+        rawValue,
+        basePath,
+        searchInput,
+        searchResults,
+    },
+)
+{
+    clearSearchResults(
+        searchResults,
+    );
+
+    const fragment =
+        document.createDocumentFragment();
+
+    mangas.forEach(
+        (
+            manga,
+            index,
+        ) =>
+        {
+            const item =
+                buildMangaSearchResult(
+                    manga,
+                    rawValue,
+                    basePath,
+                );
+
+            setupResultItem(
+                item,
+                index,
+                searchInput,
+                searchResults,
+            );
+
+            fragment.appendChild(
+                item,
+            );
+        },
+    );
+
+    shortcuts.forEach(
+        (
+            shortcut,
+            shortcutIndex,
+        ) =>
+        {
+            const index =
+                mangas.length +
+                shortcutIndex;
+
+            const item =
+                buildShortcutSearchResult(
+                    shortcut,
+                    basePath,
+                );
+
+            setupResultItem(
+                item,
+                index,
+                searchInput,
+                searchResults,
+            );
+
+            fragment.appendChild(
+                item,
+            );
+        },
+    );
+
+    if (
+        !fragment.children.length
+    ) {
+        closeSearchDropdown(
+            searchResults,
+        );
+
+        return;
+    }
+
+    searchResults.appendChild(
+        fragment,
+    );
+
+    openSearchDropdown(
+        searchResults,
+    );
+}
+
+// =========================================
+// SETUP RESULT ITEM
+// =========================================
+
+function setupResultItem(
+    item,
+    index,
+    searchInput,
+    searchResults,
+)
+{
+    item.dataset.index =
+        index;
+
+    item.addEventListener(
+        'mouseenter',
+        () =>
+        {
+            activeIndex =
+                index;
+
+            updateActiveResult(
+                searchResults,
+            );
+        },
+    );
+
+    item.addEventListener(
+        'click',
+        (
+            event,
+        ) =>
+        {
+            event.preventDefault();
+
+            resetSearch(
+                searchInput,
+                searchResults,
+            );
+
+            navigateTo(
+                item.href,
+            );
+        },
+    );
+}
+
+// =========================================
+// KEYBOARD NAVIGATION
+// =========================================
+
+function handleKeyboardNavigation(
+    event,
+    searchInput,
+    searchResults,
+)
+{
+    const resultItems =
+        $$(
+            '.search-result-item',
+            searchResults,
+        );
+
+    if (
+        !resultItems.length
+    ) {
+        return;
+    }
+
+    // DOWN
+
+    if (
+        event.key ===
+        'ArrowDown'
+    ) {
+        event.preventDefault();
+
+        activeIndex++;
+
+        if (
+            activeIndex >=
+            resultItems.length
+        ) {
+            activeIndex = 0;
+        }
+
+        updateActiveResult(
+            searchResults,
+        );
+    }
+
+    // UP
+
+    if (
+        event.key ===
+        'ArrowUp'
+    ) {
+        event.preventDefault();
+
+        activeIndex--;
+
+        if (
+            activeIndex < 0
+        ) {
+            activeIndex =
+                resultItems.length - 1;
+        }
+
+        updateActiveResult(
+            searchResults,
+        );
+    }
+
+    // ENTER
+
+    if (
+        event.key ===
+        'Enter'
+    ) {
+        event.preventDefault();
+
+        const activeItem =
+            resultItems[
+                activeIndex
+            ];
+
+        if (
+            !activeItem
+        ) {
+            return;
+        }
+
+        resetSearch(
+            searchInput,
+            searchResults,
+        );
+
+        navigateTo(
+            activeItem.href,
+        );
+    }
+
+    // ESCAPE
+
+    if (
+        event.key ===
+        'Escape'
+    ) {
+        closeSearchDropdown(
+            searchResults,
+        );
+    }
+}
+
+// =========================================
+// UPDATE ACTIVE RESULT
+// =========================================
+
+function updateActiveResult(
+    searchResults,
+)
+{
+    const items =
+        $$(
+            '.search-result-item',
+            searchResults,
+        );
+
+    items.forEach(
         (
             item,
         ) =>
@@ -106,505 +492,48 @@ function resetActive()
             );
         },
     );
-}
 
-function updateActive()
-{
-    const items =
-        getItems();
+    const activeItem =
+        items[
+            activeIndex
+        ];
 
-    items.forEach(
-        (
-            item,
-            index,
-        ) =>
-        {
-            item.classList.toggle(
-                'is-active',
-                index === activeIndex,
-            );
-        },
-    );
-
-    items[
-        activeIndex
-    ]?.scrollIntoView({
-        block:
-            'nearest',
-    });
-}
-
-function openDropdown()
-{
-    dropdown?.classList.add(
-        'has-results',
-    );
-}
-
-function closeDropdown()
-{
     if (
-        !results
-        || !dropdown
+        activeItem
     ) {
-        return;
-    }
+        activeItem.classList.add(
+            'is-active',
+        );
 
-    results.innerHTML =
+        activeItem.scrollIntoView(
+            {
+                block:
+                    'nearest',
+            },
+        );
+    }
+}
+
+// =========================================
+// RESET SEARCH
+// =========================================
+
+function resetSearch(
+    searchInput,
+    searchResults,
+)
+{
+    searchInput.value =
         '';
 
-    dropdown.classList.remove(
-        'is-loading',
-        'has-results',
+    activeIndex =
+        -1;
+
+    clearSearchResults(
+        searchResults,
     );
 
-    abortController?.abort();
-
-    abortController =
-        null;
-
-    resetActive();
-}
-
-function setLoading(
-    state,
-)
-{
-    dropdown?.classList.toggle(
-        'is-loading',
-        state,
+    closeSearchDropdown(
+        searchResults,
     );
-}
-
-function renderEmptyState(
-    message =
-        'Aucun résultat trouvé',
-)
-{
-    results.innerHTML =
-    `
-        <div class="search-result-empty">
-            ${message}
-        </div>
-    `;
-
-    openDropdown();
-
-    resetActive();
-}
-
-// =========================================
-// SEARCH
-// =========================================
-
-async function performSearch(
-    rawValue,
-)
-{
-    abortController?.abort();
-
-    const normalized =
-        normalizeSearchQuery(
-            rawValue,
-        );
-
-    if (
-        rawValue.length
-            < MIN_SEARCH_LENGTH
-        || normalized === ''
-    ) {
-
-        closeDropdown();
-
-        return;
-    }
-
-    abortController =
-        new AbortController();
-
-    const currentController =
-        abortController;
-
-    try {
-
-        setLoading(
-            true,
-        );
-
-        results.innerHTML =
-            '';
-
-        resetActive();
-
-        // =================================
-        // SHORTCUTS
-        // =================================
-
-        const shortcuts =
-            findSearchShortcuts(
-                rawValue,
-            );
-
-        shortcuts.forEach(
-            (
-                shortcut,
-            ) =>
-            {
-                results.appendChild(
-                    buildShortcutSearchResult(
-                        shortcut,
-                        basePath,
-                    ),
-                );
-            },
-        );
-
-        // =================================
-        // API
-        // =================================
-
-        const data =
-            await fetchSearchResults(
-                `${basePath}manga/ajax/recherche/${encodeURIComponent(normalized)}`,
-                currentController.signal,
-            );
-
-        const mangas =
-            data?.data?.results
-            || [];
-
-        if (
-            !mangas.length
-            && !shortcuts.length
-        ) {
-
-            renderEmptyState();
-
-            return;
-        }
-
-        mangas.forEach(
-            (
-                manga,
-            ) =>
-            {
-                results.appendChild(
-                    buildMangaSearchResult(
-                        manga,
-                        rawValue,
-                        basePath,
-                    ),
-                );
-            },
-        );
-
-        openDropdown();
-
-        activeIndex =
-            0;
-
-        updateActive();
-
-    } catch (error) {
-
-        if (
-            error?.name
-            === 'AbortError'
-        ) {
-            return;
-        }
-
-        debugError(
-            'SEARCH',
-            error,
-        );
-
-        renderEmptyState(
-            'Erreur de chargement',
-        );
-
-    } finally {
-
-        if (
-            currentController.signal.aborted
-        ) {
-            return;
-        }
-
-        setLoading(
-            false,
-        );
-    }
-}
-
-// =========================================
-// KEYBOARD
-// =========================================
-
-function handleKeyboard(
-    event,
-)
-{
-    if (
-        !dropdown?.classList.contains(
-            'has-results',
-        )
-    ) {
-        return;
-    }
-
-    const items =
-        getItems();
-
-    if (!items.length) {
-        return;
-    }
-
-    switch (event.key)
-    {
-        case 'ArrowDown':
-
-            event.preventDefault();
-
-            activeIndex =
-                Math.min(
-                    activeIndex + 1,
-                    items.length - 1,
-                );
-
-            updateActive();
-
-            break;
-
-        case 'ArrowUp':
-
-            event.preventDefault();
-
-            activeIndex =
-                Math.max(
-                    activeIndex - 1,
-                    0,
-                );
-
-            updateActive();
-
-            break;
-
-        case 'Enter':
-
-            if (
-                activeIndex < 0
-            ) {
-                return;
-            }
-
-            event.preventDefault();
-
-            {
-                const item =
-                    items[
-                        activeIndex
-                    ];
-
-                if (
-                    item
-                    instanceof HTMLAnchorElement
-                ) {
-
-                    closeDropdown();
-
-                    void navigateTo(
-                        item.href,
-                    );
-                }
-            }
-
-            break;
-
-        case 'Escape':
-
-            closeDropdown();
-
-            break;
-
-        default:
-            break;
-    }
-}
-
-// =========================================
-// GLOBAL LISTENERS
-// =========================================
-
-function initGlobalListeners()
-{
-    delegate(
-        document,
-        'click',
-        '.search-result-item',
-        (
-            event,
-            item,
-        ) =>
-        {
-            if (
-                !(
-                    item
-                    instanceof HTMLAnchorElement
-                )
-            ) {
-                return;
-            }
-
-            event.preventDefault();
-
-            closeDropdown();
-
-            void navigateTo(
-                item.href,
-            );
-        },
-    );
-
-    delegate(
-        document,
-        'click',
-        'body',
-        (
-            event,
-        ) =>
-        {
-            const target =
-                event.target;
-
-            if (
-                !(
-                    target
-                    instanceof Element
-                )
-            ) {
-                return;
-            }
-
-            if (
-                !target.closest(
-                    '.js-header-search',
-                )
-            ) {
-
-                closeDropdown();
-            }
-        },
-    );
-
-    document.addEventListener(
-        'router:start',
-        closeDropdown,
-    );
-}
-
-// =========================================
-// INIT
-// =========================================
-
-export function initSearchManga()
-{
-    form =
-        $('.js-header-search');
-
-    input =
-        $('#header-search-input');
-
-    results =
-        $('#header-search-results');
-
-    dropdown =
-        $('.js-header-search-dropdown');
-
-    if (
-        !form
-        || !input
-        || !results
-        || !dropdown
-    ) {
-        return;
-    }
-
-    // =====================================
-    // GLOBAL LISTENERS
-    // =====================================
-
-    if (!initialized) {
-
-        initialized =
-            true;
-
-        initGlobalListeners();
-
-        debug(
-            'SEARCH',
-            'initialized',
-        );
-    }
-
-    basePath =
-        form.dataset.basePath
-        || '/';
-
-    // =====================================
-    // INPUT
-    // =====================================
-
-    input.oninput =
-        () =>
-        {
-            clearTimeout(
-                debounceTimer,
-            );
-
-            debounceTimer =
-                window.setTimeout(
-                    () =>
-                    {
-                        void performSearch(
-                            input.value.trim(),
-                        );
-                    },
-                    SEARCH_DEBOUNCE,
-                );
-        };
-
-    // =====================================
-    // SUBMIT
-    // =====================================
-
-    form.onsubmit =
-        (
-            event,
-        ) =>
-        {
-            event.preventDefault();
-
-            const value =
-                normalizeSearchQuery(
-                    input.value.trim(),
-                );
-
-            if (!value) {
-                return;
-            }
-
-            closeDropdown();
-
-            void navigateTo(
-                `${basePath}manga/recherche/${encodeURIComponent(value)}`,
-            );
-        };
-
-    // =====================================
-    // KEYBOARD
-    // =====================================
-
-    input.onkeydown =
-        handleKeyboard;
 }
