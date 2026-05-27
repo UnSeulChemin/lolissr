@@ -6,33 +6,33 @@ import {
     $,
     $$,
     delegate,
-} from '../../core/dom.js';
+} from '../../../core/dom.js';
 
 import {
     normalizeSearchQuery,
-} from '../utils/slug.js';
+} from '../utils/search-utils.js';
 
 import {
     findSearchShortcuts,
-} from '../../core/keyboard/search-shortcuts.js';
+} from '../shortcuts/search-shortcuts.js';
 
 import {
     fetchSearchResults,
-} from './search-api.js';
+} from '../api/search-api.js';
 
 import {
     buildMangaSearchResult,
     buildShortcutSearchResult,
-} from './search-builders.js';
+} from '../ui/search-builders.js';
 
 import {
     navigateTo,
-} from '../../router/router.js';
+} from '../../../router/router.js';
 
 import {
     debug,
     debugError,
-} from '../../core/debug.js';
+} from '../../../core/debug.js';
 
 // =========================================
 // CONFIG

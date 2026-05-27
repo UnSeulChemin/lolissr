@@ -1,8 +1,16 @@
-// ======================================================
+// =========================================
 // SEARCH SHORTCUTS
-// ======================================================
+// =========================================
 
-export const searchShortcuts =
+import {
+    normalizeSearchQuery,
+} from '../utils/search-utils.js';
+
+// =========================================
+// SHORTCUTS
+// =========================================
+
+export const SEARCH_SHORTCUTS =
     Object.freeze([
         {
             symbol:
@@ -61,36 +69,20 @@ export const searchShortcuts =
         },
     ]);
 
-// ======================================================
-// HELPERS
-// ======================================================
-
-function normalizeShortcutValue(
-    value,
-)
-{
-    return String(
-        value ?? '',
-    )
-        .trim()
-        .toLowerCase()
-        .replace(
-            /\s+/g,
-            '',
-        );
-}
-
-// ======================================================
-// SEARCH
-// ======================================================
+// =========================================
+// FIND SEARCH SHORTCUTS
+// =========================================
 
 export function findSearchShortcuts(
     query,
 )
 {
     const normalizedQuery =
-        normalizeShortcutValue(
+        normalizeSearchQuery(
             query,
+        ).replaceAll(
+            ' ',
+            '',
         );
 
     if (
@@ -99,17 +91,27 @@ export function findSearchShortcuts(
         return [];
     }
 
-    return searchShortcuts.filter(
+    return SEARCH_SHORTCUTS.filter(
         (
             shortcut,
         ) =>
         {
-            const normalizedTitle =
-                normalizeShortcutValue(
-                    shortcut.title,
+            const searchableText =
+            [
+                shortcut.title,
+                shortcut.description,
+                shortcut.symbol,
+            ]
+                .join(
+                    ' ',
+                )
+                .toLowerCase()
+                .replaceAll(
+                    ' ',
+                    '',
                 );
 
-            return normalizedTitle.includes(
+            return searchableText.includes(
                 normalizedQuery,
             );
         },

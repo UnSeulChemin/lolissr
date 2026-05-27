@@ -65,7 +65,7 @@ import {
 
 import {
     initSearchManga,
-} from './manga/search/search-controller.js';
+} from './manga/search/controller/search-controller.js';
 
 import {
     initSeriesKeyboardNavigation,

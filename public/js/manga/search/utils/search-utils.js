@@ -2,6 +2,10 @@
 // SEARCH UTILS
 // =========================================
 
+// =========================================
+// ESCAPE HTML
+// =========================================
+
 export function escapeHtml(
     value,
 )
@@ -31,6 +35,10 @@ export function escapeHtml(
         );
 }
 
+// =========================================
+// ESCAPE REGEX
+// =========================================
+
 export function escapeRegExp(
     value,
 )
@@ -43,6 +51,25 @@ export function escapeRegExp(
     );
 }
 
+// =========================================
+// NORMALIZE QUERY
+// =========================================
+
+export function normalizeSearchQuery(
+    value,
+)
+{
+    return String(
+        value ?? '',
+    )
+        .trim()
+        .toLowerCase();
+}
+
+// =========================================
+// HIGHLIGHT SEARCH TERM
+// =========================================
+
 export function highlightSearchTerm(
     text,
     rawQuery,
@@ -53,19 +80,19 @@ export function highlightSearchTerm(
             text,
         );
 
-    const trimmedQuery =
-        String(
-            rawQuery ?? '',
-        ).trim();
+    const normalizedQuery =
+        normalizeSearchQuery(
+            rawQuery,
+        );
 
     if (
-        trimmedQuery === ''
+        normalizedQuery === ''
     ) {
         return safeText;
     }
 
     const queryParts =
-        trimmedQuery
+        normalizedQuery
             .split(
                 /\s+/,
             )
@@ -77,7 +104,7 @@ export function highlightSearchTerm(
             );
 
     if (
-        !queryParts.length
+        queryParts.length === 0
     ) {
         return safeText;
     }
@@ -92,4 +119,17 @@ export function highlightSearchTerm(
         regex,
         '<mark class="search-highlight">$1</mark>',
     );
+}
+
+// =========================================
+// IS EMPTY QUERY
+// =========================================
+
+export function isEmptyQuery(
+    value,
+)
+{
+    return normalizeSearchQuery(
+        value,
+    ) === '';
 }
