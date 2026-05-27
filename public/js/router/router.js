@@ -33,7 +33,7 @@ import {
 
 import {
     fetchPageHtml,
-} from '../navigation/ajax-fetch.js';
+} from './router-fetch.js';
 
 import {
     replaceContent,
