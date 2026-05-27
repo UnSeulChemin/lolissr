@@ -9,6 +9,8 @@ import {
 
 import {
     getPrefetchedPage,
+    getInFlightPrefetch,
+    markNavigationPrefetch,
 } from './prefetch.js';
 
 import {
@@ -40,6 +42,9 @@ let controller =
     null;
 
 let locked =
+    false;
+
+let initialized =
     false;
 
 // =========================================
@@ -87,10 +92,6 @@ function updateActiveNavigation()
         let active =
             false;
 
-        // =================================
-        // EXACT ROOT
-        // =================================
-
         if (
             hrefPath
             === '/lolissr/'
@@ -117,7 +118,7 @@ function updateActiveNavigation()
 }
 
 // =========================================
-// NAVIGATION
+// NAVIGATE
 // =========================================
 
 export async function navigateTo(
@@ -145,12 +146,28 @@ export async function navigateTo(
             location.href,
         );
 
+    // =====================================
+    // SAME URL
+    // =====================================
+
     if (
         target === current
         && options.force !== true
     ) {
         return;
     }
+
+    // =====================================
+    // PREVENT PREFETCH AFTER CLICK
+    // =====================================
+
+    markNavigationPrefetch(
+        target,
+    );
+
+    // =====================================
+    // ABORT
+    // =====================================
 
     controller?.abort();
 
@@ -165,33 +182,83 @@ export async function navigateTo(
 
     try {
 
-        document.dispatchEvent(
-            new CustomEvent(
-                'app:navigation-start',
-            ),
-        );
-
         let html =
+            null;
+
+        let instant =
+            false;
+
+        // =================================
+        // CACHE
+        // =================================
+
+        const cached =
             getPrefetchedPage(
                 target,
             );
 
-        const instant =
-            Boolean(
-                html,
-            );
-
-        if (!html) {
+        if (cached) {
 
             html =
-                await fetchPageHtml(
+                cached;
+
+            instant =
+                true;
+
+        } else {
+
+            // =============================
+            // PREFETCH REUSE
+            // =============================
+
+            const prefetchPromise =
+                getInFlightPrefetch(
                     target,
-                    {
-                        signal:
-                            controller.signal,
-                    },
                 );
+
+            if (prefetchPromise) {
+
+                html =
+                    await prefetchPromise;
+
+                instant =
+                    true;
+
+            } else {
+
+                // =========================
+                // FETCH
+                // =========================
+
+                html =
+                    await fetchPageHtml(
+                        target,
+                        {
+                            signal:
+                                controller.signal,
+                        },
+                    );
+            }
         }
+
+        // =================================
+        // INVALID
+        // =================================
+
+        if (
+            typeof html
+            !== 'string'
+            || html.length === 0
+        ) {
+
+            throw new Error(
+                'Empty HTML',
+            );
+        }
+
+        // =================================
+        // RACE CONDITION
+        // =================================
 
         if (
             currentId
@@ -199,6 +266,10 @@ export async function navigateTo(
         ) {
             return;
         }
+
+        // =================================
+        // HISTORY
+        // =================================
 
         if (
             options.updateHistory
@@ -211,6 +282,10 @@ export async function navigateTo(
                 target,
             );
         }
+
+        // =================================
+        // DOM SWAP
+        // =================================
 
         if (instant) {
 
@@ -225,13 +300,6 @@ export async function navigateTo(
             await runPageTransition(
                 () =>
                 {
-                    if (
-                        currentId
-                        !== navigationId
-                    ) {
-                        return;
-                    }
-
                     replaceContent(
                         html,
                     );
@@ -240,6 +308,10 @@ export async function navigateTo(
                 },
             );
         }
+
+        // =================================
+        // SCROLL
+        // =================================
 
         if (
             options.scrollTop
@@ -250,6 +322,10 @@ export async function navigateTo(
                 false,
             );
         }
+
+        // =================================
+        // EVENT
+        // =================================
 
         document.dispatchEvent(
             new CustomEvent(
@@ -300,12 +376,16 @@ export async function navigateTo(
 
 export function initAjaxNavigation()
 {
-    if (window.__SPA__) {
+    if (initialized) {
         return;
     }
 
-    window.__SPA__ =
+    initialized =
         true;
+
+    // =====================================
+    // CLICK
+    // =====================================
 
     document.addEventListener(
         'click',
@@ -344,20 +424,14 @@ export function initAjaxNavigation()
         },
     );
 
+    // =====================================
+    // POPSTATE
+    // =====================================
+
     window.addEventListener(
         'popstate',
         async () =>
         {
-            controller?.abort();
-
-            controller =
-                null;
-
-            locked =
-                false;
-
-            delete document.body.dataset.ajaxNavigating;
-
             try {
 
                 const html =

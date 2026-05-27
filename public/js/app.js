@@ -1,5 +1,5 @@
 // ==================================================
-// Core
+// CORE
 // ==================================================
 
 import {
@@ -16,7 +16,7 @@ import {
 } from './core/toast.js';
 
 // ==================================================
-// Navigation (SPA)
+// NAVIGATION
 // ==================================================
 
 import {
@@ -32,7 +32,7 @@ import {
 } from './navigation/global-back-navigation.js';
 
 // ==================================================
-// Manga
+// MANGA
 // ==================================================
 
 import {
@@ -64,19 +64,12 @@ import {
 } from './manga/keyboard/series-keyboard-navigation.js';
 
 // ==================================================
-// Chinois
+// CHINOIS
 // ==================================================
 
 import {
     initToggleGrammaireMaitrise,
 } from './chinois/actions/toggle-grammar-mastery.js';
-
-// ==================================================
-// Config
-// ==================================================
-
-const APP_READY_ATTRIBUTE =
-    'appInitialized';
 
 // ==================================================
 // SAFE INIT
@@ -129,30 +122,10 @@ function initFlashToast()
 }
 
 // ==================================================
-// APP STATE
+// GLOBAL INITIALIZERS
 // ==================================================
 
-function isAppInitialized()
-{
-    return (
-        document.body.dataset[
-            APP_READY_ATTRIBUTE
-        ] === 'true'
-    );
-}
-
-function setAppInitialized()
-{
-    document.body.dataset[
-        APP_READY_ATTRIBUTE
-    ] = 'true';
-}
-
-// ==================================================
-// INITIALIZERS
-// ==================================================
-
-const INITIALIZERS = [
+const GLOBAL_INITIALIZERS = [
 
     ['PageTransitions', initPageTransitions],
 
@@ -161,6 +134,13 @@ const INITIALIZERS = [
     ['Prefetch', initPrefetch],
 
     ['GlobalBackNavigation', initGlobalBackNavigation],
+];
+
+// ==================================================
+// PAGE INITIALIZERS
+// ==================================================
+
+const PAGE_INITIALIZERS = [
 
     ['AjouterPage', initAjouterPage],
 
@@ -180,16 +160,32 @@ const INITIALIZERS = [
 ];
 
 // ==================================================
-// RUN
+// RUNNERS
 // ==================================================
 
-function runInitializers()
+function runGlobalInitializers()
 {
     for (
         const [
             label,
             init,
-        ] of INITIALIZERS
+        ] of GLOBAL_INITIALIZERS
+    ) {
+
+        safeInit(
+            label,
+            init,
+        );
+    }
+}
+
+function runPageInitializers()
+{
+    for (
+        const [
+            label,
+            init,
+        ] of PAGE_INITIALIZERS
     ) {
 
         safeInit(
@@ -205,32 +201,33 @@ function runInitializers()
 
 function initApp()
 {
-    if (
-        isAppInitialized()
-    ) {
-        return;
-    }
-
-    setAppInitialized();
-
     debug(
         'APP',
         '🚀 Boot',
     );
 
     // =============================================
-    // FIRST LOAD
+    // GLOBAL
     // =============================================
 
-    runInitializers();
+    runGlobalInitializers();
 
     // =============================================
-    // SPA RELOAD
+    // PAGE
+    // =============================================
+
+    runPageInitializers();
+
+    // =============================================
+    // AJAX PAGE RELOAD
     // =============================================
 
     document.addEventListener(
         'ajax:page-loaded',
-        runInitializers,
+        () =>
+        {
+            runPageInitializers();
+        },
     );
 
     // =============================================

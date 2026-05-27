@@ -29,6 +29,9 @@ const HOVER_DELAY =
 const REQUEST_TIMEOUT =
     4000;
 
+const NAVIGATION_LOCK_DURATION =
+    1500;
+
 // =========================================
 // STATE
 // =========================================
@@ -39,14 +42,25 @@ const cache =
 const inFlight =
     new Map();
 
+const prefetched =
+    new Set();
+
 const hoverTimers =
     new WeakMap();
 
+const recentlyNavigated =
+    new Set();
+
+let initialized =
+    false;
+
 // =========================================
-// CACHE
+// HELPERS
 // =========================================
 
-function isExpired(entry)
+function isExpired(
+    entry,
+)
 {
     return (
         Date.now()
@@ -55,10 +69,46 @@ function isExpired(entry)
     );
 }
 
-export function getPrefetchedPage(url)
+// =========================================
+// NAVIGATION LOCK
+// =========================================
+
+export function markNavigationPrefetch(
+    url,
+)
 {
     const normalized =
-        normalizeUrl(url);
+        normalizeUrl(
+            url,
+        );
+
+    recentlyNavigated.add(
+        normalized,
+    );
+
+    setTimeout(
+        () =>
+        {
+            recentlyNavigated.delete(
+                normalized,
+            );
+        },
+        NAVIGATION_LOCK_DURATION,
+    );
+}
+
+// =========================================
+// CACHE
+// =========================================
+
+export function getPrefetchedPage(
+    url,
+)
+{
+    const normalized =
+        normalizeUrl(
+            url,
+        );
 
     const cached =
         cache.get(
@@ -68,6 +118,10 @@ export function getPrefetchedPage(url)
     if (!cached) {
         return null;
     }
+
+    // =====================================
+    // EXPIRED
+    // =====================================
 
     if (
         isExpired(
@@ -79,6 +133,10 @@ export function getPrefetchedPage(url)
             normalized,
         );
 
+        prefetched.delete(
+            normalized,
+        );
+
         return null;
     }
 
@@ -86,13 +144,32 @@ export function getPrefetchedPage(url)
 }
 
 // =========================================
+// IN FLIGHT
+// =========================================
+
+export function getInFlightPrefetch(
+    url,
+)
+{
+    return inFlight.get(
+        normalizeUrl(
+            url,
+        ),
+    );
+}
+
+// =========================================
 // PREFETCH
 // =========================================
 
-export async function prefetchPage(url)
+export async function prefetchPage(
+    url,
+)
 {
     const normalized =
-        normalizeUrl(url);
+        normalizeUrl(
+            url,
+        );
 
     // =====================================
     // CURRENT PAGE
@@ -104,36 +181,84 @@ export async function prefetchPage(url)
             location.href,
         )
     ) {
-        return;
+        return null;
     }
 
     // =====================================
-    // CACHE HIT
+    // RECENT NAVIGATION
     // =====================================
 
     if (
-        getPrefetchedPage(
+        recentlyNavigated.has(
             normalized,
         )
     ) {
+        return null;
+    }
 
-        return;
+    // =====================================
+    // CACHE
+    // =====================================
+
+    const cached =
+        getPrefetchedPage(
+            normalized,
+        );
+
+    if (cached) {
+
+        debug(
+            'PREFETCH',
+            'cache-hit',
+            normalized,
+        );
+
+        return cached;
     }
 
     // =====================================
     // IN FLIGHT
     // =====================================
 
+    const existing =
+        inFlight.get(
+            normalized,
+        );
+
+    if (existing) {
+
+        debug(
+            'PREFETCH',
+            'reuse',
+            normalized,
+        );
+
+        return existing;
+    }
+
+    // =====================================
+    // ALREADY PREFETCHED
+    // =====================================
+
     if (
-        inFlight.has(
+        prefetched.has(
             normalized,
         )
     ) {
-
-        return inFlight.get(
-            normalized,
-        );
+        return null;
     }
+
+    // =====================================
+    // LOCK
+    // =====================================
+
+    prefetched.add(
+        normalized,
+    );
+
+    // =====================================
+    // REQUEST
+    // =====================================
 
     const controller =
         new AbortController();
@@ -172,13 +297,26 @@ export async function prefetchPage(url)
                         },
                     );
 
+                // =================================
+                // INVALID
+                // =================================
+
                 if (
                     typeof html
                     !== 'string'
                     || html.length === 0
                 ) {
+
+                    prefetched.delete(
+                        normalized,
+                    );
+
                     return null;
                 }
+
+                // =================================
+                // CACHE
+                // =================================
 
                 cache.set(
                     normalized,
@@ -198,6 +336,10 @@ export async function prefetchPage(url)
                 return html;
 
             } catch (error) {
+
+                prefetched.delete(
+                    normalized,
+                );
 
                 if (
                     error?.name
@@ -233,7 +375,7 @@ export async function prefetchPage(url)
 }
 
 // =========================================
-// HOVER BIND
+// BIND
 // =========================================
 
 function bindHoverPrefetch()
@@ -245,10 +387,38 @@ function bindHoverPrefetch()
 
     for (const link of links)
     {
+        // =================================
+        // VALID
+        // =================================
+
         if (
             !(
                 link
                 instanceof HTMLAnchorElement
+            )
+        ) {
+            continue;
+        }
+
+        // =================================
+        // IGNORE
+        // =================================
+
+        if (
+            shouldIgnoreLink(
+                link,
+            )
+        ) {
+            continue;
+        }
+
+        // =================================
+        // HEADER NAV
+        // =================================
+
+        if (
+            link.classList.contains(
+                'nav-link-icon',
             )
         ) {
             continue;
@@ -268,13 +438,45 @@ function bindHoverPrefetch()
         link.dataset.prefetchBound =
             '1';
 
+        // =================================
+        // ENTER
+        // =================================
+
         link.addEventListener(
-            'mouseenter',
+            'pointerenter',
             () =>
             {
                 if (
-                    shouldIgnoreLink(
-                        link,
+                    document.body.dataset.ajaxNavigating
+                    === '1'
+                ) {
+                    return;
+                }
+
+                const normalized =
+                    normalizeUrl(
+                        link.href,
+                    );
+
+                // =========================
+                // RECENT NAVIGATION
+                // =========================
+
+                if (
+                    recentlyNavigated.has(
+                        normalized,
+                    )
+                ) {
+                    return;
+                }
+
+                // =========================
+                // PREFETCHED
+                // =========================
+
+                if (
+                    prefetched.has(
+                        normalized,
                     )
                 ) {
                     return;
@@ -295,7 +497,7 @@ function bindHoverPrefetch()
                             );
 
                             void prefetchPage(
-                                link.href,
+                                normalized,
                             );
                         },
                         HOVER_DELAY,
@@ -308,8 +510,12 @@ function bindHoverPrefetch()
             },
         );
 
+        // =================================
+        // LEAVE
+        // =================================
+
         link.addEventListener(
-            'mouseleave',
+            'pointerleave',
             () =>
             {
                 clearTimeout(
@@ -332,6 +538,13 @@ function bindHoverPrefetch()
 
 export function initPrefetch()
 {
+    if (initialized) {
+        return;
+    }
+
+    initialized =
+        true;
+
     bindHoverPrefetch();
 
     document.addEventListener(

@@ -30,7 +30,7 @@ import {
 } from '../../core/debug.js';
 
 // =========================================
-// Config
+// CONFIG
 // =========================================
 
 const SEARCH_DEBOUNCE =
@@ -40,14 +40,292 @@ const MIN_SEARCH_LENGTH =
     2;
 
 // =========================================
-// State
+// STATE
 // =========================================
 
 let initialized =
     false;
 
+let debounceTimer =
+    null;
+
+let abortController =
+    null;
+
+let activeIndex =
+    -1;
+
 // =========================================
-// Init
+// ELEMENTS
+// =========================================
+
+let form =
+    null;
+
+let input =
+    null;
+
+let results =
+    null;
+
+let dropdown =
+    null;
+
+let basePath =
+    '/';
+
+// =========================================
+// HELPERS
+// =========================================
+
+function getItems()
+{
+    return $$(
+        '.search-result-item',
+        results,
+    );
+}
+
+function resetActive()
+{
+    activeIndex =
+        -1;
+
+    getItems().forEach(
+        (
+            item,
+        ) =>
+        {
+            item.classList.remove(
+                'is-active',
+            );
+        },
+    );
+}
+
+function updateActive()
+{
+    const items =
+        getItems();
+
+    items.forEach(
+        (
+            item,
+            index,
+        ) =>
+        {
+            item.classList.toggle(
+                'is-active',
+                index === activeIndex,
+            );
+        },
+    );
+
+    items[
+        activeIndex
+    ]?.scrollIntoView({
+        block:
+            'nearest',
+    });
+}
+
+function openDropdown()
+{
+    dropdown?.classList.add(
+        'has-results',
+    );
+}
+
+function closeDropdown()
+{
+    if (!results || !dropdown || !input) {
+        return;
+    }
+
+    results.innerHTML =
+        '';
+
+    dropdown.classList.remove(
+        'is-loading',
+        'has-results',
+    );
+
+    abortController?.abort();
+
+    abortController =
+        null;
+
+    activeIndex =
+        -1;
+
+    resetActive();
+}
+
+function setLoading(
+    isLoading,
+)
+{
+    dropdown?.classList.toggle(
+        'is-loading',
+        isLoading,
+    );
+}
+
+function renderEmptyState(
+    message =
+        'Aucun résultat trouvé',
+)
+{
+    results.innerHTML =
+    `
+        <div class="search-result-empty">
+            ${message}
+        </div>
+    `;
+
+    openDropdown();
+
+    resetActive();
+}
+
+// =========================================
+// SEARCH
+// =========================================
+
+async function performSearch(
+    rawValue,
+)
+{
+    abortController?.abort();
+
+    const normalized =
+        normalizeSearchQuery(
+            rawValue,
+        );
+
+    if (
+        rawValue.length
+            < MIN_SEARCH_LENGTH
+        || normalized === ''
+    ) {
+
+        closeDropdown();
+
+        return;
+    }
+
+    abortController =
+        new AbortController();
+
+    const currentController =
+        abortController;
+
+    try {
+
+        setLoading(
+            true,
+        );
+
+        results.innerHTML =
+            '';
+
+        resetActive();
+
+        const shortcuts =
+            findSearchShortcuts(
+                rawValue,
+            ) || [];
+
+        shortcuts.forEach(
+            (
+                shortcut,
+            ) =>
+            {
+                results.appendChild(
+                    buildShortcutSearchResult(
+                        shortcut,
+                        basePath,
+                    ),
+                );
+            },
+        );
+
+        const data =
+            await fetchSearchResults(
+                `${basePath}manga/ajax/recherche/${encodeURIComponent(normalized)}`,
+                currentController.signal,
+            );
+
+        const mangas =
+            data?.data?.results
+            || [];
+
+        if (
+            !mangas.length
+            && !shortcuts.length
+        ) {
+
+            renderEmptyState();
+
+            return;
+        }
+
+        mangas.forEach(
+            (
+                manga,
+            ) =>
+            {
+                results.appendChild(
+                    buildMangaSearchResult(
+                        manga,
+                        rawValue,
+                        basePath,
+                    ),
+                );
+            },
+        );
+
+        openDropdown();
+
+        activeIndex =
+            0;
+
+        updateActive();
+
+    } catch (error) {
+
+        if (
+            error?.name
+            === 'AbortError'
+        ) {
+            return;
+        }
+
+        debugError(
+            'SEARCH',
+            error,
+        );
+
+        renderEmptyState(
+            'Erreur de chargement',
+        );
+
+    } finally {
+
+        if (
+            currentController.signal.aborted
+        ) {
+            return;
+        }
+
+        setLoading(
+            false,
+        );
+    }
+}
+
+// =========================================
+// INIT
 // =========================================
 
 export function initSearchManga()
@@ -56,28 +334,17 @@ export function initSearchManga()
         return;
     }
 
-    initialized =
-        true;
+    form =
+        $('.js-header-search');
 
-    const form =
-        $(
-            '.js-header-search',
-        );
+    input =
+        $('#header-search-input');
 
-    const input =
-        $(
-            '#header-search-input',
-        );
+    results =
+        $('#header-search-results');
 
-    const results =
-        $(
-            '#header-search-results',
-        );
-
-    const dropdown =
-        $(
-            '.js-header-search-dropdown',
-        );
+    dropdown =
+        $('.js-header-search-dropdown');
 
     if (
         !form
@@ -85,304 +352,18 @@ export function initSearchManga()
         || !results
         || !dropdown
     ) {
-
-        debug(
-            'SEARCH',
-            'header not found',
-        );
-
         return;
     }
 
-    const basePath =
+    initialized =
+        true;
+
+    basePath =
         form.dataset.basePath
         || '/';
 
-    let debounceTimer =
-        null;
-
-    let abortController =
-        null;
-
-    let activeIndex =
-        -1;
-
     // =====================================
-    // Helpers
-    // =====================================
-
-    function getItems()
-    {
-        return $$(
-            '.search-result-item',
-            results,
-        );
-    }
-
-    function resetActive()
-    {
-        activeIndex =
-            -1;
-
-        getItems().forEach(
-            (
-                item,
-            ) =>
-            {
-                item.classList.remove(
-                    'is-active',
-                );
-            },
-        );
-    }
-
-    function updateActive()
-    {
-        const items =
-            getItems();
-
-        items.forEach(
-            (
-                item,
-                index,
-            ) =>
-            {
-                item.classList.toggle(
-                    'is-active',
-                    index === activeIndex,
-                );
-            },
-        );
-
-        const activeItem =
-            items[
-                activeIndex
-            ];
-
-        activeItem?.scrollIntoView({
-            block:
-                'nearest',
-            });
-    }
-
-    function openDropdown()
-    {
-        dropdown.classList.add(
-            'has-results',
-        );
-    }
-
-    function closeDropdown()
-    {
-        results.innerHTML =
-            '';
-
-        input.value =
-            '';
-
-        dropdown.classList.remove(
-            'is-loading',
-            'has-results',
-        );
-
-        abortController?.abort();
-
-        abortController =
-            null;
-
-        activeIndex =
-            -1;
-
-        resetActive();
-    }
-
-    function setLoading(
-        isLoading,
-    )
-    {
-        dropdown.classList.toggle(
-            'is-loading',
-            isLoading,
-        );
-
-        if (isLoading) {
-
-            dropdown.classList.remove(
-                'has-results',
-            );
-        }
-    }
-
-    function renderEmptyState(
-        message =
-            'Aucun résultat trouvé',
-    )
-    {
-        results.innerHTML =
-        `
-            <div class="search-result-empty">
-                ${message}
-            </div>
-        `;
-
-        openDropdown();
-
-        resetActive();
-    }
-
-    // =====================================
-    // Search
-    // =====================================
-
-    async function performSearch(
-        rawValue,
-    )
-    {
-        abortController?.abort();
-
-        const normalized =
-            normalizeSearchQuery(
-                rawValue,
-            );
-
-        if (
-            rawValue.length
-                < MIN_SEARCH_LENGTH
-            || normalized === ''
-        ) {
-
-            closeDropdown();
-
-            return;
-        }
-
-        abortController =
-            new AbortController();
-
-        const currentController =
-            abortController;
-
-        try {
-
-            debug(
-                'SEARCH',
-                'fetch',
-                normalized,
-            );
-
-            setLoading(
-                true,
-            );
-
-            results.innerHTML =
-                '';
-
-            resetActive();
-
-            // =============================
-            // Shortcuts
-            // =============================
-
-            const shortcuts =
-                findSearchShortcuts(
-                    rawValue,
-                ) || [];
-
-            shortcuts.forEach(
-                (
-                    shortcut,
-                ) =>
-                {
-                    results.appendChild(
-                        buildShortcutSearchResult(
-                            shortcut,
-                            basePath,
-                        ),
-                    );
-                },
-            );
-
-            // =============================
-            // API
-            // =============================
-
-            const data =
-                await fetchSearchResults(
-                    `${basePath}manga/ajax/recherche/${encodeURIComponent(normalized)}?t=${Date.now()}`,
-                    currentController.signal,
-                );
-
-            const mangas =
-                data?.data?.results
-                || [];
-
-            if (
-                !mangas.length
-                && !shortcuts.length
-            ) {
-
-                renderEmptyState();
-
-                return;
-            }
-
-            mangas.forEach(
-                (
-                    manga,
-                ) =>
-                {
-                    results.appendChild(
-                        buildMangaSearchResult(
-                            manga,
-                            rawValue,
-                            basePath,
-                        ),
-                    );
-                },
-            );
-
-            openDropdown();
-
-            activeIndex =
-                0;
-
-            updateActive();
-
-        } catch (error) {
-
-            if (
-                error instanceof Error
-                && error.name
-                    === 'AbortError'
-            ) {
-                return;
-            }
-
-            debugError(
-                'SEARCH',
-                error,
-            );
-
-            renderEmptyState(
-                'Erreur de chargement',
-            );
-
-        } finally {
-
-            if (
-                currentController.signal.aborted
-            ) {
-                return;
-            }
-
-            setLoading(
-                false,
-            );
-        }
-    }
-
-    // =====================================
-    // Submit
+    // SUBMIT
     // =====================================
 
     form.addEventListener(
@@ -396,9 +377,7 @@ export function initSearchManga()
             let value =
                 input.value.trim();
 
-            if (
-                value === ''
-            ) {
+            if (!value) {
                 return;
             }
 
@@ -407,13 +386,9 @@ export function initSearchManga()
                     value,
                 );
 
-            if (
-                value === ''
-            ) {
+            if (!value) {
                 return;
             }
-
-            closeDropdown();
 
             window.location.href =
                 `${basePath}manga/recherche/${encodeURIComponent(value)}`;
@@ -421,7 +396,7 @@ export function initSearchManga()
     );
 
     // =====================================
-    // Input
+    // INPUT
     // =====================================
 
     input.addEventListener(
@@ -448,167 +423,7 @@ export function initSearchManga()
     );
 
     // =====================================
-    // Keyboard
-    // =====================================
-
-    input.addEventListener(
-        'keydown',
-        (
-            event,
-        ) =>
-        {
-            const items =
-                getItems();
-
-            if (
-                event.key
-                === 'Escape'
-            ) {
-
-                event.preventDefault();
-
-                closeDropdown();
-
-                return;
-            }
-
-            if (
-                !dropdown.classList.contains(
-                    'has-results',
-                )
-                || !items.length
-            ) {
-                return;
-            }
-
-            // DOWN
-
-            if (
-                event.key
-                === 'ArrowDown'
-            ) {
-
-                event.preventDefault();
-
-                activeIndex =
-                    activeIndex
-                    < items.length - 1
-                        ? activeIndex + 1
-                        : 0;
-
-                updateActive();
-
-                return;
-            }
-
-            // UP
-
-            if (
-                event.key
-                === 'ArrowUp'
-            ) {
-
-                event.preventDefault();
-
-                activeIndex =
-                    activeIndex > 0
-                        ? activeIndex - 1
-                        : items.length - 1;
-
-                updateActive();
-
-                return;
-            }
-
-            // ENTER
-
-            if (
-                event.key
-                === 'Enter'
-            ) {
-
-                const item =
-                    items[
-                        activeIndex
-                    ];
-
-                if (!item) {
-                    return;
-                }
-
-                event.preventDefault();
-
-                closeDropdown();
-
-                window.location.href =
-                    item.href;
-            }
-        },
-    );
-
-    // =====================================
-    // Hover
-    // =====================================
-
-    results.addEventListener(
-        'mouseover',
-        (
-            event,
-        ) =>
-        {
-            const target =
-                event.target;
-
-            if (
-                !(target instanceof Element)
-            ) {
-                return;
-            }
-
-            const item =
-                target.closest(
-                    '.search-result-item',
-                );
-
-            if (!item) {
-                return;
-            }
-
-            const items =
-                getItems();
-
-            const index =
-                items.indexOf(
-                    item,
-                );
-
-            if (
-                index === -1
-            ) {
-                return;
-            }
-
-            activeIndex =
-                index;
-
-            updateActive();
-        },
-    );
-
-    // =====================================
-    // SPA Navigation
-    // =====================================
-
-    document.addEventListener(
-        'app:navigation-start',
-        () =>
-        {
-            closeDropdown();
-        },
-    );
-
-    // =====================================
-    // Outside Click
+    // OUTSIDE CLICK
     // =====================================
 
     document.addEventListener(
@@ -635,6 +450,43 @@ export function initSearchManga()
                 closeDropdown();
             }
         },
+    );
+
+    // =====================================
+    // NAVIGATION
+    // =====================================
+
+    results.addEventListener(
+        'click',
+        (
+            event,
+        ) =>
+        {
+            const target =
+                event.target;
+
+            if (
+                !(target instanceof Element)
+            ) {
+                return;
+            }
+
+            const item =
+                target.closest(
+                    '.search-result-item',
+                );
+
+            if (!item) {
+                return;
+            }
+
+            closeDropdown();
+        },
+    );
+
+    document.addEventListener(
+        'app:navigation-start',
+        closeDropdown,
     );
 
     debug(

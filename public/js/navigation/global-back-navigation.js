@@ -116,10 +116,6 @@ function navigateBack()
 
     lockNavigation();
 
-    // =====================================
-    // HISTORY BACK
-    // =====================================
-
     if (
         window.history.length > 1
     ) {
@@ -128,10 +124,6 @@ function navigateBack()
 
         return;
     }
-
-    // =====================================
-    // HARD FALLBACK
-    // =====================================
 
     window.location.assign(
         config.baseUrl,
@@ -146,10 +138,6 @@ function handleKeyboard(
     event,
 )
 {
-    // =====================================
-    // BACKSPACE ONLY
-    // =====================================
-
     if (
         event.key
         !== 'Backspace'
@@ -157,19 +145,11 @@ function handleKeyboard(
         return;
     }
 
-    // =====================================
-    // IGNORE REPEAT
-    // =====================================
-
     if (
         event.repeat
     ) {
         return;
     }
-
-    // =====================================
-    // IGNORE MODIFIERS
-    // =====================================
 
     if (
         event.ctrlKey
@@ -180,10 +160,6 @@ function handleKeyboard(
         return;
     }
 
-    // =====================================
-    // IGNORE INPUTS
-    // =====================================
-
     if (
         isTypingContext(
             event.target,
@@ -192,13 +168,17 @@ function handleKeyboard(
         return;
     }
 
-    // =====================================
-    // IGNORE BUTTONS / LINKS
-    // =====================================
-
     if (
         isInteractiveElement(
             event.target,
+        )
+    ) {
+        return;
+    }
+
+    if (
+        document.querySelector(
+            '.collection-card-link.is-active',
         )
     ) {
         return;
@@ -225,5 +205,9 @@ export function initGlobalBackNavigation()
     document.addEventListener(
         'keydown',
         handleKeyboard,
+        {
+            passive:
+                false,
+        },
     );
 }

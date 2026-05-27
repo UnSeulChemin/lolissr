@@ -16,7 +16,7 @@ import {
 } from '../../core/debug.js';
 
 // =========================================
-// Config
+// CONFIG
 // =========================================
 
 const GRID_SELECTOR =
@@ -40,7 +40,7 @@ select,
 `;
 
 // =========================================
-// State
+// STATE
 // =========================================
 
 let initialized =
@@ -56,7 +56,7 @@ let lastScrollTime =
     0;
 
 // =========================================
-// Helpers
+// HELPERS
 // =========================================
 
 function getGrid()
@@ -153,7 +153,7 @@ function getNextPaginationLink()
 }
 
 // =========================================
-// Active State
+// ACTIVE
 // =========================================
 
 function clearActiveState()
@@ -253,7 +253,7 @@ function prefetchNearbyCards(
                 instanceof HTMLAnchorElement
             ) {
 
-                prefetchPage(
+                void prefetchPage(
                     card.href,
                 );
             }
@@ -265,7 +265,7 @@ function prefetchNearbyCards(
 
     if (nextPagination) {
 
-        prefetchPage(
+        void prefetchPage(
             nextPagination.href,
         );
     }
@@ -317,7 +317,7 @@ function syncActiveState()
 }
 
 // =========================================
-// Navigation
+// NAVIGATION
 // =========================================
 
 function moveHorizontal(
@@ -342,7 +342,7 @@ function moveVertical(
 }
 
 // =========================================
-// Keyboard
+// KEYBOARD
 // =========================================
 
 function handleKeyboard(
@@ -479,13 +479,26 @@ function handleKeyboard(
 
             event.preventDefault();
 
-            cards[
-                activeIndex
-            ]?.click();
+            {
+                const activeCard =
+                    cards[
+                        activeIndex
+                    ];
+
+                if (
+                    activeCard
+                    instanceof HTMLAnchorElement
+                ) {
+
+                    window.location.href =
+                        activeCard.href;
+                }
+            }
 
             break;
 
         case 'Escape':
+        case 'Backspace':
 
             event.preventDefault();
 
@@ -499,7 +512,7 @@ function handleKeyboard(
 }
 
 // =========================================
-// Resize
+// RESIZE
 // =========================================
 
 function handleResize()
@@ -508,7 +521,7 @@ function handleResize()
 }
 
 // =========================================
-// Init
+// INIT
 // =========================================
 
 export function initSeriesKeyboardNavigation()
@@ -549,11 +562,19 @@ export function initSeriesKeyboardNavigation()
                 },
             );
         },
+        {
+            passive:
+                true,
+        },
     );
 
     window.addEventListener(
         'pageshow',
         clearActiveState,
+        {
+            passive:
+                true,
+        },
     );
 
     debug(

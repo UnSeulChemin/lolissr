@@ -2,7 +2,9 @@
 // CORE : NAVIGATION
 // =========================================
 
-export function normalizeUrl(href)
+export function normalizeUrl(
+    href,
+)
 {
     const url =
         new URL(
@@ -39,7 +41,7 @@ export function normalizeUrl(href)
     url.hash = '';
 
     // =====================================
-    // APPLY CLEAN PATH
+    // APPLY
     // =====================================
 
     url.pathname =
@@ -52,7 +54,9 @@ export function normalizeUrl(href)
 // LINK FILTER
 // =========================================
 
-export function shouldIgnoreLink(link)
+export function shouldIgnoreLink(
+    link,
+)
 {
     if (
         !(
@@ -108,7 +112,7 @@ export function shouldIgnoreLink(link)
     }
 
     // =====================================
-    // DATASET
+    // AJAX DISABLED
     // =====================================
 
     if (

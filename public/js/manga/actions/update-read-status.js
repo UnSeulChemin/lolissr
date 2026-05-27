@@ -21,14 +21,21 @@ import {
 } from '../../core/debug.js';
 
 // =========================================
-// Selectors
+// CONFIG
 // =========================================
 
 const BUTTON_SELECTOR =
     '.ajax-lu-button';
 
 // =========================================
-// Helpers
+// STATE
+// =========================================
+
+let initialized =
+    false;
+
+// =========================================
+// HELPERS
 // =========================================
 
 function updateButtonState(
@@ -72,10 +79,6 @@ function updateButtonState(
     );
 }
 
-// =========================================
-// Refresh
-// =========================================
-
 function refreshButtons()
 {
     $$(
@@ -106,7 +109,7 @@ function refreshButtons()
 }
 
 // =========================================
-// API
+// UPDATE
 // =========================================
 
 async function updateReadStatus(
@@ -123,18 +126,8 @@ async function updateReadStatus(
         button.dataset.url;
 
     if (!url) {
-
-        showToast(
-            'URL manquante',
-            'error',
-        );
-
         return;
     }
-
-    // =====================================
-    // Current State
-    // =====================================
 
     const currentReadStatus =
         Number(
@@ -147,16 +140,8 @@ async function updateReadStatus(
             ? 0
             : 1;
 
-    // =====================================
-    // Disable
-    // =====================================
-
     button.disabled =
         true;
-
-    // =====================================
-    // Optimistic UI
-    // =====================================
 
     updateButtonState(
         button,
@@ -164,12 +149,6 @@ async function updateReadStatus(
     );
 
     try {
-
-        debug(
-            'READ_STATUS',
-            'update',
-            nextReadStatus,
-        );
 
         const data =
             await post(
@@ -179,23 +158,12 @@ async function updateReadStatus(
                         nextReadStatus,
                 },
                 {
-                    headers:
-                    {
-                        'Accept':
+                    headers: {
+                        Accept:
                             'application/json',
                     },
                 },
             );
-
-        debug(
-            'READ_STATUS',
-            'response',
-            data,
-        );
-
-        // =================================
-        // Validation
-        // =================================
 
         if (
             data?.success !== true
@@ -203,27 +171,16 @@ async function updateReadStatus(
 
             throw new Error(
                 data?.message
-                || 'Erreur lors de la mise à jour',
+                || 'Erreur',
             );
         }
 
-        // =================================
-        // Backend Data
-        // =================================
-
-        const finalStatus =
+        updateButtonState(
+            button,
             Number(
                 data?.data?.readStatus
                 ?? nextReadStatus,
-            );
-
-        // =================================
-        // Sync UI
-        // =================================
-
-        updateButtonState(
-            button,
-            finalStatus,
+            ),
         );
 
         showToast(
@@ -238,10 +195,6 @@ async function updateReadStatus(
             'READ_STATUS',
             error,
         );
-
-        // =================================
-        // Rollback
-        // =================================
 
         updateButtonState(
             button,
@@ -263,30 +216,17 @@ async function updateReadStatus(
 }
 
 // =========================================
-// Init
+// INIT
 // =========================================
 
 export function initUpdateReadStatus()
 {
-    // =====================================
-    // Prevent Double Init
-    // =====================================
-
-    if (
-        document.body.dataset
-            .updateReadStatusInitialized
-        === 'true'
-    ) {
+    if (initialized) {
         return;
     }
 
-    document.body.dataset
-        .updateReadStatusInitialized =
-            'true';
-
-    // =====================================
-    // Click
-    // =====================================
+    initialized =
+        true;
 
     delegate(
         document,
@@ -312,13 +252,12 @@ export function initUpdateReadStatus()
         },
     );
 
-    // =====================================
-    // AJAX Refresh
-    // =====================================
-
     document.addEventListener(
         'ajax:page-loaded',
         refreshButtons,
+        {
+            passive: true,
+        },
     );
 
     refreshButtons();

@@ -22,7 +22,7 @@ import {
 } from '../../core/debug.js';
 
 // =========================================
-// State
+// STATE
 // =========================================
 
 let initialized =
@@ -32,7 +32,7 @@ let isSavingNotes =
     false;
 
 // =========================================
-// Helpers
+// HELPERS
 // =========================================
 
 function getDetailCard()
@@ -161,51 +161,26 @@ async function saveNotes(
         return null;
     }
 
-    const slug =
-        card.dataset.slug;
-
-    const numero =
-        card.dataset.numero;
-
-    const basePath =
-        card.dataset.basePath;
-
-    if (
-        !slug
-        || !numero
-        || !basePath
-    ) {
-
-        throw new Error(
-            'Informations manga manquantes',
-        );
-    }
-
     return post(
-        `${basePath}manga/ajax/update-note/${slug}/${numero}`,
+        `${card.dataset.basePath}manga/ajax/update-note/${card.dataset.slug}/${card.dataset.numero}`,
         {
             jacquette:
                 fieldName === 'jacquette'
                     ? value
-                    : (
-                        Number(
-                            card.dataset.jacquette,
-                        ) || 0
-                    ),
+                    : Number(
+                        card.dataset.jacquette,
+                    ) || 0,
 
             livre_note:
                 fieldName === 'livreNote'
                     ? value
-                    : (
-                        Number(
-                            card.dataset.livreNote,
-                        ) || 0
-                    ),
+                    : Number(
+                        card.dataset.livreNote,
+                    ) || 0,
         },
         {
-            headers:
-            {
-                'Accept':
+            headers: {
+                Accept:
                     'application/json',
             },
         },
@@ -213,7 +188,7 @@ async function saveNotes(
 }
 
 // =========================================
-// Update
+// UPDATE
 // =========================================
 
 async function updateNote(
@@ -259,10 +234,6 @@ async function updateNote(
             button.dataset.value,
         );
 
-    // =====================================
-    // Optimistic UI
-    // =====================================
-
     card.dataset[
         fieldName
     ] =
@@ -280,13 +251,6 @@ async function updateNote(
             true;
 
         refreshNoteButtonsState();
-
-        debug(
-            'NOTE',
-            'save',
-            fieldName,
-            value,
-        );
 
         const data =
             await saveNotes(
@@ -337,10 +301,6 @@ async function updateNote(
             error,
         );
 
-        // =================================
-        // Rollback
-        // =================================
-
         card.dataset[
             fieldName
         ] =
@@ -367,7 +327,7 @@ async function updateNote(
 }
 
 // =========================================
-// Init
+// INIT
 // =========================================
 
 export function initUpdateNote()
@@ -378,10 +338,6 @@ export function initUpdateNote()
 
     initialized =
         true;
-
-    // =====================================
-    // Click
-    // =====================================
 
     delegate(
         document,
@@ -407,10 +363,6 @@ export function initUpdateNote()
         },
     );
 
-    // =====================================
-    // Sync AJAX
-    // =====================================
-
     document.addEventListener(
         'ajax:page-loaded',
         () =>
@@ -418,6 +370,9 @@ export function initUpdateNote()
             refreshNoteButtonsState();
 
             updateTotalNote();
+        },
+        {
+            passive: true,
         },
     );
 
