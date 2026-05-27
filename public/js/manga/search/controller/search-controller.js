@@ -8,10 +8,6 @@ import {
 } from '../../../core/dom.js';
 
 import {
-    navigateTo,
-} from '../../../router/router.js';
-
-import {
     fetchSearchResults,
 } from '../api/search-api.js';
 
@@ -29,8 +25,6 @@ import {
 } from '../utils/search-utils.js';
 
 import {
-    openSearchDropdown,
-    closeSearchDropdown,
     clearSearchResults,
 } from '../ui/search-dropdown.js';
 
@@ -60,22 +54,48 @@ let activeIndex =
 
 export function initSearchController()
 {
+    const search =
+        $('.js-header-search');
+
     const searchInput =
-        $(
-            '[data-search-input]',
-        );
+        $('#header-search-input');
 
     const searchResults =
-        $(
-            '[data-search-results]',
-        );
+        $('#header-search-results');
+
+    const searchDropdown =
+        $('.js-header-search-dropdown');
+
+    // =====================================
+    // ELEMENTS
+    // =====================================
 
     if (
+        !search ||
         !searchInput ||
-        !searchResults
+        !searchResults ||
+        !searchDropdown
     ) {
         return;
     }
+
+    // =====================================
+    // PREVENT DOUBLE INIT
+    // =====================================
+
+    if (
+        search.dataset.initialized ===
+        'true'
+    ) {
+        return;
+    }
+
+    search.dataset.initialized =
+        'true';
+
+    // =====================================
+    // INPUT
+    // =====================================
 
     searchInput.addEventListener(
         'input',
@@ -90,14 +110,20 @@ export function initSearchController()
                     () =>
                     {
                         handleSearch(
+                            search,
                             searchInput,
                             searchResults,
+                            searchDropdown,
                         );
                     },
                     SEARCH_DELAY,
                 );
         },
     );
+
+    // =====================================
+    // KEYBOARD
+    // =====================================
 
     searchInput.addEventListener(
         'keydown',
@@ -109,9 +135,14 @@ export function initSearchController()
                 event,
                 searchInput,
                 searchResults,
+                searchDropdown,
             );
         },
     );
+
+    // =====================================
+    // OUTSIDE CLICK
+    // =====================================
 
     document.addEventListener(
         'click',
@@ -121,11 +152,13 @@ export function initSearchController()
         {
             if (
                 !event.target.closest(
-                    '[data-search]',
+                    '.js-header-search',
                 )
             ) {
-                closeSearchDropdown(
+                resetSearch(
+                    searchInput,
                     searchResults,
+                    searchDropdown,
                 );
             }
         },
@@ -137,8 +170,10 @@ export function initSearchController()
 // =========================================
 
 async function handleSearch(
+    search,
     searchInput,
     searchResults,
+    searchDropdown,
 )
 {
     const rawValue =
@@ -149,19 +184,25 @@ async function handleSearch(
             rawValue,
         );
 
+    // =====================================
+    // EMPTY
+    // =====================================
+
     if (
         query === ''
     ) {
-        clearSearchResults(
+        resetSearch(
+            searchInput,
             searchResults,
-        );
-
-        closeSearchDropdown(
-            searchResults,
+            searchDropdown,
         );
 
         return;
     }
+
+    // =====================================
+    // ABORT PREVIOUS
+    // =====================================
 
     abortController?.abort();
 
@@ -174,22 +215,23 @@ async function handleSearch(
     try {
 
         const basePath =
-            document.body.dataset.basepath ??
+            search.dataset.basePath ??
             '/';
+
+        const searchUrl =
+            `${basePath}manga/ajax/recherche`;
 
         const [
             mangas,
             shortcuts,
         ] = await Promise.all([
             fetchSearchResults(
-                `${basePath}search?q=${encodeURIComponent(query)}`,
+                `${searchUrl}/${encodeURIComponent(query)}`,
                 abortController.signal,
             ),
 
-            Promise.resolve(
-                findSearchShortcuts(
-                    query,
-                ),
+            findSearchShortcuts(
+                query,
             ),
         ]);
 
@@ -201,6 +243,7 @@ async function handleSearch(
                 basePath,
                 searchInput,
                 searchResults,
+                searchDropdown,
             },
         );
 
@@ -230,6 +273,7 @@ function renderResults(
         basePath,
         searchInput,
         searchResults,
+        searchDropdown,
     },
 )
 {
@@ -237,13 +281,16 @@ function renderResults(
         searchResults,
     );
 
-    const fragment =
-        document.createDocumentFragment();
+    let index =
+        0;
+
+    // =====================================
+    // MANGAS
+    // =====================================
 
     mangas.forEach(
         (
             manga,
-            index,
         ) =>
         {
             const item =
@@ -258,24 +305,26 @@ function renderResults(
                 index,
                 searchInput,
                 searchResults,
+                searchDropdown,
             );
 
-            fragment.appendChild(
+            searchResults.appendChild(
                 item,
             );
+
+            index++;
         },
     );
+
+    // =====================================
+    // SHORTCUTS
+    // =====================================
 
     shortcuts.forEach(
         (
             shortcut,
-            shortcutIndex,
         ) =>
         {
-            const index =
-                mangas.length +
-                shortcutIndex;
-
             const item =
                 buildShortcutSearchResult(
                     shortcut,
@@ -287,35 +336,38 @@ function renderResults(
                 index,
                 searchInput,
                 searchResults,
+                searchDropdown,
             );
 
-            fragment.appendChild(
+            searchResults.appendChild(
                 item,
             );
+
+            index++;
         },
     );
 
+    // =====================================
+    // EMPTY
+    // =====================================
+
     if (
-        !fragment.children.length
+        index === 0
     ) {
-        closeSearchDropdown(
-            searchResults,
+        closeDropdown(
+            searchDropdown,
         );
 
         return;
     }
 
-    searchResults.appendChild(
-        fragment,
-    );
-
-    openSearchDropdown(
-        searchResults,
+    openDropdown(
+        searchDropdown,
     );
 }
 
 // =========================================
-// SETUP RESULT ITEM
+// SETUP ITEM
 // =========================================
 
 function setupResultItem(
@@ -323,10 +375,15 @@ function setupResultItem(
     index,
     searchInput,
     searchResults,
+    searchDropdown,
 )
 {
     item.dataset.index =
         index;
+
+    // =====================================
+    // HOVER
+    // =====================================
 
     item.addEventListener(
         'mouseenter',
@@ -341,21 +398,18 @@ function setupResultItem(
         },
     );
 
+    // =====================================
+    // CLICK
+    // =====================================
+
     item.addEventListener(
         'click',
-        (
-            event,
-        ) =>
+        () =>
         {
-            event.preventDefault();
-
             resetSearch(
                 searchInput,
                 searchResults,
-            );
-
-            navigateTo(
-                item.href,
+                searchDropdown,
             );
         },
     );
@@ -369,6 +423,7 @@ function handleKeyboardNavigation(
     event,
     searchInput,
     searchResults,
+    searchDropdown,
 )
 {
     const resultItems =
@@ -383,7 +438,9 @@ function handleKeyboardNavigation(
         return;
     }
 
+    // =====================================
     // DOWN
+    // =====================================
 
     if (
         event.key ===
@@ -405,7 +462,9 @@ function handleKeyboardNavigation(
         );
     }
 
+    // =====================================
     // UP
+    // =====================================
 
     if (
         event.key ===
@@ -427,7 +486,9 @@ function handleKeyboardNavigation(
         );
     }
 
+    // =====================================
     // ENTER
+    // =====================================
 
     if (
         event.key ===
@@ -449,27 +510,31 @@ function handleKeyboardNavigation(
         resetSearch(
             searchInput,
             searchResults,
+            searchDropdown,
         );
 
-        navigateTo(
-            activeItem.href,
-        );
+        window.location.href =
+            activeItem.href;
     }
 
+    // =====================================
     // ESCAPE
+    // =====================================
 
     if (
         event.key ===
         'Escape'
     ) {
-        closeSearchDropdown(
+        resetSearch(
+            searchInput,
             searchResults,
+            searchDropdown,
         );
     }
 }
 
 // =========================================
-// UPDATE ACTIVE RESULT
+// UPDATE ACTIVE
 // =========================================
 
 function updateActiveResult(
@@ -515,25 +580,69 @@ function updateActiveResult(
 }
 
 // =========================================
+// OPEN DROPDOWN
+// =========================================
+
+function openDropdown(
+    searchDropdown,
+)
+{
+    searchDropdown.classList.remove(
+        'is-loading',
+    );
+
+    searchDropdown.classList.add(
+        'has-results',
+    );
+}
+
+// =========================================
+// CLOSE DROPDOWN
+// =========================================
+
+function closeDropdown(
+    searchDropdown,
+)
+{
+    searchDropdown.classList.remove(
+        'has-results',
+    );
+
+    searchDropdown.classList.remove(
+        'is-loading',
+    );
+}
+
+// =========================================
 // RESET SEARCH
 // =========================================
 
 function resetSearch(
     searchInput,
     searchResults,
+    searchDropdown,
 )
 {
-    searchInput.value =
-        '';
+    abortController?.abort();
 
     activeIndex =
         -1;
+
+    searchInput.value =
+        '';
 
     clearSearchResults(
         searchResults,
     );
 
-    closeSearchDropdown(
-        searchResults,
+    closeDropdown(
+        searchDropdown,
     );
 }
+
+// =========================================
+// LEGACY EXPORT
+// =========================================
+
+export const initSearchManga =
+    initSearchController;

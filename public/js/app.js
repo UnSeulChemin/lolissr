@@ -36,7 +36,7 @@ import {
 } from './history/back-navigation.js';
 
 // ==================================================
-// PAGES
+// MANGA PAGES
 // ==================================================
 
 import {
@@ -48,7 +48,7 @@ import {
 } from './manga/pages/modifier.js';
 
 // ==================================================
-// ACTIONS
+// MANGA ACTIONS
 // ==================================================
 
 import {
@@ -63,9 +63,17 @@ import {
     initUpdateReadStatus,
 } from './manga/actions/update-read-status.js';
 
+// ==================================================
+// MANGA SEARCH
+// ==================================================
+
 import {
     initSearchController,
 } from './manga/search/controller/search-controller.js';
+
+// ==================================================
+// MANGA KEYBOARD
+// ==================================================
 
 import {
     initSeriesKeyboardNavigation,
@@ -134,18 +142,31 @@ function initFlashToast()
 
 const GLOBAL_INITIALIZERS = [
 
-    ['Router', initRouter],
+    [
+        'Router',
+        initRouter,
+    ],
 
-    ['Prefetch', initPrefetch],
+    [
+        'Prefetch',
+        initPrefetch,
+    ],
 
-    ['GlobalBackNavigation', initGlobalBackNavigation],
+    [
+        'GlobalBackNavigation',
+        initGlobalBackNavigation,
+    ],
 ];
 
 // ==================================================
-// ROUTES
+// ROUTE INITIALIZERS
 // ==================================================
 
 const ROUTE_INITIALIZERS = [
+
+    // ==============================================
+    // AJOUTER
+    // ==============================================
 
     {
         match:
@@ -153,19 +174,33 @@ const ROUTE_INITIALIZERS = [
 
         initializers:
         [
-            ['AjouterPage', initAjouterPage],
+            [
+                'AjouterPage',
+                initAjouterPage,
+            ],
         ],
     },
+
+    // ==============================================
+    // MODIFIER
+    // ==============================================
 
     {
         match:
-            /^\/lolissr\/manga\/modifier\/.+/,
+            /^\/lolissr\/manga\/series\/modifier\/.+/,
 
         initializers:
         [
-            ['ModifierPage', initModifierPage],
+            [
+                'ModifierPage',
+                initModifierPage,
+            ],
         ],
     },
+
+    // ==============================================
+    // GLOBAL ROUTES
+    // ==============================================
 
     {
         match:
@@ -173,23 +208,41 @@ const ROUTE_INITIALIZERS = [
 
         initializers:
         [
-            ['UpdateNote', initUpdateNote],
+            [
+                'UpdateNote',
+                initUpdateNote,
+            ],
 
-            ['DeleteManga', initDeleteManga],
+            [
+                'DeleteManga',
+                initDeleteManga,
+            ],
 
-            ['UpdateReadStatus', initUpdateReadStatus],
+            [
+                'UpdateReadStatus',
+                initUpdateReadStatus,
+            ],
 
-            ['SearchManga', initSearchController],
+            [
+                'SearchController',
+                initSearchController,
+            ],
 
-            ['SeriesKeyboardNavigation', initSeriesKeyboardNavigation],
+            [
+                'SeriesKeyboardNavigation',
+                initSeriesKeyboardNavigation,
+            ],
 
-            ['ToggleGrammaireMaitrise', initToggleGrammaireMaitrise],
+            [
+                'ToggleGrammaireMaitrise',
+                initToggleGrammaireMaitrise,
+            ],
         ],
     },
 ];
 
 // ==================================================
-// GLOBAL
+// RUN GLOBAL INITIALIZERS
 // ==================================================
 
 function runGlobalInitializers()
@@ -210,7 +263,7 @@ function runGlobalInitializers()
 }
 
 // ==================================================
-// ROUTE
+// RUN ROUTE INITIALIZERS
 // ==================================================
 
 function runRouteInitializers()
@@ -258,21 +311,21 @@ function initApp()
         '🚀 Boot',
     );
 
-    // =============================================
+    // ==============================================
     // GLOBAL
-    // =============================================
+    // ==============================================
 
     runGlobalInitializers();
 
-    // =============================================
+    // ==============================================
     // CURRENT ROUTE
-    // =============================================
+    // ==============================================
 
     runRouteInitializers();
 
-    // =============================================
+    // ==============================================
     // ROUTER HOOK
-    // =============================================
+    // ==============================================
 
     onRouteChange(
         () =>
@@ -281,9 +334,9 @@ function initApp()
         },
     );
 
-    // =============================================
-    // FLASH
-    // =============================================
+    // ==============================================
+    // FLASH TOAST
+    // ==============================================
 
     safeInit(
         'FlashToast',
@@ -301,8 +354,8 @@ function initApp()
 // ==================================================
 
 if (
-    document.readyState
-    === 'loading'
+    document.readyState ===
+    'loading'
 ) {
 
     document.addEventListener(

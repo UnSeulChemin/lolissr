@@ -30,23 +30,20 @@ export async function fetchSearchResults(
                     {
                         Accept:
                             'application/json',
-
-                        'X-Partial':
-                            'true',
                     },
                 },
             );
 
         return (
-            response?.results ??
-            response ??
+            response?.data?.results ??
             []
         );
 
     } catch (error) {
 
         if (
-            error?.name === 'AbortError'
+            error?.name ===
+            'AbortError'
         ) {
             return [];
         }
