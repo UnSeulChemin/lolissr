@@ -110,47 +110,6 @@ function updateActiveNavigation()
 }
 
 // =========================================
-// PREFETCH VISIBLE LINKS
-// =========================================
-
-function prefetchVisible()
-{
-    const root =
-        document.querySelector(
-            '.ajax-content',
-        );
-
-    if (!root) {
-        return;
-    }
-
-    const links =
-        root.querySelectorAll(
-            'a[href]',
-        );
-
-    for (const link of links)
-    {
-        if (
-            !(
-                link
-                instanceof HTMLAnchorElement
-            )
-        ) {
-            continue;
-        }
-
-        if (!link.href) {
-            continue;
-        }
-
-        window.__prefetchPage?.(
-            link.href,
-        );
-    }
-}
-
-// =========================================
 // NAVIGATION CORE
 // =========================================
 
@@ -293,7 +252,7 @@ export async function navigateTo(
         }
 
         // =================================
-        // FAST DOM SWAP
+        // DOM SWAP
         // =================================
 
         if (instant) {
@@ -347,10 +306,6 @@ export async function navigateTo(
             new CustomEvent(
                 'ajax:page-loaded',
             ),
-        );
-
-        requestAnimationFrame(
-            prefetchVisible,
         );
 
         debug(
@@ -557,10 +512,6 @@ export function initAjaxNavigation()
                     ),
                 );
 
-                requestAnimationFrame(
-                    prefetchVisible,
-                );
-
             } catch (error) {
 
                 debugError(
@@ -576,11 +527,6 @@ export function initAjaxNavigation()
     // =====================================
 
     updateActiveNavigation();
-
-    setTimeout(
-        prefetchVisible,
-        200,
-    );
 
     debug(
         'AJAX',
