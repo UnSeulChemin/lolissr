@@ -173,12 +173,36 @@ async function resolvePageHtml(
     signal,
 )
 {
+    // =====================================
+    // FORCE REFRESH
+    // =====================================
+
+    if (
+        forceRefresh
+    ) {
+
+        debug(
+            'ROUTER',
+            'force-refresh',
+            target,
+        );
+
+        return fetchPageHtml(
+            target,
+            {
+                signal,
+            },
+        );
+    }
+
+    // =====================================
+    // CACHE
+    // =====================================
+
     const cached =
-        !forceRefresh
-            ? getPrefetchedPage(
-                target,
-            )
-            : null;
+        getPrefetchedPage(
+            target,
+        );
 
     if (cached) {
 
@@ -190,6 +214,10 @@ async function resolvePageHtml(
 
         return cached;
     }
+
+    // =====================================
+    // PREFETCH
+    // =====================================
 
     const inFlight =
         getInFlightPrefetch(
@@ -206,6 +234,10 @@ async function resolvePageHtml(
 
         return inFlight;
     }
+
+    // =====================================
+    // FETCH
+    // =====================================
 
     return fetchPageHtml(
         target,

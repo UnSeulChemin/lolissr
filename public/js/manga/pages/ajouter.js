@@ -27,12 +27,19 @@ import {
     invalidateRoute,
 } from '../../router/route-invalidation.js';
 
+import {
+    invalidatePrefetch,
+} from '../../router/prefetch.js';
+
 // =========================================
 // CONFIG
 // =========================================
 
 const FORM_SELECTOR =
     '.form-layout[data-form-page="ajouter"]';
+
+const HOME_ROUTE =
+    '/lolissr/';
 
 // =========================================
 // HELPERS
@@ -95,7 +102,7 @@ export function initAjouterPage()
         false;
 
     // =====================================
-    // SLUG
+    // SLUG AUTO
     // =====================================
 
     if (
@@ -139,7 +146,7 @@ export function initAjouterPage()
     }
 
     // =====================================
-    // IMAGE
+    // IMAGE LABEL
     // =====================================
 
     if (
@@ -188,6 +195,15 @@ export function initAjouterPage()
 
             try {
 
+                debug(
+                    'AJOUTER',
+                    'submit-start',
+                );
+
+                // =============================
+                // REQUEST
+                // =============================
+
                 const data =
                     await request(
                         form.action,
@@ -211,6 +227,12 @@ export function initAjouterPage()
                         },
                     );
 
+                debug(
+                    'AJOUTER',
+                    'response',
+                    data,
+                );
+
                 // =============================
                 // ERROR
                 // =============================
@@ -229,10 +251,22 @@ export function initAjouterPage()
                 }
 
                 // =============================
-                // REFRESH HOME
+                // INVALIDATE HOME
                 // =============================
 
-                invalidateRoute('/');
+                debug(
+                    'AJOUTER',
+                    'invalidate-home',
+                    HOME_ROUTE,
+                );
+
+                invalidateRoute(
+                    HOME_ROUTE,
+                );
+
+                invalidatePrefetch(
+                    HOME_ROUTE,
+                );
 
                 // =============================
                 // SUCCESS
@@ -294,6 +328,11 @@ export function initAjouterPage()
                     submitButton.disabled =
                         false;
                 }
+
+                debug(
+                    'AJOUTER',
+                    'submit-end',
+                );
             }
         },
     );

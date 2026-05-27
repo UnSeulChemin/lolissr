@@ -42,6 +42,9 @@ const PREFETCH_STATE =
 
         inFlight:
             new Map(),
+
+        invalidated:
+            new Set(),
     };
 
 // =========================================
@@ -54,8 +57,11 @@ const cache =
 const inFlight =
     PREFETCH_STATE.inFlight;
 
+const invalidated =
+    PREFETCH_STATE.invalidated;
+
 // =========================================
-// CACHE HELPERS
+// HELPERS
 // =========================================
 
 function isExpired(
@@ -92,7 +98,7 @@ function trimCache()
 }
 
 // =========================================
-// GET CACHE
+// CACHE
 // =========================================
 
 export function getPrefetchedPage(
@@ -104,6 +110,25 @@ export function getPrefetchedPage(
             href,
         );
 
+    // =====================================
+    // INVALIDATED
+    // =====================================
+
+    if (
+        invalidated.has(
+            url,
+        )
+    ) {
+
+        debug(
+            'PREFETCH',
+            'blocked-invalidated',
+            url,
+        );
+
+        return null;
+    }
+
     const cached =
         cache.get(
             url,
@@ -113,6 +138,10 @@ export function getPrefetchedPage(
         return null;
     }
 
+    // =====================================
+    // EXPIRED
+    // =====================================
+
     if (
         isExpired(
             cached,
@@ -120,6 +149,12 @@ export function getPrefetchedPage(
     ) {
 
         cache.delete(
+            url,
+        );
+
+        debug(
+            'PREFETCH',
+            'cache-expired',
             url,
         );
 
@@ -148,12 +183,40 @@ export function invalidatePrefetch(
             href,
         );
 
+    invalidated.add(
+        url,
+    );
+
     cache.delete(
         url,
     );
 
     inFlight.delete(
         url,
+    );
+
+    debug(
+        'PREFETCH',
+        'invalidate',
+        url,
+    );
+}
+
+// =========================================
+// CLEAR ALL
+// =========================================
+
+export function clearPrefetchCache()
+{
+    cache.clear();
+
+    inFlight.clear();
+
+    invalidated.clear();
+
+    debug(
+        'PREFETCH',
+        'clear-all',
     );
 }
 
@@ -165,11 +228,33 @@ export function getInFlightPrefetch(
     href,
 )
 {
-    return inFlight.get(
+    const url =
         normalizeUrl(
             href,
-        ),
-    );
+        );
+
+    // =====================================
+    // INVALIDATED
+    // =====================================
+
+    if (
+        invalidated.has(
+            url,
+        )
+    ) {
+
+        debug(
+            'PREFETCH',
+            'blocked-inflight',
+            url,
+        );
+
+        return null;
+    }
+
+    return inFlight.get(
+        url,
+    ) || null;
 }
 
 // =========================================
@@ -199,6 +284,25 @@ export async function prefetchPage(
     }
 
     // =====================================
+    // INVALIDATED
+    // =====================================
+
+    if (
+        invalidated.has(
+            url,
+        )
+    ) {
+
+        debug(
+            'PREFETCH',
+            'skip-invalidated',
+            url,
+        );
+
+        return null;
+    }
+
+    // =====================================
     // CACHE
     // =====================================
 
@@ -221,6 +325,13 @@ export async function prefetchPage(
         );
 
     if (existing) {
+
+        debug(
+            'PREFETCH',
+            'reuse-inflight',
+            url,
+        );
+
         return existing;
     }
 
@@ -229,6 +340,10 @@ export async function prefetchPage(
         'fetch',
         url,
     );
+
+    // =====================================
+    // FETCH
+    // =====================================
 
     const promise =
         (async () =>
@@ -249,16 +364,34 @@ export async function prefetchPage(
 
                                 'X-Prefetch':
                                     '1',
+
+                                'Cache-Control':
+                                    'no-cache',
                             },
                         },
                     );
+
+                // =============================
+                // VALIDATION
+                // =============================
 
                 if (
                     typeof html
                     !== 'string'
                 ) {
+
+                    debug(
+                        'PREFETCH',
+                        'invalid-html',
+                        url,
+                    );
+
                     return null;
                 }
+
+                // =============================
+                // SAVE CACHE
+                // =============================
 
                 trimCache();
 
@@ -270,6 +403,20 @@ export async function prefetchPage(
                         timestamp:
                             Date.now(),
                     },
+                );
+
+                // =============================
+                // REFRESHED
+                // =============================
+
+                invalidated.delete(
+                    url,
+                );
+
+                debug(
+                    'PREFETCH',
+                    'success',
+                    url,
                 );
 
                 return html;
@@ -300,7 +447,7 @@ export async function prefetchPage(
 }
 
 // =========================================
-// BIND LINK
+// LINK BINDING
 // =========================================
 
 function bindLink(

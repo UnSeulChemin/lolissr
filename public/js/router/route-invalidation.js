@@ -21,10 +21,13 @@ export function invalidateRoute(
     href,
 )
 {
-    invalidatedRoutes.add(
+    const normalized =
         normalizeUrl(
             href,
-        ),
+        );
+
+    invalidatedRoutes.add(
+        normalized,
     );
 }
 
@@ -36,10 +39,13 @@ export function shouldRefreshRoute(
     href,
 )
 {
-    return invalidatedRoutes.has(
+    const normalized =
         normalizeUrl(
             href,
-        ),
+        );
+
+    return invalidatedRoutes.has(
+        normalized,
     );
 }
 
@@ -51,9 +57,21 @@ export function clearInvalidatedRoute(
     href,
 )
 {
-    invalidatedRoutes.delete(
+    const normalized =
         normalizeUrl(
             href,
-        ),
+        );
+
+    invalidatedRoutes.delete(
+        normalized,
     );
+}
+
+// =========================================
+// CLEAR ALL
+// =========================================
+
+export function clearAllInvalidatedRoutes()
+{
+    invalidatedRoutes.clear();
 }
