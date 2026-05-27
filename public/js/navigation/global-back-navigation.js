@@ -8,7 +8,7 @@ import {
 
 import {
     navigateTo,
-} from './ajax-navigation.js';
+} from '../router/router.js';
 
 // =========================================
 // CONFIG

@@ -23,6 +23,10 @@ import {
     generateSlug,
 } from '../utils/slug.js';
 
+import {
+    invalidateRoute,
+} from '../../router/route-invalidation.js';
+
 // =========================================
 // CONFIG
 // =========================================
@@ -228,10 +232,7 @@ export function initAjouterPage()
                 // REFRESH HOME
                 // =============================
 
-                sessionStorage.setItem(
-                    'refresh-home',
-                    '1',
-                );
+                invalidateRoute('/');
 
                 // =============================
                 // SUCCESS

@@ -21,7 +21,7 @@ import {
 
 import {
     navigateTo,
-} from '../../navigation/ajax-navigation.js';
+} from '../../router/router.js';
 
 // =========================================
 // STATE

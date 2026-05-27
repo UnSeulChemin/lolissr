@@ -12,10 +12,6 @@ import {
 } from '../core/navigation.js';
 
 import {
-    config,
-} from '../core/config.js';
-
-import {
     debug,
     debugError,
 } from '../core/debug.js';
@@ -25,8 +21,10 @@ import {
 // =========================================
 
 const HOVER_DELAY =
-    config.prefetch
-        .hoverDelay;
+    220;
+
+const CACHE_DURATION =
+    10000;
 
 // =========================================
 // GLOBAL STATE
@@ -59,9 +57,6 @@ const inFlight =
 const hoverTimers =
     new Map();
 
-let bindController =
-    null;
-
 // =========================================
 // CACHE
 // =========================================
@@ -81,10 +76,27 @@ export function getPrefetchedPage(
         );
 
     if (!cached) {
+        return null;
+    }
+
+    // =====================================
+    // EXPIRED
+    // =====================================
+
+    const expired =
+        Date.now()
+        - cached.timestamp
+        > CACHE_DURATION;
+
+    if (expired) {
+
+        cache.delete(
+            url,
+        );
 
         debug(
             'PREFETCH',
-            'cache-miss',
+            'cache-expired',
             url,
         );
 
@@ -97,7 +109,29 @@ export function getPrefetchedPage(
         url,
     );
 
-    return cached;
+    return cached.html;
+}
+
+// =========================================
+// INVALIDATE
+// =========================================
+
+export function invalidatePrefetch(
+    href,
+)
+{
+    const url =
+        normalizeUrl(
+            href,
+        );
+
+    cache.delete(
+        url,
+    );
+
+    inFlight.delete(
+        url,
+    );
 }
 
 // =========================================
@@ -153,7 +187,7 @@ export async function prefetchPage(
     // =====================================
 
     const cached =
-        cache.get(
+        getPrefetchedPage(
             url,
         );
 
@@ -228,9 +262,17 @@ export async function prefetchPage(
                     return null;
                 }
 
+                // =============================
+                // CACHE
+                // =============================
+
                 cache.set(
                     url,
-                    html,
+                    {
+                        html,
+                        timestamp:
+                            Date.now(),
+                    },
                 );
 
                 debug(
@@ -298,16 +340,144 @@ function clearHoverTimer(
 }
 
 // =========================================
+// LINK
+// =========================================
+
+function bindLink(
+    link,
+)
+{
+    if (
+        !(
+            link
+            instanceof HTMLAnchorElement
+        )
+    ) {
+        return;
+    }
+
+    if (
+        shouldIgnoreLink(
+            link,
+        )
+    ) {
+        return;
+    }
+
+    // =====================================
+    // ALREADY BOUND
+    // =====================================
+
+    if (
+        link.dataset.prefetchBound
+        === 'true'
+    ) {
+        return;
+    }
+
+    link.dataset.prefetchBound =
+        'true';
+
+    // =====================================
+    // POINTER ENTER
+    // =====================================
+
+    link.addEventListener(
+        'pointerenter',
+        (
+            event,
+        ) =>
+        {
+            if (
+                !event.isTrusted
+            ) {
+                return;
+            }
+
+            const url =
+                normalizeUrl(
+                    link.href,
+                );
+
+            // =============================
+            // CACHE
+            // =============================
+
+            if (
+                getPrefetchedPage(
+                    url,
+                )
+            ) {
+                return;
+            }
+
+            // =============================
+            // IN FLIGHT
+            // =============================
+
+            if (
+                inFlight.has(
+                    url,
+                )
+            ) {
+                return;
+            }
+
+            clearHoverTimer(
+                url,
+            );
+
+            const timer =
+                setTimeout(
+                    () =>
+                    {
+                        hoverTimers.delete(
+                            url,
+                        );
+
+                        void prefetchPage(
+                            url,
+                        );
+                    },
+                    HOVER_DELAY,
+                );
+
+            hoverTimers.set(
+                url,
+                timer,
+            );
+        },
+        {
+            passive:
+                true,
+        },
+    );
+
+    // =====================================
+    // POINTER LEAVE
+    // =====================================
+
+    link.addEventListener(
+        'pointerleave',
+        () =>
+        {
+            clearHoverTimer(
+                link.href,
+            );
+        },
+        {
+            passive:
+                true,
+        },
+    );
+}
+
+// =========================================
 // BIND
 // =========================================
 
 function bindPrefetch()
 {
-    bindController?.abort();
-
-    bindController =
-        new AbortController();
-
     const links =
         document.querySelectorAll(
             'a[data-prefetch]',
@@ -315,95 +485,8 @@ function bindPrefetch()
 
     for (const link of links)
     {
-        if (
-            !(
-                link
-                instanceof HTMLAnchorElement
-            )
-        ) {
-            continue;
-        }
-
-        if (
-            shouldIgnoreLink(
-                link,
-            )
-        ) {
-            continue;
-        }
-
-        // =================================
-        // POINTER ENTER
-        // =================================
-
-        link.addEventListener(
-            'pointerenter',
-            (
-                event,
-            ) =>
-            {
-                if (
-                    !event.isTrusted
-                ) {
-                    return;
-                }
-
-                clearHoverTimer(
-                    link.href,
-                );
-
-                const timer =
-                    setTimeout(
-                        () =>
-                        {
-                            hoverTimers.delete(
-                                normalizeUrl(
-                                    link.href,
-                                ),
-                            );
-
-                            void prefetchPage(
-                                link.href,
-                            );
-                        },
-                        HOVER_DELAY,
-                    );
-
-                hoverTimers.set(
-                    normalizeUrl(
-                        link.href,
-                    ),
-                    timer,
-                );
-            },
-            {
-                signal:
-                    bindController.signal,
-
-                passive:
-                    true,
-            },
-        );
-
-        // =================================
-        // POINTER LEAVE
-        // =================================
-
-        link.addEventListener(
-            'pointerleave',
-            () =>
-            {
-                clearHoverTimer(
-                    link.href,
-                );
-            },
-            {
-                signal:
-                    bindController.signal,
-
-                passive:
-                    true,
-            },
+        bindLink(
+            link,
         );
     }
 
@@ -432,7 +515,7 @@ export function initPrefetch()
     bindPrefetch();
 
     document.addEventListener(
-        'ajax:page-loaded',
+        'router:loaded',
         bindPrefetch,
     );
 

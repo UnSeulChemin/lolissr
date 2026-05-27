@@ -1,5 +1,5 @@
 // =========================================
-// AJAX NAVIGATION
+// ROUTER
 // =========================================
 
 import {
@@ -8,16 +8,22 @@ import {
 } from '../core/navigation.js';
 
 import {
+    getPrefetchedPage,
     getInFlightPrefetch,
 } from './prefetch.js';
 
 import {
+    shouldRefreshRoute,
+    clearInvalidatedRoute,
+} from './route-invalidation.js';
+
+import {
     fetchPageHtml,
-} from './ajax-fetch.js';
+} from '../navigation/ajax-fetch.js';
 
 import {
     replaceContent,
-} from './ajax-dom.js';
+} from '../navigation/ajax-dom.js';
 
 import {
     runPageTransition,
@@ -97,7 +103,7 @@ function dispatchPageLoaded(
 {
     document.dispatchEvent(
         new CustomEvent(
-            'ajax:page-loaded',
+            'router:loaded',
             {
                 detail:
                 {
@@ -162,7 +168,7 @@ export async function navigateTo(
 
     document.dispatchEvent(
         new CustomEvent(
-            'app:navigation-start',
+            'router:start',
             {
                 detail:
                 {
@@ -185,44 +191,47 @@ export async function navigateTo(
     try {
 
         // =================================
-        // FORCE HOME REFRESH
+        // INVALIDATION
         // =================================
 
-        const isHome =
-            target
-            === normalizeUrl(
-                `${location.origin}/`,
+        const forceRefresh =
+            shouldRefreshRoute(
+                target,
             );
 
-        const mustRefreshHome =
-            isHome
-            && sessionStorage.getItem(
-                'refresh-home',
-            ) === '1';
+        if (forceRefresh) {
 
-        if (mustRefreshHome) {
-
-            sessionStorage.removeItem(
-                'refresh-home',
+            clearInvalidatedRoute(
+                target,
             );
 
             debug(
-                'AJAX',
-                'force-home-refresh',
+                'ROUTER',
+                'invalidate-refresh',
+                target,
             );
         }
+
+        // =================================
+        // CACHE
+        // =================================
+
+        const cached =
+            !forceRefresh
+                ? getPrefetchedPage(
+                    target,
+                )
+                : null;
 
         // =================================
         // FETCH
         // =================================
 
         const html =
-            await (
-                (
-                    !mustRefreshHome
-                    && getInFlightPrefetch(
-                        target,
-                    )
+            cached
+            ?? await (
+                getInFlightPrefetch(
+                    target,
                 )
                 ?? fetchPageHtml(
                     target,
@@ -235,7 +244,7 @@ export async function navigateTo(
 
         // =================================
         // RACE CONDITION
-        // =================================
+        // =====================================
 
         if (
             currentNavigationId
@@ -246,7 +255,7 @@ export async function navigateTo(
 
         // =================================
         // VALIDATION
-        // =================================
+        // =====================================
 
         if (
             typeof html
@@ -260,7 +269,7 @@ export async function navigateTo(
 
         // =================================
         // HISTORY
-        // =================================
+        // =====================================
 
         if (
             options.updateHistory
@@ -276,7 +285,7 @@ export async function navigateTo(
 
         // =================================
         // TRANSITION
-        // =================================
+        // =====================================
 
         await runPageTransition(
             async () =>
@@ -291,7 +300,7 @@ export async function navigateTo(
 
         // =================================
         // SCROLL
-        // =================================
+        // =====================================
 
         if (
             options.scrollTop
@@ -303,14 +312,14 @@ export async function navigateTo(
 
         // =================================
         // PAGE LOADED
-        // =================================
+        // =====================================
 
         dispatchPageLoaded(
             target,
         );
 
         debug(
-            'AJAX',
+            'ROUTER',
             'done',
             target,
         );
@@ -323,7 +332,7 @@ export async function navigateTo(
         ) {
 
             debugError(
-                'AJAX',
+                'ROUTER',
                 error,
             );
         }
@@ -439,7 +448,7 @@ async function handlePopState()
 // INIT
 // =========================================
 
-export function initAjaxNavigation()
+export function initRouter()
 {
     document.addEventListener(
         'click',
@@ -454,7 +463,7 @@ export function initAjaxNavigation()
     updateActiveNavigation();
 
     debug(
-        'AJAX',
+        'ROUTER',
         'ready',
     );
 }

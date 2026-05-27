@@ -16,16 +16,20 @@ import {
 } from './core/toast.js';
 
 // ==================================================
-// NAVIGATION
+// ROUTER
 // ==================================================
 
 import {
-    initAjaxNavigation,
-} from './navigation/ajax-navigation.js';
+    initRouter,
+} from './router/router.js';
 
 import {
     initPrefetch,
-} from './navigation/prefetch.js';
+} from './router/prefetch.js';
+
+// ==================================================
+// NAVIGATION
+// ==================================================
 
 import {
     initGlobalBackNavigation,
@@ -129,7 +133,7 @@ const GLOBAL_INITIALIZERS = [
 
     ['PageTransitions', initPageTransitions],
 
-    ['AjaxNavigation', initAjaxNavigation],
+    ['Router', initRouter],
 
     ['Prefetch', initPrefetch],
 
@@ -219,11 +223,11 @@ function initApp()
     runPageInitializers();
 
     // =============================================
-    // AJAX PAGE RELOAD
+    // ROUTER PAGE LOAD
     // =============================================
 
     document.addEventListener(
-        'ajax:page-loaded',
+        'router:loaded',
         () =>
         {
             runPageInitializers();
