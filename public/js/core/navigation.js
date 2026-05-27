@@ -3,7 +3,7 @@
 // =========================================
 
 // =========================================
-// NORMALIZE
+// NORMALIZE URL
 // =========================================
 
 export function normalizeUrl(
@@ -16,14 +16,26 @@ export function normalizeUrl(
             window.location.origin,
         );
 
-    let pathname =
-        url.pathname.replace(
-            /\/+/g,
-            '/',
-        );
+    // =====================================
+    // REMOVE HASH
+    // =====================================
+
+    url.hash =
+        '';
 
     // =====================================
-    // TRAILING SLASH
+    // CLEAN PATH
+    // =====================================
+
+    let pathname =
+        url.pathname
+            .replace(
+                /\/+/g,
+                '/',
+            );
+
+    // =====================================
+    // FORCE TRAILING SLASH
     // =====================================
 
     if (
@@ -34,17 +46,26 @@ export function normalizeUrl(
         pathname += '/';
     }
 
+    // =====================================
+    // ROOT
+    // =====================================
+
+    if (
+        pathname === ''
+    ) {
+
+        pathname =
+            '/';
+    }
+
     url.pathname =
         pathname;
-
-    url.hash =
-        '';
 
     return url.toString();
 }
 
 // =========================================
-// FILTER
+// IGNORE LINK
 // =========================================
 
 export function shouldIgnoreLink(
@@ -115,13 +136,17 @@ export function shouldIgnoreLink(
     }
 
     // =====================================
-    // HASH SAME PAGE
+    // SAME HASH
     // =====================================
 
     if (
         url.hash
-        && url.pathname
-            === location.pathname
+        && normalizeUrl(
+            url.pathname,
+        )
+        === normalizeUrl(
+            location.pathname,
+        )
     ) {
         return true;
     }

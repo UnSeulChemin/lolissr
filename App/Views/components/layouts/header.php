@@ -60,6 +60,7 @@ $currentSearch =
 
                 <a
                     class="nav-link-icon"
+                    data-prefetch
                     href="<?= e($baseUri) ?>"
                     title="Accueil"
                 >
@@ -74,6 +75,7 @@ $currentSearch =
 
                 <a
                     class="nav-link-icon"
+                    data-prefetch
                     href="<?= e($baseUri) ?>manga"
                     title="Manga"
                 >
@@ -88,6 +90,7 @@ $currentSearch =
 
                 <a
                     class="nav-link-icon"
+                    data-prefetch
                     href="<?= e($baseUri) ?>chinois"
                     title="Chinois"
                 >

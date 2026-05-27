@@ -72,6 +72,7 @@ $hasTopLongestSeries =
                     card-link-wide
                     card-wide
                 "
+                data-prefetch
                 href="<?= e($href) ?>"
             >
 
@@ -169,6 +170,7 @@ $hasTopLongestSeries =
                     card-link
                     card-medium
                 "
+                data-prefetch
                 href="<?= e($href) ?>"
             >
 
@@ -359,6 +361,7 @@ $hasTopLongestSeries =
                         card-link
                         card-bottom
                     "
+                    data-prefetch
                     href="<?= e($href) ?>"
                 >
 

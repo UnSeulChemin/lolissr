@@ -21,32 +21,115 @@ import {
 } from '../core/debug.js';
 
 // =========================================
+// GLOBAL STATE
+// =========================================
+
+const PREFETCH_STATE =
+    window.__PREFETCH_STATE__
+    ||= {
+
+        initialized:
+            false,
+
+        cache:
+            new Map(),
+
+        inFlight:
+            new Map(),
+
+        navigationLocked:
+            false,
+
+        mouseMoved:
+            false,
+    };
+
+// =========================================
 // CONFIG
 // =========================================
 
 const CACHE_DURATION =
-    config.prefetch
-        .cacheDuration;
+    config.prefetch.cacheDuration;
 
 const HOVER_DELAY =
-    config.prefetch
-        .delay;
+    config.prefetch.delay;
 
 // =========================================
 // STATE
 // =========================================
 
 const cache =
-    new Map();
+    PREFETCH_STATE.cache;
 
 const inFlight =
-    new Map();
+    PREFETCH_STATE.inFlight;
 
 const hoverTimers =
     new WeakMap();
 
-let initialized =
-    false;
+const activeTimers =
+    new Set();
+
+// =========================================
+// DEBUG
+// =========================================
+
+debug(
+    'PREFETCH',
+    'module-load',
+);
+
+// =========================================
+// MOUSE TRACK
+// =========================================
+
+window.addEventListener(
+    'mousemove',
+    () =>
+    {
+        PREFETCH_STATE.mouseMoved =
+            true;
+    },
+    {
+        passive:
+            true,
+    },
+);
+
+// =========================================
+// NAVIGATION LOCK
+// =========================================
+
+export function lockPrefetch()
+{
+    PREFETCH_STATE.navigationLocked =
+        true;
+
+    PREFETCH_STATE.mouseMoved =
+        false;
+
+    debug(
+        'PREFETCH',
+        'lock',
+    );
+}
+
+export function unlockPrefetch()
+{
+    window.setTimeout(
+        () =>
+        {
+            PREFETCH_STATE.navigationLocked =
+                false;
+
+            debug(
+                'PREFETCH',
+                'unlock',
+            );
+        },
+        300,
+    );
+}
 
 // =========================================
 // HELPERS
@@ -63,6 +146,31 @@ function isExpired(
     );
 }
 
+function createCacheKey(
+    url,
+)
+{
+    return normalizeUrl(
+        url,
+    );
+}
+
+// =========================================
+// CLEAR TIMERS
+// =========================================
+
+export function clearPrefetchTimers()
+{
+    for (const timer of activeTimers)
+    {
+        clearTimeout(
+            timer,
+        );
+    }
+
+    activeTimers.clear();
+}
+
 // =========================================
 // CACHE
 // =========================================
@@ -71,19 +179,30 @@ export function getPrefetchedPage(
     url,
 )
 {
-    const normalized =
-        normalizeUrl(
+    const key =
+        createCacheKey(
             url,
         );
 
     const cached =
         cache.get(
-            normalized,
+            key,
         );
 
     if (!cached) {
+
+        debug(
+            'PREFETCH',
+            'cache-miss',
+            key,
+        );
+
         return null;
     }
+
+    // =====================================
+    // EXPIRED
+    // =====================================
 
     if (
         isExpired(
@@ -92,11 +211,23 @@ export function getPrefetchedPage(
     ) {
 
         cache.delete(
-            normalized,
+            key,
+        );
+
+        debug(
+            'PREFETCH',
+            'cache-expired',
+            key,
         );
 
         return null;
     }
+
+    debug(
+        'PREFETCH',
+        'cache-hit',
+        key,
+    );
 
     return cached.html;
 }
@@ -110,7 +241,7 @@ export function getInFlightPrefetch(
 )
 {
     return inFlight.get(
-        normalizeUrl(
+        createCacheKey(
             url,
         ),
     );
@@ -124,20 +255,34 @@ export async function prefetchPage(
     href,
 )
 {
-    const url =
-        normalizeUrl(
+    const key =
+        createCacheKey(
             href,
         );
+
+    debug(
+        'PREFETCH',
+        'prefetch-call',
+        key,
+    );
 
     // =====================================
     // CURRENT PAGE
     // =====================================
 
     if (
-        url === normalizeUrl(
+        key
+        === createCacheKey(
             location.href,
         )
     ) {
+
+        debug(
+            'PREFETCH',
+            'skip-current',
+            key,
+        );
+
         return null;
     }
 
@@ -147,35 +292,35 @@ export async function prefetchPage(
 
     const cached =
         getPrefetchedPage(
-            url,
+            key,
         );
 
     if (cached) {
 
         debug(
             'PREFETCH',
-            'cache-hit',
-            url,
+            'reuse-cache',
+            key,
         );
 
         return cached;
     }
 
     // =====================================
-    // REUSE
+    // IN FLIGHT
     // =====================================
 
     const existing =
         getInFlightPrefetch(
-            url,
+            key,
         );
 
     if (existing) {
 
         debug(
             'PREFETCH',
-            'reuse',
-            url,
+            'reuse-flight',
+            key,
         );
 
         return existing;
@@ -185,20 +330,20 @@ export async function prefetchPage(
     // FETCH
     // =====================================
 
+    debug(
+        'PREFETCH',
+        'real-fetch',
+        key,
+    );
+
     const promise =
         (async () =>
         {
             try {
 
-                debug(
-                    'PREFETCH',
-                    'fetch',
-                    url,
-                );
-
                 const html =
                     await request(
-                        url,
+                        key,
                         {
                             responseType:
                                 'text',
@@ -218,11 +363,18 @@ export async function prefetchPage(
                     typeof html
                     !== 'string'
                 ) {
+
+                    debug(
+                        'PREFETCH',
+                        'invalid-html',
+                        key,
+                    );
+
                     return null;
                 }
 
                 cache.set(
-                    url,
+                    key,
                     {
                         html,
                         timestamp:
@@ -232,8 +384,14 @@ export async function prefetchPage(
 
                 debug(
                     'PREFETCH',
-                    'cached',
-                    url,
+                    'cache-set',
+                    key,
+                );
+
+                debug(
+                    'PREFETCH',
+                    'cache-size',
+                    cache.size,
                 );
 
                 return html;
@@ -250,17 +408,156 @@ export async function prefetchPage(
             } finally {
 
                 inFlight.delete(
-                    url,
+                    key,
                 );
             }
         })();
 
     inFlight.set(
-        url,
+        key,
         promise,
     );
 
     return promise;
+}
+
+// =========================================
+// BIND LINK
+// =========================================
+
+function bindLink(
+    link,
+)
+{
+    if (
+        !(
+            link
+            instanceof HTMLAnchorElement
+        )
+    ) {
+        return;
+    }
+
+    if (
+        shouldIgnoreLink(
+            link,
+        )
+    ) {
+        return;
+    }
+
+    if (
+        link.dataset.prefetchBound
+        === '1'
+    ) {
+        return;
+    }
+
+    link.dataset.prefetchBound =
+        '1';
+
+    debug(
+        'PREFETCH',
+        'bind',
+        link.href,
+    );
+
+    // =====================================
+    // ENTER
+    // =====================================
+
+    link.addEventListener(
+        'mouseenter',
+        () =>
+        {
+            debug(
+                'PREFETCH',
+                'mouseenter',
+                link.href,
+            );
+
+            // =============================
+            // AUTO HOVER AFTER SPA NAV
+            // =============================
+
+            if (
+                PREFETCH_STATE.navigationLocked
+                && !PREFETCH_STATE.mouseMoved
+            ) {
+
+                debug(
+                    'PREFETCH',
+                    'blocked-auto-hover',
+                    link.href,
+                );
+
+                return;
+            }
+
+            clearTimeout(
+                hoverTimers.get(
+                    link,
+                ),
+            );
+
+            const timer =
+                window.setTimeout(
+                    () =>
+                    {
+                        activeTimers.delete(
+                            timer,
+                        );
+
+                        debug(
+                            'PREFETCH',
+                            'timer-fire',
+                            link.href,
+                        );
+
+                        void prefetchPage(
+                            link.href,
+                        );
+                    },
+                    HOVER_DELAY,
+                );
+
+            activeTimers.add(
+                timer,
+            );
+
+            hoverTimers.set(
+                link,
+                timer,
+            );
+        },
+    );
+
+    // =====================================
+    // LEAVE
+    // =====================================
+
+    link.addEventListener(
+        'mouseleave',
+        () =>
+        {
+            const timer =
+                hoverTimers.get(
+                    link,
+                );
+
+            clearTimeout(
+                timer,
+            );
+
+            activeTimers.delete(
+                timer,
+            );
+
+            hoverTimers.delete(
+                link,
+            );
+        },
+    );
 }
 
 // =========================================
@@ -271,93 +568,19 @@ function bindHoverPrefetch()
 {
     const links =
         document.querySelectorAll(
-            '.ajax-content a[href]',
+            'a[data-prefetch]',
         );
+
+    debug(
+        'PREFETCH',
+        'found',
+        links.length,
+    );
 
     for (const link of links)
     {
-        if (
-            !(
-                link
-                instanceof HTMLAnchorElement
-            )
-        ) {
-            continue;
-        }
-
-        if (
-            shouldIgnoreLink(
-                link,
-            )
-        ) {
-            continue;
-        }
-
-        if (
-            link.dataset.prefetchBound
-            === '1'
-        ) {
-            continue;
-        }
-
-        link.dataset.prefetchBound =
-            '1';
-
-        // =================================
-        // ENTER
-        // =================================
-
-        link.addEventListener(
-            'pointerenter',
-            (
-                event,
-            ) =>
-            {
-                if (
-                    event.pointerType
-                    === ''
-                ) {
-                    return;
-                }
-
-                clearTimeout(
-                    hoverTimers.get(
-                        link,
-                    ),
-                );
-
-                const timer =
-                    setTimeout(
-                        () =>
-                        {
-                            void prefetchPage(
-                                link.href,
-                            );
-                        },
-                        HOVER_DELAY,
-                    );
-
-                hoverTimers.set(
-                    link,
-                    timer,
-                );
-            },
-        );
-
-        // =================================
-        // LEAVE
-        // =================================
-
-        link.addEventListener(
-            'pointerleave',
-            () =>
-            {
-                clearTimeout(
-                    hoverTimers.get(
-                        link,
-                    ),
-                );
-            },
+        bindLink(
+            link,
         );
     }
 }
@@ -368,18 +591,39 @@ function bindHoverPrefetch()
 
 export function initPrefetch()
 {
-    if (initialized) {
+    if (
+        PREFETCH_STATE.initialized
+    ) {
+
+        debug(
+            'PREFETCH',
+            'already-init',
+        );
+
         return;
     }
 
-    initialized =
+    PREFETCH_STATE.initialized =
         true;
 
     bindHoverPrefetch();
 
     document.addEventListener(
         'ajax:page-loaded',
-        bindHoverPrefetch,
+        () =>
+        {
+            debug(
+                'PREFETCH',
+                'page-loaded',
+            );
+
+            requestAnimationFrame(
+                () =>
+                {
+                    bindHoverPrefetch();
+                },
+            );
+        },
     );
 
     debug(

@@ -60,7 +60,8 @@ function updateMeta(
     if (title) {
 
         document.title =
-            title.textContent;
+            title.textContent?.trim()
+            || document.title;
     }
 
     const lang =
@@ -181,70 +182,58 @@ function syncBodyAttributes(
 // SWAP
 // =========================================
 
+// =========================================
+// AJAX DOM
+// =========================================
+
 export function replaceContent(
     html,
 )
 {
-    try {
+    const parser =
+        new DOMParser();
 
-        const doc =
-            parseHtml(
-                html,
-            );
-
-        const current =
-            document.querySelector(
-                SELECTOR,
-            );
-
-        const next =
-            doc.querySelector(
-                SELECTOR,
-            );
-
-        if (
-            !current
-            || !next
-        ) {
-
-            throw new Error(
-                'Missing container',
-            );
-        }
-
-        // =================================
-        // META
-        // =================================
-
-        updateMeta(
-            doc,
+    const documentHtml =
+        parser.parseFromString(
+            html,
+            'text/html',
         );
 
-        // =================================
-        // BODY DATASET
-        // =================================
+    // =====================================
+    // NEW CONTENT
+    // =====================================
 
-        syncBodyAttributes(
-            doc,
+    const newContent =
+        documentHtml.querySelector(
+            '.ajax-content',
         );
 
-        // =================================
-        // SWAP
-        // =================================
-
-        current.innerHTML =
-            next.innerHTML;
-
-        debug(
-            'DOM',
-            'swapped',
+    const currentContent =
+        document.querySelector(
+            '.ajax-content',
         );
 
-    } catch (error) {
+    if (
+        !newContent
+        || !currentContent
+    ) {
 
-        debugError(
-            'DOM',
-            error,
+        throw new Error(
+            'Missing ajax content',
         );
     }
+
+    // =====================================
+    // REPLACE ONLY CONTENT
+    // =====================================
+
+    currentContent.innerHTML =
+        newContent.innerHTML;
+
+    // =====================================
+    // TITLE
+    // =====================================
+
+    document.title =
+        documentHtml.title;
 }

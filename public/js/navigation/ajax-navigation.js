@@ -10,6 +10,9 @@ import {
 import {
     getPrefetchedPage,
     getInFlightPrefetch,
+    clearPrefetchTimers,
+    lockPrefetch,
+    unlockPrefetch,
 } from './prefetch.js';
 
 import {
@@ -57,12 +60,12 @@ function updateActiveNavigation()
             normalizeUrl(
                 location.href,
             ),
-        ).pathname;
-
-    const normalizedCurrent =
-        currentPath.endsWith('/')
-            ? currentPath
-            : `${currentPath}/`;
+        )
+            .pathname
+            .replace(
+                /\/$/,
+                '',
+            );
 
     document
         .querySelectorAll(
@@ -87,25 +90,20 @@ function updateActiveNavigation()
                         normalizeUrl(
                             link.href,
                         ),
-                    ).pathname;
-
-                const normalizedPath =
-                    path.endsWith('/')
-                        ? path
-                        : `${path}/`;
+                    )
+                        .pathname
+                        .replace(
+                            /\/$/,
+                            '',
+                        );
 
                 const active =
-                    normalizedPath
-                    === '/lolissr/'
-                        ? (
-                            normalizedCurrent
-                            === normalizedPath
-                        )
+                    path === '/lolissr'
+                        ? currentPath === path
                         : (
-                            normalizedCurrent
-                                === normalizedPath
-                            || normalizedCurrent.startsWith(
-                                normalizedPath,
+                            currentPath === path
+                            || currentPath.startsWith(
+                                path + '/',
                             )
                         );
 
@@ -115,6 +113,33 @@ function updateActiveNavigation()
                 );
             },
         );
+}
+
+// =========================================
+// EVENTS
+// =========================================
+
+function dispatchPageLoaded(
+    target,
+)
+{
+    requestAnimationFrame(
+        () =>
+        {
+            document.dispatchEvent(
+                new CustomEvent(
+                    'ajax:page-loaded',
+                    {
+                        detail:
+                        {
+                            href:
+                                target,
+                        },
+                    },
+                ),
+            );
+        },
+    );
 }
 
 // =========================================
@@ -161,28 +186,15 @@ export async function navigateTo(
     locked =
         true;
 
+    clearPrefetchTimers();
+
+    lockPrefetch();
+
     const currentNavigationId =
         ++navigationId;
 
     // =====================================
-    // EVENT START
-    // =====================================
-
-    document.dispatchEvent(
-        new CustomEvent(
-            'app:navigation-start',
-            {
-                detail:
-                {
-                    href:
-                        target,
-                },
-            },
-        ),
-    );
-
-    // =====================================
-    // ABORT
+    // ABORT PREVIOUS
     // =====================================
 
     controller?.abort();
@@ -198,7 +210,7 @@ export async function navigateTo(
             );
 
         // =================================
-        // PREFETCH REUSE
+        // PREFETCH
         // =================================
 
         if (!html)
@@ -210,10 +222,22 @@ export async function navigateTo(
 
             if (inFlight) {
 
+                debug(
+                    'AJAX',
+                    'reuse-flight',
+                    target,
+                );
+
                 html =
                     await inFlight;
 
             } else {
+
+                debug(
+                    'AJAX',
+                    'fetch',
+                    target,
+                );
 
                 html =
                     await fetchPageHtml(
@@ -224,6 +248,14 @@ export async function navigateTo(
                         },
                     );
             }
+
+        } else {
+
+            debug(
+                'AJAX',
+                'reuse-cache',
+                target,
+            );
         }
 
         // =================================
@@ -252,7 +284,7 @@ export async function navigateTo(
         }
 
         // =================================
-        // TRANSITION
+        // HISTORY
         // =================================
 
         if (
@@ -266,6 +298,10 @@ export async function navigateTo(
                 target,
             );
         }
+
+        // =================================
+        // TRANSITION
+        // =================================
 
         await runPageTransition(
             async () =>
@@ -291,21 +327,14 @@ export async function navigateTo(
         }
 
         // =================================
-        // EVENT LOADED
+        // PAGE LOADED
         // =================================
 
-        document.dispatchEvent(
-            new CustomEvent(
-                'ajax:page-loaded',
-                {
-                    detail:
-                    {
-                        href:
-                            target,
-                    },
-                },
-            ),
+        dispatchPageLoaded(
+            target,
         );
+
+        unlockPrefetch();
 
         debug(
             'AJAX',
@@ -356,19 +385,11 @@ function handleClick(
         return;
     }
 
-    // =====================================
-    // LEFT CLICK ONLY
-    // =====================================
-
     if (
         event.button !== 0
     ) {
         return;
     }
-
-    // =====================================
-    // MODIFIERS
-    // =====================================
 
     if (
         event.ctrlKey
@@ -404,10 +425,6 @@ function handleClick(
     ) {
         return;
     }
-
-    // =====================================
-    // IGNORE
-    // =====================================
 
     if (
         shouldIgnoreLink(

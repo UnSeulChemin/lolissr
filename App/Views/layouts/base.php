@@ -56,6 +56,14 @@ if (
         name="viewport"
         content="width=device-width, initial-scale=1.0">
 
+    <meta
+        http-equiv="x-dns-prefetch-control"
+        content="off">
+
+    <meta
+        name="referrer"
+        content="no-referrer">
+
     <?= csrf_meta_tag() ?>
 
     <title>
@@ -81,7 +89,7 @@ if (
     <main class="ajax-content">
         <?= $content ?>
     </main>
-    
+
     <div
         id="toast"
         class="toast"
@@ -90,17 +98,45 @@ if (
     </div>
 
     <script>
+
+        // =================================
+        // CSRF
+        // =================================
+
         window.csrfToken = document
             .querySelector(
                 'meta[name="csrf-token"]',
             )
-            ?.getAttribute('content')
+            ?.getAttribute(
+                'content',
+            )
             || '';
+
+        // =================================
+        // DISABLE BROWSER PREFETCH
+        // =================================
+
+        if (
+            'connection'
+            in navigator
+        ) {
+
+            try {
+
+                navigator.connection.saveData =
+                    true;
+
+            } catch (
+                _
+            ) {}
+        }
+
     </script>
 
     <?php if ($flashToast !== null): ?>
 
         <script>
+
             window.flashToast =
                 <?= json_encode(
                     $flashToast,
@@ -111,6 +147,7 @@ if (
                     | JSON_HEX_QUOT
                     | JSON_THROW_ON_ERROR,
                 ) ?>;
+
         </script>
 
     <?php endif; ?>
