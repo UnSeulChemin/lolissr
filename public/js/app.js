@@ -72,14 +72,6 @@ import {
 } from './manga/search/controller/search-controller.js';
 
 // ==================================================
-// MANGA KEYBOARD
-// ==================================================
-
-import {
-    initSeriesKeyboardNavigation,
-} from './manga/keyboard/series-keyboard-navigation.js';
-
-// ==================================================
 // CHINOIS
 // ==================================================
 
@@ -226,11 +218,6 @@ const ROUTE_INITIALIZERS = [
             [
                 'SearchController',
                 initSearchController,
-            ],
-
-            [
-                'SeriesKeyboardNavigation',
-                initSeriesKeyboardNavigation,
             ],
 
             [

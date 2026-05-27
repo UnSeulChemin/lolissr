@@ -18,7 +18,7 @@ import {
 // SELECTORS
 // =========================================
 
-const typingSelector =
+const TYPING_SELECTOR =
 `
 input,
 textarea,
@@ -26,7 +26,7 @@ select,
 [contenteditable="true"]
 `;
 
-const interactiveSelector =
+const INTERACTIVE_SELECTOR =
 `
 a,
 button,
@@ -68,7 +68,7 @@ function isTypingContext(
 {
     return hasClosest(
         target,
-        typingSelector,
+        TYPING_SELECTOR,
     );
 }
 
@@ -78,28 +78,24 @@ function isInteractiveElement(
 {
     return hasClosest(
         target,
-        interactiveSelector,
+        INTERACTIVE_SELECTOR,
     );
 }
 
 // =========================================
-// UNLOCK
+// LOCK
 // =========================================
 
-function unlockNextFrame()
+function unlock()
 {
-    requestAnimationFrame(
-        () =>
-        {
-            locked =
-                false;
+    locked =
+        false;
+}
 
-            debug(
-                'BACKSPACE',
-                'unlock',
-            );
-        },
-    );
+function lock()
+{
+    locked =
+        true;
 }
 
 // =========================================
@@ -108,19 +104,6 @@ function unlockNextFrame()
 
 function navigateBack()
 {
-    debug(
-        'BACKSPACE',
-        'navigate-back',
-        {
-            locked,
-            href:
-                location.href,
-
-            history:
-                window.history.length,
-        },
-    );
-
     // =====================================
     // LOCK
     // =====================================
@@ -135,30 +118,27 @@ function navigateBack()
         return;
     }
 
-    locked =
-        true;
+    lock();
 
     debug(
         'BACKSPACE',
-        'lock',
+        'navigate',
+        location.pathname,
     );
 
     // =====================================
-    // HISTORY
+    // HISTORY BACK
     // =====================================
 
     if (
         window.history.length > 1
     ) {
 
-        debug(
-            'BACKSPACE',
-            'history-back',
-        );
-
         window.history.back();
 
-        unlockNextFrame();
+        requestAnimationFrame(
+            unlock,
+        );
 
         return;
     }
@@ -167,17 +147,11 @@ function navigateBack()
     // FALLBACK
     // =====================================
 
-    debug(
-        'BACKSPACE',
-        'fallback',
-        config.baseUrl,
-    );
-
     void navigateTo(
         config.baseUrl,
+    ).finally(
+        unlock,
     );
-
-    unlockNextFrame();
 }
 
 // =========================================
@@ -199,27 +173,6 @@ function handleKeyboard(
         return;
     }
 
-    debug(
-        'BACKSPACE',
-        'keydown',
-        {
-            repeat:
-                event.repeat,
-
-            ctrl:
-                event.ctrlKey,
-
-            shift:
-                event.shiftKey,
-
-            meta:
-                event.metaKey,
-
-            alt:
-                event.altKey,
-        },
-    );
-
     // =====================================
     // REPEAT
     // =====================================
@@ -227,12 +180,6 @@ function handleKeyboard(
     if (
         event.repeat
     ) {
-
-        debug(
-            'BACKSPACE',
-            'blocked-repeat',
-        );
-
         return;
     }
 
@@ -246,12 +193,6 @@ function handleKeyboard(
         || event.altKey
         || event.shiftKey
     ) {
-
-        debug(
-            'BACKSPACE',
-            'blocked-modifier',
-        );
-
         return;
     }
 
@@ -264,12 +205,6 @@ function handleKeyboard(
             event.target,
         )
     ) {
-
-        debug(
-            'BACKSPACE',
-            'blocked-input',
-        );
-
         return;
     }
 
@@ -282,43 +217,14 @@ function handleKeyboard(
             event.target,
         )
     ) {
-
-        debug(
-            'BACKSPACE',
-            'blocked-interactive',
-        );
-
         return;
     }
 
     // =====================================
-    // ACTIVE CARD
-    // =====================================
-
-    if (
-        document.querySelector(
-            '.collection-card-link.is-active',
-        )
-    ) {
-
-        debug(
-            'BACKSPACE',
-            'clear-active-card',
-        );
-
-        return;
-    }
-
-    // =====================================
-    // PREVENT
+    // PREVENT DEFAULT
     // =====================================
 
     event.preventDefault();
-
-    debug(
-        'BACKSPACE',
-        'prevent-default',
-    );
 
     // =====================================
     // NAVIGATION
@@ -346,11 +252,6 @@ export function initGlobalBackNavigation()
     initialized =
         true;
 
-    debug(
-        'BACKSPACE',
-        'init',
-    );
-
     document.addEventListener(
         'keydown',
         handleKeyboard,
@@ -358,5 +259,10 @@ export function initGlobalBackNavigation()
             passive:
                 false,
         },
+    );
+
+    debug(
+        'BACKSPACE',
+        'ready',
     );
 }
