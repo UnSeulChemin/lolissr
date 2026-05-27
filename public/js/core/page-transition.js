@@ -33,61 +33,14 @@ export function initPageTransitions()
     initialized =
         true;
 
-    requestAnimationFrame(
-        () =>
-        {
-            document.body.classList.add(
-                'page-ready',
-            );
-
-            debug(
-                'TRANSITION',
-                'ready',
-            );
-        },
+    document.body.classList.add(
+        'page-ready',
     );
-}
 
-// =========================================
-// NATIVE VIEW TRANSITION
-// =========================================
-
-async function runNativeViewTransition(
-    callback,
-)
-{
-    if (
-        typeof document.startViewTransition
-        !== 'function'
-    ) {
-
-        await callback();
-
-        return;
-    }
-
-    try {
-
-        const transition =
-            document.startViewTransition(
-                () =>
-                    Promise.resolve(
-                        callback(),
-                    ),
-            );
-
-        await transition.finished;
-
-    } catch (error) {
-
-        debug(
-            'TRANSITION',
-            'fallback',
-            error,
-        );
-
-        await callback();
-    }
+    debug(
+        'TRANSITION',
+        'ready',
+    );
 }
 
 // =========================================
@@ -98,7 +51,7 @@ export async function runPageTransition(
     callback,
 )
 {
-    const currentContent =
+    const content =
         document.querySelector(
             CONTENT_SELECTOR,
         );
@@ -107,9 +60,7 @@ export async function runPageTransition(
     // NO CONTENT
     // =====================================
 
-    if (
-        !currentContent
-    ) {
+    if (!content) {
 
         await callback();
 
@@ -117,84 +68,36 @@ export async function runPageTransition(
     }
 
     // =====================================
-    // NATIVE VIEW TRANSITIONS
+    // DISABLE POINTERS
     // =====================================
 
-    if (
-        typeof document.startViewTransition
-        === 'function'
-    ) {
+    document.body.classList.add(
+        'router-loading',
+    );
 
-        await runNativeViewTransition(
-            callback,
+    try {
+
+        // =================================
+        // SIMPLE DOM SWAP
+        // =================================
+
+        await callback();
+
+    } finally {
+
+        // =================================
+        // RESTORE POINTERS
+        // =================================
+
+        requestAnimationFrame(
+            () =>
+            {
+                document.body.classList.remove(
+                    'router-loading',
+                );
+            },
         );
-
-        return;
     }
-
-    // =====================================
-    // OUT TRANSITION
-    // =====================================
-
-    currentContent.classList.remove(
-        'page-transition-in',
-    );
-
-    currentContent.classList.add(
-        'page-transition-out',
-    );
-
-    // =====================================
-    // DOM UPDATE
-    // =====================================
-
-    await callback();
-
-    // =====================================
-    // GET NEW CONTENT
-    // =====================================
-
-    const nextContent =
-        document.querySelector(
-            CONTENT_SELECTOR,
-        );
-
-    if (
-        !nextContent
-    ) {
-        return;
-    }
-
-    // =====================================
-    // RESET STATES
-    // =====================================
-
-    nextContent.classList.remove(
-        'page-transition-out',
-    );
-
-    // =====================================
-    // IN TRANSITION
-    // =====================================
-
-    nextContent.classList.add(
-        'page-transition-in',
-    );
-
-    requestAnimationFrame(
-        () =>
-        {
-            if (
-                !nextContent.isConnected
-            ) {
-                return;
-            }
-
-            nextContent.classList.remove(
-                'page-transition-in',
-            );
-        },
-    );
 }
 
 // =========================================

@@ -130,3 +130,8 @@ textarea:focus-visible,
             0 8px 22px rgba(123, 44, 255, 0.12);
     }
 }
+
+body.router-loading *
+{
+    pointer-events: none !important;
+}
