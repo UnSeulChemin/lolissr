@@ -10,9 +10,6 @@ import {
 import {
     getPrefetchedPage,
     getInFlightPrefetch,
-    clearPrefetchTimers,
-    lockPrefetch,
-    unlockPrefetch,
 } from './prefetch.js';
 
 import {
@@ -37,9 +34,6 @@ import {
 // STATE
 // =========================================
 
-let initialized =
-    false;
-
 let locked =
     false;
 
@@ -56,16 +50,7 @@ let controller =
 function updateActiveNavigation()
 {
     const currentPath =
-        new URL(
-            normalizeUrl(
-                location.href,
-            ),
-        )
-            .pathname
-            .replace(
-                /\/$/,
-                '',
-            );
+        location.pathname;
 
     document
         .querySelectorAll(
@@ -86,25 +71,13 @@ function updateActiveNavigation()
                 }
 
                 const path =
-                    new URL(
-                        normalizeUrl(
-                            link.href,
-                        ),
-                    )
-                        .pathname
-                        .replace(
-                            /\/$/,
-                            '',
-                        );
+                    link.pathname;
 
                 const active =
-                    path === '/lolissr'
+                    path === '/lolissr/'
                         ? currentPath === path
-                        : (
-                            currentPath === path
-                            || currentPath.startsWith(
-                                path + '/',
-                            )
+                        : currentPath.startsWith(
+                            path,
                         );
 
                 link.classList.toggle(
@@ -123,22 +96,17 @@ function dispatchPageLoaded(
     target,
 )
 {
-    requestAnimationFrame(
-        () =>
-        {
-            document.dispatchEvent(
-                new CustomEvent(
-                    'ajax:page-loaded',
-                    {
-                        detail:
-                        {
-                            href:
-                                target,
-                        },
-                    },
-                ),
-            );
-        },
+    document.dispatchEvent(
+        new CustomEvent(
+            'ajax:page-loaded',
+            {
+                detail:
+                {
+                    href:
+                        target,
+                },
+            },
+        ),
     );
 }
 
@@ -186,12 +154,25 @@ export async function navigateTo(
     locked =
         true;
 
-    clearPrefetchTimers();
-
-    lockPrefetch();
-
     const currentNavigationId =
         ++navigationId;
+
+    // =====================================
+    // START EVENT
+    // =====================================
+
+    document.dispatchEvent(
+        new CustomEvent(
+            'app:navigation-start',
+            {
+                detail:
+                {
+                    href:
+                        target,
+                },
+            },
+        ),
+    );
 
     // =====================================
     // ABORT PREVIOUS
@@ -204,59 +185,26 @@ export async function navigateTo(
 
     try {
 
-        let html =
+        // =================================
+        // CACHE / PREFETCH
+        // =================================
+
+        const html =
             getPrefetchedPage(
                 target,
-            );
-
-        // =================================
-        // PREFETCH
-        // =================================
-
-        if (!html)
-        {
-            const inFlight =
+            )
+            ?? await (
                 getInFlightPrefetch(
                     target,
-                );
-
-            if (inFlight) {
-
-                debug(
-                    'AJAX',
-                    'reuse-flight',
+                )
+                ?? fetchPageHtml(
                     target,
-                );
-
-                html =
-                    await inFlight;
-
-            } else {
-
-                debug(
-                    'AJAX',
-                    'fetch',
-                    target,
-                );
-
-                html =
-                    await fetchPageHtml(
-                        target,
-                        {
-                            signal:
-                                controller.signal,
-                        },
-                    );
-            }
-
-        } else {
-
-            debug(
-                'AJAX',
-                'reuse-cache',
-                target,
+                    {
+                        signal:
+                            controller.signal,
+                    },
+                )
             );
-        }
 
         // =================================
         // RACE CONDITION
@@ -333,8 +281,6 @@ export async function navigateTo(
         dispatchPageLoaded(
             target,
         );
-
-        unlockPrefetch();
 
         debug(
             'AJAX',
@@ -468,13 +414,6 @@ async function handlePopState()
 
 export function initAjaxNavigation()
 {
-    if (initialized) {
-        return;
-    }
-
-    initialized =
-        true;
-
     document.addEventListener(
         'click',
         handleClick,

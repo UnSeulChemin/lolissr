@@ -11,10 +11,6 @@ import {
 } from '../core/navigation.js';
 
 import {
-    getPrefetchedPage,
-} from './prefetch.js';
-
-import {
     debug,
     debugError,
 } from '../core/debug.js';
@@ -69,26 +65,6 @@ export async function fetchPageHtml(
         normalizeUrl(
             href,
         );
-
-    // =====================================
-    // CACHE
-    // =====================================
-
-    const cached =
-        getPrefetchedPage(
-            url,
-        );
-
-    if (cached) {
-
-        debug(
-            'FETCH',
-            'cache-hit',
-            url,
-        );
-
-        return cached;
-    }
 
     try {
 
