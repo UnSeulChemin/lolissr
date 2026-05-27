@@ -64,32 +64,46 @@ export async function triggerBeforeRouteChange(
     context,
 )
 {
+    const tasks =
+        [];
+
     for (
         const callback
         of beforeRouteChangeCallbacks
     )
     {
-        try {
-
-            await callback(
-                context,
-            );
-
-        } catch (error) {
-
-            debugError(
-                'ROUTER-HOOK',
-                error,
-            );
-        }
+        tasks.push(
+            Promise.resolve()
+                .then(
+                    () =>
+                        callback(
+                            context,
+                        ),
+                )
+                .catch(
+                    (
+                        error,
+                    ) =>
+                    {
+                        debugError(
+                            'ROUTER-HOOK',
+                            error,
+                        );
+                    },
+                ),
+        );
     }
+
+    await Promise.all(
+        tasks,
+    );
 }
 
 // =========================================
 // TRIGGER AFTER
 // =========================================
 
-export async function triggerRouteChange(
+export function triggerRouteChange(
     context,
 )
 {
@@ -98,18 +112,25 @@ export async function triggerRouteChange(
         of routeChangeCallbacks
     )
     {
-        try {
-
-            await callback(
-                context,
-            );
-
-        } catch (error) {
-
-            debugError(
-                'ROUTER-HOOK',
-                error,
-            );
-        }
+        queueMicrotask(
+            () =>
+            {
+                Promise.resolve(
+                    callback(
+                        context,
+                    ),
+                ).catch(
+                    (
+                        error,
+                    ) =>
+                    {
+                        debugError(
+                            'ROUTER-HOOK',
+                            error,
+                        );
+                    },
+                );
+            },
+        );
     }
 }

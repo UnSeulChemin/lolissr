@@ -6,20 +6,12 @@ import {
     debug,
 } from './debug.js';
 
-import {
-    config,
-} from './config.js';
-
 // =========================================
 // CONFIG
 // =========================================
 
 const CONTENT_SELECTOR =
     '.app-content';
-
-const TRANSITION_DURATION =
-    config.transitions
-        .duration;
 
 // =========================================
 // STATE
@@ -57,190 +49,7 @@ export function initPageTransitions()
 }
 
 // =========================================
-// HELPERS
-// =========================================
-
-function forceReflow(
-    element,
-)
-{
-    void element.offsetWidth;
-}
-
-function waitTransitionEnd(
-    element,
-)
-{
-    return new Promise(
-        (
-            resolve,
-        ) =>
-        {
-            if (
-                !element
-                || !element.isConnected
-            ) {
-
-                resolve();
-
-                return;
-            }
-
-            let finished =
-                false;
-
-            function cleanup()
-            {
-                if (finished) {
-                    return;
-                }
-
-                finished =
-                    true;
-
-                clearTimeout(
-                    timeoutId,
-                );
-
-                element.removeEventListener(
-                    'transitionend',
-                    handleTransitionEnd,
-                );
-
-                resolve();
-            }
-
-            function handleTransitionEnd(
-                event,
-            )
-            {
-                if (
-                    event.target
-                    !== element
-                ) {
-                    return;
-                }
-
-                cleanup();
-            }
-
-            const timeoutId =
-                window.setTimeout(
-                    cleanup,
-                    TRANSITION_DURATION,
-                );
-
-            element.addEventListener(
-                'transitionend',
-                handleTransitionEnd,
-            );
-        },
-    );
-}
-
-// =========================================
-// OUT
-// =========================================
-
-async function animateOut(
-    element,
-)
-{
-    if (
-        !element
-        || !element.isConnected
-    ) {
-        return;
-    }
-
-    debug(
-        'TRANSITION',
-        'out',
-    );
-
-    element.classList.remove(
-        'page-transition-in',
-        'page-transition-visible',
-    );
-
-    forceReflow(
-        element,
-    );
-
-    element.classList.add(
-        'page-transition-out',
-    );
-
-    await waitTransitionEnd(
-        element,
-    );
-}
-
-// =========================================
-// IN
-// =========================================
-
-async function animateIn(
-    element,
-)
-{
-    if (
-        !element
-        || !element.isConnected
-    ) {
-        return;
-    }
-
-    debug(
-        'TRANSITION',
-        'in',
-    );
-
-    element.classList.remove(
-        'page-transition-out',
-    );
-
-    element.classList.add(
-        'page-transition-in',
-    );
-
-    forceReflow(
-        element,
-    );
-
-    requestAnimationFrame(
-        () =>
-        {
-            if (
-                !element.isConnected
-            ) {
-                return;
-            }
-
-            element.classList.add(
-                'page-transition-visible',
-            );
-        },
-    );
-
-    await waitTransitionEnd(
-        element,
-    );
-
-    if (
-        !element.isConnected
-    ) {
-        return;
-    }
-
-    element.classList.remove(
-        'page-transition-in',
-        'page-transition-visible',
-    );
-}
-
-// =========================================
-// VIEW TRANSITION
+// NATIVE VIEW TRANSITION
 // =========================================
 
 async function runNativeViewTransition(
@@ -289,7 +98,7 @@ export async function runPageTransition(
     callback,
 )
 {
-    const content =
+    const currentContent =
         document.querySelector(
             CONTENT_SELECTOR,
         );
@@ -298,7 +107,9 @@ export async function runPageTransition(
     // NO CONTENT
     // =====================================
 
-    if (!content) {
+    if (
+        !currentContent
+    ) {
 
         await callback();
 
@@ -322,17 +133,67 @@ export async function runPageTransition(
     }
 
     // =====================================
-    // FALLBACK
+    // OUT TRANSITION
     // =====================================
 
-    await animateOut(
-        content,
+    currentContent.classList.remove(
+        'page-transition-in',
     );
+
+    currentContent.classList.add(
+        'page-transition-out',
+    );
+
+    // =====================================
+    // DOM UPDATE
+    // =====================================
 
     await callback();
 
-    await animateIn(
-        content,
+    // =====================================
+    // GET NEW CONTENT
+    // =====================================
+
+    const nextContent =
+        document.querySelector(
+            CONTENT_SELECTOR,
+        );
+
+    if (
+        !nextContent
+    ) {
+        return;
+    }
+
+    // =====================================
+    // RESET STATES
+    // =====================================
+
+    nextContent.classList.remove(
+        'page-transition-out',
+    );
+
+    // =====================================
+    // IN TRANSITION
+    // =====================================
+
+    nextContent.classList.add(
+        'page-transition-in',
+    );
+
+    requestAnimationFrame(
+        () =>
+        {
+            if (
+                !nextContent.isConnected
+            ) {
+                return;
+            }
+
+            nextContent.classList.remove(
+                'page-transition-in',
+            );
+        },
     );
 }
 

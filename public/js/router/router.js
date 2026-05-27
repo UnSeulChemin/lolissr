@@ -113,6 +113,21 @@ function updateActiveNavigation()
 }
 
 // =========================================
+// CLEAR FOCUS
+// =========================================
+
+function clearActiveFocus()
+{
+    if (
+        document.activeElement
+        instanceof HTMLElement
+    ) {
+
+        document.activeElement.blur();
+    }
+}
+
+// =========================================
 // EVENTS
 // =========================================
 
@@ -337,7 +352,7 @@ export async function navigateTo(
                 controller.signal,
             );
 
-        // =================================
+        // =====================================
         // RACE CONDITION
         // =====================================
 
@@ -348,7 +363,7 @@ export async function navigateTo(
             return;
         }
 
-        // =================================
+        // =====================================
         // VALIDATION
         // =====================================
 
@@ -362,7 +377,7 @@ export async function navigateTo(
             );
         }
 
-        // =================================
+        // =====================================
         // HISTORY
         // =====================================
 
@@ -378,7 +393,7 @@ export async function navigateTo(
             );
         }
 
-        // =================================
+        // =====================================
         // TRANSITION
         // =====================================
 
@@ -390,10 +405,12 @@ export async function navigateTo(
                 );
 
                 updateActiveNavigation();
+
+                clearActiveFocus();
             },
         );
 
-        // =================================
+        // =====================================
         // SCROLL
         // =====================================
 
@@ -414,11 +431,18 @@ export async function navigateTo(
             );
         }
 
-        // =================================
+        // =====================================
+        // UNLOCK EARLY
+        // =====================================
+
+        locked =
+            false;
+
+        // =====================================
         // AFTER HOOKS
         // =====================================
 
-        await triggerRouteChange(
+        triggerRouteChange(
             {
                 from:
                     current,
@@ -428,7 +452,7 @@ export async function navigateTo(
             },
         );
 
-        // =================================
+        // =====================================
         // EVENT
         // =====================================
 
@@ -461,9 +485,6 @@ export async function navigateTo(
             currentNavigationId
             === navigationId
         ) {
-
-            locked =
-                false;
 
             controller =
                 null;
@@ -535,6 +556,10 @@ function handleClick(
     }
 
     event.preventDefault();
+
+    link.blur();
+
+    clearActiveFocus();
 
     void navigateTo(
         link.href,
