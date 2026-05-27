@@ -1,54 +1,135 @@
 // =========================================
-// AJAX FETCH (CLEAN)
+// AJAX FETCH
 // =========================================
 
-import { request } from '../core/http.js';
-import { normalizeUrl } from '../core/navigation.js';
-import { getPrefetchedPage } from './prefetch.js';
-import { debug, debugError } from '../core/debug.js';
+import {
+    request,
+} from '../core/http.js';
 
-const SELECTOR = '.ajax-content';
+import {
+    normalizeUrl,
+} from '../core/navigation.js';
 
-function isValid(html)
+import {
+    getPrefetchedPage,
+} from './prefetch.js';
+
+import {
+    debug,
+    debugError,
+} from '../core/debug.js';
+
+// =========================================
+// CONFIG
+// =========================================
+
+const SELECTOR =
+    '.ajax-content';
+
+// =========================================
+// VALIDATION
+// =========================================
+
+function isValidHtml(html)
 {
-    if (!html || typeof html !== 'string') return false;
+    if (
+        typeof html
+        !== 'string'
+        || html.length === 0
+    ) {
+        return false;
+    }
 
-    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const doc =
+        new DOMParser()
+            .parseFromString(
+                html,
+                'text/html',
+            );
 
-    return !!doc.querySelector(SELECTOR);
+    return Boolean(
+        doc.querySelector(
+            SELECTOR,
+        ),
+    );
 }
 
-export async function fetchPageHtml(href, options = {})
+// =========================================
+// FETCH
+// =========================================
+
+export async function fetchPageHtml(
+    href,
+    options = {},
+)
 {
-    const url = normalizeUrl(href);
+    const url =
+        normalizeUrl(
+            href,
+        );
 
-    const cached = getPrefetchedPage(url);
+    // =====================================
+    // PREFETCH CACHE
+    // =====================================
 
-    if (typeof cached === 'string' && isValid(cached)) {
-        debug('FETCH', 'cache-hit', url);
+    const cached =
+        getPrefetchedPage(
+            url,
+        );
+
+    if (cached) {
+
+        debug(
+            'FETCH',
+            'cache-hit',
+            url,
+        );
+
         return cached;
     }
 
     try {
 
-        const html = await request(url, {
-            responseType: 'text',
-            signal: options.signal,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'Accept': 'text/html',
-            },
-        });
+        const html =
+            await request(
+                url,
+                {
+                    responseType:
+                        'text',
 
-        if (!isValid(html)) {
-            throw new Error('Invalid AJAX HTML');
+                    signal:
+                        options.signal,
+
+                    headers: {
+                        'X-Requested-With':
+                            'XMLHttpRequest',
+
+                        Accept:
+                            'text/html',
+                    },
+                },
+            );
+
+        if (
+            !isValidHtml(
+                html,
+            )
+        ) {
+
+            throw new Error(
+                'Invalid AJAX HTML',
+            );
         }
 
         return html;
 
-    } catch (e) {
+    } catch (error) {
 
-        debugError('FETCH', e);
-        throw e;
+        debugError(
+            'FETCH',
+            error,
+        );
+
+        throw error;
     }
 }

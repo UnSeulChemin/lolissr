@@ -1,5 +1,5 @@
 // =========================================
-// PREFETCH SYSTEM (SMART HOVER)
+// PREFETCH SYSTEM
 // =========================================
 
 import {
@@ -8,6 +8,7 @@ import {
 
 import {
     normalizeUrl,
+    shouldIgnoreLink,
 } from '../core/navigation.js';
 
 import {
@@ -23,7 +24,10 @@ const CACHE_DURATION =
     10000;
 
 const HOVER_DELAY =
-    180;
+    120;
+
+const REQUEST_TIMEOUT =
+    4000;
 
 // =========================================
 // STATE
@@ -33,26 +37,28 @@ const cache =
     new Map();
 
 const inFlight =
-    new Set();
-
-const prefetched =
-    new Set();
+    new Map();
 
 const hoverTimers =
     new WeakMap();
 
 // =========================================
-// CACHE GET
+// CACHE
 // =========================================
 
-export function getPrefetchedPage(
-    url,
-)
+function isExpired(entry)
+{
+    return (
+        Date.now()
+        - entry.timestamp
+        > CACHE_DURATION
+    );
+}
+
+export function getPrefetchedPage(url)
 {
     const normalized =
-        normalizeUrl(
-            url,
-        );
+        normalizeUrl(url);
 
     const cached =
         cache.get(
@@ -63,21 +69,13 @@ export function getPrefetchedPage(
         return null;
     }
 
-    // =====================================
-    // CACHE EXPIRED
-    // =====================================
-
     if (
-        Date.now()
-        - cached.timestamp
-        > CACHE_DURATION
+        isExpired(
+            cached,
+        )
     ) {
 
         cache.delete(
-            normalized,
-        );
-
-        prefetched.delete(
             normalized,
         );
 
@@ -88,88 +86,37 @@ export function getPrefetchedPage(
 }
 
 // =========================================
-// PREFETCH CORE
+// PREFETCH
 // =========================================
 
-export async function prefetchPage(
-    url,
-)
+export async function prefetchPage(url)
 {
-    const parsed =
-        new URL(
-            url,
-            window.location.origin,
-        );
-
-    // =====================================
-    // SAME ORIGIN
-    // =====================================
-
-    if (
-        parsed.origin
-        !== window.location.origin
-    ) {
-        return;
-    }
-
-    // =====================================
-    // ONLY HTTP
-    // =====================================
-
-    if (
-        parsed.protocol !== 'http:'
-        && parsed.protocol !== 'https:'
-    ) {
-        return;
-    }
-
-    // =====================================
-    // SKIP SEARCH PARAMS
-    // =====================================
-
-    if (
-        parsed.search
-    ) {
-        return;
-    }
-
-    // =====================================
-    // SKIP HASH
-    // =====================================
-
-    if (
-        parsed.hash
-    ) {
-        return;
-    }
-
     const normalized =
-        normalizeUrl(
-            url,
-        );
+        normalizeUrl(url);
 
     // =====================================
-    // ALREADY PREFETCHED
+    // CURRENT PAGE
     // =====================================
 
     if (
-        prefetched.has(
-            normalized,
+        normalized
+        === normalizeUrl(
+            location.href,
         )
     ) {
         return;
     }
 
     // =====================================
-    // CACHE
+    // CACHE HIT
     // =====================================
 
-    const existing =
+    if (
         getPrefetchedPage(
             normalized,
-        );
+        )
+    ) {
 
-    if (existing) {
         return;
     }
 
@@ -182,12 +129,11 @@ export async function prefetchPage(
             normalized,
         )
     ) {
-        return;
-    }
 
-    inFlight.add(
-        normalized,
-    );
+        return inFlight.get(
+            normalized,
+        );
+    }
 
     const controller =
         new AbortController();
@@ -198,210 +144,187 @@ export async function prefetchPage(
             {
                 controller.abort();
             },
-            4000,
+            REQUEST_TIMEOUT,
         );
 
-    try {
+    const promise =
+        (async () =>
+        {
+            try {
 
-        const html =
-            await request(
-                normalized,
-                {
-                    responseType:
-                        'text',
+                const html =
+                    await request(
+                        normalized,
+                        {
+                            responseType:
+                                'text',
 
-                    signal:
-                        controller.signal,
+                            signal:
+                                controller.signal,
 
-                    headers: {
-                        'X-Prefetch':
-                            '1',
+                            headers: {
+                                'X-Prefetch':
+                                    '1',
 
-                        Accept:
-                            'text/html',
+                                Accept:
+                                    'text/html',
+                            },
+                        },
+                    );
+
+                if (
+                    typeof html
+                    !== 'string'
+                    || html.length === 0
+                ) {
+                    return null;
+                }
+
+                cache.set(
+                    normalized,
+                    {
+                        html,
+                        timestamp:
+                            Date.now(),
                     },
-                },
-            );
+                );
 
-        // =================================
-        // VALID HTML
-        // =================================
+                debug(
+                    'PREFETCH',
+                    'cached',
+                    normalized,
+                );
 
-        if (
-            typeof html === 'string'
-            && html.length > 0
-        ) {
+                return html;
 
-            cache.set(
-                normalized,
-                {
-                    html,
-                    timestamp:
-                        Date.now(),
-                },
-            );
+            } catch (error) {
 
-            prefetched.add(
-                normalized,
-            );
+                if (
+                    error?.name
+                    !== 'AbortError'
+                ) {
 
-            debug(
-                'PREFETCH',
-                'cached',
-                normalized,
-            );
-        }
+                    debugError(
+                        'PREFETCH',
+                        error,
+                    );
+                }
 
-    } catch (error) {
+                return null;
 
-        if (
-            error?.name
-            !== 'AbortError'
-        ) {
+            } finally {
 
-            debugError(
-                'PREFETCH',
-                error,
-            );
-        }
+                clearTimeout(
+                    timeout,
+                );
 
-    } finally {
+                inFlight.delete(
+                    normalized,
+                );
+            }
+        })();
 
-        clearTimeout(
-            timeout,
-        );
+    inFlight.set(
+        normalized,
+        promise,
+    );
 
-        inFlight.delete(
-            normalized,
-        );
-    }
+    return promise;
 }
 
 // =========================================
-// HOVER PREFETCH
+// HOVER BIND
 // =========================================
 
 function bindHoverPrefetch()
 {
-    document.addEventListener(
-        'mouseenter',
-        (event) =>
-        {
-            const target =
-                event.target;
+    const links =
+        document.querySelectorAll(
+            'a[href]',
+        );
 
-            if (
-                !(
-                    target
-                    instanceof Element
-                )
-            ) {
-                return;
-            }
+    for (const link of links)
+    {
+        if (
+            !(
+                link
+                instanceof HTMLAnchorElement
+            )
+        ) {
+            continue;
+        }
 
-            const link =
-                target.closest(
-                    'a[href]',
+        // =================================
+        // ALREADY BINDED
+        // =================================
+
+        if (
+            link.dataset.prefetchBound
+            === '1'
+        ) {
+            continue;
+        }
+
+        link.dataset.prefetchBound =
+            '1';
+
+        link.addEventListener(
+            'mouseenter',
+            () =>
+            {
+                if (
+                    shouldIgnoreLink(
+                        link,
+                    )
+                ) {
+                    return;
+                }
+
+                clearTimeout(
+                    hoverTimers.get(
+                        link,
+                    ),
                 );
 
-            if (
-                !(
-                    link
-                    instanceof HTMLAnchorElement
-                )
-            ) {
-                return;
-            }
+                const timer =
+                    setTimeout(
+                        () =>
+                        {
+                            hoverTimers.delete(
+                                link,
+                            );
 
-            // =============================
-            // NO AJAX
-            // =============================
+                            void prefetchPage(
+                                link.href,
+                            );
+                        },
+                        HOVER_DELAY,
+                    );
 
-            if (
-                link.dataset.noAjax
-                !== undefined
-            ) {
-                return;
-            }
-
-            // =============================
-            // NO PREFETCH
-            // =============================
-
-            if (
-                link.dataset.noPrefetch
-                !== undefined
-            ) {
-                return;
-            }
-
-            // =============================
-            // NEW TAB
-            // =============================
-
-            if (
-                link.target
-                === '_blank'
-            ) {
-                return;
-            }
-
-            // =============================
-            // DOWNLOAD
-            // =============================
-
-            if (
-                link.hasAttribute(
-                    'download',
-                )
-            ) {
-                return;
-            }
-
-            // =============================
-            // RESET TIMER
-            // =============================
-
-            clearTimeout(
-                hoverTimers.get(
+                hoverTimers.set(
                     link,
-                ),
-            );
+                    timer,
+                );
+            },
+        );
 
-            // =============================
-            // DELAY
-            // =============================
-
-            const timer =
-                setTimeout(
-                    () =>
-                    {
-                        hoverTimers.delete(
-                            link,
-                        );
-
-                        void prefetchPage(
-                            link.href,
-                        );
-                    },
-                    HOVER_DELAY,
+        link.addEventListener(
+            'mouseleave',
+            () =>
+            {
+                clearTimeout(
+                    hoverTimers.get(
+                        link,
+                    ),
                 );
 
-            hoverTimers.set(
-                link,
-                timer,
-            );
-        },
-        true,
-    );
+                hoverTimers.delete(
+                    link,
+                );
+            },
+        );
+    }
 }
-
-// =========================================
-// GLOBAL
-// =========================================
-
-window.__prefetchPage =
-    prefetchPage;
 
 // =========================================
 // INIT
@@ -411,8 +334,16 @@ export function initPrefetch()
 {
     bindHoverPrefetch();
 
+    document.addEventListener(
+        'ajax:page-loaded',
+        () =>
+        {
+            bindHoverPrefetch();
+        },
+    );
+
     debug(
         'PREFETCH',
-        'hover ready',
+        'ready',
     );
 }

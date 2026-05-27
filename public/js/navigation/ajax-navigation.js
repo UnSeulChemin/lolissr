@@ -1,14 +1,15 @@
 // =========================================
-// AJAX NAVIGATION (SPA CORE CLEAN)
+// AJAX NAVIGATION
 // =========================================
+
+import {
+    normalizeUrl,
+    shouldIgnoreLink,
+} from '../core/navigation.js';
 
 import {
     getPrefetchedPage,
 } from './prefetch.js';
-
-import {
-    normalizeUrl,
-} from '../core/navigation.js';
 
 import {
     fetchPageHtml,
@@ -42,18 +43,20 @@ let locked =
     false;
 
 // =========================================
-// ACTIVE NAVIGATION
+// ACTIVE NAV
 // =========================================
 
 function updateActiveNavigation()
 {
     const current =
         new URL(
-            location.href,
-        ).pathname.replace(
-            /\/+$/,
-            '/',
+            normalizeUrl(
+                location.href,
+            ),
         );
+
+    const currentPath =
+        current.pathname;
 
     const links =
         document.querySelectorAll(
@@ -73,44 +76,48 @@ function updateActiveNavigation()
 
         const href =
             new URL(
-                link.href,
-            ).pathname.replace(
-                /\/+$/,
-                '/',
+                normalizeUrl(
+                    link.href,
+                ),
             );
 
-        link.classList.remove(
-            'active',
-        );
+        const hrefPath =
+            href.pathname;
 
-        if (href === '/') {
+        let active =
+            false;
 
-            if (current === '/') {
-
-                link.classList.add(
-                    'active',
-                );
-            }
-
-            continue;
-        }
+        // =================================
+        // EXACT ROOT
+        // =================================
 
         if (
-            current === href
-            || current.startsWith(
-                href + '/',
-            )
+            hrefPath
+            === '/lolissr/'
         ) {
 
-            link.classList.add(
-                'active',
-            );
+            active =
+                currentPath
+                === '/lolissr/';
+
+        } else {
+
+            active =
+                currentPath === hrefPath
+                || currentPath.startsWith(
+                    hrefPath,
+                );
         }
+
+        link.classList.toggle(
+            'active',
+            active,
+        );
     }
 }
 
 // =========================================
-// NAVIGATION CORE
+// NAVIGATION
 // =========================================
 
 export async function navigateTo(
@@ -118,10 +125,6 @@ export async function navigateTo(
     options = {},
 )
 {
-    // =====================================
-    // LOCK
-    // =====================================
-
     if (
         locked
         && options.force !== true
@@ -142,20 +145,12 @@ export async function navigateTo(
             location.href,
         );
 
-    // =====================================
-    // SAME URL
-    // =====================================
-
     if (
         target === current
         && options.force !== true
     ) {
         return;
     }
-
-    // =====================================
-    // ABORT PREVIOUS
-    // =====================================
 
     controller?.abort();
 
@@ -170,19 +165,11 @@ export async function navigateTo(
 
     try {
 
-        // =================================
-        // SPA NAVIGATION START
-        // =================================
-
         document.dispatchEvent(
             new CustomEvent(
                 'app:navigation-start',
             ),
         );
-
-        // =================================
-        // PREFETCH CACHE
-        // =================================
 
         let html =
             getPrefetchedPage(
@@ -193,10 +180,6 @@ export async function navigateTo(
             Boolean(
                 html,
             );
-
-        // =================================
-        // FETCH
-        // =================================
 
         if (!html) {
 
@@ -210,34 +193,12 @@ export async function navigateTo(
                 );
         }
 
-        // =================================
-        // VALIDATE
-        // =================================
-
-        if (
-            typeof html !== 'string'
-            || html.length === 0
-        ) {
-
-            throw new Error(
-                'Empty HTML',
-            );
-        }
-
-        // =================================
-        // RACE CONDITION
-        // =================================
-
         if (
             currentId
             !== navigationId
         ) {
             return;
         }
-
-        // =================================
-        // HISTORY
-        // =================================
 
         if (
             options.updateHistory
@@ -250,10 +211,6 @@ export async function navigateTo(
                 target,
             );
         }
-
-        // =================================
-        // DOM SWAP
-        // =================================
 
         if (instant) {
 
@@ -284,10 +241,6 @@ export async function navigateTo(
             );
         }
 
-        // =================================
-        // SCROLL
-        // =================================
-
         if (
             options.scrollTop
             !== false
@@ -297,10 +250,6 @@ export async function navigateTo(
                 false,
             );
         }
-
-        // =================================
-        // EVENTS
-        // =================================
 
         document.dispatchEvent(
             new CustomEvent(
@@ -358,10 +307,6 @@ export function initAjaxNavigation()
     window.__SPA__ =
         true;
 
-    // =====================================
-    // CLICK NAVIGATION
-    // =====================================
-
     document.addEventListener(
         'click',
         (event) =>
@@ -384,72 +329,9 @@ export function initAjaxNavigation()
                 );
 
             if (
-                !(
-                    link
-                    instanceof HTMLAnchorElement
+                shouldIgnoreLink(
+                    link,
                 )
-            ) {
-                return;
-            }
-
-            // =================================
-            // NO AJAX
-            // =================================
-
-            if (
-                link.dataset.noAjax
-                !== undefined
-            ) {
-                return;
-            }
-
-            // =================================
-            // EXTERNAL
-            // =================================
-
-            const url =
-                new URL(
-                    link.href,
-                    window.location.origin,
-                );
-
-            if (
-                url.origin
-                !== window.location.origin
-            ) {
-                return;
-            }
-
-            // =================================
-            // NEW TAB
-            // =================================
-
-            if (
-                link.target === '_blank'
-            ) {
-                return;
-            }
-
-            // =================================
-            // DOWNLOAD
-            // =================================
-
-            if (
-                link.hasAttribute(
-                    'download',
-                )
-            ) {
-                return;
-            }
-
-            // =================================
-            // HASH ONLY
-            // =================================
-
-            if (
-                url.pathname
-                === location.pathname
-                && url.hash
             ) {
                 return;
             }
@@ -461,10 +343,6 @@ export function initAjaxNavigation()
             );
         },
     );
-
-    // =====================================
-    // BROWSER HISTORY
-    // =====================================
 
     window.addEventListener(
         'popstate',
@@ -482,23 +360,10 @@ export function initAjaxNavigation()
 
             try {
 
-                document.dispatchEvent(
-                    new CustomEvent(
-                        'app:navigation-start',
-                    ),
-                );
-
                 const html =
                     await fetchPageHtml(
                         location.href,
                     );
-
-                if (
-                    typeof html !== 'string'
-                    || html.length === 0
-                ) {
-                    return;
-                }
 
                 replaceContent(
                     html,
@@ -522,14 +387,10 @@ export function initAjaxNavigation()
         },
     );
 
-    // =====================================
-    // INIT
-    // =====================================
-
     updateActiveNavigation();
 
     debug(
         'AJAX',
-        'SPA ready',
+        'ready',
     );
 }

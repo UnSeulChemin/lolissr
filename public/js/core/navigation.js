@@ -4,41 +4,142 @@
 
 export function normalizeUrl(href)
 {
-    const url = new URL(href, window.location.origin);
+    const url =
+        new URL(
+            href,
+            window.location.origin,
+        );
 
-    let pathname = url.pathname;
+    // =====================================
+    // CLEAN PATH
+    // =====================================
 
-    // force trailing slash propre
-    if (!pathname.endsWith('/') && !pathname.includes('.')) {
+    let pathname =
+        url.pathname.replace(
+            /\/+/g,
+            '/',
+        );
+
+    // =====================================
+    // TRAILING SLASH
+    // =====================================
+
+    if (
+        !pathname.endsWith('/')
+        && !pathname.includes('.')
+    ) {
+
         pathname += '/';
     }
 
-    // ignore hash (IMPORTANT SPA)
-    const search = url.search || '';
+    // =====================================
+    // REMOVE HASH
+    // =====================================
 
-    return pathname + search;
+    url.hash = '';
+
+    // =====================================
+    // APPLY CLEAN PATH
+    // =====================================
+
+    url.pathname =
+        pathname;
+
+    return url.toString();
 }
+
+// =========================================
+// LINK FILTER
+// =========================================
 
 export function shouldIgnoreLink(link)
 {
-    if (!(link instanceof HTMLAnchorElement)) return true;
-    if (!link.href) return true;
-
-    const url = new URL(link.href, window.location.origin);
-
-    if (url.origin !== window.location.origin) return true;
-    if (link.target === '_blank') return true;
-    if (link.hasAttribute('download')) return true;
-    if (link.dataset.noAjax !== undefined) return true;
-
     if (
-        url.hash &&
-        url.pathname === location.pathname
+        !(
+            link
+            instanceof HTMLAnchorElement
+        )
     ) {
         return true;
     }
 
-    if (/\.(jpg|jpeg|png|gif|webp|svg|pdf|zip)$/i.test(url.pathname)) {
+    if (!link.href) {
+        return true;
+    }
+
+    const url =
+        new URL(
+            link.href,
+            window.location.origin,
+        );
+
+    // =====================================
+    // EXTERNAL
+    // =====================================
+
+    if (
+        url.origin
+        !== window.location.origin
+    ) {
+        return true;
+    }
+
+    // =====================================
+    // TARGET
+    // =====================================
+
+    if (
+        link.target
+        === '_blank'
+    ) {
+        return true;
+    }
+
+    // =====================================
+    // DOWNLOAD
+    // =====================================
+
+    if (
+        link.hasAttribute(
+            'download',
+        )
+    ) {
+        return true;
+    }
+
+    // =====================================
+    // DATASET
+    // =====================================
+
+    if (
+        link.dataset.noAjax
+        !== undefined
+    ) {
+        return true;
+    }
+
+    // =====================================
+    // SAME PAGE HASH
+    // =====================================
+
+    if (
+        url.hash
+        && url.pathname
+        === location.pathname
+    ) {
+        return true;
+    }
+
+    // =====================================
+    // STATIC FILES
+    // =====================================
+
+    if (
+        /\.(jpg|jpeg|png|gif|webp|svg|pdf|zip)$/i
+            .test(
+                url.pathname,
+            )
+    ) {
         return true;
     }
 

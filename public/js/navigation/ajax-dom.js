@@ -1,57 +1,121 @@
 // =========================================
-// AJAX DOM (STABLE SPA SWAP)
+// AJAX DOM
 // =========================================
 
-import { $ } from '../core/dom.js';
-import { debug, debugError } from '../core/debug.js';
+import {
+    debug,
+    debugError,
+} from '../core/debug.js';
 
-const SELECTOR = '.ajax-content';
+// =========================================
+// CONFIG
+// =========================================
+
+const SELECTOR =
+    '.ajax-content';
+
+// =========================================
+// PARSE
+// =========================================
 
 function parseHtml(html)
 {
-    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const doc =
+        new DOMParser()
+            .parseFromString(
+                html,
+                'text/html',
+            );
 
-    if (!doc.querySelector(SELECTOR)) {
-        throw new Error('Invalid SPA HTML (missing container)');
+    if (
+        !doc.querySelector(
+            SELECTOR,
+        )
+    ) {
+
+        throw new Error(
+            'Missing AJAX container',
+        );
     }
 
     return doc;
 }
 
-function getContainer(root)
-{
-    return root.querySelector(SELECTOR);
-}
+// =========================================
+// META
+// =========================================
 
 function updateMeta(doc)
 {
-    const title = doc.querySelector('title');
-    if (title) document.title = title.textContent;
+    const title =
+        doc.querySelector(
+            'title',
+        );
 
-    const html = doc.documentElement;
-    if (html?.lang) document.documentElement.lang = html.lang;
+    if (title) {
+        document.title =
+            title.textContent;
+    }
+
+    if (
+        doc.documentElement.lang
+    ) {
+
+        document.documentElement.lang =
+            doc.documentElement.lang;
+    }
 }
+
+// =========================================
+// SWAP
+// =========================================
 
 export function replaceContent(html)
 {
     try {
-        const doc = parseHtml(html);
 
-        const current = document.querySelector(SELECTOR);
-        const next = getContainer(doc);
+        const doc =
+            parseHtml(
+                html,
+            );
 
-        if (!current || !next) {
-            throw new Error('Missing SPA container');
+        const current =
+            document.querySelector(
+                SELECTOR,
+            );
+
+        const next =
+            doc.querySelector(
+                SELECTOR,
+            );
+
+        if (
+            !current
+            || !next
+        ) {
+
+            throw new Error(
+                'Missing container',
+            );
         }
 
-        updateMeta(doc);
+        updateMeta(
+            doc,
+        );
 
-        // ⚡ IMPORTANT FIX: replace INNER ONLY (SAFE HEADER PERSIST)
-        current.innerHTML = next.innerHTML;
+        current.innerHTML =
+            next.innerHTML;
 
-        debug('DOM', 'swapped');
+        debug(
+            'DOM',
+            'swapped',
+        );
 
-    } catch (e) {
-        debugError('DOM', e);
+    } catch (error) {
+
+        debugError(
+            'DOM',
+            error,
+        );
     }
 }
