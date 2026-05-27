@@ -10,13 +10,13 @@ import {
     navigateTo,
 } from '../router/router.js';
 
-// =========================================
-// CONFIG
-// =========================================
+import {
+    debug,
+} from '../core/debug.js';
 
-const BACK_LOCK_DURATION =
-    config.navigation
-        .backLockDuration;
+// =========================================
+// SELECTORS
+// =========================================
 
 const typingSelector =
 `
@@ -42,9 +42,6 @@ let initialized =
 
 let locked =
     false;
-
-let unlockTimer =
-    null;
 
 // =========================================
 // HELPERS
@@ -86,27 +83,23 @@ function isInteractiveElement(
 }
 
 // =========================================
-// LOCK
+// UNLOCK
 // =========================================
 
-function lockNavigation()
+function unlockNextFrame()
 {
-    locked =
-        true;
+    requestAnimationFrame(
+        () =>
+        {
+            locked =
+                false;
 
-    clearTimeout(
-        unlockTimer,
+            debug(
+                'BACKSPACE',
+                'unlock',
+            );
+        },
     );
-
-    unlockTimer =
-        window.setTimeout(
-            () =>
-            {
-                locked =
-                    false;
-            },
-            BACK_LOCK_DURATION,
-        );
 }
 
 // =========================================
@@ -115,24 +108,76 @@ function lockNavigation()
 
 function navigateBack()
 {
+    debug(
+        'BACKSPACE',
+        'navigate-back',
+        {
+            locked,
+            href:
+                location.href,
+
+            history:
+                window.history.length,
+        },
+    );
+
+    // =====================================
+    // LOCK
+    // =====================================
+
     if (locked) {
+
+        debug(
+            'BACKSPACE',
+            'blocked',
+        );
+
         return;
     }
 
-    lockNavigation();
+    locked =
+        true;
+
+    debug(
+        'BACKSPACE',
+        'lock',
+    );
+
+    // =====================================
+    // HISTORY
+    // =====================================
 
     if (
         window.history.length > 1
     ) {
 
+        debug(
+            'BACKSPACE',
+            'history-back',
+        );
+
         window.history.back();
+
+        unlockNextFrame();
 
         return;
     }
 
+    // =====================================
+    // FALLBACK
+    // =====================================
+
+    debug(
+        'BACKSPACE',
+        'fallback',
+        config.baseUrl,
+    );
+
     void navigateTo(
         config.baseUrl,
     );
+
+    unlockNextFrame();
 }
 
 // =========================================
@@ -143,6 +188,10 @@ function handleKeyboard(
     event,
 )
 {
+    // =====================================
+    // KEY
+    // =====================================
+
     if (
         event.key
         !== 'Backspace'
@@ -150,11 +199,46 @@ function handleKeyboard(
         return;
     }
 
+    debug(
+        'BACKSPACE',
+        'keydown',
+        {
+            repeat:
+                event.repeat,
+
+            ctrl:
+                event.ctrlKey,
+
+            shift:
+                event.shiftKey,
+
+            meta:
+                event.metaKey,
+
+            alt:
+                event.altKey,
+        },
+    );
+
+    // =====================================
+    // REPEAT
+    // =====================================
+
     if (
         event.repeat
     ) {
+
+        debug(
+            'BACKSPACE',
+            'blocked-repeat',
+        );
+
         return;
     }
+
+    // =====================================
+    // MODIFIERS
+    // =====================================
 
     if (
         event.ctrlKey
@@ -162,34 +246,83 @@ function handleKeyboard(
         || event.altKey
         || event.shiftKey
     ) {
+
+        debug(
+            'BACKSPACE',
+            'blocked-modifier',
+        );
+
         return;
     }
+
+    // =====================================
+    // INPUT
+    // =====================================
 
     if (
         isTypingContext(
             event.target,
         )
     ) {
+
+        debug(
+            'BACKSPACE',
+            'blocked-input',
+        );
+
         return;
     }
+
+    // =====================================
+    // INTERACTIVE
+    // =====================================
 
     if (
         isInteractiveElement(
             event.target,
         )
     ) {
+
+        debug(
+            'BACKSPACE',
+            'blocked-interactive',
+        );
+
         return;
     }
+
+    // =====================================
+    // ACTIVE CARD
+    // =====================================
 
     if (
         document.querySelector(
             '.collection-card-link.is-active',
         )
     ) {
+
+        debug(
+            'BACKSPACE',
+            'clear-active-card',
+        );
+
         return;
     }
 
+    // =====================================
+    // PREVENT
+    // =====================================
+
     event.preventDefault();
+
+    debug(
+        'BACKSPACE',
+        'prevent-default',
+    );
+
+    // =====================================
+    // NAVIGATION
+    // =====================================
 
     navigateBack();
 }
@@ -201,11 +334,22 @@ function handleKeyboard(
 export function initGlobalBackNavigation()
 {
     if (initialized) {
+
+        debug(
+            'BACKSPACE',
+            'already-init',
+        );
+
         return;
     }
 
     initialized =
         true;
+
+    debug(
+        'BACKSPACE',
+        'init',
+    );
 
     document.addEventListener(
         'keydown',
