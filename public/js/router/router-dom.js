@@ -11,7 +11,7 @@ import {
 // =========================================
 
 const CONTENT_SELECTOR =
-    '.ajax-content';
+    '.app-content';
 
 // =========================================
 // PARSE HTML
@@ -21,53 +21,62 @@ function parseHtml(
     html,
 )
 {
-    const doc =
+    const documentHtml =
         new DOMParser()
             .parseFromString(
                 html,
                 'text/html',
             );
 
-    const container =
-        doc.querySelector(
+    const nextContent =
+        documentHtml.querySelector(
             CONTENT_SELECTOR,
         );
 
-    if (!container) {
+    if (!nextContent) {
 
         throw new Error(
-            'Missing AJAX container',
+            'Missing app content',
         );
     }
 
     return {
-        doc,
-        container,
+        documentHtml,
+        nextContent,
     };
 }
 
 // =========================================
-// UPDATE META
+// UPDATE DOCUMENT
 // =========================================
 
-function updateMeta(
-    doc,
+function updateDocumentMeta(
+    documentHtml,
 )
 {
+    // =====================================
+    // TITLE
+    // =====================================
+
     const title =
-        doc.querySelector(
+        documentHtml.querySelector(
             'title',
         );
 
-    if (title) {
+    if (
+        title?.textContent
+    ) {
 
         document.title =
-            title.textContent?.trim()
-            || document.title;
+            title.textContent.trim();
     }
 
+    // =====================================
+    // LANG
+    // =====================================
+
     const lang =
-        doc.documentElement.lang;
+        documentHtml.documentElement.lang;
 
     if (lang) {
 
@@ -77,21 +86,25 @@ function updateMeta(
 }
 
 // =========================================
-// SYNC BODY ATTRIBUTES
+// SYNC BODY
 // =========================================
 
 function syncBodyAttributes(
-    doc,
+    documentHtml,
 )
 {
     const nextBody =
-        doc.body;
+        documentHtml.body;
 
     if (!nextBody) {
         return;
     }
 
-    const preservedDataset =
+    // =====================================
+    // KEEP INTERNAL FLAGS
+    // =====================================
+
+    const preserved =
     {
         appInitialized:
             document.body.dataset
@@ -102,72 +115,67 @@ function syncBodyAttributes(
     // REMOVE OLD DATA ATTRIBUTES
     // =====================================
 
-    document.body
-        .getAttributeNames()
-        .forEach(
-            (
-                attribute,
-            ) =>
-            {
-                if (
-                    attribute.startsWith(
-                        'data-',
-                    )
-                ) {
+    for (
+        const attribute
+        of document.body.getAttributeNames()
+    )
+    {
+        if (
+            attribute.startsWith(
+                'data-',
+            )
+        ) {
 
-                    document.body.removeAttribute(
-                        attribute,
-                    );
-                }
-            },
-        );
+            document.body.removeAttribute(
+                attribute,
+            );
+        }
+    }
 
     // =====================================
     // APPLY NEW DATA ATTRIBUTES
     // =====================================
 
-    nextBody
-        .getAttributeNames()
-        .forEach(
-            (
+    for (
+        const attribute
+        of nextBody.getAttributeNames()
+    )
+    {
+        if (
+            !attribute.startsWith(
+                'data-',
+            )
+        ) {
+            continue;
+        }
+
+        const value =
+            nextBody.getAttribute(
                 attribute,
-            ) =>
-            {
-                if (
-                    attribute.startsWith(
-                        'data-',
-                    )
-                ) {
+            );
 
-                    const value =
-                        nextBody.getAttribute(
-                            attribute,
-                        );
+        if (
+            value !== null
+        ) {
 
-                    if (
-                        value !== null
-                    ) {
-
-                        document.body.setAttribute(
-                            attribute,
-                            value,
-                        );
-                    }
-                }
-            },
-        );
+            document.body.setAttribute(
+                attribute,
+                value,
+            );
+        }
+    }
 
     // =====================================
-    // RESTORE SPA FLAGS
+    // RESTORE INTERNAL FLAGS
     // =====================================
 
     if (
-        preservedDataset.appInitialized
+        preserved.appInitialized
     ) {
 
         document.body.dataset
             .appInitialized =
-                preservedDataset.appInitialized;
+                preserved.appInitialized;
     }
 }
 
@@ -182,42 +190,50 @@ export function replaceContent(
     try {
 
         const {
-            doc,
-            container,
+            documentHtml,
+            nextContent,
         } =
             parseHtml(
                 html,
             );
 
-        const currentContainer =
+        const currentContent =
             document.querySelector(
                 CONTENT_SELECTOR,
             );
 
         if (
-            !currentContainer
+            !currentContent
         ) {
 
             throw new Error(
-                'Missing current AJAX container',
+                'Missing current app content',
             );
         }
 
-        updateMeta(
-            doc,
+        // =================================
+        // DOCUMENT
+        // =================================
+
+        updateDocumentMeta(
+            documentHtml,
         );
 
         syncBodyAttributes(
-            doc,
+            documentHtml,
         );
 
-        currentContainer.innerHTML =
-            container.innerHTML;
+        // =================================
+        // CONTENT
+        // =================================
+
+        currentContent.innerHTML =
+            nextContent.innerHTML;
 
     } catch (error) {
 
         debugError(
-            'AJAX-DOM',
+            'ROUTER_DOM',
             error,
         );
 

@@ -86,7 +86,7 @@ if (
         'components/layouts/header.php',
     ); ?>
 
-    <main class="ajax-content">
+    <main class="app-content">
         <?= $content ?>
     </main>
 

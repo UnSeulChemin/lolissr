@@ -6,12 +6,20 @@ import {
     debug,
 } from './debug.js';
 
+import {
+    config,
+} from './config.js';
+
 // =========================================
 // CONFIG
 // =========================================
 
-const TRANSITION_TIMEOUT =
-    350;
+const CONTENT_SELECTOR =
+    '.app-content';
+
+const TRANSITION_DURATION =
+    config.transitions
+        .duration;
 
 // =========================================
 // STATE
@@ -61,8 +69,6 @@ function forceReflow(
 
 function waitTransitionEnd(
     element,
-    timeout =
-        TRANSITION_TIMEOUT,
 )
 {
     return new Promise(
@@ -80,31 +86,31 @@ function waitTransitionEnd(
                 return;
             }
 
-            let resolved =
+            let finished =
                 false;
 
             function cleanup()
             {
-                if (resolved) {
+                if (finished) {
                     return;
                 }
 
-                resolved =
+                finished =
                     true;
 
                 clearTimeout(
-                    fallbackTimeout,
+                    timeoutId,
                 );
 
                 element.removeEventListener(
                     'transitionend',
-                    handleEnd,
+                    handleTransitionEnd,
                 );
 
                 resolve();
             }
 
-            function handleEnd(
+            function handleTransitionEnd(
                 event,
             )
             {
@@ -118,15 +124,15 @@ function waitTransitionEnd(
                 cleanup();
             }
 
-            const fallbackTimeout =
+            const timeoutId =
                 window.setTimeout(
                     cleanup,
-                    timeout,
+                    TRANSITION_DURATION,
                 );
 
             element.addEventListener(
                 'transitionend',
-                handleEnd,
+                handleTransitionEnd,
             );
         },
     );
@@ -136,7 +142,7 @@ function waitTransitionEnd(
 // OUT
 // =========================================
 
-export async function transitionOut(
+async function animateOut(
     element,
 )
 {
@@ -174,7 +180,7 @@ export async function transitionOut(
 // IN
 // =========================================
 
-export async function transitionIn(
+async function animateIn(
     element,
 )
 {
@@ -237,7 +243,7 @@ export async function transitionIn(
 // VIEW TRANSITION
 // =========================================
 
-async function runViewTransition(
+async function runNativeViewTransition(
     callback,
 )
 {
@@ -263,9 +269,7 @@ async function runViewTransition(
 
         await transition.finished;
 
-    } catch (
-        error
-    ) {
+    } catch (error) {
 
         debug(
             'TRANSITION',
@@ -278,7 +282,7 @@ async function runViewTransition(
 }
 
 // =========================================
-// PAGE WRAPPER
+// PAGE TRANSITION
 // =========================================
 
 export async function runPageTransition(
@@ -287,7 +291,7 @@ export async function runPageTransition(
 {
     const content =
         document.querySelector(
-            '.ajax-content',
+            CONTENT_SELECTOR,
         );
 
     // =====================================
@@ -302,7 +306,7 @@ export async function runPageTransition(
     }
 
     // =====================================
-    // VIEW TRANSITION
+    // NATIVE VIEW TRANSITIONS
     // =====================================
 
     if (
@@ -310,7 +314,7 @@ export async function runPageTransition(
         === 'function'
     ) {
 
-        await runViewTransition(
+        await runNativeViewTransition(
             callback,
         );
 
@@ -321,19 +325,19 @@ export async function runPageTransition(
     // FALLBACK
     // =====================================
 
-    await transitionOut(
+    await animateOut(
         content,
     );
 
     await callback();
 
-    await transitionIn(
+    await animateIn(
         content,
     );
 }
 
 // =========================================
-// SCROLL
+// SCROLL TOP
 // =========================================
 
 export function scrollTop(
@@ -341,7 +345,8 @@ export function scrollTop(
 )
 {
     window.scrollTo({
-        top: 0,
+        top:
+            0,
 
         behavior:
             smooth

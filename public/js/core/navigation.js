@@ -125,11 +125,11 @@ export function shouldIgnoreLink(
     }
 
     // =====================================
-    // AJAX DISABLED
+    // ROUTER DISABLED
     // =====================================
 
     if (
-        link.dataset.noAjax
+        link.dataset.noRouter
         !== undefined
     ) {
         return true;

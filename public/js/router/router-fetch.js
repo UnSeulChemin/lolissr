@@ -19,8 +19,8 @@ import {
 // CONFIG
 // =========================================
 
-const SELECTOR =
-    '.ajax-content';
+const CONTENT_SELECTOR =
+    '.app-content';
 
 // =========================================
 // VALIDATION
@@ -47,13 +47,13 @@ function isValidHtml(
 
     return Boolean(
         doc.querySelector(
-            SELECTOR,
+            CONTENT_SELECTOR,
         ),
     );
 }
 
 // =========================================
-// FETCH
+// FETCH PAGE
 // =========================================
 
 export async function fetchPageHtml(
@@ -86,9 +86,6 @@ export async function fetchPageHtml(
 
                     headers:
                     {
-                        'X-Requested-With':
-                            'XMLHttpRequest',
-
                         Accept:
                             'text/html',
                     },
@@ -102,7 +99,7 @@ export async function fetchPageHtml(
         ) {
 
             throw new Error(
-                'Invalid AJAX HTML',
+                'Invalid router HTML',
             );
         }
 
