@@ -2,85 +2,96 @@
 // APP CONFIG
 // =========================================
 
-const isLocalhost =
-    window.location.hostname
-        === 'localhost';
+const hostname =
+    window.location.hostname;
 
-const isSubdirectoryInstall =
-    window.location.pathname
-        .startsWith(
-            '/lolissr/',
-        );
+const pathname =
+    window.location.pathname;
+
+// =========================================
+// ENV
+// =========================================
+
+const isLocalhost =
+    hostname === 'localhost'
+    || hostname === '127.0.0.1';
+
+// =========================================
+// BASE URL
+// =========================================
 
 const baseUrl =
-    isSubdirectoryInstall
+    pathname.startsWith(
+        '/lolissr/',
+    )
         ? '/lolissr/'
         : '/';
 
 // =========================================
-// Config
+// CONFIG
 // =========================================
 
 export const config =
-{
-    // =====================================
-    // App
-    // =====================================
+    Object.freeze({
 
-    debug:
-        isLocalhost,
+        // =================================
+        // APP
+        // =================================
 
-    baseUrl,
+        debug:
+            isLocalhost,
 
-    // =====================================
-    // AJAX
-    // =====================================
+        baseUrl,
 
-    ajax:
-    {
-        timeout:
-            10000,
-    },
+        // =================================
+        // AJAX
+        // =================================
 
-    // =====================================
-    // Prefetch
-    // =====================================
+        ajax:
+        {
+            timeout:
+                10000,
+        },
 
-    prefetch:
-    {
-        delay:
-            80,
+        // =================================
+        // PREFETCH
+        // =================================
 
-        timeout:
-            8000,
+        prefetch:
+        {
+            delay:
+                80,
 
-        cooldown:
-            3000,
+            timeout:
+                8000,
 
-        cacheLimit:
-            50,
-    },
+            cooldown:
+                3000,
 
-    // =====================================
-    // Transitions
-    // =====================================
+            cacheLimit:
+                50,
+        },
 
-    transitions:
-    {
-        duration:
-            250,
-    },
+        // =================================
+        // TRANSITIONS
+        // =================================
 
-    // =====================================
-    // Navigation
-    // =====================================
+        transitions:
+        {
+            duration:
+                250,
+        },
 
-    navigation:
-    {
-        backLockDuration:
-            350,
+        // =================================
+        // NAVIGATION
+        // =================================
 
-        initialPrefetchDelay:
-            800,
-    },
-};
+        navigation:
+        {
+            backLockDuration:
+                350,
+
+            initialPrefetchDelay:
+                800,
+        },
+    });

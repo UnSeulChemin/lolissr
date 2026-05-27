@@ -11,6 +11,7 @@ import {
     getPrefetchedPage,
     getInFlightPrefetch,
     markNavigationPrefetch,
+    clearPrefetch,
 } from './prefetch.js';
 
 import {
@@ -48,20 +49,17 @@ let initialized =
     false;
 
 // =========================================
-// ACTIVE NAV
+// ACTIVE NAVIGATION
 // =========================================
 
 function updateActiveNavigation()
 {
-    const current =
+    const currentPath =
         new URL(
             normalizeUrl(
                 location.href,
             ),
-        );
-
-    const currentPath =
-        current.pathname;
+        ).pathname;
 
     const links =
         document.querySelectorAll(
@@ -79,36 +77,25 @@ function updateActiveNavigation()
             continue;
         }
 
-        const href =
+        const hrefPath =
             new URL(
                 normalizeUrl(
                     link.href,
                 ),
-            );
+            ).pathname;
 
-        const hrefPath =
-            href.pathname;
+        const isRoot =
+            hrefPath === '/lolissr/';
 
-        let active =
-            false;
-
-        if (
-            hrefPath
-            === '/lolissr/'
-        ) {
-
-            active =
-                currentPath
-                === '/lolissr/';
-
-        } else {
-
-            active =
-                currentPath === hrefPath
-                || currentPath.startsWith(
-                    hrefPath,
+        const active =
+            isRoot
+                ? currentPath === hrefPath
+                : (
+                    currentPath === hrefPath
+                    || currentPath.startsWith(
+                        hrefPath,
+                    )
                 );
-        }
 
         link.classList.toggle(
             'active',
@@ -126,15 +113,16 @@ export async function navigateTo(
     options = {},
 )
 {
+    // =====================================
+    // LOCK
+    // =====================================
+
     if (
         locked
         && options.force !== true
     ) {
         return;
     }
-
-    const currentId =
-        ++navigationId;
 
     const target =
         normalizeUrl(
@@ -157,8 +145,11 @@ export async function navigateTo(
         return;
     }
 
+    const currentId =
+        ++navigationId;
+
     // =====================================
-    // PREVENT PREFETCH AFTER CLICK
+    // PREVENT RE-PREFETCH
     // =====================================
 
     markNavigationPrefetch(
@@ -166,7 +157,7 @@ export async function navigateTo(
     );
 
     // =====================================
-    // ABORT
+    // ABORT PREVIOUS
     // =====================================
 
     controller?.abort();
@@ -252,7 +243,7 @@ export async function navigateTo(
         ) {
 
             throw new Error(
-                'Empty HTML',
+                'Invalid HTML',
             );
         }
 
@@ -284,30 +275,19 @@ export async function navigateTo(
         }
 
         // =================================
-        // DOM SWAP
+        // TRANSITION
         // =================================
 
-        if (instant) {
+        await runPageTransition(
+            () =>
+            {
+                replaceContent(
+                    html,
+                );
 
-            replaceContent(
-                html,
-            );
-
-            updateActiveNavigation();
-
-        } else {
-
-            await runPageTransition(
-                () =>
-                {
-                    replaceContent(
-                        html,
-                    );
-
-                    updateActiveNavigation();
-                },
-            );
-        }
+                updateActiveNavigation();
+            },
+        );
 
         // =================================
         // SCROLL
@@ -322,6 +302,14 @@ export async function navigateTo(
                 false,
             );
         }
+
+        // =================================
+        // CLEAN PREFETCH
+        // =================================
+
+        clearPrefetch(
+            target,
+        );
 
         // =================================
         // EVENT
@@ -371,6 +359,150 @@ export async function navigateTo(
 }
 
 // =========================================
+// CLICK HANDLER
+// =========================================
+
+function handleClick(
+    event,
+)
+{
+    // =====================================
+    // LEFT CLICK ONLY
+    // =====================================
+
+    if (
+        event.button !== 0
+    ) {
+        return;
+    }
+
+    // =====================================
+    // MODIFIER KEYS
+    // =====================================
+
+    if (
+        event.metaKey
+        || event.ctrlKey
+        || event.shiftKey
+        || event.altKey
+    ) {
+        return;
+    }
+
+    const target =
+        event.target;
+
+    if (
+        !(
+            target
+            instanceof Element
+        )
+    ) {
+        return;
+    }
+
+    const link =
+        target.closest(
+            'a[href]',
+        );
+
+    if (
+        !(
+            link
+            instanceof HTMLAnchorElement
+        )
+    ) {
+        return;
+    }
+
+    // =====================================
+    // IGNORE
+    // =====================================
+
+    if (
+        shouldIgnoreLink(
+            link,
+        )
+    ) {
+        return;
+    }
+
+    const normalized =
+        normalizeUrl(
+            link.href,
+        );
+
+    // =====================================
+    // SAME URL
+    // =====================================
+
+    if (
+        normalized
+        === normalizeUrl(
+            location.href,
+        )
+    ) {
+
+        event.preventDefault();
+
+        return;
+    }
+
+    // =====================================
+    // NAV LOCK
+    // =====================================
+
+    if (
+        locked
+    ) {
+
+        event.preventDefault();
+
+        return;
+    }
+
+    event.preventDefault();
+
+    void navigateTo(
+        normalized,
+    );
+}
+
+// =========================================
+// POPSTATE
+// =========================================
+
+async function handlePopState()
+{
+    try {
+
+        const html =
+            await fetchPageHtml(
+                location.href,
+            );
+
+        replaceContent(
+            html,
+        );
+
+        updateActiveNavigation();
+
+        document.dispatchEvent(
+            new CustomEvent(
+                'ajax:page-loaded',
+            ),
+        );
+
+    } catch (error) {
+
+        debugError(
+            'POPSTATE',
+            error,
+        );
+    }
+}
+
+// =========================================
 // INIT
 // =========================================
 
@@ -383,82 +515,14 @@ export function initAjaxNavigation()
     initialized =
         true;
 
-    // =====================================
-    // CLICK
-    // =====================================
-
     document.addEventListener(
         'click',
-        (event) =>
-        {
-            const target =
-                event.target;
-
-            if (
-                !(
-                    target
-                    instanceof Element
-                )
-            ) {
-                return;
-            }
-
-            const link =
-                target.closest(
-                    'a[href]',
-                );
-
-            if (
-                shouldIgnoreLink(
-                    link,
-                )
-            ) {
-                return;
-            }
-
-            event.preventDefault();
-
-            void navigateTo(
-                link.href,
-            );
-        },
+        handleClick,
     );
-
-    // =====================================
-    // POPSTATE
-    // =====================================
 
     window.addEventListener(
         'popstate',
-        async () =>
-        {
-            try {
-
-                const html =
-                    await fetchPageHtml(
-                        location.href,
-                    );
-
-                replaceContent(
-                    html,
-                );
-
-                updateActiveNavigation();
-
-                document.dispatchEvent(
-                    new CustomEvent(
-                        'ajax:page-loaded',
-                    ),
-                );
-
-            } catch (error) {
-
-                debugError(
-                    'POPSTATE',
-                    error,
-                );
-            }
-        },
+        handlePopState,
     );
 
     updateActiveNavigation();

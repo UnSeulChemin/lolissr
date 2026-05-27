@@ -11,14 +11,14 @@ import {
 } from '../../core/debug.js';
 
 // =========================================
-// Config
+// CONFIG
 // =========================================
 
 const FORM_SELECTOR =
     '.form-layout[data-form-page="modifier"]';
 
 // =========================================
-// Helpers
+// HELPERS
 // =========================================
 
 function getNumberValue(
@@ -38,15 +38,11 @@ function formatNote(
 }
 
 // =========================================
-// Init
+// INIT
 // =========================================
 
 export function initModifierPage()
 {
-    // =====================================
-    // Form
-    // =====================================
-
     const form =
         $(
             FORM_SELECTOR,
@@ -55,10 +51,6 @@ export function initModifierPage()
     if (!form) {
         return;
     }
-
-    // =====================================
-    // Prevent Double Init
-    // =====================================
 
     if (
         form.dataset.modifierPageInitialized
@@ -70,24 +62,14 @@ export function initModifierPage()
     form.dataset.modifierPageInitialized =
         'true';
 
-    // =====================================
-    // Inputs
-    // =====================================
-
     const jacquetteInput =
-        $(
-            '#jacquette',
-        );
+        $('#jacquette');
 
     const livreNoteInput =
-        $(
-            '#livre_note',
-        );
+        $('#livre_note');
 
     const totalNoteInput =
-        $(
-            '#note-total',
-        );
+        $('#note-total');
 
     if (
         !(
@@ -111,10 +93,6 @@ export function initModifierPage()
 
         return;
     }
-
-    // =====================================
-    // Update Total
-    // =====================================
 
     function updateTotalNote()
     {
@@ -143,23 +121,23 @@ export function initModifierPage()
             );
     }
 
-    // =====================================
-    // Events
-    // =====================================
-
     jacquetteInput.addEventListener(
         'input',
         updateTotalNote,
+        {
+            passive:
+                true,
+        },
     );
 
     livreNoteInput.addEventListener(
         'input',
         updateTotalNote,
+        {
+            passive:
+                true,
+        },
     );
-
-    // =====================================
-    // Initial State
-    // =====================================
 
     updateTotalNote();
 

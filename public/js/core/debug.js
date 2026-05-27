@@ -7,32 +7,33 @@ import {
 } from './config.js';
 
 // =========================================
-// Styles
+// STYLES
 // =========================================
 
 const styles =
-{
-    log:
-    `
-    color:#9b5cff;
-    font-weight:bold;
-    `,
+    Object.freeze({
 
-    warn:
-    `
-    color:#ffb84d;
-    font-weight:bold;
-    `,
+        log:
+        `
+        color:#9b5cff;
+        font-weight:bold;
+        `,
 
-    error:
-    `
-    color:#ff4d6d;
-    font-weight:bold;
-    `,
-};
+        warn:
+        `
+        color:#ffb84d;
+        font-weight:bold;
+        `,
+
+        error:
+        `
+        color:#ff4d6d;
+        font-weight:bold;
+        `,
+    });
 
 // =========================================
-// Helpers
+// HELPERS
 // =========================================
 
 function canDebug()
@@ -52,15 +53,20 @@ function print(
         return;
     }
 
-    console[type](
+    const logger =
+        console[type]
+        || console.log;
+
+    logger(
         `%c[${scope}]`,
-        styles[type],
+        styles[type]
+        || styles.log,
         ...args,
     );
 }
 
 // =========================================
-// Debug
+// DEBUG
 // =========================================
 
 export function debug(
@@ -76,7 +82,7 @@ export function debug(
 }
 
 // =========================================
-// Debug Warn
+// WARN
 // =========================================
 
 export function debugWarn(
@@ -92,7 +98,7 @@ export function debugWarn(
 }
 
 // =========================================
-// Debug Error
+// ERROR
 // =========================================
 
 export function debugError(

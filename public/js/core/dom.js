@@ -2,33 +2,47 @@
 // CORE : DOM
 // =========================================
 
-/**
- * Query Selector
- */
+// =========================================
+// STATE
+// =========================================
+
+const delegatedEvents =
+    new Set();
+
+// =========================================
+// QUERY
+// =========================================
+
 export function $(
     selector,
     parent = document,
 )
 {
-    return parent.querySelector(selector);
+    return parent.querySelector(
+        selector,
+    );
 }
 
-/**
- * Query Selector All
- */
+// =========================================
+// QUERY ALL
+// =========================================
+
 export function $$(
     selector,
     parent = document,
 )
 {
     return [
-        ...parent.querySelectorAll(selector),
+        ...parent.querySelectorAll(
+            selector,
+        ),
     ];
 }
 
-/**
- * Safe Event Delegation
- */
+// =========================================
+// DELEGATE
+// =========================================
+
 export function delegate(
     parent,
     eventType,
@@ -36,52 +50,104 @@ export function delegate(
     callback,
 )
 {
-    parent.addEventListener(eventType, (event) =>
-    {
-        const element =
-            event.target instanceof Element
-                ? event.target.closest(selector)
-                : null;
+    // =====================================
+    // UNIQUE KEY
+    // =====================================
 
-        if (!element)
+    const key =
+        `${eventType}::${selector}`;
+
+    // =====================================
+    // ALREADY REGISTERED
+    // =====================================
+
+    if (
+        delegatedEvents.has(
+            key,
+        )
+    ) {
+        return;
+    }
+
+    delegatedEvents.add(
+        key,
+    );
+
+    parent.addEventListener(
+        eventType,
+        (event) =>
         {
-            return;
-        }
+            const target =
+                event.target;
 
-        callback(event, element);
-    });
+            if (
+                !(
+                    target
+                    instanceof Element
+                )
+            ) {
+                return;
+            }
+
+            const element =
+                target.closest(
+                    selector,
+                );
+
+            if (!element) {
+                return;
+            }
+
+            callback(
+                event,
+                element,
+            );
+        },
+    );
 }
 
-/**
- * Dataset Getter
- */
+// =========================================
+// DATASET GET
+// =========================================
+
 export function data(
     element,
     key,
 )
 {
-    return element.dataset[key];
+    return element.dataset[
+        key
+    ];
 }
 
-/**
- * Dataset Setter
- */
+// =========================================
+// DATASET SET
+// =========================================
+
 export function setData(
     element,
     key,
     value,
 )
 {
-    element.dataset[key] = value;
+    element.dataset[
+        key
+    ] = value;
 }
 
-/**
- * Element Exists
- */
+// =========================================
+// EXISTS
+// =========================================
+
 export function exists(
     selector,
     parent = document,
 )
 {
-    return !!$(selector, parent);
+    return Boolean(
+        $(
+            selector,
+            parent,
+        ),
+    );
 }

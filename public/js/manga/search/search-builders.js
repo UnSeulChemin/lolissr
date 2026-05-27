@@ -8,7 +8,7 @@ import {
 } from './search-utils.js';
 
 // =========================================
-// Manga Result
+// MANGA RESULT
 // =========================================
 
 export function buildMangaSearchResult(
@@ -33,6 +33,8 @@ export function buildMangaSearchResult(
         <img
             src="${basePath}images/mangas/thumbnail/${manga.thumbnail}.${manga.extension}"
             alt="${escapeHtml(manga.livre)}"
+            loading="lazy"
+            decoding="async"
         >
 
         <span class="search-result-content">
@@ -60,7 +62,7 @@ export function buildMangaSearchResult(
 }
 
 // =========================================
-// Shortcut Result
+// SHORTCUT RESULT
 // =========================================
 
 export function buildShortcutSearchResult(
@@ -81,7 +83,10 @@ export function buildShortcutSearchResult(
 
     item.innerHTML =
     `
-        <span class="search-result-icon">
+        <span
+            class="search-result-icon"
+            aria-hidden="true"
+        >
             ${escapeHtml(
                 shortcut.symbol,
             )}

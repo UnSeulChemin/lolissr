@@ -24,14 +24,14 @@ import {
 } from '../utils/slug.js';
 
 // =========================================
-// Config
+// CONFIG
 // =========================================
 
 const FORM_SELECTOR =
     '.form-layout[data-form-page="ajouter"]';
 
 // =========================================
-// Upload Text
+// HELPERS
 // =========================================
 
 function updateUploadText(
@@ -46,7 +46,7 @@ function updateUploadText(
 }
 
 // =========================================
-// Init
+// INIT
 // =========================================
 
 export function initAjouterPage()
@@ -65,10 +65,6 @@ export function initAjouterPage()
         return;
     }
 
-    // =====================================
-    // Prevent Double Init
-    // =====================================
-
     if (
         form.dataset.initialized
         === 'true'
@@ -78,10 +74,6 @@ export function initAjouterPage()
 
     form.dataset.initialized =
         'true';
-
-    // =====================================
-    // Inputs
-    // =====================================
 
     const livreInput =
         $('#livre');
@@ -95,24 +87,26 @@ export function initAjouterPage()
     const uploadText =
         $('.form-upload-text');
 
-    // =====================================
-    // Auto Slug
-    // =====================================
-
     let slugEditedManually =
         false;
+
+    // =====================================
+    // SLUG
+    // =====================================
 
     if (
         slugInput
         instanceof HTMLInputElement
     ) {
 
-        slugInput.oninput =
+        slugInput.addEventListener(
+            'input',
             () =>
             {
                 slugEditedManually =
                     true;
-            };
+            },
+        );
     }
 
     if (
@@ -122,7 +116,8 @@ export function initAjouterPage()
         instanceof HTMLInputElement
     ) {
 
-        livreInput.oninput =
+        livreInput.addEventListener(
+            'input',
             () =>
             {
                 if (
@@ -135,11 +130,12 @@ export function initAjouterPage()
                     generateSlug(
                         livreInput.value,
                     );
-            };
+            },
+        );
     }
 
     // =====================================
-    // Upload Preview
+    // IMAGE
     // =====================================
 
     if (
@@ -148,21 +144,24 @@ export function initAjouterPage()
         && uploadText
     ) {
 
-        imageInput.onchange =
+        imageInput.addEventListener(
+            'change',
             () =>
             {
                 updateUploadText(
                     imageInput,
                     uploadText,
                 );
-            };
+            },
+        );
     }
 
     // =====================================
-    // Submit
+    // SUBMIT
     // =====================================
 
-    form.onsubmit =
+    form.addEventListener(
+        'submit',
         async (
             event,
         ) =>
@@ -184,11 +183,6 @@ export function initAjouterPage()
             }
 
             try {
-
-                debug(
-                    'AJOUTER',
-                    'submit',
-                );
 
                 const data =
                     await request(
@@ -213,15 +207,6 @@ export function initAjouterPage()
                         },
                     );
 
-                debug(
-                    'AJOUTER',
-                    data,
-                );
-
-                // =============================
-                // Error
-                // =============================
-
                 if (
                     !data?.success
                 ) {
@@ -234,10 +219,6 @@ export function initAjouterPage()
 
                     return;
                 }
-
-                // =============================
-                // Success
-                // =============================
 
                 showToast(
                     data.message
@@ -261,11 +242,6 @@ export function initAjouterPage()
                         uploadText,
                     );
                 }
-
-                debug(
-                    'AJOUTER',
-                    'success',
-                );
 
             } catch (error) {
 
@@ -292,7 +268,8 @@ export function initAjouterPage()
                         false;
                 }
             }
-        };
+        },
+    );
 
     debug(
         'AJOUTER',

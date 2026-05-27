@@ -7,7 +7,7 @@ export function escapeHtml(
 )
 {
     return String(
-        value,
+        value ?? '',
     )
         .replaceAll(
             '&',
@@ -35,7 +35,9 @@ export function escapeRegExp(
     value,
 )
 {
-    return value.replace(
+    return String(
+        value ?? '',
+    ).replace(
         /[.*+?^${}()|[\]\\]/g,
         '\\$&',
     );
@@ -52,7 +54,9 @@ export function highlightSearchTerm(
         );
 
     const trimmedQuery =
-        rawQuery.trim();
+        String(
+            rawQuery ?? '',
+        ).trim();
 
     if (
         trimmedQuery === ''

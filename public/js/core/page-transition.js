@@ -1,67 +1,133 @@
 // =========================================
-// PAGE TRANSITIONS (SPA CLEAN MODE)
+// PAGE TRANSITIONS
 // =========================================
 
-import { debug } from './debug.js';
+import {
+    debug,
+} from './debug.js';
+
+// =========================================
+// STATE
+// =========================================
+
+let initialized =
+    false;
+
+// =========================================
+// INIT
+// =========================================
 
 export function initPageTransitions()
 {
-    window.addEventListener('load', () =>
-    {
-        requestAnimationFrame(() =>
+    if (initialized) {
+        return;
+    }
+
+    initialized =
+        true;
+
+    requestAnimationFrame(
+        () =>
         {
-            document.body.classList.add('page-ready');
-            debug?.('TRANSITION', 'ready');
-        });
-    });
+            document.body.classList.add(
+                'page-ready',
+            );
+
+            debug(
+                'TRANSITION',
+                'ready',
+            );
+        },
+    );
 }
 
-/**
- * OUT
- */
-export function transitionOut(el)
-{
-    if (!el || !el.isConnected) return;
+// =========================================
+// OUT
+// =========================================
 
-    el.classList.add('page-transition-out');
+export function transitionOut(
+    element,
+)
+{
+    if (
+        !element
+        || !element.isConnected
+    ) {
+        return;
+    }
+
+    element.classList.add(
+        'page-transition-out',
+    );
 }
 
-/**
- * IN
- */
-export function transitionIn(el)
+// =========================================
+// IN
+// =========================================
+
+export function transitionIn(
+    element,
+)
 {
-    if (!el || !el.isConnected) return;
+    if (
+        !element
+        || !element.isConnected
+    ) {
+        return;
+    }
 
-    el.classList.remove('page-transition-out');
-    el.classList.add('page-transition-enter');
+    element.classList.remove(
+        'page-transition-out',
+    );
 
-    requestAnimationFrame(() =>
-    {
-        if (!el || !el.isConnected) return;
-        el.classList.add('page-transition-visible');
-    });
+    element.classList.add(
+        'page-transition-enter',
+    );
+
+    requestAnimationFrame(
+        () =>
+        {
+            if (
+                !element
+                || !element.isConnected
+            ) {
+                return;
+            }
+
+            element.classList.add(
+                'page-transition-visible',
+            );
+        },
+    );
 }
 
-/**
- * SPA transition wrapper (instant mode)
- */
-export function runPageTransition(cb)
+// =========================================
+// SPA WRAPPER
+// =========================================
+
+export async function runPageTransition(
+    callback,
+)
 {
-    // ⚡ important: microtask safe wrapper
-    // évite race conditions DOM swap
-    return cb();
+    await Promise.resolve();
+
+    callback();
 }
 
-/**
- * Scroll helper
- */
-export function scrollTop(smooth = false)
+// =========================================
+// SCROLL
+// =========================================
+
+export function scrollTop(
+    smooth = false,
+)
 {
-    // ⚠️ tu peux garder ou enlever cette protection
-    // mais elle peut empêcher scroll sur navigation rapide
     window.scrollTo({
         top: 0,
-        behavior: smooth ? 'smooth' : 'auto',
+
+        behavior:
+            smooth
+                ? 'smooth'
+                : 'auto',
     });
 }

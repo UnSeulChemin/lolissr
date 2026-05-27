@@ -2,17 +2,19 @@
 // CORE : HTTP
 // =========================================
 
-/**
- * CSRF TOKEN
- */
+// =========================================
+// CSRF
+// =========================================
+
 function getCsrfToken()
 {
     return window.csrfToken || '';
 }
 
-/**
- * BUILD HEADERS
- */
+// =========================================
+// HEADERS
+// =========================================
+
 function buildHeaders(
     custom = {},
 )
@@ -28,32 +30,30 @@ function buildHeaders(
     };
 }
 
-/**
- * SAFE RESPONSE PARSER
- */
-/**
- * SAFE RESPONSE PARSER
- */
+// =========================================
+// RESPONSE PARSER
+// =========================================
+
 async function parseResponse(
-    res,
+    response,
     type = 'text',
 )
 {
-    // =============================
+    // =====================================
     // TEXT
-    // =============================
+    // =====================================
 
     if (type === 'text') {
 
-        return await res.text();
+        return response.text();
     }
 
-    // =============================
+    // =====================================
     // JSON
-    // =============================
+    // =====================================
 
     const text =
-        await res.text();
+        await response.text();
 
     if (
         text.trim() === ''
@@ -67,12 +67,7 @@ async function parseResponse(
             text,
         );
 
-    } catch (error) {
-
-        console.error(
-            'Invalid JSON response:',
-            text,
-        );
+    } catch {
 
         throw new Error(
             'Invalid JSON response',
@@ -80,9 +75,10 @@ async function parseResponse(
     }
 }
 
-/**
- * MAIN REQUEST
- */
+// =========================================
+// REQUEST
+// =========================================
+
 export async function request(
     url,
     options = {},
@@ -92,7 +88,7 @@ export async function request(
         options.responseType
         || 'text';
 
-    const res =
+    const response =
         await fetch(
             url,
             {
@@ -110,30 +106,38 @@ export async function request(
 
     const data =
         await parseResponse(
-            res,
+            response,
             responseType,
         );
 
-    // =============================
+    // =====================================
     // HTTP ERROR
-    // =============================
+    // =====================================
 
-    if (!res.ok) {
+    if (!response.ok) {
 
-        throw {
-            status:
-                res.status,
+        const error =
+            new Error(
+                data?.message
+                || `HTTP ${response.status}`,
+            );
 
-            data,
-        };
+        error.status =
+            response.status;
+
+        error.data =
+            data;
+
+        throw error;
     }
 
     return data;
 }
 
-/**
- * GET
- */
+// =========================================
+// GET
+// =========================================
+
 export function get(
     url,
     options = {},
@@ -150,9 +154,10 @@ export function get(
     );
 }
 
-/**
- * POST
- */
+// =========================================
+// POST
+// =========================================
+
 export function post(
     url,
     body = {},

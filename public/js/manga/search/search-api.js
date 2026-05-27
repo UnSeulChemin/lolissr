@@ -6,6 +6,10 @@ import {
     get,
 } from '../../core/http.js';
 
+// =========================================
+// FETCH
+// =========================================
+
 export async function fetchSearchResults(
     url,
     signal,
@@ -24,7 +28,7 @@ export async function fetchSearchResults(
                 'X-Partial':
                     'true',
 
-                'Accept':
+                Accept:
                     'application/json',
             },
         },

@@ -1,75 +1,77 @@
 // ======================================================
-// Search Shortcuts
+// SEARCH SHORTCUTS
 // ======================================================
 
 export const searchShortcuts =
-[
-    {
-        symbol:
-            '一',
+    Object.freeze([
+        {
+            symbol:
+                '一',
 
-        title:
-            'HSK1',
+            title:
+                'HSK1',
 
-        description:
-            'Débutant total',
+            description:
+                'Débutant total',
 
-        url:
-            'chinois/grammaire/hsk1',
-    },
+            url:
+                'chinois/grammaire/hsk1',
+        },
 
-    {
-        symbol:
-            '二',
+        {
+            symbol:
+                '二',
 
-        title:
-            'HSK2',
+            title:
+                'HSK2',
 
-        description:
-            'Bases simples',
+            description:
+                'Bases simples',
 
-        url:
-            'chinois/grammaire/hsk2',
-    },
+            url:
+                'chinois/grammaire/hsk2',
+        },
 
-    {
-        symbol:
-            '三',
+        {
+            symbol:
+                '三',
 
-        title:
-            'HSK3',
+            title:
+                'HSK3',
 
-        description:
-            'Intermédiaire débutant',
+            description:
+                'Intermédiaire débutant',
 
-        url:
-            'chinois/grammaire/hsk3',
-    },
+            url:
+                'chinois/grammaire/hsk3',
+        },
 
-    {
-        symbol:
-            '四',
+        {
+            symbol:
+                '四',
 
-        title:
-            'HSK4',
+            title:
+                'HSK4',
 
-        description:
-            'Intermédiaire solide',
+            description:
+                'Intermédiaire solide',
 
-        url:
-            'chinois/grammaire/hsk4',
-    },
-];
+            url:
+                'chinois/grammaire/hsk4',
+        },
+    ]);
 
 // ======================================================
-// Helpers
+// HELPERS
 // ======================================================
 
 function normalizeShortcutValue(
     value,
 )
 {
-    return value
+    return String(
+        value ?? '',
+    )
         .trim()
         .toLowerCase()
         .replace(
@@ -79,7 +81,7 @@ function normalizeShortcutValue(
 }
 
 // ======================================================
-// Search
+// SEARCH
 // ======================================================
 
 export function findSearchShortcuts(
@@ -92,8 +94,7 @@ export function findSearchShortcuts(
         );
 
     if (
-        normalizedQuery
-        === ''
+        normalizedQuery === ''
     ) {
         return [];
     }

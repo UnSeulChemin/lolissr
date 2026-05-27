@@ -98,6 +98,28 @@ export function markNavigationPrefetch(
 }
 
 // =========================================
+// CLEAR PREFETCH
+// =========================================
+
+export function clearPrefetch(
+    url,
+)
+{
+    const normalized =
+        normalizeUrl(
+            url,
+        );
+
+    prefetched.delete(
+        normalized,
+    );
+
+    inFlight.delete(
+        normalized,
+    );
+}
+
+// =========================================
 // CACHE
 // =========================================
 
@@ -118,10 +140,6 @@ export function getPrefetchedPage(
     if (!cached) {
         return null;
     }
-
-    // =====================================
-    // EXPIRED
-    // =====================================
 
     if (
         isExpired(
@@ -237,7 +255,7 @@ export async function prefetchPage(
     }
 
     // =====================================
-    // ALREADY PREFETCHED
+    // PREFETCHED
     // =====================================
 
     if (
@@ -248,17 +266,9 @@ export async function prefetchPage(
         return null;
     }
 
-    // =====================================
-    // LOCK
-    // =====================================
-
     prefetched.add(
         normalized,
     );
-
-    // =====================================
-    // REQUEST
-    // =====================================
 
     const controller =
         new AbortController();
@@ -287,7 +297,8 @@ export async function prefetchPage(
                             signal:
                                 controller.signal,
 
-                            headers: {
+                            headers:
+                            {
                                 'X-Prefetch':
                                     '1',
 
@@ -296,10 +307,6 @@ export async function prefetchPage(
                             },
                         },
                     );
-
-                // =================================
-                // INVALID
-                // =================================
 
                 if (
                     typeof html
@@ -313,10 +320,6 @@ export async function prefetchPage(
 
                     return null;
                 }
-
-                // =================================
-                // CACHE
-                // =================================
 
                 cache.set(
                     normalized,
@@ -375,7 +378,7 @@ export async function prefetchPage(
 }
 
 // =========================================
-// BIND
+// HOVER
 // =========================================
 
 function bindHoverPrefetch()
@@ -387,10 +390,6 @@ function bindHoverPrefetch()
 
     for (const link of links)
     {
-        // =================================
-        // VALID
-        // =================================
-
         if (
             !(
                 link
@@ -399,10 +398,6 @@ function bindHoverPrefetch()
         ) {
             continue;
         }
-
-        // =================================
-        // IGNORE
-        // =================================
 
         if (
             shouldIgnoreLink(
@@ -413,7 +408,7 @@ function bindHoverPrefetch()
         }
 
         // =================================
-        // HEADER NAV
+        // HEADER LINKS
         // =================================
 
         if (
@@ -458,10 +453,6 @@ function bindHoverPrefetch()
                         link.href,
                     );
 
-                // =========================
-                // RECENT NAVIGATION
-                // =========================
-
                 if (
                     recentlyNavigated.has(
                         normalized,
@@ -469,10 +460,6 @@ function bindHoverPrefetch()
                 ) {
                     return;
                 }
-
-                // =========================
-                // PREFETCHED
-                // =========================
 
                 if (
                     prefetched.has(
@@ -549,10 +536,7 @@ export function initPrefetch()
 
     document.addEventListener(
         'ajax:page-loaded',
-        () =>
-        {
-            bindHoverPrefetch();
-        },
+        bindHoverPrefetch,
     );
 
     debug(

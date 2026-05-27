@@ -18,7 +18,7 @@ const TRIM_DASHES_REGEX =
     /^-+|-+$/g;
 
 // =========================================
-// Normalize Base
+// NORMALIZE BASE
 // =========================================
 
 export function normalizeBase(
@@ -26,7 +26,7 @@ export function normalizeBase(
 )
 {
     return String(
-        value,
+        value ?? '',
     )
         .toLowerCase()
         .trim()
@@ -40,7 +40,7 @@ export function normalizeBase(
 }
 
 // =========================================
-// Generate Slug
+// GENERATE SLUG
 // =========================================
 
 export function generateSlug(
@@ -72,7 +72,7 @@ export function generateSlug(
 }
 
 // =========================================
-// Normalize Search Query
+// SEARCH QUERY
 // =========================================
 
 export function normalizeSearchQuery(
@@ -85,7 +85,7 @@ export function normalizeSearchQuery(
 }
 
 // =========================================
-// INIT AUTO SLUG
+// AUTO SLUG
 // =========================================
 
 export function initAutoSlug()
@@ -104,27 +104,38 @@ export function initAutoSlug()
         !sourceInput
         || !targetInput
     ) {
-
         return;
     }
 
-    const updateSlug =
-        () =>
-        {
-            targetInput.value =
-                generateSlug(
-                    sourceInput.value,
-                );
-        };
+    // =====================================
+    // PREVENT DOUBLE INIT
+    // =====================================
 
-    sourceInput.removeEventListener(
-        'input',
-        updateSlug,
-    );
+    if (
+        sourceInput.dataset.slugInitialized
+        === 'true'
+    ) {
+        return;
+    }
+
+    sourceInput.dataset.slugInitialized =
+        'true';
+
+    function updateSlug()
+    {
+        targetInput.value =
+            generateSlug(
+                sourceInput.value,
+            );
+    }
 
     sourceInput.addEventListener(
         'input',
         updateSlug,
+        {
+            passive:
+                true,
+        },
     );
 
     updateSlug();

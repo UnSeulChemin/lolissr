@@ -15,7 +15,7 @@ import {
 } from './config.js';
 
 // =========================================
-// Config
+// CONFIG
 // =========================================
 
 const TOAST_DURATION =
@@ -23,14 +23,14 @@ const TOAST_DURATION =
     ?? 2400;
 
 // =========================================
-// State
+// STATE
 // =========================================
 
 let toastHideTimeout =
     null;
 
 // =========================================
-// Constants
+// CONSTANTS
 // =========================================
 
 const toastIcons =
@@ -58,8 +58,37 @@ const toastClasses =
 };
 
 // =========================================
-// Helpers
+// HELPERS
 // =========================================
+
+function escapeHtml(
+    value,
+)
+{
+    return String(
+        value ?? '',
+    )
+        .replaceAll(
+            '&',
+            '&amp;',
+        )
+        .replaceAll(
+            '<',
+            '&lt;',
+        )
+        .replaceAll(
+            '>',
+            '&gt;',
+        )
+        .replaceAll(
+            '"',
+            '&quot;',
+        )
+        .replaceAll(
+            "'",
+            '&#039;',
+        );
+}
 
 function getToastElement()
 {
@@ -117,7 +146,7 @@ function renderToastContent(
             </span>
 
             <span class="toast-message">
-                ${message}
+                ${escapeHtml(message)}
             </span>
 
         </div>
@@ -152,7 +181,7 @@ function clearHideTimeout()
 }
 
 // =========================================
-// Public API
+// PUBLIC API
 // =========================================
 
 export function showToast(
@@ -182,7 +211,7 @@ export function showToast(
     );
 
     // =====================================
-    // Reset
+    // RESET
     // =====================================
 
     clearHideTimeout();
@@ -192,7 +221,7 @@ export function showToast(
     );
 
     // =====================================
-    // Type
+    // TYPE
     // =====================================
 
     toastElement.classList.add(
@@ -202,7 +231,7 @@ export function showToast(
     );
 
     // =====================================
-    // Content
+    // CONTENT
     // =====================================
 
     renderToastContent(
@@ -212,7 +241,7 @@ export function showToast(
     );
 
     // =====================================
-    // Restart Animation
+    // RESTART
     // =====================================
 
     restartAnimation(
@@ -220,7 +249,7 @@ export function showToast(
     );
 
     // =====================================
-    // Show
+    // SHOW
     // =====================================
 
     toastElement.classList.add(
@@ -228,7 +257,7 @@ export function showToast(
     );
 
     // =====================================
-    // Auto Hide
+    // AUTO HIDE
     // =====================================
 
     toastHideTimeout =

@@ -2,6 +2,10 @@
 // CORE : NAVIGATION
 // =========================================
 
+// =========================================
+// NORMALIZE
+// =========================================
+
 export function normalizeUrl(
     href,
 )
@@ -11,10 +15,6 @@ export function normalizeUrl(
             href,
             window.location.origin,
         );
-
-    // =====================================
-    // CLEAN PATH
-    // =====================================
 
     let pathname =
         url.pathname.replace(
@@ -34,24 +34,20 @@ export function normalizeUrl(
         pathname += '/';
     }
 
+    url.pathname =
+        pathname;
+
     // =====================================
     // REMOVE HASH
     // =====================================
 
     url.hash = '';
 
-    // =====================================
-    // APPLY
-    // =====================================
-
-    url.pathname =
-        pathname;
-
     return url.toString();
 }
 
 // =========================================
-// LINK FILTER
+// FILTER
 // =========================================
 
 export function shouldIgnoreLink(
@@ -93,8 +89,7 @@ export function shouldIgnoreLink(
     // =====================================
 
     if (
-        link.target
-        === '_blank'
+        link.target === '_blank'
     ) {
         return true;
     }
@@ -129,13 +124,13 @@ export function shouldIgnoreLink(
     if (
         url.hash
         && url.pathname
-        === location.pathname
+            === location.pathname
     ) {
         return true;
     }
 
     // =====================================
-    // STATIC FILES
+    // STATIC
     // =====================================
 
     if (

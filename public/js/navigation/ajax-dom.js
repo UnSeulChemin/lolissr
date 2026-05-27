@@ -18,7 +18,9 @@ const SELECTOR =
 // PARSE
 // =========================================
 
-function parseHtml(html)
+function parseHtml(
+    html,
+)
 {
     const doc =
         new DOMParser()
@@ -27,11 +29,12 @@ function parseHtml(html)
                 'text/html',
             );
 
-    if (
-        !doc.querySelector(
+    const container =
+        doc.querySelector(
             SELECTOR,
-        )
-    ) {
+        );
+
+    if (!container) {
 
         throw new Error(
             'Missing AJAX container',
@@ -45,7 +48,9 @@ function parseHtml(html)
 // META
 // =========================================
 
-function updateMeta(doc)
+function updateMeta(
+    doc,
+)
 {
     const title =
         doc.querySelector(
@@ -53,16 +58,122 @@ function updateMeta(doc)
         );
 
     if (title) {
+
         document.title =
             title.textContent;
     }
 
-    if (
-        doc.documentElement.lang
-    ) {
+    const lang =
+        doc.documentElement.lang;
+
+    if (lang) {
 
         document.documentElement.lang =
-            doc.documentElement.lang;
+            lang;
+    }
+}
+
+// =========================================
+// BODY ATTRIBUTES
+// =========================================
+
+function syncBodyAttributes(
+    doc,
+)
+{
+    const nextBody =
+        doc.body;
+
+    if (!nextBody) {
+        return;
+    }
+
+    // =====================================
+    // KEEP SPA FLAGS
+    // =====================================
+
+    const currentFlags =
+    {
+        appInitialized:
+            document.body.dataset
+                .appInitialized,
+
+        ajaxNavigating:
+            document.body.dataset
+                .ajaxNavigating,
+    };
+
+    // =====================================
+    // RESET DATASET
+    // =====================================
+
+    document.body
+        .getAttributeNames()
+        .forEach(
+            (
+                attribute,
+            ) =>
+            {
+                if (
+                    attribute.startsWith(
+                        'data-',
+                    )
+                ) {
+
+                    document.body.removeAttribute(
+                        attribute,
+                    );
+                }
+            },
+        );
+
+    // =====================================
+    // APPLY NEW DATASET
+    // =====================================
+
+    nextBody
+        .getAttributeNames()
+        .forEach(
+            (
+                attribute,
+            ) =>
+            {
+                if (
+                    attribute.startsWith(
+                        'data-',
+                    )
+                ) {
+
+                    document.body.setAttribute(
+                        attribute,
+                        nextBody.getAttribute(
+                            attribute,
+                        ),
+                    );
+                }
+            },
+        );
+
+    // =====================================
+    // RESTORE SPA FLAGS
+    // =====================================
+
+    if (
+        currentFlags.appInitialized
+    ) {
+
+        document.body.dataset
+            .appInitialized =
+                currentFlags.appInitialized;
+    }
+
+    if (
+        currentFlags.ajaxNavigating
+    ) {
+
+        document.body.dataset
+            .ajaxNavigating =
+                currentFlags.ajaxNavigating;
     }
 }
 
@@ -70,7 +181,9 @@ function updateMeta(doc)
 // SWAP
 // =========================================
 
-export function replaceContent(html)
+export function replaceContent(
+    html,
+)
 {
     try {
 
@@ -99,9 +212,25 @@ export function replaceContent(html)
             );
         }
 
+        // =================================
+        // META
+        // =================================
+
         updateMeta(
             doc,
         );
+
+        // =================================
+        // BODY DATASET
+        // =================================
+
+        syncBodyAttributes(
+            doc,
+        );
+
+        // =================================
+        // SWAP
+        // =================================
 
         current.innerHTML =
             next.innerHTML;

@@ -11,7 +11,7 @@ import {
 } from '../core/config.js';
 
 // =========================================
-// Config
+// CONFIG
 // =========================================
 
 const TRANSITION_TIMEOUT =
@@ -19,7 +19,7 @@ const TRANSITION_TIMEOUT =
         .duration;
 
 // =========================================
-// Helpers
+// HELPERS
 // =========================================
 
 function forceReflow(
@@ -53,44 +53,40 @@ function waitTransitionEnd(
             let resolved =
                 false;
 
-            const cleanup =
-                () =>
-                {
-                    if (
-                        resolved
-                    ) {
-                        return;
-                    }
+            function cleanup()
+            {
+                if (resolved) {
+                    return;
+                }
 
-                    resolved =
-                        true;
+                resolved =
+                    true;
 
-                    element.removeEventListener(
-                        'transitionend',
-                        handleEnd,
-                    );
+                clearTimeout(
+                    fallbackTimeout,
+                );
 
-                    clearTimeout(
-                        fallbackTimeout,
-                    );
+                element.removeEventListener(
+                    'transitionend',
+                    handleEnd,
+                );
 
-                    resolve();
-                };
+                resolve();
+            }
 
-            const handleEnd =
-                (
-                    event,
-                ) =>
-                {
-                    if (
-                        event.target
-                        !== element
-                    ) {
-                        return;
-                    }
+            function handleEnd(
+                event,
+            )
+            {
+                if (
+                    event.target
+                    !== element
+                ) {
+                    return;
+                }
 
-                    cleanup();
-                };
+                cleanup();
+            }
 
             const fallbackTimeout =
                 window.setTimeout(
@@ -101,17 +97,13 @@ function waitTransitionEnd(
             element.addEventListener(
                 'transitionend',
                 handleEnd,
-                {
-                    once:
-                        true,
-                },
             );
         },
     );
 }
 
 // =========================================
-// Animate Out
+// OUT
 // =========================================
 
 export async function animateContentOut(
@@ -127,7 +119,7 @@ export async function animateContentOut(
 
     debug(
         'TRANSITION',
-        'animate out',
+        'out',
     );
 
     content.classList.remove(
@@ -149,7 +141,7 @@ export async function animateContentOut(
 }
 
 // =========================================
-// Animate In
+// IN
 // =========================================
 
 export async function animateContentIn(
@@ -165,7 +157,7 @@ export async function animateContentIn(
 
     debug(
         'TRANSITION',
-        'animate in',
+        'in',
     );
 
     content.classList.remove(
@@ -212,7 +204,7 @@ export async function animateContentIn(
 }
 
 // =========================================
-// View Transition API
+// VIEW TRANSITION
 // =========================================
 
 export async function runViewTransition(
@@ -233,10 +225,10 @@ export async function runViewTransition(
 
         const transition =
             document.startViewTransition(
-                async () =>
-                {
-                    await callback();
-                },
+                () =>
+                    Promise.resolve(
+                        callback(),
+                    ),
             );
 
         await transition.finished;

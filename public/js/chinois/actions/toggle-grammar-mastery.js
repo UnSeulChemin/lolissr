@@ -15,18 +15,19 @@ import {
 } from '../../core/toast.js';
 
 import {
+    debug,
     debugError,
 } from '../../core/debug.js';
 
 // =========================================
-// State
+// STATE
 // =========================================
 
 let initialized =
     false;
 
 // =========================================
-// Helpers
+// HELPERS
 // =========================================
 
 function isValidButton(
@@ -98,7 +99,7 @@ function updateButtonState(
 }
 
 // =========================================
-// Toggle
+// TOGGLE
 // =========================================
 
 async function toggleMastery(
@@ -134,11 +135,12 @@ async function toggleMastery(
                         ?? '',
                 },
                 {
-                    headers: {
+                    headers:
+                    {
                         'X-Partial':
                             'true',
 
-                        'Accept':
+                        Accept:
                             'application/json',
                     },
                 },
@@ -204,7 +206,7 @@ async function toggleMastery(
 }
 
 // =========================================
-// Init
+// INIT
 // =========================================
 
 export function initToggleGrammaireMaitrise()
@@ -244,5 +246,10 @@ export function initToggleGrammaireMaitrise()
                 button,
             );
         },
+    );
+
+    debug(
+        'GRAMMAR',
+        'initialized',
     );
 }
