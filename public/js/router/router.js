@@ -55,6 +55,9 @@ import {
 let locked =
     false;
 
+let unlockFrame =
+    null;
+
 let navigationId =
     0;
 
@@ -432,11 +435,21 @@ export async function navigateTo(
         }
 
         // =====================================
-        // UNLOCK EARLY
+        // UNLOCK
         // =====================================
 
-        locked =
-            false;
+        cancelAnimationFrame(
+            unlockFrame,
+        );
+
+        unlockFrame =
+            requestAnimationFrame(
+                () =>
+                {
+                    locked =
+                        false;
+                },
+            );
 
         // =====================================
         // AFTER HOOKS

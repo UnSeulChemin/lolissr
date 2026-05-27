@@ -21,6 +21,21 @@ let initialized =
     false;
 
 // =========================================
+// HELPERS
+// =========================================
+
+function clearActiveElement()
+{
+    if (
+        document.activeElement
+        instanceof HTMLElement
+    ) {
+
+        document.activeElement.blur();
+    }
+}
+
+// =========================================
 // INIT
 // =========================================
 
@@ -76,6 +91,12 @@ export async function runPageTransition(
     );
 
     try {
+
+        // =================================
+        // CLEAR ACTIVE FOCUS
+        // =================================
+
+        clearActiveElement();
 
         // =================================
         // SIMPLE DOM SWAP
