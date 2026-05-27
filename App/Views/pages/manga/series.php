@@ -65,6 +65,7 @@ $totalPages =
                                 ? 'active'
                                 : '' ?>
                         "
+                        data-prefetch
                         href="<?= e($baseUri) ?>manga/series/page/<?= $i ?>"
                     >
                         <?= $i ?>

@@ -20,6 +20,7 @@ $baseUri =
                 transition-card
                 dashboard-card
             "
+            data-prefetch
             href="<?= e($baseUri) ?>chinois/grammaire/hsk1"
         >
 
@@ -46,6 +47,7 @@ $baseUri =
                 transition-card
                 dashboard-card
             "
+            data-prefetch
             href="<?= e($baseUri) ?>chinois/grammaire/hsk2"
         >
 
@@ -72,6 +74,7 @@ $baseUri =
                 transition-card
                 dashboard-card
             "
+            data-prefetch
             href="<?= e($baseUri) ?>chinois/grammaire/hsk3"
         >
 
@@ -98,6 +101,7 @@ $baseUri =
                 transition-card
                 dashboard-card
             "
+            data-prefetch
             href="<?= e($baseUri) ?>chinois/grammaire/hsk4"
         >
 

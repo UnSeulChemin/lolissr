@@ -41,6 +41,7 @@ $baseUri =
                 transition-card
                 dashboard-card
             "
+            data-prefetch
             href="<?= e($baseUri) ?>chinois/mandarin"
         >
 
@@ -67,6 +68,7 @@ $baseUri =
                 transition-card
                 dashboard-card
             "
+            data-prefetch
             href="<?= e($baseUri) ?>chinois/jinyu"
         >
 
@@ -93,6 +95,7 @@ $baseUri =
                 transition-card
                 dashboard-card
             "
+            data-prefetch
             href="<?= e($baseUri) ?>chinois/ajouter"
         >
 
@@ -119,6 +122,7 @@ $baseUri =
                 transition-card
                 dashboard-card
             "
+            data-prefetch
             href="<?= e($baseUri) ?>chinois/grammaire"
         >
 
@@ -145,6 +149,7 @@ $baseUri =
                 transition-card
                 dashboard-card
             "
+            data-prefetch
             href="<?= e($baseUri) ?>chinois/flashcards"
         >
 

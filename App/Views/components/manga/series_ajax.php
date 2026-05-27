@@ -165,6 +165,7 @@ $baseUri =
         collection-card
         collection-card-link
     "
+    data-prefetch
     href="<?= e($href) ?>"
 >
 

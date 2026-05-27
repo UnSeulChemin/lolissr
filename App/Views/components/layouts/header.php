@@ -36,6 +36,7 @@ $currentSearch =
 
         <a
             class="site-logo"
+            data-prefetch
             href="<?= e($baseUri) ?>"
             title="Accueil"
         >

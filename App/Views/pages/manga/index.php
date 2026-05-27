@@ -41,6 +41,7 @@ $baseUri =
                 transition-card
                 dashboard-card
             "
+            data-prefetch
             href="<?= e($baseUri) ?>manga/series"
         >
 
@@ -67,6 +68,7 @@ $baseUri =
                 transition-card
                 dashboard-card
             "
+            data-prefetch
             href="<?= e($baseUri) ?>manga/ajouter"
         >
 
@@ -93,6 +95,7 @@ $baseUri =
                 transition-card
                 dashboard-card
             "
+            data-prefetch
             href="<?= e($baseUri) ?>manga/lien"
         >
 
