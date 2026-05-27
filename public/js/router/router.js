@@ -23,6 +23,11 @@ import {
 } from './router-hooks.js';
 
 import {
+    saveScrollPosition,
+    restoreScrollPosition,
+} from './route-scroll.js';
+
+import {
     fetchPageHtml,
 } from '../navigation/ajax-fetch.js';
 
@@ -144,6 +149,14 @@ export async function navigateTo(
 
     const currentNavigationId =
         ++navigationId;
+
+    // =====================================
+    // SAVE CURRENT SCROLL
+    // =====================================
+
+    saveScrollPosition(
+        current,
+    );
 
     // =====================================
     // ABORT PREVIOUS
@@ -283,6 +296,15 @@ export async function navigateTo(
         // =====================================
 
         if (
+            options.restoreScroll
+            === true
+        ) {
+
+            restoreScrollPosition(
+                target,
+            );
+
+        } else if (
             options.scrollTop
             !== false
         ) {
@@ -423,6 +445,9 @@ async function handlePopState()
 
             scrollTop:
                 false,
+
+            restoreScroll:
+                true,
 
             force:
                 true,
