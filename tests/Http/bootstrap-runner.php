@@ -13,6 +13,8 @@ require ROOT . '/Framework/Support/helpers.php';
 require __DIR__ . '/Support/HttpClient.php';
 require __DIR__ . '/Support/Assertions.php';
 require __DIR__ . '/Support/Terminal.php';
+require __DIR__ . '/Support/Stats.php';
+require __DIR__ . '/Support/HtmlReport.php';
 
 $config = require __DIR__ . '/config.php';
 
