@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Http\Cases\Core;
+namespace Tests\Unit\Core;
 
 final class UploadedFileTest
 {

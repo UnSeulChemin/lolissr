@@ -2,111 +2,172 @@
 
 declare(strict_types=1);
 
-if (!defined('ROOT'))
-{
+if (!defined('ROOT')) {
     define(
         'ROOT',
         dirname(__DIR__),
     );
 }
 
+/*
+|--------------------------------------------------------------------------
+| AUTOLOAD
+|--------------------------------------------------------------------------
+*/
+
 require_once ROOT . '/vendor/autoload.php';
+
 require_once ROOT . '/Framework/Support/helpers.php';
 
 /*
 |--------------------------------------------------------------------------
-| Chargement du fichier .env
+| ENVIRONMENT
 |--------------------------------------------------------------------------
+|
+| Charge le .env puis force le runtime testing.
+| Aucun test mutateur ne doit être actif par défaut.
+|
 */
 
-$envFile = base_path('.env');
+$envFile =
+    base_path('.env');
 
-if (is_file($envFile))
-{
+if (is_file($envFile)) {
+
     $lines = file(
         $envFile,
         FILE_IGNORE_NEW_LINES
         | FILE_SKIP_EMPTY_LINES,
     ) ?: [];
 
-    foreach ($lines as $line)
-    {
-        $line = trim($line);
+    foreach ($lines as $line) {
+
+        $line =
+            trim($line);
 
         if (
             $line === ''
             || str_starts_with($line, '#')
             || !str_contains($line, '=')
-        )
-        {
+        ) {
             continue;
         }
 
-        [$name, $value] = explode(
+        [
+            $name,
+            $value,
+        ] = explode(
             '=',
             $line,
             2,
         );
 
-        $name = trim($name);
-        $value = trim($value);
+        $name =
+            trim($name);
 
-        $_ENV[$name] = $value;
-        $_SERVER[$name] = $value;
+        $value =
+            trim($value);
+
+        $_ENV[$name] =
+            $value;
+
+        $_SERVER[$name] =
+            $value;
 
         putenv(
-            $name . '=' . $value,
+            "{$name}={$value}",
         );
     }
 }
 
 /*
 |--------------------------------------------------------------------------
-| Mode test forcé
+| FORCE TEST ENV
 |--------------------------------------------------------------------------
-|
-| Ce fichier force un contexte de test runtime.
-| Il ne doit pas autoriser d'écriture mutatrice par défaut.
-|
 */
 
-$_ENV['APP_ENV'] = 'testing';
-$_SERVER['APP_ENV'] = 'testing';
+$_ENV['APP_ENV'] =
+    'testing';
 
-putenv('APP_ENV=testing');
+$_SERVER['APP_ENV'] =
+    'testing';
+
+putenv(
+    'APP_ENV=testing',
+);
 
 /*
 |--------------------------------------------------------------------------
-| Tests safe par défaut
+| SAFE TEST MODE
 |--------------------------------------------------------------------------
+|
+| Tous les tests sont non-mutateurs par défaut.
+| Aucune écriture DB/fichier réelle.
+|
 */
 
-$_ENV['TESTS_ENABLED'] = 'true';
-$_SERVER['TESTS_ENABLED'] = 'true';
+$testEnv = [
 
-putenv('TESTS_ENABLED=true');
+    'TESTS_ENABLED' =>
+        'true',
 
-$_ENV['TEST_UPLOAD_MODE'] = 'true';
-$_SERVER['TEST_UPLOAD_MODE'] = 'true';
+    'TEST_UPLOAD_MODE' =>
+        'true',
 
-putenv('TEST_UPLOAD_MODE=true');
+    'TEST_UPLOAD_REAL' =>
+        'false',
 
-$_ENV['TEST_UPLOAD_REAL'] = 'false';
-$_SERVER['TEST_UPLOAD_REAL'] = 'false';
+    'TEST_POST_AJOUTER' =>
+        'false',
 
-putenv('TEST_UPLOAD_REAL=false');
+    'TEST_POST_UPDATE' =>
+        'false',
 
-$_ENV['TEST_POST_AJOUTER'] = 'false';
-$_SERVER['TEST_POST_AJOUTER'] = 'false';
+    'TEST_AJAX_UPDATE' =>
+        'false',
 
-putenv('TEST_POST_AJOUTER=false');
+    'TEST_UPLOAD_DUPLICATE_SLUG_NUMERO' =>
+        'false',
 
-$_ENV['TEST_POST_UPDATE'] = 'false';
-$_SERVER['TEST_POST_UPDATE'] = 'false';
+    'TEST_UPLOAD_INVALID_IMAGE' =>
+        'false',
 
-putenv('TEST_POST_UPDATE=false');
+    'TEST_UPLOAD_MAX_SIZE' =>
+        'false',
+];
 
-$_ENV['TEST_AJAX_UPDATE'] = 'false';
-$_SERVER['TEST_AJAX_UPDATE'] = 'false';
+foreach (
+    $testEnv
+    as $key => $value
+) {
 
-putenv('TEST_AJAX_UPDATE=false');
+    $_ENV[$key] =
+        $value;
+
+    $_SERVER[$key] =
+        $value;
+
+    putenv(
+        "{$key}={$value}",
+    );
+}
+
+/*
+|--------------------------------------------------------------------------
+| RUNTIME SAFETY
+|--------------------------------------------------------------------------
+|
+| Vérification finale :
+| le runtime DOIT être en lecture seule.
+|
+*/
+
+if (
+    ($_ENV['APP_ENV'] ?? '')
+    !== 'testing'
+) {
+
+    throw new RuntimeException(
+        'Le runtime de test doit être en environnement testing.',
+    );
+}

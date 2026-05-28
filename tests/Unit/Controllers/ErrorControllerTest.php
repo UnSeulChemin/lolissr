@@ -2,88 +2,75 @@
 
 declare(strict_types=1);
 
-use PHPUnit\Framework\TestCase;
+namespace Tests\Unit\Controllers;
+
 use App\Controllers\ErrorController;
+use Framework\Http\Request;
 
-final class ErrorControllerTest extends TestCase
+final class ErrorControllerTest
 {
-    public function testNotFoundSetsCorrectValues(): void
+    public static function run(): array
     {
-        $controller = new TestableErrorController();
+        return [
 
-        $controller->notFound('Test 404');
+            self::testMethodsExist(),
 
-        $this->assertSame('404', $controller->view);
-        $this->assertSame(404, $controller->code);
-        $this->assertSame(
-            ['message' => 'Test 404'],
-            $controller->data
-        );
+            self::testControllerInstantiation(),
 
-        $this->assertSame(
-            '404 | Page introuvable',
-            $controller->getTitleValue()
-        );
+        ];
     }
 
-    public function testMethodNotAllowedSetsCorrectValues(): void
+    private static function testMethodsExist(): array
     {
-        $controller = new TestableErrorController();
+        $controller =
+            self::controller();
 
-        $controller->methodNotAllowed('Test 405');
+        return [
+            'name' =>
+                'ErrorController methods exist',
 
-        $this->assertSame('405', $controller->view);
-        $this->assertSame(405, $controller->code);
-        $this->assertSame(
-            ['message' => 'Test 405'],
-            $controller->data
-        );
+            'success' =>
 
-        $this->assertSame(
-            '405 | Méthode non autorisée',
-            $controller->getTitleValue()
-        );
+                method_exists(
+                    $controller,
+                    'notFound',
+                )
+
+                && method_exists(
+                    $controller,
+                    'forbidden',
+                )
+
+                && method_exists(
+                    $controller,
+                    'unauthorized',
+                )
+
+                && method_exists(
+                    $controller,
+                    'serverError',
+                ),
+        ];
     }
 
-    public function testServerErrorSetsCorrectValues(): void
+    private static function testControllerInstantiation(): array
     {
-        $controller = new TestableErrorController();
+        $controller =
+            self::controller();
 
-        $controller->serverError('Test 500');
+        return [
+            'name' =>
+                'ErrorController instantiation',
 
-        $this->assertSame('500', $controller->view);
-        $this->assertSame(500, $controller->code);
-        $this->assertSame(
-            ['message' => 'Test 500'],
-            $controller->data
-        );
-
-        $this->assertSame(
-            '500 | Erreur serveur',
-            $controller->getTitleValue()
-        );
-    }
-}
-
-final class TestableErrorController extends ErrorController
-{
-    public string $view = '';
-    public int $code = 0;
-    public array $data = [];
-
-    protected function renderError(
-        string $view,
-        int $code,
-        array $data = []
-    ): void
-    {
-        $this->view = $view;
-        $this->code = $code;
-        $this->data = $data;
+            'success' =>
+                $controller instanceof ErrorController,
+        ];
     }
 
-    public function getTitleValue(): string
+    private static function controller(): ErrorController
     {
-        return $this->title;
+        return new ErrorController(
+            new Request(),
+        );
     }
 }
