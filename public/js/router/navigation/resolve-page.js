@@ -25,6 +25,12 @@ export async function resolvePage(
     signal,
 )
 {
+    /*
+    |--------------------------------------------------------------------------
+    | FORCE REFRESH
+    |--------------------------------------------------------------------------
+    */
+
     if (
         forceRefresh
     ) {
@@ -43,6 +49,12 @@ export async function resolvePage(
         );
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | PREFETCH CACHE
+    |--------------------------------------------------------------------------
+    */
+
     const cached =
         getPrefetchedPage(
             target,
@@ -59,6 +71,12 @@ export async function resolvePage(
         return cached;
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | PREFETCH IN FLIGHT
+    |--------------------------------------------------------------------------
+    */
+
     const inFlight =
         getInFlightPrefetch(
             target,
@@ -74,6 +92,18 @@ export async function resolvePage(
 
         return inFlight;
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | NETWORK FETCH
+    |--------------------------------------------------------------------------
+    */
+
+    debug(
+        'ROUTER',
+        'network-fetch',
+        target,
+    );
 
     return fetchPage(
         target,
