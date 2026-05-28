@@ -222,7 +222,11 @@ async function deleteManga(
             || redirectUrl;
 
         await navigateTo(
+            location.href,
             target,
+            {
+                force: true,
+            },
         );
 
     } catch (error) {
