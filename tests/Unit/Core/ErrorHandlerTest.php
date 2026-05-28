@@ -6,21 +6,42 @@ namespace Tests\Unit\Core;
 
 use ErrorException;
 use Framework\Http\ErrorHandler;
-use PHPUnit\Framework\TestCase;
 
-final class ErrorHandlerTest extends TestCase
+final class ErrorHandlerTest
 {
-    public function testHandleError(): void
+    public static function run(): array
     {
-        $this->expectException(
-            ErrorException::class,
-        );
+        return [
 
-        ErrorHandler::handleError(
-            E_WARNING,
-            'Test warning',
-            __FILE__,
-            __LINE__,
-        );
+            self::testHandleError(),
+
+        ];
+    }
+
+    private static function testHandleError(): array
+    {
+        $success = false;
+
+        try {
+
+            ErrorHandler::handleError(
+                E_WARNING,
+                'Test warning',
+                __FILE__,
+                __LINE__,
+            );
+
+        } catch (ErrorException) {
+
+            $success = true;
+        }
+
+        return [
+            'name' =>
+                'ErrorHandler converts error to exception',
+
+            'success' =>
+                $success,
+        ];
     }
 }

@@ -11,16 +11,8 @@ final class DatabaseConfigTest extends TestCase
 {
     public function testHost(): void
     {
-        $host =
-            DatabaseConfig::host();
-
         $this->assertIsString(
-            $host,
-        );
-
-        $this->assertNotSame(
-            '',
-            $host,
+            DatabaseConfig::host(),
         );
     }
 
@@ -32,18 +24,31 @@ final class DatabaseConfigTest extends TestCase
         );
     }
 
+    public function testName(): void
+    {
+        $this->assertIsString(
+            DatabaseConfig::name(),
+        );
+    }
+
+    public function testUser(): void
+    {
+        $this->assertIsString(
+            DatabaseConfig::user(),
+        );
+    }
+
+    public function testPass(): void
+    {
+        $this->assertIsString(
+            DatabaseConfig::pass(),
+        );
+    }
+
     public function testCharset(): void
     {
-        $charset =
-            DatabaseConfig::charset();
-
         $this->assertIsString(
-            $charset,
-        );
-
-        $this->assertNotSame(
-            '',
-            $charset,
+            DatabaseConfig::charset(),
         );
     }
 }

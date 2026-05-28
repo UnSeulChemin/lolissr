@@ -13,42 +13,56 @@ use PHPUnit\Framework\TestCase;
 
 final class ChinoisControllerTest extends TestCase
 {
+    private ChinoisReadService $readService;
+
+    private ChinoisGrammaireRepository $repository;
+
     private ChinoisController $controller;
 
     protected function setUp(): void
     {
+        $this->readService =
+            $this->createMock(
+                ChinoisReadService::class,
+            );
+
+        $this->repository =
+            $this->createMock(
+                ChinoisGrammaireRepository::class,
+            );
+
         $this->controller =
             new ChinoisController(
-                new FakeChinoisReadService(),
-                new FakeChinoisRepository(),
+                $this->readService,
+                $this->repository,
                 new Request(),
             );
     }
 
     public function testMethodsExist(): void
     {
-        $this->assertTrue(
+        self::assertTrue(
             method_exists(
                 $this->controller,
                 'mandarin',
             ),
         );
 
-        $this->assertTrue(
+        self::assertTrue(
             method_exists(
                 $this->controller,
                 'jinyu',
             ),
         );
 
-        $this->assertTrue(
+        self::assertTrue(
             method_exists(
                 $this->controller,
                 'grammaire',
             ),
         );
 
-        $this->assertTrue(
+        self::assertTrue(
             method_exists(
                 $this->controller,
                 'flashcards',
@@ -56,7 +70,7 @@ final class ChinoisControllerTest extends TestCase
         );
     }
 
-    public function testInvalidHskLevel(): void
+    public function testInvalidHskLevelThrowsNotFound(): void
     {
         $this->expectException(
             NotFoundException::class,
@@ -69,39 +83,9 @@ final class ChinoisControllerTest extends TestCase
 
     public function testControllerInstantiation(): void
     {
-        $this->assertInstanceOf(
+        self::assertInstanceOf(
             ChinoisController::class,
             $this->controller,
         );
-    }
-}
-
-final class FakeChinoisReadService extends ChinoisReadService
-{
-    public function __construct()
-    {
-    }
-
-    public function mandarin(): array
-    {
-        return [];
-    }
-
-    public function jinyu(): array
-    {
-        return [];
-    }
-}
-
-final class FakeChinoisRepository extends ChinoisGrammaireRepository
-{
-    public function __construct()
-    {
-    }
-
-    public function findByLevel(
-        string $level,
-    ): array {
-        return [];
     }
 }

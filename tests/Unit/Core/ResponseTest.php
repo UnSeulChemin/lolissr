@@ -4,48 +4,73 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Core;
 
-use PHPUnit\Framework\TestCase;
-
-final class ResponseTest extends TestCase
+final class ResponseTest
 {
-    public function testJsonEncoding(): void
+    public static function run(): array
     {
-        $json =
-            json_encode(
-                [
-                    'success' => true,
-                ],
-            );
+        return [
 
-        $this->assertNotFalse(
-            $json,
-        );
+            self::testJsonEncoding(),
+
+            self::testUtf8(),
+
+            self::testRedirectUrl(),
+
+        ];
     }
 
-    public function testUtf8(): void
+    private static function testJsonEncoding(): array
     {
-        $json =
-            json_encode(
-                [
-                    'title' => 'Élite',
-                ],
-                JSON_UNESCAPED_UNICODE,
-            );
-
-        $this->assertStringContainsString(
-            'Élite',
-            (string) $json,
+        $json = json_encode(
+            [
+                'success' => true,
+            ],
         );
+
+        return [
+            'name' =>
+                'Response JSON encoding',
+
+            'success' =>
+                $json !== false,
+        ];
     }
 
-    public function testRedirectUrl(): void
+    private static function testUtf8(): array
+    {
+        $json = json_encode(
+            [
+                'title' => 'Élite',
+            ],
+            JSON_UNESCAPED_UNICODE,
+        );
+
+        return [
+            'name' =>
+                'Response UTF8',
+
+            'success' =>
+                str_contains(
+                    (string) $json,
+                    'Élite',
+                ),
+        ];
+    }
+
+    private static function testRedirectUrl(): array
     {
         $url =
             '/manga/rave';
 
-        $this->assertStringStartsWith(
-            '/',
-            $url,
-        );
+        return [
+            'name' =>
+                'Response redirect URL',
+
+            'success' =>
+                str_starts_with(
+                    $url,
+                    '/',
+                ),
+        ];
     }
 }

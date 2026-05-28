@@ -5,12 +5,28 @@ declare(strict_types=1);
 namespace Tests\Unit\Core;
 
 use Framework\Container\Container;
-use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
-final class ContainerTest extends TestCase
+final class ContainerTest
 {
-    public function testBind(): void
+    public static function run(): array
+    {
+        return [
+
+            self::testBind(),
+
+            self::testSingleton(),
+
+            self::testAutowiring(),
+
+            self::testMissingClass(),
+
+            self::testCircularDependency(),
+
+        ];
+    }
+
+    private static function testBind(): array
     {
         $container =
             new Container();
@@ -24,13 +40,16 @@ final class ContainerTest extends TestCase
                 TestService::class,
             );
 
-        $this->assertInstanceOf(
-            TestService::class,
-            $service,
-        );
+        return [
+            'name' =>
+                'Container bind',
+
+            'success' =>
+                $service instanceof TestService,
+        ];
     }
 
-    public function testSingleton(): void
+    private static function testSingleton(): array
     {
         $container =
             new Container();
@@ -39,23 +58,26 @@ final class ContainerTest extends TestCase
             TestService::class,
         );
 
-        $first =
+        $a =
             $container->get(
                 TestService::class,
             );
 
-        $second =
+        $b =
             $container->get(
                 TestService::class,
             );
 
-        $this->assertSame(
-            $first,
-            $second,
-        );
+        return [
+            'name' =>
+                'Container singleton',
+
+            'success' =>
+                $a === $b,
+        ];
     }
 
-    public function testAutowiring(): void
+    private static function testAutowiring(): array
     {
         $container =
             new Container();
@@ -65,31 +87,67 @@ final class ContainerTest extends TestCase
                 TestDependencyService::class,
             );
 
-        $this->assertInstanceOf(
-            TestDependencyService::class,
-            $service,
-        );
+        return [
+            'name' =>
+                'Container autowiring',
+
+            'success' =>
+                $service instanceof TestDependencyService,
+        ];
     }
 
-    public function testMissingClass(): void
+    private static function testMissingClass(): array
     {
         $container =
             new Container();
 
-        $this->expectException(
-            RuntimeException::class,
-        );
+        $success = false;
 
-        $container->get(
-            'MissingClass',
-        );
+        try {
+
+            $container->get(
+                'MissingClass',
+            );
+
+        } catch (RuntimeException) {
+
+            $success = true;
+        }
+
+        return [
+            'name' =>
+                'Container missing class',
+
+            'success' =>
+                $success,
+        ];
     }
 
-    public function testCircularDependencyPlaceholder(): void
+    private static function testCircularDependency(): array
     {
-        $this->assertTrue(
-            true,
-        );
+        $container =
+            new Container();
+
+        $success = false;
+
+        try {
+
+            $container->get(
+                CircularA::class,
+            );
+
+        } catch (RuntimeException) {
+
+            $success = true;
+        }
+
+        return [
+            'name' =>
+                'Container circular dependency',
+
+            'success' =>
+                $success,
+        ];
     }
 }
 
@@ -101,6 +159,22 @@ final class TestDependencyService
 {
     public function __construct(
         private readonly TestService $service,
+    ) {
+    }
+}
+
+final class CircularA
+{
+    public function __construct(
+        CircularB $service,
+    ) {
+    }
+}
+
+final class CircularB
+{
+    public function __construct(
+        CircularA $service,
     ) {
     }
 }

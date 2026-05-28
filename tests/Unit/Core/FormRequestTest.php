@@ -6,90 +6,169 @@ namespace Tests\Unit\Core;
 
 use Framework\Http\FormRequest;
 use Framework\Http\Request;
-use PHPUnit\Framework\TestCase;
 
-final class FormRequestTest extends TestCase
+final class FormRequestTest
 {
-    public function testPasses(): void
+    public static function run(): array
     {
-        $request =
-            new Request(
-                post: [
-                    'title' => 'Rave',
-                ],
-            );
+        return [
 
-        $formRequest =
-            new FakeFormRequest(
-                $request,
-            );
+            self::testPasses(),
 
-        $this->assertTrue(
-            $formRequest->passes(),
-        );
+            self::testFails(),
+
+            self::testValidated(),
+
+            self::testData(),
+
+            self::testFiles(),
+
+            self::testAll(),
+
+        ];
     }
 
-    public function testFails(): void
+    private static function testPasses(): array
     {
-        $request =
-            new Request(
-                post: [],
-            );
+        $request = new Request(
+            post: [
+                'title' => 'Rave',
+            ],
+        );
 
         $formRequest =
             new FakeFormRequest(
                 $request,
             );
 
-        $this->assertTrue(
-            $formRequest->fails(),
-        );
+        return [
+            'name' =>
+                'FormRequest passes',
+
+            'success' =>
+                $formRequest->passes(),
+        ];
     }
 
-    public function testValidated(): void
+    private static function testFails(): array
     {
-        $request =
-            new Request(
-                post: [
-                    'title' => 'Rave',
-                ],
-            );
+        $request = new Request(
+            post: [],
+        );
 
         $formRequest =
             new FakeFormRequest(
                 $request,
             );
 
-        $this->assertSame(
-            'Rave',
-            $formRequest->validated()['title'],
-        );
+        return [
+            'name' =>
+                'FormRequest fails',
+
+            'success' =>
+                $formRequest->fails(),
+        ];
     }
 
-    public function testFiles(): void
+    private static function testValidated(): array
     {
-        $request =
-            new Request(
-                files: [
-                    'image' => [
-                        'name' => 'cover.jpg',
-                    ],
-                ],
-            );
+        $request = new Request(
+            post: [
+                'title' => 'Rave',
+            ],
+        );
 
         $formRequest =
             new FakeFormRequest(
                 $request,
             );
 
-        $this->assertArrayHasKey(
-            'image',
-            $formRequest->files(),
+        return [
+            'name' =>
+                'FormRequest validated',
+
+            'success' =>
+                $formRequest->validated()['title']
+                    === 'Rave',
+        ];
+    }
+
+    private static function testData(): array
+    {
+        $request = new Request(
+            post: [
+                'title' => 'Rave',
+            ],
         );
+
+        $formRequest =
+            new FakeFormRequest(
+                $request,
+            );
+
+        return [
+            'name' =>
+                'FormRequest data',
+
+            'success' =>
+                $formRequest->data()['title']
+                    === 'Rave',
+        ];
+    }
+
+    private static function testFiles(): array
+    {
+        $request = new Request(
+            files: [
+                'image' => [
+                    'name' =>
+                        'cover.jpg',
+                ],
+            ],
+        );
+
+        $formRequest =
+            new FakeFormRequest(
+                $request,
+            );
+
+        return [
+            'name' =>
+                'FormRequest files',
+
+            'success' =>
+                isset(
+                    $formRequest->files()['image'],
+                ),
+        ];
+    }
+
+    private static function testAll(): array
+    {
+        $request = new Request(
+            post: [
+                'title' => 'Rave',
+            ],
+        );
+
+        $formRequest =
+            new FakeFormRequest(
+                $request,
+            );
+
+        return [
+            'name' =>
+                'FormRequest all',
+
+            'success' =>
+                $formRequest->all()['title']
+                    === 'Rave',
+        ];
     }
 }
 
-final class FakeFormRequest extends FormRequest
+final class FakeFormRequest
+    extends FormRequest
 {
     protected function validate(): void
     {

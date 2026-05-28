@@ -13,21 +13,35 @@ use PHPUnit\Framework\TestCase;
 
 final class MangaControllerTest extends TestCase
 {
+    private MangaReadService $readService;
+
+    private MangaWriteService $writeService;
+
     private MangaController $controller;
 
     protected function setUp(): void
     {
+        $this->readService =
+            $this->createMock(
+                MangaReadService::class,
+            );
+
+        $this->writeService =
+            $this->createMock(
+                MangaWriteService::class,
+            );
+
         $this->controller =
             new MangaController(
-                new FakeMangaReadService(),
-                new FakeMangaWriteService(),
+                $this->readService,
+                $this->writeService,
                 new Request(),
             );
     }
 
     public function testSearchMethodExists(): void
     {
-        $this->assertTrue(
+        self::assertTrue(
             method_exists(
                 $this->controller,
                 'search',
@@ -35,8 +49,14 @@ final class MangaControllerTest extends TestCase
         );
     }
 
-    public function testShowSeriesNotFound(): void
+    public function testShowSeriesThrowsNotFound(): void
     {
+        $this->readService
+            ->expects(self::once())
+            ->method('showSeries')
+            ->with('unknown')
+            ->willReturn(null);
+
         $this->expectException(
             NotFoundException::class,
         );
@@ -46,8 +66,17 @@ final class MangaControllerTest extends TestCase
         );
     }
 
-    public function testShowNotFound(): void
+    public function testShowThrowsNotFound(): void
     {
+        $this->readService
+            ->expects(self::once())
+            ->method('one')
+            ->with(
+                'unknown',
+                1,
+            )
+            ->willReturn(null);
+
         $this->expectException(
             NotFoundException::class,
         );
@@ -56,51 +85,5 @@ final class MangaControllerTest extends TestCase
             'unknown',
             1,
         );
-    }
-}
-
-final class FakeMangaReadService extends MangaReadService
-{
-    public function __construct()
-    {
-    }
-
-    public function search(
-        string $query,
-    ): object {
-
-        return (object) [
-            'search' =>
-                $query,
-
-            'mangas' =>
-                [],
-        ];
-    }
-
-    public function showSeries(
-        string $slug,
-    ): ?object {
-        return null;
-    }
-
-    public function one(
-        string $slug,
-        int $numero,
-    ): ?object {
-        return null;
-    }
-
-    public function series(
-        int|string $page,
-    ): ?object {
-        return null;
-    }
-}
-
-final class FakeMangaWriteService extends MangaWriteService
-{
-    public function __construct()
-    {
     }
 }

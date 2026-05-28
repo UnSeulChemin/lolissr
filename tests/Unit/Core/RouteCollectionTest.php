@@ -6,82 +6,118 @@ namespace Tests\Unit\Core;
 
 use Framework\Routing\Route;
 use Framework\Routing\RouteCollection;
-use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
-final class RouteCollectionTest extends TestCase
+final class RouteCollectionTest
 {
-    public function testAddRoute(): void
+    public static function run(): array
     {
-        $collection =
-            new RouteCollection();
+        return [
 
-        $route =
-            new Route(
-                'GET',
-                '/manga',
-                static fn () => null,
-            );
+            self::testAddRoute(),
 
-        $collection->add(
-            $route,
-        );
+            self::testDuplicateRoute(),
 
-        $this->assertCount(
-            1,
-            $collection->all(),
-        );
+            self::testList(),
+
+        ];
     }
 
-    public function testDuplicateRoute(): void
+    private static function testAddRoute(): array
     {
         $collection =
             new RouteCollection();
 
-        $route =
-            new Route(
-                'GET',
-                '/manga',
-                static fn () => null,
-            );
-
-        $collection->add(
-            $route,
-        );
-
-        $this->expectException(
-            RuntimeException::class,
+        $route = new Route(
+            'GET',
+            '/manga',
+            static fn () => null,
         );
 
         $collection->add(
             $route,
         );
+
+        return [
+            'name' =>
+                'RouteCollection add route',
+
+            'success' =>
+                count(
+                    $collection->all(),
+                ) === 1,
+        ];
     }
 
-    public function testList(): void
+    private static function testDuplicateRoute(): array
     {
         $collection =
             new RouteCollection();
 
+        $route = new Route(
+            'GET',
+            '/manga',
+            static fn () => null,
+        );
+
         $collection->add(
-            new Route(
-                'GET',
-                '/search',
-                'SearchController@index',
-            ),
+            $route,
+        );
+
+        $success = false;
+
+        try {
+
+            $collection->add(
+                $route,
+            );
+
+        } catch (RuntimeException) {
+
+            $success = true;
+        }
+
+        return [
+            'name' =>
+                'RouteCollection duplicate route',
+
+            'success' =>
+                $success,
+        ];
+    }
+
+    private static function testList(): array
+    {
+        $collection =
+            new RouteCollection();
+
+        $route = new Route(
+            'GET',
+            '/search',
+            'SearchController@index',
+        );
+
+        $collection->add(
+            $route,
         );
 
         $list =
             $collection->list();
 
-        $this->assertArrayHasKey(
-            0,
-            $list,
-        );
+        return [
+            'name' =>
+                'RouteCollection list',
 
-        $this->assertStringContainsString(
-            '/search',
-            $list[0],
-        );
+            'success' =>
+                isset($list[0])
+                && str_contains(
+                    $list[0],
+                    '/search',
+                )
+                && str_contains(
+                    $list[0],
+                    'SearchController@index',
+                ),
+        ];
     }
 }

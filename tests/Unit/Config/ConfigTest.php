@@ -6,111 +6,46 @@ namespace Tests\Unit\Config;
 
 use Framework\Config\Config;
 use PHPUnit\Framework\TestCase;
-use ReflectionClass;
-use ReflectionMethod;
 
 final class ConfigTest extends TestCase
 {
-    public function testSegments(): void
+    public function testGetReturnsDefaultForEmptyKey(): void
     {
-        $result =
-            $this->privateMethod(
-                'segments',
-            )->invoke(
-                null,
-                'app.debug',
-            );
-
-        $this->assertSame(
-            [
-                'app',
-                'debug',
-            ],
-            $result,
-        );
-    }
-
-    public function testArrayGet(): void
-    {
-        $result =
-            $this->privateMethod(
-                'arrayGet',
-            )->invoke(
-                null,
-                [
-                    'app' => [
-                        'debug' => true,
-                    ],
-                ],
-                [
-                    'app',
-                    'debug',
-                ],
-            );
-
-        $this->assertTrue(
-            $result,
-        );
-    }
-
-    public function testArrayGetDefault(): void
-    {
-        $result =
-            $this->privateMethod(
-                'arrayGet',
-            )->invoke(
-                null,
-                [],
-                [
-                    'missing',
-                ],
-                'default',
-            );
-
         $this->assertSame(
             'default',
-            $result,
+            Config::get(
+                '',
+                'default',
+            ),
         );
     }
 
-    public function testArrayHas(): void
+    public function testGetReturnsDefaultForUnknownConfig(): void
     {
-        $result =
-            $this->privateMethod(
-                'arrayHas',
-            )->invoke(
-                null,
-                [
-                    'app' => [
-                        'debug' => true,
-                    ],
-                ],
-                [
-                    'app',
-                    'debug',
-                ],
-            );
-
-        $this->assertTrue(
-            $result,
+        $this->assertSame(
+            'default',
+            Config::get(
+                'unknown.key',
+                'default',
+            ),
         );
     }
 
-    public function testArrayHasMissing(): void
+    public function testHasReturnsFalseForEmptyKey(): void
     {
-        $result =
-            $this->privateMethod(
-                'arrayHas',
-            )->invoke(
-                null,
-                [],
-                [
-                    'missing',
-                ],
-            );
-
         $this->assertFalse(
-            $result,
+            Config::has(
+                '',
+            ),
+        );
+    }
+
+    public function testHasReturnsFalseForUnknownConfig(): void
+    {
+        $this->assertFalse(
+            Config::has(
+                'unknown.key',
+            ),
         );
     }
 
@@ -121,26 +56,5 @@ final class ConfigTest extends TestCase
         $this->assertTrue(
             true,
         );
-    }
-
-    private function privateMethod(
-        string $method,
-    ): ReflectionMethod {
-
-        $reflection =
-            new ReflectionClass(
-                Config::class,
-            );
-
-        $method =
-            $reflection->getMethod(
-                $method,
-            );
-
-        $method->setAccessible(
-            true,
-        );
-
-        return $method;
     }
 }

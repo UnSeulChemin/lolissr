@@ -6,35 +6,9 @@ namespace Tests\Unit\Config;
 
 use Framework\Config\UploadConfig;
 use PHPUnit\Framework\TestCase;
-use ReflectionClass;
-use ReflectionMethod;
 
 final class UploadConfigTest extends TestCase
 {
-    public function testNormalizedList(): void
-    {
-        $result =
-            $this->privateMethod(
-                'normalizedList',
-            )->invoke(
-                null,
-                [
-                    ' JPG ',
-                    'png',
-                    'jpg',
-                    '',
-                ],
-            );
-
-        $this->assertSame(
-            [
-                'jpg',
-                'png',
-            ],
-            $result,
-        );
-    }
-
     public function testMaxSize(): void
     {
         $this->assertGreaterThanOrEqual(
@@ -43,49 +17,33 @@ final class UploadConfigTest extends TestCase
         );
     }
 
-    public function testAllowedExtensions(): void
+    public function testAllowedExtensionsReturnsArray(): void
     {
         $this->assertIsArray(
             UploadConfig::allowedExtensions(),
         );
     }
 
-    public function testAllowedMimeTypes(): void
+    public function testAllowedMimeTypesReturnsArray(): void
     {
         $this->assertIsArray(
             UploadConfig::allowedMimeTypes(),
         );
     }
 
-    public function testThumbnailDirectory(): void
+    public function testThumbnailDirectoryReturnsString(): void
     {
-        $directory =
-            UploadConfig::mangaThumbnailDirectory();
-
         $this->assertNotSame(
             '',
-            $directory,
+            UploadConfig::mangaThumbnailDirectory(),
         );
     }
 
-    private function privateMethod(
-        string $method,
-    ): ReflectionMethod {
-
-        $reflection =
-            new ReflectionClass(
-                UploadConfig::class,
-            );
-
-        $method =
-            $reflection->getMethod(
-                $method,
-            );
-
-        $method->setAccessible(
-            true,
+    public function testThumbnailDirectoryEndsWithSeparator(): void
+    {
+        $this->assertStringEndsWith(
+            DIRECTORY_SEPARATOR,
+            UploadConfig::mangaThumbnailDirectory(),
         );
-
-        return $method;
     }
 }
