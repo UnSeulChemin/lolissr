@@ -41,7 +41,7 @@ final class ChinoisAjaxController extends Controller
         }
 
         $maitrise =
-            (int) $this->repository
+            $this->repository
                 ->toggleMaitrise($id);
 
         $this->jsonResult(

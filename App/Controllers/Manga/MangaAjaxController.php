@@ -16,9 +16,6 @@ use Framework\Http\Request;
 
 final class MangaAjaxController extends Controller
 {
-    private const AJAX_PATH =
-        'manga/ajax';
-
     private const SERIES_PATH =
         'manga/series';
 

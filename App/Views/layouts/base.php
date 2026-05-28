@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 use Framework\Support\Session;
 
+// =========================================
+// BASE URI
+// =========================================
+
 $baseUri = trim(
     (string) ($baseUri ?? ''),
     '/',
@@ -13,6 +17,24 @@ $baseUri =
     $baseUri !== ''
         ? '/' . $baseUri . '/'
         : '/';
+
+// =========================================
+// DEFAULT VARIABLES
+// =========================================
+
+$title =
+    is_string($title ?? null)
+        ? $title
+        : '';
+
+$content =
+    is_string($content ?? null)
+        ? $content
+        : '';
+
+// =========================================
+// FLASH TOAST
+// =========================================
 
 $flashToast = null;
 
@@ -67,7 +89,7 @@ if (
     <?= csrf_meta_tag() ?>
 
     <title>
-        <?= e($title ?? '') ?>
+        <?= e($title) ?>
     </title>
 
     <link
@@ -128,7 +150,10 @@ if (
 
             } catch (
                 _
-            ) {}
+            ) {
+
+                // Ignore
+            }
         }
 
     </script>
