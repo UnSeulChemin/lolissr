@@ -48,22 +48,23 @@ function bindLink(
     link.dataset.prefetchBound =
         'true';
 
+    let hoverTimer =
+        null;
+
     link.addEventListener(
-        'pointerenter',
-        (
-            event,
-        ) =>
+        'mouseenter',
+        () =>
         {
-            if (
-                !event.isTrusted
-            ) {
-
-                return;
-            }
-
-            void prefetchPage(
-                link.href,
-            );
+            hoverTimer =
+                window.setTimeout(
+                    () =>
+                    {
+                        void prefetchPage(
+                            link.href,
+                        );
+                    },
+                    80,
+                );
         },
         {
             passive:
@@ -72,32 +73,15 @@ function bindLink(
     );
 
     link.addEventListener(
-        'pointerdown',
+        'mouseleave',
         () =>
         {
-            void prefetchPage(
-                link.href,
+            clearTimeout(
+                hoverTimer,
             );
         },
         {
             passive:
-                true,
-        },
-    );
-
-    link.addEventListener(
-        'touchstart',
-        () =>
-        {
-            void prefetchPage(
-                link.href,
-            );
-        },
-        {
-            passive:
-                true,
-
-            once:
                 true,
         },
     );
