@@ -6,6 +6,14 @@ import {
     get,
 } from '../../../core/http.js';
 
+import {
+    debugError,
+} from '../../../core/debug.js';
+
+import {
+    FrontendError,
+} from '../../../core/errors/FrontendError.js';
+
 // =========================================
 // FETCH SEARCH RESULTS
 // =========================================
@@ -48,13 +56,35 @@ export async function fetchSearchResults(
             error?.name
             === 'AbortError'
         ) {
+
             return [];
         }
 
-        console.error(
-            '[SEARCH API]',
+        /*
+        |--------------------------------------------------------------------------
+        | DEBUG
+        |--------------------------------------------------------------------------
+        */
+
+        debugError(
+            'SEARCH_API',
             error,
         );
+
+        /*
+        |--------------------------------------------------------------------------
+        | SEARCH MUST STAY SILENT
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            error
+            instanceof FrontendError
+        ) {
+
+            error.silent =
+                true;
+        }
 
         return [];
     }

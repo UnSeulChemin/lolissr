@@ -17,8 +17,15 @@ import {
 
 import {
     debug,
-    debugError,
 } from '../../core/debug.js';
+
+import {
+    handleError,
+} from '../../core/errors/error-handler.js';
+
+import {
+    FrontendError,
+} from '../../core/errors/FrontendError.js';
 
 // =========================================
 // CONFIG
@@ -94,6 +101,7 @@ function refreshButtons()
                     instanceof HTMLButtonElement
                 )
             ) {
+
                 return;
             }
 
@@ -119,6 +127,7 @@ async function updateReadStatus(
     if (
         button.disabled
     ) {
+
         return;
     }
 
@@ -126,6 +135,7 @@ async function updateReadStatus(
         button.dataset.url;
 
     if (!url) {
+
         return;
     }
 
@@ -140,9 +150,11 @@ async function updateReadStatus(
             ? 0
             : 1;
 
-    // =====================================
-    // OPTIMISTIC UI
-    // =====================================
+    /*
+    |--------------------------------------------------------------------------
+    | OPTIMISTIC UI
+    |--------------------------------------------------------------------------
+    */
 
     button.disabled =
         true;
@@ -170,16 +182,32 @@ async function updateReadStatus(
                 },
             );
 
+        /*
+        |--------------------------------------------------------------------------
+        | VALIDATION
+        |--------------------------------------------------------------------------
+        */
+
         if (
             data?.success
             !== true
         ) {
 
-            throw new Error(
+            throw new FrontendError(
                 data?.message
-                || 'Erreur',
+                || 'Erreur mise à jour',
+                {
+                    code:
+                        'READ_STATUS_UPDATE_FAILED',
+                },
             );
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | APPLY SERVER STATE
+        |--------------------------------------------------------------------------
+        */
 
         updateButtonState(
             button,
@@ -189,6 +217,12 @@ async function updateReadStatus(
             ),
         );
 
+        /*
+        |--------------------------------------------------------------------------
+        | SUCCESS
+        |--------------------------------------------------------------------------
+        */
+
         showToast(
             data?.message
             || 'Mise à jour effectuée',
@@ -197,21 +231,19 @@ async function updateReadStatus(
 
     } catch (error) {
 
-        debugError(
-            'READ_STATUS',
-            error,
-        );
+        /*
+        |--------------------------------------------------------------------------
+        | RESTORE PREVIOUS STATE
+        |--------------------------------------------------------------------------
+        */
 
         updateButtonState(
             button,
             currentReadStatus,
         );
 
-        showToast(
-            error instanceof Error
-                ? error.message
-                : 'Erreur réseau',
-            'error',
+        handleError(
+            error,
         );
 
     } finally {
@@ -228,6 +260,7 @@ async function updateReadStatus(
 export function initUpdateReadStatus()
 {
     if (initialized) {
+
         return;
     }
 
@@ -249,6 +282,7 @@ export function initUpdateReadStatus()
                     instanceof HTMLButtonElement
                 )
             ) {
+
                 return;
             }
 

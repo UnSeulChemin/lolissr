@@ -16,8 +16,15 @@ import {
 
 import {
     debug,
-    debugError,
 } from '../../core/debug.js';
+
+import {
+    handleError,
+} from '../../core/errors/error-handler.js';
+
+import {
+    FrontendError,
+} from '../../core/errors/FrontendError.js';
 
 import {
     navigateTo,
@@ -66,6 +73,7 @@ async function deleteManga(
     if (
         button.disabled
     ) {
+
         return;
     }
 
@@ -76,15 +84,32 @@ async function deleteManga(
         button.dataset.redirect
         || '/';
 
+    /*
+    |--------------------------------------------------------------------------
+    | URL
+    |--------------------------------------------------------------------------
+    */
+
     if (!url) {
 
-        showToast(
-            'URL invalide',
-            'error',
+        handleError(
+            new FrontendError(
+                'URL invalide',
+                {
+                    code:
+                        'INVALID_DELETE_URL',
+                },
+            ),
         );
 
         return;
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | CONFIRM
+    |--------------------------------------------------------------------------
+    */
 
     const confirmed =
         window.confirm(
@@ -92,8 +117,15 @@ async function deleteManga(
         );
 
     if (!confirmed) {
+
         return;
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | SAVE ORIGINAL TEXT
+    |--------------------------------------------------------------------------
+    */
 
     if (
         !button.dataset.originalText
@@ -103,6 +135,12 @@ async function deleteManga(
             button.textContent
             || 'Supprimer';
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | LOADING
+    |--------------------------------------------------------------------------
+    */
 
     setLoadingState(
         button,
@@ -130,30 +168,54 @@ async function deleteManga(
                 },
             );
 
+        /*
+        |--------------------------------------------------------------------------
+        | VALIDATION
+        |--------------------------------------------------------------------------
+        */
+
         if (
             data?.success
             !== true
         ) {
 
-            throw new Error(
+            throw new FrontendError(
                 data?.message
                 || 'Erreur suppression',
+                {
+                    code:
+                        'DELETE_FAILED',
+                },
             );
         }
 
-        // =================================
-        // INVALIDATE
-        // =================================
+        /*
+        |--------------------------------------------------------------------------
+        | INVALIDATE
+        |--------------------------------------------------------------------------
+        */
 
         invalidateRoute(
             '/',
         );
+
+        /*
+        |--------------------------------------------------------------------------
+        | SUCCESS
+        |--------------------------------------------------------------------------
+        */
 
         showToast(
             data.message
             || 'Supprimé',
             'success',
         );
+
+        /*
+        |--------------------------------------------------------------------------
+        | REDIRECT
+        |--------------------------------------------------------------------------
+        */
 
         const target =
             data.data?.redirect
@@ -165,16 +227,8 @@ async function deleteManga(
 
     } catch (error) {
 
-        debugError(
-            'DELETE',
+        handleError(
             error,
-        );
-
-        showToast(
-            error instanceof Error
-                ? error.message
-                : 'Erreur réseau',
-            'error',
         );
 
         setLoadingState(
@@ -191,6 +245,7 @@ async function deleteManga(
 export function initDeleteManga()
 {
     if (initialized) {
+
         return;
     }
 
@@ -212,6 +267,7 @@ export function initDeleteManga()
                     instanceof HTMLButtonElement
                 )
             ) {
+
                 return;
             }
 

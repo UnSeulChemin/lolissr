@@ -6,6 +6,10 @@ import {
     debugError,
 } from './debug.js';
 
+import {
+    FrontendError,
+} from './errors/FrontendError.js';
+
 // =========================================
 // CONFIG
 // =========================================
@@ -191,8 +195,15 @@ async function parseResponse(
 
         } catch {
 
-            throw new Error(
-                'Invalid JSON response',
+            throw new FrontendError(
+                'Réponse JSON invalide',
+                {
+                    code:
+                        'INVALID_JSON',
+
+                    status:
+                        response.status,
+                },
             );
         }
     }
@@ -215,28 +226,20 @@ function createHttpError(
     data,
 )
 {
-    const error =
-        new Error(
-            data?.message
-            || `HTTP ${response.status}`,
-        );
+    return new FrontendError(
+        data?.message
+        || `HTTP ${response.status}`,
+        {
+            code:
+                `HTTP_${response.status}`,
 
-    error.name =
-        'HttpError';
+            status:
+                response.status,
 
-    error.status =
-        response.status;
-
-    error.data =
-        data;
-
-    error.response =
-        response;
-
-    error.url =
-        response.url;
-
-    return error;
+            details:
+                data,
+        },
+    );
 }
 
 // =========================================
@@ -375,8 +378,60 @@ export async function request(
             === 'AbortError'
         ) {
 
-            throw new Error(
+            throw new FrontendError(
                 `Request timeout (${timeout}ms)`,
+                {
+                    code:
+                        'REQUEST_TIMEOUT',
+
+                    status:
+                        408,
+                },
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | NETWORK ERROR
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            error instanceof TypeError
+        ) {
+
+            throw new FrontendError(
+                'Erreur réseau',
+                {
+                    code:
+                        'NETWORK_ERROR',
+
+                    status:
+                        0,
+                },
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | UNKNOWN ERROR
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            ! (
+                error
+                instanceof FrontendError
+            )
+        ) {
+
+            throw new FrontendError(
+                error?.message
+                || 'Erreur inconnue',
+                {
+                    code:
+                        'UNKNOWN_ERROR',
+                },
             );
         }
 

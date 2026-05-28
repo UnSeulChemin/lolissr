@@ -7,6 +7,10 @@ import {
     debugError,
 } from '../core/debug.js';
 
+import {
+    FrontendError,
+} from '../core/errors/FrontendError.js';
+
 // =========================================
 // CONFIG
 // =========================================
@@ -36,8 +40,12 @@ function parseHtml(
 
     if (!nextContent) {
 
-        throw new Error(
-            'Missing app content',
+        throw new FrontendError(
+            'Contenu application introuvable',
+            {
+                code:
+                    'MISSING_APP_CONTENT',
+            },
         );
     }
 
@@ -55,9 +63,11 @@ function updateDocumentMeta(
     documentHtml,
 )
 {
-    // =====================================
-    // TITLE
-    // =====================================
+    /*
+    |--------------------------------------------------------------------------
+    | TITLE
+    |--------------------------------------------------------------------------
+    */
 
     const title =
         documentHtml.querySelector(
@@ -81,9 +91,11 @@ function updateDocumentMeta(
         }
     }
 
-    // =====================================
-    // LANG
-    // =====================================
+    /*
+    |--------------------------------------------------------------------------
+    | LANG
+    |--------------------------------------------------------------------------
+    */
 
     const nextLang =
         documentHtml.documentElement.lang;
@@ -111,12 +123,15 @@ function syncBodyAttributes(
         documentHtml.body;
 
     if (!nextBody) {
+
         return;
     }
 
-    // =====================================
-    // KEEP INTERNAL FLAGS
-    // =====================================
+    /*
+    |--------------------------------------------------------------------------
+    | KEEP INTERNAL FLAGS
+    |--------------------------------------------------------------------------
+    */
 
     const preserved =
     {
@@ -125,9 +140,11 @@ function syncBodyAttributes(
                 .appInitialized,
     };
 
-    // =====================================
-    // REMOVE OLD DATA ATTRIBUTES
-    // =====================================
+    /*
+    |--------------------------------------------------------------------------
+    | REMOVE OLD DATA ATTRIBUTES
+    |--------------------------------------------------------------------------
+    */
 
     for (
         const attribute
@@ -139,6 +156,7 @@ function syncBodyAttributes(
                 'data-',
             )
         ) {
+
             continue;
         }
 
@@ -147,9 +165,11 @@ function syncBodyAttributes(
         );
     }
 
-    // =====================================
-    // APPLY NEW DATA ATTRIBUTES
-    // =====================================
+    /*
+    |--------------------------------------------------------------------------
+    | APPLY NEW DATA ATTRIBUTES
+    |--------------------------------------------------------------------------
+    */
 
     for (
         const attribute
@@ -161,6 +181,7 @@ function syncBodyAttributes(
                 'data-',
             )
         ) {
+
             continue;
         }
 
@@ -172,6 +193,7 @@ function syncBodyAttributes(
         if (
             value === null
         ) {
+
             continue;
         }
 
@@ -181,9 +203,11 @@ function syncBodyAttributes(
         );
     }
 
-    // =====================================
-    // RESTORE INTERNAL FLAGS
-    // =====================================
+    /*
+    |--------------------------------------------------------------------------
+    | RESTORE INTERNAL FLAGS
+    |--------------------------------------------------------------------------
+    */
 
     if (
         preserved.appInitialized
@@ -204,10 +228,6 @@ function replaceDomContent(
     nextContent,
 )
 {
-    // =====================================
-    // FAST DOM SWAP
-    // =====================================
-
     currentContent.replaceChildren(
         ...nextContent.cloneNode(
             true,
@@ -225,9 +245,11 @@ export function replaceContent(
 {
     try {
 
-        // =================================
-        // PARSE
-        // =================================
+        /*
+        |--------------------------------------------------------------------------
+        | PARSE
+        |--------------------------------------------------------------------------
+        */
 
         const {
             documentHtml,
@@ -237,9 +259,11 @@ export function replaceContent(
                 html,
             );
 
-        // =================================
-        // CURRENT CONTENT
-        // =================================
+        /*
+        |--------------------------------------------------------------------------
+        | CURRENT CONTENT
+        |--------------------------------------------------------------------------
+        */
 
         const currentContent =
             document.querySelector(
@@ -250,14 +274,20 @@ export function replaceContent(
             !currentContent
         ) {
 
-            throw new Error(
-                'Missing current app content',
+            throw new FrontendError(
+                'Contenu actuel introuvable',
+                {
+                    code:
+                        'MISSING_CURRENT_CONTENT',
+                },
             );
         }
 
-        // =================================
-        // DOCUMENT
-        // =================================
+        /*
+        |--------------------------------------------------------------------------
+        | DOCUMENT
+        |--------------------------------------------------------------------------
+        */
 
         updateDocumentMeta(
             documentHtml,
@@ -267,9 +297,11 @@ export function replaceContent(
             documentHtml,
         );
 
-        // =================================
-        // DOM SWAP
-        // =================================
+        /*
+        |--------------------------------------------------------------------------
+        | DOM SWAP
+        |--------------------------------------------------------------------------
+        */
 
         replaceDomContent(
             currentContent,

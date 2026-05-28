@@ -66,9 +66,11 @@ export function initSearchController()
     const searchDropdown =
         $('.js-header-search-dropdown');
 
-    // =====================================
-    // ELEMENTS
-    // =====================================
+    /*
+    |--------------------------------------------------------------------------
+    | ELEMENTS
+    |--------------------------------------------------------------------------
+    */
 
     if (
         !search ||
@@ -76,26 +78,32 @@ export function initSearchController()
         !searchResults ||
         !searchDropdown
     ) {
+
         return;
     }
 
-    // =====================================
-    // PREVENT DOUBLE INIT
-    // =====================================
+    /*
+    |--------------------------------------------------------------------------
+    | PREVENT DOUBLE INIT
+    |--------------------------------------------------------------------------
+    */
 
     if (
         search.dataset.initialized ===
         'true'
     ) {
+
         return;
     }
 
     search.dataset.initialized =
         'true';
 
-    // =====================================
-    // INPUT
-    // =====================================
+    /*
+    |--------------------------------------------------------------------------
+    | INPUT
+    |--------------------------------------------------------------------------
+    */
 
     searchInput.addEventListener(
         'input',
@@ -109,7 +117,7 @@ export function initSearchController()
                 setTimeout(
                     () =>
                     {
-                        handleSearch(
+                        void handleSearch(
                             search,
                             searchInput,
                             searchResults,
@@ -121,9 +129,11 @@ export function initSearchController()
         },
     );
 
-    // =====================================
-    // KEYBOARD
-    // =====================================
+    /*
+    |--------------------------------------------------------------------------
+    | KEYBOARD
+    |--------------------------------------------------------------------------
+    */
 
     searchInput.addEventListener(
         'keydown',
@@ -140,9 +150,11 @@ export function initSearchController()
         },
     );
 
-    // =====================================
-    // OUTSIDE CLICK
-    // =====================================
+    /*
+    |--------------------------------------------------------------------------
+    | OUTSIDE CLICK
+    |--------------------------------------------------------------------------
+    */
 
     document.addEventListener(
         'click',
@@ -155,6 +167,7 @@ export function initSearchController()
                     '.js-header-search',
                 )
             ) {
+
                 resetSearch(
                     searchInput,
                     searchResults,
@@ -184,13 +197,16 @@ async function handleSearch(
             rawValue,
         );
 
-    // =====================================
-    // EMPTY
-    // =====================================
+    /*
+    |--------------------------------------------------------------------------
+    | EMPTY
+    |--------------------------------------------------------------------------
+    */
 
     if (
         query === ''
     ) {
+
         resetSearch(
             searchInput,
             searchResults,
@@ -200,9 +216,11 @@ async function handleSearch(
         return;
     }
 
-    // =====================================
-    // ABORT PREVIOUS
-    // =====================================
+    /*
+    |--------------------------------------------------------------------------
+    | ABORT PREVIOUS
+    |--------------------------------------------------------------------------
+    */
 
     abortController?.abort();
 
@@ -215,8 +233,8 @@ async function handleSearch(
     try {
 
         const basePath =
-            search.dataset.basePath ??
-            '/';
+            search.dataset.basePath
+            ?? '/';
 
         const searchUrl =
             `${basePath}manga/ajax/recherche`;
@@ -249,14 +267,18 @@ async function handleSearch(
 
     } catch (error) {
 
+        /*
+        |--------------------------------------------------------------------------
+        | SEARCH MUST NEVER CRASH UI
+        |--------------------------------------------------------------------------
+        */
+
         if (
-            error?.name !==
-            'AbortError'
+            error?.name
+            === 'AbortError'
         ) {
-            console.error(
-                '[SEARCH]',
-                error,
-            );
+
+            return;
         }
     }
 }
@@ -284,9 +306,11 @@ function renderResults(
     let index =
         0;
 
-    // =====================================
-    // MANGAS
-    // =====================================
+    /*
+    |--------------------------------------------------------------------------
+    | MANGAS
+    |--------------------------------------------------------------------------
+    */
 
     mangas.forEach(
         (
@@ -316,9 +340,11 @@ function renderResults(
         },
     );
 
-    // =====================================
-    // SHORTCUTS
-    // =====================================
+    /*
+    |--------------------------------------------------------------------------
+    | SHORTCUTS
+    |--------------------------------------------------------------------------
+    */
 
     shortcuts.forEach(
         (
@@ -347,13 +373,16 @@ function renderResults(
         },
     );
 
-    // =====================================
-    // EMPTY
-    // =====================================
+    /*
+    |--------------------------------------------------------------------------
+    | EMPTY
+    |--------------------------------------------------------------------------
+    */
 
     if (
         index === 0
     ) {
+
         closeDropdown(
             searchDropdown,
         );
@@ -381,10 +410,6 @@ function setupResultItem(
     item.dataset.index =
         index;
 
-    // =====================================
-    // HOVER
-    // =====================================
-
     item.addEventListener(
         'mouseenter',
         () =>
@@ -397,10 +422,6 @@ function setupResultItem(
             );
         },
     );
-
-    // =====================================
-    // CLICK
-    // =====================================
 
     item.addEventListener(
         'click',
@@ -435,17 +456,21 @@ function handleKeyboardNavigation(
     if (
         !resultItems.length
     ) {
+
         return;
     }
 
-    // =====================================
-    // DOWN
-    // =====================================
+    /*
+    |--------------------------------------------------------------------------
+    | DOWN
+    |--------------------------------------------------------------------------
+    */
 
     if (
         event.key ===
         'ArrowDown'
     ) {
+
         event.preventDefault();
 
         activeIndex++;
@@ -454,6 +479,7 @@ function handleKeyboardNavigation(
             activeIndex >=
             resultItems.length
         ) {
+
             activeIndex = 0;
         }
 
@@ -462,14 +488,17 @@ function handleKeyboardNavigation(
         );
     }
 
-    // =====================================
-    // UP
-    // =====================================
+    /*
+    |--------------------------------------------------------------------------
+    | UP
+    |--------------------------------------------------------------------------
+    */
 
     if (
         event.key ===
         'ArrowUp'
     ) {
+
         event.preventDefault();
 
         activeIndex--;
@@ -477,6 +506,7 @@ function handleKeyboardNavigation(
         if (
             activeIndex < 0
         ) {
+
             activeIndex =
                 resultItems.length - 1;
         }
@@ -486,14 +516,17 @@ function handleKeyboardNavigation(
         );
     }
 
-    // =====================================
-    // ENTER
-    // =====================================
+    /*
+    |--------------------------------------------------------------------------
+    | ENTER
+    |--------------------------------------------------------------------------
+    */
 
     if (
         event.key ===
         'Enter'
     ) {
+
         event.preventDefault();
 
         const activeItem =
@@ -504,6 +537,7 @@ function handleKeyboardNavigation(
         if (
             !activeItem
         ) {
+
             return;
         }
 
@@ -517,14 +551,17 @@ function handleKeyboardNavigation(
             activeItem.href;
     }
 
-    // =====================================
-    // ESCAPE
-    // =====================================
+    /*
+    |--------------------------------------------------------------------------
+    | ESCAPE
+    |--------------------------------------------------------------------------
+    */
 
     if (
         event.key ===
         'Escape'
     ) {
+
         resetSearch(
             searchInput,
             searchResults,
@@ -566,6 +603,7 @@ function updateActiveResult(
     if (
         activeItem
     ) {
+
         activeItem.classList.add(
             'is-active',
         );

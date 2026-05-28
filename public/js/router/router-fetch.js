@@ -15,6 +15,10 @@ import {
     debugError,
 } from '../core/debug.js';
 
+import {
+    FrontendError,
+} from '../core/errors/FrontendError.js';
+
 // =========================================
 // FETCH PAGE
 // =========================================
@@ -63,8 +67,12 @@ export async function fetchPage(
             !== 'page'
         ) {
 
-            throw new Error(
-                'Invalid page response',
+            throw new FrontendError(
+                'Réponse page invalide',
+                {
+                    code:
+                        'INVALID_PAGE_RESPONSE',
+                },
             );
         }
 
@@ -73,8 +81,12 @@ export async function fetchPage(
             !== 'string'
         ) {
 
-            throw new Error(
-                'Invalid page HTML',
+            throw new FrontendError(
+                'HTML page invalide',
+                {
+                    code:
+                        'INVALID_PAGE_HTML',
+                },
             );
         }
 
