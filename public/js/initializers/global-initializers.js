@@ -12,11 +12,11 @@ import {
 
 import {
     initNavigationLoading,
-} from '../router/navigation-loading.js';
+} from '../router/ui/navigation-loading.js';
 
 import {
     initRouterDebugPanel,
-} from '../router/router-debug-panel.js';
+} from '../router/ui/router-debug-panel.js';
 
 import {
     initGlobalBackNavigation,

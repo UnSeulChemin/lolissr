@@ -2,7 +2,7 @@
 // ROUTER STATE
 // =========================================
 
-export const routerState =
+export const navigationState =
 {
     locked:
         false,
@@ -13,3 +13,41 @@ export const routerState =
     controller:
         null,
 };
+
+// =========================================
+// LOCK
+// =========================================
+
+export function lockRouter()
+{
+    navigationState.locked =
+        true;
+}
+
+// =========================================
+// UNLOCK
+// =========================================
+
+export function unlockRouter()
+{
+    navigationState.locked =
+        false;
+}
+
+// =========================================
+// CONTROLLER
+// =========================================
+
+export function setController(
+    controller,
+)
+{
+    navigationState.controller =
+        controller;
+}
+
+export function clearController()
+{
+    navigationState.controller =
+        null;
+}

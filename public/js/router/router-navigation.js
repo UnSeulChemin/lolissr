@@ -3,8 +3,22 @@
 // =========================================
 
 import {
+    normalizeUrl,
+} from '../core/navigation.js';
+
+import {
     FrontendError,
 } from '../core/errors/FrontendError.js';
+
+import {
+    emitNavigationEvent,
+    NAVIGATION_START,
+    NAVIGATION_FETCH,
+    NAVIGATION_RENDER,
+    NAVIGATION_READY,
+    NAVIGATION_ERROR,
+    NAVIGATION_ABORT,
+} from '../core/navigation-protocol.js';
 
 import {
     getPrefetchedPage,
@@ -31,12 +45,12 @@ import {
 } from './route-scroll.js';
 
 import {
-    fetchPage,
-} from './router-fetch.js';
-
-import {
     replaceContent,
 } from './router-dom.js';
+
+import {
+    fetchPage,
+} from './router-fetch.js';
 
 import {
     updateActiveNavigation,
@@ -47,17 +61,15 @@ import {
 } from './router-focus.js';
 
 import {
-    routerState,
+    navigationState,
+    lockRouter,
+    unlockRouter,
+    setController,
+    clearController,
 } from './router-state.js';
 
 import {
     dispatchRouterLoaded,
-    emitNavigationStart,
-    emitNavigationFetch,
-    emitNavigationRender,
-    emitNavigationReady,
-    emitNavigationAbort,
-    emitNavigationError,
 } from './router-events.js';
 
 import {
@@ -66,20 +78,8 @@ import {
 } from '../core/debug.js';
 
 // =========================================
-// HELPERS
+// VALIDATION
 // =========================================
-
-function lockRouter()
-{
-    routerState.locked =
-        true;
-}
-
-function unlockRouter()
-{
-    routerState.locked =
-        false;
-}
 
 function validatePageResponse(
     response,
@@ -187,13 +187,24 @@ async function resolvePage(
 // =========================================
 
 export async function navigateTo(
-    current,
-    target,
+    from,
+    to,
     options = {},
 )
 {
+    const current =
+        normalizeUrl(
+            from
+            || location.href,
+        );
+
+    const target =
+        normalizeUrl(
+            to,
+        );
+
     if (
-        target === current
+        current === target
         && options.force !== true
     ) {
 
@@ -201,7 +212,7 @@ export async function navigateTo(
     }
 
     if (
-        routerState.locked
+        navigationState.locked
         && options.force !== true
     ) {
 
@@ -216,22 +227,32 @@ export async function navigateTo(
 
     lockRouter();
 
-    const currentNavigationId =
-        ++routerState.navigationId;
+    const navigationId =
+        ++navigationState.navigationId;
 
     saveScrollPosition(
         current,
     );
 
-    emitNavigationStart(
-        current,
-        target,
+    emitNavigationEvent(
+        NAVIGATION_START,
+        {
+            from:
+                current,
+
+            to:
+                target,
+        },
     );
 
-    routerState.controller?.abort();
+    navigationState.controller?.abort();
 
-    routerState.controller =
+    const controller =
         new AbortController();
+
+    setController(
+        controller,
+    );
 
     try {
 
@@ -252,33 +273,47 @@ export async function navigateTo(
                 target,
             );
 
-        if (forceRefresh) {
+        if (
+            forceRefresh
+        ) {
 
             clearInvalidatedRoute(
                 target,
             );
         }
 
-        emitNavigationFetch(
-            current,
-            target,
+        emitNavigationEvent(
+            NAVIGATION_FETCH,
+            {
+                from:
+                    current,
+
+                to:
+                    target,
+            },
         );
 
         const response =
             await resolvePage(
                 target,
                 forceRefresh,
-                routerState.controller.signal,
+                controller.signal,
             );
 
         if (
-            currentNavigationId
-            !== routerState.navigationId
+            navigationId
+            !== navigationState.navigationId
         ) {
 
-            emitNavigationAbort(
-                current,
-                target,
+            emitNavigationEvent(
+                NAVIGATION_ABORT,
+                {
+                    from:
+                        current,
+
+                    to:
+                        target,
+                },
             );
 
             return;
@@ -309,9 +344,15 @@ export async function navigateTo(
                 response.page.title;
         }
 
-        emitNavigationRender(
-            current,
-            target,
+        emitNavigationEvent(
+            NAVIGATION_RENDER,
+            {
+                from:
+                    current,
+
+                to:
+                    target,
+            },
         );
 
         replaceContent(
@@ -358,9 +399,15 @@ export async function navigateTo(
                     target,
                 );
 
-                emitNavigationReady(
-                    current,
-                    target,
+                emitNavigationEvent(
+                    NAVIGATION_READY,
+                    {
+                        from:
+                            current,
+
+                        to:
+                            target,
+                    },
                 );
             },
         );
@@ -380,18 +427,31 @@ export async function navigateTo(
             === 'AbortError'
         ) {
 
-            emitNavigationAbort(
-                current,
-                target,
+            emitNavigationEvent(
+                NAVIGATION_ABORT,
+                {
+                    from:
+                        current,
+
+                    to:
+                        target,
+                },
             );
 
             return;
         }
 
-        emitNavigationError(
-            current,
-            target,
-            error,
+        emitNavigationEvent(
+            NAVIGATION_ERROR,
+            {
+                from:
+                    current,
+
+                to:
+                    target,
+
+                error,
+            },
         );
 
         debugError(
@@ -401,12 +461,11 @@ export async function navigateTo(
     } finally {
 
         if (
-            currentNavigationId
-            === routerState.navigationId
+            navigationId
+            === navigationState.navigationId
         ) {
 
-            routerState.controller =
-                null;
+            clearController();
         }
     }
 }

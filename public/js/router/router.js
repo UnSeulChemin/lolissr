@@ -3,7 +3,6 @@
 // =========================================
 
 import {
-    normalizeUrl,
     shouldIgnoreLink,
 } from '../core/navigation.js';
 
@@ -97,12 +96,8 @@ function handleClick(
     clearActiveFocus();
 
     void navigateTo(
-        normalizeUrl(
-            location.href,
-        ),
-        normalizeUrl(
-            link.href,
-        ),
+        location.href,
+        link.href,
     );
 }
 
@@ -113,12 +108,8 @@ function handleClick(
 async function handlePopState()
 {
     await navigateTo(
-        normalizeUrl(
-            location.href,
-        ),
-        normalizeUrl(
-            location.href,
-        ),
+        null,
+        location.href,
         {
             updateHistory:
                 false,

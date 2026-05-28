@@ -4,11 +4,11 @@
 
 import {
     config,
-} from '../core/config.js';
+} from '../../core/config.js';
 
 import {
     debug,
-} from '../core/debug.js';
+} from '../../core/debug.js';
 
 // =========================================
 // CONFIG

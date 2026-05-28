@@ -4,14 +4,14 @@
 
 import {
     debug,
-} from '../core/debug.js';
+} from '../../core/debug.js';
 
 import {
     NAVIGATION_START,
     NAVIGATION_READY,
     NAVIGATION_ERROR,
     NAVIGATION_ABORT,
-} from '../core/navigation-protocol.js';
+} from '../../core/navigation-protocol.js';
 
 // =========================================
 // STATE
