@@ -220,6 +220,11 @@ final readonly class MangaWriteService
                                 'editeur' => $dto->editeur,
                                 'numero' => $dto->numero,
                                 'statut' => $dto->statut,
+
+                                'jacquette' => 1,
+                                'livre_note' => 1,
+                                'note' => 2,
+
                                 'commentaire' => $dto->commentaire,
                             ]);
 

@@ -110,8 +110,8 @@ $hasEditeur =
         data-slug="<?= e($slug) ?>"
         data-numero="<?= $numero ?>"
         data-base-path="<?= e($baseUri) ?>"
-        data-jacquette="<?= $manga->jacquette ?? '' ?>"
-        data-livre-note="<?= $manga->livre_note ?? '' ?>"
+        data-jacquette="<?= (int) ($manga->jacquette ?? 1) ?>"
+        data-livre-note="<?= (int) ($manga->livre_note ?? 1) ?>"
     >
 
         <figure class="detail-image">
