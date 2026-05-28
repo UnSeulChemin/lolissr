@@ -19,7 +19,15 @@ final class ContainerTest
 
             self::testAutowiring(),
 
+            self::testFactoryBinding(),
+
+            self::testFactoryMustReturnObject(),
+
+            self::testDefaultValueResolution(),
+
             self::testMissingClass(),
+
+            self::testNonInstantiableClass(),
 
             self::testCircularDependency(),
 
@@ -96,6 +104,81 @@ final class ContainerTest
         ];
     }
 
+    private static function testFactoryBinding(): array
+    {
+        $container =
+            new Container();
+
+        $container->bind(
+            TestService::class,
+            static fn (): TestService => new TestService(),
+        );
+
+        $service =
+            $container->get(
+                TestService::class,
+            );
+
+        return [
+            'name' =>
+                'Container factory binding',
+
+            'success' =>
+                $service instanceof TestService,
+        ];
+    }
+
+    private static function testFactoryMustReturnObject(): array
+    {
+        $container =
+            new Container();
+
+        $container->bind(
+            TestService::class,
+            static fn (): string => 'invalid',
+        );
+
+        $success = false;
+
+        try {
+
+            $container->get(
+                TestService::class,
+            );
+
+        } catch (RuntimeException) {
+
+            $success = true;
+        }
+
+        return [
+            'name' =>
+                'Container factory object validation',
+
+            'success' =>
+                $success,
+        ];
+    }
+
+    private static function testDefaultValueResolution(): array
+    {
+        $container =
+            new Container();
+
+        $service =
+            $container->get(
+                DefaultValueService::class,
+            );
+
+        return [
+            'name' =>
+                'Container default value',
+
+            'success' =>
+                $service instanceof DefaultValueService,
+        ];
+    }
+
     private static function testMissingClass(): array
     {
         $container =
@@ -117,6 +200,33 @@ final class ContainerTest
         return [
             'name' =>
                 'Container missing class',
+
+            'success' =>
+                $success,
+        ];
+    }
+
+    private static function testNonInstantiableClass(): array
+    {
+        $container =
+            new Container();
+
+        $success = false;
+
+        try {
+
+            $container->get(
+                TestInterface::class,
+            );
+
+        } catch (RuntimeException) {
+
+            $success = true;
+        }
+
+        return [
+            'name' =>
+                'Container non instantiable',
 
             'success' =>
                 $success,
@@ -161,6 +271,18 @@ final class TestDependencyService
         private readonly TestService $service,
     ) {
     }
+}
+
+final class DefaultValueService
+{
+    public function __construct(
+        private string $name = 'test',
+    ) {
+    }
+}
+
+interface TestInterface
+{
 }
 
 final class CircularA

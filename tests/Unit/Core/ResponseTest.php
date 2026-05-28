@@ -4,73 +4,101 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Core;
 
+use Framework\Http\Response;
+use ReflectionClass;
+
 final class ResponseTest
 {
     public static function run(): array
     {
         return [
 
-            self::testJsonEncoding(),
+            self::testClassExists(),
 
-            self::testUtf8(),
+            self::testHtmlMethodExists(),
 
-            self::testRedirectUrl(),
+            self::testJsonMethodExists(),
+
+            self::testRedirectMethodExists(),
+
+            self::testJsonFlags(),
 
         ];
     }
 
-    private static function testJsonEncoding(): array
+    private static function testClassExists(): array
     {
-        $json = json_encode(
-            [
-                'success' => true,
-            ],
-        );
-
         return [
             'name' =>
-                'Response JSON encoding',
+                'Response class exists',
 
             'success' =>
-                $json !== false,
-        ];
-    }
-
-    private static function testUtf8(): array
-    {
-        $json = json_encode(
-            [
-                'title' => 'Élite',
-            ],
-            JSON_UNESCAPED_UNICODE,
-        );
-
-        return [
-            'name' =>
-                'Response UTF8',
-
-            'success' =>
-                str_contains(
-                    (string) $json,
-                    'Élite',
+                class_exists(
+                    Response::class,
                 ),
         ];
     }
 
-    private static function testRedirectUrl(): array
+    private static function testHtmlMethodExists(): array
     {
-        $url =
-            '/manga/rave';
+        return [
+            'name' =>
+                'Response html method exists',
+
+            'success' =>
+                method_exists(
+                    Response::class,
+                    'html',
+                ),
+        ];
+    }
+
+    private static function testJsonMethodExists(): array
+    {
+        return [
+            'name' =>
+                'Response json method exists',
+
+            'success' =>
+                method_exists(
+                    Response::class,
+                    'json',
+                ),
+        ];
+    }
+
+    private static function testRedirectMethodExists(): array
+    {
+        return [
+            'name' =>
+                'Response redirect method exists',
+
+            'success' =>
+                method_exists(
+                    Response::class,
+                    'redirect',
+                ),
+        ];
+    }
+
+    private static function testJsonFlags(): array
+    {
+        $reflection =
+            new ReflectionClass(
+                Response::class,
+            );
+
+        $success =
+            $reflection->hasMethod(
+                'json',
+            );
 
         return [
             'name' =>
-                'Response redirect URL',
+                'Response json method available',
 
             'success' =>
-                str_starts_with(
-                    $url,
-                    '/',
-                ),
+                $success,
         ];
     }
 }

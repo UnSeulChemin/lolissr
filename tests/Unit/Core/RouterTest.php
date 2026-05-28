@@ -19,7 +19,17 @@ final class RouterTest
 
             self::testPrefix(),
 
+            self::testNestedPrefix(),
+
             self::testMiddleware(),
+
+            self::testMultipleMiddlewares(),
+
+            self::testGroupRoutes(),
+
+            self::testRoutePath(),
+
+            self::testRouteMethod(),
 
         ];
     }
@@ -93,19 +103,51 @@ final class RouterTest
                 static fn () => null,
             );
 
-        $routes =
+        $route =
             array_values(
                 $collection->all(),
-            );
+            )[0];
 
         return [
             'name' =>
                 'Router prefix',
 
             'success' =>
-                isset($routes[0])
-                && $routes[0]->getPath()
-                    === '/api/search',
+                $route->getPath()
+                === '/api/search',
+        ];
+    }
+
+    private static function testNestedPrefix(): array
+    {
+        $collection =
+            new RouteCollection();
+
+        $router =
+            new Router(
+                $collection,
+            );
+
+        $router
+            ->prefix('/api')
+            ->prefix('/v1')
+            ->get(
+                '/search',
+                static fn () => null,
+            );
+
+        $route =
+            array_values(
+                $collection->all(),
+            )[0];
+
+        return [
+            'name' =>
+                'Router nested prefix',
+
+            'success' =>
+                $route->getPath()
+                === '/api/v1/search',
         ];
     }
 
@@ -128,19 +170,154 @@ final class RouterTest
                 static fn () => null,
             );
 
-        $routes =
+        $route =
             array_values(
                 $collection->all(),
-            );
+            )[0];
 
         return [
             'name' =>
                 'Router middleware',
 
             'success' =>
-                isset($routes[0])
-                && $routes[0]->getMiddlewares()
-                    === ['AuthMiddleware'],
+                $route->getMiddlewares()
+                === ['AuthMiddleware'],
+        ];
+    }
+
+    private static function testMultipleMiddlewares(): array
+    {
+        $collection =
+            new RouteCollection();
+
+        $router =
+            new Router(
+                $collection,
+            );
+
+        $router
+            ->middleware([
+                'AuthMiddleware',
+                'AdminMiddleware',
+            ])
+            ->get(
+                '/admin',
+                static fn () => null,
+            );
+
+        $route =
+            array_values(
+                $collection->all(),
+            )[0];
+
+        return [
+            'name' =>
+                'Router multiple middlewares',
+
+            'success' =>
+                $route->getMiddlewares()
+                === [
+                    'AuthMiddleware',
+                    'AdminMiddleware',
+                ],
+        ];
+    }
+
+    private static function testGroupRoutes(): array
+    {
+        $collection =
+            new RouteCollection();
+
+        $router =
+            new Router(
+                $collection,
+            );
+
+        $router->group(
+            static function (
+                Router $router,
+            ): void {
+
+                $router->get(
+                    '/one',
+                    static fn () => null,
+                );
+
+                $router->get(
+                    '/two',
+                    static fn () => null,
+                );
+            },
+        );
+
+        return [
+            'name' =>
+                'Router group',
+
+            'success' =>
+                count(
+                    $collection->all(),
+                ) === 2,
+        ];
+    }
+
+    private static function testRoutePath(): array
+    {
+        $collection =
+            new RouteCollection();
+
+        $router =
+            new Router(
+                $collection,
+            );
+
+        $router->get(
+            '/manga/{slug}',
+            static fn () => null,
+        );
+
+        $route =
+            array_values(
+                $collection->all(),
+            )[0];
+
+        return [
+            'name' =>
+                'Router route path',
+
+            'success' =>
+                $route->getPath()
+                === '/manga/{slug}',
+        ];
+    }
+
+    private static function testRouteMethod(): array
+    {
+        $collection =
+            new RouteCollection();
+
+        $router =
+            new Router(
+                $collection,
+            );
+
+        $router->post(
+            '/save',
+            static fn () => null,
+        );
+
+        $route =
+            array_values(
+                $collection->all(),
+            )[0];
+
+        return [
+            'name' =>
+                'Router route method',
+
+            'success' =>
+                $route->getMethod()
+                === 'POST',
         ];
     }
 }

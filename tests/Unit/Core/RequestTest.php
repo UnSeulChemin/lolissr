@@ -14,9 +14,15 @@ final class RequestTest
 
             self::testMethod(),
 
+            self::testDefaultMethod(),
+
             self::testAjax(),
 
+            self::testAjaxViaXAjax(),
+
             self::testPrefetch(),
+
+            self::testPrefetchViaHeader(),
 
             self::testPartial(),
 
@@ -24,15 +30,23 @@ final class RequestTest
 
             self::testPath(),
 
-            self::testInput(),
+            self::testRootPath(),
+
+            self::testInputPriority(),
+
+            self::testInputDefault(),
 
             self::testQueryAll(),
 
             self::testServer(),
 
+            self::testServerDefault(),
+
             self::testHeader(),
 
             self::testFiles(),
+
+            self::testMissingFile(),
 
         ];
     }
@@ -52,7 +66,20 @@ final class RequestTest
             'success' =>
                 $request->method() === 'POST'
                 && $request->isPost()
-                && !$request->isGet(),
+                && ! $request->isGet(),
+        ];
+    }
+
+    private static function testDefaultMethod(): array
+    {
+        $request = new Request();
+
+        return [
+            'name' =>
+                'Request default method',
+
+            'success' =>
+                $request->method() === 'GET',
         ];
     }
 
@@ -74,6 +101,24 @@ final class RequestTest
         ];
     }
 
+    private static function testAjaxViaXAjax(): array
+    {
+        $request = new Request(
+            server: [
+                'HTTP_X_AJAX' =>
+                    'true',
+            ],
+        );
+
+        return [
+            'name' =>
+                'Request AJAX X-Ajax',
+
+            'success' =>
+                $request->isAjax(),
+        ];
+    }
+
     private static function testPrefetch(): array
     {
         $request = new Request(
@@ -85,7 +130,25 @@ final class RequestTest
 
         return [
             'name' =>
-                'Request prefetch detection',
+                'Request prefetch purpose',
+
+            'success' =>
+                $request->isPrefetch(),
+        ];
+    }
+
+    private static function testPrefetchViaHeader(): array
+    {
+        $request = new Request(
+            server: [
+                'HTTP_X_PREFETCH' =>
+                    'true',
+            ],
+        );
+
+        return [
+            'name' =>
+                'Request prefetch X-Prefetch',
 
             'success' =>
                 $request->isPrefetch(),
@@ -133,7 +196,7 @@ final class RequestTest
         $request = new Request(
             server: [
                 'REQUEST_URI' =>
-                    '/recherche/rave',
+                    '/recherche/rave?test=1',
             ],
         );
 
@@ -147,23 +210,55 @@ final class RequestTest
         ];
     }
 
-    private static function testInput(): array
+    private static function testRootPath(): array
+    {
+        $request = new Request();
+
+        return [
+            'name' =>
+                'Request root path',
+
+            'success' =>
+                $request->path()
+                    === '/',
+        ];
+    }
+
+    private static function testInputPriority(): array
     {
         $request = new Request(
             get: [
-                'search' =>
-                    'rave',
+                'value' => 'get',
+            ],
+            post: [
+                'value' => 'post',
             ],
         );
 
         return [
             'name' =>
-                'Request input',
+                'Request input priority',
 
             'success' =>
                 $request->input(
-                    'search',
-                ) === 'rave',
+                    'value',
+                ) === 'post',
+        ];
+    }
+
+    private static function testInputDefault(): array
+    {
+        $request = new Request();
+
+        return [
+            'name' =>
+                'Request input default',
+
+            'success' =>
+                $request->input(
+                    'missing',
+                    'default',
+                ) === 'default',
         ];
     }
 
@@ -203,6 +298,22 @@ final class RequestTest
                 $request->server(
                     'HTTP_HOST',
                 ) === 'localhost',
+        ];
+    }
+
+    private static function testServerDefault(): array
+    {
+        $request = new Request();
+
+        return [
+            'name' =>
+                'Request server default',
+
+            'success' =>
+                $request->server(
+                    'missing',
+                    'fallback',
+                ) === 'fallback',
         ];
     }
 
@@ -247,6 +358,21 @@ final class RequestTest
                         'image',
                     ),
                 ),
+        ];
+    }
+
+    private static function testMissingFile(): array
+    {
+        $request = new Request();
+
+        return [
+            'name' =>
+                'Request missing file',
+
+            'success' =>
+                $request->file(
+                    'missing',
+                ) === null,
         ];
     }
 }
