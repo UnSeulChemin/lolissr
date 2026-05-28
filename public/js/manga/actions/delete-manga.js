@@ -28,7 +28,7 @@ import {
 
 import {
     navigateTo,
-} from '../../router/router.js';
+} from '../../router/router-navigation.js'
 
 import {
     invalidateRoute,
