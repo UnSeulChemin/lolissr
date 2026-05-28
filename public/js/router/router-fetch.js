@@ -13,7 +13,7 @@ import {
 import {
     debug,
     debugError,
-} from '../core/debug.js';
+} from '../core/debug/debug.js';
 
 import {
     FrontendError,

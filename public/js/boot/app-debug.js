@@ -1,14 +1,29 @@
-// ==================================================
+// =========================================
 // APP DEBUG
-// ==================================================
+// =========================================
 
 import {
     showToast,
 } from '../core/toast.js';
 
-// ==================================================
+// =========================================
+// HELPERS
+// =========================================
+
+function reload()
+{
+    window.setTimeout(
+        () =>
+        {
+            location.reload();
+        },
+        300,
+    );
+}
+
+// =========================================
 // INIT
-// ==================================================
+// =========================================
 
 export function initAppDebug()
 {
@@ -34,13 +49,7 @@ export function initAppDebug()
                 'success',
             );
 
-            window.setTimeout(
-                () =>
-                {
-                    location.reload();
-                },
-                300,
-            );
+            reload();
         };
 
     window.disableDebug =
@@ -55,13 +64,7 @@ export function initAppDebug()
                 'success',
             );
 
-            window.setTimeout(
-                () =>
-                {
-                    location.reload();
-                },
-                300,
-            );
+            reload();
         };
 
     window.__TEST_ERROR__ =

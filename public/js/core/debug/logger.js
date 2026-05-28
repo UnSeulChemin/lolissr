@@ -4,7 +4,7 @@
 
 import {
     config,
-} from './config.js';
+} from '../config.js';
 
 // =========================================
 // CONFIG
@@ -21,22 +21,13 @@ const styles =
     Object.freeze({
 
         info:
-        `
-        color:#9b5cff;
-        font-weight:bold;
-        `,
+            'color:#9b5cff;font-weight:bold;',
 
         warn:
-        `
-        color:#ffb84d;
-        font-weight:bold;
-        `,
+            'color:#ffb84d;font-weight:bold;',
 
         error:
-        `
-        color:#ff4d6d;
-        font-weight:bold;
-        `,
+            'color:#ff4d6d;font-weight:bold;',
     });
 
 // =========================================
@@ -98,7 +89,7 @@ function print(
 {
     /*
     |--------------------------------------------------------------------------
-    | ONLY INFO/WARN NEED DEBUG MODE
+    | ERRORS ALWAYS LOGGED
     |--------------------------------------------------------------------------
     */
 
@@ -216,8 +207,11 @@ export function clearLogs()
 }
 
 // =========================================
-// GLOBAL DEBUG
+// GLOBALS
 // =========================================
 
 window.__LOGS__ =
     getLogs;
+
+window.__CLEAR_LOGS__ =
+    clearLogs;

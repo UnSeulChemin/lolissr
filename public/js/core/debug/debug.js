@@ -3,23 +3,10 @@
 // =========================================
 
 import {
-    config,
-} from './config.js';
-
-import {
     logInfo,
     logWarn,
     logError,
 } from './logger.js';
-
-// =========================================
-// HELPERS
-// =========================================
-
-function canDebug()
-{
-    return config.debug;
-}
 
 // =========================================
 // DEBUG
@@ -30,13 +17,6 @@ export function debug(
     ...args
 )
 {
-    if (
-        !canDebug()
-    ) {
-
-        return;
-    }
-
     logInfo(
         scope,
         ...args,
@@ -52,13 +32,6 @@ export function debugWarn(
     ...args
 )
 {
-    if (
-        !canDebug()
-    ) {
-
-        return;
-    }
-
     logWarn(
         scope,
         ...args,
@@ -75,12 +48,6 @@ export function debugError(
     ...args
 )
 {
-    /*
-    |--------------------------------------------------------------------------
-    | ERRORS ALWAYS LOGGED
-    |--------------------------------------------------------------------------
-    */
-
     logError(
         scope,
         error,

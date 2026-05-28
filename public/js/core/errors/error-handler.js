@@ -8,7 +8,7 @@ import {
 
 import {
     debugError,
-} from '../debug.js';
+} from '../debug/debug.js';
 
 import {
     FrontendError,
@@ -130,66 +130,28 @@ function getErrorMessage(
     error,
 )
 {
-    /*
-    |--------------------------------------------------------------------------
-    | NETWORK
-    |--------------------------------------------------------------------------
-    */
-
-    if (
+    switch (
         error.code
-        === 'NETWORK_ERROR'
     ) {
 
-        return 'Erreur réseau';
+        case 'NETWORK_ERROR':
+            return 'Erreur réseau';
+
+        case 'REQUEST_TIMEOUT':
+            return 'Le serveur met trop de temps à répondre';
+
+        case 'HTTP_404':
+            return 'Page introuvable';
+
+        case 'HTTP_500':
+            return 'Erreur serveur';
+
+        default:
+            return (
+                error.message
+                || 'Une erreur est survenue'
+            );
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | TIMEOUT
-    |--------------------------------------------------------------------------
-    */
-
-    if (
-        error.code
-        === 'REQUEST_TIMEOUT'
-    ) {
-
-        return 'Le serveur met trop de temps à répondre';
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | HTTP 404
-    |--------------------------------------------------------------------------
-    */
-
-    if (
-        error.code
-        === 'HTTP_404'
-    ) {
-
-        return 'Page introuvable';
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | HTTP 500
-    |--------------------------------------------------------------------------
-    */
-
-    if (
-        error.code
-        === 'HTTP_500'
-    ) {
-
-        return 'Erreur serveur';
-    }
-
-    return (
-        error.message
-        || 'Une erreur est survenue'
-    );
 }
 
 // =========================================

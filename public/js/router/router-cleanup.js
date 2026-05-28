@@ -4,7 +4,7 @@
 
 import {
     debugError,
-} from '../core/debug.js';
+} from '../core/debug/debug.js';
 
 // =========================================
 // STATE

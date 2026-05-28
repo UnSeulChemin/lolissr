@@ -17,7 +17,7 @@ import {
 
 import {
     debug,
-} from '../../core/debug.js';
+} from '../../core/debug/debug.js'
 
 import {
     handleError,

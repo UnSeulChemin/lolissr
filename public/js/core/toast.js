@@ -8,7 +8,7 @@ import {
 
 import {
     debug,
-} from './debug.js';
+} from './debug/debug.js';
 
 import {
     config,

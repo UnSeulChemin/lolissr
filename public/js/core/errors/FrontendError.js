@@ -37,7 +37,8 @@ export class FrontendError extends Error
         */
 
         if (
-            Error.captureStackTrace
+            typeof Error.captureStackTrace
+            === 'function'
         ) {
 
             Error.captureStackTrace(
