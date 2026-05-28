@@ -22,38 +22,9 @@ import {
 
 import {
     getPrefetchedPage,
+    getInFlightPrefetch,
     setPrefetchedPage,
 } from './prefetch-cache.js';
-
-// =========================================
-// IN FLIGHT
-// =========================================
-
-export function getInFlightPrefetch(
-    href,
-)
-{
-    const url =
-        normalizeUrl(
-            href,
-        );
-
-    if (
-        invalidated.has(
-            url,
-        )
-    ) {
-
-        return null;
-    }
-
-    return (
-        inFlight.get(
-            url,
-        )
-        || null
-    );
-}
 
 // =========================================
 // PREFETCH
@@ -68,6 +39,12 @@ export async function prefetchPage(
             href,
         );
 
+    /*
+    |--------------------------------------------------------------------------
+    | CURRENT PAGE
+    |--------------------------------------------------------------------------
+    */
+
     if (
         url
         === normalizeUrl(
@@ -78,6 +55,12 @@ export async function prefetchPage(
         return null;
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | INVALIDATED
+    |--------------------------------------------------------------------------
+    */
+
     if (
         invalidated.has(
             url,
@@ -87,6 +70,12 @@ export async function prefetchPage(
         return null;
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | CACHE
+    |--------------------------------------------------------------------------
+    */
+
     const cached =
         getPrefetchedPage(
             url,
@@ -94,18 +83,42 @@ export async function prefetchPage(
 
     if (cached) {
 
+        debug(
+            'PREFETCH',
+            'cache-hit',
+            url,
+        );
+
         return cached;
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | IN FLIGHT
+    |--------------------------------------------------------------------------
+    */
+
     const existing =
-        inFlight.get(
+        getInFlightPrefetch(
             url,
         );
 
     if (existing) {
 
+        debug(
+            'PREFETCH',
+            'reuse',
+            url,
+        );
+
         return existing;
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | FETCH
+    |--------------------------------------------------------------------------
+    */
 
     debug(
         'PREFETCH',
@@ -136,13 +149,31 @@ export async function prefetchPage(
                         },
                     );
 
+                /*
+                |--------------------------------------------------------------------------
+                | VALIDATION
+                |--------------------------------------------------------------------------
+                */
+
                 if (
                     response?.type
                     !== 'page'
                 ) {
 
+                    debug(
+                        'PREFETCH',
+                        'invalid-response',
+                        url,
+                    );
+
                     return null;
                 }
+
+                /*
+                |--------------------------------------------------------------------------
+                | CACHE
+                |--------------------------------------------------------------------------
+                */
 
                 setPrefetchedPage(
                     url,

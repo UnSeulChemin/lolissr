@@ -5,7 +5,7 @@
 import {
     getPrefetchedPage,
     getInFlightPrefetch,
-} from '../prefetch/prefetch.js';
+} from '../prefetch/prefetch-cache.js';
 
 import {
     fetchPage,

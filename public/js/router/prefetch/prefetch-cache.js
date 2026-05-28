@@ -185,3 +185,33 @@ export function clearPrefetchCache()
 
     invalidated.clear();
 }
+
+// =========================================
+// IN FLIGHT
+// =========================================
+
+export function getInFlightPrefetch(
+    href,
+)
+{
+    const url =
+        normalizeUrl(
+            href,
+        );
+
+    if (
+        invalidated.has(
+            url,
+        )
+    ) {
+
+        return null;
+    }
+
+    return (
+        inFlight.get(
+            url,
+        )
+        || null
+    );
+}

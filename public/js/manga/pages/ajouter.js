@@ -29,7 +29,7 @@ import {
 
 import {
     invalidatePrefetch,
-} from '../../router/prefetch/prefetch.js';
+} from '../../router/prefetch/prefetch-cache.js';
 
 // =========================================
 // CONFIG
