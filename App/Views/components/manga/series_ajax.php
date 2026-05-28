@@ -186,6 +186,7 @@ $baseUri =
         class="
             collection-card-badge
             <?= e($noteClass) ?>
+            glow-red
         "
     >
         ⭐ <?= e($noteLabel) ?>/10
@@ -194,10 +195,7 @@ $baseUri =
     <span
         class="
             collection-read-badge
-            <?= $isFullyRead
-                ? 'active'
-                : ''
-            ?>
+            <?= $isFullyRead ? 'active glow-blue' : '' ?>
         "
     >
 
