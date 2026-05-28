@@ -149,7 +149,7 @@ final class ErrorHandler
         ];
 
         if (
-            !in_array(
+            ! in_array(
                 $error['type'],
                 $fatalErrors,
                 true,

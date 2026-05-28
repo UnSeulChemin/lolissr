@@ -121,7 +121,8 @@ function buildSignal(
 {
     if (
         signal
-        && AbortSignal.any
+        && typeof AbortSignal.any
+            === 'function'
     ) {
 
         return AbortSignal.any([
@@ -232,6 +233,9 @@ function createHttpError(
     error.response =
         response;
 
+    error.url =
+        response.url;
+
     return error;
 }
 
@@ -323,7 +327,7 @@ export async function request(
         */
 
         if (
-            !response.ok
+            ! response.ok
         ) {
 
             throw createHttpError(

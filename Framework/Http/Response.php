@@ -13,7 +13,7 @@ final class Response
         int $statusCode,
     ): void {
 
-        if (!headers_sent()) {
+        if (! headers_sent()) {
 
             http_response_code(
                 $statusCode,
@@ -114,7 +114,7 @@ final class Response
         int $statusCode = 302,
     ): never {
 
-        if (!headers_sent()) {
+        if (! headers_sent()) {
 
             header(
                 'Location: ' . $url,
@@ -125,10 +125,14 @@ final class Response
             exit;
         }
 
-        echo
-            '<script>location.href = '
-            . json_encode($url)
-            . ';</script>';
+        echo sprintf(
+            '<script>window.location.href=%s;</script>',
+            json_encode(
+                $url,
+                JSON_UNESCAPED_UNICODE
+                | JSON_UNESCAPED_SLASHES,
+            ),
+        );
 
         exit;
     }
