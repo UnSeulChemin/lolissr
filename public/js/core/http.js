@@ -89,13 +89,16 @@ function createTimeoutController(
         window.setTimeout(
             () =>
             {
-                controller.abort();
+                controller.abort(
+                    'timeout',
+                );
             },
             timeout,
         );
 
     return {
-        controller,
+        signal:
+            controller.signal,
 
         clear:
             () =>
@@ -105,6 +108,29 @@ function createTimeoutController(
                 );
             },
     };
+}
+
+// =========================================
+// SIGNAL
+// =========================================
+
+function buildSignal(
+    signal,
+    timeoutSignal,
+)
+{
+    if (
+        signal
+        && AbortSignal.any
+    ) {
+
+        return AbortSignal.any([
+            signal,
+            timeoutSignal,
+        ]);
+    }
+
+    return timeoutSignal;
 }
 
 // =========================================
@@ -176,7 +202,7 @@ async function parseResponse(
     |--------------------------------------------------------------------------
     */
 
-    return response.text();
+    return await response.text();
 }
 
 // =========================================
@@ -194,6 +220,9 @@ function createHttpError(
             || `HTTP ${response.status}`,
         );
 
+    error.name =
+        'HttpError';
+
     error.status =
         response.status;
 
@@ -204,6 +233,40 @@ function createHttpError(
         response;
 
     return error;
+}
+
+// =========================================
+// JSON BODY
+// =========================================
+
+function createJsonRequest(
+    method,
+    url,
+    body = {},
+    options = {},
+)
+{
+    return request(
+        url,
+        {
+            method,
+
+            body:
+                JSON.stringify(
+                    body,
+                ),
+
+            headers:
+            {
+                'Content-Type':
+                    'application/json',
+
+                ...(options.headers || {}),
+            },
+
+            ...options,
+        },
+    );
 }
 
 // =========================================
@@ -224,18 +287,6 @@ export async function request(
             timeout,
         );
 
-    const signal =
-        options.signal
-            ? AbortSignal.any([
-                options.signal,
-                timeoutController
-                    .controller
-                    .signal,
-            ])
-            : timeoutController
-                .controller
-                .signal;
-
     try {
 
         const response =
@@ -247,7 +298,11 @@ export async function request(
 
                     ...options,
 
-                    signal,
+                    signal:
+                        buildSignal(
+                            options.signal,
+                            timeoutController.signal,
+                        ),
 
                     headers:
                         buildHeaders(
@@ -317,7 +372,7 @@ export async function request(
         ) {
 
             throw new Error(
-                'Request timeout',
+                `Request timeout (${timeout}ms)`,
             );
         }
 
@@ -359,27 +414,11 @@ export function post(
     options = {},
 )
 {
-    return request(
+    return createJsonRequest(
+        'POST',
         url,
-        {
-            method:
-                'POST',
-
-            body:
-                JSON.stringify(
-                    body,
-                ),
-
-            headers:
-            {
-                'Content-Type':
-                    'application/json',
-
-                ...(options.headers || {}),
-            },
-
-            ...options,
-        },
+        body,
+        options,
     );
 }
 
@@ -393,27 +432,29 @@ export function put(
     options = {},
 )
 {
-    return request(
+    return createJsonRequest(
+        'PUT',
         url,
-        {
-            method:
-                'PUT',
+        body,
+        options,
+    );
+}
 
-            body:
-                JSON.stringify(
-                    body,
-                ),
+// =========================================
+// PATCH
+// =========================================
 
-            headers:
-            {
-                'Content-Type':
-                    'application/json',
-
-                ...(options.headers || {}),
-            },
-
-            ...options,
-        },
+export function patch(
+    url,
+    body = {},
+    options = {},
+)
+{
+    return createJsonRequest(
+        'PATCH',
+        url,
+        body,
+        options,
     );
 }
 

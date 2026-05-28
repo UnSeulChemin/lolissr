@@ -13,7 +13,7 @@ final class Response
         int $statusCode,
     ): void {
 
-        if (! headers_sent()) {
+        if (!headers_sent()) {
 
             http_response_code(
                 $statusCode,
@@ -74,6 +74,7 @@ final class Response
                 $data,
                 JSON_UNESCAPED_UNICODE
                 | JSON_UNESCAPED_SLASHES
+                | JSON_INVALID_UTF8_SUBSTITUTE
                 | JSON_THROW_ON_ERROR,
             );
 
@@ -82,19 +83,26 @@ final class Response
             Logger::exception(
                 $exception,
                 [
-                    'type' => 'json_encode',
+                    'type' =>
+                        'json_encode',
                 ],
             );
 
-            self::setStatusCode(500);
+            self::setStatusCode(
+                500,
+            );
 
             echo json_encode(
                 [
-                    'success' => false,
-                    'message' => 'JSON encode error',
+                    'success' =>
+                        false,
+
+                    'message' =>
+                        'JSON encode error',
                 ],
                 JSON_UNESCAPED_UNICODE
-                | JSON_UNESCAPED_SLASHES,
+                | JSON_UNESCAPED_SLASHES
+                | JSON_INVALID_UTF8_SUBSTITUTE,
             );
         }
 
@@ -106,14 +114,21 @@ final class Response
         int $statusCode = 302,
     ): never {
 
-        if (! headers_sent()) {
+        if (!headers_sent()) {
 
             header(
                 'Location: ' . $url,
                 true,
                 $statusCode,
             );
+
+            exit;
         }
+
+        echo
+            '<script>location.href = '
+            . json_encode($url)
+            . ';</script>';
 
         exit;
     }

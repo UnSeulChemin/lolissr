@@ -36,7 +36,8 @@ final class Logger
 
     private static function ensureDirectory(): bool
     {
-        $directory = self::directory();
+        $directory =
+            self::directory();
 
         if (is_dir($directory)) {
             return true;
@@ -61,21 +62,30 @@ final class Logger
             }
 
             /** @var Request|null $request */
-            $request = app(Request::class);
+            $request =
+                app(Request::class);
 
-            if (!$request instanceof Request) {
+            if (
+                !$request instanceof Request
+            ) {
                 return null;
             }
 
             return [
-                'method' => $request->method(),
-                'uri' => $request->uri(),
-                'ip' => $request->server(
-                    'REMOTE_ADDR',
-                ),
+                'method' =>
+                    $request->method(),
+
+                'uri' =>
+                    $request->uri(),
+
+                'ip' =>
+                    $request->server(
+                        'REMOTE_ADDR',
+                    ),
             ];
 
         } catch (Throwable) {
+
             return null;
         }
     }
@@ -105,27 +115,35 @@ final class Logger
         }
 
         $payload = [
-            'date' => date('Y-m-d H:i:s'),
+            'date' =>
+                date('Y-m-d H:i:s'),
 
-            'level' => strtoupper($level),
+            'level' =>
+                strtoupper($level),
 
-            'message' => trim($message),
+            'message' =>
+                trim($message),
 
-            'context' => $context,
+            'context' =>
+                $context,
 
-            'request' => self::requestContext(),
+            'request' =>
+                self::requestContext(),
         ];
 
         try {
 
-            $content = json_encode(
-                $payload,
-                JSON_UNESCAPED_UNICODE
-                | JSON_UNESCAPED_SLASHES
-                | JSON_THROW_ON_ERROR,
-            );
+            $content =
+                json_encode(
+                    $payload,
+                    JSON_UNESCAPED_UNICODE
+                    | JSON_UNESCAPED_SLASHES
+                    | JSON_INVALID_UTF8_SUBSTITUTE
+                    | JSON_THROW_ON_ERROR,
+                );
 
         } catch (JsonException) {
+
             return;
         }
 
@@ -147,6 +165,7 @@ final class Logger
         string $message,
         array $context = [],
     ): void {
+
         self::write(
             'DEBUG',
             $message,
@@ -161,6 +180,7 @@ final class Logger
         string $message,
         array $context = [],
     ): void {
+
         self::write(
             'INFO',
             $message,
@@ -175,6 +195,7 @@ final class Logger
         string $message,
         array $context = [],
     ): void {
+
         self::write(
             'WARNING',
             $message,
@@ -189,6 +210,7 @@ final class Logger
         string $message,
         array $context = [],
     ): void {
+
         self::write(
             'ERROR',
             $message,
@@ -209,13 +231,17 @@ final class Logger
             array_merge(
                 $context,
                 [
-                    'exception' => $exception::class,
+                    'exception' =>
+                        $exception::class,
 
-                    'file' => $exception->getFile(),
+                    'file' =>
+                        $exception->getFile(),
 
-                    'line' => $exception->getLine(),
+                    'line' =>
+                        $exception->getLine(),
 
-                    'trace' => $exception->getTraceAsString(),
+                    'trace' =>
+                        $exception->getTraceAsString(),
                 ],
             ),
         );
