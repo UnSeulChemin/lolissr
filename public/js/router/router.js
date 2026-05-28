@@ -96,7 +96,6 @@ function handleClick(
     clearActiveFocus();
 
     void navigateTo(
-        location.href,
         link.href,
     );
 }
@@ -108,7 +107,6 @@ function handleClick(
 async function handlePopState()
 {
     await navigateTo(
-        null,
         location.href,
         {
             updateHistory:

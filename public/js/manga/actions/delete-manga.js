@@ -28,7 +28,7 @@ import {
 
 import {
     navigateTo,
-} from '../../router/router-navigation.js'
+} from '../../router/router-navigation.js';
 
 import {
     invalidateRoute,
@@ -222,10 +222,10 @@ async function deleteManga(
             || redirectUrl;
 
         await navigateTo(
-            location.href,
             target,
             {
-                force: true,
+                force:
+                    true,
             },
         );
 
