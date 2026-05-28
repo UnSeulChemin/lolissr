@@ -23,9 +23,6 @@ export async function fetchSearchResults(
                 {
                     signal,
 
-                    responseType:
-                        'json',
-
                     headers:
                     {
                         Accept:
@@ -35,15 +32,21 @@ export async function fetchSearchResults(
             );
 
         return (
-            response?.data?.results ??
-            []
+            response?.data?.results
+            ?? []
         );
 
     } catch (error) {
 
+        /*
+        |--------------------------------------------------------------------------
+        | ABORT
+        |--------------------------------------------------------------------------
+        */
+
         if (
-            error?.name ===
-            'AbortError'
+            error?.name
+            === 'AbortError'
         ) {
             return [];
         }

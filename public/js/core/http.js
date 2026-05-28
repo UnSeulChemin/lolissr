@@ -34,11 +34,41 @@ function buildHeaders(
 )
 {
     return {
+        /*
+        |--------------------------------------------------------------------------
+        | AJAX
+        |--------------------------------------------------------------------------
+        */
+
+        'X-Ajax':
+            'true',
+
         'X-Requested-With':
             'XMLHttpRequest',
 
+        /*
+        |--------------------------------------------------------------------------
+        | CSRF
+        |--------------------------------------------------------------------------
+        */
+
         'X-CSRF-TOKEN':
             getCsrfToken(),
+
+        /*
+        |--------------------------------------------------------------------------
+        | ACCEPT
+        |--------------------------------------------------------------------------
+        */
+
+        'Accept':
+            'application/json',
+
+        /*
+        |--------------------------------------------------------------------------
+        | CUSTOM
+        |--------------------------------------------------------------------------
+        */
 
         ...custom,
     };
@@ -59,15 +89,14 @@ function createTimeoutController(
         window.setTimeout(
             () =>
             {
-                controller.abort(
-                    'Request timeout',
-                );
+                controller.abort();
             },
             timeout,
         );
 
     return {
         controller,
+
         clear:
             () =>
             {
@@ -79,52 +108,75 @@ function createTimeoutController(
 }
 
 // =========================================
+// RESPONSE TYPE
+// =========================================
+
+function isJsonResponse(
+    response,
+)
+{
+    const contentType =
+        response.headers.get(
+            'content-type',
+        ) || '';
+
+    return contentType.includes(
+        'application/json',
+    );
+}
+
+// =========================================
 // PARSE RESPONSE
 // =========================================
 
 async function parseResponse(
     response,
-    type,
 )
 {
-    // =====================================
-    // TEXT
-    // =====================================
+    /*
+    |--------------------------------------------------------------------------
+    | EMPTY RESPONSE
+    |--------------------------------------------------------------------------
+    */
 
     if (
-        type === 'text'
-    ) {
-
-        return response.text();
-    }
-
-    // =====================================
-    // JSON
-    // =====================================
-
-    const text =
-        await response.text();
-
-    if (
-        text.trim()
-        === ''
+        response.status === 204
     ) {
 
         return null;
     }
 
-    try {
+    /*
+    |--------------------------------------------------------------------------
+    | JSON
+    |--------------------------------------------------------------------------
+    */
 
-        return JSON.parse(
-            text,
-        );
+    if (
+        isJsonResponse(
+            response,
+        )
+    ) {
 
-    } catch {
+        try {
 
-        throw new Error(
-            'Invalid JSON response',
-        );
+            return await response.json();
+
+        } catch {
+
+            throw new Error(
+                'Invalid JSON response',
+            );
+        }
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | TEXT
+    |--------------------------------------------------------------------------
+    */
+
+    return response.text();
 }
 
 // =========================================
@@ -148,6 +200,9 @@ function createHttpError(
     error.data =
         data;
 
+    error.response =
+        response;
+
     return error;
 }
 
@@ -160,10 +215,6 @@ export async function request(
     options = {},
 )
 {
-    const responseType =
-        options.responseType
-        || 'text';
-
     const timeout =
         options.timeout
         || DEFAULT_TIMEOUT;
@@ -177,9 +228,13 @@ export async function request(
         options.signal
             ? AbortSignal.any([
                 options.signal,
-                timeoutController.controller.signal,
+                timeoutController
+                    .controller
+                    .signal,
             ])
-            : timeoutController.controller.signal;
+            : timeoutController
+                .controller
+                .signal;
 
     try {
 
@@ -204,12 +259,13 @@ export async function request(
         const data =
             await parseResponse(
                 response,
-                responseType,
             );
 
-        // =================================
-        // HTTP ERROR
-        // =================================
+        /*
+        |--------------------------------------------------------------------------
+        | HTTP ERROR
+        |--------------------------------------------------------------------------
+        */
 
         if (
             !response.ok
@@ -221,6 +277,25 @@ export async function request(
             );
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | REDIRECT RESPONSE
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            data?.type
+            === 'redirect'
+        ) {
+
+            return {
+                ...data,
+
+                redirected:
+                    true,
+            };
+        }
+
         return data;
 
     } catch (error) {
@@ -229,6 +304,12 @@ export async function request(
             'HTTP',
             error,
         );
+
+        /*
+        |--------------------------------------------------------------------------
+        | TIMEOUT
+        |--------------------------------------------------------------------------
+        */
 
         if (
             error?.name
@@ -284,8 +365,39 @@ export function post(
             method:
                 'POST',
 
-            responseType:
-                'json',
+            body:
+                JSON.stringify(
+                    body,
+                ),
+
+            headers:
+            {
+                'Content-Type':
+                    'application/json',
+
+                ...(options.headers || {}),
+            },
+
+            ...options,
+        },
+    );
+}
+
+// =========================================
+// PUT
+// =========================================
+
+export function put(
+    url,
+    body = {},
+    options = {},
+)
+{
+    return request(
+        url,
+        {
+            method:
+                'PUT',
 
             body:
                 JSON.stringify(
@@ -299,6 +411,26 @@ export function post(
 
                 ...(options.headers || {}),
             },
+
+            ...options,
+        },
+    );
+}
+
+// =========================================
+// DELETE
+// =========================================
+
+export function destroy(
+    url,
+    options = {},
+)
+{
+    return request(
+        url,
+        {
+            method:
+                'DELETE',
 
             ...options,
         },

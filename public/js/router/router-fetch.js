@@ -33,12 +33,12 @@ function isValidHtml(
     if (
         typeof html
         !== 'string'
-        || html.length === 0
+        || html.trim() === ''
     ) {
         return false;
     }
 
-    const doc =
+    const documentHtml =
         new DOMParser()
             .parseFromString(
                 html,
@@ -46,7 +46,7 @@ function isValidHtml(
             );
 
     return Boolean(
-        doc.querySelector(
+        documentHtml.querySelector(
             CONTENT_SELECTOR,
         ),
     );
@@ -78,9 +78,6 @@ export async function fetchPageHtml(
             await request(
                 url,
                 {
-                    responseType:
-                        'text',
-
                     signal:
                         options.signal,
 
@@ -91,6 +88,12 @@ export async function fetchPageHtml(
                     },
                 },
             );
+
+        /*
+        |--------------------------------------------------------------------------
+        | VALIDATION
+        |--------------------------------------------------------------------------
+        */
 
         if (
             !isValidHtml(
