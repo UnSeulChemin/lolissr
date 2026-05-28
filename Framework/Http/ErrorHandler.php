@@ -8,8 +8,7 @@ use App\Controllers\ErrorController;
 use ErrorException;
 use Framework\Application\App;
 use Framework\Exceptions\BaseHttpException;
-use Framework\Http\Request;
-use Framework\Http\Response;
+use Framework\Exceptions\JsonResponseException;
 use Framework\Support\Logger;
 use Throwable;
 
@@ -58,16 +57,27 @@ final class ErrorHandler
 
         try {
 
-            // JSON response exception
+            /*
+            |--------------------------------------------------------------------------
+            | JSON RESPONSE EXCEPTION
+            |--------------------------------------------------------------------------
+            */
+
             if (
                 $exception instanceof JsonResponseException
             ) {
+
                 $exception
                     ->response()
                     ->send();
             }
 
-            // HTTP exception
+            /*
+            |--------------------------------------------------------------------------
+            | HTTP EXCEPTION
+            |--------------------------------------------------------------------------
+            */
+
             if (
                 $exception instanceof BaseHttpException
             ) {
@@ -81,7 +91,12 @@ final class ErrorHandler
                 );
             }
 
-            // Uncaught exception
+            /*
+            |--------------------------------------------------------------------------
+            | UNCAUGHT EXCEPTION
+            |--------------------------------------------------------------------------
+            */
+
             Logger::exception(
                 $exception,
                 [
@@ -118,7 +133,8 @@ final class ErrorHandler
 
     public static function handleShutdown(): void
     {
-        $error = error_get_last();
+        $error =
+            error_get_last();
 
         if ($error === null) {
             return;
@@ -133,7 +149,7 @@ final class ErrorHandler
         ];
 
         if (
-            ! in_array(
+            !in_array(
                 $error['type'],
                 $fatalErrors,
                 true,
@@ -199,25 +215,21 @@ final class ErrorHandler
         $request =
             Request::capture();
 
-        $expectsJson =
-            $request->isAjax()
-            || str_contains(
-                strtolower(
-                    $request->server(
-                        'HTTP_ACCEPT',
-                        '',
-                    ),
-                ),
-                'application/json',
-            );
+        /*
+        |--------------------------------------------------------------------------
+        | AJAX / JSON
+        |--------------------------------------------------------------------------
+        */
 
-        // AJAX / JSON
-        if ($expectsJson) {
+        if (
+            $request->expectsJson()
+        ) {
 
             foreach (
                 $exception->getHeaders()
                 as $header => $value
             ) {
+
                 header(
                     "{$header}: {$value}",
                 );
@@ -225,15 +237,25 @@ final class ErrorHandler
 
             Response::json(
                 [
-                    'success' => false,
-                    'message' => $exception->getMessage(),
-                    'data' => $exception->getData(),
+                    'success' =>
+                        false,
+
+                    'message' =>
+                        $exception->getMessage(),
+
+                    'data' =>
+                        $exception->getData(),
                 ],
                 $exception->getStatusCode(),
             );
         }
 
-        // HTML
+        /*
+        |--------------------------------------------------------------------------
+        | HTML
+        |--------------------------------------------------------------------------
+        */
+
         $controller =
             self::controller();
 

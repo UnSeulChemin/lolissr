@@ -35,7 +35,23 @@ abstract class Controller
 
     /*
     |--------------------------------------------------------------------------
-    | VIEW PATH
+    | HELPERS
+    |--------------------------------------------------------------------------
+    */
+
+    protected function isAjax(): bool
+    {
+        return $this->request->isAjax();
+    }
+
+    protected function expectsJson(): bool
+    {
+        return $this->request->expectsJson();
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | VIEW PATHS
     |--------------------------------------------------------------------------
     */
 
@@ -180,12 +196,6 @@ abstract class Controller
                 $variables,
             );
 
-        /*
-        |--------------------------------------------------------------------------
-        | PARTIAL
-        |--------------------------------------------------------------------------
-        */
-
         if (! $withTemplate) {
             return $content;
         }
@@ -210,10 +220,13 @@ abstract class Controller
 
     /*
     |--------------------------------------------------------------------------
-    | PAGE RESPONSE
+    | VIEW RESPONSE
     |--------------------------------------------------------------------------
     */
 
+    /**
+     * @param array<string, mixed> $data
+     */
     private function respondView(
         string $viewPath,
         int $statusCode = 200,
@@ -230,19 +243,21 @@ abstract class Controller
 
         /*
         |--------------------------------------------------------------------------
-        | AJAX
+        | AJAX / SPA
         |--------------------------------------------------------------------------
         */
 
         if (
-            $this->request->isAjax()
+            $this->expectsJson()
         ) {
 
             Response::json(
                 [
-                    'success' => true,
+                    'success' =>
+                        true,
 
-                    'type' => 'page',
+                    'type' =>
+                        'page',
 
                     'page' => [
                         'html' =>
@@ -298,7 +313,7 @@ abstract class Controller
 
     /*
     |--------------------------------------------------------------------------
-    | PARTIAL
+    | FRAGMENT
     |--------------------------------------------------------------------------
     */
 
@@ -352,6 +367,36 @@ abstract class Controller
 
     /*
     |--------------------------------------------------------------------------
+    | JSON
+    |--------------------------------------------------------------------------
+    */
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    protected function json(
+        array $data,
+        int $statusCode = 200,
+    ): never {
+
+        Response::json(
+            $data,
+            $statusCode,
+        );
+    }
+
+    protected function jsonResult(
+        ServiceResult $result,
+    ): never {
+
+        $this->json(
+            $result->toArray(),
+            $result->status,
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
     | REDIRECT
     |--------------------------------------------------------------------------
     */
@@ -361,14 +406,27 @@ abstract class Controller
         int $statusCode = 302,
     ): never {
 
+        $redirectUrl =
+            preg_match(
+                '#^https?://#i',
+                $url,
+            )
+                ? $url
+                : $this->baseUri
+                    . '/'
+                    . ltrim(
+                        $url,
+                        '/',
+                    );
+
         /*
         |--------------------------------------------------------------------------
-        | AJAX
+        | AJAX / SPA
         |--------------------------------------------------------------------------
         */
 
         if (
-            $this->request->isAjax()
+            $this->expectsJson()
         ) {
 
             Response::json(
@@ -380,18 +438,9 @@ abstract class Controller
                         'redirect',
 
                     'redirect' =>
-                        preg_match(
-                            '#^https?://#i',
-                            $url,
-                        )
-                            ? $url
-                            : $this->baseUri
-                                . '/'
-                                . ltrim(
-                                    $url,
-                                    '/',
-                                ),
+                        $redirectUrl,
                 ],
+                $statusCode,
             );
         }
 
@@ -401,26 +450,8 @@ abstract class Controller
         |--------------------------------------------------------------------------
         */
 
-        if (
-            preg_match(
-                '#^https?://#i',
-                $url,
-            )
-        ) {
-
-            Response::redirect(
-                $url,
-                $statusCode,
-            );
-        }
-
         Response::redirect(
-            $this->baseUri
-            . '/'
-            . ltrim(
-                $url,
-                '/',
-            ),
+            $redirectUrl,
             $statusCode,
         );
     }
@@ -549,41 +580,6 @@ abstract class Controller
 
         throw new RuntimeException(
             $message,
-        );
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | HELPERS
-    |--------------------------------------------------------------------------
-    */
-
-    protected function isAjax(): bool
-    {
-        return $this->request->isAjax();
-    }
-
-    /**
-     * @param array<string, mixed> $data
-     */
-    protected function json(
-        array $data,
-        int $statusCode = 200,
-    ): never {
-
-        Response::json(
-            $data,
-            $statusCode,
-        );
-    }
-
-    protected function jsonResult(
-        ServiceResult $result,
-    ): never {
-
-        $this->json(
-            $result->toArray(),
-            $result->status,
         );
     }
 }

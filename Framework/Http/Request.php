@@ -27,10 +27,17 @@ final class Request
         array $files = [],
         array $server = [],
     ) {
-        $this->get = $get;
-        $this->post = $post;
-        $this->files = $files;
-        $this->server = $server;
+        $this->get =
+            $get;
+
+        $this->post =
+            $post;
+
+        $this->files =
+            $files;
+
+        $this->server =
+            $server;
     }
 
     public static function capture(): self
@@ -163,21 +170,17 @@ final class Request
 
     public function path(): string
     {
-        $path = parse_url(
-            $this->uri(),
-            PHP_URL_PATH,
-        ) ?: '/';
+        $path =
+            parse_url(
+                $this->uri(),
+                PHP_URL_PATH,
+            ) ?: '/';
 
-        /*
-        |--------------------------------------------------------------------------
-        | REMOVE BASE URI
-        |--------------------------------------------------------------------------
-        */
-
-        $baseUri = rtrim(
-            App::baseUri(),
-            '/',
-        );
+        $baseUri =
+            rtrim(
+                App::baseUri(),
+                '/',
+            );
 
         if (
             $baseUri !== ''
@@ -188,22 +191,20 @@ final class Request
             )
         ) {
 
-            $path = substr(
-                $path,
-                strlen($baseUri),
-            );
+            $path =
+                substr(
+                    $path,
+                    strlen(
+                        $baseUri,
+                    ),
+                );
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | NORMALIZE
-        |--------------------------------------------------------------------------
-        */
-
-        $path = trim(
-            $path,
-            '/',
-        );
+        $path =
+            trim(
+                $path,
+                '/',
+            );
 
         return $path === ''
             ? '/'

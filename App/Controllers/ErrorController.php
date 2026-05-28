@@ -13,7 +13,9 @@ final class ErrorController extends Controller
     public function __construct(
         Request $request,
     ) {
-        parent::__construct($request);
+        parent::__construct(
+            $request,
+        );
     }
 
     public function notFound(
@@ -98,7 +100,8 @@ final class ErrorController extends Controller
     ): never {
 
         $context = [
-            'uri' => $this->request->uri(),
+            'uri' =>
+                $this->request->uri(),
         ];
 
         if ($critical) {
@@ -116,7 +119,15 @@ final class ErrorController extends Controller
             );
         }
 
-        if ($this->expectsJson()) {
+        /*
+        |--------------------------------------------------------------------------
+        | JSON / AJAX
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $this->expectsJson()
+        ) {
 
             $this->jsonResult(
                 ServiceResult::error(
@@ -126,13 +137,21 @@ final class ErrorController extends Controller
             );
         }
 
-        $this->title = $title;
+        /*
+        |--------------------------------------------------------------------------
+        | HTML
+        |--------------------------------------------------------------------------
+        */
+
+        $this->title =
+            $title;
 
         $this->renderError(
             $view,
             $status,
             [
-                'message' => $message,
+                'message' =>
+                    $message,
             ],
         );
     }
