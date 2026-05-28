@@ -1,116 +1,54 @@
 // =========================================
-// DEBUG
+// NAVIGATION PROTOCOL
 // =========================================
 
 import {
-    config,
-} from './config.js';
+    debug,
+} from '../core/debug.js';
 
 // =========================================
-// STYLES
+// EVENTS
 // =========================================
 
-const styles =
-    Object.freeze({
+export const NAVIGATION_START =
+    'navigation:start';
 
-        log:
-        `
-        color:#9b5cff;
-        font-weight:bold;
-        `,
+export const NAVIGATION_FETCH =
+    'navigation:fetch';
 
-        warn:
-        `
-        color:#ffb84d;
-        font-weight:bold;
-        `,
+export const NAVIGATION_RENDER =
+    'navigation:render';
 
-        error:
-        `
-        color:#ff4d6d;
-        font-weight:bold;
-        `,
-    });
+export const NAVIGATION_READY =
+    'navigation:ready';
+
+export const NAVIGATION_ERROR =
+    'navigation:error';
+
+export const NAVIGATION_ABORT =
+    'navigation:abort';
 
 // =========================================
-// HELPERS
+// EMIT
 // =========================================
 
-function canDebug()
-{
-    return config.debug;
-}
-
-function print(
+export function emitNavigationEvent(
     type,
-    scope,
-    ...args
+    detail = {},
 )
 {
-    if (
-        !canDebug()
-    ) {
-        return;
-    }
-
-    const logger =
-        console[type]
-        || console.log;
-
-    logger(
-        `%c[${scope}]`,
-        styles[type]
-        || styles.log,
-        ...args,
+    debug(
+        'NAVIGATION',
+        type,
+        detail,
     );
-}
 
-// =========================================
-// DEBUG
-// =========================================
-
-export function debug(
-    scope,
-    ...args
-)
-{
-    print(
-        'log',
-        scope,
-        ...args,
-    );
-}
-
-// =========================================
-// WARN
-// =========================================
-
-export function debugWarn(
-    scope,
-    ...args
-)
-{
-    print(
-        'warn',
-        scope,
-        ...args,
-    );
-}
-
-// =========================================
-// ERROR
-// =========================================
-
-export function debugError(
-    scope,
-    error,
-    ...args
-)
-{
-    print(
-        'error',
-        scope,
-        error,
-        ...args,
+    document.dispatchEvent(
+        new CustomEvent(
+            type,
+            {
+                detail,
+            },
+        ),
     );
 }

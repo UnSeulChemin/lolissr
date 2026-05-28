@@ -31,6 +31,14 @@ import {
     onRouteChange,
 } from './router/router-hooks.js';
 
+import {
+    initNavigationLoading,
+} from './router/navigation-loading.js';
+
+import {
+    initRouterDebugPanel,
+} from './router/router-debug-panel.js';
+
 // ==================================================
 // NAVIGATION
 // ==================================================
@@ -195,6 +203,16 @@ const GLOBAL_INITIALIZERS = [
     [
         'Prefetch',
         initPrefetch,
+    ],
+
+    [
+        'NavigationLoading',
+        initNavigationLoading,
+    ],
+
+    [
+        'RouterDebugPanel',
+        initRouterDebugPanel,
     ],
 
     [
@@ -407,6 +425,35 @@ function initApp()
         'APP',
         '✅ Ready',
     );
+}
+
+// ==================================================
+// DEV TESTS
+// ==================================================
+
+if (
+    window.location.hostname.includes(
+        'localhost',
+    )
+) {
+
+    window.__TEST_ERROR__ =
+        () =>
+        {
+            throw new Error(
+                'Test error',
+            );
+        };
+
+    window.__TEST_PROMISE_ERROR__ =
+        () =>
+        {
+            Promise.reject(
+                new Error(
+                    'Promise test error',
+                ),
+            );
+        };
 }
 
 // ==================================================

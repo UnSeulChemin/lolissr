@@ -135,3 +135,51 @@ body.router-loading *
 {
     pointer-events: none !important;
 }
+
+body.is-routing
+{
+    cursor: progress;
+}
+
+#router-debug-panel
+{
+    position: fixed;
+
+    bottom: 10px;
+    right: 10px;
+
+    width: 320px;
+    max-height: 300px;
+
+    overflow: auto;
+
+    background: rgba(0,0,0,.9);
+
+    color: white;
+
+    font-size: 12px;
+
+    padding: 10px;
+
+    border-radius: 10px;
+
+    z-index: 999999;
+
+    font-family: monospace;
+}
+
+.router-debug-title
+{
+    font-weight: bold;
+
+    margin-bottom: 8px;
+}
+
+.router-debug-content
+{
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 4px;
+}

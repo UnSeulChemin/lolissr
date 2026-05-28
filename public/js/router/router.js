@@ -8,6 +8,20 @@ import {
 } from '../core/navigation.js';
 
 import {
+    FrontendError,
+} from '../core/errors/FrontendError.js';
+
+import {
+    emitNavigationEvent,
+    NAVIGATION_START,
+    NAVIGATION_FETCH,
+    NAVIGATION_RENDER,
+    NAVIGATION_READY,
+    NAVIGATION_ERROR,
+    NAVIGATION_ABORT,
+} from '../core/navigation-protocol.js';
+
+import {
     getPrefetchedPage,
     getInFlightPrefetch,
 } from './prefetch.js';
@@ -81,6 +95,7 @@ function updateActiveNavigation()
                         instanceof HTMLAnchorElement
                     )
                 ) {
+
                     return;
                 }
 
@@ -173,9 +188,11 @@ async function resolvePage(
     signal,
 )
 {
-    // =====================================
-    // FORCE REFRESH
-    // =====================================
+    /*
+    |--------------------------------------------------------------------------
+    | FORCE REFRESH
+    |--------------------------------------------------------------------------
+    */
 
     if (
         forceRefresh
@@ -195,9 +212,11 @@ async function resolvePage(
         );
     }
 
-    // =====================================
-    // CACHE
-    // =====================================
+    /*
+    |--------------------------------------------------------------------------
+    | CACHE
+    |--------------------------------------------------------------------------
+    */
 
     const cached =
         getPrefetchedPage(
@@ -215,9 +234,11 @@ async function resolvePage(
         return cached;
     }
 
-    // =====================================
-    // PREFETCH
-    // =====================================
+    /*
+    |--------------------------------------------------------------------------
+    | PREFETCH
+    |--------------------------------------------------------------------------
+    */
 
     const inFlight =
         getInFlightPrefetch(
@@ -235,9 +256,11 @@ async function resolvePage(
         return inFlight;
     }
 
-    // =====================================
-    // FETCH
-    // =====================================
+    /*
+    |--------------------------------------------------------------------------
+    | FETCH
+    |--------------------------------------------------------------------------
+    */
 
     return fetchPage(
         target,
@@ -248,6 +271,16 @@ async function resolvePage(
 }
 
 // =========================================
+// LOCK
+// =========================================
+
+function lockRouter()
+{
+    locked =
+        true;
+}
+
+// =========================================
 // UNLOCK
 // =========================================
 
@@ -255,6 +288,43 @@ function unlockRouter()
 {
     locked =
         false;
+}
+
+// =========================================
+// VALIDATE RESPONSE
+// =========================================
+
+function validatePageResponse(
+    response,
+)
+{
+    if (
+        response?.type
+        !== 'page'
+    ) {
+
+        throw new FrontendError(
+            'Réponse page invalide',
+            {
+                code:
+                    'INVALID_PAGE_RESPONSE',
+            },
+        );
+    }
+
+    if (
+        typeof response.page?.html
+        !== 'string'
+    ) {
+
+        throw new FrontendError(
+            'HTML page invalide',
+            {
+                code:
+                    'INVALID_PAGE_HTML',
+            },
+        );
+    }
 }
 
 // =========================================
@@ -276,41 +346,81 @@ export async function navigateTo(
             location.href,
         );
 
-    // =====================================
-    // SAME URL
-    // =====================================
+    /*
+    |--------------------------------------------------------------------------
+    | SAME URL
+    |--------------------------------------------------------------------------
+    */
 
     if (
         target === current
         && options.force !== true
     ) {
+
         return;
     }
 
-    // =====================================
-    // LOCK
-    // =====================================
+    /*
+    |--------------------------------------------------------------------------
+    | LOCK
+    |--------------------------------------------------------------------------
+    */
 
     if (
         locked
         && options.force !== true
     ) {
+
+        debug(
+            'ROUTER',
+            'locked',
+            target,
+        );
+
         return;
     }
 
-    locked =
-        true;
+    lockRouter();
 
     const currentNavigationId =
         ++navigationId;
+
+    /*
+    |--------------------------------------------------------------------------
+    | SAVE SCROLL
+    |--------------------------------------------------------------------------
+    */
 
     saveScrollPosition(
         current,
     );
 
+    /*
+    |--------------------------------------------------------------------------
+    | EVENTS
+    |--------------------------------------------------------------------------
+    */
+
     dispatchRouteStart(
         target,
     );
+
+    emitNavigationEvent(
+        NAVIGATION_START,
+        {
+            from:
+                current,
+
+            to:
+                target,
+        },
+    );
+
+    /*
+    |--------------------------------------------------------------------------
+    | ABORT PREVIOUS
+    |--------------------------------------------------------------------------
+    */
 
     controller?.abort();
 
@@ -319,9 +429,11 @@ export async function navigateTo(
 
     try {
 
-        // =================================
-        // BEFORE
-        // =================================
+        /*
+        |--------------------------------------------------------------------------
+        | BEFORE ROUTE CHANGE
+        |--------------------------------------------------------------------------
+        */
 
         await triggerBeforeRouteChange(
             {
@@ -333,15 +445,19 @@ export async function navigateTo(
             },
         );
 
-        // =================================
-        // CLEANUP
-        // =================================
+        /*
+        |--------------------------------------------------------------------------
+        | CLEANUP
+        |--------------------------------------------------------------------------
+        */
 
         runCleanup();
 
-        // =================================
-        // INVALIDATION
-        // =================================
+        /*
+        |--------------------------------------------------------------------------
+        | INVALIDATION
+        |--------------------------------------------------------------------------
+        */
 
         const forceRefresh =
             shouldRefreshRoute(
@@ -355,9 +471,18 @@ export async function navigateTo(
             );
         }
 
-        // =================================
-        // FETCH
-        // =================================
+        /*
+        |--------------------------------------------------------------------------
+        | FETCH
+        |--------------------------------------------------------------------------
+        */
+
+        emitNavigationEvent(
+            NAVIGATION_FETCH,
+            {
+                target,
+            },
+        );
 
         const response =
             await resolvePage(
@@ -366,44 +491,42 @@ export async function navigateTo(
                 controller.signal,
             );
 
-        // =================================
-        // RACE
-        // =================================
+        /*
+        |--------------------------------------------------------------------------
+        | RACE CONDITION
+        |--------------------------------------------------------------------------
+        */
 
         if (
             currentNavigationId
             !== navigationId
         ) {
+
+            emitNavigationEvent(
+                NAVIGATION_ABORT,
+                {
+                    target,
+                },
+            );
+
             return;
         }
 
-        // =================================
-        // VALIDATION
-        // =================================
+        /*
+        |--------------------------------------------------------------------------
+        | VALIDATION
+        |--------------------------------------------------------------------------
+        */
 
-        if (
-            response?.type
-            !== 'page'
-        ) {
+        validatePageResponse(
+            response,
+        );
 
-            throw new Error(
-                'Invalid page response',
-            );
-        }
-
-        if (
-            typeof response.page?.html
-            !== 'string'
-        ) {
-
-            throw new Error(
-                'Invalid page HTML',
-            );
-        }
-
-        // =================================
-        // HISTORY
-        // =================================
+        /*
+        |--------------------------------------------------------------------------
+        | HISTORY
+        |--------------------------------------------------------------------------
+        */
 
         if (
             options.updateHistory
@@ -417,9 +540,11 @@ export async function navigateTo(
             );
         }
 
-        // =================================
-        // TITLE
-        // =================================
+        /*
+        |--------------------------------------------------------------------------
+        | TITLE
+        |--------------------------------------------------------------------------
+        */
 
         if (
             typeof response.page.title
@@ -430,9 +555,18 @@ export async function navigateTo(
                 response.page.title;
         }
 
-        // =================================
-        // DOM SWAP
-        // =================================
+        /*
+        |--------------------------------------------------------------------------
+        | RENDER
+        |--------------------------------------------------------------------------
+        */
+
+        emitNavigationEvent(
+            NAVIGATION_RENDER,
+            {
+                target,
+            },
+        );
 
         replaceContent(
             response.page.html,
@@ -442,9 +576,11 @@ export async function navigateTo(
 
         clearActiveFocus();
 
-        // =================================
-        // SCROLL
-        // =================================
+        /*
+        |--------------------------------------------------------------------------
+        | SCROLL
+        |--------------------------------------------------------------------------
+        */
 
         if (
             options.scrollTop
@@ -463,15 +599,19 @@ export async function navigateTo(
             );
         }
 
-        // =================================
-        // UNLOCK
-        // =================================
+        /*
+        |--------------------------------------------------------------------------
+        | UNLOCK
+        |--------------------------------------------------------------------------
+        */
 
         unlockRouter();
 
-        // =================================
-        // AFTER
-        // =================================
+        /*
+        |--------------------------------------------------------------------------
+        | AFTER
+        |--------------------------------------------------------------------------
+        */
 
         queueMicrotask(
             () =>
@@ -489,6 +629,17 @@ export async function navigateTo(
                 dispatchRouteLoaded(
                     target,
                 );
+
+                emitNavigationEvent(
+                    NAVIGATION_READY,
+                    {
+                        from:
+                            current,
+
+                        to:
+                            target,
+                        },
+                );
             },
         );
 
@@ -502,17 +653,45 @@ export async function navigateTo(
 
         unlockRouter();
 
+        /*
+        |--------------------------------------------------------------------------
+        | ABORT
+        |--------------------------------------------------------------------------
+        */
+
         if (
             error?.name
-            !== 'AbortError'
+            === 'AbortError'
         ) {
 
-            debugError(
-                'ROUTER',
-                error,
+            emitNavigationEvent(
+                NAVIGATION_ABORT,
+                {
+                    target,
+                },
             );
+
+            return;
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | ERROR EVENT
+        |--------------------------------------------------------------------------
+        */
+
+        emitNavigationEvent(
+            NAVIGATION_ERROR,
+            {
+                target,
+                error,
+            },
+        );
+
+        debugError(
+            'ROUTER',
+            error,
+        );
     } finally {
 
         if (
@@ -537,12 +716,14 @@ function handleClick(
     if (
         event.defaultPrevented
     ) {
+
         return;
     }
 
     if (
         event.button !== 0
     ) {
+
         return;
     }
 
@@ -552,6 +733,7 @@ function handleClick(
         || event.shiftKey
         || event.altKey
     ) {
+
         return;
     }
 
@@ -564,6 +746,7 @@ function handleClick(
             instanceof Element
         )
     ) {
+
         return;
     }
 
@@ -578,6 +761,7 @@ function handleClick(
             instanceof HTMLAnchorElement
         )
     ) {
+
         return;
     }
 
@@ -586,6 +770,7 @@ function handleClick(
             link,
         )
     ) {
+
         return;
     }
 

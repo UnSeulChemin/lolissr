@@ -8,6 +8,11 @@ const hostname =
 const pathname =
     window.location.pathname;
 
+const searchParams =
+    new URLSearchParams(
+        window.location.search,
+    );
+
 // =========================================
 // ENV
 // =========================================
@@ -15,6 +20,15 @@ const pathname =
 const isLocalhost =
     hostname === 'localhost'
     || hostname === '127.0.0.1';
+
+// =========================================
+// DEBUG
+// =========================================
+
+const debugEnabled =
+    searchParams.get(
+        'debug',
+    ) === '1';
 
 // =========================================
 // BASE URL
@@ -28,6 +42,15 @@ const baseUrl =
         : '/';
 
 // =========================================
+// ENVIRONMENT
+// =========================================
+
+const env =
+    debugEnabled
+        ? 'development'
+        : 'production';
+
+// =========================================
 // CONFIG
 // =========================================
 
@@ -38,8 +61,12 @@ export const config =
         // APP
         // =================================
 
+        env,
+
         debug:
-            isLocalhost,
+            debugEnabled,
+
+        isLocalhost,
 
         baseUrl,
 
@@ -51,6 +78,9 @@ export const config =
         {
             timeout:
                 10000,
+
+            maxConcurrentNavigations:
+                1,
         },
 
         // =================================
@@ -59,6 +89,9 @@ export const config =
 
         prefetch:
         {
+            enabled:
+                true,
+
             hoverDelay:
                 80,
 
@@ -67,6 +100,9 @@ export const config =
 
             cacheLimit:
                 50,
+
+            cacheDuration:
+                60000,
         },
 
         // =================================
@@ -75,6 +111,9 @@ export const config =
 
         transitions:
         {
+            enabled:
+                true,
+
             duration:
                 250,
         },
@@ -90,5 +129,21 @@ export const config =
 
             initialPrefetchDelay:
                 800,
+
+            restoreScroll:
+                true,
+        },
+
+        // =================================
+        // DEBUG PANEL
+        // =================================
+
+        debugPanel:
+        {
+            enabled:
+                debugEnabled,
+
+            maxLogs:
+                30,
         },
     });
