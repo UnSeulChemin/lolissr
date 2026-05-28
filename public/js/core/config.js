@@ -8,11 +8,6 @@ const hostname =
 const pathname =
     window.location.pathname;
 
-const searchParams =
-    new URLSearchParams(
-        window.location.search,
-    );
-
 // =========================================
 // ENV
 // =========================================
@@ -26,8 +21,8 @@ const isLocalhost =
 // =========================================
 
 const debugEnabled =
-    searchParams.get(
-        'debug',
+    localStorage.getItem(
+        'lolissr_debug',
     ) === '1';
 
 // =========================================

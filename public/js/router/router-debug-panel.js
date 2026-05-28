@@ -83,6 +83,7 @@ function appendLog(
         );
 
     if (!content) {
+
         return;
     }
 
@@ -101,7 +102,7 @@ function appendLog(
 
     while (
         content.children.length
-        > 30
+        > config.debugPanel.maxLogs
     )
     {
         content.lastChild?.remove();
