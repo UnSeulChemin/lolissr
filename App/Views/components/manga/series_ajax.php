@@ -122,7 +122,7 @@ $baseUri =
         if ($displayNote >= 8) {
 
             $noteClass =
-                'collection-note-good';
+                'collection-note-good glow-red';
 
         } elseif ($displayNote <= 4) {
 
@@ -186,7 +186,6 @@ $baseUri =
         class="
             collection-card-badge
             <?= e($noteClass) ?>
-            glow-red
         "
     >
         ⭐ <?= e($noteLabel) ?>/10
