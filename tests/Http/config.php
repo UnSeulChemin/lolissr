@@ -96,9 +96,9 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'realSlug' => 'one-piece',
+    'realSlug' => 'i-want-to-see-you-shy',
     'realNumero' => 1,
-    'nonCanonicalSlug' => 'One-Piece',
+    'nonCanonicalSlug' => 'I-Want-To-See-You-Shy',
 
     /*
     |--------------------------------------------------------------------------
