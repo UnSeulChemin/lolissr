@@ -82,7 +82,7 @@ final class MangaAjaxController extends Controller
             );
         }
 
-        $this->renderPartial(
+        $this->renderFragment(
             'components/manga/series_ajax',
             [
                 'mangas' =>

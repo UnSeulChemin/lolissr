@@ -305,7 +305,7 @@ abstract class Controller
     /**
      * @param array<string, mixed> $data
      */
-    protected function renderPartial(
+    protected function renderFragment(
         string $file,
         array $data = [],
     ): never {

@@ -1063,7 +1063,7 @@ final class TestableMangaController extends MangaController
         $this->renderedData = $data;
     }
 
-    protected function renderPartial(string $file, array $data = []): void
+    protected function renderFragment(string $file, array $data = []): void
     {
         if ($this->stopped)
         {
