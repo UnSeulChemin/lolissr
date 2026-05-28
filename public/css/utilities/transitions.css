@@ -2,153 +2,252 @@
    PAGE TRANSITIONS (FAST MODE)
 ========================================= */
 
-.page-transition-out {
+.page-transition-out
+{
     opacity: 0;
-    transition: opacity 60ms ease;
+
+    transition:
+        opacity 60ms ease;
 }
 
-.page-transition-enter {
+.page-transition-enter
+{
     opacity: 0;
 }
 
-.page-transition-visible {
+.page-transition-visible
+{
     opacity: 1;
-    transition: opacity 80ms ease;
+
+    transition:
+        opacity 80ms ease;
 }
 
-/* PERFORMANCE */
+
+/* =========================================
+   PERFORMANCE
+========================================= */
+
 .page-transition-out,
 .page-transition-enter,
-.transition-card {
+.transition-card
+{
     backface-visibility: hidden;
 }
 
+
 /* =========================================
-   CARD TRANSITIONS (FAST)
+   CARD TRANSITIONS
 ========================================= */
 
-.transition-card {
+.transition-card
+{
     opacity: 0;
-    transform: translateY(4px) scale(0.995);
-    animation: card-in 140ms ease-out forwards;
-    transform-origin: center;
-    will-change: transform, opacity;
+
+    animation:
+        card-in 140ms ease-out forwards;
 }
 
-@keyframes card-in {
-    to {
+@keyframes card-in
+{
+    from
+    {
+        opacity: 0;
+    }
+
+    to
+    {
         opacity: 1;
-        transform: translateY(0) scale(1);
     }
 }
 
-/* HOVER FAST */
+
+/* =========================================
+   CARD HOVER
+========================================= */
+
 .transition-card:hover,
 .transition-card:focus-visible,
-.transition-card.is-active {
-    transform: translateY(-5px) scale(1.01);
-    transition: transform 120ms ease;
+.transition-card.is-active
+{
+    transform:
+        translateY(-5px);
+
+    transition:
+        transform 120ms ease;
 }
+
 
 /* =========================================
    READ BADGE
 ========================================= */
 
-.collection-read-badge {
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+.collection-read-badge
+{
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
 }
 
-.collection-read-badge:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 3px 8px rgba(79, 99, 255, 0.16);
+.collection-read-badge:hover
+{
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 3px 8px
+        rgba(79, 99, 255, 0.16);
 }
+
 
 /* =========================================
-   GLOW EFFECTS (UNCHANGED VISUAL STYLE)
+   GLOW EFFECTS
 ========================================= */
 
 .collection-note-good::after,
-.collection-read-badge.active::after {
+.collection-read-badge.active::after
+{
     opacity: 1;
-    animation: badge-glow-shared 1.8s ease-in-out infinite;
+
+    animation:
+        badge-glow-shared 1.8s ease-in-out infinite;
 }
 
-.collection-note-good::after {
-    background: radial-gradient(
-        circle,
-        rgba(255, 74, 74, 0.95) 0%,
-        rgba(255, 74, 74, 0.55) 35%,
-        rgba(255, 74, 74, 0.18) 58%,
-        rgba(255, 74, 74, 0) 78%
-    );
+.collection-note-good::after
+{
+    background:
+        radial-gradient(
+            circle,
+            rgba(255, 74, 74, 0.95) 0%,
+            rgba(255, 74, 74, 0.55) 35%,
+            rgba(255, 74, 74, 0.18) 58%,
+            rgba(255, 74, 74, 0) 78%
+        );
 }
 
-.collection-read-badge.active::after {
-    background: radial-gradient(
-        circle,
-        rgba(79, 99, 255, 0.95) 0%,
-        rgba(79, 99, 255, 0.55) 35%,
-        rgba(79, 99, 255, 0.18) 58%,
-        rgba(79, 99, 255, 0) 78%
-    );
+.collection-read-badge.active::after
+{
+    background:
+        radial-gradient(
+            circle,
+            rgba(79, 99, 255, 0.95) 0%,
+            rgba(79, 99, 255, 0.55) 35%,
+            rgba(79, 99, 255, 0.18) 58%,
+            rgba(79, 99, 255, 0) 78%
+        );
 }
 
-.collection-note-mid::after {
-    background: radial-gradient(
-        circle,
-        rgba(123, 44, 255, 0.42) 0%,
-        rgba(123, 44, 255, 0) 72%
-    );
+.collection-note-mid::after
+{
+    background:
+        radial-gradient(
+            circle,
+            rgba(123, 44, 255, 0.42) 0%,
+            rgba(123, 44, 255, 0) 72%
+        );
+
     opacity: 1;
-    animation: badge-glow-purple 3.2s ease-in-out infinite;
+
+    animation:
+        badge-glow-purple 3.2s ease-in-out infinite;
 }
 
-.collection-note-low::after {
-    background: radial-gradient(
-        circle,
-        rgba(255, 208, 74, 0.42) 0%,
-        rgba(255, 208, 74, 0) 72%
-    );
+.collection-note-low::after
+{
+    background:
+        radial-gradient(
+            circle,
+            rgba(255, 208, 74, 0.42) 0%,
+            rgba(255, 208, 74, 0) 72%
+        );
+
     opacity: 1;
-    animation: badge-glow-gold 3.6s ease-in-out infinite;
+
+    animation:
+        badge-glow-gold 3.6s ease-in-out infinite;
 }
+
 
 /* =========================================
    LOADING SHIMMER
 ========================================= */
 
-.is-loading {
+.is-loading
+{
     user-select: none;
 }
 
-.is-loading .card {
+.is-loading .card
+{
     position: relative;
+
     overflow: hidden;
 }
 
-.is-loading .card::after {
+.is-loading .card::after
+{
     content: "";
+
     position: absolute;
+
     inset: 0;
-    background: linear-gradient(
-        90deg,
-        transparent 0%,
-        rgba(255,255,255,0.12) 50%,
-        transparent 100%
-    );
-    transform: translateX(-100%);
-    animation: card-shimmer 1s linear infinite;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255,255,255,0.12) 50%,
+            transparent 100%
+        );
+
+    transform:
+        translateX(-100%);
+
+    animation:
+        card-shimmer 1s linear infinite;
 }
+
 
 /* =========================================
    CARD STAGGER
 ========================================= */
 
-.transition-card:nth-child(1) { animation-delay: 0.01s; }
-.transition-card:nth-child(2) { animation-delay: 0.03s; }
-.transition-card:nth-child(3) { animation-delay: 0.05s; }
-.transition-card:nth-child(4) { animation-delay: 0.07s; }
-.transition-card:nth-child(5) { animation-delay: 0.09s; }
-.transition-card:nth-child(6) { animation-delay: 0.11s; }
-.transition-card:nth-child(7) { animation-delay: 0.13s; }
-.transition-card:nth-child(8) { animation-delay: 0.15s; }
+.transition-card:nth-child(1)
+{
+    animation-delay: 0.01s;
+}
+
+.transition-card:nth-child(2)
+{
+    animation-delay: 0.03s;
+}
+
+.transition-card:nth-child(3)
+{
+    animation-delay: 0.05s;
+}
+
+.transition-card:nth-child(4)
+{
+    animation-delay: 0.07s;
+}
+
+.transition-card:nth-child(5)
+{
+    animation-delay: 0.09s;
+}
+
+.transition-card:nth-child(6)
+{
+    animation-delay: 0.11s;
+}
+
+.transition-card:nth-child(7)
+{
+    animation-delay: 0.13s;
+}
+
+.transition-card:nth-child(8)
+{
+    animation-delay: 0.15s;
+}
