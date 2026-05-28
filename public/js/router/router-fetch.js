@@ -16,47 +16,10 @@ import {
 } from '../core/debug.js';
 
 // =========================================
-// CONFIG
-// =========================================
-
-const CONTENT_SELECTOR =
-    '.app-content';
-
-// =========================================
-// VALIDATION
-// =========================================
-
-function isValidHtml(
-    html,
-)
-{
-    if (
-        typeof html
-        !== 'string'
-        || html.trim() === ''
-    ) {
-        return false;
-    }
-
-    const documentHtml =
-        new DOMParser()
-            .parseFromString(
-                html,
-                'text/html',
-            );
-
-    return Boolean(
-        documentHtml.querySelector(
-            CONTENT_SELECTOR,
-        ),
-    );
-}
-
-// =========================================
 // FETCH PAGE
 // =========================================
 
-export async function fetchPageHtml(
+export async function fetchPage(
     href,
     options = {},
 )
@@ -74,7 +37,7 @@ export async function fetchPageHtml(
             url,
         );
 
-        const html =
+        const response =
             await request(
                 url,
                 {
@@ -84,7 +47,7 @@ export async function fetchPageHtml(
                     headers:
                     {
                         Accept:
-                            'text/html',
+                            'application/json',
                     },
                 },
             );
@@ -96,13 +59,22 @@ export async function fetchPageHtml(
         */
 
         if (
-            !isValidHtml(
-                html,
-            )
+            response?.type
+            !== 'page'
         ) {
 
             throw new Error(
-                'Invalid router HTML',
+                'Invalid page response',
+            );
+        }
+
+        if (
+            typeof response.page?.html
+            !== 'string'
+        ) {
+
+            throw new Error(
+                'Invalid page HTML',
             );
         }
 
@@ -112,7 +84,7 @@ export async function fetchPageHtml(
             url,
         );
 
-        return html;
+        return response;
 
     } catch (error) {
 

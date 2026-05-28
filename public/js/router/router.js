@@ -32,7 +32,7 @@ import {
 } from './route-scroll.js';
 
 import {
-    fetchPageHtml,
+    fetchPage,
 } from './router-fetch.js';
 
 import {
@@ -164,10 +164,10 @@ function dispatchRouteStart(
 }
 
 // =========================================
-// FETCH HTML
+// RESOLVE PAGE
 // =========================================
 
-async function resolvePageHtml(
+async function resolvePage(
     target,
     forceRefresh,
     signal,
@@ -187,7 +187,7 @@ async function resolvePageHtml(
             target,
         );
 
-        return fetchPageHtml(
+        return fetchPage(
             target,
             {
                 signal,
@@ -239,7 +239,7 @@ async function resolvePageHtml(
     // FETCH
     // =====================================
 
-    return fetchPageHtml(
+    return fetchPage(
         target,
         {
             signal,
@@ -359,8 +359,8 @@ export async function navigateTo(
         // FETCH
         // =================================
 
-        const html =
-            await resolvePageHtml(
+        const response =
+            await resolvePage(
                 target,
                 forceRefresh,
                 controller.signal,
@@ -382,12 +382,22 @@ export async function navigateTo(
         // =================================
 
         if (
-            typeof html
+            response?.type
+            !== 'page'
+        ) {
+
+            throw new Error(
+                'Invalid page response',
+            );
+        }
+
+        if (
+            typeof response.page?.html
             !== 'string'
         ) {
 
             throw new Error(
-                'Invalid HTML response',
+                'Invalid page HTML',
             );
         }
 
@@ -408,11 +418,24 @@ export async function navigateTo(
         }
 
         // =================================
+        // TITLE
+        // =================================
+
+        if (
+            typeof response.page.title
+            === 'string'
+        ) {
+
+            document.title =
+                response.page.title;
+        }
+
+        // =================================
         // DOM SWAP
         // =================================
 
         replaceContent(
-            html,
+            response.page.html,
         );
 
         updateActiveNavigation();
@@ -441,7 +464,7 @@ export async function navigateTo(
         }
 
         // =================================
-        // INSTANT UNLOCK
+        // UNLOCK
         // =================================
 
         unlockRouter();

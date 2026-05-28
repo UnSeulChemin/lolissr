@@ -16,7 +16,8 @@ use Throwable;
 
 abstract class Controller
 {
-    protected string $template = 'layouts/base';
+    protected string $template =
+        'layouts/base';
 
     protected string $title;
 
@@ -25,17 +26,28 @@ abstract class Controller
     public function __construct(
         protected Request $request,
     ) {
-        $this->title = App::siteName();
-        $this->baseUri = base_uri();
+        $this->title =
+            App::siteName();
+
+        $this->baseUri =
+            base_uri();
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | VIEW PATH
+    |--------------------------------------------------------------------------
+    */
 
     protected function viewPath(
         string $file,
     ): string {
 
         return view_path(
-            ltrim($file, '/')
-            . '.php',
+            ltrim(
+                $file,
+                '/',
+            ) . '.php',
         );
     }
 
@@ -54,6 +66,12 @@ abstract class Controller
             $this->template,
         );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | PHP RENDER
+    |--------------------------------------------------------------------------
+    */
 
     /**
      * @param array<string, mixed> $variables
@@ -84,6 +102,12 @@ abstract class Controller
         }
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | VALIDATION
+    |--------------------------------------------------------------------------
+    */
+
     private function ensureViewExists(
         string $path,
     ): void {
@@ -97,6 +121,12 @@ abstract class Controller
         );
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | BASE DATA
+    |--------------------------------------------------------------------------
+    */
+
     /**
      * @param array<string, mixed> $data
      * @return array<string, mixed>
@@ -106,12 +136,25 @@ abstract class Controller
     ): array {
 
         return [
-            'view' => $data,
-            'title' => $this->title,
-            'baseUri' => $this->baseUri,
-            'currentPath' => $this->request->path(),
+            'view' =>
+                $data,
+
+            'title' =>
+                $this->title,
+
+            'baseUri' =>
+                $this->baseUri,
+
+            'currentPath' =>
+                $this->request->path(),
         ];
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | RENDER CONTENT
+    |--------------------------------------------------------------------------
+    */
 
     /**
      * @param array<string, mixed> $data
@@ -137,6 +180,12 @@ abstract class Controller
                 $variables,
             );
 
+        /*
+        |--------------------------------------------------------------------------
+        | PARTIAL
+        |--------------------------------------------------------------------------
+        */
+
         if (! $withTemplate) {
             return $content;
         }
@@ -152,14 +201,19 @@ abstract class Controller
             $templatePath,
             [
                 ...$variables,
-                'content' => $content,
+
+                'content' =>
+                    $content,
             ],
         );
     }
 
-    /**
-     * @param array<string, mixed> $data
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | PAGE RESPONSE
+    |--------------------------------------------------------------------------
+    */
+
     private function respondView(
         string $viewPath,
         int $statusCode = 200,
@@ -167,15 +221,61 @@ abstract class Controller
         bool $withTemplate = true,
     ): never {
 
-        Response::html(
+        $html =
             $this->renderContent(
                 $viewPath,
                 $data,
                 $withTemplate,
-            ),
+            );
+
+        /*
+        |--------------------------------------------------------------------------
+        | AJAX
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $this->request->isAjax()
+        ) {
+
+            Response::json(
+                [
+                    'success' => true,
+
+                    'type' => 'page',
+
+                    'page' => [
+                        'html' =>
+                            $html,
+
+                        'title' =>
+                            $this->title,
+
+                        'url' =>
+                            $this->request->uri(),
+                    ],
+                ],
+                $statusCode,
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | SSR
+        |--------------------------------------------------------------------------
+        */
+
+        Response::html(
+            $html,
             $statusCode,
         );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | RENDER
+    |--------------------------------------------------------------------------
+    */
 
     /**
      * @param array<string, mixed> $data
@@ -186,10 +286,21 @@ abstract class Controller
     ): never {
 
         $this->respondView(
-            viewPath: $this->viewPath($file),
-            data: $data,
+            viewPath:
+                $this->viewPath(
+                    $file,
+                ),
+
+            data:
+                $data,
         );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | PARTIAL
+    |--------------------------------------------------------------------------
+    */
 
     /**
      * @param array<string, mixed> $data
@@ -199,12 +310,22 @@ abstract class Controller
         array $data = [],
     ): never {
 
-        $this->respondView(
-            viewPath: $this->viewPath($file),
-            data: $data,
-            withTemplate: false,
+        Response::html(
+            $this->renderContent(
+                $this->viewPath(
+                    $file,
+                ),
+                $data,
+                false,
+            ),
         );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | ERROR
+    |--------------------------------------------------------------------------
+    */
 
     /**
      * @param array<string, mixed> $data
@@ -216,18 +337,76 @@ abstract class Controller
     ): never {
 
         $this->respondView(
-            viewPath: $this->errorViewPath($file),
-            statusCode: $statusCode,
-            data: $data,
+            viewPath:
+                $this->errorViewPath(
+                    $file,
+                ),
+
+            statusCode:
+                $statusCode,
+
+            data:
+                $data,
         );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | REDIRECT
+    |--------------------------------------------------------------------------
+    */
 
     protected function redirect(
         string $url,
         int $statusCode = 302,
     ): never {
 
-        if (preg_match('#^https?://#i', $url)) {
+        /*
+        |--------------------------------------------------------------------------
+        | AJAX
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $this->request->isAjax()
+        ) {
+
+            Response::json(
+                [
+                    'success' =>
+                        true,
+
+                    'type' =>
+                        'redirect',
+
+                    'redirect' =>
+                        preg_match(
+                            '#^https?://#i',
+                            $url,
+                        )
+                            ? $url
+                            : $this->baseUri
+                                . '/'
+                                . ltrim(
+                                    $url,
+                                    '/',
+                                ),
+                ],
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | SSR
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            preg_match(
+                '#^https?://#i',
+                $url,
+            )
+        ) {
 
             Response::redirect(
                 $url,
@@ -238,10 +417,19 @@ abstract class Controller
         Response::redirect(
             $this->baseUri
             . '/'
-            . ltrim($url, '/'),
+            . ltrim(
+                $url,
+                '/',
+            ),
             $statusCode,
         );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | SESSION REDIRECT
+    |--------------------------------------------------------------------------
+    */
 
     /**
      * @param array<string, mixed> $session
@@ -251,7 +439,9 @@ abstract class Controller
         array $session,
     ): never {
 
-        foreach ($session as $key => $value) {
+        foreach (
+            $session as $key => $value
+        ) {
 
             Session::set(
                 $key,
@@ -259,7 +449,9 @@ abstract class Controller
             );
         }
 
-        $this->redirect($url);
+        $this->redirect(
+            $url,
+        );
     }
 
     protected function redirectWithError(
@@ -269,7 +461,8 @@ abstract class Controller
     ): never {
 
         $session = [
-            'error' => $message,
+            'error' =>
+                $message,
         ];
 
         if ($withOld) {
@@ -290,15 +483,21 @@ abstract class Controller
     protected function redirectWithValidationErrors(
         string $url,
         array $errors,
-        string $message = 'Le formulaire contient des erreurs.',
+        string $message =
+            'Le formulaire contient des erreurs.',
     ): never {
 
         $this->redirectWith(
             $url,
             [
-                'errors' => $errors,
-                'old' => $this->request->all(),
-                'error' => $message,
+                'errors' =>
+                    $errors,
+
+                'old' =>
+                    $this->request->all(),
+
+                'error' =>
+                    $message,
             ],
         );
     }
@@ -311,13 +510,21 @@ abstract class Controller
         $this->redirectWith(
             $url,
             [
-                'success' => $message,
+                'success' =>
+                    $message,
             ],
         );
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | EXCEPTIONS
+    |--------------------------------------------------------------------------
+    */
+
     public function notFound(
-        string $message = 'Page introuvable',
+        string $message =
+            'Page introuvable',
     ): never {
 
         throw new NotFoundException(
@@ -326,7 +533,8 @@ abstract class Controller
     }
 
     public function methodNotAllowed(
-        string $message = 'Méthode non autorisée',
+        string $message =
+            'Méthode non autorisée',
     ): never {
 
         throw new MethodNotAllowedException(
@@ -335,7 +543,8 @@ abstract class Controller
     }
 
     public function serverError(
-        string $message = 'Erreur interne du serveur',
+        string $message =
+            'Erreur interne du serveur',
     ): never {
 
         throw new RuntimeException(
@@ -343,26 +552,15 @@ abstract class Controller
         );
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | HELPERS
+    |--------------------------------------------------------------------------
+    */
+
     protected function isAjax(): bool
     {
         return $this->request->isAjax();
-    }
-
-    protected function expectsJson(): bool
-    {
-        $accept =
-            strtolower(
-                $this->request->server(
-                    'HTTP_ACCEPT',
-                    '',
-                ),
-            );
-
-        return $this->isAjax()
-            || str_contains(
-                $accept,
-                'application/json',
-            );
     }
 
     /**

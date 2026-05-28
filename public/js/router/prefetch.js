@@ -97,17 +97,6 @@ function trimCache()
     }
 }
 
-function isValidHtml(
-    html,
-)
-{
-    return (
-        typeof html
-        === 'string'
-        && html.trim() !== ''
-    );
-}
-
 // =========================================
 // CACHE
 // =========================================
@@ -121,23 +110,11 @@ export function getPrefetchedPage(
             href,
         );
 
-    /*
-    |--------------------------------------------------------------------------
-    | INVALIDATED
-    |--------------------------------------------------------------------------
-    */
-
     if (
         invalidated.has(
             url,
         )
     ) {
-
-        debug(
-            'PREFETCH',
-            'blocked-invalidated',
-            url,
-        );
 
         return null;
     }
@@ -151,12 +128,6 @@ export function getPrefetchedPage(
         return null;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | EXPIRED
-    |--------------------------------------------------------------------------
-    */
-
     if (
         isExpired(
             cached,
@@ -167,22 +138,16 @@ export function getPrefetchedPage(
             url,
         );
 
-        debug(
-            'PREFETCH',
-            'cache-expired',
-            url,
-        );
-
         return null;
     }
 
-    debug(
-        'PREFETCH',
-        'cache-hit',
-        url,
-    );
+    return {
+        type:
+            'page',
 
-    return cached.html;
+        page:
+            cached.page,
+    };
 }
 
 // =========================================
@@ -228,11 +193,6 @@ export function clearPrefetchCache()
     inFlight.clear();
 
     invalidated.clear();
-
-    debug(
-        'PREFETCH',
-        'clear-all',
-    );
 }
 
 // =========================================
@@ -253,13 +213,6 @@ export function getInFlightPrefetch(
             url,
         )
     ) {
-
-        debug(
-            'PREFETCH',
-            'blocked-inflight',
-            url,
-        );
-
         return null;
     }
 
@@ -284,12 +237,6 @@ export async function prefetchPage(
             href,
         );
 
-    /*
-    |--------------------------------------------------------------------------
-    | CURRENT PAGE
-    |--------------------------------------------------------------------------
-    */
-
     if (
         url
         === normalizeUrl(
@@ -299,32 +246,13 @@ export async function prefetchPage(
         return null;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | INVALIDATED
-    |--------------------------------------------------------------------------
-    */
-
     if (
         invalidated.has(
             url,
         )
     ) {
-
-        debug(
-            'PREFETCH',
-            'skip-invalidated',
-            url,
-        );
-
         return null;
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | CACHE
-    |--------------------------------------------------------------------------
-    */
 
     const cached =
         getPrefetchedPage(
@@ -335,25 +263,12 @@ export async function prefetchPage(
         return cached;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | IN FLIGHT
-    |--------------------------------------------------------------------------
-    */
-
     const existing =
         inFlight.get(
             url,
         );
 
     if (existing) {
-
-        debug(
-            'PREFETCH',
-            'reuse-inflight',
-            url,
-        );
-
         return existing;
     }
 
@@ -363,25 +278,19 @@ export async function prefetchPage(
         url,
     );
 
-    /*
-    |--------------------------------------------------------------------------
-    | FETCH
-    |--------------------------------------------------------------------------
-    */
-
     const promise =
         (async () =>
         {
             try {
 
-                const html =
+                const response =
                     await request(
                         url,
                         {
                             headers:
                             {
                                 Accept:
-                                    'text/html',
+                                    'application/json',
 
                                 'X-Prefetch':
                                     'true',
@@ -399,14 +308,13 @@ export async function prefetchPage(
                 */
 
                 if (
-                    !isValidHtml(
-                        html,
-                    )
+                    response?.type
+                    !== 'page'
                 ) {
 
                     debug(
                         'PREFETCH',
-                        'invalid-html',
+                        'invalid-response',
                         url,
                     );
 
@@ -415,7 +323,7 @@ export async function prefetchPage(
 
                 /*
                 |--------------------------------------------------------------------------
-                | SAVE CACHE
+                | CACHE
                 |--------------------------------------------------------------------------
                 */
 
@@ -424,18 +332,13 @@ export async function prefetchPage(
                 cache.set(
                     url,
                     {
-                        html,
+                        page:
+                            response.page,
 
                         timestamp:
                             Date.now(),
                     },
                 );
-
-                /*
-                |--------------------------------------------------------------------------
-                | REFRESHED
-                |--------------------------------------------------------------------------
-                */
 
                 invalidated.delete(
                     url,
@@ -447,7 +350,7 @@ export async function prefetchPage(
                     url,
                 );
 
-                return html;
+                return response;
 
             } catch (error) {
 
@@ -509,12 +412,6 @@ function bindLink(
     link.dataset.prefetchBound =
         'true';
 
-    /*
-    |--------------------------------------------------------------------------
-    | HOVER
-    |--------------------------------------------------------------------------
-    */
-
     link.addEventListener(
         'pointerenter',
         (
@@ -537,12 +434,6 @@ function bindLink(
         },
     );
 
-    /*
-    |--------------------------------------------------------------------------
-    | POINTER DOWN
-    |--------------------------------------------------------------------------
-    */
-
     link.addEventListener(
         'pointerdown',
         () =>
@@ -556,12 +447,6 @@ function bindLink(
                 true,
         },
     );
-
-    /*
-    |--------------------------------------------------------------------------
-    | MOBILE
-    |--------------------------------------------------------------------------
-    */
 
     link.addEventListener(
         'touchstart',
