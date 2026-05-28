@@ -5,81 +5,37 @@ declare(strict_types=1);
 namespace Tests\Unit\Config;
 
 use Framework\Config\Config;
+use PHPUnit\Framework\TestCase;
 use ReflectionClass;
+use ReflectionMethod;
 
-final class ConfigTest
+final class ConfigTest extends TestCase
 {
-    public static function run(): array
+    public function testSegments(): void
     {
-        return [
-
-            self::testSegments(),
-
-            self::testArrayGet(),
-
-            self::testArrayGetDefault(),
-
-            self::testArrayHas(),
-
-            self::testArrayHasMissing(),
-
-            self::testClear(),
-
-        ];
-    }
-
-    private static function testSegments(): array
-    {
-        $reflection =
-            new ReflectionClass(
-                Config::class,
-            );
-
-        $method =
-            $reflection->getMethod(
-                'segments',
-            );
-
-        $method->setAccessible(
-            true,
-        );
-
         $result =
-            $method->invoke(
+            $this->privateMethod(
+                'segments',
+            )->invoke(
                 null,
                 'app.debug',
             );
 
-        return [
-            'name' =>
-                'Config segments',
-
-            'success' =>
-                $result === [
-                    'app',
-                    'debug',
-                ],
-        ];
+        $this->assertSame(
+            [
+                'app',
+                'debug',
+            ],
+            $result,
+        );
     }
 
-    private static function testArrayGet(): array
+    public function testArrayGet(): void
     {
-        $reflection =
-            new ReflectionClass(
-                Config::class,
-            );
-
-        $method =
-            $reflection->getMethod(
-                'arrayGet',
-            );
-
-        $method->setAccessible(
-            true,
-        );
-
         $result =
-            $method->invoke(
+            $this->privateMethod(
+                'arrayGet',
+            )->invoke(
                 null,
                 [
                     'app' => [
@@ -92,33 +48,17 @@ final class ConfigTest
                 ],
             );
 
-        return [
-            'name' =>
-                'Config array get',
-
-            'success' =>
-                $result === true,
-        ];
+        $this->assertTrue(
+            $result,
+        );
     }
 
-    private static function testArrayGetDefault(): array
+    public function testArrayGetDefault(): void
     {
-        $reflection =
-            new ReflectionClass(
-                Config::class,
-            );
-
-        $method =
-            $reflection->getMethod(
-                'arrayGet',
-            );
-
-        $method->setAccessible(
-            true,
-        );
-
         $result =
-            $method->invoke(
+            $this->privateMethod(
+                'arrayGet',
+            )->invoke(
                 null,
                 [],
                 [
@@ -127,33 +67,18 @@ final class ConfigTest
                 'default',
             );
 
-        return [
-            'name' =>
-                'Config array get default',
-
-            'success' =>
-                $result === 'default',
-        ];
+        $this->assertSame(
+            'default',
+            $result,
+        );
     }
 
-    private static function testArrayHas(): array
+    public function testArrayHas(): void
     {
-        $reflection =
-            new ReflectionClass(
-                Config::class,
-            );
-
-        $method =
-            $reflection->getMethod(
-                'arrayHas',
-            );
-
-        $method->setAccessible(
-            true,
-        );
-
         $result =
-            $method->invoke(
+            $this->privateMethod(
+                'arrayHas',
+            )->invoke(
                 null,
                 [
                     'app' => [
@@ -166,33 +91,17 @@ final class ConfigTest
                 ],
             );
 
-        return [
-            'name' =>
-                'Config array has',
-
-            'success' =>
-                $result === true,
-        ];
+        $this->assertTrue(
+            $result,
+        );
     }
 
-    private static function testArrayHasMissing(): array
+    public function testArrayHasMissing(): void
     {
-        $reflection =
-            new ReflectionClass(
-                Config::class,
-            );
-
-        $method =
-            $reflection->getMethod(
-                'arrayHas',
-            );
-
-        $method->setAccessible(
-            true,
-        );
-
         $result =
-            $method->invoke(
+            $this->privateMethod(
+                'arrayHas',
+            )->invoke(
                 null,
                 [],
                 [
@@ -200,25 +109,38 @@ final class ConfigTest
                 ],
             );
 
-        return [
-            'name' =>
-                'Config array has missing',
-
-            'success' =>
-                $result === false,
-        ];
+        $this->assertFalse(
+            $result,
+        );
     }
 
-    private static function testClear(): array
+    public function testClear(): void
     {
         Config::clear();
 
-        return [
-            'name' =>
-                'Config clear cache',
+        $this->assertTrue(
+            true,
+        );
+    }
 
-            'success' =>
-                true,
-        ];
+    private function privateMethod(
+        string $method,
+    ): ReflectionMethod {
+
+        $reflection =
+            new ReflectionClass(
+                Config::class,
+            );
+
+        $method =
+            $reflection->getMethod(
+                $method,
+            );
+
+        $method->setAccessible(
+            true,
+        );
+
+        return $method;
     }
 }

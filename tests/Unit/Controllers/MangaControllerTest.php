@@ -5,104 +5,66 @@ declare(strict_types=1);
 namespace Tests\Unit\Controllers;
 
 use App\Controllers\Manga\MangaController;
+use App\Services\Manga\MangaReadService;
+use App\Services\Manga\MangaWriteService;
 use Framework\Exceptions\NotFoundException;
 use Framework\Http\Request;
+use PHPUnit\Framework\TestCase;
 
-final class MangaControllerTest
+final class MangaControllerTest extends TestCase
 {
-    public static function run(): array
+    private MangaController $controller;
+
+    protected function setUp(): void
     {
-        return [
-
-            self::testSearchMethodExists(),
-
-            self::testShowSeriesNotFound(),
-
-            self::testShowNotFound(),
-
-        ];
+        $this->controller =
+            new MangaController(
+                new FakeMangaReadService(),
+                new FakeMangaWriteService(),
+                new Request(),
+            );
     }
 
-    private static function testSearchMethodExists(): array
+    public function testSearchMethodExists(): void
     {
-        $controller =
-            self::controller();
-
-        return [
-            'name' =>
-                'MangaController search method exists',
-
-            'success' =>
-                method_exists(
-                    $controller,
-                    'search',
-                ),
-        ];
+        $this->assertTrue(
+            method_exists(
+                $this->controller,
+                'search',
+            ),
+        );
     }
 
-    private static function testShowSeriesNotFound(): array
+    public function testShowSeriesNotFound(): void
     {
-        $success = false;
+        $this->expectException(
+            NotFoundException::class,
+        );
 
-        try {
-
-            self::controller()
-                ->showSeries(
-                    'unknown',
-                );
-
-        } catch (NotFoundException) {
-
-            $success = true;
-        }
-
-        return [
-            'name' =>
-                'MangaController showSeries not found',
-
-            'success' =>
-                $success,
-        ];
+        $this->controller->showSeries(
+            'unknown',
+        );
     }
 
-    private static function testShowNotFound(): array
+    public function testShowNotFound(): void
     {
-        $success = false;
+        $this->expectException(
+            NotFoundException::class,
+        );
 
-        try {
-
-            self::controller()
-                ->show(
-                    'unknown',
-                    1,
-                );
-
-        } catch (NotFoundException) {
-
-            $success = true;
-        }
-
-        return [
-            'name' =>
-                'MangaController show not found',
-
-            'success' =>
-                $success,
-        ];
-    }
-
-    private static function controller(): MangaController
-    {
-        return new MangaController(
-            new FakeMangaReadService(),
-            new FakeMangaWriteService(),
-            new Request(),
+        $this->controller->show(
+            'unknown',
+            1,
         );
     }
 }
 
-final class FakeMangaReadService
+final class FakeMangaReadService extends MangaReadService
 {
+    public function __construct()
+    {
+    }
+
     public function search(
         string $query,
     ): object {
@@ -136,6 +98,9 @@ final class FakeMangaReadService
     }
 }
 
-final class FakeMangaWriteService
+final class FakeMangaWriteService extends MangaWriteService
 {
+    public function __construct()
+    {
+    }
 }

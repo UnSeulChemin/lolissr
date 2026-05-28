@@ -5,78 +5,69 @@ declare(strict_types=1);
 namespace Tests\Unit\Core;
 
 use Framework\Http\JsonResponse;
+use PHPUnit\Framework\TestCase;
 
-final class JsonResponseTest
+final class JsonResponseTest extends TestCase
 {
-    public static function run(): array
+    public function testSuccess(): void
     {
-        return [
-
-            self::testSuccess(),
-
-            self::testError(),
-
-            self::testStatus(),
-
-        ];
-    }
-
-    private static function testSuccess(): array
-    {
-        $response = JsonResponse::success(
-            [
-                'title' => 'Rave',
-            ],
-        );
+        $response =
+            JsonResponse::success(
+                [
+                    'title' => 'Rave',
+                ],
+            );
 
         $data =
             $response->data();
 
-        return [
-            'name' =>
-                'JsonResponse success',
+        $this->assertTrue(
+            $data['success'],
+        );
 
-            'success' =>
-                $data['success'] === true
-                && $data['title'] === 'Rave',
-        ];
+        $this->assertSame(
+            'Rave',
+            $data['title'],
+        );
     }
 
-    private static function testError(): array
+    public function testError(): void
     {
-        $response = JsonResponse::error(
+        $response =
+            JsonResponse::error(
+                'Erreur AJAX',
+                400,
+            );
+
+        $data =
+            $response->data();
+
+        $this->assertFalse(
+            $data['success'],
+        );
+
+        $this->assertSame(
             'Erreur AJAX',
-            400,
+            $data['message'],
         );
-
-        $data =
-            $response->data();
-
-        return [
-            'name' =>
-                'JsonResponse error',
-
-            'success' =>
-                $data['success'] === false
-                && $data['message']
-                    === 'Erreur AJAX',
-        ];
     }
 
-    private static function testStatus(): array
+    public function testStatus(): void
     {
-        $response = JsonResponse::success(
-            [],
+        $response =
+            JsonResponse::success(
+                [],
+                201,
+            );
+
+        $this->assertSame(
             201,
+            $response->status(),
         );
 
-        return [
-            'name' =>
-                'JsonResponse status',
-
-            'success' =>
-                $response->status()
-                    === 201,
-        ];
+        $this->assertSame(
+            201,
+            $response->getStatusCode(),
+        );
     }
 }

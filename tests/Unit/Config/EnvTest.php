@@ -5,152 +5,108 @@ declare(strict_types=1);
 namespace Tests\Unit\Config;
 
 use Framework\Config\Env;
+use PHPUnit\Framework\TestCase;
 use ReflectionClass;
+use ReflectionMethod;
 
-final class EnvTest
+final class EnvTest extends TestCase
 {
-    public static function run(): array
+    public function testCastTrue(): void
     {
-        return [
-
-            self::testCastTrue(),
-
-            self::testCastFalse(),
-
-            self::testCastNull(),
-
-            self::testCastEmpty(),
-
-            self::testBool(),
-
-            self::testInt(),
-
-            self::testHas(),
-
-        ];
-    }
-
-    private static function testCastTrue(): array
-    {
-        $result =
-            self::cast(
+        $this->assertTrue(
+            $this->cast(
                 'true',
-            );
-
-        return [
-            'name' =>
-                'Env cast true',
-
-            'success' =>
-                $result === true,
-        ];
+            ),
+        );
     }
 
-    private static function testCastFalse(): array
+    public function testCastFalse(): void
     {
-        $result =
-            self::cast(
+        $this->assertFalse(
+            $this->cast(
                 'false',
-            );
-
-        return [
-            'name' =>
-                'Env cast false',
-
-            'success' =>
-                $result === false,
-        ];
+            ),
+        );
     }
 
-    private static function testCastNull(): array
+    public function testCastNull(): void
     {
-        $result =
-            self::cast(
+        $this->assertNull(
+            $this->cast(
                 'null',
-            );
-
-        return [
-            'name' =>
-                'Env cast null',
-
-            'success' =>
-                $result === null,
-        ];
+            ),
+        );
     }
 
-    private static function testCastEmpty(): array
+    public function testCastEmpty(): void
     {
-        $result =
-            self::cast(
+        $this->assertSame(
+            '',
+            $this->cast(
                 'empty',
-            );
-
-        return [
-            'name' =>
-                'Env cast empty',
-
-            'success' =>
-                $result === '',
-        ];
+            ),
+        );
     }
 
-    private static function testBool(): array
+    public function testBool(): void
     {
         $_ENV['TEST_BOOL'] =
             'true';
 
         Env::clear();
 
-        return [
-            'name' =>
-                'Env bool',
-
-            'success' =>
-                Env::bool(
-                    'TEST_BOOL',
-                ) === true,
-        ];
+        $this->assertTrue(
+            Env::bool(
+                'TEST_BOOL',
+            ),
+        );
     }
 
-    private static function testInt(): array
+    public function testInt(): void
     {
         $_ENV['TEST_INT'] =
             '42';
 
         Env::clear();
 
-        return [
-            'name' =>
-                'Env int',
-
-            'success' =>
-                Env::int(
-                    'TEST_INT',
-                ) === 42,
-        ];
+        $this->assertSame(
+            42,
+            Env::int(
+                'TEST_INT',
+            ),
+        );
     }
 
-    private static function testHas(): array
+    public function testHas(): void
     {
         $_ENV['TEST_HAS'] =
             'ok';
 
         Env::clear();
 
-        return [
-            'name' =>
-                'Env has',
-
-            'success' =>
-                Env::has(
-                    'TEST_HAS',
-                ),
-        ];
+        $this->assertTrue(
+            Env::has(
+                'TEST_HAS',
+            ),
+        );
     }
 
-    private static function cast(
+    private function cast(
         string $value,
     ): mixed {
+
+        return $this->privateMethod(
+            'cast',
+        )->invoke(
+            null,
+            $value,
+        );
+    }
+
+    private function privateMethod(
+        string $method,
+    ): ReflectionMethod {
+
         $reflection =
             new ReflectionClass(
                 Env::class,
@@ -158,16 +114,13 @@ final class EnvTest
 
         $method =
             $reflection->getMethod(
-                'cast',
+                $method,
             );
 
         $method->setAccessible(
             true,
         );
 
-        return $method->invoke(
-            null,
-            $value,
-        );
+        return $method;
     }
 }

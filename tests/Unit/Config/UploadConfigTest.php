@@ -5,45 +5,18 @@ declare(strict_types=1);
 namespace Tests\Unit\Config;
 
 use Framework\Config\UploadConfig;
+use PHPUnit\Framework\TestCase;
 use ReflectionClass;
+use ReflectionMethod;
 
-final class UploadConfigTest
+final class UploadConfigTest extends TestCase
 {
-    public static function run(): array
+    public function testNormalizedList(): void
     {
-        return [
-
-            self::testNormalizedList(),
-
-            self::testMaxSize(),
-
-            self::testAllowedExtensions(),
-
-            self::testAllowedMimeTypes(),
-
-            self::testThumbnailDirectory(),
-
-        ];
-    }
-
-    private static function testNormalizedList(): array
-    {
-        $reflection =
-            new ReflectionClass(
-                UploadConfig::class,
-            );
-
-        $method =
-            $reflection->getMethod(
-                'normalizedList',
-            );
-
-        $method->setAccessible(
-            true,
-        );
-
         $result =
-            $method->invoke(
+            $this->privateMethod(
+                'normalizedList',
+            )->invoke(
                 null,
                 [
                     ' JPG ',
@@ -53,71 +26,66 @@ final class UploadConfigTest
                 ],
             );
 
-        return [
-            'name' =>
-                'UploadConfig normalized list',
-
-            'success' =>
-                $result === [
-                    'jpg',
-                    'png',
-                ],
-        ];
+        $this->assertSame(
+            [
+                'jpg',
+                'png',
+            ],
+            $result,
+        );
     }
 
-    private static function testMaxSize(): array
+    public function testMaxSize(): void
     {
-        $result =
-            UploadConfig::maxSize();
-
-        return [
-            'name' =>
-                'UploadConfig max size',
-
-            'success' =>
-                $result >= 1,
-        ];
+        $this->assertGreaterThanOrEqual(
+            1,
+            UploadConfig::maxSize(),
+        );
     }
 
-    private static function testAllowedExtensions(): array
+    public function testAllowedExtensions(): void
     {
-        $result =
-            UploadConfig::allowedExtensions();
-
-        return [
-            'name' =>
-                'UploadConfig allowed extensions',
-
-            'success' =>
-                is_array($result),
-        ];
+        $this->assertIsArray(
+            UploadConfig::allowedExtensions(),
+        );
     }
 
-    private static function testAllowedMimeTypes(): array
+    public function testAllowedMimeTypes(): void
     {
-        $result =
-            UploadConfig::allowedMimeTypes();
-
-        return [
-            'name' =>
-                'UploadConfig allowed mime types',
-
-            'success' =>
-                is_array($result),
-        ];
+        $this->assertIsArray(
+            UploadConfig::allowedMimeTypes(),
+        );
     }
 
-    private static function testThumbnailDirectory(): array
+    public function testThumbnailDirectory(): void
     {
-        $result =
+        $directory =
             UploadConfig::mangaThumbnailDirectory();
 
-        return [
-            'name' =>
-                'UploadConfig thumbnail directory',
+        $this->assertNotSame(
+            '',
+            $directory,
+        );
+    }
 
-            'success' =>
-                $result !== '',
-        ];
+    private function privateMethod(
+        string $method,
+    ): ReflectionMethod {
+
+        $reflection =
+            new ReflectionClass(
+                UploadConfig::class,
+            );
+
+        $method =
+            $reflection->getMethod(
+                $method,
+            );
+
+        $method->setAccessible(
+            true,
+        );
+
+        return $method;
     }
 }

@@ -6,104 +6,82 @@ namespace Tests\Unit\Core;
 
 use Framework\Routing\RouteCollection;
 use Framework\Routing\Router;
+use PHPUnit\Framework\TestCase;
 
-final class RouterTest
+final class RouterTest extends TestCase
 {
-    public static function run(): array
+    public function testGetRoute(): void
     {
-        return [
+        $collection =
+            new RouteCollection();
 
-            self::testGetRoute(),
-
-            self::testPostRoute(),
-
-            self::testSearchRoute(),
-
-            self::testRoutePrefix(),
-
-        ];
-    }
-
-    private static function testGetRoute(): array
-    {
-        $collection = new RouteCollection();
-
-        $router = new Router(
-            $collection,
-        );
+        $router =
+            new Router(
+                $collection,
+            );
 
         $router->get(
             '/manga',
             static fn () => null,
         );
 
-        return [
-            'name' =>
-                'Router GET route',
-
-            'success' =>
-                count(
-                    $collection->all(),
-                ) === 1,
-        ];
+        $this->assertCount(
+            1,
+            $collection->all(),
+        );
     }
 
-    private static function testPostRoute(): array
+    public function testPostRoute(): void
     {
-        $collection = new RouteCollection();
+        $collection =
+            new RouteCollection();
 
-        $router = new Router(
-            $collection,
-        );
+        $router =
+            new Router(
+                $collection,
+            );
 
         $router->post(
             '/update',
             static fn () => null,
         );
 
-        return [
-            'name' =>
-                'Router POST route',
-
-            'success' =>
-                count(
-                    $collection->all(),
-                ) === 1,
-        ];
+        $this->assertCount(
+            1,
+            $collection->all(),
+        );
     }
 
-    private static function testSearchRoute(): array
+    public function testSearchRoute(): void
     {
-        $collection = new RouteCollection();
+        $collection =
+            new RouteCollection();
 
-        $router = new Router(
-            $collection,
-        );
+        $router =
+            new Router(
+                $collection,
+            );
 
         $router->get(
             '/recherche/{slug}',
             static fn () => null,
         );
 
-        $routes =
-            $collection->all();
-
-        return [
-            'name' =>
-                'Router clean search route',
-
-            'success' =>
-                count($routes) === 1,
-        ];
+        $this->assertCount(
+            1,
+            $collection->all(),
+        );
     }
 
-    private static function testRoutePrefix(): array
+    public function testRoutePrefix(): void
     {
-        $collection = new RouteCollection();
+        $collection =
+            new RouteCollection();
 
-        $router = new Router(
-            $collection,
-        );
+        $router =
+            new Router(
+                $collection,
+            );
 
         $router
             ->prefix('/api')
@@ -112,14 +90,9 @@ final class RouterTest
                 static fn () => null,
             );
 
-        return [
-            'name' =>
-                'Router prefix',
-
-            'success' =>
-                count(
-                    $collection->all(),
-                ) === 1,
-        ];
+        $this->assertCount(
+            1,
+            $collection->all(),
+        );
     }
 }

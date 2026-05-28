@@ -5,28 +5,12 @@ declare(strict_types=1);
 namespace Tests\Unit\Core;
 
 use Framework\Container\Container;
+use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
-final class ContainerTest
+final class ContainerTest extends TestCase
 {
-    public static function run(): array
-    {
-        return [
-
-            self::testBind(),
-
-            self::testSingleton(),
-
-            self::testAutowiring(),
-
-            self::testMissingClass(),
-
-            self::testCircularDependency(),
-
-        ];
-    }
-
-    private static function testBind(): array
+    public function testBind(): void
     {
         $container =
             new Container();
@@ -40,16 +24,13 @@ final class ContainerTest
                 TestService::class,
             );
 
-        return [
-            'name' =>
-                'Container bind',
-
-            'success' =>
-                $service instanceof TestService,
-        ];
+        $this->assertInstanceOf(
+            TestService::class,
+            $service,
+        );
     }
 
-    private static function testSingleton(): array
+    public function testSingleton(): void
     {
         $container =
             new Container();
@@ -58,26 +39,23 @@ final class ContainerTest
             TestService::class,
         );
 
-        $a =
+        $first =
             $container->get(
                 TestService::class,
             );
 
-        $b =
+        $second =
             $container->get(
                 TestService::class,
             );
 
-        return [
-            'name' =>
-                'Container singleton',
-
-            'success' =>
-                $a === $b,
-        ];
+        $this->assertSame(
+            $first,
+            $second,
+        );
     }
 
-    private static function testAutowiring(): array
+    public function testAutowiring(): void
     {
         $container =
             new Container();
@@ -87,53 +65,31 @@ final class ContainerTest
                 TestDependencyService::class,
             );
 
-        return [
-            'name' =>
-                'Container autowiring',
-
-            'success' =>
-                $service instanceof TestDependencyService,
-        ];
+        $this->assertInstanceOf(
+            TestDependencyService::class,
+            $service,
+        );
     }
 
-    private static function testMissingClass(): array
+    public function testMissingClass(): void
     {
         $container =
             new Container();
 
-        $success = false;
+        $this->expectException(
+            RuntimeException::class,
+        );
 
-        try {
-
-            $container->get(
-                'MissingClass',
-            );
-
-        } catch (RuntimeException) {
-
-            $success = true;
-        }
-
-        return [
-            'name' =>
-                'Container missing class',
-
-            'success' =>
-                $success,
-        ];
+        $container->get(
+            'MissingClass',
+        );
     }
 
-    private static function testCircularDependency(): array
+    public function testCircularDependencyPlaceholder(): void
     {
-        $success = true;
-
-        return [
-            'name' =>
-                'Container circular dependency placeholder',
-
-            'success' =>
-                $success,
-        ];
+        $this->assertTrue(
+            true,
+        );
     }
 }
 

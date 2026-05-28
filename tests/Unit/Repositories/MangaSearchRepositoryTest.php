@@ -5,169 +5,126 @@ declare(strict_types=1);
 namespace Tests\Unit\Repositories;
 
 use App\Repositories\Manga\MangaSearchRepository;
+use PHPUnit\Framework\TestCase;
 use ReflectionClass;
+use ReflectionMethod;
 
-final class MangaSearchRepositoryTest
+final class MangaSearchRepositoryTest extends TestCase
 {
-    public static function run(): array
+    private MangaSearchRepository $repository;
+
+    protected function setUp(): void
     {
-        return [
-
-            self::testNormalizeSearch(),
-
-            self::testExtractNumero(),
-
-            self::testExtractNumeroWithTome(),
-
-            self::testInvalidNumero(),
-
-        ];
+        $this->repository =
+            new MangaSearchRepository();
     }
 
-    private static function testNormalizeSearch(): array
+    public function testNormalizeSearch(): void
     {
-        $repository =
-            new MangaSearchRepository();
-
-        $reflection =
-            new ReflectionClass(
-                $repository,
-            );
-
         $method =
-            $reflection->getMethod(
+            $this->privateMethod(
                 'normalizeSearch',
             );
 
-        $method->setAccessible(
-            true,
-        );
-
         $result =
             $method->invoke(
-                $repository,
+                $this->repository,
                 '   one    piece   ',
             );
 
-        return [
-            'name' =>
-                'MangaSearch normalize search',
-
-            'success' =>
-                $result === 'one piece',
-        ];
+        $this->assertSame(
+            'one piece',
+            $result,
+        );
     }
 
-    private static function testExtractNumero(): array
+    public function testExtractNumero(): void
     {
-        $repository =
-            new MangaSearchRepository();
-
-        $reflection =
-            new ReflectionClass(
-                $repository,
-            );
-
         $method =
-            $reflection->getMethod(
+            $this->privateMethod(
                 'extractSearchNumero',
             );
 
-        $method->setAccessible(
-            true,
-        );
-
         $result =
             $method->invoke(
-                $repository,
+                $this->repository,
                 'one piece 12',
             );
 
-        return [
-            'name' =>
-                'MangaSearch extract numero',
+        $this->assertIsArray(
+            $result,
+        );
 
-            'success' =>
+        $this->assertSame(
+            'one piece',
+            $result['title'],
+        );
 
-                is_array($result)
-
-                && $result['title']
-                    === 'one piece'
-
-                && $result['numero']
-                    === 12,
-        ];
+        $this->assertSame(
+            12,
+            $result['numero'],
+        );
     }
 
-    private static function testExtractNumeroWithTome(): array
+    public function testExtractNumeroWithTome(): void
     {
-        $repository =
-            new MangaSearchRepository();
-
-        $reflection =
-            new ReflectionClass(
-                $repository,
-            );
-
         $method =
-            $reflection->getMethod(
+            $this->privateMethod(
                 'extractSearchNumero',
             );
 
-        $method->setAccessible(
-            true,
-        );
-
         $result =
             $method->invoke(
-                $repository,
+                $this->repository,
                 'one piece tome 12',
             );
 
-        return [
-            'name' =>
-                'MangaSearch extract tome numero',
+        $this->assertIsArray(
+            $result,
+        );
 
-            'success' =>
-
-                is_array($result)
-
-                && $result['numero']
-                    === 12,
-        ];
+        $this->assertSame(
+            12,
+            $result['numero'],
+        );
     }
 
-    private static function testInvalidNumero(): array
+    public function testInvalidNumero(): void
     {
-        $repository =
-            new MangaSearchRepository();
+        $method =
+            $this->privateMethod(
+                'extractSearchNumero',
+            );
+
+        $result =
+            $method->invoke(
+                $this->repository,
+                'one piece',
+            );
+
+        $this->assertNull(
+            $result,
+        );
+    }
+
+    private function privateMethod(
+        string $method,
+    ): ReflectionMethod {
 
         $reflection =
             new ReflectionClass(
-                $repository,
+                $this->repository,
             );
 
         $method =
             $reflection->getMethod(
-                'extractSearchNumero',
+                $method,
             );
 
         $method->setAccessible(
             true,
         );
 
-        $result =
-            $method->invoke(
-                $repository,
-                'one piece',
-            );
-
-        return [
-            'name' =>
-                'MangaSearch invalid numero',
-
-            'success' =>
-                $result === null,
-        ];
+        return $method;
     }
 }

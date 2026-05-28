@@ -5,183 +5,143 @@ declare(strict_types=1);
 namespace Tests\Unit\Core;
 
 use Framework\Http\Request;
+use PHPUnit\Framework\TestCase;
 
-final class RequestTest
+final class RequestTest extends TestCase
 {
-    public static function run(): array
+    public function testMethod(): void
     {
-        return [
-
-            self::testMethod(),
-
-            self::testAjax(),
-
-            self::testPrefetch(),
-
-            self::testPartial(),
-
-            self::testExpectsJson(),
-
-            self::testPath(),
-
-            self::testInput(),
-
-            self::testFiles(),
-
-        ];
-    }
-
-    private static function testMethod(): array
-    {
-        $request = new Request(
-            server: [
-                'REQUEST_METHOD' => 'POST',
-            ],
-        );
-
-        return [
-            'name' =>
-                'Request method POST',
-
-            'success' =>
-                $request->method() === 'POST'
-                && $request->isPost()
-                && !$request->isGet(),
-        ];
-    }
-
-    private static function testAjax(): array
-    {
-        $request = new Request(
-            server: [
-                'HTTP_X_REQUESTED_WITH' =>
-                    'XMLHttpRequest',
-            ],
-        );
-
-        return [
-            'name' =>
-                'Request AJAX detection',
-
-            'success' =>
-                $request->isAjax(),
-        ];
-    }
-
-    private static function testPrefetch(): array
-    {
-        $request = new Request(
-            server: [
-                'HTTP_PURPOSE' =>
-                    'prefetch',
-            ],
-        );
-
-        return [
-            'name' =>
-                'Request prefetch detection',
-
-            'success' =>
-                $request->isPrefetch(),
-        ];
-    }
-
-    private static function testPartial(): array
-    {
-        $request = new Request(
-            server: [
-                'HTTP_X_PARTIAL' =>
-                    'true',
-            ],
-        );
-
-        return [
-            'name' =>
-                'Request partial detection',
-
-            'success' =>
-                $request->wantsPartial(),
-        ];
-    }
-
-    private static function testExpectsJson(): array
-    {
-        $request = new Request(
-            server: [
-                'HTTP_ACCEPT' =>
-                    'application/json',
-            ],
-        );
-
-        return [
-            'name' =>
-                'Request expects JSON',
-
-            'success' =>
-                $request->expectsJson(),
-        ];
-    }
-
-    private static function testPath(): array
-    {
-        $request = new Request(
-            server: [
-                'REQUEST_URI' =>
-                    '/recherche/rave',
-            ],
-        );
-
-        return [
-            'name' =>
-                'Request clean search path',
-
-            'success' =>
-                $request->path()
-                === '/recherche/rave',
-        ];
-    }
-
-    private static function testInput(): array
-    {
-        $request = new Request(
-            get: [
-                'search' =>
-                    'rave',
-            ],
-        );
-
-        return [
-            'name' =>
-                'Request input query',
-
-            'success' =>
-                $request->input(
-                    'search',
-                ) === 'rave',
-        ];
-    }
-
-    private static function testFiles(): array
-    {
-        $request = new Request(
-            files: [
-                'image' => [
-                    'name' =>
-                        'cover.jpg',
+        $request =
+            new Request(
+                server: [
+                    'REQUEST_METHOD' => 'POST',
                 ],
-            ],
+            );
+
+        $this->assertSame(
+            'POST',
+            $request->method(),
         );
 
-        return [
-            'name' =>
-                'Request files',
+        $this->assertTrue(
+            $request->isPost(),
+        );
 
-            'success' =>
-                is_array(
-                    $request->file(
-                        'image',
-                    ),
-                ),
-        ];
+        $this->assertFalse(
+            $request->isGet(),
+        );
+    }
+
+    public function testAjax(): void
+    {
+        $request =
+            new Request(
+                server: [
+                    'HTTP_X_REQUESTED_WITH' =>
+                        'XMLHttpRequest',
+                ],
+            );
+
+        $this->assertTrue(
+            $request->isAjax(),
+        );
+    }
+
+    public function testPrefetch(): void
+    {
+        $request =
+            new Request(
+                server: [
+                    'HTTP_PURPOSE' =>
+                        'prefetch',
+                ],
+            );
+
+        $this->assertTrue(
+            $request->isPrefetch(),
+        );
+    }
+
+    public function testPartial(): void
+    {
+        $request =
+            new Request(
+                server: [
+                    'HTTP_X_PARTIAL' =>
+                        'true',
+                ],
+            );
+
+        $this->assertTrue(
+            $request->wantsPartial(),
+        );
+    }
+
+    public function testExpectsJson(): void
+    {
+        $request =
+            new Request(
+                server: [
+                    'HTTP_ACCEPT' =>
+                        'application/json',
+                ],
+            );
+
+        $this->assertTrue(
+            $request->expectsJson(),
+        );
+    }
+
+    public function testPath(): void
+    {
+        $request =
+            new Request(
+                server: [
+                    'REQUEST_URI' =>
+                        '/recherche/rave',
+                ],
+            );
+
+        $this->assertSame(
+            '/recherche/rave',
+            $request->path(),
+        );
+    }
+
+    public function testInput(): void
+    {
+        $request =
+            new Request(
+                get: [
+                    'search' =>
+                        'rave',
+                ],
+            );
+
+        $this->assertSame(
+            'rave',
+            $request->input(
+                'search',
+            ),
+        );
+    }
+
+    public function testFiles(): void
+    {
+        $request =
+            new Request(
+                files: [
+                    'image' => [
+                        'name' =>
+                            'cover.jpg',
+                    ],
+                ],
+            );
+
+        $this->assertIsArray(
+            $request->file(
+                'image',
+            ),
+        );
     }
 }

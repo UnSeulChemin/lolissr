@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use RuntimeException;
+
 if (!defined('ROOT')) {
     define(
         'ROOT',
@@ -9,24 +11,14 @@ if (!defined('ROOT')) {
     );
 }
 
-/*
-|--------------------------------------------------------------------------
-| AUTOLOAD
-|--------------------------------------------------------------------------
-*/
-
 require_once ROOT . '/vendor/autoload.php';
 
 require_once ROOT . '/Framework/Support/helpers.php';
 
 /*
 |--------------------------------------------------------------------------
-| ENVIRONMENT
+| LOAD ENV
 |--------------------------------------------------------------------------
-|
-| Charge le .env puis force le runtime testing.
-| Aucun test mutateur ne doit être actif par défaut.
-|
 */
 
 $envFile =
@@ -100,10 +92,6 @@ putenv(
 |--------------------------------------------------------------------------
 | SAFE TEST MODE
 |--------------------------------------------------------------------------
-|
-| Tous les tests sont non-mutateurs par défaut.
-| Aucune écriture DB/fichier réelle.
-|
 */
 
 $testEnv = [
@@ -156,10 +144,6 @@ foreach (
 |--------------------------------------------------------------------------
 | RUNTIME SAFETY
 |--------------------------------------------------------------------------
-|
-| Vérification finale :
-| le runtime DOIT être en lecture seule.
-|
 */
 
 if (

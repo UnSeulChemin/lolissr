@@ -5,108 +5,83 @@ declare(strict_types=1);
 namespace Tests\Unit\Controllers;
 
 use App\Controllers\Chinois\ChinoisController;
+use App\Repositories\Chinois\ChinoisGrammaireRepository;
+use App\Services\Chinois\ChinoisReadService;
 use Framework\Exceptions\NotFoundException;
 use Framework\Http\Request;
+use PHPUnit\Framework\TestCase;
 
-final class ChinoisControllerTest
+final class ChinoisControllerTest extends TestCase
 {
-    public static function run(): array
+    private ChinoisController $controller;
+
+    protected function setUp(): void
     {
-        return [
-
-            self::testMethodsExist(),
-
-            self::testInvalidHskLevel(),
-
-            self::testControllerInstantiation(),
-
-        ];
+        $this->controller =
+            new ChinoisController(
+                new FakeChinoisReadService(),
+                new FakeChinoisRepository(),
+                new Request(),
+            );
     }
 
-    private static function testMethodsExist(): array
+    public function testMethodsExist(): void
     {
-        $controller =
-            self::controller();
+        $this->assertTrue(
+            method_exists(
+                $this->controller,
+                'mandarin',
+            ),
+        );
 
-        return [
-            'name' =>
-                'ChinoisController methods exist',
+        $this->assertTrue(
+            method_exists(
+                $this->controller,
+                'jinyu',
+            ),
+        );
 
-            'success' =>
+        $this->assertTrue(
+            method_exists(
+                $this->controller,
+                'grammaire',
+            ),
+        );
 
-                method_exists(
-                    $controller,
-                    'mandarin',
-                )
-
-                && method_exists(
-                    $controller,
-                    'jinyu',
-                )
-
-                && method_exists(
-                    $controller,
-                    'grammaire',
-                )
-
-                && method_exists(
-                    $controller,
-                    'flashcards',
-                ),
-        ];
+        $this->assertTrue(
+            method_exists(
+                $this->controller,
+                'flashcards',
+            ),
+        );
     }
 
-    private static function testInvalidHskLevel(): array
+    public function testInvalidHskLevel(): void
     {
-        $success = false;
+        $this->expectException(
+            NotFoundException::class,
+        );
 
-        try {
-
-            self::controller()
-                ->hsk(
-                    99,
-                );
-
-        } catch (NotFoundException) {
-
-            $success = true;
-        }
-
-        return [
-            'name' =>
-                'ChinoisController invalid HSK',
-
-            'success' =>
-                $success,
-        ];
+        $this->controller->hsk(
+            99,
+        );
     }
 
-    private static function testControllerInstantiation(): array
+    public function testControllerInstantiation(): void
     {
-        $controller =
-            self::controller();
-
-        return [
-            'name' =>
-                'ChinoisController instantiation',
-
-            'success' =>
-                $controller instanceof ChinoisController,
-        ];
-    }
-
-    private static function controller(): ChinoisController
-    {
-        return new ChinoisController(
-            new FakeChinoisReadService(),
-            new FakeChinoisRepository(),
-            new Request(),
+        $this->assertInstanceOf(
+            ChinoisController::class,
+            $this->controller,
         );
     }
 }
 
-final class FakeChinoisReadService
+final class FakeChinoisReadService extends ChinoisReadService
 {
+    public function __construct()
+    {
+    }
+
     public function mandarin(): array
     {
         return [];
@@ -118,8 +93,12 @@ final class FakeChinoisReadService
     }
 }
 
-final class FakeChinoisRepository
+final class FakeChinoisRepository extends ChinoisGrammaireRepository
 {
+    public function __construct()
+    {
+    }
+
     public function findByLevel(
         string $level,
     ): array {

@@ -5,62 +5,45 @@ declare(strict_types=1);
 namespace Tests\Unit\Config;
 
 use Framework\Config\DatabaseConfig;
+use PHPUnit\Framework\TestCase;
 
-final class DatabaseConfigTest
+final class DatabaseConfigTest extends TestCase
 {
-    public static function run(): array
-    {
-        return [
-
-            self::testHost(),
-
-            self::testPort(),
-
-            self::testCharset(),
-
-        ];
-    }
-
-    private static function testHost(): array
+    public function testHost(): void
     {
         $host =
             DatabaseConfig::host();
 
-        return [
-            'name' =>
-                'DatabaseConfig host',
+        $this->assertIsString(
+            $host,
+        );
 
-            'success' =>
-                is_string($host)
-                && $host !== '',
-        ];
+        $this->assertNotSame(
+            '',
+            $host,
+        );
     }
 
-    private static function testPort(): array
+    public function testPort(): void
     {
-        $port =
-            DatabaseConfig::port();
-
-        return [
-            'name' =>
-                'DatabaseConfig port',
-
-            'success' =>
-                $port >= 1,
-        ];
+        $this->assertGreaterThanOrEqual(
+            1,
+            DatabaseConfig::port(),
+        );
     }
 
-    private static function testCharset(): array
+    public function testCharset(): void
     {
         $charset =
             DatabaseConfig::charset();
 
-        return [
-            'name' =>
-                'DatabaseConfig charset',
+        $this->assertIsString(
+            $charset,
+        );
 
-            'success' =>
-                $charset !== '',
-        ];
+        $this->assertNotSame(
+            '',
+            $charset,
+        );
     }
 }

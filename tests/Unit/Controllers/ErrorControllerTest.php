@@ -6,71 +6,56 @@ namespace Tests\Unit\Controllers;
 
 use App\Controllers\ErrorController;
 use Framework\Http\Request;
+use PHPUnit\Framework\TestCase;
 
-final class ErrorControllerTest
+final class ErrorControllerTest extends TestCase
 {
-    public static function run(): array
+    private ErrorController $controller;
+
+    protected function setUp(): void
     {
-        return [
-
-            self::testMethodsExist(),
-
-            self::testControllerInstantiation(),
-
-        ];
+        $this->controller =
+            new ErrorController(
+                new Request(),
+            );
     }
 
-    private static function testMethodsExist(): array
+    public function testMethodsExist(): void
     {
-        $controller =
-            self::controller();
+        $this->assertTrue(
+            method_exists(
+                $this->controller,
+                'notFound',
+            ),
+        );
 
-        return [
-            'name' =>
-                'ErrorController methods exist',
+        $this->assertTrue(
+            method_exists(
+                $this->controller,
+                'forbidden',
+            ),
+        );
 
-            'success' =>
+        $this->assertTrue(
+            method_exists(
+                $this->controller,
+                'unauthorized',
+            ),
+        );
 
-                method_exists(
-                    $controller,
-                    'notFound',
-                )
-
-                && method_exists(
-                    $controller,
-                    'forbidden',
-                )
-
-                && method_exists(
-                    $controller,
-                    'unauthorized',
-                )
-
-                && method_exists(
-                    $controller,
-                    'serverError',
-                ),
-        ];
+        $this->assertTrue(
+            method_exists(
+                $this->controller,
+                'serverError',
+            ),
+        );
     }
 
-    private static function testControllerInstantiation(): array
+    public function testControllerInstantiation(): void
     {
-        $controller =
-            self::controller();
-
-        return [
-            'name' =>
-                'ErrorController instantiation',
-
-            'success' =>
-                $controller instanceof ErrorController,
-        ];
-    }
-
-    private static function controller(): ErrorController
-    {
-        return new ErrorController(
-            new Request(),
+        $this->assertInstanceOf(
+            ErrorController::class,
+            $this->controller,
         );
     }
 }
