@@ -131,6 +131,39 @@ export function initSearchController()
 
     /*
     |--------------------------------------------------------------------------
+    | SUBMIT
+    |--------------------------------------------------------------------------
+    */
+
+    search.addEventListener(
+        'submit',
+        (
+            event,
+        ) =>
+        {
+            event.preventDefault();
+
+            const query =
+                normalizeSearchQuery(
+                    searchInput.value,
+                );
+
+            const basePath =
+                search.dataset.basePath
+                ?? '/';
+
+            const url =
+                query !== ''
+                    ? `${basePath}manga/recherche/${encodeURIComponent(query)}`
+                    : `${basePath}manga/recherche`;
+
+            window.location.href =
+                url;
+        },
+    );
+
+    /*
+    |--------------------------------------------------------------------------
     | KEYBOARD
     |--------------------------------------------------------------------------
     */
@@ -253,17 +286,15 @@ async function handleSearch(
             ),
         ]);
 
-        renderResults(
-            {
-                mangas,
-                shortcuts,
-                rawValue,
-                basePath,
-                searchInput,
-                searchResults,
-                searchDropdown,
-            },
-        );
+        renderResults({
+            mangas,
+            shortcuts,
+            rawValue,
+            basePath,
+            searchInput,
+            searchResults,
+            searchDropdown,
+        });
 
     } catch (error) {
 
@@ -453,13 +484,6 @@ function handleKeyboardNavigation(
             searchResults,
         );
 
-    if (
-        !resultItems.length
-    ) {
-
-        return;
-    }
-
     /*
     |--------------------------------------------------------------------------
     | DOWN
@@ -470,6 +494,13 @@ function handleKeyboardNavigation(
         event.key ===
         'ArrowDown'
     ) {
+
+        if (
+            !resultItems.length
+        ) {
+
+            return;
+        }
 
         event.preventDefault();
 
@@ -486,6 +517,8 @@ function handleKeyboardNavigation(
         updateActiveResult(
             searchResults,
         );
+
+        return;
     }
 
     /*
@@ -498,6 +531,13 @@ function handleKeyboardNavigation(
         event.key ===
         'ArrowUp'
     ) {
+
+        if (
+            !resultItems.length
+        ) {
+
+            return;
+        }
 
         event.preventDefault();
 
@@ -514,6 +554,8 @@ function handleKeyboardNavigation(
         updateActiveResult(
             searchResults,
         );
+
+        return;
     }
 
     /*
@@ -527,28 +569,32 @@ function handleKeyboardNavigation(
         'Enter'
     ) {
 
-        event.preventDefault();
-
         const activeItem =
             resultItems[
                 activeIndex
             ];
 
+        /*
+        |--------------------------------------------------------------------------
+        | ACTIVE RESULT
+        |--------------------------------------------------------------------------
+        */
+
         if (
-            !activeItem
+            activeItem
         ) {
 
-            return;
+            event.preventDefault();
+
+            resetSearch(
+                searchInput,
+                searchResults,
+                searchDropdown,
+            );
+
+            window.location.href =
+                activeItem.href;
         }
-
-        resetSearch(
-            searchInput,
-            searchResults,
-            searchDropdown,
-        );
-
-        window.location.href =
-            activeItem.href;
     }
 
     /*
@@ -608,12 +654,10 @@ function updateActiveResult(
             'is-active',
         );
 
-        activeItem.scrollIntoView(
-            {
-                block:
-                    'nearest',
-            },
-        );
+        activeItem.scrollIntoView({
+            block:
+                'nearest',
+        });
     }
 }
 
