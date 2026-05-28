@@ -60,7 +60,7 @@ import {
 import {
     debug,
     debugError,
-} from '../../core/debug/debug.js'
+} from '../../core/debug/debug.js';
 
 // =========================================
 // NAVIGATE

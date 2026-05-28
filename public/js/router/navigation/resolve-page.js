@@ -5,7 +5,7 @@
 import {
     getPrefetchedPage,
     getInFlightPrefetch,
-} from '../prefetch.js';
+} from '../prefetch/prefetch.js';
 
 import {
     fetchPage,
@@ -13,7 +13,7 @@ import {
 
 import {
     debug,
-} from '../../core/debug/debug.js'
+} from '../../core/debug/debug.js';
 
 // =========================================
 // RESOLVE

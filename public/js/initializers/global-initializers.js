@@ -8,7 +8,7 @@ import {
 
 import {
     initPrefetch,
-} from '../router/prefetch.js';
+} from '../router/prefetch/prefetch.js';
 
 import {
     initNavigationLoading,

@@ -17,7 +17,7 @@ import {
 import {
     debug,
     debugError,
-} from '../../core/debug/debug.js'
+} from '../../core/debug/debug.js';
 
 import {
     generateSlug,
@@ -29,7 +29,7 @@ import {
 
 import {
     invalidatePrefetch,
-} from '../../router/prefetch.js';
+} from '../../router/prefetch/prefetch.js';
 
 // =========================================
 // CONFIG
