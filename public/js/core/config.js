@@ -21,7 +21,8 @@ const isLocalhost =
 // =========================================
 
 const debugEnabled =
-    localStorage.getItem(
+    isLocalhost
+    && localStorage.getItem(
         'lolissr_debug',
     ) === '1';
 

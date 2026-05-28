@@ -17,6 +17,9 @@ import {
 // STATE
 // =========================================
 
+let initialized =
+    false;
+
 let loadingTimer =
     null;
 
@@ -49,7 +52,7 @@ function handleNavigationStart()
     );
 
     loadingTimer =
-        setTimeout(
+        window.setTimeout(
             () =>
             {
                 showLoading();
@@ -87,6 +90,16 @@ function handleNavigationEnd()
 
 export function initNavigationLoading()
 {
+    if (
+        initialized
+    ) {
+
+        return;
+    }
+
+    initialized =
+        true;
+
     document.addEventListener(
         NAVIGATION_START,
         handleNavigationStart,

@@ -18,6 +18,13 @@ const PANEL_ID =
     'router-debug-panel';
 
 // =========================================
+// STATE
+// =========================================
+
+let initialized =
+    false;
+
+// =========================================
 // HELPERS
 // =========================================
 
@@ -115,6 +122,16 @@ function appendLog(
 
 export function initRouterDebugPanel()
 {
+    if (
+        initialized
+    ) {
+
+        return;
+    }
+
+    initialized =
+        true;
+
     if (
         !canDebug()
     ) {

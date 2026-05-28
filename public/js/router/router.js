@@ -72,8 +72,31 @@ let controller =
     null;
 
 // =========================================
-// ACTIVE NAVIGATION
+// HELPERS
 // =========================================
+
+function lockRouter()
+{
+    locked =
+        true;
+}
+
+function unlockRouter()
+{
+    locked =
+        false;
+}
+
+function clearActiveFocus()
+{
+    if (
+        document.activeElement
+        instanceof HTMLElement
+    ) {
+
+        document.activeElement.blur();
+    }
+}
 
 function updateActiveNavigation()
 {
@@ -99,13 +122,13 @@ function updateActiveNavigation()
                     return;
                 }
 
-                const path =
+                const normalizedLink =
                     normalizeUrl(
                         link.pathname,
                     );
 
                 const active =
-                    path
+                    normalizedLink
                     === normalizeUrl(
                         '/lolissr/',
                     )
@@ -123,26 +146,7 @@ function updateActiveNavigation()
         );
 }
 
-// =========================================
-// CLEAR FOCUS
-// =========================================
-
-function clearActiveFocus()
-{
-    if (
-        document.activeElement
-        instanceof HTMLElement
-    ) {
-
-        document.activeElement.blur();
-    }
-}
-
-// =========================================
-// EVENTS
-// =========================================
-
-function dispatchRouteLoaded(
+function dispatchRouterLoaded(
     target,
 )
 {
@@ -160,22 +164,37 @@ function dispatchRouteLoaded(
     );
 }
 
-function dispatchRouteStart(
-    target,
+function validatePageResponse(
+    response,
 )
 {
-    document.dispatchEvent(
-        new CustomEvent(
-            'router:start',
+    if (
+        response?.type
+        !== 'page'
+    ) {
+
+        throw new FrontendError(
+            'Réponse page invalide',
             {
-                detail:
-                {
-                    href:
-                        target,
-                },
+                code:
+                    'INVALID_PAGE_RESPONSE',
             },
-        ),
-    );
+        );
+    }
+
+    if (
+        typeof response.page?.html
+        !== 'string'
+    ) {
+
+        throw new FrontendError(
+            'HTML page invalide',
+            {
+                code:
+                    'INVALID_PAGE_HTML',
+            },
+        );
+    }
 }
 
 // =========================================
@@ -271,63 +290,6 @@ async function resolvePage(
 }
 
 // =========================================
-// LOCK
-// =========================================
-
-function lockRouter()
-{
-    locked =
-        true;
-}
-
-// =========================================
-// UNLOCK
-// =========================================
-
-function unlockRouter()
-{
-    locked =
-        false;
-}
-
-// =========================================
-// VALIDATE RESPONSE
-// =========================================
-
-function validatePageResponse(
-    response,
-)
-{
-    if (
-        response?.type
-        !== 'page'
-    ) {
-
-        throw new FrontendError(
-            'Réponse page invalide',
-            {
-                code:
-                    'INVALID_PAGE_RESPONSE',
-            },
-        );
-    }
-
-    if (
-        typeof response.page?.html
-        !== 'string'
-    ) {
-
-        throw new FrontendError(
-            'HTML page invalide',
-            {
-                code:
-                    'INVALID_PAGE_HTML',
-            },
-        );
-    }
-}
-
-// =========================================
 // NAVIGATE
 // =========================================
 
@@ -401,10 +363,6 @@ export async function navigateTo(
     |--------------------------------------------------------------------------
     */
 
-    dispatchRouteStart(
-        target,
-    );
-
     emitNavigationEvent(
         NAVIGATION_START,
         {
@@ -431,7 +389,7 @@ export async function navigateTo(
 
         /*
         |--------------------------------------------------------------------------
-        | BEFORE ROUTE CHANGE
+        | BEFORE HOOKS
         |--------------------------------------------------------------------------
         */
 
@@ -480,7 +438,11 @@ export async function navigateTo(
         emitNavigationEvent(
             NAVIGATION_FETCH,
             {
-                target,
+                from:
+                    current,
+
+                to:
+                    target,
             },
         );
 
@@ -505,7 +467,11 @@ export async function navigateTo(
             emitNavigationEvent(
                 NAVIGATION_ABORT,
                 {
-                    target,
+                    from:
+                        current,
+
+                    to:
+                        target,
                 },
             );
 
@@ -564,7 +530,11 @@ export async function navigateTo(
         emitNavigationEvent(
             NAVIGATION_RENDER,
             {
-                target,
+                from:
+                    current,
+
+                to:
+                    target,
             },
         );
 
@@ -599,12 +569,6 @@ export async function navigateTo(
             );
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | UNLOCK
-        |--------------------------------------------------------------------------
-        */
-
         unlockRouter();
 
         /*
@@ -626,7 +590,7 @@ export async function navigateTo(
                     },
                 );
 
-                dispatchRouteLoaded(
+                dispatchRouterLoaded(
                     target,
                 );
 
@@ -638,7 +602,7 @@ export async function navigateTo(
 
                         to:
                             target,
-                        },
+                    },
                 );
             },
         );
@@ -667,8 +631,12 @@ export async function navigateTo(
             emitNavigationEvent(
                 NAVIGATION_ABORT,
                 {
-                    target,
-                },
+                    from:
+                        current,
+
+                    to:
+                        target,
+                    },
             );
 
             return;
@@ -676,14 +644,19 @@ export async function navigateTo(
 
         /*
         |--------------------------------------------------------------------------
-        | ERROR EVENT
+        | ERROR
         |--------------------------------------------------------------------------
         */
 
         emitNavigationEvent(
             NAVIGATION_ERROR,
             {
-                target,
+                from:
+                    current,
+
+                to:
+                    target,
+
                 error,
             },
         );
