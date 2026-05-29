@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
-function http_get(
+function http_request(
+    string $method,
     string $url,
     array $headers = [],
+    ?string $body = null,
 ): array {
 
     $context =
@@ -12,11 +14,16 @@ function http_get(
 
             'http' => [
 
-                'method' => 'GET',
+                'method' => strtoupper(
+                    $method,
+                ),
 
                 'ignore_errors' => true,
 
                 'timeout' => 10,
+
+                'content' =>
+                    $body ?? '',
 
                 'header' => implode(
                     "\r\n",
@@ -30,7 +37,7 @@ function http_get(
             ],
         ]);
 
-    $body =
+    $responseBody =
         @file_get_contents(
             $url,
             false,
@@ -58,10 +65,38 @@ function http_get(
 
         'status' => $status,
 
-        'body' => is_string($body)
-            ? $body
-            : '',
+        'body' =>
+            is_string($responseBody)
+                ? $responseBody
+                : '',
 
-        'headers' => $responseHeaders,
+        'headers' =>
+            $responseHeaders,
     ];
+}
+
+function http_get(
+    string $url,
+    array $headers = [],
+): array {
+
+    return http_request(
+        'GET',
+        $url,
+        $headers,
+    );
+}
+
+function http_post(
+    string $url,
+    array $headers = [],
+    ?string $body = null,
+): array {
+
+    return http_request(
+        'POST',
+        $url,
+        $headers,
+        $body,
+    );
 }

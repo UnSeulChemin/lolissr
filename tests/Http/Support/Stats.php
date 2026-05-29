@@ -63,6 +63,20 @@ final class Stats
         );
     }
 
+    public function averageDuration(): float
+    {
+        if ($this->total === 0)
+        {
+            return 0.0;
+        }
+
+        return round(
+            $this->duration
+            / $this->total,
+            4,
+        );
+    }
+
     public function hasFailures(): bool
     {
         return $this->fail > 0;

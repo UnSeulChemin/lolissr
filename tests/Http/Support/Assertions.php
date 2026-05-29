@@ -40,3 +40,37 @@ function assert_not_empty_body(
 
     return trim($body) !== '';
 }
+
+function assert_json(
+    string $body,
+): bool {
+
+    json_decode(
+        $body,
+        true,
+    );
+
+    return
+        json_last_error()
+        === JSON_ERROR_NONE;
+}
+
+function assert_header(
+    array $headers,
+    string $needle,
+): bool {
+
+    foreach ($headers as $header)
+    {
+        if (
+            str_contains(
+                strtolower($header),
+                strtolower($needle),
+            )
+        ) {
+            return true;
+        }
+    }
+
+    return false;
+}
