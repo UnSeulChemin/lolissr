@@ -23,6 +23,9 @@ $results = [];
 $globalStart =
     microtime(true);
 
+$currentCategory =
+    null;
+
 echo PHP_EOL;
 echo str_repeat('=', 50) . PHP_EOL;
 echo 'LOLISSR HTTP TESTS' . PHP_EOL;
@@ -31,6 +34,24 @@ echo PHP_EOL;
 
 foreach ($tests as $test)
 {
+    $category =
+        (string) (
+            $test['category']
+            ?? 'General'
+        );
+
+    if ($category !== $currentCategory)
+    {
+        $currentCategory =
+            $category;
+
+        echo PHP_EOL;
+        echo '--- '
+            . $category
+            . ' ---'
+            . PHP_EOL;
+    }
+
     $label =
         (string) (
             $test['label']
@@ -85,6 +106,33 @@ foreach ($tests as $test)
     $success =
         $status === $expectedStatus;
 
+    $failureReason = '';
+
+    /*
+    |--------------------------------------------------------------------------
+    | Empty Body
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        $success
+        && !assert_not_empty_body(
+            $body,
+        )
+    ) {
+
+        $success = false;
+
+        $failureReason =
+            'Empty response body';
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Contains
+    |--------------------------------------------------------------------------
+    */
+
     if (
         $success
         && isset($test['contains'])
@@ -104,10 +152,20 @@ foreach ($tests as $test)
 
                 $success = false;
 
+                $failureReason =
+                    'Missing text: '
+                    . $needle;
+
                 break;
             }
         }
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Success
+    |--------------------------------------------------------------------------
+    */
 
     if ($success)
     {
@@ -122,15 +180,23 @@ foreach ($tests as $test)
 
         $results[] = [
             'status' => 'OK',
+            'category' => $category,
             'label' => $label,
             'path' => $path,
             'url' => $url,
             'http_status' => $status,
             'duration' => $duration,
+            'reason' => '',
         ];
 
         continue;
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Failure
+    |--------------------------------------------------------------------------
+    */
 
     $stats->fail(
         $duration,
@@ -138,16 +204,26 @@ foreach ($tests as $test)
 
     echo
         "❌ {$label}"
-        . " [{$status}]"
-        . PHP_EOL;
+        . " [{$status}]";
+
+    if ($failureReason !== '')
+    {
+        echo
+            ' -> '
+            . $failureReason;
+    }
+
+    echo PHP_EOL;
 
     $results[] = [
         'status' => 'FAIL',
+        'category' => $category,
         'label' => $label,
         'path' => $path,
         'url' => $url,
         'http_status' => $status,
         'duration' => $duration,
+        'reason' => $failureReason,
     ];
 }
 
@@ -161,7 +237,11 @@ echo 'Tests   : ' . $stats->total() . PHP_EOL;
 echo 'OK      : ' . $stats->successCount() . PHP_EOL;
 echo 'FAIL    : ' . $stats->failCount() . PHP_EOL;
 echo 'Success : ' . $stats->successRate() . '%' . PHP_EOL;
-echo 'Temps   : ' . round($totalDuration, 3) . 's' . PHP_EOL;
+echo 'Temps   : ' . round(
+        $totalDuration,
+        3,
+    ) . 's'
+    . PHP_EOL;
 echo str_repeat('=', 50) . PHP_EOL;
 
 $reportDirectory =
