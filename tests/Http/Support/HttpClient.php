@@ -2,13 +2,27 @@
 
 declare(strict_types=1);
 
-function http_get(string $url): array
-{
+function http_get(
+    string $url,
+    array $headers = [],
+): array {
+
+    $defaultHeaders = [
+        'User-Agent: LoliSSR-TestRunner',
+    ];
+
     $context = stream_context_create([
         'http' => [
             'method' => 'GET',
             'ignore_errors' => true,
             'timeout' => 10,
+            'header' => implode(
+                "\r\n",
+                array_merge(
+                    $defaultHeaders,
+                    $headers,
+                ),
+            ),
         ],
     ]);
 
@@ -18,19 +32,28 @@ function http_get(string $url): array
         $context,
     );
 
-    $headers = $http_response_header ?? [];
+    $responseHeaders =
+        $http_response_header
+        ?? [];
 
     $status = 0;
 
     if (
-        isset($headers[0])
-        && preg_match('/\s(\d{3})\s/', $headers[0], $match)
+        isset($responseHeaders[0])
+        && preg_match(
+            '/\s(\d{3})\s/',
+            $responseHeaders[0],
+            $matches,
+        )
     ) {
-        $status = (int) $match[1];
+        $status = (int) $matches[1];
     }
 
     return [
         'status' => $status,
-        'body' => $body ?: '',
+        'body' => is_string($body)
+            ? $body
+            : '',
+        'headers' => $responseHeaders,
     ];
 }

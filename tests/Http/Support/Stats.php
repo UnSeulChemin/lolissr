@@ -50,4 +50,17 @@ final class Stats
     {
         return $this->fail > 0;
     }
+
+    public function successRate(): float
+    {
+        if ($this->total === 0)
+        {
+            return 0;
+        }
+
+        return round(
+            ($this->success / $this->total) * 100,
+            2,
+        );
+    }
 }

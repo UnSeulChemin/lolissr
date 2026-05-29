@@ -2,13 +2,7 @@
 
 declare(strict_types=1);
 
-define(
-    'ROOT',
-    dirname(__DIR__, 2),
-);
-
-require ROOT . '/vendor/autoload.php';
-require ROOT . '/Framework/Support/helpers.php';
+require __DIR__ . '/bootstrap.php';
 
 require __DIR__ . '/Support/HttpClient.php';
 require __DIR__ . '/Support/Assertions.php';
@@ -16,18 +10,42 @@ require __DIR__ . '/Support/Terminal.php';
 require __DIR__ . '/Support/Stats.php';
 require __DIR__ . '/Support/HtmlReport.php';
 
+/*
+|--------------------------------------------------------------------------
+| CONFIG
+|--------------------------------------------------------------------------
+*/
+
 $config = require __DIR__ . '/config.php';
 
-$base = $config['base'];
+/*
+|--------------------------------------------------------------------------
+| TEST REGISTRY
+|--------------------------------------------------------------------------
+*/
 
 $tests = [];
 
-foreach (glob(__DIR__ . '/cases/safe/*.php') as $file)
+$files = glob(
+    __DIR__ . '/cases/safe/*.php',
+) ?: [];
+
+sort($files);
+
+foreach ($files as $file)
 {
     require $file;
 }
 
 return [
-    'base' => $base,
+
+    'config' => $config,
+
+    'base' => (string) (
+        $config['base']
+        ?? 'http://localhost'
+    ),
+
     'tests' => $tests,
+
 ];
