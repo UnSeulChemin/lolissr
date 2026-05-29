@@ -16,7 +16,8 @@ require __DIR__ . '/Support/HtmlReport.php';
 |--------------------------------------------------------------------------
 */
 
-$config = require __DIR__ . '/config.php';
+$config =
+    require __DIR__ . '/config.php';
 
 /*
 |--------------------------------------------------------------------------
@@ -41,10 +42,7 @@ return [
 
     'config' => $config,
 
-    'base' => (string) (
-        $config['base']
-        ?? 'http://localhost'
-    ),
+    'base' => (string) $config['base'],
 
     'tests' => $tests,
 

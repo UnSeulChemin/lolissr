@@ -7,30 +7,35 @@ function http_get(
     array $headers = [],
 ): array {
 
-    $defaultHeaders = [
-        'User-Agent: LoliSSR-TestRunner',
-    ];
+    $context =
+        stream_context_create([
 
-    $context = stream_context_create([
-        'http' => [
-            'method' => 'GET',
-            'ignore_errors' => true,
-            'timeout' => 10,
-            'header' => implode(
-                "\r\n",
-                array_merge(
-                    $defaultHeaders,
-                    $headers,
+            'http' => [
+
+                'method' => 'GET',
+
+                'ignore_errors' => true,
+
+                'timeout' => 10,
+
+                'header' => implode(
+                    "\r\n",
+                    array_merge(
+                        [
+                            'User-Agent: LoliSSR-TestRunner',
+                        ],
+                        $headers,
+                    ),
                 ),
-            ),
-        ],
-    ]);
+            ],
+        ]);
 
-    $body = @file_get_contents(
-        $url,
-        false,
-        $context,
-    );
+    $body =
+        @file_get_contents(
+            $url,
+            false,
+            $context,
+        );
 
     $responseHeaders =
         $http_response_header
@@ -50,10 +55,13 @@ function http_get(
     }
 
     return [
+
         'status' => $status,
+
         'body' => is_string($body)
             ? $body
             : '',
+
         'headers' => $responseHeaders,
     ];
 }

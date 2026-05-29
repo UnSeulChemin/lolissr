@@ -7,7 +7,8 @@ function assert_status(
     int $expected,
 ): bool {
 
-    return ($response['status'] ?? 0)
+    return
+        (int) ($response['status'] ?? 0)
         === $expected;
 }
 
@@ -16,10 +17,21 @@ function assert_contains(
     string $needle,
 ): bool {
 
-    return stripos(
+    return str_contains(
         $body,
         $needle,
-    ) !== false;
+    );
+}
+
+function assert_not_contains(
+    string $body,
+    string $needle,
+): bool {
+
+    return !str_contains(
+        $body,
+        $needle,
+    );
 }
 
 function assert_not_empty_body(

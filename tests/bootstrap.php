@@ -12,8 +12,8 @@ if (!defined('ROOT'))
     );
 }
 
-require_once ROOT . '/vendor/autoload.php';
-require_once ROOT . '/Framework/Support/helpers.php';
+require ROOT . '/vendor/autoload.php';
+require ROOT . '/Framework/Support/helpers.php';
 
 /*
 |--------------------------------------------------------------------------
@@ -28,11 +28,12 @@ putenv('APP_ENV=testing');
 
 /*
 |--------------------------------------------------------------------------
-| SAFE MODE
+| SAFE FLAGS
 |--------------------------------------------------------------------------
 */
 
-foreach ([
+$flags = [
+
     'TESTS_ENABLED' => 'true',
 
     'TEST_UPLOAD_MODE' => 'true',
@@ -46,7 +47,9 @@ foreach ([
     'TEST_UPLOAD_DUPLICATE_SLUG_NUMERO' => 'false',
     'TEST_UPLOAD_INVALID_IMAGE' => 'false',
     'TEST_UPLOAD_MAX_SIZE' => 'false',
-] as $key => $value)
+];
+
+foreach ($flags as $key => $value)
 {
     $_ENV[$key] = $value;
     $_SERVER[$key] = $value;
@@ -68,6 +71,6 @@ if (
 )
 {
     throw new RuntimeException(
-        'Tests must run in testing environment.',
+        'HTTP tests must run in testing environment.',
     );
 }

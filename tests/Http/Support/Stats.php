@@ -12,15 +12,19 @@ final class Stats
 
     private float $duration = 0.0;
 
-    public function success(float $duration): void
-    {
+    public function success(
+        float $duration,
+    ): void {
+
         $this->total++;
         $this->success++;
         $this->duration += $duration;
     }
 
-    public function fail(float $duration): void
-    {
+    public function fail(
+        float $duration,
+    ): void {
+
         $this->total++;
         $this->fail++;
         $this->duration += $duration;
@@ -46,21 +50,21 @@ final class Stats
         return $this->duration;
     }
 
-    public function hasFailures(): bool
-    {
-        return $this->fail > 0;
-    }
-
     public function successRate(): float
     {
         if ($this->total === 0)
         {
-            return 0;
+            return 0.0;
         }
 
         return round(
             ($this->success / $this->total) * 100,
             2,
         );
+    }
+
+    public function hasFailures(): bool
+    {
+        return $this->fail > 0;
     }
 }
