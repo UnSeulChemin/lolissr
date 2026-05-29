@@ -115,13 +115,15 @@ abstract class Controller
 
         ob_start();
 
-        try {
+        try
+        {
 
             require $path;
 
             return (string) ob_get_clean();
 
-        } catch (Throwable $exception) {
+        } catch (Throwable $exception)
+        {
 
             ob_end_clean();
 
@@ -139,7 +141,8 @@ abstract class Controller
         string $path,
     ): void {
 
-        if (is_file($path)) {
+        if (is_file($path))
+        {
             return;
         }
 
@@ -207,7 +210,8 @@ abstract class Controller
                 $variables,
             );
 
-        if (! $withTemplate) {
+        if (! $withTemplate)
+        {
             return $content;
         }
 
@@ -504,7 +508,8 @@ abstract class Controller
                 $message,
         ];
 
-        if ($withOld) {
+        if ($withOld)
+        {
 
             $session['old'] =
                 $this->request->all();

@@ -104,7 +104,8 @@ final readonly class MangaReadService
             $this->searchRepository
                 ->countFirstTomes();
 
-        if ($totalSeries === 0) {
+        if ($totalSeries === 0)
+        {
             return null;
         }
 
@@ -113,7 +114,8 @@ final readonly class MangaReadService
                 $totalSeries / $perPage,
             );
 
-        if ($page > $totalPages) {
+        if ($page > $totalPages)
+        {
             return null;
         }
 
@@ -186,7 +188,8 @@ final readonly class MangaReadService
                     $normalizedSlug,
                 );
 
-        if ($mangas === []) {
+        if ($mangas === [])
+        {
             return null;
         }
 
@@ -227,7 +230,8 @@ final readonly class MangaReadService
                     $numero,
                 );
 
-        if ($manga === null) {
+        if ($manga === null)
+        {
             return null;
         }
 

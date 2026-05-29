@@ -66,7 +66,8 @@ final class MangaSearchRepository extends Model
             $matches,
         );
 
-        if ($matched !== 1) {
+        if ($matched !== 1)
+        {
             return null;
         }
 
@@ -112,7 +113,8 @@ final class MangaSearchRepository extends Model
                 . '%',
         ];
 
-        if ($numero !== null) {
+        if ($numero !== null)
+        {
 
             $sql .= '
                 AND numero = :numero
@@ -146,7 +148,8 @@ final class MangaSearchRepository extends Model
             $search,
         );
 
-        if ($search === '') {
+        if ($search === '')
+        {
             return [];
         }
 
@@ -154,7 +157,8 @@ final class MangaSearchRepository extends Model
             $search,
         );
 
-        if ($searchNumero !== null) {
+        if ($searchNumero !== null)
+        {
 
             return $this->fetchSearchResults(
                 $searchNumero['title'],
@@ -188,7 +192,8 @@ final class MangaSearchRepository extends Model
         $offset = ($page - 1) * $perPage;
 
         $allowedOrderBy = ['id DESC', 'id ASC'];
-        if (!in_array($orderBy, $allowedOrderBy, true)) {
+        if (!in_array($orderBy, $allowedOrderBy, true))
+        {
             $orderBy = 'id DESC';
         }
 

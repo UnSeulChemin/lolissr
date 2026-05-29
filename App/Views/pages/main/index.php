@@ -2,7 +2,8 @@
 
 declare(strict_types=1);
 
-if (!isset($stats)) {
+if (!isset($stats))
+{
 
     throw new \RuntimeException(
         'Stats manquantes dans la vue.',

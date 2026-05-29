@@ -25,13 +25,15 @@ final class MangaStatsRepository extends Model
             $params,
         );
 
-        if ($result === null) {
+        if ($result === null)
+        {
             return $default;
         }
 
         $resultArray = (array) $result;
 
-        if (!array_key_exists($field, $resultArray)) {
+        if (!array_key_exists($field, $resultArray))
+        {
             return $default;
         }
 

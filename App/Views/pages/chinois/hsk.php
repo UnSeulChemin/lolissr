@@ -17,7 +17,8 @@ $baseUri =
 
 $sections = [];
 
-foreach ($grammaires as $grammaire) {
+foreach ($grammaires as $grammaire)
+{
 
     $section =
         (string) $grammaire->section;

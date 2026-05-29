@@ -95,7 +95,8 @@ final readonly class MangaWriteService
         string $message,
     ): ?ServiceResult {
 
-        if ($result) {
+        if ($result)
+        {
             return null;
         }
 
@@ -175,7 +176,8 @@ final readonly class MangaWriteService
                             $files,
                         );
 
-                if (! $upload->success) {
+                if (! $upload->success)
+                {
                     return $this->error(
                         $upload->message,
                         $upload->status,
@@ -208,7 +210,8 @@ final readonly class MangaWriteService
                     );
                 }
 
-                try {
+                try
+                {
 
                     $inserted =
                         $this->mangaRepository
@@ -237,7 +240,8 @@ final readonly class MangaWriteService
                             'Erreur lors de l’enregistrement',
                         );
 
-                    if ($failure !== null) {
+                    if ($failure !== null)
+                    {
 
                         $this->uploadService
                             ->removeFile(
@@ -253,7 +257,8 @@ final readonly class MangaWriteService
                         'Manga ajouté avec succès',
                     );
 
-                } catch (Throwable $exception) {
+                } catch (Throwable $exception)
+                {
 
                     $this->uploadService
                         ->removeFile(
@@ -272,7 +277,8 @@ final readonly class MangaWriteService
         MangaUpdateDTO $dto,
     ): ServiceResult {
 
-        if ($this->isReadOnlyMode()) {
+        if ($this->isReadOnlyMode())
+        {
             return $this->blockedWriteResponse();
         }
 
@@ -304,7 +310,8 @@ final readonly class MangaWriteService
                         'Erreur lors de la mise à jour',
                     );
 
-                if ($failure !== null) {
+                if ($failure !== null)
+                {
                     return $failure;
                 }
 
@@ -323,7 +330,8 @@ final readonly class MangaWriteService
         MangaUpdateNoteDTO $dto,
     ): ServiceResult {
 
-        if ($this->isReadOnlyMode()) {
+        if ($this->isReadOnlyMode())
+        {
             return $this->blockedWriteResponse();
         }
 
@@ -352,7 +360,8 @@ final readonly class MangaWriteService
                         'Erreur lors de la mise à jour des notes',
                     );
 
-                if ($failure !== null) {
+                if ($failure !== null)
+                {
                     return $failure;
                 }
 
@@ -365,7 +374,8 @@ final readonly class MangaWriteService
                             $numero,
                         );
 
-                if ($manga === null) {
+                if ($manga === null)
+                {
                     return $this->error(
                         'Manga introuvable',
                         404,
@@ -399,11 +409,13 @@ final readonly class MangaWriteService
         int $readStatus,
     ): ServiceResult {
 
-        if ($this->isReadOnlyMode()) {
+        if ($this->isReadOnlyMode())
+        {
             return $this->blockedWriteResponse();
         }
 
-        if (! in_array($readStatus, [0, 1], true)) {
+        if (! in_array($readStatus, [0, 1], true))
+        {
             return $this->error(
                 'Statut de lecture invalide',
                 422,
@@ -434,7 +446,8 @@ final readonly class MangaWriteService
                         'Erreur lors de la mise à jour',
                     );
 
-                if ($failure !== null) {
+                if ($failure !== null)
+                {
                     return $failure;
                 }
 
@@ -457,7 +470,8 @@ final readonly class MangaWriteService
         int $numero,
     ): ServiceResult {
 
-        if ($this->isReadOnlyMode()) {
+        if ($this->isReadOnlyMode())
+        {
             return $this->blockedWriteResponse();
         }
 
@@ -474,7 +488,8 @@ final readonly class MangaWriteService
                             $numero,
                         );
 
-                if ($manga === null) {
+                if ($manga === null)
+                {
                     return $this->error(
                         'Manga introuvable',
                         404,
@@ -497,7 +512,8 @@ final readonly class MangaWriteService
                         'Erreur lors de la suppression',
                     );
 
-                if ($failure !== null) {
+                if ($failure !== null)
+                {
                     return $failure;
                 }
 

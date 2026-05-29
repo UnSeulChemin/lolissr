@@ -47,7 +47,8 @@ final class ChinoisGrammaireRepository extends Model
             [$niveau],
         );
 
-        if ($query === false) {
+        if ($query === false)
+        {
             return [];
         }
 
@@ -100,7 +101,8 @@ final class ChinoisGrammaireRepository extends Model
             [$id],
         );
 
-        if ($result === null) {
+        if ($result === null)
+        {
             return 0;
         }
 

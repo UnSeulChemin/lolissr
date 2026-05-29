@@ -2,7 +2,8 @@
 
 declare(strict_types=1);
 
-if (!isset($manga)) {
+if (!isset($manga))
+{
 
     throw new \RuntimeException(
         'Manga manquant dans la vue.',

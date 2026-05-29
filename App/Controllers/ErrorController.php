@@ -18,6 +18,30 @@ final class ErrorController extends Controller
         );
     }
 
+    public function unauthorized(
+        string $message = 'Non authentifié',
+    ): never {
+
+        $this->error(
+            status: 401,
+            view: '401',
+            title: '401 | Non authentifié',
+            message: $message,
+        );
+    }
+
+    public function forbidden(
+        string $message = 'Accès interdit',
+    ): never {
+
+        $this->error(
+            status: 403,
+            view: '403',
+            title: '403 | Accès interdit',
+            message: $message,
+        );
+    }
+
     public function notFound(
         string $message = 'Page introuvable',
     ): never {
@@ -54,26 +78,14 @@ final class ErrorController extends Controller
         );
     }
 
-    public function forbidden(
-        string $message = 'Accès interdit',
+    public function validationError(
+        string $message = 'Erreur de validation',
     ): never {
 
         $this->error(
-            status: 403,
-            view: '403',
-            title: '403 | Accès interdit',
-            message: $message,
-        );
-    }
-
-    public function unauthorized(
-        string $message = 'Non authentifié',
-    ): never {
-
-        $this->error(
-            status: 401,
-            view: '401',
-            title: '401 | Non authentifié',
+            status: 422,
+            view: '422',
+            title: '422 | Erreur de validation',
             message: $message,
         );
     }
@@ -104,14 +116,16 @@ final class ErrorController extends Controller
                 $this->request->uri(),
         ];
 
-        if ($critical) {
+        if ($critical)
+        {
 
             Logger::error(
                 $title,
                 $context,
             );
 
-        } else {
+        } else
+        {
 
             Logger::warning(
                 $title,

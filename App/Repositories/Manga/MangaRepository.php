@@ -17,7 +17,8 @@ final class MangaRepository extends Model
 
     private function guardWrite(): void
     {
-        if (!App::isReadOnly()) {
+        if (!App::isReadOnly())
+        {
             return;
         }
 

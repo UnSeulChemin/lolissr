@@ -116,14 +116,17 @@ $baseUri =
     $noteClass =
         'collection-note-mid';
 
-    if ($displayNote !== null) {
+    if ($displayNote !== null)
+    {
 
-        if ($displayNote >= 8) {
+        if ($displayNote >= 8)
+        {
 
             $noteClass =
                 'collection-note-good glow-red';
 
-        } elseif ($displayNote <= 4) {
+        } elseif ($displayNote <= 4)
+        {
 
             $noteClass =
                 'collection-note-low';

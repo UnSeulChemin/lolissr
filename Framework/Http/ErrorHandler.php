@@ -70,6 +70,8 @@ final class ErrorHandler
                 $exception
                     ->response()
                     ->send();
+
+                exit;
             }
 
             /*
@@ -305,6 +307,11 @@ final class ErrorHandler
 
             419
                 => $controller->csrfExpired(
+                    $message,
+                ),
+
+            422
+                => $controller->validationError(
                     $message,
                 ),
 

@@ -27,7 +27,9 @@ final class ChinoisController extends Controller
         private readonly ChinoisGrammaireRepository $chinoisGrammaireRepository,
         Request $request,
     ) {
-        parent::__construct($request);
+        parent::__construct(
+            $request,
+        );
     }
 
     public function index(): never
@@ -81,11 +83,8 @@ final class ChinoisController extends Controller
     }
 
     public function hsk(
-        int|string $level,
+        string $level,
     ): never {
-
-        $level =
-            (string) $level;
 
         if (
             ! in_array(
@@ -100,7 +99,7 @@ final class ChinoisController extends Controller
         }
 
         $hskLevel =
-            'HSK' . $level;
+            "HSK{$level}";
 
         $grammaires =
             $this->chinoisGrammaireRepository

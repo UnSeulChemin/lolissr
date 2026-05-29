@@ -46,7 +46,8 @@ final readonly class StatsService
     {
         $totalTomes = $this->totalTomes();
 
-        if ($totalTomes <= 0) {
+        if ($totalTomes <= 0)
+        {
             return 0;
         }
 

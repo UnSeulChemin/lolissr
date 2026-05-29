@@ -28,7 +28,8 @@ abstract class Model
             $this->table,
         );
 
-        if ($table === '') {
+        if ($table === '')
+        {
             throw new RuntimeException(
                 'Nom de table invalide.',
             );
@@ -63,19 +64,22 @@ abstract class Model
         string $sql,
         array $params = [],
     ): PDOStatement|false {
-        try {
+        try
+        {
             $statement = $this->db->prepare(
                 $sql,
             );
 
-            if ($statement === false) {
+            if ($statement === false)
+            {
                 return false;
             }
 
             $statement->execute($params);
 
             return $statement;
-        } catch (Throwable $exception) {
+        } catch (Throwable $exception)
+        {
             throw new RuntimeException(
                 'Erreur SQL : '
                 . $exception->getMessage(),
@@ -97,11 +101,13 @@ abstract class Model
             $params,
         );
 
-        if ($statement === false) {
+        if ($statement === false)
+        {
             return null;
         }
 
-        if ($class !== null) {
+        if ($class !== null)
+        {
             $statement->setFetchMode(
                 PDO::FETCH_CLASS,
                 $class,
@@ -129,11 +135,13 @@ abstract class Model
             $params,
         );
 
-        if ($statement === false) {
+        if ($statement === false)
+        {
             return [];
         }
 
-        if ($class !== null) {
+        if ($class !== null)
+        {
             $statement->setFetchMode(
                 PDO::FETCH_CLASS,
                 $class,
@@ -187,12 +195,14 @@ abstract class Model
 
         $values = [];
 
-        foreach ($where as $field => $value) {
+        foreach ($where as $field => $value)
+        {
             $field = $this->sanitizeIdentifier(
                 $field,
             );
 
-            if ($field === '') {
+            if ($field === '')
+            {
                 continue;
             }
 
@@ -215,7 +225,8 @@ abstract class Model
         array $where,
         ?string $class = null,
     ): array {
-        if ($where === []) {
+        if ($where === [])
+        {
             return [];
         }
 
@@ -223,7 +234,8 @@ abstract class Model
             $where,
         );
 
-        if ($builtWhere['conditions'] === []) {
+        if ($builtWhere['conditions'] === [])
+        {
             return [];
         }
 
@@ -257,12 +269,14 @@ abstract class Model
 
         $values = [];
 
-        foreach ($data as $field => $value) {
+        foreach ($data as $field => $value)
+        {
             $field = $this->sanitizeIdentifier(
                 $field,
             );
 
-            if ($field === '') {
+            if ($field === '')
+            {
                 continue;
             }
 
@@ -286,7 +300,8 @@ abstract class Model
     public function insert(
         array $data,
     ): bool {
-        if ($data === []) {
+        if ($data === [])
+        {
             return false;
         }
 
@@ -294,7 +309,8 @@ abstract class Model
             $data,
         );
 
-        if ($builtInsert['fields'] === []) {
+        if ($builtInsert['fields'] === [])
+        {
             return false;
         }
 
@@ -334,12 +350,14 @@ abstract class Model
 
         $values = [];
 
-        foreach ($data as $field => $value) {
+        foreach ($data as $field => $value)
+        {
             $field = $this->sanitizeIdentifier(
                 $field,
             );
 
-            if ($field === '') {
+            if ($field === '')
+            {
                 continue;
             }
 
@@ -382,7 +400,8 @@ abstract class Model
     public function delete(
         array $where,
     ): bool {
-        if ($where === []) {
+        if ($where === [])
+        {
             return false;
         }
 
@@ -390,7 +409,8 @@ abstract class Model
             $where,
         );
 
-        if ($builtWhere['conditions'] === []) {
+        if ($builtWhere['conditions'] === [])
+        {
             return false;
         }
 

@@ -98,7 +98,8 @@ final readonly class UploadService
     ): ?string {
         $name = $this->originalFilename($file);
 
-        if ($name === null) {
+        if ($name === null)
+        {
             return null;
         }
 
@@ -109,7 +110,8 @@ final readonly class UploadService
             ),
         );
 
-        if ($extension === '') {
+        if ($extension === '')
+        {
             return null;
         }
 
@@ -139,7 +141,8 @@ final readonly class UploadService
     private function isValidTmpFile(
         ?string $tmpName,
     ): bool {
-        if ($tmpName === null) {
+        if ($tmpName === null)
+        {
             return false;
         }
 
@@ -174,7 +177,8 @@ final readonly class UploadService
     private function ensureDirectoryExists(
         string $directory,
     ): bool {
-        if (is_dir($directory)) {
+        if (is_dir($directory))
+        {
             return true;
         }
 
@@ -188,11 +192,13 @@ final readonly class UploadService
     public function removeFile(
         string $path,
     ): void {
-        if (!is_file($path)) {
+        if (!is_file($path))
+        {
             return;
         }
 
-        if (!unlink($path)) {
+        if (!unlink($path))
+        {
             Logger::error(
                 'Impossible de supprimer le fichier : '
                 . $path,
@@ -290,7 +296,8 @@ final readonly class UploadService
             $fileKey,
         );
 
-        if ($file === null) {
+        if ($file === null)
+        {
             return $this->failUpload(
                 'Upload manga: fichier introuvable.',
                 'Fichier image introuvable',
@@ -302,7 +309,8 @@ final readonly class UploadService
             $file,
         );
 
-        if ($extension === null) {
+        if ($extension === null)
+        {
             return $this->failUpload(
                 'Upload manga: extension introuvable.',
                 'Extension image introuvable',
@@ -364,7 +372,8 @@ final readonly class UploadService
             $numero,
         );
 
-        if ($thumbnail === '') {
+        if ($thumbnail === '')
+        {
             return $this->failUpload(
                 'Upload manga: nom thumbnail invalide.',
                 'Nom de fichier invalide',
@@ -378,7 +387,8 @@ final readonly class UploadService
                 $extension,
             );
 
-        if ($destination === null) {
+        if ($destination === null)
+        {
             return $this->failUpload(
                 'Upload manga: dossier impossible à créer.',
                 'Dossier image introuvable',
@@ -386,12 +396,15 @@ final readonly class UploadService
             );
         }
 
-        if (is_file($destination)) {
-            if ($this->isTestUploadMode()) {
+        if (is_file($destination))
+        {
+            if ($this->isTestUploadMode())
+            {
                 $this->removeFile(
                     $destination,
                 );
-            } else {
+            } else
+            {
                 return $this->failUpload(
                     'Upload manga: fichier déjà existant : '
                     . $destination,

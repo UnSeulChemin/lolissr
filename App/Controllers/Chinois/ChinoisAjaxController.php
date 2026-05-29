@@ -16,13 +16,15 @@ final class ChinoisAjaxController extends Controller
         private readonly ChinoisGrammaireRepository $repository,
         Request $request,
     ) {
-        parent::__construct($request);
+        parent::__construct(
+            $request,
+        );
     }
 
     /*
-    |--------------------------------------------------------------
+    |--------------------------------------------------------------------------
     | Toggle Grammaire Maîtrise
-    |--------------------------------------------------------------
+    |--------------------------------------------------------------------------
     */
 
     public function toggleGrammaireMaitrise(): never
@@ -33,16 +35,22 @@ final class ChinoisAjaxController extends Controller
                 0,
             );
 
-        if ($id <= 0) {
+        if ($id <= 0)
+        {
 
-            throw new ValidationException([
-                'id' => 'ID invalide',
-            ]);
+            throw new ValidationException(
+                [
+                    'id' =>
+                        'ID invalide',
+                ],
+            );
         }
 
         $maitrise =
             $this->repository
-                ->toggleMaitrise($id);
+                ->toggleMaitrise(
+                    $id,
+                );
 
         $this->jsonResult(
             ServiceResult::success(
@@ -50,6 +58,7 @@ final class ChinoisAjaxController extends Controller
                     $maitrise === 1
                         ? 'Grammaire maîtrisée'
                         : 'Grammaire non maîtrisée',
+
                 data: [
                     'maitrise' =>
                         $maitrise,
