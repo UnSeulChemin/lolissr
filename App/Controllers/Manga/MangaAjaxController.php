@@ -155,7 +155,6 @@ final class MangaAjaxController extends Controller
             ServiceResult::success(
                 message:
                     $result->message,
-
                 data: [
                     ...$result->data,
 
@@ -170,7 +169,6 @@ final class MangaAjaxController extends Controller
                             $jacquette + $livreNote,
                     ],
                 ],
-
                 status:
                     $result->status,
             ),
@@ -263,14 +261,12 @@ final class MangaAjaxController extends Controller
             ServiceResult::success(
                 message:
                     $result->message,
-
                 data: [
                     ...$result->data,
 
                     'redirect' =>
                         $redirect,
                 ],
-
                 status:
                     $result->status,
             ),
@@ -344,10 +340,8 @@ final class MangaAjaxController extends Controller
             throw new BaseHttpException(
                 message:
                     'URL non canonique',
-
                 statusCode:
                     409,
-
                 data: [
                     'redirect' => sprintf(
                         '%s/%s/%d',

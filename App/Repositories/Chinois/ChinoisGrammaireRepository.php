@@ -60,35 +60,22 @@ final class ChinoisGrammaireRepository extends Model
             ): ChinoisGrammaireDTO {
                 return new ChinoisGrammaireDTO(
                     id: (int) $row->id,
-
                     niveau: (string) $row->niveau,
-
                     section: (string) $row->section,
-
                     sectionPosition: (int) $row->section_position,
-
                     categorie: (string) $row->categorie,
-
                     categoriePosition: (int) $row->categorie_position,
-
                     titre: (string) $row->titre,
-
                     structure: (string) $row->structure,
-
                     phrase: (string) $row->phrase,
-
                     pinyin: isset($row->pinyin)
                         ? (string) $row->pinyin
                         : '',
-
                     traduction: (string) $row->traduction,
-
                     explication: $row->explication !== null
                         ? (string) $row->explication
                         : null,
-
                     position: (int) $row->position,
-
                     maitrise: (bool) $row->maitrise,
                 );
             },

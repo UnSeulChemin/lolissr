@@ -188,7 +188,9 @@ final class MangaSearchRepository extends Model
         $offset = ($page - 1) * $perPage;
 
         $allowedOrderBy = ['id DESC', 'id ASC'];
-        if (!in_array($orderBy, $allowedOrderBy, true)) $orderBy = 'id DESC';
+        if (!in_array($orderBy, $allowedOrderBy, true)) {
+            $orderBy = 'id DESC';
+        }
 
         $sql = "
             SELECT

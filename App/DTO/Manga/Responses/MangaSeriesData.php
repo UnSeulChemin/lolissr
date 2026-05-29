@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\DTO\Manga\Responses;
@@ -14,6 +15,7 @@ final readonly class MangaSeriesData
         public ?string $slugFilter,
         public int $currentPage,
         public int $totalSeries,     // total mangas
-        public int $perPage          // mangas par page
-    ) {}
+        public int $perPage,          // mangas par page
+    ) {
+    }
 }

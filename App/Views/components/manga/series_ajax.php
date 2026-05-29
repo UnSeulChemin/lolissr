@@ -155,7 +155,7 @@ $baseUri =
             ? 'collection-status-finished'
             : 'collection-status-progress';
 
-?>
+    ?>
 
 <a
     class="
@@ -227,15 +227,15 @@ $baseUri =
     <p class="collection-card-subtitle">
 
         <?= $isSerieView
-            ? 'Tome '
-                . str_pad(
-                    (string) $numero,
-                    2,
-                    '0',
-                    STR_PAD_LEFT,
-                )
-            : $total . ' tomes'
-        ?>
+                ? 'Tome '
+                    . str_pad(
+                        (string) $numero,
+                        2,
+                        '0',
+                        STR_PAD_LEFT,
+                    )
+                : $total . ' tomes'
+    ?>
 
     </p>
 

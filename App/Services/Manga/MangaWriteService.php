@@ -378,10 +378,8 @@ final readonly class MangaWriteService
                         'notes' => new UpdateNoteData(
                             jacquette:
                                 $dto->jacquette ?? 0,
-
                             livreNote:
                                 $dto->livreNote ?? 0,
-
                             note:
                                 $manga->note
                                 ?? (

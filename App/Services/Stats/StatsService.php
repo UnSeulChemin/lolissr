@@ -94,35 +94,24 @@ final readonly class StatsService
 
         return new DashboardStats(
             totalTomes: $totalTomes,
-
             totalSeries: $this->totalSeries(),
-
             totalRead: $totalRead,
-
             totalUnread: max(
                 0,
                 $totalTomes - $totalRead,
             ),
-
             readingProgress: $totalTomes > 0
                 ? (int) round(
                     ($totalRead / $totalTomes)
                     * 100,
                 )
                 : 0,
-
             averageNote: $this->averageNote(),
-
             lastTome: $this->lastTome(),
-
             longestSeries: $this->longestSeries(),
-
             topLongestSeries: $this->topLongestSeries(),
-
             lowRatedMangas: [],
-
             lowJacquetteMangas: [],
-
             lowLivreStateMangas: [],
         );
     }

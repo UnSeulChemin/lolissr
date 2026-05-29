@@ -216,27 +216,27 @@ $sourceDescription =
                                         <?= $isMaitrise
                                             ? 'active'
                                             : ''
-                                        ?>
+                            ?>
                                     "
                                     data-id="<?= (int) $grammaire->id ?>"
                                     data-url="<?= e($baseUri) ?>chinois/ajax/toggle-grammaire-maitrise"
                                     data-maitrise="<?= $isMaitrise
-                                        ? '1'
-                                        : '0'
-                                    ?>"
+                            ? '1'
+                            : '0'
+                            ?>"
                                     type="button"
                                     aria-pressed="<?= $isMaitrise
-                                        ? 'true'
-                                        : 'false'
-                                    ?>"
+                                ? 'true'
+                                : 'false'
+                            ?>"
                                     aria-label="<?= $isMaitrise
-                                        ? 'Retirer la maîtrise'
-                                        : 'Marquer comme maîtrisé'
-                                    ?>"
+                                ? 'Retirer la maîtrise'
+                                : 'Marquer comme maîtrisé'
+                            ?>"
                                     title="<?= $isMaitrise
-                                        ? 'Retirer la maîtrise'
-                                        : 'Marquer comme maîtrisé'
-                                    ?>"
+                                ? 'Retirer la maîtrise'
+                                : 'Marquer comme maîtrisé'
+                            ?>"
                                 >
 
                                     <svg

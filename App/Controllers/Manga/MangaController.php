@@ -460,10 +460,8 @@ final class MangaController extends Controller
             throw new BaseHttpException(
                 message:
                     'URL non canonique',
-
                 statusCode:
                     409,
-
                 data: [
                     'redirect' =>
                         $redirectPath,
@@ -489,10 +487,8 @@ final class MangaController extends Controller
             throw new BaseHttpException(
                 message:
                     $result->message,
-
                 statusCode:
                     422,
-
                 data: $result->data,
             );
         }

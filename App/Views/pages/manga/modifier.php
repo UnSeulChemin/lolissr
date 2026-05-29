@@ -133,7 +133,7 @@ $noteTotal =
                                 <?= (string) $jacquetteValue === (string) $i
                                     ? 'selected'
                                     : ''
-                                ?>
+                            ?>
                             >
 
                                 <?= $i ?>
@@ -195,7 +195,7 @@ $noteTotal =
                                 <?= (string) $livreNoteValue === (string) $i
                                     ? 'selected'
                                     : ''
-                                ?>
+                            ?>
                             >
 
                                 <?= $i ?>
@@ -282,8 +282,7 @@ $noteTotal =
                     >
 
                         <?php foreach (
-                            $statutOptions
-                            as $value => $label
+                            $statutOptions as $value => $label
                         ): ?>
 
                             <option
@@ -291,7 +290,7 @@ $noteTotal =
                                 <?= (string) $statutValue === $value
                                     ? 'selected'
                                     : ''
-                                ?>
+                            ?>
                             >
 
                                 <?= e($label) ?>

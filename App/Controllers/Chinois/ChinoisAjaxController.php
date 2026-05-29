@@ -50,7 +50,6 @@ final class ChinoisAjaxController extends Controller
                     $maitrise === 1
                         ? 'Grammaire maîtrisée'
                         : 'Grammaire non maîtrisée',
-
                 data: [
                     'maitrise' =>
                         $maitrise,

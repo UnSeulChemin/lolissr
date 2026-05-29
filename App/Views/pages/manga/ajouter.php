@@ -193,8 +193,7 @@ $returnUrl =
                     >
 
                         <?php foreach (
-                            $statutOptions
-                            as $value => $label
+                            $statutOptions as $value => $label
                         ): ?>
 
                             <option

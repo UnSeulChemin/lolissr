@@ -305,7 +305,6 @@ abstract class Controller
                 $this->viewPath(
                     $file,
                 ),
-
             data:
                 $data,
         );
@@ -356,10 +355,8 @@ abstract class Controller
                 $this->errorViewPath(
                     $file,
                 ),
-
             statusCode:
                 $statusCode,
-
             data:
                 $data,
         );

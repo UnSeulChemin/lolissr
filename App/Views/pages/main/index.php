@@ -310,7 +310,7 @@ $hasTopLongestSeries =
                         ) . '/10',
                     )
                     : 'Aucune note'
-                ?>
+?>
 
             </p>
 
@@ -332,8 +332,7 @@ $hasTopLongestSeries =
         <section class="home-ranking-list card-list">
 
             <?php foreach (
-                $stats->topLongestSeries
-                as $index => $serie
+                $stats->topLongestSeries as $index => $serie
             ): ?>
 
                 <?php

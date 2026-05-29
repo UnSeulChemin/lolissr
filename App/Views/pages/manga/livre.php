@@ -154,7 +154,7 @@ $hasEditeur =
                     <?= $hasEditeur
                         ? e((string) $manga->editeur)
                         : 'Non renseigné'
-                    ?>
+?>
 
                 </div>
 
@@ -221,7 +221,7 @@ $hasEditeur =
                                     <?= ($manga->jacquette === $note)
                                         ? 'active'
                                         : ''
-                                    ?>
+                            ?>
                                 "
                                 type="button"
                                 data-value="<?= $note ?>"
@@ -267,7 +267,7 @@ $hasEditeur =
                                     <?= ($manga->livre_note === $note)
                                         ? 'active'
                                         : ''
-                                    ?>
+                            ?>
                                 "
                                 type="button"
                                 data-value="<?= $note ?>"
@@ -301,7 +301,7 @@ $hasEditeur =
 
                     <?= ($manga->jacquette ?? 0)
                         + ($manga->livre_note ?? 0)
-                    ?>/10
+?>/10
 
                 </div>
 
@@ -326,9 +326,9 @@ $hasEditeur =
                         detail-value
                         detail-comment-box
                         <?= !$hasCommentaire
-                            ? 'is-empty'
-                            : ''
-                        ?>
+        ? 'is-empty'
+        : ''
+?>
                     "
                 >
 
@@ -350,15 +350,15 @@ $hasEditeur =
                         class="
                             js-read-status-button
                             <?= $isLu
-                                ? 'active'
-                                : ''
-                            ?>
+        ? 'active'
+        : ''
+?>
                         "
                         data-url="<?= e($updateReadStatusUrl) ?>"
                         data-read-status="<?= $isLu
-                            ? '1'
-                            : '0'
-                        ?>"
+? '1'
+: '0'
+?>"
                         title="<?= e($readStatusLabel) ?>"
                         aria-label="<?= e($readStatusLabel) ?>"
                     >

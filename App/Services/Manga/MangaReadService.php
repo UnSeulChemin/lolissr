@@ -20,7 +20,8 @@ final readonly class MangaReadService
     public function __construct(
         private MangaRepository $mangaRepository,
         private MangaSearchRepository $searchRepository,
-    ) {}
+    ) {
+    }
 
     private function mapSeriesItem(
         Manga $manga,
@@ -29,42 +30,32 @@ final readonly class MangaReadService
         return new MangaSeriesItemData(
             slug:
                 $manga->slug,
-
             numero:
                 $manga->numero,
-
             livre:
                 $manga->livre,
-
             thumbnail:
                 $manga->thumbnail !== ''
                     ? $manga->thumbnail
                     : null,
-
             extension:
                 $manga->extension !== ''
                     ? $manga->extension
                     : null,
-
             statut:
                 $manga->statut !== ''
                     ? $manga->statut
                     : 'en_cours',
-
             note:
                 $manga->note !== null
                     ? (float) $manga->note
                     : null,
-
             averageNote:
                 $manga->average_note,
-
             total:
                 $manga->total ?? 0,
-
             totalLu:
                 $manga->total_lu ?? 0,
-
             lu:
                 $manga->lu,
         );
@@ -77,23 +68,18 @@ final readonly class MangaReadService
         return new MangaSearchItemData(
             slug:
                 $manga->slug,
-
             numero:
                 $manga->numero,
-
             livre:
                 $manga->livre,
-
             thumbnail:
                 $manga->thumbnail !== ''
                     ? $manga->thumbnail
                     : null,
-
             extension:
                 $manga->extension !== ''
                     ? $manga->extension
                     : null,
-
             note:
                 $manga->note,
         );
@@ -146,19 +132,14 @@ final readonly class MangaReadService
                     $this->mapSeriesItem(...),
                     $mangas,
                 ),
-
             compteur:
                 $totalPages,
-
             currentPage:
                 $page,
-
             slugFilter:
                 null,
-
             totalSeries:
                 $totalSeries,
-
             perPage:
                 $perPage,
         );
@@ -188,7 +169,6 @@ final readonly class MangaReadService
                     $this->mapSearchItem(...),
                     $results,
                 ),
-
             search:
                 $query,
         );
@@ -220,19 +200,14 @@ final readonly class MangaReadService
                     $this->mapSeriesItem(...),
                     $mangas,
                 ),
-
             compteur:
                 1,
-
             currentPage:
                 1,
-
             slugFilter:
                 $normalizedSlug,
-
             totalSeries:
                 $totalItems,
-
             perPage:
                 $totalItems,
         );
@@ -260,7 +235,6 @@ final readonly class MangaReadService
         return new MangaShowData(
             manga:
                 $manga,
-
             canonicalSlug:
                 $normalizedSlug,
         );

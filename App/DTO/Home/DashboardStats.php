@@ -16,27 +16,16 @@ final readonly class DashboardStats
      */
     public function __construct(
         public int $totalTomes,
-
         public int $totalSeries,
-
         public int $totalRead,
-
         public int $totalUnread,
-
         public int $readingProgress,
-
         public ?float $averageNote,
-
         public ?Manga $lastTome,
-
         public ?Manga $longestSeries,
-
         public array $topLongestSeries,
-
         public array $lowRatedMangas,
-
         public array $lowJacquetteMangas,
-
         public array $lowLivreStateMangas,
     ) {
     }
