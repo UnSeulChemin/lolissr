@@ -1,40 +1,283 @@
-
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
+
 <meta charset="utf-8">
+
 <title>LoliSSR Report</title>
 
 <style>
 
+:root{
+
+    --background:#ebebeb;
+
+    --surface:#ffffff;
+    --surface-soft:#f8f8fb;
+
+    --violet:#7b2cff;
+
+    --violet-soft:
+        rgba(123,44,255,.08);
+
+    --violet-border:
+        rgba(123,44,255,.12);
+
+    --text:#1a1a1a;
+
+    --shadow:
+        0 10px 30px rgba(0,0,0,.06),
+        0 2px 10px rgba(0,0,0,.03);
+}
+
+*{
+    box-sizing:border-box;
+}
+
 body{
-    font-family:Segoe UI,sans-serif;
-    margin:40px;
+
+    margin:0;
+
+    padding:50px;
+
+    background:var(--background);
+
+    color:var(--text);
+
+    font-family:
+        Montserrat,
+        Segoe UI,
+        sans-serif;
+}
+
+.container{
+
+    width:min(
+        1400px,
+        100%
+    );
+
+    margin:auto;
+}
+
+.hero{
+
+    position:relative;
+
+    margin-bottom:40px;
+
+    padding:34px 30px;
+
+    text-align:center;
+
+    border-radius:28px;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,.98),
+            rgba(123,44,255,.06)
+        );
+
+    border:
+        1px solid
+        rgba(123,44,255,.10);
+
+    box-shadow:
+        0 12px 28px rgba(0,0,0,.07);
+}
+
+.hero h1{
+
+    margin:0;
+
+    font-size:3rem;
+
+    color:#7b2cff;
+}
+
+.hero p{
+
+    opacity:.75;
+}
+
+.grid{
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(
+                250px,
+                1fr
+            )
+        );
+
+    gap:24px;
+
+    margin-bottom:40px;
+}
+
+.card{
+
+    padding:24px;
+
+    border-radius:24px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #ffffff,
+            #f8f8fb
+        );
+
+    border:
+        1px solid
+        rgba(123,44,255,.10);
+
+    box-shadow:
+        var(--shadow);
+
+    text-align:center;
+}
+
+.card-title{
+
+    font-size:1rem;
+
+    opacity:.65;
+
+    margin-bottom:12px;
+}
+
+.card-value{
+
+    font-size:3rem;
+
+    font-weight:800;
+}
+
+.card-value.violet{
+
+    color:#7b2cff;
+}
+
+.table-card{
+
+    overflow:hidden;
+
+    border-radius:24px;
+
+    background:#fff;
+
+    border:
+        1px solid
+        rgba(123,44,255,.10);
+
+    box-shadow:
+        var(--shadow);
 }
 
 table{
+
     width:100%;
+
     border-collapse:collapse;
 }
 
-th,
-td{
-    border:1px solid #ddd;
-    padding:10px;
-}
-
 th{
-    background:#f5f5f5;
+
+    padding:18px;
+
+    text-align:left;
+
+    color:#5e4b75;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(123,44,255,.14),
+            rgba(178,76,255,.08)
+        );
 }
 
-.ok{
-    color:green;
-    font-weight:bold;
+td{
+
+    padding:18px;
+
+    border-top:
+        1px solid
+        rgba(123,44,255,.06);
 }
 
-.fail{
-    color:red;
-    font-weight:bold;
+tr:hover{
+
+    background:
+        rgba(123,44,255,.04);
+}
+
+.badge-ok{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    min-width:90px;
+
+    padding:8px 14px;
+
+    border-radius:999px;
+
+    color:white;
+
+    font-weight:700;
+
+    background:#27d99a;
+}
+
+.badge-fail{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    min-width:90px;
+
+    padding:8px 14px;
+
+    border-radius:999px;
+
+    color:white;
+
+    font-weight:700;
+
+    background:
+        linear-gradient(
+            180deg,
+            #ff6d6d,
+            #ff4d4d
+        );
+
+    box-shadow:
+        0 0 20px
+        rgba(255,80,80,.25);
+}
+
+.footer{
+
+    margin-top:30px;
+
+    text-align:center;
+
+    opacity:.5;
+
+    font-size:.9rem;
 }
 
 </style>
@@ -43,172 +286,82 @@ th{
 
 <body>
 
-<h1>LoliSSR HTTP Report</h1>
+<div class="container">
 
-<p>Total : 24</p>
-<p>OK : 24</p>
-<p>FAIL : 0</p>
+    <div class="hero">
 
-<table>
+        <h1>📜 LoliSSR Report</h1>
 
-<thead>
-<tr>
-    <th>Status</th>
-    <th>Label</th>
-    <th>Path</th>
-    <th>Temps</th>
-</tr>
-</thead>
+        <p>
+            Rapport généré automatiquement par la suite HTTP Safe
+        </p>
 
-<tbody>
+    </div>
 
-            <tr>
-                <td>OK</td>
-                <td>Accueil</td>
-                <td>/</td>
-                <td>41.61 ms</td>
-            </tr>
-            <tr>
-                <td>OK</td>
-                <td>Index</td>
-                <td>/manga</td>
-                <td>112.23 ms</td>
-            </tr>
-            <tr>
-                <td>OK</td>
-                <td>Recherche</td>
-                <td>/manga/recherche</td>
-                <td>95.58 ms</td>
-            </tr>
-            <tr>
-                <td>OK</td>
-                <td>Series</td>
-                <td>/manga/series</td>
-                <td>130.47 ms</td>
-            </tr>
-            <tr>
-                <td>OK</td>
-                <td>Page 1</td>
-                <td>/manga/series/page/1</td>
-                <td>95.33 ms</td>
-            </tr>
-            <tr>
-                <td>OK</td>
-                <td>I Want To See You Shy</td>
-                <td>/manga/series/i-want-to-see-you-shy/1</td>
-                <td>137.09 ms</td>
-            </tr>
-            <tr>
-                <td>OK</td>
-                <td>Accueil</td>
-                <td>/chinois</td>
-                <td>48.22 ms</td>
-            </tr>
-            <tr>
-                <td>OK</td>
-                <td>Mandarin</td>
-                <td>/chinois/mandarin</td>
-                <td>65.53 ms</td>
-            </tr>
-            <tr>
-                <td>OK</td>
-                <td>Jinyu</td>
-                <td>/chinois/jinyu</td>
-                <td>65.11 ms</td>
-            </tr>
-            <tr>
-                <td>OK</td>
-                <td>Grammaire</td>
-                <td>/chinois/grammaire</td>
-                <td>78.48 ms</td>
-            </tr>
-            <tr>
-                <td>OK</td>
-                <td>HSK1</td>
-                <td>/chinois/grammaire/hsk1</td>
-                <td>83.14 ms</td>
-            </tr>
-            <tr>
-                <td>OK</td>
-                <td>Flashcards</td>
-                <td>/chinois/flashcards</td>
-                <td>76.93 ms</td>
-            </tr>
-            <tr>
-                <td>OK</td>
-                <td>Accueil</td>
-                <td>/chinois</td>
-                <td>63.40 ms</td>
-            </tr>
-            <tr>
-                <td>OK</td>
-                <td>Mandarin</td>
-                <td>/chinois/mandarin</td>
-                <td>48.71 ms</td>
-            </tr>
-            <tr>
-                <td>OK</td>
-                <td>Jinyu</td>
-                <td>/chinois/jinyu</td>
-                <td>82.15 ms</td>
-            </tr>
-            <tr>
-                <td>OK</td>
-                <td>Grammaire</td>
-                <td>/chinois/grammaire</td>
-                <td>78.62 ms</td>
-            </tr>
-            <tr>
-                <td>OK</td>
-                <td>HSK1</td>
-                <td>/chinois/grammaire/hsk1</td>
-                <td>63.26 ms</td>
-            </tr>
-            <tr>
-                <td>OK</td>
-                <td>Flashcards</td>
-                <td>/chinois/flashcards</td>
-                <td>63.17 ms</td>
-            </tr>
-            <tr>
-                <td>OK</td>
-                <td>Index</td>
-                <td>/manga</td>
-                <td>96.82 ms</td>
-            </tr>
-            <tr>
-                <td>OK</td>
-                <td>Recherche</td>
-                <td>/manga/recherche</td>
-                <td>128.87 ms</td>
-            </tr>
-            <tr>
-                <td>OK</td>
-                <td>Series</td>
-                <td>/manga/series</td>
-                <td>83.77 ms</td>
-            </tr>
-            <tr>
-                <td>OK</td>
-                <td>Series Page 1</td>
-                <td>/manga/series/page/1</td>
-                <td>79.39 ms</td>
-            </tr>
-            <tr>
-                <td>OK</td>
-                <td>I Want To See You Shy</td>
-                <td>/manga/series/i-want-to-see-you-shy/1</td>
-                <td>78.52 ms</td>
-            </tr>
-            <tr>
-                <td>OK</td>
-                <td>Accueil</td>
-                <td>/</td>
-                <td>31.36 ms</td>
-            </tr>
-</tbody>
+    <div class="grid">
 
-</table>
+        <div class="card">
+            <div class="card-title">Tests</div>
+            <div class="card-value">
+                24
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Succès</div>
+            <div class="card-value">
+                24
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Échecs</div>
+            <div class="card-value">
+                0
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Success Rate</div>
+            <div class="card-value violet">
+                100%
+            </div>
+        </div>
+
+    </div>
+
+    <div class="table-card">
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Statut</th>
+                    <th>Test</th>
+                    <th>Route</th>
+                    <th>Temps</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr><td><span class="badge-ok">OK</span></td><td>Accueil</td><td>/</td><td>41.59 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Index</td><td>/manga</td><td>126.13 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Recherche</td><td>/manga/recherche</td><td>94.17 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Series</td><td>/manga/series</td><td>132.38 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Page 1</td><td>/manga/series/page/1</td><td>109.36 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>I Want To See You Shy</td><td>/manga/series/i-want-to-see-you-shy/1</td><td>94.92 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Accueil</td><td>/chinois</td><td>76.84 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Mandarin</td><td>/chinois/mandarin</td><td>67.33 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Jinyu</td><td>/chinois/jinyu</td><td>80.00 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Grammaire</td><td>/chinois/grammaire</td><td>79.92 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>HSK1</td><td>/chinois/grammaire/hsk1</td><td>64.83 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Flashcards</td><td>/chinois/flashcards</td><td>59.08 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Accueil</td><td>/chinois</td><td>66.90 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Mandarin</td><td>/chinois/mandarin</td><td>81.03 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Jinyu</td><td>/chinois/jinyu</td><td>61.59 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Grammaire</td><td>/chinois/grammaire</td><td>63.69 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>HSK1</td><td>/chinois/grammaire/hsk1</td><td>46.31 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Flashcards</td><td>/chinois/flashcards</td><td>80.44 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Index</td><td>/manga</td><td>95.32 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Recherche</td><td>/manga/recherche</td><td>97.35 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Series</td><td>/manga/series</td><td>132.52 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Series Page 1</td><td>/manga/series/page/1</td><td>92.54 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>I Want To See You Shy</td><td>/manga/series/i-want-to-see-you-shy/1</td><td>132.32 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Accueil</td><td>/</td><td>44.53 ms</td></tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <div class="footer">
+
+        Généré le 29/05/2026 08:16:52
+
+    </div>
+
+</div>
 
 </body>
 </html>
