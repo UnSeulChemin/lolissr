@@ -177,12 +177,16 @@ if (!is_dir($reportDirectory))
     );
 }
 
+$reportFile =
+    $reportDirectory
+    . '/lolissr-http-report.html';
+
 HtmlReport::generate(
     $results,
     $stats,
-    $reportDirectory . '/latest.html',
+    $reportFile,
 );
 
 echo PHP_EOL;
 echo '📄 Rapport HTML généré' . PHP_EOL;
-echo $reportDirectory . '/latest.html' . PHP_EOL;
+echo $reportFile . PHP_EOL;
