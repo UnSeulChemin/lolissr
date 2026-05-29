@@ -6,7 +6,7 @@ $tests[] = [
 
     'category' => '404',
 
-    'label' => 'Route inexistante',
+    'label' => 'Route inconnue retourne 404',
 
     'path' => '/route-inexistante',
 
@@ -17,7 +17,7 @@ $tests[] = [
 
     'category' => '404',
 
-    'label' => 'Serie inexistante',
+    'label' => 'Série inexistante retourne 404',
 
     'path' => '/manga/series/serie-qui-nexiste-pas',
 
@@ -28,7 +28,7 @@ $tests[] = [
 
     'category' => '404',
 
-    'label' => 'Manga inexistant',
+    'label' => 'Manga inexistant retourne 404',
 
     'path' => '/manga/series/serie-qui-nexiste-pas/999',
 
@@ -39,7 +39,7 @@ $tests[] = [
 
     'category' => '404',
 
-    'label' => 'Page manga inexistante',
+    'label' => 'Page série hors limite retourne 404',
 
     'path' => '/manga/series/page/999999',
 
@@ -50,7 +50,7 @@ $tests[] = [
 
     'category' => '404',
 
-    'label' => 'HSK inexistant',
+    'label' => 'Niveau HSK inexistant retourne 404',
 
     'path' => '/chinois/grammaire/hsk999',
 

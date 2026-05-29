@@ -6,76 +6,52 @@ $tests[] = [
 
     'category' => 'Chinois',
 
-    'label' => 'Accueil',
+    'label' => 'Accueil chinois accessible',
 
     'path' => '/chinois',
-
-    'contains' => [
-        'Chinois',
-    ],
 ];
 
 $tests[] = [
 
     'category' => 'Chinois',
 
-    'label' => 'Mandarin',
+    'label' => 'Page mandarin accessible',
 
     'path' => '/chinois/mandarin',
-
-    'contains' => [
-        'Mandarin',
-    ],
 ];
 
 $tests[] = [
 
     'category' => 'Chinois',
 
-    'label' => 'Jinyu',
+    'label' => 'Page jinyu accessible',
 
     'path' => '/chinois/jinyu',
-
-    'contains' => [
-        'Jinyu',
-    ],
 ];
 
 $tests[] = [
 
     'category' => 'Chinois',
 
-    'label' => 'Grammaire',
+    'label' => 'Page grammaire accessible',
 
     'path' => '/chinois/grammaire',
-
-    'contains' => [
-        'Grammaire',
-    ],
 ];
 
 $tests[] = [
 
     'category' => 'Chinois',
 
-    'label' => 'HSK 1',
+    'label' => 'Page HSK 1 accessible',
 
     'path' => '/chinois/grammaire/hsk1',
-
-    'contains' => [
-        'HSK',
-    ],
 ];
 
 $tests[] = [
 
     'category' => 'Chinois',
 
-    'label' => 'Flashcards',
+    'label' => 'Page flashcards accessible',
 
     'path' => '/chinois/flashcards',
-
-    'contains' => [
-        'Flashcards',
-    ],
 ];

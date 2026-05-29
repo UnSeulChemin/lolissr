@@ -6,7 +6,7 @@ $tests[] = [
 
     'category' => 'Canonical',
 
-    'label' => 'Slug manga non canonique',
+    'label' => 'Slug manga non canonique redirigé en 301',
 
     'path' => '/manga/series/I-WANT-TO-SEE-YOU-SHY/1',
 

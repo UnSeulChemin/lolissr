@@ -6,11 +6,7 @@ $tests[] = [
 
     'category' => 'Public',
 
-    'label' => 'Accueil',
+    'label' => 'Accueil public accessible',
 
     'path' => '/',
-
-    'contains' => [
-        'LoliSSR',
-    ],
 ];

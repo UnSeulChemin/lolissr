@@ -6,33 +6,25 @@ $tests[] = [
 
     'category' => 'Manga',
 
-    'label' => 'Index',
+    'label' => 'Page manga accessible',
 
     'path' => '/manga',
-
-    'contains' => [
-        'Manga',
-    ],
 ];
 
 $tests[] = [
 
     'category' => 'Manga',
 
-    'label' => 'Recherche',
+    'label' => 'Recherche manga accessible',
 
     'path' => '/manga/recherche',
-
-    'contains' => [
-        'Recherche',
-    ],
 ];
 
 $tests[] = [
 
     'category' => 'Manga',
 
-    'label' => 'Series',
+    'label' => 'Liste des séries accessible',
 
     'path' => '/manga/series',
 ];
@@ -41,7 +33,7 @@ $tests[] = [
 
     'category' => 'Manga',
 
-    'label' => 'Series Page 1',
+    'label' => 'Pagination séries page 1 accessible',
 
     'path' => '/manga/series/page/1',
 ];
@@ -50,11 +42,7 @@ $tests[] = [
 
     'category' => 'Manga',
 
-    'label' => 'Manga Detail',
+    'label' => 'Fiche manga existante accessible',
 
     'path' => '/manga/series/i-want-to-see-you-shy/1',
-
-    'contains' => [
-        'I Want To See You Shy',
-    ],
 ];

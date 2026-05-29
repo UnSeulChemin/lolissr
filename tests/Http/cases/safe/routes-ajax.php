@@ -6,7 +6,7 @@ $tests[] = [
 
     'category' => 'AJAX',
 
-    'label' => 'Recherche AJAX',
+    'label' => 'Recherche AJAX retourne 200',
 
     'path' => '/manga/ajax/recherche/love',
 
@@ -30,7 +30,7 @@ $tests[] = [
 
     'category' => 'AJAX',
 
-    'label' => 'Pagination AJAX',
+    'label' => 'Pagination AJAX retourne 200',
 
     'path' => '/manga/ajax/series/page/1',
 

@@ -1,29 +1,16 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
-
 <meta charset="utf-8">
-
-<title>LoliSSR Report</title>
+<title>LoliSSR HTTP Report</title>
 
 <style>
 
 :root{
-
     --background:#ebebeb;
-
     --surface:#ffffff;
     --surface-soft:#f8f8fb;
-
     --violet:#7b2cff;
-
-    --violet-soft:
-        rgba(123,44,255,.08);
-
-    --violet-border:
-        rgba(123,44,255,.12);
-
     --text:#1a1a1a;
 
     --shadow:
@@ -36,41 +23,22 @@
 }
 
 body{
-
     margin:0;
-
     padding:50px;
-
     background:var(--background);
-
     color:var(--text);
-
-    font-family:
-        Montserrat,
-        Segoe UI,
-        sans-serif;
+    font-family:Montserrat,Segoe UI,sans-serif;
 }
 
 .container{
-
-    width:min(
-        1400px,
-        100%
-    );
-
+    width:min(1400px,100%);
     margin:auto;
 }
 
 .hero{
-
-    position:relative;
-
     margin-bottom:40px;
-
     padding:34px 30px;
-
     text-align:center;
-
     border-radius:28px;
 
     background:
@@ -80,117 +48,96 @@ body{
             rgba(123,44,255,.06)
         );
 
-    border:
-        1px solid
-        rgba(123,44,255,.10);
+    border:1px solid rgba(123,44,255,.10);
 
     box-shadow:
         0 12px 28px rgba(0,0,0,.07);
 }
 
 .hero h1{
-
     margin:0;
-
-    font-size:3rem;
-
     color:#7b2cff;
+    font-size:3rem;
 }
 
 .hero p{
-
     opacity:.75;
 }
 
 .grid{
-
     display:grid;
-
-    grid-template-columns:
-        repeat(
-            auto-fit,
-            minmax(
-                250px,
-                1fr
-            )
-        );
-
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
     gap:24px;
-
-    margin-bottom:40px;
+    margin-bottom:24px;
 }
 
 .card{
-
     padding:24px;
-
     border-radius:24px;
-
-    background:
-        linear-gradient(
-            180deg,
-            #ffffff,
-            #f8f8fb
-        );
-
-    border:
-        1px solid
-        rgba(123,44,255,.10);
-
-    box-shadow:
-        var(--shadow);
-
     text-align:center;
+    background:linear-gradient(180deg,#fff,#f8f8fb);
+    border:1px solid rgba(123,44,255,.10);
+    box-shadow:var(--shadow);
+}
+
+.clickable{
+    cursor:pointer;
+    transition:.15s ease;
+}
+
+.clickable:hover{
+    transform:translateY(-3px);
 }
 
 .card-title{
-
-    font-size:1rem;
-
     opacity:.65;
-
     margin-bottom:12px;
 }
 
 .card-value{
-
     font-size:3rem;
-
     font-weight:800;
 }
 
-.card-value.violet{
-
+.violet{
     color:#7b2cff;
 }
 
+.fail-count{
+    color:#ff4d4d;
+}
+
+.filters{
+    display:flex;
+    gap:12px;
+    margin-bottom:20px;
+}
+
+.filters button{
+    border:none;
+    border-radius:14px;
+    padding:12px 18px;
+    cursor:pointer;
+    font-weight:700;
+    color:#fff;
+    background:#7b2cff;
+}
+
 .table-card{
-
     overflow:hidden;
-
     border-radius:24px;
-
     background:#fff;
-
-    border:
-        1px solid
-        rgba(123,44,255,.10);
-
-    box-shadow:
-        var(--shadow);
+    border:1px solid rgba(123,44,255,.10);
+    box-shadow:var(--shadow);
 }
 
 table{
-
     width:100%;
-
     border-collapse:collapse;
 }
 
 th{
-
     padding:18px;
-
     text-align:left;
 
     color:#5e4b75;
@@ -204,84 +151,43 @@ th{
 }
 
 td{
-
     padding:18px;
-
-    border-top:
-        1px solid
-        rgba(123,44,255,.06);
+    border-top:1px solid rgba(123,44,255,.06);
 }
 
 tr:hover{
-
-    background:
-        rgba(123,44,255,.04);
+    background:rgba(123,44,255,.04);
 }
 
 .badge-ok{
-
     display:inline-flex;
-
-    align-items:center;
-
     justify-content:center;
-
     min-width:90px;
-
     padding:8px 14px;
-
     border-radius:999px;
-
-    color:white;
-
+    color:#fff;
     font-weight:700;
-
     background:#27d99a;
 }
 
 .badge-fail{
-
     display:inline-flex;
-
-    align-items:center;
-
     justify-content:center;
-
     min-width:90px;
-
     padding:8px 14px;
-
     border-radius:999px;
-
-    color:white;
-
+    color:#fff;
     font-weight:700;
-
-    background:
-        linear-gradient(
-            180deg,
-            #ff6d6d,
-            #ff4d4d
-        );
-
-    box-shadow:
-        0 0 20px
-        rgba(255,80,80,.25);
+    background:linear-gradient(180deg,#ff6d6d,#ff4d4d);
 }
 
 .footer{
-
     margin-top:30px;
-
     text-align:center;
-
     opacity:.5;
-
-    font-size:.9rem;
 }
 
 </style>
-
 </head>
 
 <body>
@@ -289,45 +195,38 @@ tr:hover{
 <div class="container">
 
     <div class="hero">
-
         <h1>📜 LoliSSR Report</h1>
-
-        <p>
-            Rapport généré automatiquement par la suite HTTP Safe
-        </p>
-
+        <p>Rapport HTTP généré automatiquement</p>
     </div>
 
     <div class="grid">
 
-        <div class="card">
+        <div class="card clickable" onclick="showAll()">
             <div class="card-title">Tests</div>
-            <div class="card-value">
-                24
-            </div>
+            <div class="card-value">20</div>
         </div>
 
-        <div class="card">
+        <div class="card clickable" onclick="showSuccess()">
             <div class="card-title">Succès</div>
-            <div class="card-value">
-                24
-            </div>
+            <div class="card-value">18</div>
         </div>
 
-        <div class="card">
+        <div class="card clickable" onclick="showFailures()">
             <div class="card-title">Échecs</div>
-            <div class="card-value">
-                0
-            </div>
+            <div class="card-value fail-count">2</div>
         </div>
 
         <div class="card">
             <div class="card-title">Success Rate</div>
-            <div class="card-value violet">
-                100%
-            </div>
+            <div class="card-value violet">90%</div>
         </div>
 
+    </div>
+
+    <div class="filters">
+        <button onclick="showAll()">Tout</button>
+        <button onclick="showSuccess()">Succès</button>
+        <button onclick="showFailures()">Échecs</button>
     </div>
 
     <div class="table-card">
@@ -335,20 +234,17 @@ tr:hover{
         <table>
 
             <thead>
-
                 <tr>
                     <th>Statut</th>
                     <th>Test</th>
                     <th>Route</th>
                     <th>Temps</th>
+                    <th>Raison</th>
                 </tr>
-
             </thead>
 
             <tbody>
-
-                <tr><td><span class="badge-ok">OK</span></td><td>Accueil</td><td>/</td><td>41.59 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Index</td><td>/manga</td><td>126.13 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Recherche</td><td>/manga/recherche</td><td>94.17 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Series</td><td>/manga/series</td><td>132.38 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Page 1</td><td>/manga/series/page/1</td><td>109.36 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>I Want To See You Shy</td><td>/manga/series/i-want-to-see-you-shy/1</td><td>94.92 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Accueil</td><td>/chinois</td><td>76.84 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Mandarin</td><td>/chinois/mandarin</td><td>67.33 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Jinyu</td><td>/chinois/jinyu</td><td>80.00 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Grammaire</td><td>/chinois/grammaire</td><td>79.92 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>HSK1</td><td>/chinois/grammaire/hsk1</td><td>64.83 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Flashcards</td><td>/chinois/flashcards</td><td>59.08 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Accueil</td><td>/chinois</td><td>66.90 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Mandarin</td><td>/chinois/mandarin</td><td>81.03 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Jinyu</td><td>/chinois/jinyu</td><td>61.59 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Grammaire</td><td>/chinois/grammaire</td><td>63.69 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>HSK1</td><td>/chinois/grammaire/hsk1</td><td>46.31 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Flashcards</td><td>/chinois/flashcards</td><td>80.44 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Index</td><td>/manga</td><td>95.32 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Recherche</td><td>/manga/recherche</td><td>97.35 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Series</td><td>/manga/series</td><td>132.52 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Series Page 1</td><td>/manga/series/page/1</td><td>92.54 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>I Want To See You Shy</td><td>/manga/series/i-want-to-see-you-shy/1</td><td>132.32 ms</td></tr><tr><td><span class="badge-ok">OK</span></td><td>Accueil</td><td>/</td><td>44.53 ms</td></tr>
-
+                <tr data-status="OK"><td><span class="badge-ok">OK</span></td><td>Route inconnue retourne 404</td><td>/route-inexistante</td><td>25.88 ms</td><td></td></tr><tr data-status="OK"><td><span class="badge-ok">OK</span></td><td>Série inexistante retourne 404</td><td>/manga/series/serie-qui-nexiste-pas</td><td>101.59 ms</td><td></td></tr><tr data-status="OK"><td><span class="badge-ok">OK</span></td><td>Manga inexistant retourne 404</td><td>/manga/series/serie-qui-nexiste-pas/999</td><td>109.38 ms</td><td></td></tr><tr data-status="FAIL"><td><span class="badge-fail">FAIL</span></td><td>Page série hors limite retourne 404</td><td>/manga/series/page/999999</td><td>117.70 ms</td><td></td></tr><tr data-status="OK"><td><span class="badge-ok">OK</span></td><td>Niveau HSK inexistant retourne 404</td><td>/chinois/grammaire/hsk999</td><td>74.93 ms</td><td></td></tr><tr data-status="OK"><td><span class="badge-ok">OK</span></td><td>Recherche AJAX retourne 200</td><td>/manga/ajax/recherche/love</td><td>106.84 ms</td><td></td></tr><tr data-status="FAIL"><td><span class="badge-fail">FAIL</span></td><td>Pagination AJAX retourne 200</td><td>/manga/ajax/series/page/1</td><td>82.14 ms</td><td></td></tr><tr data-status="OK"><td><span class="badge-ok">OK</span></td><td>Slug manga non canonique redirigé en 301</td><td>/manga/series/I-WANT-TO-SEE-YOU-SHY/1</td><td>247.56 ms</td><td></td></tr><tr data-status="OK"><td><span class="badge-ok">OK</span></td><td>Accueil chinois accessible</td><td>/chinois</td><td>56.39 ms</td><td></td></tr><tr data-status="OK"><td><span class="badge-ok">OK</span></td><td>Page mandarin accessible</td><td>/chinois/mandarin</td><td>65.52 ms</td><td></td></tr><tr data-status="OK"><td><span class="badge-ok">OK</span></td><td>Page jinyu accessible</td><td>/chinois/jinyu</td><td>63.54 ms</td><td></td></tr><tr data-status="OK"><td><span class="badge-ok">OK</span></td><td>Page grammaire accessible</td><td>/chinois/grammaire</td><td>63.41 ms</td><td></td></tr><tr data-status="OK"><td><span class="badge-ok">OK</span></td><td>Page HSK 1 accessible</td><td>/chinois/grammaire/hsk1</td><td>67.15 ms</td><td></td></tr><tr data-status="OK"><td><span class="badge-ok">OK</span></td><td>Page flashcards accessible</td><td>/chinois/flashcards</td><td>75.51 ms</td><td></td></tr><tr data-status="OK"><td><span class="badge-ok">OK</span></td><td>Page manga accessible</td><td>/manga</td><td>95.31 ms</td><td></td></tr><tr data-status="OK"><td><span class="badge-ok">OK</span></td><td>Recherche manga accessible</td><td>/manga/recherche</td><td>97.05 ms</td><td></td></tr><tr data-status="OK"><td><span class="badge-ok">OK</span></td><td>Liste des séries accessible</td><td>/manga/series</td><td>99.14 ms</td><td></td></tr><tr data-status="OK"><td><span class="badge-ok">OK</span></td><td>Pagination séries page 1 accessible</td><td>/manga/series/page/1</td><td>97.79 ms</td><td></td></tr><tr data-status="OK"><td><span class="badge-ok">OK</span></td><td>Fiche manga existante accessible</td><td>/manga/series/i-want-to-see-you-shy/1</td><td>108.89 ms</td><td></td></tr><tr data-status="OK"><td><span class="badge-ok">OK</span></td><td>Accueil public accessible</td><td>/</td><td>51.82 ms</td><td></td></tr>
             </tbody>
 
         </table>
@@ -356,12 +252,48 @@ tr:hover{
     </div>
 
     <div class="footer">
-
-        Généré le 29/05/2026 08:16:52
-
+        Généré le 29/05/2026 09:03:44
     </div>
 
 </div>
+
+<script>
+
+function filterRows(status)
+{
+    document
+        .querySelectorAll('tbody tr')
+        .forEach(row => {
+
+            if (status === null)
+            {
+                row.style.display = '';
+                return;
+            }
+
+            row.style.display =
+                row.dataset.status === status
+                    ? ''
+                    : 'none';
+        });
+}
+
+function showAll()
+{
+    filterRows(null);
+}
+
+function showSuccess()
+{
+    filterRows('OK');
+}
+
+function showFailures()
+{
+    filterRows('FAIL');
+}
+
+</script>
 
 </body>
 </html>

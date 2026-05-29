@@ -92,11 +92,10 @@ final readonly class MangaReadService
         int|string $page = 1,
     ): ?MangaSeriesData {
 
-        $page =
-            max(
-                1,
-                (int) $page,
-            );
+        $page = max(
+            1,
+            (int) $page,
+        );
 
         $perPage =
             App::pagination();
@@ -115,7 +114,7 @@ final readonly class MangaReadService
             );
 
         if ($page > $totalPages) {
-            $page = $totalPages;
+            return null;
         }
 
         $mangas =

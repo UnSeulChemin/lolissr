@@ -15,21 +15,26 @@ final class HtmlReport
         foreach ($results as $result)
         {
             $status =
-                (string) $result['status'];
+                (string) ($result['status'] ?? 'FAIL');
 
             $label =
                 htmlspecialchars(
-                    (string) $result['label'],
+                    (string) ($result['label'] ?? ''),
                 );
 
             $path =
                 htmlspecialchars(
-                    (string) $result['path'],
+                    (string) ($result['path'] ?? ''),
+                );
+
+            $reason =
+                htmlspecialchars(
+                    (string) ($result['reason'] ?? ''),
                 );
 
             $duration =
                 number_format(
-                    ((float) $result['duration']) * 1000,
+                    ((float) ($result['duration'] ?? 0)) * 1000,
                     2,
                 );
 
@@ -39,11 +44,12 @@ final class HtmlReport
                     : 'badge-fail';
 
             $rows .=
-                '<tr>'
+                '<tr data-status="' . $status . '">'
                 . '<td><span class="' . $badgeClass . '">' . $status . '</span></td>'
                 . '<td>' . $label . '</td>'
                 . '<td>' . $path . '</td>'
                 . '<td>' . $duration . ' ms</td>'
+                . '<td>' . $reason . '</td>'
                 . '</tr>';
         }
 
@@ -56,30 +62,17 @@ final class HtmlReport
         $html = <<<HTML
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
-
 <meta charset="utf-8">
-
-<title>LoliSSR Report</title>
+<title>LoliSSR HTTP Report</title>
 
 <style>
 
 :root{
-
     --background:#ebebeb;
-
     --surface:#ffffff;
     --surface-soft:#f8f8fb;
-
     --violet:#7b2cff;
-
-    --violet-soft:
-        rgba(123,44,255,.08);
-
-    --violet-border:
-        rgba(123,44,255,.12);
-
     --text:#1a1a1a;
 
     --shadow:
@@ -92,41 +85,22 @@ final class HtmlReport
 }
 
 body{
-
     margin:0;
-
     padding:50px;
-
     background:var(--background);
-
     color:var(--text);
-
-    font-family:
-        Montserrat,
-        Segoe UI,
-        sans-serif;
+    font-family:Montserrat,Segoe UI,sans-serif;
 }
 
 .container{
-
-    width:min(
-        1400px,
-        100%
-    );
-
+    width:min(1400px,100%);
     margin:auto;
 }
 
 .hero{
-
-    position:relative;
-
     margin-bottom:40px;
-
     padding:34px 30px;
-
     text-align:center;
-
     border-radius:28px;
 
     background:
@@ -136,117 +110,96 @@ body{
             rgba(123,44,255,.06)
         );
 
-    border:
-        1px solid
-        rgba(123,44,255,.10);
+    border:1px solid rgba(123,44,255,.10);
 
     box-shadow:
         0 12px 28px rgba(0,0,0,.07);
 }
 
 .hero h1{
-
     margin:0;
-
-    font-size:3rem;
-
     color:#7b2cff;
+    font-size:3rem;
 }
 
 .hero p{
-
     opacity:.75;
 }
 
 .grid{
-
     display:grid;
-
-    grid-template-columns:
-        repeat(
-            auto-fit,
-            minmax(
-                250px,
-                1fr
-            )
-        );
-
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
     gap:24px;
-
-    margin-bottom:40px;
+    margin-bottom:24px;
 }
 
 .card{
-
     padding:24px;
-
     border-radius:24px;
-
-    background:
-        linear-gradient(
-            180deg,
-            #ffffff,
-            #f8f8fb
-        );
-
-    border:
-        1px solid
-        rgba(123,44,255,.10);
-
-    box-shadow:
-        var(--shadow);
-
     text-align:center;
+    background:linear-gradient(180deg,#fff,#f8f8fb);
+    border:1px solid rgba(123,44,255,.10);
+    box-shadow:var(--shadow);
+}
+
+.clickable{
+    cursor:pointer;
+    transition:.15s ease;
+}
+
+.clickable:hover{
+    transform:translateY(-3px);
 }
 
 .card-title{
-
-    font-size:1rem;
-
     opacity:.65;
-
     margin-bottom:12px;
 }
 
 .card-value{
-
     font-size:3rem;
-
     font-weight:800;
 }
 
-.card-value.violet{
-
+.violet{
     color:#7b2cff;
 }
 
+.fail-count{
+    color:#ff4d4d;
+}
+
+.filters{
+    display:flex;
+    gap:12px;
+    margin-bottom:20px;
+}
+
+.filters button{
+    border:none;
+    border-radius:14px;
+    padding:12px 18px;
+    cursor:pointer;
+    font-weight:700;
+    color:#fff;
+    background:#7b2cff;
+}
+
 .table-card{
-
     overflow:hidden;
-
     border-radius:24px;
-
     background:#fff;
-
-    border:
-        1px solid
-        rgba(123,44,255,.10);
-
-    box-shadow:
-        var(--shadow);
+    border:1px solid rgba(123,44,255,.10);
+    box-shadow:var(--shadow);
 }
 
 table{
-
     width:100%;
-
     border-collapse:collapse;
 }
 
 th{
-
     padding:18px;
-
     text-align:left;
 
     color:#5e4b75;
@@ -260,84 +213,43 @@ th{
 }
 
 td{
-
     padding:18px;
-
-    border-top:
-        1px solid
-        rgba(123,44,255,.06);
+    border-top:1px solid rgba(123,44,255,.06);
 }
 
 tr:hover{
-
-    background:
-        rgba(123,44,255,.04);
+    background:rgba(123,44,255,.04);
 }
 
 .badge-ok{
-
     display:inline-flex;
-
-    align-items:center;
-
     justify-content:center;
-
     min-width:90px;
-
     padding:8px 14px;
-
     border-radius:999px;
-
-    color:white;
-
+    color:#fff;
     font-weight:700;
-
     background:#27d99a;
 }
 
 .badge-fail{
-
     display:inline-flex;
-
-    align-items:center;
-
     justify-content:center;
-
     min-width:90px;
-
     padding:8px 14px;
-
     border-radius:999px;
-
-    color:white;
-
+    color:#fff;
     font-weight:700;
-
-    background:
-        linear-gradient(
-            180deg,
-            #ff6d6d,
-            #ff4d4d
-        );
-
-    box-shadow:
-        0 0 20px
-        rgba(255,80,80,.25);
+    background:linear-gradient(180deg,#ff6d6d,#ff4d4d);
 }
 
 .footer{
-
     margin-top:30px;
-
     text-align:center;
-
     opacity:.5;
-
-    font-size:.9rem;
 }
 
 </style>
-
 </head>
 
 <body>
@@ -345,45 +257,38 @@ tr:hover{
 <div class="container">
 
     <div class="hero">
-
         <h1>📜 LoliSSR Report</h1>
-
-        <p>
-            Rapport généré automatiquement par la suite HTTP Safe
-        </p>
-
+        <p>Rapport HTTP généré automatiquement</p>
     </div>
 
     <div class="grid">
 
-        <div class="card">
+        <div class="card clickable" onclick="showAll()">
             <div class="card-title">Tests</div>
-            <div class="card-value">
-                {$stats->total()}
-            </div>
+            <div class="card-value">{$stats->total()}</div>
         </div>
 
-        <div class="card">
+        <div class="card clickable" onclick="showSuccess()">
             <div class="card-title">Succès</div>
-            <div class="card-value">
-                {$stats->successCount()}
-            </div>
+            <div class="card-value">{$stats->successCount()}</div>
         </div>
 
-        <div class="card">
+        <div class="card clickable" onclick="showFailures()">
             <div class="card-title">Échecs</div>
-            <div class="card-value">
-                {$stats->failCount()}
-            </div>
+            <div class="card-value fail-count">{$stats->failCount()}</div>
         </div>
 
         <div class="card">
             <div class="card-title">Success Rate</div>
-            <div class="card-value violet">
-                {$successRate}%
-            </div>
+            <div class="card-value violet">{$successRate}%</div>
         </div>
 
+    </div>
+
+    <div class="filters">
+        <button onclick="showAll()">Tout</button>
+        <button onclick="showSuccess()">Succès</button>
+        <button onclick="showFailures()">Échecs</button>
     </div>
 
     <div class="table-card">
@@ -391,20 +296,17 @@ tr:hover{
         <table>
 
             <thead>
-
                 <tr>
                     <th>Statut</th>
                     <th>Test</th>
                     <th>Route</th>
                     <th>Temps</th>
+                    <th>Raison</th>
                 </tr>
-
             </thead>
 
             <tbody>
-
                 {$rows}
-
             </tbody>
 
         </table>
@@ -412,12 +314,48 @@ tr:hover{
     </div>
 
     <div class="footer">
-
         Généré le {$generatedAt}
-
     </div>
 
 </div>
+
+<script>
+
+function filterRows(status)
+{
+    document
+        .querySelectorAll('tbody tr')
+        .forEach(row => {
+
+            if (status === null)
+            {
+                row.style.display = '';
+                return;
+            }
+
+            row.style.display =
+                row.dataset.status === status
+                    ? ''
+                    : 'none';
+        });
+}
+
+function showAll()
+{
+    filterRows(null);
+}
+
+function showSuccess()
+{
+    filterRows('OK');
+}
+
+function showFailures()
+{
+    filterRows('FAIL');
+}
+
+</script>
 
 </body>
 </html>
