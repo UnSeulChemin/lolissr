@@ -4,6 +4,6 @@ declare(strict_types=1);
 
 return [
 
-    'base' => 'http://localhost',
+    'base' => 'http://localhost' . base_uri(),
 
 ];
