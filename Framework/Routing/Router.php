@@ -6,6 +6,7 @@ namespace Framework\Routing;
 
 use Closure;
 use Framework\Container\AppContainer;
+use Framework\Exceptions\NotFoundException;
 use Framework\Http\Middleware\MiddlewareInterface;
 use Framework\Http\Request;
 use ReflectionMethod;
@@ -132,7 +133,7 @@ final class Router
             }
 
             if (
-                !preg_match(
+                ! preg_match(
                     $route->pattern,
                     $uri,
                     $matches,
@@ -151,8 +152,7 @@ final class Router
                     ->get($middlewareClass);
 
                 if (
-                    !$middleware
-                    instanceof MiddlewareInterface
+                    ! $middleware instanceof MiddlewareInterface
                 ) {
                     throw new RuntimeException(
                         "Middleware invalide : {$middlewareClass}",
@@ -210,7 +210,7 @@ final class Router
 
                 if (
                     $type instanceof ReflectionNamedType
-                    && !$type->isBuiltin()
+                    && ! $type->isBuiltin()
                 ) {
                     $className = $type->getName();
 
@@ -233,7 +233,7 @@ final class Router
                     continue;
                 }
 
-                if (!empty($routeParams)) {
+                if (! empty($routeParams)) {
                     $arguments[] = array_shift(
                         $routeParams,
                     );
@@ -242,8 +242,7 @@ final class Router
                 }
 
                 if (
-                    $parameter
-                        ->isDefaultValueAvailable()
+                    $parameter->isDefaultValueAvailable()
                 ) {
                     $arguments[] = $parameter
                         ->getDefaultValue();
@@ -262,9 +261,8 @@ final class Router
             return;
         }
 
-        http_response_code(404);
-
-        echo 'Route non trouvée : '
-            . htmlspecialchars($uri);
+        throw new NotFoundException(
+            "Route non trouvée : {$uri}",
+        );
     }
 }

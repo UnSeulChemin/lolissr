@@ -79,7 +79,7 @@ final class ErrorController extends Controller
     }
 
     public function serverError(
-        string $message = 'Erreur interne du serveur',
+        string $message = 'Une erreur interne est survenue.',
     ): never {
 
         $this->error(

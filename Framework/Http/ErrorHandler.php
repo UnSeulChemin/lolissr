@@ -105,14 +105,11 @@ final class ErrorHandler
                 ],
             );
 
-            if (App::debug()) {
-
-                self::renderDebug(
-                    $exception,
-                );
-            }
-
-            self::render500();
+            self::render500(
+                App::debug()
+                    ? $exception->getMessage()
+                    : 'Une erreur interne est survenue.',
+            );
 
         } catch (Throwable $fallbackException) {
 
@@ -172,14 +169,11 @@ final class ErrorHandler
             ],
         );
 
-        if (App::debug()) {
-
-            self::renderFatalDebug(
-                $error,
-            );
-        }
-
-        self::render500();
+        self::render500(
+            App::debug()
+                ? $error['message']
+                : 'Une erreur interne est survenue.',
+        );
     }
 
     private static function logHttpException(
@@ -201,6 +195,27 @@ final class ErrorHandler
         );
     }
 
+    private static function displayMessage(
+        BaseHttpException $exception,
+    ): string {
+
+        if (App::debug()) {
+            return $exception->getMessage();
+        }
+
+        return match (
+            $exception->getStatusCode()
+        ) {
+            401 => 'Non authentifié',
+            403 => 'Accès interdit',
+            404 => 'Page introuvable',
+            405 => 'Méthode non autorisée',
+            419 => 'Session expirée',
+            422 => 'Erreur de validation',
+            default => 'Une erreur interne est survenue.',
+        };
+    }
+
     private static function controller(): ErrorController
     {
         return new ErrorController(
@@ -214,6 +229,11 @@ final class ErrorHandler
 
         $request =
             Request::capture();
+
+        $message =
+            self::displayMessage(
+                $exception,
+            );
 
         /*
         |--------------------------------------------------------------------------
@@ -241,7 +261,7 @@ final class ErrorHandler
                         false,
 
                     'message' =>
-                        $exception->getMessage(),
+                        $message,
 
                     'data' =>
                         $exception->getData(),
@@ -265,106 +285,43 @@ final class ErrorHandler
 
             401
                 => $controller->unauthorized(
-                    $exception->getMessage(),
+                    $message,
                 ),
 
             403
                 => $controller->forbidden(
-                    $exception->getMessage(),
+                    $message,
                 ),
 
             404
                 => $controller->notFound(
-                    $exception->getMessage(),
+                    $message,
                 ),
 
             405
                 => $controller->methodNotAllowed(
-                    $exception->getMessage(),
+                    $message,
                 ),
 
             419
                 => $controller->csrfExpired(
-                    $exception->getMessage(),
+                    $message,
                 ),
 
             default
                 => $controller->serverError(
-                    $exception->getMessage(),
+                    $message,
                 ),
         };
     }
 
-    private static function render500(): never
-    {
+    private static function render500(
+        string $message,
+    ): never {
+
         self::controller()
             ->serverError(
-                'Erreur interne du serveur.',
+                $message,
             );
-    }
-
-    private static function renderDebug(
-        Throwable $exception,
-    ): never {
-
-        http_response_code(500);
-
-        echo '<pre>';
-
-        echo htmlspecialchars(
-            sprintf(
-                "%s\n\n%s\n\nFile: %s\nLine: %d",
-                $exception::class,
-                $exception->getMessage(),
-                $exception->getFile(),
-                $exception->getLine(),
-            ),
-            ENT_QUOTES,
-            'UTF-8',
-        );
-
-        echo PHP_EOL . PHP_EOL;
-
-        echo htmlspecialchars(
-            $exception->getTraceAsString(),
-            ENT_QUOTES,
-            'UTF-8',
-        );
-
-        echo '</pre>';
-
-        exit;
-    }
-
-    /**
-     * @param array{
-     *     type:int,
-     *     message:string,
-     *     file:string,
-     *     line:int
-     * } $error
-     */
-    private static function renderFatalDebug(
-        array $error,
-    ): never {
-
-        http_response_code(500);
-
-        echo '<pre>';
-
-        echo htmlspecialchars(
-            sprintf(
-                "Fatal error\n\n%s\n\nFile: %s\nLine: %d",
-                $error['message'],
-                $error['file'],
-                $error['line'],
-            ),
-            ENT_QUOTES,
-            'UTF-8',
-        );
-
-        echo '</pre>';
-
-        exit;
     }
 }
