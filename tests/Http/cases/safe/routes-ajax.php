@@ -6,7 +6,7 @@ $tests[] = [
 
     'category' => 'AJAX',
 
-    'label' => 'Recherche AJAX retourne 200',
+    'label' => 'Recherche AJAX retourne JSON',
 
     'path' => '/manga/ajax/recherche/love',
 
@@ -30,16 +30,13 @@ $tests[] = [
 
     'category' => 'AJAX',
 
-    'label' => 'Pagination AJAX retourne 200',
+    'label' => 'Pagination AJAX retourne fragment HTML',
 
     'path' => '/manga/ajax/series/page/1',
 
     'expected_status' => 200,
 
-    'headers' => [
-
-        'Accept: application/json',
-
-        'X-Requested-With: XMLHttpRequest',
+    'contains' => [
+        'collection-card',
     ],
 ];
