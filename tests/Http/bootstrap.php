@@ -8,7 +8,7 @@ if (!defined('ROOT'))
 {
     define(
         'ROOT',
-        dirname(__DIR__),
+        dirname(__DIR__, 2),
     );
 }
 
