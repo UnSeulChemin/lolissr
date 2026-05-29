@@ -3,14 +3,11 @@
 declare(strict_types=1);
 
 $search =
-    isset($view['search'])
-        ? (string) $view['search']
-        : '';
+    (string) ($search ?? '');
 
 $mangas =
-    isset($view['mangas'])
-    && is_array($view['mangas'])
-        ? $view['mangas']
+    is_array($mangas ?? null)
+        ? $mangas
         : [];
 
 $baseUri =

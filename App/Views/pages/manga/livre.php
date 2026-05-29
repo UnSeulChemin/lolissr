@@ -2,11 +2,7 @@
 
 declare(strict_types=1);
 
-$manga =
-    $view['manga']
-    ?? null;
-
-if ($manga === null) {
+if (!isset($manga)) {
 
     throw new \RuntimeException(
         'Manga manquant dans la vue.',

@@ -273,11 +273,27 @@ foreach ($tests as $test)
             'http_status' =>
                 $status,
 
+            'expected_status' =>
+                $expectedStatus,
+
             'duration' =>
                 $duration,
 
             'reason' =>
                 '',
+
+            'headers' =>
+                implode(
+                    "\n",
+                    $responseHeaders,
+                ),
+
+            'body' =>
+                substr(
+                    $body,
+                    0,
+                    3000,
+                ),
         ];
 
         continue;
@@ -326,11 +342,27 @@ foreach ($tests as $test)
         'http_status' =>
             $status,
 
+        'expected_status' =>
+            $expectedStatus,
+
         'duration' =>
             $duration,
 
         'reason' =>
             $failureReason,
+
+        'headers' =>
+            implode(
+                "\n",
+                $responseHeaders,
+            ),
+
+        'body' =>
+            substr(
+                $body,
+                0,
+                3000,
+            ),
     ];
 }
 

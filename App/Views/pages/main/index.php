@@ -2,11 +2,7 @@
 
 declare(strict_types=1);
 
-$stats =
-    $view['stats']
-    ?? null;
-
-if ($stats === null) {
+if (!isset($stats)) {
 
     throw new \RuntimeException(
         'Stats manquantes dans la vue.',

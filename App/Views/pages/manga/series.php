@@ -3,19 +3,21 @@
 declare(strict_types=1);
 
 $mangas =
-    $view['mangas'] ?? [];
+    is_array($mangas ?? null)
+        ? $mangas
+        : [];
 
 $currentPage =
-    (int) ($view['currentPage'] ?? 1);
+    (int) ($currentPage ?? 1);
 
 $totalSeries =
-    (int) ($view['totalSeries'] ?? 0);
+    (int) ($totalSeries ?? 0);
 
 $perPage =
-    (int) ($view['perPage'] ?? 10);
+    (int) ($perPage ?? 10);
 
 $slugFilter =
-    $view['slugFilter'] ?? null;
+    $slugFilter ?? null;
 
 $isSerieView =
     is_string($slugFilter)
@@ -46,7 +48,7 @@ $totalPages =
         ); ?>
 
         <?php if (
-            ! $isSerieView
+            !$isSerieView
             && $totalPages > 1
         ): ?>
 

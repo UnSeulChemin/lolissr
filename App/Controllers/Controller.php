@@ -102,6 +102,17 @@ abstract class Controller
             EXTR_SKIP,
         );
 
+        if (
+            isset($variables['view'])
+            && is_array($variables['view'])
+        ) {
+
+            extract(
+                $variables['view'],
+                EXTR_SKIP,
+            );
+        }
+
         ob_start();
 
         try {

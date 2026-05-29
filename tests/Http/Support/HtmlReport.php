@@ -32,6 +32,26 @@ final class HtmlReport
                     (string) ($result['reason'] ?? ''),
                 );
 
+            $expectedStatus =
+                htmlspecialchars(
+                    (string) ($result['expected_status'] ?? ''),
+                );
+
+            $actualStatus =
+                htmlspecialchars(
+                    (string) ($result['http_status'] ?? ''),
+                );
+
+            $headers =
+                htmlspecialchars(
+                    (string) ($result['headers'] ?? ''),
+                );
+
+            $body =
+                htmlspecialchars(
+                    (string) ($result['body'] ?? ''),
+                );
+
             $duration =
                 number_format(
                     ((float) ($result['duration'] ?? 0)) * 1000,
@@ -44,13 +64,65 @@ final class HtmlReport
                     : 'badge-fail';
 
             $rows .=
-                '<tr data-status="' . $status . '">'
-                . '<td><span class="' . $badgeClass . '">' . $status . '</span></td>'
-                . '<td>' . $label . '</td>'
-                . '<td>' . $path . '</td>'
-                . '<td>' . $duration . ' ms</td>'
-                . '<td>' . $reason . '</td>'
+
+                '<tr class="main-row" data-status="' . $status . '">'
+
+                    . '<td><span class="' . $badgeClass . '">' . $status . '</span></td>'
+
+                    . '<td>' . $label . '</td>'
+
+                    . '<td>' . $path . '</td>'
+
+                    . '<td>' . $duration . ' ms</td>'
+
+                    . '<td>' . $reason . '</td>'
+
                 . '</tr>';
+
+            if ($status === 'FAIL')
+            {
+                $rows .=
+
+                    '<tr class="debug-row" data-status="FAIL">'
+
+                        . '<td colspan="5">'
+
+                            . '<div class="debug-content">'
+
+                                . '<h3>Debug</h3>'
+
+                                . '<p><strong>Expected :</strong> '
+                                . $expectedStatus
+                                . '</p>'
+
+                                . '<p><strong>Actual :</strong> '
+                                . $actualStatus
+                                . '</p>'
+
+                                . '<p><strong>Reason :</strong> '
+                                . $reason
+                                . '</p>'
+
+                                . '<h4>Headers</h4>'
+
+                                . '<pre>'
+                                . $headers
+                                . '</pre>'
+
+                                . '<h4>Response</h4>'
+
+                                . '<pre>'
+                                . $body
+                                . '</pre>'
+
+                            . '</div>'
+
+                        . '</td>'
+
+                    . '</tr>';
+            }
+
+
         }
 
         $successRate =
@@ -221,6 +293,44 @@ tr:hover{
     background:rgba(123,44,255,.04);
 }
 
+.main-row{
+    cursor:pointer;
+}
+
+.debug-row{
+    display:none;
+}
+
+.debug-row.open{
+    display:table-row;
+}
+
+.debug-content{
+
+    padding:20px;
+
+    background:
+        rgba(
+            123,
+            44,
+            255,
+            .03
+        );
+}
+
+.debug-content pre{
+
+    overflow:auto;
+
+    padding:12px;
+
+    border-radius:12px;
+
+    background:#f4f4f4;
+
+    white-space:pre-wrap;
+}
+
 .badge-ok{
     display:inline-flex;
     justify-content:center;
@@ -283,12 +393,6 @@ tr:hover{
             <div class="card-value violet">{$successRate}%</div>
         </div>
 
-    </div>
-
-    <div class="filters">
-        <button onclick="showAll()">Tout</button>
-        <button onclick="showSuccess()">Succès</button>
-        <button onclick="showFailures()">Échecs</button>
     </div>
 
     <div class="table-card">
@@ -354,6 +458,33 @@ function showFailures()
 {
     filterRows('FAIL');
 }
+
+document
+    .querySelectorAll('.main-row')
+    .forEach((row) => {
+
+        row.addEventListener(
+            'click',
+            () => {
+
+                const debugRow =
+                    row.nextElementSibling;
+
+                if (
+                    !debugRow
+                    || !debugRow.classList.contains(
+                        'debug-row',
+                    )
+                ) {
+                    return;
+                }
+
+                debugRow.classList.toggle(
+                    'open',
+                );
+            },
+        );
+    });
 
 </script>
 

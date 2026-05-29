@@ -2,24 +2,16 @@
 
 declare(strict_types=1);
 
-/**
- * @var array<string, mixed> $view
- */
-
-$grammaires =
-    isset($view['grammaires'])
-    && is_array($view['grammaires'])
-        ? $view['grammaires']
-        : [];
+/** @var array<int, object> $grammaires */
+/** @var string $level */
+/** @var string $baseUri */
 
 $level =
-    isset($view['level'])
-        ? (string) $view['level']
-        : '1';
+    (string) $level;
 
 $baseUri =
     rtrim(
-        (string) ($baseUri ?? ''),
+        $baseUri,
         '/',
     ) . '/';
 

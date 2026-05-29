@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 use Framework\Support\Session;
 
-$manga =
-    $view['manga']
-    ?? null;
-
-if ($manga === null) {
+if (!isset($manga)) {
 
     throw new \RuntimeException(
         'Manga manquant dans la vue.',

@@ -3,6 +3,17 @@
 declare(strict_types=1);
 
 /** @var array<int, object> $mangas */
+/** @var bool $isSerieView */
+/** @var string $baseUri */
+
+$isSerieView =
+    (bool) $isSerieView;
+
+$baseUri =
+    rtrim(
+        $baseUri,
+        '/',
+    ) . '/';
 
 ?>
 
@@ -16,19 +27,7 @@ declare(strict_types=1);
 
 </div>
 
-<?php return; endif;
-
-$isSerieView =
-    isset($isSerieView)
-        ? (bool) $isSerieView
-        : false;
-
-$baseUri =
-    isset($baseUri)
-        ? rtrim((string) $baseUri, '/') . '/'
-        : '';
-
-?>
+<?php return; endif; ?>
 
 <section class="collection-grid">
 

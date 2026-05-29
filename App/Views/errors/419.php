@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
+/** @var string $baseUri */
+/** @var string|null $message */
+
 $baseUri =
     rtrim(
-        (string) ($baseUri ?? ''),
+        $baseUri,
         '/',
     ) . '/';
 
-$message =
-    isset($view['message'])
-    && is_string($view['message'])
-        ? $view['message']
-        : 'Session expirée ou requête invalide.';
+$message ??=
+    'Session expirée ou requête invalide.';
 
 ?>
 

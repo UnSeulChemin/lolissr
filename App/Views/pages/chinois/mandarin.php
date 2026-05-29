@@ -2,11 +2,7 @@
 
 declare(strict_types=1);
 
-$vocabulaires =
-    isset($view['vocabulaires'])
-    && is_array($view['vocabulaires'])
-        ? $view['vocabulaires']
-        : [];
+/** @var array<int, object> $vocabulaires */
 
 ?>
 

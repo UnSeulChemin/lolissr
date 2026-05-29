@@ -70,11 +70,9 @@ final class Stats
             return 0.0;
         }
 
-        return round(
+        return
             $this->duration
-            / $this->total,
-            4,
-        );
+            / $this->total;
     }
 
     public function hasFailures(): bool
