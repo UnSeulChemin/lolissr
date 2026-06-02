@@ -3,6 +3,14 @@
 // =========================================
 
 import {
+    invalidateRoute,
+} from '../../router/route-invalidation.js';
+
+import {
+    invalidatePrefetch,
+} from '../../router/prefetch/prefetch-cache.js';
+
+import {
     post,
 } from '../../core/http.js';
 
@@ -300,15 +308,23 @@ async function updateNote(
                 );
         }
 
-        updateTotalNote();
+    updateTotalNote();
 
-        refreshButtons();
+    refreshButtons();
 
-        showToast(
-            data?.message
-            || 'Sauvegardé',
-            'success',
-        );
+    invalidateRoute(
+        window.location.href,
+    );
+
+    invalidatePrefetch(
+        window.location.href,
+    );
+
+    showToast(
+        data?.message
+        || 'Sauvegardé',
+        'success',
+    );
 
     } catch (error) {
 

@@ -343,3 +343,41 @@
     fill: currentColor;
     stroke: currentColor;
 }
+
+/* =========================================
+   PERFECT SCORE
+========================================= */
+
+.perfect-score-group .js-note-button.active
+{
+    position: relative;
+
+    isolation: isolate;
+
+    transform:
+        scale(1.08);
+}
+
+.perfect-score-group .js-note-button.active::after
+{
+    content: '';
+
+    position: absolute;
+
+    inset: -3px;
+
+    border-radius: inherit;
+
+    pointer-events: none;
+
+    z-index: -1;
+
+    filter:
+        blur(8px);
+
+    background:
+        rgba(79, 99, 255, 0.52);
+
+    animation:
+        badge-glow-shared 1.8s ease-in-out infinite;
+}

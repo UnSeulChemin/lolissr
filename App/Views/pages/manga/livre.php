@@ -94,6 +94,12 @@ $hasEditeur =
         (string) $manga->editeur,
     ) !== '';
 
+$isPerfectJacquette =
+    (int) ($manga->jacquette ?? 0) === 5;
+
+$isPerfectLivre =
+    (int) ($manga->livre_note ?? 0) === 5;
+
 ?>
 
 <section class="layout-container dashboard-page">
@@ -202,7 +208,13 @@ $hasEditeur =
                 <div class="detail-value detail-value-notes">
 
                     <div
-                        class="js-note-group"
+                        class="
+                            js-note-group
+                            <?= $isPerfectJacquette
+                                ? 'perfect-score-group'
+                                : ''
+                            ?>
+                        "
                         data-field="jacquette"
                     >
 
@@ -218,7 +230,7 @@ $hasEditeur =
                                     <?= ($manga->jacquette === $note)
                                         ? 'active'
                                         : ''
-                            ?>
+                                    ?>
                                 "
                                 type="button"
                                 data-value="<?= $note ?>"
@@ -248,7 +260,13 @@ $hasEditeur =
                 <div class="detail-value detail-value-notes">
 
                     <div
-                        class="js-note-group"
+                        class="
+                            js-note-group
+                            <?= $isPerfectLivre
+                                ? 'perfect-score-group'
+                                : ''
+                            ?>
+                        "
                         data-field="livreNote"
                     >
 
@@ -264,7 +282,7 @@ $hasEditeur =
                                     <?= ($manga->livre_note === $note)
                                         ? 'active'
                                         : ''
-                            ?>
+                                    ?>
                                 "
                                 type="button"
                                 data-value="<?= $note ?>"
