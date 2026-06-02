@@ -82,6 +82,8 @@ final readonly class MangaReadService
                     : null,
             note:
                 $manga->note,
+            lu:
+                $manga->lu,
         );
     }
 
