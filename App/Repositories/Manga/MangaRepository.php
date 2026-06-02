@@ -120,12 +120,39 @@ final class MangaRepository extends Model
     public function findBySlug(
         string $slug,
     ): array {
+
         /** @var list<Manga> $mangas */
         $mangas = $this->fetchAll(
-            "SELECT *
-            FROM {$this->getTable()}
-            WHERE slug = :slug
-            ORDER BY numero DESC",
+            "
+            SELECT
+                m.*,
+                stats.total,
+                stats.total_lu,
+                stats.average_note
+            FROM {$this->getTable()} m
+            INNER JOIN (
+                SELECT
+                    slug,
+                    COUNT(*) AS total,
+                    SUM(
+                        CASE
+                            WHEN lu = 1 THEN 1
+                            ELSE 0
+                        END
+                    ) AS total_lu,
+                    ROUND(
+                        AVG(
+                            COALESCE(note, 0)
+                        ),
+                        1
+                    ) AS average_note
+                FROM {$this->getTable()}
+                GROUP BY slug
+            ) stats
+                ON stats.slug = m.slug
+            WHERE m.slug = :slug
+            ORDER BY m.numero DESC
+            ",
             [
                 'slug' => $this->normalizeSlug(
                     $slug,
