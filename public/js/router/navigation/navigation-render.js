@@ -15,10 +15,6 @@ import {
 } from '../router-focus.js';
 
 import {
-    restoreScrollPosition,
-} from '../route-scroll.js';
-
-import {
     emitNavigationRender,
 } from './navigation-events.js';
 
@@ -67,20 +63,8 @@ export async function renderPage(
 
     clearActiveFocus();
 
-    if (
-        options.scrollTop
-        === true
-    ) {
-
-        window.scrollTo(
-            0,
-            0,
-        );
-
-        return;
-    }
-
-    restoreScrollPosition(
-        target,
+    window.scrollTo(
+        0,
+        0,
     );
 }
