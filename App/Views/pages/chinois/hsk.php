@@ -31,6 +31,35 @@ foreach ($grammaires as $grammaire)
         $grammaire;
 }
 
+$sectionIds = [];
+
+foreach (array_keys($sections) as $section)
+{
+    $sectionId =
+        transliterator_transliterate(
+            'Any-Latin; Latin-ASCII',
+            $section,
+        );
+
+    $sectionId =
+        mb_strtolower(
+            $sectionId,
+        );
+
+    $sectionId =
+        preg_replace(
+            '/[^a-z0-9]+/',
+            '-',
+            $sectionId,
+        );
+
+    $sectionIds[$section] =
+        trim(
+            $sectionId,
+            '-',
+        );
+}
+
 $descriptions = [
     '1' => 'Structures courantes, phrases du quotidien et grammaire HSK1.',
     '2' => 'Structures courantes, phrases du quotidien et grammaire HSK2.',
@@ -113,11 +142,37 @@ $sourceDescription =
 
     </section>
 
+    <section class="grammar-summary transition-card">
+
+        <h2 class="grammar-summary-title">
+            Sommaire
+        </h2>
+
+        <nav class="grammar-summary-links">
+
+            <?php foreach ($sections as $section => $categories): ?>
+
+            <a
+                href="#<?= e($sectionIds[$section]) ?>"
+                class="grammar-summary-link"
+            >
+                <?= e($section) ?>
+            </a>
+
+            <?php endforeach; ?>
+
+        </nav>
+
+    </section>
+
     <?php foreach ($sections as $section => $categories): ?>
 
         <section class="grammar-main-section transition-card">
 
-            <h2 class="grammar-section-title">
+            <h2
+                id="<?= e($sectionIds[$section]) ?>"
+                class="grammar-section-title"
+            >
 
                 <span class="grammar-section-bar"></span>
 
