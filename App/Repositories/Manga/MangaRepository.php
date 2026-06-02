@@ -131,23 +131,7 @@ final class MangaRepository extends Model
                 stats.average_note
             FROM {$this->getTable()} m
             INNER JOIN (
-                SELECT
-                    slug,
-                    COUNT(*) AS total,
-                    SUM(
-                        CASE
-                            WHEN lu = 1 THEN 1
-                            ELSE 0
-                        END
-                    ) AS total_lu,
-                    ROUND(
-                        AVG(
-                            COALESCE(note, 0)
-                        ),
-                        1
-                    ) AS average_note
-                FROM {$this->getTable()}
-                GROUP BY slug
+                {$this->statsSubQuery()}
             ) stats
                 ON stats.slug = m.slug
             WHERE m.slug = :slug
@@ -346,5 +330,28 @@ final class MangaRepository extends Model
         );
 
         return $result !== null;
+    }
+
+    private function statsSubQuery(): string
+    {
+        return "
+            SELECT
+                slug,
+                COUNT(*) AS total,
+                SUM(
+                    CASE
+                        WHEN lu = 1 THEN 1
+                        ELSE 0
+                    END
+                ) AS total_lu,
+                ROUND(
+                    AVG(
+                        COALESCE(note, 0)
+                    ),
+                    1
+                ) AS average_note
+            FROM {$this->getTable()}
+            GROUP BY slug
+        ";
     }
 }

@@ -93,6 +93,15 @@ $baseUri =
         $total > 0
         && $totalLu >= $total;
 
+    $isRead =
+        isset($manga->lu)
+        && (int) $manga->lu === 1;
+
+    $showReadBadge =
+        $isSerieView
+            ? $isRead
+            : $isFullyRead;
+
     if (
         $slug === ''
         || $livre === ''
@@ -198,7 +207,7 @@ $baseUri =
     <span
         class="
             collection-read-badge
-            <?= $isFullyRead ? 'active glow-blue' : '' ?>
+            <?= $showReadBadge ? 'active glow-blue' : '' ?>
         "
     >
 
