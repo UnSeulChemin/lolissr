@@ -367,8 +367,8 @@
         border-color var(--transition-fast);
 }
 
-.collection-pagination-link:hover,
-.collection-pagination-link:focus-visible
+.collection-pagination-link:not(.active):hover,
+.collection-pagination-link:not(.active):focus-visible
 {
     transform: translateY(-2px);
 
@@ -383,6 +383,10 @@
     background: var(--gradient-violet);
 
     border-color: transparent;
+
+    cursor: default;
+
+    pointer-events: none;
 }
 
 .collection-back-wrapper
