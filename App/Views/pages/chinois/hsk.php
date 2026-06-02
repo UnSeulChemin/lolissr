@@ -3,15 +3,17 @@
 declare(strict_types=1);
 
 /** @var array<int, object> $grammaires */
-/** @var string $level */
-/** @var string $baseUri */
 
 $level =
-    (string) $level;
+    (string) (
+        $level
+        ?? '1'
+    );
 
 $baseUri =
     rtrim(
-        $baseUri,
+        $baseUri
+        ?? '',
         '/',
     ) . '/';
 
@@ -19,15 +21,14 @@ $sections = [];
 
 foreach ($grammaires as $grammaire)
 {
-
     $section =
         (string) $grammaire->section;
 
     $categorie =
         (string) $grammaire->categorie;
 
-    $sections[$section][$categorie][]
-        = $grammaire;
+    $sections[$section][$categorie][] =
+        $grammaire;
 }
 
 $descriptions = [

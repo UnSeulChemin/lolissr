@@ -3,15 +3,17 @@
 declare(strict_types=1);
 
 /** @var array<int, object> $mangas */
-/** @var bool $isSerieView */
-/** @var string $baseUri */
 
 $isSerieView =
-    (bool) $isSerieView;
+    (bool) (
+        $isSerieView
+        ?? false
+    );
 
 $baseUri =
     rtrim(
-        $baseUri,
+        $baseUri
+        ?? '',
         '/',
     ) . '/';
 

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-/** @var string $baseUri */
 /** @var string|null $message */
 
 $baseUri =
     rtrim(
-        $baseUri,
+        $baseUri
+        ?? '',
         '/',
     ) . '/';
 
