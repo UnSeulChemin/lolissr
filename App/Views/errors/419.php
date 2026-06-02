@@ -31,9 +31,17 @@ $message ??=
                 ⌛ 419 — Session expirée
             </h1>
 
-            <p>
-                <?= e($message) ?>
-            </p>
+            <div class="error-route">
+
+                <span class="error-route-label">
+                    Erreur
+                </span>
+
+                <span class="error-route-path">
+                    <?= e($message) ?>
+                </span>
+
+            </div>
 
             <div class="detail-actions">
 

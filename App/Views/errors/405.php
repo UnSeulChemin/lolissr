@@ -12,7 +12,7 @@ $baseUri =
     ) . '/';
 
 $message ??=
-    'La méthode utilisée n’est pas autorisée.';
+    'Méthode non autorisée.';
 
 ?>
 
@@ -31,9 +31,17 @@ $message ??=
                 ⛔ 405 — Méthode non autorisée
             </h1>
 
-            <p>
-                <?= e($message) ?>
-            </p>
+            <div class="error-route">
+
+                <span class="error-route-label">
+                    Erreur
+                </span>
+
+                <span class="error-route-path">
+                    <?= e($message) ?>
+                </span>
+
+            </div>
 
             <div class="detail-actions">
 

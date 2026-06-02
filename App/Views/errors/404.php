@@ -31,9 +31,17 @@ $message ??=
                 🚫 404 — Page introuvable
             </h1>
 
-            <p>
-                <?= e($message) ?>
-            </p>
+            <div class="error-route">
+
+                <span class="error-route-label">
+                    Route non trouvée
+                </span>
+
+                <span class="error-route-path">
+                    <?= e($message) ?>
+                </span>
+
+            </div>
 
             <div class="detail-actions">
 
