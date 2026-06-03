@@ -30,6 +30,10 @@ import {
     initToggleGrammaireMaitrise,
 } from '../chinois/actions/toggle-grammar-mastery.js';
 
+import {
+    initAjouterPage as initAjouterChinoisPage,
+} from '../chinois/pages/ajouter.js';
+
 // ==================================================
 // EXPORT
 // ==================================================
@@ -38,7 +42,7 @@ export const ROUTE_INITIALIZERS = [
 
     /*
     |--------------------------------------------------------------------------
-    | AJOUTER
+    | AJOUTER MANGA
     |--------------------------------------------------------------------------
     */
 
@@ -51,6 +55,25 @@ export const ROUTE_INITIALIZERS = [
             [
                 'AjouterPage',
                 initAjouterPage,
+            ],
+        ],
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | AJOUTER CHINOIS
+    |--------------------------------------------------------------------------
+    */
+
+    {
+        match:
+            /^\/lolissr\/chinois\/(grammaire|vocabulaire)\/ajouter\/?$/,
+
+        initializers:
+        [
+            [
+                'AjouterChinoisPage',
+                initAjouterChinoisPage,
             ],
         ],
     },
