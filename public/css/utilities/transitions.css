@@ -294,3 +294,20 @@
         0 0 16px rgba(123, 44, 255, 0.35),
         0 0 24px rgba(123, 44, 255, 0.15);
 }
+
+/* =========================================
+   FORM TRANSITIONS
+========================================= */
+
+.transition-form
+{
+    transition:
+        box-shadow 160ms ease;
+}
+
+.transition-form:hover
+{
+    box-shadow:
+        0 10px 30px rgba(123, 44, 255, 0.18),
+        0 0 20px rgba(123, 44, 255, 0.12);
+}
