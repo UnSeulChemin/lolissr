@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\DTO\Chinois;
+namespace App\DTO\Chinois\Responses;
 
-final readonly class ChinoisGrammaireDTO
+final readonly class ChinoisGrammaireData
 {
     public function __construct(
         public int $id,

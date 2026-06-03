@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories\Chinois;
 
-use App\DTO\Chinois\ChinoisGrammaireDTO;
+use App\DTO\Chinois\Responses\ChinoisGrammaireData;
 use App\Models\Model;
 use stdClass;
 
@@ -13,7 +13,7 @@ final class ChinoisGrammaireRepository extends Model
     protected string $table = 'chinois_grammaire';
 
     /**
-     * @return list<ChinoisGrammaireDTO>
+     * @return list<ChinoisGrammaireData>
      */
     public function findByLevel(
         string $niveau,
@@ -59,32 +59,39 @@ final class ChinoisGrammaireRepository extends Model
         return array_map(
             static function (
                 stdClass $row,
-            ): ChinoisGrammaireDTO {
-                return new ChinoisGrammaireDTO(
+            ): ChinoisGrammaireData {
+
+                return new ChinoisGrammaireData(
                     id: (int) $row->id,
                     niveau: (string) $row->niveau,
+
                     section: (string) $row->section,
                     sectionPosition: (int) $row->section_position,
+
                     categorie: (string) $row->categorie,
                     categoriePosition: (int) $row->categorie_position,
+
                     titre: (string) $row->titre,
                     structure: (string) $row->structure,
 
-                    abreviation: $row->abreviation !== null
-                        ? (string) $row->abreviation
-                        : null,
+                    abreviation:
+                        $row->abreviation !== null
+                            ? (string) $row->abreviation
+                            : null,
 
                     phrase: (string) $row->phrase,
 
-                    pinyin: isset($row->pinyin)
-                        ? (string) $row->pinyin
-                        : '',
+                    pinyin:
+                        isset($row->pinyin)
+                            ? (string) $row->pinyin
+                            : '',
 
                     traduction: (string) $row->traduction,
 
-                    explication: $row->explication !== null
-                        ? (string) $row->explication
-                        : null,
+                    explication:
+                        $row->explication !== null
+                            ? (string) $row->explication
+                            : null,
 
                     position: (int) $row->position,
                     maitrise: (bool) $row->maitrise,
