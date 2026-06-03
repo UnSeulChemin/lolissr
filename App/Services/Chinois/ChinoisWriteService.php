@@ -137,4 +137,39 @@ final readonly class ChinoisWriteService
             },
         );
     }
+
+    public function deleteGrammaire(
+        int $id,
+    ): ServiceResult {
+
+        if ($this->isReadOnlyMode())
+        {
+            return $this->error(
+                'Écriture en base désactivée',
+                403,
+            );
+        }
+
+        return $this->database->transaction(
+            function () use ($id): ServiceResult {
+
+                $deleted =
+                    $this->grammaireRepository
+                        ->deleteGrammaire(
+                            $id,
+                        );
+
+                if (! $deleted)
+                {
+                    return $this->error(
+                        'Erreur lors de la suppression',
+                    );
+                }
+
+                return $this->success(
+                    'Grammaire supprimée avec succès',
+                );
+            },
+        );
+    }
 }

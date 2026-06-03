@@ -31,6 +31,10 @@ import {
 } from '../chinois/actions/toggle-grammar-mastery.js';
 
 import {
+    initDeleteGrammaire,
+} from '../chinois/actions/delete-grammar.js';
+
+import {
     initAjouterPage as initAjouterChinoisPage,
 } from '../chinois/pages/ajouter.js';
 
@@ -80,7 +84,7 @@ export const ROUTE_INITIALIZERS = [
 
     /*
     |--------------------------------------------------------------------------
-    | MODIFIER
+    | MODIFIER MANGA
     |--------------------------------------------------------------------------
     */
 
@@ -132,6 +136,11 @@ export const ROUTE_INITIALIZERS = [
             [
                 'ToggleGrammaireMaitrise',
                 initToggleGrammaireMaitrise,
+            ],
+
+            [
+                'DeleteGrammaire',
+                initDeleteGrammaire,
             ],
         ],
     },

@@ -197,6 +197,11 @@ return static function (Router $router): void {
                 'toggle-grammaire-maitrise',
                 [ChinoisAjaxController::class, 'toggleGrammaireMaitrise'],
             );
+
+            $router->post(
+                'delete-grammaire',
+                [ChinoisAjaxController::class, 'deleteGrammaire'],
+            );            
         });
     });
 };

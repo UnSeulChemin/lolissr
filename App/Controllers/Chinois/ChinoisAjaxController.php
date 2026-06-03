@@ -7,6 +7,7 @@ namespace App\Controllers\Chinois;
 use App\Controllers\Controller;
 use App\DTO\Common\ServiceResult;
 use App\Repositories\Chinois\ChinoisGrammaireRepository;
+use App\Services\Chinois\ChinoisWriteService;
 use Framework\Exceptions\ValidationException;
 use Framework\Http\Request;
 
@@ -14,18 +15,13 @@ final class ChinoisAjaxController extends Controller
 {
     public function __construct(
         private readonly ChinoisGrammaireRepository $repository,
+        private readonly ChinoisWriteService $writeService,
         Request $request,
     ) {
         parent::__construct(
             $request,
         );
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Toggle Grammaire Maîtrise
-    |--------------------------------------------------------------------------
-    */
 
     public function toggleGrammaireMaitrise(): never
     {
@@ -37,7 +33,6 @@ final class ChinoisAjaxController extends Controller
 
         if ($id <= 0)
         {
-
             throw new ValidationException(
                 [
                     'id' =>
@@ -64,6 +59,35 @@ final class ChinoisAjaxController extends Controller
                         $maitrise,
                 ],
             ),
+        );
+    }
+
+    public function deleteGrammaire(): never
+    {
+        $id =
+            (int) $this->request->input(
+                'id',
+                0,
+            );
+
+        if ($id <= 0)
+        {
+            throw new ValidationException(
+                [
+                    'id' =>
+                        'ID invalide',
+                ],
+            );
+        }
+
+        $result =
+            $this->writeService
+                ->deleteGrammaire(
+                    $id,
+                );
+
+        $this->jsonResult(
+            $result,
         );
     }
 }

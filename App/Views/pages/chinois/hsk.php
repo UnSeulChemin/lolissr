@@ -229,17 +229,12 @@ $sourceDescription =
                                     class="grammar-delete"
                                     type="button"
                                     data-id="<?= (int) $grammaire->id ?>"
+                                    data-url="<?= e($baseUri) ?>chinois/ajax/delete-grammaire"
                                     aria-label="Supprimer la règle"
                                     title="Supprimer la règle"
                                 >
                                     ✕
                                 </button>
-
-                                <h4 class="grammar-topic">
-                                    <?= e(
-                                        (string) $grammaire->titre,
-                                    ) ?>
-                                </h4>
 
                                 <h4 class="grammar-topic">
                                     <?= e(

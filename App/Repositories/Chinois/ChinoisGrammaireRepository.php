@@ -6,11 +6,26 @@ namespace App\Repositories\Chinois;
 
 use App\DTO\Chinois\Responses\ChinoisGrammaireData;
 use App\Models\Model;
+use Framework\Application\App;
+use LogicException;
 use stdClass;
 
 final class ChinoisGrammaireRepository extends Model
 {
-    protected string $table = 'chinois_grammaire';
+    protected string $table =
+        'chinois_grammaire';
+
+    private function guardWrite(): void
+    {
+        if (! App::isReadOnly())
+        {
+            return;
+        }
+
+        throw new LogicException(
+            'Écriture en base interdite en mode lecture seule.',
+        );
+    }
 
     /**
      * @return list<ChinoisGrammaireData>
@@ -18,6 +33,7 @@ final class ChinoisGrammaireRepository extends Model
     public function findByLevel(
         string $niveau,
     ): array {
+
         $query = $this->query(
             "SELECT
                 id,
@@ -54,7 +70,8 @@ final class ChinoisGrammaireRepository extends Model
         }
 
         /** @var list<stdClass> $results */
-        $results = $query->fetchAll();
+        $results =
+            $query->fetchAll();
 
         return array_map(
             static function (
@@ -104,6 +121,9 @@ final class ChinoisGrammaireRepository extends Model
     public function toggleMaitrise(
         int $id,
     ): int {
+
+        $this->guardWrite();
+
         $this->execute(
             "UPDATE {$this->getTable()}
             SET maitrise = NOT maitrise
@@ -111,12 +131,13 @@ final class ChinoisGrammaireRepository extends Model
             [$id],
         );
 
-        $result = $this->fetchOne(
-            "SELECT maitrise
-            FROM {$this->getTable()}
-            WHERE id = ?",
-            [$id],
-        );
+        $result =
+            $this->fetchOne(
+                "SELECT maitrise
+                FROM {$this->getTable()}
+                WHERE id = ?",
+                [$id],
+            );
 
         if ($result === null)
         {
@@ -124,5 +145,18 @@ final class ChinoisGrammaireRepository extends Model
         }
 
         return (int) $result->maitrise;
+    }
+
+    public function deleteGrammaire(
+        int $id,
+    ): bool {
+
+        $this->guardWrite();
+
+        return $this->delete(
+            [
+                'id' => $id,
+            ],
+        );
     }
 }
