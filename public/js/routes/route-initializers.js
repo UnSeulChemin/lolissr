@@ -31,6 +31,10 @@ import {
 } from '../chinois/actions/toggle-grammar-mastery.js';
 
 import {
+    initToggleVocabulaireMaitrise,
+} from '../chinois/actions/toggle-vocabulary-mastery.js';
+
+import {
     initDeleteGrammaire,
 } from '../chinois/actions/delete-grammar.js';
 
@@ -137,6 +141,11 @@ export const ROUTE_INITIALIZERS = [
             [
                 'ToggleGrammaireMaitrise',
                 initToggleGrammaireMaitrise,
+            ],
+
+            [
+                'ToggleVocabulaireMaitrise',
+                initToggleVocabulaireMaitrise,
             ],
 
             [

@@ -193,6 +193,17 @@ return static function (Router $router): void {
             [ChinoisController::class, 'createVocabulaire'],
         );
 
+        $router->get(
+            'vocabulaire/modifier/{id:int}',
+            [ChinoisController::class, 'editVocabulaire'],
+        );
+
+        $router->post(
+            'vocabulaire/modifier/{id:int}',
+            [ChinoisController::class, 'updateVocabulaire'],
+            [CsrfMiddleware::class],
+        );
+
         $router->post(
             'vocabulaire/ajouter',
             [ChinoisController::class, 'storeVocabulaire'],

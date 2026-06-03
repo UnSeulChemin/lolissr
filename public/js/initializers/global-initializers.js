@@ -26,10 +26,6 @@ import {
     initGlobalErrorHandlers,
 } from '../boot/app-errors.js';
 
-import {
-    initToggleVocabulaireMaitrise,
-} from '../../features/chinois/vocabulaire/toggle-vocabulaire-maitrise.js';
-
 // ==================================================
 // EXPORT
 // ==================================================
@@ -64,10 +60,5 @@ export const GLOBAL_INITIALIZERS = [
     [
         'GlobalErrorHandlers',
         initGlobalErrorHandlers,
-    ],
-
-    [
-        'ToggleVocabulaireMaitrise',
-        initToggleVocabulaireMaitrise,
     ],
 ];

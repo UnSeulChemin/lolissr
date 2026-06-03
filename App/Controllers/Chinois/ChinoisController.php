@@ -13,6 +13,7 @@ use App\Services\Chinois\ChinoisWriteService;
 use Framework\Exceptions\NotFoundException;
 use Framework\Exceptions\ValidationException;
 use Framework\Http\Request;
+use App\Repositories\Chinois\ChinoisVocabulaireRepository;
 
 final class ChinoisController extends Controller
 {
@@ -30,6 +31,7 @@ final class ChinoisController extends Controller
         private readonly ChinoisReadService $chinoisReadService,
         private readonly ChinoisWriteService $chinoisWriteService,
         private readonly ChinoisGrammaireRepository $chinoisGrammaireRepository,
+        private readonly ChinoisVocabulaireRepository $chinoisVocabulaireRepository,
         Request $request,
     ) {
         parent::__construct(
@@ -244,6 +246,33 @@ final class ChinoisController extends Controller
         );
     }
 
+    public function editVocabulaire(
+        int $id,
+    ): never
+    {
+        $vocabulaire =
+            $this->chinoisVocabulaireRepository
+                ->findById($id);
+
+        if ($vocabulaire === null)
+        {
+            throw new NotFoundException(
+                'Vocabulaire introuvable',
+            );
+        }
+
+        $this->title =
+            'Chinois | Modifier du vocabulaire';
+
+        $this->render(
+            'pages/chinois/vocabulaire/modifier',
+            [
+                'vocabulaire' =>
+                    $vocabulaire,
+            ],
+        );
+    }
+
     public function updateGrammaire(
         ChinoisGrammaireCreateRequest $request,
         int $id,
@@ -316,6 +345,62 @@ final class ChinoisController extends Controller
             'chinois/grammaire/hsk'
             . $level,
             'Grammaire modifiée.',
+        );
+    }
+
+    public function updateVocabulaire(
+        ChinoisVocabulaireCreateRequest $request,
+        int $id,
+    ): never {
+
+        $vocabulaire =
+            $this->chinoisVocabulaireRepository
+                ->findById($id);
+
+        if ($vocabulaire === null)
+        {
+            throw new NotFoundException(
+                'Vocabulaire introuvable',
+            );
+        }
+
+        if ($request->fails())
+        {
+            throw new ValidationException(
+                $request->errors(),
+            );
+        }
+
+        $dto =
+            $request->dto();
+
+        $this->chinoisVocabulaireRepository
+            ->updateVocabulaire(
+                $id,
+                [
+                    'langue' =>
+                        $dto->langue,
+
+                    'mot' =>
+                        $dto->mot,
+
+                    'pinyin' =>
+                        $dto->pinyin,
+
+                    'type' =>
+                        $dto->type,
+
+                    'traduction' =>
+                        $dto->traduction,
+
+                    'exemple' =>
+                        $dto->exemple,
+                ],
+            );
+
+        $this->redirectWithSuccess(
+            'chinois/' . $dto->langue,
+            'Vocabulaire modifié.',
         );
     }
 }
