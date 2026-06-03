@@ -17,7 +17,7 @@ $baseUri =
         <div
             class="
                 dashboard-title-box
-                transition-card
+                transition-title
             "
         >
 

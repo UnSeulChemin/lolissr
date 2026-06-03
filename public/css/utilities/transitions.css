@@ -274,3 +274,23 @@
     animation:
         badge-glow-gold 3.6s ease-in-out infinite;
 }
+
+/* =========================================
+   TITLE TRANSITIONS
+========================================= */
+.transition-title
+{
+    transition:
+        color 140ms ease,
+        text-shadow 140ms ease;
+}
+
+.transition-title:hover
+{
+    color: #c08cff;
+
+    text-shadow:
+        0 0 8px rgba(123, 44, 255, 0.55),
+        0 0 16px rgba(123, 44, 255, 0.35),
+        0 0 24px rgba(123, 44, 255, 0.15);
+}
