@@ -97,7 +97,7 @@ $sourceDescription =
 
 <section class="layout-container dashboard-page">
 
-    <section class="grammar-hero transition-card">
+    <section class="grammar-hero transition-title">
 
         <div class="grammar-hero-main">
 

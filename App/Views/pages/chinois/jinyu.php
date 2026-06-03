@@ -11,7 +11,7 @@ declare(strict_types=1);
     <section
         class="
             chinois-vocab-panel
-            transition-card
+            transition-vocab
         "
     >
 
@@ -67,7 +67,7 @@ declare(strict_types=1);
 
                         <?php foreach ($vocabulaires as $vocabulaire): ?>
 
-                            <tr class="transition-card">
+                            <tr>
 
                                 <td>
 
