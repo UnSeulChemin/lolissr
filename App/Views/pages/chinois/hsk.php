@@ -142,7 +142,7 @@ $sourceDescription =
 
     </section>
 
-    <section class="grammar-summary transition-card">
+    <section class="grammar-summary">
 
         <h2 class="grammar-summary-title">
             Sommaire
@@ -167,7 +167,7 @@ $sourceDescription =
 
     <?php foreach ($sections as $section => $categories): ?>
 
-        <section class="grammar-main-section transition-card">
+        <section class="grammar-main-section">
 
             <h2
                 id="<?= e($sectionIds[$section]) ?>"
@@ -182,7 +182,7 @@ $sourceDescription =
 
             <?php foreach ($categories as $categorie => $items): ?>
 
-                <section class="grammar-category transition-card">
+                <section class="grammar-category">
 
                     <h3 class="grammar-category-title">
 
