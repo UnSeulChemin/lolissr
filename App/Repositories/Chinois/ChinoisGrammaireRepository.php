@@ -147,6 +147,79 @@ final class ChinoisGrammaireRepository extends Model
         return (int) $result->maitrise;
     }
 
+    public function findById(
+        int $id,
+    ): ?ChinoisGrammaireData {
+
+        $result =
+            $this->fetchOne(
+                "SELECT
+                    id,
+                    niveau,
+                    section,
+                    section_position,
+                    categorie,
+                    categorie_position,
+                    titre,
+                    structure,
+                    abreviation,
+                    phrase,
+                    pinyin,
+                    traduction,
+                    explication,
+                    position,
+                    maitrise
+
+                FROM {$this->getTable()}
+
+                WHERE id = ?
+
+                LIMIT 1",
+                [$id],
+            );
+
+        if ($result === null)
+        {
+            return null;
+        }
+
+        return new ChinoisGrammaireData(
+            id: (int) $result->id,
+            niveau: (string) $result->niveau,
+
+            section: (string) $result->section,
+            sectionPosition: (int) $result->section_position,
+
+            categorie: (string) $result->categorie,
+            categoriePosition: (int) $result->categorie_position,
+
+            titre: (string) $result->titre,
+            structure: (string) $result->structure,
+
+            abreviation:
+                $result->abreviation !== null
+                    ? (string) $result->abreviation
+                    : null,
+
+            phrase: (string) $result->phrase,
+
+            pinyin:
+                isset($result->pinyin)
+                    ? (string) $result->pinyin
+                    : '',
+
+            traduction: (string) $result->traduction,
+
+            explication:
+                $result->explication !== null
+                    ? (string) $result->explication
+                    : null,
+
+            position: (int) $result->position,
+            maitrise: (bool) $result->maitrise,
+        );
+    }
+
     public function deleteGrammaire(
         int $id,
     ): bool {
@@ -154,6 +227,21 @@ final class ChinoisGrammaireRepository extends Model
         $this->guardWrite();
 
         return $this->delete(
+            [
+                'id' => $id,
+            ],
+        );
+    }
+
+    public function updateGrammaire(
+        int $id,
+        array $data,
+    ): bool {
+
+        $this->guardWrite();
+
+        return $this->update(
+            $data,
             [
                 'id' => $id,
             ],

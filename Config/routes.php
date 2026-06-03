@@ -171,6 +171,17 @@ return static function (Router $router): void {
             [ChinoisController::class, 'createGrammaire'],
         );
 
+        $router->get(
+            'grammaire/modifier/{id:int}',
+            [ChinoisController::class, 'editGrammaire'],
+        );
+
+        $router->post(
+            'grammaire/modifier/{id:int}',
+            [ChinoisController::class, 'updateGrammaire'],
+            [CsrfMiddleware::class],
+        );
+
         $router->post(
             'grammaire/ajouter',
             [ChinoisController::class, 'storeGrammaire'],

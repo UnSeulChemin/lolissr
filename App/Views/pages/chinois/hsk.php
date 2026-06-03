@@ -236,10 +236,9 @@ $sourceDescription =
                                     ✕
                                 </button>
 
-                                <button
+                                <a
                                     class="grammar-edit"
-                                    type="button"
-                                    data-url="<?= e($baseUri) ?>chinois/grammaire/modifier/<?= (int) $grammaire->id ?>"
+                                    href="<?= e($baseUri) ?>chinois/grammaire/modifier/<?= (int) $grammaire->id ?>"
                                     aria-label="Modifier la règle"
                                     title="Modifier la règle"
                                 >
@@ -261,7 +260,7 @@ $sourceDescription =
 
                                     </svg>
 
-                                </button>
+                                </a>
 
                                 <h4 class="grammar-topic">
                                     <?= e(

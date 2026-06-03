@@ -211,4 +211,105 @@ final class ChinoisController extends Controller
             $result,
         );
     }
+
+    public function editGrammaire(
+        int $id,
+    ): never
+    {
+        $grammaire =
+            $this->chinoisGrammaireRepository
+                ->findById($id);
+
+        if ($grammaire === null)
+        {
+            throw new NotFoundException(
+                'Grammaire introuvable',
+            );
+        }
+
+        $this->title =
+            'Chinois | Modifier une grammaire';
+
+        $this->render(
+            'pages/chinois/grammaire/modifier',
+            [
+                'grammaire' => $grammaire,
+            ],
+        );
+    }
+
+    public function updateGrammaire(
+        ChinoisGrammaireCreateRequest $request,
+        int $id,
+    ): never {
+
+        $grammaire =
+            $this->chinoisGrammaireRepository
+                ->findById($id);
+
+        if ($grammaire === null)
+        {
+            throw new NotFoundException(
+                'Grammaire introuvable',
+            );
+        }
+
+        if ($request->fails())
+        {
+            throw new ValidationException(
+                $request->errors(),
+            );
+        }
+
+        $dto =
+            $request->dto();
+
+        $this->chinoisGrammaireRepository
+            ->updateGrammaire(
+                $id,
+                [
+                    'niveau' =>
+                        $dto->niveau,
+
+                    'titre' =>
+                        $dto->titre,
+
+                    'structure' =>
+                        $dto->structure,
+
+                    'abreviation' =>
+                        $dto->abreviation,
+
+                    'phrase' =>
+                        $dto->phrase,
+
+                    'pinyin' =>
+                        $dto->pinyin,
+
+                    'traduction' =>
+                        $dto->traduction,
+
+                    'explication' =>
+                        $dto->explication,
+
+                    'section' =>
+                        $dto->section,
+
+                    'categorie' =>
+                        $dto->categorie,
+                ],
+            );
+
+        $level =
+            substr(
+                $dto->niveau,
+                3,
+            );
+
+        $this->redirectWithSuccess(
+            'chinois/grammaire/hsk'
+            . $level,
+            'Grammaire modifiée.',
+        );
+    }
 }
