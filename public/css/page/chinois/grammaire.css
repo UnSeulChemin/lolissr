@@ -464,6 +464,77 @@
 }
 
 /* =========================================
+   ÉDITION
+========================================= */
+
+.grammar-edit
+{
+    position: absolute;
+
+    right: 62px;
+    bottom: 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 34px;
+    height: 34px;
+
+    padding: 0;
+
+    color: var(--color-violet);
+
+    border: 2px solid rgba(123, 44, 255, 0.20);
+    border-radius: 11px;
+
+    background: rgba(123, 44, 255, 0.05);
+
+    box-shadow:
+        0 4px 10px rgba(123, 44, 255, 0.06);
+
+    cursor: pointer;
+
+    transition:
+        transform var(--transition-fast),
+        background var(--transition-fast),
+        border-color var(--transition-fast),
+        color var(--transition-fast),
+        box-shadow var(--transition-fast);
+
+    z-index: 5;
+}
+
+.grammar-edit:hover
+{
+    transform: scale(1.05);
+
+    color: #ffffff;
+
+    border-color: var(--color-violet);
+
+    background: var(--gradient-violet);
+
+    box-shadow:
+        0 8px 18px rgba(123, 44, 255, 0.22);
+}
+
+.grammar-edit-icon
+{
+    width: 17px;
+    height: 17px;
+
+    flex-shrink: 0;
+
+    pointer-events: none;
+}
+
+.grammar-edit *
+{
+    pointer-events: none;
+}
+
+/* =========================================
    MAÎTRISE
 ========================================= */
 

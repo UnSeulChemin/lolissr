@@ -236,6 +236,33 @@ $sourceDescription =
                                     ✕
                                 </button>
 
+                                <button
+                                    class="grammar-edit"
+                                    type="button"
+                                    data-url="<?= e($baseUri) ?>chinois/grammaire/modifier/<?= (int) $grammaire->id ?>"
+                                    aria-label="Modifier la règle"
+                                    title="Modifier la règle"
+                                >
+
+                                    <svg
+                                        class="grammar-edit-icon"
+                                        viewBox="0 0 24 24"
+                                        aria-hidden="true"
+                                    >
+
+                                        <path
+                                            d="M4 20H8L18.5 9.5C19.1 8.9 19.1 7.9 18.5 7.3L16.7 5.5C16.1 4.9 15.1 4.9 14.5 5.5L4 16V20Z"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="2"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                        />
+
+                                    </svg>
+
+                                </button>
+
                                 <h4 class="grammar-topic">
                                     <?= e(
                                         (string) $grammaire->titre,
