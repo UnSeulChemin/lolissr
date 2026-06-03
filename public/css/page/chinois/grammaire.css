@@ -667,3 +667,11 @@
     box-shadow:
         0 8px 18px rgba(123, 44, 255, 0.22);
 }
+
+.grammar-abbreviation
+{
+    margin-top: 14px;
+    margin-bottom: 8px;
+
+    color: var(--color-text-secondary);
+}

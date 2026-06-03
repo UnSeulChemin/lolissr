@@ -204,6 +204,12 @@ $sourceDescription =
                                     (string) $grammaire->explication,
                                 ) !== '';
 
+                            $hasAbreviation =
+                                isset($grammaire->abreviation)
+                                && trim(
+                                    (string) $grammaire->abreviation,
+                                ) !== '';
+
                             $isMaitrise =
                                 (int) (
                                     $grammaire->maitrise
@@ -230,6 +236,24 @@ $sourceDescription =
                                         (string) $grammaire->structure,
                                     ) ?>
                                 </div>
+
+                                <?php if ($hasAbreviation): ?>
+
+                                    <div class="grammar-abbreviation">
+
+                                        <span class="grammar-abbreviation-label">
+                                            Abréviation courante :
+                                        </span>
+
+                                        <span class="grammar-abbreviation-value">
+                                            <?= e(
+                                                (string) $grammaire->abreviation,
+                                            ) ?>
+                                        </span>
+
+                                    </div>
+
+                                <?php endif; ?>
 
                                 <div class="grammar-example">
                                     <?= e(

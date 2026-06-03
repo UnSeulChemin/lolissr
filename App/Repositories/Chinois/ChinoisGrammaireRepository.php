@@ -28,6 +28,7 @@ final class ChinoisGrammaireRepository extends Model
                 categorie_position,
                 titre,
                 structure,
+                abreviation,
                 phrase,
                 pinyin,
                 traduction,
@@ -68,14 +69,23 @@ final class ChinoisGrammaireRepository extends Model
                     categoriePosition: (int) $row->categorie_position,
                     titre: (string) $row->titre,
                     structure: (string) $row->structure,
+
+                    abreviation: $row->abreviation !== null
+                        ? (string) $row->abreviation
+                        : null,
+
                     phrase: (string) $row->phrase,
+
                     pinyin: isset($row->pinyin)
                         ? (string) $row->pinyin
                         : '',
+
                     traduction: (string) $row->traduction,
+
                     explication: $row->explication !== null
                         ? (string) $row->explication
                         : null,
+
                     position: (int) $row->position,
                     maitrise: (bool) $row->maitrise,
                 );

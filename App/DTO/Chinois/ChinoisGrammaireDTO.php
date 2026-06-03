@@ -15,6 +15,7 @@ final readonly class ChinoisGrammaireDTO
         public int $categoriePosition,
         public string $titre,
         public string $structure,
+        public ?string $abreviation,
         public string $phrase,
         public string $pinyin,
         public string $traduction,

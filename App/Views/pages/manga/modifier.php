@@ -79,11 +79,10 @@ $noteTotal =
     <section
         class="
             form-page
-            transition-card
         "
     >
 
-        <section class="form-card">
+        <section class="form-card transition-form">
 
             <form
                 class="form-layout"
