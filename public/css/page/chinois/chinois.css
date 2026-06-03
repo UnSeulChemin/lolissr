@@ -9,7 +9,7 @@
     grid-template-columns:
         repeat(
             2,
-            minmax(0, 580px)
+            minmax(0, 620px)
         );
 
     justify-content: center;
@@ -19,8 +19,7 @@
 
 .chinois-vocab-panel
 {
-    width: min(1200px, 100%);
-
+    width: min(var(--width-grammar), 100%);
     margin: 0 auto;
 }
 
@@ -34,7 +33,7 @@
 
     overflow: hidden;
 
-    padding: 20px;
+    padding: 22px;
 
     border-radius: var(--radius-card-lg);
 
@@ -76,12 +75,6 @@
         var(--shadow-card-hover);
 }
 
-.grammar-delete
-{
-    top: 18px;
-    right: 18px;
-}
-
 /* =========================================
    MOT
 ========================================= */
@@ -114,30 +107,39 @@
 
 .chinois-vocab-type
 {
-    display: inline-flex;
+    position: absolute;
 
+    top: 18px;
+    right: 64px;
+
+    display: flex;
     align-items: center;
     justify-content: center;
 
-    margin-bottom: 16px;
+    min-height: 34px;
 
     padding:
-        10px
-        18px;
+        0
+        14px;
 
-    color: var(--color-violet);
+    color: #7b57ff;
 
-    font-size: .9rem;
-    font-weight: 700;
+    font-size: .72rem;
+    font-weight: 800;
+
+    text-transform: uppercase;
+    letter-spacing: .06em;
+
+    border-radius: 10px;
 
     border:
-        1px solid rgba(123,44,255,.18);
-
-    border-radius:
-        var(--radius-pill);
+        1px solid rgba(123,44,255,.12);
 
     background:
-        rgba(123,44,255,.08);
+        rgba(123,44,255,.05);
+
+    box-shadow:
+        0 2px 6px rgba(123,44,255,.04);
 }
 
 /* =========================================
@@ -181,8 +183,8 @@
 {
     position: absolute;
 
-    right: 14px;
-    bottom: 14px;
+    right: 18px;
+    bottom: 18px;
 
     display: flex;
 

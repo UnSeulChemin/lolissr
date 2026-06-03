@@ -18,21 +18,8 @@ $baseUri =
     <section
         class="
             chinois-vocab-panel
-            transition-vocab
         "
     >
-
-        <div class="chinois-vocab-header">
-
-            <h2 class="chinois-vocab-title">
-                Vocabulaire
-            </h2>
-
-            <p class="chinois-vocab-subtitle">
-                Liste des mots et phrases enregistrés en <?= e($langue) ?>.
-            </p>
-
-        </div>
 
         <section class="chinois-vocab-list">
 
@@ -134,6 +121,9 @@ $baseUri =
                                         : '' ?>
                                 "
                                 type="button"
+                                aria-pressed="<?= $isMaitrise
+                                    ? 'true'
+                                    : 'false' ?>"
                             >
 
                                 <svg
