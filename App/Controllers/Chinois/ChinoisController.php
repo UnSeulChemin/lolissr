@@ -53,8 +53,11 @@ final class ChinoisController extends Controller
             'Chinois | Mandarin';
 
         $this->render(
-            'pages/chinois/mandarin',
+            'pages/chinois/vocabulaire/index',
             [
+                'langue' =>
+                    'mandarin',
+
                 'vocabulaires' =>
                     $this->chinoisReadService
                         ->mandarin(),
@@ -68,8 +71,11 @@ final class ChinoisController extends Controller
             'Chinois | 晋语';
 
         $this->render(
-            'pages/chinois/jinyu',
+            'pages/chinois/vocabulaire/index',
             [
+                'langue' =>
+                    '晋语',
+
                 'vocabulaires' =>
                     $this->chinoisReadService
                         ->jinyu(),

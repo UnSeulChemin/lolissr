@@ -1,159 +1,218 @@
 /* =========================================
-   PAGE : CHINOIS
+   LISTE
 ========================================= */
+
+.chinois-vocab-list
+{
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 580px)
+        );
+
+    justify-content: center;
+
+    gap: 28px;
+}
 
 .chinois-vocab-panel
 {
-    width: min(var(--width-chinois-panel), 100%);
+    width: min(1200px, 100%);
 
-    margin: var(--margin-chinois-panel-top) auto 0;
-    padding: var(--padding-chinois-panel);
-
-    border: var(--border-panel);
-    border-radius: var(--radius-chinois-panel);
-
-    background: var(--background-panel);
-
-    box-shadow: var(--shadow-panel-large);
+    margin: 0 auto;
 }
 
-.chinois-vocab-header
+/* =========================================
+   CARTE
+========================================= */
+
+.chinois-vocab-card
 {
-    margin-bottom: var(--margin-chinois-header-bottom);
+    position: relative;
 
-    text-align: center;
-}
-
-.chinois-vocab-title
-{
-    margin: 0;
-
-    color: var(--color-violet);
-    font-size: var(--font-size-chinois-title);
-    font-weight: var(--font-weight-chinois-title);
-
-    text-align: center;
-}
-
-.chinois-vocab-subtitle
-{
-    margin: var(--space-sm) 0 0;
-
-    color: var(--color-panel-text-soft);
-    font-size: var(--font-size-chinois-subtitle);
-
-    text-align: center;
-}
-
-.chinois-vocab-table-wrap
-{
     overflow: hidden;
 
-    border: var(--border-chinois-table);
-    border-radius: var(--radius-chinois-table);
+    padding: 20px;
 
-    background: var(--background-chinois-table);
+    border-radius: var(--radius-card-lg);
+
+    background: var(--gradient-dashboard-card);
+
+    box-shadow: var(--shadow-card);
+
+    transition:
+        transform var(--transition-normal),
+        box-shadow var(--transition-normal);
+
+    box-sizing: border-box;
 }
 
-.chinois-vocab-table
+.chinois-vocab-card::before
 {
-    width: 100%;
+    content: "";
 
-    border-collapse: collapse;
+    position: absolute;
+    inset: 0;
 
-    color: var(--color-panel-text);
+    background:
+        var(--gradient-dashboard-card-overlay);
+
+    pointer-events: none;
 }
 
-.chinois-vocab-table thead
+.chinois-vocab-card > *
 {
-    background: var(--gradient-chinois-table-head);
+    position: relative;
+    z-index: 1;
 }
 
-.chinois-vocab-table th
+.chinois-vocab-card:hover
 {
-    padding: var(--padding-chinois-table-head);
+    transform: translateY(-2px);
 
-    color: var(--color-violet);
-    font-size: var(--font-size-chinois-table-head);
-    font-weight: var(--font-weight-chinois-table-head);
-
-    text-align: center;
-    text-transform: uppercase;
-    letter-spacing: var(--letter-spacing-chinois-table-head);
+    box-shadow:
+        var(--shadow-card-hover);
 }
 
-.chinois-vocab-table td
+.grammar-delete
 {
-    padding: var(--padding-chinois-table-cell);
-
-    font-size: var(--font-size-base);
-
-    text-align: center;
-    vertical-align: middle;
-
-    border-top: var(--border-chinois-table-row);
+    top: 18px;
+    right: 18px;
 }
 
-.chinois-vocab-table tbody tr
-{
-    transition: background var(--transition-fast);
-}
-
-.chinois-vocab-table tbody tr:hover
-{
-    background: var(--background-chinois-table-row-hover);
-}
+/* =========================================
+   MOT
+========================================= */
 
 .chinois-vocab-word
 {
-    display: block;
+    margin: 0 0 4px;
 
-    color: var(--color-panel-text);
+    color: var(--color-title);
 
-    font-size: var(--font-size-chinois-word);
-    font-weight: var(--font-weight-chinois-word);
+    font-size: 1.9rem;
+    font-weight: 800;
+
+    line-height: 1.1;
 }
 
 .chinois-vocab-pinyin
 {
-    display: block;
+    margin-bottom: 10px;
 
-    margin-top: 7px;
+    color: var(--color-violet);
 
-    color: var(--color-chinois-pinyin);
-
-    font-size: var(--font-size-chinois-pinyin);
-    font-weight: var(--font-weight-chinois-pinyin);
+    font-size: .95rem;
+    font-weight: 700;
 }
+
+/* =========================================
+   TYPE
+========================================= */
 
 .chinois-vocab-type
 {
     display: inline-flex;
+
     align-items: center;
     justify-content: center;
 
-    min-width: var(--width-chinois-type);
-    padding: var(--padding-chinois-type);
+    margin-bottom: 16px;
+
+    padding:
+        10px
+        18px;
 
     color: var(--color-violet);
 
-    font-size: var(--font-size-chinois-type);
-    font-weight: var(--font-weight-chinois-type);
+    font-size: .9rem;
+    font-weight: 700;
 
-    border: var(--border-chinois-type);
-    border-radius: var(--radius-pill);
+    border:
+        1px solid rgba(123,44,255,.18);
 
-    background: var(--background-chinois-type);
+    border-radius:
+        var(--radius-pill);
+
+    background:
+        rgba(123,44,255,.08);
 }
+
+/* =========================================
+   TRADUCTION
+========================================= */
+
+.chinois-vocab-translation
+{
+    margin-bottom: 10px;
+
+    color: var(--color-title);
+
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+/* =========================================
+   EXEMPLE
+========================================= */
 
 .chinois-vocab-example
 {
-    display: inline-block;
+    margin-top: 16px;
+    padding-top: 14px;
 
-    max-width: var(--width-chinois-example);
+    color: var(--color-text);
 
-    color: var(--color-panel-text-soft);
+    font-size: 1rem;
 
-    font-size: var(--font-size-base);
-    line-height: var(--line-height-chinois-example);
+    line-height: 1.8;
+
+    border-top:
+        1px solid rgba(123,44,255,.12);
+}
+
+/* =========================================
+   ACTIONS
+========================================= */
+
+.chinois-vocab-actions
+{
+    position: absolute;
+
+    right: 14px;
+    bottom: 14px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+.chinois-vocab-actions .grammar-edit,
+.chinois-vocab-actions .grammar-mastered
+{
+    position: static;
+}
+
+/* =========================================
+   VIDE
+========================================= */
+
+.chinois-vocab-empty
+{
+    padding: 40px;
+
+    text-align: center;
+
+    border-radius:
+        var(--radius-card-lg);
+
+    background:
+        var(--gradient-dashboard-card);
+
+    box-shadow:
+        var(--shadow-card);
 }
