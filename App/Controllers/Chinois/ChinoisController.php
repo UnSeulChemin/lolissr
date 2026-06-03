@@ -5,9 +5,13 @@ declare(strict_types=1);
 namespace App\Controllers\Chinois;
 
 use App\Controllers\Controller;
+use App\Http\Requests\Chinois\ChinoisGrammaireCreateRequest;
+use App\Http\Requests\Chinois\ChinoisVocabulaireCreateRequest;
 use App\Repositories\Chinois\ChinoisGrammaireRepository;
 use App\Services\Chinois\ChinoisReadService;
+use App\Services\Chinois\ChinoisWriteService;
 use Framework\Exceptions\NotFoundException;
+use Framework\Exceptions\ValidationException;
 use Framework\Http\Request;
 
 final class ChinoisController extends Controller
@@ -24,6 +28,7 @@ final class ChinoisController extends Controller
 
     public function __construct(
         private readonly ChinoisReadService $chinoisReadService,
+        private readonly ChinoisWriteService $chinoisWriteService,
         private readonly ChinoisGrammaireRepository $chinoisGrammaireRepository,
         Request $request,
     ) {
@@ -160,6 +165,50 @@ final class ChinoisController extends Controller
 
         $this->render(
             'pages/chinois/vocabulaire/ajouter',
+        );
+    }
+
+    public function storeGrammaire(
+        ChinoisGrammaireCreateRequest $request,
+    ): never {
+
+        if ($request->fails())
+        {
+            throw new ValidationException(
+                $request->errors(),
+            );
+        }
+
+        $result =
+            $this->chinoisWriteService
+                ->createGrammaire(
+                    $request->dto(),
+                );
+
+        $this->jsonResult(
+            $result,
+        );
+    }
+
+    public function storeVocabulaire(
+        ChinoisVocabulaireCreateRequest $request,
+    ): never {
+
+        if ($request->fails())
+        {
+            throw new ValidationException(
+                $request->errors(),
+            );
+        }
+
+        $result =
+            $this->chinoisWriteService
+                ->createVocabulaire(
+                    $request->dto(),
+                );
+
+        $this->jsonResult(
+            $result,
         );
     }
 }

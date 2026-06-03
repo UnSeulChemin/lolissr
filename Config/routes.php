@@ -171,9 +171,21 @@ return static function (Router $router): void {
             [ChinoisController::class, 'createGrammaire'],
         );
 
+        $router->post(
+            'grammaire/ajouter',
+            [ChinoisController::class, 'storeGrammaire'],
+            [CsrfMiddleware::class],
+        );
+
         $router->get(
             'vocabulaire/ajouter',
             [ChinoisController::class, 'createVocabulaire'],
+        );
+
+        $router->post(
+            'vocabulaire/ajouter',
+            [ChinoisController::class, 'storeVocabulaire'],
+            [CsrfMiddleware::class],
         );
 
         $router->prefix('ajax')->middleware([
