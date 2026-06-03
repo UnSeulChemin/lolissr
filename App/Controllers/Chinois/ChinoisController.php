@@ -142,4 +142,24 @@ final class ChinoisController extends Controller
             'pages/chinois/ajouter',
         );
     }
+
+    public function createGrammaire(): never
+    {
+        $this->title =
+            'Chinois | Ajouter une grammaire';
+
+        $this->render(
+            'pages/chinois/grammaire/ajouter',
+        );
+    }
+
+    public function createVocabulaire(): never
+    {
+        $this->title =
+            'Chinois | Ajouter du vocabulaire';
+
+        $this->render(
+            'pages/chinois/vocabulaire/ajouter',
+        );
+    }
 }

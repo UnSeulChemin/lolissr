@@ -166,6 +166,16 @@ return static function (Router $router): void {
             [ChinoisController::class, 'ajouter'],
         );
 
+        $router->get(
+            'grammaire/ajouter',
+            [ChinoisController::class, 'createGrammaire'],
+        );
+
+        $router->get(
+            'vocabulaire/ajouter',
+            [ChinoisController::class, 'createVocabulaire'],
+        );
+
         $router->prefix('ajax')->middleware([
             ExpectJsonMiddleware::class,
             CsrfMiddleware::class,
