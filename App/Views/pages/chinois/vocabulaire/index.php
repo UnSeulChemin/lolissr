@@ -121,6 +121,11 @@ $baseUri =
                                         : '' ?>
                                 "
                                 type="button"
+                                data-id="<?= (int) $vocabulaire->id ?>"
+                                data-url="<?= e($baseUri) ?>chinois/ajax/toggle-vocabulaire-maitrise"
+                                data-maitrise="<?= $isMaitrise
+                                    ? '1'
+                                    : '0' ?>"
                                 aria-pressed="<?= $isMaitrise
                                     ? 'true'
                                     : 'false' ?>"

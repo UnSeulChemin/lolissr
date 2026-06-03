@@ -210,9 +210,14 @@ return static function (Router $router): void {
             );
 
             $router->post(
+                'toggle-vocabulaire-maitrise',
+                [ChinoisAjaxController::class, 'toggleVocabulaireMaitrise'],
+            );
+
+            $router->post(
                 'delete-grammaire',
                 [ChinoisAjaxController::class, 'deleteGrammaire'],
-            );            
+            );
         });
     });
 };

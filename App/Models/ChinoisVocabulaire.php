@@ -20,5 +20,7 @@ final class ChinoisVocabulaire
 
     public ?string $exemple = null;
 
+    public bool $maitrise = false;
+
     public string $created_at = '';
 }
