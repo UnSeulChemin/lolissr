@@ -226,7 +226,7 @@ $sourceDescription =
                             >
 
                                 <button
-                                    class="grammar-delete"
+                                    class="grammar-delete grammaire-delete"
                                     type="button"
                                     data-id="<?= (int) $grammaire->id ?>"
                                     data-url="<?= e($baseUri) ?>chinois/ajax/delete-grammaire"

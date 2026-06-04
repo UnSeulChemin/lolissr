@@ -172,4 +172,39 @@ final readonly class ChinoisWriteService
             },
         );
     }
+
+    public function deleteVocabulaire(
+        int $id,
+    ): ServiceResult {
+
+        if ($this->isReadOnlyMode())
+        {
+            return $this->error(
+                'Écriture en base désactivée',
+                403,
+            );
+        }
+
+        return $this->database->transaction(
+            function () use ($id): ServiceResult {
+
+                $deleted =
+                    $this->vocabulaireRepository
+                        ->deleteVocabulaire(
+                            $id,
+                        );
+
+                if (! $deleted)
+                {
+                    return $this->error(
+                        'Erreur lors de la suppression',
+                    );
+                }
+
+                return $this->success(
+                    'Vocabulaire supprimé avec succès',
+                );
+            },
+        );
+    }
 }

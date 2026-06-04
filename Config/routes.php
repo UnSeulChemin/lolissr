@@ -229,6 +229,11 @@ return static function (Router $router): void {
                 'delete-grammaire',
                 [ChinoisAjaxController::class, 'deleteGrammaire'],
             );
+
+            $router->post(
+                'delete-vocabulaire',
+                [ChinoisAjaxController::class, 'deleteVocabulaire'],
+            );
         });
     });
 };

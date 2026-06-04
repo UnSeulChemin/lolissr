@@ -1,5 +1,5 @@
 // =========================================
-// DELETE GRAMMAIRE
+// DELETE VOCABULAIRE
 // =========================================
 
 import {
@@ -37,14 +37,13 @@ let initialized =
 // DELETE
 // =========================================
 
-async function deleteGrammaire(
+async function deleteVocabulaire(
     button,
 )
 {
     if (
         button.disabled
     ) {
-
         return;
     }
 
@@ -58,26 +57,19 @@ async function deleteGrammaire(
 
     const item =
         button.closest(
-            '.grammar-item',
+            '.chinois-vocab-card',
         );
-
-    /*
-    |--------------------------------------------------------------------------
-    | VALIDATION
-    |--------------------------------------------------------------------------
-    */
 
     if (
         !url
         || id <= 0
     ) {
-
         handleError(
             new FrontendError(
                 'Paramètres invalides',
                 {
                     code:
-                        'INVALID_GRAMMAR_DELETE',
+                        'INVALID_VOCAB_DELETE',
                 },
             ),
         );
@@ -85,28 +77,15 @@ async function deleteGrammaire(
         return;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | CONFIRM
-    |--------------------------------------------------------------------------
-    */
-
     const confirmed =
         window.confirm(
-            'Supprimer cette règle de grammaire ?',
+            'Supprimer ce vocabulaire ?',
         );
 
     if (!confirmed)
     {
-
         return;
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | LOADING
-    |--------------------------------------------------------------------------
-    */
 
     button.disabled =
         true;
@@ -114,7 +93,7 @@ async function deleteGrammaire(
     try {
 
         debug(
-            'GRAMMAIRE_DELETE',
+            'VOCABULAIRE_DELETE',
             'request',
             {
                 id,
@@ -133,34 +112,21 @@ async function deleteGrammaire(
             data?.success
             !== true
         ) {
-
             throw new FrontendError(
                 data?.message
                 || 'Erreur suppression',
                 {
                     code:
-                        'DELETE_GRAMMAR_FAILED',
+                        'DELETE_VOCAB_FAILED',
                 },
             );
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | REMOVE CARD
-        |--------------------------------------------------------------------------
-        */
-
         item?.remove();
-
-        /*
-        |--------------------------------------------------------------------------
-        | SUCCESS
-        |--------------------------------------------------------------------------
-        */
 
         showToast(
             data.message
-            || 'Grammaire supprimée',
+            || 'Vocabulaire supprimé',
             'success',
         );
 
@@ -179,11 +145,10 @@ async function deleteGrammaire(
 // INIT
 // =========================================
 
-export function initDeleteGrammaire()
+export function initDeleteVocabulaire()
 {
     if (initialized)
     {
-
         return;
     }
 
@@ -193,7 +158,7 @@ export function initDeleteGrammaire()
     delegate(
         document,
         'click',
-        '.grammaire-delete',
+        '.vocabulaire-delete',
         (
             _,
             button,
@@ -205,18 +170,26 @@ export function initDeleteGrammaire()
                     instanceof HTMLButtonElement
                 )
             ) {
-
                 return;
             }
 
-            void deleteGrammaire(
+            if (
+                !button
+                    .closest(
+                        '.chinois-vocab-card',
+                    )
+            ) {
+                return;
+            }
+
+            void deleteVocabulaire(
                 button,
             );
         },
     );
 
     debug(
-        'GRAMMAIRE_DELETE',
+        'VOCABULAIRE_DELETE',
         'initialized',
     );
 }

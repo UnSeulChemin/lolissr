@@ -51,7 +51,7 @@ $baseUri =
                     >
 
                         <button
-                            class="grammar-delete"
+                            class="grammar-delete vocabulaire-delete"
                             type="button"
                             data-id="<?= (int) $vocabulaire->id ?>"
                             data-url="<?= e($baseUri) ?>chinois/ajax/delete-vocabulaire"

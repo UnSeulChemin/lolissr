@@ -42,6 +42,10 @@ import {
     initAjouterPage as initAjouterChinoisPage,
 } from '../chinois/pages/ajouter.js';
 
+import {
+    initDeleteVocabulaire,
+} from '../chinois/actions/delete-vocabulary.js';
+
 
 // ==================================================
 // EXPORT
@@ -151,6 +155,11 @@ export const ROUTE_INITIALIZERS = [
             [
                 'DeleteGrammaire',
                 initDeleteGrammaire,
+            ],
+
+            [
+                'DeleteVocabulaire',
+                initDeleteVocabulaire,
             ],
         ],
     },

@@ -131,4 +131,33 @@ final class ChinoisAjaxController extends Controller
             $result,
         );
     }
+
+    public function deleteVocabulaire(): never
+    {
+        $id =
+            (int) $this->request->input(
+                'id',
+                0,
+            );
+
+        if ($id <= 0)
+        {
+            throw new ValidationException(
+                [
+                    'id' =>
+                        'ID invalide',
+                ],
+            );
+        }
+
+        $result =
+            $this->writeService
+                ->deleteVocabulaire(
+                    $id,
+                );
+
+        $this->jsonResult(
+            $result,
+        );
+    }
 }
