@@ -107,7 +107,6 @@ $isPerfectLivre =
     <section
         class="
             detail-card
-            transition-card
             js-detail-card
         "
         data-slug="<?= e($slug) ?>"
@@ -431,7 +430,6 @@ $isPerfectLivre =
     <div
         class="
             collection-back-wrapper
-            transition-card
         "
     >
 
