@@ -323,6 +323,7 @@ $sourceDescription =
                                 <button
                                     class="
                                         grammar-mastered
+                                        grammar-ajax
                                         <?= $isMaitrise
                                             ? 'active'
                                             : ''

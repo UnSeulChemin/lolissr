@@ -222,7 +222,7 @@ export function initToggleVocabulaireMaitrise()
     delegate(
         document,
         'click',
-        '.grammar-mastered',
+        '.vocabulary-ajax',
         (
             _,
             button,

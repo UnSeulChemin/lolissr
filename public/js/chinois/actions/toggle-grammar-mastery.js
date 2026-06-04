@@ -221,7 +221,7 @@ export function initToggleGrammaireMaitrise()
     delegate(
         document,
         'click',
-        '.grammar-mastered',
+        '.grammar-ajax',
         (
             _,
             button,

@@ -116,6 +116,7 @@ $baseUri =
                             <button
                                 class="
                                     grammar-mastered
+                                    vocabulary-ajax
                                     <?= $isMaitrise
                                         ? 'active'
                                         : '' ?>
