@@ -3,6 +3,14 @@
 // =========================================
 
 import {
+    invalidateRoute,
+} from '../../router/route-invalidation.js';
+
+import {
+    invalidatePrefetch,
+} from '../../router/prefetch/prefetch-cache.js';
+
+import {
     post,
 } from '../../core/http.js';
 
@@ -168,6 +176,14 @@ async function toggleMastery(
         updateButtonState(
             button,
             mastered,
+        );
+
+        invalidateRoute(
+            window.location.href,
+        );
+
+        invalidatePrefetch(
+            window.location.href,
         );
 
         showToast(
