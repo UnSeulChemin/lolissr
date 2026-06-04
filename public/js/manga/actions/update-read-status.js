@@ -27,6 +27,14 @@ import {
     FrontendError,
 } from '../../core/errors/FrontendError.js';
 
+import {
+    invalidateRoute,
+} from '../../router/route-invalidation.js';
+
+import {
+    invalidatePrefetch,
+} from '../../router/prefetch/prefetch-cache.js';
+
 // =========================================
 // CONFIG
 // =========================================
@@ -215,6 +223,14 @@ async function updateReadStatus(
                 data?.data?.readStatus
                 ?? nextReadStatus,
             ),
+        );
+
+        invalidateRoute(
+            window.location.href,
+        );
+
+        invalidatePrefetch(
+            window.location.href,
         );
 
         /*

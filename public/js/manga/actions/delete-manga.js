@@ -34,6 +34,10 @@ import {
     invalidateRoute,
 } from '../../router/route-invalidation.js';
 
+import {
+    invalidatePrefetch,
+} from '../../router/prefetch/prefetch-cache.js';
+
 // =========================================
 // STATE
 // =========================================
@@ -196,6 +200,10 @@ async function deleteManga(
         */
 
         invalidateRoute(
+            '/',
+        );
+
+        invalidatePrefetch(
             '/',
         );
 

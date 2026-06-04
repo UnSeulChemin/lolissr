@@ -26,6 +26,14 @@ import {
     FrontendError,
 } from '../../core/errors/FrontendError.js';
 
+import {
+    invalidateRoute,
+} from '../../router/route-invalidation.js';
+
+import {
+    invalidatePrefetch,
+} from '../../router/prefetch/prefetch-cache.js';
+
 // =========================================
 // STATE
 // =========================================
@@ -123,6 +131,14 @@ async function deleteVocabulaire(
         }
 
         item?.remove();
+
+        invalidateRoute(
+            window.location.href,
+        );
+
+        invalidatePrefetch(
+            window.location.href,
+        );
 
         showToast(
             data.message
