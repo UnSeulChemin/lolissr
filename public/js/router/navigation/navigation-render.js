@@ -63,6 +63,33 @@ export async function renderPage(
 
     clearActiveFocus();
 
+    // =====================================
+    // HASH SCROLL
+    // =====================================
+
+    if (
+        window.location.hash
+    ) {
+
+        setTimeout(
+            () =>
+            {
+                document
+                    .querySelector(
+                        window.location.hash,
+                    )
+                    ?.scrollIntoView();
+            },
+            0,
+        );
+
+        return;
+    }
+
+    // =====================================
+    // DEFAULT SCROLL
+    // =====================================
+
     window.scrollTo(
         0,
         0,
