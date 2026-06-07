@@ -28,6 +28,8 @@ final readonly class DashboardStats
         public int $remainingGrammar,
         public int $grammarProgress,
 
+        public int $globalChineseProgress,
+
         // =========================================
         // MANGA
         // =========================================

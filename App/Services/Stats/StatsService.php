@@ -136,6 +136,24 @@ final readonly class StatsService
                 )
                 : 0;
 
+        $totalChinese =
+            $totalVocabulary
+            + $totalGrammar;
+
+        $totalRemainingChinese =
+            $remainingVocabulary
+            + $remainingGrammar;
+
+        $globalChineseProgress =
+            $totalChinese > 0
+                ? (int) round(
+                    (
+                        ($totalChinese - $totalRemainingChinese)
+                        / $totalChinese
+                    ) * 100,
+                )
+                : 0;
+
         return new DashboardStats(
             totalVocabulary: $totalVocabulary,
             remainingVocabulary: $remainingVocabulary,
@@ -144,6 +162,9 @@ final readonly class StatsService
             totalGrammar: $totalGrammar,
             remainingGrammar: $remainingGrammar,
             grammarProgress: $grammarProgress,
+
+            globalChineseProgress:
+                $globalChineseProgress,
 
             totalTomes: $totalTomes,
             totalSeries: $this->totalSeries(),

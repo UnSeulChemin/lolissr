@@ -477,6 +477,75 @@ $hasTopLongestSeries =
     </section>
 
     <h2 class="home-section-title">
+        👑 Maîtrise du mandarin
+    </h2>
+
+    <section class="home-grid home-grid-stats card-grid-3">
+
+        <article
+            class="
+                card
+                transition-card
+                card-small
+            "
+        >
+
+            <h2 class="home-card-title">
+                📚 Total vocabulaire
+            </h2>
+
+            <p class="home-card-value">
+                <?= (int) $stats->totalVocabulary ?>
+            </p>
+
+        </article>
+
+        <article
+            class="
+                card
+                transition-card
+                card-small
+            "
+        >
+
+            <h2 class="home-card-title">
+                📝 Total grammaire
+            </h2>
+
+            <p class="home-card-value">
+                <?= (int) $stats->totalGrammar ?>
+            </p>
+
+        </article>
+
+        <article
+            class="
+                card
+                transition-card
+                card-small
+            "
+        >
+
+            <h2 class="home-card-title">
+                🏆 Niveau global
+            </h2>
+
+            <p class="home-card-value">
+
+                <?= number_format(
+                    $stats->globalChineseProgress / 10,
+                    1,
+                    ',',
+                    ' ',
+                ) ?>/10
+
+            </p>
+
+        </article>
+
+    </section>
+
+    <h2 class="home-section-title">
         🎓 Maîtrise du chinois
     </h2>
 
