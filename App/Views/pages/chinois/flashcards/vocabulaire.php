@@ -130,6 +130,8 @@ $baseUri =
                                 vocabulary-ajax
                             "
                             type="button"
+                            data-id="<?= (int) $card->id ?>"
+                            data-url="<?= e($baseUri) ?>chinois/ajax/toggle-vocabulaire-maitrise"
                         >
 
                             <svg

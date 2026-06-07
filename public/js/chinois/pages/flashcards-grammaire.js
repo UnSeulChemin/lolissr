@@ -2,6 +2,26 @@
 // FLASHCARDS GRAMMAIRE
 // =========================================
 
+import {
+    post,
+} from '../../core/http.js';
+
+import {
+    showToast,
+} from '../../core/toast.js';
+
+import {
+    invalidateRoute,
+} from '../../router/route-invalidation.js';
+
+import {
+    invalidatePrefetch,
+} from '../../router/prefetch/prefetch-cache.js';
+
+// =========================================
+// INIT
+// =========================================
+
 export function initFlashcardsGrammairePage()
 {
     const cards =
@@ -66,12 +86,21 @@ export function initFlashcardsGrammairePage()
             'flashcard-edit',
         );
 
+    const masteredButton =
+        document.getElementById(
+            'flashcard-mastered',
+        );
+
+    // =========================================
+    // RENDER
+    // =========================================
+
     function renderCard()
     {
         const card =
             cards[currentIndex];
 
-        if (! card)
+        if (!card)
         {
             return;
         }
@@ -89,17 +118,41 @@ export function initFlashcardsGrammairePage()
             card.phrase;
 
         pinyinElement.textContent =
-            card.pinyin;
+            card.pinyin ?? '';
 
         traductionElement.textContent =
             card.traduction;
 
         explicationElement.textContent =
-            card.explication;
+            card.explication ?? '';
 
         editElement.href =
             `${window.baseUri}chinois/grammaire/modifier/${card.id}`;
+
+        if (
+            masteredButton
+            instanceof HTMLButtonElement
+        ) {
+            masteredButton.dataset.id =
+                String(card.id);
+
+            masteredButton.dataset.maitrise =
+                '0';
+
+            masteredButton.classList.remove(
+                'active',
+            );
+
+            masteredButton.setAttribute(
+                'aria-pressed',
+                'false',
+            );
+        }
     }
+
+    // =========================================
+    // NAVIGATION
+    // =========================================
 
     previousButton?.addEventListener(
         'click',
@@ -129,6 +182,93 @@ export function initFlashcardsGrammairePage()
             renderCard();
         },
     );
+
+    // =========================================
+    // VALIDATION
+    // =========================================
+
+    masteredButton?.addEventListener(
+        'click',
+        async () =>
+        {
+            const card =
+                cards[currentIndex];
+
+            if (!card)
+            {
+                return;
+            }
+
+            try
+            {
+                const data =
+                    await post(
+                        `${window.baseUri}chinois/ajax/toggle-grammaire-maitrise`,
+                        {
+                            id:
+                                card.id,
+                        },
+                    );
+
+                if (!data?.success)
+                {
+                    showToast(
+                        'Erreur',
+                        'error',
+                    );
+
+                    return;
+                }
+
+                invalidateRoute(
+                    window.location.href,
+                );
+
+                invalidatePrefetch(
+                    window.location.href,
+                );
+
+                cards.splice(
+                    currentIndex,
+                    1,
+                );
+
+                if (
+                    cards.length === 0
+                ) {
+                    location.reload();
+
+                    return;
+                }
+
+                if (
+                    currentIndex
+                    >= cards.length
+                ) {
+                    currentIndex =
+                        0;
+                }
+
+                renderCard();
+
+                showToast(
+                    'Carte validée',
+                    'success',
+                );
+
+            } catch {
+
+                showToast(
+                    'Erreur réseau',
+                    'error',
+                );
+            }
+        },
+    );
+
+    // =========================================
+    // START
+    // =========================================
 
     renderCard();
 }

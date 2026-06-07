@@ -130,8 +130,15 @@ $baseUri =
 
                 <button
                     id="flashcard-mastered"
-                    class="grammar-mastered"
+                    class="
+                        grammar-mastered
+                        grammar-ajax
+                    "
                     type="button"
+                    data-id="<?= (int) $card->id ?>"
+                    data-url="<?= e($baseUri) ?>chinois/ajax/toggle-grammaire-maitrise"
+                    data-maitrise="0"
+                    aria-pressed="false"
                 >
 
                     <svg
