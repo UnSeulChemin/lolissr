@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repositories\Chinois;
 
 use App\DTO\Chinois\Responses\ChinoisGrammaireData;
+use App\Models\ChinoisGrammaire;
 use App\Models\Model;
 use Framework\Application\App;
 use LogicException;
@@ -273,5 +274,43 @@ final class ChinoisGrammaireRepository extends Model
         return $result !== null
             ? (int) $result->total
             : 0;
+    }
+
+    /**
+     * @return list<ChinoisGrammaire>
+     */
+    public function findNotMastered(): array
+    {
+        /** @var list<ChinoisGrammaire> $grammaires */
+        $grammaires =
+            $this->fetchAll(
+                "SELECT
+                    id,
+                    niveau,
+                    titre,
+                    structure,
+                    abreviation,
+                    phrase,
+                    pinyin,
+                    traduction,
+                    explication,
+                    maitrise,
+                    section,
+                    section_position,
+                    categorie,
+                    categorie_position,
+                    position,
+                    created_at
+
+                FROM {$this->getTable()}
+
+                WHERE maitrise = 0
+
+                ORDER BY id ASC",
+                [],
+                ChinoisGrammaire::class,
+            );
+
+        return $grammaires;
     }
 }

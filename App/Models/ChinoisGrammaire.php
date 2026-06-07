@@ -14,6 +14,8 @@ final class ChinoisGrammaire
 
     public string $structure = '';
 
+    public ?string $abreviation = null;
+
     public string $phrase = '';
 
     public ?string $pinyin = null;

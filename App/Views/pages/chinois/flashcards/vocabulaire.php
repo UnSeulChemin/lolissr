@@ -12,102 +12,168 @@ $baseUri =
 
 ?>
 
-<section class="layout-container">
+<section class="layout-container dashboard-page">
 
-    <?php if ($vocabulaires === []) : ?>
+    <section class="chinois-vocab-panel">
 
-        <article class="card">
-
-            <h2>
-                Aucun vocabulaire à réviser.
-            </h2>
-
-        </article>
-
-    <?php else : ?>
-
-        <?php $card = $vocabulaires[0]; ?>
-
-        <article
+        <section
             class="
-                card
-                transition-card
+                chinois-vocab-list
+                chinois-vocab-list--flashcard
             "
         >
 
-            <header>
+            <?php if ($vocabulaires === []) : ?>
 
-                <button
-                    type="button"
-                    id="flashcard-previous"
+                <div class="chinois-vocab-empty">
+
+                    Aucun vocabulaire à réviser.
+
+                </div>
+
+            <?php else : ?>
+
+                <?php $card = $vocabulaires[0]; ?>
+
+                <article
+                    class="
+                        chinois-vocab-card
+                        transition-card
+                    "
                 >
-                    ←
-                </button>
 
-                <p id="flashcard-counter">
-                    Carte 1 / <?= count($vocabulaires) ?>
-                </p>
+                    <div class="flashcard-navigation">
 
-                <button
-                    type="button"
-                    id="flashcard-next"
-                >
-                    →
-                </button>
+                        <button
+                            type="button"
+                            id="flashcard-previous"
+                            class="flashcard-nav-button"
+                        >
+                            ←
+                        </button>
 
-            </header>
+                        <span id="flashcard-counter">
+                            Carte 1 / <?= count($vocabulaires) ?>
+                        </span>
 
-            <section>
+                        <button
+                            type="button"
+                            id="flashcard-next"
+                            class="flashcard-nav-button"
+                        >
+                            →
+                        </button>
 
-                <h2 id="flashcard-mot">
-                    <?= e($card->mot) ?>
-                </h2>
+                    </div>
 
-                <hr>
+                    <h3
+                        id="flashcard-mot"
+                        class="chinois-vocab-word"
+                    >
+                        <?= e($card->mot) ?>
+                    </h3>
 
-                <p id="flashcard-pinyin">
-                    <?= e($card->pinyin) ?>
-                </p>
+                    <div
+                        id="flashcard-pinyin"
+                        class="chinois-vocab-pinyin"
+                    >
+                        <?= e($card->pinyin) ?>
+                    </div>
 
-                <p id="flashcard-traduction">
-                    <?= e($card->traduction) ?>
-                </p>
+                    <div
+                        id="flashcard-traduction"
+                        class="chinois-vocab-translation"
+                    >
+                        <?= e($card->traduction) ?>
+                    </div>
 
-                <p id="flashcard-exemple">
-                    <?= nl2br(
-                        e($card->exemple),
-                    ) ?>
-                </p>
+                    <div
+                        id="flashcard-exemple"
+                        class="chinois-vocab-example"
+                    >
+                        <?= nl2br(
+                            e($card->exemple),
+                        ) ?>
+                    </div>
 
-            </section>
+                    <div class="chinois-vocab-actions">
 
-            <footer>
+                        <a
+                            id="flashcard-edit"
+                            class="grammar-edit"
+                            href="<?= e($baseUri) ?>chinois/vocabulaire/modifier/<?= $card->id ?>"
+                        >
 
-                <a
-                    id="flashcard-edit"
-                    class="button"
-                    href="<?= e($baseUri) ?>chinois/vocabulaire/modifier/<?= $card->id ?>"
-                >
-                    Modifier
-                </a>
+                            <svg
+                                class="grammar-edit-icon"
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                            >
 
-            </footer>
+                                <path
+                                    d="M4 20H8L18.5 9.5C19.1 8.9 19.1 7.9 18.5 7.3L16.7 5.5C16.1 4.9 15.1 4.9 14.5 5.5L4 16V20Z"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                />
 
-        </article>
+                            </svg>
 
-    <?php endif; ?>
+                        </a>
+
+                        <button
+                            id="flashcard-mastered"
+                            class="
+                                grammar-mastered
+                                vocabulary-ajax
+                            "
+                            type="button"
+                        >
+
+                            <svg
+                                class="grammar-mastered-icon"
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                            >
+
+                                <path
+                                    d="M20 6L9 17L4 12"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="3"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                />
+
+                            </svg>
+
+                        </button>
+
+                    </div>
+
+                </article>
+
+            <?php endif; ?>
+
+        </section>
+
+    </section>
 
 </section>
 
 <script>
-    window.flashcards =
-        <?= json_encode(
-             $vocabulaires,
-                JSON_UNESCAPED_UNICODE,
-        ) ?>;
 
-    window.baseUri =
-        <?= json_encode(
-            $baseUri,
-        ) ?>;
+window.flashcards =
+    <?= json_encode(
+        $vocabulaires,
+        JSON_UNESCAPED_UNICODE,
+    ) ?>;
+
+window.baseUri =
+    <?= json_encode(
+        $baseUri,
+    ) ?>;
+
 </script>

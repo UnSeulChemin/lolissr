@@ -421,11 +421,19 @@ final class ChinoisController extends Controller
 
     public function flashcardsGrammaire(): never
     {
+        $grammaires =
+            $this->chinoisGrammaireRepository
+                ->findNotMastered();
+
         $this->title =
             'Chinois | Flashcards Grammaire';
 
         $this->render(
             'pages/chinois/flashcards/grammaire',
+            [
+                'grammaires' =>
+                    $grammaires,
+            ],
         );
     }
 }

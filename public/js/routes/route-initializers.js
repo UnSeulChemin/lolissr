@@ -50,6 +50,10 @@ import {
     initFlashcardsVocabulairePage,
 } from '../chinois/pages/flashcards-vocabulaire.js';
 
+import {
+    initFlashcardsGrammairePage,
+} from '../chinois/pages/flashcards-grammaire.js';
+
 
 // ==================================================
 // EXPORT
@@ -104,6 +108,19 @@ export const ROUTE_INITIALIZERS = [
             [
                 'FlashcardsVocabulaire',
                 initFlashcardsVocabulairePage,
+            ],
+        ],
+    },
+
+    {
+        match:
+            /^\/lolissr\/chinois\/flashcards\/grammaire\/?$/,
+
+        initializers:
+        [
+            [
+                'FlashcardsGrammaire',
+                initFlashcardsGrammairePage,
             ],
         ],
     },
