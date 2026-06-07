@@ -162,6 +162,16 @@ return static function (Router $router): void {
         );
 
         $router->get(
+            'flashcards/vocabulaire',
+            [ChinoisController::class, 'flashcardsVocabulaire'],
+        );
+
+        $router->get(
+            'flashcards/grammaire',
+            [ChinoisController::class, 'flashcardsGrammaire'],
+        );
+
+        $router->get(
             'ajouter',
             [ChinoisController::class, 'ajouter'],
         );

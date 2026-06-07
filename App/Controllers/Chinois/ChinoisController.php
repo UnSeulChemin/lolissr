@@ -403,4 +403,24 @@ final class ChinoisController extends Controller
             'Vocabulaire modifié.',
         );
     }
+
+    public function flashcardsVocabulaire(): never
+    {
+        $this->title =
+            'Chinois | Flashcards Vocabulaire';
+
+        $this->render(
+            'pages/chinois/flashcards/vocabulaire',
+        );
+    }
+
+    public function flashcardsGrammaire(): never
+    {
+        $this->title =
+            'Chinois | Flashcards Grammaire';
+
+        $this->render(
+            'pages/chinois/flashcards/grammaire',
+        );
+    }
 }
