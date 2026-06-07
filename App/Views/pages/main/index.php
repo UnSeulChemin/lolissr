@@ -491,7 +491,7 @@ $hasTopLongestSeries =
         >
 
             <h2 class="home-card-title">
-                📚 Total vocabulaire
+                📚 Total vocabulaires
             </h2>
 
             <p class="home-card-value">
@@ -509,7 +509,7 @@ $hasTopLongestSeries =
         >
 
             <h2 class="home-card-title">
-                📝 Total grammaire
+                📖 Total grammaires
             </h2>
 
             <p class="home-card-value">
@@ -527,7 +527,7 @@ $hasTopLongestSeries =
         >
 
             <h2 class="home-card-title">
-                🏆 Niveau global
+                🏆 Niveau moyen global
             </h2>
 
             <p class="home-card-value">
@@ -590,7 +590,7 @@ $hasTopLongestSeries =
         >
 
             <h2 class="home-card-title">
-                📈 Progression vocabulaire
+                📊 Progression vocabulaire
             </h2>
 
             <p
@@ -617,7 +617,7 @@ $hasTopLongestSeries =
         <article class="card transition-card card-small">
 
             <h2 class="home-card-title">
-                📝 Grammaire apprise
+                📖 Grammaire apprise
             </h2>
 
             <p class="home-card-value">
@@ -651,7 +651,7 @@ $hasTopLongestSeries =
         >
 
             <h2 class="home-card-title">
-                📈 Progression grammaire
+                📊 Progression grammaire
             </h2>
 
             <p

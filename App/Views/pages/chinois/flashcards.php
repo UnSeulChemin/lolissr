@@ -1,0 +1,73 @@
+<?php
+
+declare(strict_types=1);
+
+$baseUri =
+    rtrim(
+        (string) ($baseUri ?? ''),
+        '/',
+    ) . '/';
+
+?>
+
+<section class="layout-container dashboard-page">
+
+    <section class="dashboard-grid">
+
+        <a
+            class="
+                card
+                transition-card
+                dashboard-card
+            "
+            data-prefetch
+            href="<?= e($baseUri) ?>chinois/flashcards/vocabulaire"
+        >
+
+            <span
+                class="dashboard-card-icon"
+                aria-hidden="true"
+            >
+                📚
+            </span>
+
+            <span class="dashboard-card-title">
+                Vocabulaire
+            </span>
+
+            <span class="dashboard-card-description">
+                Mots, caractères et expressions.
+            </span>
+
+        </a>
+
+        <a
+            class="
+                card
+                transition-card
+                dashboard-card
+            "
+            data-prefetch
+            href="<?= e($baseUri) ?>chinois/flashcards/grammaire"
+        >
+
+            <span
+                class="dashboard-card-icon"
+                aria-hidden="true"
+            >
+                📖
+            </span>
+
+            <span class="dashboard-card-title">
+                Grammaire
+            </span>
+
+            <span class="dashboard-card-description">
+                Structures et points de grammaire.
+            </span>
+
+        </a>
+
+    </section>
+
+</section>
