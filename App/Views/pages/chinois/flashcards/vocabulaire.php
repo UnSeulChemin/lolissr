@@ -127,7 +127,6 @@ $baseUri =
                             id="flashcard-mastered"
                             class="
                                 grammar-mastered
-                                vocabulary-ajax
                             "
                             type="button"
                             data-id="<?= (int) $card->id ?>"

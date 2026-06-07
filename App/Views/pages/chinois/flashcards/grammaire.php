@@ -132,7 +132,6 @@ $baseUri =
                     id="flashcard-mastered"
                     class="
                         grammar-mastered
-                        grammar-ajax
                     "
                     type="button"
                     data-id="<?= (int) $card->id ?>"
