@@ -19,6 +19,37 @@ import {
 } from '../../router/prefetch/prefetch-cache.js';
 
 // =========================================
+// CACHE
+// =========================================
+
+function invalidateGrammarPages()
+{
+    const routes = [
+        'hsk1',
+        'hsk2',
+        'hsk3',
+        'hsk4',
+    ];
+
+    for (
+        const route
+        of routes
+    ) {
+
+        const url =
+            `${window.baseUri}chinois/grammaire/${route}`;
+
+        invalidateRoute(
+            url,
+        );
+
+        invalidatePrefetch(
+            url,
+        );
+    }
+}
+
+// =========================================
 // INIT
 // =========================================
 
@@ -227,6 +258,8 @@ export function initFlashcardsGrammairePage()
                 invalidatePrefetch(
                     window.location.href,
                 );
+
+                invalidateGrammarPages();
 
                 cards.splice(
                     currentIndex,

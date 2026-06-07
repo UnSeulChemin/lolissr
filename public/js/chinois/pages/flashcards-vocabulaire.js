@@ -19,6 +19,35 @@ import {
 } from '../../router/prefetch/prefetch-cache.js';
 
 // =========================================
+// CACHE
+// =========================================
+
+function invalidateVocabularyPages()
+{
+    const routes = [
+        'mandarin',
+        'jinyu',
+    ];
+
+    for (
+        const route
+        of routes
+    ) {
+
+        const url =
+            `${window.baseUri}chinois/${route}`;
+
+        invalidateRoute(
+            url,
+        );
+
+        invalidatePrefetch(
+            url,
+        );
+    }
+}
+
+// =========================================
 // INIT
 // =========================================
 
@@ -214,6 +243,8 @@ export function initFlashcardsVocabulairePage()
                 invalidatePrefetch(
                     window.location.href,
                 );
+
+                invalidateVocabularyPages();
 
                 cards.splice(
                     currentIndex,

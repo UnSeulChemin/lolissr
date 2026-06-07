@@ -186,6 +186,14 @@ async function toggleMastery(
             window.location.href,
         );
 
+        invalidateRoute(
+            `${window.baseUri}chinois/flashcards/grammaire`,
+        );
+
+        invalidatePrefetch(
+            `${window.baseUri}chinois/flashcards/grammaire`,
+        );
+
         showToast(
             data.message
                 ?? 'Mise à jour effectuée',

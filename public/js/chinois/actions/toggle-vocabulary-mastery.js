@@ -186,6 +186,14 @@ async function toggleMastery(
             window.location.href,
         );
 
+        invalidateRoute(
+            `${window.baseUri}chinois/flashcards/vocabulaire`,
+        );
+
+        invalidatePrefetch(
+            `${window.baseUri}chinois/flashcards/vocabulaire`,
+        );
+
         showToast(
             data.message
                 ?? 'Mise à jour effectuée',
