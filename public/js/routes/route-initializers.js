@@ -46,6 +46,10 @@ import {
     initDeleteVocabulaire,
 } from '../chinois/actions/delete-vocabulary.js';
 
+import {
+    initFlashcardsVocabulairePage,
+} from '../chinois/pages/flashcards-vocabulaire.js';
+
 
 // ==================================================
 // EXPORT
@@ -87,6 +91,19 @@ export const ROUTE_INITIALIZERS = [
             [
                 'AjouterChinoisPage',
                 initAjouterChinoisPage,
+            ],
+        ],
+    },
+
+    {
+        match:
+            /^\/lolissr\/chinois\/flashcards\/vocabulaire\/?$/,
+
+        initializers:
+        [
+            [
+                'FlashcardsVocabulaire',
+                initFlashcardsVocabulairePage,
             ],
         ],
     },

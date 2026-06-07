@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 /** @var list<App\Models\ChinoisVocabulaire> $vocabulaires */
 
+$baseUri =
+    rtrim(
+        (string) ($baseUri ?? ''),
+        '/',
+    ) . '/';
+
 ?>
 
 <section class="layout-container">
@@ -31,39 +37,54 @@ declare(strict_types=1);
 
             <header>
 
-                <p>
+                <button
+                    type="button"
+                    id="flashcard-previous"
+                >
+                    ←
+                </button>
+
+                <p id="flashcard-counter">
                     Carte 1 / <?= count($vocabulaires) ?>
                 </p>
 
-                <h2>
-                    <?= e($card->mot) ?>
-                </h2>
+                <button
+                    type="button"
+                    id="flashcard-next"
+                >
+                    →
+                </button>
 
             </header>
 
-            <hr>
+            <section>
 
-            <p>
-                <?= e($card->pinyin) ?>
-            </p>
+                <h2 id="flashcard-mot">
+                    <?= e($card->mot) ?>
+                </h2>
 
-            <p>
-                <?= e($card->traduction) ?>
-            </p>
+                <hr>
 
-            <?php if ($card->exemple !== '') : ?>
+                <p id="flashcard-pinyin">
+                    <?= e($card->pinyin) ?>
+                </p>
 
-                <p>
+                <p id="flashcard-traduction">
+                    <?= e($card->traduction) ?>
+                </p>
+
+                <p id="flashcard-exemple">
                     <?= nl2br(
                         e($card->exemple),
                     ) ?>
                 </p>
 
-            <?php endif; ?>
+            </section>
 
             <footer>
 
                 <a
+                    id="flashcard-edit"
                     class="button"
                     href="<?= e($baseUri) ?>chinois/vocabulaire/modifier/<?= $card->id ?>"
                 >
@@ -77,3 +98,16 @@ declare(strict_types=1);
     <?php endif; ?>
 
 </section>
+
+<script>
+    window.flashcards =
+        <?= json_encode(
+             $vocabulaires,
+                JSON_UNESCAPED_UNICODE,
+        ) ?>;
+
+    window.baseUri =
+        <?= json_encode(
+            $baseUri,
+        ) ?>;
+</script>
