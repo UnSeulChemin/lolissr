@@ -476,4 +476,133 @@ $hasTopLongestSeries =
 
     </section>
 
+    <h2 class="home-section-title">
+        🎓 Maîtrise du chinois
+    </h2>
+
+    <section class="home-grid home-grid-stats card-grid-3">
+
+        <!-- VOCABULAIRE -->
+
+        <article class="card transition-card card-small">
+
+            <h2 class="home-card-title">
+                📚 Vocabulaire appris
+            </h2>
+
+            <p class="home-card-value">
+                <?= (int) (
+                    $stats->totalVocabulary
+                    - $stats->remainingVocabulary
+                ) ?>
+            </p>
+
+        </article>
+
+        <article class="card transition-card card-small">
+
+            <h2 class="home-card-title">
+                🎯 Vocabulaire restant
+            </h2>
+
+            <p class="home-card-value">
+                <?= (int) $stats->remainingVocabulary ?>
+            </p>
+
+        </article>
+
+        <article
+            class="
+                card
+                transition-card
+                card-small
+                home-reading-progress-card
+            "
+        >
+
+            <h2 class="home-card-title">
+                📈 Progression vocabulaire
+            </h2>
+
+            <p
+                class="
+                    home-card-value
+                    home-reading-progress-value
+                "
+            >
+                <?= (int) $stats->vocabularyProgress ?>%
+            </p>
+
+            <div
+                class="home-reading-progress"
+                style="--progress: <?= (int) $stats->vocabularyProgress ?>%;"
+            >
+                <div class="home-reading-progress-bar"></div>
+            </div>
+
+        </article>
+
+
+        <!-- GRAMMAIRE -->
+
+        <article class="card transition-card card-small">
+
+            <h2 class="home-card-title">
+                📝 Grammaire apprise
+            </h2>
+
+            <p class="home-card-value">
+                <?= (int) (
+                    $stats->totalGrammar
+                    - $stats->remainingGrammar
+                ) ?>
+            </p>
+
+        </article>
+
+        <article class="card transition-card card-small">
+
+            <h2 class="home-card-title">
+                🎯 Grammaire restante
+            </h2>
+
+            <p class="home-card-value">
+                <?= (int) $stats->remainingGrammar ?>
+            </p>
+
+        </article>
+
+        <article
+            class="
+                card
+                transition-card
+                card-small
+                home-reading-progress-card
+            "
+        >
+
+            <h2 class="home-card-title">
+                📈 Progression grammaire
+            </h2>
+
+            <p
+                class="
+                    home-card-value
+                    home-reading-progress-value
+                "
+            >
+                <?= (int) $stats->grammarProgress ?>%
+            </p>
+
+            <div
+                class="home-reading-progress"
+                style="--progress: <?= (int) $stats->grammarProgress ?>%;"
+            >
+                <div class="home-reading-progress-bar"></div>
+            </div>
+
+        </article>
+
+    </section>
+
 </section>

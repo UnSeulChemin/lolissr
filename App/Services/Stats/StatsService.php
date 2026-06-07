@@ -6,12 +6,16 @@ namespace App\Services\Stats;
 
 use App\DTO\Home\DashboardStats;
 use App\Models\Manga;
+use App\Repositories\Chinois\ChinoisGrammaireRepository;
+use App\Repositories\Chinois\ChinoisVocabulaireRepository;
 use App\Repositories\Manga\MangaStatsRepository;
 
 final readonly class StatsService
 {
     public function __construct(
         private MangaStatsRepository $repository,
+        private ChinoisVocabulaireRepository $vocabulaireRepository,
+        private ChinoisGrammaireRepository $grammaireRepository,
     ) {
     }
 
@@ -44,7 +48,8 @@ final readonly class StatsService
 
     public function readingProgress(): int
     {
-        $totalTomes = $this->totalTomes();
+        $totalTomes =
+            $this->totalTomes();
 
         if ($totalTomes <= 0)
         {
@@ -89,28 +94,83 @@ final readonly class StatsService
 
     public function dashboard(): DashboardStats
     {
-        $totalTomes = $this->totalTomes();
+        $totalTomes =
+            $this->totalTomes();
 
-        $totalRead = $this->totalRead();
+        $totalRead =
+            $this->totalRead();
+
+        $totalVocabulary =
+            $this->vocabulaireRepository
+                ->countAll();
+
+        $remainingVocabulary =
+            $this->vocabulaireRepository
+                ->countRemaining();
+
+        $vocabularyProgress =
+            $totalVocabulary > 0
+                ? (int) round(
+                    (
+                        ($totalVocabulary - $remainingVocabulary)
+                        / $totalVocabulary
+                    ) * 100,
+                )
+                : 0;
+
+        $totalGrammar =
+            $this->grammaireRepository
+                ->countAll();
+
+        $remainingGrammar =
+            $this->grammaireRepository
+                ->countRemaining();
+
+        $grammarProgress =
+            $totalGrammar > 0
+                ? (int) round(
+                    (
+                        ($totalGrammar - $remainingGrammar)
+                        / $totalGrammar
+                    ) * 100,
+                )
+                : 0;
 
         return new DashboardStats(
+            totalVocabulary: $totalVocabulary,
+            remainingVocabulary: $remainingVocabulary,
+            vocabularyProgress: $vocabularyProgress,
+
+            totalGrammar: $totalGrammar,
+            remainingGrammar: $remainingGrammar,
+            grammarProgress: $grammarProgress,
+
             totalTomes: $totalTomes,
             totalSeries: $this->totalSeries(),
+
             totalRead: $totalRead,
             totalUnread: max(
                 0,
                 $totalTomes - $totalRead,
             ),
+
             readingProgress: $totalTomes > 0
                 ? (int) round(
-                    ($totalRead / $totalTomes)
-                    * 100,
+                    (
+                        $totalRead
+                        / $totalTomes
+                    ) * 100,
                 )
                 : 0,
+
             averageNote: $this->averageNote(),
+
             lastTome: $this->lastTome(),
             longestSeries: $this->longestSeries(),
-            topLongestSeries: $this->topLongestSeries(),
+
+            topLongestSeries:
+                $this->topLongestSeries(),
+
             lowRatedMangas: [],
             lowJacquetteMangas: [],
             lowLivreStateMangas: [],

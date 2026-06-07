@@ -247,4 +247,31 @@ final class ChinoisGrammaireRepository extends Model
             ],
         );
     }
+
+    public function countAll(): int
+    {
+        $result =
+            $this->fetchOne(
+                "SELECT COUNT(*) AS total
+                FROM {$this->getTable()}"
+            );
+
+        return $result !== null
+            ? (int) $result->total
+            : 0;
+    }
+
+    public function countRemaining(): int
+    {
+        $result =
+            $this->fetchOne(
+                "SELECT COUNT(*) AS total
+                FROM {$this->getTable()}
+                WHERE maitrise = 0"
+            );
+
+        return $result !== null
+            ? (int) $result->total
+            : 0;
+    }
 }
