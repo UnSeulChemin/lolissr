@@ -172,4 +172,35 @@ final class ChinoisVocabulaireRepository extends Model
             ? (int) $result->total
             : 0;
     }
+
+    /**
+     * @return list<ChinoisVocabulaire>
+     */
+    public function findNotMastered(): array
+    {
+        /** @var list<ChinoisVocabulaire> $vocabulaires */
+        $vocabulaires =
+            $this->fetchAll(
+                "SELECT
+                    id,
+                    langue,
+                    mot,
+                    pinyin,
+                    type,
+                    traduction,
+                    exemple,
+                    maitrise,
+                    created_at
+
+                FROM {$this->getTable()}
+
+                WHERE maitrise = 0
+
+                ORDER BY id ASC",
+                [],
+                ChinoisVocabulaire::class,
+            );
+
+        return $vocabulaires;
+    }
 }

@@ -411,6 +411,11 @@ final class ChinoisController extends Controller
 
         $this->render(
             'pages/chinois/flashcards/vocabulaire',
+            [
+                'vocabulaires' =>
+                    $this->chinoisVocabulaireRepository
+                        ->findNotMastered(),
+            ],
         );
     }
 
