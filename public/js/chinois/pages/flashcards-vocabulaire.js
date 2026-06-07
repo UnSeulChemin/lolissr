@@ -24,10 +24,6 @@ import {
 
 export function initFlashcardsVocabulairePage()
 {
-console.log(
-    'FLASHCARDS',
-    window.flashcards,
-);
     const cards =
         window.flashcards ?? [];
 
