@@ -8,16 +8,31 @@ use Framework\Support\Session;
 /** @var ChinoisVocabulaire $vocabulaire */
 
 $errors =
-    Session::pull('errors', []);
+    Session::pull(
+        'errors',
+        [],
+    );
 
 $old =
-    Session::pull('old', []);
+    Session::pull(
+        'old',
+        [],
+    );
 
 $baseUri =
     rtrim(
-        (string) ($baseUri ?? ''),
+        (string) (
+            $baseUri
+            ?? ''
+        ),
         '/',
     ) . '/';
+
+$returnTo =
+    (string) (
+        $returnTo
+        ?? ''
+    );
 
 $formAction =
     $baseUri
@@ -25,9 +40,15 @@ $formAction =
     . $vocabulaire->id;
 
 $returnUrl =
-    $baseUri
-    . 'chinois/'
-    . $vocabulaire->langue;
+    $returnTo !== ''
+        ? $baseUri
+            . ltrim(
+                $returnTo,
+                '/',
+            )
+        : $baseUri
+            . 'chinois/'
+            . $vocabulaire->langue;
 
 $langueValue =
     (string) (
@@ -56,6 +77,16 @@ $langueOptions = [
             >
 
                 <?= csrf_field() ?>
+
+                <?php if (!empty($returnTo)) : ?>
+
+                    <input
+                        type="hidden"
+                        name="return_to"
+                        value="<?= e($returnTo) ?>"
+                    >
+
+                <?php endif; ?>
 
                 <div class="form-group">
 

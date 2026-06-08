@@ -106,7 +106,7 @@ $baseUri =
                 <a
                     id="flashcard-edit"
                     class="grammar-edit"
-                    href="<?= e($baseUri) ?>chinois/grammaire/modifier/<?= $card->id ?>"
+                    href="<?= e($baseUri) ?>chinois/grammaire/modifier/<?= $card->id ?>?return_to=chinois/flashcards/grammaire"
                 >
 
                     <svg

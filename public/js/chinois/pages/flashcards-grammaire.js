@@ -158,7 +158,7 @@ export function initFlashcardsGrammairePage()
             card.explication ?? '';
 
         editElement.href =
-            `${window.baseUri}chinois/grammaire/modifier/${card.id}`;
+            `${window.baseUri}chinois/grammaire/modifier/${card.id}?return_to=chinois/flashcards/grammaire`;
 
         if (
             masteredButton

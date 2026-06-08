@@ -16,18 +16,30 @@ $baseUri =
         '/',
     ) . '/';
 
+$returnTo =
+    (string) (
+        $returnTo
+        ?? ''
+    );
+
 $formAction =
     $baseUri
     . 'chinois/grammaire/modifier/'
     . (int) $grammaire->id;
 
 $returnUrl =
-    $baseUri
-    . 'chinois/grammaire/hsk'
-    . substr(
-        (string) $grammaire->niveau,
-        3,
-    );
+    $returnTo !== ''
+        ? $baseUri
+            . ltrim(
+                $returnTo,
+                '/',
+            )
+        : $baseUri
+            . 'chinois/grammaire/hsk'
+            . substr(
+                (string) $grammaire->niveau,
+                3,
+            );
 
 $niveauValue =
     (string) (
@@ -56,7 +68,17 @@ $niveauOptions = [
                 method="post"
             >
 
-                <?= csrf_field() ?>
+            <?= csrf_field() ?>
+
+            <?php if (!empty($returnTo)) : ?>
+
+                <input
+                    type="hidden"
+                    name="return_to"
+                    value="<?= e($returnTo) ?>"
+                >
+
+            <?php endif; ?>
 
                 <div class="form-group">
 

@@ -241,7 +241,14 @@ final class ChinoisController extends Controller
         $this->render(
             'pages/chinois/grammaire/modifier',
             [
-                'grammaire' => $grammaire,
+                'grammaire' =>
+                    $grammaire,
+
+                'returnTo' =>
+                    (string) $this->request->input(
+                        'return_to',
+                        '',
+                    ),
             ],
         );
     }
@@ -269,6 +276,12 @@ final class ChinoisController extends Controller
             [
                 'vocabulaire' =>
                     $vocabulaire,
+
+                'returnTo' =>
+                    (string) $this->request->input(
+                        'return_to',
+                        '',
+                    ),
             ],
         );
     }
@@ -341,6 +354,20 @@ final class ChinoisController extends Controller
                 3,
             );
 
+        $returnTo =
+            (string) $this->request->input(
+                'return_to',
+                '',
+            );
+
+        if ($returnTo !== '')
+        {
+            $this->redirectWithSuccess(
+                $returnTo,
+                'Grammaire modifiée.',
+            );
+        }
+
         $this->redirectWithSuccess(
             'chinois/grammaire/hsk'
             . $level,
@@ -397,6 +424,20 @@ final class ChinoisController extends Controller
                         $dto->exemple,
                 ],
             );
+
+        $returnTo =
+            (string) $this->request->input(
+                'return_to',
+                '',
+            );
+
+        if ($returnTo !== '')
+        {
+            $this->redirectWithSuccess(
+                $returnTo,
+                'Vocabulaire modifié.',
+            );
+        }
 
         $this->redirectWithSuccess(
             'chinois/' . $dto->langue,

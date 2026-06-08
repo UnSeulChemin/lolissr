@@ -143,7 +143,7 @@ export function initFlashcardsVocabulairePage()
         }
 
         editElement.href =
-            `${window.baseUri}chinois/vocabulaire/modifier/${card.id}`;
+            `${window.baseUri}chinois/vocabulaire/modifier/${card.id}?return_to=chinois/flashcards/vocabulaire`;
 
         if (
             masteredButton
