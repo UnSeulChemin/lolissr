@@ -66,6 +66,16 @@ $baseUri =
 
                     </div>
 
+                    <button
+                        id="flashcard-delete"
+                        class="grammar-delete vocabulaire-delete"
+                        type="button"
+                        data-id="<?= (int) $card->id ?>"
+                        data-url="<?= e($baseUri) ?>chinois/ajax/delete-vocabulaire"
+                    >
+                        ✕
+                    </button>
+
                     <h3
                         id="flashcard-mot"
                         class="chinois-vocab-word"

@@ -110,6 +110,11 @@ export function initFlashcardsVocabulairePage()
             'flashcard-mastered',
         );
 
+    const deleteButton =
+        document.getElementById(
+            'flashcard-delete',
+        );
+
     // =========================================
     // RENDER
     // =========================================
@@ -144,6 +149,14 @@ export function initFlashcardsVocabulairePage()
 
         editElement.href =
             `${window.baseUri}chinois/vocabulaire/modifier/${card.id}?return_to=chinois/flashcards/vocabulaire`;
+
+        if (
+            deleteButton
+            instanceof HTMLButtonElement
+        ) {
+            deleteButton.dataset.id =
+                String(card.id);
+        }
 
         if (
             masteredButton

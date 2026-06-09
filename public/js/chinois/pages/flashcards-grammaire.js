@@ -122,6 +122,11 @@ export function initFlashcardsGrammairePage()
             'flashcard-mastered',
         );
 
+    const deleteButton =
+    document.getElementById(
+        'flashcard-delete',
+    );
+
     // =========================================
     // RENDER
     // =========================================
@@ -159,6 +164,14 @@ export function initFlashcardsGrammairePage()
 
         editElement.href =
             `${window.baseUri}chinois/grammaire/modifier/${card.id}?return_to=chinois/flashcards/grammaire`;
+
+        if (
+            deleteButton
+            instanceof HTMLButtonElement
+        ) {
+            deleteButton.dataset.id =
+                String(card.id);
+        }
 
         if (
             masteredButton

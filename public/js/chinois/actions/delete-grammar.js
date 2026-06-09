@@ -152,33 +152,47 @@ async function deleteGrammaire(
             );
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | REMOVE CARD
-        |--------------------------------------------------------------------------
-        */
+    /*
+    |--------------------------------------------------------------------------
+    | REMOVE CARD
+    |--------------------------------------------------------------------------
+    */
 
+    const isFlashcard =
+        document.getElementById(
+            'flashcard-counter',
+        ) !== null;
+
+    if (!isFlashcard)
+    {
         item?.remove();
+    }
+    else
+    {
+        location.reload();
 
-        invalidateRoute(
-            window.location.href,
-        );
+        return;
+    }
 
-        invalidatePrefetch(
-            window.location.href,
-        );
+    invalidateRoute(
+        window.location.href,
+    );
 
-        /*
-        |--------------------------------------------------------------------------
-        | SUCCESS
-        |--------------------------------------------------------------------------
-        */
+    invalidatePrefetch(
+        window.location.href,
+    );
 
-        showToast(
-            data.message
-            || 'Grammaire supprimée',
-            'success',
-        );
+    /*
+    |--------------------------------------------------------------------------
+    | SUCCESS
+    |--------------------------------------------------------------------------
+    */
+
+    showToast(
+        data.message
+        || 'Grammaire supprimée',
+        'success',
+    );
 
     } catch (error) {
 
