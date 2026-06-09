@@ -69,6 +69,33 @@ $baseUri =
                 dashboard-card
             "
             data-prefetch
+            href="<?= e($baseUri) ?>manga/series/notes"
+        >
+
+            <span
+                class="dashboard-card-icon"
+                aria-hidden="true"
+            >
+                ⭐
+            </span>
+
+            <span class="dashboard-card-title">
+                Notes
+            </span>
+
+            <span class="dashboard-card-description">
+                Classement, moyenne globale et statistiques des notes.
+            </span>
+
+        </a>
+
+        <a
+            class="
+                card
+                transition-card
+                dashboard-card
+            "
+            data-prefetch
             href="<?= e($baseUri) ?>manga/ajouter"
         >
 

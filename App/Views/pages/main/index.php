@@ -289,12 +289,15 @@ $hasTopLongestSeries =
 
         </a>
 
-        <article
+        <a
             class="
                 card
                 transition-card
                 card-small
+                card-link
             "
+            data-prefetch
+            href="<?= e($baseUri . 'manga/series/notes') ?>"
         >
 
             <h2 class="home-card-title">
@@ -313,11 +316,11 @@ $hasTopLongestSeries =
                         ) . '/10',
                     )
                     : 'Aucune note'
-?>
+                ?>
 
             </p>
 
-        </article>
+        </a>
 
     </section>
 

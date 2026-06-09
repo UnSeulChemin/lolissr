@@ -39,11 +39,19 @@ return static function (Router $router): void {
 
         $router->prefix('series')->group(function (Router $router): void {
 
-            $router->get('', [MangaController::class, 'series']);
+            $router->get(
+                '',
+                [MangaController::class, 'series'],
+            );
 
             $router->get(
                 'page/{page:int}',
                 [MangaController::class, 'series'],
+            );
+
+            $router->get(
+                'notes',
+                [MangaController::class, 'notes'],
             );
 
             $router->get(
