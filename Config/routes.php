@@ -9,11 +9,45 @@ use App\Controllers\Manga\MangaAjaxController;
 use App\Controllers\Manga\MangaController;
 use Framework\Http\Middleware\CsrfMiddleware;
 use Framework\Http\Middleware\ExpectJsonMiddleware;
+use App\Controllers\AuthController;
 use Framework\Routing\Router;
 
 return static function (Router $router): void {
 
     $router->get('/', [MainController::class, 'index']);
+
+    /*
+    |--------------------------------------------------------------------------
+    | AUTH
+    |--------------------------------------------------------------------------
+    */
+
+    $router->get(
+        'connexion',
+        [AuthController::class, 'login'],
+    );
+
+    $router->post(
+        'connexion',
+        [AuthController::class, 'authenticate'],
+        [CsrfMiddleware::class],
+    );
+
+    $router->get(
+        'inscription',
+        [AuthController::class, 'register'],
+    );
+
+    $router->post(
+        'inscription',
+        [AuthController::class, 'store'],
+        [CsrfMiddleware::class],
+    );
+
+    $router->get(
+        'deconnexion',
+        [AuthController::class, 'logout'],
+    );
 
     $router->prefix('manga')->group(function (Router $router): void {
 
