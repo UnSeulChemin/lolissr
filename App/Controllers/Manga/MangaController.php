@@ -350,6 +350,11 @@ final class MangaController extends Controller
 
         $this->render(
             'pages/manga/notes',
+            [
+                'mangas' =>
+                    $this->mangaReadService
+                        ->notes(),
+            ],
         );
     }
 

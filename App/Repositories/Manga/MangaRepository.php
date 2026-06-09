@@ -354,4 +354,39 @@ final class MangaRepository extends Model
             GROUP BY slug
         ";
     }
+
+    /**
+     * @return list<Manga>
+     */
+    public function findSeriesWithoutPerfectNote(): array
+    {
+        /** @var list<Manga> $mangas */
+        $mangas = $this->fetchAll(
+            "
+            SELECT
+                m.*,
+                stats.total,
+                stats.total_lu,
+                stats.average_note
+
+            FROM {$this->getTable()} m
+
+            INNER JOIN (
+                {$this->statsSubQuery()}
+            ) stats
+                ON stats.slug = m.slug
+
+            WHERE m.numero = 1
+            AND stats.average_note < 10
+
+            ORDER BY
+                stats.average_note ASC,
+                m.livre ASC
+            ",
+            [],
+            Manga::class,
+        );
+
+        return $mangas;
+    }
 }

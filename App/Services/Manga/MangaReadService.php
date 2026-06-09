@@ -244,4 +244,16 @@ final readonly class MangaReadService
                 $normalizedSlug,
         );
     }
+
+    /**
+     * @return list<MangaSeriesItemData>
+     */
+    public function notes(): array
+    {
+        return array_map(
+            $this->mapSeriesItem(...),
+            $this->mangaRepository
+                ->findSeriesWithoutPerfectNote(),
+        );
+    }
 }
