@@ -247,12 +247,15 @@ $hasTopLongestSeries =
 
     <section class="home-grid home-grid-stats card-grid-3">
 
-        <article
+        <a
             class="
                 card
                 transition-card
                 card-small
+                card-link
             "
+            data-prefetch
+            href="<?= e($baseUri . 'manga/series') ?>"
         >
 
             <h2 class="home-card-title">
@@ -263,7 +266,7 @@ $hasTopLongestSeries =
                 <?= (int) $stats->totalTomes ?> tomes
             </p>
 
-        </article>
+        </a>
 
         <a
             class="
