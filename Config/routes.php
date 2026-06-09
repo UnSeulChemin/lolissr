@@ -37,20 +37,25 @@ return static function (Router $router): void {
         ],
     );
 
-    $router->get(
-        'inscription',
-        [AuthController::class, 'register'],
-        [GuestMiddleware::class],
-    );
+    if (
+        env('APP_ENV') !== 'production'
+    ) {
 
-    $router->post(
-        'inscription',
-        [AuthController::class, 'store'],
-        [
-            GuestMiddleware::class,
-            CsrfMiddleware::class,
-        ],
-    );
+        $router->get(
+            'inscription',
+            [AuthController::class, 'register'],
+            [GuestMiddleware::class],
+        );
+
+        $router->post(
+            'inscription',
+            [AuthController::class, 'store'],
+            [
+                GuestMiddleware::class,
+                CsrfMiddleware::class,
+            ],
+        );
+    }
 
     $router->get(
         'deconnexion',
