@@ -96,33 +96,6 @@ $baseUri =
                 dashboard-card
             "
             data-prefetch
-            href="<?= e($baseUri) ?>chinois/ajouter"
-        >
-
-            <span
-                class="dashboard-card-icon"
-                aria-hidden="true"
-            >
-                ➕
-            </span>
-
-            <span class="dashboard-card-title">
-                Ajouter
-            </span>
-
-            <span class="dashboard-card-description">
-                Ajouter des mots, expressions et exemples en chinois.
-            </span>
-
-        </a>
-
-        <a
-            class="
-                card
-                transition-card
-                dashboard-card
-            "
-            data-prefetch
             href="<?= e($baseUri) ?>chinois/grammaire"
         >
 
@@ -139,6 +112,33 @@ $baseUri =
 
             <span class="dashboard-card-description">
                 Structures, règles et notes de grammaire chinoise.
+            </span>
+
+        </a>
+
+        <a
+            class="
+                card
+                transition-card
+                dashboard-card
+            "
+            data-prefetch
+            href="<?= e($baseUri) ?>chinois/ajouter"
+        >
+
+            <span
+                class="dashboard-card-icon"
+                aria-hidden="true"
+            >
+                ➕
+            </span>
+
+            <span class="dashboard-card-title">
+                Ajouter
+            </span>
+
+            <span class="dashboard-card-description">
+                Ajouter des mots, expressions et exemples en chinois.
             </span>
 
         </a>
