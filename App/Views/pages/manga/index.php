@@ -84,7 +84,7 @@ $baseUri =
             </span>
 
             <span class="dashboard-card-description">
-                Classement, moyenne globale et statistiques des notes.
+                Les séries qui n'ont pas encore atteint la note parfaite.
             </span>
 
         </a>
