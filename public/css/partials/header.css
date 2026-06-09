@@ -5,8 +5,11 @@
 header
 {
     width: 100%;
+
     background: var(--gradient-violet);
-    box-shadow: 0 4px 18px rgba(123, 44, 255, 0.18);
+
+    box-shadow:
+        0 4px 18px rgba(123, 44, 255, 0.18);
 }
 
 header nav
@@ -41,15 +44,30 @@ header ul
 
 
 /* =========================================
-   LOGO
+   PROFILE
 ========================================= */
 
-.site-logo
+.site-profile
 {
     position: absolute;
     top: 50%;
     left: 24px;
 
+    display: flex;
+    align-items: center;
+
+    gap: 0;
+
+    transform: translateY(-50%);
+}
+
+
+/* =========================================
+   LOGO
+========================================= */
+
+.site-logo
+{
     display: inline-flex;
     align-items: center;
     gap: 4px;
@@ -77,7 +95,6 @@ header ul
     overflow: hidden;
 
     transform:
-        translateY(-50%)
         skewX(-8deg)
         rotate(-1.5deg);
 
@@ -100,7 +117,6 @@ header ul
 .site-logo:active
 {
     transform:
-        translateY(-50%)
         skewX(-8deg)
         rotate(-1.5deg)
         scale(0.98);
@@ -140,13 +156,14 @@ header ul
 
     color: #6d2cff;
 
-    background: linear-gradient(
-        135deg,
-        #ffd6ff 0%,
-        #ffffff 35%,
-        #d9c2ff 70%,
-        #ffdcff 100%
-    );
+    background:
+        linear-gradient(
+            135deg,
+            #ffd6ff 0%,
+            #ffffff 35%,
+            #d9c2ff 70%,
+            #ffdcff 100%
+        );
 
     box-shadow:
         0 3px 10px rgba(255, 255, 255, 0.16),
@@ -154,6 +171,48 @@ header ul
 
     text-shadow:
         0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+
+/* =========================================
+   LEVEL BADGE
+========================================= */
+
+.site-logo-level
+{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 46px;
+    height: 46px;
+
+    margin-left: -1px;
+
+    padding: 0 12px;
+
+    border-radius: 0 16px 16px 0;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,.20),
+            rgba(255,255,255,.08)
+        );
+
+    border: 1px solid rgba(255,255,255,.22);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.20);
+
+    backdrop-filter: blur(6px);
+
+    color: #ffffff;
+
+    font-size: 18px;
+    font-weight: 900;
+
+    line-height: 1;
 }
 
 
@@ -172,13 +231,14 @@ header ul
     width: 52px;
     height: 52px;
 
-    font-size: 26px;
-    text-decoration: none;
-
     border-radius: var(--radius-pill);
 
     background: rgba(255, 255, 255, 0.06);
+
     backdrop-filter: blur(6px);
+
+    font-size: 26px;
+    text-decoration: none;
 
     transition:
         transform 0.25s ease,
@@ -189,7 +249,7 @@ header ul
 
 .nav-link-icon::before
 {
-    content: "";
+    content: '';
 
     position: absolute;
     inset: 0;
@@ -230,7 +290,10 @@ header ul
         0 0 20px rgba(123, 44, 255, 0.65),
         0 10px 26px rgba(123, 44, 255, 0.30);
 
-    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.22));
+    filter:
+        drop-shadow(
+            0 0 8px rgba(255, 255, 255, 0.22)
+        );
 }
 
 .nav-link-icon.active:hover

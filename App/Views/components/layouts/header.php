@@ -12,29 +12,62 @@ $currentSearch =
         ? (string) $currentSearch
         : '';
 
+$username =
+    (string) (
+        user()?->username
+        ?? ''
+    );
+
+$usernameMain =
+    strlen($username) > 3
+        ? substr($username, 0, -3)
+        : $username;
+
+$usernameSuffix =
+    strlen($username) > 3
+        ? substr($username, -3)
+        : '';
+
+$level = (int) (
+    user()?->level
+    ?? 1
+);
+
 ?>
 
 <header>
 
     <nav>
 
-        <a
-            class="site-logo"
-            href="<?= e($baseUri) ?>"
-            title="Accueil"
-        >
-
-            <span class="site-logo-loli">
-                Loli
-            </span>
-
-            <span class="site-logo-ssr">
-                SSR
-            </span>
-
-        </a>
-
         <?php if (is_logged()): ?>
+
+            <div class="site-profile">
+
+                <a
+                    class="site-logo"
+                    href="<?= e($baseUri) ?>profil"
+                    title="<?= e($username) ?>"
+                >
+
+                    <span class="site-logo-loli">
+                        <?= e($usernameMain) ?>
+                    </span>
+
+                    <?php if ($usernameSuffix !== ''): ?>
+
+                        <span class="site-logo-ssr">
+                            <?= e($usernameSuffix) ?>
+                        </span>
+
+                    <?php endif; ?>
+
+                </a>
+
+                <span class="site-logo-level">
+                    <?= e((string) $level) ?>
+                </span>
+
+            </div>
 
             <ul>
 
