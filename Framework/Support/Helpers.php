@@ -8,6 +8,8 @@ use Framework\Config\Env;
 use Framework\Container\AppContainer;
 use Framework\Http\Response;
 use Framework\Support\Session;
+use App\Models\User;
+use App\Services\Auth\AuthService;
 
 /*
 |------------------------------------------------------------------
@@ -413,5 +415,37 @@ if (! function_exists('base_uri')) {
         return $baseUri !== ''
             ? '/' . $baseUri
             : '';
+    }
+}
+
+/*
+|------------------------------------------------------------------
+| Auth
+|------------------------------------------------------------------
+*/
+
+if (! function_exists('auth')) {
+
+    function auth(): AuthService
+    {
+        return app(
+            AuthService::class,
+        );
+    }
+}
+
+if (! function_exists('user')) {
+
+    function user(): ?User
+    {
+        return auth()->user();
+    }
+}
+
+if (! function_exists('is_logged')) {
+
+    function is_logged(): bool
+    {
+        return auth()->check();
     }
 }

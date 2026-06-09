@@ -2,22 +2,10 @@
 
 declare(strict_types=1);
 
-/*
-|--------------------------------------------------------------------------
-| Base URI
-|--------------------------------------------------------------------------
-*/
-
 $baseUri = rtrim(
     (string) ($baseUri ?? ''),
     '/',
 ) . '/';
-
-/*
-|--------------------------------------------------------------------------
-| Current Search
-|--------------------------------------------------------------------------
-*/
 
 $currentSearch =
     isset($currentSearch)
@@ -30,13 +18,8 @@ $currentSearch =
 
     <nav>
 
-        <!-- =====================================
-             Logo
-        ====================================== -->
-
         <a
             class="site-logo"
-            data-prefetch
             href="<?= e($baseUri) ?>"
             title="Accueil"
         >
@@ -51,155 +34,154 @@ $currentSearch =
 
         </a>
 
-        <!-- =====================================
-             Navigation
-        ====================================== -->
+        <?php if (is_logged()): ?>
 
-        <ul>
+            <ul>
 
-            <li>
+                <li>
 
-                <a
-                    class="nav-link-icon"
-                    data-prefetch
-                    href="<?= e($baseUri) ?>"
-                    title="Accueil"
+                    <a
+                        class="nav-link-icon"
+                        data-prefetch
+                        href="<?= e($baseUri) ?>"
+                        title="Accueil"
+                    >
+                        🏠
+                    </a>
+
+                </li>
+
+                <li>
+
+                    <a
+                        class="nav-link-icon"
+                        data-prefetch
+                        href="<?= e($baseUri) ?>manga"
+                        title="Manga"
+                    >
+                        📚
+                    </a>
+
+                </li>
+
+                <li>
+
+                    <a
+                        class="nav-link-icon"
+                        data-prefetch
+                        href="<?= e($baseUri) ?>chinois"
+                        title="Chinois"
+                    >
+                        ⛩️
+                    </a>
+
+                </li>
+
+                <li>
+
+                    <a
+                        class="nav-link-icon"
+                        data-prefetch
+                        href="<?= e($baseUri) ?>deconnexion"
+                        title="Déconnexion"
+                    >
+                        🚪
+                    </a>
+
+                </li>
+
+            </ul>
+
+            <div class="header-search-area">
+
+                <form
+                    class="header-search js-header-search"
+                    method="GET"
+                    action="<?= e($baseUri) ?>manga/recherche"
+                    data-base-path="<?= e($baseUri) ?>"
                 >
 
-                    🏠
-
-                </a>
-
-            </li>
-
-            <li>
-
-                <a
-                    class="nav-link-icon"
-                    data-prefetch
-                    href="<?= e($baseUri) ?>manga"
-                    title="Manga"
-                >
-
-                    📚
-
-                </a>
-
-            </li>
-
-            <li>
-
-                <a
-                    class="nav-link-icon"
-                    data-prefetch
-                    href="<?= e($baseUri) ?>chinois"
-                    title="Chinois"
-                >
-
-                    ⛩️
-
-                </a>
-
-            </li>
-
-        </ul>
-
-        <!-- =====================================
-             Search
-        ====================================== -->
-
-        <div class="header-search-area">
-
-            <form
-                class="header-search js-header-search"
-                method="GET"
-                action="<?= e($baseUri) ?>manga/recherche"
-                data-base-path="<?= e($baseUri) ?>"
-            >
-
-                <input
-                    id="header-search-input"
-                    type="search"
-                    name="q"
-                    placeholder="Rechercher..."
-                    value="<?= e($currentSearch) ?>"
-                    aria-label="Rechercher"
-                    autocomplete="off"
-                >
-
-                <button
-                    type="submit"
-                    title="Rechercher"
-                    aria-label="Rechercher"
-                >
-
-                    🔎
-
-                </button>
-
-                <!-- =================================
-                     Dropdown
-                ================================== -->
-
-                <div class="header-search-dropdown js-header-search-dropdown">
-
-                    <!-- =============================
-                         Skeleton
-                    ============================== -->
-
-                    <div
-                        class="header-search-skeleton"
-                        aria-hidden="true"
+                    <input
+                        id="header-search-input"
+                        type="search"
+                        name="q"
+                        placeholder="Rechercher..."
+                        value="<?= e($currentSearch) ?>"
+                        autocomplete="off"
                     >
 
-                        <?php for (
-                            $i = 1;
-                            $i <= 5;
-                            $i++
-                        ): ?>
+                    <button type="submit">
+                        🔎
+                    </button>
 
-                            <div class="header-search-skeleton-item">
+                    <div class="header-search-dropdown js-header-search-dropdown">
 
-                                <div class="header-search-skeleton-thumb"></div>
+                        <div
+                            class="header-search-skeleton"
+                            aria-hidden="true"
+                        >
 
-                                <div class="header-search-skeleton-texts">
+                            <?php for ($i = 1; $i <= 5; $i++): ?>
 
-                                    <div
-                                        class="
-                                            header-search-skeleton-line
-                                            header-search-skeleton-line-title
-                                        "
-                                    ></div>
+                                <div class="header-search-skeleton-item">
 
-                                    <div
-                                        class="
-                                            header-search-skeleton-line
-                                            header-search-skeleton-line-subtitle
-                                        "
-                                    ></div>
+                                    <div class="header-search-skeleton-thumb"></div>
+
+                                    <div class="header-search-skeleton-texts">
+
+                                        <div
+                                            class="
+                                                header-search-skeleton-line
+                                                header-search-skeleton-line-title
+                                            "
+                                        ></div>
+
+                                        <div
+                                            class="
+                                                header-search-skeleton-line
+                                                header-search-skeleton-line-subtitle
+                                            "
+                                        ></div>
+
+                                    </div>
 
                                 </div>
 
-                            </div>
+                            <?php endfor; ?>
 
-                        <?php endfor; ?>
+                        </div>
+
+                        <div
+                            class="header-search-results"
+                            id="header-search-results"
+                        ></div>
 
                     </div>
 
-                    <!-- =============================
-                         Results
-                    ============================== -->
+                </form>
 
-                    <div
-                        class="header-search-results"
-                        id="header-search-results"
-                    ></div>
+            </div>
 
-                </div>
+        <?php else: ?>
 
-            </form>
+            <ul>
 
-        </div>
+                <li>
+
+                    <a
+                        class="nav-link-icon"
+                        data-prefetch
+                        href="<?= e($baseUri) ?>connexion"
+                        title="Connexion"
+                    >
+                        🔐
+                    </a>
+
+                </li>
+
+            </ul>
+
+        <?php endif; ?>
 
     </nav>
 
