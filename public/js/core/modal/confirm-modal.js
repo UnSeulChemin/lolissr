@@ -8,6 +8,7 @@ export function confirmModal(
         message,
         confirmText = 'Confirmer',
         cancelText = 'Annuler',
+        danger = false,
     },
 )
 {
@@ -26,35 +27,59 @@ export function confirmModal(
 
             overlay.innerHTML = `
                 <div class="confirm-modal">
-                    <h3>${title}</h3>
 
-                    <p>${message}</p>
+                    <h3>
+                        ${title}
+                    </h3>
+
+                    <p>
+                        ${message}
+                    </p>
 
                     <div class="confirm-modal-actions">
 
                         <button
-                            class="confirm-modal-cancel"
+                            class="confirm-modal-secondary"
                             type="button"
                         >
                             ${cancelText}
                         </button>
 
                         <button
-                            class="confirm-modal-confirm"
+                            class="${
+                                danger
+                                    ? 'confirm-modal-danger'
+                                    : 'confirm-modal-primary'
+                            }"
                             type="button"
                         >
                             ${confirmText}
                         </button>
 
                     </div>
+
                 </div>
             `;
+
+            const confirmSelector =
+                danger
+                    ? '.confirm-modal-danger'
+                    : '.confirm-modal-primary';
 
             const close =
                 (
                     result,
                 ) =>
                 {
+                    if (
+                        ! document.body.contains(
+                            overlay,
+                        )
+                    ) {
+
+                        return;
+                    }
+
                     document.body.style.overflow =
                         '';
 
@@ -76,7 +101,8 @@ export function confirmModal(
                 ) =>
                 {
                     if (
-                        event.key === 'Escape'
+                        event.key
+                        === 'Escape'
                     ) {
 
                         close(
@@ -99,13 +125,13 @@ export function confirmModal(
 
             overlay
                 .querySelector(
-                    '.confirm-modal-confirm',
+                    confirmSelector,
                 )
                 ?.focus();
 
             overlay
                 .querySelector(
-                    '.confirm-modal-cancel',
+                    '.confirm-modal-secondary',
                 )
                 ?.addEventListener(
                     'click',
@@ -117,7 +143,7 @@ export function confirmModal(
 
             overlay
                 .querySelector(
-                    '.confirm-modal-confirm',
+                    confirmSelector,
                 )
                 ?.addEventListener(
                     'click',
