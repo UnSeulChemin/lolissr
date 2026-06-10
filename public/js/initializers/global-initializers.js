@@ -26,6 +26,10 @@ import {
     initGlobalErrorHandlers,
 } from '../boot/app-errors.js';
 
+import {
+    initCopy,
+} from '../core/copy/copy-init.js';
+
 // ==================================================
 // EXPORT
 // ==================================================
@@ -40,6 +44,11 @@ export const GLOBAL_INITIALIZERS = [
     [
         'Prefetch',
         initPrefetch,
+    ],
+
+    [
+        'Copy',
+        initCopy,
     ],
 
     [

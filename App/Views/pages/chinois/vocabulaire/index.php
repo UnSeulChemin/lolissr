@@ -59,7 +59,11 @@ $baseUri =
                             ✕
                         </button>
 
-                        <h3 class="chinois-vocab-word">
+                        <h3
+                            class="chinois-vocab-word"
+                            data-copy="<?= e((string) $vocabulaire->mot) ?>"
+                            title="Cliquer pour copier"
+                        >
                             <?= e((string) $vocabulaire->mot) ?>
                         </h3>
 
@@ -81,7 +85,11 @@ $baseUri =
                             ) !== ''
                         ): ?>
 
-                            <div class="chinois-vocab-example">
+                            <div
+                                class="chinois-vocab-example"
+                                data-copy="<?= e((string) $vocabulaire->exemple) ?>"
+                                title="Cliquer pour copier"
+                            >
                                 <?= e((string) $vocabulaire->exemple) ?>
                             </div>
 
