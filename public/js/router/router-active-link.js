@@ -15,9 +15,8 @@ export function updateActiveNavigation()
     const currentPath =
         location.pathname;
 
-    document
-        .querySelectorAll(
-            '.nav-link-icon',
+        document.querySelectorAll(
+            '.nav-link-icon, .site-profile-link',
         )
         .forEach(
             (

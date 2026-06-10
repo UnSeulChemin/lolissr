@@ -12,6 +12,7 @@ use Framework\Http\Middleware\AuthMiddleware;
 use Framework\Http\Middleware\CsrfMiddleware;
 use Framework\Http\Middleware\ExpectJsonMiddleware;
 use Framework\Http\Middleware\GuestMiddleware;
+use App\Controllers\ProfileController;
 use Framework\Routing\Router;
 
 return static function (Router $router): void {
@@ -75,6 +76,11 @@ return static function (Router $router): void {
         $router->get(
             '/',
             [MainController::class, 'index'],
+        );
+        
+        $router->get(
+            'profil',
+            [ProfileController::class, 'index'],
         );
 
         $router->prefix('manga')->group(function (Router $router): void {

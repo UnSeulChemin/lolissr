@@ -67,7 +67,7 @@ header ul
 .site-profile:hover
 {
     box-shadow:
-        0 0 0 1px rgba(255,255,255,.22);
+        0 0 0 2px rgba(255,255,255,.22);
 }
 
 .site-profile:hover .site-logo,
@@ -303,4 +303,18 @@ header ul
     align-items: stretch;
 
     text-decoration: none;
+}
+
+.site-profile-link.active
+{
+    box-shadow:
+        0 0 0 2px rgba(255,255,255,.22);
+        
+    border-radius: 16px;
+}
+
+.site-profile-link.active .site-logo,
+.site-profile-link.active .site-logo-level
+{
+    border-color: rgba(255,255,255,.35);
 }
