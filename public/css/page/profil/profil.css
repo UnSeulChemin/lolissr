@@ -180,6 +180,29 @@
 
     justify-content: flex-start;
     align-items: stretch;
+
+    overflow: hidden;
+
+    border: 1px solid rgba(
+        139,
+        92,
+        246,
+        .20
+    );
+
+    box-shadow:
+        inset 0 1px 2px rgba(
+            255,
+            255,
+            255,
+            .65
+        ),
+        0 8px 18px rgba(
+            139,
+            92,
+            246,
+            .10
+        );
 }
 
 .profile-level-header
@@ -210,11 +233,21 @@
 
     color: var(--color-violet);
 
-    opacity: .9;
+    opacity: .95;
+
+    text-shadow:
+        0 0 12px rgba(
+            139,
+            92,
+            246,
+            .18
+        );
 }
 
 .profile-level-progress
 {
+    position: relative;
+
     width: 100%;
     height: 22px;
 
@@ -222,29 +255,79 @@
 
     border-radius: 999px;
 
-    background:
-        rgba(
-            0,
-            0,
-            0,
-            .08
+    border: 1px solid rgba(
+        139,
+        92,
+        246,
+        .22
+    );
+
+    background: linear-gradient(
+        180deg,
+        rgba(139,92,246,.10),
+        rgba(139,92,246,.04)
+    );
+
+    box-shadow:
+        inset 0 1px 2px rgba(
+            255,
+            255,
+            255,
+            .70
+        ),
+        0 8px 18px rgba(
+            139,
+            92,
+            246,
+            .10
         );
 }
 
 .profile-level-progress-bar
 {
-    width: 75%;
+    position: relative;
+
     height: 100%;
 
     border-radius: inherit;
 
-    background:
-        linear-gradient(
-            90deg,
-            #6d28d9,
-            #7c3aed,
-            #a855f7
+    background: linear-gradient(
+        90deg,
+        #8b5cf6 0%,
+        #7c3aed 55%,
+        #a855f7 100%
+    );
+
+    box-shadow:
+        0 0 12px rgba(
+            139,
+            92,
+            246,
+            .45
         );
+}
+
+.profile-level-progress-bar::after
+{
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: -40%;
+
+    width: 40%;
+    height: 100%;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,.65),
+        transparent
+    );
+
+    animation:
+        home-progress-shine 2.8s linear infinite;
 }
 
 
