@@ -81,6 +81,18 @@ final class Session
             'cookie_samesite' => 'Lax',
         ]);
 
+        file_put_contents(
+    base_path('storage/logs/session.log'),
+    sprintf(
+        "[%s] uri=%s session_id=%s cookie=%s\n",
+        date('Y-m-d H:i:s'),
+        $_SERVER['REQUEST_URI'] ?? '',
+        session_id(),
+        $_COOKIE['LOLISSR_SESSION'] ?? 'none',
+    ),
+    FILE_APPEND,
+);
+
         self::$started = true;
     }
 

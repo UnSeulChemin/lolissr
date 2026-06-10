@@ -118,7 +118,6 @@ $level = (int) (
 
                     <a
                         class="nav-link-icon"
-                        data-prefetch
                         data-confirm-logout
                         href="<?= e($baseUri) ?>deconnexion"
                         title="Déconnexion"
