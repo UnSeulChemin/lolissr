@@ -26,6 +26,10 @@ import {
     confirmModal,
 } from '../core/modal/confirm-modal.js';
 
+import {
+    request,
+} from '../core/http.js';
+
 // =========================================
 // CLICK
 // =========================================
@@ -114,6 +118,26 @@ async function handleClick(
 
             return;
         }
+
+        const response =
+            await request(
+                link.href,
+                {
+                    method:
+                        'POST',
+                },
+            );
+
+        if (
+            response?.type
+            === 'redirect'
+        ) {
+
+            window.location.href =
+                response.redirect;
+        }
+
+        return;
     }
 
     if (

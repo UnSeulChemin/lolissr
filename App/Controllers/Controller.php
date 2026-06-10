@@ -452,7 +452,7 @@ abstract class Controller
                     'redirect' =>
                         $redirectUrl,
                 ],
-                $statusCode,
+                200,
             );
         }
 

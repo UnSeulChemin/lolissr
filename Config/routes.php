@@ -58,11 +58,6 @@ return static function (Router $router): void {
         );
     }
 
-    $router->get(
-        'deconnexion',
-        [AuthController::class, 'logout'],
-    );
-
     /*
     |--------------------------------------------------------------------------
     | PROTECTED
@@ -81,6 +76,14 @@ return static function (Router $router): void {
         $router->get(
             'profil',
             [ProfileController::class, 'index'],
+        );
+
+        $router->post(
+            'deconnexion',
+            [AuthController::class, 'logout'],
+            [
+                CsrfMiddleware::class,
+            ],
         );
 
         $router->prefix('manga')->group(function (Router $router): void {
