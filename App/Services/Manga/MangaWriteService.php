@@ -17,6 +17,8 @@ use Framework\Application\App;
 use Framework\Config\UploadConfig;
 use Framework\Database\Database;
 use Framework\Support\Logger;
+use App\Constants\UserXp;
+use App\Services\User\UserLevelService;
 use Throwable;
 
 final readonly class MangaWriteService
@@ -26,6 +28,7 @@ final readonly class MangaWriteService
         private UploadService $uploadService,
         private MangaCacheService $cacheService,
         private Database $database,
+        private UserLevelService $userLevelService,
     ) {
     }
 
@@ -429,6 +432,24 @@ final readonly class MangaWriteService
                 $readStatus,
             ): ServiceResult {
 
+                $manga =
+                    $this->mangaRepository
+                        ->findOneBySlugAndNumero(
+                            $slug,
+                            $numero,
+                        );
+
+                if ($manga === null)
+                {
+                    return $this->error(
+                        'Manga introuvable',
+                        404,
+                    );
+                }
+
+                $wasRead =
+                    $manga->lu === 1;
+
                 $updated =
                     $this->mangaRepository
                         ->updateReadStatus(
@@ -449,6 +470,23 @@ final readonly class MangaWriteService
                 if ($failure !== null)
                 {
                     return $failure;
+                }
+
+                if (
+                    ! $wasRead
+                    && $readStatus === 1
+                ) {
+
+                    $user = user();
+
+                    if ($user !== null)
+                    {
+                        $this->userLevelService
+                            ->addXp(
+                                $user,
+                                UserXp::READ_TOME,
+                            );
+                    }
                 }
 
                 $this->clearCache();
