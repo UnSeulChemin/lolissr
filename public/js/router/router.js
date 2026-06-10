@@ -22,11 +22,15 @@ import {
     debug,
 } from '../core/debug/debug.js';
 
+import {
+    confirmModal,
+} from '../core/modal/confirm-modal.js';
+
 // =========================================
 // CLICK
 // =========================================
 
-function handleClick(
+async function handleClick(
     event,
 )
 {
@@ -80,6 +84,36 @@ function handleClick(
     ) {
 
         return;
+    }
+
+    if (
+        link.hasAttribute(
+            'data-confirm-logout',
+        )
+    ) {
+
+        event.preventDefault();
+
+        const confirmed =
+            await confirmModal(
+                {
+                    title:
+                        'Déconnexion',
+
+                    message:
+                        'Êtes-vous sûr de vouloir vous déconnecter ?',
+
+                    confirmText:
+                        'Déconnexion',
+                },
+            );
+
+        if (
+            ! confirmed
+        ) {
+
+            return;
+        }
     }
 
     if (

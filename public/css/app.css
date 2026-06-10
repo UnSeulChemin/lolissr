@@ -6,6 +6,7 @@
 @import url('./base/variables.css');
 @import url('./base/global.css');
 @import url('./base/scrollbars.css');
+@import url('./base/confirm-modal.css');
 
 /* UTILITIES */
 @import url('./utilities/transitions.css');

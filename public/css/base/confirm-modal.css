@@ -1,0 +1,185 @@
+/* =========================================
+   CONFIRM MODAL
+========================================= */
+
+.confirm-modal-overlay
+{
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 24px;
+
+    background: rgba(15, 10, 30, 0.55);
+
+    backdrop-filter: blur(8px);
+
+    animation:
+        confirm-modal-fade-in 0.20s ease;
+}
+
+.confirm-modal
+{
+    width: 100%;
+    max-width: 460px;
+
+    padding: 24px;
+
+    border: 1px solid rgba(255,255,255,.18);
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,.16),
+            rgba(255,255,255,.06)
+        );
+
+    box-shadow:
+        0 20px 50px rgba(0,0,0,.35),
+        0 0 0 1px rgba(255,255,255,.10),
+        inset 0 1px 0 rgba(255,255,255,.15);
+
+    backdrop-filter: blur(12px);
+
+    animation:
+        confirm-modal-pop-in 0.22s ease;
+}
+
+.confirm-modal h3
+{
+    margin: 0 0 12px;
+
+    color: #ffffff;
+
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.confirm-modal p
+{
+    margin: 0;
+
+    color: rgba(255,255,255,.82);
+
+    line-height: 1.6;
+}
+
+.confirm-modal-actions
+{
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+
+    margin-top: 24px;
+}
+
+.confirm-modal-actions button
+{
+    cursor: pointer;
+
+    border: none;
+    border-radius: 14px;
+
+    padding: 10px 18px;
+
+    font-weight: 700;
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        background .2s ease;
+}
+
+.confirm-modal-actions button:hover
+{
+    transform: translateY(-2px);
+}
+
+.confirm-modal-cancel
+{
+    color: #ffffff;
+
+    background:
+        rgba(255,255,255,.10);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.15);
+}
+
+.confirm-modal-cancel:hover
+{
+    background:
+        rgba(255,255,255,.16);
+}
+
+.confirm-modal-confirm
+{
+    color: #ffffff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #7b2cff,
+            #9d5cff
+        );
+
+    box-shadow:
+        0 8px 18px rgba(123,44,255,.30);
+}
+
+.confirm-modal-confirm:hover
+{
+    box-shadow:
+        0 10px 24px rgba(123,44,255,.42);
+}
+
+/* =========================================
+   ANIMATIONS
+========================================= */
+
+@keyframes confirm-modal-fade-in
+{
+    from
+    {
+        opacity: 0;
+    }
+
+    to
+    {
+        opacity: 1;
+    }
+}
+
+@keyframes confirm-modal-pop-in
+{
+    from
+    {
+        opacity: 0;
+
+        transform:
+            scale(.95)
+            translateY(10px);
+    }
+
+    to
+    {
+        opacity: 1;
+
+        transform:
+            scale(1)
+            translateY(0);
+    }
+}
+
+.confirm-modal-actions button:focus-visible
+{
+    outline: none;
+
+    box-shadow:
+        0 0 0 3px rgba(255,255,255,.25);
+}
