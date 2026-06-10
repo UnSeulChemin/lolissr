@@ -57,27 +57,25 @@ header ul
     align-items: stretch;
 
     transform: translateY(-50%);
+    border-radius: 16px;
 }
 
 /* =========================================
    PROFILE HOVER
 ========================================= */
 
-.site-profile:hover .site-logo
+.site-profile:hover
 {
-    border-color: rgba(255,255,255,.28);
-
     box-shadow:
-        0 0 0 2px rgba(255,255,255,.22),
-        inset 0 1px 0 rgba(255,255,255,.20);
+        0 0 0 2px rgba(255,255,255,.22);
 }
 
+.site-profile:hover .site-logo,
 .site-profile:hover .site-logo-level
 {
     border-color: rgba(255,255,255,.28);
 
     box-shadow:
-        0 0 0 2px rgba(255,255,255,.22),
         inset 0 1px 0 rgba(255,255,255,.20);
 }
 
@@ -87,7 +85,7 @@ header ul
 
 .site-logo
 {
-    display: inline-flex;
+    display: flex;
     align-items: center;
     gap: 4px;
 
@@ -116,11 +114,6 @@ header ul
     white-space: nowrap;
 
     position: relative;
-}
-
-.site-logo:active
-{
-    transform: scale(0.98);
 }
 
 .site-logo-loli,
@@ -305,4 +298,12 @@ header ul
 .nav-link-icon.active:hover
 {
     background: rgba(255, 255, 255, 0.22);
+}
+
+.site-profile-link
+{
+    display: inline-flex;
+    align-items: stretch;
+
+    text-decoration: none;
 }

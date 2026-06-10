@@ -44,28 +44,32 @@ $level = (int) (
             <div class="site-profile">
 
                 <a
-                    class="site-logo"
+                    class="site-profile-link"
                     href="<?= e($baseUri) ?>profil"
                     title="<?= e($username) ?>"
                 >
 
-                    <span class="site-logo-loli">
-                        <?= e($usernameMain) ?>
-                    </span>
+                    <span class="site-logo">
 
-                    <?php if ($usernameSuffix !== ''): ?>
-
-                        <span class="site-logo-ssr">
-                            <?= e($usernameSuffix) ?>
+                        <span class="site-logo-loli">
+                            <?= e($usernameMain) ?>
                         </span>
 
-                    <?php endif; ?>
+                        <?php if ($usernameSuffix !== ''): ?>
+
+                            <span class="site-logo-ssr">
+                                <?= e($usernameSuffix) ?>
+                            </span>
+
+                        <?php endif; ?>
+
+                    </span>
+
+                    <span class="site-logo-level">
+                        <?= e((string) $level) ?>
+                    </span>
 
                 </a>
-
-                <span class="site-logo-level">
-                    <?= e((string) $level) ?>
-                </span>
 
             </div>
 
