@@ -53,14 +53,33 @@ header ul
     top: 50%;
     left: 24px;
 
-    display: flex;
-    align-items: center;
-
-    gap: 0;
+    display: inline-flex;
+    align-items: stretch;
 
     transform: translateY(-50%);
 }
 
+/* =========================================
+   PROFILE HOVER
+========================================= */
+
+.site-profile:hover .site-logo
+{
+    border-color: rgba(255,255,255,.28);
+
+    box-shadow:
+        0 0 0 2px rgba(255,255,255,.22),
+        inset 0 1px 0 rgba(255,255,255,.20);
+}
+
+.site-profile:hover .site-logo-level
+{
+    border-color: rgba(255,255,255,.28);
+
+    box-shadow:
+        0 0 0 2px rgba(255,255,255,.22),
+        inset 0 1px 0 rgba(255,255,255,.20);
+}
 
 /* =========================================
    LOGO
@@ -74,52 +93,34 @@ header ul
 
     padding: 7px 12px 8px;
 
-    border: 1px solid rgba(255, 255, 255, 0.22);
-    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,.22);
+    border-right: none;
+
+    border-radius: 16px 0 0 16px;
 
     background:
         linear-gradient(
             135deg,
-            rgba(255, 255, 255, 0.20),
-            rgba(255, 255, 255, 0.08)
+            rgba(255,255,255,.20),
+            rgba(255,255,255,.08)
         );
 
     box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.20);
+        inset 0 1px 0 rgba(255,255,255,.20);
 
     backdrop-filter: blur(6px);
 
-    line-height: 1;
     text-decoration: none;
-    user-select: none;
     overflow: hidden;
 
-    transform:
-        skewX(-8deg)
-        rotate(-1.5deg);
+    white-space: nowrap;
 
-    transition:
-        transform 0.25s ease,
-        background-color 0.25s ease,
-        box-shadow 0.25s ease,
-        border-color 0.25s ease;
-}
-
-.site-logo:hover
-{
-    border-color: rgba(255, 255, 255, 0.28);
-
-    box-shadow:
-        0 0 0 2px rgba(255, 255, 255, 0.22),
-        inset 0 1px 0 rgba(255, 255, 255, 0.20);
+    position: relative;
 }
 
 .site-logo:active
 {
-    transform:
-        skewX(-8deg)
-        rotate(-1.5deg)
-        scale(0.98);
+    transform: scale(0.98);
 }
 
 .site-logo-loli,
@@ -136,7 +137,7 @@ header ul
     letter-spacing: -1px;
     line-height: 1;
 
-    transform: skewX(10deg);
+    transform: skewX(8deg);
 }
 
 .site-logo-loli
@@ -180,27 +181,26 @@ header ul
 
 .site-logo-level
 {
+    position: relative;
+
     display: flex;
     align-items: center;
     justify-content: center;
 
-    min-width: 46px;
-    height: 46px;
+    min-width: 54px;
+    padding: 0 14px;
 
     margin-left: -1px;
 
-    padding: 0 12px;
-
+    border: 1px solid rgba(255,255,255,.22);
     border-radius: 0 16px 16px 0;
 
     background:
         linear-gradient(
             135deg,
-            rgba(255,255,255,.20),
+            rgba(255,255,255,.18),
             rgba(255,255,255,.08)
         );
-
-    border: 1px solid rgba(255,255,255,.22);
 
     box-shadow:
         inset 0 1px 0 rgba(255,255,255,.20);
@@ -209,10 +209,16 @@ header ul
 
     color: #ffffff;
 
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 900;
-
     line-height: 1;
+
+    user-select: none;
+    flex-shrink: 0;
+
+    text-shadow:
+        0 2px 0 rgba(120, 60, 255, 0.28),
+        0 4px 10px rgba(255, 255, 255, 0.12);
 }
 
 
