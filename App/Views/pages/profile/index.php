@@ -29,7 +29,7 @@ $baseUri =
             <div class="profile-content">
 
                 <p class="profile-subtitle">
-                    Explorateur (Liste de titre?)
+                    Explorateur (Liste de titre? wtyle animé preminium)
                 </p>
 
                 <h1 class="profile-name">
