@@ -29,7 +29,7 @@ $baseUri =
             <div class="profile-content">
 
                 <p class="profile-subtitle">
-                    Explorateur
+                    Explorateur (Liste de titre?)
                 </p>
 
                 <h1 class="profile-name">
@@ -111,6 +111,10 @@ $baseUri =
         </article>
 
     </section>
+
+    <h2 class="home-section-title">
+        📊 Résumé de l'XP gagnée
+    </h2>
 
     <section class="profile-stats">
 
