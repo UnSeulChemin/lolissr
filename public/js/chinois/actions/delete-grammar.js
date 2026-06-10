@@ -34,6 +34,10 @@ import {
     invalidatePrefetch,
 } from '../../router/prefetch/prefetch-cache.js';
 
+import {
+    deleteModal,
+} from '../../core/modal/modal.js';
+
 // =========================================
 // STATE
 // =========================================
@@ -100,13 +104,12 @@ async function deleteGrammaire(
     */
 
     const confirmed =
-        window.confirm(
+        await deleteModal(
             'Supprimer cette règle de grammaire ?',
         );
 
     if (!confirmed)
     {
-
         return;
     }
 

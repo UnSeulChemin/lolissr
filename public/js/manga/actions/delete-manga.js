@@ -38,6 +38,10 @@ import {
     invalidatePrefetch,
 } from '../../router/prefetch/prefetch-cache.js';
 
+import {
+    deleteModal,
+} from '../../core/modal/modal.js';
+
 // =========================================
 // STATE
 // =========================================
@@ -116,12 +120,12 @@ async function deleteManga(
     */
 
     const confirmed =
-        window.confirm(
+        await deleteModal(
             'Supprimer ce manga ?',
         );
 
-    if (!confirmed) {
-
+    if (!confirmed)
+    {
         return;
     }
 
