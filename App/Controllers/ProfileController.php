@@ -31,7 +31,9 @@ final class ProfileController extends Controller
             'pages/profile/index',
             [
                 'user' => $user,
-                'progress' => $this->userLevelService->progress($user),
+                'progress' => $this->userLevelService->progress(
+                    $user,
+                ),
                 'xpRequired' => $this->userLevelService->xpRequiredForLevel(
                     $user->level,
                 ),

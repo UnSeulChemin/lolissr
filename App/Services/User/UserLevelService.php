@@ -7,6 +7,18 @@ namespace App\Services\User;
 use App\Models\User;
 use App\Repositories\Auth\UserRepository;
 
+/**
+ * =========================================
+ * USER LEVEL SERVICE
+ * =========================================
+ *
+ * Responsable de :
+ *
+ * - Calcul du niveau
+ * - Calcul de la progression
+ * - Gestion des gains d'XP
+ * - Passage des niveaux
+ */
 final readonly class UserLevelService
 {
     public function __construct(
@@ -14,12 +26,28 @@ final readonly class UserLevelService
     ) {
     }
 
+    /**
+     * XP nécessaire pour atteindre
+     * le niveau suivant.
+     *
+     * Niveau 1 -> 5 XP
+     * Niveau 2 -> 10 XP
+     * Niveau 3 -> 15 XP
+     * etc.
+     */
     public function xpRequiredForLevel(
         int $level,
     ): int {
-        return $level * 5;
+
+        return max(
+            1,
+            $level * 5,
+        );
     }
 
+    /**
+     * Progression du niveau actuel.
+     */
     public function progress(
         User $user,
     ): float {
@@ -28,11 +56,6 @@ final readonly class UserLevelService
             $this->xpRequiredForLevel(
                 $user->level,
             );
-
-        if ($required <= 0)
-        {
-            return 0;
-        }
 
         return min(
             100,
@@ -43,39 +66,37 @@ final readonly class UserLevelService
         );
     }
 
-    public function xpRemaining(
-        User $user,
-    ): int {
-
-        return max(
-            0,
-            $this->xpRequiredForLevel(
-                $user->level,
-            )
-            - $user->xp,
-        );
-    }
-
+    /**
+     * Ajoute de l'XP à un utilisateur.
+     *
+     * Gère automatiquement :
+     *
+     * - les montées de niveau
+     * - les montées multiples
+     * - la sauvegarde en base
+     */
     public function addXp(
         User $user,
         int $xp,
     ): void {
 
+        if ($xp <= 0)
+        {
+            return;
+        }
+
         $user->xp += $xp;
 
-        while (true)
-        {
-            $required =
+        while (
+            $user->xp >= $this->xpRequiredForLevel(
+                $user->level,
+            )
+        ) {
+
+            $user->xp -=
                 $this->xpRequiredForLevel(
                     $user->level,
                 );
-
-            if ($user->xp < $required)
-            {
-                break;
-            }
-
-            $user->xp -= $required;
 
             $user->level++;
         }
