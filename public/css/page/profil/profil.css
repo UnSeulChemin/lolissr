@@ -1,0 +1,288 @@
+.profile-page
+{
+    --profile-width: calc(
+        (var(--width-home-grid-column) * 3)
+        + (var(--gap-grid-home) * 2)
+    );
+
+    display: flex;
+    flex-direction: column;
+
+    gap: var(--gap-grid-home);
+}
+
+/* =========================================
+   HEADER
+========================================= */
+
+.profile-header-grid
+{
+    display: grid;
+
+    width: var(--profile-width);
+
+    grid-template-columns:
+        repeat(
+            2,
+            1fr
+        );
+
+    gap: var(--gap-grid-home);
+
+    margin: 0 auto;
+}
+
+.profile-card
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 1rem;
+}
+
+.profile-avatar
+{
+    width: 70px;
+    height: 70px;
+
+    flex-shrink: 0;
+
+    border-radius: 999px;
+}
+
+.profile-card,
+.profile-achievements
+{
+    width: 100%;
+    min-height: 240px;
+
+    padding: 1.5rem;
+
+    box-sizing: border-box;
+}
+
+/* =========================================
+   PROFILE
+========================================= */
+
+.profile-avatar
+{
+    width: 65px;
+    height: 65px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    font-size: 1.6rem;
+
+    background:
+        rgba(
+            139,
+            92,
+            246,
+            .12
+        );
+}
+
+.profile-subtitle
+{
+    margin: 0;
+
+    color: #777;
+
+    font-size: .95rem;
+}
+
+.profile-name
+{
+    margin: 0;
+
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+/* =========================================
+   ACHIEVEMENTS
+========================================= */
+
+.profile-section-title
+{
+    margin: 0 0 1.5rem;
+
+    text-align: center;
+
+    font-size: 1.5rem;
+}
+
+.achievement-list
+{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    gap: .75rem;
+
+    margin: 0 auto;
+}
+
+.achievement-item
+{
+    padding: .7rem 1rem;
+
+    font-size: .95rem;
+
+    border-radius: 14px;
+
+    background:
+        rgba(
+            139,
+            92,
+            246,
+            .08
+        );
+}
+
+/* =========================================
+   LEVEL CARD
+========================================= */
+
+.profile-level-card-wrapper
+{
+    width: var(--profile-width);
+
+    margin: 0 auto;
+}
+
+.profile-level-card
+{
+    width: 100%;
+
+    padding: 1.5rem;
+
+    box-sizing: border-box;
+}
+
+.profile-level-header
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: .25rem;
+
+    margin-bottom: 1.25rem;
+}
+
+.profile-level-label
+{
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.profile-level-xp
+{
+    font-size: 1.15rem;
+    font-weight: 600;
+
+    color: var(--color-violet);
+
+    opacity: .9;
+}
+
+.profile-level-progress
+{
+    width: 100%;
+    height: 22px;
+
+    overflow: hidden;
+
+    border-radius: 999px;
+
+    background:
+        rgba(
+            0,
+            0,
+            0,
+            .08
+        );
+}
+
+.profile-level-progress-bar
+{
+    width: 75%;
+    height: 100%;
+
+    border-radius: inherit;
+
+    background:
+        linear-gradient(
+            90deg,
+            #6d28d9,
+            #7c3aed,
+            #a855f7
+        );
+}
+
+/* =========================================
+   STATS
+========================================= */
+
+.profile-stats
+{
+    display: flex;
+    flex-direction: column;
+
+    gap: var(--gap-grid-home);
+}
+
+.profile-stat-row
+{
+    display: grid;
+
+    width: var(--profile-width);
+
+    grid-template-columns:
+        repeat(
+            2,
+            1fr
+        );
+
+    gap: var(--gap-grid-home);
+
+    margin: 0 auto;
+}
+
+.profile-stat-card
+{
+    width: 100%;
+    min-height: 215px;
+
+    box-sizing: border-box;
+
+    justify-content: center;
+
+    gap: 10px;
+}
+
+.profile-stat-title
+{
+    margin: 0;
+
+    font-size: var(--font-size-base);
+    font-weight: 700;
+}
+
+.profile-stat-value
+{
+    margin: 0;
+
+    font-size: 2.9rem;
+    font-weight: 700;
+
+    line-height: 1;
+}
