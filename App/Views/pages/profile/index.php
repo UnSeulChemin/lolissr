@@ -2,11 +2,24 @@
 
 declare(strict_types=1);
 
+/** @var App\Models\User $user */
+/** @var float $progress */
+/** @var int $xpRequired */
+
 $baseUri =
     rtrim(
         (string) ($baseUri ?? ''),
         '/',
     ) . '/';
+
+$username =
+    $user->username;
+
+$level =
+    $user->level;
+
+$currentXp =
+    $user->xp;
 
 ?>
 
@@ -33,7 +46,7 @@ $baseUri =
                 </p>
 
                 <h1 class="profile-name">
-                    LoliSSR
+                    <?= e($username) ?>
                 </h1>
 
             </div>
@@ -90,11 +103,29 @@ $baseUri =
             <div class="profile-level-header">
 
                 <div class="profile-level-label">
-                    Niveau 1
+                    Niveau <?= $level ?>
                 </div>
 
                 <div class="profile-level-xp">
-                    75 / 100 XP
+
+                    <?= number_format(
+                        $currentXp,
+                        0,
+                        ',',
+                        ' ',
+                    ) ?>
+
+                    /
+
+                    <?= number_format(
+                        $xpRequired,
+                        0,
+                        ',',
+                        ' ',
+                    ) ?>
+
+                    XP
+
                 </div>
 
             </div>
@@ -103,7 +134,7 @@ $baseUri =
 
                 <div
                     class="profile-level-progress-bar"
-                    style="width: 75%;"
+                    style="width: <?= $progress ?>%;"
                 ></div>
 
             </div>

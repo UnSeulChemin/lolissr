@@ -65,4 +65,21 @@ final class UserRepository extends Model
             'xp' => 0,
         ]);
     }
+
+    public function updateLevelAndXp(
+        int $userId,
+        int $level,
+        int $xp,
+    ): bool {
+
+        return $this->update(
+            [
+                'level' => $level,
+                'xp' => $xp,
+            ],
+            [
+                'id' => $userId,
+            ],
+        );
+    }
 }
