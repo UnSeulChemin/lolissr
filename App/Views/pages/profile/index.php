@@ -9,6 +9,8 @@ declare(strict_types=1);
 /** @var float $progress */
 /** @var int $readTomes */
 /** @var int $totalXp */
+/** @var int $completedSeries */
+/** @var int $seriesXp */
 
 $baseUri =
     rtrim(
@@ -171,6 +173,43 @@ $username =
 
                     <?= number_format(
                         $totalXp,
+                        0,
+                        ',',
+                        ' ',
+                    ) ?>
+
+                    XP
+
+                </p>
+
+            </article>
+
+        </div>
+
+        <div class="profile-stat-row">
+
+            <article class="card transition-card profile-stat-card">
+
+                <h2 class="profile-stat-title">
+                    📚 Séries terminées
+                </h2>
+
+                <p class="profile-stat-value">
+                    <?= number_format($completedSeries) ?>
+                </p>
+
+            </article>
+
+            <article class="card transition-card profile-stat-card">
+
+                <h2 class="profile-stat-title">
+                    🏆 XP Séries
+                </h2>
+
+                <p class="profile-stat-value">
+
+                    <?= number_format(
+                        $seriesXp,
                         0,
                         ',',
                         ' ',

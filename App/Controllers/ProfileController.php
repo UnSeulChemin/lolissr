@@ -42,6 +42,14 @@ final class ProfileController extends Controller
                     $user,
                 );
 
+        $readTomes =
+            $this->mangaStatsRepository
+                ->countRead();
+
+        $completedSeries =
+            $this->mangaStatsRepository
+                ->countCompletedSeries();
+
         $this->render(
             'pages/profile/index',
             [
@@ -60,13 +68,18 @@ final class ProfileController extends Controller
                     $progress,
 
                 'readTomes' =>
-                    $this->mangaStatsRepository
-                        ->countRead(),
+                    $readTomes,
 
                 'totalXp' =>
-                    $this->mangaStatsRepository
-                        ->countRead()
+                    $readTomes
                     * UserXp::READ_TOME,
+
+                'completedSeries' =>
+                    $completedSeries,
+
+                'seriesXp' =>
+                    $completedSeries
+                    * UserXp::COMPLETE_SERIES,
             ],
         );
     }

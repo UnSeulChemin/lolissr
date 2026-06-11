@@ -212,4 +212,20 @@ final class MangaStatsRepository extends Model
             && (int) $result->total
                 === (int) $result->total_lu;
     }
+
+    public function countCompletedSeries(): int
+    {
+        return (int) $this->fetchSingleValue(
+            "
+            SELECT COUNT(*) AS total
+            FROM (
+                SELECT slug
+                FROM {$this->getTable()}
+                GROUP BY slug
+                HAVING COUNT(*) = SUM(lu)
+            ) completed
+            ",
+            'total',
+        );
+    }
 }
