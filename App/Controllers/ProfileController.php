@@ -24,11 +24,6 @@ final class ProfileController extends Controller
 
         $user = user();
 
-        if ($user === null)
-        {
-            redirect('connexion');
-        }
-
         $stats =
             $this->profileStatsService
                 ->getStats();

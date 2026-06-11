@@ -8,16 +8,7 @@ use App\Models\User;
 use App\Repositories\Auth\UserRepository;
 
 /**
- * =========================================
- * USER LEVEL SERVICE
- * =========================================
- *
- * Responsable de :
- *
- * - Calcul du niveau
- * - Calcul de la progression
- * - Gestion des gains d'XP
- * - Passage des niveaux
+ * Gestion des niveaux et de l'expérience utilisateur.
  */
 final readonly class UserLevelService
 {
@@ -27,18 +18,11 @@ final readonly class UserLevelService
     }
 
     /**
-     * XP nécessaire pour atteindre
-     * le niveau suivant.
-     *
-     * Niveau 1 -> 5 XP
-     * Niveau 2 -> 10 XP
-     * Niveau 3 -> 15 XP
-     * etc.
+     * XP nécessaire pour atteindre le niveau suivant.
      */
     public function xpRequiredForLevel(
         int $level,
     ): int {
-
         return max(
             1,
             $level * 5,
@@ -67,13 +51,7 @@ final readonly class UserLevelService
     }
 
     /**
-     * Ajoute de l'XP à un utilisateur.
-     *
-     * Gère automatiquement :
-     *
-     * - les montées de niveau
-     * - les montées multiples
-     * - la sauvegarde en base
+     * Ajoute de l'expérience à un utilisateur.
      */
     public function addXp(
         User $user,
@@ -87,16 +65,19 @@ final readonly class UserLevelService
 
         $user->xp += $xp;
 
-        while (
-            $user->xp >= $this->xpRequiredForLevel(
-                $user->level,
-            )
-        ) {
-
-            $user->xp -=
+        while (true)
+        {
+            $required =
                 $this->xpRequiredForLevel(
                     $user->level,
                 );
+
+            if ($user->xp < $required)
+            {
+                break;
+            }
+
+            $user->xp -= $required;
 
             $user->level++;
         }

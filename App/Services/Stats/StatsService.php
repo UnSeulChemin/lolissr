@@ -48,19 +48,9 @@ final readonly class StatsService
 
     public function readingProgress(): int
     {
-        $totalTomes =
-            $this->totalTomes();
-
-        if ($totalTomes <= 0)
-        {
-            return 0;
-        }
-
-        return (int) round(
-            (
-                $this->totalRead()
-                / $totalTomes
-            ) * 100,
+        return $this->percentage(
+            $this->totalTomes(),
+            $this->totalRead(),
         );
     }
 
@@ -100,6 +90,21 @@ final readonly class StatsService
         $totalRead =
             $this->totalRead();
 
+        $totalSeries =
+            $this->totalSeries();
+
+        $totalUnread =
+            max(
+                0,
+                $totalTomes - $totalRead,
+            );
+
+        $readingProgress =
+            $this->percentage(
+                $totalTomes,
+                $totalRead,
+            );
+
         $totalVocabulary =
             $this->vocabulaireRepository
                 ->countAll();
@@ -109,14 +114,10 @@ final readonly class StatsService
                 ->countRemaining();
 
         $vocabularyProgress =
-            $totalVocabulary > 0
-                ? (int) round(
-                    (
-                        ($totalVocabulary - $remainingVocabulary)
-                        / $totalVocabulary
-                    ) * 100,
-                )
-                : 0;
+            $this->progress(
+                $totalVocabulary,
+                $remainingVocabulary,
+            );
 
         $totalGrammar =
             $this->grammaireRepository
@@ -127,14 +128,10 @@ final readonly class StatsService
                 ->countRemaining();
 
         $grammarProgress =
-            $totalGrammar > 0
-                ? (int) round(
-                    (
-                        ($totalGrammar - $remainingGrammar)
-                        / $totalGrammar
-                    ) * 100,
-                )
-                : 0;
+            $this->progress(
+                $totalGrammar,
+                $remainingGrammar,
+            );
 
         $totalChinese =
             $totalVocabulary
@@ -145,14 +142,10 @@ final readonly class StatsService
             + $remainingGrammar;
 
         $globalChineseProgress =
-            $totalChinese > 0
-                ? (int) round(
-                    (
-                        ($totalChinese - $totalRemainingChinese)
-                        / $totalChinese
-                    ) * 100,
-                )
-                : 0;
+            $this->progress(
+                $totalChinese,
+                $totalRemainingChinese,
+            );
 
         return new DashboardStats(
             totalVocabulary: $totalVocabulary,
@@ -167,22 +160,12 @@ final readonly class StatsService
                 $globalChineseProgress,
 
             totalTomes: $totalTomes,
-            totalSeries: $this->totalSeries(),
+            totalSeries: $totalSeries,
 
             totalRead: $totalRead,
-            totalUnread: max(
-                0,
-                $totalTomes - $totalRead,
-            ),
+            totalUnread: $totalUnread,
 
-            readingProgress: $totalTomes > 0
-                ? (int) round(
-                    (
-                        $totalRead
-                        / $totalTomes
-                    ) * 100,
-                )
-                : 0,
+            readingProgress: $readingProgress,
 
             averageNote: $this->averageNote(),
 
@@ -195,6 +178,39 @@ final readonly class StatsService
             lowRatedMangas: [],
             lowJacquetteMangas: [],
             lowLivreStateMangas: [],
+        );
+    }
+
+    private function progress(
+        int $total,
+        int $remaining,
+    ): int {
+
+        if ($total <= 0)
+        {
+            return 0;
+        }
+
+        return (int) round(
+            (
+                ($total - $remaining)
+                / $total
+            ) * 100,
+        );
+    }
+
+    private function percentage(
+        int $total,
+        int $value,
+    ): int {
+
+        if ($total <= 0)
+        {
+            return 0;
+        }
+
+        return (int) round(
+            ($value / $total) * 100,
         );
     }
 }
