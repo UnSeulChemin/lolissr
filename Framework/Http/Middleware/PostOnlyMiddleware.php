@@ -13,7 +13,9 @@ final class PostOnlyMiddleware
     public function handle(
         Request $request,
     ): void {
-        if ($request->isPost()) {
+
+        if ($request->isPost())
+        {
             return;
         }
 

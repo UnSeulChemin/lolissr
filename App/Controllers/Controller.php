@@ -120,7 +120,11 @@ abstract class Controller
 
             require $path;
 
-            return (string) ob_get_clean();
+            $content = ob_get_clean();
+
+            return is_string($content)
+                ? $content
+                : '';
 
         } catch (Throwable $exception)
         {

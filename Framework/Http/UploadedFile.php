@@ -21,21 +21,31 @@ final readonly class UploadedFile
     public function exists(
         string $key,
     ): bool {
-        return $this->request->hasValidFile(
-            $key,
-        );
+        return isset(
+            $this->request->files()[$key],
+        )
+        && (
+            $this->request->files()[$key]['error']
+            ?? UPLOAD_ERR_NO_FILE
+        ) === UPLOAD_ERR_OK;
     }
 
     public function name(
         string $key,
     ): ?string {
-        if (!$this->exists($key)) {
+
+        if (! $this->exists($key))
+        {
             return null;
         }
 
-        $name = trim(
-            $this->request->fileName($key),
-        );
+        $name =
+            trim(
+                (string) (
+                    $this->request->files()[$key]['name']
+                    ?? ''
+                ),
+            );
 
         return $name !== ''
             ? $name
@@ -45,13 +55,19 @@ final readonly class UploadedFile
     public function tmp(
         string $key,
     ): ?string {
-        if (!$this->exists($key)) {
+
+        if (! $this->exists($key))
+        {
             return null;
         }
 
-        $tmp = trim(
-            $this->request->fileTmpPath($key),
-        );
+        $tmp =
+            trim(
+                (string) (
+                    $this->request->files()[$key]['tmp_name']
+                    ?? ''
+                ),
+            );
 
         return $tmp !== ''
             ? $tmp
@@ -61,40 +77,60 @@ final readonly class UploadedFile
     public function error(
         string $key,
     ): ?int {
-        if (!$this->request->hasFile($key)) {
+
+        if (
+            ! isset(
+                $this->request->files()[$key],
+            )
+        ) {
             return null;
         }
 
-        return $this->request->fileError($key);
+        return (int) (
+            $this->request->files()[$key]['error']
+            ?? UPLOAD_ERR_NO_FILE
+        );
     }
 
     public function size(
         string $key,
     ): ?int {
-        if (!$this->exists($key)) {
+
+        if (! $this->exists($key))
+        {
             return null;
         }
 
-        return $this->request->fileSize($key);
+        return (int) (
+            $this->request->files()[$key]['size']
+            ?? 0
+        );
     }
 
     public function extension(
         string $key,
     ): ?string {
-        $name = $this->name($key);
 
-        if ($name === null) {
+        $name =
+            $this->name(
+                $key,
+            );
+
+        if ($name === null)
+        {
             return null;
         }
 
-        $extension = strtolower(
-            pathinfo(
-                $name,
-                PATHINFO_EXTENSION,
-            ),
-        );
+        $extension =
+            strtolower(
+                pathinfo(
+                    $name,
+                    PATHINFO_EXTENSION,
+                ),
+            );
 
-        if ($extension === '') {
+        if ($extension === '')
+        {
             return null;
         }
 
@@ -106,22 +142,31 @@ final readonly class UploadedFile
     public function mimeType(
         string $key,
     ): ?string {
-        $tmpName = $this->tmp($key);
+
+        $tmp =
+            $this->tmp(
+                $key,
+            );
 
         if (
-            $tmpName === null
-            || !is_file($tmpName)
+            $tmp === null
+            || ! is_file($tmp)
         ) {
             return null;
         }
 
-        $mimeType = $this->finfo->file(
-            $tmpName,
-        );
+        $mimeType =
+            $this->finfo->file(
+                $tmp,
+            );
 
-        return is_string($mimeType)
-            && $mimeType !== ''
-                ? strtolower($mimeType)
-                : null;
+        return is_string(
+            $mimeType,
+        )
+        && $mimeType !== ''
+            ? strtolower(
+                $mimeType,
+            )
+            : null;
     }
 }

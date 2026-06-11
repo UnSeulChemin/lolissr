@@ -22,11 +22,8 @@ implements MiddlewareInterface
         }
 
         throw new JsonResponseException(
-            new JsonResponse(
-                [
-                    'success' => false,
-                    'message' => 'Requête JSON requise',
-                ],
+            JsonResponse::error(
+                'Requête JSON requise',
                 400,
             ),
         );

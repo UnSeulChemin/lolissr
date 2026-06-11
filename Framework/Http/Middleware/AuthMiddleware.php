@@ -17,8 +17,6 @@ final class AuthMiddleware implements MiddlewareInterface
             return;
         }
 
-        redirect(
-            'connexion',
-        );
+        redirect('/connexion');
     }
 }

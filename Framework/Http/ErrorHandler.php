@@ -127,6 +127,8 @@ final class ErrorHandler
                 'Critical framework error.',
                 500,
             );
+
+            exit;
         }
     }
 

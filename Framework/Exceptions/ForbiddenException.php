@@ -10,8 +10,8 @@ final class ForbiddenException extends BaseHttpException
         string $message = 'Accès interdit',
     ) {
         parent::__construct(
-            $message,
-            403,
+            message: $message,
+            statusCode: 403,
         );
     }
 }
