@@ -24,6 +24,8 @@ final class Manga
 
     public int $xp_read_rewarded = 0;
 
+    public int $xp_series_rewarded = 0;
+
     public string $statut = 'en_cours';
 
     public ?int $jacquette = null;

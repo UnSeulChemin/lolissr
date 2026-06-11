@@ -184,4 +184,32 @@ final class MangaStatsRepository extends Model
 
         return $mangas;
     }
+
+    public function isSeriesCompleted(
+        string $slug,
+    ): bool {
+
+        $result = $this->fetchOne(
+            "
+            SELECT
+                COUNT(*) AS total,
+                SUM(lu) AS total_lu
+            FROM {$this->getTable()}
+            WHERE slug = :slug
+            ",
+            [
+                'slug' => $slug,
+            ],
+        );
+
+        if ($result === null)
+        {
+            return false;
+        }
+
+        return
+            (int) $result->total > 0
+            && (int) $result->total
+                === (int) $result->total_lu;
+    }
 }

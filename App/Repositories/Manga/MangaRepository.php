@@ -424,4 +424,47 @@ final class MangaRepository extends Model
             ],
         );
     }
+
+    public function isSeriesRewarded(
+        string $slug,
+    ): bool {
+
+        $result = $this->fetchOne(
+            "
+            SELECT xp_series_rewarded
+            FROM {$this->getTable()}
+            WHERE slug = :slug
+            LIMIT 1
+            ",
+            [
+                'slug' => $slug,
+            ],
+        );
+
+        if ($result === null)
+        {
+            return true;
+        }
+
+        return
+            (int) $result->xp_series_rewarded === 1;
+    }
+
+    public function markSeriesRewardedBySlug(
+        string $slug,
+    ): bool {
+
+        $this->guardWrite();
+
+        return $this->execute(
+            "
+            UPDATE manga
+            SET xp_series_rewarded = 1
+            WHERE slug = :slug
+            ",
+            [
+                'slug' => $slug,
+            ],
+        );
+    }
 }

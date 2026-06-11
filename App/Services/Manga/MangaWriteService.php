@@ -19,12 +19,14 @@ use Framework\Database\Database;
 use Framework\Support\Logger;
 use App\Constants\UserXp;
 use App\Services\User\UserLevelService;
+use App\Repositories\Manga\MangaStatsRepository;
 use Throwable;
 
 final readonly class MangaWriteService
 {
     public function __construct(
         private MangaRepository $mangaRepository,
+        private MangaStatsRepository $mangaStatsRepository,
         private UploadService $uploadService,
         private MangaCacheService $cacheService,
         private Database $database,
@@ -487,6 +489,26 @@ final readonly class MangaWriteService
                                 $user,
                                 UserXp::READ_TOME,
                             );
+
+                        if (
+                            $this->mangaStatsRepository
+                                ->isSeriesCompleted($slug)
+                            && !
+                            $this->mangaRepository
+                                ->isSeriesRewarded($slug)
+                        )
+                        {
+                            $this->userLevelService
+                                ->addXp(
+                                    $user,
+                                    UserXp::COMPLETE_SERIES,
+                                );
+
+                            $this->mangaRepository
+                                ->markSeriesRewardedBySlug(
+                                    $slug,
+                                );
+                        }                        
 
                         $this->mangaRepository
                             ->markXpRewarded(
