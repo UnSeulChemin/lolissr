@@ -30,9 +30,11 @@ final class MangaAjaxController extends Controller
         parent::__construct($request);
     }
 
-    // ------------------------------
-    // Private helpers
-    // ------------------------------
+    /*
+    |--------------------------------------------------------------------------
+    | Helpers
+    |--------------------------------------------------------------------------
+    */
 
     private function buildRedirectPath(string $slug, bool $seriesStillExists): string
     {
@@ -72,9 +74,11 @@ final class MangaAjaxController extends Controller
         return $data;
     }
 
-    // ------------------------------
-    // Public AJAX methods
-    // ------------------------------
+    /*
+    |--------------------------------------------------------------------------
+    | AJAX Search
+    |--------------------------------------------------------------------------
+    */
 
     public function search(string $query = ''): never
     {
@@ -82,6 +86,12 @@ final class MangaAjaxController extends Controller
 
         $this->jsonResult(ServiceResult::success(data: ['results' => $searchData->mangas]));
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | AJAX Series Page
+    |--------------------------------------------------------------------------
+    */
 
     public function seriesPage(int $page = 1): never
     {
@@ -100,6 +110,12 @@ final class MangaAjaxController extends Controller
             'isSerieView' => $data->slugFilter !== null,
         ]);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Update Note
+    |--------------------------------------------------------------------------
+    */
 
     public function updateNote(string $slug, int $numero): never
     {
@@ -131,6 +147,12 @@ final class MangaAjaxController extends Controller
         ));
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Update Read Status
+    |--------------------------------------------------------------------------
+    */
+
     public function updateReadStatus(string $slug, int $numero): never
     {
         $data = $this->resolveMangaOrFail($slug, $numero);
@@ -139,6 +161,12 @@ final class MangaAjaxController extends Controller
         $result = $this->mangaWriteService->updateReadStatus($data->canonicalSlug, $numero, $readStatus);
         $this->jsonResult($result);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Delete Manga
+    |--------------------------------------------------------------------------
+    */
 
     public function delete(string $slug, int $numero): never
     {

@@ -18,7 +18,7 @@ use Framework\Http\Request;
 final class MangaController extends Controller
 {
     private const SERIES_PATH = 'manga/series';
-    private const EDIT_PATH   = 'manga/series/modifier';
+    private const EDIT_PATH = 'manga/series/modifier';
 
     public function __construct(
         private readonly MangaReadService $mangaReadService,
@@ -30,7 +30,7 @@ final class MangaController extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | Helpers privés
+    | Helpers
     |--------------------------------------------------------------------------
     */
 
