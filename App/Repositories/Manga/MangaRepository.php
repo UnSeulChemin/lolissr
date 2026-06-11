@@ -17,7 +17,7 @@ final class MangaRepository extends Model
 
     private function guardWrite(): void
     {
-        if (!App::isReadOnly())
+        if (! App::isReadOnly())
         {
             return;
         }
@@ -411,7 +411,7 @@ final class MangaRepository extends Model
     }
 
     public function markXpRewarded(
-    int $id,
+        int $id,
     ): bool {
         $this->guardWrite();
 
@@ -437,7 +437,7 @@ final class MangaRepository extends Model
             LIMIT 1
             ",
             [
-                'slug' => $slug,
+                'slug' => $this->normalizeSlug($slug),
             ],
         );
 
@@ -463,7 +463,7 @@ final class MangaRepository extends Model
             WHERE slug = :slug
             ",
             [
-                'slug' => $slug,
+                'slug' => $this->normalizeSlug($slug),
             ],
         );
     }

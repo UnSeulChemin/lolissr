@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Manga;
 
+use App\Constants\UserXp;
 use App\DTO\Common\ServiceResult;
 use App\DTO\Manga\Inputs\MangaCreateDTO;
 use App\DTO\Manga\Inputs\MangaUpdateDTO;
@@ -12,14 +13,15 @@ use App\DTO\Manga\Responses\UpdateNoteData;
 use App\DTO\Upload\UploadThumbnailData;
 use App\Models\Manga;
 use App\Repositories\Manga\MangaRepository;
+use App\Repositories\Manga\MangaStatsRepository;
 use App\Services\UploadService;
+use App\Services\User\UserLevelService;
+
 use Framework\Application\App;
 use Framework\Config\UploadConfig;
 use Framework\Database\Database;
 use Framework\Support\Logger;
-use App\Constants\UserXp;
-use App\Services\User\UserLevelService;
-use App\Repositories\Manga\MangaStatsRepository;
+
 use Throwable;
 
 final readonly class MangaWriteService
@@ -112,6 +114,50 @@ final readonly class MangaWriteService
         );
 
         return $this->error($message);
+    }
+
+    private function rewardReadXp(
+        Manga $manga,
+        string $slug,
+    ): void {
+
+        $user = user();
+
+        if ($user === null)
+        {
+            return;
+        }
+
+        $this->userLevelService
+            ->addXp(
+                $user,
+                UserXp::READ_TOME,
+            );
+
+        if (
+            $this->mangaStatsRepository
+                ->isSeriesCompleted($slug)
+            && !
+            $this->mangaRepository
+                ->isSeriesRewarded($slug)
+        ) {
+
+            $this->userLevelService
+                ->addXp(
+                    $user,
+                    UserXp::COMPLETE_SERIES,
+                );
+
+            $this->mangaRepository
+                ->markSeriesRewardedBySlug(
+                    $slug,
+                );
+        }
+
+        $this->mangaRepository
+            ->markXpRewarded(
+                $manga->id,
+            );
     }
 
     private function removeThumbnail(
@@ -479,42 +525,10 @@ final readonly class MangaWriteService
                     && $readStatus === 1
                     && $manga->xp_read_rewarded === 0
                 ) {
-
-                    $user = user();
-
-                    if ($user !== null)
-                    {
-                        $this->userLevelService
-                            ->addXp(
-                                $user,
-                                UserXp::READ_TOME,
-                            );
-
-                        if (
-                            $this->mangaStatsRepository
-                                ->isSeriesCompleted($slug)
-                            && !
-                            $this->mangaRepository
-                                ->isSeriesRewarded($slug)
-                        )
-                        {
-                            $this->userLevelService
-                                ->addXp(
-                                    $user,
-                                    UserXp::COMPLETE_SERIES,
-                                );
-
-                            $this->mangaRepository
-                                ->markSeriesRewardedBySlug(
-                                    $slug,
-                                );
-                        }                        
-
-                        $this->mangaRepository
-                            ->markXpRewarded(
-                                $manga->id,
-                            );
-                    }
+                    $this->rewardReadXp(
+                        $manga,
+                        $slug,
+                    );
                 }
 
                 $this->clearCache();

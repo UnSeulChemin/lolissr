@@ -13,7 +13,6 @@ use App\Models\Manga;
 use App\Repositories\Manga\MangaRepository;
 use App\Repositories\Manga\MangaSearchRepository;
 use Framework\Application\App;
-use Framework\Support\Str;
 
 final readonly class MangaReadService
 {
@@ -181,14 +180,9 @@ final readonly class MangaReadService
         string $slug,
     ): ?MangaSeriesData {
 
-        $normalizedSlug =
-            Str::slug($slug);
-
         $mangas =
             $this->mangaRepository
-                ->findBySlug(
-                    $normalizedSlug,
-                );
+                ->findBySlug($slug);
 
         if ($mangas === [])
         {
@@ -204,16 +198,11 @@ final readonly class MangaReadService
                     $this->mapSeriesItem(...),
                     $mangas,
                 ),
-            compteur:
-                1,
-            currentPage:
-                1,
-            slugFilter:
-                $normalizedSlug,
-            totalSeries:
-                $totalItems,
-            perPage:
-                $totalItems,
+            compteur: 1,
+            currentPage: 1,
+            slugFilter: $slug,
+            totalSeries: $totalItems,
+            perPage: $totalItems,
         );
     }
 
@@ -222,13 +211,10 @@ final readonly class MangaReadService
         int $numero,
     ): ?MangaShowData {
 
-        $normalizedSlug =
-            Str::slug($slug);
-
         $manga =
             $this->mangaRepository
                 ->findOneBySlugAndNumero(
-                    $normalizedSlug,
+                    $slug,
                     $numero,
                 );
 
@@ -238,10 +224,8 @@ final readonly class MangaReadService
         }
 
         return new MangaShowData(
-            manga:
-                $manga,
-            canonicalSlug:
-                $normalizedSlug,
+            manga: $manga,
+            canonicalSlug: $manga->slug,
         );
     }
 
