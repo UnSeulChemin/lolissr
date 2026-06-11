@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Framework\Routing;
 
 use Closure;
+use Framework\Container\Container;
 use Framework\Container\AppContainer;
 use Framework\Exceptions\NotFoundException;
 use Framework\Http\Middleware\MiddlewareInterface;
@@ -17,8 +18,14 @@ final class Router
 {
     private RouteCollection $collection;
 
+    /**
+     * @var list<string>
+     */
     private array $groupPrefixes = [];
 
+    /**
+     * @var list<string>
+     */
     private array $groupMiddlewares = [];
 
     public function __construct(
@@ -32,10 +39,11 @@ final class Router
     ): self {
         $clone = clone $this;
 
-        $clone->groupPrefixes[] = trim(
-            $prefix,
-            '/',
-        );
+        $clone->groupPrefixes[] =
+            trim(
+                $prefix,
+                '/',
+            );
 
         return $clone;
     }
@@ -45,10 +53,11 @@ final class Router
     ): self {
         $clone = clone $this;
 
-        $clone->groupMiddlewares = array_merge(
-            $clone->groupMiddlewares,
-            (array) $middleware,
-        );
+        $clone->groupMiddlewares =
+            array_merge(
+                $clone->groupMiddlewares,
+                (array) $middleware,
+            );
 
         return $clone;
     }
@@ -91,46 +100,69 @@ final class Router
         array|string|Closure $action,
         array $middlewares,
     ): void {
-        $fullPath = '/' . implode(
-            '/',
-            array_merge(
-                $this->groupPrefixes,
-                [trim($path, '/')],
+
+        $segments =
+            array_filter(
+                array_merge(
+                    $this->groupPrefixes,
+                    [
+                        trim(
+                            $path,
+                            '/',
+                        ),
+                    ],
+                ),
+                static fn (
+                    string $segment,
+                ): bool => $segment !== '',
+            );
+
+        $fullPath =
+            '/'
+            . implode(
+                '/',
+                $segments,
+            );
+
+        $this->collection->add(
+            new Route(
+                $method,
+                $fullPath,
+                $action,
+                array_merge(
+                    $this->groupMiddlewares,
+                    $middlewares,
+                ),
             ),
         );
-
-        $fullMiddlewares = array_merge(
-            $this->groupMiddlewares,
-            $middlewares,
-        );
-
-        $route = new Route(
-            $method,
-            $fullPath,
-            $action,
-            $fullMiddlewares,
-        );
-
-        $this->collection->add($route);
     }
 
+    /**
+     * Match and execute current request.
+     */
     public function dispatch(): void
     {
-        $request = AppContainer::get()->get(
-            Request::class,
-        );
+        $container =
+            AppContainer::get();
 
-        $uri = $request->path();
+        /** @var Request $request */
+        $request =
+            $container->get(
+                Request::class,
+            );
 
-        $method = $request->method();
+        $uri =
+            $request->path();
 
-        foreach ($this->collection->all() as $route) {
-            if (
-                $route->getMethod()
-                !== $method
-            ) {
-                continue;
-            }
+        $method =
+            $request->method();
+
+        foreach (
+            $this->collection->forMethod(
+                $method,
+            )
+            as $route
+        ) {
 
             if (
                 ! preg_match(
@@ -142,120 +174,33 @@ final class Router
                 continue;
             }
 
-            array_shift($matches);
-
-            foreach (
-                $route->getMiddlewares()
-                as $middlewareClass
-            ) {
-                $middleware = AppContainer::get()
-                    ->get($middlewareClass);
-
-                if (
-                    ! $middleware instanceof MiddlewareInterface
-                ) {
-                    throw new RuntimeException(
-                        "Middleware invalide : {$middlewareClass}",
-                    );
-                }
-
-                $middleware->handle(
-                    $request,
-                );
-            }
-
-            $params = array_map(
-                static function (
-                    string $value,
-                ): string|int {
-                    return ctype_digit($value)
-                        ? (int) $value
-                        : $value;
-                },
+            array_shift(
                 $matches,
             );
 
-            $action = $route->getAction();
-
-            if ($action instanceof Closure) {
-                $action(...$params);
-
-                return;
-            }
-
-            [
-                $controllerClass,
-                $methodName,
-            ] = is_array($action)
-                ? $action
-                : explode('@', $action);
-
-            $controller = AppContainer::get()
-                ->get($controllerClass);
-
-            $reflection = new ReflectionMethod(
-                $controller,
-                $methodName,
+            $this->runMiddlewares(
+                $container,
+                $route,
+                $request,
             );
 
-            $arguments = [];
+            $params =
+                array_map(
+                    static fn (
+                        string $value,
+                    ): string|int => ctype_digit(
+                        $value,
+                    )
+                        ? (int) $value
+                        : $value,
+                    $matches,
+                );
 
-            $routeParams = $params;
-
-            foreach (
-                $reflection->getParameters()
-                as $parameter
-            ) {
-                $type = $parameter->getType();
-
-                if (
-                    $type instanceof ReflectionNamedType
-                    && ! $type->isBuiltin()
-                ) {
-                    $className = $type->getName();
-
-                    if (
-                        is_a(
-                            $className,
-                            Request::class,
-                            true,
-                        )
-                    ) {
-                        $arguments[] = AppContainer::get()
-                            ->get($className);
-
-                        continue;
-                    }
-
-                    $arguments[] = AppContainer::get()
-                        ->get($className);
-
-                    continue;
-                }
-
-                if (! empty($routeParams)) {
-                    $arguments[] = array_shift(
-                        $routeParams,
-                    );
-
-                    continue;
-                }
-
-                if (
-                    $parameter->isDefaultValueAvailable()
-                ) {
-                    $arguments[] = $parameter
-                        ->getDefaultValue();
-
-                    continue;
-                }
-
-                $arguments[] = null;
-            }
-
-            $reflection->invokeArgs(
-                $controller,
-                $arguments,
+            $this->executeAction(
+                $container,
+                $route,
+                $params,
+                $request,
             );
 
             return;
@@ -264,5 +209,170 @@ final class Router
         throw new NotFoundException(
             "Route non trouvée : {$uri}",
         );
+    }
+
+    /**
+     * Execute all route middlewares.
+     */
+    private function runMiddlewares(
+        Container $container,
+        Route $route,
+        Request $request,
+    ): void {
+
+        foreach (
+            $route->getMiddlewares()
+            as $middlewareClass
+        ) {
+
+            $middleware =
+                $container->get(
+                    $middlewareClass,
+                );
+
+            if (
+                ! $middleware instanceof MiddlewareInterface
+            ) {
+                throw new RuntimeException(
+                    "Invalid middleware: {$middlewareClass}",
+                );
+            }
+
+            $middleware->handle(
+                $request,
+            );
+        }
+    }
+
+    /**
+     * Execute route action.
+     *
+     * @param list<string|int> $params
+     */
+    private function executeAction(
+        Container $container,
+        Route $route,
+        array $params,
+        Request $request,
+    ): void {
+
+        $action =
+            $route->getAction();
+
+        if ($action instanceof Closure)
+        {
+            $action(...$params);
+
+            return;
+        }
+
+        [
+            $controllerClass,
+            $methodName,
+        ] = is_array($action)
+            ? $action
+            : explode(
+                '@',
+                $action,
+                2,
+            );
+
+        $controller =
+            $container->get(
+                $controllerClass,
+            );
+
+        $arguments =
+            $this->resolveArguments(
+                $container,
+                $controller,
+                $methodName,
+                $params,
+                $request,
+            );
+
+        $controller->{$methodName}(
+            ...$arguments,
+        );
+    }
+
+    /**
+     * Resolve controller arguments.
+     *
+     * @param list<string|int> $params
+     * @return list<mixed>
+     */
+    private function resolveArguments(
+        Container $container,
+        object $controller,
+        string $method,
+        array $params,
+        Request $request,
+    ): array {
+
+        $reflection =
+            new ReflectionMethod(
+                $controller,
+                $method,
+            );
+
+        $arguments = [];
+
+        foreach (
+            $reflection->getParameters()
+            as $parameter
+        ) {
+
+            $type =
+                $parameter->getType();
+
+            if (
+                $type instanceof ReflectionNamedType
+                && ! $type->isBuiltin()
+            ) {
+
+                $className =
+                    $type->getName();
+
+                if (
+                    $className === Request::class
+                ) {
+                    $arguments[] =
+                        $request;
+
+                    continue;
+                }
+
+                $arguments[] =
+                    $container->get(
+                        $className,
+                    );
+
+                continue;
+            }
+
+            if ($params !== [])
+            {
+                $arguments[] =
+                    array_shift(
+                        $params,
+                    );
+
+                continue;
+            }
+
+            if (
+                $parameter->isDefaultValueAvailable()
+            ) {
+                $arguments[] =
+                    $parameter->getDefaultValue();
+
+                continue;
+            }
+
+            $arguments[] = null;
+        }
+
+        return $arguments;
     }
 }

@@ -12,12 +12,12 @@ use Framework\Http\ErrorHandler;
 use Framework\Http\Request;
 use Framework\Routing\RouteCollection;
 use Framework\Routing\Router;
+use RuntimeException;
 
 final class Bootstrap
 {
     public static function run(): never
     {
-        // Environment
         Env::clear();
         Config::clear();
 
@@ -27,11 +27,10 @@ final class Bootstrap
 
         self::configureDebug();
 
-        // Error handling
         ErrorHandler::register();
 
-        // Container
-        $container = new Container();
+        $container =
+            new Container();
 
         AppContainer::set(
             $container,
@@ -39,10 +38,9 @@ final class Bootstrap
 
         $container->singleton(
             Request::class,
-            fn (): Request => Request::capture(),
+            static fn (): Request => Request::capture(),
         );
 
-        // Routing
         $collection =
             new RouteCollection();
 
@@ -56,11 +54,17 @@ final class Bootstrap
                 'Config/routes.php',
             );
 
-        if (is_callable($routes)) {
-            $routes($router);
+        if (! is_callable($routes))
+        {
+            throw new RuntimeException(
+                'Config/routes.php must return a callable.',
+            );
         }
 
-        // Dispatch
+        $routes(
+            $router,
+        );
+
         $router->dispatch();
 
         exit;
@@ -68,9 +72,10 @@ final class Bootstrap
 
     private static function loadEnvironment(
         string $envFile,
-    ): void {
-
-        if (! is_file($envFile)) {
+    ): void
+    {
+        if (! is_file($envFile))
+        {
             return;
         }
 
@@ -80,13 +85,15 @@ final class Bootstrap
             | FILE_SKIP_EMPTY_LINES,
         );
 
-        if ($lines === false) {
+        if ($lines === false)
+        {
             return;
         }
 
-        foreach ($lines as $line) {
-
-            $line = trim($line);
+        foreach ($lines as $line)
+        {
+            $line =
+                trim($line);
 
             if (
                 $line === ''
@@ -109,10 +116,16 @@ final class Bootstrap
                 trim($name);
 
             $value =
-                trim($value);
+                trim(
+                    $value,
+                    " \t\n\r\0\x0B\"'",
+                );
 
-            $_ENV[$name] = $value;
-            $_SERVER[$name] = $value;
+            $_ENV[$name] =
+                $value;
+
+            $_SERVER[$name] =
+                $value;
 
             putenv(
                 "{$name}={$value}",
