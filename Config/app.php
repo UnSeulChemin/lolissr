@@ -11,8 +11,5 @@ return [
 
     'debug' => env_bool('APP_DEBUG', false),
 
-    'pagination' => max(
-        1,
-        env_int('APP_PAGINATION', 8)
-    ),
+    'pagination' => max(1, env_int('APP_PAGINATION', 8)),
 ];
