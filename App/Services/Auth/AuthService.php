@@ -6,14 +6,12 @@ namespace App\Services\Auth;
 
 use App\Models\User;
 use App\Repositories\Auth\UserRepository;
-use App\Services\User\UserXpMigrationService;
 use Framework\Support\Session;
 
 final readonly class AuthService
 {
     public function __construct(
-        private UserRepository $userRepository,
-        private UserXpMigrationService $userXpMigrationService,
+        private UserRepository $userRepository
     ) {
     }
 
@@ -79,10 +77,7 @@ final readonly class AuthService
             'user_id',
             $user->id,
         );
-
-        $this->userXpMigrationService
-        ->migrate();
-
+        
         return true;
     }
 
