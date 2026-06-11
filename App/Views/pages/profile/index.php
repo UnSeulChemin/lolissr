@@ -11,6 +11,7 @@ declare(strict_types=1);
 /** @var int $totalXp */
 /** @var int $completedSeries */
 /** @var int $seriesXp */
+/** @var int $totalProfileXp */
 
 $baseUri =
     rtrim(
@@ -154,6 +155,43 @@ $username =
             <article class="card transition-card profile-stat-card">
 
                 <h2 class="profile-stat-title">
+                    📈 Progression totale
+                </h2>
+
+                <p class="profile-stat-value">
+                    Niveau <?= $level ?>
+                </p>
+
+            </article>
+
+            <article class="card transition-card profile-stat-card">
+
+                <h2 class="profile-stat-title">
+                    ⭐ XP Totale
+                </h2>
+
+                <p class="profile-stat-value">
+
+                    <?= number_format(
+                        $totalProfileXp,
+                        0,
+                        ',',
+                        ' ',
+                    ) ?>
+
+                    XP
+
+                </p>
+
+            </article>
+
+        </div>
+
+        <div class="profile-stat-row">
+
+            <article class="card transition-card profile-stat-card">
+
+                <h2 class="profile-stat-title">
                     📚 Tomes
                 </h2>
 
@@ -166,7 +204,7 @@ $username =
             <article class="card transition-card profile-stat-card">
 
                 <h2 class="profile-stat-title">
-                    ⭐ Total XP
+                    📚 XP Tomes
                 </h2>
 
                 <p class="profile-stat-value">
