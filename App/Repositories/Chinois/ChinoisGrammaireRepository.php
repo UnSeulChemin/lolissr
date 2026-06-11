@@ -313,4 +313,18 @@ final class ChinoisGrammaireRepository extends Model
 
         return $grammaires;
     }
+
+    public function countMastered(): int
+    {
+        $result =
+            $this->fetchOne(
+                "SELECT COUNT(*) AS total
+                FROM {$this->getTable()}
+                WHERE maitrise = 1"
+            );
+
+        return $result !== null
+            ? (int) $result->total
+            : 0;
+    }
 }

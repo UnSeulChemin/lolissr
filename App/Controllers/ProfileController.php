@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Repositories\Manga\MangaStatsRepository;
+use App\Services\Profile\ProfileStatsService;
 use App\Services\User\UserLevelService;
-use App\Constants\UserXp;
 use Framework\Http\Request;
 
 final class ProfileController extends Controller
 {
     public function __construct(
         private readonly UserLevelService $userLevelService,
-        private readonly MangaStatsRepository $mangaStatsRepository,
+        private readonly ProfileStatsService $profileStatsService,
         Request $request,
     ) {
         parent::__construct($request);
@@ -30,40 +29,15 @@ final class ProfileController extends Controller
             redirect('connexion');
         }
 
-        $xpRequired =
-            $this->userLevelService
-                ->xpRequiredForLevel(
-                    $user->level,
-                );
-
-        $progress =
-            $this->userLevelService
-                ->progress(
-                    $user,
-                );
-
-        $readTomes =
-            $this->mangaStatsRepository
-                ->countRead();
-
-        $completedSeries =
-            $this->mangaStatsRepository
-                ->countCompletedSeries();
-
-        $totalProfileXp =
-        (
-            $readTomes
-            * UserXp::READ_TOME
-        )
-        + (
-            $completedSeries
-            * UserXp::COMPLETE_SERIES
-        );
+        $stats =
+            $this->profileStatsService
+                ->getStats();
 
         $this->render(
             'pages/profile/index',
             [
-                'user' => $user,
+                'user' =>
+                    $user,
 
                 'level' =>
                     $user->level,
@@ -72,27 +46,43 @@ final class ProfileController extends Controller
                     $user->xp,
 
                 'xpRequired' =>
-                    $xpRequired,
+                    $this->userLevelService
+                        ->xpRequiredForLevel(
+                            $user->level,
+                        ),
 
                 'progress' =>
-                    $progress,
+                    $this->userLevelService
+                        ->progress(
+                            $user,
+                        ),
 
                 'readTomes' =>
-                    $readTomes,
+                    $stats->readTomes,
 
-                'totalXp' =>
-                    $readTomes
-                    * UserXp::READ_TOME,
+                'tomeXp' =>
+                    $stats->tomeXp,
 
                 'completedSeries' =>
-                    $completedSeries,
+                    $stats->completedSeries,
 
                 'seriesXp' =>
-                    $completedSeries
-                    * UserXp::COMPLETE_SERIES,
+                    $stats->seriesXp,
+
+                'vocabularyLearned' =>
+                    $stats->vocabularyLearned,
+
+                'vocabularyXp' =>
+                    $stats->vocabularyXp,
+
+                'grammarLearned' =>
+                    $stats->grammarLearned,
+
+                'grammarXp' =>
+                    $stats->grammarXp,
 
                 'totalProfileXp' =>
-                    $totalProfileXp,
+                    $stats->totalXp,
             ],
         );
     }

@@ -8,10 +8,14 @@ declare(strict_types=1);
 /** @var int $xpRequired */
 /** @var float $progress */
 /** @var int $readTomes */
-/** @var int $totalXp */
+/** @var int $tomeXp */
 /** @var int $completedSeries */
 /** @var int $seriesXp */
 /** @var int $totalProfileXp */
+/** @var int $vocabularyLearned */
+/** @var int $vocabularyXp */
+/** @var int $grammarLearned */
+/** @var int $grammarXp */
 
 $baseUri =
     rtrim(
@@ -210,7 +214,7 @@ $username =
                 <p class="profile-stat-value">
 
                     <?= number_format(
-                        $totalXp,
+                        $tomeXp,
                         0,
                         ',',
                         ' ',
@@ -229,7 +233,7 @@ $username =
             <article class="card transition-card profile-stat-card">
 
                 <h2 class="profile-stat-title">
-                    📚 Séries terminées
+                    📖 Séries terminées
                 </h2>
 
                 <p class="profile-stat-value">
@@ -270,16 +274,7 @@ $username =
                 </h2>
 
                 <p class="profile-stat-value">
-
-                    <?= number_format(
-                        $totalXp,
-                        0,
-                        ',',
-                        ' ',
-                    ) ?>
-
-                    XP
-
+                    <?= number_format($vocabularyLearned) ?>
                 </p>
 
             </article>
@@ -291,16 +286,8 @@ $username =
                 </h2>
 
                 <p class="profile-stat-value">
-
-                    <?= number_format(
-                        $totalXp,
-                        0,
-                        ',',
-                        ' ',
-                    ) ?>
-
+                    <?= number_format($vocabularyXp, 0, ',', ' ') ?>
                     XP
-
                 </p>
 
             </article>
@@ -316,16 +303,7 @@ $username =
                 </h2>
 
                 <p class="profile-stat-value">
-
-                    <?= number_format(
-                        $totalXp,
-                        0,
-                        ',',
-                        ' ',
-                    ) ?>
-
-                    XP
-
+                    <?= number_format($grammarLearned) ?>
                 </p>
 
             </article>
@@ -337,16 +315,8 @@ $username =
                 </h2>
 
                 <p class="profile-stat-value">
-
-                    <?= number_format(
-                        $totalXp,
-                        0,
-                        ',',
-                        ' ',
-                    ) ?>
-
+                    <?= number_format($grammarXp, 0, ',', ' ') ?>
                     XP
-
                 </p>
 
             </article>
