@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers\Manga;
 
 use App\Controllers\Controller;
+use App\DTO\Manga\Responses\MangaShowData;
 use App\Http\Requests\Manga\MangaCreateRequest;
 use App\Http\Requests\Manga\MangaUpdateRequest;
 use App\Services\Manga\MangaReadService;
@@ -16,543 +17,194 @@ use Framework\Http\Request;
 
 final class MangaController extends Controller
 {
-    private const SERIES_PATH =
-        'manga/series';
-
-    private const EDIT_PATH =
-        'manga/series/modifier';
+    private const SERIES_PATH = 'manga/series';
+    private const EDIT_PATH   = 'manga/series/modifier';
 
     public function __construct(
-        protected MangaReadService $mangaReadService,
-        protected MangaWriteService $mangaWriteService,
+        private readonly MangaReadService $mangaReadService,
+        private readonly MangaWriteService $mangaWriteService,
         Request $request,
     ) {
-        parent::__construct(
-            $request,
-        );
+        parent::__construct($request);
     }
 
     /*
     |--------------------------------------------------------------------------
-    | Canonical Redirect
+    | Helpers privés
     |--------------------------------------------------------------------------
     */
 
-    protected function redirectToCanonicalUrl(
+    private function redirectToCanonicalUrl(
         string $requestedSlug,
         string $canonicalSlug,
         string $pathPrefix,
-        ?int $numero = null,
+        ?int $numero = null
     ): void {
+        $requestedSlug = trim($requestedSlug);
+        $canonicalSlug = trim($canonicalSlug);
 
-        $requestedSlug =
-            trim(
-                $requestedSlug,
-            );
-
-        $canonicalSlug =
-            trim(
-                $canonicalSlug,
-            );
-
-        if (
-            $canonicalSlug === ''
-            || $requestedSlug === $canonicalSlug
-        ) {
+        if ($canonicalSlug === '' || $requestedSlug === $canonicalSlug) {
             return;
         }
 
-        $location =
-            sprintf(
-                '%s/%s',
-                trim(
-                    $pathPrefix,
-                    '/',
-                ),
-                rawurlencode(
-                    $canonicalSlug,
-                ),
-            );
-
-        if ($numero !== null)
-        {
-            $location .=
-                '/' . $numero;
+        $location = sprintf('%s/%s', trim($pathPrefix, '/'), rawurlencode($canonicalSlug));
+        if ($numero !== null) {
+            $location .= '/' . $numero;
         }
 
-        if (
-            trim(
-                $location,
-                '/',
-            )
-            === trim(
-                $this->request->path(),
-                '/',
-            )
-        ) {
+        if (trim($location, '/') === trim($this->request->path(), '/')) {
             return;
         }
 
-        $this->redirect(
-            $location,
-            301,
-        );
+        $this->redirect($location, 301);
+    }
+
+    private function buildEditPath(string $slug, int $numero): string
+    {
+        return sprintf('%s/%s/%d', self::EDIT_PATH, rawurlencode($slug), $numero);
+    }
+
+    private function resolveMangaOrFail(string $slug, int $numero): MangaShowData
+    {
+        $data = $this->mangaReadService->one($slug, $numero);
+        if ($data === null) {
+            throw new NotFoundException('Manga introuvable');
+        }
+
+        if ($slug !== $data->canonicalSlug) {
+            throw new BaseHttpException(
+                message: 'URL non canonique',
+                statusCode: 409,
+                data: [
+                    'redirect' => sprintf('%s/%s/%d', self::SERIES_PATH, rawurlencode($data->canonicalSlug), $numero)
+                ]
+            );
+        }
+
+        return $data;
     }
 
     /*
     |--------------------------------------------------------------------------
-    | Build Edit Path
-    |--------------------------------------------------------------------------
-    */
-
-    private function buildEditPath(
-        string $slug,
-        int $numero,
-    ): string {
-
-        return sprintf(
-            '%s/%s/%d',
-            self::EDIT_PATH,
-            rawurlencode(
-                $slug,
-            ),
-            $numero,
-        );
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Index
+    | Pages publiques
     |--------------------------------------------------------------------------
     */
 
     public function index(): never
     {
-        $this->title =
-            'Manga';
-
-        $this->render(
-            'pages/manga/index',
-        );
+        $this->title = 'Manga';
+        $this->render('pages/manga/index');
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Links
-    |--------------------------------------------------------------------------
-    */
 
     public function links(): never
     {
-        $this->title =
-            'Manga | Lien';
-
-        $this->render(
-            'pages/manga/lien',
-        );
+        $this->title = 'Manga | Lien';
+        $this->render('pages/manga/lien');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Series List
-    |--------------------------------------------------------------------------
-    */
-
-    public function series(
-        int $page = 1,
-    ): never {
-
-        $data =
-            $this->mangaReadService
-                ->series(
-                    $page,
-                );
-
-        if ($data === null)
-        {
-
-            throw new NotFoundException(
-                'Page introuvable',
-            );
+    public function series(int $page = 1): never
+    {
+        $data = $this->mangaReadService->series($page);
+        if ($data === null) {
+            throw new NotFoundException('Page introuvable');
         }
 
-        $this->title =
-            'Manga | Series';
+        $this->title = 'Manga | Series' . ($data->currentPage > 1 ? ' - Page ' . $data->currentPage : '');
+        $this->render('pages/manga/series', [
+            'mangas'      => $data->mangas,
+            'currentPage' => $data->currentPage,
+            'compteur'    => $data->compteur,
+            'totalSeries' => $data->totalSeries,
+            'perPage'     => $data->perPage,
+            'slugFilter'  => $data->slugFilter,
+        ]);
+    }
 
-        if (
-            $data->currentPage > 1
-        ) {
+    public function search(string $query = ''): never
+    {
+        $data = $this->mangaReadService->search($query);
+        $this->title = $data->search !== '' ? 'Manga | Recherche : ' . $data->search : 'Manga | Recherche';
+        $this->render('pages/manga/search', [
+            'mangas' => $data->mangas,
+            'search' => $data->search,
+        ]);
+    }
 
-            $this->title .=
-                ' - Page '
-                . $data->currentPage;
+    public function showSeries(string $slug): never
+    {
+        $data = $this->mangaReadService->showSeries($slug);
+        if ($data === null || $data->mangas === []) {
+            throw new NotFoundException('Manga introuvable');
         }
 
-        $this->render(
-            'pages/manga/series',
-            [
-                'mangas' =>
-                    $data->mangas,
-
-                'currentPage' =>
-                    $data->currentPage,
-
-                'compteur' =>
-                    $data->compteur,
-
-                'totalSeries' =>
-                    $data->totalSeries,
-
-                'perPage' =>
-                    $data->perPage,
-
-                'slugFilter' =>
-                    $data->slugFilter,
-            ],
-        );
+        $this->title = 'Manga | ' . $data->mangas[0]->livre;
+        $this->render('pages/manga/series', [
+            'mangas'      => $data->mangas,
+            'currentPage' => 1,
+            'compteur'    => 1,
+            'totalSeries' => $data->totalSeries,
+            'perPage'     => $data->perPage,
+            'slugFilter'  => $data->slugFilter,
+        ]);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Search
-    |--------------------------------------------------------------------------
-    */
-
-    public function search(
-        string $query = '',
-    ): never {
-
-        $data =
-            $this->mangaReadService
-                ->search(
-                    $query,
-                );
-
-        $this->title =
-            $data->search !== ''
-                ? 'Manga | Recherche : '
-                    . $data->search
-                : 'Manga | Recherche';
-
-        $this->render(
-            'pages/manga/search',
-            [
-                'mangas' =>
-                    $data->mangas,
-
-                'search' =>
-                    $data->search,
-            ],
-        );
+    public function show(string $slug, int $numero): never
+    {
+        $data = $this->resolveMangaOrFail($slug, $numero);
+        $this->redirectToCanonicalUrl($slug, $data->canonicalSlug, self::SERIES_PATH, $numero);
+        $this->title = 'Manga | ' . $data->manga->livre;
+        $this->render('pages/manga/livre', ['manga' => $data->manga]);
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Show Series
-    |--------------------------------------------------------------------------
-    */
-
-    public function showSeries(
-        string $slug,
-    ): never {
-
-        $data =
-            $this->mangaReadService
-                ->showSeries(
-                    $slug,
-                );
-
-        if (
-            $data === null
-            || $data->mangas === []
-        ) {
-
-            throw new NotFoundException(
-                'Manga introuvable',
-            );
-        }
-
-        $this->title =
-            'Manga | '
-            . $data->mangas[0]->livre;
-
-        $this->render(
-            'pages/manga/series',
-            [
-                'mangas' =>
-                    $data->mangas,
-
-                'currentPage' =>
-                    1,
-
-                'compteur' =>
-                    1,
-
-                'totalSeries' =>
-                    $data->totalSeries,
-
-                'perPage' =>
-                    $data->perPage,
-
-                'slugFilter' =>
-                    $data->slugFilter,
-            ],
-        );
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Show Manga
-    |--------------------------------------------------------------------------
-    */
-
-    public function show(
-        string $slug,
-        int $numero,
-    ): never {
-
-        $data =
-            $this->resolveMangaOrFail(
-                $slug,
-                $numero,
-            );
-
-        $this->redirectToCanonicalUrl(
-            $slug,
-            $data->canonicalSlug,
-            self::SERIES_PATH,
-            $numero,
-        );
-
-        $this->title =
-            'Manga | '
-            . $data->manga->livre;
-
-        $this->render(
-            'pages/manga/livre',
-            [
-                'manga' =>
-                    $data->manga,
-            ],
-        );
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Notes
-    |--------------------------------------------------------------------------
-    */
 
     public function notes(): never
     {
-        $this->title =
-            'Manga | Notes';
-
-        $this->render(
-            'pages/manga/notes',
-            [
-                'mangas' =>
-                    $this->mangaReadService
-                        ->notes(),
-            ],
-        );
+        $this->title = 'Manga | Notes';
+        $this->render('pages/manga/notes', ['mangas' => $this->mangaReadService->notes()]);
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Create Page
-    |--------------------------------------------------------------------------
-    */
 
     public function create(): never
     {
-        $this->title =
-            'Manga | Ajouter';
-
-        $this->render(
-            'pages/manga/ajouter',
-        );
+        $this->title = 'Manga | Ajouter';
+        $this->render('pages/manga/ajouter');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Edit Page
-    |--------------------------------------------------------------------------
-    */
-
-    public function edit(
-        string $slug,
-        int $numero,
-    ): never {
-
-        $data =
-            $this->resolveMangaOrFail(
-                $slug,
-                $numero,
-            );
-
-        $this->redirectToCanonicalUrl(
-            $slug,
-            $data->canonicalSlug,
-            self::EDIT_PATH,
-            $numero,
-        );
-
-        $this->title =
-            'Manga | Modifier';
-
-        $this->render(
-            'pages/manga/modifier',
-            [
-                'manga' =>
-                    $data->manga,
-            ],
-        );
+    public function edit(string $slug, int $numero): never
+    {
+        $data = $this->resolveMangaOrFail($slug, $numero);
+        $this->redirectToCanonicalUrl($slug, $data->canonicalSlug, self::EDIT_PATH, $numero);
+        $this->title = 'Manga | Modifier';
+        $this->render('pages/manga/modifier', ['manga' => $data->manga]);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Store
-    |--------------------------------------------------------------------------
-    */
-
-    public function store(
-        MangaCreateRequest $request,
-    ): never {
-
-        if ($request->fails())
-        {
-
-            throw new ValidationException(
-                $request->errors(),
-            );
+    public function store(MangaCreateRequest $request): never
+    {
+        if ($request->fails()) {
+            throw new ValidationException($request->errors());
         }
 
-        $result =
-            $this->mangaWriteService
-                ->create(
-                    $request->dto(),
-                    $request->files(),
-                );
-
-        $this->jsonResult(
-            $result,
-        );
+        $result = $this->mangaWriteService->create($request->dto(), $request->files());
+        $this->jsonResult($result);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Update
-    |--------------------------------------------------------------------------
-    */
+    public function update(MangaUpdateRequest $request, string $slug, int $numero): never
+    {
+        $data = $this->resolveMangaOrFail($slug, $numero);
+        $redirectPath = $this->buildEditPath($data->canonicalSlug, $numero);
 
-    public function update(
-        MangaUpdateRequest $request,
-        string $slug,
-        int $numero,
-    ): never {
-
-        $data =
-            $this->resolveMangaOrFail(
-                $slug,
-                $numero,
-            );
-
-        $redirectPath =
-            $this->buildEditPath(
-                $data->canonicalSlug,
-                $numero,
-            );
-
-        if (
-            $slug !==
-            $data->canonicalSlug
-        ) {
-
-            throw new BaseHttpException(
-                message:
-                    'URL non canonique',
-
-                statusCode:
-                    409,
-
-                data: [
-                    'redirect' =>
-                        $redirectPath,
-                ],
-            );
+        if ($slug !== $data->canonicalSlug) {
+            throw new BaseHttpException(message: 'URL non canonique', statusCode: 409, data: ['redirect' => $redirectPath]);
         }
 
-        if ($request->fails())
-        {
-
-            throw new ValidationException(
-                $request->errors(),
-            );
+        if ($request->fails()) {
+            throw new ValidationException($request->errors());
         }
 
-        $result =
-            $this->mangaWriteService
-                ->update(
-                    $data->canonicalSlug,
-                    $numero,
-                    $request->dto(),
-                );
+        $result = $this->mangaWriteService->update($data->canonicalSlug, $numero, $request->dto());
 
-        if (! $result->success)
-        {
-
-            throw new BaseHttpException(
-                message:
-                    $result->message,
-
-                statusCode:
-                    422,
-
-                data:
-                    $result->data,
-            );
+        if (!$result->success) {
+            throw new BaseHttpException(message: $result->message, statusCode: 422, data: $result->data);
         }
 
-        $this->redirectWithSuccess(
-            sprintf(
-                '%s/%s/%d',
-                self::SERIES_PATH,
-                rawurlencode(
-                    $data->canonicalSlug,
-                ),
-                $numero,
-            ),
-            $result->message,
-        );
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Resolve Manga
-    |--------------------------------------------------------------------------
-    */
-
-    private function resolveMangaOrFail(
-        string $slug,
-        int $numero,
-    ): object {
-
-        $data =
-            $this->mangaReadService
-                ->one(
-                    $slug,
-                    $numero,
-                );
-
-        if ($data === null)
-        {
-
-            throw new NotFoundException(
-                'Manga introuvable',
-            );
-        }
-
-        return $data;
+        $this->redirectWithSuccess(sprintf('%s/%s/%d', self::SERIES_PATH, rawurlencode($data->canonicalSlug), $numero), $result->message);
     }
 }
