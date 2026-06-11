@@ -389,4 +389,39 @@ final class MangaRepository extends Model
 
         return $mangas;
     }
+
+    /**
+     * @return list<Manga>
+     */
+    public function findReadWithoutReward(): array
+    {
+        /** @var list<Manga> $mangas */
+        $mangas = $this->fetchAll(
+            "
+            SELECT *
+            FROM {$this->getTable()}
+            WHERE lu = 1
+            AND xp_read_rewarded = 0
+            ",
+            [],
+            Manga::class,
+        );
+
+        return $mangas;
+    }
+
+    public function markXpRewarded(
+    int $id,
+    ): bool {
+        $this->guardWrite();
+
+        return $this->update(
+            [
+                'xp_read_rewarded' => 1,
+            ],
+            [
+                'id' => $id,
+            ],
+        );
+    }
 }

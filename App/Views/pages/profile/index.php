@@ -3,8 +3,12 @@
 declare(strict_types=1);
 
 /** @var App\Models\User $user */
-/** @var float $progress */
+/** @var int $level */
+/** @var int $currentXp */
 /** @var int $xpRequired */
+/** @var float $progress */
+/** @var int $readTomes */
+/** @var int $totalXp */
 
 $baseUri =
     rtrim(
@@ -14,12 +18,6 @@ $baseUri =
 
 $username =
     $user->username;
-
-$level =
-    $user->level;
-
-$currentXp =
-    $user->xp;
 
 ?>
 
@@ -158,7 +156,7 @@ $currentXp =
                 </h2>
 
                 <p class="profile-stat-value">
-                    190
+                    <?= number_format($readTomes) ?>
                 </p>
 
             </article>
@@ -170,35 +168,16 @@ $currentXp =
                 </h2>
 
                 <p class="profile-stat-value">
-                    22 650 XP
-                </p>
 
-            </article>
+                    <?= number_format(
+                        $totalXp,
+                        0,
+                        ',',
+                        ' ',
+                    ) ?>
 
-        </div>
+                    XP
 
-        <div class="profile-stat-row">
-
-            <article class="card transition-card profile-stat-card">
-
-                <h2 class="profile-stat-title">
-                    📖 Séries
-                </h2>
-
-                <p class="profile-stat-value">
-                    23
-                </p>
-
-            </article>
-
-            <article class="card transition-card profile-stat-card">
-
-                <h2 class="profile-stat-title">
-                    ⭐ XP Séries
-                </h2>
-
-                <p class="profile-stat-value">
-                    1 150 XP
                 </p>
 
             </article>
@@ -214,7 +193,16 @@ $currentXp =
                 </h2>
 
                 <p class="profile-stat-value">
-                    1450
+
+                    <?= number_format(
+                        $totalXp,
+                        0,
+                        ',',
+                        ' ',
+                    ) ?>
+
+                    XP
+
                 </p>
 
             </article>
@@ -226,7 +214,16 @@ $currentXp =
                 </h2>
 
                 <p class="profile-stat-value">
-                    14 500 XP
+
+                    <?= number_format(
+                        $totalXp,
+                        0,
+                        ',',
+                        ' ',
+                    ) ?>
+
+                    XP
+
                 </p>
 
             </article>
@@ -242,7 +239,16 @@ $currentXp =
                 </h2>
 
                 <p class="profile-stat-value">
-                    320
+
+                    <?= number_format(
+                        $totalXp,
+                        0,
+                        ',',
+                        ' ',
+                    ) ?>
+
+                    XP
+
                 </p>
 
             </article>
@@ -254,7 +260,16 @@ $currentXp =
                 </h2>
 
                 <p class="profile-stat-value">
-                    3 200 XP
+
+                    <?= number_format(
+                        $totalXp,
+                        0,
+                        ',',
+                        ' ',
+                    ) ?>
+
+                    XP
+
                 </p>
 
             </article>

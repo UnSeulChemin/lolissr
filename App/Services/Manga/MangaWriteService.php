@@ -475,6 +475,7 @@ final readonly class MangaWriteService
                 if (
                     ! $wasRead
                     && $readStatus === 1
+                    && $manga->xp_read_rewarded === 0
                 ) {
 
                     $user = user();
@@ -485,6 +486,11 @@ final readonly class MangaWriteService
                             ->addXp(
                                 $user,
                                 UserXp::READ_TOME,
+                            );
+
+                        $this->mangaRepository
+                            ->markXpRewarded(
+                                $manga->id,
                             );
                     }
                 }

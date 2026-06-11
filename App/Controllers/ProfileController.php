@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Repositories\Manga\MangaStatsRepository;
 use App\Services\User\UserLevelService;
+use App\Constants\UserXp;
 use Framework\Http\Request;
 
 final class ProfileController extends Controller
 {
     public function __construct(
         private readonly UserLevelService $userLevelService,
+        private readonly MangaStatsRepository $mangaStatsRepository,
         Request $request,
     ) {
         parent::__construct($request);
@@ -27,16 +30,43 @@ final class ProfileController extends Controller
             redirect('connexion');
         }
 
+        $xpRequired =
+            $this->userLevelService
+                ->xpRequiredForLevel(
+                    $user->level,
+                );
+
+        $progress =
+            $this->userLevelService
+                ->progress(
+                    $user,
+                );
+
         $this->render(
             'pages/profile/index',
             [
                 'user' => $user,
-                'progress' => $this->userLevelService->progress(
-                    $user,
-                ),
-                'xpRequired' => $this->userLevelService->xpRequiredForLevel(
+
+                'level' =>
                     $user->level,
-                ),
+
+                'currentXp' =>
+                    $user->xp,
+
+                'xpRequired' =>
+                    $xpRequired,
+
+                'progress' =>
+                    $progress,
+
+                'readTomes' =>
+                    $this->mangaStatsRepository
+                        ->countRead(),
+
+                'totalXp' =>
+                    $this->mangaStatsRepository
+                        ->countRead()
+                    * UserXp::READ_TOME,
             ],
         );
     }
