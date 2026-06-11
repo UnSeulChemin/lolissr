@@ -196,7 +196,7 @@ $username =
             <article class="card transition-card profile-stat-card">
 
                 <h2 class="profile-stat-title">
-                    📚 Tomes
+                    📚 Tomes lu
                 </h2>
 
                 <p class="profile-stat-value">
