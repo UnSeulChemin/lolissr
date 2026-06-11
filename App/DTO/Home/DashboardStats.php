@@ -9,17 +9,14 @@ use App\Models\Manga;
 final readonly class DashboardStats
 {
     /**
+     * Statistiques Chinois + Manga du dashboard.
+     *
      * @param list<Manga> $topLongestSeries
      * @param list<Manga> $lowRatedMangas
      * @param list<Manga> $lowJacquetteMangas
      * @param list<Manga> $lowLivreStateMangas
      */
     public function __construct(
-
-        // =========================================
-        // CHINOIS
-        // =========================================
-
         public int $totalVocabulary,
         public int $remainingVocabulary,
         public int $vocabularyProgress,
@@ -29,10 +26,6 @@ final readonly class DashboardStats
         public int $grammarProgress,
 
         public int $globalChineseProgress,
-
-        // =========================================
-        // MANGA
-        // =========================================
 
         public int $totalTomes,
         public int $totalSeries,

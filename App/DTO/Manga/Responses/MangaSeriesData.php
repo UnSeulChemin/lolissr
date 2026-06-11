@@ -11,11 +11,11 @@ final readonly class MangaSeriesData
      */
     public function __construct(
         public array $mangas,
-        public ?int $compteur,      // nombre total de pages
+        public ?int $compteur,
         public ?string $slugFilter,
         public int $currentPage,
-        public int $totalSeries,     // total mangas
-        public int $perPage,          // mangas par page
+        public int $totalSeries,
+        public int $perPage,
     ) {
     }
 }

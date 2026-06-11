@@ -21,45 +21,15 @@ final readonly class ChinoisVocabulaireCreateDTO
     /**
      * @param array<string, mixed> $data
      */
-    public static function fromArray(
-        array $data,
-    ): self {
-
+    public static function fromArray(array $data): self
+    {
         return new self(
-            langue: trim(
-                (string) ($data['langue'] ?? ''),
-            ),
-
-            mot: trim(
-                (string) ($data['mot'] ?? ''),
-            ),
-
-            pinyin: trim(
-                (string) ($data['pinyin'] ?? ''),
-            ),
-
-            type: trim(
-                (string) ($data['type'] ?? ''),
-            ),
-
-            traduction: trim(
-                (string) ($data['traduction'] ?? ''),
-            ),
-
-            exemple: Str::nullableTrim(
-                $data['exemple'] ?? null,
-            ),
-        );
-    }
-
-    /**
-     * @param array<string, mixed> $post
-     */
-    public static function fromPost(
-        array $post,
-    ): self {
-        return self::fromArray(
-            $post,
+            langue: trim((string) ($data['langue'] ?? '')),
+            mot: trim((string) ($data['mot'] ?? '')),
+            pinyin: trim((string) ($data['pinyin'] ?? '')),
+            type: trim((string) ($data['type'] ?? '')),
+            traduction: trim((string) ($data['traduction'] ?? '')),
+            exemple: Str::nullableTrim($data['exemple'] ?? null),
         );
     }
 }
