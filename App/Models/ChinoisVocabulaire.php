@@ -22,5 +22,7 @@ final class ChinoisVocabulaire
 
     public bool $maitrise = false;
 
+    public int $xp_rewarded = 0;
+
     public string $created_at = '';
 }

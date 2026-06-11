@@ -26,6 +26,8 @@ final class ChinoisGrammaire
 
     public int $maitrise = 0;
 
+    public int $xp_rewarded = 0;
+
     public string $section = '';
 
     public int $section_position = 0;

@@ -45,6 +45,7 @@ final class ChinoisVocabulaireRepository extends Model
                     traduction,
                     exemple,
                     maitrise,
+                    xp_rewarded,
                     created_at
 
                 FROM {$this->getTable()}
@@ -75,6 +76,7 @@ final class ChinoisVocabulaireRepository extends Model
                     traduction,
                     exemple,
                     maitrise,
+                    xp_rewarded,
                     created_at
 
                 FROM {$this->getTable()}
@@ -190,6 +192,7 @@ final class ChinoisVocabulaireRepository extends Model
                     traduction,
                     exemple,
                     maitrise,
+                    xp_rewarded,
                     created_at
 
                 FROM {$this->getTable()}
@@ -216,5 +219,19 @@ final class ChinoisVocabulaireRepository extends Model
         return $result !== null
             ? (int) $result->total
             : 0;
+    }
+
+    public function markXpRewarded(
+        int $id,
+    ): bool {
+
+        return $this->update(
+            [
+                'xp_rewarded' => 1,
+            ],
+            [
+                'id' => $id,
+            ],
+        );
     }
 }

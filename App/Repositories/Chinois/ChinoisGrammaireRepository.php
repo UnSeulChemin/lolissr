@@ -51,7 +51,8 @@ final class ChinoisGrammaireRepository extends Model
                 traduction,
                 explication,
                 position,
-                maitrise
+                maitrise,
+                xp_rewarded
 
             FROM {$this->getTable()}
 
@@ -113,6 +114,9 @@ final class ChinoisGrammaireRepository extends Model
 
                     position: (int) $row->position,
                     maitrise: (bool) $row->maitrise,
+
+                    xpRewarded:
+                        (int) $row->xp_rewarded,
                 );
             },
             $results,
@@ -169,7 +173,8 @@ final class ChinoisGrammaireRepository extends Model
                     traduction,
                     explication,
                     position,
-                    maitrise
+                    maitrise,
+                    xp_rewarded
 
                 FROM {$this->getTable()}
 
@@ -218,6 +223,9 @@ final class ChinoisGrammaireRepository extends Model
 
             position: (int) $result->position,
             maitrise: (bool) $result->maitrise,
+
+            xpRewarded:
+                (int) $result->xp_rewarded,
         );
     }
 
@@ -326,5 +334,19 @@ final class ChinoisGrammaireRepository extends Model
         return $result !== null
             ? (int) $result->total
             : 0;
+    }
+
+    public function markXpRewarded(
+        int $id,
+    ): bool {
+
+        return $this->update(
+            [
+                'xp_rewarded' => 1,
+            ],
+            [
+                'id' => $id,
+            ],
+        );
     }
 }
