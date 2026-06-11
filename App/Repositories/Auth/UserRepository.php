@@ -19,7 +19,7 @@ final class UserRepository extends Model
         $user = $this->fetchOne(
             "
             SELECT *
-            FROM {$this->getTable()}
+            FROM {$this->table()}
             WHERE username = :username
             LIMIT 1
             ",
@@ -40,7 +40,7 @@ final class UserRepository extends Model
         $user = $this->fetchOne(
             "
             SELECT *
-            FROM {$this->getTable()}
+            FROM {$this->table()}
             WHERE id = :id
             LIMIT 1
             ",

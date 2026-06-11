@@ -99,7 +99,7 @@ final class MangaSearchRepository extends Model
     ): array {
         $sql = "
             SELECT *
-            FROM {$this->getTable()}
+            FROM {$this->table()}
             WHERE (
                 livre LIKE :search_livre
                 OR slug LIKE :search_slug
@@ -175,7 +175,7 @@ final class MangaSearchRepository extends Model
     {
         $result = $this->fetchOne("
             SELECT COUNT(*) AS total
-            FROM {$this->getTable()}
+            FROM {$this->table()}
             WHERE numero = 1
         ");
 
@@ -203,14 +203,14 @@ final class MangaSearchRepository extends Model
                 stats.total,
                 stats.total_lu,
                 stats.average_note
-            FROM {$this->getTable()} m
+            FROM {$this->table()} m
             INNER JOIN (
                 SELECT
                     slug,
                     COUNT(*) AS total,
                     SUM(CASE WHEN lu = 1 THEN 1 ELSE 0 END) AS total_lu,
                     ROUND(AVG(COALESCE(note,0)),1) AS average_note
-                FROM {$this->getTable()}
+                FROM {$this->table()}
                 GROUP BY slug
             ) stats ON stats.slug = m.slug
             WHERE m.numero = 1

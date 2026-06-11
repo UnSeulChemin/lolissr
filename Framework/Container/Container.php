@@ -29,9 +29,9 @@ final class Container
     private array $resolving = [];
 
     /**
-     * @var array<string, ResolvedClass>
+     * @var array<string, ReflectionClass<object>>
      */
-    private array $resolvedClasses = [];
+    private array $reflections = [];
 
     public function bind(
         string $abstract,
@@ -65,7 +65,8 @@ final class Container
         string $abstract,
     ): object {
 
-        if (isset($this->instances[$abstract])) {
+        if (isset($this->instances[$abstract]))
+        {
             return $this->instances[$abstract];
         }
 
@@ -81,7 +82,8 @@ final class Container
                 $binding['concrete'],
             );
 
-        if ($binding['singleton']) {
+        if ($binding['singleton'])
+        {
             $this->instances[$abstract] =
                 $object;
         }
@@ -93,12 +95,13 @@ final class Container
         callable|string $concrete,
     ): object {
 
-        if (is_callable($concrete)) {
-
+        if (is_callable($concrete))
+        {
             $object =
                 $concrete($this);
 
-            if (! is_object($object)) {
+            if (! is_object($object))
+            {
                 throw new RuntimeException(
                     'Container factory must return an object.',
                 );
@@ -107,13 +110,24 @@ final class Container
             return $object;
         }
 
-        if (! class_exists($concrete)) {
+        if (
+            interface_exists($concrete)
+        )
+        {
+            throw new RuntimeException(
+                "No binding registered for interface: {$concrete}",
+            );
+        }
+
+        if (! class_exists($concrete))
+        {
             throw new RuntimeException(
                 "Class not found: {$concrete}",
             );
         }
 
-        if (isset($this->resolving[$concrete])) {
+        if (isset($this->resolving[$concrete]))
+        {
             throw new RuntimeException(
                 "Circular dependency detected: {$concrete}",
             );
@@ -123,26 +137,68 @@ final class Container
 
         try {
 
-            $resolved =
-                $this->resolvedClasses[$concrete]
-                ??= $this->analyzeClass(
+            $reflection =
+                $this->reflections[$concrete]
+                ??= new ReflectionClass(
                     $concrete,
                 );
+
+            if (! $reflection->isInstantiable())
+            {
+                throw new RuntimeException(
+                    "Class is not instantiable: {$concrete}",
+                );
+            }
+
+            $constructor =
+                $reflection->getConstructor();
+
+            if ($constructor === null)
+            {
+                return $reflection->newInstance();
+            }
 
             $dependencies = [];
 
             foreach (
-                $resolved->dependencies
-                as $dependency
+                $constructor->getParameters()
+                as $parameter
             ) {
+
+                $type =
+                    $parameter->getType();
+
+                if (
+                    ! $type instanceof ReflectionNamedType
+                    || $type->isBuiltin()
+                ) {
+
+                    if (
+                        $parameter->isDefaultValueAvailable()
+                    ) {
+                        $dependencies[] =
+                            $parameter->getDefaultValue();
+
+                        continue;
+                    }
+
+                    throw new RuntimeException(
+                        sprintf(
+                            'Unable to resolve %s::$%s',
+                            $concrete,
+                            $parameter->getName(),
+                        ),
+                    );
+                }
+
                 $dependencies[] =
                     $this->get(
-                        $dependency,
+                        $type->getName(),
                     );
             }
 
-            return new $concrete(
-                ...$dependencies,
+            return $reflection->newInstanceArgs(
+                $dependencies,
             );
 
         } finally {
@@ -151,70 +207,5 @@ final class Container
                 $this->resolving[$concrete],
             );
         }
-    }
-
-    private function analyzeClass(
-        string $class,
-    ): ResolvedClass {
-
-        $reflection =
-            new ReflectionClass(
-                $class,
-            );
-
-        if (! $reflection->isInstantiable()) {
-            throw new RuntimeException(
-                "Class is not instantiable: {$class}",
-            );
-        }
-
-        $constructor =
-            $reflection->getConstructor();
-
-        if ($constructor === null) {
-            return new ResolvedClass(
-                [],
-                true,
-            );
-        }
-
-        $dependencies = [];
-
-        foreach (
-            $constructor->getParameters()
-            as $parameter
-        ) {
-
-            $type =
-                $parameter->getType();
-
-            if (
-                ! $type instanceof ReflectionNamedType
-                || $type->isBuiltin()
-            ) {
-
-                if (
-                    $parameter->isDefaultValueAvailable()
-                ) {
-                    continue;
-                }
-
-                throw new RuntimeException(
-                    sprintf(
-                        'Unable to resolve %s::$%s',
-                        $class,
-                        $parameter->getName(),
-                    ),
-                );
-            }
-
-            $dependencies[] =
-                $type->getName();
-        }
-
-        return new ResolvedClass(
-            $dependencies,
-            true,
-        );
     }
 }

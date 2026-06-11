@@ -44,7 +44,7 @@ final class MangaStatsRepository extends Model
     {
         return (int) $this->fetchSingleValue(
             "SELECT COUNT(*) AS total
-            FROM {$this->getTable()}",
+            FROM {$this->table()}",
             'total',
         );
     }
@@ -53,7 +53,7 @@ final class MangaStatsRepository extends Model
     {
         return (int) $this->fetchSingleValue(
             "SELECT COUNT(DISTINCT slug) AS total
-            FROM {$this->getTable()}",
+            FROM {$this->table()}",
             'total',
         );
     }
@@ -62,7 +62,7 @@ final class MangaStatsRepository extends Model
     {
         return (int) $this->fetchSingleValue(
             "SELECT COUNT(*) AS total
-            FROM {$this->getTable()}
+            FROM {$this->table()}
             WHERE lu = 1",
             'total',
         );
@@ -75,7 +75,7 @@ final class MangaStatsRepository extends Model
                 AVG(note),
                 1
             ) AS moyenne
-            FROM {$this->getTable()}
+            FROM {$this->table()}
             WHERE note IS NOT NULL",
             'moyenne',
             [],
@@ -92,7 +92,7 @@ final class MangaStatsRepository extends Model
         /** @var Manga|null $manga */
         $manga = $this->fetchOne(
             "SELECT *
-            FROM {$this->getTable()}
+            FROM {$this->table()}
             ORDER BY id DESC
             LIMIT 1",
             [],
@@ -110,14 +110,14 @@ final class MangaStatsRepository extends Model
                 m.*,
                 stats.total
 
-            FROM {$this->getTable()} m
+            FROM {$this->table()} m
 
             INNER JOIN (
                 SELECT
                     slug,
                     COUNT(*) AS total
 
-                FROM {$this->getTable()}
+                FROM {$this->table()}
 
                 GROUP BY slug
 
@@ -155,14 +155,14 @@ final class MangaStatsRepository extends Model
                 m.*,
                 stats.total
 
-            FROM {$this->getTable()} m
+            FROM {$this->table()} m
 
             INNER JOIN (
                 SELECT
                     slug,
                     COUNT(*) AS total
 
-                FROM {$this->getTable()}
+                FROM {$this->table()}
 
                 GROUP BY slug
 
@@ -194,7 +194,7 @@ final class MangaStatsRepository extends Model
             SELECT
                 COUNT(*) AS total,
                 SUM(lu) AS total_lu
-            FROM {$this->getTable()}
+            FROM {$this->table()}
             WHERE slug = :slug
             ",
             [
@@ -220,7 +220,7 @@ final class MangaStatsRepository extends Model
             SELECT COUNT(*) AS total
             FROM (
                 SELECT slug
-                FROM {$this->getTable()}
+                FROM {$this->table()}
                 GROUP BY slug
                 HAVING COUNT(*) = SUM(lu)
             ) completed

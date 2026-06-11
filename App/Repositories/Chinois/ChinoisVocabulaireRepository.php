@@ -48,7 +48,7 @@ final class ChinoisVocabulaireRepository extends Model
                     xp_rewarded,
                     created_at
 
-                FROM {$this->getTable()}
+                FROM {$this->table()}
 
                 WHERE langue = ?
 
@@ -79,7 +79,7 @@ final class ChinoisVocabulaireRepository extends Model
                     xp_rewarded,
                     created_at
 
-                FROM {$this->getTable()}
+                FROM {$this->table()}
 
                 WHERE id = ?
 
@@ -98,7 +98,7 @@ final class ChinoisVocabulaireRepository extends Model
         $this->guardWrite();
 
         $this->execute(
-            "UPDATE {$this->getTable()}
+            "UPDATE {$this->table()}
             SET maitrise = NOT maitrise
             WHERE id = ?",
             [$id],
@@ -107,7 +107,7 @@ final class ChinoisVocabulaireRepository extends Model
         $result =
             $this->fetchOne(
                 "SELECT maitrise
-                FROM {$this->getTable()}
+                FROM {$this->table()}
                 WHERE id = ?",
                 [$id],
             );
@@ -153,7 +153,7 @@ final class ChinoisVocabulaireRepository extends Model
         $result =
             $this->fetchOne(
                 "SELECT COUNT(*) AS total
-                FROM {$this->getTable()}"
+                FROM {$this->table()}"
             );
 
         return $result !== null
@@ -166,7 +166,7 @@ final class ChinoisVocabulaireRepository extends Model
         $result =
             $this->fetchOne(
                 "SELECT COUNT(*) AS total
-                FROM {$this->getTable()}
+                FROM {$this->table()}
                 WHERE maitrise = 0"
             );
 
@@ -195,7 +195,7 @@ final class ChinoisVocabulaireRepository extends Model
                     xp_rewarded,
                     created_at
 
-                FROM {$this->getTable()}
+                FROM {$this->table()}
 
                 WHERE maitrise = 0
 
@@ -212,7 +212,7 @@ final class ChinoisVocabulaireRepository extends Model
         $result =
             $this->fetchOne(
                 "SELECT COUNT(*) AS total
-                FROM {$this->getTable()}
+                FROM {$this->table()}
                 WHERE maitrise = 1"
             );
 

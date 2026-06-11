@@ -54,7 +54,7 @@ final class ChinoisGrammaireRepository extends Model
                 maitrise,
                 xp_rewarded
 
-            FROM {$this->getTable()}
+            FROM {$this->table()}
 
             WHERE niveau = ?
 
@@ -130,7 +130,7 @@ final class ChinoisGrammaireRepository extends Model
         $this->guardWrite();
 
         $this->execute(
-            "UPDATE {$this->getTable()}
+            "UPDATE {$this->table()}
             SET maitrise = NOT maitrise
             WHERE id = ?",
             [$id],
@@ -139,7 +139,7 @@ final class ChinoisGrammaireRepository extends Model
         $result =
             $this->fetchOne(
                 "SELECT maitrise
-                FROM {$this->getTable()}
+                FROM {$this->table()}
                 WHERE id = ?",
                 [$id],
             );
@@ -176,7 +176,7 @@ final class ChinoisGrammaireRepository extends Model
                     maitrise,
                     xp_rewarded
 
-                FROM {$this->getTable()}
+                FROM {$this->table()}
 
                 WHERE id = ?
 
@@ -262,7 +262,7 @@ final class ChinoisGrammaireRepository extends Model
         $result =
             $this->fetchOne(
                 "SELECT COUNT(*) AS total
-                FROM {$this->getTable()}"
+                FROM {$this->table()}"
             );
 
         return $result !== null
@@ -275,7 +275,7 @@ final class ChinoisGrammaireRepository extends Model
         $result =
             $this->fetchOne(
                 "SELECT COUNT(*) AS total
-                FROM {$this->getTable()}
+                FROM {$this->table()}
                 WHERE maitrise = 0"
             );
 
@@ -310,7 +310,7 @@ final class ChinoisGrammaireRepository extends Model
                     position,
                     created_at
 
-                FROM {$this->getTable()}
+                FROM {$this->table()}
 
                 WHERE maitrise = 0
 
@@ -327,7 +327,7 @@ final class ChinoisGrammaireRepository extends Model
         $result =
             $this->fetchOne(
                 "SELECT COUNT(*) AS total
-                FROM {$this->getTable()}
+                FROM {$this->table()}
                 WHERE maitrise = 1"
             );
 

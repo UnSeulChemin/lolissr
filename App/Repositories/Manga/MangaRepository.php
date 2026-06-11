@@ -129,7 +129,7 @@ final class MangaRepository extends Model
                 stats.total,
                 stats.total_lu,
                 stats.average_note
-            FROM {$this->getTable()} m
+            FROM {$this->table()} m
             INNER JOIN (
                 {$this->statsSubQuery()}
             ) stats
@@ -155,7 +155,7 @@ final class MangaRepository extends Model
         /** @var Manga|null $manga */
         $manga = $this->fetchOne(
             "SELECT *
-            FROM {$this->getTable()}
+            FROM {$this->table()}
             WHERE slug = :slug
             AND numero = :numero
             LIMIT 1",
@@ -319,7 +319,7 @@ final class MangaRepository extends Model
     ): bool {
         $result = $this->fetchOne(
             "SELECT 1
-            FROM {$this->getTable()}
+            FROM {$this->table()}
             WHERE slug = :slug
             LIMIT 1",
             [
@@ -350,7 +350,7 @@ final class MangaRepository extends Model
                     ),
                     1
                 ) AS average_note
-            FROM {$this->getTable()}
+            FROM {$this->table()}
             GROUP BY slug
         ";
     }
@@ -369,7 +369,7 @@ final class MangaRepository extends Model
                 stats.total_lu,
                 stats.average_note
 
-            FROM {$this->getTable()} m
+            FROM {$this->table()} m
 
             INNER JOIN (
                 {$this->statsSubQuery()}
@@ -399,7 +399,7 @@ final class MangaRepository extends Model
         $mangas = $this->fetchAll(
             "
             SELECT *
-            FROM {$this->getTable()}
+            FROM {$this->table()}
             WHERE lu = 1
             AND xp_read_rewarded = 0
             ",
@@ -432,7 +432,7 @@ final class MangaRepository extends Model
         $result = $this->fetchOne(
             "
             SELECT xp_series_rewarded
-            FROM {$this->getTable()}
+            FROM {$this->table()}
             WHERE slug = :slug
             LIMIT 1
             ",
