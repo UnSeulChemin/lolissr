@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Services\Auth\AuthService;
+
 use Framework\Http\Request;
 
 final class AuthController extends Controller
 {
+    private const PRODUCTION_ENV = 'production';
+
     public function __construct(
         private readonly AuthService $authService,
         Request $request,
@@ -18,7 +21,7 @@ final class AuthController extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | LOGIN
+    | Login
     |--------------------------------------------------------------------------
     */
 
@@ -26,21 +29,17 @@ final class AuthController extends Controller
     {
         $this->title = 'Connexion';
 
-        $this->render(
-            'pages/auth/connexion',
-        );
+        $this->render('pages/auth/connexion');
     }
 
     public function authenticate(): never
     {
-        $success =
-            $this->authService->login(
-                (string) $this->request->input('username'),
-                (string) $this->request->input('password'),
-            );
+        $success = $this->authService->login(
+            (string) $this->request->input('username'),
+            (string) $this->request->input('password'),
+        );
 
-        if (! $success)
-        {
+        if (! $success) {
             $this->redirectWithError(
                 'connexion',
                 'Identifiants invalides.',
@@ -52,41 +51,29 @@ final class AuthController extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | REGISTER
+    | Register
     |--------------------------------------------------------------------------
     */
 
     public function register(): never
     {
-        if (
-            env('APP_ENV') === 'production'
-        ) {
-            $this->notFound();
-        }
+        $this->guardRegistration();
 
         $this->title = 'Inscription';
 
-        $this->render(
-            'pages/auth/inscription',
-        );
+        $this->render('pages/auth/inscription');
     }
 
     public function store(): never
     {
-        if (
-            env('APP_ENV') === 'production'
-        ) {
-            $this->notFound();
-        }
+        $this->guardRegistration();
 
-        $success =
-            $this->authService->register(
-                (string) $this->request->input('username'),
-                (string) $this->request->input('password'),
-            );
+        $success = $this->authService->register(
+            (string) $this->request->input('username'),
+            (string) $this->request->input('password'),
+        );
 
-        if (! $success)
-        {
+        if (! $success) {
             $this->redirectWithError(
                 'inscription',
                 'Impossible de créer le compte.',
@@ -101,7 +88,7 @@ final class AuthController extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | LOGOUT
+    | Logout
     |--------------------------------------------------------------------------
     */
 
@@ -109,8 +96,19 @@ final class AuthController extends Controller
     {
         $this->authService->logout();
 
-        $this->redirect(
-            'connexion',
-        );
+        $this->redirect('connexion');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Helpers
+    |--------------------------------------------------------------------------
+    */
+
+    private function guardRegistration(): void
+    {
+        if (env('APP_ENV') === self::PRODUCTION_ENV) {
+            $this->notFound();
+        }
     }
 }
