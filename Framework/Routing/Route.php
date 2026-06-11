@@ -68,11 +68,13 @@ final class Route
         return $this->path;
     }
 
+    /**
+     * @return array{0: class-string, 1: string}|string|Closure
+     */
     public function getAction(): array|string|Closure
     {
         return $this->action;
     }
-
 
     /**
      * @return list<string>

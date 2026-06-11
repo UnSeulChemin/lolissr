@@ -321,6 +321,27 @@ final class Request
             ?? $default;
     }
 
+    public function has(
+        string $key,
+    ): bool
+    {
+        return $this->input(
+            $key,
+        ) !== null;
+    }
+
+    public function filled(
+        string $key,
+    ): bool
+    {
+        return trim(
+            (string) $this->input(
+                $key,
+                '',
+            ),
+        ) !== '';
+    }
+
     /**
      * @return array<string, mixed>
      */
