@@ -6,6 +6,8 @@ namespace Framework\Config;
 
 final class UploadConfig
 {
+    private static ?string $mangaThumbnailDirectory = null;
+
     public static function maxSize(): int
     {
         return max(
@@ -45,12 +47,14 @@ final class UploadConfig
 
     public static function mangaThumbnailDirectory(): string
     {
-        return rtrim(
-            base_path(
-                'public/images/mangas/thumbnail',
-            ),
-            '/\\',
-        ) . DIRECTORY_SEPARATOR;
+        return self::$mangaThumbnailDirectory
+            ??= rtrim(
+                base_path(
+                    'public/images/mangas/thumbnail',
+                ),
+                '/\\',
+            )
+            . DIRECTORY_SEPARATOR;
     }
 
     /**
@@ -60,26 +64,36 @@ final class UploadConfig
     private static function normalizedList(
         mixed $values,
     ): array {
-        if (!is_array($values)) {
+
+        if (! is_array($values))
+        {
             return [];
         }
 
-        $values = array_map(
-            static fn (mixed $value): string => strtolower(
-                trim((string) $value),
-            ),
-            $values,
-        );
+        $values =
+            array_map(
+                static fn (
+                    mixed $value,
+                ): string => strtolower(
+                    trim(
+                        (string) $value,
+                    ),
+                ),
+                $values,
+            );
 
-        $values = array_filter(
-            $values,
-            static fn (
-                string $value,
-            ): bool => $value !== '',
-        );
+        $values =
+            array_filter(
+                $values,
+                static fn (
+                    string $value,
+                ): bool => $value !== '',
+            );
 
         return array_values(
-            array_unique($values),
+            array_unique(
+                $values,
+            ),
         );
     }
 }

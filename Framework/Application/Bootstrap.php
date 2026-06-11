@@ -41,12 +41,9 @@ final class Bootstrap
             static fn (): Request => Request::capture(),
         );
 
-        $collection =
-            new RouteCollection();
-
         $router =
             new Router(
-                $collection,
+                new RouteCollection(),
             );
 
         $routes =
@@ -65,7 +62,18 @@ final class Bootstrap
             $router,
         );
 
-        $router->dispatch();
+        $kernel =
+            new AppKernel(
+                $router,
+            );
+
+        $kernel->boot();
+
+        try {
+            $kernel->handle();
+        } finally {
+            $kernel->terminate();
+        }
 
         exit;
     }
