@@ -9,37 +9,39 @@ final class MangaNoteNormalizer
     public static function normalize(
         mixed $value,
     ): ?int {
-        if ($value === null) {
-            return null;
-        }
-
-        if (is_int($value)) {
-            return self::normalizeInteger(
-                $value,
-            );
-        }
-
-        $value = trim(
-            (string) $value,
-        );
 
         if (
-            $value === ''
-            || !ctype_digit($value)
+            $value === null
+            || $value === ''
         ) {
             return null;
         }
 
-        return self::normalizeInteger(
-            (int) $value,
-        );
-    }
+        if (
+            is_string($value)
+        ) {
+            $value =
+                trim($value);
 
-    private static function normalizeInteger(
-        int $note,
-    ): ?int {
-        return ($note >= 1 && $note <= 5)
-            ? $note
+            if (! ctype_digit($value))
+            {
+                return null;
+            }
+
+            $value =
+                (int) $value;
+        }
+
+        if (! is_int($value))
+        {
+            return null;
+        }
+
+        return (
+            $value >= 1
+            && $value <= 5
+        )
+            ? $value
             : null;
     }
 }

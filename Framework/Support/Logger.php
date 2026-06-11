@@ -12,6 +12,10 @@ use Throwable;
 
 final class Logger
 {
+    private static ?string $directory = null;
+
+    private static ?string $file = null;
+
     private static function enabled(): bool
     {
         return (bool) config(
@@ -22,14 +26,16 @@ final class Logger
 
     private static function directory(): string
     {
-        return base_path(
-            'storage/logs',
-        );
+        return self::$directory
+            ??= base_path(
+                'storage/logs',
+            );
     }
 
     private static function file(): string
     {
-        return self::directory()
+        return self::$file
+            ??= self::directory()
             . DIRECTORY_SEPARATOR
             . 'app.log';
     }
@@ -39,15 +45,13 @@ final class Logger
         $directory =
             self::directory();
 
-        if (is_dir($directory)) {
-            return true;
-        }
-
-        return mkdir(
-            $directory,
-            0755,
-            true,
-        ) || is_dir($directory);
+        return is_dir($directory)
+            || mkdir(
+                $directory,
+                0755,
+                true,
+            )
+            || is_dir($directory);
     }
 
     /**
@@ -57,17 +61,18 @@ final class Logger
     {
         try {
 
-            if (!AppContainer::has()) {
+            if (! AppContainer::has())
+            {
                 return null;
             }
 
-            /** @var Request|null $request */
             $request =
-                app(Request::class);
+                app(
+                    Request::class,
+                );
 
-            if (
-                !$request instanceof Request
-            ) {
+            if (! $request instanceof Request)
+            {
                 return null;
             }
 
@@ -99,30 +104,44 @@ final class Logger
         array $context = [],
     ): void {
 
-        if (!self::enabled()) {
+        if (! self::enabled())
+        {
             return;
         }
 
         if (
             strtoupper($level) === 'DEBUG'
-            && !App::debug()
+            && ! App::debug()
         ) {
             return;
         }
 
-        if (!self::ensureDirectory()) {
+        $message =
+            trim($message);
+
+        if ($message === '')
+        {
+            return;
+        }
+
+        if (! self::ensureDirectory())
+        {
             return;
         }
 
         $payload = [
             'date' =>
-                date('Y-m-d H:i:s'),
+                date(
+                    'Y-m-d H:i:s',
+                ),
 
             'level' =>
-                strtoupper($level),
+                strtoupper(
+                    $level,
+                ),
 
             'message' =>
-                trim($message),
+                $message,
 
             'context' =>
                 $context,
@@ -147,14 +166,16 @@ final class Logger
             return;
         }
 
-        if ($content === false) {
+        if ($content === false)
+        {
             return;
         }
 
         file_put_contents(
             self::file(),
             $content . PHP_EOL,
-            FILE_APPEND | LOCK_EX,
+            FILE_APPEND
+            | LOCK_EX,
         );
     }
 
@@ -165,7 +186,6 @@ final class Logger
         string $message,
         array $context = [],
     ): void {
-
         self::write(
             'DEBUG',
             $message,
@@ -180,7 +200,6 @@ final class Logger
         string $message,
         array $context = [],
     ): void {
-
         self::write(
             'INFO',
             $message,
@@ -195,7 +214,6 @@ final class Logger
         string $message,
         array $context = [],
     ): void {
-
         self::write(
             'WARNING',
             $message,
@@ -210,7 +228,6 @@ final class Logger
         string $message,
         array $context = [],
     ): void {
-
         self::write(
             'ERROR',
             $message,

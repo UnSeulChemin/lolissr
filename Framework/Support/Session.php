@@ -8,24 +8,30 @@ use RuntimeException;
 
 final class Session
 {
+    private const FLASH_KEY = '_flash';
+
     private static bool $started = false;
 
-    private const FLASH_KEY = '_flash';
+    private static ?string $directory = null;
 
     private static function ensureStarted(): void
     {
+        if (self::$started)
+        {
+            return;
+        }
+
         if (
-            self::$started
-            || session_status() === PHP_SESSION_ACTIVE
+            session_status()
+            === PHP_SESSION_ACTIVE
         ) {
             self::$started = true;
 
             return;
         }
 
-        $directory = base_path(
-            'storage/sessions',
-        );
+        $directory =
+            self::directory();
 
         if (
             ! is_dir($directory)
@@ -52,15 +58,34 @@ final class Session
             ),
         );
 
-        $secure = self::isHttps();
+        $secure =
+            self::isHttps();
 
-        ini_set('session.use_strict_mode', '1');
-        ini_set('session.use_only_cookies', '1');
-        ini_set('session.use_trans_sid', '0');
-        ini_set('session.cookie_httponly', '1');
+        ini_set(
+            'session.use_strict_mode',
+            '1',
+        );
+
+        ini_set(
+            'session.use_only_cookies',
+            '1',
+        );
+
+        ini_set(
+            'session.use_trans_sid',
+            '0',
+        );
+
+        ini_set(
+            'session.cookie_httponly',
+            '1',
+        );
+
         ini_set(
             'session.cookie_secure',
-            $secure ? '1' : '0',
+            $secure
+                ? '1'
+                : '0',
         );
 
         session_set_cookie_params([
@@ -212,8 +237,8 @@ final class Session
 
         $_SESSION = [];
 
-        if (ini_get('session.use_cookies')) {
-
+        if (ini_get('session.use_cookies'))
+        {
             $params =
                 session_get_cookie_params();
 
@@ -234,11 +259,21 @@ final class Session
 
         session_destroy();
 
+        $_SESSION = [];
+
         self::$started = false;
     }
 
     public static function start(): void
     {
         self::ensureStarted();
+    }
+
+    private static function directory(): string
+    {
+        return self::$directory
+            ??= base_path(
+                'storage/sessions',
+            );
     }
 }

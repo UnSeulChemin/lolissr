@@ -6,28 +6,29 @@ namespace Framework\Support;
 
 final class Str
 {
-    /**
-     * Normalise une chaîne en slug.
-     */
     public static function slug(
         string $value,
     ): string {
-        $value = mb_strtolower(
-            trim($value),
-            'UTF-8',
-        );
 
-        $value = preg_replace(
-            '/[^\p{L}\p{N}\s-]/u',
-            '',
-            $value,
-        ) ?? '';
+        $value =
+            mb_strtolower(
+                trim($value),
+                'UTF-8',
+            );
 
-        $value = preg_replace(
-            '/[\s-]+/u',
-            '-',
-            $value,
-        ) ?? '';
+        $value =
+            preg_replace(
+                '/[^\p{L}\p{N}\s-]/u',
+                '',
+                $value,
+            ) ?? '';
+
+        $value =
+            preg_replace(
+                '/[\s-]+/u',
+                '-',
+                $value,
+            ) ?? '';
 
         return trim(
             $value,
@@ -35,43 +36,41 @@ final class Str
         );
     }
 
-    /**
-     * Trim une chaîne nullable.
-     * Retourne null si vide.
-     */
     public static function nullableTrim(
         ?string $value,
     ): ?string {
-        if ($value === null) {
+
+        if ($value === null)
+        {
             return null;
         }
 
-        $value = trim($value);
+        $value =
+            trim($value);
 
         return $value !== ''
             ? $value
             : null;
     }
 
-    /**
-     * Vérifie si une chaîne est vide.
-     */
     public static function isBlank(
         ?string $value,
     ): bool {
+
         return self::nullableTrim(
             $value,
         ) === null;
     }
 
-    /**
-     * Génère un nom de thumbnail.
-     */
     public static function thumbnailName(
         string $livre,
         int $numero,
     ): string {
-        $thumbnail = self::slug($livre);
+
+        $thumbnail =
+            self::slug(
+                $livre,
+            );
 
         if (
             $thumbnail === ''

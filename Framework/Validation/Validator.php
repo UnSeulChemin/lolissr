@@ -24,7 +24,7 @@ final class Validator
     private array $errors = [];
 
     /**
-     * @var list<string>
+     * @var array<string, true>
      */
     private array $nullable = [];
 
@@ -54,19 +54,21 @@ final class Validator
 
     private function isNullableAndEmpty(
         string $field,
-    ): bool {
+    ): bool
+    {
         if (
-            !in_array(
-                $field,
-                $this->nullable,
-                true,
+            ! isset(
+                $this->nullable[$field],
             )
         ) {
             return false;
         }
 
         $value = trim(
-            (string) ($this->data[$field] ?? ''),
+            (string) (
+                $this->data[$field]
+                ?? ''
+            ),
         );
 
         return $value === '';
@@ -82,39 +84,27 @@ final class Validator
     private function hasUploadedFile(
         string $field,
     ): bool {
-        if (!isset($this->files[$field])) {
-            return false;
-        }
-
-        $file = $this->files[$field];
-
-        if (!isset($file['tmp_name'])) {
-            return false;
-        }
-
-        return is_string($file['tmp_name'])
-            && $file['tmp_name'] !== '';
+        return isset(
+            $this->files[$field]['tmp_name'],
+        )
+        && is_string(
+            $this->files[$field]['tmp_name'],
+        )
+        && $this->files[$field]['tmp_name'] !== '';
     }
 
     private function shouldSkipFile(
         string $field,
     ): bool {
         return $this->hasError($field)
-            || !$this->hasUploadedFile($field);
+            || ! $this->hasUploadedFile($field);
     }
 
     public function nullable(
-        string $field,
-    ): self {
-        if (
-            !in_array(
-                $field,
-                $this->nullable,
-                true,
-            )
-        ) {
-            $this->nullable[] = $field;
-        }
+    string $field,
+    ): self
+    {
+        $this->nullable[$field] = true;
 
         return $this;
     }
@@ -162,18 +152,16 @@ final class Validator
     public function integer(
         string $field,
         ?string $message = null,
-    ): self {
-        if ($this->shouldSkip($field)) {
+    ): self
+    {
+        if ($this->shouldSkip($field))
+        {
             return $this;
         }
 
-        $value = $this->data[$field] ?? null;
-
         if (
-            filter_var(
-                $value,
-                FILTER_VALIDATE_INT,
-            ) === false
+            $this->integerValue($field)
+            === null
         ) {
             $this->errors[$field] =
                 $message
@@ -183,23 +171,41 @@ final class Validator
         return $this;
     }
 
+    private function integerValue(
+        string $field,
+    ): ?int
+    {
+        $value =
+            $this->data[$field]
+            ?? null;
+
+        return filter_var(
+            $value,
+            FILTER_VALIDATE_INT,
+        ) !== false
+            ? (int) $value
+            : null;
+    }
+
     public function min(
         string $field,
         int $min,
         ?string $message = null,
-    ): self {
-        if ($this->shouldSkip($field)) {
+    ): self
+    {
+        if ($this->shouldSkip($field))
+        {
             return $this;
         }
 
-        $value = $this->data[$field] ?? null;
+        $value =
+            $this->integerValue(
+                $field,
+            );
 
         if (
-            filter_var(
-                $value,
-                FILTER_VALIDATE_INT,
-            ) === false
-            || (int) $value < $min
+            $value === null
+            || $value < $min
         ) {
             $this->errors[$field] =
                 $message
@@ -213,19 +219,21 @@ final class Validator
         string $field,
         int $max,
         ?string $message = null,
-    ): self {
-        if ($this->shouldSkip($field)) {
+    ): self
+    {
+        if ($this->shouldSkip($field))
+        {
             return $this;
         }
 
-        $value = $this->data[$field] ?? null;
+        $value =
+            $this->integerValue(
+                $field,
+            );
 
         if (
-            filter_var(
-                $value,
-                FILTER_VALIDATE_INT,
-            ) === false
-            || (int) $value > $max
+            $value === null
+            || $value > $max
         ) {
             $this->errors[$field] =
                 $message
@@ -239,16 +247,23 @@ final class Validator
         string $field,
         int $max,
         ?string $message = null,
-    ): self {
-        if ($this->shouldSkip($field)) {
+    ): self
+    {
+        if ($this->shouldSkip($field))
+        {
             return $this;
         }
 
-        $value = trim(
-            (string) ($this->data[$field] ?? ''),
-        );
+        $value =
+            (string) (
+                $this->data[$field]
+                ?? ''
+            );
 
-        if (mb_strlen($value) > $max) {
+        if (
+            mb_strlen($value)
+            > $max
+        ) {
             $this->errors[$field] =
                 $message
                 ?? "Le champ {$field} ne doit pas dépasser {$max} caractères.";
@@ -294,7 +309,7 @@ final class Validator
             return $this;
         }
 
-        if (!$this->hasUploadedFile($field)) {
+        if (! $this->hasUploadedFile($field)) {
             $this->errors[$field] =
                 $message
                 ?? "Le fichier {$field} est obligatoire.";
@@ -311,7 +326,7 @@ final class Validator
             return $this;
         }
 
-        if (!$this->hasUploadedFile($field)) {
+        if (! $this->hasUploadedFile($field)) {
             return $this;
         }
 
@@ -338,15 +353,26 @@ final class Validator
             return $this;
         }
 
-        $name = $this->files[$field]['name'] ?? null;
+        $name =
+            $this->files[$field]['name']
+            ?? null;
 
-        if (!is_string($name) || $name === '') {
+        if (
+            ! is_string($name)
+            || $name === ''
+        ) {
             $this->errors[$field] =
                 $message
                 ?? "Extension invalide pour {$field}.";
 
             return $this;
         }
+
+        $allowedExtensions =
+            array_map(
+                'strtolower',
+                $allowedExtensions,
+            );
 
         $extension = strtolower(
             pathinfo(
@@ -360,7 +386,7 @@ final class Validator
         }
 
         if (
-            !in_array(
+            ! in_array(
                 $extension,
                 $allowedExtensions,
                 true,
@@ -386,12 +412,14 @@ final class Validator
             return $this;
         }
 
-        $tmpName = $this->files[$field]['tmp_name'] ?? null;
+        $tmpName =
+            $this->files[$field]['tmp_name']
+            ?? null;
 
         if (
-            !is_string($tmpName)
+            ! is_string($tmpName)
             || $tmpName === ''
-            || !is_file($tmpName)
+            || ! is_file($tmpName)
         ) {
             $this->errors[$field] =
                 $message
@@ -400,13 +428,20 @@ final class Validator
             return $this;
         }
 
-        $mimeType = $this->finfo->file(
-            $tmpName,
-        );
+        $allowedMimeTypes =
+            array_map(
+                'strtolower',
+                $allowedMimeTypes,
+            );
+
+        $mimeType =
+            $this->finfo->file(
+                $tmpName,
+            );
 
         if (
-            !is_string($mimeType)
-            || !in_array(
+            ! is_string($mimeType)
+            || ! in_array(
                 strtolower($mimeType),
                 $allowedMimeTypes,
                 true,
@@ -449,6 +484,31 @@ final class Validator
         }
 
         return $this;
+    }
+
+    public function passes(): bool
+    {
+        return ! $this->fails();
+    }
+
+    public function error(
+        string $field,
+    ): ?string
+    {
+        return $this->errors[$field]
+            ?? null;
+    }
+
+    public function firstError(): ?string
+    {
+        $first =
+            reset(
+                $this->errors,
+            );
+
+        return $first !== false
+            ? $first
+            : null;
     }
 
     /**
