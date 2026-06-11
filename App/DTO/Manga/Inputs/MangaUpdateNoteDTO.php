@@ -17,25 +17,11 @@ final readonly class MangaUpdateNoteDTO
     /**
      * @param array<string, mixed> $data
      */
-    public static function fromArray(
-        array $data,
-    ): self {
+    public static function fromArray(array $data): self
+    {
         return new self(
-            jacquette: MangaNoteNormalizer::normalize(
-                $data['jacquette'] ?? null,
-            ),
-            livreNote: MangaNoteNormalizer::normalize(
-                $data['livre_note'] ?? null,
-            ),
+            jacquette: MangaNoteNormalizer::normalize($data['jacquette'] ?? null),
+            livreNote: MangaNoteNormalizer::normalize($data['livre_note'] ?? null),
         );
-    }
-
-    /**
-     * @param array<string, mixed> $post
-     */
-    public static function fromPost(
-        array $post,
-    ): self {
-        return self::fromArray($post);
     }
 }

@@ -21,37 +21,14 @@ final readonly class MangaUpdateDTO
     /**
      * @param array<string, mixed> $data
      */
-    public static function fromArray(
-        array $data,
-    ): self {
+    public static function fromArray(array $data): self
+    {
         return new self(
-            editeur: Str::nullableTrim(
-                $data['editeur'] ?? null,
-            ),
-            statut: trim(
-                (string) (
-                    $data['statut']
-                    ?? 'en_cours'
-                ),
-            ),
-            jacquette: MangaNoteNormalizer::normalize(
-                $data['jacquette'] ?? null,
-            ),
-            livreNote: MangaNoteNormalizer::normalize(
-                $data['livre_note'] ?? null,
-            ),
-            commentaire: Str::nullableTrim(
-                $data['commentaire'] ?? null,
-            ),
+            editeur: Str::nullableTrim($data['editeur'] ?? null),
+            statut: trim((string) ($data['statut'] ?? 'en_cours')),
+            jacquette: MangaNoteNormalizer::normalize($data['jacquette'] ?? null),
+            livreNote: MangaNoteNormalizer::normalize($data['livre_note'] ?? null),
+            commentaire: Str::nullableTrim($data['commentaire'] ?? null),
         );
-    }
-
-    /**
-     * @param array<string, mixed> $post
-     */
-    public static function fromPost(
-        array $post,
-    ): self {
-        return self::fromArray($post);
     }
 }
