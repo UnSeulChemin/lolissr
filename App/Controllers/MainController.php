@@ -6,6 +6,7 @@ namespace App\Controllers;
 
 use App\DTO\Home\DashboardStats;
 use App\Services\Stats\StatsService;
+
 use Framework\Cache\Cache;
 use Framework\Http\Request;
 
@@ -29,11 +30,8 @@ final class MainController extends Controller
             callback: fn (): DashboardStats => $this->statsService->dashboard(),
         );
 
-        $this->render(
-            'pages/main/index',
-            [
-                'stats' => $stats,
-            ],
-        );
+        $this->render('pages/main/index', [
+            'stats' => $stats,
+        ]);
     }
 }

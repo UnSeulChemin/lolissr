@@ -6,6 +6,7 @@ namespace App\Controllers;
 
 use App\Services\Profile\ProfileStatsService;
 use App\Services\User\UserLevelService;
+
 use Framework\Http\Request;
 
 final class ProfileController extends Controller
@@ -23,62 +24,34 @@ final class ProfileController extends Controller
         $this->title = 'Profil';
 
         $user = user();
+        $stats = $this->profileStatsService->getStats();
 
-        $stats =
-            $this->profileStatsService
-                ->getStats();
+        $this->render('pages/profile/index', [
+            'user' => $user,
+            'level' => $user->level,
+            'currentXp' => $user->xp,
 
-        $this->render(
-            'pages/profile/index',
-            [
-                'user' =>
-                    $user,
+            'xpRequired' => $this->userLevelService->xpRequiredForLevel(
+                $user->level,
+            ),
 
-                'level' =>
-                    $user->level,
+            'progress' => $this->userLevelService->progress(
+                $user,
+            ),
 
-                'currentXp' =>
-                    $user->xp,
+            'readTomes' => $stats->readTomes,
+            'tomeXp' => $stats->tomeXp,
 
-                'xpRequired' =>
-                    $this->userLevelService
-                        ->xpRequiredForLevel(
-                            $user->level,
-                        ),
+            'completedSeries' => $stats->completedSeries,
+            'seriesXp' => $stats->seriesXp,
 
-                'progress' =>
-                    $this->userLevelService
-                        ->progress(
-                            $user,
-                        ),
+            'vocabularyLearned' => $stats->vocabularyLearned,
+            'vocabularyXp' => $stats->vocabularyXp,
 
-                'readTomes' =>
-                    $stats->readTomes,
+            'grammarLearned' => $stats->grammarLearned,
+            'grammarXp' => $stats->grammarXp,
 
-                'tomeXp' =>
-                    $stats->tomeXp,
-
-                'completedSeries' =>
-                    $stats->completedSeries,
-
-                'seriesXp' =>
-                    $stats->seriesXp,
-
-                'vocabularyLearned' =>
-                    $stats->vocabularyLearned,
-
-                'vocabularyXp' =>
-                    $stats->vocabularyXp,
-
-                'grammarLearned' =>
-                    $stats->grammarLearned,
-
-                'grammarXp' =>
-                    $stats->grammarXp,
-
-                'totalProfileXp' =>
-                    $stats->totalXp,
-            ],
-        );
+            'totalProfileXp' => $stats->totalXp,
+        ]);
     }
 }
