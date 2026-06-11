@@ -281,11 +281,12 @@ final class Router
                 );
             }
 
-            $action = explode(
-                '@',
-                $action,
-                2,
-            );
+            $action =
+                explode(
+                    '@',
+                    $action,
+                    2,
+                );
         }
 
         [

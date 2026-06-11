@@ -8,11 +8,12 @@ use App\Controllers\Chinois\ChinoisController;
 use App\Controllers\MainController;
 use App\Controllers\Manga\MangaAjaxController;
 use App\Controllers\Manga\MangaController;
+use App\Controllers\ProfileController;
+
 use Framework\Http\Middleware\AuthMiddleware;
 use Framework\Http\Middleware\CsrfMiddleware;
 use Framework\Http\Middleware\ExpectJsonMiddleware;
 use Framework\Http\Middleware\GuestMiddleware;
-use App\Controllers\ProfileController;
 use Framework\Routing\Router;
 
 return static function (Router $router): void {
@@ -39,7 +40,7 @@ return static function (Router $router): void {
     );
 
     if (
-        env('APP_ENV') !== 'production'
+        config('app.env') !== 'production'
     ) {
 
         $router->get(
@@ -72,7 +73,7 @@ return static function (Router $router): void {
             '/',
             [MainController::class, 'index'],
         );
-        
+
         $router->get(
             'profil',
             [ProfileController::class, 'index'],
@@ -155,6 +156,7 @@ return static function (Router $router): void {
                     ],
                 );
             });
+
             /*
             |--------------------------------------------------------------------------
             | AJAX HTML FRAGMENTS

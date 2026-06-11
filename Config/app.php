@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 return [
-
     'name' => env('APP_NAME', 'Site'),
 
     'base_uri' => env('APP_BASE_URI', '/lolissr'),

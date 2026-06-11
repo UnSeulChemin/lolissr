@@ -10,6 +10,10 @@ final class Route
 {
     public readonly string $pattern;
 
+    private const PARAM_PATTERNS = [
+        'int' => '([0-9]+)',
+    ];
+
     /**
      * @param list<string> $middlewares
      */
@@ -29,11 +33,7 @@ final class Route
             rtrim(
                 $this->path,
                 '/',
-            );
-
-        if ($path === '') {
-            $path = '/';
-        }
+            ) ?: '/';
 
         $pattern =
             preg_replace_callback(
@@ -42,13 +42,9 @@ final class Route
                     array $matches,
                 ): string {
 
-                    return match (
-                        $matches[2] ?? 'string'
-                    ) {
-                        'int' => '([0-9]+)',
-
-                        default => '([^/]+)',
-                    };
+                    return self::PARAM_PATTERNS[
+                        $matches[2] ?? ''
+                    ] ?? '([^/]+)';
                 },
                 $path,
             );

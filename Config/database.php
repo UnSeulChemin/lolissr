@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 return [
-
     'host' => env('DB_HOST', 'localhost'),
 
     'port' => env_int('DB_PORT', 3306),
@@ -15,5 +14,4 @@ return [
     'pass' => env('DB_PASS', ''),
 
     'charset' => env('DB_CHARSET', 'utf8mb4'),
-
 ];
