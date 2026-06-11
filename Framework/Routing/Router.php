@@ -48,6 +48,9 @@ final class Router
         return $clone;
     }
 
+    /**
+     * @param string|list<string> $middleware
+     */
     public function middleware(
         array|string $middleware,
     ): self {
@@ -94,6 +97,9 @@ final class Router
         );
     }
 
+    /**
+     * @param list<string> $middlewares
+     */
     private function addRoute(
         string $method,
         string $path,
@@ -266,21 +272,44 @@ final class Router
             return;
         }
 
-        [
-            $controllerClass,
-            $methodName,
-        ] = is_array($action)
-            ? $action
-            : explode(
+        if (! is_array($action))
+        {
+            if (! str_contains($action, '@'))
+            {
+                throw new RuntimeException(
+                    "Invalid route action: {$action}",
+                );
+            }
+
+            $action = explode(
                 '@',
                 $action,
                 2,
             );
+        }
+
+        [
+            $controllerClass,
+            $methodName,
+        ] = $action;
 
         $controller =
             $container->get(
                 $controllerClass,
             );
+
+        if (! method_exists(
+            $controller,
+            $methodName,
+        )) {
+            throw new RuntimeException(
+                sprintf(
+                    'Method %s::%s does not exist.',
+                    $controller::class,
+                    $methodName,
+                ),
+            );
+        }
 
         $arguments =
             $this->resolveArguments(
@@ -370,7 +399,14 @@ final class Router
                 continue;
             }
 
-            $arguments[] = null;
+            throw new RuntimeException(
+                sprintf(
+                    'Unable to resolve parameter "%s" in %s::%s()',
+                    $parameter->getName(),
+                    $controller::class,
+                    $method,
+                ),
+            );
         }
 
         return $arguments;

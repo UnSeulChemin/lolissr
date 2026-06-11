@@ -10,6 +10,9 @@ final class Route
 {
     public readonly string $pattern;
 
+    /**
+     * @param list<string> $middlewares
+     */
     public function __construct(
         private readonly string $method,
         private readonly string $path,
@@ -70,6 +73,10 @@ final class Route
         return $this->action;
     }
 
+
+    /**
+     * @return list<string>
+     */
     public function getMiddlewares(): array
     {
         return $this->middlewares;
