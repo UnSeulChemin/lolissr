@@ -246,17 +246,17 @@ tr:hover{
 
         <div class="card clickable" onclick="showSuccess()">
             <div class="card-title">Succès</div>
-            <div class="card-value">20</div>
+            <div class="card-value">1</div>
         </div>
 
         <div class="card clickable" onclick="showFailures()">
             <div class="card-title">Échecs</div>
-            <div class="card-value fail-count">0</div>
+            <div class="card-value fail-count">19</div>
         </div>
 
         <div class="card">
             <div class="card-title">Success Rate</div>
-            <div class="card-value violet">100%</div>
+            <div class="card-value violet">5%</div>
         </div>
 
     </div>
@@ -276,7 +276,2783 @@ tr:hover{
             </thead>
 
             <tbody>
-                <tr class="main-row" data-status="OK"><td><span class="badge-ok">OK</span></td><td>Route inconnue retourne 404</td><td>/route-inexistante</td><td>28.20 ms</td><td></td></tr><tr class="main-row" data-status="OK"><td><span class="badge-ok">OK</span></td><td>Série inexistante retourne 404</td><td>/manga/series/serie-qui-nexiste-pas</td><td>76.75 ms</td><td></td></tr><tr class="main-row" data-status="OK"><td><span class="badge-ok">OK</span></td><td>Manga inexistant retourne 404</td><td>/manga/series/serie-qui-nexiste-pas/999</td><td>78.49 ms</td><td></td></tr><tr class="main-row" data-status="OK"><td><span class="badge-ok">OK</span></td><td>Page série hors limite retourne 404</td><td>/manga/series/page/999999</td><td>94.81 ms</td><td></td></tr><tr class="main-row" data-status="OK"><td><span class="badge-ok">OK</span></td><td>Niveau HSK inexistant retourne 404</td><td>/chinois/grammaire/hsk999</td><td>112.21 ms</td><td></td></tr><tr class="main-row" data-status="OK"><td><span class="badge-ok">OK</span></td><td>Recherche AJAX retourne JSON</td><td>/manga/ajax/recherche/love</td><td>97.04 ms</td><td></td></tr><tr class="main-row" data-status="OK"><td><span class="badge-ok">OK</span></td><td>Pagination AJAX retourne fragment HTML</td><td>/manga/ajax/series/page/1</td><td>96.20 ms</td><td></td></tr><tr class="main-row" data-status="OK"><td><span class="badge-ok">OK</span></td><td>Slug manga non canonique redirigé en 301</td><td>/manga/series/I-WANT-TO-SEE-YOU-SHY/1</td><td>143.42 ms</td><td></td></tr><tr class="main-row" data-status="OK"><td><span class="badge-ok">OK</span></td><td>Accueil chinois accessible</td><td>/chinois</td><td>127.47 ms</td><td></td></tr><tr class="main-row" data-status="OK"><td><span class="badge-ok">OK</span></td><td>Page mandarin accessible</td><td>/chinois/mandarin</td><td>136.63 ms</td><td></td></tr><tr class="main-row" data-status="OK"><td><span class="badge-ok">OK</span></td><td>Page jinyu accessible</td><td>/chinois/jinyu</td><td>106.84 ms</td><td></td></tr><tr class="main-row" data-status="OK"><td><span class="badge-ok">OK</span></td><td>Page grammaire accessible</td><td>/chinois/grammaire</td><td>109.96 ms</td><td></td></tr><tr class="main-row" data-status="OK"><td><span class="badge-ok">OK</span></td><td>Page HSK 1 accessible</td><td>/chinois/grammaire/hsk1</td><td>155.62 ms</td><td></td></tr><tr class="main-row" data-status="OK"><td><span class="badge-ok">OK</span></td><td>Page flashcards accessible</td><td>/chinois/flashcards</td><td>116.05 ms</td><td></td></tr><tr class="main-row" data-status="OK"><td><span class="badge-ok">OK</span></td><td>Page manga accessible</td><td>/manga</td><td>79.34 ms</td><td></td></tr><tr class="main-row" data-status="OK"><td><span class="badge-ok">OK</span></td><td>Recherche manga accessible</td><td>/manga/recherche</td><td>98.77 ms</td><td></td></tr><tr class="main-row" data-status="OK"><td><span class="badge-ok">OK</span></td><td>Liste des séries accessible</td><td>/manga/series</td><td>97.51 ms</td><td></td></tr><tr class="main-row" data-status="OK"><td><span class="badge-ok">OK</span></td><td>Pagination séries page 1 accessible</td><td>/manga/series/page/1</td><td>95.20 ms</td><td></td></tr><tr class="main-row" data-status="OK"><td><span class="badge-ok">OK</span></td><td>Fiche manga existante accessible</td><td>/manga/series/i-want-to-see-you-shy/1</td><td>81.15 ms</td><td></td></tr><tr class="main-row" data-status="OK"><td><span class="badge-ok">OK</span></td><td>Accueil public accessible</td><td>/</td><td>75.97 ms</td><td></td></tr>
+                <tr class="main-row" data-status="OK"><td><span class="badge-ok">OK</span></td><td>Route inconnue retourne 404</td><td>/route-inexistante</td><td>102.94 ms</td><td></td></tr><tr class="main-row" data-status="FAIL"><td><span class="badge-fail">FAIL</span></td><td>Série inexistante retourne 404</td><td>/manga/series/serie-qui-nexiste-pas</td><td>157.89 ms</td><td></td></tr><tr class="debug-row" data-status="FAIL"><td colspan="5"><div class="debug-content"><h3>Debug</h3><p><strong>Expected :</strong> 404</p><p><strong>Actual :</strong> 302</p><p><strong>Reason :</strong> </p><h4>Headers</h4><pre>HTTP/1.1 302 Found
+Date: Thu, 11 Jun 2026 04:56:36 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=halc7o2hi0823k20aosi1na9uv; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Location: /lolissr/connexion
+Content-Length: 0
+Connection: close
+Content-Type: text/html; charset=UTF-8
+HTTP/1.1 200 OK
+Date: Thu, 11 Jun 2026 04:56:36 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=7joumtdnj5jhata3o3kejg7vh9; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4180
+Connection: close
+Content-Type: text/html; charset=UTF-8</pre><h4>Response</h4><pre>
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;fr&quot;&gt;
+
+&lt;head&gt;
+
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+
+    &lt;meta
+        name=&quot;viewport&quot;
+        content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+
+    &lt;meta
+        http-equiv=&quot;x-dns-prefetch-control&quot;
+        content=&quot;off&quot;&gt;
+
+    &lt;meta
+        name=&quot;referrer&quot;
+        content=&quot;no-referrer&quot;&gt;
+
+    &lt;meta name=&quot;csrf-token&quot; content=&quot;c9ad1286d8a4da8e1f4528eaf17dc4fe20efa9afd4d970e159cacc3e89d688ce&quot;&gt;
+    &lt;title&gt;
+        Connexion    &lt;/title&gt;
+
+    &lt;link
+        rel=&quot;shortcut icon&quot;
+        href=&quot;/lolissr/images/favicon/favicon.png&quot;&gt;
+
+    &lt;link
+        rel=&quot;stylesheet&quot;
+        href=&quot;/lolissr/css/app.css&quot;&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+    
+&lt;header&gt;
+
+    &lt;nav&gt;
+
+        
+            &lt;ul&gt;
+
+                &lt;li&gt;
+
+                    &lt;a
+                        class=&quot;nav-link-icon&quot;
+                        data-prefetch
+                        href=&quot;/lolissr/connexion&quot;
+                        title=&quot;Connexion&quot;
+                    &gt;
+                        🔐
+                    &lt;/a&gt;
+
+                &lt;/li&gt;
+
+            &lt;/ul&gt;
+
+        
+    &lt;/nav&gt;
+
+&lt;/header&gt;
+    &lt;main class=&quot;app-content&quot;&gt;
+        
+&lt;section class=&quot;layout-container dashboard-page&quot;&gt;
+
+    &lt;section class=&quot;form-page&quot;&gt;
+
+        &lt;section class=&quot;form-card transition-form&quot;&gt;
+
+                &lt;form
+                    class=&quot;form-layout&quot;
+                    action=&quot;/lolissr/connexion&quot;
+                    method=&quot;post&quot;
+                &gt;
+
+                &lt;input type=&quot;hidden&quot; name=&quot;csrf_token&quot; value=&quot;c9ad1286d8a4da8e1f4528eaf17dc4fe20efa9afd4d970e159cacc3e89d688ce&quot;&gt;
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;username&quot;
+                    &gt;
+
+                        Nom d&#039;utilisateur
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;text&quot;
+                        name=&quot;username&quot;
+                        id=&quot;username&quot;
+                        value=&quot;&quot;
+                        autofocus
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;password&quot;
+                    &gt;
+
+                        Mot de passe
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;password&quot;
+                        name=&quot;password&quot;
+                        id=&quot;password&quot;
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-actions&quot;&gt;
+
+                    &lt;button
+                        type=&quot;submit&quot;
+                        class=&quot;form-submit&quot;
+                    &gt;
+
+                        Connexion</pre></div></td></tr><tr class="main-row" data-status="FAIL"><td><span class="badge-fail">FAIL</span></td><td>Manga inexistant retourne 404</td><td>/manga/series/serie-qui-nexiste-pas/999</td><td>143.45 ms</td><td></td></tr><tr class="debug-row" data-status="FAIL"><td colspan="5"><div class="debug-content"><h3>Debug</h3><p><strong>Expected :</strong> 404</p><p><strong>Actual :</strong> 302</p><p><strong>Reason :</strong> </p><h4>Headers</h4><pre>HTTP/1.1 302 Found
+Date: Thu, 11 Jun 2026 04:56:36 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=bnec9tf6mfoeobbfg4ql7pkh3r; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Location: /lolissr/connexion
+Content-Length: 0
+Connection: close
+Content-Type: text/html; charset=UTF-8
+HTTP/1.1 200 OK
+Date: Thu, 11 Jun 2026 04:56:36 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=096fopm0s9sismiotk125c3f6n; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4180
+Connection: close
+Content-Type: text/html; charset=UTF-8</pre><h4>Response</h4><pre>
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;fr&quot;&gt;
+
+&lt;head&gt;
+
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+
+    &lt;meta
+        name=&quot;viewport&quot;
+        content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+
+    &lt;meta
+        http-equiv=&quot;x-dns-prefetch-control&quot;
+        content=&quot;off&quot;&gt;
+
+    &lt;meta
+        name=&quot;referrer&quot;
+        content=&quot;no-referrer&quot;&gt;
+
+    &lt;meta name=&quot;csrf-token&quot; content=&quot;5ddd15b0ca351c465f8b94246cd186c5fb18c6d74540c5b3279011d881664191&quot;&gt;
+    &lt;title&gt;
+        Connexion    &lt;/title&gt;
+
+    &lt;link
+        rel=&quot;shortcut icon&quot;
+        href=&quot;/lolissr/images/favicon/favicon.png&quot;&gt;
+
+    &lt;link
+        rel=&quot;stylesheet&quot;
+        href=&quot;/lolissr/css/app.css&quot;&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+    
+&lt;header&gt;
+
+    &lt;nav&gt;
+
+        
+            &lt;ul&gt;
+
+                &lt;li&gt;
+
+                    &lt;a
+                        class=&quot;nav-link-icon&quot;
+                        data-prefetch
+                        href=&quot;/lolissr/connexion&quot;
+                        title=&quot;Connexion&quot;
+                    &gt;
+                        🔐
+                    &lt;/a&gt;
+
+                &lt;/li&gt;
+
+            &lt;/ul&gt;
+
+        
+    &lt;/nav&gt;
+
+&lt;/header&gt;
+    &lt;main class=&quot;app-content&quot;&gt;
+        
+&lt;section class=&quot;layout-container dashboard-page&quot;&gt;
+
+    &lt;section class=&quot;form-page&quot;&gt;
+
+        &lt;section class=&quot;form-card transition-form&quot;&gt;
+
+                &lt;form
+                    class=&quot;form-layout&quot;
+                    action=&quot;/lolissr/connexion&quot;
+                    method=&quot;post&quot;
+                &gt;
+
+                &lt;input type=&quot;hidden&quot; name=&quot;csrf_token&quot; value=&quot;5ddd15b0ca351c465f8b94246cd186c5fb18c6d74540c5b3279011d881664191&quot;&gt;
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;username&quot;
+                    &gt;
+
+                        Nom d&#039;utilisateur
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;text&quot;
+                        name=&quot;username&quot;
+                        id=&quot;username&quot;
+                        value=&quot;&quot;
+                        autofocus
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;password&quot;
+                    &gt;
+
+                        Mot de passe
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;password&quot;
+                        name=&quot;password&quot;
+                        id=&quot;password&quot;
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-actions&quot;&gt;
+
+                    &lt;button
+                        type=&quot;submit&quot;
+                        class=&quot;form-submit&quot;
+                    &gt;
+
+                        Connexion</pre></div></td></tr><tr class="main-row" data-status="FAIL"><td><span class="badge-fail">FAIL</span></td><td>Page série hors limite retourne 404</td><td>/manga/series/page/999999</td><td>162.01 ms</td><td></td></tr><tr class="debug-row" data-status="FAIL"><td colspan="5"><div class="debug-content"><h3>Debug</h3><p><strong>Expected :</strong> 404</p><p><strong>Actual :</strong> 302</p><p><strong>Reason :</strong> </p><h4>Headers</h4><pre>HTTP/1.1 302 Found
+Date: Thu, 11 Jun 2026 04:56:36 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=vsl9gi3kni7v4oc9gonmue57of; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Location: /lolissr/connexion
+Content-Length: 0
+Connection: close
+Content-Type: text/html; charset=UTF-8
+HTTP/1.1 200 OK
+Date: Thu, 11 Jun 2026 04:56:36 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=h311v80hokrnsj44uimj8jbh36; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4180
+Connection: close
+Content-Type: text/html; charset=UTF-8</pre><h4>Response</h4><pre>
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;fr&quot;&gt;
+
+&lt;head&gt;
+
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+
+    &lt;meta
+        name=&quot;viewport&quot;
+        content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+
+    &lt;meta
+        http-equiv=&quot;x-dns-prefetch-control&quot;
+        content=&quot;off&quot;&gt;
+
+    &lt;meta
+        name=&quot;referrer&quot;
+        content=&quot;no-referrer&quot;&gt;
+
+    &lt;meta name=&quot;csrf-token&quot; content=&quot;7c414f4f1321ace9c6ca3623e3d4a3525b0ea113e113f4ac20db201c6682d6dd&quot;&gt;
+    &lt;title&gt;
+        Connexion    &lt;/title&gt;
+
+    &lt;link
+        rel=&quot;shortcut icon&quot;
+        href=&quot;/lolissr/images/favicon/favicon.png&quot;&gt;
+
+    &lt;link
+        rel=&quot;stylesheet&quot;
+        href=&quot;/lolissr/css/app.css&quot;&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+    
+&lt;header&gt;
+
+    &lt;nav&gt;
+
+        
+            &lt;ul&gt;
+
+                &lt;li&gt;
+
+                    &lt;a
+                        class=&quot;nav-link-icon&quot;
+                        data-prefetch
+                        href=&quot;/lolissr/connexion&quot;
+                        title=&quot;Connexion&quot;
+                    &gt;
+                        🔐
+                    &lt;/a&gt;
+
+                &lt;/li&gt;
+
+            &lt;/ul&gt;
+
+        
+    &lt;/nav&gt;
+
+&lt;/header&gt;
+    &lt;main class=&quot;app-content&quot;&gt;
+        
+&lt;section class=&quot;layout-container dashboard-page&quot;&gt;
+
+    &lt;section class=&quot;form-page&quot;&gt;
+
+        &lt;section class=&quot;form-card transition-form&quot;&gt;
+
+                &lt;form
+                    class=&quot;form-layout&quot;
+                    action=&quot;/lolissr/connexion&quot;
+                    method=&quot;post&quot;
+                &gt;
+
+                &lt;input type=&quot;hidden&quot; name=&quot;csrf_token&quot; value=&quot;7c414f4f1321ace9c6ca3623e3d4a3525b0ea113e113f4ac20db201c6682d6dd&quot;&gt;
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;username&quot;
+                    &gt;
+
+                        Nom d&#039;utilisateur
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;text&quot;
+                        name=&quot;username&quot;
+                        id=&quot;username&quot;
+                        value=&quot;&quot;
+                        autofocus
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;password&quot;
+                    &gt;
+
+                        Mot de passe
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;password&quot;
+                        name=&quot;password&quot;
+                        id=&quot;password&quot;
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-actions&quot;&gt;
+
+                    &lt;button
+                        type=&quot;submit&quot;
+                        class=&quot;form-submit&quot;
+                    &gt;
+
+                        Connexion</pre></div></td></tr><tr class="main-row" data-status="FAIL"><td><span class="badge-fail">FAIL</span></td><td>Niveau HSK inexistant retourne 404</td><td>/chinois/grammaire/hsk999</td><td>145.20 ms</td><td></td></tr><tr class="debug-row" data-status="FAIL"><td colspan="5"><div class="debug-content"><h3>Debug</h3><p><strong>Expected :</strong> 404</p><p><strong>Actual :</strong> 302</p><p><strong>Reason :</strong> </p><h4>Headers</h4><pre>HTTP/1.1 302 Found
+Date: Thu, 11 Jun 2026 04:56:36 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=mhbus9pe215lmd5kbbk3miimp0; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Location: /lolissr/connexion
+Content-Length: 0
+Connection: close
+Content-Type: text/html; charset=UTF-8
+HTTP/1.1 200 OK
+Date: Thu, 11 Jun 2026 04:56:36 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=8e729sdpsu2icp09fflmvq3uv0; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4180
+Connection: close
+Content-Type: text/html; charset=UTF-8</pre><h4>Response</h4><pre>
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;fr&quot;&gt;
+
+&lt;head&gt;
+
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+
+    &lt;meta
+        name=&quot;viewport&quot;
+        content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+
+    &lt;meta
+        http-equiv=&quot;x-dns-prefetch-control&quot;
+        content=&quot;off&quot;&gt;
+
+    &lt;meta
+        name=&quot;referrer&quot;
+        content=&quot;no-referrer&quot;&gt;
+
+    &lt;meta name=&quot;csrf-token&quot; content=&quot;963a876568dd89d824fd5352e958992564b412dfd802af466ec3cce51221532a&quot;&gt;
+    &lt;title&gt;
+        Connexion    &lt;/title&gt;
+
+    &lt;link
+        rel=&quot;shortcut icon&quot;
+        href=&quot;/lolissr/images/favicon/favicon.png&quot;&gt;
+
+    &lt;link
+        rel=&quot;stylesheet&quot;
+        href=&quot;/lolissr/css/app.css&quot;&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+    
+&lt;header&gt;
+
+    &lt;nav&gt;
+
+        
+            &lt;ul&gt;
+
+                &lt;li&gt;
+
+                    &lt;a
+                        class=&quot;nav-link-icon&quot;
+                        data-prefetch
+                        href=&quot;/lolissr/connexion&quot;
+                        title=&quot;Connexion&quot;
+                    &gt;
+                        🔐
+                    &lt;/a&gt;
+
+                &lt;/li&gt;
+
+            &lt;/ul&gt;
+
+        
+    &lt;/nav&gt;
+
+&lt;/header&gt;
+    &lt;main class=&quot;app-content&quot;&gt;
+        
+&lt;section class=&quot;layout-container dashboard-page&quot;&gt;
+
+    &lt;section class=&quot;form-page&quot;&gt;
+
+        &lt;section class=&quot;form-card transition-form&quot;&gt;
+
+                &lt;form
+                    class=&quot;form-layout&quot;
+                    action=&quot;/lolissr/connexion&quot;
+                    method=&quot;post&quot;
+                &gt;
+
+                &lt;input type=&quot;hidden&quot; name=&quot;csrf_token&quot; value=&quot;963a876568dd89d824fd5352e958992564b412dfd802af466ec3cce51221532a&quot;&gt;
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;username&quot;
+                    &gt;
+
+                        Nom d&#039;utilisateur
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;text&quot;
+                        name=&quot;username&quot;
+                        id=&quot;username&quot;
+                        value=&quot;&quot;
+                        autofocus
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;password&quot;
+                    &gt;
+
+                        Mot de passe
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;password&quot;
+                        name=&quot;password&quot;
+                        id=&quot;password&quot;
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-actions&quot;&gt;
+
+                    &lt;button
+                        type=&quot;submit&quot;
+                        class=&quot;form-submit&quot;
+                    &gt;
+
+                        Connexion</pre></div></td></tr><tr class="main-row" data-status="FAIL"><td><span class="badge-fail">FAIL</span></td><td>Recherche AJAX retourne JSON</td><td>/manga/ajax/recherche/love</td><td>144.05 ms</td><td></td></tr><tr class="debug-row" data-status="FAIL"><td colspan="5"><div class="debug-content"><h3>Debug</h3><p><strong>Expected :</strong> 200</p><p><strong>Actual :</strong> 302</p><p><strong>Reason :</strong> </p><h4>Headers</h4><pre>HTTP/1.1 302 Found
+Date: Thu, 11 Jun 2026 04:56:37 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=vr4hfud5uokpqv2r8ebp06ike7; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Location: /lolissr/connexion
+Content-Length: 0
+Connection: close
+Content-Type: text/html; charset=UTF-8
+HTTP/1.1 200 OK
+Date: Thu, 11 Jun 2026 04:56:37 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=44l7nhku7r7bi013afk5vdi4ea; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4782
+Connection: close
+Content-Type: application/json; charset=UTF-8</pre><h4>Response</h4><pre>{&quot;success&quot;:true,&quot;type&quot;:&quot;page&quot;,&quot;page&quot;:{&quot;html&quot;:&quot;\r\n&lt;!DOCTYPE html&gt;\r\n&lt;html lang=\&quot;fr\&quot;&gt;\r\n\r\n&lt;head&gt;\r\n\r\n    &lt;meta charset=\&quot;UTF-8\&quot;&gt;\r\n\r\n    &lt;meta\r\n        name=\&quot;viewport\&quot;\r\n        content=\&quot;width=device-width, initial-scale=1.0\&quot;&gt;\r\n\r\n    &lt;meta\r\n        http-equiv=\&quot;x-dns-prefetch-control\&quot;\r\n        content=\&quot;off\&quot;&gt;\r\n\r\n    &lt;meta\r\n        name=\&quot;referrer\&quot;\r\n        content=\&quot;no-referrer\&quot;&gt;\r\n\r\n    &lt;meta name=\&quot;csrf-token\&quot; content=\&quot;f004f2cc6ca007be24eca689af0f46e9686b1312b31760c6c54f110f0f25ca0f\&quot;&gt;\r\n    &lt;title&gt;\r\n        Connexion    &lt;/title&gt;\r\n\r\n    &lt;link\r\n        rel=\&quot;shortcut icon\&quot;\r\n        href=\&quot;/lolissr/images/favicon/favicon.png\&quot;&gt;\r\n\r\n    &lt;link\r\n        rel=\&quot;stylesheet\&quot;\r\n        href=\&quot;/lolissr/css/app.css\&quot;&gt;\r\n\r\n&lt;/head&gt;\r\n\r\n&lt;body&gt;\r\n\r\n    \r\n&lt;header&gt;\r\n\r\n    &lt;nav&gt;\r\n\r\n        \r\n            &lt;ul&gt;\r\n\r\n                &lt;li&gt;\r\n\r\n                    &lt;a\r\n                        class=\&quot;nav-link-icon\&quot;\r\n                        data-prefetch\r\n                        href=\&quot;/lolissr/connexion\&quot;\r\n                        title=\&quot;Connexion\&quot;\r\n                    &gt;\r\n                        🔐\r\n                    &lt;/a&gt;\r\n\r\n                &lt;/li&gt;\r\n\r\n            &lt;/ul&gt;\r\n\r\n        \r\n    &lt;/nav&gt;\r\n\r\n&lt;/header&gt;\r\n    &lt;main class=\&quot;app-content\&quot;&gt;\r\n        \r\n&lt;section class=\&quot;layout-container dashboard-page\&quot;&gt;\r\n\r\n    &lt;section class=\&quot;form-page\&quot;&gt;\r\n\r\n        &lt;section class=\&quot;form-card transition-form\&quot;&gt;\r\n\r\n                &lt;form\r\n                    class=\&quot;form-layout\&quot;\r\n                    action=\&quot;/lolissr/connexion\&quot;\r\n                    method=\&quot;post\&quot;\r\n                &gt;\r\n\r\n                &lt;input type=\&quot;hidden\&quot; name=\&quot;csrf_token\&quot; value=\&quot;f004f2cc6ca007be24eca689af0f46e9686b1312b31760c6c54f110f0f25ca0f\&quot;&gt;\r\n                &lt;div class=\&quot;form-group\&quot;&gt;\r\n\r\n                    &lt;label\r\n                        class=\&quot;form-label\&quot;\r\n                        for=\&quot;username\&quot;\r\n                    &gt;\r\n\r\n                        Nom d&#039;utilisateur\r\n\r\n                    &lt;/label&gt;\r\n\r\n                    &lt;input\r\n                        class=\&quot;form-input\&quot;\r\n                        type=\&quot;text\&quot;\r\n                        name=\&quot;username\&quot;\r\n                        id=\&quot;username\&quot;\r\n                        value=\&quot;\&quot;\r\n                        autofocus\r\n                        required\r\n                    &gt;\r\n\r\n                    \r\n                &lt;/div&gt;\r\n\r\n                &lt;div class=\&quot;form-group\&quot;&gt;\r\n\r\n                    &lt;label\r\n                        class=\&quot;form-label\&quot;\r\n                        for=\&quot;password\&quot;\r\n                    &gt;\r\n\r\n                        Mot de passe\r\n\r\n                    &lt;/label&gt;\r\n\r\n                    &lt;input\r\n                        class=\&quot;form-input\&quot;\r\n                        type=\&quot;password\&quot;\r\n                        name=\&quot;password\&quot;\r\n  </pre></div></td></tr><tr class="main-row" data-status="FAIL"><td><span class="badge-fail">FAIL</span></td><td>Pagination AJAX retourne fragment HTML</td><td>/manga/ajax/series/page/1</td><td>159.63 ms</td><td></td></tr><tr class="debug-row" data-status="FAIL"><td colspan="5"><div class="debug-content"><h3>Debug</h3><p><strong>Expected :</strong> 200</p><p><strong>Actual :</strong> 302</p><p><strong>Reason :</strong> </p><h4>Headers</h4><pre>HTTP/1.1 302 Found
+Date: Thu, 11 Jun 2026 04:56:37 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=8ces4ose98phu9hieh27gkvjhc; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Location: /lolissr/connexion
+Content-Length: 0
+Connection: close
+Content-Type: text/html; charset=UTF-8
+HTTP/1.1 200 OK
+Date: Thu, 11 Jun 2026 04:56:37 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=8gqtgjunv9b56cmcavvju84rq5; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4180
+Connection: close
+Content-Type: text/html; charset=UTF-8</pre><h4>Response</h4><pre>
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;fr&quot;&gt;
+
+&lt;head&gt;
+
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+
+    &lt;meta
+        name=&quot;viewport&quot;
+        content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+
+    &lt;meta
+        http-equiv=&quot;x-dns-prefetch-control&quot;
+        content=&quot;off&quot;&gt;
+
+    &lt;meta
+        name=&quot;referrer&quot;
+        content=&quot;no-referrer&quot;&gt;
+
+    &lt;meta name=&quot;csrf-token&quot; content=&quot;c94410718199f696eb8834a6103c2015aaf7af3062fb813d690a430bdd7a3def&quot;&gt;
+    &lt;title&gt;
+        Connexion    &lt;/title&gt;
+
+    &lt;link
+        rel=&quot;shortcut icon&quot;
+        href=&quot;/lolissr/images/favicon/favicon.png&quot;&gt;
+
+    &lt;link
+        rel=&quot;stylesheet&quot;
+        href=&quot;/lolissr/css/app.css&quot;&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+    
+&lt;header&gt;
+
+    &lt;nav&gt;
+
+        
+            &lt;ul&gt;
+
+                &lt;li&gt;
+
+                    &lt;a
+                        class=&quot;nav-link-icon&quot;
+                        data-prefetch
+                        href=&quot;/lolissr/connexion&quot;
+                        title=&quot;Connexion&quot;
+                    &gt;
+                        🔐
+                    &lt;/a&gt;
+
+                &lt;/li&gt;
+
+            &lt;/ul&gt;
+
+        
+    &lt;/nav&gt;
+
+&lt;/header&gt;
+    &lt;main class=&quot;app-content&quot;&gt;
+        
+&lt;section class=&quot;layout-container dashboard-page&quot;&gt;
+
+    &lt;section class=&quot;form-page&quot;&gt;
+
+        &lt;section class=&quot;form-card transition-form&quot;&gt;
+
+                &lt;form
+                    class=&quot;form-layout&quot;
+                    action=&quot;/lolissr/connexion&quot;
+                    method=&quot;post&quot;
+                &gt;
+
+                &lt;input type=&quot;hidden&quot; name=&quot;csrf_token&quot; value=&quot;c94410718199f696eb8834a6103c2015aaf7af3062fb813d690a430bdd7a3def&quot;&gt;
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;username&quot;
+                    &gt;
+
+                        Nom d&#039;utilisateur
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;text&quot;
+                        name=&quot;username&quot;
+                        id=&quot;username&quot;
+                        value=&quot;&quot;
+                        autofocus
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;password&quot;
+                    &gt;
+
+                        Mot de passe
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;password&quot;
+                        name=&quot;password&quot;
+                        id=&quot;password&quot;
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-actions&quot;&gt;
+
+                    &lt;button
+                        type=&quot;submit&quot;
+                        class=&quot;form-submit&quot;
+                    &gt;
+
+                        Connexion</pre></div></td></tr><tr class="main-row" data-status="FAIL"><td><span class="badge-fail">FAIL</span></td><td>Slug manga non canonique redirigé en 301</td><td>/manga/series/I-WANT-TO-SEE-YOU-SHY/1</td><td>126.54 ms</td><td></td></tr><tr class="debug-row" data-status="FAIL"><td colspan="5"><div class="debug-content"><h3>Debug</h3><p><strong>Expected :</strong> 301</p><p><strong>Actual :</strong> 302</p><p><strong>Reason :</strong> </p><h4>Headers</h4><pre>HTTP/1.1 302 Found
+Date: Thu, 11 Jun 2026 04:56:37 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=c1dhge4t77idqqs7blt72kb7us; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Location: /lolissr/connexion
+Content-Length: 0
+Connection: close
+Content-Type: text/html; charset=UTF-8
+HTTP/1.1 200 OK
+Date: Thu, 11 Jun 2026 04:56:37 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=r5ja4drmkps7um2p60evnn6qv1; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4180
+Connection: close
+Content-Type: text/html; charset=UTF-8</pre><h4>Response</h4><pre>
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;fr&quot;&gt;
+
+&lt;head&gt;
+
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+
+    &lt;meta
+        name=&quot;viewport&quot;
+        content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+
+    &lt;meta
+        http-equiv=&quot;x-dns-prefetch-control&quot;
+        content=&quot;off&quot;&gt;
+
+    &lt;meta
+        name=&quot;referrer&quot;
+        content=&quot;no-referrer&quot;&gt;
+
+    &lt;meta name=&quot;csrf-token&quot; content=&quot;a8098ac5617ff2eb22697de66aec838564ed9a89368a59efea3e4da1f9440c8b&quot;&gt;
+    &lt;title&gt;
+        Connexion    &lt;/title&gt;
+
+    &lt;link
+        rel=&quot;shortcut icon&quot;
+        href=&quot;/lolissr/images/favicon/favicon.png&quot;&gt;
+
+    &lt;link
+        rel=&quot;stylesheet&quot;
+        href=&quot;/lolissr/css/app.css&quot;&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+    
+&lt;header&gt;
+
+    &lt;nav&gt;
+
+        
+            &lt;ul&gt;
+
+                &lt;li&gt;
+
+                    &lt;a
+                        class=&quot;nav-link-icon&quot;
+                        data-prefetch
+                        href=&quot;/lolissr/connexion&quot;
+                        title=&quot;Connexion&quot;
+                    &gt;
+                        🔐
+                    &lt;/a&gt;
+
+                &lt;/li&gt;
+
+            &lt;/ul&gt;
+
+        
+    &lt;/nav&gt;
+
+&lt;/header&gt;
+    &lt;main class=&quot;app-content&quot;&gt;
+        
+&lt;section class=&quot;layout-container dashboard-page&quot;&gt;
+
+    &lt;section class=&quot;form-page&quot;&gt;
+
+        &lt;section class=&quot;form-card transition-form&quot;&gt;
+
+                &lt;form
+                    class=&quot;form-layout&quot;
+                    action=&quot;/lolissr/connexion&quot;
+                    method=&quot;post&quot;
+                &gt;
+
+                &lt;input type=&quot;hidden&quot; name=&quot;csrf_token&quot; value=&quot;a8098ac5617ff2eb22697de66aec838564ed9a89368a59efea3e4da1f9440c8b&quot;&gt;
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;username&quot;
+                    &gt;
+
+                        Nom d&#039;utilisateur
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;text&quot;
+                        name=&quot;username&quot;
+                        id=&quot;username&quot;
+                        value=&quot;&quot;
+                        autofocus
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;password&quot;
+                    &gt;
+
+                        Mot de passe
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;password&quot;
+                        name=&quot;password&quot;
+                        id=&quot;password&quot;
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-actions&quot;&gt;
+
+                    &lt;button
+                        type=&quot;submit&quot;
+                        class=&quot;form-submit&quot;
+                    &gt;
+
+                        Connexion</pre></div></td></tr><tr class="main-row" data-status="FAIL"><td><span class="badge-fail">FAIL</span></td><td>Accueil chinois accessible</td><td>/chinois</td><td>144.84 ms</td><td></td></tr><tr class="debug-row" data-status="FAIL"><td colspan="5"><div class="debug-content"><h3>Debug</h3><p><strong>Expected :</strong> 200</p><p><strong>Actual :</strong> 302</p><p><strong>Reason :</strong> </p><h4>Headers</h4><pre>HTTP/1.1 302 Found
+Date: Thu, 11 Jun 2026 04:56:37 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=r1vlh4l23b99hlhqk5ikq1buao; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Location: /lolissr/connexion
+Content-Length: 0
+Connection: close
+Content-Type: text/html; charset=UTF-8
+HTTP/1.1 200 OK
+Date: Thu, 11 Jun 2026 04:56:37 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=2ls7vtv57hcipt0sbo5vurp7dh; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4180
+Connection: close
+Content-Type: text/html; charset=UTF-8</pre><h4>Response</h4><pre>
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;fr&quot;&gt;
+
+&lt;head&gt;
+
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+
+    &lt;meta
+        name=&quot;viewport&quot;
+        content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+
+    &lt;meta
+        http-equiv=&quot;x-dns-prefetch-control&quot;
+        content=&quot;off&quot;&gt;
+
+    &lt;meta
+        name=&quot;referrer&quot;
+        content=&quot;no-referrer&quot;&gt;
+
+    &lt;meta name=&quot;csrf-token&quot; content=&quot;33a97b50111727aa8c26c18272ee7879ebd7e8387026b5e146d2fff01ad5efee&quot;&gt;
+    &lt;title&gt;
+        Connexion    &lt;/title&gt;
+
+    &lt;link
+        rel=&quot;shortcut icon&quot;
+        href=&quot;/lolissr/images/favicon/favicon.png&quot;&gt;
+
+    &lt;link
+        rel=&quot;stylesheet&quot;
+        href=&quot;/lolissr/css/app.css&quot;&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+    
+&lt;header&gt;
+
+    &lt;nav&gt;
+
+        
+            &lt;ul&gt;
+
+                &lt;li&gt;
+
+                    &lt;a
+                        class=&quot;nav-link-icon&quot;
+                        data-prefetch
+                        href=&quot;/lolissr/connexion&quot;
+                        title=&quot;Connexion&quot;
+                    &gt;
+                        🔐
+                    &lt;/a&gt;
+
+                &lt;/li&gt;
+
+            &lt;/ul&gt;
+
+        
+    &lt;/nav&gt;
+
+&lt;/header&gt;
+    &lt;main class=&quot;app-content&quot;&gt;
+        
+&lt;section class=&quot;layout-container dashboard-page&quot;&gt;
+
+    &lt;section class=&quot;form-page&quot;&gt;
+
+        &lt;section class=&quot;form-card transition-form&quot;&gt;
+
+                &lt;form
+                    class=&quot;form-layout&quot;
+                    action=&quot;/lolissr/connexion&quot;
+                    method=&quot;post&quot;
+                &gt;
+
+                &lt;input type=&quot;hidden&quot; name=&quot;csrf_token&quot; value=&quot;33a97b50111727aa8c26c18272ee7879ebd7e8387026b5e146d2fff01ad5efee&quot;&gt;
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;username&quot;
+                    &gt;
+
+                        Nom d&#039;utilisateur
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;text&quot;
+                        name=&quot;username&quot;
+                        id=&quot;username&quot;
+                        value=&quot;&quot;
+                        autofocus
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;password&quot;
+                    &gt;
+
+                        Mot de passe
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;password&quot;
+                        name=&quot;password&quot;
+                        id=&quot;password&quot;
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-actions&quot;&gt;
+
+                    &lt;button
+                        type=&quot;submit&quot;
+                        class=&quot;form-submit&quot;
+                    &gt;
+
+                        Connexion</pre></div></td></tr><tr class="main-row" data-status="FAIL"><td><span class="badge-fail">FAIL</span></td><td>Page mandarin accessible</td><td>/chinois/mandarin</td><td>157.24 ms</td><td></td></tr><tr class="debug-row" data-status="FAIL"><td colspan="5"><div class="debug-content"><h3>Debug</h3><p><strong>Expected :</strong> 200</p><p><strong>Actual :</strong> 302</p><p><strong>Reason :</strong> </p><h4>Headers</h4><pre>HTTP/1.1 302 Found
+Date: Thu, 11 Jun 2026 04:56:37 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=fdubta2g72h0bqbb7v7qt57acc; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Location: /lolissr/connexion
+Content-Length: 0
+Connection: close
+Content-Type: text/html; charset=UTF-8
+HTTP/1.1 200 OK
+Date: Thu, 11 Jun 2026 04:56:37 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=013v61abb59pemfrunojcto69a; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4180
+Connection: close
+Content-Type: text/html; charset=UTF-8</pre><h4>Response</h4><pre>
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;fr&quot;&gt;
+
+&lt;head&gt;
+
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+
+    &lt;meta
+        name=&quot;viewport&quot;
+        content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+
+    &lt;meta
+        http-equiv=&quot;x-dns-prefetch-control&quot;
+        content=&quot;off&quot;&gt;
+
+    &lt;meta
+        name=&quot;referrer&quot;
+        content=&quot;no-referrer&quot;&gt;
+
+    &lt;meta name=&quot;csrf-token&quot; content=&quot;5707738dc015e364d93570afb137608a98d44c7b4e5ce55478fe282f4c9356c7&quot;&gt;
+    &lt;title&gt;
+        Connexion    &lt;/title&gt;
+
+    &lt;link
+        rel=&quot;shortcut icon&quot;
+        href=&quot;/lolissr/images/favicon/favicon.png&quot;&gt;
+
+    &lt;link
+        rel=&quot;stylesheet&quot;
+        href=&quot;/lolissr/css/app.css&quot;&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+    
+&lt;header&gt;
+
+    &lt;nav&gt;
+
+        
+            &lt;ul&gt;
+
+                &lt;li&gt;
+
+                    &lt;a
+                        class=&quot;nav-link-icon&quot;
+                        data-prefetch
+                        href=&quot;/lolissr/connexion&quot;
+                        title=&quot;Connexion&quot;
+                    &gt;
+                        🔐
+                    &lt;/a&gt;
+
+                &lt;/li&gt;
+
+            &lt;/ul&gt;
+
+        
+    &lt;/nav&gt;
+
+&lt;/header&gt;
+    &lt;main class=&quot;app-content&quot;&gt;
+        
+&lt;section class=&quot;layout-container dashboard-page&quot;&gt;
+
+    &lt;section class=&quot;form-page&quot;&gt;
+
+        &lt;section class=&quot;form-card transition-form&quot;&gt;
+
+                &lt;form
+                    class=&quot;form-layout&quot;
+                    action=&quot;/lolissr/connexion&quot;
+                    method=&quot;post&quot;
+                &gt;
+
+                &lt;input type=&quot;hidden&quot; name=&quot;csrf_token&quot; value=&quot;5707738dc015e364d93570afb137608a98d44c7b4e5ce55478fe282f4c9356c7&quot;&gt;
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;username&quot;
+                    &gt;
+
+                        Nom d&#039;utilisateur
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;text&quot;
+                        name=&quot;username&quot;
+                        id=&quot;username&quot;
+                        value=&quot;&quot;
+                        autofocus
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;password&quot;
+                    &gt;
+
+                        Mot de passe
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;password&quot;
+                        name=&quot;password&quot;
+                        id=&quot;password&quot;
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-actions&quot;&gt;
+
+                    &lt;button
+                        type=&quot;submit&quot;
+                        class=&quot;form-submit&quot;
+                    &gt;
+
+                        Connexion</pre></div></td></tr><tr class="main-row" data-status="FAIL"><td><span class="badge-fail">FAIL</span></td><td>Page jinyu accessible</td><td>/chinois/jinyu</td><td>158.28 ms</td><td></td></tr><tr class="debug-row" data-status="FAIL"><td colspan="5"><div class="debug-content"><h3>Debug</h3><p><strong>Expected :</strong> 200</p><p><strong>Actual :</strong> 302</p><p><strong>Reason :</strong> </p><h4>Headers</h4><pre>HTTP/1.1 302 Found
+Date: Thu, 11 Jun 2026 04:56:37 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=3otr00v9btbcvt7qgjjenkp9lv; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Location: /lolissr/connexion
+Content-Length: 0
+Connection: close
+Content-Type: text/html; charset=UTF-8
+HTTP/1.1 200 OK
+Date: Thu, 11 Jun 2026 04:56:37 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=68al8hl4kn2qvo4ve3leecc2d5; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4180
+Connection: close
+Content-Type: text/html; charset=UTF-8</pre><h4>Response</h4><pre>
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;fr&quot;&gt;
+
+&lt;head&gt;
+
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+
+    &lt;meta
+        name=&quot;viewport&quot;
+        content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+
+    &lt;meta
+        http-equiv=&quot;x-dns-prefetch-control&quot;
+        content=&quot;off&quot;&gt;
+
+    &lt;meta
+        name=&quot;referrer&quot;
+        content=&quot;no-referrer&quot;&gt;
+
+    &lt;meta name=&quot;csrf-token&quot; content=&quot;a31a3cdd52c07e55495026f48585c367523d3ac2fa376640bc10cb2b8b20022a&quot;&gt;
+    &lt;title&gt;
+        Connexion    &lt;/title&gt;
+
+    &lt;link
+        rel=&quot;shortcut icon&quot;
+        href=&quot;/lolissr/images/favicon/favicon.png&quot;&gt;
+
+    &lt;link
+        rel=&quot;stylesheet&quot;
+        href=&quot;/lolissr/css/app.css&quot;&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+    
+&lt;header&gt;
+
+    &lt;nav&gt;
+
+        
+            &lt;ul&gt;
+
+                &lt;li&gt;
+
+                    &lt;a
+                        class=&quot;nav-link-icon&quot;
+                        data-prefetch
+                        href=&quot;/lolissr/connexion&quot;
+                        title=&quot;Connexion&quot;
+                    &gt;
+                        🔐
+                    &lt;/a&gt;
+
+                &lt;/li&gt;
+
+            &lt;/ul&gt;
+
+        
+    &lt;/nav&gt;
+
+&lt;/header&gt;
+    &lt;main class=&quot;app-content&quot;&gt;
+        
+&lt;section class=&quot;layout-container dashboard-page&quot;&gt;
+
+    &lt;section class=&quot;form-page&quot;&gt;
+
+        &lt;section class=&quot;form-card transition-form&quot;&gt;
+
+                &lt;form
+                    class=&quot;form-layout&quot;
+                    action=&quot;/lolissr/connexion&quot;
+                    method=&quot;post&quot;
+                &gt;
+
+                &lt;input type=&quot;hidden&quot; name=&quot;csrf_token&quot; value=&quot;a31a3cdd52c07e55495026f48585c367523d3ac2fa376640bc10cb2b8b20022a&quot;&gt;
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;username&quot;
+                    &gt;
+
+                        Nom d&#039;utilisateur
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;text&quot;
+                        name=&quot;username&quot;
+                        id=&quot;username&quot;
+                        value=&quot;&quot;
+                        autofocus
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;password&quot;
+                    &gt;
+
+                        Mot de passe
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;password&quot;
+                        name=&quot;password&quot;
+                        id=&quot;password&quot;
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-actions&quot;&gt;
+
+                    &lt;button
+                        type=&quot;submit&quot;
+                        class=&quot;form-submit&quot;
+                    &gt;
+
+                        Connexion</pre></div></td></tr><tr class="main-row" data-status="FAIL"><td><span class="badge-fail">FAIL</span></td><td>Page grammaire accessible</td><td>/chinois/grammaire</td><td>127.57 ms</td><td></td></tr><tr class="debug-row" data-status="FAIL"><td colspan="5"><div class="debug-content"><h3>Debug</h3><p><strong>Expected :</strong> 200</p><p><strong>Actual :</strong> 302</p><p><strong>Reason :</strong> </p><h4>Headers</h4><pre>HTTP/1.1 302 Found
+Date: Thu, 11 Jun 2026 04:56:37 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=o611br3e7q1utbmhul5dd2mvff; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Location: /lolissr/connexion
+Content-Length: 0
+Connection: close
+Content-Type: text/html; charset=UTF-8
+HTTP/1.1 200 OK
+Date: Thu, 11 Jun 2026 04:56:37 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=fiv5atdkjnsuh0tmfhok2gljdb; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4180
+Connection: close
+Content-Type: text/html; charset=UTF-8</pre><h4>Response</h4><pre>
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;fr&quot;&gt;
+
+&lt;head&gt;
+
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+
+    &lt;meta
+        name=&quot;viewport&quot;
+        content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+
+    &lt;meta
+        http-equiv=&quot;x-dns-prefetch-control&quot;
+        content=&quot;off&quot;&gt;
+
+    &lt;meta
+        name=&quot;referrer&quot;
+        content=&quot;no-referrer&quot;&gt;
+
+    &lt;meta name=&quot;csrf-token&quot; content=&quot;8ce86ff55739f9badf20f423fae2cfdde72c5046c1c134742f03e4d6eb8e1a77&quot;&gt;
+    &lt;title&gt;
+        Connexion    &lt;/title&gt;
+
+    &lt;link
+        rel=&quot;shortcut icon&quot;
+        href=&quot;/lolissr/images/favicon/favicon.png&quot;&gt;
+
+    &lt;link
+        rel=&quot;stylesheet&quot;
+        href=&quot;/lolissr/css/app.css&quot;&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+    
+&lt;header&gt;
+
+    &lt;nav&gt;
+
+        
+            &lt;ul&gt;
+
+                &lt;li&gt;
+
+                    &lt;a
+                        class=&quot;nav-link-icon&quot;
+                        data-prefetch
+                        href=&quot;/lolissr/connexion&quot;
+                        title=&quot;Connexion&quot;
+                    &gt;
+                        🔐
+                    &lt;/a&gt;
+
+                &lt;/li&gt;
+
+            &lt;/ul&gt;
+
+        
+    &lt;/nav&gt;
+
+&lt;/header&gt;
+    &lt;main class=&quot;app-content&quot;&gt;
+        
+&lt;section class=&quot;layout-container dashboard-page&quot;&gt;
+
+    &lt;section class=&quot;form-page&quot;&gt;
+
+        &lt;section class=&quot;form-card transition-form&quot;&gt;
+
+                &lt;form
+                    class=&quot;form-layout&quot;
+                    action=&quot;/lolissr/connexion&quot;
+                    method=&quot;post&quot;
+                &gt;
+
+                &lt;input type=&quot;hidden&quot; name=&quot;csrf_token&quot; value=&quot;8ce86ff55739f9badf20f423fae2cfdde72c5046c1c134742f03e4d6eb8e1a77&quot;&gt;
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;username&quot;
+                    &gt;
+
+                        Nom d&#039;utilisateur
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;text&quot;
+                        name=&quot;username&quot;
+                        id=&quot;username&quot;
+                        value=&quot;&quot;
+                        autofocus
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;password&quot;
+                    &gt;
+
+                        Mot de passe
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;password&quot;
+                        name=&quot;password&quot;
+                        id=&quot;password&quot;
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-actions&quot;&gt;
+
+                    &lt;button
+                        type=&quot;submit&quot;
+                        class=&quot;form-submit&quot;
+                    &gt;
+
+                        Connexion</pre></div></td></tr><tr class="main-row" data-status="FAIL"><td><span class="badge-fail">FAIL</span></td><td>Page HSK 1 accessible</td><td>/chinois/grammaire/hsk1</td><td>126.60 ms</td><td></td></tr><tr class="debug-row" data-status="FAIL"><td colspan="5"><div class="debug-content"><h3>Debug</h3><p><strong>Expected :</strong> 200</p><p><strong>Actual :</strong> 302</p><p><strong>Reason :</strong> </p><h4>Headers</h4><pre>HTTP/1.1 302 Found
+Date: Thu, 11 Jun 2026 04:56:38 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=6oqmt8o906l5lp0arctth0ppmn; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Location: /lolissr/connexion
+Content-Length: 0
+Connection: close
+Content-Type: text/html; charset=UTF-8
+HTTP/1.1 200 OK
+Date: Thu, 11 Jun 2026 04:56:38 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=5bjt4pn2dv4selrq42k5ek6pui; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4180
+Connection: close
+Content-Type: text/html; charset=UTF-8</pre><h4>Response</h4><pre>
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;fr&quot;&gt;
+
+&lt;head&gt;
+
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+
+    &lt;meta
+        name=&quot;viewport&quot;
+        content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+
+    &lt;meta
+        http-equiv=&quot;x-dns-prefetch-control&quot;
+        content=&quot;off&quot;&gt;
+
+    &lt;meta
+        name=&quot;referrer&quot;
+        content=&quot;no-referrer&quot;&gt;
+
+    &lt;meta name=&quot;csrf-token&quot; content=&quot;521fc4d57576e750e8fdc9a9a3f78d55a85d9f5c2c7ab18cadeb46f748095b2a&quot;&gt;
+    &lt;title&gt;
+        Connexion    &lt;/title&gt;
+
+    &lt;link
+        rel=&quot;shortcut icon&quot;
+        href=&quot;/lolissr/images/favicon/favicon.png&quot;&gt;
+
+    &lt;link
+        rel=&quot;stylesheet&quot;
+        href=&quot;/lolissr/css/app.css&quot;&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+    
+&lt;header&gt;
+
+    &lt;nav&gt;
+
+        
+            &lt;ul&gt;
+
+                &lt;li&gt;
+
+                    &lt;a
+                        class=&quot;nav-link-icon&quot;
+                        data-prefetch
+                        href=&quot;/lolissr/connexion&quot;
+                        title=&quot;Connexion&quot;
+                    &gt;
+                        🔐
+                    &lt;/a&gt;
+
+                &lt;/li&gt;
+
+            &lt;/ul&gt;
+
+        
+    &lt;/nav&gt;
+
+&lt;/header&gt;
+    &lt;main class=&quot;app-content&quot;&gt;
+        
+&lt;section class=&quot;layout-container dashboard-page&quot;&gt;
+
+    &lt;section class=&quot;form-page&quot;&gt;
+
+        &lt;section class=&quot;form-card transition-form&quot;&gt;
+
+                &lt;form
+                    class=&quot;form-layout&quot;
+                    action=&quot;/lolissr/connexion&quot;
+                    method=&quot;post&quot;
+                &gt;
+
+                &lt;input type=&quot;hidden&quot; name=&quot;csrf_token&quot; value=&quot;521fc4d57576e750e8fdc9a9a3f78d55a85d9f5c2c7ab18cadeb46f748095b2a&quot;&gt;
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;username&quot;
+                    &gt;
+
+                        Nom d&#039;utilisateur
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;text&quot;
+                        name=&quot;username&quot;
+                        id=&quot;username&quot;
+                        value=&quot;&quot;
+                        autofocus
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;password&quot;
+                    &gt;
+
+                        Mot de passe
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;password&quot;
+                        name=&quot;password&quot;
+                        id=&quot;password&quot;
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-actions&quot;&gt;
+
+                    &lt;button
+                        type=&quot;submit&quot;
+                        class=&quot;form-submit&quot;
+                    &gt;
+
+                        Connexion</pre></div></td></tr><tr class="main-row" data-status="FAIL"><td><span class="badge-fail">FAIL</span></td><td>Page flashcards accessible</td><td>/chinois/flashcards</td><td>159.88 ms</td><td></td></tr><tr class="debug-row" data-status="FAIL"><td colspan="5"><div class="debug-content"><h3>Debug</h3><p><strong>Expected :</strong> 200</p><p><strong>Actual :</strong> 302</p><p><strong>Reason :</strong> </p><h4>Headers</h4><pre>HTTP/1.1 302 Found
+Date: Thu, 11 Jun 2026 04:56:38 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=3olqnh1t6u0o6t0bsp7jab87e7; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Location: /lolissr/connexion
+Content-Length: 0
+Connection: close
+Content-Type: text/html; charset=UTF-8
+HTTP/1.1 200 OK
+Date: Thu, 11 Jun 2026 04:56:38 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=3bcduaa00e6gvvfru31lr257s4; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4180
+Connection: close
+Content-Type: text/html; charset=UTF-8</pre><h4>Response</h4><pre>
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;fr&quot;&gt;
+
+&lt;head&gt;
+
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+
+    &lt;meta
+        name=&quot;viewport&quot;
+        content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+
+    &lt;meta
+        http-equiv=&quot;x-dns-prefetch-control&quot;
+        content=&quot;off&quot;&gt;
+
+    &lt;meta
+        name=&quot;referrer&quot;
+        content=&quot;no-referrer&quot;&gt;
+
+    &lt;meta name=&quot;csrf-token&quot; content=&quot;01f4fe664b784a0fd91ed1f3e286caf6a605786a80036dcde1322bb78c8e361c&quot;&gt;
+    &lt;title&gt;
+        Connexion    &lt;/title&gt;
+
+    &lt;link
+        rel=&quot;shortcut icon&quot;
+        href=&quot;/lolissr/images/favicon/favicon.png&quot;&gt;
+
+    &lt;link
+        rel=&quot;stylesheet&quot;
+        href=&quot;/lolissr/css/app.css&quot;&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+    
+&lt;header&gt;
+
+    &lt;nav&gt;
+
+        
+            &lt;ul&gt;
+
+                &lt;li&gt;
+
+                    &lt;a
+                        class=&quot;nav-link-icon&quot;
+                        data-prefetch
+                        href=&quot;/lolissr/connexion&quot;
+                        title=&quot;Connexion&quot;
+                    &gt;
+                        🔐
+                    &lt;/a&gt;
+
+                &lt;/li&gt;
+
+            &lt;/ul&gt;
+
+        
+    &lt;/nav&gt;
+
+&lt;/header&gt;
+    &lt;main class=&quot;app-content&quot;&gt;
+        
+&lt;section class=&quot;layout-container dashboard-page&quot;&gt;
+
+    &lt;section class=&quot;form-page&quot;&gt;
+
+        &lt;section class=&quot;form-card transition-form&quot;&gt;
+
+                &lt;form
+                    class=&quot;form-layout&quot;
+                    action=&quot;/lolissr/connexion&quot;
+                    method=&quot;post&quot;
+                &gt;
+
+                &lt;input type=&quot;hidden&quot; name=&quot;csrf_token&quot; value=&quot;01f4fe664b784a0fd91ed1f3e286caf6a605786a80036dcde1322bb78c8e361c&quot;&gt;
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;username&quot;
+                    &gt;
+
+                        Nom d&#039;utilisateur
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;text&quot;
+                        name=&quot;username&quot;
+                        id=&quot;username&quot;
+                        value=&quot;&quot;
+                        autofocus
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;password&quot;
+                    &gt;
+
+                        Mot de passe
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;password&quot;
+                        name=&quot;password&quot;
+                        id=&quot;password&quot;
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-actions&quot;&gt;
+
+                    &lt;button
+                        type=&quot;submit&quot;
+                        class=&quot;form-submit&quot;
+                    &gt;
+
+                        Connexion</pre></div></td></tr><tr class="main-row" data-status="FAIL"><td><span class="badge-fail">FAIL</span></td><td>Page manga accessible</td><td>/manga</td><td>128.52 ms</td><td></td></tr><tr class="debug-row" data-status="FAIL"><td colspan="5"><div class="debug-content"><h3>Debug</h3><p><strong>Expected :</strong> 200</p><p><strong>Actual :</strong> 302</p><p><strong>Reason :</strong> </p><h4>Headers</h4><pre>HTTP/1.1 302 Found
+Date: Thu, 11 Jun 2026 04:56:38 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=4gr3u0sktbp42idr9fltntfgpe; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Location: /lolissr/connexion
+Content-Length: 0
+Connection: close
+Content-Type: text/html; charset=UTF-8
+HTTP/1.1 200 OK
+Date: Thu, 11 Jun 2026 04:56:38 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=fpkcggicsm984p1eplbc7mq29c; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4180
+Connection: close
+Content-Type: text/html; charset=UTF-8</pre><h4>Response</h4><pre>
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;fr&quot;&gt;
+
+&lt;head&gt;
+
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+
+    &lt;meta
+        name=&quot;viewport&quot;
+        content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+
+    &lt;meta
+        http-equiv=&quot;x-dns-prefetch-control&quot;
+        content=&quot;off&quot;&gt;
+
+    &lt;meta
+        name=&quot;referrer&quot;
+        content=&quot;no-referrer&quot;&gt;
+
+    &lt;meta name=&quot;csrf-token&quot; content=&quot;7c1288d826a431154af81887801bca5cef2ee70857696f8c8e7b9550a4a13f64&quot;&gt;
+    &lt;title&gt;
+        Connexion    &lt;/title&gt;
+
+    &lt;link
+        rel=&quot;shortcut icon&quot;
+        href=&quot;/lolissr/images/favicon/favicon.png&quot;&gt;
+
+    &lt;link
+        rel=&quot;stylesheet&quot;
+        href=&quot;/lolissr/css/app.css&quot;&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+    
+&lt;header&gt;
+
+    &lt;nav&gt;
+
+        
+            &lt;ul&gt;
+
+                &lt;li&gt;
+
+                    &lt;a
+                        class=&quot;nav-link-icon&quot;
+                        data-prefetch
+                        href=&quot;/lolissr/connexion&quot;
+                        title=&quot;Connexion&quot;
+                    &gt;
+                        🔐
+                    &lt;/a&gt;
+
+                &lt;/li&gt;
+
+            &lt;/ul&gt;
+
+        
+    &lt;/nav&gt;
+
+&lt;/header&gt;
+    &lt;main class=&quot;app-content&quot;&gt;
+        
+&lt;section class=&quot;layout-container dashboard-page&quot;&gt;
+
+    &lt;section class=&quot;form-page&quot;&gt;
+
+        &lt;section class=&quot;form-card transition-form&quot;&gt;
+
+                &lt;form
+                    class=&quot;form-layout&quot;
+                    action=&quot;/lolissr/connexion&quot;
+                    method=&quot;post&quot;
+                &gt;
+
+                &lt;input type=&quot;hidden&quot; name=&quot;csrf_token&quot; value=&quot;7c1288d826a431154af81887801bca5cef2ee70857696f8c8e7b9550a4a13f64&quot;&gt;
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;username&quot;
+                    &gt;
+
+                        Nom d&#039;utilisateur
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;text&quot;
+                        name=&quot;username&quot;
+                        id=&quot;username&quot;
+                        value=&quot;&quot;
+                        autofocus
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;password&quot;
+                    &gt;
+
+                        Mot de passe
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;password&quot;
+                        name=&quot;password&quot;
+                        id=&quot;password&quot;
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-actions&quot;&gt;
+
+                    &lt;button
+                        type=&quot;submit&quot;
+                        class=&quot;form-submit&quot;
+                    &gt;
+
+                        Connexion</pre></div></td></tr><tr class="main-row" data-status="FAIL"><td><span class="badge-fail">FAIL</span></td><td>Recherche manga accessible</td><td>/manga/recherche</td><td>128.84 ms</td><td></td></tr><tr class="debug-row" data-status="FAIL"><td colspan="5"><div class="debug-content"><h3>Debug</h3><p><strong>Expected :</strong> 200</p><p><strong>Actual :</strong> 302</p><p><strong>Reason :</strong> </p><h4>Headers</h4><pre>HTTP/1.1 302 Found
+Date: Thu, 11 Jun 2026 04:56:38 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=u11lp2kceja0km36mt1bgjsfca; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Location: /lolissr/connexion
+Content-Length: 0
+Connection: close
+Content-Type: text/html; charset=UTF-8
+HTTP/1.1 200 OK
+Date: Thu, 11 Jun 2026 04:56:38 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=5jefufl9hm385o61eefe46g5p1; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4180
+Connection: close
+Content-Type: text/html; charset=UTF-8</pre><h4>Response</h4><pre>
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;fr&quot;&gt;
+
+&lt;head&gt;
+
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+
+    &lt;meta
+        name=&quot;viewport&quot;
+        content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+
+    &lt;meta
+        http-equiv=&quot;x-dns-prefetch-control&quot;
+        content=&quot;off&quot;&gt;
+
+    &lt;meta
+        name=&quot;referrer&quot;
+        content=&quot;no-referrer&quot;&gt;
+
+    &lt;meta name=&quot;csrf-token&quot; content=&quot;9c3127ab4fd5188fc4913979491f7c3ec7aadd3a811e3d19845f65433c94e9b2&quot;&gt;
+    &lt;title&gt;
+        Connexion    &lt;/title&gt;
+
+    &lt;link
+        rel=&quot;shortcut icon&quot;
+        href=&quot;/lolissr/images/favicon/favicon.png&quot;&gt;
+
+    &lt;link
+        rel=&quot;stylesheet&quot;
+        href=&quot;/lolissr/css/app.css&quot;&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+    
+&lt;header&gt;
+
+    &lt;nav&gt;
+
+        
+            &lt;ul&gt;
+
+                &lt;li&gt;
+
+                    &lt;a
+                        class=&quot;nav-link-icon&quot;
+                        data-prefetch
+                        href=&quot;/lolissr/connexion&quot;
+                        title=&quot;Connexion&quot;
+                    &gt;
+                        🔐
+                    &lt;/a&gt;
+
+                &lt;/li&gt;
+
+            &lt;/ul&gt;
+
+        
+    &lt;/nav&gt;
+
+&lt;/header&gt;
+    &lt;main class=&quot;app-content&quot;&gt;
+        
+&lt;section class=&quot;layout-container dashboard-page&quot;&gt;
+
+    &lt;section class=&quot;form-page&quot;&gt;
+
+        &lt;section class=&quot;form-card transition-form&quot;&gt;
+
+                &lt;form
+                    class=&quot;form-layout&quot;
+                    action=&quot;/lolissr/connexion&quot;
+                    method=&quot;post&quot;
+                &gt;
+
+                &lt;input type=&quot;hidden&quot; name=&quot;csrf_token&quot; value=&quot;9c3127ab4fd5188fc4913979491f7c3ec7aadd3a811e3d19845f65433c94e9b2&quot;&gt;
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;username&quot;
+                    &gt;
+
+                        Nom d&#039;utilisateur
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;text&quot;
+                        name=&quot;username&quot;
+                        id=&quot;username&quot;
+                        value=&quot;&quot;
+                        autofocus
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;password&quot;
+                    &gt;
+
+                        Mot de passe
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;password&quot;
+                        name=&quot;password&quot;
+                        id=&quot;password&quot;
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-actions&quot;&gt;
+
+                    &lt;button
+                        type=&quot;submit&quot;
+                        class=&quot;form-submit&quot;
+                    &gt;
+
+                        Connexion</pre></div></td></tr><tr class="main-row" data-status="FAIL"><td><span class="badge-fail">FAIL</span></td><td>Liste des séries accessible</td><td>/manga/series</td><td>160.95 ms</td><td></td></tr><tr class="debug-row" data-status="FAIL"><td colspan="5"><div class="debug-content"><h3>Debug</h3><p><strong>Expected :</strong> 200</p><p><strong>Actual :</strong> 302</p><p><strong>Reason :</strong> </p><h4>Headers</h4><pre>HTTP/1.1 302 Found
+Date: Thu, 11 Jun 2026 04:56:38 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=2l58ml6a87aqj1o1qr1dv5skdv; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Location: /lolissr/connexion
+Content-Length: 0
+Connection: close
+Content-Type: text/html; charset=UTF-8
+HTTP/1.1 200 OK
+Date: Thu, 11 Jun 2026 04:56:38 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=g8icc3tr6o5frpt6d9i23mp0lp; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4180
+Connection: close
+Content-Type: text/html; charset=UTF-8</pre><h4>Response</h4><pre>
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;fr&quot;&gt;
+
+&lt;head&gt;
+
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+
+    &lt;meta
+        name=&quot;viewport&quot;
+        content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+
+    &lt;meta
+        http-equiv=&quot;x-dns-prefetch-control&quot;
+        content=&quot;off&quot;&gt;
+
+    &lt;meta
+        name=&quot;referrer&quot;
+        content=&quot;no-referrer&quot;&gt;
+
+    &lt;meta name=&quot;csrf-token&quot; content=&quot;54610d5d05ab2ad1202d3b0885eb859cadbf4bd548847bfd0701ab7544c6ab78&quot;&gt;
+    &lt;title&gt;
+        Connexion    &lt;/title&gt;
+
+    &lt;link
+        rel=&quot;shortcut icon&quot;
+        href=&quot;/lolissr/images/favicon/favicon.png&quot;&gt;
+
+    &lt;link
+        rel=&quot;stylesheet&quot;
+        href=&quot;/lolissr/css/app.css&quot;&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+    
+&lt;header&gt;
+
+    &lt;nav&gt;
+
+        
+            &lt;ul&gt;
+
+                &lt;li&gt;
+
+                    &lt;a
+                        class=&quot;nav-link-icon&quot;
+                        data-prefetch
+                        href=&quot;/lolissr/connexion&quot;
+                        title=&quot;Connexion&quot;
+                    &gt;
+                        🔐
+                    &lt;/a&gt;
+
+                &lt;/li&gt;
+
+            &lt;/ul&gt;
+
+        
+    &lt;/nav&gt;
+
+&lt;/header&gt;
+    &lt;main class=&quot;app-content&quot;&gt;
+        
+&lt;section class=&quot;layout-container dashboard-page&quot;&gt;
+
+    &lt;section class=&quot;form-page&quot;&gt;
+
+        &lt;section class=&quot;form-card transition-form&quot;&gt;
+
+                &lt;form
+                    class=&quot;form-layout&quot;
+                    action=&quot;/lolissr/connexion&quot;
+                    method=&quot;post&quot;
+                &gt;
+
+                &lt;input type=&quot;hidden&quot; name=&quot;csrf_token&quot; value=&quot;54610d5d05ab2ad1202d3b0885eb859cadbf4bd548847bfd0701ab7544c6ab78&quot;&gt;
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;username&quot;
+                    &gt;
+
+                        Nom d&#039;utilisateur
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;text&quot;
+                        name=&quot;username&quot;
+                        id=&quot;username&quot;
+                        value=&quot;&quot;
+                        autofocus
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;password&quot;
+                    &gt;
+
+                        Mot de passe
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;password&quot;
+                        name=&quot;password&quot;
+                        id=&quot;password&quot;
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-actions&quot;&gt;
+
+                    &lt;button
+                        type=&quot;submit&quot;
+                        class=&quot;form-submit&quot;
+                    &gt;
+
+                        Connexion</pre></div></td></tr><tr class="main-row" data-status="FAIL"><td><span class="badge-fail">FAIL</span></td><td>Pagination séries page 1 accessible</td><td>/manga/series/page/1</td><td>128.20 ms</td><td></td></tr><tr class="debug-row" data-status="FAIL"><td colspan="5"><div class="debug-content"><h3>Debug</h3><p><strong>Expected :</strong> 200</p><p><strong>Actual :</strong> 302</p><p><strong>Reason :</strong> </p><h4>Headers</h4><pre>HTTP/1.1 302 Found
+Date: Thu, 11 Jun 2026 04:56:38 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=hj69ki8fopfkgmpg3id1khmggo; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Location: /lolissr/connexion
+Content-Length: 0
+Connection: close
+Content-Type: text/html; charset=UTF-8
+HTTP/1.1 200 OK
+Date: Thu, 11 Jun 2026 04:56:38 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=e6d5b7vsgku97243enq4866tau; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4180
+Connection: close
+Content-Type: text/html; charset=UTF-8</pre><h4>Response</h4><pre>
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;fr&quot;&gt;
+
+&lt;head&gt;
+
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+
+    &lt;meta
+        name=&quot;viewport&quot;
+        content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+
+    &lt;meta
+        http-equiv=&quot;x-dns-prefetch-control&quot;
+        content=&quot;off&quot;&gt;
+
+    &lt;meta
+        name=&quot;referrer&quot;
+        content=&quot;no-referrer&quot;&gt;
+
+    &lt;meta name=&quot;csrf-token&quot; content=&quot;950f85e669e89763bc8162670c98fde8d362f32c208d43d1ea20c6f084bd3e9b&quot;&gt;
+    &lt;title&gt;
+        Connexion    &lt;/title&gt;
+
+    &lt;link
+        rel=&quot;shortcut icon&quot;
+        href=&quot;/lolissr/images/favicon/favicon.png&quot;&gt;
+
+    &lt;link
+        rel=&quot;stylesheet&quot;
+        href=&quot;/lolissr/css/app.css&quot;&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+    
+&lt;header&gt;
+
+    &lt;nav&gt;
+
+        
+            &lt;ul&gt;
+
+                &lt;li&gt;
+
+                    &lt;a
+                        class=&quot;nav-link-icon&quot;
+                        data-prefetch
+                        href=&quot;/lolissr/connexion&quot;
+                        title=&quot;Connexion&quot;
+                    &gt;
+                        🔐
+                    &lt;/a&gt;
+
+                &lt;/li&gt;
+
+            &lt;/ul&gt;
+
+        
+    &lt;/nav&gt;
+
+&lt;/header&gt;
+    &lt;main class=&quot;app-content&quot;&gt;
+        
+&lt;section class=&quot;layout-container dashboard-page&quot;&gt;
+
+    &lt;section class=&quot;form-page&quot;&gt;
+
+        &lt;section class=&quot;form-card transition-form&quot;&gt;
+
+                &lt;form
+                    class=&quot;form-layout&quot;
+                    action=&quot;/lolissr/connexion&quot;
+                    method=&quot;post&quot;
+                &gt;
+
+                &lt;input type=&quot;hidden&quot; name=&quot;csrf_token&quot; value=&quot;950f85e669e89763bc8162670c98fde8d362f32c208d43d1ea20c6f084bd3e9b&quot;&gt;
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;username&quot;
+                    &gt;
+
+                        Nom d&#039;utilisateur
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;text&quot;
+                        name=&quot;username&quot;
+                        id=&quot;username&quot;
+                        value=&quot;&quot;
+                        autofocus
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;password&quot;
+                    &gt;
+
+                        Mot de passe
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;password&quot;
+                        name=&quot;password&quot;
+                        id=&quot;password&quot;
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-actions&quot;&gt;
+
+                    &lt;button
+                        type=&quot;submit&quot;
+                        class=&quot;form-submit&quot;
+                    &gt;
+
+                        Connexion</pre></div></td></tr><tr class="main-row" data-status="FAIL"><td><span class="badge-fail">FAIL</span></td><td>Fiche manga existante accessible</td><td>/manga/series/i-want-to-see-you-shy/1</td><td>128.44 ms</td><td></td></tr><tr class="debug-row" data-status="FAIL"><td colspan="5"><div class="debug-content"><h3>Debug</h3><p><strong>Expected :</strong> 200</p><p><strong>Actual :</strong> 302</p><p><strong>Reason :</strong> </p><h4>Headers</h4><pre>HTTP/1.1 302 Found
+Date: Thu, 11 Jun 2026 04:56:38 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=9klpv9fmj1sk1sipu3161g6jvk; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Location: /lolissr/connexion
+Content-Length: 0
+Connection: close
+Content-Type: text/html; charset=UTF-8
+HTTP/1.1 200 OK
+Date: Thu, 11 Jun 2026 04:56:38 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=fmabgi57jn9rkgjf6s7tr5gmav; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4180
+Connection: close
+Content-Type: text/html; charset=UTF-8</pre><h4>Response</h4><pre>
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;fr&quot;&gt;
+
+&lt;head&gt;
+
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+
+    &lt;meta
+        name=&quot;viewport&quot;
+        content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+
+    &lt;meta
+        http-equiv=&quot;x-dns-prefetch-control&quot;
+        content=&quot;off&quot;&gt;
+
+    &lt;meta
+        name=&quot;referrer&quot;
+        content=&quot;no-referrer&quot;&gt;
+
+    &lt;meta name=&quot;csrf-token&quot; content=&quot;7147afd1bc26eb21b6b0dbf52424479ad23b286709fee50f5e17948b67508a00&quot;&gt;
+    &lt;title&gt;
+        Connexion    &lt;/title&gt;
+
+    &lt;link
+        rel=&quot;shortcut icon&quot;
+        href=&quot;/lolissr/images/favicon/favicon.png&quot;&gt;
+
+    &lt;link
+        rel=&quot;stylesheet&quot;
+        href=&quot;/lolissr/css/app.css&quot;&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+    
+&lt;header&gt;
+
+    &lt;nav&gt;
+
+        
+            &lt;ul&gt;
+
+                &lt;li&gt;
+
+                    &lt;a
+                        class=&quot;nav-link-icon&quot;
+                        data-prefetch
+                        href=&quot;/lolissr/connexion&quot;
+                        title=&quot;Connexion&quot;
+                    &gt;
+                        🔐
+                    &lt;/a&gt;
+
+                &lt;/li&gt;
+
+            &lt;/ul&gt;
+
+        
+    &lt;/nav&gt;
+
+&lt;/header&gt;
+    &lt;main class=&quot;app-content&quot;&gt;
+        
+&lt;section class=&quot;layout-container dashboard-page&quot;&gt;
+
+    &lt;section class=&quot;form-page&quot;&gt;
+
+        &lt;section class=&quot;form-card transition-form&quot;&gt;
+
+                &lt;form
+                    class=&quot;form-layout&quot;
+                    action=&quot;/lolissr/connexion&quot;
+                    method=&quot;post&quot;
+                &gt;
+
+                &lt;input type=&quot;hidden&quot; name=&quot;csrf_token&quot; value=&quot;7147afd1bc26eb21b6b0dbf52424479ad23b286709fee50f5e17948b67508a00&quot;&gt;
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;username&quot;
+                    &gt;
+
+                        Nom d&#039;utilisateur
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;text&quot;
+                        name=&quot;username&quot;
+                        id=&quot;username&quot;
+                        value=&quot;&quot;
+                        autofocus
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;password&quot;
+                    &gt;
+
+                        Mot de passe
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;password&quot;
+                        name=&quot;password&quot;
+                        id=&quot;password&quot;
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-actions&quot;&gt;
+
+                    &lt;button
+                        type=&quot;submit&quot;
+                        class=&quot;form-submit&quot;
+                    &gt;
+
+                        Connexion</pre></div></td></tr><tr class="main-row" data-status="FAIL"><td><span class="badge-fail">FAIL</span></td><td>Accueil public accessible</td><td>/</td><td>160.02 ms</td><td></td></tr><tr class="debug-row" data-status="FAIL"><td colspan="5"><div class="debug-content"><h3>Debug</h3><p><strong>Expected :</strong> 200</p><p><strong>Actual :</strong> 302</p><p><strong>Reason :</strong> </p><h4>Headers</h4><pre>HTTP/1.1 302 Found
+Date: Thu, 11 Jun 2026 04:56:38 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=d1aptbiuig1l23ag7a004trkdf; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Location: /lolissr/connexion
+Content-Length: 0
+Connection: close
+Content-Type: text/html; charset=UTF-8
+HTTP/1.1 200 OK
+Date: Thu, 11 Jun 2026 04:56:39 GMT
+Server: Apache/2.4.62 (Win64) PHP/8.3.14 mod_fcgid/2.3.10-dev
+X-Powered-By: PHP/8.3.14
+Set-Cookie: LOLISSR_SESSION=htcovq50s5q6lf2tht49pc0qd9; path=/; HttpOnly; SameSite=Lax
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate
+Pragma: no-cache
+Content-Length: 4180
+Connection: close
+Content-Type: text/html; charset=UTF-8</pre><h4>Response</h4><pre>
+&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;fr&quot;&gt;
+
+&lt;head&gt;
+
+    &lt;meta charset=&quot;UTF-8&quot;&gt;
+
+    &lt;meta
+        name=&quot;viewport&quot;
+        content=&quot;width=device-width, initial-scale=1.0&quot;&gt;
+
+    &lt;meta
+        http-equiv=&quot;x-dns-prefetch-control&quot;
+        content=&quot;off&quot;&gt;
+
+    &lt;meta
+        name=&quot;referrer&quot;
+        content=&quot;no-referrer&quot;&gt;
+
+    &lt;meta name=&quot;csrf-token&quot; content=&quot;0ec02fffa70d9a52180c8789ddaea60e3d919ca5762e0fc138e218b6af3d2707&quot;&gt;
+    &lt;title&gt;
+        Connexion    &lt;/title&gt;
+
+    &lt;link
+        rel=&quot;shortcut icon&quot;
+        href=&quot;/lolissr/images/favicon/favicon.png&quot;&gt;
+
+    &lt;link
+        rel=&quot;stylesheet&quot;
+        href=&quot;/lolissr/css/app.css&quot;&gt;
+
+&lt;/head&gt;
+
+&lt;body&gt;
+
+    
+&lt;header&gt;
+
+    &lt;nav&gt;
+
+        
+            &lt;ul&gt;
+
+                &lt;li&gt;
+
+                    &lt;a
+                        class=&quot;nav-link-icon&quot;
+                        data-prefetch
+                        href=&quot;/lolissr/connexion&quot;
+                        title=&quot;Connexion&quot;
+                    &gt;
+                        🔐
+                    &lt;/a&gt;
+
+                &lt;/li&gt;
+
+            &lt;/ul&gt;
+
+        
+    &lt;/nav&gt;
+
+&lt;/header&gt;
+    &lt;main class=&quot;app-content&quot;&gt;
+        
+&lt;section class=&quot;layout-container dashboard-page&quot;&gt;
+
+    &lt;section class=&quot;form-page&quot;&gt;
+
+        &lt;section class=&quot;form-card transition-form&quot;&gt;
+
+                &lt;form
+                    class=&quot;form-layout&quot;
+                    action=&quot;/lolissr/connexion&quot;
+                    method=&quot;post&quot;
+                &gt;
+
+                &lt;input type=&quot;hidden&quot; name=&quot;csrf_token&quot; value=&quot;0ec02fffa70d9a52180c8789ddaea60e3d919ca5762e0fc138e218b6af3d2707&quot;&gt;
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;username&quot;
+                    &gt;
+
+                        Nom d&#039;utilisateur
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;text&quot;
+                        name=&quot;username&quot;
+                        id=&quot;username&quot;
+                        value=&quot;&quot;
+                        autofocus
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-group&quot;&gt;
+
+                    &lt;label
+                        class=&quot;form-label&quot;
+                        for=&quot;password&quot;
+                    &gt;
+
+                        Mot de passe
+
+                    &lt;/label&gt;
+
+                    &lt;input
+                        class=&quot;form-input&quot;
+                        type=&quot;password&quot;
+                        name=&quot;password&quot;
+                        id=&quot;password&quot;
+                        required
+                    &gt;
+
+                    
+                &lt;/div&gt;
+
+                &lt;div class=&quot;form-actions&quot;&gt;
+
+                    &lt;button
+                        type=&quot;submit&quot;
+                        class=&quot;form-submit&quot;
+                    &gt;
+
+                        Connexion</pre></div></td></tr>
             </tbody>
 
         </table>
@@ -284,7 +3060,7 @@ tr:hover{
     </div>
 
     <div class="footer">
-        Généré le 07/06/2026 01:07:49
+        Généré le 11/06/2026 04:56:39
     </div>
 
 </div>

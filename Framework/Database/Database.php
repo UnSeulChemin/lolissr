@@ -52,7 +52,7 @@ final class Database extends PDO
         }
     }
 
-    public function begin(): void
+    public function startTransaction(): void
     {
         if ($this->inTransaction()) {
             return;
@@ -82,7 +82,7 @@ final class Database extends PDO
     public function transaction(
         callable $callback,
     ): mixed {
-        $this->begin();
+        $this->startTransaction();
 
         try {
             $result = $callback();
