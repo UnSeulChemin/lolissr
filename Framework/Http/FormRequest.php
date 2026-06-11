@@ -27,7 +27,7 @@ abstract class FormRequest
 
     final public function passes(): bool
     {
-        return !$this->fails();
+        return ! $this->fails();
     }
 
     final public function fails(): bool
@@ -44,7 +44,7 @@ abstract class FormRequest
     }
 
     /**
-     * Retourne uniquement les données validées.
+     * Retourne les données validées.
      *
      * @return array<string, mixed>
      */
