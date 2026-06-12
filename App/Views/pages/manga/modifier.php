@@ -38,7 +38,7 @@ $jacquetteValue =
 
 $livreNoteValue =
     $old['livre_note']
-    ?? ($manga->livre_note ?? '');
+    ?? ($manga->livreNote ?? '');
 
 $commentaireValue =
     $old['commentaire']

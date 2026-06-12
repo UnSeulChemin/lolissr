@@ -98,7 +98,7 @@ $isPerfectJacquette =
     (int) ($manga->jacquette ?? 0) === 5;
 
 $isPerfectLivre =
-    (int) ($manga->livre_note ?? 0) === 5;
+    (int) ($manga->livreNote ?? 0) === 5;
 
 ?>
 
@@ -113,7 +113,7 @@ $isPerfectLivre =
         data-numero="<?= $numero ?>"
         data-base-path="<?= e($baseUri) ?>"
         data-jacquette="<?= (int) ($manga->jacquette ?? 1) ?>"
-        data-livre-note="<?= (int) ($manga->livre_note ?? 1) ?>"
+        data-livre-note="<?= (int) ($manga->livreNote ?? 1) ?>"
     >
 
         <figure class="detail-image">
@@ -278,7 +278,7 @@ $isPerfectLivre =
                             <button
                                 class="
                                     js-note-button
-                                    <?= ($manga->livre_note === $note)
+                                    <?= ($manga->livreNote === $note)
                                         ? 'active'
                                         : ''
                                     ?>
@@ -314,8 +314,8 @@ $isPerfectLivre =
                 >
 
                     <?= ($manga->jacquette ?? 0)
-                        + ($manga->livre_note ?? 0)
-?>/10
+                        + ($manga->livreNote ?? 0)
+                    ?>/10
 
                 </div>
 
