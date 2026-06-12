@@ -9,10 +9,7 @@ use Framework\Http\FormRequest;
 
 final class MangaUpdateRequest extends FormRequest
 {
-    private const STATUTS = [
-        'en_cours',
-        'termine',
-    ];
+    private const STATUTS = ['en_cours', 'termine'];
 
     protected function validate(): void
     {
@@ -42,7 +39,7 @@ final class MangaUpdateRequest extends FormRequest
 
     public function dto(): MangaUpdateDTO
     {
-        return MangaUpdateDTO::fromPost(
+        return MangaUpdateDTO::fromArray(
             $this->validated(),
         );
     }

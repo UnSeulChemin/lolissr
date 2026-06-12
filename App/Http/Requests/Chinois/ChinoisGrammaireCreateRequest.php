@@ -58,7 +58,7 @@ final class ChinoisGrammaireCreateRequest extends FormRequest
 
     public function dto(): ChinoisGrammaireCreateDTO
     {
-        return ChinoisGrammaireCreateDTO::fromPost(
+        return ChinoisGrammaireCreateDTO::fromArray(
             $this->validated(),
         );
     }

@@ -28,6 +28,11 @@ final class Validator
      */
     private array $nullable = [];
 
+    /**
+     * @var array<string, ?int>
+     */
+    private array $integerCache = [];
+
     private finfo $finfo;
 
     /**
@@ -175,16 +180,26 @@ final class Validator
         string $field,
     ): ?int
     {
+        if (
+            array_key_exists(
+                $field,
+                $this->integerCache,
+            )
+        ) {
+            return $this->integerCache[$field];
+        }
+
         $value =
             $this->data[$field]
             ?? null;
 
-        return filter_var(
-            $value,
-            FILTER_VALIDATE_INT,
-        ) !== false
-            ? (int) $value
-            : null;
+        return $this->integerCache[$field] =
+            filter_var(
+                $value,
+                FILTER_VALIDATE_INT,
+            ) !== false
+                ? (int) $value
+                : null;
     }
 
     public function min(

@@ -10,10 +10,7 @@ use Framework\Http\FormRequest;
 
 final class MangaCreateRequest extends FormRequest
 {
-    private const STATUTS = [
-        'en_cours',
-        'termine',
-    ];
+    private const STATUTS = ['en_cours', 'termine'];
 
     protected function validate(): void
     {
@@ -45,23 +42,14 @@ final class MangaCreateRequest extends FormRequest
 
             ->fileRequired('image')
             ->fileOk('image')
-            ->imageExtension(
-                'image',
-                UploadConfig::allowedExtensions(),
-            )
-            ->imageMime(
-                'image',
-                UploadConfig::allowedMimeTypes(),
-            )
-            ->maxFileSize(
-                'image',
-                UploadConfig::maxSize(),
-            );
+            ->imageExtension('image', UploadConfig::allowedExtensions())
+            ->imageMime('image', UploadConfig::allowedMimeTypes())
+            ->maxFileSize('image', UploadConfig::maxSize());
     }
 
     public function dto(): MangaCreateDTO
     {
-        return MangaCreateDTO::fromPost(
+        return MangaCreateDTO::fromArray(
             $this->validated(),
         );
     }

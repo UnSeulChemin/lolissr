@@ -9,10 +9,7 @@ use Framework\Http\FormRequest;
 
 final class ChinoisVocabulaireCreateRequest extends FormRequest
 {
-    private const LANGUES = [
-        'mandarin',
-        'jinyu',
-    ];
+    private const LANGUES = ['mandarin', 'jinyu'];
 
     protected function validate(): void
     {
@@ -43,7 +40,7 @@ final class ChinoisVocabulaireCreateRequest extends FormRequest
 
     public function dto(): ChinoisVocabulaireCreateDTO
     {
-        return ChinoisVocabulaireCreateDTO::fromPost(
+        return ChinoisVocabulaireCreateDTO::fromArray(
             $this->validated(),
         );
     }
