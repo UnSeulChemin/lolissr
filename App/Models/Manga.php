@@ -16,15 +16,15 @@ final class Manga
 
     public string $livre = '';
 
-    public ?string $editeur = null;
+    public string $editeur = '';
 
     public int $numero = 0;
 
-    public int $lu = 0;
+    public bool $lu = false;
 
-    public int $xp_read_rewarded = 0;
+    public bool $xp_read_rewarded = false;
 
-    public int $xp_series_rewarded = 0;
+    public bool $xp_series_rewarded = false;
 
     public string $statut = 'en_cours';
 

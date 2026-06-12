@@ -48,7 +48,7 @@ final class ChinoisAjaxController extends Controller
         if (
             $maitrise === 1
             && $grammaire !== null
-            && $grammaire->xpRewarded === 0
+            && ! $grammaire->xpRewarded
         ) {
             $user = user();
 
@@ -91,7 +91,7 @@ final class ChinoisAjaxController extends Controller
         if (
             $maitrise === 1
             && $vocabulaire !== null
-            && $vocabulaire->xp_rewarded === 0
+            && ! $vocabulaire->xp_rewarded
         ) {
             $user = user();
 

@@ -18,15 +18,15 @@ final class ChinoisGrammaire
 
     public string $phrase = '';
 
-    public ?string $pinyin = null;
+    public string $pinyin = '';
 
     public string $traduction = '';
 
-    public ?string $explication = null;
+    public string $explication = '';
 
-    public int $maitrise = 0;
+    public bool $maitrise = false;
 
-    public int $xp_rewarded = 0;
+    public bool $xp_rewarded = false;
 
     public string $section = '';
 

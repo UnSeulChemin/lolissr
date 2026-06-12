@@ -496,7 +496,7 @@ final readonly class MangaWriteService
                 }
 
                 $wasRead =
-                    $manga->lu === 1;
+                    $manga->lu;
 
                 $updated =
                     $this->mangaRepository
@@ -523,7 +523,7 @@ final readonly class MangaWriteService
                 if (
                     ! $wasRead
                     && $readStatus === 1
-                    && $manga->xp_read_rewarded === 0
+                    && ! $manga->xp_read_rewarded
                 ) {
                     $this->rewardReadXp(
                         $manga,

@@ -12,26 +12,32 @@ use Throwable;
 
 abstract class Model
 {
+    /*
+    |--------------------------------------------------------------------------
+    | Table
+    |--------------------------------------------------------------------------
+    */
+
+    /**
+     * Nom de la table SQL.
+     */
+    protected string $table = '';
+
+    /**
+     * Nom de table validé et mis en cache.
+     */
+    private ?string $resolvedTable = null;
+
     /**
      * Cache des identifiants SQL nettoyés.
      *
      * @var array<string, string>
      */
-    private array $identifierCache = [];
-
-    /**
-     * Cache du nom de table validé.
-     */
-    private ?string $resolvedTable = null;
-
-    protected string $table = '';
-
-    protected Database $db;
+    private static array $identifierCache = [];
 
     public function __construct(
-        Database $database,
+        protected Database $db,
     ) {
-        $this->db = $database;
     }
 
     /**
@@ -44,7 +50,7 @@ abstract class Model
     }
 
     /**
-     * Valide le nom de table.
+     * Valide le nom de table configuré.
      */
     private function resolveTable(): string
     {
@@ -63,14 +69,11 @@ abstract class Model
         return $table;
     }
 
-    /**
-     * Nettoie un identifiant SQL.
-     */
-    protected function sanitizeIdentifier(
+    private function sanitizeIdentifier(
         string $value,
     ): string {
 
-        return $this->identifierCache[$value]
+        return self::$identifierCache[$value]
             ??= (
                 preg_replace(
                     '/[^a-zA-Z0-9_]/',
@@ -81,16 +84,22 @@ abstract class Model
             );
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Query Helpers
+    |--------------------------------------------------------------------------
+    */
+
     /**
-     * @param array<int|string,mixed> $params
+     * @param array<int|string, mixed> $params
      */
     protected function query(
         string $sql,
         array $params = [],
     ): PDOStatement|false {
 
-        try {
-
+        try
+        {
             $statement =
                 $this->db->prepare(
                     $sql,
@@ -106,9 +115,9 @@ abstract class Model
             );
 
             return $statement;
-
-        } catch (Throwable $exception) {
-
+        }
+        catch (Throwable $exception)
+        {
             throw new RuntimeException(
                 $exception->getMessage(),
                 previous: $exception,
@@ -117,7 +126,7 @@ abstract class Model
     }
 
     /**
-     * @param array<int|string,mixed> $params
+     * @param array<int|string, mixed> $params
      */
     protected function fetchOne(
         string $sql,
@@ -153,8 +162,8 @@ abstract class Model
     }
 
     /**
-     * @param array<int|string,mixed> $params
-     * @return array<int,object>
+     * @param array<int|string, mixed> $params
+     * @return array<int, object>
      */
     protected function fetchAll(
         string $sql,
@@ -189,20 +198,24 @@ abstract class Model
     }
 
     /**
-     * @param array<int|string,mixed> $params
+     * @param array<int|string, mixed> $params
      */
     protected function execute(
         string $sql,
         array $params = [],
     ): bool {
 
-        $this->query(
+        return $this->query(
             $sql,
             $params,
-        );
-
-        return true;
+        ) !== false;
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | CRUD
+    |--------------------------------------------------------------------------
+    */
 
     public function find(
         int $id,
@@ -220,47 +233,8 @@ abstract class Model
     }
 
     /**
-     * @param array<string,mixed> $where
-     * @return array{
-     *     conditions:list<string>,
-     *     values:list<mixed>
-     * }
-     */
-    protected function buildWhere(
-        array $where,
-    ): array {
-
-        $conditions = [];
-        $values = [];
-
-        foreach ($where as $field => $value)
-        {
-            $field =
-                $this->sanitizeIdentifier(
-                    $field,
-                );
-
-            if ($field === '')
-            {
-                continue;
-            }
-
-            $conditions[] =
-                "{$field} = ?";
-
-            $values[] =
-                $value;
-        }
-
-        return [
-            'conditions' => $conditions,
-            'values' => $values,
-        ];
-    }
-
-    /**
-     * @param array<string,mixed> $where
-     * @return array<int,object>
+     * @param array<string, mixed> $where
+     * @return array<int, object>
      */
     public function findBy(
         array $where,
@@ -296,7 +270,7 @@ abstract class Model
     }
 
     /**
-     * @param array<string,mixed> $data
+     * @param array<string, mixed> $data
      */
     public function insert(
         array $data,
@@ -351,8 +325,8 @@ abstract class Model
     }
 
     /**
-     * @param array<string,mixed> $data
-     * @param array<string,mixed> $where
+     * @param array<string, mixed> $data
+     * @param array<string, mixed> $where
      */
     public function update(
         array $data,
@@ -418,7 +392,7 @@ abstract class Model
     }
 
     /**
-     * @param array<string,mixed> $where
+     * @param array<string, mixed> $where
      */
     public function delete(
         array $where,
@@ -449,5 +423,50 @@ abstract class Model
             ),
             $builtWhere['values'],
         );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Internal Helpers
+    |--------------------------------------------------------------------------
+    */
+
+    /**
+     * @param array<string, mixed> $where
+     * @return array{
+     *     conditions:list<string>,
+     *     values:list<mixed>
+     * }
+     */
+    private function buildWhere(
+        array $where,
+    ): array {
+
+        $conditions = [];
+        $values = [];
+
+        foreach ($where as $field => $value)
+        {
+            $field =
+                $this->sanitizeIdentifier(
+                    $field,
+                );
+
+            if ($field === '')
+            {
+                continue;
+            }
+
+            $conditions[] =
+                "{$field} = ?";
+
+            $values[] =
+                $value;
+        }
+
+        return [
+            'conditions' => $conditions,
+            'values' => $values,
+        ];
     }
 }

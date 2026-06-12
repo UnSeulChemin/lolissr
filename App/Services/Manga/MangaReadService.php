@@ -46,9 +46,7 @@ final readonly class MangaReadService
                     ? $manga->statut
                     : 'en_cours',
             note:
-                $manga->note !== null
-                    ? (float) $manga->note
-                    : null,
+                (float) $manga->note,
             averageNote:
                 $manga->average_note,
             total:

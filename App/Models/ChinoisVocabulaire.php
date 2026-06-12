@@ -12,7 +12,7 @@ final class ChinoisVocabulaire
 
     public string $mot = '';
 
-    public ?string $pinyin = null;
+    public string $pinyin = '';
 
     public string $type = '';
 
@@ -22,7 +22,9 @@ final class ChinoisVocabulaire
 
     public bool $maitrise = false;
 
-    public int $xp_rewarded = 0;
+    public bool $xp_rewarded = false;
+
+    public int $position = 0;
 
     public string $created_at = '';
 }

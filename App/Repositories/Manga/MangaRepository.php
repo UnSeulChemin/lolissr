@@ -447,7 +447,7 @@ final class MangaRepository extends Model
         }
 
         return
-            (int) $result->xp_series_rewarded === 1;
+            (bool) $result->xp_series_rewarded;
     }
 
     public function markSeriesRewardedBySlug(
