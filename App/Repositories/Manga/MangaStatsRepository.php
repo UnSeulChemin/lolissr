@@ -4,13 +4,39 @@ declare(strict_types=1);
 
 namespace App\Repositories\Manga;
 
+use App\DTO\Manga\Responses\MangaStatsData;
 use App\Models\Manga;
 use App\Models\Model;
+
 use Framework\Support\Str;
 
 final class MangaStatsRepository extends Model
 {
     protected string $table = 'manga';
+
+    private function mapToStatsDto(
+        Manga $manga,
+    ): MangaStatsData {
+        return new MangaStatsData(
+            id: $manga->id,
+            slug: $manga->slug,
+            livre: $manga->livre,
+
+            thumbnail:
+                $manga->thumbnail !== ''
+                    ? $manga->thumbnail
+                    : null,
+
+            extension:
+                $manga->extension !== ''
+                    ? $manga->extension
+                    : null,
+
+            numero: $manga->numero,
+
+            total: $manga->total,
+        );
+    }
 
     /**
      * @param array<string, mixed> $params
@@ -103,6 +129,18 @@ final class MangaStatsRepository extends Model
         return $manga;
     }
 
+    public function findLastAddedDto(): ?MangaStatsData
+    {
+        $manga = $this->findLastAdded();
+
+        if ($manga === null)
+        {
+            return null;
+        }
+
+        return $this->mapToStatsDto($manga);
+    }
+
     public function findLongestSeries(): ?Manga
     {
         /** @var Manga|null $manga */
@@ -137,6 +175,32 @@ final class MangaStatsRepository extends Model
         );
 
         return $manga;
+    }
+
+    public function findLongestSeriesDto(): ?MangaStatsData
+    {
+        $manga = $this->findLongestSeries();
+
+        if ($manga === null)
+        {
+            return null;
+        }
+
+        return $this->mapToStatsDto($manga);
+    }
+
+    /**
+     * @return list<MangaStatsData>
+     */
+    public function topLongestSeriesDto(
+        int $limit = 5,
+    ): array {
+
+        return array_map(
+            fn (Manga $manga)
+                => $this->mapToStatsDto($manga),
+            $this->topLongestSeries($limit),
+        );
     }
 
     /**

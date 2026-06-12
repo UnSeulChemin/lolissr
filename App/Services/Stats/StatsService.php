@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Stats;
 
 use App\DTO\Home\DashboardStats;
-use App\Models\Manga;
+use App\DTO\Manga\Responses\MangaStatsData;
 use App\Repositories\Chinois\ChinoisGrammaireRepository;
 use App\Repositories\Chinois\ChinoisVocabulaireRepository;
 use App\Repositories\Manga\MangaStatsRepository;
@@ -60,26 +60,26 @@ final readonly class StatsService
             ->averageNote();
     }
 
-    public function lastTome(): ?Manga
+    public function lastTome(): ?MangaStatsData
     {
         return $this->repository
-            ->findLastAdded();
+            ->findLastAddedDto();
     }
 
-    public function longestSeries(): ?Manga
+    public function longestSeries(): ?MangaStatsData
     {
         return $this->repository
-            ->findLongestSeries();
+            ->findLongestSeriesDto();
     }
 
     /**
-     * @return list<Manga>
+     * @return list<MangaStatsData>
      */
     public function topLongestSeries(
         int $limit = 5,
     ): array {
         return $this->repository
-            ->topLongestSeries($limit);
+            ->topLongestSeriesDto($limit);
     }
 
     public function dashboard(): DashboardStats

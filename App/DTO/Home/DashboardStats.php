@@ -4,17 +4,15 @@ declare(strict_types=1);
 
 namespace App\DTO\Home;
 
-use App\Models\Manga;
+use App\DTO\Manga\Responses\MangaStatsData;
 
 final readonly class DashboardStats
 {
     /**
-     * Statistiques Chinois + Manga du dashboard.
-     *
-     * @param list<Manga> $topLongestSeries
-     * @param list<Manga> $lowRatedMangas
-     * @param list<Manga> $lowJacquetteMangas
-     * @param list<Manga> $lowLivreStateMangas
+     * @param list<MangaStatsData> $topLongestSeries
+     * @param list<MangaStatsData> $lowRatedMangas
+     * @param list<MangaStatsData> $lowJacquetteMangas
+     * @param list<MangaStatsData> $lowLivreStateMangas
      */
     public function __construct(
         public int $totalVocabulary,
@@ -36,8 +34,8 @@ final readonly class DashboardStats
 
         public ?float $averageNote,
 
-        public ?Manga $lastTome,
-        public ?Manga $longestSeries,
+        public ?MangaStatsData $lastTome,
+        public ?MangaStatsData $longestSeries,
 
         /** @var list<Manga> */
         public array $topLongestSeries,
