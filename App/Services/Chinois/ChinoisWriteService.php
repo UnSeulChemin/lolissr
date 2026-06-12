@@ -81,7 +81,7 @@ final readonly class ChinoisWriteService
                             'explication' => $dto->explication,
 
                             'position' => 0,
-                            'maitrise' => 0,
+                            'maitrise' => false,
                         ]);
 
                 if (! $inserted)

@@ -211,10 +211,8 @@ $sourceDescription =
                                 ) !== '';
 
                             $isMaitrise =
-                                (int) (
-                                    $grammaire->maitrise
-                                    ?? 0
-                                ) === 1;
+                                $grammaire->maitrise
+                                ?? false;
 
                             ?>
 

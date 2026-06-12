@@ -17,7 +17,7 @@ use Framework\Http\Request;
 
 final class ChinoisController extends Controller
 {
-    private const HSK_LEVELS = ['1','2','3','4'];
+    private const HSK_LEVELS = [1, 2, 3, 4];
 
     public function __construct(
         private readonly ChinoisReadService $chinoisReadService,
@@ -65,20 +65,31 @@ final class ChinoisController extends Controller
         $this->render('pages/chinois/grammaire');
     }
 
-    public function hsk(string $level): never
+    public function hsk(int $level): never
     {
-        if (!in_array($level, self::HSK_LEVELS, true)) {
-            throw new NotFoundException('Niveau HSK introuvable');
+        if (! in_array($level, self::HSK_LEVELS, true)) {
+            throw new NotFoundException(
+                'Niveau HSK introuvable',
+            );
         }
 
         $hskLevel = "HSK{$level}";
-        $grammaires = $this->chinoisGrammaireRepository->findByLevel($hskLevel);
 
-        $this->title = 'Chinois | Grammaire ' . $hskLevel;
-        $this->render('pages/chinois/hsk', [
-            'grammaires' => $grammaires,
-            'level' => $level,
-        ]);
+        $grammaires =
+            $this->chinoisGrammaireRepository
+                ->findByLevel($hskLevel);
+
+        $this->title =
+            'Chinois | Grammaire '
+            . $hskLevel;
+
+        $this->render(
+            'pages/chinois/hsk',
+            [
+                'grammaires' => $grammaires,
+                'level' => (string) $level,
+            ],
+        );
     }
 
     public function flashcards(): never
@@ -171,7 +182,7 @@ final class ChinoisController extends Controller
 
     public function updateGrammaire(ChinoisGrammaireCreateRequest $request, int $id): never
     {
-        $grammaire = $this->chinoisGrammaireRepository->findById($id) ??
+        $this->chinoisGrammaireRepository->findById($id) ??
             throw new NotFoundException('Grammaire introuvable');
 
         if ($request->fails()) {
@@ -197,26 +208,47 @@ final class ChinoisController extends Controller
         $this->redirectWithSuccess($returnTo !== '' ? $returnTo : 'chinois/grammaire/hsk' . $level, 'Grammaire modifiée.');
     }
 
-    public function updateVocabulaire(ChinoisVocabulaireCreateRequest $request, int $id): never
-    {
-        $vocabulaire = $this->chinoisVocabulaireRepository->findById($id) ??
+    public function updateVocabulaire(
+        ChinoisVocabulaireCreateRequest $request,
+        int $id,
+    ): never {
+
+        $this->chinoisVocabulaireRepository->findById($id) ??
             throw new NotFoundException('Vocabulaire introuvable');
 
         if ($request->fails()) {
-            throw new ValidationException($request->errors());
+            throw new ValidationException(
+                $request->errors(),
+            );
         }
 
         $dto = $request->dto();
-        $this->chinoisVocabulaireRepository->updateVocabulaire($id, [
-            'langue' => $dto->langue,
-            'mot' => $dto->mot,
-            'pinyin' => $dto->pinyin,
-            'type' => $dto->type,
-            'traduction' => $dto->traduction,
-            'exemple' => $dto->exemple,
-        ]);
 
-        $returnTo = (string) $this->request->input('return_to', '');
-        $this->redirectWithSuccess($returnTo !== '' ? $returnTo : 'chinois/' . $dto->langue, 'Vocabulaire modifié.');
+        $this->chinoisVocabulaireRepository
+            ->updateVocabulaire(
+                $id,
+                [
+                    'langue' => $dto->langue,
+                    'mot' => $dto->mot,
+                    'pinyin' => $dto->pinyin,
+                    'type' => $dto->type,
+                    'traduction' => $dto->traduction,
+                    'exemple' => $dto->exemple,
+                ],
+            );
+
+        $returnTo =
+            (string) $this->request
+                ->input(
+                    'return_to',
+                    '',
+                );
+
+        $this->redirectWithSuccess(
+            $returnTo !== ''
+                ? $returnTo
+                : 'chinois/' . $dto->langue,
+            'Vocabulaire modifié.',
+        );
     }
 }

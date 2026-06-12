@@ -46,7 +46,7 @@ final class ChinoisAjaxController extends Controller
         $maitrise = $this->repository->toggleMaitrise($id);
 
         if (
-            $maitrise === 1
+            $maitrise
             && $grammaire !== null
             && ! $grammaire->xpRewarded
         ) {
@@ -64,7 +64,7 @@ final class ChinoisAjaxController extends Controller
 
         $this->jsonResult(
             ServiceResult::success(
-                message: $maitrise === 1
+                message: $maitrise
                     ? 'Grammaire maîtrisée'
                     : 'Grammaire non maîtrisée',
 
@@ -89,7 +89,7 @@ final class ChinoisAjaxController extends Controller
         $maitrise = $this->vocabulaireRepository->toggleMaitrise($id);
 
         if (
-            $maitrise === 1
+            $maitrise
             && $vocabulaire !== null
             && ! $vocabulaire->xp_rewarded
         ) {
@@ -107,7 +107,7 @@ final class ChinoisAjaxController extends Controller
 
         $this->jsonResult(
             ServiceResult::success(
-                message: $maitrise === 1
+                message: $maitrise
                     ? 'Vocabulaire maîtrisé'
                     : 'Vocabulaire non maîtrisé',
 

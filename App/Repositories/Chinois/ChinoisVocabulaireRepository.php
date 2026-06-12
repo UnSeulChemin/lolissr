@@ -93,7 +93,7 @@ final class ChinoisVocabulaireRepository extends Model
 
     public function toggleMaitrise(
         int $id,
-    ): int {
+    ): bool {
 
         $this->guardWrite();
 
@@ -114,10 +114,10 @@ final class ChinoisVocabulaireRepository extends Model
 
         if ($result === null)
         {
-            return 0;
+            return false;
         }
 
-        return (int) $result->maitrise;
+        return (bool) $result->maitrise;
     }
 
     public function deleteVocabulaire(

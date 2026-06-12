@@ -36,10 +36,10 @@ $baseUri =
                     <?php
 
                     $isMaitrise =
-                        (int) (
+                        (bool) (
                             $vocabulaire->maitrise
-                            ?? 0
-                        ) === 1;
+                            ?? false
+                        );
 
                     ?>
 

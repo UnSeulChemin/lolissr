@@ -116,7 +116,7 @@ final class ChinoisGrammaireRepository extends Model
                     maitrise: (bool) $row->maitrise,
 
                     xpRewarded:
-                        (int) $row->xp_rewarded,
+                        (bool) $row->xp_rewarded,
                 );
             },
             $results,
@@ -125,7 +125,7 @@ final class ChinoisGrammaireRepository extends Model
 
     public function toggleMaitrise(
         int $id,
-    ): int {
+    ): bool {
 
         $this->guardWrite();
 
@@ -146,10 +146,10 @@ final class ChinoisGrammaireRepository extends Model
 
         if ($result === null)
         {
-            return 0;
+            return false;
         }
 
-        return (int) $result->maitrise;
+        return (bool) $result->maitrise;
     }
 
     public function findById(
@@ -225,7 +225,7 @@ final class ChinoisGrammaireRepository extends Model
             maitrise: (bool) $result->maitrise,
 
             xpRewarded:
-                (int) $result->xp_rewarded,
+                (bool) $result->xp_rewarded,
         );
     }
 
