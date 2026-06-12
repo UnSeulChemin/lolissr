@@ -458,7 +458,7 @@ final class MangaRepository extends Model
 
         return $this->execute(
             "
-            UPDATE manga
+            UPDATE {$this->table()}
             SET xp_series_rewarded = 1
             WHERE slug = :slug
             ",

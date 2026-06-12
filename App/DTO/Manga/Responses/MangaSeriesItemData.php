@@ -17,7 +17,7 @@ final readonly class MangaSeriesItemData
         public ?float $averageNote,
         public int $total,
         public int $totalLu,
-        public int $lu,
+        public bool $lu,
     ) {
     }
 }

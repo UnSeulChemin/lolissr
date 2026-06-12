@@ -6,6 +6,7 @@ namespace App\Repositories\Manga;
 
 use App\Models\Manga;
 use App\Models\Model;
+use Framework\Support\Str;
 
 final class MangaStatsRepository extends Model
 {
@@ -198,7 +199,7 @@ final class MangaStatsRepository extends Model
             WHERE slug = :slug
             ",
             [
-                'slug' => $slug,
+                'slug' => Str::slug($slug),
             ],
         );
 

@@ -13,7 +13,7 @@ final readonly class MangaSearchItemData
         public ?string $thumbnail,
         public ?string $extension,
         public ?int $note,
-        public int $lu,
+        public bool $lu,
     ) {
     }
 }

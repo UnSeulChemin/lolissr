@@ -12,6 +12,11 @@ final class MangaSearchRepository extends Model
 {
     protected string $table = 'manga';
 
+    private const ALLOWED_ORDER_BY = [
+        'id DESC',
+        'id ASC',
+    ];
+
     private function normalizeSearch(
         string $search,
     ): string {
@@ -185,19 +190,21 @@ final class MangaSearchRepository extends Model
     /**
      * @return list<Manga>
      */
-    public function findAllFirstTomes(string $orderBy, int $perPage, int $page): array
-    {
+    public function findAllFirstTomes(
+        string $orderBy,
+        int $perPage,
+        int $page,
+    ): array {
         $page = max(1, $page);
         $perPage = max(1, $perPage);
         $offset = ($page - 1) * $perPage;
 
-        $allowedOrderBy = ['id DESC', 'id ASC'];
-        if (!in_array($orderBy, $allowedOrderBy, true))
-        {
+        if (! in_array($orderBy, self::ALLOWED_ORDER_BY, true)) {
             $orderBy = 'id DESC';
         }
 
-        $sql = "
+        return $this->fetchAll(
+            "
             SELECT
                 m.*,
                 stats.total,
@@ -209,19 +216,22 @@ final class MangaSearchRepository extends Model
                     slug,
                     COUNT(*) AS total,
                     SUM(CASE WHEN lu = 1 THEN 1 ELSE 0 END) AS total_lu,
-                    ROUND(AVG(COALESCE(note,0)),1) AS average_note
+                    ROUND(AVG(COALESCE(note, 0)), 1) AS average_note
                 FROM {$this->table()}
                 GROUP BY slug
-            ) stats ON stats.slug = m.slug
+            ) stats
+                ON stats.slug = m.slug
             WHERE m.numero = 1
             ORDER BY
                 CASE WHEN stats.total_lu < stats.total THEN 0 ELSE 1 END ASC,
-                CASE WHEN m.statut='termine' THEN 1 ELSE 0 END ASC,
+                CASE WHEN m.statut = 'termine' THEN 1 ELSE 0 END ASC,
                 stats.average_note ASC,
                 {$orderBy}
-            LIMIT {$perPage} OFFSET {$offset}
-        ";
-
-        return $this->fetchAll($sql, [], Manga::class);
+            LIMIT {$perPage}
+            OFFSET {$offset}
+            ",
+            [],
+            Manga::class,
+        );
     }
 }

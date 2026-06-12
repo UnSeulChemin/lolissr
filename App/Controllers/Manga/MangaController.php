@@ -18,7 +18,6 @@ use Framework\Http\Request;
 final class MangaController extends Controller
 {
     private const SERIES_PATH = 'manga/series';
-    private const EDIT_PATH = 'manga/series/modifier';
 
     public function __construct(
         private readonly MangaReadService $mangaReadService,
@@ -33,36 +32,6 @@ final class MangaController extends Controller
     | Helpers
     |--------------------------------------------------------------------------
     */
-
-    private function redirectToCanonicalUrl(
-        string $requestedSlug,
-        string $canonicalSlug,
-        string $pathPrefix,
-        ?int $numero = null
-    ): void {
-        $requestedSlug = trim($requestedSlug);
-        $canonicalSlug = trim($canonicalSlug);
-
-        if ($canonicalSlug === '' || $requestedSlug === $canonicalSlug) {
-            return;
-        }
-
-        $location = sprintf('%s/%s', trim($pathPrefix, '/'), rawurlencode($canonicalSlug));
-        if ($numero !== null) {
-            $location .= '/' . $numero;
-        }
-
-        if (trim($location, '/') === trim($this->request->path(), '/')) {
-            return;
-        }
-
-        $this->redirect($location, 301);
-    }
-
-    private function buildEditPath(string $slug, int $numero): string
-    {
-        return sprintf('%s/%s/%d', self::EDIT_PATH, rawurlencode($slug), $numero);
-    }
 
     private function resolveMangaOrFail(string $slug, int $numero): MangaShowData
     {
@@ -151,7 +120,6 @@ final class MangaController extends Controller
     public function show(string $slug, int $numero): never
     {
         $data = $this->resolveMangaOrFail($slug, $numero);
-        $this->redirectToCanonicalUrl($slug, $data->canonicalSlug, self::SERIES_PATH, $numero);
         $this->title = 'Manga | ' . $data->manga->livre;
         $this->render('pages/manga/livre', ['manga' => $data->manga]);
     }
@@ -171,7 +139,6 @@ final class MangaController extends Controller
     public function edit(string $slug, int $numero): never
     {
         $data = $this->resolveMangaOrFail($slug, $numero);
-        $this->redirectToCanonicalUrl($slug, $data->canonicalSlug, self::EDIT_PATH, $numero);
         $this->title = 'Manga | Modifier';
         $this->render('pages/manga/modifier', ['manga' => $data->manga]);
     }
@@ -189,11 +156,6 @@ final class MangaController extends Controller
     public function update(MangaUpdateRequest $request, string $slug, int $numero): never
     {
         $data = $this->resolveMangaOrFail($slug, $numero);
-        $redirectPath = $this->buildEditPath($data->canonicalSlug, $numero);
-
-        if ($slug !== $data->canonicalSlug) {
-            throw new BaseHttpException(message: 'URL non canonique', statusCode: 409, data: ['redirect' => $redirectPath]);
-        }
 
         if ($request->fails()) {
             throw new ValidationException($request->errors());

@@ -43,13 +43,17 @@ final class MangaAjaxController extends Controller
             : sprintf('%s/%s', $this->baseUri, self::SERIES_PATH);
     }
 
-    private function validateNote(int $jacquette, int $livreNote): void
-    {
-        if ($jacquette < self::MIN_NOTE || $jacquette > self::MAX_NOTE) {
-            throw new ValidationException(['jacquette' => 'Note invalide']);
-        }
-        if ($livreNote < self::MIN_NOTE || $livreNote > self::MAX_NOTE) {
-            throw new ValidationException(['livre_note' => 'Note invalide']);
+    private function validateNote(
+        int $note,
+        string $field,
+    ): void {
+        if (
+            $note < self::MIN_NOTE
+            || $note > self::MAX_NOTE
+        ) {
+            throw new ValidationException([
+                $field => 'Note invalide',
+            ]);
         }
     }
 
@@ -124,7 +128,15 @@ final class MangaAjaxController extends Controller
         $jacquette = (int) $this->request->input('jacquette', 0);
         $livreNote = (int) $this->request->input('livre_note', 0);
 
-        $this->validateNote($jacquette, $livreNote);
+        $this->validateNote(
+            $jacquette,
+            'jacquette',
+        );
+
+        $this->validateNote(
+            $livreNote,
+            'livre_note',
+        );
 
         $dto = MangaUpdateNoteDTO::fromArray([
             'jacquette' => $jacquette,
