@@ -60,20 +60,20 @@ final readonly class ChinoisReadService
     }
 
     /**
-     * @return list<ChinoisGrammaire>
+     * @return list<ChinoisGrammaireData>
      */
     public function flashcardsGrammaire(): array
     {
         return $this->grammaireRepository
-            ->findNotMastered();
+            ->findNotMasteredDto();
     }
 
     /**
-     * @return list<ChinoisVocabulaire>
+     * @return list<ChinoisVocabulaireData>
      */
     public function flashcardsVocabulaire(): array
     {
         return $this->vocabulaireRepository
-            ->findNotMastered();
+            ->findNotMasteredDto();
     }
 }

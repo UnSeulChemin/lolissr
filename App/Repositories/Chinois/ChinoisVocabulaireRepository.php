@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Repositories\Chinois;
 
 use App\DTO\Chinois\Responses\ChinoisVocabulaireData;
-use App\Models\ChinoisVocabulaire;
 use App\Models\Model;
 
 use Framework\Application\App;
@@ -51,6 +50,45 @@ final class ChinoisVocabulaireRepository extends Model
 
             xpRewarded:
                 (bool) $row->xp_rewarded,
+        );
+    }
+
+    /**
+     * @return list<ChinoisVocabulaireData>
+     */
+    public function findNotMasteredDto(): array
+    {
+        $query = $this->query(
+            "SELECT
+                id,
+                langue,
+                mot,
+                pinyin,
+                type,
+                traduction,
+                exemple,
+                maitrise,
+                xp_rewarded
+
+            FROM {$this->table()}
+
+            WHERE maitrise = 0
+
+            ORDER BY id ASC"
+        );
+
+        if ($query === false)
+        {
+            return [];
+        }
+
+        /** @var list<stdClass> $results */
+        $results = $query->fetchAll();
+
+        return array_map(
+            fn (stdClass $row)
+                => $this->mapRowToDto($row),
+            $results,
         );
     }
 
@@ -211,38 +249,6 @@ final class ChinoisVocabulaireRepository extends Model
         return $result !== null
             ? (int) $result->total
             : 0;
-    }
-
-    /**
-     * @return list<ChinoisVocabulaire>
-     */
-    public function findNotMastered(): array
-    {
-        /** @var list<ChinoisVocabulaire> $vocabulaires */
-        $vocabulaires =
-            $this->fetchAll(
-                "SELECT
-                    id,
-                    langue,
-                    mot,
-                    pinyin,
-                    type,
-                    traduction,
-                    exemple,
-                    maitrise,
-                    xp_rewarded,
-                    created_at
-
-                FROM {$this->table()}
-
-                WHERE maitrise = 0
-
-                ORDER BY id ASC",
-                [],
-                ChinoisVocabulaire::class,
-            );
-
-        return $vocabulaires;
     }
 
     public function countMastered(): int

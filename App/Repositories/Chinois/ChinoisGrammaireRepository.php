@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace App\Repositories\Chinois;
 
 use App\DTO\Chinois\Responses\ChinoisGrammaireData;
-use App\Models\ChinoisGrammaire;
 use App\Models\Model;
+
 use Framework\Application\App;
+
 use LogicException;
 use stdClass;
 
@@ -25,6 +26,96 @@ final class ChinoisGrammaireRepository extends Model
 
         throw new LogicException(
             'Écriture en base interdite en mode lecture seule.',
+        );
+    }
+
+    private function mapRowToDto(
+        stdClass $row,
+    ): ChinoisGrammaireData
+    {
+        return new ChinoisGrammaireData(
+            id: (int) $row->id,
+            niveau: (string) $row->niveau,
+
+            section: (string) $row->section,
+            sectionPosition: (int) $row->section_position,
+
+            categorie: (string) $row->categorie,
+            categoriePosition: (int) $row->categorie_position,
+
+            titre: (string) $row->titre,
+            structure: (string) $row->structure,
+
+            abreviation:
+                $row->abreviation !== null
+                    ? (string) $row->abreviation
+                    : null,
+
+            phrase: (string) $row->phrase,
+
+            pinyin:
+                $row->pinyin !== null
+                    ? (string) $row->pinyin
+                    : '',
+
+            traduction: (string) $row->traduction,
+
+            explication:
+                $row->explication !== null
+                    ? (string) $row->explication
+                    : null,
+
+            position: (int) $row->position,
+            maitrise: (bool) $row->maitrise,
+
+            xpRewarded:
+                (bool) $row->xp_rewarded,
+        );
+    }
+
+    /**
+     * @return list<ChinoisGrammaireData>
+     */
+    public function findNotMasteredDto(): array
+    {
+        $query = $this->query(
+            "SELECT
+                id,
+                niveau,
+                section,
+                section_position,
+                categorie,
+                categorie_position,
+                titre,
+                structure,
+                abreviation,
+                phrase,
+                pinyin,
+                traduction,
+                explication,
+                position,
+                maitrise,
+                xp_rewarded
+
+            FROM {$this->table()}
+
+            WHERE maitrise = 0
+
+            ORDER BY id ASC"
+        );
+
+        if ($query === false)
+        {
+            return [];
+        }
+
+        /** @var list<stdClass> $results */
+        $results = $query->fetchAll();
+
+        return array_map(
+            fn (stdClass $row)
+                => $this->mapRowToDto($row),
+            $results,
         );
     }
 
@@ -76,49 +167,8 @@ final class ChinoisGrammaireRepository extends Model
             $query->fetchAll();
 
         return array_map(
-            static function (
-                stdClass $row,
-            ): ChinoisGrammaireData {
-
-                return new ChinoisGrammaireData(
-                    id: (int) $row->id,
-                    niveau: (string) $row->niveau,
-
-                    section: (string) $row->section,
-                    sectionPosition: (int) $row->section_position,
-
-                    categorie: (string) $row->categorie,
-                    categoriePosition: (int) $row->categorie_position,
-
-                    titre: (string) $row->titre,
-                    structure: (string) $row->structure,
-
-                    abreviation:
-                        $row->abreviation !== null
-                            ? (string) $row->abreviation
-                            : null,
-
-                    phrase: (string) $row->phrase,
-
-                    pinyin:
-                        isset($row->pinyin)
-                            ? (string) $row->pinyin
-                            : '',
-
-                    traduction: (string) $row->traduction,
-
-                    explication:
-                        $row->explication !== null
-                            ? (string) $row->explication
-                            : null,
-
-                    position: (int) $row->position,
-                    maitrise: (bool) $row->maitrise,
-
-                    xpRewarded:
-                        (bool) $row->xp_rewarded,
-                );
-            },
+            fn (stdClass $row)
+                => $this->mapRowToDto($row),
             $results,
         );
     }
@@ -189,44 +239,7 @@ final class ChinoisGrammaireRepository extends Model
             return null;
         }
 
-        return new ChinoisGrammaireData(
-            id: (int) $result->id,
-            niveau: (string) $result->niveau,
-
-            section: (string) $result->section,
-            sectionPosition: (int) $result->section_position,
-
-            categorie: (string) $result->categorie,
-            categoriePosition: (int) $result->categorie_position,
-
-            titre: (string) $result->titre,
-            structure: (string) $result->structure,
-
-            abreviation:
-                $result->abreviation !== null
-                    ? (string) $result->abreviation
-                    : null,
-
-            phrase: (string) $result->phrase,
-
-            pinyin:
-                isset($result->pinyin)
-                    ? (string) $result->pinyin
-                    : '',
-
-            traduction: (string) $result->traduction,
-
-            explication:
-                $result->explication !== null
-                    ? (string) $result->explication
-                    : null,
-
-            position: (int) $result->position,
-            maitrise: (bool) $result->maitrise,
-
-            xpRewarded:
-                (bool) $result->xp_rewarded,
-        );
+        return $this->mapRowToDto($result);
     }
 
     public function deleteGrammaire(
@@ -282,44 +295,6 @@ final class ChinoisGrammaireRepository extends Model
         return $result !== null
             ? (int) $result->total
             : 0;
-    }
-
-    /**
-     * @return list<ChinoisGrammaire>
-     */
-    public function findNotMastered(): array
-    {
-        /** @var list<ChinoisGrammaire> $grammaires */
-        $grammaires =
-            $this->fetchAll(
-                "SELECT
-                    id,
-                    niveau,
-                    titre,
-                    structure,
-                    abreviation,
-                    phrase,
-                    pinyin,
-                    traduction,
-                    explication,
-                    maitrise,
-                    section,
-                    section_position,
-                    categorie,
-                    categorie_position,
-                    position,
-                    created_at
-
-                FROM {$this->table()}
-
-                WHERE maitrise = 0
-
-                ORDER BY id ASC",
-                [],
-                ChinoisGrammaire::class,
-            );
-
-        return $grammaires;
     }
 
     public function countMastered(): int
