@@ -207,4 +207,74 @@ final readonly class ChinoisWriteService
             },
         );
     }
+
+    public function updateGrammaire(
+        int $id,
+        ChinoisGrammaireCreateDTO $dto,
+    ): bool {
+
+        return $this->grammaireRepository
+            ->updateGrammaire(
+                $id,
+                [
+                    'niveau' => $dto->niveau,
+                    'titre' => $dto->titre,
+                    'structure' => $dto->structure,
+                    'abreviation' => $dto->abreviation,
+                    'phrase' => $dto->phrase,
+                    'pinyin' => $dto->pinyin,
+                    'traduction' => $dto->traduction,
+                    'explication' => $dto->explication,
+                    'section' => $dto->section,
+                    'categorie' => $dto->categorie,
+                ],
+            );
+    }
+
+    public function updateVocabulaire(
+        int $id,
+        ChinoisVocabulaireCreateDTO $dto,
+    ): bool {
+
+        return $this->vocabulaireRepository
+            ->updateVocabulaire(
+                $id,
+                [
+                    'langue' => $dto->langue,
+                    'mot' => $dto->mot,
+                    'pinyin' => $dto->pinyin,
+                    'type' => $dto->type,
+                    'traduction' => $dto->traduction,
+                    'exemple' => $dto->exemple,
+                ],
+            );
+    }
+
+    public function toggleGrammaireMaitrise(
+        int $id,
+    ): bool {
+        return $this->grammaireRepository
+            ->toggleMaitrise($id);
+    }
+
+    public function toggleVocabulaireMaitrise(
+        int $id,
+    ): bool {
+        return $this->vocabulaireRepository
+            ->toggleMaitrise($id);
+    }
+
+    public function markGrammaireXpRewarded(
+        int $id,
+    ): bool {
+        return $this->grammaireRepository
+            ->markXpRewarded($id);
+    }
+
+    public function markVocabulaireXpRewarded(
+        int $id,
+    ): bool {
+        return $this->vocabulaireRepository
+            ->markXpRewarded($id);
+    }
 }

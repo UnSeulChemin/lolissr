@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace App\Repositories\Chinois;
 
+use App\DTO\Chinois\Responses\ChinoisVocabulaireData;
 use App\Models\ChinoisVocabulaire;
 use App\Models\Model;
+
 use Framework\Application\App;
+
+use stdClass;
 use LogicException;
 
 final class ChinoisVocabulaireRepository extends Model
@@ -26,46 +30,77 @@ final class ChinoisVocabulaireRepository extends Model
         );
     }
 
+    private function mapRowToDto(
+        stdClass $row,
+    ): ChinoisVocabulaireData {
+        return new ChinoisVocabulaireData(
+            id: (int) $row->id,
+            langue: (string) $row->langue,
+            mot: (string) $row->mot,
+            pinyin: (string) $row->pinyin,
+            type: (string) $row->type,
+            traduction: (string) $row->traduction,
+
+            exemple:
+                $row->exemple !== null
+                    ? (string) $row->exemple
+                    : null,
+
+            maitrise:
+                (bool) $row->maitrise,
+
+            xpRewarded:
+                (bool) $row->xp_rewarded,
+        );
+    }
+
     /**
-     * @return list<ChinoisVocabulaire>
+     * @return list<ChinoisVocabulaireData>
      */
     public function findByLangue(
         string $langue,
-    ): array {
+    ): array
+    {
+        $query = $this->query(
+            "SELECT
+                id,
+                langue,
+                mot,
+                pinyin,
+                type,
+                traduction,
+                exemple,
+                maitrise,
+                xp_rewarded
 
-        /** @var list<ChinoisVocabulaire> $vocabulaire */
-        $vocabulaire =
-            $this->fetchAll(
-                "SELECT
-                    id,
-                    langue,
-                    mot,
-                    pinyin,
-                    type,
-                    traduction,
-                    exemple,
-                    maitrise,
-                    xp_rewarded,
-                    created_at
+            FROM {$this->table()}
 
-                FROM {$this->table()}
+            WHERE langue = ?
 
-                WHERE langue = ?
+            ORDER BY id DESC",
+            [$langue],
+        );
 
-                ORDER BY id DESC",
-                [$langue],
-                ChinoisVocabulaire::class,
-            );
+        if ($query === false)
+        {
+            return [];
+        }
 
-        return $vocabulaire;
+        /** @var list<stdClass> $results */
+        $results = $query->fetchAll();
+
+        return array_map(
+            fn (stdClass $row)
+                => $this->mapRowToDto($row),
+            $results,
+        );
     }
 
     public function findById(
         int $id,
-    ): ?ChinoisVocabulaire {
+    ): ?ChinoisVocabulaireData {
 
-        /** @var ChinoisVocabulaire|null $vocabulaire */
-        $vocabulaire =
+        $result =
             $this->fetchOne(
                 "SELECT
                     id,
@@ -76,8 +111,7 @@ final class ChinoisVocabulaireRepository extends Model
                     traduction,
                     exemple,
                     maitrise,
-                    xp_rewarded,
-                    created_at
+                    xp_rewarded
 
                 FROM {$this->table()}
 
@@ -85,10 +119,14 @@ final class ChinoisVocabulaireRepository extends Model
 
                 LIMIT 1",
                 [$id],
-                ChinoisVocabulaire::class,
             );
 
-        return $vocabulaire;
+        if ($result === null)
+        {
+            return null;
+        }
+
+        return $this->mapRowToDto($result);
     }
 
     public function toggleMaitrise(

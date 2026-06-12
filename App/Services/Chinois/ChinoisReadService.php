@@ -4,43 +4,76 @@ declare(strict_types=1);
 
 namespace App\Services\Chinois;
 
-use App\Models\ChinoisVocabulaire;
+use App\DTO\Chinois\Responses\ChinoisGrammaireData;
+use App\DTO\Chinois\Responses\ChinoisVocabulaireData;
+use App\Repositories\Chinois\ChinoisGrammaireRepository;
 use App\Repositories\Chinois\ChinoisVocabulaireRepository;
 
 final readonly class ChinoisReadService
 {
     public function __construct(
-        private ChinoisVocabulaireRepository $chinoisRepository,
+        private ChinoisVocabulaireRepository $vocabulaireRepository,
+        private ChinoisGrammaireRepository $grammaireRepository,
     ) {
     }
 
     /**
-     * @return list<ChinoisVocabulaire>
+     * @return list<ChinoisVocabulaireData>
      */
     public function mandarin(): array
     {
-        return $this->findByLangue(
-            'mandarin',
-        );
+        return $this->vocabulaireRepository
+            ->findByLangue('mandarin');
     }
 
     /**
-     * @return list<ChinoisVocabulaire>
+     * @return list<ChinoisVocabulaireData>
      */
     public function jinyu(): array
     {
-        return $this->findByLangue(
-            'jinyu',
-        );
+        return $this->vocabulaireRepository
+            ->findByLangue('jinyu');
+    }
+
+    /**
+     * @return list<ChinoisGrammaireData>
+     */
+    public function hsk(
+        string $niveau,
+    ): array {
+        return $this->grammaireRepository
+            ->findByLevel($niveau);
+    }
+
+    public function grammaire(
+        int $id,
+    ): ?ChinoisGrammaireData {
+        return $this->grammaireRepository
+            ->findById($id);
+    }
+
+    public function vocabulaire(
+        int $id,
+    ): ?ChinoisVocabulaireData {
+        return $this->vocabulaireRepository
+            ->findById($id);
+    }
+
+    /**
+     * @return list<ChinoisGrammaire>
+     */
+    public function flashcardsGrammaire(): array
+    {
+        return $this->grammaireRepository
+            ->findNotMastered();
     }
 
     /**
      * @return list<ChinoisVocabulaire>
      */
-    private function findByLangue(
-        string $langue,
-    ): array {
-        return $this->chinoisRepository
-            ->findByLangue($langue);
+    public function flashcardsVocabulaire(): array
+    {
+        return $this->vocabulaireRepository
+            ->findNotMastered();
     }
 }

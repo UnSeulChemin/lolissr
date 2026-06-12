@@ -7,8 +7,7 @@ namespace App\Controllers\Chinois;
 use App\Constants\UserXp;
 use App\Controllers\Controller;
 use App\DTO\Common\ServiceResult;
-use App\Repositories\Chinois\ChinoisGrammaireRepository;
-use App\Repositories\Chinois\ChinoisVocabulaireRepository;
+use App\Services\Chinois\ChinoisReadService;
 use App\Services\Chinois\ChinoisWriteService;
 use App\Services\User\UserLevelService;
 use Framework\Exceptions\ValidationException;
@@ -17,8 +16,7 @@ use Framework\Http\Request;
 final class ChinoisAjaxController extends Controller
 {
     public function __construct(
-        private readonly ChinoisGrammaireRepository $repository,
-        private readonly ChinoisVocabulaireRepository $vocabulaireRepository,
+        private readonly ChinoisReadService $readService,
         private readonly ChinoisWriteService $writeService,
         private readonly UserLevelService $userLevelService,
         Request $request,
@@ -36,37 +34,47 @@ final class ChinoisAjaxController extends Controller
     {
         $id = (int) $this->request->input('id', 0);
 
-        if ($id <= 0) {
+        if ($id <= 0)
+        {
             throw new ValidationException([
                 'id' => 'ID invalide',
             ]);
         }
 
-        $grammaire = $this->repository->findById($id);
-        $maitrise = $this->repository->toggleMaitrise($id);
+        $grammaire =
+            $this->readService
+                ->grammaire($id);
+
+        $maitrise =
+            $this->writeService
+                ->toggleGrammaireMaitrise($id);
 
         if (
             $maitrise
             && $grammaire !== null
             && ! $grammaire->xpRewarded
-        ) {
+        )
+        {
             $user = user();
 
-            if ($user !== null) {
+            if ($user !== null)
+            {
                 $this->userLevelService->addXp(
                     $user,
                     UserXp::LEARN_GRAMMAR,
                 );
             }
 
-            $this->repository->markXpRewarded($id);
+            $this->writeService
+                ->markGrammaireXpRewarded($id);
         }
 
         $this->jsonResult(
             ServiceResult::success(
-                message: $maitrise
-                    ? 'Grammaire maîtrisée'
-                    : 'Grammaire non maîtrisée',
+                message:
+                    $maitrise
+                        ? 'Grammaire maîtrisée'
+                        : 'Grammaire non maîtrisée',
 
                 data: [
                     'maitrise' => $maitrise,
@@ -79,37 +87,47 @@ final class ChinoisAjaxController extends Controller
     {
         $id = (int) $this->request->input('id', 0);
 
-        if ($id <= 0) {
+        if ($id <= 0)
+        {
             throw new ValidationException([
                 'id' => 'ID invalide',
             ]);
         }
 
-        $vocabulaire = $this->vocabulaireRepository->findById($id);
-        $maitrise = $this->vocabulaireRepository->toggleMaitrise($id);
+        $vocabulaire =
+            $this->readService
+                ->vocabulaire($id);
+
+        $maitrise =
+            $this->writeService
+                ->toggleVocabulaireMaitrise($id);
 
         if (
             $maitrise
             && $vocabulaire !== null
-            && ! $vocabulaire->xp_rewarded
-        ) {
+            && ! $vocabulaire->xpRewarded
+        )
+        {
             $user = user();
 
-            if ($user !== null) {
+            if ($user !== null)
+            {
                 $this->userLevelService->addXp(
                     $user,
                     UserXp::LEARN_VOCABULARY,
                 );
             }
 
-            $this->vocabulaireRepository->markXpRewarded($id);
+            $this->writeService
+                ->markVocabulaireXpRewarded($id);
         }
 
         $this->jsonResult(
             ServiceResult::success(
-                message: $maitrise
-                    ? 'Vocabulaire maîtrisé'
-                    : 'Vocabulaire non maîtrisé',
+                message:
+                    $maitrise
+                        ? 'Vocabulaire maîtrisé'
+                        : 'Vocabulaire non maîtrisé',
 
                 data: [
                     'maitrise' => $maitrise,
