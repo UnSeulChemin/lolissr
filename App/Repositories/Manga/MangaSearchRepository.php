@@ -6,6 +6,7 @@ namespace App\Repositories\Manga;
 
 use App\Models\Manga;
 use App\Models\Model;
+
 use Framework\Support\Str;
 
 final class MangaSearchRepository extends Model

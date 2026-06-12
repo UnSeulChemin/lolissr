@@ -4,16 +4,64 @@ declare(strict_types=1);
 
 namespace App\Repositories\Manga;
 
-use App\Models\Manga;
+use App\DTO\Manga\Responses\MangaData;
 use App\Models\Model;
+use App\Models\Manga;
+
 use Framework\Application\App;
 use Framework\Support\MangaNoteNormalizer;
 use Framework\Support\Str;
+
 use LogicException;
 
 final class MangaRepository extends Model
 {
     protected string $table = 'manga';
+
+    private function mapToDto(
+        Manga $manga,
+    ): MangaData
+    {
+        return new MangaData(
+            id: $manga->id,
+            slug: $manga->slug,
+            livre: $manga->livre,
+
+            thumbnail:
+                $manga->thumbnail !== ''
+                    ? $manga->thumbnail
+                    : null,
+
+            extension:
+                $manga->extension !== ''
+                    ? $manga->extension
+                    : null,
+
+            editeur: $manga->editeur,
+
+            numero: $manga->numero,
+
+            lu: $manga->lu,
+
+            statut: $manga->statut,
+
+            jacquette: $manga->jacquette,
+            livreNote: $manga->livre_note,
+            note: $manga->note,
+
+            commentaire: $manga->commentaire,
+
+            total: $manga->total,
+            totalLu: $manga->total_lu,
+            averageNote: $manga->average_note,
+
+            xpReadRewarded:
+                (bool) $manga->xp_read_rewarded,
+
+            xpSeriesRewarded:
+                (bool) $manga->xp_series_rewarded,
+        );
+    }
 
     private function guardWrite(): void
     {
@@ -148,6 +196,20 @@ final class MangaRepository extends Model
         return $mangas;
     }
 
+    /**
+     * @return list<MangaData>
+     */
+    public function findBySlugDto(
+        string $slug,
+    ): array {
+
+        return array_map(
+            fn (Manga $manga)
+                => $this->mapToDto($manga),
+            $this->findBySlug($slug),
+        );
+    }
+
     public function findOneBySlugAndNumero(
         string $slug,
         int $numero,
@@ -170,6 +232,25 @@ final class MangaRepository extends Model
         );
 
         return $manga;
+    }
+
+    public function findOneDtoBySlugAndNumero(
+        string $slug,
+        int $numero,
+    ): ?MangaData {
+
+        $manga =
+            $this->findOneBySlugAndNumero(
+                $slug,
+                $numero,
+            );
+
+        if ($manga === null)
+        {
+            return null;
+        }
+
+        return $this->mapToDto($manga);
     }
 
     /**

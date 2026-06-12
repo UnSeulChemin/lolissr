@@ -211,7 +211,7 @@ final readonly class MangaReadService
 
         $manga =
             $this->mangaRepository
-                ->findOneBySlugAndNumero(
+                ->findOneDtoBySlugAndNumero(
                     $slug,
                     $numero,
                 );
