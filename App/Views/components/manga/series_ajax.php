@@ -73,11 +73,7 @@ $baseUri =
     $averageNote =
         isset($manga->averageNote)
             ? (float) $manga->averageNote
-            : (
-                isset($manga->average_note)
-                    ? (float) $manga->average_note
-                    : null
-            );
+            : null;
 
     $total =
         isset($manga->total)

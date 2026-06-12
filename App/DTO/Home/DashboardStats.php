@@ -37,16 +37,16 @@ final readonly class DashboardStats
         public ?MangaStatsData $lastTome,
         public ?MangaStatsData $longestSeries,
 
-        /** @var list<Manga> */
+        /** @var list<MangaStatsData> */
         public array $topLongestSeries,
 
-        /** @var list<Manga> */
+        /** @var list<MangaStatsData> */
         public array $lowRatedMangas,
 
-        /** @var list<Manga> */
+        /** @var list<MangaStatsData> */
         public array $lowJacquetteMangas,
 
-        /** @var list<Manga> */
+        /** @var list<MangaStatsData> */
         public array $lowLivreStateMangas,
     ) {
     }
