@@ -1,12 +1,14 @@
 @echo off
 
+cd /d "%~dp0.."
+
 echo.
 echo ==========================
 echo      CLEAR CACHE
 echo ==========================
 echo.
 
-for %%f in (..\storage\cache\*) do (
+for %%f in (storage\cache\*) do (
     if /I not "%%~nxf"==".gitkeep" (
         del /f /q "%%f"
     )

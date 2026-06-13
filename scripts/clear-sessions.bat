@@ -1,12 +1,14 @@
 @echo off
 
+cd /d "%~dp0.."
+
 echo.
 echo ==========================
-echo     CLEAR SESSIONS
+echo    CLEAR SESSIONS
 echo ==========================
 echo.
 
-for %%f in (..\storage\sessions\*) do (
+for %%f in (storage\sessions\*) do (
     if /I not "%%~nxf"==".gitkeep" (
         del /f /q "%%f"
     )
