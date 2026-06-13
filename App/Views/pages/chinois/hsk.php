@@ -55,7 +55,7 @@ foreach (array_keys($sections) as $section)
             '/[^a-z0-9]+/',
             '-',
             $sectionId,
-        );
+        ) ?? '';
 
     $sectionIds[$section] =
         trim(

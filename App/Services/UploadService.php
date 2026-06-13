@@ -165,6 +165,8 @@ final readonly class UploadService
             return null;
         }
 
+        assert($tmpName !== null);
+
         $mimeType = $this->finfo->file(
             $tmpName,
         );
@@ -346,6 +348,8 @@ final readonly class UploadService
                 422,
             );
         }
+
+        assert($tmpName !== null);
 
         $mimeType = $this->fileMimeType(
             $file,

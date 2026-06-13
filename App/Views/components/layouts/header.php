@@ -12,22 +12,6 @@ $currentSearch =
         ? (string) $currentSearch
         : '';
 
-$username =
-    user()->username;
-
-$usernameMain =
-    strlen($username) > 3
-        ? substr($username, 0, -3)
-        : $username;
-
-$usernameSuffix =
-    strlen($username) > 3
-        ? substr($username, -3)
-        : '';
-
-$level =
-    user()->level;
-
 ?>
 
 <header>
@@ -35,6 +19,31 @@ $level =
     <nav>
 
         <?php if (is_logged()): ?>
+
+            <?php
+
+            /** @var App\Models\User|null $user */
+            $user = user();
+
+            assert($user !== null);
+
+            $username =
+                $user->username;
+
+            $usernameMain =
+                strlen($username) > 3
+                    ? substr($username, 0, -3)
+                    : $username;
+
+            $usernameSuffix =
+                strlen($username) > 3
+                    ? substr($username, -3)
+                    : '';
+
+            $level =
+                $user->level;
+
+            ?>
 
             <div class="site-profile">
 

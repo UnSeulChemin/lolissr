@@ -24,6 +24,9 @@ final class ProfileController extends Controller
         $this->title = 'Profil';
 
         $user = user();
+
+        assert($user !== null);
+
         $stats = $this->profileStatsService->getStats();
 
         $this->render('pages/profile/index', [
