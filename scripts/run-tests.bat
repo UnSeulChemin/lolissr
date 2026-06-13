@@ -2,7 +2,7 @@
 title LoliSSR - Guild Verification Quest
 cls
 
-cd /d "%~dp0"
+cd /d "%~dp0.."
 
 echo.
 echo ============================================================
@@ -27,11 +27,11 @@ if errorlevel 1 (
     exit /b 1
 )
 
-if not exist "run-tests.php" (
+if not exist "tests\run-tests.php" (
     echo.
     echo [FAILED]
     echo.
-    echo The sacred script run-tests.php was not found.
+    echo The sacred script tests\run-tests.php was not found.
     echo The quest cannot begin.
     echo.
     pause
@@ -47,7 +47,7 @@ echo.
 echo Quest started.
 echo.
 
-php run-tests.php
+php tests\run-tests.php
 
 echo.
 echo ============================================================
