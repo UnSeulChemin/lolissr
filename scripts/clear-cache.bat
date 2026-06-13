@@ -2,18 +2,18 @@
 
 echo.
 echo ==========================
-echo     CLEAR SESSIONS
+echo      CLEAR CACHE
 echo ==========================
 echo.
 
-for %%f in (storage\sessions\*) do (
+for %%f in (..\storage\cache\*) do (
     if /I not "%%~nxf"==".gitkeep" (
         del /f /q "%%f"
     )
 )
 
 echo.
-echo Sessions videes.
+echo Cache vide.
 echo.
 
 pause
