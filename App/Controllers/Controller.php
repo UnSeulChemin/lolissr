@@ -364,11 +364,14 @@ abstract class Controller
         int $statusCode = 302,
     ): never {
 
-        $redirectUrl =
+        $isAbsoluteUrl =
             preg_match(
                 '#^https?://#i',
                 $url,
-            )
+            ) === 1;
+
+        $redirectUrl =
+            $isAbsoluteUrl
                 ? $url
                 : $this->baseUri
                     . '/'
