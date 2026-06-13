@@ -1,4 +1,8 @@
 {
+    "name": "lolissr/lolissr",
+    "description": "Site personnel",
+    "license": "proprietary",
+
     "require": {
         "php": "^8.3"
     },
