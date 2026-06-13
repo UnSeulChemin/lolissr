@@ -134,28 +134,6 @@ if (
             )
             || '';
 
-        // =================================
-        // DISABLE BROWSER PREFETCH
-        // =================================
-
-        if (
-            'connection'
-            in navigator
-        ) {
-
-            try {
-
-                navigator.connection.saveData =
-                    true;
-
-            } catch (
-                _
-            ) {
-
-                // Ignore
-            }
-        }
-
     </script>
 
     <?php if ($flashToast !== null): ?>

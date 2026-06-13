@@ -14,7 +14,15 @@ $baseUri =
 
 <section class="layout-container dashboard-page">
 
-    <section class="grammar-main-section">
+    <section
+        class="grammar-main-section"
+        data-flashcards='<?= e(json_encode(
+            $grammaires,
+            JSON_UNESCAPED_UNICODE
+            | JSON_THROW_ON_ERROR,
+        )) ?>'
+        data-base-uri="<?= e($baseUri) ?>"
+    >
 
         <?php if ($grammaires === []) : ?>
 
@@ -176,18 +184,3 @@ $baseUri =
     </section>
 
 </section>
-
-<script>
-
-window.flashcards =
-    <?= json_encode(
-        $grammaires,
-        JSON_UNESCAPED_UNICODE,
-    ) ?>;
-
-window.baseUri =
-    <?= json_encode(
-        $baseUri,
-    ) ?>;
-
-</script>

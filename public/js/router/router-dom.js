@@ -308,16 +308,6 @@ export function replaceContent(
             nextContent,
         );
 
-        /*
-        |------------------------------------------------------------------
-        | EXECUTE INLINE SCRIPTS
-        |------------------------------------------------------------------
-        */
-
-        executeScripts(
-            currentContent,
-        );
-
         debug(
             'ROUTER_DOM',
             'content-replaced',
@@ -331,42 +321,5 @@ export function replaceContent(
         );
 
         throw error;
-    }
-}
-
-function executeScripts(
-    container,
-)
-{
-    const scripts =
-        container.querySelectorAll(
-            'script',
-        );
-
-    for (
-        const script
-        of scripts
-    ) {
-        const replacement =
-            document.createElement(
-                'script',
-            );
-
-        for (
-            const attribute
-            of script.attributes
-        ) {
-            replacement.setAttribute(
-                attribute.name,
-                attribute.value,
-            );
-        }
-
-        replacement.textContent =
-            script.textContent;
-
-        script.replaceWith(
-            replacement,
-        );
     }
 }

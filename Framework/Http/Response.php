@@ -25,13 +25,11 @@ final class Response
         string $contentType,
     ): void {
 
-        if (headers_sent()) {
-            return;
+        if (! headers_sent()) {
+            header(
+                "Content-Type: {$contentType}; charset=UTF-8",
+            );
         }
-
-        header(
-            "Content-Type: {$contentType}; charset=UTF-8",
-        );
     }
 
     public static function html(

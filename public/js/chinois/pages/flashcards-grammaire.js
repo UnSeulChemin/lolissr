@@ -22,7 +22,7 @@ import {
 // CACHE
 // =========================================
 
-function invalidateGrammarPages()
+function invalidateGrammarPages(baseUri)
 {
     const routes = [
         'hsk1',
@@ -37,7 +37,7 @@ function invalidateGrammarPages()
     ) {
 
         const url =
-            `${window.baseUri}chinois/grammaire/${route}`;
+            `${baseUri}chinois/grammaire/${route}`;
 
         invalidateRoute(
             url,
@@ -55,12 +55,25 @@ function invalidateGrammarPages()
 
 export function initFlashcardsGrammairePage()
 {
+    const container =
+        document.querySelector(
+            '.grammar-main-section',
+        );
+
+    if (!container)
+    {
+        return;
+    }
+
     const cards =
-        Array.isArray(
-            window.flashcards,
-        )
-            ? [...window.flashcards]
-            : [];
+        JSON.parse(
+            container.dataset.flashcards
+            ?? '[]',
+        );
+
+    const baseUri =
+        container.dataset.baseUri
+        ?? '/';
 
     if (
         cards.length === 0
@@ -167,7 +180,7 @@ export function initFlashcardsGrammairePage()
             card.explication ?? '';
 
         editElement.href =
-            `${window.baseUri}chinois/grammaire/modifier/${card.id}?return_to=chinois/flashcards/grammaire`;
+            `${baseUri}chinois/grammaire/modifier/${card.id}?return_to=chinois/flashcards/grammaire`;
 
         if (
             deleteButton
@@ -251,7 +264,7 @@ export function initFlashcardsGrammairePage()
             {
                 const data =
                     await post(
-                        `${window.baseUri}chinois/ajax/toggle-grammaire-maitrise`,
+                        `${baseUri}chinois/ajax/toggle-grammaire-maitrise`,
                         {
                             id:
                                 card.id,
@@ -276,7 +289,7 @@ export function initFlashcardsGrammairePage()
                     window.location.href,
                 );
 
-                invalidateGrammarPages();
+                invalidateGrammarPages(baseUri);
 
                 cards.splice(
                     currentIndex,

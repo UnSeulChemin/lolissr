@@ -14,14 +14,17 @@ $baseUri =
 
 <section class="layout-container dashboard-page">
 
-    <section class="chinois-vocab-panel">
+    <section
+        class="chinois-vocab-panel"
+        data-flashcards='<?= e(json_encode(
+            $vocabulaires,
+            JSON_UNESCAPED_UNICODE
+            | JSON_THROW_ON_ERROR,
+        )) ?>'
+        data-base-uri="<?= e($baseUri) ?>"
+    >
 
-        <section
-            class="
-                chinois-vocab-list
-                chinois-vocab-list--flashcard
-            "
-        >
+        <section class="chinois-vocab-list chinois-vocab-list--flashcard">
 
             <?php if ($vocabulaires === []) : ?>
 
@@ -173,18 +176,3 @@ $baseUri =
     </section>
 
 </section>
-
-<script>
-
-window.flashcards =
-    <?= json_encode(
-        $vocabulaires,
-        JSON_UNESCAPED_UNICODE,
-    ) ?>;
-
-window.baseUri =
-    <?= json_encode(
-        $baseUri,
-    ) ?>;
-
-</script>

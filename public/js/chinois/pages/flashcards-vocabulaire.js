@@ -22,7 +22,7 @@ import {
 // CACHE
 // =========================================
 
-function invalidateVocabularyPages()
+function invalidateVocabularyPages(baseUri)
 {
     const routes = [
         'mandarin',
@@ -35,7 +35,7 @@ function invalidateVocabularyPages()
     ) {
 
         const url =
-            `${window.baseUri}chinois/${route}`;
+            `${baseUri}chinois/${route}`;
 
         invalidateRoute(
             url,
@@ -53,12 +53,25 @@ function invalidateVocabularyPages()
 
 export function initFlashcardsVocabulairePage()
 {
+    const container =
+        document.querySelector(
+            '.chinois-vocab-panel',
+        );
+
+    if (!container)
+    {
+        return;
+    }
+
     const cards =
-        Array.isArray(
-            window.flashcards,
-        )
-            ? [...window.flashcards]
-            : [];
+        JSON.parse(
+            container.dataset.flashcards
+            ?? '[]',
+        );
+
+    const baseUri =
+        container.dataset.baseUri
+        ?? '/';
 
     if (
         cards.length === 0
@@ -152,7 +165,7 @@ export function initFlashcardsVocabulairePage()
         }
 
         editElement.href =
-            `${window.baseUri}chinois/vocabulaire/modifier/${card.id}?return_to=chinois/flashcards/vocabulaire`;
+            `${baseUri}chinois/vocabulaire/modifier/${card.id}?return_to=chinois/flashcards/vocabulaire`;
 
         if (
             deleteButton
@@ -236,7 +249,7 @@ export function initFlashcardsVocabulairePage()
             {
                 const data =
                     await post(
-                        `${window.baseUri}chinois/ajax/toggle-vocabulaire-maitrise`,
+                        `${baseUri}chinois/ajax/toggle-vocabulaire-maitrise`,
                         {
                             id:
                                 card.id,
@@ -261,7 +274,7 @@ export function initFlashcardsVocabulairePage()
                     window.location.href,
                 );
 
-                invalidateVocabularyPages();
+                invalidateVocabularyPages(baseUri);
 
                 cards.splice(
                     currentIndex,
