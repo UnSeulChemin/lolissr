@@ -71,14 +71,10 @@ dist/
 build/
 
 #################################
-# TESTS / COVERAGE
+# TESTS
 #################################
 
-.phpunit.result.cache
-.phpunit.cache/
-
-coverage/
-tests/reports/
+tests/Http/reports/
 
 #################################
 # PHPSTAN
