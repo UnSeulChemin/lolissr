@@ -14,12 +14,25 @@ echo.
 echo ============================================================
 echo.
 
-php scripts/backup-database.php
+echo [SYSTEM]
+echo Locating archives...
+echo Connecting to database...
+echo Preparing storage vault...
+echo Generating SQL artifact...
+echo.
+echo Quest started.
+echo.
+
+php scripts\backup-database.php
 
 echo.
 echo ============================================================
 echo.
 echo                  QUEST COMPLETED
+echo.
+echo          The kingdom archives are secured.
+echo.
+echo      A new database artifact has been created.
 echo.
 echo ============================================================
 echo.

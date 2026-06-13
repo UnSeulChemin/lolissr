@@ -11,32 +11,14 @@ require ROOT . '/Framework/Support/helpers.php';
 
 Bootstrap::loadEnvOnly();
 
-$date =
-    date('Y-m-d');
-
-$host =
-    (string) env('DB_HOST');
-
-$port =
-    (string) env('DB_PORT');
-
-$database =
-    (string) env('DB_NAME');
-
-$user =
-    (string) env('DB_USER');
-
-$password =
-    (string) env('DB_PASS');
-
-$mysqldump =
-    (string) env('MYSQLDUMP_PATH');
+$timestamp =
+    date('Y-m-d_H-i-s');
 
 $backupDirectory =
     ROOT
     . '/storage/backups/database';
 
-if (!is_dir($backupDirectory))
+if (! is_dir($backupDirectory))
 {
     mkdir(
         $backupDirectory,
@@ -48,18 +30,18 @@ if (!is_dir($backupDirectory))
 $backupFile =
     $backupDirectory
     . '/backup-'
-    . $date
+    . $timestamp
     . '.sql';
 
 $command =
     sprintf(
         '"%s" -h%s -P%s -u%s -p%s %s > "%s"',
-        $mysqldump,
-        escapeshellarg($host),
-        escapeshellarg($port),
-        escapeshellarg($user),
-        escapeshellarg($password),
-        escapeshellarg($database),
+        env('MYSQLDUMP_PATH'),
+        escapeshellarg((string) env('DB_HOST')),
+        escapeshellarg((string) env('DB_PORT')),
+        escapeshellarg((string) env('DB_USER')),
+        escapeshellarg((string) env('DB_PASS')),
+        escapeshellarg((string) env('DB_NAME')),
         $backupFile,
     );
 
@@ -71,13 +53,13 @@ passthru(
 if ($result !== 0)
 {
     echo PHP_EOL;
-    echo 'Backup failed.';
+    echo '[FAILED] Database backup failed.';
     echo PHP_EOL;
 
     exit(1);
 }
 
 echo PHP_EOL;
-echo 'Backup completed: ';
+echo '[OK] Backup created: ';
 echo basename($backupFile);
 echo PHP_EOL;
