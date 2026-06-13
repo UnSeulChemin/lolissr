@@ -12,17 +12,9 @@
 
 notes.txt
 note.txt
+
 *.tmp
 *.temp
-
-#################################
-# LOGS
-#################################
-
-/storage/logs/**
-!/storage/logs/.gitkeep
-
-*.log
 
 #################################
 # CACHE
@@ -39,10 +31,20 @@ note.txt
 !/storage/sessions/.gitkeep
 
 #################################
+# LOGS
+#################################
+
+/storage/logs/**
+!/storage/logs/.gitkeep
+
+*.log
+
+#################################
 # BACKUPS
 #################################
 
 /storage/backups/**
+!/storage/backups/.gitkeep
 
 #################################
 # UPLOADS
@@ -53,13 +55,6 @@ note.txt
 
 /tests/Http/tmp-uploads/**
 !/tests/Http/tmp-uploads/.gitkeep
-
-#################################
-# DATABASES
-#################################
-
-*.sqlite
-*.db
 
 #################################
 # DEPENDANCES
@@ -90,13 +85,7 @@ tests/reports/
 #################################
 
 .phpstan/cache/
-/phpstan.neon.tmp
-
-#################################
-# OUTILS
-#################################
-
-.php-cs-fixer.cache
+phpstan.neon.tmp
 
 #################################
 # EXPORTS / ARCHIVES
@@ -109,11 +98,22 @@ tests/reports/
 *.7z
 
 #################################
-# IDE / OS
+# IDE / EDITEURS
 #################################
 
 .vscode/
 .idea/
 
+#################################
+# SYSTEME D'EXPLOITATION
+#################################
+
 .DS_Store
 Thumbs.db
+
+#################################
+# DIVERS
+#################################
+
+*.bak
+*.old
