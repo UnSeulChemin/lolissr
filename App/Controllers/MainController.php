@@ -26,7 +26,7 @@ final class MainController extends Controller
         /** @var DashboardStats $stats */
         $stats = Cache::remember(
             key: 'home.dashboard',
-            ttl: 300,
+            ttl: null,
             callback: fn (): DashboardStats => $this->statsService->dashboard(),
         );
 
