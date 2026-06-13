@@ -200,39 +200,50 @@ final class MangaSearchRepository extends Model
         $perPage = max(1, $perPage);
         $offset = ($page - 1) * $perPage;
 
-        if (! in_array($orderBy, self::ALLOWED_ORDER_BY, true)) {
+        if (! in_array($orderBy, self::ALLOWED_ORDER_BY, true))
+        {
             $orderBy = 'id DESC';
         }
 
-        return $this->fetchAll(
+        /** @var list<Manga> $mangas */
+        $mangas = $this->fetchAll(
             "
             SELECT
                 m.*,
                 stats.total,
                 stats.total_lu,
                 stats.average_note
+
             FROM {$this->table()} m
+
             INNER JOIN (
                 SELECT
                     slug,
                     COUNT(*) AS total,
                     SUM(CASE WHEN lu = 1 THEN 1 ELSE 0 END) AS total_lu,
                     ROUND(AVG(COALESCE(note, 0)), 1) AS average_note
+
                 FROM {$this->table()}
+
                 GROUP BY slug
             ) stats
                 ON stats.slug = m.slug
+
             WHERE m.numero = 1
+
             ORDER BY
                 CASE WHEN stats.total_lu < stats.total THEN 0 ELSE 1 END ASC,
                 CASE WHEN m.statut = 'termine' THEN 1 ELSE 0 END ASC,
                 stats.average_note ASC,
                 {$orderBy}
+
             LIMIT {$perPage}
             OFFSET {$offset}
             ",
             [],
             Manga::class,
         );
+
+        return $mangas;
     }
 }

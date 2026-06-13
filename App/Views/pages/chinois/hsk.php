@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-/** @var array<int, object> $grammaires */
+use App\DTO\Chinois\Responses\ChinoisGrammaireData;
+
+/** @var list<ChinoisGrammaireData> $grammaires */
 
 $level =
     (string) (
@@ -21,11 +23,8 @@ $sections = [];
 
 foreach ($grammaires as $grammaire)
 {
-    $section =
-        (string) $grammaire->section;
-
-    $categorie =
-        (string) $grammaire->categorie;
+    $section = $grammaire->section;
+    $categorie = $grammaire->categorie;
 
     $sections[$section][$categorie][] =
         $grammaire;
@@ -40,6 +39,11 @@ foreach (array_keys($sections) as $section)
             'Any-Latin; Latin-ASCII',
             $section,
         );
+
+    if ($sectionId === false)
+    {
+        $sectionId = $section;
+    }
 
     $sectionId =
         mb_strtolower(
@@ -200,19 +204,13 @@ $sourceDescription =
 
                             $hasExplication =
                                 $grammaire->explication !== null
-                                && trim(
-                                    (string) $grammaire->explication,
-                                ) !== '';
+                                && trim($grammaire->explication) !== '';
 
                             $hasAbreviation =
-                                isset($grammaire->abreviation)
-                                && trim(
-                                    (string) $grammaire->abreviation,
-                                ) !== '';
+                                $grammaire->abreviation !== null
+                                && trim($grammaire->abreviation) !== '';
 
-                            $isMaitrise =
-                                $grammaire->maitrise
-                                ?? false;
+                            $isMaitrise = $grammaire->maitrise;
 
                             ?>
 
@@ -226,7 +224,7 @@ $sourceDescription =
                                 <button
                                     class="grammar-delete grammaire-delete"
                                     type="button"
-                                    data-id="<?= (int) $grammaire->id ?>"
+                                    data-id="<?= $grammaire->id ?>"
                                     data-url="<?= e($baseUri) ?>chinois/ajax/delete-grammaire"
                                     aria-label="Supprimer la règle"
                                     title="Supprimer la règle"
@@ -236,7 +234,7 @@ $sourceDescription =
 
                                 <a
                                     class="grammar-edit"
-                                    href="<?= e($baseUri) ?>chinois/grammaire/modifier/<?= (int) $grammaire->id ?>"
+                                    href="<?= e($baseUri) ?>chinois/grammaire/modifier/<?= $grammaire->id ?>"
                                     aria-label="Modifier la règle"
                                     title="Modifier la règle"
                                 >
@@ -261,15 +259,11 @@ $sourceDescription =
                                 </a>
 
                                 <h4 class="grammar-topic">
-                                    <?= e(
-                                        (string) $grammaire->titre,
-                                    ) ?>
+                                    <?= e($grammaire->titre) ?>
                                 </h4>
 
                                 <div class="grammar-structure">
-                                    <?= e(
-                                        (string) $grammaire->structure,
-                                    ) ?>
+                                    <?= e($grammaire->structure) ?>
                                 </div>
 
                                 <?php if ($hasAbreviation): ?>
@@ -281,9 +275,7 @@ $sourceDescription =
                                         </span>
 
                                         <span class="grammar-abbreviation-value">
-                                            <?= e(
-                                                (string) $grammaire->abreviation,
-                                            ) ?>
+                                            <?= e($grammaire->abreviation) ?>
                                         </span>
 
                                     </div>
@@ -291,29 +283,21 @@ $sourceDescription =
                                 <?php endif; ?>
 
                                 <div class="grammar-example">
-                                    <?= e(
-                                        (string) $grammaire->phrase,
-                                    ) ?>
+                                    <?= e($grammaire->phrase) ?>
                                 </div>
 
                                 <div class="grammar-pinyin">
-                                    <?= e(
-                                        (string) $grammaire->pinyin,
-                                    ) ?>
+                                    <?= e($grammaire->pinyin) ?>
                                 </div>
 
                                 <div class="grammar-translation">
-                                    <?= e(
-                                        (string) $grammaire->traduction,
-                                    ) ?>
+                                    <?= e($grammaire->traduction) ?>
                                 </div>
 
                                 <?php if ($hasExplication): ?>
 
                                     <div class="grammar-explanation">
-                                        <?= e(
-                                            (string) $grammaire->explication,
-                                        ) ?>
+                                        <?= e($grammaire->explication) ?>
                                     </div>
 
                                 <?php endif; ?>
@@ -327,7 +311,7 @@ $sourceDescription =
                                             : ''
                             ?>
                                     "
-                                    data-id="<?= (int) $grammaire->id ?>"
+                                    data-id="<?= $grammaire->id ?>"
                                     data-url="<?= e($baseUri) ?>chinois/ajax/toggle-grammaire-maitrise"
                                     data-maitrise="<?= $isMaitrise
                             ? '1'

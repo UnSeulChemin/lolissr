@@ -510,25 +510,37 @@ final class MangaRepository extends Model
         string $slug,
     ): bool {
 
-        $result = $this->fetchOne(
-            "
-            SELECT xp_series_rewarded
-            FROM {$this->table()}
-            WHERE slug = :slug
-            LIMIT 1
-            ",
-            [
-                'slug' => $this->normalizeSlug($slug),
-            ],
-        );
+        $result =
+            $this->fetchOne(
+                "
+                SELECT xp_series_rewarded
+
+                FROM {$this->table()}
+
+                WHERE slug = :slug
+
+                LIMIT 1
+                ",
+                [
+                    'slug' => $this->normalizeSlug(
+                        $slug,
+                    ),
+                ],
+            );
 
         if ($result === null)
         {
             return true;
         }
 
-        return
-            (bool) $result->xp_series_rewarded;
+        /** @var array{xp_series_rewarded?: mixed} $data */
+        $data =
+            (array) $result;
+
+        return (bool) (
+            $data['xp_series_rewarded']
+            ?? false
+        );
     }
 
     public function markSeriesRewardedBySlug(

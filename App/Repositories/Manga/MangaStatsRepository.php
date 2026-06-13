@@ -254,28 +254,40 @@ final class MangaStatsRepository extends Model
         string $slug,
     ): bool {
 
-        $result = $this->fetchOne(
-            "
-            SELECT
-                COUNT(*) AS total,
-                SUM(lu) AS total_lu
-            FROM {$this->table()}
-            WHERE slug = :slug
-            ",
-            [
-                'slug' => Str::slug($slug),
-            ],
-        );
+        $result =
+            $this->fetchOne(
+                "
+                SELECT
+                    COUNT(*) AS total,
+                    SUM(lu) AS total_lu
+
+                FROM {$this->table()}
+
+                WHERE slug = :slug
+                ",
+                [
+                    'slug' => Str::slug($slug),
+                ],
+            );
 
         if ($result === null)
         {
             return false;
         }
 
+        /** @var array{total?: mixed, total_lu?: mixed} $data */
+        $data =
+            (array) $result;
+
+        $total =
+            (int) ($data['total'] ?? 0);
+
+        $totalLu =
+            (int) ($data['total_lu'] ?? 0);
+
         return
-            (int) $result->total > 0
-            && (int) $result->total
-                === (int) $result->total_lu;
+            $total > 0
+            && $total === $totalLu;
     }
 
     public function countCompletedSeries(): int

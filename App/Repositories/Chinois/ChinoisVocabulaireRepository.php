@@ -164,6 +164,7 @@ final class ChinoisVocabulaireRepository extends Model
             return null;
         }
 
+        /** @var stdClass $result */
         return $this->mapRowToDto($result);
     }
 
@@ -193,7 +194,13 @@ final class ChinoisVocabulaireRepository extends Model
             return false;
         }
 
-        return (bool) $result->maitrise;
+        /** @var array{maitrise?: mixed} $data */
+        $data = (array) $result;
+
+        return (bool) (
+            $data['maitrise']
+            ?? false
+        );
     }
 
     public function deleteVocabulaire(
@@ -236,9 +243,18 @@ final class ChinoisVocabulaireRepository extends Model
                 FROM {$this->table()}"
             );
 
-        return $result !== null
-            ? (int) $result->total
-            : 0;
+        if ($result === null)
+        {
+            return 0;
+        }
+
+        /** @var array{total?: mixed} $data */
+        $data = (array) $result;
+
+        return (int) (
+            $data['total']
+            ?? 0
+        );
     }
 
     public function countRemaining(): int
@@ -250,9 +266,18 @@ final class ChinoisVocabulaireRepository extends Model
                 WHERE maitrise = 0"
             );
 
-        return $result !== null
-            ? (int) $result->total
-            : 0;
+        if ($result === null)
+        {
+            return 0;
+        }
+
+        /** @var array{total?: mixed} $data */
+        $data = (array) $result;
+
+        return (int) (
+            $data['total']
+            ?? 0
+        );
     }
 
     public function countMastered(): int
@@ -264,9 +289,18 @@ final class ChinoisVocabulaireRepository extends Model
                 WHERE maitrise = 1"
             );
 
-        return $result !== null
-            ? (int) $result->total
-            : 0;
+        if ($result === null)
+        {
+            return 0;
+        }
+
+        /** @var array{total?: mixed} $data */
+        $data = (array) $result;
+
+        return (int) (
+            $data['total']
+            ?? 0
+        );
     }
 
     public function markXpRewarded(

@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-/** @var array<int, object> $vocabulaires */
-/** @var string $langue */
+use App\DTO\Chinois\Responses\ChinoisVocabulaireData;
+
+/** @var list<ChinoisVocabulaireData> $vocabulaires */
 
 $baseUri =
     rtrim(
@@ -35,11 +36,7 @@ $baseUri =
 
                     <?php
 
-                    $isMaitrise =
-                        (bool) (
-                            $vocabulaire->maitrise
-                            ?? false
-                        );
+                        $isMaitrise = $vocabulaire->maitrise;
 
                     ?>
 
@@ -53,7 +50,7 @@ $baseUri =
                         <button
                             class="grammar-delete vocabulaire-delete"
                             type="button"
-                            data-id="<?= (int) $vocabulaire->id ?>"
+                            data-id="<?= $vocabulaire->id ?>"
                             data-url="<?= e($baseUri) ?>chinois/ajax/delete-vocabulaire"
                         >
                             ✕
@@ -61,36 +58,34 @@ $baseUri =
 
                         <h3
                             class="chinois-vocab-word"
-                            data-copy="<?= e((string) $vocabulaire->mot) ?>"
+                            data-copy="<?= e($vocabulaire->mot) ?>"
                             title="Cliquer pour copier"
                         >
-                            <?= e((string) $vocabulaire->mot) ?>
+                            <?= e($vocabulaire->mot) ?>
                         </h3>
 
                         <div class="chinois-vocab-pinyin">
-                            <?= e((string) $vocabulaire->pinyin) ?>
+                            <?= e($vocabulaire->pinyin) ?>
                         </div>
 
                         <div class="chinois-vocab-type">
-                            <?= e((string) $vocabulaire->type) ?>
+                            <?= e($vocabulaire->type) ?>
                         </div>
 
                         <div class="chinois-vocab-translation">
-                            <?= e((string) $vocabulaire->traduction) ?>
+                            <?= e($vocabulaire->traduction) ?>
                         </div>
 
                         <?php if (
-                            trim(
-                                (string) $vocabulaire->exemple,
-                            ) !== ''
+                            trim($vocabulaire->exemple ?? '') !== ''
                         ): ?>
 
                             <div
                                 class="chinois-vocab-example"
-                                data-copy="<?= e((string) $vocabulaire->exemple) ?>"
+                                data-copy="<?= e($vocabulaire->exemple ?? '') ?>"
                                 title="Cliquer pour copier"
                             >
-                                <?= e((string) $vocabulaire->exemple) ?>
+                                <?= e($vocabulaire->exemple ?? '') ?>
                             </div>
 
                         <?php endif; ?>
@@ -99,7 +94,7 @@ $baseUri =
 
                             <a
                                 class="grammar-edit"
-                                href="<?= e($baseUri) ?>chinois/vocabulaire/modifier/<?= (int) $vocabulaire->id ?>"
+                                href="<?= e($baseUri) ?>chinois/vocabulaire/modifier/<?= $vocabulaire->id ?>"
                             >
 
                                 <svg
@@ -130,7 +125,7 @@ $baseUri =
                                         : '' ?>
                                 "
                                 type="button"
-                                data-id="<?= (int) $vocabulaire->id ?>"
+                                data-id="<?= $vocabulaire->id ?>"
                                 data-url="<?= e($baseUri) ?>chinois/ajax/toggle-vocabulaire-maitrise"
                                 data-maitrise="<?= $isMaitrise
                                     ? '1'
