@@ -54,7 +54,11 @@ function invalidateVocabularyPages()
 export function initFlashcardsVocabulairePage()
 {
     const cards =
-        window.flashcards ?? [];
+        Array.isArray(
+            window.flashcards,
+        )
+            ? [...window.flashcards]
+            : [];
 
     if (
         cards.length === 0
