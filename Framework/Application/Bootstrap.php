@@ -16,6 +16,15 @@ use RuntimeException;
 
 final class Bootstrap
 {
+    public static function loadEnvOnly(): void
+    {
+        Env::clear();
+
+        self::loadEnvironment(
+            base_path('.env'),
+        );
+    }
+
     public static function run(): never
     {
         Env::clear();
