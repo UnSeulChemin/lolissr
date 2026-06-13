@@ -2,7 +2,11 @@
 
 declare(strict_types=1);
 
+use App\Models\ChinoisGrammaire;
+
 use Framework\Support\Session;
+
+/** @var ChinoisGrammaire $grammaire */
 
 $errors =
     Session::pull('errors', []);
@@ -25,7 +29,7 @@ $returnTo =
 $formAction =
     $baseUri
     . 'chinois/grammaire/modifier/'
-    . (int) $grammaire->id;
+    . $grammaire->id;
 
 $returnUrl =
     $returnTo !== ''
@@ -37,7 +41,7 @@ $returnUrl =
         : $baseUri
             . 'chinois/grammaire/hsk'
             . substr(
-                (string) $grammaire->niveau,
+                $grammaire->niveau,
                 3,
             );
 
@@ -70,7 +74,7 @@ $niveauOptions = [
 
             <?= csrf_field() ?>
 
-            <?php if (!empty($returnTo)) : ?>
+            <?php if ($returnTo !== '') : ?>
 
                 <input
                     type="hidden"

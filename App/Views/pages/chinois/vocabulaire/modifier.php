@@ -78,7 +78,7 @@ $langueOptions = [
 
                 <?= csrf_field() ?>
 
-                <?php if (!empty($returnTo)) : ?>
+                <?php if ($returnTo !== '') : ?>
 
                     <input
                         type="hidden"
