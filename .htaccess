@@ -1,9 +1,5 @@
 RewriteEngine On
 RewriteBase /lolissr/
 
-# Redirige vers public/
-RewriteRule ^$ public/ [L]
-
-# Redirige tout vers public/
 RewriteCond %{REQUEST_URI} !^/lolissr/public/
 RewriteRule ^(.*)$ public/$1 [L]
