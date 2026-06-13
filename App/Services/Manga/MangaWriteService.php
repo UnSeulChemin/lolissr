@@ -21,6 +21,7 @@ use Framework\Application\App;
 use Framework\Config\UploadConfig;
 use Framework\Database\Database;
 use Framework\Support\Logger;
+use Framework\Cache\Cache;
 
 use Throwable;
 
@@ -30,7 +31,6 @@ final readonly class MangaWriteService
         private MangaRepository $mangaRepository,
         private MangaStatsRepository $mangaStatsRepository,
         private UploadService $uploadService,
-        private MangaCacheService $cacheService,
         private Database $database,
         private UserLevelService $userLevelService,
     ) {
@@ -81,7 +81,9 @@ final readonly class MangaWriteService
 
     private function clearCache(): void
     {
-        $this->cacheService->clear();
+        Cache::forget(
+            'home.dashboard',
+        );
     }
 
     private function logFailure(
