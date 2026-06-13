@@ -14,8 +14,7 @@ import {
 // CONFIG
 // =========================================
 
-const PREFETCH_DELAY =
-    80;
+const PREFETCH_DELAY = 0;
 
 // =========================================
 // BIND LINK
@@ -107,7 +106,7 @@ function bindLink(
     */
 
     link.addEventListener(
-        'mouseenter',
+        'pointerenter',
         () =>
         {
             clearTimeout(
