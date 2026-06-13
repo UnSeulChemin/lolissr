@@ -25,6 +25,11 @@ call scripts\clear-sessions.bat
 
 echo.
 echo [SYSTEM]
+echo Clearing logs...
+call scripts\clear-logs.bat
+
+echo.
+echo [SYSTEM]
 echo Regenerating Composer autoload...
 composer dump-autoload
 
@@ -32,6 +37,11 @@ echo.
 echo ============================================================
 echo.
 echo                  QUEST COMPLETED
+echo.
+echo      Cache cleared.
+echo      Sessions cleared.
+echo      Logs cleared.
+echo      Autoload regenerated.
 echo.
 echo      The development environment is refreshed.
 echo.
