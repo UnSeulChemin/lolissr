@@ -56,10 +56,10 @@ final class MangaRepository extends Model
             averageNote: $manga->average_note,
 
             xpReadRewarded:
-                (bool) $manga->xp_read_rewarded,
+                $manga->xp_read_rewarded,
 
             xpSeriesRewarded:
-                (bool) $manga->xp_series_rewarded,
+                $manga->xp_series_rewarded,
         );
     }
 

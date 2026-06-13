@@ -209,6 +209,10 @@ final class ChinoisVocabulaireRepository extends Model
         );
     }
 
+
+    /**
+     * @param array<string, mixed> $data
+     */
     public function updateVocabulaire(
         int $id,
         array $data,

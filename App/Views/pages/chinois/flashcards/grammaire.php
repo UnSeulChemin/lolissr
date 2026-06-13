@@ -73,7 +73,7 @@ $baseUri =
                     id="flashcard-delete"
                     class="grammar-delete grammaire-delete"
                     type="button"
-                    data-id="<?= (int) $card->id ?>"
+                    data-id="<?= $card->id ?>"
                     data-url="<?= e($baseUri) ?>chinois/ajax/delete-grammaire"
                 >
                     ✕
@@ -152,7 +152,7 @@ $baseUri =
                         grammar-mastered
                     "
                     type="button"
-                    data-id="<?= (int) $card->id ?>"
+                    data-id="<?= $card->id ?>"
                     data-url="<?= e($baseUri) ?>chinois/ajax/toggle-grammaire-maitrise"
                     data-maitrise="0"
                     aria-pressed="false"

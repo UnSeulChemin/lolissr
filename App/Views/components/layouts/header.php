@@ -13,10 +13,7 @@ $currentSearch =
         : '';
 
 $username =
-    (string) (
-        user()?->username
-        ?? ''
-    );
+    user()->username;
 
 $usernameMain =
     strlen($username) > 3
@@ -28,10 +25,8 @@ $usernameSuffix =
         ? substr($username, -3)
         : '';
 
-$level = (int) (
-    user()?->level
-    ?? 1
-);
+$level =
+    user()->level;
 
 ?>
 

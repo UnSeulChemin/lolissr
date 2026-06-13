@@ -73,15 +73,15 @@ abstract class Model
         string $value,
     ): string {
 
-        return self::$identifierCache[$value]
-            ??= (
-                preg_replace(
-                    '/[^a-zA-Z0-9_]/',
-                    '',
-                    $value,
-                )
-                ?: ''
+        $sanitized =
+            preg_replace(
+                '/[^a-zA-Z0-9_]/',
+                '',
+                $value,
             );
+
+        return self::$identifierCache[$value]
+            ??= ($sanitized ?? '');
     }
 
     /*

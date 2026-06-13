@@ -255,6 +255,9 @@ final class ChinoisGrammaireRepository extends Model
         );
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public function updateGrammaire(
         int $id,
         array $data,

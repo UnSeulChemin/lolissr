@@ -6,15 +6,15 @@ namespace App\Models;
 
 final class User
 {
-    public int $id;
+    public int $id = 0;
 
-    public string $username;
+    public string $username = '';
 
-    public string $password;
+    public string $password = '';
 
-    public int $level;
+    public int $level = 1;
 
-    public int $xp;
+    public int $xp = 0;
 
     public ?string $created_at = null;
 
