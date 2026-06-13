@@ -23,40 +23,6 @@ final readonly class UploadService
         );
     }
 
-    public function isTestUploadMode(): bool
-    {
-        $uploadMode = config(
-            'tests.upload_mode',
-            false,
-        );
-
-        return App::isTesting()
-            && $uploadMode === true;
-    }
-
-    private function testUploadDirectory(): string
-    {
-        return rtrim(
-            base_path(
-                trim(
-                    (string) config(
-                        'tests.upload_dir',
-                        'tests/Http/tmp-uploads',
-                    ),
-                    '/\\',
-                ),
-            ),
-            '/\\',
-        ) . DIRECTORY_SEPARATOR;
-    }
-
-    private function uploadDirectory(): string
-    {
-        return $this->isTestUploadMode()
-            ? $this->testUploadDirectory()
-            : UploadConfig::mangaThumbnailDirectory();
-    }
-
     /**
      * @param array<string, mixed> $files
      * @return array<string, mixed>|null
@@ -146,9 +112,9 @@ final readonly class UploadService
             return false;
         }
 
-        return $this->isTestUploadMode()
-            ? is_file($tmpName)
-            : is_uploaded_file($tmpName);
+        return is_uploaded_file(
+            $tmpName,
+        );
     }
 
     /**
@@ -189,23 +155,6 @@ final readonly class UploadService
             0755,
             true,
         ) || is_dir($directory);
-    }
-
-    public function removeFile(
-        string $path,
-    ): void {
-        if (!is_file($path))
-        {
-            return;
-        }
-
-        if (!unlink($path))
-        {
-            Logger::error(
-                'Impossible de supprimer le fichier : '
-                . $path,
-            );
-        }
     }
 
     private function failure(
@@ -253,7 +202,8 @@ final readonly class UploadService
         string $thumbnail,
         string $extension,
     ): ?string {
-        $directory = $this->uploadDirectory();
+        $directory =
+            UploadConfig::mangaThumbnailDirectory();
 
         if (
             !$this->ensureDirectoryExists(
@@ -269,21 +219,6 @@ final readonly class UploadService
             . $extension;
     }
 
-    private function moveFile(
-        string $tmpName,
-        string $destination,
-    ): bool {
-        return $this->isTestUploadMode()
-            ? copy(
-                $tmpName,
-                $destination,
-            )
-            : move_uploaded_file(
-                $tmpName,
-                $destination,
-            );
-    }
-
     /**
      * @param array<string, mixed> $files
      */
@@ -292,7 +227,17 @@ final readonly class UploadService
         int $numero,
         array $files,
         string $fileKey = 'image',
-    ): ServiceResult {
+    ): ServiceResult
+    {
+
+        if (App::isTesting())
+        {
+            return $this->failure(
+                'Upload interdit pendant les tests HTTP',
+                403,
+            );
+        }
+
         $file = $this->uploadedFile(
             $files,
             $fileKey,
@@ -402,24 +347,16 @@ final readonly class UploadService
 
         if (is_file($destination))
         {
-            if ($this->isTestUploadMode())
-            {
-                $this->removeFile(
-                    $destination,
-                );
-            } else
-            {
-                return $this->failUpload(
-                    'Upload manga: fichier déjà existant : '
-                    . $destination,
-                    'Une image avec ce nom existe déjà',
-                    409,
-                );
-            }
+            return $this->failUpload(
+                'Upload manga: fichier déjà existant : '
+                . $destination,
+                'Une image avec ce nom existe déjà',
+                409,
+            );
         }
 
         if (
-            !$this->moveFile(
+            !move_uploaded_file(
                 $tmpName,
                 $destination,
             )
