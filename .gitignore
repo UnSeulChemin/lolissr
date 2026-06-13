@@ -7,14 +7,18 @@
 !.env.example
 
 #################################
+# IMAGES
+#################################
+
+/public/images/**
+!/public/images/.gitkeep
+
+#################################
 # NOTES / TEMP
 #################################
 
 notes.txt
 note.txt
-
-*.tmp
-*.temp
 
 #################################
 # CACHE
@@ -37,8 +41,6 @@ note.txt
 /storage/logs/**
 !/storage/logs/.gitkeep
 
-*.log
-
 #################################
 # BACKUPS
 #################################
@@ -47,58 +49,23 @@ note.txt
 !/storage/backups/.gitkeep
 
 #################################
-# UPLOADS
-#################################
-
-/public/images/**
-!/public/images/.gitkeep
-
-/tests/Http/tmp-uploads/**
-!/tests/Http/tmp-uploads/.gitkeep
-
-#################################
-# DEPENDANCES
-#################################
-
-/vendor/
-node_modules/
-
-#################################
-# BUILD / FRONT
-#################################
-
-dist/
-build/
-
-#################################
 # TESTS
 #################################
 
 tests/Http/reports/
 
 #################################
-# PHPSTAN
+# DEPENDANCES
 #################################
 
-.phpstan/cache/
-phpstan.neon.tmp
+/vendor/
 
 #################################
 # EXPORTS / ARCHIVES
 #################################
 
 *.zip
-*.tar
-*.gz
 *.rar
-*.7z
-
-#################################
-# IDE / EDITEURS
-#################################
-
-.vscode/
-.idea/
 
 #################################
 # SYSTEME D'EXPLOITATION
@@ -106,10 +73,3 @@ phpstan.neon.tmp
 
 .DS_Store
 Thumbs.db
-
-#################################
-# DIVERS
-#################################
-
-*.bak
-*.old
