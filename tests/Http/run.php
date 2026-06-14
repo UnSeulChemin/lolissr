@@ -209,6 +209,7 @@ foreach ($tests as $test)
     if (
         $success
         && !($test['json'] ?? false)
+        && !($test['fragment'] ?? false)
     ) {
 
         if (!assert_html($body))
@@ -223,6 +224,7 @@ foreach ($tests as $test)
     if (
         $success
         && !($test['json'] ?? false)
+        && !($test['fragment'] ?? false)
     ) {
 
         if (!assert_title($body))

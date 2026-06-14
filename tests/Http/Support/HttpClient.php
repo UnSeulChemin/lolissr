@@ -2,6 +2,57 @@
 
 declare(strict_types=1);
 
+const HTTP_COOKIE_NAME = 'LOLISSR_SESSION';
+
+$GLOBALS['http_cookie'] = '';
+
+function http_config(): array
+{
+    /** @var array<string,mixed> */
+    return require dirname(__DIR__)
+        . '/http-config.php';
+}
+
+function http_cookie(): string
+{
+    return (string) (
+        $GLOBALS['http_cookie']
+        ?? ''
+    );
+}
+
+function http_set_cookie(
+    string $cookie,
+): void {
+    $GLOBALS['http_cookie'] =
+        $cookie;
+}
+
+function http_extract_cookie(
+    array $headers,
+): void {
+
+    foreach ($headers as $header)
+    {
+        if (
+            preg_match(
+                '/Set-Cookie:\s*'
+                . HTTP_COOKIE_NAME
+                . '=([^;]+)/i',
+                $header,
+                $matches,
+            )
+        ) {
+
+            http_set_cookie(
+                $matches[1],
+            );
+
+            return;
+        }
+    }
+}
+
 function http_request(
     string $method,
     string $url,
@@ -10,8 +61,19 @@ function http_request(
 ): array {
 
     $config =
-        require dirname(__DIR__)
-        . '/http-config.php';
+        http_config();
+
+    $cookie =
+        http_cookie();
+
+    if ($cookie !== '')
+    {
+        $headers[] =
+            'Cookie: '
+            . HTTP_COOKIE_NAME
+            . '='
+            . $cookie;
+    }
 
     $context =
         stream_context_create([
@@ -37,8 +99,10 @@ function http_request(
                     array_merge(
                         [
                             'User-Agent: '
-                            . ($config['user_agent']
-                                ?? 'LoliSSR-TestRunner'),
+                            . (
+                                $config['user_agent']
+                                ?? 'LoliSSR-TestRunner'
+                            ),
                         ],
                         $headers,
                     ),
@@ -57,6 +121,10 @@ function http_request(
         $http_response_header
         ?? [];
 
+    http_extract_cookie(
+        $responseHeaders,
+    );
+
     $status = 0;
 
     if (
@@ -67,20 +135,24 @@ function http_request(
             $matches,
         )
     ) {
-        $status = (int) $matches[1];
+        $status =
+            (int) $matches[1];
     }
 
     return [
 
-        'status' => $status,
+        'status' =>
+            $status,
 
-        'body' => is_string(
-            $responseBody,
-        )
-            ? $responseBody
-            : '',
+        'body' =>
+            is_string(
+                $responseBody,
+            )
+                ? $responseBody
+                : '',
 
-        'headers' => $responseHeaders,
+        'headers' =>
+            $responseHeaders,
     ];
 }
 
@@ -88,6 +160,7 @@ function http_get(
     string $url,
     array $headers = [],
 ): array {
+
     return http_request(
         'GET',
         $url,
@@ -100,10 +173,105 @@ function http_post(
     array $headers = [],
     ?string $body = null,
 ): array {
+
     return http_request(
         'POST',
         $url,
         $headers,
         $body,
     );
+}
+
+function http_extract_csrf(
+    string $html,
+): ?string {
+
+    if (
+        preg_match(
+            '/name="csrf_token"\s+value="([^"]+)"/i',
+            $html,
+            $matches,
+        )
+    ) {
+        return $matches[1];
+    }
+
+    return null;
+}
+
+function http_login(): void
+{
+    $config =
+        http_config();
+
+    $username =
+        (string) (
+            $config['username']
+            ?? ''
+        );
+
+    $password =
+        (string) (
+            $config['password']
+            ?? ''
+        );
+
+    if (
+        $username === ''
+        || $password === ''
+    ) {
+        throw new RuntimeException(
+            'HTTP_TEST_USERNAME ou HTTP_TEST_PASSWORD manquant.',
+        );
+    }
+
+    $loginPage =
+        http_get(
+            $config['base']
+            . '/connexion',
+        );
+
+    $csrf =
+        http_extract_csrf(
+            $loginPage['body'],
+        );
+
+    if ($csrf === null)
+    {
+        throw new RuntimeException(
+            'Token CSRF introuvable.',
+        );
+    }
+
+    $payload =
+        http_build_query([
+            'username' => $username,
+            'password' => $password,
+            'csrf_token' => $csrf,
+        ]);
+
+    $response =
+        http_post(
+            $config['base']
+            . '/connexion',
+            [
+                'Content-Type: application/x-www-form-urlencoded',
+            ],
+            $payload,
+        );
+
+    if (
+        !in_array(
+            $response['status'],
+            [
+                200,
+                302,
+            ],
+            true,
+        )
+    ) {
+        throw new RuntimeException(
+            'Connexion HTTP impossible.',
+        );
+    }
 }

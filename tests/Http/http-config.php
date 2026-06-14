@@ -13,4 +13,14 @@ return [
 
     'user_agent' => 'LoliSSR-TestRunner',
 
+    'username' => env(
+        'HTTP_TEST_USERNAME',
+        '',
+    ),
+
+    'password' => env(
+        'HTTP_TEST_PASSWORD',
+        '',
+    ),
+
 ];

@@ -61,7 +61,7 @@ function assert_title(
     string $body,
 ): bool {
     return preg_match(
-        '/<title>.*<\/title>/i',
+        '/<title\b[^>]*>.*?<\/title>/is',
         $body,
     ) === 1;
 }

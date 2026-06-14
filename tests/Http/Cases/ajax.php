@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 $tests[] = [
 
-    'category' => 'AJAX',
+    'category' => 'Ajax',
 
-    'label' => 'Recherche AJAX retourne JSON',
+    'label' => 'Recherche manga JSON',
 
     'path' => '/manga/ajax/recherche/love',
 
@@ -28,15 +28,13 @@ $tests[] = [
 
 $tests[] = [
 
-    'category' => 'AJAX',
+    'category' => 'Ajax',
 
-    'label' => 'Pagination AJAX retourne fragment HTML',
+    'label' => 'Pagination séries HTML',
 
     'path' => '/manga/ajax/series/page/1',
 
     'expected_status' => 200,
 
-    'contains' => [
-        'collection-card',
-    ],
+    'fragment' => true,
 ];

@@ -55,3 +55,21 @@ $tests[] = [
 
     'path' => '/chinois/flashcards',
 ];
+
+$tests[] = [
+
+    'category' => 'Chinois',
+
+    'label' => 'Flashcards vocabulaire accessible',
+
+    'path' => '/chinois/flashcards/vocabulaire',
+];
+
+$tests[] = [
+
+    'category' => 'Chinois',
+
+    'label' => 'Flashcards grammaire accessible',
+
+    'path' => '/chinois/flashcards/grammaire',
+];

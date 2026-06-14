@@ -4,25 +4,25 @@ declare(strict_types=1);
 
 require __DIR__ . '/bootstrap.php';
 
-require __DIR__ . '/Support/HttpClient.php';
 require __DIR__ . '/Support/Assertions.php';
-require __DIR__ . '/Support/Terminal.php';
-require __DIR__ . '/Support/Stats.php';
+require __DIR__ . '/Support/HttpClient.php';
 require __DIR__ . '/Support/HtmlReport.php';
+require __DIR__ . '/Support/Stats.php';
+require __DIR__ . '/Support/Terminal.php';
 
 $config =
     require __DIR__ . '/http-config.php';
 
+http_login();
+
 $tests = [];
 
-$files = glob(
-    __DIR__ . '/Cases/*.php',
-) ?: [];
-
-sort($files);
-
-foreach ($files as $file)
-{
+foreach (
+    glob(
+        __DIR__ . '/Cases/*.php',
+    ) ?: []
+    as $file
+) {
     require $file;
 }
 

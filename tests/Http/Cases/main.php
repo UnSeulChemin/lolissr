@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 $tests[] = [
 
-    'category' => 'Public',
+    'category' => 'Main',
 
-    'label' => 'Accueil public accessible',
+    'label' => 'Accueil accessible',
 
     'path' => '/',
 ];
