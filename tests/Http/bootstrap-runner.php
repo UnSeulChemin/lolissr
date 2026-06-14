@@ -8,7 +8,6 @@ require __DIR__ . '/Support/Assertions.php';
 require __DIR__ . '/Support/HttpClient.php';
 require __DIR__ . '/Support/HtmlReport.php';
 require __DIR__ . '/Support/Stats.php';
-require __DIR__ . '/Support/Terminal.php';
 
 $config =
     require __DIR__ . '/http-config.php';
@@ -27,8 +26,6 @@ foreach (
 }
 
 return [
-
-    'config' => $config,
 
     'base' => (string) $config['base'],
 

@@ -191,10 +191,8 @@ final readonly class MangaWriteService
         array $files,
     ): ServiceResult {
 
-        if (
-            $this->isReadOnlyMode()
-            && ! $this->uploadService->isTestUploadMode()
-        ) {
+        if ($this->isReadOnlyMode())
+        {
             return $this->blockedWriteResponse();
         }
 
@@ -205,10 +203,8 @@ final readonly class MangaWriteService
                     $dto->numero,
                 );
 
-        if (
-            ! $this->uploadService->isTestUploadMode()
-            && $existingManga !== null
-        ) {
+        if ($existingManga !== null)
+        {
             return $this->error(
                 'Ce manga existe déjà',
                 409,
@@ -246,20 +242,6 @@ final readonly class MangaWriteService
                 ) {
                     return $this->error(
                         'Upload invalide',
-                    );
-                }
-
-                if (
-                    $this->uploadService
-                        ->isTestUploadMode()
-                ) {
-                    return $this->success(
-                        'Upload test OK',
-                        [
-                            'file' => basename(
-                                $uploadData->destinationPath,
-                            ),
-                        ],
                     );
                 }
 

@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+/**
+ * @param array<string,mixed> $response
+ */
 function assert_status(
     array $response,
     int $expected,
@@ -66,16 +69,23 @@ function assert_title(
     ) === 1;
 }
 
+/**
+ * @param list<string> $headers
+ */
 function assert_header(
     array $headers,
     string $needle,
 ): bool {
+
+    $needle =
+        strtolower($needle);
+
     foreach ($headers as $header)
     {
         if (
             str_contains(
                 strtolower($header),
-                strtolower($needle),
+                $needle,
             )
         ) {
             return true;

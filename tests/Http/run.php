@@ -6,9 +6,6 @@ $bootstrap =
     require __DIR__
     . '/bootstrap-runner.php';
 
-$config =
-    $bootstrap['config'];
-
 $base =
     $bootstrap['base'];
 
@@ -25,6 +22,64 @@ $globalStart =
 
 $currentCategory =
     null;
+
+/**
+ * @param array<int,array<string,mixed>> $results
+ */
+function addResult(
+    array &$results,
+    string $status,
+    string $category,
+    string $label,
+    string $path,
+    int $httpStatus,
+    int $expectedStatus,
+    float $duration,
+    string $reason,
+    array $headers,
+    string $body,
+): void {
+
+    $results[] = [
+
+        'status' =>
+            $status,
+
+        'category' =>
+            $category,
+
+        'label' =>
+            $label,
+
+        'path' =>
+            $path,
+
+        'http_status' =>
+            $httpStatus,
+
+        'expected_status' =>
+            $expectedStatus,
+
+        'duration' =>
+            $duration,
+
+        'reason' =>
+            $reason,
+
+        'headers' =>
+            implode(
+                "\n",
+                $headers,
+            ),
+
+        'body' =>
+            substr(
+                $body,
+                0,
+                3000,
+            ),
+    ];
+}
 
 echo PHP_EOL;
 echo str_repeat('=', 50) . PHP_EOL;
@@ -215,24 +270,15 @@ foreach ($tests as $test)
         if (!assert_html($body))
         {
             $success = false;
-
-            $failureReason =
-                'Invalid HTML';
+            $failureReason = 'Invalid HTML';
         }
-    }
 
-    if (
-        $success
-        && !($test['json'] ?? false)
-        && !($test['fragment'] ?? false)
-    ) {
-
-        if (!assert_title($body))
-        {
+        if (
+            $success
+            && !assert_title($body)
+        ) {
             $success = false;
-
-            $failureReason =
-                'Missing title tag';
+            $failureReason = 'Missing title tag';
         }
     }
 
@@ -289,48 +335,19 @@ foreach ($tests as $test)
             . " [{$status}]"
             . PHP_EOL;
 
-        $results[] = [
-
-            'status' =>
-                'OK',
-
-            'category' =>
-                $category,
-
-            'label' =>
-                $label,
-
-            'path' =>
-                $path,
-
-            'url' =>
-                $url,
-
-            'http_status' =>
-                $status,
-
-            'expected_status' =>
-                $expectedStatus,
-
-            'duration' =>
-                $duration,
-
-            'reason' =>
-                '',
-
-            'headers' =>
-                implode(
-                    "\n",
-                    $responseHeaders,
-                ),
-
-            'body' =>
-                substr(
-                    $body,
-                    0,
-                    3000,
-                ),
-        ];
+        addResult(
+            results: $results,
+            status: 'OK',
+            category: $category,
+            label: $label,
+            path: $path,
+            httpStatus: $status,
+            expectedStatus: $expectedStatus,
+            duration: $duration,
+            reason: '',
+            headers: $responseHeaders,
+            body: $body,
+        );
 
         continue;
     }
@@ -358,48 +375,19 @@ foreach ($tests as $test)
 
     echo PHP_EOL;
 
-    $results[] = [
-
-        'status' =>
-            'FAIL',
-
-        'category' =>
-            $category,
-
-        'label' =>
-            $label,
-
-        'path' =>
-            $path,
-
-        'url' =>
-            $url,
-
-        'http_status' =>
-            $status,
-
-        'expected_status' =>
-            $expectedStatus,
-
-        'duration' =>
-            $duration,
-
-        'reason' =>
-            $failureReason,
-
-        'headers' =>
-            implode(
-                "\n",
-                $responseHeaders,
-            ),
-
-        'body' =>
-            substr(
-                $body,
-                0,
-                3000,
-            ),
-    ];
+    addResult(
+        results: $results,
+        status: 'FAIL',
+        category: $category,
+        label: $label,
+        path: $path,
+        httpStatus: $status,
+        expectedStatus: $expectedStatus,
+        duration: $duration,
+        reason: $failureReason,
+        headers: $responseHeaders,
+        body: $body,
+    );
 }
 
 $totalDuration =

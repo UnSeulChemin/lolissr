@@ -13,6 +13,22 @@ function http_config(): array
         . '/http-config.php';
 }
 
+function http_base(): string
+{
+    return (string) (
+        http_config()['base']
+        ?? ''
+    );
+}
+
+function http_timeout(): int
+{
+    return (int) (
+        http_config()['timeout']
+        ?? 10
+    );
+}
+
 function http_cookie(): string
 {
     return (string) (
@@ -28,6 +44,9 @@ function http_set_cookie(
         $cookie;
 }
 
+/**
+ * @param list<string> $headers
+ */
 function http_extract_cookie(
     array $headers,
 ): void {
@@ -53,6 +72,14 @@ function http_extract_cookie(
     }
 }
 
+/**
+ * @param list<string> $headers
+ * @return array{
+ *     status:int,
+ *     body:string,
+ *     headers:list<string>
+ * }
+ */
 function http_request(
     string $method,
     string $url,
@@ -86,10 +113,7 @@ function http_request(
 
                 'ignore_errors' => true,
 
-                'timeout' => (int) (
-                    $config['timeout']
-                    ?? 10
-                ),
+                'timeout' => http_timeout(),
 
                 'content' =>
                     $body ?? '',
@@ -117,9 +141,11 @@ function http_request(
             $context,
         );
 
+    /** @var list<string> $responseHeaders */
     $responseHeaders =
-        $http_response_header
-        ?? [];
+        is_array($http_response_header ?? null)
+            ? $http_response_header
+            : [];
 
     http_extract_cookie(
         $responseHeaders,
@@ -156,6 +182,14 @@ function http_request(
     ];
 }
 
+/**
+ * @param list<string> $headers
+ * @return array{
+ *     status:int,
+ *     body:string,
+ *     headers:list<string>
+ * }
+ */
 function http_get(
     string $url,
     array $headers = [],
@@ -168,6 +202,14 @@ function http_get(
     );
 }
 
+/**
+ * @param list<string> $headers
+ * @return array{
+ *     status:int,
+ *     body:string,
+ *     headers:list<string>
+ * }
+ */
 function http_post(
     string $url,
     array $headers = [],
@@ -225,15 +267,12 @@ function http_login(): void
         );
     }
 
-    $loginPage =
-        http_get(
-            $config['base']
-            . '/connexion',
-        );
-
     $csrf =
         http_extract_csrf(
-            $loginPage['body'],
+            http_get(
+                http_base()
+                . '/connexion',
+            )['body'],
         );
 
     if ($csrf === null)
@@ -250,26 +289,17 @@ function http_login(): void
             'csrf_token' => $csrf,
         ]);
 
-    $response =
-        http_post(
-            $config['base']
-            . '/connexion',
-            [
-                'Content-Type: application/x-www-form-urlencoded',
-            ],
-            $payload,
-        );
+    http_post(
+        http_base()
+        . '/connexion',
+        [
+            'Content-Type: application/x-www-form-urlencoded',
+        ],
+        $payload,
+    );
 
-    if (
-        !in_array(
-            $response['status'],
-            [
-                200,
-                302,
-            ],
-            true,
-        )
-    ) {
+    if (http_cookie() === '')
+    {
         throw new RuntimeException(
             'Connexion HTTP impossible.',
         );

@@ -12,22 +12,33 @@ final class Stats
 
     private float $duration = 0.0;
 
+    private function addDuration(
+        float $duration,
+    ): void {
+        $this->total++;
+        $this->duration += $duration;
+    }
+
     public function success(
         float $duration,
     ): void {
 
-        $this->total++;
+        $this->addDuration(
+            $duration,
+        );
+
         $this->success++;
-        $this->duration += $duration;
     }
 
     public function fail(
         float $duration,
     ): void {
 
-        $this->total++;
+        $this->addDuration(
+            $duration,
+        );
+
         $this->fail++;
-        $this->duration += $duration;
     }
 
     public function total(): int

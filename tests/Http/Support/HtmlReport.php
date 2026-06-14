@@ -4,6 +4,20 @@ declare(strict_types=1);
 
 final class HtmlReport
 {
+    private static function escape(
+        mixed $value,
+    ): string {
+
+        return htmlspecialchars(
+            (string) $value,
+            ENT_QUOTES,
+            'UTF-8',
+        );
+    }
+
+    /**
+     * @param array<int,array<string,mixed>> $results
+     */
     public static function generate(
         array $results,
         Stats $stats,
@@ -12,44 +26,47 @@ final class HtmlReport
 
         $rows = '';
 
+        /**
+         * @var array<string,mixed> $result
+         */
         foreach ($results as $result)
         {
             $status =
                 (string) ($result['status'] ?? 'FAIL');
 
             $label =
-                htmlspecialchars(
-                    (string) ($result['label'] ?? ''),
+                self::escape(
+                    $result['label'] ?? '',
                 );
 
             $path =
-                htmlspecialchars(
-                    (string) ($result['path'] ?? ''),
+                self::escape(
+                    $result['path'] ?? '',
                 );
 
             $reason =
-                htmlspecialchars(
-                    (string) ($result['reason'] ?? ''),
+                self::escape(
+                    $result['reason'] ?? '',
                 );
 
             $expectedStatus =
-                htmlspecialchars(
-                    (string) ($result['expected_status'] ?? ''),
+                self::escape(
+                    $result['expected_status'] ?? '',
                 );
 
             $actualStatus =
-                htmlspecialchars(
-                    (string) ($result['http_status'] ?? ''),
+                self::escape(
+                    $result['http_status'] ?? '',
                 );
 
             $headers =
-                htmlspecialchars(
-                    (string) ($result['headers'] ?? ''),
+                self::escape(
+                    $result['headers'] ?? '',
                 );
 
             $body =
-                htmlspecialchars(
-                    (string) ($result['body'] ?? ''),
+                self::escape(
+                    $result['body'] ?? '',
                 );
 
             $duration =
@@ -128,8 +145,19 @@ final class HtmlReport
         $successRate =
             $stats->successRate();
 
+        $total =
+            $stats->total();
+
+        $success =
+            $stats->successCount();
+
+        $fail =
+            $stats->failCount();
+
         $generatedAt =
-            date('d/m/Y H:i:s');
+            date(
+                'd/m/Y H:i:s',
+            );
 
         $html = <<<HTML
 <!DOCTYPE html>
@@ -375,17 +403,17 @@ tr:hover{
 
         <div class="card clickable" onclick="showAll()">
             <div class="card-title">Tests</div>
-            <div class="card-value">{$stats->total()}</div>
+            <div class="card-value">{$total}</div>
         </div>
 
         <div class="card clickable" onclick="showSuccess()">
             <div class="card-title">Succès</div>
-            <div class="card-value">{$stats->successCount()}</div>
+            <div class="card-value">{$success}</div>
         </div>
 
         <div class="card clickable" onclick="showFailures()">
             <div class="card-title">Échecs</div>
-            <div class="card-value fail-count">{$stats->failCount()}</div>
+            <div class="card-value fail-count">{$fail}</div>
         </div>
 
         <div class="card">

@@ -378,4 +378,16 @@ final readonly class UploadService
             $destination,
         );
     }
+
+    public function removeFile(
+        string $path,
+    ): void {
+
+        if (!is_file($path))
+        {
+            return;
+        }
+
+        unlink($path);
+    }
 }
