@@ -15,6 +15,8 @@ final class SqlRepository extends Model
         string $sql,
     ): array {
 
-        return $this->fetchAll($sql);
+        return $this->fetchAll(
+            trim($sql),
+        );
     }
 }
