@@ -202,6 +202,40 @@ foreach ($tests as $test)
 
     /*
     |--------------------------------------------------------------------------
+    | HTML
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        $success
+        && !($test['json'] ?? false)
+    ) {
+
+        if (!assert_html($body))
+        {
+            $success = false;
+
+            $failureReason =
+                'Invalid HTML';
+        }
+    }
+
+    if (
+        $success
+        && !($test['json'] ?? false)
+    ) {
+
+        if (!assert_title($body))
+        {
+            $success = false;
+
+            $failureReason =
+                'Missing title tag';
+        }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
     | HEADERS
     |--------------------------------------------------------------------------
     */
@@ -417,7 +451,7 @@ if (!is_dir($reportDirectory))
 {
     mkdir(
         $reportDirectory,
-        0777,
+        0755,
         true,
     );
 }

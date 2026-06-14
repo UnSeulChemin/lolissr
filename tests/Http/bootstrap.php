@@ -18,10 +18,7 @@ $_SERVER['APP_ENV'] = 'testing';
 
 putenv('APP_ENV=testing');
 
-if (
-    ($_ENV['APP_ENV'] ?? '')
-    !== 'testing'
-)
+if (app_env() !== 'testing')
 {
     throw new RuntimeException(
         'HTTP tests must run in testing environment.',

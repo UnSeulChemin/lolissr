@@ -9,6 +9,10 @@ function http_request(
     ?string $body = null,
 ): array {
 
+    $config =
+        require dirname(__DIR__)
+        . '/http-config.php';
+
     $context =
         stream_context_create([
 
@@ -20,7 +24,10 @@ function http_request(
 
                 'ignore_errors' => true,
 
-                'timeout' => 10,
+                'timeout' => (int) (
+                    $config['timeout']
+                    ?? 10
+                ),
 
                 'content' =>
                     $body ?? '',
@@ -29,7 +36,9 @@ function http_request(
                     "\r\n",
                     array_merge(
                         [
-                            'User-Agent: LoliSSR-TestRunner',
+                            'User-Agent: '
+                            . ($config['user_agent']
+                                ?? 'LoliSSR-TestRunner'),
                         ],
                         $headers,
                     ),
@@ -65,13 +74,13 @@ function http_request(
 
         'status' => $status,
 
-        'body' =>
-            is_string($responseBody)
-                ? $responseBody
-                : '',
+        'body' => is_string(
+            $responseBody,
+        )
+            ? $responseBody
+            : '',
 
-        'headers' =>
-            $responseHeaders,
+        'headers' => $responseHeaders,
     ];
 }
 
@@ -79,7 +88,6 @@ function http_get(
     string $url,
     array $headers = [],
 ): array {
-
     return http_request(
         'GET',
         $url,
@@ -92,7 +100,6 @@ function http_post(
     array $headers = [],
     ?string $body = null,
 ): array {
-
     return http_request(
         'POST',
         $url,

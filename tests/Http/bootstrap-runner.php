@@ -11,12 +11,12 @@ require __DIR__ . '/Support/Stats.php';
 require __DIR__ . '/Support/HtmlReport.php';
 
 $config =
-    require __DIR__ . '/config.php';
+    require __DIR__ . '/http-config.php';
 
 $tests = [];
 
 $files = glob(
-    __DIR__ . '/cases/safe/*.php',
+    __DIR__ . '/Cases/*.php',
 ) ?: [];
 
 sort($files);
