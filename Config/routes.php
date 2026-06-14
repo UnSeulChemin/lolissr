@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Controllers\AuthController;
+use App\Controllers\SqlController;
 use App\Controllers\Chinois\ChinoisAjaxController;
 use App\Controllers\Chinois\ChinoisController;
 use App\Controllers\MainController;
@@ -78,6 +79,31 @@ return static function (Router $router): void {
             'profil',
             [ProfileController::class, 'index'],
         );
+
+        /*
+        |--------------------------------------------------------------------------
+        | SQL
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            config('app.env') !== 'production'
+        )
+        {
+
+            $router->get(
+                'sql',
+                [SqlController::class, 'index'],
+            );
+
+            $router->post(
+                'sql',
+                [SqlController::class, 'execute'],
+                [
+                    CsrfMiddleware::class,
+                ],
+            );
+        }
 
         $router->post(
             'deconnexion',

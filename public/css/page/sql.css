@@ -1,0 +1,113 @@
+.sql-grid
+{
+    margin-top: var(--gap-grid-home);
+
+    align-items: start;
+}
+
+.sql-textarea
+{
+    min-height: 350px;
+
+    font-family:
+        Consolas,
+        monospace;
+}
+
+.sql-result-card,
+.sql-query-card
+{
+    min-height: 310px;
+
+    justify-content: flex-start;
+}
+
+.sql-result-count
+{
+    margin: 0 0 16px;
+
+    font-size: var(--font-size-base);
+
+    font-weight: 600;
+}
+
+.sql-result-query
+{
+    margin: 0;
+
+    padding: 16px;
+
+    min-height: 220px;
+
+    overflow: auto;
+
+    border-radius: var(--radius-input);
+
+    background:
+        rgba(
+            0,
+            0,
+            0,
+            0.03
+        );
+
+    font-family:
+        Consolas,
+        monospace;
+
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.sql-table-wrapper
+{
+    overflow-x: auto;
+}
+
+.sql-table
+{
+    width: 100%;
+
+    border-collapse: collapse;
+}
+
+.sql-table th,
+.sql-table td
+{
+    padding: 14px 16px;
+
+    text-align: left;
+
+    vertical-align: top;
+
+    border-bottom:
+        1px solid rgba(
+            0,
+            0,
+            0,
+            0.08
+        );
+}
+
+.sql-table th
+{
+    font-weight: 700;
+}
+
+.sql-table tbody tr:nth-child(even)
+{
+    background:
+        rgba(
+            0,
+            0,
+            0,
+            0.025
+        );
+}
+
+.sql-error
+{
+    color: #dc2626;
+
+    font-weight: 700;
+}
