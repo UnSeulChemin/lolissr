@@ -2,6 +2,10 @@
 
 Suite de tests HTTP utilisée pour vérifier les principales routes de l'application.
 
+## Prérequis
+
+Les tests sont exécutés avec un utilisateur connecté.
+
 ## Vérifications
 
 - Routes web
@@ -14,8 +18,7 @@ Suite de tests HTTP utilisée pour vérifier les principales routes de l'applica
 ## Garanties
 
 - Aucune écriture en base de données
+- Aucune modification de données
 - Aucune suppression en base de données
 - Aucun upload réel
-- Aucune modification de données
 - Aucun effet de bord
-- 100 % safe

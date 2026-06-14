@@ -2,17 +2,6 @@
 
 declare(strict_types=1);
 
-/**
- * @param array<string,mixed> $response
- */
-function assert_status(
-    array $response,
-    int $expected,
-): bool {
-    return (int) ($response['status'] ?? 0)
-        === $expected;
-}
-
 function assert_contains(
     string $body,
     string $needle,
