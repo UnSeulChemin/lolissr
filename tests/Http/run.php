@@ -9,22 +9,25 @@ $bootstrap =
 $base =
     $bootstrap['base'];
 
+/** @var list<array<string,mixed>> $tests */
 $tests =
     $bootstrap['tests'];
 
 $stats =
     new Stats();
 
+/** @var array<int,array<string,mixed>> $results */
 $results = [];
 
 $globalStart =
     microtime(true);
 
-$currentCategory =
-    null;
+/** @var string|null $currentCategory */
+$currentCategory = null;
 
 /**
  * @param array<int,array<string,mixed>> $results
+ * @param list<string> $headers
  */
 function addResult(
     array &$results,
@@ -73,7 +76,7 @@ function addResult(
             ),
 
         'body' =>
-            substr(
+            mb_substr(
                 $body,
                 0,
                 3000,
@@ -125,6 +128,7 @@ foreach ($tests as $test)
             ?? 200
         );
 
+    /** @var list<string> $headers */
     $headers =
         (array) (
             $test['headers']
@@ -145,6 +149,12 @@ foreach ($tests as $test)
     $start =
         microtime(true);
 
+    /** @var array{
+     *     status:int,
+     *     body:string,
+     *     headers:list<string>
+     * } $response
+     */
     $response =
         http_get(
             $url,
@@ -167,6 +177,7 @@ foreach ($tests as $test)
             ?? ''
         );
 
+    /** @var list<string> $responseHeaders */
     $responseHeaders =
         (array) (
             $response['headers']
@@ -437,12 +448,17 @@ $reportDirectory =
     __DIR__
     . '/reports';
 
-if (!is_dir($reportDirectory))
-{
-    mkdir(
+if (
+    !is_dir($reportDirectory)
+    && !mkdir(
         $reportDirectory,
         0755,
         true,
+    )
+    && !is_dir($reportDirectory)
+) {
+    throw new RuntimeException(
+        'Impossible de créer le dossier reports.',
     );
 }
 

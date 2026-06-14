@@ -1,69 +1,21 @@
-# LoliSSR HTTP Test Suite
+# LoliSSR HTTP Tests
 
-Suite de tests HTTP légère pour LoliSSR.
+Suite de tests HTTP utilisée pour vérifier les principales routes de l'application.
 
-## Objectifs
+## Vérifications
 
-- Vérifier les routes publiques
-- Vérifier les routes AJAX
-- Vérifier les URLs canoniques
-- Vérifier les codes HTTP
-- Vérifier la présence de contenu HTML
+- Routes web
+- Routes AJAX
+- Réponses JSON
+- Fragments HTML
+- Codes HTTP
+- Pages d'erreur
 
 ## Garanties
 
-- 100% safe
-- 0 écriture BDD
-- 0 suppression BDD
-- 0 upload réel
-- 0 mutation de données
-- 0 SQL manuel
-- 0 effet de bord
-
-## Structure
-
-```text
-tests/
-│
-├── Http/
-│   ├── cases/
-│   │   └── safe/
-│   │
-│   ├── reports/
-│   │
-│   ├── Support/
-│   │   ├── Assertions.php
-│   │   ├── HtmlReport.php
-│   │   ├── HttpClient.php
-│   │   ├── Stats.php
-│   │   └── Terminal.php
-│   │
-│   ├── bootstrap.php
-│   ├── bootstrap-runner.php
-│   └── config.php
-│
-├── run-tests.php
-└── run-tests.bat
-```
-
-## Exécution
-
-```bash
-php tests/run-tests.php
-```
-
-ou
-
-```bash
-tests/run-tests.bat
-```
-
-## Rapport
-
-Après exécution :
-
-```text
-tests/Http/reports/latest.html
-```
-
-contient le rapport complet.
+- Aucune écriture en base de données
+- Aucune suppression en base de données
+- Aucun upload réel
+- Aucune modification de données
+- Aucun effet de bord
+- 100 % safe

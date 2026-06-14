@@ -9,9 +9,6 @@ require __DIR__ . '/Support/HttpClient.php';
 require __DIR__ . '/Support/HtmlReport.php';
 require __DIR__ . '/Support/Stats.php';
 
-$config =
-    require __DIR__ . '/http-config.php';
-
 http_login();
 
 $tests = [];
@@ -27,7 +24,7 @@ foreach (
 
 return [
 
-    'base' => (string) $config['base'],
+    'base' => http_base(),
 
     'tests' => $tests,
 
