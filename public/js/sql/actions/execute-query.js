@@ -15,8 +15,12 @@ import {
 } from '../../core/errors/FrontendError.js';
 
 import {
+    confirmModal,
+} from '../../core/modal/confirm-modal.js';
+
+import {
     deleteModal,
-} from '../../core/modal/modal.js';
+} from '../../core/modal/delete-modal.js';
 
 // =========================================
 // STATE
@@ -344,19 +348,42 @@ async function executeQuery(
             );
         }
 
-        const isDangerousQuery =
-            /^\s*(INSERT|UPDATE|DELETE|DROP|TRUNCATE|ALTER|CREATE|RENAME|REPLACE)\b/i
-                .test(
-                    sql,
-                );
+        const isDestructiveQuery =
+            /^\s*(DELETE|DROP|TRUNCATE)\b/i
+                .test(sql);
+
+        const isModificationQuery =
+            /^\s*(INSERT|UPDATE|ALTER|CREATE|RENAME|REPLACE)\b/i
+                .test(sql);
 
         if (
-            isDangerousQuery
+            isDestructiveQuery
         )
         {
             const confirmed =
                 await deleteModal(
-                    'Cette requête peut modifier la base de données. Continuer ?',
+                    'Cette requête va supprimer des données. Continuer ?',
+                );
+
+            if (!confirmed)
+            {
+                return;
+            }
+        }
+        
+        else if (
+            isModificationQuery
+        )
+        {
+            const confirmed =
+                await confirmModal(
+                    {
+                        title:
+                            'Modification',
+
+                        message:
+                            'Cette requête va modifier la base de données. Continuer ?',
+                    },
                 );
 
             if (!confirmed)
