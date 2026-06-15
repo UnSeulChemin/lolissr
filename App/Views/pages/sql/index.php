@@ -11,6 +11,12 @@ $result =
 $error =
     $error ?? null;
 
+$baseUri =
+    rtrim(
+        (string) ($baseUri ?? ''),
+        '/',
+    ) . '/';
+
 ?>
 
 <section class="layout-container dashboard-page">
@@ -21,8 +27,9 @@ $error =
 
             <form
                 class="form-layout"
-                action=""
                 method="post"
+                data-sql-form
+                data-url="<?= e($baseUri) ?>sql/ajax/execute"
             >
 
                 <?= csrf_field() ?>
@@ -71,145 +78,153 @@ $error =
 
         </section>
 
-        <?php if (
-            $error !== null
-            || $result !== []
-        ): ?>
+        <div id="sql-results">
 
-            <section
-                class="
-                    home-grid
-                    home-grid-top
-                    card-grid-3
-                    sql-grid
-                "
-            >
+            <?php if (
+                $error !== null
+                || $result !== []
+            ): ?>
 
-                <article
+                <section
                     class="
-                        card
-                        transition-card
-                        card-medium
-                        sql-query-card
+                        home-grid
+                        home-grid-top
+                        card-grid-3
+                        sql-grid
                     "
                 >
 
-                    <h2 class="home-card-title">
-
-                        📝 Requête SQL
-
-                    </h2>
-
-                    <pre class="sql-result-query"><?= e($sql) ?></pre>
-
-                </article>
-
-                <article
-                    class="
-                        card
-                        transition-card
-                        card-link-wide
-                        card-wide
-                        sql-result-card
-                    "
-                >
-
-                    <?php if ($error !== null): ?>
-
-                        <p class="sql-error">
-
-                            <?= e($error) ?>
-
-                        </p>
-
-                    <?php else: ?>
+                    <article
+                        class="
+                            card
+                            transition-card
+                            card-medium
+                            sql-query-card
+                        "
+                    >
 
                         <h2 class="home-card-title">
 
-                            📊 Résultat
+                            📝 Requête SQL
 
                         </h2>
 
-                        <p class="sql-result-count">
+                        <pre class="sql-result-query"><?= e($sql) ?></pre>
 
-                            <?= count($result) ?>
+                    </article>
 
-                            ligne(s)
+                    <article
+                        class="
+                            card
+                            transition-card
+                            card-link-wide
+                            card-wide
+                            sql-result-card
+                        "
+                    >
 
-                        </p>
+                        <?php if ($error !== null): ?>
 
-                        <?php
+                            <p class="sql-error">
 
-                        $columns =
-                            array_keys(
-                                (array) $result[0],
-                            );
+                                <?= e($error) ?>
 
-                        ?>
+                            </p>
 
-                        <div class="sql-table-wrapper">
+                        <?php else: ?>
 
-                            <table class="sql-table">
+                            <h2 class="home-card-title">
 
-                                <thead>
+                                📊 Résultat
 
-                                    <tr>
+                            </h2>
 
-                                        <?php foreach (
-                                            $columns as $column
-                                        ): ?>
+                            <?php if ($result === []): ?>
 
-                                            <th>
+                                <p class="sql-result-count">
 
-                                                <?= e($column) ?>
+                                    Aucune ligne retournée.
 
-                                            </th>
+                                </p>
 
-                                        <?php endforeach; ?>
+                            <?php else: ?>
 
-                                    </tr>
+                                <p class="sql-result-count">
 
-                                </thead>
+                                    <?= count($result) ?>
 
-                                <tbody>
+                                    ligne(s)
 
-                                    <?php foreach (
-                                        $result as $row
-                                    ): ?>
+                                </p>
 
-                                        <tr>
+                                <?php
 
-                                            <?php foreach (
-                                                (array) $row as $value
-                                            ): ?>
+                                $columns =
+                                    array_keys(
+                                        (array) $result[0],
+                                    );
 
-                                                <td>
+                                ?>
 
-                                                    <?= e(
-                                                        (string) $value,
-                                                    ) ?>
+                                <div class="sql-table-wrapper">
 
-                                                </td>
+                                    <table class="sql-table">
+
+                                        <thead>
+
+                                            <tr>
+
+                                                <?php foreach ($columns as $column): ?>
+
+                                                    <th>
+
+                                                        <?= e($column) ?>
+
+                                                    </th>
+
+                                                <?php endforeach; ?>
+
+                                            </tr>
+
+                                        </thead>
+
+                                        <tbody>
+
+                                            <?php foreach ($result as $row): ?>
+
+                                                <tr>
+
+                                                    <?php foreach ((array) $row as $value): ?>
+
+                                                        <td>
+
+                                                            <?= e((string) $value) ?>
+
+                                                        </td>
+
+                                                    <?php endforeach; ?>
+
+                                                </tr>
 
                                             <?php endforeach; ?>
 
-                                        </tr>
+                                        </tbody>
 
-                                    <?php endforeach; ?>
+                                    </table>
 
-                                </tbody>
+                                </div>
 
-                            </table>
+                            <?php endif; ?>
 
-                        </div>
+                        <?php endif; ?>
 
-                    <?php endif; ?>
+                    </article>
 
-                </article>
+                </section>
 
-            </section>
+            <?php endif; ?>
 
-        <?php endif; ?>
+        </div>
 
     </section>
 

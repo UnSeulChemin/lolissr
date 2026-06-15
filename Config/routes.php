@@ -3,10 +3,11 @@
 declare(strict_types=1);
 
 use App\Controllers\AuthController;
-use App\Controllers\SqlController;
+use App\Controllers\MainController;
+use App\Controllers\Sql\SqlController;
+use App\Controllers\Sql\SqlAjaxController;
 use App\Controllers\Chinois\ChinoisAjaxController;
 use App\Controllers\Chinois\ChinoisController;
-use App\Controllers\MainController;
 use App\Controllers\Manga\MangaAjaxController;
 use App\Controllers\Manga\MangaController;
 use App\Controllers\ProfileController;
@@ -90,19 +91,34 @@ return static function (Router $router): void {
             config('app.env') !== 'production'
         )
         {
+            $router->prefix('sql')->group(function (Router $router): void {
 
-            $router->get(
-                'sql',
-                [SqlController::class, 'index'],
-            );
+                $router->get(
+                    '',
+                    [SqlController::class, 'index'],
+                );
 
-            $router->post(
-                'sql',
-                [SqlController::class, 'execute'],
-                [
-                    CsrfMiddleware::class,
-                ],
-            );
+                $router->post(
+                    '',
+                    [SqlController::class, 'execute'],
+                    [
+                        CsrfMiddleware::class,
+                    ],
+                );
+
+                $router->prefix('ajax')
+                    ->middleware([
+                        ExpectJsonMiddleware::class,
+                        CsrfMiddleware::class,
+                    ])
+                    ->group(function (Router $router): void {
+
+                        $router->post(
+                            'execute',
+                            [SqlAjaxController::class, 'execute'],
+                        );
+                    });
+            });
         }
 
         $router->post(

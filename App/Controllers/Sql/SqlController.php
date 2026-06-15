@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Controllers;
+namespace App\Controllers\Sql;
 
+use App\Controllers\Controller;
 use App\Repositories\Sql\SqlRepository;
 
 use Framework\Http\Request;
@@ -19,12 +20,20 @@ final class SqlController extends Controller
         parent::__construct($request);
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Helpers
+    |--------------------------------------------------------------------------
+    */
+
+    /**
+     * @param list<object> $result
+     */
     private function renderPage(
         string $sql = '',
         array $result = [],
         ?string $error = null,
     ): never {
-
         $this->title = 'SQL';
 
         $this->render(
@@ -37,6 +46,12 @@ final class SqlController extends Controller
         );
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Pages
+    |--------------------------------------------------------------------------
+    */
+
     public function index(): never
     {
         $this->renderPage();
@@ -48,23 +63,26 @@ final class SqlController extends Controller
             (string) $this->request->input('sql'),
         );
 
+        if ($sql === '')
+        {
+            $this->renderPage(
+                error: 'Veuillez saisir une requête SQL.',
+            );
+        }
+
         try
         {
-            $result =
-                $this->sqlRepository
-                    ->executeQuery($sql);
-
             $this->renderPage(
-                $sql,
-                $result,
+                sql: $sql,
+                result: $this->sqlRepository
+                    ->executeQuery($sql),
             );
         }
         catch (Throwable $exception)
         {
             $this->renderPage(
-                $sql,
-                [],
-                $exception->getMessage(),
+                sql: $sql,
+                error: $exception->getMessage(),
             );
         }
     }

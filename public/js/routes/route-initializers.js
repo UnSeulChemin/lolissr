@@ -54,6 +54,10 @@ import {
     initFlashcardsGrammairePage,
 } from '../chinois/pages/flashcards-grammaire.js';
 
+import {
+    initSqlPage,
+} from '../sql/pages/sql.js';
+
 
 // ==================================================
 // EXPORT
@@ -140,6 +144,25 @@ export const ROUTE_INITIALIZERS = [
             [
                 'ModifierPage',
                 initModifierPage,
+            ],
+        ],
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | SQL
+    |--------------------------------------------------------------------------
+    */
+
+    {
+        match:
+            /^\/lolissr\/sql\/?$/,
+
+        initializers:
+        [
+            [
+                'SqlPage',
+                initSqlPage,
             ],
         ],
     },

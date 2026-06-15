@@ -14,7 +14,6 @@ final class SqlRepository extends Model
     public function executeQuery(
         string $sql,
     ): array {
-
         return $this->fetchAll(
             trim($sql),
         );
