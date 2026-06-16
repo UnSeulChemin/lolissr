@@ -334,7 +334,7 @@ final class ChinoisController extends Controller
         $this->redirectWithSuccess(
             $returnTo !== ''
                 ? $returnTo
-                : 'chinois/' . $dto->langue,
+                : 'chinois/vocabulaire/' . $dto->langue,
             'Vocabulaire modifié.',
         );
     }

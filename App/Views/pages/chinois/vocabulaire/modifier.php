@@ -47,7 +47,7 @@ $returnUrl =
                 '/',
             )
         : $baseUri
-            . 'chinois/'
+            . 'chinois/vocabulaire/'
             . $vocabulaire->langue;
 
 $langueValue =
