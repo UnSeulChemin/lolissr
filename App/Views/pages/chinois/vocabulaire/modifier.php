@@ -36,7 +36,9 @@ $returnTo =
 
 $formAction =
     $baseUri
-    . 'chinois/vocabulaire/modifier/'
+    . 'chinois/vocabulaire/'
+    . $vocabulaire->langue
+    . '/modifier/'
     . $vocabulaire->id;
 
 $returnUrl =

@@ -332,12 +332,12 @@ return static function (Router $router): void {
             );
 
             $router->get(
-                'vocabulaire/modifier/{id:int}',
+                'vocabulaire/{langue}/modifier/{id:int}',
                 [ChinoisController::class, 'editVocabulaire'],
             );
 
             $router->post(
-                'vocabulaire/modifier/{id:int}',
+                'vocabulaire/{langue}/modifier/{id:int}',
                 [ChinoisController::class, 'updateVocabulaire'],
                 [CsrfMiddleware::class],
             );

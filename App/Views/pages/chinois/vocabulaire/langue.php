@@ -94,7 +94,7 @@ $baseUri =
 
                             <a
                                 class="grammar-edit"
-                                href="<?= e($baseUri) ?>chinois/vocabulaire/modifier/<?= $vocabulaire->id ?>"
+                                href="<?= e($baseUri) ?>chinois/vocabulaire/<?= $vocabulaire->langue ?>/modifier/<?= $vocabulaire->id ?>"
                             >
 
                                 <svg

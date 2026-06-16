@@ -221,6 +221,7 @@ final class ChinoisController extends Controller
     }
 
     public function editVocabulaire(
+        string $_langue,
         int $id,
     ): never {
 
@@ -299,6 +300,7 @@ final class ChinoisController extends Controller
 
     public function updateVocabulaire(
         ChinoisVocabulaireCreateRequest $request,
+        string $_langue,
         int $id,
     ): never {
 
