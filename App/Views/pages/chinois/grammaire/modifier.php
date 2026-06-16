@@ -28,7 +28,9 @@ $returnTo =
 
 $formAction =
     $baseUri
-    . 'chinois/grammaire/modifier/'
+    . 'chinois/grammaire/'
+    . strtolower($grammaire->niveau)
+    . '/modifier/'
     . $grammaire->id;
 
 $returnUrl =

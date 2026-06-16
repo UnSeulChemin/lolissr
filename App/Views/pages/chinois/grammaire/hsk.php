@@ -234,7 +234,7 @@ $sourceDescription =
 
                                 <a
                                     class="grammar-edit"
-                                    href="<?= e($baseUri) ?>chinois/grammaire/modifier/<?= $grammaire->id ?>"
+                                    href="<?= e($baseUri) ?>chinois/grammaire/<?= strtolower($grammaire->niveau) ?>/modifier/<?= $grammaire->id ?>"
                                     aria-label="Modifier la règle"
                                     title="Modifier la règle"
                                 >

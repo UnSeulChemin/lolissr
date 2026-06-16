@@ -321,12 +321,12 @@ return static function (Router $router): void {
             );
 
             $router->get(
-                'grammaire/modifier/{id:int}',
+                'grammaire/hsk{level:int}/modifier/{id:int}',
                 [ChinoisController::class, 'editGrammaire'],
             );
 
             $router->post(
-                'grammaire/modifier/{id:int}',
+                'grammaire/hsk{level:int}/modifier/{id:int}',
                 [ChinoisController::class, 'updateGrammaire'],
                 [CsrfMiddleware::class],
             );

@@ -192,6 +192,7 @@ final class ChinoisController extends Controller
     }
 
     public function editGrammaire(
+        int $_level,
         int $id,
     ): never {
 
@@ -252,6 +253,7 @@ final class ChinoisController extends Controller
 
     public function updateGrammaire(
         ChinoisGrammaireCreateRequest $request,
+        int $_level,
         int $id,
     ): never {
 
