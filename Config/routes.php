@@ -289,8 +289,30 @@ return static function (Router $router): void {
             );
 
             $router->get(
+                'flashcards/vocabulaire/modifier/{id:int}',
+                [ChinoisController::class, 'editFlashcardVocabulaire'],
+            );
+
+            $router->post(
+                'flashcards/vocabulaire/modifier/{id:int}',
+                [ChinoisController::class, 'updateFlashcardVocabulaire'],
+                [CsrfMiddleware::class],
+            );
+
+            $router->get(
                 'flashcards/grammaire',
                 [ChinoisController::class, 'flashcardsGrammaire'],
+            );
+
+            $router->get(
+                'flashcards/grammaire/modifier/{id:int}',
+                [ChinoisController::class, 'editFlashcardGrammaire'],
+            );
+
+            $router->post(
+                'flashcards/grammaire/modifier/{id:int}',
+                [ChinoisController::class, 'updateFlashcardGrammaire'],
+                [CsrfMiddleware::class],
             );
 
             $router->get(

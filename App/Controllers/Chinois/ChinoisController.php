@@ -7,8 +7,11 @@ namespace App\Controllers\Chinois;
 use App\Controllers\Controller;
 use App\Http\Requests\Chinois\ChinoisGrammaireCreateRequest;
 use App\Http\Requests\Chinois\ChinoisVocabulaireCreateRequest;
+use App\DTO\Chinois\Responses\ChinoisVocabulaireData;
+use App\DTO\Chinois\Responses\ChinoisGrammaireData;
 use App\Services\Chinois\ChinoisReadService;
 use App\Services\Chinois\ChinoisWriteService;
+
 use Framework\Exceptions\NotFoundException;
 use Framework\Exceptions\ValidationException;
 use Framework\Http\Request;
@@ -23,6 +26,74 @@ final class ChinoisController extends Controller
         Request $request,
     ) {
         parent::__construct($request);
+    }
+
+    private function vocabulaireOrFail(
+        int $id,
+    ): ChinoisVocabulaireData
+    {
+        return
+            $this->chinoisReadService
+                ->vocabulaire($id)
+            ?? throw new NotFoundException(
+                'Vocabulaire introuvable',
+            );
+    }
+
+    private function grammaireOrFail(
+        int $id,
+    ): ChinoisGrammaireData
+    {
+        return
+            $this->chinoisReadService
+                ->grammaire($id)
+            ?? throw new NotFoundException(
+                'Grammaire introuvable',
+            );
+    }
+
+    private function renderEditVocabulaire(
+        int $id,
+        string $returnTo,
+    ): never {
+
+        $this->title =
+            'Chinois | Modifier du vocabulaire';
+
+        $this->render(
+            'pages/chinois/vocabulaire/modifier',
+            [
+                'vocabulaire' =>
+                    $this->vocabulaireOrFail(
+                        $id,
+                    ),
+
+                'returnTo' =>
+                    $returnTo,
+            ],
+        );
+    }
+
+    private function renderEditGrammaire(
+        int $id,
+        string $returnTo,
+    ): never {
+
+        $this->title =
+            'Chinois | Modifier une grammaire';
+
+        $this->render(
+            'pages/chinois/grammaire/modifier',
+            [
+                'grammaire' =>
+                    $this->grammaireOrFail(
+                        $id,
+                    ),
+
+                'returnTo' =>
+                    $returnTo,
+            ],
+        );
     }
 
     /*
@@ -134,6 +205,44 @@ final class ChinoisController extends Controller
         );
     }
 
+    public function editFlashcardVocabulaire(
+        int $id,
+    ): never {
+
+        $this->renderEditVocabulaire(
+            $id,
+            'chinois/flashcards/vocabulaire',
+        );
+    }
+
+    public function updateFlashcardVocabulaire(
+        ChinoisVocabulaireCreateRequest $request,
+        int $id,
+    ): never {
+
+        $this->vocabulaireOrFail(
+            $id,
+        );
+
+        if ($request->fails())
+        {
+            throw new ValidationException(
+                $request->errors(),
+            );
+        }
+
+        $this->chinoisWriteService
+            ->updateVocabulaire(
+                $id,
+                $request->dto(),
+            );
+
+        $this->redirectWithSuccess(
+            'chinois/flashcards/vocabulaire',
+            'Vocabulaire modifié.',
+        );
+    }
+
     public function flashcardsGrammaire(): never
     {
         $this->title =
@@ -146,6 +255,43 @@ final class ChinoisController extends Controller
                     $this->chinoisReadService
                         ->flashcardsGrammaire(),
             ],
+        );
+    }
+
+    public function editFlashcardGrammaire(
+        int $id,
+    ): never {
+
+        $this->renderEditGrammaire(
+            $id,
+            'chinois/flashcards/grammaire',
+        );
+    }
+
+    public function updateFlashcardGrammaire(
+        ChinoisGrammaireCreateRequest $request,
+        int $id,
+    ): never {
+
+        $this->grammaireOrFail(
+            $id,
+        );
+
+        if ($request->fails()) {
+            throw new ValidationException(
+                $request->errors(),
+            );
+        }
+
+        $this->chinoisWriteService
+            ->updateGrammaire(
+                $id,
+                $request->dto(),
+            );
+
+        $this->redirectWithSuccess(
+            'chinois/flashcards/grammaire',
+            'Grammaire modifiée.',
         );
     }
 
@@ -196,28 +342,13 @@ final class ChinoisController extends Controller
         int $id,
     ): never {
 
-        $grammaire =
-            $this->chinoisReadService
-                ->grammaire($id)
-            ?? throw new NotFoundException(
-                'Grammaire introuvable',
-            );
-
-        $this->title =
-            'Chinois | Modifier une grammaire';
-
-        $this->render(
-            'pages/chinois/grammaire/modifier',
-            [
-                'grammaire' => $grammaire,
-
-                'returnTo' =>
-                    (string) $this->request
-                        ->input(
-                            'return_to',
-                            '',
-                        ),
-            ],
+        $this->renderEditGrammaire(
+            $id,
+            (string) $this->request
+                ->input(
+                    'return_to',
+                    '',
+                ),
         );
     }
 
@@ -226,28 +357,13 @@ final class ChinoisController extends Controller
         int $id,
     ): never {
 
-        $vocabulaire =
-            $this->chinoisReadService
-                ->vocabulaire($id)
-            ?? throw new NotFoundException(
-                'Vocabulaire introuvable',
-            );
-
-        $this->title =
-            'Chinois | Modifier du vocabulaire';
-
-        $this->render(
-            'pages/chinois/vocabulaire/modifier',
-            [
-                'vocabulaire' => $vocabulaire,
-
-                'returnTo' =>
-                    (string) $this->request
-                        ->input(
-                            'return_to',
-                            '',
-                        ),
-            ],
+        $this->renderEditVocabulaire(
+            $id,
+            (string) $this->request
+                ->input(
+                    'return_to',
+                    '',
+                ),
         );
     }
 
@@ -257,11 +373,9 @@ final class ChinoisController extends Controller
         int $id,
     ): never {
 
-        $this->chinoisReadService
-            ->grammaire($id)
-            ?? throw new NotFoundException(
-                'Grammaire introuvable',
-            );
+        $this->grammaireOrFail(
+            $id,
+        );
 
         if ($request->fails())
         {
@@ -306,11 +420,9 @@ final class ChinoisController extends Controller
         int $id,
     ): never {
 
-        $this->chinoisReadService
-            ->vocabulaire($id)
-            ?? throw new NotFoundException(
-                'Vocabulaire introuvable',
-            );
+        $this->vocabulaireOrFail(
+            $id,
+        );
 
         if ($request->fails())
         {

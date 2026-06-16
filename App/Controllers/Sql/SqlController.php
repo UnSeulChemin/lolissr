@@ -27,11 +27,11 @@ final class SqlController extends Controller
     */
 
     /**
-     * @param list<object> $result
+     * @param list<object>|null $result
      */
     private function renderPage(
         string $sql = '',
-        array $result = [],
+        ?array $result = null,
         ?string $error = null,
     ): never {
         $this->title = 'SQL';

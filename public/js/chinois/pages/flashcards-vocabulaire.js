@@ -35,7 +35,7 @@ function invalidateVocabularyPages(baseUri)
     ) {
 
         const url =
-            `${baseUri}chinois/${route}`;
+            `${baseUri}chinois/vocabulaire/${route}`;
 
         invalidateRoute(
             url,
@@ -165,7 +165,7 @@ export function initFlashcardsVocabulairePage()
         }
 
         editElement.href =
-            `${baseUri}chinois/vocabulaire/modifier/${card.id}?return_to=chinois/flashcards/vocabulaire`;
+            `${baseUri}chinois/flashcards/vocabulaire/modifier/${card.id}`;
 
         if (
             deleteButton

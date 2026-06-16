@@ -6,6 +6,15 @@ $sql =
     (string) ($sql ?? '');
 
 $result =
+    $result ?? null;
+
+$hasExecuted =
+    $result !== null;
+
+$resultCount =
+    count($result ?? []);
+
+$result =
     $result ?? [];
 
 $error =
@@ -82,7 +91,7 @@ $baseUri =
 
             <?php if (
                 $error !== null
-                || $result !== []
+                || $hasExecuted
             ): ?>
 
                 <section
@@ -139,7 +148,7 @@ $baseUri =
 
                             </h2>
 
-                            <?php if ($result === []): ?>
+                            <?php if ($resultCount === 0): ?>
 
                                 <p class="sql-result-count">
 
@@ -151,7 +160,7 @@ $baseUri =
 
                                 <p class="sql-result-count">
 
-                                    <?= count($result) ?>
+                                    <?= $resultCount ?>
 
                                     ligne(s)
 

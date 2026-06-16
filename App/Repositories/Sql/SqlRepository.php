@@ -11,11 +11,12 @@ final class SqlRepository extends Model
     /**
      * @return list<object>
      */
-    public function executeQuery(
-        string $sql,
-    ): array {
-        return $this->fetchAll(
-            trim($sql),
+    public function executeQuery(string $sql): array
+    {
+        return array_values(
+            $this->fetchAll(
+                trim($sql),
+            ),
         );
     }
 }

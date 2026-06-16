@@ -180,7 +180,7 @@ export function initFlashcardsGrammairePage()
             card.explication ?? '';
 
         editElement.href =
-            `${baseUri}chinois/grammaire/modifier/${card.id}?return_to=chinois/flashcards/grammaire`;
+            `${baseUri}chinois/flashcards/grammaire/modifier/${card.id}`;
 
         if (
             deleteButton
