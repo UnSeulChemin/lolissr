@@ -93,7 +93,7 @@ final class ChinoisController extends Controller
     public function flashcards(): never
     {
         $this->title = 'Chinois | Flashcards';
-        $this->render('pages/chinois/flashcards');
+        $this->render('pages/chinois/flashcards/index');
     }
 
     public function flashcardsVocabulaire(): never
