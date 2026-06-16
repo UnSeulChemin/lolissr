@@ -37,22 +37,45 @@ final class ChinoisController extends Controller
         $this->render('pages/chinois/index');
     }
 
-    public function mandarin(): never
+    public function vocabulaire(): never
     {
-        $this->title = 'Chinois | Mandarin';
-        $this->render('pages/chinois/vocabulaire/index', [
-            'langue' => 'mandarin',
-            'vocabulaires' => $this->chinoisReadService->mandarin(),
-        ]);
+        $this->title = 'Chinois | Vocabulaire';
+        $this->render('pages/chinois/vocabulaire/index');
     }
 
-    public function jinyu(): never
+    public function langue(string $langue): never
     {
-        $this->title = 'Chinois | 晋语';
-        $this->render('pages/chinois/vocabulaire/index', [
-            'langue' => '晋语',
-            'vocabulaires' => $this->chinoisReadService->jinyu(),
-        ]);
+
+        $langue = mb_strtolower($langue);
+
+        $vocabulaires =
+            match ($langue)
+            {
+                'mandarin' =>
+                    $this->chinoisReadService
+                        ->mandarin(),
+
+                'jinyu' =>
+                    $this->chinoisReadService
+                        ->jinyu(),
+
+                default =>
+                    throw new NotFoundException(
+                        'Langue introuvable',
+                    ),
+            };
+
+        $this->title = 'Chinois | ' . ($langue === 'jinyu' ? '晋语' : 'Mandarin');
+
+        $this->render('pages/chinois/vocabulaire/langue',
+            [
+                'langue' =>
+                    $langue,
+
+                'vocabulaires' =>
+                    $vocabulaires,
+            ],
+        );
     }
 
     public function grammaire(): never

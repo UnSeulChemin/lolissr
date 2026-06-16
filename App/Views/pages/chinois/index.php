@@ -42,49 +42,22 @@ $baseUri =
                 dashboard-card
             "
             data-prefetch
-            href="<?= e($baseUri) ?>chinois/mandarin"
+            href="<?= e($baseUri) ?>chinois/vocabulaire"
         >
 
             <span
                 class="dashboard-card-icon"
                 aria-hidden="true"
             >
-                中文
+                📚
             </span>
 
             <span class="dashboard-card-title">
-                Mandarin
+                Vocabulaire
             </span>
 
             <span class="dashboard-card-description">
-                Mots, expressions et vocabulaire en chinois standard.
-            </span>
-
-        </a>
-
-        <a
-            class="
-                card
-                transition-card
-                dashboard-card
-            "
-            data-prefetch
-            href="<?= e($baseUri) ?>chinois/jinyu"
-        >
-
-            <span
-                class="dashboard-card-icon"
-                aria-hidden="true"
-            >
-                晋语
-            </span>
-
-            <span class="dashboard-card-title">
-                JinYu
-            </span>
-
-            <span class="dashboard-card-description">
-                Mots, expressions locales et tournures du 晋语.
+                Mandarin, 晋语, expressions et vocabulaire chinois.
             </span>
 
         </a>

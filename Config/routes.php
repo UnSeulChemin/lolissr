@@ -259,13 +259,13 @@ return static function (Router $router): void {
             $router->get('', [ChinoisController::class, 'index']);
 
             $router->get(
-                'mandarin',
-                [ChinoisController::class, 'mandarin'],
+                'vocabulaire',
+                [ChinoisController::class, 'vocabulaire'],
             );
 
             $router->get(
-                'jinyu',
-                [ChinoisController::class, 'jinyu'],
+                'vocabulaire/{langue}',
+                [ChinoisController::class, 'langue'],
             );
 
             $router->get(
