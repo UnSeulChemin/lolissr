@@ -92,7 +92,7 @@ export const ROUTE_INITIALIZERS = [
 
     {
         match:
-            /^\/lolissr\/chinois\/(grammaire|vocabulaire)\/ajouter\/?$/,
+            /^\/lolissr\/chinois\/ajouter\/(grammaire|vocabulaire)\/?$/,
 
         initializers:
         [
