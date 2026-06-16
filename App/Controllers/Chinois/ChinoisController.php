@@ -58,7 +58,7 @@ final class ChinoisController extends Controller
     public function grammaire(): never
     {
         $this->title = 'Chinois | Grammaire';
-        $this->render('pages/chinois/grammaire');
+        $this->render('pages/chinois/grammaire/index');
     }
 
     public function hsk(int $level): never
@@ -78,7 +78,7 @@ final class ChinoisController extends Controller
             . $hskLevel;
 
         $this->render(
-            'pages/chinois/hsk',
+            'pages/chinois/grammaire/hsk',
             [
                 'grammaires' =>
                     $this->chinoisReadService
