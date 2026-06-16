@@ -21,7 +21,7 @@ $baseUri =
                 dashboard-card
             "
             data-prefetch
-            href="<?= e($baseUri) ?>chinois/vocabulaire/ajouter"
+            href="<?= e($baseUri) ?>chinois/ajouter/vocabulaire"
         >
 
             <span
@@ -48,7 +48,7 @@ $baseUri =
                 dashboard-card
             "
             data-prefetch
-            href="<?= e($baseUri) ?>chinois/grammaire/ajouter"
+            href="<?= e($baseUri) ?>chinois/ajouter/grammaire"
         >
 
             <span

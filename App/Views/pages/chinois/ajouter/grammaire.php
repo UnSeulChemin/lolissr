@@ -18,7 +18,7 @@ $baseUri =
 
 $formAction =
     $baseUri
-    . 'chinois/grammaire/ajouter';
+    . 'chinois/ajouter/grammaire';
 
 $returnUrl =
     $baseUri

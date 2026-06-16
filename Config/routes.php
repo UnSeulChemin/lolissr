@@ -299,8 +299,25 @@ return static function (Router $router): void {
             );
 
             $router->get(
-                'grammaire/ajouter',
+                'ajouter/grammaire',
                 [ChinoisController::class, 'createGrammaire'],
+            );
+
+            $router->post(
+                'ajouter/grammaire',
+                [ChinoisController::class, 'storeGrammaire'],
+                [CsrfMiddleware::class],
+            );
+
+            $router->get(
+                'ajouter/vocabulaire',
+                [ChinoisController::class, 'createVocabulaire'],
+            );
+
+            $router->post(
+                'ajouter/vocabulaire',
+                [ChinoisController::class, 'storeVocabulaire'],
+                [CsrfMiddleware::class],
             );
 
             $router->get(
@@ -314,17 +331,6 @@ return static function (Router $router): void {
                 [CsrfMiddleware::class],
             );
 
-            $router->post(
-                'grammaire/ajouter',
-                [ChinoisController::class, 'storeGrammaire'],
-                [CsrfMiddleware::class],
-            );
-
-            $router->get(
-                'vocabulaire/ajouter',
-                [ChinoisController::class, 'createVocabulaire'],
-            );
-
             $router->get(
                 'vocabulaire/modifier/{id:int}',
                 [ChinoisController::class, 'editVocabulaire'],
@@ -333,12 +339,6 @@ return static function (Router $router): void {
             $router->post(
                 'vocabulaire/modifier/{id:int}',
                 [ChinoisController::class, 'updateVocabulaire'],
-                [CsrfMiddleware::class],
-            );
-
-            $router->post(
-                'vocabulaire/ajouter',
-                [ChinoisController::class, 'storeVocabulaire'],
                 [CsrfMiddleware::class],
             );
 

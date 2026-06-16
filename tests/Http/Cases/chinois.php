@@ -12,21 +12,21 @@ $tests[] = [
 ];
 
 $tests[] = [
-
     'category' => 'Chinois',
-
-    'label' => 'Page mandarin accessible',
-
-    'path' => '/chinois/mandarin',
+    'label' => 'Page vocabulaire accessible',
+    'path' => '/chinois/vocabulaire',
 ];
 
 $tests[] = [
-
     'category' => 'Chinois',
+    'label' => 'Page vocabulaire mandarin accessible',
+    'path' => '/chinois/vocabulaire/mandarin',
+];
 
-    'label' => 'Page jinyu accessible',
-
-    'path' => '/chinois/jinyu',
+$tests[] = [
+    'category' => 'Chinois',
+    'label' => 'Page vocabulaire jinyu accessible',
+    'path' => '/chinois/vocabulaire/jinyu',
 ];
 
 $tests[] = [
