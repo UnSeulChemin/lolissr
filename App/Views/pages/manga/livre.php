@@ -33,16 +33,16 @@ $thumbnailPath =
 
 $modifierUrl =
     $baseUri
-    . 'manga/series/modifier/'
+    . 'manga/series/'
     . $slug
-    . '/'
+    . '/modifier/'
     . $numero;
 
 $deleteUrl =
     $baseUri
-    . 'manga/series/supprimer/'
+    . 'manga/series/'
     . $slug
-    . '/'
+    . '/supprimer/'
     . $numero;
 
 $redirectUrl =

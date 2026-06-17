@@ -132,7 +132,9 @@ return static function (Router $router): void {
         $router->prefix('manga')->group(function (Router $router): void {
 
             $router->get('', [MangaController::class, 'index']);
+
             $router->get('recherche', [MangaController::class, 'search']);
+
             $router->get('recherche/{query}', [MangaController::class, 'search']);
 
             $router->get('ajouter', [MangaController::class, 'create']);
@@ -153,50 +155,45 @@ return static function (Router $router): void {
 
             $router->prefix('series')->group(function (Router $router): void {
 
-                $router->get(
-                    '',
-                    [MangaController::class, 'series'],
-                );
+                $router->get('', [MangaController::class, 'series']);
 
-                $router->get(
-                    'page/{page:int}',
-                    [MangaController::class, 'series'],
-                );
+                $router->get('page/{page:int}', [MangaController::class, 'series']);
 
-                $router->get(
-                    'notes',
-                    [MangaController::class, 'notes'],
-                );
+                $router->get('notes', [MangaController::class, 'notes']);
 
-                $router->get(
-                    '{slug}/{numero:int}',
-                    [MangaController::class, 'show'],
-                );
+                /*
+                |--------------------------------------------------------------------------
+                | ACTIONS SUR UN TOME
+                |--------------------------------------------------------------------------
+                */
 
-                $router->get(
-                    '{slug}',
-                    [MangaController::class, 'showSeries'],
-                );
-
-                $router->get(
-                    'modifier/{slug}/{numero:int}',
-                    [MangaController::class, 'edit'],
-                );
+                $router->get('{slug}/modifier/{numero:int}', [MangaController::class, 'edit']);
 
                 $router->post(
-                    'modifier/{slug}/{numero:int}',
+                    '{slug}/modifier/{numero:int}',
                     [MangaController::class, 'update'],
                     [CsrfMiddleware::class],
                 );
 
                 $router->post(
-                    'supprimer/{slug}/{numero:int}',
+                    '{slug}/supprimer/{numero:int}',
                     [MangaAjaxController::class, 'delete'],
                     [
                         ExpectJsonMiddleware::class,
                         CsrfMiddleware::class,
                     ],
                 );
+
+                /*
+                |--------------------------------------------------------------------------
+                | CONSULTATION
+                |--------------------------------------------------------------------------
+                */
+
+                $router->get('{slug}/{numero:int}', [MangaController::class, 'show']);
+
+                $router->get('{slug}', [MangaController::class, 'showSeries']);
+
             });
 
             /*

@@ -51,11 +51,9 @@ $statutOptions = [
 
 $formAction =
     $baseUri
-    . 'manga/series/modifier/'
-    . rawurlencode(
-        (string) $manga->slug,
-    )
-    . '/'
+    . 'manga/series/'
+    . rawurlencode((string) $manga->slug)
+    . '/modifier/'
     . (int) $manga->numero;
 
 $cancelUrl =

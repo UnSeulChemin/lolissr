@@ -74,11 +74,11 @@ export function initModifierPage()
     if (
         !(
             jacquetteInput
-            instanceof HTMLInputElement
+            instanceof HTMLSelectElement
         )
         || !(
             livreNoteInput
-            instanceof HTMLInputElement
+            instanceof HTMLSelectElement
         )
         || !(
             totalNoteInput
@@ -125,8 +125,7 @@ export function initModifierPage()
         'input',
         updateTotalNote,
         {
-            passive:
-                true,
+            passive: true,
         },
     );
 
@@ -134,8 +133,7 @@ export function initModifierPage()
         'input',
         updateTotalNote,
         {
-            passive:
-                true,
+            passive: true,
         },
     );
 
