@@ -105,7 +105,7 @@ if (
 <body>
 
     <?php require_once view_path(
-        'components/layouts/header.php',
+        'layouts/header.php',
     ); ?>
 
     <main class="app-content">
