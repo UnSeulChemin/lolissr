@@ -103,8 +103,8 @@ export function buildChineseResult(
 {
     const url =
         item.type === 'grammaire'
-            ? `${basePath}chinois/grammaire`
-            : `${basePath}chinois/vocabulaire`;
+            ? `${basePath}chinois/grammaire/${item.id}`
+            : `${basePath}chinois/vocabulaire/${item.id}`;
 
     return createResultItem(
         url,

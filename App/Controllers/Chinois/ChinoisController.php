@@ -454,4 +454,48 @@ final class ChinoisController extends Controller
             'Vocabulaire modifié.',
         );
     }
+
+    public function showGrammaire(
+        int $id,
+    ): never {
+
+        $grammaire =
+            $this->grammaireOrFail(
+                $id,
+            );
+
+        $this->title =
+            'Chinois | '
+            . $grammaire->titre;
+
+        $this->render(
+            'pages/chinois/grammaire/show',
+            [
+                'grammaire' =>
+                    $grammaire,
+            ],
+        );
+    }
+
+    public function showVocabulaire(
+        int $id,
+    ): never {
+
+        $vocabulaire =
+            $this->vocabulaireOrFail(
+                $id,
+            );
+
+        $this->title =
+            'Chinois | '
+            . $vocabulaire->mot;
+
+        $this->render(
+            'pages/chinois/vocabulaire/show',
+            [
+                'vocabulaire' =>
+                    $vocabulaire,
+            ],
+        );
+    }
 }
