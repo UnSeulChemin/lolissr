@@ -24,7 +24,7 @@ import {
 
 import {
     initSearchController,
-} from '../manga/search/controller/search-controller.js';
+} from '../search/controller/search-controller.js';
 
 import {
     initToggleGrammaireMaitrise,

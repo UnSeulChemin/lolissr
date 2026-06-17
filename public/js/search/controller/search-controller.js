@@ -5,7 +5,7 @@
 import {
     $,
     $$,
-} from '../../../core/dom.js';
+} from '../../core/dom.js';
 
 import {
     fetchSearchResults,
@@ -14,7 +14,7 @@ import {
 import {
     buildMangaSearchResult,
     buildShortcutSearchResult,
-} from '../ui/search-builders.js';
+} from '../ui/manga-search-builder.js';
 
 import {
     findSearchShortcuts,
