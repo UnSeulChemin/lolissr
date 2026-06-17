@@ -79,7 +79,7 @@ final class MangaController extends Controller
         }
 
         $this->title = 'Manga | Series' . ($data->currentPage > 1 ? ' - Page ' . $data->currentPage : '');
-        $this->render('pages/manga/series', [
+        $this->render('pages/manga/series/index', [
             'mangas'      => $data->mangas,
             'currentPage' => $data->currentPage,
             'compteur'    => $data->compteur,
@@ -107,7 +107,7 @@ final class MangaController extends Controller
         }
 
         $this->title = 'Manga | ' . $data->mangas[0]->livre;
-        $this->render('pages/manga/series', [
+        $this->render('pages/manga/series/index', [
             'mangas'      => $data->mangas,
             'currentPage' => 1,
             'compteur'    => 1,
@@ -121,7 +121,7 @@ final class MangaController extends Controller
     {
         $data = $this->resolveMangaOrFail($slug, $numero);
         $this->title = 'Manga | ' . $data->manga->livre;
-        $this->render('pages/manga/livre', ['manga' => $data->manga]);
+        $this->render('pages/manga/series/livre', ['manga' => $data->manga]);
     }
 
     public function notes(): never
@@ -140,7 +140,7 @@ final class MangaController extends Controller
     {
         $data = $this->resolveMangaOrFail($slug, $numero);
         $this->title = 'Manga | Modifier';
-        $this->render('pages/manga/modifier', ['manga' => $data->manga]);
+        $this->render('pages/manga/series/modifier', ['manga' => $data->manga]);
     }
 
     public function store(MangaCreateRequest $request): never
