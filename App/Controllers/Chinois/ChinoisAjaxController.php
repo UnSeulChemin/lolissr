@@ -16,8 +16,8 @@ use Framework\Http\Request;
 final class ChinoisAjaxController extends Controller
 {
     public function __construct(
-        private readonly ChinoisReadService $readService,
-        private readonly ChinoisWriteService $writeService,
+        private readonly ChinoisReadService $chinoisReadService,
+        private readonly ChinoisWriteService $chinoisWriteService,
         private readonly UserLevelService $userLevelService,
         Request $request,
     ) {
@@ -35,7 +35,7 @@ final class ChinoisAjaxController extends Controller
     ): never
     {
         $searchData =
-            $this->readService
+            $this->chinoisReadService
                 ->search($query);
 
         $this->jsonResult(
@@ -66,11 +66,11 @@ final class ChinoisAjaxController extends Controller
         }
 
         $grammaire =
-            $this->readService
+            $this->chinoisReadService
                 ->grammaire($id);
 
         $maitrise =
-            $this->writeService
+            $this->chinoisWriteService
                 ->toggleGrammaireMaitrise($id);
 
         if (
@@ -89,7 +89,7 @@ final class ChinoisAjaxController extends Controller
                 );
             }
 
-            $this->writeService
+            $this->chinoisWriteService
                 ->markGrammaireXpRewarded($id);
         }
 
@@ -119,11 +119,11 @@ final class ChinoisAjaxController extends Controller
         }
 
         $vocabulaire =
-            $this->readService
+            $this->chinoisReadService
                 ->vocabulaire($id);
 
         $maitrise =
-            $this->writeService
+            $this->chinoisWriteService
                 ->toggleVocabulaireMaitrise($id);
 
         if (
@@ -142,7 +142,7 @@ final class ChinoisAjaxController extends Controller
                 );
             }
 
-            $this->writeService
+            $this->chinoisWriteService
                 ->markVocabulaireXpRewarded($id);
         }
 
@@ -177,7 +177,7 @@ final class ChinoisAjaxController extends Controller
         }
 
         $this->jsonResult(
-            $this->writeService->deleteGrammaire($id),
+            $this->chinoisWriteService->deleteGrammaire($id),
         );
     }
 
@@ -192,7 +192,7 @@ final class ChinoisAjaxController extends Controller
         }
 
         $this->jsonResult(
-            $this->writeService->deleteVocabulaire($id),
+            $this->chinoisWriteService->deleteVocabulaire($id),
         );
     }
 }

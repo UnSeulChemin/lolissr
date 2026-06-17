@@ -157,14 +157,17 @@ final readonly class MangaReadService
         string $query = '',
     ): MangaSearchData {
 
+        $query =
+            trim($query);
+
         $results =
             $this->searchRepository
                 ->searchMangas(
-                    trim($query),
+                    $query,
                 );
 
         return new MangaSearchData(
-            mangas:
+            results:
                 array_map(
                     $this->mapSearchItem(...),
                     $results,

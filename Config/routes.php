@@ -259,20 +259,15 @@ return static function (Router $router): void {
                 'vocabulaire',
                 [ChinoisController::class, 'vocabulaire'],
             );
-            
+
             $router->get(
-                'grammaire/{id:int}',
-                [ChinoisController::class, 'showGrammaire'],
+                'vocabulaire/{langue}',
+                [ChinoisController::class, 'langue'],
             );
 
             $router->get(
                 'vocabulaire/{id:int}',
                 [ChinoisController::class, 'showVocabulaire'],
-            );
-
-            $router->get(
-                'vocabulaire/{langue}',
-                [ChinoisController::class, 'langue'],
             );
 
             $router->get(
@@ -283,6 +278,11 @@ return static function (Router $router): void {
             $router->get(
                 'grammaire/hsk{level:int}',
                 [ChinoisController::class, 'hsk'],
+            );
+
+            $router->get(
+                'grammaire/{id:int}',
+                [ChinoisController::class, 'showGrammaire'],
             );
 
             $router->get(

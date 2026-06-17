@@ -7,10 +7,10 @@ namespace App\DTO\Manga\Responses;
 final readonly class MangaSearchData
 {
     /**
-     * @param list<MangaSearchItemData> $mangas
+     * @param list<MangaSearchItemData> $results
      */
     public function __construct(
-        public array $mangas,
+        public array $results,
         public string $search,
     ) {
     }

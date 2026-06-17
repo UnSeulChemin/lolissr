@@ -88,7 +88,13 @@ final class MangaAjaxController extends Controller
     {
         $searchData = $this->mangaReadService->search($query);
 
-        $this->jsonResult(ServiceResult::success(data: ['results' => $searchData->mangas]));
+        $this->jsonResult(
+            ServiceResult::success(
+                data: [
+                    'results' => $searchData->results,
+                ],
+            ),
+        );
     }
 
     /*
