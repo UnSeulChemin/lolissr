@@ -361,6 +361,18 @@ return static function (Router $router): void {
                 [CsrfMiddleware::class],
             );
 
+            $router->prefix('ajax')
+                ->middleware(
+                    ExpectJsonMiddleware::class,
+                )
+                ->group(function (Router $router): void {
+
+                    $router->get(
+                        'recherche/{query}',
+                        [ChinoisAjaxController::class, 'search'],
+                    );
+                });
+            
             $router->prefix('ajax')->middleware([
                 ExpectJsonMiddleware::class,
                 CsrfMiddleware::class,

@@ -307,6 +307,8 @@ final class ChinoisVocabulaireRepository extends Model
         int $id,
     ): bool {
 
+        $this->guardWrite();
+
         return $this->update(
             [
                 'xp_rewarded' => 1,

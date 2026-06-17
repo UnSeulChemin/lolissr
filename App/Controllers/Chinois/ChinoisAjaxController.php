@@ -26,6 +26,30 @@ final class ChinoisAjaxController extends Controller
 
     /*
     |--------------------------------------------------------------------------
+    | AJAX Search
+    |--------------------------------------------------------------------------
+    */
+
+    public function search(
+        string $query = '',
+    ): never
+    {
+        $searchData =
+            $this->readService
+                ->search($query);
+
+        $this->jsonResult(
+            ServiceResult::success(
+                data: [
+                    'results' =>
+                        $searchData->results,
+                ],
+            ),
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
     | Maîtrise
     |--------------------------------------------------------------------------
     */

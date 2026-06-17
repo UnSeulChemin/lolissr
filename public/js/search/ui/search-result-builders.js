@@ -96,6 +96,34 @@ export function buildMangaResult(
     );
 }
 
+export function buildChineseResult(
+    item,
+    basePath,
+)
+{
+    const url =
+        item.type === 'grammaire'
+            ? `${basePath}chinois/grammaire`
+            : `${basePath}chinois/vocabulaire`;
+
+    return createResultItem(
+        url,
+        `
+            <span class="search-result-content">
+
+                <strong class="search-result-title">
+                    ${escapeHtml(item.titre)}
+                </strong>
+
+                <small class="search-result-meta">
+                    ${escapeHtml(item.description)}
+                </small>
+
+            </span>
+        `,
+    );
+}
+
 // =========================================
 // BUILD SHORTCUT RESULT
 // =========================================

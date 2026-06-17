@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Services\Chinois;
 
+use App\DTO\Chinois\Responses\ChinoisSearchData;
 use App\DTO\Chinois\Responses\ChinoisGrammaireData;
 use App\DTO\Chinois\Responses\ChinoisVocabulaireData;
 use App\Repositories\Chinois\ChinoisGrammaireRepository;
+use App\Repositories\Chinois\ChinoisSearchRepository;
 use App\Repositories\Chinois\ChinoisVocabulaireRepository;
 
 final readonly class ChinoisReadService
@@ -14,6 +16,7 @@ final readonly class ChinoisReadService
     public function __construct(
         private ChinoisVocabulaireRepository $vocabulaireRepository,
         private ChinoisGrammaireRepository $grammaireRepository,
+        private ChinoisSearchRepository $searchRepository,
     ) {
     }
 
@@ -75,5 +78,22 @@ final readonly class ChinoisReadService
     {
         return $this->vocabulaireRepository
             ->findNotMasteredDto();
+    }
+
+    public function search(
+        string $query = '',
+    ): ChinoisSearchData {
+
+        $query =
+            trim($query);
+
+        return new ChinoisSearchData(
+            results:
+                $this->searchRepository
+                    ->search($query),
+
+            search:
+                $query,
+        );
     }
 }

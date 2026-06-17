@@ -192,13 +192,21 @@ final class Router
 
             $params =
                 array_map(
-                    static fn (
+                    static function (
                         string $value,
-                    ): string|int => ctype_digit(
-                        $value,
-                    )
-                        ? (int) $value
-                        : $value,
+                    ): string|int {
+
+                        $value =
+                            rawurldecode(
+                                $value,
+                            );
+
+                        return ctype_digit(
+                            $value,
+                        )
+                            ? (int) $value
+                            : $value;
+                    },
                     $matches,
                 );
 

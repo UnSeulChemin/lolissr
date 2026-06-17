@@ -14,6 +14,7 @@ import {
 import {
     buildMangaResult,
     buildShortcutSearchResult,
+    buildChineseResult,
 } from '../ui/search-result-builders.js';
 
 import {
@@ -274,10 +275,16 @@ async function handleSearch(
 
         const [
             mangas,
+            chinois,
             shortcuts,
         ] = await Promise.all([
             fetchSearchResults(
                 `${searchUrl}/${encodeURIComponent(query)}`,
+                abortController.signal,
+            ),
+
+            fetchSearchResults(
+                `${basePath}chinois/ajax/recherche/${encodeURIComponent(query)}`,
                 abortController.signal,
             ),
 
@@ -288,6 +295,7 @@ async function handleSearch(
 
         renderResults({
             mangas,
+            chinois,
             shortcuts,
             rawValue,
             basePath,
@@ -321,6 +329,7 @@ async function handleSearch(
 function renderResults(
     {
         mangas,
+        chinois,
         shortcuts,
         rawValue,
         basePath,
@@ -354,6 +363,39 @@ function renderResults(
                 rawValue,
                 basePath,
             );
+
+            setupResultItem(
+                item,
+                index,
+                searchInput,
+                searchResults,
+                searchDropdown,
+            );
+
+            searchResults.appendChild(
+                item,
+            );
+
+            index++;
+        },
+    );
+
+    /*
+    |--------------------------------------------------------------------------
+    | CHINOIS
+    |--------------------------------------------------------------------------
+    */
+
+    chinois.forEach(
+        (
+            result,
+        ) =>
+        {
+            const item =
+                buildChineseResult(
+                    result,
+                    basePath,
+                );
 
             setupResultItem(
                 item,
