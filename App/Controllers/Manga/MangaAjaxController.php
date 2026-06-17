@@ -106,7 +106,7 @@ final class MangaAjaxController extends Controller
             throw new NotFoundException('Page introuvable');
         }
 
-        $this->renderFragment('components/manga/series_ajax', [
+        $this->renderFragment('pages/manga/series/ajax', [
             'mangas' => $data->mangas,
             'currentPage' => $data->currentPage,
             'totalPages' => $data->compteur,

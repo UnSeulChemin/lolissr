@@ -31,7 +31,7 @@ $mangas =
         <?php else: ?>
 
             <?php require view_path(
-                'components/manga/series_ajax.php',
+                'pages/manga/series/ajax.php',
             ); ?>
 
         <?php endif; ?>

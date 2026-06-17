@@ -44,7 +44,7 @@ $totalPages =
     <div class="collection-ajax-container">
 
         <?php require view_path(
-            'components/manga/series_ajax.php',
+            'pages/manga/series/ajax.php',
         ); ?>
 
         <?php if (
