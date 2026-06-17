@@ -127,7 +127,7 @@ final class MangaController extends Controller
     public function notes(): never
     {
         $this->title = 'Manga | Notes';
-        $this->render('pages/manga/notes', ['mangas' => $this->mangaReadService->notes()]);
+        $this->render('pages/manga/series/notes', ['mangas' => $this->mangaReadService->notes()]);
     }
 
     public function create(): never
