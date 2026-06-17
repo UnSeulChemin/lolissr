@@ -37,7 +37,7 @@ function createResultItem(
 // BUILD MANGA RESULT
 // =========================================
 
-export function buildMangaSearchResult(
+export function buildMangaResult(
     manga,
     rawValue,
     basePath,

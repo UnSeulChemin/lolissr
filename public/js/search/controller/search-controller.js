@@ -12,9 +12,9 @@ import {
 } from '../api/search-api.js';
 
 import {
-    buildMangaSearchResult,
+    buildMangaResult,
     buildShortcutSearchResult,
-} from '../ui/manga-search-builder.js';
+} from '../ui/search-result-builders.js';
 
 import {
     findSearchShortcuts,
@@ -349,11 +349,11 @@ function renderResults(
         ) =>
         {
             const item =
-                buildMangaSearchResult(
-                    manga,
-                    rawValue,
-                    basePath,
-                );
+            buildMangaResult(
+                manga,
+                rawValue,
+                basePath,
+            );
 
             setupResultItem(
                 item,
