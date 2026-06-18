@@ -10,7 +10,7 @@ import {
     buildMangaResult,
     buildShortcutSearchResult,
     buildChineseResult,
-} from '../ui/search-result-builders.js';
+} from '../builders/search-result-builders.js';
 
 // =========================================
 // RENDER RESULTS

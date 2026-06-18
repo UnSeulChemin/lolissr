@@ -129,7 +129,10 @@ export function isEmptyQuery(
     value,
 )
 {
-    return normalizeSearchQuery(
-        value,
-    ) === '';
+    const query =
+        normalizeSearchQuery(
+            value,
+        );
+
+    return query === '';
 }
