@@ -411,12 +411,15 @@ $hasTopLongestSeries =
 
     <section class="home-grid home-grid-stats card-grid-3">
 
-        <article
+        <a
             class="
                 card
                 transition-card
                 card-small
+                card-link
             "
+            data-prefetch
+            href="<?= e($baseUri . 'manga/series/a-lire') ?>"
         >
 
             <h2 class="home-card-title">
@@ -427,7 +430,7 @@ $hasTopLongestSeries =
                 <?= (int) $stats->totalRead ?> lus
             </p>
 
-        </article>
+        </a>
 
         <a
             class="
@@ -450,13 +453,16 @@ $hasTopLongestSeries =
 
         </a>
 
-        <article
+        <a
             class="
                 card
                 transition-card
                 card-small
+                card-link
                 home-reading-progress-card
             "
+            data-prefetch
+            href="<?= e($baseUri . 'manga/series/a-lire') ?>"
         >
 
             <h2 class="home-card-title">
@@ -481,7 +487,7 @@ $hasTopLongestSeries =
 
             </div>
 
-        </article>
+        </a>
 
     </section>
 
