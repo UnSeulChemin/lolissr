@@ -93,7 +93,7 @@ final class MangaController extends Controller
     {
         $data = $this->mangaReadService->search($query);
         $this->title = $data->search !== '' ? 'Manga | Recherche : ' . $data->search : 'Manga | Recherche';
-        $this->render('pages/search/manga', [
+        $this->render('pages/manga/series/recherche', [
             'mangas' => $data->results,
             'search' => $data->search,
         ]);

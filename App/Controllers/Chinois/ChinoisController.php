@@ -469,7 +469,7 @@ final class ChinoisController extends Controller
             . $grammaire->titre;
 
         $this->render(
-            'pages/chinois/grammaire/show',
+            'pages/chinois/grammaire/recherche',
             [
                 'grammaire' =>
                     $grammaire,
@@ -491,7 +491,7 @@ final class ChinoisController extends Controller
             . $vocabulaire->mot;
 
         $this->render(
-            'pages/chinois/vocabulaire/show',
+            'pages/chinois/vocabulaire/recherche',
             [
                 'vocabulaire' =>
                     $vocabulaire,
