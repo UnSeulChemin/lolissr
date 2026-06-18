@@ -50,20 +50,12 @@ final class ChinoisSearchRepository extends Model
                 WHERE
                     titre LIKE ?
                     OR structure LIKE ?
-                    OR phrase LIKE ?
-                    OR pinyin LIKE ?
-                    OR traduction LIKE ?
-                    OR explication LIKE ?
 
                 ORDER BY id DESC
 
                 LIMIT 20
                 ",
                 [
-                    $like,
-                    $like,
-                    $like,
-                    $like,
                     $like,
                     $like,
                 ]
@@ -126,14 +118,12 @@ final class ChinoisSearchRepository extends Model
                 WHERE
                     mot LIKE ?
                     OR pinyin LIKE ?
-                    OR traduction LIKE ?
 
                 ORDER BY id DESC
 
                 LIMIT 20
                 ",
                 [
-                    $like,
                     $like,
                     $like,
                 ],

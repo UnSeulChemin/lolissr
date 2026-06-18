@@ -99,7 +99,6 @@ export function findSearchShortcuts(
             const searchableText =
             [
                 shortcut.title,
-                shortcut.description,
                 shortcut.symbol,
             ]
                 .join(
