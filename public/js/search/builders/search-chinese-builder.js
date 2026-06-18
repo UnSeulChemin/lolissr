@@ -41,6 +41,18 @@ export function buildChineseResult(
             item.niveau ?? '',
         ).toLowerCase();
 
+    const icon =
+        type === 'grammaire'
+            ? '📖'
+            : '📚';
+
+    const label =
+        type === 'grammaire'
+            ? niveau.toUpperCase()
+            : langue === 'jinyu'
+                ? '晋语'
+                : '中文';
+
     const url =
         type === 'grammaire'
             ? `${basePath}chinois/grammaire/${niveau}/recherche/${id}`
@@ -50,6 +62,18 @@ export function buildChineseResult(
         url,
 
         `
+            <span class="search-result-category">
+
+                <span class="search-result-category-icon">
+                    ${escapeHtml(icon)}
+                </span>
+
+                <span class="search-result-category-label">
+                    ${escapeHtml(label)}
+                </span>
+
+            </span>
+
             <span class="search-result-content">
 
                 <strong class="search-result-title">

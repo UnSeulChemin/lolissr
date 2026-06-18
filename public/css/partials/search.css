@@ -390,3 +390,30 @@
             0.06
         );
 }
+
+.search-result-category
+{
+    width: 50px;
+    min-width: 50px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    flex-shrink: 0;
+}
+
+.search-result-category-icon
+{
+    line-height: 1;
+}
+
+.search-result-category-label
+{
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1;
+}
