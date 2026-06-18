@@ -101,7 +101,7 @@ export function renderResults(
     index =
         appendSection({
             title:
-                '📚 Series',
+                '📚 SÉRIES',
 
             results:
                 mangas.slice(
@@ -127,7 +127,7 @@ export function renderResults(
     index =
         appendSection({
             title:
-                '⛩️ Chinois',
+                '⛩️ CHINOIS',
 
             results:
                 chinois.slice(
@@ -152,7 +152,7 @@ export function renderResults(
     index =
         appendSection({
             title:
-                '⚡ Raccourcis',
+                '⚡ RACCOURCIS',
 
             results:
                 shortcuts.slice(
