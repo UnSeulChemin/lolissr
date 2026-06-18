@@ -31,10 +31,20 @@ export function buildChineseResult(
     const description =
         item.description ?? '';
 
+    const langue =
+        String(
+            item.langue ?? '',
+        ).toLowerCase();
+
+    const niveau =
+        String(
+            item.niveau ?? '',
+        ).toLowerCase();
+
     const url =
         type === 'grammaire'
-            ? `${basePath}chinois/grammaire/recherche/${id}`
-            : `${basePath}chinois/vocabulaire/recherche/${id}`;
+            ? `${basePath}chinois/grammaire/${niveau}/recherche/${id}`
+            : `${basePath}chinois/vocabulaire/${langue}/recherche/${id}`;
 
     return createResultItem(
         url,

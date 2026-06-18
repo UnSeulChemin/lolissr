@@ -456,6 +456,7 @@ final class ChinoisController extends Controller
     }
 
     public function showGrammaire(
+        string $_niveau,
         int $id,
     ): never {
 
@@ -478,6 +479,7 @@ final class ChinoisController extends Controller
     }
 
     public function showVocabulaire(
+        string $_langue,
         int $id,
     ): never {
 

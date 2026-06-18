@@ -18,7 +18,9 @@ final class ChinoisSearchRepository extends Model
         string $search,
     ): array {
 
-        $search = trim($search);
+        $search = trim(
+            $search,
+        );
 
         if ($search === '')
         {
@@ -43,7 +45,8 @@ final class ChinoisSearchRepository extends Model
                 SELECT
                     id,
                     titre,
-                    explication
+                    explication,
+                    niveau
 
                 FROM chinois_grammaire
 
@@ -58,7 +61,7 @@ final class ChinoisSearchRepository extends Model
                 [
                     $like,
                     $like,
-                ]
+                ],
             );
 
         if ($grammaireQuery !== false)
@@ -69,8 +72,7 @@ final class ChinoisSearchRepository extends Model
                     ->fetchAll();
 
             foreach (
-                $grammaires
-                as $grammaire
+                $grammaires as $grammaire
             ) {
 
                 $results[] =
@@ -95,6 +97,12 @@ final class ChinoisSearchRepository extends Model
                                 0,
                                 100,
                             ),
+
+                        niveau:
+                            (string) (
+                                $grammaire->niveau
+                                ?? ''
+                            ),
                     );
             }
         }
@@ -111,7 +119,8 @@ final class ChinoisSearchRepository extends Model
                 SELECT
                     id,
                     mot,
-                    traduction
+                    traduction,
+                    langue
 
                 FROM chinois_vocabulaire
 
@@ -137,8 +146,7 @@ final class ChinoisSearchRepository extends Model
                     ->fetchAll();
 
             foreach (
-                $vocabulaires
-                as $vocabulaire
+                $vocabulaires as $vocabulaire
             ) {
 
                 $results[] =
@@ -154,6 +162,12 @@ final class ChinoisSearchRepository extends Model
 
                         description:
                             (string) $vocabulaire->traduction,
+
+                        langue:
+                            (string) (
+                                $vocabulaire->langue
+                                ?? ''
+                            ),
                     );
             }
         }
