@@ -429,12 +429,15 @@ $hasTopLongestSeries =
 
         </article>
 
-        <article
+        <a
             class="
                 card
                 transition-card
                 card-small
+                card-link
             "
+            data-prefetch
+            href="<?= e($baseUri . 'manga/series/a-lire') ?>"
         >
 
             <h2 class="home-card-title">
@@ -445,7 +448,7 @@ $hasTopLongestSeries =
                 <?= (int) $stats->totalUnread ?> à lire
             </p>
 
-        </article>
+        </a>
 
         <article
             class="

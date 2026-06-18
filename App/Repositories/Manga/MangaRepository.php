@@ -474,6 +474,40 @@ final class MangaRepository extends Model
     /**
      * @return list<Manga>
      */
+    public function findIncompleteSeries(): array
+    {
+        /** @var list<Manga> $mangas */
+        $mangas = $this->fetchAll(
+            "
+            SELECT
+                m.*,
+                stats.total,
+                stats.total_lu,
+                stats.average_note
+
+            FROM {$this->table()} m
+
+            INNER JOIN (
+                {$this->statsSubQuery()}
+            ) stats
+                ON stats.slug = m.slug
+
+            WHERE m.numero = 1
+            AND stats.total_lu < stats.total
+
+            ORDER BY
+                m.livre ASC
+            ",
+            [],
+            Manga::class,
+        );
+
+        return $mangas;
+    }
+
+    /**
+     * @return list<Manga>
+     */
     public function findReadWithoutReward(): array
     {
         /** @var list<Manga> $mangas */

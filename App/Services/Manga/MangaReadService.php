@@ -241,4 +241,16 @@ final readonly class MangaReadService
                 ->findSeriesWithoutPerfectNote(),
         );
     }
+
+    /**
+     * @return list<MangaSeriesItemData>
+     */
+    public function aLire(): array
+    {
+        return array_map(
+            $this->mapSeriesItem(...),
+            $this->mangaRepository
+                ->findIncompleteSeries(),
+        );
+    }
 }
