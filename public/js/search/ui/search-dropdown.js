@@ -2,58 +2,27 @@
 // SEARCH DROPDOWN
 // =========================================
 
-// =========================================
-// OPEN SEARCH DROPDOWN
-// =========================================
-
 export function openSearchDropdown(
     dropdown,
 )
 {
-    if (
-        !dropdown
-    ) {
-        return;
-    }
-
-    dropdown.classList.add(
-        'is-active',
+    dropdown?.classList.add(
+        'has-results',
     );
 }
-
-// =========================================
-// CLOSE SEARCH DROPDOWN
-// =========================================
 
 export function closeSearchDropdown(
     dropdown,
 )
 {
-    if (
-        !dropdown
-    ) {
-        return;
-    }
-
-    dropdown.classList.remove(
-        'is-active',
+    dropdown?.classList.remove(
+        'has-results',
     );
 }
-
-// =========================================
-// CLEAR SEARCH RESULTS
-// =========================================
 
 export function clearSearchResults(
     container,
 )
 {
-    if (
-        !container
-    ) {
-        return;
-    }
-
-    container.innerHTML =
-        '';
+    container?.replaceChildren();
 }

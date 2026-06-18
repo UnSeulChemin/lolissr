@@ -12,12 +12,6 @@ import {
 } from '../api/search-api.js';
 
 import {
-    buildMangaResult,
-    buildShortcutSearchResult,
-    buildChineseResult,
-} from '../ui/search-result-builders.js';
-
-import {
     findSearchShortcuts,
 } from '../shortcuts/search-shortcuts.js';
 
@@ -26,8 +20,18 @@ import {
 } from '../utils/search-utils.js';
 
 import {
+    openSearchDropdown,
+    closeSearchDropdown,
     clearSearchResults,
 } from '../ui/search-dropdown.js';
+
+import {
+    renderResults,
+} from './search-renderer.js';
+
+import {
+    updateActiveResult,
+} from './search-keyboard.js';
 
 // =========================================
 // CONFIG
@@ -67,44 +71,24 @@ export function initSearchController()
     const searchDropdown =
         $('.js-header-search-dropdown');
 
-    /*
-    |--------------------------------------------------------------------------
-    | ELEMENTS
-    |--------------------------------------------------------------------------
-    */
-
     if (
         !search ||
         !searchInput ||
         !searchResults ||
         !searchDropdown
     ) {
-
         return;
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | PREVENT DOUBLE INIT
-    |--------------------------------------------------------------------------
-    */
 
     if (
         search.dataset.initialized ===
         'true'
     ) {
-
         return;
     }
 
     search.dataset.initialized =
         'true';
-
-    /*
-    |--------------------------------------------------------------------------
-    | INPUT
-    |--------------------------------------------------------------------------
-    */
 
     searchInput.addEventListener(
         'input',
@@ -129,12 +113,6 @@ export function initSearchController()
                 );
         },
     );
-
-    /*
-    |--------------------------------------------------------------------------
-    | SUBMIT
-    |--------------------------------------------------------------------------
-    */
 
     search.addEventListener(
         'submit',
@@ -163,12 +141,6 @@ export function initSearchController()
         },
     );
 
-    /*
-    |--------------------------------------------------------------------------
-    | KEYBOARD
-    |--------------------------------------------------------------------------
-    */
-
     searchInput.addEventListener(
         'keydown',
         (
@@ -184,12 +156,6 @@ export function initSearchController()
         },
     );
 
-    /*
-    |--------------------------------------------------------------------------
-    | OUTSIDE CLICK
-    |--------------------------------------------------------------------------
-    */
-
     document.addEventListener(
         'click',
         (
@@ -201,7 +167,6 @@ export function initSearchController()
                     '.js-header-search',
                 )
             ) {
-
                 resetSearch(
                     searchInput,
                     searchResults,
@@ -231,16 +196,9 @@ async function handleSearch(
             rawValue,
         );
 
-    /*
-    |--------------------------------------------------------------------------
-    | EMPTY
-    |--------------------------------------------------------------------------
-    */
-
     if (
         query === ''
     ) {
-
         resetSearch(
             searchInput,
             searchResults,
@@ -249,12 +207,6 @@ async function handleSearch(
 
         return;
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | ABORT PREVIOUS
-    |--------------------------------------------------------------------------
-    */
 
     abortController?.abort();
 
@@ -302,170 +254,20 @@ async function handleSearch(
             searchInput,
             searchResults,
             searchDropdown,
+            setupResultItem,
+            openDropdown,
+            closeDropdown,
         });
 
     } catch (error) {
 
-        /*
-        |--------------------------------------------------------------------------
-        | SEARCH MUST NEVER CRASH UI
-        |--------------------------------------------------------------------------
-        */
-
         if (
-            error?.name
-            === 'AbortError'
+            error?.name ===
+            'AbortError'
         ) {
-
             return;
         }
     }
-}
-
-// =========================================
-// RENDER RESULTS
-// =========================================
-
-function renderResults(
-    {
-        mangas,
-        chinois,
-        shortcuts,
-        rawValue,
-        basePath,
-        searchInput,
-        searchResults,
-        searchDropdown,
-    },
-)
-{
-    clearSearchResults(
-        searchResults,
-    );
-
-    let index =
-        0;
-
-    /*
-    |--------------------------------------------------------------------------
-    | MANGAS
-    |--------------------------------------------------------------------------
-    */
-
-    mangas.forEach(
-        (
-            manga,
-        ) =>
-        {
-            const item =
-            buildMangaResult(
-                manga,
-                rawValue,
-                basePath,
-            );
-
-            setupResultItem(
-                item,
-                index,
-                searchInput,
-                searchResults,
-                searchDropdown,
-            );
-
-            searchResults.appendChild(
-                item,
-            );
-
-            index++;
-        },
-    );
-
-    /*
-    |--------------------------------------------------------------------------
-    | CHINOIS
-    |--------------------------------------------------------------------------
-    */
-
-    chinois.forEach(
-        (
-            result,
-        ) =>
-        {
-            const item =
-                buildChineseResult(
-                    result,
-                    basePath,
-                );
-
-            setupResultItem(
-                item,
-                index,
-                searchInput,
-                searchResults,
-                searchDropdown,
-            );
-
-            searchResults.appendChild(
-                item,
-            );
-
-            index++;
-        },
-    );
-
-    /*
-    |--------------------------------------------------------------------------
-    | SHORTCUTS
-    |--------------------------------------------------------------------------
-    */
-
-    shortcuts.forEach(
-        (
-            shortcut,
-        ) =>
-        {
-            const item =
-                buildShortcutSearchResult(
-                    shortcut,
-                    basePath,
-                );
-
-            setupResultItem(
-                item,
-                index,
-                searchInput,
-                searchResults,
-                searchDropdown,
-            );
-
-            searchResults.appendChild(
-                item,
-            );
-
-            index++;
-        },
-    );
-
-    /*
-    |--------------------------------------------------------------------------
-    | EMPTY
-    |--------------------------------------------------------------------------
-    */
-
-    if (
-        index === 0
-    ) {
-
-        closeDropdown(
-            searchDropdown,
-        );
-
-        return;
-    }
-
-    openDropdown(
-        searchDropdown,
-    );
 }
 
 // =========================================
@@ -492,6 +294,7 @@ function setupResultItem(
 
             updateActiveResult(
                 searchResults,
+                activeIndex,
             );
         },
     );
@@ -526,12 +329,6 @@ function handleKeyboardNavigation(
             searchResults,
         );
 
-    /*
-    |--------------------------------------------------------------------------
-    | DOWN
-    |--------------------------------------------------------------------------
-    */
-
     if (
         event.key ===
         'ArrowDown'
@@ -540,7 +337,6 @@ function handleKeyboardNavigation(
         if (
             !resultItems.length
         ) {
-
             return;
         }
 
@@ -552,22 +348,16 @@ function handleKeyboardNavigation(
             activeIndex >=
             resultItems.length
         ) {
-
             activeIndex = 0;
         }
 
         updateActiveResult(
             searchResults,
+            activeIndex,
         );
 
         return;
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | UP
-    |--------------------------------------------------------------------------
-    */
 
     if (
         event.key ===
@@ -577,7 +367,6 @@ function handleKeyboardNavigation(
         if (
             !resultItems.length
         ) {
-
             return;
         }
 
@@ -588,23 +377,17 @@ function handleKeyboardNavigation(
         if (
             activeIndex < 0
         ) {
-
             activeIndex =
                 resultItems.length - 1;
         }
 
         updateActiveResult(
             searchResults,
+            activeIndex,
         );
 
         return;
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | ENTER
-    |--------------------------------------------------------------------------
-    */
 
     if (
         event.key ===
@@ -615,12 +398,6 @@ function handleKeyboardNavigation(
             resultItems[
                 activeIndex
             ];
-
-        /*
-        |--------------------------------------------------------------------------
-        | ACTIVE RESULT
-        |--------------------------------------------------------------------------
-        */
 
         if (
             activeItem
@@ -639,17 +416,10 @@ function handleKeyboardNavigation(
         }
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | ESCAPE
-    |--------------------------------------------------------------------------
-    */
-
     if (
         event.key ===
         'Escape'
     ) {
-
         resetSearch(
             searchInput,
             searchResults,
@@ -659,52 +429,7 @@ function handleKeyboardNavigation(
 }
 
 // =========================================
-// UPDATE ACTIVE
-// =========================================
-
-function updateActiveResult(
-    searchResults,
-)
-{
-    const items =
-        $$(
-            '.search-result-item',
-            searchResults,
-        );
-
-    items.forEach(
-        (
-            item,
-        ) =>
-        {
-            item.classList.remove(
-                'is-active',
-            );
-        },
-    );
-
-    const activeItem =
-        items[
-            activeIndex
-        ];
-
-    if (
-        activeItem
-    ) {
-
-        activeItem.classList.add(
-            'is-active',
-        );
-
-        activeItem.scrollIntoView({
-            block:
-                'nearest',
-        });
-    }
-}
-
-// =========================================
-// OPEN DROPDOWN
+// DROPDOWN
 // =========================================
 
 function openDropdown(
@@ -715,21 +440,17 @@ function openDropdown(
         'is-loading',
     );
 
-    searchDropdown.classList.add(
-        'has-results',
+    openSearchDropdown(
+        searchDropdown,
     );
 }
-
-// =========================================
-// CLOSE DROPDOWN
-// =========================================
 
 function closeDropdown(
     searchDropdown,
 )
 {
-    searchDropdown.classList.remove(
-        'has-results',
+    closeSearchDropdown(
+        searchDropdown,
     );
 
     searchDropdown.classList.remove(

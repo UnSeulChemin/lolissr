@@ -8,7 +8,7 @@ import {
 
 import {
     debugError,
-} from '../../core/debug/debug.js'
+} from '../../core/debug/debug.js';
 
 import {
     FrontendError,
@@ -56,7 +56,6 @@ export async function fetchSearchResults(
             error?.name === 'AbortError'
             || signal?.aborted
         ) {
-
             return [];
         }
 
@@ -80,7 +79,6 @@ export async function fetchSearchResults(
         if (
             error instanceof FrontendError
         ) {
-
             error.silent =
                 true;
         }
