@@ -71,15 +71,9 @@ return static function (Router $router): void {
         AuthMiddleware::class,
     )->group(function (Router $router): void {
 
-        $router->get(
-            '/',
-            [MainController::class, 'index'],
-        );
+        $router->get('/', [MainController::class, 'index']);
 
-        $router->get(
-            'profil',
-            [ProfileController::class, 'index'],
-        );
+        $router->get('profil', [ProfileController::class, 'index']);
 
         /*
         |--------------------------------------------------------------------------
@@ -93,10 +87,7 @@ return static function (Router $router): void {
         {
             $router->prefix('sql')->group(function (Router $router): void {
 
-                $router->get(
-                    '',
-                    [SqlController::class, 'index'],
-                );
+                $router->get('', [SqlController::class, 'index']);
 
                 $router->post(
                     '',
@@ -129,8 +120,8 @@ return static function (Router $router): void {
             ],
         );
 
-        $router->prefix('manga')->group(function (Router $router): void {
-
+        $router->prefix('manga')->group(function (Router $router): void
+        {
             $router->get('', [MangaController::class, 'index']);
 
             $router->get('recherche', [MangaController::class, 'search']);
@@ -204,12 +195,9 @@ return static function (Router $router): void {
             |--------------------------------------------------------------------------
             */
 
-            $router->prefix('ajax')->group(function (Router $router): void {
-
-                $router->get(
-                    'series/page/{page:int}',
-                    [MangaAjaxController::class, 'seriesPage'],
-                );
+            $router->prefix('ajax')->group(function (Router $router): void
+            {
+                $router->get('series/page/{page:int}', [MangaAjaxController::class, 'seriesPage']);
             });
 
             /*
@@ -219,16 +207,11 @@ return static function (Router $router): void {
             */
 
             $router->prefix('ajax')
-                ->middleware(
-                    ExpectJsonMiddleware::class,
-                )
-                ->group(function (Router $router): void {
-
-                    $router->get(
-                        'recherche/{query}',
-                        [MangaAjaxController::class, 'search'],
-                    );
-                });
+                ->middleware(ExpectJsonMiddleware::class)
+                ->group(function (Router $router): void
+            {
+                $router->get('recherche/{query}', [MangaAjaxController::class, 'search']);
+            });
 
             /*
             |--------------------------------------------------------------------------
@@ -236,20 +219,13 @@ return static function (Router $router): void {
             |--------------------------------------------------------------------------
             */
 
-            $router->prefix('ajax')->middleware([
-                ExpectJsonMiddleware::class,
-                CsrfMiddleware::class,
-            ])->group(function (Router $router): void {
+            $router->prefix('ajax')
+                ->middleware([ExpectJsonMiddleware::class, CsrfMiddleware::class])
+                ->group(function (Router $router): void
+            {
+                $router->post('update-note/{slug}/{numero:int}', [MangaAjaxController::class, 'updateNote']);
 
-                $router->post(
-                    'update-note/{slug}/{numero:int}',
-                    [MangaAjaxController::class, 'updateNote'],
-                );
-
-                $router->post(
-                    'update-read-status/{slug}/{numero:int}',
-                    [MangaAjaxController::class, 'updateReadStatus'],
-                );
+                $router->post('update-read-status/{slug}/{numero:int}', [MangaAjaxController::class, 'updateReadStatus']);
             });
         });
 
@@ -257,50 +233,23 @@ return static function (Router $router): void {
 
             $router->get('', [ChinoisController::class, 'index']);
 
-            $router->get(
-                'vocabulaire',
-                [ChinoisController::class, 'vocabulaire'],
-            );
+            $router->get('vocabulaire', [ChinoisController::class, 'vocabulaire']);
 
-            $router->get(
-                'vocabulaire/{langue}',
-                [ChinoisController::class, 'langue'],
-            );
+            $router->get('vocabulaire/{langue}', [ChinoisController::class, 'langue']);
 
-            $router->get(
-                'grammaire',
-                [ChinoisController::class, 'grammaire'],
-            );
+            $router->get('grammaire', [ChinoisController::class, 'grammaire']);
 
-            $router->get(
-                'grammaire/hsk{level:int}',
-                [ChinoisController::class, 'hsk'],
-            );
+            $router->get('grammaire/hsk{level:int}', [ChinoisController::class, 'hsk']);
 
-            $router->get(
-                'vocabulaire/{langue}/recherche/{id:int}',
-                [ChinoisController::class, 'showVocabulaire'],
-            );
+            $router->get('vocabulaire/{langue}/recherche/{id:int}', [ChinoisController::class, 'showVocabulaire']);
 
-            $router->get(
-                'grammaire/{niveau}/recherche/{id:int}',
-                [ChinoisController::class, 'showGrammaire'],
-            );
+            $router->get('grammaire/{niveau}/recherche/{id:int}', [ChinoisController::class, 'showGrammaire']);
 
-            $router->get(
-                'flashcards',
-                [ChinoisController::class, 'flashcards'],
-            );
+            $router->get('flashcards', [ChinoisController::class, 'flashcards']);
 
-            $router->get(
-                'flashcards/vocabulaire',
-                [ChinoisController::class, 'flashcardsVocabulaire'],
-            );
+            $router->get('flashcards/vocabulaire', [ChinoisController::class, 'flashcardsVocabulaire']);
 
-            $router->get(
-                'flashcards/vocabulaire/modifier/{id:int}',
-                [ChinoisController::class, 'editFlashcardVocabulaire'],
-            );
+            $router->get('flashcards/vocabulaire/modifier/{id:int}', [ChinoisController::class, 'editFlashcardVocabulaire']);
 
             $router->post(
                 'flashcards/vocabulaire/modifier/{id:int}',
