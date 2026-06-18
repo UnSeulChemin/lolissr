@@ -12,6 +12,65 @@ import {
     buildChineseResult,
 } from '../builders/search-result-builders.js';
 
+import {
+    appendSectionTitle,
+} from '../renderers/search-section-renderer.js';
+
+// =========================================
+// APPEND SECTION
+// =========================================
+
+function appendSection(
+    {
+        title,
+        results,
+        buildItem,
+        searchInput,
+        searchResults,
+        searchDropdown,
+        setupResultItem,
+        index,
+    },
+)
+{
+    if (
+        results.length === 0
+    ) {
+        return index;
+    }
+
+    appendSectionTitle(
+        searchResults,
+        title,
+    );
+
+    results.forEach(
+        (result) =>
+        {
+            const item =
+                buildItem(
+                    result,
+                );
+
+            setupResultItem(
+                item,
+                index,
+                searchInput,
+                searchResults,
+                searchDropdown,
+            );
+
+            searchResults.appendChild(
+                item,
+            );
+
+            index++;
+        },
+    );
+
+    return index;
+}
+
 // =========================================
 // RENDER RESULTS
 // =========================================
@@ -36,86 +95,88 @@ export function renderResults(
         searchResults,
     );
 
-    let index = 0;
+    let index =
+        0;
 
-    mangas.forEach(
-        (manga) =>
-        {
-            const item =
-                buildMangaResult(
-                    manga,
-                    rawValue,
-                    basePath,
-                );
+    index =
+        appendSection({
+            title:
+                '📚 Series',
 
-            setupResultItem(
-                item,
-                index,
-                searchInput,
-                searchResults,
-                searchDropdown,
-            );
+            results:
+                mangas.slice(
+                    0,
+                    5,
+                ),
 
-            searchResults.appendChild(
-                item,
-            );
+            buildItem:
+                (manga) =>
+                    buildMangaResult(
+                        manga,
+                        rawValue,
+                        basePath,
+                    ),
 
-            index++;
-        },
-    );
+            searchInput,
+            searchResults,
+            searchDropdown,
+            setupResultItem,
+            index,
+        });
 
-    chinois.forEach(
-        (result) =>
-        {
-            const item =
-                buildChineseResult(
-                    result,
-                    basePath,
-                );
+    index =
+        appendSection({
+            title:
+                '⛩️ Chinois',
 
-            setupResultItem(
-                item,
-                index,
-                searchInput,
-                searchResults,
-                searchDropdown,
-            );
+            results:
+                chinois.slice(
+                    0,
+                    5,
+                ),
 
-            searchResults.appendChild(
-                item,
-            );
+            buildItem:
+                (item) =>
+                    buildChineseResult(
+                        item,
+                        basePath,
+                    ),
 
-            index++;
-        },
-    );
+            searchInput,
+            searchResults,
+            searchDropdown,
+            setupResultItem,
+            index,
+        });
 
-    shortcuts.forEach(
-        (shortcut) =>
-        {
-            const item =
-                buildShortcutSearchResult(
-                    shortcut,
-                    basePath,
-                );
+    index =
+        appendSection({
+            title:
+                '⚡ Raccourcis',
 
-            setupResultItem(
-                item,
-                index,
-                searchInput,
-                searchResults,
-                searchDropdown,
-            );
+            results:
+                shortcuts.slice(
+                    0,
+                    5,
+                ),
 
-            searchResults.appendChild(
-                item,
-            );
+            buildItem:
+                (shortcut) =>
+                    buildShortcutSearchResult(
+                        shortcut,
+                        basePath,
+                    ),
 
-            index++;
-        },
-    );
+            searchInput,
+            searchResults,
+            searchDropdown,
+            setupResultItem,
+            index,
+        });
 
-    if (index === 0)
-    {
+    if (
+        index === 0
+    ) {
         closeDropdown(
             searchDropdown,
         );
