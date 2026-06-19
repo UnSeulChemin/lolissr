@@ -10,8 +10,11 @@ use App\DTO\Manga\Responses\MangaSeriesData;
 use App\DTO\Manga\Responses\MangaSeriesItemData;
 use App\DTO\Manga\Responses\MangaShowData;
 use App\Models\Manga;
+use App\Models\Artbook;
 use App\Repositories\Manga\MangaRepository;
 use App\Repositories\Manga\MangaSearchRepository;
+use App\Repositories\Manga\ArtbookRepository;
+
 use Framework\Application\App;
 
 final readonly class MangaReadService
@@ -19,6 +22,7 @@ final readonly class MangaReadService
     public function __construct(
         private MangaRepository $mangaRepository,
         private MangaSearchRepository $searchRepository,
+        private ArtbookRepository $artbookRepository,
     ) {
     }
 
@@ -252,5 +256,14 @@ final readonly class MangaReadService
             $this->mangaRepository
                 ->findIncompleteSeries(),
         );
+    }
+
+    /**
+     * @return list<Artbook>
+     */
+    public function artbooks(): array
+    {
+        return $this->artbookRepository
+            ->findAll();
     }
 }

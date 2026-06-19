@@ -492,6 +492,50 @@ $hasTopLongestSeries =
     </section>
 
     <h2 class="home-section-title">
+        🎨 Artbooks
+    </h2>
+
+    <section class="home-grid home-grid-stats card-grid-3">
+
+        <article class="card transition-card card-small">
+
+            <h2 class="home-card-title">
+                📚 Total artbooks
+            </h2>
+
+            <p class="home-card-value">
+                24 artbooks
+            </p>
+
+        </article>
+
+        <article class="card transition-card card-small">
+
+            <h2 class="home-card-title">
+                📖 Séries représentées
+            </h2>
+
+            <p class="home-card-value">
+                6 séries
+            </p>
+
+        </article>
+
+        <article class="card transition-card card-small">
+
+            <h2 class="home-card-title">
+                🎨 Auteurs représentés
+            </h2>
+
+            <p class="home-card-value">
+                4 auteurs
+            </p>
+
+        </article>
+
+    </section>
+
+    <h2 class="home-section-title">
         👑 Maîtrise du mandarin
     </h2>
 

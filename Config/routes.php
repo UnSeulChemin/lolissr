@@ -154,6 +154,8 @@ return static function (Router $router): void {
 
                 $router->get('a-lire', [MangaController::class, 'aLire']);
 
+                $router->get('artbooks', [MangaController::class, 'artbooks']);
+
                 /*
                 |--------------------------------------------------------------------------
                 | ACTIONS SUR UN TOME

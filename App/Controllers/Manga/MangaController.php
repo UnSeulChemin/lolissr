@@ -142,6 +142,13 @@ final class MangaController extends Controller
         );
     }
 
+    public function artbooks(): never
+    {
+        $this->title = 'Manga | Artbooks';
+
+        $this->render('pages/manga/series/artbooks', ['artbooks' => $this->mangaReadService->artbooks()]);
+    }
+
     public function create(): never
     {
         $this->title = 'Manga | Ajouter';
