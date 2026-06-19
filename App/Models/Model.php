@@ -427,6 +427,57 @@ abstract class Model
 
     /*
     |--------------------------------------------------------------------------
+    | Aggregate Helpers
+    |--------------------------------------------------------------------------
+    */
+
+    protected function countRows(): int
+    {
+        $result =
+            $this->fetchOne(
+                "
+                SELECT COUNT(*) AS total
+                FROM {$this->table()}
+                ",
+            );
+
+        /** @var array{total?: mixed} $data */
+        $data = (array) $result;
+
+        return (int) (
+            $data['total']
+            ?? 0
+        );
+    }
+
+    protected function countWhere(
+        string $where,
+        array $params = [],
+    ): int {
+
+        $result =
+            $this->fetchOne(
+                "
+                SELECT
+                    COUNT(*) AS total
+                FROM {$this->table()}
+                WHERE {$where}
+                ",
+                $params,
+            );
+
+        /** @var array{total?: mixed} $data */
+        $data =
+            (array) $result;
+
+        return (int) (
+            $data['total']
+            ?? 0
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
     | Internal Helpers
     |--------------------------------------------------------------------------
     */

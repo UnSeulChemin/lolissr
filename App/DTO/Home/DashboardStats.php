@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\DTO\Home;
 
 use App\DTO\Manga\Responses\MangaStatsData;
+use App\Models\Artbook;
 
 final readonly class DashboardStats
 {
@@ -31,6 +32,12 @@ final readonly class DashboardStats
         public int $totalRead,
         public int $totalUnread,
         public int $readingProgress,
+
+        public int $totalArtbooks,
+        public int $totalArtbookAuthors,
+        public int $totalArtbookSeries,
+
+        public ?Artbook $latestArtbook,
 
         public ?float $averageNote,
 

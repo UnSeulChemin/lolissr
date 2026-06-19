@@ -26,6 +26,12 @@ $hasTopLongestSeries =
     is_iterable($stats->topLongestSeries)
     && count((array) $stats->topLongestSeries) > 0;
 
+$hasLatestArtbook =
+    $stats->latestArtbook !== null;
+
+$topArtbookAuthor =
+    'À calculer';
+
 ?>
 
 <section class="layout-container">
@@ -495,19 +501,179 @@ $hasTopLongestSeries =
         🎨 Artbooks
     </h2>
 
+    <section class="home-grid home-grid-top card-grid-3">
+
+        <!-- Auteur le plus représenté -->
+
+        <a
+            class="
+                card
+                transition-card
+                card-link
+                card-link-wide
+                card-wide
+            "
+            href="#"
+        >
+
+            <h2 class="home-card-title">
+                🎨 Auteur le plus représenté
+            </h2>
+
+            <div class="home-longest-content">
+
+                <div
+                    class="
+                        card-image-box-portrait
+                        home-feature-image-box
+                    "
+                >
+
+                    <span
+                        style="
+                            display:flex;
+                            align-items:center;
+                            justify-content:center;
+                            width:100%;
+                            height:100%;
+                            font-size:4rem;
+                        "
+                    >
+                        🎨
+                    </span>
+
+                </div>
+
+                <div class="home-longest-info">
+
+                    <p class="home-longest-name">
+                        <?= e($topArtbookAuthor) ?>
+                    </p>
+
+                    <p class="home-longest-count">
+                        Placeholder
+                    </p>
+
+                </div>
+
+            </div>
+
+        </a>
+
+        <!-- Dernier artbook ajouté -->
+
+        <?php if ($hasLatestArtbook): ?>
+
+            <?php
+
+            $artbook =
+                $stats->latestArtbook;
+
+            $coverPath =
+                $baseUri
+                . 'images/artbooks/thumbnail/'
+                . $artbook->thumbnail
+                . '.'
+                . $artbook->extension;
+
+            ?>
+
+            <a
+                class="
+                    card
+                    transition-card
+                    card-link
+                    card-medium
+                "
+                href="#"
+            >
+
+                <h2 class="home-card-title">
+                    🎨 Dernier artbook ajouté
+                </h2>
+
+                <div class="home-feature-content">
+
+                    <div
+                        class="
+                            card-image-box-portrait
+                            home-feature-image-box
+                        "
+                    >
+
+                        <img
+                            class="card-image-portrait"
+                            src="<?= e($coverPath) ?>"
+                            alt="<?= e($artbook->artbook) ?>"
+                        >
+
+                    </div>
+
+                    <div class="home-feature-info">
+
+                        <p class="home-feature-title">
+                            <?= e($artbook->artbook) ?>
+                        </p>
+
+                        <p class="home-feature-meta">
+                            <?= e(
+                                $artbook->auteur
+                                ?? 'Auteur inconnu'
+                            ) ?>
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </a>
+
+        <?php else: ?>
+
+            <article
+                class="
+                    card
+                    transition-card
+                    card-medium
+                "
+            >
+
+                <h2 class="home-card-title">
+                    🎨 Dernier artbook ajouté
+                </h2>
+
+                <p class="home-empty">
+                    Aucune donnée
+                </p>
+
+            </article>
+
+        <?php endif; ?>
+
+    </section>
+
     <section class="home-grid home-grid-stats card-grid-3">
 
-        <article class="card transition-card card-small">
+        <a
+            class="
+                card
+                transition-card
+                card-small
+                card-link
+            "
+            data-prefetch
+            href="<?= e($baseUri . 'manga/series/artbooks') ?>"
+        >
 
             <h2 class="home-card-title">
                 📚 Total artbooks
             </h2>
 
             <p class="home-card-value">
-                24 artbooks
+                <?= (int) $stats->totalArtbooks ?>
             </p>
 
-        </article>
+        </a>
 
         <article class="card transition-card card-small">
 
@@ -516,7 +682,7 @@ $hasTopLongestSeries =
             </h2>
 
             <p class="home-card-value">
-                6 séries
+                <?= (int) $stats->totalArtbookSeries ?>
             </p>
 
         </article>
@@ -528,7 +694,7 @@ $hasTopLongestSeries =
             </h2>
 
             <p class="home-card-value">
-                4 auteurs
+                <?= (int) $stats->totalArtbookAuthors ?>
             </p>
 
         </article>

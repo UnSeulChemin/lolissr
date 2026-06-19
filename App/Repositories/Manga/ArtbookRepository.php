@@ -31,4 +31,77 @@ final class ArtbookRepository extends Model
 
         return $artbooks;
     }
+
+    public function countAll(): int
+    {
+        return $this->countRows();
+    }
+
+    public function countAuthors(): int
+    {
+        $result =
+            $this->fetchOne(
+                "
+                SELECT
+                    COUNT(
+                        DISTINCT auteur
+                    ) AS total
+                FROM {$this->table()}
+                WHERE auteur IS NOT NULL
+                AND auteur <> ''
+                ",
+            );
+
+        /** @var array{total?: mixed} $data */
+        $data =
+            (array) $result;
+
+        return (int) (
+            $data['total']
+            ?? 0
+        );
+    }
+
+    public function countSeries(): int
+    {
+        $result =
+            $this->fetchOne(
+                "
+                SELECT
+                    COUNT(
+                        DISTINCT serie
+                    ) AS total
+                FROM {$this->table()}
+                WHERE serie IS NOT NULL
+                AND serie <> ''
+                ",
+            );
+
+        /** @var array{total?: mixed} $data */
+        $data =
+            (array) $result;
+
+        return (int) (
+            $data['total']
+            ?? 0
+        );
+    }
+
+    public function findLatest(): ?Artbook
+    {
+        /** @var Artbook|null $artbook */
+        $artbook =
+            $this->fetchOne(
+                "
+                SELECT *
+                FROM {$this->table()}
+                ORDER BY created_at DESC
+                LIMIT 1
+                ",
+                [],
+                Artbook::class,
+            );
+
+        return $artbook;
+    }
 }

@@ -282,69 +282,20 @@ final class ChinoisGrammaireRepository extends Model
 
     public function countAll(): int
     {
-        $result =
-            $this->fetchOne(
-                "SELECT COUNT(*) AS total
-                FROM {$this->table()}"
-            );
-
-        if ($result === null)
-        {
-            return 0;
-        }
-
-        /** @var array{total?: mixed} $data */
-        $data = (array) $result;
-
-        return (int) (
-            $data['total']
-            ?? 0
-        );
+        return $this->countRows();
     }
 
     public function countRemaining(): int
     {
-        $result =
-            $this->fetchOne(
-                "SELECT COUNT(*) AS total
-                FROM {$this->table()}
-                WHERE maitrise = 0"
-            );
-
-        if ($result === null)
-        {
-            return 0;
-        }
-
-        /** @var array{total?: mixed} $data */
-        $data = (array) $result;
-
-        return (int) (
-            $data['total']
-            ?? 0
+        return $this->countWhere(
+            'maitrise = 0',
         );
     }
 
     public function countMastered(): int
     {
-        $result =
-            $this->fetchOne(
-                "SELECT COUNT(*) AS total
-                FROM {$this->table()}
-                WHERE maitrise = 1"
-            );
-
-        if ($result === null)
-        {
-            return 0;
-        }
-
-        /** @var array{total?: mixed} $data */
-        $data = (array) $result;
-
-        return (int) (
-            $data['total']
-            ?? 0
+        return $this->countWhere(
+            'maitrise = 1',
         );
     }
 

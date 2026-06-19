@@ -9,6 +9,7 @@ use App\DTO\Manga\Responses\MangaStatsData;
 use App\Repositories\Chinois\ChinoisGrammaireRepository;
 use App\Repositories\Chinois\ChinoisVocabulaireRepository;
 use App\Repositories\Manga\MangaStatsRepository;
+use App\Repositories\Manga\ArtbookRepository;
 
 final readonly class StatsService
 {
@@ -16,6 +17,7 @@ final readonly class StatsService
         private MangaStatsRepository $repository,
         private ChinoisVocabulaireRepository $vocabulaireRepository,
         private ChinoisGrammaireRepository $grammaireRepository,
+        private ArtbookRepository $artbookRepository,
     ) {
     }
 
@@ -84,6 +86,22 @@ final readonly class StatsService
 
     public function dashboard(): DashboardStats
     {
+        $totalArtbooks =
+            $this->artbookRepository
+                ->countAll();
+
+        $totalArtbookAuthors =
+            $this->artbookRepository
+                ->countAuthors();
+
+        $totalArtbookSeries =
+            $this->artbookRepository
+                ->countSeries();
+
+        $latestArtbook =
+            $this->artbookRepository
+                ->findLatest();
+
         $totalTomes =
             $this->totalTomes();
 
@@ -166,6 +184,18 @@ final readonly class StatsService
             totalUnread: $totalUnread,
 
             readingProgress: $readingProgress,
+
+            totalArtbooks:
+                $totalArtbooks,
+
+            totalArtbookAuthors:
+                $totalArtbookAuthors,
+
+            totalArtbookSeries:
+                $totalArtbookSeries,
+
+            latestArtbook:
+                $latestArtbook,
 
             averageNote: $this->averageNote(),
 
