@@ -57,3 +57,16 @@
         opacity: 0.52;
     }
 }
+
+@keyframes header-search-skeleton-shimmer
+{
+    0%
+    {
+        background-position: 200% 0;
+    }
+
+    100%
+    {
+        background-position: -200% 0;
+    }
+}

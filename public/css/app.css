@@ -7,12 +7,13 @@
 @import url('./base/global.css');
 @import url('./base/scrollbars.css');
 @import url('./base/confirm-modal.css');
+@import url('./base/keyframes.css');
 
 /* UTILITIES */
 @import url('./utilities/transitions.css');
-@import url('./utilities/animations.css');
 @import url('./utilities/router.css');
 @import url('./utilities/copy.css');
+@import url('./utilities/loading.css');
 
 /* COMPONENTS */
 @import url('./components/cards.css');
@@ -21,6 +22,7 @@
 @import url('./components/collections.css');
 @import url('./components/toast.css');
 @import url('./components/error-route.css');
+@import url('./components/glow.css');
 
 /* PARTIALS */
 @import url('./partials/header.css');

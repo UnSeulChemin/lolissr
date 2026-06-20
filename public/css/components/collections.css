@@ -395,3 +395,23 @@
     justify-content: center;
     align-items: center;
 }
+
+/* =========================================
+   READ BADGE
+========================================= */
+
+.collection-read-badge
+{
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+.collection-read-badge:hover
+{
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 3px 8px rgba(79, 99, 255, 0.16);
+}

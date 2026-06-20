@@ -294,3 +294,20 @@
     font-weight: 600;
     line-height: 1.4;
 }
+
+/* =========================================
+   FORM TRANSITIONS
+========================================= */
+
+.transition-form
+{
+    transition:
+        box-shadow 160ms ease;
+}
+
+.transition-form:hover
+{
+    box-shadow:
+        0 10px 30px rgba(123, 44, 255, 0.18),
+        0 0 20px rgba(123, 44, 255, 0.12);
+}

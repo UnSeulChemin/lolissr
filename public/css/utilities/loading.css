@@ -1,0 +1,38 @@
+/* =========================================
+   LOADING SHIMMER
+========================================= */
+
+.is-loading
+{
+    user-select: none;
+}
+
+.is-loading .card
+{
+    position: relative;
+
+    overflow: hidden;
+}
+
+.is-loading .card::after
+{
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255,255,255,0.12) 50%,
+            transparent 100%
+        );
+
+    transform:
+        translateX(-100%);
+
+    animation:
+        card-shimmer 1s linear infinite;
+}
