@@ -29,8 +29,12 @@ $hasTopLongestSeries =
 $hasLatestArtbook =
     $stats->latestArtbook !== null;
 
-$topArtbookAuthor =
-    'À calculer';
+$mostRepresented =
+    $stats->mostRepresented;
+
+$isAuthor =
+    $mostRepresented !== null
+    && $mostRepresented->type === 'author';
 
 ?>
 
@@ -503,7 +507,7 @@ $topArtbookAuthor =
 
     <section class="home-grid home-grid-top card-grid-3">
 
-        <!-- Auteur le plus représenté -->
+        <!-- Auteur / Série le plus représenté -->
 
         <a
             class="
@@ -517,7 +521,12 @@ $topArtbookAuthor =
         >
 
             <h2 class="home-card-title">
-                🎨 Auteur le plus représenté
+
+                <?= $isAuthor
+                    ? '🎨 Auteur le plus représenté'
+                    : '📚 Série la plus représentée'
+                ?>
+
             </h2>
 
             <div class="home-longest-content">
@@ -529,29 +538,34 @@ $topArtbookAuthor =
                     "
                 >
 
-                    <span
-                        style="
-                            display:flex;
-                            align-items:center;
-                            justify-content:center;
-                            width:100%;
-                            height:100%;
-                            font-size:4rem;
-                        "
+                    <img
+                        class="card-image-portrait"
+                        src="<?= e($baseUri) ?>images/ui/placeholder-artbook.webp"
+                        alt=""
                     >
-                        🎨
-                    </span>
 
                 </div>
 
                 <div class="home-longest-info">
 
                     <p class="home-longest-name">
-                        <?= e($topArtbookAuthor) ?>
+
+                        <?= e(
+                            $mostRepresented->name
+                            ?? 'Aucune donnée'
+                        ) ?>
+
                     </p>
 
                     <p class="home-longest-count">
-                        Placeholder
+
+                        <?= (int) (
+                            $mostRepresented->total
+                            ?? 0
+                        ) ?>
+
+                        artbooks
+
                     </p>
 
                 </div>

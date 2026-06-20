@@ -102,6 +102,10 @@ final readonly class StatsService
             $this->artbookRepository
                 ->findLatest();
 
+        $mostRepresented =
+            $this->artbookRepository
+                ->findMostRepresented();
+
         $totalTomes =
             $this->totalTomes();
 
@@ -196,6 +200,9 @@ final readonly class StatsService
 
             latestArtbook:
                 $latestArtbook,
+
+            mostRepresented:
+                $mostRepresented,
 
             averageNote: $this->averageNote(),
 

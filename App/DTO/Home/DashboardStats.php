@@ -38,6 +38,7 @@ final readonly class DashboardStats
         public int $totalArtbookSeries,
 
         public ?Artbook $latestArtbook,
+        public ?object $mostRepresented,
 
         public ?float $averageNote,
 

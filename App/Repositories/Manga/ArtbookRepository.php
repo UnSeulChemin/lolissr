@@ -104,4 +104,57 @@ final class ArtbookRepository extends Model
 
         return $artbook;
     }
+
+    public function findMostRepresented(): ?object
+    {
+        $author =
+            $this->fetchOne(
+                "
+                SELECT
+                    'author' AS type,
+                    auteur AS name,
+                    COUNT(*) AS total
+                FROM {$this->table()}
+                WHERE auteur IS NOT NULL
+                AND auteur <> ''
+                GROUP BY auteur
+                ORDER BY total DESC
+                LIMIT 1
+                "
+            );
+
+        $series =
+            $this->fetchOne(
+                "
+                SELECT
+                    'series' AS type,
+                    serie AS name,
+                    COUNT(*) AS total
+                FROM {$this->table()}
+                WHERE serie IS NOT NULL
+                AND serie <> ''
+                GROUP BY serie
+                ORDER BY total DESC
+                LIMIT 1
+                "
+            );
+
+        $authorTotal =
+            (int) (($author?->total ?? 0));
+
+        $seriesTotal =
+            (int) (($series?->total ?? 0));
+
+        if (
+            $authorTotal === 0
+            && $seriesTotal === 0
+        ) {
+            return null;
+        }
+
+        return $authorTotal >= $seriesTotal
+            ? $author
+            : $series;
+    }
+
 }
