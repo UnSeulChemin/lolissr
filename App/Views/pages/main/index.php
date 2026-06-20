@@ -32,6 +32,22 @@ $hasLatestArtbook =
 $mostRepresented =
     $stats->mostRepresented;
 
+$mostRepresentedThumbnailPath =
+    null;
+
+if (
+    $mostRepresented !== null
+    && !empty($mostRepresented->thumbnail)
+    && !empty($mostRepresented->extension)
+) {
+    $mostRepresentedThumbnailPath =
+        $baseUri
+        . 'images/artbooks/thumbnail/'
+        . $mostRepresented->thumbnail
+        . '.'
+        . $mostRepresented->extension;
+}
+
 $isAuthor =
     $mostRepresented !== null
     && $mostRepresented->type === 'author';
@@ -538,11 +554,23 @@ $isAuthor =
                     "
                 >
 
-                    <img
-                        class="card-image-portrait"
-                        src="<?= e($baseUri) ?>images/ui/placeholder-artbook.webp"
-                        alt=""
-                    >
+                    <?php if ($mostRepresentedThumbnailPath !== null): ?>
+
+                        <img
+                            class="card-image-portrait"
+                            src="<?= e($mostRepresentedThumbnailPath) ?>"
+                            alt="<?= e($mostRepresented->name) ?>"
+                        >
+
+                    <?php else: ?>
+
+                        <img
+                            class="card-image-portrait"
+                            src="<?= e($baseUri) ?>images/artbooks/placeholder-artbook.webp"
+                            alt=""
+                        >
+
+                    <?php endif; ?>
 
                 </div>
 

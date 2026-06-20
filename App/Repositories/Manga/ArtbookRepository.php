@@ -113,7 +113,9 @@ final class ArtbookRepository extends Model
                 SELECT
                     'author' AS type,
                     auteur AS name,
-                    COUNT(*) AS total
+                    COUNT(*) AS total,
+                    MIN(thumbnail) AS thumbnail,
+                    MIN(extension) AS extension
                 FROM {$this->table()}
                 WHERE auteur IS NOT NULL
                 AND auteur <> ''
@@ -129,7 +131,9 @@ final class ArtbookRepository extends Model
                 SELECT
                     'series' AS type,
                     serie AS name,
-                    COUNT(*) AS total
+                    COUNT(*) AS total,
+                    MIN(thumbnail) AS thumbnail,
+                    MIN(extension) AS extension
                 FROM {$this->table()}
                 WHERE serie IS NOT NULL
                 AND serie <> ''
@@ -140,10 +144,10 @@ final class ArtbookRepository extends Model
             );
 
         $authorTotal =
-            (int) (($author?->total ?? 0));
+            (int) (($author?->total) ?? 0);
 
         $seriesTotal =
-            (int) (($series?->total ?? 0));
+            (int) (($series?->total) ?? 0);
 
         if (
             $authorTotal === 0
@@ -156,5 +160,4 @@ final class ArtbookRepository extends Model
             ? $author
             : $series;
     }
-
 }
