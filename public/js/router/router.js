@@ -164,14 +164,24 @@ async function handleClick(
 
 async function handlePopState()
 {
+    document.body.classList.add(
+        'no-route-animation',
+    );
+
     await navigateTo(
         location.href,
         {
-            updateHistory:
-                false,
+            updateHistory: false,
+            force: true,
+        },
+    );
 
-            force:
-                true,
+    requestAnimationFrame(
+        () =>
+        {
+            document.body.classList.remove(
+                'no-route-animation',
+            );
         },
     );
 }

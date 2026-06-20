@@ -136,6 +136,12 @@ body.router-loading *
     pointer-events: none !important;
 }
 
+body.no-route-animation .transition-card
+{
+    animation: none !important;
+    opacity: 1 !important;
+}
+
 body.is-routing
 {
     cursor: progress;
