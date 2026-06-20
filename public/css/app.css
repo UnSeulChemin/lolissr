@@ -29,7 +29,7 @@
 @import url('./partials/search.css');
 
 /* PAGES */
-@import url('./page/home.css');
+@import url('./page/main/home.css');
 @import url('./page/sql.css');
 @import url('./page/chinois/vocabulaire.css');
 @import url('./page/chinois/grammaire.css');
