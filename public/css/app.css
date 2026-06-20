@@ -18,12 +18,9 @@
 @import url('./components/cards.css');
 @import url('./components/forms.css');
 @import url('./components/dashboard.css');
-@import url('./components/details.css');
 @import url('./components/collections.css');
 @import url('./components/toast.css');
 @import url('./components/error-route.css');
-@import url('./components/note-rating.css');
-@import url('./components/read-status.css');
 
 /* PARTIALS */
 @import url('./partials/header.css');
@@ -35,3 +32,6 @@
 @import url('./page/chinois/chinois.css');
 @import url('./page/chinois/grammaire.css');
 @import url('./page/profil/profil.css');
+@import url('./page/manga/details.css');
+@import url('./page/manga/note-rating.css');
+@import url('./page/manga/read-status.css');
