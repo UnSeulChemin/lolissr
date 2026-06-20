@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\DTO\Home\DashboardStats;
+use App\DTO\Home\Responses\DashboardStatsData;
 use App\Services\Stats\StatsService;
 
 use Framework\Cache\Cache;
@@ -23,11 +23,11 @@ final class MainController extends Controller
     {
         $this->title = 'Accueil';
 
-        /** @var DashboardStats $stats */
+        /** @var DashboardStatsData $stats */
         $stats = Cache::remember(
             key: 'home.dashboard',
             ttl: null,
-            callback: fn (): DashboardStats => $this->statsService->dashboard(),
+            callback: fn (): DashboardStatsData => $this->statsService->dashboard(),
         );
 
         $this->render('pages/main/index', [

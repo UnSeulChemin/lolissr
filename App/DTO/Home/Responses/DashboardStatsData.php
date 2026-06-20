@@ -2,12 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\DTO\Home;
+namespace App\DTO\Home\Responses;
 
 use App\DTO\Manga\Responses\MangaStatsData;
-use App\Models\Artbook;
 
-final readonly class DashboardStats
+final readonly class DashboardStatsData
 {
     /**
      * @param list<MangaStatsData> $topLongestSeries
@@ -37,8 +36,8 @@ final readonly class DashboardStats
         public int $totalArtbookAuthors,
         public int $totalArtbookSeries,
 
-        public ?Artbook $latestArtbook,
-        public ?object $mostRepresented,
+        public ?LatestArtbookData $latestArtbook,
+        public ?MostRepresentedArtbookData $mostRepresented,
 
         public ?float $averageNote,
 

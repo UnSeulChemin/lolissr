@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Stats;
 
-use App\DTO\Home\DashboardStats;
+use App\DTO\Home\Responses\DashboardStatsData;
 use App\DTO\Manga\Responses\MangaStatsData;
 use App\Repositories\Chinois\ChinoisGrammaireRepository;
 use App\Repositories\Chinois\ChinoisVocabulaireRepository;
@@ -84,7 +84,7 @@ final readonly class StatsService
             ->topLongestSeriesDto($limit);
     }
 
-    public function dashboard(): DashboardStats
+    public function dashboard(): DashboardStatsData
     {
         $totalArtbooks =
             $this->artbookRepository
@@ -169,7 +169,7 @@ final readonly class StatsService
                 $totalRemainingChinese,
             );
 
-        return new DashboardStats(
+        return new DashboardStatsData(
             totalVocabulary: $totalVocabulary,
             remainingVocabulary: $remainingVocabulary,
             vocabularyProgress: $vocabularyProgress,

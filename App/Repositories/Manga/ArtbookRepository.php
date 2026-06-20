@@ -6,11 +6,36 @@ namespace App\Repositories\Manga;
 
 use App\Models\Artbook;
 use App\Models\Model;
+use App\DTO\Home\Responses\MostRepresentedArtbookData;
+use App\DTO\Home\Responses\LatestArtbookData;
 
 final class ArtbookRepository extends Model
 {
     protected string $table =
         'artbook';
+
+    private function mapLatestArtbook(
+        object $row,
+    ): LatestArtbookData {
+        return new LatestArtbookData(
+            artbook: (string) $row->artbook,
+            auteur: $row->auteur,
+            thumbnail: $row->thumbnail,
+            extension: $row->extension,
+        );
+    }
+
+    private function mapMostRepresented(
+        object $row,
+    ): MostRepresentedArtbookData {
+        return new MostRepresentedArtbookData(
+            type: (string) $row->type,
+            name: (string) $row->name,
+            total: (int) $row->total,
+            thumbnail: $row->thumbnail,
+            extension: $row->extension,
+        );
+    }
 
     /**
      * @return list<Artbook>
@@ -87,25 +112,28 @@ final class ArtbookRepository extends Model
         );
     }
 
-    public function findLatest(): ?Artbook
+    public function findLatest(): ?LatestArtbookData
     {
-        /** @var Artbook|null $artbook */
-        $artbook =
+        $row =
             $this->fetchOne(
                 "
-                SELECT *
+                SELECT
+                    artbook,
+                    auteur,
+                    thumbnail,
+                    extension
                 FROM {$this->table()}
                 ORDER BY created_at DESC
                 LIMIT 1
-                ",
-                [],
-                Artbook::class,
+                "
             );
 
-        return $artbook;
+        return $row !== null
+            ? $this->mapLatestArtbook($row)
+            : null;
     }
 
-    public function findMostRepresented(): ?object
+    public function findMostRepresented(): ?MostRepresentedArtbookData
     {
         $author =
             $this->fetchOne(
@@ -156,8 +184,13 @@ final class ArtbookRepository extends Model
             return null;
         }
 
-        return $authorTotal >= $seriesTotal
-            ? $author
-            : $series;
+        $winner =
+            $authorTotal >= $seriesTotal
+                ? $author
+                : $series;
+
+        return $winner !== null
+            ? $this->mapMostRepresented($winner)
+            : null;
     }
 }
