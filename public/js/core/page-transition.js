@@ -120,22 +120,3 @@ export async function runPageTransition(
         );
     }
 }
-
-// =========================================
-// SCROLL TOP
-// =========================================
-
-export function scrollTop(
-    smooth = false,
-)
-{
-    window.scrollTo({
-        top:
-            0,
-
-        behavior:
-            smooth
-                ? 'smooth'
-                : 'auto',
-    });
-}

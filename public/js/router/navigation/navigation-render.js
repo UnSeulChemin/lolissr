@@ -15,6 +15,10 @@ import {
 } from '../router-focus.js';
 
 import {
+    restoreScrollPosition,
+} from '../route-scroll.js';
+
+import {
     emitNavigationRender,
 } from './navigation-events.js';
 
@@ -81,6 +85,22 @@ export async function renderPage(
                     ?.scrollIntoView();
             },
             0,
+        );
+
+        return;
+    }
+
+    // =====================================
+    // RESTORE SCROLL (BACK/FORWARD)
+    // =====================================
+
+    if (
+        options.updateHistory
+        === false
+    ) {
+
+        restoreScrollPosition(
+            target,
         );
 
         return;
