@@ -7,27 +7,25 @@ namespace App\Repositories\Chinois;
 use App\DTO\Chinois\Responses\ChinoisVocabulaireData;
 use App\Models\Model;
 
-use Framework\Application\App;
-
 use stdClass;
-use LogicException;
 
 final class ChinoisVocabulaireRepository extends Model
 {
     protected string $table =
         'chinois_vocabulaire';
 
-    private function guardWrite(): void
-    {
-        if (! App::isReadOnly())
-        {
-            return;
-        }
-
-        throw new LogicException(
-            'Écriture en base interdite en mode lecture seule.',
-        );
-    }
+    private const SELECT_FIELDS =
+    '
+        id,
+        langue,
+        mot,
+        pinyin,
+        type,
+        traduction,
+        exemple,
+        maitrise,
+        xp_rewarded
+    ';
 
     private function mapRowToDto(
         stdClass $row,
@@ -59,16 +57,7 @@ final class ChinoisVocabulaireRepository extends Model
     public function findNotMasteredDto(): array
     {
         $query = $this->query(
-            "SELECT
-                id,
-                langue,
-                mot,
-                pinyin,
-                type,
-                traduction,
-                exemple,
-                maitrise,
-                xp_rewarded
+            "SELECT " . self::SELECT_FIELDS . "
 
             FROM {$this->table()}
 
@@ -100,16 +89,7 @@ final class ChinoisVocabulaireRepository extends Model
     ): array
     {
         $query = $this->query(
-            "SELECT
-                id,
-                langue,
-                mot,
-                pinyin,
-                type,
-                traduction,
-                exemple,
-                maitrise,
-                xp_rewarded
+            "SELECT " . self::SELECT_FIELDS . "
 
             FROM {$this->table()}
 
@@ -140,16 +120,7 @@ final class ChinoisVocabulaireRepository extends Model
 
         $result =
             $this->fetchOne(
-                "SELECT
-                    id,
-                    langue,
-                    mot,
-                    pinyin,
-                    type,
-                    traduction,
-                    exemple,
-                    maitrise,
-                    xp_rewarded
+                "SELECT " . self::SELECT_FIELDS . "
 
                 FROM {$this->table()}
 

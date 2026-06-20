@@ -7,9 +7,6 @@ namespace App\Repositories\Chinois;
 use App\DTO\Chinois\Responses\ChinoisGrammaireData;
 use App\Models\Model;
 
-use Framework\Application\App;
-
-use LogicException;
 use stdClass;
 
 final class ChinoisGrammaireRepository extends Model
@@ -17,17 +14,25 @@ final class ChinoisGrammaireRepository extends Model
     protected string $table =
         'chinois_grammaire';
 
-    private function guardWrite(): void
-    {
-        if (! App::isReadOnly())
-        {
-            return;
-        }
-
-        throw new LogicException(
-            'Écriture en base interdite en mode lecture seule.',
-        );
-    }
+    private const SELECT_FIELDS =
+    '
+        id,
+        niveau,
+        section,
+        section_position,
+        categorie,
+        categorie_position,
+        titre,
+        structure,
+        abreviation,
+        phrase,
+        pinyin,
+        traduction,
+        explication,
+        position,
+        maitrise,
+        xp_rewarded
+    ';
 
     private function mapRowToDto(
         stdClass $row,
@@ -79,23 +84,7 @@ final class ChinoisGrammaireRepository extends Model
     public function findNotMasteredDto(): array
     {
         $query = $this->query(
-            "SELECT
-                id,
-                niveau,
-                section,
-                section_position,
-                categorie,
-                categorie_position,
-                titre,
-                structure,
-                abreviation,
-                phrase,
-                pinyin,
-                traduction,
-                explication,
-                position,
-                maitrise,
-                xp_rewarded
+            "SELECT " . self::SELECT_FIELDS . "
 
             FROM {$this->table()}
 
@@ -127,23 +116,7 @@ final class ChinoisGrammaireRepository extends Model
     ): array {
 
         $query = $this->query(
-            "SELECT
-                id,
-                niveau,
-                section,
-                section_position,
-                categorie,
-                categorie_position,
-                titre,
-                structure,
-                abreviation,
-                phrase,
-                pinyin,
-                traduction,
-                explication,
-                position,
-                maitrise,
-                xp_rewarded
+            "SELECT " . self::SELECT_FIELDS . "
 
             FROM {$this->table()}
 
@@ -214,23 +187,7 @@ final class ChinoisGrammaireRepository extends Model
 
         $result =
             $this->fetchOne(
-                "SELECT
-                    id,
-                    niveau,
-                    section,
-                    section_position,
-                    categorie,
-                    categorie_position,
-                    titre,
-                    structure,
-                    abreviation,
-                    phrase,
-                    pinyin,
-                    traduction,
-                    explication,
-                    position,
-                    maitrise,
-                    xp_rewarded
+                "SELECT " . self::SELECT_FIELDS . "
 
                 FROM {$this->table()}
 

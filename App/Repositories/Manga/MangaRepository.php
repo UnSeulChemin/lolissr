@@ -8,11 +8,8 @@ use App\DTO\Manga\Responses\MangaData;
 use App\Models\Model;
 use App\Models\Manga;
 
-use Framework\Application\App;
 use Framework\Support\MangaNoteNormalizer;
 use Framework\Support\Str;
-
-use LogicException;
 
 final class MangaRepository extends Model
 {
@@ -63,18 +60,6 @@ final class MangaRepository extends Model
         );
     }
 
-    private function guardWrite(): void
-    {
-        if (! App::isReadOnly())
-        {
-            return;
-        }
-
-        throw new LogicException(
-            'Écriture en base interdite en mode lecture seule.',
-        );
-    }
-
     private function normalizeSlug(
         string $slug,
     ): string {
@@ -93,6 +78,27 @@ final class MangaRepository extends Model
         }
 
         return $jacquette + $livreNote;
+    }
+
+    /**
+     * @param array<string,mixed> $data
+     */
+    private function updateBySlugAndNumero(
+        string $slug,
+        int $numero,
+        array $data,
+    ): bool {
+
+        return $this->update(
+            $data,
+            [
+                'slug' => $this->normalizeSlug(
+                    $slug,
+                ),
+
+                'numero' => $numero,
+            ],
+        );
     }
 
     /**
@@ -276,7 +282,8 @@ final class MangaRepository extends Model
         ?int $jacquette,
         ?int $livreNote,
         ?string $commentaire,
-    ): bool {
+    ): bool
+    {
         $this->guardWrite();
 
         $jacquette = MangaNoteNormalizer::normalize(
@@ -287,7 +294,9 @@ final class MangaRepository extends Model
             $livreNote,
         );
 
-        return $this->update(
+        return $this->updateBySlugAndNumero(
+            $slug,
+            $numero,
             [
                 'editeur' => Str::nullableTrim(
                     $editeur,
@@ -310,13 +319,6 @@ final class MangaRepository extends Model
                     $commentaire,
                 ),
             ],
-            [
-                'slug' => $this->normalizeSlug(
-                    $slug,
-                ),
-
-                'numero' => $numero,
-            ],
         );
     }
 
@@ -324,19 +326,15 @@ final class MangaRepository extends Model
         string $slug,
         int $numero,
         bool $readStatus,
-    ): bool {
+    ): bool
+    {
         $this->guardWrite();
 
-        return $this->update(
+        return $this->updateBySlugAndNumero(
+            $slug,
+            $numero,
             [
                 'lu' => (int) $readStatus,
-            ],
-            [
-                'slug' => $this->normalizeSlug(
-                    $slug,
-                ),
-
-                'numero' => $numero,
             ],
         );
     }
@@ -346,7 +344,8 @@ final class MangaRepository extends Model
         int $numero,
         ?int $jacquette,
         ?int $livreNote,
-    ): bool {
+    ): bool
+    {
         $this->guardWrite();
 
         $jacquette = MangaNoteNormalizer::normalize(
@@ -357,7 +356,9 @@ final class MangaRepository extends Model
             $livreNote,
         );
 
-        return $this->update(
+        return $this->updateBySlugAndNumero(
+            $slug,
+            $numero,
             [
                 'jacquette' => $jacquette,
 
@@ -367,13 +368,6 @@ final class MangaRepository extends Model
                     $jacquette,
                     $livreNote,
                 ),
-            ],
-            [
-                'slug' => $this->normalizeSlug(
-                    $slug,
-                ),
-
-                'numero' => $numero,
             ],
         );
     }

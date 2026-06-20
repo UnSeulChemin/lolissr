@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Framework\Application\App;
 use Framework\Database\Database;
+
 use PDO;
 use PDOStatement;
+use LogicException;
 use RuntimeException;
 use Throwable;
 
@@ -73,15 +76,24 @@ abstract class Model
         string $value,
     ): string {
 
-        $sanitized =
-            preg_replace(
+        return self::$identifierCache[$value]
+            ??= preg_replace(
                 '/[^a-zA-Z0-9_]/',
                 '',
                 $value,
-            );
+            ) ?? '';
+    }
 
-        return self::$identifierCache[$value]
-            ??= ($sanitized ?? '');
+    protected function guardWrite(): void
+    {
+        if (! App::isReadOnly())
+        {
+            return;
+        }
+
+        throw new LogicException(
+            'Écriture en base interdite en mode lecture seule.',
+        );
     }
 
     /*
@@ -126,7 +138,11 @@ abstract class Model
     }
 
     /**
-     * @param array<int|string, mixed> $params
+     * @template T of object
+     *
+     * @param class-string<T>|null $class
+     *
+     * @return T|null
      */
     protected function fetchOne(
         string $sql,
@@ -162,8 +178,11 @@ abstract class Model
     }
 
     /**
-     * @param array<int|string, mixed> $params
-     * @return array<int, object>
+     * @template T of object
+     *
+     * @param class-string<T>|null $class
+     *
+     * @return list<T>
      */
     protected function fetchAll(
         string $sql,
@@ -190,7 +209,7 @@ abstract class Model
             );
         }
 
-        /** @var array<int, object> $results */
+        /** @var list<T> $results */
         $results =
             $statement->fetchAll();
 
@@ -217,6 +236,11 @@ abstract class Model
     |--------------------------------------------------------------------------
     */
 
+    /**
+     * @template T of object
+     * @param class-string<T>|null $class
+     * @return T|null
+     */
     public function find(
         int $id,
         ?string $class = null,
@@ -234,7 +258,10 @@ abstract class Model
 
     /**
      * @param array<string, mixed> $where
-     * @return array<int, object>
+     *
+     * @template T of object
+     * @param class-string<T>|null $class
+     * @return list<T>
      */
     public function findBy(
         array $where,
