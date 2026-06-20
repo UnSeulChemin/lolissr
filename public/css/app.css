@@ -31,9 +31,9 @@
 /* PAGES */
 @import url('./page/home.css');
 @import url('./page/sql.css');
-@import url('./page/chinois/chinois.css');
+@import url('./page/chinois/vocabulaire.css');
 @import url('./page/chinois/grammaire.css');
 @import url('./page/profil/profil.css');
-@import url('./page/manga/details.css');
+@import url('./page/manga/detail.css');
 @import url('./page/manga/note-rating.css');
 @import url('./page/manga/read-status.css');
