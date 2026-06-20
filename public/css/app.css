@@ -22,6 +22,8 @@
 @import url('./components/collections.css');
 @import url('./components/toast.css');
 @import url('./components/error-route.css');
+@import url('./components/note-rating.css');
+@import url('./components/read-status.css');
 
 /* PARTIALS */
 @import url('./partials/header.css');

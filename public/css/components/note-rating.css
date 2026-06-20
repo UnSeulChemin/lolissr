@@ -1,0 +1,105 @@
+/* =========================================
+   NOTES RATING
+========================================= */
+
+.js-note-group
+{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: nowrap;
+    gap: 12px;
+
+    width: 100%;
+}
+
+.js-note-button
+{
+    width: 34px;
+    min-width: 34px;
+    height: 34px;
+    padding: 0;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    color: var(--color-title);
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 700;
+    line-height: 1;
+
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-light);
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    transition:
+        transform var(--transition-fast),
+        background-color var(--transition-fast),
+        color var(--transition-fast),
+        border-color var(--transition-fast),
+        box-shadow var(--transition-fast);
+}
+
+.js-note-button:hover
+{
+    transform: translateY(-1px);
+
+    border-color: rgba(123, 44, 255, 0.35);
+
+    box-shadow:
+        0 6px 14px rgba(123, 44, 255, 0.12);
+}
+
+.js-note-button.active
+{
+    color: var(--color-surface);
+    background: var(--gradient-violet);
+    border-color: transparent;
+
+    box-shadow:
+        0 8px 18px rgba(123, 44, 255, 0.18),
+        inset 0 1px 2px rgba(255,255,255,0.25);
+}
+
+
+/* =========================================
+   PERFECT SCORE
+========================================= */
+
+.perfect-score-group .js-note-button.active
+{
+    position: relative;
+
+    isolation: isolate;
+
+    transform:
+        scale(1.08);
+}
+
+.perfect-score-group .js-note-button.active::after
+{
+    content: '';
+
+    position: absolute;
+
+    inset: -3px;
+
+    border-radius: inherit;
+
+    pointer-events: none;
+
+    z-index: -1;
+
+    filter:
+        blur(8px);
+
+    background:
+        rgba(79, 99, 255, 0.52);
+
+    animation:
+        badge-glow-shared 1.8s ease-in-out infinite;
+}

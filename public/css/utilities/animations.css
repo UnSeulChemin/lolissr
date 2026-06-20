@@ -2,26 +2,58 @@
    KEYFRAMES
 ========================================= */
 
-@keyframes card-shimmer {
-    100% {
-        transform: translateX(100%);
+@keyframes card-in
+{
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes card-shimmer
+{
+    100% { transform: translateX(100%); }
+}
+
+@keyframes badge-glow-shared
+{
+    0%, 100%
+    {
+        transform: scale(0.88);
+        opacity: 0.42;
+    }
+
+    50%
+    {
+        transform: scale(1.16);
+        opacity: 1;
     }
 }
 
-@keyframes badge-glow-shared {
-    0% { transform: scale(0.88); opacity: 0.42; }
-    50% { transform: scale(1.16); opacity: 1; }
-    100% { transform: scale(0.88); opacity: 0.42; }
+@keyframes badge-glow-purple
+{
+    0%, 100%
+    {
+        transform: scale(0.94);
+        opacity: 0.34;
+    }
+
+    50%
+    {
+        transform: scale(1.06);
+        opacity: 0.58;
+    }
 }
 
-@keyframes badge-glow-purple {
-    0% { transform: scale(0.94); opacity: 0.34; }
-    50% { transform: scale(1.06); opacity: 0.58; }
-    100% { transform: scale(0.94); opacity: 0.34; }
-}
+@keyframes badge-glow-gold
+{
+    0%, 100%
+    {
+        transform: scale(0.95);
+        opacity: 0.28;
+    }
 
-@keyframes badge-glow-gold {
-    0% { transform: scale(0.95); opacity: 0.28; }
-    50% { transform: scale(1.04); opacity: 0.52; }
-    100% { transform: scale(0.95); opacity: 0.28; }
+    50%
+    {
+        transform: scale(1.04);
+        opacity: 0.52;
+    }
 }
