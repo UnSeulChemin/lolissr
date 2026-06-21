@@ -20,7 +20,7 @@ final readonly class ArtbookData
         public ?string $auteur,
         public ?string $serie,
 
-        public string $createdAt,
+        public string $createdAt
     ) {
     }
 }

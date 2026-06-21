@@ -9,7 +9,7 @@ final readonly class UpdateNoteData
     public function __construct(
         public int $jacquette,
         public int $livreNote,
-        public int $note,
+        public int $note
     ) {
     }
 }

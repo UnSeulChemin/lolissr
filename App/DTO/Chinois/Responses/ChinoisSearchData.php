@@ -11,7 +11,7 @@ final readonly class ChinoisSearchData
      */
     public function __construct(
         public array $results,
-        public string $search,
+        public string $search
     ) {
     }
 }

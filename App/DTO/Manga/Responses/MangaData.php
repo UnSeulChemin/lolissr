@@ -32,7 +32,7 @@ final readonly class MangaData
         public ?float $averageNote,
 
         public bool $xpReadRewarded,
-        public bool $xpSeriesRewarded,
+        public bool $xpSeriesRewarded
     ) {
     }
 }

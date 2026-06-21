@@ -14,7 +14,7 @@ final readonly class ChinoisVocabulaireCreateDTO
         public string $pinyin,
         public string $type,
         public string $traduction,
-        public ?string $exemple,
+        public ?string $exemple
     ) {
     }
 
@@ -29,7 +29,7 @@ final readonly class ChinoisVocabulaireCreateDTO
             pinyin: trim((string) ($data['pinyin'] ?? '')),
             type: trim((string) ($data['type'] ?? '')),
             traduction: trim((string) ($data['traduction'] ?? '')),
-            exemple: Str::nullableTrim($data['exemple'] ?? null),
+            exemple: Str::nullableTrim($data['exemple'] ?? null)
         );
     }
 }

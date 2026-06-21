@@ -9,7 +9,7 @@ final readonly class UploadThumbnailData
     public function __construct(
         public string $thumbnailPath,
         public string $extension,
-        public string $destinationPath,
+        public string $destinationPath
     ) {
     }
 }

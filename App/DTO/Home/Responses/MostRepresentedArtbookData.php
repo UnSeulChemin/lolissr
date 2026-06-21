@@ -11,7 +11,7 @@ final readonly class MostRepresentedArtbookData
         public string $name,
         public int $total,
         public ?string $thumbnail,
-        public ?string $extension,
+        public ?string $extension
     ) {
     }
 }

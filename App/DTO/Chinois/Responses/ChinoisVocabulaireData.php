@@ -15,7 +15,7 @@ final readonly class ChinoisVocabulaireData
         public string $traduction,
         public ?string $exemple,
         public bool $maitrise,
-        public bool $xpRewarded,
+        public bool $xpRewarded
     ) {
     }
 }

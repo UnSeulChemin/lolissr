@@ -12,7 +12,7 @@ final readonly class ChinoisSearchItemData
         public string $titre,
         public string $description,
         public ?string $langue = null,
-        public ?string $niveau = null,
+        public ?string $niveau = null
     ) {
     }
 }

@@ -22,7 +22,7 @@ final readonly class ChinoisGrammaireData
         public ?string $explication,
         public int $position,
         public bool $maitrise,
-        public bool $xpRewarded,
+        public bool $xpRewarded
     ) {
     }
 }

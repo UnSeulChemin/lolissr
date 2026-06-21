@@ -10,7 +10,7 @@ final readonly class LatestArtbookData
         public string $artbook,
         public ?string $auteur,
         public ?string $thumbnail,
-        public ?string $extension,
+        public ?string $extension
     ) {
     }
 }

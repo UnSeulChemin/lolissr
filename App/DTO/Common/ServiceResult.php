@@ -13,40 +13,24 @@ final readonly class ServiceResult
         public bool $success,
         public int $status,
         public string $message,
-        public array $data = [],
+        public array $data = []
     ) {
     }
 
     /**
      * @param array<string, mixed> $data
      */
-    public static function success(
-        string $message = 'Succès',
-        array $data = [],
-        int $status = 200,
-    ): self {
-        return new self(
-            success: true,
-            status: $status,
-            message: $message,
-            data: $data,
-        );
+    public static function success(string $message = 'Succès', array $data = [], int $status = 200): self
+    {
+        return new self(success: true, status: $status, message: $message, data: $data);
     }
 
     /**
      * @param array<string, mixed> $data
      */
-    public static function error(
-        string $message = 'Erreur',
-        array $data = [],
-        int $status = 400,
-    ): self {
-        return new self(
-            success: false,
-            status: $status,
-            message: $message,
-            data: $data,
-        );
+    public static function error(string $message = 'Erreur', array $data = [], int $status = 400): self
+    {
+        return new self(success: false, status: $status, message: $message, data: $data);
     }
 
     /**
@@ -58,10 +42,6 @@ final readonly class ServiceResult
      */
     public function toArray(): array
     {
-        return [
-            'success' => $this->success,
-            'message' => $this->message,
-            'data' => $this->data,
-        ];
+        return ['success' => $this->success, 'message' => $this->message, 'data' => $this->data];
     }
 }

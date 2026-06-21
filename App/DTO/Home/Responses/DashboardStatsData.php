@@ -54,7 +54,7 @@ final readonly class DashboardStatsData
         public array $lowJacquetteMangas,
 
         /** @var list<MangaStatsData> */
-        public array $lowLivreStateMangas,
+        public array $lowLivreStateMangas
     ) {
     }
 }

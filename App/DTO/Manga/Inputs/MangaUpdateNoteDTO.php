@@ -10,7 +10,7 @@ final readonly class MangaUpdateNoteDTO
 {
     public function __construct(
         public ?int $jacquette,
-        public ?int $livreNote,
+        public ?int $livreNote
     ) {
     }
 
@@ -21,7 +21,7 @@ final readonly class MangaUpdateNoteDTO
     {
         return new self(
             jacquette: MangaNoteNormalizer::normalize($data['jacquette'] ?? null),
-            livreNote: MangaNoteNormalizer::normalize($data['livre_note'] ?? null),
+            livreNote: MangaNoteNormalizer::normalize($data['livre_note'] ?? null)
         );
     }
 }
