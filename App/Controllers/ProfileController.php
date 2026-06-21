@@ -14,7 +14,7 @@ final class ProfileController extends Controller
     public function __construct(
         private readonly UserLevelService $userLevelService,
         private readonly ProfileStatsService $profileStatsService,
-        Request $request,
+        Request $request
     ) {
         parent::__construct($request);
     }
@@ -34,13 +34,8 @@ final class ProfileController extends Controller
             'level' => $user->level,
             'currentXp' => $user->xp,
 
-            'xpRequired' => $this->userLevelService->xpRequiredForLevel(
-                $user->level,
-            ),
-
-            'progress' => $this->userLevelService->progress(
-                $user,
-            ),
+            'xpRequired' => $this->userLevelService->xpRequiredForLevel($user->level),
+            'progress' => $this->userLevelService->progress($user),
 
             'readTomes' => $stats->readTomes,
             'tomeXp' => $stats->tomeXp,

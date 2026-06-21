@@ -17,40 +17,29 @@ final class SqlAjaxController extends Controller
 {
     public function __construct(
         private readonly SqlReadService $sqlReadService,
-        Request $request,
+        Request $request
     ) {
         parent::__construct($request);
     }
 
     public function execute(): never
     {
-        $sql = trim(
-            (string) $this->request->input('sql'),
-        );
+        $sql = trim((string) $this->request->input('sql'));
 
-        if ($sql === '') {
-            throw new ValidationException([
-                'sql' => 'Veuillez saisir une requête SQL.',
-            ]);
+        if ($sql === '')
+        {
+            throw new ValidationException(['sql' => 'Veuillez saisir une requête SQL.']);
         }
 
-        try {
-            $result = $this->sqlReadService
-                ->execute($sql);
+        try
+        {
+            $result = $this->sqlReadService->execute($sql);
 
-            $this->jsonResult(
-                ServiceResult::success(
-                    data: [
-                        'result' => $result,
-                    ],
-                ),
-            );
-        } catch (Throwable $exception) {
-            $this->jsonResult(
-                ServiceResult::error(
-                    message: $exception->getMessage(),
-                ),
-            );
+            $this->jsonResult(ServiceResult::success(data: ['result' => $result]));
+        }
+        catch (Throwable $exception)
+        {
+            $this->jsonResult(ServiceResult::error(message: $exception->getMessage()));
         }
     }
 }

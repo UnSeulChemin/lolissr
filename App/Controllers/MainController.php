@@ -14,7 +14,7 @@ final class MainController extends Controller
 {
     public function __construct(
         private readonly StatsService $statsService,
-        Request $request,
+        Request $request
     ) {
         parent::__construct($request);
     }
@@ -27,11 +27,9 @@ final class MainController extends Controller
         $stats = Cache::remember(
             key: 'home.dashboard',
             ttl: null,
-            callback: fn (): DashboardStatsData => $this->statsService->dashboard(),
+            callback: fn (): DashboardStatsData => $this->statsService->dashboard()
         );
 
-        $this->render('pages/main/index', [
-            'stats' => $stats,
-        ]);
+        $this->render('pages/main/index', ['stats' => $stats]);
     }
 }

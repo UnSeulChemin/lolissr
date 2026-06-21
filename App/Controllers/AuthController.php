@@ -21,14 +21,13 @@ final class AuthController extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | Login
+    | AUTHENTICATION
     |--------------------------------------------------------------------------
     */
 
     public function login(): never
     {
         $this->title = 'Connexion';
-
         $this->render('pages/auth/connexion');
     }
 
@@ -39,19 +38,24 @@ final class AuthController extends Controller
             (string) $this->request->input('password'),
         );
 
-        if (! $success) {
-            $this->redirectWithError(
-                'connexion',
-                'Identifiants invalides.',
-            );
+        if (! $success)
+        {
+            $this->redirectWithError('connexion', 'Identifiants invalides.');
         }
 
         $this->redirect('/');
     }
 
+    public function logout(): never
+    {
+        $this->authService->logout();
+
+        $this->redirect('connexion');
+    }
+
     /*
     |--------------------------------------------------------------------------
-    | Register
+    | REGISTRATION
     |--------------------------------------------------------------------------
     */
 
@@ -60,7 +64,6 @@ final class AuthController extends Controller
         $this->guardRegistration();
 
         $this->title = 'Inscription';
-
         $this->render('pages/auth/inscription');
     }
 
@@ -73,41 +76,24 @@ final class AuthController extends Controller
             (string) $this->request->input('password'),
         );
 
-        if (! $success) {
-            $this->redirectWithError(
-                'inscription',
-                'Impossible de créer le compte.',
-            );
+        if (! $success)
+        {
+            $this->redirectWithError('inscription', 'Impossible de créer le compte.');
         }
 
-        $this->redirectWithSuccess(
-            'connexion',
-            'Compte créé avec succès.',
-        );
+        $this->redirectWithSuccess('connexion', 'Compte créé avec succès.');
     }
 
     /*
     |--------------------------------------------------------------------------
-    | Logout
-    |--------------------------------------------------------------------------
-    */
-
-    public function logout(): never
-    {
-        $this->authService->logout();
-
-        $this->redirect('connexion');
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Helpers
+    | HELPERS
     |--------------------------------------------------------------------------
     */
 
     private function guardRegistration(): void
     {
-        if (env('APP_ENV') === self::PRODUCTION_ENV) {
+        if (env('APP_ENV') === self::PRODUCTION_ENV)
+        {
             $this->notFound();
         }
     }

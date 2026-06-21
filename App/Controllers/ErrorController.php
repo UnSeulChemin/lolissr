@@ -12,14 +12,14 @@ use Framework\Support\Logger;
 final class ErrorController extends Controller
 {
     public function __construct(
-        Request $request,
+        Request $request
     ) {
         parent::__construct($request);
     }
 
     /*
     |--------------------------------------------------------------------------
-    | HTTP Errors
+    | HTTP ERRORS
     |--------------------------------------------------------------------------
     */
 
@@ -43,9 +43,8 @@ final class ErrorController extends Controller
         $this->error(405, '405', '405 | Méthode non autorisée', $message);
     }
 
-    public function csrfExpired(
-        string $message = 'Session expirée ou requête invalide.',
-    ): never {
+    public function csrfExpired(string $message = 'Session expirée ou requête invalide.'): never
+    {
         $this->error(419, '419', '419 | Session expirée', $message);
     }
 
@@ -54,21 +53,14 @@ final class ErrorController extends Controller
         $this->error(422, '422', '422 | Erreur de validation', $message);
     }
 
-    public function serverError(
-        string $message = 'Une erreur interne est survenue.',
-    ): never {
-        $this->error(
-            500,
-            '500',
-            '500 | Erreur serveur',
-            $message,
-            true,
-        );
+    public function serverError(string $message = 'Une erreur interne est survenue.'): never
+    {
+        $this->error(500, '500', '500 | Erreur serveur', $message, true);
     }
 
     /*
     |--------------------------------------------------------------------------
-    | Helpers
+    | HELPERS
     |--------------------------------------------------------------------------
     */
 
@@ -77,24 +69,27 @@ final class ErrorController extends Controller
         string $view,
         string $title,
         string $message,
-        bool $critical = false,
-    ): never {
-        $context = [
-            'uri' => $this->request->uri(),
-        ];
+        bool $critical = false
+    ): never
+    {
+        $context = ['uri' => $this->request->uri()];
 
-        if ($critical) {
+        if ($critical)
+        {
             Logger::error($title, $context);
-        } else {
+        }
+        else
+        {
             Logger::warning($title, $context);
         }
 
-        if ($this->expectsJson()) {
+        if ($this->expectsJson())
+        {
             $this->jsonResult(
                 ServiceResult::error(
                     message: $message,
-                    status: $status,
-                ),
+                    status: $status
+                )
             );
         }
 
@@ -105,7 +100,7 @@ final class ErrorController extends Controller
             $status,
             [
                 'message' => $message,
-            ],
+            ]
         );
     }
 }

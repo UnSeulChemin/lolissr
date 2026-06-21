@@ -18,8 +18,7 @@ use Throwable;
 
 abstract class Controller
 {
-    protected string $template =
-        'layouts/base';
+    protected string $template = 'layouts/base';
 
     protected string $title;
 
@@ -28,16 +27,13 @@ abstract class Controller
     public function __construct(
         protected Request $request,
     ) {
-        $this->title =
-            App::siteName();
-
-        $this->baseUri =
-            base_uri();
+        $this->title = App::siteName();
+        $this->baseUri = base_uri();
     }
 
     /*
     |--------------------------------------------------------------------------
-    | Utilities
+    | UTILITIES
     |--------------------------------------------------------------------------
     */
 
@@ -53,165 +49,105 @@ abstract class Controller
 
     /*
     |--------------------------------------------------------------------------
-    | Views & Rendering
+    | VIEWS & RENDERING
     |--------------------------------------------------------------------------
     */
 
-    protected function viewPath(
-        string $file,
-    ): string {
-
-        return view_path(
-            ltrim(
-                $file,
-                '/',
-            ) . '.php',
-        );
+    protected function viewPath(string $file): string
+    {
+        return view_path(ltrim($file, '/') . '.php');
     }
 
-    protected function errorViewPath(
-        string $file,
-    ): string {
-
-        return $this->viewPath(
-            'errors/' . $file,
-        );
+    protected function errorViewPath(string $file): string
+    {
+        return $this->viewPath('errors/' . $file);
     }
 
     protected function templatePath(): string
     {
-        return $this->viewPath(
-            $this->template,
-        );
+        return $this->viewPath($this->template);
     }
 
     /**
      * @param array<string, mixed> $variables
      */
-    private function renderPhp(
-        string $path,
-        array $variables = [],
-    ): string {
+    private function renderPhp(string $path, array $variables = []): string
+    {
+        extract($variables, EXTR_SKIP);
 
-        extract(
-            $variables,
-            EXTR_SKIP,
-        );
-
-        if (
-            isset($variables['view'])
-            && is_array($variables['view'])
-        ) {
-
-            extract(
-                $variables['view'],
-                EXTR_SKIP,
-            );
+        if (isset($variables['view']) && is_array($variables['view']))
+        {
+            extract($variables['view'], EXTR_SKIP);
         }
 
         ob_start();
 
         try
         {
-
             require $path;
 
             $content = ob_get_clean();
 
-            return is_string($content)
-                ? $content
-                : '';
-
-        } catch (Throwable $exception)
+            return is_string($content) ? $content : '';
+        }
+        catch (Throwable $exception)
         {
-
             ob_end_clean();
 
             throw $exception;
         }
     }
 
-    private function ensureViewExists(
-        string $path,
-    ): void {
-
+    private function ensureViewExists(string $path): void
+    {
         if (is_file($path))
         {
             return;
         }
 
-        throw new RuntimeException(
-            "Vue introuvable : {$path}",
-        );
+        throw new RuntimeException("Vue introuvable : {$path}");
     }
 
     /**
      * @param array<string, mixed> $data
      * @return array<string, mixed>
      */
-    private function baseViewData(
-        array $data = [],
-    ): array {
-
+    private function baseViewData(array $data = []): array
+    {
         return [
-            'view' =>
-                $data,
-
-            'title' =>
-                $this->title,
-
-            'baseUri' =>
-                $this->baseUri,
-
-            'currentPath' =>
-                $this->request->path(),
+            'view' => $data,
+            'title' => $this->title,
+            'baseUri' => $this->baseUri,
+            'currentPath' => $this->request->path(),
         ];
     }
 
     /**
      * @param array<string, mixed> $data
      */
-    private function renderContent(
-        string $viewPath,
-        array $data = [],
-        bool $withTemplate = true,
-    ): string {
+    private function renderContent(string $viewPath, array $data = [], bool $withTemplate = true): string
+    {
+        $this->ensureViewExists($viewPath);
 
-        $this->ensureViewExists(
-            $viewPath,
-        );
+        $variables = $this->baseViewData($data);
 
-        $variables =
-            $this->baseViewData(
-                $data,
-            );
-
-        $content =
-            $this->renderPhp(
-                $viewPath,
-                $variables,
-            );
+        $content = $this->renderPhp($viewPath, $variables);
 
         if (! $withTemplate)
         {
             return $content;
         }
 
-        $templatePath =
-            $this->templatePath();
+        $templatePath = $this->templatePath();
 
-        $this->ensureViewExists(
-            $templatePath,
-        );
+        $this->ensureViewExists($templatePath);
 
         return $this->renderPhp(
             $templatePath,
             [
                 ...$variables,
-
-                'content' =>
-                    $content,
-            ],
+                'content' => $content,
+            ]
         );
     }
 
@@ -223,162 +159,83 @@ abstract class Controller
         int $statusCode = 200,
         array $data = [],
         bool $withTemplate = true,
-    ): never {
+    ): never
+    {
+        $html = $this->renderContent($viewPath, $data, $withTemplate);
 
-        $html =
-            $this->renderContent(
-                $viewPath,
-                $data,
-                $withTemplate,
-            );
-
-        if (
-            $this->expectsJson()
-        ) {
-
+        if ($this->expectsJson())
+        {
             Response::json(
                 [
-                    'success' =>
-                        true,
-
-                    'type' =>
-                        'page',
-
+                    'success' => true,
+                    'type' => 'page',
                     'page' => [
-                        'html' =>
-                            $html,
-
-                        'title' =>
-                            $this->title,
-
-                        'url' =>
-                            $this->request->uri(),
+                        'html' => $html,
+                        'title' => $this->title,
+                        'url' => $this->request->uri(),
                     ],
                 ],
-                $statusCode,
+                $statusCode
             );
         }
 
-        Response::html(
-            $html,
-            $statusCode,
-        );
+        Response::html($html, $statusCode);
     }
 
     /**
      * @param array<string, mixed> $data
      */
-    protected function render(
-        string $file,
-        array $data = [],
-    ): never {
-
-        $this->respondView(
-            viewPath:
-                $this->viewPath(
-                    $file,
-                ),
-            data:
-                $data,
-        );
+    protected function render(string $file, array $data = []): never
+    {
+        $this->respondView(viewPath: $this->viewPath($file), data: $data);
     }
 
     /**
      * @param array<string, mixed> $data
      */
-    protected function renderFragment(
-        string $file,
-        array $data = [],
-    ): never {
-
-        Response::html(
-            $this->renderContent(
-                $this->viewPath(
-                    $file,
-                ),
-                $data,
-                false,
-            ),
-        );
+    protected function renderFragment(string $file, array $data = []): never
+    {
+        Response::html($this->renderContent($this->viewPath($file), $data, false));
     }
 
     /**
      * @param array<string, mixed> $data
      */
-    protected function renderError(
-        string $file,
-        int $statusCode,
-        array $data = [],
-    ): never {
-
-        $this->respondView(
-            viewPath:
-                $this->errorViewPath(
-                    $file,
-                ),
-            statusCode:
-                $statusCode,
-            data:
-                $data,
-        );
+    protected function renderError(string $file, int $statusCode, array $data = []): never
+    {
+        $this->respondView(viewPath: $this->errorViewPath($file), statusCode: $statusCode, data: $data);
     }
 
     /*
     |--------------------------------------------------------------------------
-    | JSON Responses
+    | JSON RESPONSES
     |--------------------------------------------------------------------------
     */
 
     /**
      * @param array<string, mixed> $data
      */
-    protected function json(
-        array $data,
-        int $statusCode = 200,
-    ): never {
-
-        Response::json(
-            $data,
-            $statusCode,
-        );
+    protected function json(array $data, int $statusCode = 200): never
+    {
+        Response::json($data, $statusCode);
     }
 
-    protected function jsonResult(
-        ServiceResult $result,
-    ): never {
-
-        $this->json(
-            $result->toArray(),
-            $result->status,
-        );
+    protected function jsonResult(ServiceResult $result): never
+    {
+        $this->json($result->toArray(), $result->status);
     }
 
     /*
     |--------------------------------------------------------------------------
-    | Redirects
+    | REDIRECTS
     |--------------------------------------------------------------------------
     */
 
-    protected function redirect(
-        string $url,
-        int $statusCode = 302,
-    ): never {
+    protected function redirect(string $url, int $statusCode = 302): never
+    {
+        $isAbsoluteUrl = preg_match('#^https?://#i', $url) === 1;
 
-        $isAbsoluteUrl =
-            preg_match(
-                '#^https?://#i',
-                $url,
-            ) === 1;
-
-        $redirectUrl =
-            $isAbsoluteUrl
-                ? $url
-                : $this->baseUri
-                    . '/'
-                    . ltrim(
-                        $url,
-                        '/',
-                    );
+        $redirectUrl = $isAbsoluteUrl ? $url : $this->baseUri . '/' . ltrim($url, '/');
 
         /*
         |--------------------------------------------------------------------------
@@ -386,20 +243,13 @@ abstract class Controller
         |--------------------------------------------------------------------------
         */
 
-        if (
-            $this->expectsJson()
-        ) {
-
+        if ($this->expectsJson())
+        {
             Response::json(
                 [
-                    'success' =>
-                        true,
-
-                    'type' =>
-                        'redirect',
-
-                    'redirect' =>
-                        $redirectUrl,
+                    'success' => true,
+                    'type' => 'redirect',
+                    'redirect' => $redirectUrl,
                 ],
                 200,
             );
@@ -411,57 +261,32 @@ abstract class Controller
         |--------------------------------------------------------------------------
         */
 
-        Response::redirect(
-            $redirectUrl,
-            $statusCode,
-        );
+        Response::redirect($redirectUrl, $statusCode);
     }
 
     /**
      * @param array<string, mixed> $session
      */
-    protected function redirectWith(
-        string $url,
-        array $session,
-    ): never {
-
-        foreach (
-            $session as $key => $value
-        ) {
-
-            Session::set(
-                $key,
-                $value,
-            );
+    protected function redirectWith(string $url, array $session): never
+    {
+        foreach ($session as $key => $value)
+        {
+            Session::set($key, $value);
         }
 
-        $this->redirect(
-            $url,
-        );
+        $this->redirect($url);
     }
 
-    protected function redirectWithError(
-        string $url,
-        string $message,
-        bool $withOld = true,
-    ): never {
-
-        $session = [
-            'error' =>
-                $message,
-        ];
+    protected function redirectWithError(string $url, string $message, bool $withOld = true): never
+    {
+        $session = ['error' => $message];
 
         if ($withOld)
         {
-
-            $session['old'] =
-                $this->request->all();
+            $session['old'] = $this->request->all();
         }
 
-        $this->redirectWith(
-            $url,
-            $session,
-        );
+        $this->redirectWith($url, $session);
     }
 
     /**
@@ -470,72 +295,42 @@ abstract class Controller
     protected function redirectWithValidationErrors(
         string $url,
         array $errors,
-        string $message =
-            'Le formulaire contient des erreurs.',
-    ): never {
-
+        string $message = 'Le formulaire contient des erreurs.',
+    ): never
+    {
         $this->redirectWith(
             $url,
             [
-                'errors' =>
-                    $errors,
-
-                'old' =>
-                    $this->request->all(),
-
-                'error' =>
-                    $message,
-            ],
+                'errors' => $errors,
+                'old' => $this->request->all(),
+                'error' => $message,
+            ]
         );
     }
 
-    protected function redirectWithSuccess(
-        string $url,
-        string $message,
-    ): never {
-
-        $this->redirectWith(
-            $url,
-            [
-                'success' =>
-                    $message,
-            ],
-        );
+    protected function redirectWithSuccess(string $url, string $message): never
+    {
+        $this->redirectWith($url, ['success' => $message]);
     }
 
     /*
     |--------------------------------------------------------------------------
-    | Exceptions
+    | EXCEPTIONS
     |--------------------------------------------------------------------------
     */
 
-    public function notFound(
-        string $message =
-            'Page introuvable',
-    ): never {
-
-        throw new NotFoundException(
-            $message,
-        );
+    public function notFound(string $message = 'Page introuvable'): never
+    {
+        throw new NotFoundException($message);
     }
 
-    public function methodNotAllowed(
-        string $message =
-            'Méthode non autorisée',
-    ): never {
-
-        throw new MethodNotAllowedException(
-            $message,
-        );
+    public function methodNotAllowed(string $message = 'Méthode non autorisée'): never
+    {
+        throw new MethodNotAllowedException($message);
     }
 
-    public function serverError(
-        string $message =
-            'Erreur interne du serveur',
-    ): never {
-
-        throw new RuntimeException(
-            $message,
-        );
+    public function serverError(string $message = 'Erreur interne du serveur'): never
+    {
+        throw new RuntimeException($message);
     }
 }
