@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Manga;
 
+use App\DTO\Manga\Responses\ArtbookData;
 use App\DTO\Manga\Responses\MangaSearchData;
 use App\DTO\Manga\Responses\MangaSearchItemData;
 use App\DTO\Manga\Responses\MangaSeriesData;
@@ -85,6 +86,26 @@ final readonly class MangaReadService
                 $manga->note,
             lu:
                 $manga->lu,
+        );
+    }
+
+    private function mapArtbook(Artbook $artbook): ArtbookData
+    {
+        return new ArtbookData(
+            id: $artbook->id,
+
+            thumbnail: $artbook->thumbnail,
+            extension: $artbook->extension,
+
+            slug: $artbook->slug,
+            numero: $artbook->numero,
+
+            artbook: $artbook->artbook,
+
+            auteur: $artbook->auteur,
+            serie: $artbook->serie,
+
+            createdAt: $artbook->created_at,
         );
     }
 
@@ -259,23 +280,31 @@ final readonly class MangaReadService
     }
 
     /**
-     * @return list<Artbook>
+     * @return list<ArtbookData>
      */
     public function artbooks(): array
     {
-        return $this->artbookRepository
-            ->findAll();
+        return array_map(
+            $this->mapArtbook(...),
+            $this->artbookRepository->findAll(),
+        );
     }
 
     public function oneArtbook(
         string $slug,
         int $numero,
-    ): ?Artbook
-    {
-        return $this->artbookRepository
+    ): ?ArtbookData {
+        $artbook = $this->artbookRepository
             ->findOneBySlugAndNumero(
                 $slug,
                 $numero,
             );
+
+        if ($artbook === null)
+        {
+            return null;
+        }
+
+        return $this->mapArtbook($artbook);
     }
 }

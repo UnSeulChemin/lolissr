@@ -193,7 +193,7 @@ return static function (Router $router): void {
                 |--------------------------------------------------------------------------
                 */
 
-                $router->get('{slug}/{numero:int}', [MangaController::class, 'show']);
+                $router->get('{slug}/{numero:int}', [MangaController::class, 'showManga']);
 
                 $router->get('{slug}', [MangaController::class, 'showSeries']);
 

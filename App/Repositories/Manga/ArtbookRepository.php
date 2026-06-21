@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace App\Repositories\Manga;
 
-use App\Models\Artbook;
-use App\Models\Model;
-use App\DTO\Home\Responses\MostRepresentedArtbookData;
 use App\DTO\Home\Responses\LatestArtbookData;
+use App\DTO\Home\Responses\MostRepresentedArtbookData;
+use App\Models\Model;
+use App\Models\Artbook;
 
 final class ArtbookRepository extends Model
 {
-    protected string $table =
-        'artbook';
+    protected string $table = 'artbook';
 
     private function mapLatestArtbook(
         object $row,
@@ -43,16 +42,15 @@ final class ArtbookRepository extends Model
     public function findAll(): array
     {
         /** @var list<Artbook> $artbooks */
-        $artbooks =
-            $this->fetchAll(
-                "
-                SELECT *
-                FROM {$this->table()}
-                ORDER BY created_at DESC
-                ",
-                [],
-                Artbook::class,
-            );
+        $artbooks = $this->fetchAll(
+            "
+            SELECT *
+            FROM {$this->table()}
+            ORDER BY created_at DESC
+            ",
+            [],
+            Artbook::class,
+        );
 
         return $artbooks;
     }
@@ -64,69 +62,58 @@ final class ArtbookRepository extends Model
 
     public function countAuthors(): int
     {
-        $result =
-            $this->fetchOne(
-                "
-                SELECT
-                    COUNT(
-                        DISTINCT auteur
-                    ) AS total
-                FROM {$this->table()}
-                WHERE auteur IS NOT NULL
-                AND auteur <> ''
-                ",
-            );
+        $result = $this->fetchOne(
+            "
+            SELECT
+                COUNT(
+                    DISTINCT auteur
+                ) AS total
+            FROM {$this->table()}
+            WHERE auteur IS NOT NULL
+            AND auteur <> ''
+            ",
+        );
 
         /** @var array{total?: mixed} $data */
-        $data =
-            (array) $result;
+        $data = (array) $result;
 
-        return (int) (
-            $data['total']
-            ?? 0
-        );
+        return (int) ($data['total'] ?? 0);
     }
 
     public function countSeries(): int
     {
-        $result =
-            $this->fetchOne(
-                "
-                SELECT
-                    COUNT(
-                        DISTINCT serie
-                    ) AS total
-                FROM {$this->table()}
-                WHERE serie IS NOT NULL
-                AND serie <> ''
-                ",
-            );
+        $result = $this->fetchOne(
+            "
+            SELECT
+                COUNT(
+                    DISTINCT serie
+                ) AS total
+            FROM {$this->table()}
+            WHERE serie IS NOT NULL
+            AND serie <> ''
+            ",
+        );
 
         /** @var array{total?: mixed} $data */
-        $data =
-            (array) $result;
+        $data = (array) $result;
 
-        return (int) (
-            $data['total']
-            ?? 0
-        );
+        return (int) ($data['total'] ?? 0);
     }
 
     public function findLatest(): ?LatestArtbookData
     {
-        $row =
-            $this->fetchOne(
-                "
-                SELECT
-                    artbook,
-                    auteur,
-                    thumbnail,
-                    extension
-                FROM {$this->table()}
-                ORDER BY created_at DESC
-                LIMIT 1
-                "
-            );
+        $row = $this->fetchOne(
+            "
+            SELECT
+                artbook,
+                auteur,
+                thumbnail,
+                extension
+            FROM {$this->table()}
+            ORDER BY created_at DESC
+            LIMIT 1
+            "
+        );
 
         return $row !== null
             ? $this->mapLatestArtbook($row)
@@ -135,86 +122,74 @@ final class ArtbookRepository extends Model
 
     public function findMostRepresented(): ?MostRepresentedArtbookData
     {
-        $author =
-            $this->fetchOne(
-                "
-                SELECT
-                    'author' AS type,
-                    auteur AS name,
-                    COUNT(*) AS total,
-                    MIN(thumbnail) AS thumbnail,
-                    MIN(extension) AS extension
-                FROM {$this->table()}
-                WHERE auteur IS NOT NULL
-                AND auteur <> ''
-                GROUP BY auteur
-                ORDER BY total DESC
-                LIMIT 1
-                "
-            );
+        $author = $this->fetchOne(
+            "
+            SELECT
+                'author' AS type,
+                auteur AS name,
+                COUNT(*) AS total,
+                MIN(thumbnail) AS thumbnail,
+                MIN(extension) AS extension
+            FROM {$this->table()}
+            WHERE auteur IS NOT NULL
+            AND auteur <> ''
+            GROUP BY auteur
+            ORDER BY total DESC
+            LIMIT 1
+            "
+        );
 
-        $series =
-            $this->fetchOne(
-                "
-                SELECT
-                    'series' AS type,
-                    serie AS name,
-                    COUNT(*) AS total,
-                    MIN(thumbnail) AS thumbnail,
-                    MIN(extension) AS extension
-                FROM {$this->table()}
-                WHERE serie IS NOT NULL
-                AND serie <> ''
-                GROUP BY serie
-                ORDER BY total DESC
-                LIMIT 1
-                "
-            );
+        $series = $this->fetchOne(
+            "
+            SELECT
+                'series' AS type,
+                serie AS name,
+                COUNT(*) AS total,
+                MIN(thumbnail) AS thumbnail,
+                MIN(extension) AS extension
+            FROM {$this->table()}
+            WHERE serie IS NOT NULL
+            AND serie <> ''
+            GROUP BY serie
+            ORDER BY total DESC
+            LIMIT 1
+            "
+        );
 
-        $authorTotal =
-            (int) (($author?->total) ?? 0);
+        $authorTotal = (int) (($author?->total) ?? 0);
+        $seriesTotal = (int) (($series?->total) ?? 0);
 
-        $seriesTotal =
-            (int) (($series?->total) ?? 0);
-
-        if (
-            $authorTotal === 0
-            && $seriesTotal === 0
-        ) {
+        if ($authorTotal === 0 && $seriesTotal === 0)
+        {
             return null;
         }
 
-        $winner =
-            $authorTotal >= $seriesTotal
-                ? $author
-                : $series;
+        $winner = $authorTotal >= $seriesTotal
+            ? $author
+            : $series;
 
         return $winner !== null
             ? $this->mapMostRepresented($winner)
             : null;
     }
 
-    public function findOneBySlugAndNumero(
-        string $slug,
-        int $numero,
-    ): ?Artbook
+    public function findOneBySlugAndNumero(string $slug, int $numero): ?Artbook
     {
         /** @var Artbook|null $artbook */
-        $artbook =
-            $this->fetchOne(
-                "
-                SELECT *
-                FROM {$this->table()}
-                WHERE slug = :slug
-                AND numero = :numero
-                LIMIT 1
-                ",
-                [
-                    'slug' => $slug,
-                    'numero' => $numero,
-                ],
-                Artbook::class,
-            );
+        $artbook = $this->fetchOne(
+            "
+            SELECT *
+            FROM {$this->table()}
+            WHERE slug = :slug
+            AND numero = :numero
+            LIMIT 1
+            ",
+            [
+                'slug' => $slug,
+                'numero' => $numero,
+            ],
+            Artbook::class,
+        );
 
         return $artbook;
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers\Manga;
 
 use App\Controllers\Controller;
+use App\DTO\Manga\Responses\ArtbookData;
 use App\DTO\Manga\Responses\MangaShowData;
 use App\Http\Requests\Manga\MangaCreateRequest;
 use App\Http\Requests\Manga\MangaUpdateRequest;
@@ -110,19 +111,14 @@ final class MangaController extends Controller
 
     public function showArtbook(string $slug, int $numero): never
     {
-        $artbook = $this->mangaReadService->oneArtbook($slug, $numero);
-
-        if ($artbook === null)
-        {
-            throw new NotFoundException('Artbook introuvable');
-        }
+        $artbook = $this->resolveArtbookOrFail($slug, $numero);
 
         $this->title = 'Artbook | ' . $artbook->artbook;
 
         $this->render('pages/manga/artbooks/livre', ['artbook' => $artbook]);
     }
 
-    public function show(string $slug, int $numero): never
+    public function showManga(string $slug, int $numero): never
     {
         $data = $this->resolveMangaOrFail($slug, $numero);
 
@@ -232,5 +228,17 @@ final class MangaController extends Controller
         }
 
         return $data;
+    }
+
+    private function resolveArtbookOrFail(string $slug, int $numero): ArtbookData
+    {
+        $artbook = $this->mangaReadService->oneArtbook($slug, $numero);
+
+        if ($artbook === null)
+        {
+            throw new NotFoundException('Artbook introuvable');
+        }
+
+        return $artbook;
     }
 }
