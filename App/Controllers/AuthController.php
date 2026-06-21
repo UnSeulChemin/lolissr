@@ -28,6 +28,7 @@ final class AuthController extends Controller
     public function login(): never
     {
         $this->title = 'Connexion';
+
         $this->render('pages/auth/connexion');
     }
 
@@ -64,6 +65,7 @@ final class AuthController extends Controller
         $this->guardRegistration();
 
         $this->title = 'Inscription';
+
         $this->render('pages/auth/inscription');
     }
 
