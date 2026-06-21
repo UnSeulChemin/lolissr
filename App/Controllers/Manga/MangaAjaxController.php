@@ -19,68 +19,22 @@ use Framework\Http\Request;
 final class MangaAjaxController extends Controller
 {
     private const SERIES_PATH = 'manga/series';
+
     private const MIN_NOTE = 1;
+
     private const MAX_NOTE = 5;
 
     public function __construct(
         private readonly MangaReadService $mangaReadService,
         private readonly MangaWriteService $mangaWriteService,
-        Request $request,
+        Request $request
     ) {
         parent::__construct($request);
     }
 
     /*
     |--------------------------------------------------------------------------
-    | Helpers
-    |--------------------------------------------------------------------------
-    */
-
-    private function buildRedirectPath(string $slug, bool $seriesStillExists): string
-    {
-        return $seriesStillExists
-            ? sprintf('%s/%s/%s', $this->baseUri, self::SERIES_PATH, rawurlencode($slug))
-            : sprintf('%s/%s', $this->baseUri, self::SERIES_PATH);
-    }
-
-    private function validateNote(
-        int $note,
-        string $field,
-    ): void {
-        if (
-            $note < self::MIN_NOTE
-            || $note > self::MAX_NOTE
-        ) {
-            throw new ValidationException([
-                $field => 'Note invalide',
-            ]);
-        }
-    }
-
-    private function resolveMangaOrFail(string $slug, int $numero): MangaShowData
-    {
-        $data = $this->mangaReadService->one($slug, $numero);
-
-        if ($data === null) {
-            throw new NotFoundException('Manga introuvable');
-        }
-
-        if ($slug !== $data->canonicalSlug) {
-            throw new BaseHttpException(
-                message: 'URL non canonique',
-                statusCode: 409,
-                data: [
-                    'redirect' => sprintf('%s/%s/%d', self::SERIES_PATH, rawurlencode($data->canonicalSlug), $numero),
-                ],
-            );
-        }
-
-        return $data;
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | AJAX Search
+    | AJAX SEARCH
     |--------------------------------------------------------------------------
     */
 
@@ -88,27 +42,23 @@ final class MangaAjaxController extends Controller
     {
         $searchData = $this->mangaReadService->search($query);
 
-        $this->jsonResult(
-            ServiceResult::success(
-                data: [
-                    'results' => $searchData->results,
-                ],
-            ),
-        );
+        $this->jsonResult(ServiceResult::success(data: ['results' => $searchData->results]));
     }
 
     /*
     |--------------------------------------------------------------------------
-    | AJAX Series Page
+    | AJAX SERIES PAGE
     |--------------------------------------------------------------------------
     */
 
     public function seriesPage(int $page = 1): never
     {
         $page = max(1, $page);
+
         $data = $this->mangaReadService->series($page);
 
-        if ($data === null) {
+        if ($data === null)
+        {
             throw new NotFoundException('Page introuvable');
         }
 
@@ -123,7 +73,7 @@ final class MangaAjaxController extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | Update Note
+    | UPDATE NOTE
     |--------------------------------------------------------------------------
     */
 
@@ -134,15 +84,8 @@ final class MangaAjaxController extends Controller
         $jacquette = (int) $this->request->input('jacquette', 0);
         $livreNote = (int) $this->request->input('livre_note', 0);
 
-        $this->validateNote(
-            $jacquette,
-            'jacquette',
-        );
-
-        $this->validateNote(
-            $livreNote,
-            'livre_note',
-        );
+        $this->validateNote($jacquette, 'jacquette');
+        $this->validateNote($livreNote, 'livre_note');
 
         $dto = MangaUpdateNoteDTO::fromArray([
             'jacquette' => $jacquette,
@@ -151,38 +94,46 @@ final class MangaAjaxController extends Controller
 
         $result = $this->mangaWriteService->updateNote($data->canonicalSlug, $numero, $dto);
 
-        $this->jsonResult(ServiceResult::success(
-            message: $result->message,
-            data: [
-                ...$result->data,
-                'notes' => [
-                    'jacquette' => $jacquette,
-                    'livreNote' => $livreNote,
-                    'note' => $jacquette + $livreNote,
+        $this->jsonResult(
+            ServiceResult::success(
+                message: $result->message,
+                data: [
+                    ...$result->data,
+                    'notes' => [
+                        'jacquette' => $jacquette,
+                        'livreNote' => $livreNote,
+                        'note' => $jacquette + $livreNote,
+                    ],
                 ],
-            ],
-            status: $result->status
-        ));
+                status: $result->status
+            )
+        );
     }
 
     /*
     |--------------------------------------------------------------------------
-    | Update Read Status
+    | UPDATE READ STATUS
     |--------------------------------------------------------------------------
     */
 
     public function updateReadStatus(string $slug, int $numero): never
     {
         $data = $this->resolveMangaOrFail($slug, $numero);
+
         $readStatus = (int) $this->request->input('readStatus', 0);
 
-        $result = $this->mangaWriteService->updateReadStatus($data->canonicalSlug, $numero, $readStatus);
+        $result = $this->mangaWriteService->updateReadStatus(
+            $data->canonicalSlug,
+            $numero,
+            $readStatus
+        );
+
         $this->jsonResult($result);
     }
 
     /*
     |--------------------------------------------------------------------------
-    | Delete Manga
+    | DELETE MANGA
     |--------------------------------------------------------------------------
     */
 
@@ -193,12 +144,67 @@ final class MangaAjaxController extends Controller
         $result = $this->mangaWriteService->delete($data->canonicalSlug, $numero);
 
         $seriesStillExists = $this->mangaReadService->seriesExists($data->canonicalSlug);
+
         $redirect = $this->buildRedirectPath($data->canonicalSlug, $seriesStillExists);
 
-        $this->jsonResult(ServiceResult::success(
-            message: $result->message,
-            data: [...$result->data, 'redirect' => $redirect],
-            status: $result->status
-        ));
+        $this->jsonResult(
+            ServiceResult::success(
+                message: $result->message,
+                data: [
+                    ...$result->data,
+                    'redirect' => $redirect,
+                ],
+                status: $result->status
+            )
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | HELPERS
+    |--------------------------------------------------------------------------
+    */
+
+    private function buildRedirectPath(string $slug, bool $seriesStillExists): string
+    {
+        return $seriesStillExists
+            ? sprintf('%s/%s/%s', $this->baseUri, self::SERIES_PATH, rawurlencode($slug))
+            : sprintf('%s/%s', $this->baseUri, self::SERIES_PATH);
+    }
+
+    private function validateNote(int $note, string $field): void
+    {
+        if ($note < self::MIN_NOTE || $note > self::MAX_NOTE)
+        {
+            throw new ValidationException([$field => 'Note invalide']);
+        }
+    }
+
+    private function resolveMangaOrFail(string $slug, int $numero): MangaShowData
+    {
+        $data = $this->mangaReadService->one($slug, $numero);
+
+        if ($data === null)
+        {
+            throw new NotFoundException('Manga introuvable');
+        }
+
+        if ($slug !== $data->canonicalSlug)
+        {
+            throw new BaseHttpException(
+                message: 'URL non canonique',
+                statusCode: 409,
+                data: [
+                    'redirect' => sprintf(
+                        '%s/%s/%d',
+                        self::SERIES_PATH,
+                        rawurlencode($data->canonicalSlug),
+                        $numero
+                    ),
+                ]
+            );
+        }
+
+        return $data;
     }
 }
