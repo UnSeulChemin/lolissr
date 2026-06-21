@@ -704,7 +704,7 @@ $isAuthor =
                 card-link
             "
             data-prefetch
-            href="<?= e($baseUri . 'manga/series/artbooks') ?>"
+            href="<?= e($baseUri . 'manga/artbooks') ?>"
         >
 
             <h2 class="home-card-title">

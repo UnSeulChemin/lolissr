@@ -69,6 +69,33 @@ $baseUri =
                 dashboard-card
             "
             data-prefetch
+            href="<?= e($baseUri) ?>manga/artbooks"
+        >
+
+            <span
+                class="dashboard-card-icon"
+                aria-hidden="true"
+            >
+                🎨
+            </span>
+
+            <span class="dashboard-card-title">
+                Artbooks
+            </span>
+
+            <span class="dashboard-card-description">
+                Voir tous les artbooks enregistrés.
+            </span>
+
+        </a>
+
+        <a
+            class="
+                card
+                transition-card
+                dashboard-card
+            "
+            data-prefetch
             href="<?= e($baseUri) ?>manga/ajouter"
         >
 

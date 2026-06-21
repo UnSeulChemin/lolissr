@@ -65,12 +65,6 @@ final class MangaController extends Controller
         $this->render('pages/manga/index');
     }
 
-    public function links(): never
-    {
-        $this->title = 'Manga | Lien';
-        $this->render('pages/manga/lien');
-    }
-
     public function series(int $page = 1): never
     {
         $data = $this->mangaReadService->series($page);
@@ -87,6 +81,24 @@ final class MangaController extends Controller
             'perPage'     => $data->perPage,
             'slugFilter'  => $data->slugFilter,
         ]);
+    }
+
+    public function artbooks(): never
+    {
+        $this->title = 'Manga | Artbooks';
+
+        $this->render(
+            'pages/manga/artbooks/index',
+            [
+                'artbooks' => $this->mangaReadService->artbooks(),
+            ],
+        );
+    }
+
+    public function links(): never
+    {
+        $this->title = 'Manga | Lien';
+        $this->render('pages/manga/lien');
     }
 
     public function search(string $query = ''): never
@@ -140,13 +152,6 @@ final class MangaController extends Controller
                 'mangas' => $this->mangaReadService->aLire(),
             ],
         );
-    }
-
-    public function artbooks(): never
-    {
-        $this->title = 'Manga | Artbooks';
-
-        $this->render('pages/manga/series/artbooks', ['artbooks' => $this->mangaReadService->artbooks()]);
     }
 
     public function create(): never

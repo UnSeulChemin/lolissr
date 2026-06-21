@@ -140,6 +140,14 @@ return static function (Router $router): void {
 
             /*
             |--------------------------------------------------------------------------
+            | ARTBOOKS
+            |--------------------------------------------------------------------------
+            */
+
+            $router->get('artbooks', [MangaController::class, 'artbooks']);
+
+            /*
+            |--------------------------------------------------------------------------
             | SERIES
             |--------------------------------------------------------------------------
             */
@@ -153,8 +161,6 @@ return static function (Router $router): void {
                 $router->get('notes', [MangaController::class, 'notes']);
 
                 $router->get('a-lire', [MangaController::class, 'aLire']);
-
-                $router->get('artbooks', [MangaController::class, 'artbooks']);
 
                 /*
                 |--------------------------------------------------------------------------
