@@ -266,4 +266,12 @@ final readonly class MangaReadService
         return $this->artbookRepository
             ->findAll();
     }
+
+    public function oneArtbook(
+        string $slug,
+    ): ?Artbook
+    {
+        return $this->artbookRepository
+            ->findOneBySlug($slug);
+    }
 }

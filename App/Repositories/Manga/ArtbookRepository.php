@@ -193,4 +193,26 @@ final class ArtbookRepository extends Model
             ? $this->mapMostRepresented($winner)
             : null;
     }
+
+    public function findOneBySlug(
+        string $slug,
+    ): ?Artbook
+    {
+        /** @var Artbook|null $artbook */
+        $artbook =
+            $this->fetchOne(
+                "
+                SELECT *
+                FROM {$this->table()}
+                WHERE slug = :slug
+                LIMIT 1
+                ",
+                [
+                    'slug' => $slug,
+                ],
+                Artbook::class,
+            );
+
+        return $artbook;
+    }
 }

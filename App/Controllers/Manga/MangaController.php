@@ -129,6 +129,33 @@ final class MangaController extends Controller
         ]);
     }
 
+    public function showArtbook(
+        string $slug,
+    ): never
+    {
+        $artbook =
+            $this->mangaReadService
+                ->oneArtbook($slug);
+
+        if ($artbook === null)
+        {
+            throw new NotFoundException(
+                'Artbook introuvable',
+            );
+        }
+
+        $this->title =
+            'Artbook | '
+            . $artbook->artbook;
+
+        $this->render(
+            'pages/manga/artbooks/livre',
+            [
+                'artbook' => $artbook,
+            ],
+        );
+    }
+
     public function show(string $slug, int $numero): never
     {
         $data = $this->resolveMangaOrFail($slug, $numero);

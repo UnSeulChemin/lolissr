@@ -146,14 +146,16 @@ return static function (Router $router): void {
 
             $router->get('artbooks', [MangaController::class, 'artbooks']);
 
+            $router->get('artbooks/{slug}', [MangaController::class, 'showArtbook']);
+
             /*
             |--------------------------------------------------------------------------
             | SERIES
             |--------------------------------------------------------------------------
             */
 
-            $router->prefix('series')->group(function (Router $router): void {
-
+            $router->prefix('series')->group(function (Router $router): void
+            {
                 $router->get('', [MangaController::class, 'series']);
 
                 $router->get('page/{page:int}', [MangaController::class, 'series']);
