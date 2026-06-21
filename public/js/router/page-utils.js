@@ -24,14 +24,3 @@ export function invalidatePages(
         );
     }
 }
-
-// =========================================
-// REFRESH CURRENT PAGE
-// =========================================
-
-export function refreshCurrentPage()
-{
-    invalidatePage(
-        window.location.href,
-    );
-}

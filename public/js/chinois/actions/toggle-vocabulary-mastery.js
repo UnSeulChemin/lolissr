@@ -3,8 +3,8 @@
 // =========================================
 
 import {
-    invalidatePage,
-} from '../../router/page-invalidation.js';
+    invalidatePages,
+} from '../../router/page-utils.js';
 
 import {
     post,
@@ -174,11 +174,8 @@ async function toggleMastery(
             mastered,
         );
 
-        invalidatePage(
+        invalidatePages(
             window.location.href,
-        );
-
-        invalidatePage(
             `${window.baseUri}chinois/flashcards/vocabulaire`,
         );
 
