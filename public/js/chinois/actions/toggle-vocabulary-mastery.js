@@ -3,12 +3,8 @@
 // =========================================
 
 import {
-    invalidateRoute,
-} from '../../router/route-invalidation.js';
-
-import {
-    invalidatePrefetch,
-} from '../../router/prefetch/prefetch-cache.js';
+    invalidatePage,
+} from '../../router/page-invalidation.js';
 
 import {
     post,
@@ -178,19 +174,11 @@ async function toggleMastery(
             mastered,
         );
 
-        invalidateRoute(
+        invalidatePage(
             window.location.href,
         );
 
-        invalidatePrefetch(
-            window.location.href,
-        );
-
-        invalidateRoute(
-            `${window.baseUri}chinois/flashcards/vocabulaire`,
-        );
-
-        invalidatePrefetch(
+        invalidatePage(
             `${window.baseUri}chinois/flashcards/vocabulaire`,
         );
 

@@ -24,12 +24,8 @@ import {
 } from '../utils/slug.js';
 
 import {
-    invalidateRoute,
-} from '../../router/route-invalidation.js';
-
-import {
-    invalidatePrefetch,
-} from '../../router/prefetch/prefetch-cache.js';
+    invalidatePage,
+} from '../../router/page-invalidation.js';
 
 // =========================================
 // CONFIG
@@ -255,11 +251,7 @@ export function initAjouterPage()
                 |--------------------------------------------------------------------------
                 */
 
-                invalidateRoute(
-                    HOME_ROUTE,
-                );
-
-                invalidatePrefetch(
+                invalidatePage(
                     HOME_ROUTE,
                 );
 

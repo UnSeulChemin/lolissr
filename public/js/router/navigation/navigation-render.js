@@ -22,6 +22,10 @@ import {
     emitNavigationRender,
 } from './navigation-events.js';
 
+import {
+    cachePage,
+} from '../page-cache.js';
+
 // =========================================
 // RENDER
 // =========================================
@@ -57,6 +61,11 @@ export async function renderPage(
     emitNavigationRender(
         current,
         target,
+    );
+
+    cachePage(
+        target,
+        response,
     );
 
     replaceContent(

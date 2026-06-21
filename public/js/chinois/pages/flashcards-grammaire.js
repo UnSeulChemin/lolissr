@@ -11,12 +11,8 @@ import {
 } from '../../core/toast.js';
 
 import {
-    invalidateRoute,
-} from '../../router/route-invalidation.js';
-
-import {
-    invalidatePrefetch,
-} from '../../router/prefetch/prefetch-cache.js';
+    invalidatePage,
+} from '../../router/page-invalidation.js';
 
 // =========================================
 // CACHE
@@ -36,15 +32,8 @@ function invalidateGrammarPages(baseUri)
         of routes
     ) {
 
-        const url =
-            `${baseUri}chinois/grammaire/${route}`;
-
-        invalidateRoute(
-            url,
-        );
-
-        invalidatePrefetch(
-            url,
+        invalidatePage(
+            `${baseUri}chinois/grammaire/${route}`,
         );
     }
 }
@@ -281,11 +270,7 @@ export function initFlashcardsGrammairePage()
                     return;
                 }
 
-                invalidateRoute(
-                    window.location.href,
-                );
-
-                invalidatePrefetch(
+                invalidatePage(
                     window.location.href,
                 );
 

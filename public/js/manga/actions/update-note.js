@@ -3,12 +3,8 @@
 // =========================================
 
 import {
-    invalidateRoute,
-} from '../../router/route-invalidation.js';
-
-import {
-    invalidatePrefetch,
-} from '../../router/prefetch/prefetch-cache.js';
+    invalidatePage,
+} from '../../router/page-invalidation.js';
 
 import {
     post,
@@ -312,11 +308,7 @@ async function updateNote(
 
     refreshButtons();
 
-    invalidateRoute(
-        window.location.href,
-    );
-
-    invalidatePrefetch(
+    invalidatePage(
         window.location.href,
     );
 

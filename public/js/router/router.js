@@ -3,10 +3,6 @@
 // =========================================
 
 import {
-    shouldIgnoreLink,
-} from '../core/navigation.js';
-
-import {
     navigateTo,
 } from './router-navigation.js';
 
@@ -19,6 +15,10 @@ import {
 } from './router-focus.js';
 
 import {
+    getPrefetchedPage,
+} from './prefetch/prefetch-cache.js';
+
+import {
     debug,
 } from '../core/debug/debug.js';
 
@@ -29,6 +29,10 @@ import {
 import {
     request,
 } from '../core/http.js';
+
+import {
+    shouldIgnoreLink,
+} from '../core/navigation.js';
 
 // =========================================
 // CLICK
@@ -192,6 +196,9 @@ async function handlePopState()
 
 export function initRouter()
 {
+    history.scrollRestoration =
+        'manual';
+
     document.addEventListener(
         'click',
         handleClick,

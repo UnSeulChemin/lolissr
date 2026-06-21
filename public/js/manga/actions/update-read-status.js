@@ -28,12 +28,8 @@ import {
 } from '../../core/errors/FrontendError.js';
 
 import {
-    invalidateRoute,
-} from '../../router/route-invalidation.js';
-
-import {
-    invalidatePrefetch,
-} from '../../router/prefetch/prefetch-cache.js';
+    invalidatePage,
+} from '../../router/page-invalidation.js';
 
 // =========================================
 // CONFIG
@@ -225,11 +221,7 @@ async function updateReadStatus(
             ),
         );
 
-        invalidateRoute(
-            window.location.href,
-        );
-
-        invalidatePrefetch(
+        invalidatePage(
             window.location.href,
         );
 

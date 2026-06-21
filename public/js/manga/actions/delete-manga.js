@@ -31,12 +31,8 @@ import {
 } from '../../router/router-navigation.js';
 
 import {
-    invalidateRoute,
-} from '../../router/route-invalidation.js';
-
-import {
-    invalidatePrefetch,
-} from '../../router/prefetch/prefetch-cache.js';
+    invalidatePage,
+} from '../../router/page-invalidation.js';
 
 import {
     deleteModal,
@@ -203,11 +199,7 @@ async function deleteManga(
         |--------------------------------------------------------------------------
         */
 
-        invalidateRoute(
-            '/',
-        );
-
-        invalidatePrefetch(
+        invalidatePage(
             '/',
         );
 

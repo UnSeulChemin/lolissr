@@ -11,12 +11,8 @@ import {
 } from '../../core/toast.js';
 
 import {
-    invalidateRoute,
-} from '../../router/route-invalidation.js';
-
-import {
-    invalidatePrefetch,
-} from '../../router/prefetch/prefetch-cache.js';
+    invalidatePage,
+} from '../../router/page-invalidation.js';
 
 // =========================================
 // CACHE
@@ -34,15 +30,8 @@ function invalidateVocabularyPages(baseUri)
         of routes
     ) {
 
-        const url =
-            `${baseUri}chinois/vocabulaire/${route}`;
-
-        invalidateRoute(
-            url,
-        );
-
-        invalidatePrefetch(
-            url,
+        invalidatePage(
+            `${baseUri}chinois/vocabulaire/${route}`,
         );
     }
 }
@@ -265,12 +254,8 @@ export function initFlashcardsVocabulairePage()
 
                     return;
                 }
-
-                invalidateRoute(
-                    window.location.href,
-                );
-
-                invalidatePrefetch(
+                
+                invalidatePage(
                     window.location.href,
                 );
 
