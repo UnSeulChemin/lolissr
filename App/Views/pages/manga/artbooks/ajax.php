@@ -69,7 +69,7 @@ $baseUri =
         collection-card-link
     "
     data-prefetch
-    href="<?= e($baseUri) ?>manga/artbooks/<?= e($slug) ?>"
+    href="<?= e($baseUri) ?>manga/artbooks/<?= e($slug) ?>/<?= (int) $artbook->numero ?>"
 >
 
     <div class="card-image-box-portrait">

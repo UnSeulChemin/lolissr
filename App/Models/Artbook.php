@@ -14,6 +14,8 @@ final class Artbook
 
     public string $slug = '';
 
+    public int $numero = 1;
+
     public string $artbook = '';
 
     public ?string $auteur = null;

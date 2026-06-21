@@ -131,11 +131,15 @@ final class MangaController extends Controller
 
     public function showArtbook(
         string $slug,
+        int $numero,
     ): never
     {
         $artbook =
             $this->mangaReadService
-                ->oneArtbook($slug);
+                ->oneArtbook(
+                    $slug,
+                    $numero,
+                );
 
         if ($artbook === null)
         {

@@ -194,8 +194,9 @@ final class ArtbookRepository extends Model
             : null;
     }
 
-    public function findOneBySlug(
+    public function findOneBySlugAndNumero(
         string $slug,
+        int $numero,
     ): ?Artbook
     {
         /** @var Artbook|null $artbook */
@@ -205,10 +206,12 @@ final class ArtbookRepository extends Model
                 SELECT *
                 FROM {$this->table()}
                 WHERE slug = :slug
+                AND numero = :numero
                 LIMIT 1
                 ",
                 [
                     'slug' => $slug,
+                    'numero' => $numero,
                 ],
                 Artbook::class,
             );

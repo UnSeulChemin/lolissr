@@ -146,7 +146,7 @@ return static function (Router $router): void {
 
             $router->get('artbooks', [MangaController::class, 'artbooks']);
 
-            $router->get('artbooks/{slug}', [MangaController::class, 'showArtbook']);
+            $router->get('artbooks/{slug}/{numero:int}', [MangaController::class, 'showArtbook']);
 
             /*
             |--------------------------------------------------------------------------

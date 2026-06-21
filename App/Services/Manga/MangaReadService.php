@@ -269,9 +269,13 @@ final readonly class MangaReadService
 
     public function oneArtbook(
         string $slug,
+        int $numero,
     ): ?Artbook
     {
         return $this->artbookRepository
-            ->findOneBySlug($slug);
+            ->findOneBySlugAndNumero(
+                $slug,
+                $numero,
+            );
     }
 }
