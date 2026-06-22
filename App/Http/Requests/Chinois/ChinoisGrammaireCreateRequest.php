@@ -5,16 +5,12 @@ declare(strict_types=1);
 namespace App\Http\Requests\Chinois;
 
 use App\DTO\Chinois\Inputs\ChinoisGrammaireCreateDTO;
+
 use Framework\Http\FormRequest;
 
 final class ChinoisGrammaireCreateRequest extends FormRequest
 {
-    private const NIVEAUX = [
-        'HSK1',
-        'HSK2',
-        'HSK3',
-        'HSK4',
-    ];
+    private const NIVEAUX = ['HSK1', 'HSK2', 'HSK3', 'HSK4'];
 
     protected function validate(): void
     {
@@ -58,8 +54,6 @@ final class ChinoisGrammaireCreateRequest extends FormRequest
 
     public function dto(): ChinoisGrammaireCreateDTO
     {
-        return ChinoisGrammaireCreateDTO::fromArray(
-            $this->validated(),
-        );
+        return ChinoisGrammaireCreateDTO::fromArray($this->validated());
     }
 }

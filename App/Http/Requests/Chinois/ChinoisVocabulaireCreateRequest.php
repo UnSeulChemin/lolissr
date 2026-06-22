@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests\Chinois;
 
 use App\DTO\Chinois\Inputs\ChinoisVocabulaireCreateDTO;
+
 use Framework\Http\FormRequest;
 
 final class ChinoisVocabulaireCreateRequest extends FormRequest
@@ -40,8 +41,6 @@ final class ChinoisVocabulaireCreateRequest extends FormRequest
 
     public function dto(): ChinoisVocabulaireCreateDTO
     {
-        return ChinoisVocabulaireCreateDTO::fromArray(
-            $this->validated(),
-        );
+        return ChinoisVocabulaireCreateDTO::fromArray($this->validated());
     }
 }

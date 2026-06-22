@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests\Manga;
 
 use App\DTO\Manga\Inputs\MangaUpdateDTO;
+
 use Framework\Http\FormRequest;
 
 final class MangaUpdateRequest extends FormRequest
@@ -14,6 +15,7 @@ final class MangaUpdateRequest extends FormRequest
     protected function validate(): void
     {
         $this->validator
+
             ->nullable('editeur')
             ->string('editeur')
             ->maxLength('editeur', 100)
@@ -39,8 +41,6 @@ final class MangaUpdateRequest extends FormRequest
 
     public function dto(): MangaUpdateDTO
     {
-        return MangaUpdateDTO::fromArray(
-            $this->validated(),
-        );
+        return MangaUpdateDTO::fromArray($this->validated());
     }
 }

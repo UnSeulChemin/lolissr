@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace App\Http\Requests\Manga;
 
 use App\DTO\Manga\Inputs\MangaCreateDTO;
-use Framework\Config\UploadConfig;
+
 use Framework\Http\FormRequest;
+use Framework\Config\UploadConfig;
 
 final class MangaCreateRequest extends FormRequest
 {
@@ -15,6 +16,7 @@ final class MangaCreateRequest extends FormRequest
     protected function validate(): void
     {
         $this->validator
+
             ->required('livre')
             ->string('livre')
             ->maxLength('livre', 150)
@@ -49,8 +51,6 @@ final class MangaCreateRequest extends FormRequest
 
     public function dto(): MangaCreateDTO
     {
-        return MangaCreateDTO::fromArray(
-            $this->validated(),
-        );
+        return MangaCreateDTO::fromArray($this->validated());
     }
 }
