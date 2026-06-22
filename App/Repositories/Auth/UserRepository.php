@@ -11,10 +11,8 @@ final class UserRepository extends Model
 {
     protected string $table = 'users';
 
-    public function findByUsername(
-        string $username,
-    ): ?User {
-
+    public function findByUsername(string $username): ?User
+    {
         /** @var User|null $user */
         $user = $this->fetchOne(
             "
@@ -26,16 +24,14 @@ final class UserRepository extends Model
             [
                 'username' => trim($username),
             ],
-            User::class,
+            User::class
         );
 
         return $user;
     }
 
-    public function findById(
-        int $id,
-    ): ?User {
-
+    public function findById(int $id): ?User
+    {
         /** @var User|null $user */
         $user = $this->fetchOne(
             "
@@ -47,17 +43,14 @@ final class UserRepository extends Model
             [
                 'id' => $id,
             ],
-            User::class,
+            User::class
         );
 
         return $user;
     }
 
-    public function create(
-        string $username,
-        string $password,
-    ): bool {
-
+    public function create(string $username, string $password): bool
+    {
         return $this->insert([
             'username' => trim($username),
             'password' => $password,
@@ -66,20 +59,8 @@ final class UserRepository extends Model
         ]);
     }
 
-    public function updateLevelAndXp(
-        int $userId,
-        int $level,
-        int $xp,
-    ): bool {
-
-        return $this->update(
-            [
-                'level' => $level,
-                'xp' => $xp,
-            ],
-            [
-                'id' => $userId,
-            ],
-        );
+    public function updateLevelAndXp(int $userId, int $level, int $xp): bool
+    {
+        return $this->update(['level' => $level, 'xp' => $xp], ['id' => $userId]);
     }
 }
