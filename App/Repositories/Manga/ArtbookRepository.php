@@ -6,35 +6,12 @@ namespace App\Repositories\Manga;
 
 use App\DTO\Home\Responses\LatestArtbookData;
 use App\DTO\Home\Responses\MostRepresentedArtbookData;
-use App\Models\Model;
 use App\Models\Artbook;
+use App\Models\Model;
 
 final class ArtbookRepository extends Model
 {
     protected string $table = 'artbook';
-
-    private function mapLatestArtbook(
-        object $row,
-    ): LatestArtbookData {
-        return new LatestArtbookData(
-            artbook: (string) $row->artbook,
-            auteur: $row->auteur,
-            thumbnail: $row->thumbnail,
-            extension: $row->extension,
-        );
-    }
-
-    private function mapMostRepresented(
-        object $row,
-    ): MostRepresentedArtbookData {
-        return new MostRepresentedArtbookData(
-            type: (string) $row->type,
-            name: (string) $row->name,
-            total: (int) $row->total,
-            thumbnail: $row->thumbnail,
-            extension: $row->extension,
-        );
-    }
 
     /**
      * @return list<Artbook>
@@ -45,11 +22,13 @@ final class ArtbookRepository extends Model
         $artbooks = $this->fetchAll(
             "
             SELECT *
+
             FROM {$this->table()}
+
             ORDER BY created_at DESC
             ",
             [],
-            Artbook::class,
+            Artbook::class
         );
 
         return $artbooks;
@@ -62,42 +41,32 @@ final class ArtbookRepository extends Model
 
     public function countAuthors(): int
     {
-        $result = $this->fetchOne(
+        return (int) $this->fetchSingleValue(
             "
-            SELECT
-                COUNT(
-                    DISTINCT auteur
-                ) AS total
+            SELECT COUNT(DISTINCT auteur) AS total
+
             FROM {$this->table()}
+
             WHERE auteur IS NOT NULL
             AND auteur <> ''
             ",
+            'total'
         );
-
-        /** @var array{total?: mixed} $data */
-        $data = (array) $result;
-
-        return (int) ($data['total'] ?? 0);
     }
 
     public function countSeries(): int
     {
-        $result = $this->fetchOne(
+        return (int) $this->fetchSingleValue(
             "
-            SELECT
-                COUNT(
-                    DISTINCT serie
-                ) AS total
+            SELECT COUNT(DISTINCT serie) AS total
+
             FROM {$this->table()}
+
             WHERE serie IS NOT NULL
             AND serie <> ''
             ",
+            'total'
         );
-
-        /** @var array{total?: mixed} $data */
-        $data = (array) $result;
-
-        return (int) ($data['total'] ?? 0);
     }
 
     public function findLatest(): ?LatestArtbookData
@@ -109,15 +78,16 @@ final class ArtbookRepository extends Model
                 auteur,
                 thumbnail,
                 extension
+
             FROM {$this->table()}
+
             ORDER BY created_at DESC
+
             LIMIT 1
             "
         );
 
-        return $row !== null
-            ? $this->mapLatestArtbook($row)
-            : null;
+        return $row !== null ? $this->mapLatestArtbook($row) : null;
     }
 
     public function findMostRepresented(): ?MostRepresentedArtbookData
@@ -130,11 +100,16 @@ final class ArtbookRepository extends Model
                 COUNT(*) AS total,
                 MIN(thumbnail) AS thumbnail,
                 MIN(extension) AS extension
+
             FROM {$this->table()}
+
             WHERE auteur IS NOT NULL
             AND auteur <> ''
+
             GROUP BY auteur
+
             ORDER BY total DESC
+
             LIMIT 1
             "
         );
@@ -147,11 +122,16 @@ final class ArtbookRepository extends Model
                 COUNT(*) AS total,
                 MIN(thumbnail) AS thumbnail,
                 MIN(extension) AS extension
+
             FROM {$this->table()}
+
             WHERE serie IS NOT NULL
             AND serie <> ''
+
             GROUP BY serie
+
             ORDER BY total DESC
+
             LIMIT 1
             "
         );
@@ -164,13 +144,9 @@ final class ArtbookRepository extends Model
             return null;
         }
 
-        $winner = $authorTotal >= $seriesTotal
-            ? $author
-            : $series;
+        $winner = $authorTotal >= $seriesTotal ? $author : $series;
 
-        return $winner !== null
-            ? $this->mapMostRepresented($winner)
-            : null;
+        return $winner !== null ? $this->mapMostRepresented($winner) : null;
     }
 
     public function findOneBySlugAndNumero(string $slug, int $numero): ?Artbook
@@ -179,18 +155,67 @@ final class ArtbookRepository extends Model
         $artbook = $this->fetchOne(
             "
             SELECT *
+
             FROM {$this->table()}
+
             WHERE slug = :slug
             AND numero = :numero
+
             LIMIT 1
             ",
             [
                 'slug' => $slug,
                 'numero' => $numero,
             ],
-            Artbook::class,
+            Artbook::class
         );
 
         return $artbook;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | HELPERS
+    |--------------------------------------------------------------------------
+    */
+
+    private function mapLatestArtbook(object $row): LatestArtbookData
+    {
+        return new LatestArtbookData(
+            artbook: (string) $row->artbook,
+            auteur: $row->auteur,
+            thumbnail: $row->thumbnail,
+            extension: $row->extension
+        );
+    }
+
+    private function mapMostRepresented(object $row): MostRepresentedArtbookData
+    {
+        return new MostRepresentedArtbookData(
+            type: (string) $row->type,
+            name: (string) $row->name,
+            total: (int) $row->total,
+            thumbnail: $row->thumbnail,
+            extension: $row->extension
+        );
+    }
+
+    private function fetchSingleValue(
+        string $sql,
+        string $field,
+        array $params = [],
+        mixed $default = 0
+    ): mixed
+    {
+        $result = $this->fetchOne($sql, $params);
+
+        if ($result === null)
+        {
+            return $default;
+        }
+
+        $resultArray = (array) $result;
+
+        return $resultArray[$field] ?? $default;
     }
 }

@@ -13,10 +13,6 @@ final class SqlRepository extends Model
      */
     public function executeQuery(string $sql): array
     {
-        return array_values(
-            $this->fetchAll(
-                trim($sql),
-            ),
-        );
+        return array_values($this->fetchAll(trim($sql)));
     }
 }

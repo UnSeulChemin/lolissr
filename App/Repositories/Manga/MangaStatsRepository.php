@@ -14,116 +14,55 @@ final class MangaStatsRepository extends Model
 {
     protected string $table = 'manga';
 
-    private function mapToStatsDto(
-        Manga $manga,
-    ): MangaStatsData {
-        return new MangaStatsData(
-            id: $manga->id,
-            slug: $manga->slug,
-            livre: $manga->livre,
-
-            thumbnail:
-                $manga->thumbnail !== ''
-                    ? $manga->thumbnail
-                    : null,
-
-            extension:
-                $manga->extension !== ''
-                    ? $manga->extension
-                    : null,
-
-            numero: $manga->numero,
-
-            total: $manga->total,
-        );
-    }
-
-    /**
-     * @param array<string, mixed> $params
-     */
-    private function fetchSingleValue(
-        string $sql,
-        string $field,
-        array $params = [],
-        mixed $default = 0,
-    ): mixed {
-        $result = $this->fetchOne(
-            $sql,
-            $params,
-        );
-
-        if ($result === null)
-        {
-            return $default;
-        }
-
-        $resultArray = (array) $result;
-
-        if (!array_key_exists($field, $resultArray))
-        {
-            return $default;
-        }
-
-        return $resultArray[$field];
-    }
-
     public function countAllTomes(): int
     {
-        return (int) $this->fetchSingleValue(
-            "SELECT COUNT(*) AS total
-            FROM {$this->table()}",
-            'total',
-        );
+        return (int) $this->fetchSingleValue("SELECT COUNT(*) AS total FROM {$this->table()}", 'total');
     }
 
     public function countSeries(): int
     {
-        return (int) $this->fetchSingleValue(
-            "SELECT COUNT(DISTINCT slug) AS total
-            FROM {$this->table()}",
-            'total',
-        );
+        return (int) $this->fetchSingleValue("SELECT COUNT(DISTINCT slug) AS total FROM {$this->table()}", 'total');
     }
 
     public function countRead(): int
     {
-        return (int) $this->fetchSingleValue(
-            "SELECT COUNT(*) AS total
-            FROM {$this->table()}
-            WHERE lu = 1",
-            'total',
-        );
+        return (int) $this->fetchSingleValue("SELECT COUNT(*) AS total FROM {$this->table()} WHERE lu = 1", 'total');
     }
 
     public function averageNote(): ?float
     {
         $average = $this->fetchSingleValue(
-            "SELECT ROUND(
-                AVG(note),
-                1
-            ) AS moyenne
+            "
+            SELECT
+                ROUND(AVG(note), 1) AS moyenne
+
             FROM {$this->table()}
-            WHERE note IS NOT NULL",
+
+            WHERE note IS NOT NULL
+            ",
             'moyenne',
             [],
-            null,
+            null
         );
 
-        return $average !== null
-            ? (float) $average
-            : null;
+        return $average !== null ? (float) $average : null;
     }
 
     public function findLastAdded(): ?Manga
     {
         /** @var Manga|null $manga */
         $manga = $this->fetchOne(
-            "SELECT *
+            "
+            SELECT *
+
             FROM {$this->table()}
+
             ORDER BY id DESC
-            LIMIT 1",
+
+            LIMIT 1
+            ",
             [],
-            Manga::class,
+            Manga::class
         );
 
         return $manga;
@@ -133,19 +72,15 @@ final class MangaStatsRepository extends Model
     {
         $manga = $this->findLastAdded();
 
-        if ($manga === null)
-        {
-            return null;
-        }
-
-        return $this->mapToStatsDto($manga);
+        return $manga !== null ? $this->mapToStatsDto($manga) : null;
     }
 
     public function findLongestSeries(): ?Manga
     {
         /** @var Manga|null $manga */
         $manga = $this->fetchOne(
-            "SELECT
+            "
+            SELECT
                 m.*,
                 stats.total
 
@@ -163,15 +98,15 @@ final class MangaStatsRepository extends Model
                 ORDER BY total DESC
 
                 LIMIT 1
-
             ) stats
                 ON stats.slug = m.slug
 
             WHERE m.numero = 1
 
-            LIMIT 1",
+            LIMIT 1
+            ",
             [],
-            Manga::class,
+            Manga::class
         );
 
         return $manga;
@@ -181,42 +116,28 @@ final class MangaStatsRepository extends Model
     {
         $manga = $this->findLongestSeries();
 
-        if ($manga === null)
-        {
-            return null;
-        }
-
-        return $this->mapToStatsDto($manga);
+        return $manga !== null ? $this->mapToStatsDto($manga) : null;
     }
 
     /**
      * @return list<MangaStatsData>
      */
-    public function topLongestSeriesDto(
-        int $limit = 5,
-    ): array {
-
-        return array_map(
-            fn (Manga $manga)
-                => $this->mapToStatsDto($manga),
-            $this->topLongestSeries($limit),
-        );
+    public function topLongestSeriesDto(int $limit = 5): array
+    {
+        return $this->mapResultsToStatsDto($this->topLongestSeries($limit));
     }
 
     /**
      * @return list<Manga>
      */
-    public function topLongestSeries(
-        int $limit = 5,
-    ): array {
-        $limit = max(
-            1,
-            $limit,
-        );
+    public function topLongestSeries(int $limit = 5): array
+    {
+        $limit = max(1, $limit);
 
         /** @var list<Manga> $mangas */
         $mangas = $this->fetchAll(
-            "SELECT
+            "
+            SELECT
                 m.*,
                 stats.total
 
@@ -234,7 +155,6 @@ final class MangaStatsRepository extends Model
                 ORDER BY total DESC
 
                 LIMIT {$limit}
-
             ) stats
                 ON stats.slug = m.slug
 
@@ -242,33 +162,31 @@ final class MangaStatsRepository extends Model
 
             ORDER BY
                 stats.total DESC,
-                m.livre ASC",
+                m.livre ASC
+            ",
             [],
-            Manga::class,
+            Manga::class
         );
 
         return $mangas;
     }
 
-    public function isSeriesCompleted(
-        string $slug,
-    ): bool {
+    public function isSeriesCompleted(string $slug): bool
+    {
+        $result = $this->fetchOne(
+            "
+            SELECT
+                COUNT(*) AS total,
+                SUM(lu) AS total_lu
 
-        $result =
-            $this->fetchOne(
-                "
-                SELECT
-                    COUNT(*) AS total,
-                    SUM(lu) AS total_lu
+            FROM {$this->table()}
 
-                FROM {$this->table()}
-
-                WHERE slug = :slug
-                ",
-                [
-                    'slug' => Str::slug($slug),
-                ],
-            );
+            WHERE slug = :slug
+            ",
+            [
+                'slug' => Str::slug($slug),
+            ]
+        );
 
         if ($result === null)
         {
@@ -276,18 +194,12 @@ final class MangaStatsRepository extends Model
         }
 
         /** @var array{total?: mixed, total_lu?: mixed} $data */
-        $data =
-            (array) $result;
+        $data = (array) $result;
 
-        $total =
-            (int) ($data['total'] ?? 0);
+        $total = (int) ($data['total'] ?? 0);
+        $totalLu = (int) ($data['total_lu'] ?? 0);
 
-        $totalLu =
-            (int) ($data['total_lu'] ?? 0);
-
-        return
-            $total > 0
-            && $total === $totalLu;
+        return $total > 0 && $total === $totalLu;
     }
 
     public function countCompletedSeries(): int
@@ -295,14 +207,75 @@ final class MangaStatsRepository extends Model
         return (int) $this->fetchSingleValue(
             "
             SELECT COUNT(*) AS total
+
             FROM (
                 SELECT slug
+
                 FROM {$this->table()}
+
                 GROUP BY slug
+
                 HAVING COUNT(*) = SUM(lu)
             ) completed
             ",
-            'total',
+            'total'
         );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | HELPERS
+    |--------------------------------------------------------------------------
+    */
+
+    private function mapToStatsDto(Manga $manga): MangaStatsData
+    {
+        return new MangaStatsData(
+            id: $manga->id,
+            slug: $manga->slug,
+            livre: $manga->livre,
+
+            thumbnail: $manga->thumbnail !== '' ? $manga->thumbnail : null,
+            extension: $manga->extension !== '' ? $manga->extension : null,
+
+            numero: $manga->numero,
+            total: $manga->total
+        );
+    }
+
+    /**
+     * @param list<Manga> $mangas
+     * @return list<MangaStatsData>
+     */
+    private function mapResultsToStatsDto(array $mangas): array
+    {
+        return array_map($this->mapToStatsDto(...), $mangas);
+    }
+
+    /**
+     * @param array<string, mixed> $params
+     */
+    private function fetchSingleValue(
+        string $sql,
+        string $field,
+        array $params = [],
+        mixed $default = 0
+    ): mixed {
+
+        $result = $this->fetchOne($sql, $params);
+
+        if ($result === null)
+        {
+            return $default;
+        }
+
+        $resultArray = (array) $result;
+
+        if (! array_key_exists($field, $resultArray))
+        {
+            return $default;
+        }
+
+        return $resultArray[$field];
     }
 }

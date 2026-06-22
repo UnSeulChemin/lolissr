@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers\Sql;
 
 use App\Controllers\Controller;
-use App\Repositories\Sql\SqlRepository;
+use App\Services\Sql\SqlReadService;
 
 use Framework\Http\Request;
 
@@ -14,7 +14,7 @@ use Throwable;
 final class SqlController extends Controller
 {
     public function __construct(
-        private readonly SqlRepository $sqlRepository,
+        private readonly SqlReadService $sqlReadService,
         Request $request
     ) {
         parent::__construct($request);
@@ -42,7 +42,7 @@ final class SqlController extends Controller
 
         try
         {
-            $this->renderPage(sql: $sql, result: $this->sqlRepository->executeQuery($sql));
+            $this->renderPage(sql: $sql, result: $this->sqlReadService->execute($sql));
         }
         catch (Throwable $exception)
         {
