@@ -7,9 +7,9 @@ namespace App\Models;
 use Framework\Application\App;
 use Framework\Database\Database;
 
+use LogicException;
 use PDO;
 use PDOStatement;
-use LogicException;
 use RuntimeException;
 use Throwable;
 
@@ -17,7 +17,7 @@ abstract class Model
 {
     /*
     |--------------------------------------------------------------------------
-    | Table
+    | TABLE
     |--------------------------------------------------------------------------
     */
 
@@ -39,49 +39,13 @@ abstract class Model
     private static array $identifierCache = [];
 
     public function __construct(
-        protected Database $db,
+        protected Database $db
     ) {
     }
 
-    /**
-     * Retourne le nom de table validé.
-     */
     protected function table(): string
     {
-        return $this->resolvedTable
-            ??= $this->resolveTable();
-    }
-
-    /**
-     * Valide le nom de table configuré.
-     */
-    private function resolveTable(): string
-    {
-        $table =
-            $this->sanitizeIdentifier(
-                $this->table,
-            );
-
-        if ($table === '')
-        {
-            throw new RuntimeException(
-                'Nom de table invalide.',
-            );
-        }
-
-        return $table;
-    }
-
-    private function sanitizeIdentifier(
-        string $value,
-    ): string {
-
-        return self::$identifierCache[$value]
-            ??= preg_replace(
-                '/[^a-zA-Z0-9_]/',
-                '',
-                $value,
-            ) ?? '';
+        return $this->resolvedTable ??= $this->resolveTable();
     }
 
     protected function guardWrite(): void
@@ -91,49 +55,36 @@ abstract class Model
             return;
         }
 
-        throw new LogicException(
-            'Écriture en base interdite en mode lecture seule.',
-        );
+        throw new LogicException('Écriture en base interdite en mode lecture seule.');
     }
 
     /*
     |--------------------------------------------------------------------------
-    | Query Helpers
+    | HELPERS SQL
     |--------------------------------------------------------------------------
     */
 
     /**
      * @param array<int|string, mixed> $params
      */
-    protected function query(
-        string $sql,
-        array $params = [],
-    ): PDOStatement|false {
-
+    protected function query(string $sql, array $params = []): PDOStatement|false
+    {
         try
         {
-            $statement =
-                $this->db->prepare(
-                    $sql,
-                );
+            $statement = $this->db->prepare($sql);
 
             if ($statement === false)
             {
                 return false;
             }
 
-            $statement->execute(
-                $params,
-            );
+            $statement->execute($params);
 
             return $statement;
         }
         catch (Throwable $exception)
         {
-            throw new RuntimeException(
-                $exception->getMessage(),
-                previous: $exception,
-            );
+            throw new RuntimeException($exception->getMessage(), previous: $exception);
         }
     }
 
@@ -144,17 +95,9 @@ abstract class Model
      *
      * @return T|null
      */
-    protected function fetchOne(
-        string $sql,
-        array $params = [],
-        ?string $class = null,
-    ): ?object {
-
-        $statement =
-            $this->query(
-                $sql,
-                $params,
-            );
+    protected function fetchOne(string $sql, array $params = [], ?string $class = null): ?object
+    {
+        $statement = $this->query($sql, $params);
 
         if ($statement === false)
         {
@@ -163,18 +106,12 @@ abstract class Model
 
         if ($class !== null)
         {
-            $statement->setFetchMode(
-                PDO::FETCH_CLASS,
-                $class,
-            );
+            $statement->setFetchMode(PDO::FETCH_CLASS, $class);
         }
 
-        $result =
-            $statement->fetch();
+        $result = $statement->fetch();
 
-        return $result !== false
-            ? $result
-            : null;
+        return $result !== false ? $result : null;
     }
 
     /**
@@ -184,17 +121,9 @@ abstract class Model
      *
      * @return list<T>
      */
-    protected function fetchAll(
-        string $sql,
-        array $params = [],
-        ?string $class = null,
-    ): array {
-
-        $statement =
-            $this->query(
-                $sql,
-                $params,
-            );
+    protected function fetchAll(string $sql, array $params = [], ?string $class = null): array
+    {
+        $statement = $this->query($sql, $params);
 
         if ($statement === false)
         {
@@ -203,15 +132,11 @@ abstract class Model
 
         if ($class !== null)
         {
-            $statement->setFetchMode(
-                PDO::FETCH_CLASS,
-                $class,
-            );
+            $statement->setFetchMode(PDO::FETCH_CLASS, $class);
         }
 
         /** @var list<T> $results */
-        $results =
-            $statement->fetchAll();
+        $results = $statement->fetchAll();
 
         return $results;
     }
@@ -219,15 +144,9 @@ abstract class Model
     /**
      * @param array<int|string, mixed> $params
      */
-    protected function execute(
-        string $sql,
-        array $params = [],
-    ): bool {
-
-        return $this->query(
-            $sql,
-            $params,
-        ) !== false;
+    protected function execute(string $sql, array $params = []): bool
+    {
+        return $this->query($sql, $params) !== false;
     }
 
     /*
@@ -238,22 +157,14 @@ abstract class Model
 
     /**
      * @template T of object
+     *
      * @param class-string<T>|null $class
+     *
      * @return T|null
      */
-    public function find(
-        int $id,
-        ?string $class = null,
-    ): ?object {
-
-        return $this->fetchOne(
-            "SELECT *
-             FROM {$this->table()}
-             WHERE id = ?
-             LIMIT 1",
-            [$id],
-            $class,
-        );
+    public function find(int $id, ?string $class = null): ?object
+    {
+        return $this->fetchOne("SELECT * FROM {$this->table()} WHERE id = ? LIMIT 1", [$id], $class);
     }
 
     /**
@@ -261,22 +172,17 @@ abstract class Model
      *
      * @template T of object
      * @param class-string<T>|null $class
+     *
      * @return list<T>
      */
-    public function findBy(
-        array $where,
-        ?string $class = null,
-    ): array {
-
+    public function findBy(array $where, ?string $class = null): array
+    {
         if ($where === [])
         {
             return [];
         }
 
-        $builtWhere =
-            $this->buildWhere(
-                $where,
-            );
+        $builtWhere = $this->buildWhere($where);
 
         if ($builtWhere['conditions'] === [])
         {
@@ -287,22 +193,17 @@ abstract class Model
             'SELECT * FROM '
             . $this->table()
             . ' WHERE '
-            . implode(
-                ' AND ',
-                $builtWhere['conditions'],
-            ),
+            . implode(' AND ', $builtWhere['conditions']),
             $builtWhere['values'],
-            $class,
+            $class
         );
     }
 
     /**
      * @param array<string, mixed> $data
      */
-    public function insert(
-        array $data,
-    ): bool {
-
+    public function insert(array $data): bool
+    {
         if ($data === [])
         {
             return false;
@@ -313,10 +214,7 @@ abstract class Model
 
         foreach ($data as $field => $value)
         {
-            $field =
-                $this->sanitizeIdentifier(
-                    $field,
-                );
+            $field = $this->sanitizeIdentifier($field);
 
             if ($field === '')
             {
@@ -332,12 +230,7 @@ abstract class Model
             return false;
         }
 
-        $placeholders =
-            array_fill(
-                0,
-                count($fields),
-                '?',
-            );
+        $placeholders = array_fill(0, count($fields), '?');
 
         return $this->execute(
             'INSERT INTO '
@@ -347,7 +240,7 @@ abstract class Model
             . ') VALUES ('
             . implode(', ', $placeholders)
             . ')',
-            $values,
+            $values
         );
     }
 
@@ -355,15 +248,10 @@ abstract class Model
      * @param array<string, mixed> $data
      * @param array<string, mixed> $where
      */
-    public function update(
-        array $data,
-        array $where,
-    ): bool {
-
-        if (
-            $data === []
-            || $where === []
-        ) {
+    public function update(array $data, array $where): bool
+    {
+        if ($data === [] || $where === [])
+        {
             return false;
         }
 
@@ -372,32 +260,21 @@ abstract class Model
 
         foreach ($data as $field => $value)
         {
-            $field =
-                $this->sanitizeIdentifier(
-                    $field,
-                );
+            $field = $this->sanitizeIdentifier($field);
 
             if ($field === '')
             {
                 continue;
             }
 
-            $fields[] =
-                "{$field} = ?";
-
-            $values[] =
-                $value;
+            $fields[] = "{$field} = ?";
+            $values[] = $value;
         }
 
-        $builtWhere =
-            $this->buildWhere(
-                $where,
-            );
+        $builtWhere = $this->buildWhere($where);
 
-        if (
-            $fields === []
-            || $builtWhere['conditions'] === []
-        ) {
+        if ($fields === [] || $builtWhere['conditions'] === [])
+        {
             return false;
         }
 
@@ -407,33 +284,25 @@ abstract class Model
             . ' SET '
             . implode(', ', $fields)
             . ' WHERE '
-            . implode(
-                ' AND ',
-                $builtWhere['conditions'],
-            ),
+            . implode(' AND ', $builtWhere['conditions']),
             array_merge(
                 $values,
-                $builtWhere['values'],
-            ),
+                $builtWhere['values']
+            )
         );
     }
 
     /**
      * @param array<string, mixed> $where
      */
-    public function delete(
-        array $where,
-    ): bool {
-
+    public function delete(array $where): bool
+    {
         if ($where === [])
         {
             return false;
         }
 
-        $builtWhere =
-            $this->buildWhere(
-                $where,
-            );
+        $builtWhere = $this->buildWhere($where);
 
         if ($builtWhere['conditions'] === [])
         {
@@ -444,44 +313,29 @@ abstract class Model
             'DELETE FROM '
             . $this->table()
             . ' WHERE '
-            . implode(
-                ' AND ',
-                $builtWhere['conditions'],
-            ),
-            $builtWhere['values'],
+            . implode(' AND ', $builtWhere['conditions']),
+            $builtWhere['values']
         );
     }
 
     /*
     |--------------------------------------------------------------------------
-    | Aggregate Helpers
+    | STATISTIQUES
     |--------------------------------------------------------------------------
     */
 
     protected function countRows(): int
     {
-        $result =
-            $this->fetchOne(
-                "
-                SELECT COUNT(*) AS total
-                FROM {$this->table()}
-                ",
-            );
+        $result = $this->fetchOne("SELECT COUNT(*) AS total FROM {$this->table()}");
 
         /** @var array{total?: mixed} $data */
         $data = (array) $result;
 
-        return (int) (
-            $data['total']
-            ?? 0
-        );
+        return (int) ($data['total'] ?? 0);
     }
 
-    protected function countWhere(
-        string $where,
-        array $params = [],
-    ): int {
-
+    protected function countWhere(string $where, array $params = []): int
+    {
         $result =
             $this->fetchOne(
                 "
@@ -490,61 +344,61 @@ abstract class Model
                 FROM {$this->table()}
                 WHERE {$where}
                 ",
-                $params,
+                $params
             );
 
         /** @var array{total?: mixed} $data */
-        $data =
-            (array) $result;
+        $data = (array) $result;
 
-        return (int) (
-            $data['total']
-            ?? 0
-        );
+        return (int) ($data['total'] ?? 0);
     }
 
     /*
     |--------------------------------------------------------------------------
-    | Internal Helpers
+    | HELPERS INTERNES
     |--------------------------------------------------------------------------
     */
 
-    /**
-     * @param array<string, mixed> $where
-     * @return array{
-     *     conditions:list<string>,
-     *     values:list<mixed>
-     * }
-     */
-    private function buildWhere(
-        array $where,
-    ): array {
-
+    private function buildWhere(array $where): array
+    {
         $conditions = [];
         $values = [];
 
         foreach ($where as $field => $value)
         {
-            $field =
-                $this->sanitizeIdentifier(
-                    $field,
-                );
+            $field = $this->sanitizeIdentifier($field);
 
             if ($field === '')
             {
                 continue;
             }
 
-            $conditions[] =
-                "{$field} = ?";
-
-            $values[] =
-                $value;
+            $conditions[] = "{$field} = ?";
+            $values[] = $value;
         }
 
-        return [
-            'conditions' => $conditions,
-            'values' => $values,
-        ];
+        return ['conditions' => $conditions, 'values' => $values];
+    }
+
+    private function resolveTable(): string
+    {
+        $table = $this->sanitizeIdentifier($this->table);
+
+        if ($table === '')
+        {
+            throw new RuntimeException('Nom de table invalide.');
+        }
+
+        return $table;
+    }
+
+    private function sanitizeIdentifier(string $value): string
+    {
+        return self::$identifierCache[$value]
+            ??= preg_replace(
+                '/[^a-zA-Z0-9_]/',
+                '',
+                $value
+            ) ?? '';
     }
 }
