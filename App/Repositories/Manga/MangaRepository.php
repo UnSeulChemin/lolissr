@@ -98,8 +98,6 @@ final class MangaRepository extends Model
      */
     public function insert(array $data): bool
     {
-        $this->guardWrite();
-
         return parent::insert($this->normalizeInsertData($data));
     }
 
@@ -113,8 +111,6 @@ final class MangaRepository extends Model
         ?string $commentaire
     ): bool
     {
-        $this->guardWrite();
-
         [$jacquette, $livreNote] = $this->normalizeNotes($jacquette, $livreNote);
 
         return $this->updateBySlugAndNumero(
@@ -137,8 +133,6 @@ final class MangaRepository extends Model
         bool $readStatus
     ): bool
     {
-        $this->guardWrite();
-
         return $this->updateBySlugAndNumero($slug, $numero, ['lu' => (int) $readStatus]);
     }
 
@@ -149,8 +143,6 @@ final class MangaRepository extends Model
         ?int $livreNote
     ): bool
     {
-        $this->guardWrite();
-
         [$jacquette, $livreNote] = $this->normalizeNotes($jacquette, $livreNote);
 
         return $this->updateBySlugAndNumero(
@@ -166,8 +158,6 @@ final class MangaRepository extends Model
 
     public function deleteBySlugAndNumero(string $slug, int $numero): bool
     {
-        $this->guardWrite();
-
         return $this->delete(['slug' => $this->normalizeSlug($slug), 'numero' => $numero]);
     }
 
@@ -283,8 +273,6 @@ final class MangaRepository extends Model
 
     public function markXpRewarded(int $id): bool
     {
-        $this->guardWrite();
-
         return $this->update(['xp_read_rewarded' => 1], ['id' => $id]);
     }
 
@@ -318,8 +306,6 @@ final class MangaRepository extends Model
 
     public function markSeriesRewardedBySlug(string $slug): bool
     {
-        $this->guardWrite();
-
         return $this->execute(
             "
             UPDATE {$this->table()}

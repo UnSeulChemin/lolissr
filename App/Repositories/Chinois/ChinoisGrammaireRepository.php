@@ -96,8 +96,6 @@ final class ChinoisGrammaireRepository extends Model
 
     public function toggleMaitrise(int $id): bool
     {
-        $this->guardWrite();
-
         $this->execute("UPDATE {$this->table()} SET maitrise = NOT maitrise WHERE id = ?", [$id]);
 
         $result = $this->fetchOne("SELECT maitrise FROM {$this->table()} WHERE id = ?", [$id]);
@@ -115,8 +113,6 @@ final class ChinoisGrammaireRepository extends Model
 
     public function deleteGrammaire(int $id): bool
     {
-        $this->guardWrite();
-
         return $this->delete(['id' => $id]);
     }
 
@@ -125,8 +121,6 @@ final class ChinoisGrammaireRepository extends Model
      */
     public function updateGrammaire(int $id, array $data): bool
     {
-        $this->guardWrite();
-
         return $this->update($data, ['id' => $id]);
     }
 
@@ -147,8 +141,6 @@ final class ChinoisGrammaireRepository extends Model
 
     public function markXpRewarded(int $id): bool
     {
-        $this->guardWrite();
-
         return $this->update(['xp_rewarded' => 1], ['id' => $id]);
     }
 

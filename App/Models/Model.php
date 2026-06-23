@@ -50,12 +50,10 @@ abstract class Model
 
     protected function guardWrite(): void
     {
-        if (! App::isReadOnly())
+        if (App::isTesting())
         {
-            return;
+            throw new LogicException('Écriture en base interdite pendant les tests.');
         }
-
-        throw new LogicException('Écriture en base interdite en mode lecture seule.');
     }
 
     /*
@@ -146,6 +144,8 @@ abstract class Model
      */
     protected function execute(string $sql, array $params = []): bool
     {
+        $this->guardWrite();
+
         return $this->query($sql, $params) !== false;
     }
 

@@ -72,23 +72,14 @@ final class App
         );
     }
 
-    public static function isTesting(): bool
-    {
-        return self::env() === 'testing';
-    }
-
     public static function isProduction(): bool
     {
         return self::env() === 'production';
     }
 
-    public static function isLocal(): bool
+    public static function isTesting(): bool
     {
-        return self::env() === 'local';
+        return self::env() === 'testing';
     }
 
-    public static function isReadOnly(): bool
-    {
-        return self::isTesting();
-    }
 }
