@@ -90,6 +90,7 @@ abstract class Model
     /**
      * @template T of object
      *
+     * @param array<int|string, mixed> $params
      * @param class-string<T>|null $class
      *
      * @return ($class is class-string<T> ? T|null : stdClass|null)
@@ -116,6 +117,7 @@ abstract class Model
     /**
      * @template T of object
      *
+     * @param array<int|string, mixed> $params
      * @param class-string<T>|null $class
      *
      * @return ($class is class-string<T> ? list<T> : list<stdClass>)
@@ -166,7 +168,7 @@ abstract class Model
      *
      * @param class-string<T>|null $class
      *
-     * @return T|null
+     * @return ($class is class-string<T> ? T|null : stdClass|null)
      */
     public function find(int $id, ?string $class = null): ?object
     {
@@ -174,12 +176,12 @@ abstract class Model
     }
 
     /**
-     * @param array<string, mixed> $where
-     *
      * @template T of object
+     *
+     * @param array<string, mixed> $where
      * @param class-string<T>|null $class
      *
-     * @return list<T>
+     * @return ($class is class-string<T> ? list<T> : list<stdClass>)
      */
     public function findBy(array $where, ?string $class = null): array
     {
@@ -340,6 +342,9 @@ abstract class Model
         return (int) ($data['total'] ?? 0);
     }
 
+    /**
+     * @param array<int|string, mixed> $params
+     */
     protected function countWhere(string $where, array $params = []): int
     {
         $result =
@@ -365,6 +370,14 @@ abstract class Model
     |--------------------------------------------------------------------------
     */
 
+    /**
+     * @param array<string, mixed> $where
+     *
+     * @return array{
+     *     conditions: list<string>,
+     *     values: list<mixed>
+     * }
+     */
     private function buildWhere(array $where): array
     {
         $conditions = [];

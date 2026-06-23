@@ -136,8 +136,8 @@ final class ArtbookRepository extends Model
             "
         );
 
-        $authorTotal = (int) (($author?->total) ?? 0);
-        $seriesTotal = (int) (($series?->total) ?? 0);
+        $authorTotal = $author !== null ? (int) $author->total : 0;
+        $seriesTotal = $series !== null ? (int) $series->total : 0;
 
         if ($authorTotal === 0 && $seriesTotal === 0)
         {
@@ -181,25 +181,47 @@ final class ArtbookRepository extends Model
 
     private function mapLatestArtbook(object $row): LatestArtbookData
     {
+        /** @var array{
+         *     artbook: string,
+         *     auteur: ?string,
+         *     thumbnail: ?string,
+         *     extension: ?string
+         * } $data
+         */
+        $data = (array) $row;
+
         return new LatestArtbookData(
-            artbook: (string) $row->artbook,
-            auteur: $row->auteur,
-            thumbnail: $row->thumbnail,
-            extension: $row->extension
+            artbook: $data['artbook'],
+            auteur: $data['auteur'],
+            thumbnail: $data['thumbnail'],
+            extension: $data['extension']
         );
     }
 
     private function mapMostRepresented(object $row): MostRepresentedArtbookData
     {
+        /** @var array{
+         *     type: string,
+         *     name: string,
+         *     total: int|string,
+         *     thumbnail: ?string,
+         *     extension: ?string
+         * } $data
+         */
+        $data = (array) $row;
+
         return new MostRepresentedArtbookData(
-            type: (string) $row->type,
-            name: (string) $row->name,
-            total: (int) $row->total,
-            thumbnail: $row->thumbnail,
-            extension: $row->extension
+            type: $data['type'],
+            name: $data['name'],
+            total: (int) $data['total'],
+            thumbnail: $data['thumbnail'],
+            extension: $data['extension']
         );
     }
 
+    /**
+     * @param array<string, mixed> $params
+     */
     private function fetchSingleValue(
         string $sql,
         string $field,
