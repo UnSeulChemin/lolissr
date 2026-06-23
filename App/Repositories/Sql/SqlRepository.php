@@ -6,15 +6,13 @@ namespace App\Repositories\Sql;
 
 use App\Models\Model;
 
-use stdClass;
-
 final class SqlRepository extends Model
 {
     /**
-     * @return list<stdClass>
+     * @return list<object>
      */
     public function executeQuery(string $sql): array
     {
-        return $this->fetchAll(trim($sql), [], stdClass::class);
+        return $this->fetchAll(trim($sql));
     }
 }

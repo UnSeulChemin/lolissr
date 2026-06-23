@@ -12,6 +12,7 @@ use PDO;
 use PDOStatement;
 use RuntimeException;
 use Throwable;
+use stdClass;
 
 abstract class Model
 {
@@ -91,7 +92,7 @@ abstract class Model
      *
      * @param class-string<T>|null $class
      *
-     * @return T|null
+     * @return ($class is class-string<T> ? T|null : stdClass|null)
      */
     protected function fetchOne(string $sql, array $params = [], ?string $class = null): ?object
     {
@@ -117,7 +118,7 @@ abstract class Model
      *
      * @param class-string<T>|null $class
      *
-     * @return list<T>
+     * @return ($class is class-string<T> ? list<T> : list<stdClass>)
      */
     protected function fetchAll(string $sql, array $params = [], ?string $class = null): array
     {
@@ -131,9 +132,14 @@ abstract class Model
         if ($class !== null)
         {
             $statement->setFetchMode(PDO::FETCH_CLASS, $class);
+
+            /** @var list<T> $results */
+            $results = $statement->fetchAll();
+
+            return $results;
         }
 
-        /** @var list<T> $results */
+        /** @var list<stdClass> $results */
         $results = $statement->fetchAll();
 
         return $results;

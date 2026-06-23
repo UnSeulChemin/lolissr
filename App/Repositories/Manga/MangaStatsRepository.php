@@ -10,8 +10,6 @@ use App\Models\Model;
 
 use Framework\Support\Str;
 
-use stdClass;
-
 final class MangaStatsRepository extends Model
 {
     protected string $table = 'manga';
@@ -175,7 +173,6 @@ final class MangaStatsRepository extends Model
 
     public function isSeriesCompleted(string $slug): bool
     {
-        /** @var stdClass|null $result */
         $result = $this->fetchOne(
             "
             SELECT
@@ -188,8 +185,7 @@ final class MangaStatsRepository extends Model
             ",
             [
                 'slug' => Str::slug($slug),
-            ],
-            stdClass::class
+            ]
         );
 
         if ($result === null)
@@ -261,8 +257,7 @@ final class MangaStatsRepository extends Model
      */
     private function fetchSingleValue(string $sql, string $field, array $params = [], mixed $default = 0): mixed
     {
-        /** @var stdClass|null $result */
-        $result = $this->fetchOne($sql, $params, stdClass::class);
+        $result = $this->fetchOne($sql, $params);
 
         if ($result === null)
         {
