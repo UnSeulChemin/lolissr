@@ -37,9 +37,10 @@ $mostRepresentedThumbnailPath =
 
 if (
     $mostRepresented !== null
-    && !empty($mostRepresented->thumbnail)
-    && !empty($mostRepresented->extension)
-) {
+    && $mostRepresented->thumbnail !== ''
+    && $mostRepresented->extension !== ''
+)
+{
     $mostRepresentedThumbnailPath =
         $baseUri
         . 'images/artbooks/thumbnail/'

@@ -18,32 +18,22 @@ final class Logger
 
     private static function enabled(): bool
     {
-        return (bool) config(
-            'log.enabled',
-            true,
-        );
+        return (bool) config('log.enabled', true);
     }
 
     private static function directory(): string
     {
-        return self::$directory
-            ??= base_path(
-                'storage/logs',
-            );
+        return self::$directory ??= base_path('storage/logs');
     }
 
     private static function file(): string
     {
-        return self::$file
-            ??= self::directory()
-            . DIRECTORY_SEPARATOR
-            . 'app.log';
+        return self::$file ??= self::directory() . DIRECTORY_SEPARATOR . 'app.log';
     }
 
     private static function ensureDirectory(): bool
     {
-        $directory =
-            self::directory();
+        $directory = self::directory();
 
         return is_dir($directory)
             || mkdir(
@@ -89,8 +79,9 @@ final class Logger
                     ),
             ];
 
-        } catch (Throwable) {
-
+        }
+        catch (Throwable)
+        {
             return null;
         }
     }
@@ -161,12 +152,8 @@ final class Logger
                     | JSON_THROW_ON_ERROR,
                 );
 
-        } catch (JsonException) {
-
-            return;
         }
-
-        if ($content === false)
+        catch (JsonException)
         {
             return;
         }
@@ -174,8 +161,7 @@ final class Logger
         file_put_contents(
             self::file(),
             $content . PHP_EOL,
-            FILE_APPEND
-            | LOCK_EX,
+            FILE_APPEND | LOCK_EX,
         );
     }
 
@@ -210,55 +196,36 @@ final class Logger
     /**
      * @param array<string, mixed> $context
      */
-    public static function warning(
-        string $message,
-        array $context = [],
-    ): void {
-        self::write(
-            'WARNING',
-            $message,
-            $context,
-        );
+    public static function warning(string $message, array $context = []): void
+    {
+        self::write('WARNING', $message, $context);
     }
 
     /**
      * @param array<string, mixed> $context
      */
-    public static function error(
-        string $message,
-        array $context = [],
-    ): void {
-        self::write(
-            'ERROR',
-            $message,
-            $context,
-        );
+    public static function error(string $message, array $context = []): void
+    {
+        self::write('ERROR', $message, $context);
     }
 
     /**
      * @param array<string, mixed> $context
      */
-    public static function exception(
-        Throwable $exception,
-        array $context = [],
-    ): void {
-
+    public static function exception(Throwable $exception, array $context = []): void
+    {
         self::error(
             $exception->getMessage(),
             array_merge(
                 $context,
                 [
-                    'exception' =>
-                        $exception::class,
+                    'exception' => $exception::class,
 
-                    'file' =>
-                        $exception->getFile(),
+                    'file' => $exception->getFile(),
 
-                    'line' =>
-                        $exception->getLine(),
+                    'line' => $exception->getLine(),
 
-                    'trace' =>
-                        $exception->getTraceAsString(),
+                    'trace' => $exception->getTraceAsString(),
                 ],
             ),
         );

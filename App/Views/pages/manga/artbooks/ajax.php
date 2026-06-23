@@ -28,23 +28,19 @@ $baseUri =
 
 <?php foreach ($artbooks as $artbook):
 
-    $slug =
-        (string) ($artbook->slug ?? '');
+    $slug = $artbook->slug;
 
-    $title =
-        (string) ($artbook->artbook ?? '');
+    $title = $artbook->artbook;
 
-    $author =
-        (string) ($artbook->auteur ?? '');
+    $author = $artbook->auteur;
 
-    $serie =
-        (string) ($artbook->serie ?? '');
+    $serie = $artbook->serie;
 
-    $thumbnail =
-        (string) ($artbook->thumbnail ?? '');
+    $thumbnail = $artbook->thumbnail;
 
-    $extension =
-        (string) ($artbook->extension ?? '');
+    $extension = $artbook->extension;
+
+    $numero = $artbook->numero;
 
     if (
         $slug === ''
@@ -69,7 +65,7 @@ $baseUri =
         collection-card-link
     "
     data-prefetch
-    href="<?= e($baseUri) ?>manga/artbooks/<?= e($slug) ?>/<?= (int) $artbook->numero ?>"
+    href="<?= e($baseUri) ?>manga/artbooks/<?= e($slug) ?>/<?= $numero ?>"
 >
 
     <div class="card-image-box-portrait">

@@ -24,7 +24,7 @@ final class Router
     private array $groupPrefixes = [];
 
     /**
-     * @var list<string>
+     * @var list<class-string>
      */
     private array $groupMiddlewares = [];
 
@@ -34,113 +34,66 @@ final class Router
         $this->collection = $collection;
     }
 
-    public function prefix(
-        string $prefix,
-    ): self {
+    public function prefix(string $prefix): self
+    {
         $clone = clone $this;
 
-        $clone->groupPrefixes[] =
-            trim(
-                $prefix,
-                '/',
-            );
+        $clone->groupPrefixes[] = trim($prefix, '/');
 
         return $clone;
     }
 
     /**
-     * @param string|list<string> $middleware
+     * @param class-string|list<class-string> $middleware
      */
-    public function middleware(
-        array|string $middleware,
-    ): self {
+    public function middleware(array|string $middleware): self
+    {
         $clone = clone $this;
 
-        $clone->groupMiddlewares =
-            array_merge(
-                $clone->groupMiddlewares,
-                (array) $middleware,
-            );
+        $clone->groupMiddlewares = array_merge($clone->groupMiddlewares, (array) $middleware);
 
         return $clone;
     }
 
-    public function group(
-        Closure $callback,
-    ): void {
+    public function group(Closure $callback): void
+    {
         $callback($this);
     }
 
-    public function get(
-        string $path,
-        array|string|Closure $action,
-        array $middlewares = [],
-    ): void {
-        $this->addRoute(
-            'GET',
-            $path,
-            $action,
-            $middlewares,
-        );
-    }
-
-    public function post(
-        string $path,
-        array|string|Closure $action,
-        array $middlewares = [],
-    ): void {
-        $this->addRoute(
-            'POST',
-            $path,
-            $action,
-            $middlewares,
-        );
+    /**
+     * @param array{class-string,string}|string|Closure $action
+     * @param list<class-string> $middlewares
+     */
+    public function get(string $path, array|string|Closure $action, array $middlewares = []): void
+    {
+        $this->addRoute('GET', $path, $action, $middlewares);
     }
 
     /**
-     * @param list<string> $middlewares
+     * @param array{class-string,string}|string|Closure $action
+     * @param list<class-string> $middlewares
      */
-    private function addRoute(
-        string $method,
-        string $path,
-        array|string|Closure $action,
-        array $middlewares,
-    ): void {
+    public function post(string $path, array|string|Closure $action, array $middlewares = []): void
+    {
+        $this->addRoute('POST', $path, $action, $middlewares);
+    }
 
+    /**
+     * @param array{class-string,string}|string|Closure $action
+     * @param list<class-string> $middlewares
+     */
+    private function addRoute(string $method, string $path, array|string|Closure $action, array $middlewares): void
+    {
         $segments =
             array_filter(
-                array_merge(
-                    $this->groupPrefixes,
-                    [
-                        trim(
-                            $path,
-                            '/',
-                        ),
-                    ],
-                ),
-                static fn (
-                    string $segment,
-                ): bool => $segment !== '',
+                array_merge($this->groupPrefixes, [trim($path, '/')]),
+                static fn (string $segment): bool
+                    => $segment !== ''
             );
 
-        $fullPath =
-            '/'
-            . implode(
-                '/',
-                $segments,
-            );
+        $fullPath = '/' . implode('/', $segments);
 
-        $this->collection->add(
-            new Route(
-                $method,
-                $fullPath,
-                $action,
-                array_merge(
-                    $this->groupMiddlewares,
-                    $middlewares,
-                ),
-            ),
-        );
+        $this->collection->add(new Route($method, $fullPath, $action, array_merge($this->groupMiddlewares, $middlewares)));
     }
 
     /**
@@ -148,113 +101,63 @@ final class Router
      */
     public function dispatch(): void
     {
-        $container =
-            AppContainer::get();
+        $container = AppContainer::get();
 
         /** @var Request $request */
-        $request =
-            $container->get(
-                Request::class,
-            );
+        $request = $container->get(Request::class);
 
-        $uri =
-            $request->path();
+        $uri = $request->path();
 
-        $method =
-            $request->method();
+        $method = $request->method();
 
-        foreach (
-            $this->collection->forMethod(
-                $method,
-            )
-            as $route
-        ) {
+        foreach ($this->collection->forMethod($method) as $route)
+        {
 
-            if (
-                ! preg_match(
-                    $route->pattern,
-                    $uri,
-                    $matches,
-                )
-            ) {
+            if (preg_match($route->pattern, $uri, $matches) !== 1)
+            {
                 continue;
             }
 
-            array_shift(
-                $matches,
-            );
+            array_shift($matches);
 
-            $this->runMiddlewares(
-                $container,
-                $route,
-                $request,
-            );
+            $this->runMiddlewares($container, $route, $request);
 
-            $params =
+            /** @var list<int|string> $params */
+            $params = array_values(
                 array_map(
-                    static function (
-                        string $value,
-                    ): string|int {
+                    static function (string $value): string|int
+                    {
+                        $value = rawurldecode($value);
 
-                        $value =
-                            rawurldecode(
-                                $value,
-                            );
-
-                        return ctype_digit(
-                            $value,
-                        )
-                            ? (int) $value
-                            : $value;
+                        return ctype_digit($value) ? (int) $value : $value;
                     },
                     $matches,
-                );
-
-            $this->executeAction(
-                $container,
-                $route,
-                $params,
-                $request,
+                ),
             );
+
+            $this->executeAction($container, $route, $params, $request);
 
             return;
         }
 
-        throw new NotFoundException(
-            "Route non trouvée : {$uri}",
-        );
+        throw new NotFoundException("Route non trouvée : {$uri}");
     }
 
     /**
      * Execute all route middlewares.
      */
-    private function runMiddlewares(
-        Container $container,
-        Route $route,
-        Request $request,
-    ): void {
+    private function runMiddlewares(Container $container, Route $route, Request $request): void
+    {
+        foreach ($route->getMiddlewares() as $middlewareClass)
+        {
+            $middleware = $container->get($middlewareClass);
 
-        foreach (
-            $route->getMiddlewares()
-            as $middlewareClass
-        ) {
-
-            $middleware =
-                $container->get(
-                    $middlewareClass,
-                );
-
-            if (
-                ! $middleware instanceof MiddlewareInterface
-            ) {
-                throw new RuntimeException(
-                    "Invalid middleware: {$middlewareClass}",
-                );
+            if (! $middleware instanceof MiddlewareInterface)
+            {
+                throw new RuntimeException("Invalid middleware: {$middlewareClass}");
             }
 
-            $middleware->handle(
-                $request,
-            );
+            $middleware->handle($request);
         }
     }
 
@@ -263,15 +166,9 @@ final class Router
      *
      * @param list<string|int> $params
      */
-    private function executeAction(
-        Container $container,
-        Route $route,
-        array $params,
-        Request $request,
-    ): void {
-
-        $action =
-            $route->getAction();
+    private function executeAction(Container $container, Route $route, array $params, Request $request): void
+    {
+        $action = $route->getAction();
 
         if ($action instanceof Closure)
         {
@@ -284,54 +181,25 @@ final class Router
         {
             if (! str_contains($action, '@'))
             {
-                throw new RuntimeException(
-                    "Invalid route action: {$action}",
-                );
+                throw new RuntimeException("Invalid route action: {$action}");
             }
 
-            $action =
-                explode(
-                    '@',
-                    $action,
-                    2,
-                );
+            $action = explode('@', $action, 2);
         }
 
-        [
-            $controllerClass,
-            $methodName,
-        ] = $action;
+        [$controllerClass, $methodName] = $action;
 
-        $controller =
-            $container->get(
-                $controllerClass,
-            );
+        $controller = $container->get($controllerClass);
 
-        if (! method_exists(
-            $controller,
-            $methodName,
-        )) {
-            throw new RuntimeException(
-                sprintf(
-                    'Method %s::%s does not exist.',
-                    $controller::class,
-                    $methodName,
-                ),
-            );
+        if (! method_exists($controller, $methodName))
+        {
+            throw new RuntimeException(sprintf('Method %s::%s does not exist.', $controller::class, $methodName));
         }
 
-        $arguments =
-            $this->resolveArguments(
-                $container,
-                $controller,
-                $methodName,
-                $params,
-                $request,
-            );
+        $arguments = $this->resolveArguments($container, $controller, $methodName, $params, $request);
 
-        $controller->{$methodName}(
-            ...$arguments,
-        );
+        /** @phpstan-ignore-next-line */
+        $controller->{$methodName}(...$arguments);
     }
 
     /**
@@ -348,62 +216,40 @@ final class Router
         Request $request,
     ): array {
 
-        $reflection =
-            new ReflectionMethod(
-                $controller,
-                $method,
-            );
+        $reflection = new ReflectionMethod($controller, $method);
 
         $arguments = [];
 
-        foreach (
-            $reflection->getParameters()
-            as $parameter
-        ) {
+        foreach ($reflection->getParameters() as $parameter)
+        {
+            $type = $parameter->getType();
 
-            $type =
-                $parameter->getType();
+            if ($type instanceof ReflectionNamedType && ! $type->isBuiltin())
+            {
+                $className = $type->getName();
 
-            if (
-                $type instanceof ReflectionNamedType
-                && ! $type->isBuiltin()
-            ) {
-
-                $className =
-                    $type->getName();
-
-                if (
-                    $className === Request::class
-                ) {
-                    $arguments[] =
-                        $request;
+                if ($className === Request::class)
+                {
+                    $arguments[] = $request;
 
                     continue;
                 }
 
-                $arguments[] =
-                    $container->get(
-                        $className,
-                    );
+                $arguments[] = $container->get($className);
 
                 continue;
             }
 
             if ($params !== [])
             {
-                $arguments[] =
-                    array_shift(
-                        $params,
-                    );
+                $arguments[] = array_shift($params);
 
                 continue;
             }
 
-            if (
-                $parameter->isDefaultValueAvailable()
-            ) {
-                $arguments[] =
-                    $parameter->getDefaultValue();
+            if ($parameter->isDefaultValueAvailable())
+            {
+                $arguments[] = $parameter->getDefaultValue();
 
                 continue;
             }

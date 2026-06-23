@@ -9,41 +9,27 @@ use JsonException;
 
 final class Response
 {
-    private static function setStatusCode(
-        int $statusCode,
-    ): void {
-
-        if (! headers_sent()) {
-
-            http_response_code(
-                $statusCode,
-            );
+    private static function setStatusCode(int $statusCode): void
+    {
+        if (! headers_sent())
+        {
+            http_response_code($statusCode);
         }
     }
 
-    private static function sendContentType(
-        string $contentType,
-    ): void {
-
-        if (! headers_sent()) {
-            header(
-                "Content-Type: {$contentType}; charset=UTF-8",
-            );
+    private static function sendContentType(string $contentType): void
+    {
+        if (! headers_sent())
+        {
+            header("Content-Type: {$contentType}; charset=UTF-8");
         }
     }
 
-    public static function html(
-        string $content,
-        int $statusCode = 200,
-    ): never {
+    public static function html(string $content, int $statusCode = 200): never
+    {
+        self::setStatusCode($statusCode);
 
-        self::setStatusCode(
-            $statusCode,
-        );
-
-        self::sendContentType(
-            'text/html',
-        );
+        self::sendContentType('text/html');
 
         echo $content;
 
@@ -53,18 +39,11 @@ final class Response
     /**
      * @param array<string, mixed> $data
      */
-    public static function json(
-        array $data,
-        int $statusCode = 200,
-    ): never {
+    public static function json(array $data, int $statusCode = 200): never
+    {
+        self::setStatusCode($statusCode);
 
-        self::setStatusCode(
-            $statusCode,
-        );
-
-        self::sendContentType(
-            'application/json',
-        );
+        self::sendContentType('application/json');
 
         try {
 
@@ -76,27 +55,18 @@ final class Response
                 | JSON_THROW_ON_ERROR,
             );
 
-        } catch (JsonException $exception) {
+        }
+        catch (JsonException $exception)
+        {
+            Logger::exception($exception, ['type' => 'json_encode']);
 
-            Logger::exception(
-                $exception,
-                [
-                    'type' =>
-                        'json_encode',
-                ],
-            );
-
-            self::setStatusCode(
-                500,
-            );
+            self::setStatusCode(500);
 
             echo json_encode(
                 [
-                    'success' =>
-                        false,
+                    'success' => false,
 
-                    'message' =>
-                        'JSON encode error',
+                    'message' => 'JSON encode error',
                 ],
                 JSON_UNESCAPED_UNICODE
                 | JSON_UNESCAPED_SLASHES
@@ -107,18 +77,11 @@ final class Response
         exit;
     }
 
-    public static function redirect(
-        string $url,
-        int $statusCode = 302,
-    ): never {
-
-        if (! headers_sent()) {
-
-            header(
-                'Location: ' . $url,
-                true,
-                $statusCode,
-            );
+    public static function redirect(string $url, int $statusCode = 302): never
+    {
+        if (! headers_sent())
+        {
+            header('Location: ' . $url, true, $statusCode);
 
             exit;
         }

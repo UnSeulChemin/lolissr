@@ -51,27 +51,19 @@ final class ErrorHandler
         );
     }
 
-    public static function handleException(
-        Throwable $exception,
-    ): never {
-
-        try {
-
+    public static function handleException(Throwable $exception): never
+    {
+        try
+        {
             /*
             |--------------------------------------------------------------------------
             | JSON RESPONSE EXCEPTION
             |--------------------------------------------------------------------------
             */
 
-            if (
-                $exception instanceof JsonResponseException
-            ) {
-
-                $exception
-                    ->response()
-                    ->send();
-
-                exit;
+            if ($exception instanceof JsonResponseException)
+            {
+                $exception->response()->send();
             }
 
             /*
@@ -80,64 +72,34 @@ final class ErrorHandler
             |--------------------------------------------------------------------------
             */
 
-            if (
-                $exception instanceof BaseHttpException
-            ) {
+            if ($exception instanceof BaseHttpException)
+            {
+                self::logHttpException($exception);
 
-                self::logHttpException(
-                    $exception,
-                );
+                self::renderHttpException($exception);
+            }
+            else
+            {
+                Logger::exception($exception, ['type' => 'uncaught_exception']);
 
-                self::renderHttpException(
-                    $exception,
-                );
+                self::render500(App::debug() ? $exception->getMessage() : 'Une erreur interne est survenue.');
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | UNCAUGHT EXCEPTION
-            |--------------------------------------------------------------------------
-            */
+        }
+        catch (Throwable $fallbackException)
+        {
+            Logger::exception($fallbackException, ['type' => 'error_handler_failure']);
 
-            Logger::exception(
-                $exception,
-                [
-                    'type' =>
-                        'uncaught_exception',
-                ],
-            );
-
-            self::render500(
-                App::debug()
-                    ? $exception->getMessage()
-                    : 'Une erreur interne est survenue.',
-            );
-
-        } catch (Throwable $fallbackException) {
-
-            Logger::exception(
-                $fallbackException,
-                [
-                    'type' =>
-                        'error_handler_failure',
-                ],
-            );
-
-            Response::html(
-                'Critical framework error.',
-                500,
-            );
-
-            exit;
+            Response::html('Critical framework error.', 500);
         }
     }
 
     public static function handleShutdown(): void
     {
-        $error =
-            error_get_last();
+        $error = error_get_last();
 
-        if ($error === null) {
+        if ($error === null)
+        {
             return;
         }
 
@@ -149,67 +111,39 @@ final class ErrorHandler
             E_USER_ERROR,
         ];
 
-        if (
-            ! in_array(
-                $error['type'],
-                $fatalErrors,
-                true,
-            )
-        ) {
+        if (! in_array($error['type'], $fatalErrors, true))
+        {
             return;
         }
 
-        Logger::error(
-            'Fatal Error',
-            [
-                'message' =>
-                    $error['message'],
+        Logger::error('Fatal Error', ['message' => $error['message'], 'file' => $error['file'], 'line' => $error['line']]);
 
-                'file' =>
-                    $error['file'],
-
-                'line' =>
-                    $error['line'],
-            ],
-        );
-
-        self::render500(
-            App::debug()
-                ? $error['message']
-                : 'Une erreur interne est survenue.',
-        );
+        self::render500(App::debug() ? $error['message'] : 'Une erreur interne est survenue.');
     }
 
-    private static function logHttpException(
-        BaseHttpException $exception,
-    ): void {
-
+    private static function logHttpException(BaseHttpException $exception): void
+    {
         Logger::warning(
             'HTTP Exception',
             [
-                'status' =>
-                    $exception->getStatusCode(),
+                'status' => $exception->getStatusCode(),
 
-                'message' =>
-                    $exception->getMessage(),
+                'message' => $exception->getMessage(),
 
-                'data' =>
-                    $exception->getData(),
+                'data' => $exception->getData(),
             ],
         );
     }
 
-    private static function displayMessage(
-        BaseHttpException $exception,
-    ): string {
-
-        if (App::debug()) {
+    private static function displayMessage(BaseHttpException $exception): string
+    {
+        if (App::debug())
+        {
             return $exception->getMessage();
         }
 
-        return match (
-            $exception->getStatusCode()
-        ) {
+        return match ($exception->getStatusCode())
+        {
             401 => 'Non authentifié',
             403 => 'Accès interdit',
             404 => 'Page introuvable',
@@ -222,22 +156,14 @@ final class ErrorHandler
 
     private static function controller(): ErrorController
     {
-        return new ErrorController(
-            Request::capture(),
-        );
+        return new ErrorController(Request::capture());
     }
 
-    private static function renderHttpException(
-        BaseHttpException $exception,
-    ): never {
+    private static function renderHttpException(BaseHttpException $exception): never
+    {
+        $request = Request::capture();
 
-        $request =
-            Request::capture();
-
-        $message =
-            self::displayMessage(
-                $exception,
-            );
+        $message = self::displayMessage($exception);
 
         /*
         |--------------------------------------------------------------------------
@@ -245,30 +171,20 @@ final class ErrorHandler
         |--------------------------------------------------------------------------
         */
 
-        if (
-            $request->expectsJson()
-        ) {
-
-            foreach (
-                $exception->getHeaders()
-                as $header => $value
-            ) {
-
-                header(
-                    "{$header}: {$value}",
-                );
+        if ($request->expectsJson())
+        {
+            foreach ($exception->getHeaders() as $header => $value)
+            {
+                header("{$header}: {$value}");
             }
 
             Response::json(
                 [
-                    'success' =>
-                        false,
+                    'success' => false,
 
-                    'message' =>
-                        $message,
+                    'message' => $message,
 
-                    'data' =>
-                        $exception->getData(),
+                    'data' => $exception->getData(),
                 ],
                 $exception->getStatusCode(),
             );
@@ -280,57 +196,28 @@ final class ErrorHandler
         |--------------------------------------------------------------------------
         */
 
-        $controller =
-            self::controller();
+        $controller = self::controller();
 
-        match (
-            $exception->getStatusCode()
-        ) {
+        match ($exception->getStatusCode())
+        {
+            401 => $controller->unauthorized($message),
 
-            401
-                => $controller->unauthorized(
-                    $message,
-                ),
+            403 => $controller->forbidden($message),
 
-            403
-                => $controller->forbidden(
-                    $message,
-                ),
+            404 => $controller->notFound($message),
 
-            404
-                => $controller->notFound(
-                    $message,
-                ),
+            405 => $controller->methodNotAllowed($message),
 
-            405
-                => $controller->methodNotAllowed(
-                    $message,
-                ),
+            419 => $controller->csrfExpired($message),
 
-            419
-                => $controller->csrfExpired(
-                    $message,
-                ),
+            422 => $controller->validationError($message),
 
-            422
-                => $controller->validationError(
-                    $message,
-                ),
-
-            default
-                => $controller->serverError(
-                    $message,
-                ),
+            default => $controller->serverError($message),
         };
     }
 
-    private static function render500(
-        string $message,
-    ): never {
-
-        self::controller()
-            ->serverError(
-                $message,
-            );
+    private static function render500(string $message): never
+    {
+        self::controller()->serverError($message);
     }
 }

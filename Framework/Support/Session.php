@@ -21,72 +21,32 @@ final class Session
             return;
         }
 
-        if (
-            session_status()
-            === PHP_SESSION_ACTIVE
-        ) {
+        if (session_status() === PHP_SESSION_ACTIVE)
+        {
             self::$started = true;
 
             return;
         }
 
-        $directory =
-            self::directory();
+        $directory = self::directory();
 
-        if (
-            ! is_dir($directory)
-            && ! mkdir(
-                $directory,
-                0755,
-                true,
-            )
-            && ! is_dir($directory)
-        ) {
-            throw new RuntimeException(
-                'Impossible de créer le dossier de session.',
-            );
+        if (! is_dir($directory) && ! mkdir($directory, 0755, true) && ! is_dir($directory)
+        )
+        {
+            throw new RuntimeException('Impossible de créer le dossier de session.');
         }
 
-        session_save_path(
-            $directory,
-        );
+        session_save_path($directory);
 
-        session_name(
-            (string) env(
-                'SESSION_NAME',
-                'LOLISSR_SESSION',
-            ),
-        );
+        session_name((string) env('SESSION_NAME', 'LOLISSR_SESSION'));
 
-        $secure =
-            self::isHttps();
+        $secure = self::isHttps();
 
-        ini_set(
-            'session.use_strict_mode',
-            '1',
-        );
-
-        ini_set(
-            'session.use_only_cookies',
-            '1',
-        );
-
-        ini_set(
-            'session.use_trans_sid',
-            '0',
-        );
-
-        ini_set(
-            'session.cookie_httponly',
-            '1',
-        );
-
-        ini_set(
-            'session.cookie_secure',
-            $secure
-                ? '1'
-                : '0',
-        );
+        ini_set('session.use_strict_mode', '1');
+        ini_set('session.use_only_cookies', '1');
+        ini_set('session.use_trans_sid', '0');
+        ini_set('session.cookie_httponly', '1');
+        ini_set('session.cookie_secure', $secure ? '1' : '0');
 
         session_set_cookie_params([
             'lifetime' => 0,
@@ -113,52 +73,34 @@ final class Session
     {
         $https = $_SERVER['HTTPS'] ?? null;
 
-        return (
-            is_string($https)
-            && $https !== ''
-            && strtolower($https) !== 'off'
-        )
-        || (int) ($_SERVER['SERVER_PORT'] ?? 0) === 443
-        || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https';
+        return (is_string($https) && $https !== '' && strtolower($https) !== 'off')
+            || (int) ($_SERVER['SERVER_PORT'] ?? 0) === 443
+            || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https';
     }
 
-    public static function set(
-        string $key,
-        mixed $value,
-    ): void {
-
+    public static function set(string $key, mixed $value): void
+    {
         self::ensureStarted();
 
         $_SESSION[$key] = $value;
     }
 
-    public static function get(
-        string $key,
-        mixed $default = null,
-    ): mixed {
-
+    public static function get(string $key, mixed $default = null): mixed
+    {
         self::ensureStarted();
 
-        return $_SESSION[$key]
-            ?? $default;
+        return $_SESSION[$key] ?? $default;
     }
 
-    public static function has(
-        string $key,
-    ): bool {
-
+    public static function has(string $key): bool
+    {
         self::ensureStarted();
 
-        return array_key_exists(
-            $key,
-            $_SESSION,
-        );
+        return array_key_exists($key, $_SESSION);
     }
 
-    public static function remove(
-        string $key,
-    ): void {
-
+    public static function remove(string $key): void
+    {
         self::ensureStarted();
 
         unset($_SESSION[$key]);
@@ -167,38 +109,29 @@ final class Session
     /**
      * @param list<string> $keys
      */
-    public static function forget(
-        array $keys,
-    ): void {
-
+    public static function forget(array $keys): void
+    {
         self::ensureStarted();
 
-        foreach ($keys as $key) {
-
+        foreach ($keys as $key)
+        {
             unset($_SESSION[$key]);
         }
     }
 
-    public static function pull(
-        string $key,
-        mixed $default = null,
-    ): mixed {
-
+    public static function pull(string $key, mixed $default = null): mixed
+    {
         self::ensureStarted();
 
-        $value = $_SESSION[$key]
-            ?? $default;
+        $value = $_SESSION[$key] ?? $default;
 
         unset($_SESSION[$key]);
 
         return $value;
     }
 
-    public static function flash(
-        string $key,
-        mixed $value,
-    ): void {
-
+    public static function flash(string $key, mixed $value): void
+    {
         self::ensureStarted();
 
         $_SESSION[self::FLASH_KEY][$key] = $value;
@@ -211,13 +144,9 @@ final class Session
     {
         self::ensureStarted();
 
-        $flash =
-            $_SESSION[self::FLASH_KEY]
-            ?? [];
+        $flash = $_SESSION[self::FLASH_KEY] ?? [];
 
-        unset(
-            $_SESSION[self::FLASH_KEY],
-        );
+        unset($_SESSION[self::FLASH_KEY]);
 
         return $flash;
     }
@@ -226,9 +155,7 @@ final class Session
     {
         self::ensureStarted();
 
-        session_regenerate_id(
-            true,
-        );
+        session_regenerate_id(true);
     }
 
     public static function destroy(): void
@@ -237,13 +164,19 @@ final class Session
 
         $_SESSION = [];
 
-        if (ini_get('session.use_cookies'))
+        if (ini_get('session.use_cookies') === '1')
         {
-            $params =
-                session_get_cookie_params();
+            $params = session_get_cookie_params();
+
+            $sessionName = session_name();
+
+            if (! is_string($sessionName))
+            {
+                $sessionName = 'PHPSESSID';
+            }
 
             setcookie(
-                session_name(),
+                $sessionName,
                 '',
                 [
                     'expires' => time() - 42000,
@@ -251,8 +184,7 @@ final class Session
                     'domain' => $params['domain'],
                     'secure' => $params['secure'],
                     'httponly' => $params['httponly'],
-                    'samesite' => $params['samesite']
-                        ?? 'Lax',
+                    'samesite' => $params['samesite'],
                 ],
             );
         }
@@ -271,9 +203,6 @@ final class Session
 
     private static function directory(): string
     {
-        return self::$directory
-            ??= base_path(
-                'storage/sessions',
-            );
+        return self::$directory ??= base_path('storage/sessions');
     }
 }

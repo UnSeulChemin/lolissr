@@ -124,7 +124,7 @@ final class MangaSearchRepository extends Model
      */
     private function extractSearchNumero(string $search): ?array
     {
-        $pattern = '/^(.*?)\s*(?:t|tome|vol|vol\.|volume|n°|no|#)?\s*0*([1-9][0-9]*)$/ixu';
+        $pattern = '/^(.*?)\s*(?:t|tome|vol(?:\.)?|volume|n°|no|\#)?\s*0*([1-9][0-9]*)$/iu';
 
         $matched = preg_match($pattern, $search, $matches);
 

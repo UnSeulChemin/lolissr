@@ -175,7 +175,7 @@ final readonly class MangaReadService
             extension: $manga->extension !== '' ? $manga->extension : null,
             statut: $manga->statut !== '' ? $manga->statut : 'en_cours',
             note: $manga->note === null ? null : (float) $manga->note,
-            averageNote: $manga->average_note === null ? null : (float) $manga->average_note,
+            averageNote: $manga->average_note,
             total: $manga->total ?? 0,
             totalLu: $manga->total_lu ?? 0,
             lu: $manga->lu

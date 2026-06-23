@@ -35,13 +35,10 @@ final class Database extends PDO
                     PDO::ATTR_EMULATE_PREPARES => false,
                 ],
             );
-        } catch (PDOException $exception) {
-            Logger::exception(
-                $exception,
-                [
-                    'type' => 'database_connection',
-                ],
-            );
+        }
+        catch (PDOException $exception)
+        {
+            Logger::exception($exception, ['type' => 'database_connection']);
 
             throw new RuntimeException(
                 App::debug()
@@ -54,7 +51,8 @@ final class Database extends PDO
 
     public function startTransaction(): void
     {
-        if ($this->inTransaction()) {
+        if ($this->inTransaction())
+        {
             return;
         }
 
@@ -63,7 +61,8 @@ final class Database extends PDO
 
     public function commitTransaction(): void
     {
-        if (! $this->inTransaction()) {
+        if (! $this->inTransaction())
+        {
             return;
         }
 
@@ -72,25 +71,28 @@ final class Database extends PDO
 
     public function rollbackTransaction(): void
     {
-        if (! $this->inTransaction()) {
+        if (! $this->inTransaction())
+        {
             return;
         }
 
         $this->rollBack();
     }
 
-    public function transaction(
-        callable $callback,
-    ): mixed {
+    public function transaction(callable $callback): mixed
+    {
         $this->startTransaction();
 
-        try {
+        try
+        {
             $result = $callback();
 
             $this->commitTransaction();
 
             return $result;
-        } catch (Throwable $exception) {
+        }
+        catch (Throwable $exception)
+        {
             $this->rollbackTransaction();
 
             throw $exception;
