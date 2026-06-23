@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\Chinois;
 
-use App\DTO\Chinois\Responses\ChinoisSearchData;
 use App\DTO\Chinois\Responses\ChinoisGrammaireData;
+use App\DTO\Chinois\Responses\ChinoisSearchData;
 use App\DTO\Chinois\Responses\ChinoisVocabulaireData;
 use App\Repositories\Chinois\ChinoisGrammaireRepository;
 use App\Repositories\Chinois\ChinoisSearchRepository;
@@ -16,7 +16,7 @@ final readonly class ChinoisReadService
     public function __construct(
         private ChinoisVocabulaireRepository $vocabulaireRepository,
         private ChinoisGrammaireRepository $grammaireRepository,
-        private ChinoisSearchRepository $searchRepository,
+        private ChinoisSearchRepository $searchRepository
     ) {
     }
 
@@ -25,8 +25,7 @@ final readonly class ChinoisReadService
      */
     public function mandarin(): array
     {
-        return $this->vocabulaireRepository
-            ->findByLangue('mandarin');
+        return $this->vocabulaireRepository->findByLangue('mandarin');
     }
 
     /**
@@ -34,32 +33,25 @@ final readonly class ChinoisReadService
      */
     public function jinyu(): array
     {
-        return $this->vocabulaireRepository
-            ->findByLangue('jinyu');
+        return $this->vocabulaireRepository->findByLangue('jinyu');
     }
 
     /**
      * @return list<ChinoisGrammaireData>
      */
-    public function hsk(
-        string $niveau,
-    ): array {
-        return $this->grammaireRepository
-            ->findByLevel($niveau);
+    public function hsk(string $niveau): array
+    {
+        return $this->grammaireRepository->findByLevel($niveau);
     }
 
-    public function grammaire(
-        int $id,
-    ): ?ChinoisGrammaireData {
-        return $this->grammaireRepository
-            ->findById($id);
+    public function grammaire(int $id): ?ChinoisGrammaireData
+    {
+        return $this->grammaireRepository->findById($id);
     }
 
-    public function vocabulaire(
-        int $id,
-    ): ?ChinoisVocabulaireData {
-        return $this->vocabulaireRepository
-            ->findById($id);
+    public function vocabulaire(int $id): ?ChinoisVocabulaireData
+    {
+        return $this->vocabulaireRepository->findById($id);
     }
 
     /**
@@ -67,8 +59,7 @@ final readonly class ChinoisReadService
      */
     public function flashcardsGrammaire(): array
     {
-        return $this->grammaireRepository
-            ->findNotMasteredDto();
+        return $this->grammaireRepository->findNotMasteredDto();
     }
 
     /**
@@ -76,24 +67,13 @@ final readonly class ChinoisReadService
      */
     public function flashcardsVocabulaire(): array
     {
-        return $this->vocabulaireRepository
-            ->findNotMasteredDto();
+        return $this->vocabulaireRepository->findNotMasteredDto();
     }
 
-    public function search(
-        string $query = '',
-    ): ChinoisSearchData {
+    public function search(string $query = ''): ChinoisSearchData
+    {
+        $query = trim($query);
 
-        $query =
-            trim($query);
-
-        return new ChinoisSearchData(
-            results:
-                $this->searchRepository
-                    ->search($query),
-
-            search:
-                $query,
-        );
+        return new ChinoisSearchData(results: $this->searchRepository->search($query), search: $query);
     }
 }

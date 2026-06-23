@@ -18,6 +18,6 @@ final readonly class SqlReadService
      */
     public function execute(string $sql): array
     {
-        return $this->sqlRepository->executeQuery(trim($sql));
+        return $this->sqlRepository->executeQuery($sql);
     }
 }

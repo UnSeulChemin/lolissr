@@ -6,6 +6,7 @@ namespace App\Services\Auth;
 
 use App\Models\User;
 use App\Repositories\Auth\UserRepository;
+
 use Framework\Support\Session;
 
 final readonly class AuthService
@@ -15,69 +16,40 @@ final readonly class AuthService
     ) {
     }
 
-    public function register(
-        string $username,
-        string $password,
-    ): bool {
+    public function register(string $username, string $password): bool
+    {
+        $username = trim($username);
 
-        $username =
-            trim($username);
-
-        if (
-            $username === ''
-            || $password === ''
-        ) {
+        if ($username === '' || $password === '')
+        {
             return false;
         }
 
-        if (
-            $this->userRepository->findByUsername(
-                $username,
-            ) !== null
-        ) {
+        if ($this->userRepository->findByUsername($username) !== null)
+        {
             return false;
         }
 
-        return $this->userRepository->create(
-            $username,
-            password_hash(
-                $password,
-                PASSWORD_DEFAULT,
-            ),
-        );
+        return $this->userRepository->create($username, password_hash($password, PASSWORD_DEFAULT));
     }
 
-    public function login(
-        string $username,
-        string $password,
-    ): bool {
-
-        $user =
-            $this->userRepository->findByUsername(
-                trim($username),
-            );
+    public function login(string $username, string $password): bool
+    {
+        $user = $this->userRepository->findByUsername(trim($username));
 
         if ($user === null)
         {
             return false;
         }
 
-        if (
-            ! password_verify(
-                $password,
-                $user->password,
-            )
-        ) {
+        if (! password_verify($password, $user->password))
+        {
             return false;
         }
 
         Session::regenerate();
+        Session::set('user_id', $user->id);
 
-        Session::set(
-            'user_id',
-            $user->id,
-        );
-        
         return true;
     }
 
@@ -88,20 +60,14 @@ final readonly class AuthService
 
     public function user(): ?User
     {
-        $userId = (int) Session::get(
-            'user_id',
-            0,
-        );
+        $userId = (int) Session::get('user_id', 0);
 
         if ($userId <= 0)
         {
             return null;
         }
 
-        return $this->userRepository
-            ->findById(
-                $userId,
-            );
+        return $this->userRepository->findById($userId);
     }
 
     public function check(): bool
