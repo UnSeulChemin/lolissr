@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories\Auth;
 
+use App\Constants\UserTitle;
 use App\Models\Model;
 use App\Models\User;
 
@@ -54,6 +55,7 @@ final class UserRepository extends Model
         return $this->insert([
             'username' => trim($username),
             'password' => $password,
+            'title' => UserTitle::EXPLORATEUR,
             'level' => 1,
             'xp' => 0,
         ]);
@@ -61,7 +63,15 @@ final class UserRepository extends Model
 
     public function updateLevelAndXp(int $userId, int $level, int $xp): bool
     {
-        return $this->update(['level' => $level, 'xp' => $xp], ['id' => $userId]);
+        return $this->update(
+            [
+                'level' => $level,
+                'xp' => $xp,
+            ],
+            [
+                'id' => $userId,
+            ],
+        );
     }
 
     public function updateTitle(int $userId, string $title): bool

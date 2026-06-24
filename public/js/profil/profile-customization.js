@@ -15,6 +15,10 @@ import {
     showToast,
 } from '../core/toast.js';
 
+import {
+    invalidateProfilePages,
+} from './profile-cache.js';
+
 // =========================================
 // OPEN TITLE MODAL
 // =========================================
@@ -32,7 +36,7 @@ async function openTitleModal()
         );
 
     if (
-        !title
+        ! title
     )
     {
         return;
@@ -45,15 +49,33 @@ async function openTitleModal()
         },
     );
 
-    document
-        .querySelector(
+    const customizationTitle =
+        document.querySelector(
             '.profile-customization-title',
-        )
-        ?.replaceChildren(
-            document.createTextNode(
-                title,
-            ),
         );
+
+    if (
+        customizationTitle
+    )
+    {
+        customizationTitle.textContent =
+            title;
+    }
+
+    const profileSubtitle =
+        document.querySelector(
+            '.profile-subtitle',
+        );
+
+    if (
+        profileSubtitle
+    )
+    {
+        profileSubtitle.textContent =
+            title;
+    }
+
+    invalidateProfilePages();
 
     showToast(
         'Titre mis à jour',

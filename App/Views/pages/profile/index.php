@@ -48,7 +48,7 @@ $username =
             <div class="profile-content">
 
                 <p class="profile-subtitle">
-                    Explorateur (Liste de titre? wtyle animé preminium)
+                    <?= e($user->title) ?>
                 </p>
 
                 <h1 class="profile-name">

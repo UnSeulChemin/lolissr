@@ -26,9 +26,9 @@ declare(strict_types=1);
                 <?= e($user->username) ?>
             </h1>
 
-            <p class="profile-customization-title">
-                Explorateur
-            </p>
+        <p class="profile-customization-title">
+            <?= e($user->title) ?>
+        </p>
 
         </article>
 
