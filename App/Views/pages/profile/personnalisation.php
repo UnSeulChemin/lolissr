@@ -39,10 +39,24 @@ declare(strict_types=1);
                 <p>Choisir un avatar.</p>
             </article>
 
-            <article class="card transition-card">
-                <h2>🏆 Titre</h2>
-                <p>Choisir un titre débloqué.</p>
-            </article>
+        <article
+            class="
+                card
+                transition-card
+                profile-customization-card
+                js-profile-title
+            "
+        >
+
+            <h2>
+                🏆 Titre
+            </h2>
+
+            <p>
+                Choisir un titre débloqué.
+            </p>
+
+        </article>
 
             <article class="card transition-card">
                 <h2>🎨 Bannière</h2>

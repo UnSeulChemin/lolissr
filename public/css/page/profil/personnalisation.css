@@ -88,3 +88,8 @@
 
     padding: 2rem;
 }
+
+.profile-customization-card
+{
+    cursor: pointer;
+}

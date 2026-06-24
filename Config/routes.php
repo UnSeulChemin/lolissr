@@ -9,6 +9,7 @@ use App\Controllers\MainController;
 use App\Controllers\Manga\MangaAjaxController;
 use App\Controllers\Manga\MangaController;
 use App\Controllers\ProfileController;
+use App\Controllers\ProfileAjaxController;
 use App\Controllers\Sql\SqlAjaxController;
 use App\Controllers\Sql\SqlController;
 
@@ -51,6 +52,17 @@ return static function (Router $router): void
         $router->get('profil', [ProfileController::class, 'index']);
 
         $router->get('profil/personnalisation', [ProfileController::class, 'customization']);
+
+        $router->prefix('profil/ajax')->middleware(ExpectJsonMiddleware::class)->group(function (Router $router): void
+        {
+            $router->get('titles', [ProfileAjaxController::class, 'titles']);
+        });
+
+        $router->prefix('profil/ajax')->middleware([ExpectJsonMiddleware::class, CsrfMiddleware::class])
+            ->group(function (Router $router): void
+        {
+            $router->post('update-title', [ProfileAjaxController::class, 'updateTitle']);
+        });
 
         /*
         |--------------------------------------------------------------------------
