@@ -4,11 +4,16 @@
 
 import {
     get,
+    post,
 } from '../core/http.js';
 
 import {
     titleModal,
 } from '../core/modal/modal.js';
+
+import {
+    showToast,
+} from '../core/toast.js';
 
 // =========================================
 // OPEN TITLE MODAL
@@ -27,14 +32,32 @@ async function openTitleModal()
         );
 
     if (
-        ! title
+        !title
     )
     {
         return;
     }
 
-    console.log(
-        title,
+    await post(
+        '/lolissr/profil/ajax/update-title',
+        {
+            title,
+        },
+    );
+
+    document
+        .querySelector(
+            '.profile-customization-title',
+        )
+        ?.replaceChildren(
+            document.createTextNode(
+                title,
+            ),
+        );
+
+    showToast(
+        'Titre mis à jour',
+        'success',
     );
 }
 

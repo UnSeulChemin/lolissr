@@ -6,12 +6,14 @@ namespace App\Controllers;
 
 use App\Constants\UserTitle;
 use App\DTO\Common\ServiceResult;
+use App\Repositories\Auth\UserRepository;
 
 use Framework\Http\Request;
 
 final class ProfileAjaxController extends Controller
 {
     public function __construct(
+        private readonly UserRepository $userRepository,
         Request $request
     ) {
         parent::__construct($request);
@@ -39,13 +41,46 @@ final class ProfileAjaxController extends Controller
 
     public function updateTitle(): never
     {
-        $titleId = (int) $this->request->input('titleId');
+        $user = user();
+
+        assert($user !== null);
+
+        $title =
+            (string) $this->request->input(
+                'title',
+            );
+
+        $availableTitles =
+            UserTitle::unlockedTitles(
+                $user->level,
+            );
+
+        if (
+            ! in_array(
+                $title,
+                $availableTitles,
+                true,
+            )
+        )
+        {
+            $this->jsonResult(
+                ServiceResult::error(
+                    message: 'Titre invalide',
+                    status: 422,
+                ),
+            );
+        }
+
+        $this->userRepository->updateTitle(
+            $user->id,
+            $title,
+        );
 
         $this->jsonResult(
             ServiceResult::success(
                 message: 'Titre mis à jour',
                 data: [
-                    'titleId' => $titleId,
+                    'title' => $title,
                 ],
             ),
         );
