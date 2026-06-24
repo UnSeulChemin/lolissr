@@ -32,7 +32,8 @@ $username =
 
     <section class="profile-header-grid">
 
-        <article
+        <a
+            href="<?= $baseUri ?>profil/personnalisation"
             class="
                 card
                 transition-card
@@ -56,7 +57,7 @@ $username =
 
             </div>
 
-        </article>
+        </a>
 
         <article
             class="

@@ -52,4 +52,15 @@ final class ProfileController extends Controller
             'totalProfileXp' => $stats->totalXp,
         ]);
     }
+
+    public function customization(): never
+    {
+        $this->title = 'Personnalisation';
+
+        $user = user();
+
+        assert($user !== null);
+
+        $this->render('pages/profile/personnalisation', ['user' => $user]);
+    }
 }

@@ -50,6 +50,8 @@ return static function (Router $router): void
 
         $router->get('profil', [ProfileController::class, 'index']);
 
+        $router->get('profil/personnalisation', [ProfileController::class, 'customization']);
+
         /*
         |--------------------------------------------------------------------------
         | SQL
