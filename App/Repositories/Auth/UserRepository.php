@@ -85,4 +85,54 @@ final class UserRepository extends Model
             ],
         );
     }
+
+    public function avatars(): array
+    {
+        return $this->fetchAll(
+            "
+            SELECT
+                thumbnail,
+                extension
+            FROM avatars
+            ORDER BY id
+            "
+        );
+    }
+
+    /**
+     * @return object{thumbnail:string,extension:string}|null
+     */
+    public function avatar(string $thumbnail): ?object
+    {
+        return $this->fetchOne(
+            "
+            SELECT
+                thumbnail,
+                extension
+            FROM avatars
+            WHERE thumbnail = :thumbnail
+            LIMIT 1
+            ",
+            [
+                'thumbnail' => $thumbnail,
+            ],
+        );
+    }
+
+    public function updateAvatar(
+        int $userId,
+        string $thumbnail,
+        string $extension,
+    ): bool
+    {
+        return $this->update(
+            [
+                'thumbnail' => $thumbnail,
+                'extension' => $extension,
+            ],
+            [
+                'id' => $userId,
+            ],
+        );
+    }
 }

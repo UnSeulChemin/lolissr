@@ -23,8 +23,9 @@ $baseUri =
         '/',
     ) . '/';
 
-$username =
-    $user->username;
+$username = $user->username;
+
+$avatarPath = "{$baseUri}images/avatar/thumbnail/{$user->thumbnail}.{$user->extension}";
 
 ?>
 
@@ -42,7 +43,13 @@ $username =
         >
 
             <div class="profile-avatar">
-                👤
+
+                <img
+                    src="<?= e($avatarPath) ?>"
+                    alt="<?= e($user->username) ?>"
+                    draggable="false"
+                >
+
             </div>
 
             <div class="profile-content">

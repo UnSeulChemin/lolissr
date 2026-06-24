@@ -85,4 +85,61 @@ final class ProfileAjaxController extends Controller
             ),
         );
     }
+
+    public function avatars(): never
+    {
+        $avatars =
+            $this->userRepository->avatars();
+
+        $this->jsonResult(
+            ServiceResult::success(
+                data: [
+                    'avatars' => $avatars,
+                ],
+            ),
+        );
+    }
+
+    public function updateAvatar(): never
+    {
+        $user = user();
+
+        assert($user !== null);
+
+        $thumbnail =
+            (string) $this->request->input(
+                'avatar',
+            );
+
+        $avatar =
+            $this->userRepository->avatar(
+                $thumbnail,
+            );
+
+        if ($avatar === null)
+        {
+            $this->jsonResult(
+                ServiceResult::error(
+                    message: 'Avatar invalide',
+                    status: 422,
+                ),
+            );
+        }
+
+        $this->userRepository->updateAvatar(
+            $user->id,
+            $avatar->thumbnail,
+            $avatar->extension,
+        );
+
+        $this->jsonResult(
+            ServiceResult::success(
+                message: 'Avatar mis à jour',
+                data: [
+                    'thumbnail' => $avatar->thumbnail,
+                    'extension' => $avatar->extension,
+                ],
+            ),
+        );
+    }
 }

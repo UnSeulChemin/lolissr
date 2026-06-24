@@ -56,12 +56,16 @@ return static function (Router $router): void
         $router->prefix('profil/ajax')->middleware(ExpectJsonMiddleware::class)->group(function (Router $router): void
         {
             $router->get('titles', [ProfileAjaxController::class, 'titles']);
+
+            $router->get('avatars', [ProfileAjaxController::class, 'avatars']);
         });
 
         $router->prefix('profil/ajax')->middleware([ExpectJsonMiddleware::class, CsrfMiddleware::class])
             ->group(function (Router $router): void
         {
             $router->post('update-title', [ProfileAjaxController::class, 'updateTitle']);
+
+            $router->post('update-avatar', [ProfileAjaxController::class, 'updateAvatar']);
         });
 
         /*

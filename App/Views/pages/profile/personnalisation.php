@@ -4,6 +4,16 @@ declare(strict_types=1);
 
 /** @var App\Models\User $user */
 
+$baseUri =
+    rtrim(
+        $baseUri
+        ?? '',
+        '/',
+    ) . '/';
+
+$avatarPath =
+    "{$baseUri}images/avatar/thumbnail/{$user->thumbnail}.{$user->extension}";
+
 ?>
 
 <section class="layout-container">
@@ -19,44 +29,64 @@ declare(strict_types=1);
         >
 
             <div class="profile-customization-avatar">
-                👤
+
+                <img
+                    src="<?= e($avatarPath) ?>"
+                    alt="<?= e($user->username) ?>"
+                    draggable="false"
+                >
+
             </div>
 
             <h1 class="profile-customization-name">
                 <?= e($user->username) ?>
             </h1>
 
-        <p class="profile-customization-title">
-            <?= e($user->title) ?>
-        </p>
+            <p class="profile-customization-title">
+                <?= e($user->title) ?>
+            </p>
 
         </article>
 
         <section class="profile-customization-grid">
 
-            <article class="card transition-card">
-                <h2>👤 Avatar</h2>
-                <p>Choisir un avatar.</p>
+            <article
+                class="
+                    card
+                    transition-card
+                    profile-customization-card
+                    js-profile-avatar
+                "
+            >
+
+                <h2>
+                    👤 Avatar
+                </h2>
+
+                <p>
+                    Choisir un avatar.
+                </p>
+
             </article>
 
-        <article
-            class="
-                card
-                transition-card
-                profile-customization-card
-                js-profile-title
-            "
-        >
+            <article
+                class="
+                    card
+                    transition-card
+                    profile-customization-card
+                    js-profile-title
+                "
+            >
 
-            <h2>
-                🏆 Titre
-            </h2>
+                <h2>
+                    🏆 Titre
+                </h2>
 
-            <p>
-                Choisir un titre débloqué.
-            </p>
+                <p>
+                    Choisir un titre débloqué.
+                </p>
 
-        </article>
+            </article>
 
             <article class="card transition-card">
                 <h2>🎨 Bannière</h2>

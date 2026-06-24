@@ -8,6 +8,10 @@ final class User
 {
     public int $id = 0;
 
+    public string $thumbnail = '';
+
+    public string $extension = '';
+
     public string $username = '';
 
     public string $password = '';
