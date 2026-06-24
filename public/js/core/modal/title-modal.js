@@ -30,10 +30,10 @@ export function titleModal(
                             ) => `
                                 <button
                                     class="title-modal-item"
-                                    data-id="${title.id}"
+                                    data-title="${title}"
                                     type="button"
                                 >
-                                    ${title.name}
+                                    ${title}
                                 </button>
                             `,
                         ).join('')}
@@ -78,9 +78,7 @@ export function titleModal(
                             'click',
                             () =>
                                 close(
-                                    Number(
-                                        button.dataset.id,
-                                    ),
+                                    button.dataset.title,
                                 ),
                         );
                     },

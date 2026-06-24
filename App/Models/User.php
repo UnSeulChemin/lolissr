@@ -12,6 +12,8 @@ final class User
 
     public string $password = '';
 
+    public string $title = 'Explorateur';
+
     public int $level = 1;
 
     public int $xp = 0;

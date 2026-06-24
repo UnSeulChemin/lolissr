@@ -21,20 +21,20 @@ async function openTitleModal()
             '/lolissr/profil/ajax/titles',
         );
 
-    const titleId =
+    const title =
         await titleModal(
             data.data.titles,
         );
 
     if (
-        ! titleId
-    ) {
-
+        ! title
+    )
+    {
         return;
     }
 
     console.log(
-        titleId,
+        title,
     );
 }
 

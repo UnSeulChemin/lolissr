@@ -63,4 +63,16 @@ final class UserRepository extends Model
     {
         return $this->update(['level' => $level, 'xp' => $xp], ['id' => $userId]);
     }
+
+    public function updateTitle(int $userId, string $title): bool
+    {
+        return $this->update(
+            [
+                'title' => $title,
+            ],
+            [
+                'id' => $userId,
+            ],
+        );
+    }
 }
