@@ -1,0 +1,55 @@
+/* =========================================
+   TITLE MODAL
+========================================= */
+
+.title-modal-list
+{
+    display: flex;
+    flex-direction: column;
+
+    gap: .75rem;
+
+    margin-top: 1rem;
+}
+
+.title-modal-item
+{
+    width: 100%;
+
+    padding: .9rem 1rem;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    border: 1px solid var(--color-violet-border-soft);
+    border-radius: var(--radius-input);
+
+    background: white;
+
+    transition:
+        border-color .15s,
+        transform .15s,
+        background .15s;
+}
+
+.title-modal-item:hover
+{
+    background: rgba(
+        139,
+        92,
+        246,
+        .05
+    );
+
+    border-color: var(--color-violet);
+
+    transform: translateY(-1px);
+}
+
+.title-modal-item:focus
+{
+    outline: none;
+
+    border-color: var(--color-violet);
+}

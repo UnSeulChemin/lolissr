@@ -13,3 +13,7 @@ export {
 export {
     alertModal,
 } from './alert-modal.js';
+
+export {
+    titleModal,
+} from './title-modal.js';

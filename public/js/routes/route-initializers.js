@@ -58,6 +58,10 @@ import {
     initSqlPage,
 } from '../sql/pages/sql.js';
 
+import {
+    initProfileCustomization,
+} from '../profil/profile-customization.js';
+
 
 // ==================================================
 // EXPORT
@@ -163,6 +167,19 @@ export const ROUTE_INITIALIZERS = [
             [
                 'SqlPage',
                 initSqlPage,
+            ],
+        ],
+    },
+
+    {
+        match:
+            /^\/lolissr\/profil\/personnalisation\/?$/,
+
+        initializers:
+        [
+            [
+                'ProfileCustomization',
+                initProfileCustomization,
             ],
         ],
     },
