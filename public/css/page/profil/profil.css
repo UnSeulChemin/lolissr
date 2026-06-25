@@ -37,19 +37,33 @@
     margin: 0 auto;
 }
 
-.profile-card,
 .profile-achievements
 {
     width: 100%;
-    min-height: 280px;
 
     padding: 2rem;
 
     box-sizing: border-box;
 }
 
+.profile-card
+{
+    width: 100%;
+
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+
+    padding: 0;
+}
+
 .profile-achievements
 {
+    min-height: 280px;
+
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -61,38 +75,6 @@
 /* =========================================
    PROFILE CARD
 ========================================= */
-
-.profile-card
-{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    gap: 1.25rem;
-}
-
-.profile-avatar
-{
-    width: 78px;
-    height: 78px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 999px;
-
-    font-size: 1.8rem;
-
-    background:
-        rgba(
-            139,
-            92,
-            246,
-            .12
-        );
-}
 
 .profile-subtitle
 {
@@ -444,4 +426,64 @@
     font-weight: 700;
 
     line-height: 1;
+}
+
+.profile-banner
+{
+    width: 100%;
+
+    aspect-ratio: 4 / 1;
+
+    overflow: hidden;
+}
+
+.profile-banner img
+{
+    display: block;
+
+    width: 100%;
+    height: auto;
+
+    object-fit: cover;
+    object-position: top center;
+}
+
+.profile-avatar
+{
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 110px;
+    height: 110px;
+
+    margin: -55px auto 1.5rem;
+
+    border-radius: 999px;
+
+    background: #fff;
+
+    z-index: 2;
+}
+
+.profile-avatar img
+{
+    display: block;
+
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.profile-content
+{
+    padding:
+        0
+        2rem
+        2rem;
+
+    text-align: center;
 }

@@ -25,7 +25,11 @@ $baseUri =
 
 $username = $user->username;
 
-$avatarPath = "{$baseUri}images/avatars/thumbnail/{$user->avatar}.{$user->avatar_extension}";
+$avatarPath =
+    "{$baseUri}images/avatars/thumbnail/{$user->avatar}.{$user->avatar_extension}";
+
+$bannerPath =
+    "{$baseUri}images/banners/thumbnail/{$user->banner}.{$user->banner_extension}";
 
 ?>
 
@@ -41,6 +45,16 @@ $avatarPath = "{$baseUri}images/avatars/thumbnail/{$user->avatar}.{$user->avatar
                 profile-card
             "
         >
+
+            <div class="profile-banner">
+
+                <img
+                    src="<?= e($bannerPath) ?>"
+                    alt="Bannière"
+                    draggable="false"
+                >
+
+            </div>
 
             <div class="profile-avatar">
 
