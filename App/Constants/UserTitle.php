@@ -7,8 +7,8 @@ namespace App\Constants;
 final class UserTitle
 {
     public const EXPLORATEUR = 'Explorateur';
-    public const COLLECTIONNEUR = 'Collectionneur';
-    public const BIBLIOTHECAIRE = 'Bibliothécaire';
+    public const AVENTURIER = 'Aventurier';
+    public const VOYAGEUR = 'Voyageur';
     public const ERUDIT = 'Érudit';
     public const MAITRE = 'Maître';
     public const SAGE = 'Sage';
@@ -16,8 +16,8 @@ final class UserTitle
 
     public const LEVEL_TITLES = [
         1 => self::EXPLORATEUR,
-        5 => self::COLLECTIONNEUR,
-        10 => self::BIBLIOTHECAIRE,
+        5 => self::AVENTURIER,
+        10 => self::VOYAGEUR,
         15 => self::ERUDIT,
         20 => self::MAITRE,
         25 => self::SAGE,
