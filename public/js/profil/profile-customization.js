@@ -19,6 +19,10 @@ import {
     invalidateProfilePages,
 } from './profile-cache.js';
 
+import {
+    avatarModal,
+} from '../core/modal/avatar-modal.js';
+
 // =========================================
 // OPEN TITLE MODAL
 // =========================================
@@ -83,6 +87,70 @@ async function openTitleModal()
     );
 }
 
+async function openAvatarModal()
+{
+    const data =
+        await get(
+            '/lolissr/profil/ajax/avatars',
+        );
+
+    const thumbnail =
+        await avatarModal(
+            data.data.avatars,
+        );
+
+    if (
+        ! thumbnail
+    )
+    {
+        return;
+    }
+
+    const response =
+        await post(
+            '/lolissr/profil/ajax/update-avatar',
+            {
+                avatar: thumbnail,
+            },
+        );
+
+    const avatarPath =
+        `/lolissr/images/avatar/thumbnail/${response.data.thumbnail}.${response.data.extension}`;
+
+    const customizationAvatar =
+        document.querySelector(
+            '.profile-customization-avatar img',
+        );
+
+    if (
+        customizationAvatar
+    )
+    {
+        customizationAvatar.src =
+            avatarPath;
+    }
+
+    const profileAvatar =
+        document.querySelector(
+            '.profile-avatar img',
+        );
+
+    if (
+        profileAvatar
+    )
+    {
+        profileAvatar.src =
+            avatarPath;
+    }
+
+    invalidateProfilePages();
+
+    showToast(
+        'Avatar mis à jour',
+        'success',
+    );
+}
+
 // =========================================
 // INIT
 // =========================================
@@ -98,6 +166,18 @@ export function initProfileCustomization()
             () =>
             {
                 void openTitleModal();
+            },
+        );
+
+    document
+        .querySelector(
+            '.js-profile-avatar',
+        )
+        ?.addEventListener(
+            'click',
+            () =>
+            {
+                void openAvatarModal();
             },
         );
 }

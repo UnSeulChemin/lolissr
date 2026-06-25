@@ -1,0 +1,40 @@
+/* =========================================
+   AVATAR MODAL
+========================================= */
+
+.avatar-modal-grid
+{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.avatar-modal-item
+{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: .5rem;
+    background: transparent;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.avatar-modal-item:hover
+{
+    border-color: var(--primary);
+    transform: scale(1.05);
+}
+
+.avatar-modal-item img
+{
+    width: 72px;
+    height: 72px;
+    object-fit: cover;
+    border-radius: 50%;
+    user-select: none;
+    pointer-events: none;
+}

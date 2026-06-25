@@ -88,35 +88,32 @@ final class UserRepository extends Model
 
     public function avatars(): array
     {
-        return $this->fetchAll(
-            "
-            SELECT
-                thumbnail,
-                extension
-            FROM avatars
-            ORDER BY id
-            "
-        );
-    }
+        $path =
+            dirname(__DIR__, 3)
+            . '/public/images/avatar/thumbnail';
 
-    /**
-     * @return object{thumbnail:string,extension:string}|null
-     */
-    public function avatar(string $thumbnail): ?object
-    {
-        return $this->fetchOne(
-            "
-            SELECT
-                thumbnail,
-                extension
-            FROM avatars
-            WHERE thumbnail = :thumbnail
-            LIMIT 1
-            ",
-            [
-                'thumbnail' => $thumbnail,
-            ],
-        );
+        $avatars = [];
+
+        foreach (
+            glob(
+                $path . '/*.{webp,jpg,png}',
+                GLOB_BRACE,
+            ) ?: [] as $file
+        )
+        {
+            $avatars[] = [
+                'thumbnail' => pathinfo(
+                    $file,
+                    PATHINFO_FILENAME,
+                ),
+                'extension' => pathinfo(
+                    $file,
+                    PATHINFO_EXTENSION,
+                ),
+            ];
+        }
+
+        return $avatars;
     }
 
     public function updateAvatar(
