@@ -115,7 +115,7 @@ async function openAvatarModal()
         );
 
     const avatarPath =
-        `/lolissr/images/avatar/thumbnail/${response.data.thumbnail}.${response.data.extension}`;
+        `/lolissr/images/avatars/thumbnail/${response.data.thumbnail}.${response.data.extension}`;
 
     const customizationAvatar =
         document.querySelector(

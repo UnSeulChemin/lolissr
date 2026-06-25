@@ -92,7 +92,7 @@ final class UserRepository extends Model
     {
         $path =
             dirname(__DIR__, 3)
-            . '/public/images/avatar/thumbnail';
+            . '/public/images/avatars/thumbnail';
 
         $avatars = [];
 
