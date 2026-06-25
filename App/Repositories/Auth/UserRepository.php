@@ -53,6 +53,8 @@ final class UserRepository extends Model
     public function create(string $username, string $password): bool
     {
         return $this->insert([
+            'thumbnail' => 'default',
+            'extension' => 'png',
             'username' => trim($username),
             'password' => $password,
             'title' => UserTitle::EXPLORATEUR,
