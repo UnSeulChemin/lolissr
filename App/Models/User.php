@@ -8,9 +8,9 @@ final class User
 {
     public int $id = 0;
 
-    public string $thumbnail = '';
+    public string $avatar = 'default';
 
-    public string $extension = '';
+    public string $avatar_extension = 'png';
 
     public string $username = '';
 

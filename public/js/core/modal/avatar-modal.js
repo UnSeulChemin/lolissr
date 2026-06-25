@@ -30,13 +30,13 @@ export function avatarModal(
                             ) => `
                                 <button
                                     class="avatar-modal-item"
-                                    data-avatar="${avatar.thumbnail}"
+                                    data-avatar="${avatar.avatar}"
                                     type="button"
                                 >
 
                                     <img
-                                        src="/lolissr/images/avatars/thumbnail/${avatar.thumbnail}.${avatar.extension}"
-                                        alt="${avatar.thumbnail}"
+                                        src="/lolissr/images/avatars/thumbnail/${avatar.avatar}.${avatar.avatar_extension}"
+                                        alt="${avatar.avatar}"
                                         draggable="false"
                                     >
 

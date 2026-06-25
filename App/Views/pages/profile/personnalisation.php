@@ -11,8 +11,7 @@ $baseUri =
         '/',
     ) . '/';
 
-$avatarPath =
-    "{$baseUri}images/avatars/thumbnail/{$user->thumbnail}.{$user->extension}";
+$avatarPath = "{$baseUri}images/avatars/thumbnail/{$user->avatar}.{$user->avatar_extension}";
 
 ?>
 

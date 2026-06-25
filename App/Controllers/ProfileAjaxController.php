@@ -106,7 +106,7 @@ final class ProfileAjaxController extends Controller
 
         assert($user !== null);
 
-        $thumbnail =
+        $avatarName =
             (string) $this->request->input(
                 'avatar',
             );
@@ -119,8 +119,8 @@ final class ProfileAjaxController extends Controller
         )
         {
             if (
-                $item['thumbnail']
-                === $thumbnail
+                $item['avatar']
+                === $avatarName
             )
             {
                 $avatar =
@@ -142,16 +142,16 @@ final class ProfileAjaxController extends Controller
 
         $this->userRepository->updateAvatar(
             $user->id,
-            $avatar['thumbnail'],
-            $avatar['extension'],
+            $avatar['avatar'],
+            $avatar['avatar_extension'],
         );
 
         $this->jsonResult(
             ServiceResult::success(
                 message: 'Avatar mis à jour',
                 data: [
-                    'thumbnail' => $avatar['thumbnail'],
-                    'extension' => $avatar['extension'],
+                    'avatar' => $avatar['avatar'],
+                    'avatar_extension' => $avatar['avatar_extension'],
                 ],
             ),
         );

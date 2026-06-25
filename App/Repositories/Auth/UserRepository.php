@@ -53,8 +53,8 @@ final class UserRepository extends Model
     public function create(string $username, string $password): bool
     {
         return $this->insert([
-            'thumbnail' => 'default',
-            'extension' => 'png',
+            'avatar' => 'default',
+            'avatar_extension' => 'png',
             'username' => trim($username),
             'password' => $password,
             'title' => UserTitle::EXPLORATEUR,
@@ -104,11 +104,11 @@ final class UserRepository extends Model
         )
         {
             $avatars[] = [
-                'thumbnail' => pathinfo(
+                'avatar' => pathinfo(
                     $file,
                     PATHINFO_FILENAME,
                 ),
-                'extension' => pathinfo(
+                'avatar_extension' => pathinfo(
                     $file,
                     PATHINFO_EXTENSION,
                 ),
@@ -120,14 +120,14 @@ final class UserRepository extends Model
 
     public function updateAvatar(
         int $userId,
-        string $thumbnail,
-        string $extension,
+        string $avatar,
+        string $avatarExtension,
     ): bool
     {
         return $this->update(
             [
-                'thumbnail' => $thumbnail,
-                'extension' => $extension,
+                'avatar' => $avatar,
+                'avatar_extension' => $avatarExtension,
             ],
             [
                 'id' => $userId,

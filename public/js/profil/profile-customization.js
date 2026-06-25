@@ -94,13 +94,13 @@ async function openAvatarModal()
             '/lolissr/profil/ajax/avatars',
         );
 
-    const thumbnail =
+    const avatar =
         await avatarModal(
             data.data.avatars,
         );
 
     if (
-        ! thumbnail
+        ! avatar
     )
     {
         return;
@@ -110,12 +110,11 @@ async function openAvatarModal()
         await post(
             '/lolissr/profil/ajax/update-avatar',
             {
-                avatar: thumbnail,
+                avatar,
             },
         );
 
-    const avatarPath =
-        `/lolissr/images/avatars/thumbnail/${response.data.thumbnail}.${response.data.extension}`;
+    const avatarPath = `/lolissr/images/avatars/thumbnail/${response.data.avatar}.${response.data.avatar_extension}`;
 
     const customizationAvatar =
         document.querySelector(
