@@ -23,6 +23,10 @@ import {
     avatarModal,
 } from '../core/modal/avatar-modal.js';
 
+import {
+    bannerModal,
+} from '../core/modal/banner-modal.js';
+
 // =========================================
 // OPEN TITLE MODAL
 // =========================================
@@ -150,6 +154,40 @@ async function openAvatarModal()
     );
 }
 
+async function openBannerModal()
+{
+    const data =
+        await get(
+            '/lolissr/profil/ajax/banners',
+        );
+
+    const banner =
+        await bannerModal(
+            data.data.banners,
+        );
+
+    if (
+        ! banner
+    )
+    {
+        return;
+    }
+
+    await post(
+        '/lolissr/profil/ajax/update-banner',
+        {
+            banner,
+        },
+    );
+
+    invalidateProfilePages();
+
+    showToast(
+        'Bannière mise à jour',
+        'success',
+    );
+}
+
 // =========================================
 // INIT
 // =========================================
@@ -177,6 +215,18 @@ export function initProfileCustomization()
             () =>
             {
                 void openAvatarModal();
+            },
+        );
+
+    document
+        .querySelector(
+            '.js-profile-banner',
+        )
+        ?.addEventListener(
+            'click',
+            () =>
+            {
+                void openBannerModal();
             },
         );
 }

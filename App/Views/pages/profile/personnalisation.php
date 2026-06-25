@@ -13,6 +13,8 @@ $baseUri =
 
 $avatarPath = "{$baseUri}images/avatars/thumbnail/{$user->avatar}.{$user->avatar_extension}";
 
+$bannerPath = "{$baseUri}images/banners/thumbnail/{$user->banner}.{$user->banner_extension}";
+
 ?>
 
 <section class="layout-container">
@@ -26,6 +28,16 @@ $avatarPath = "{$baseUri}images/avatars/thumbnail/{$user->avatar}.{$user->avatar
                 profile-customization-hero
             "
         >
+
+            <div class="profile-customization-banner">
+
+                <img
+                    src="<?= e($bannerPath) ?>"
+                    alt="Bannière"
+                    draggable="false"
+                >
+
+            </div>
 
             <div class="profile-customization-avatar">
 
@@ -87,9 +99,23 @@ $avatarPath = "{$baseUri}images/avatars/thumbnail/{$user->avatar}.{$user->avatar
 
             </article>
 
-            <article class="card transition-card">
-                <h2>🎨 Bannière</h2>
-                <p>Personnaliser le profil.</p>
+            <article
+                class="
+                    card
+                    transition-card
+                    profile-customization-card
+                    js-profile-banner
+                "
+            >
+
+                <h2>
+                    🎨 Bannière
+                </h2>
+
+                <p>
+                    Personnaliser le profil.
+                </p>
+
             </article>
 
             <article class="card transition-card">

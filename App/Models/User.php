@@ -12,6 +12,10 @@ final class User
 
     public string $avatar_extension = 'png';
 
+    public string $banner = 'default';
+
+    public string $banner_extension = 'png';
+
     public string $username = '';
 
     public string $password = '';

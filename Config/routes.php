@@ -58,6 +58,8 @@ return static function (Router $router): void
             $router->get('titles', [ProfileAjaxController::class, 'titles']);
 
             $router->get('avatars', [ProfileAjaxController::class, 'avatars']);
+
+            $router->get('banners', [ProfileAjaxController::class, 'banners']);
         });
 
         $router->prefix('profil/ajax')->middleware([ExpectJsonMiddleware::class, CsrfMiddleware::class])
@@ -66,6 +68,8 @@ return static function (Router $router): void
             $router->post('update-title', [ProfileAjaxController::class, 'updateTitle']);
 
             $router->post('update-avatar', [ProfileAjaxController::class, 'updateAvatar']);
+
+            $router->post('update-banner', [ProfileAjaxController::class, 'updateBanner']);
         });
 
         /*

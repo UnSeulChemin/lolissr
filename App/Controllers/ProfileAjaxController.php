@@ -100,6 +100,20 @@ final class ProfileAjaxController extends Controller
         );
     }
 
+    public function banners(): never
+    {
+        $banners =
+            $this->userRepository->banners();
+
+        $this->jsonResult(
+            ServiceResult::success(
+                data: [
+                    'banners' => $banners,
+                ],
+            ),
+        );
+    }
+
     public function updateAvatar(): never
     {
         $user = user();
@@ -152,6 +166,63 @@ final class ProfileAjaxController extends Controller
                 data: [
                     'avatar' => $avatar['avatar'],
                     'avatar_extension' => $avatar['avatar_extension'],
+                ],
+            ),
+        );
+    }
+
+    public function updateBanner(): never
+    {
+        $user = user();
+
+        assert($user !== null);
+
+        $bannerName =
+            (string) $this->request->input(
+                'banner',
+            );
+
+        $banner =
+            null;
+
+        foreach (
+            $this->userRepository->banners() as $item
+        )
+        {
+            if (
+                $item['banner']
+                === $bannerName
+            )
+            {
+                $banner =
+                    $item;
+
+                break;
+            }
+        }
+
+        if ($banner === null)
+        {
+            $this->jsonResult(
+                ServiceResult::error(
+                    message: 'Bannière invalide',
+                    status: 422,
+                ),
+            );
+        }
+
+        $this->userRepository->updateBanner(
+            $user->id,
+            $banner['banner'],
+            $banner['banner_extension'],
+        );
+
+        $this->jsonResult(
+            ServiceResult::success(
+                message: 'Bannière mise à jour',
+                data: [
+                    'banner' => $banner['banner'],
+                    'banner_extension' => $banner['banner_extension'],
                 ],
             ),
         );

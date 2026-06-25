@@ -55,6 +55,8 @@ final class UserRepository extends Model
         return $this->insert([
             'avatar' => 'default',
             'avatar_extension' => 'png',
+            'banner' => 'default',
+            'banner_extension' => 'png',
             'username' => trim($username),
             'password' => $password,
             'title' => UserTitle::EXPLORATEUR,
@@ -118,6 +120,36 @@ final class UserRepository extends Model
         return $avatars;
     }
 
+    public function banners(): array
+    {
+        $path =
+            dirname(__DIR__, 3)
+            . '/public/images/banners/thumbnail';
+
+        $banners = [];
+
+        foreach (
+            glob(
+                $path . '/*.{webp,jpg,png}',
+                GLOB_BRACE,
+            ) ?: [] as $file
+        )
+        {
+            $banners[] = [
+                'banner' => pathinfo(
+                    $file,
+                    PATHINFO_FILENAME,
+                ),
+                'banner_extension' => pathinfo(
+                    $file,
+                    PATHINFO_EXTENSION,
+                ),
+            ];
+        }
+
+        return $banners;
+    }
+
     public function updateAvatar(
         int $userId,
         string $avatar,
@@ -128,6 +160,23 @@ final class UserRepository extends Model
             [
                 'avatar' => $avatar,
                 'avatar_extension' => $avatarExtension,
+            ],
+            [
+                'id' => $userId,
+            ],
+        );
+    }
+
+    public function updateBanner(
+        int $userId,
+        string $banner,
+        string $bannerExtension,
+    ): bool
+    {
+        return $this->update(
+            [
+                'banner' => $banner,
+                'banner_extension' => $bannerExtension,
             ],
             [
                 'id' => $userId,
