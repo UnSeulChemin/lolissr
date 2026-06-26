@@ -16,6 +16,10 @@ final class User
 
     public string $banner_extension = 'png';
 
+    public string $frame = 'default';
+
+    public string $frame_extension = 'png';
+
     public string $username = '';
 
     public string $password = '';

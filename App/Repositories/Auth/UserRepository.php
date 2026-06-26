@@ -57,6 +57,8 @@ final class UserRepository extends Model
             'avatar_extension' => 'png',
             'banner' => 'default',
             'banner_extension' => 'png',
+            'frame' => 'default',
+            'frame_extension' => 'png',
             'username' => trim($username),
             'password' => $password,
             'title' => UserTitle::EXPLORATEUR,
@@ -150,6 +152,36 @@ final class UserRepository extends Model
         return $banners;
     }
 
+    public function frames(): array
+    {
+        $path =
+            dirname(__DIR__, 3)
+            . '/public/images/frames/thumbnail';
+
+        $frames = [];
+
+        foreach (
+            glob(
+                $path . '/*.{webp,jpg,png}',
+                GLOB_BRACE,
+            ) ?: [] as $file
+        )
+        {
+            $frames[] = [
+                'frame' => pathinfo(
+                    $file,
+                    PATHINFO_FILENAME,
+                ),
+                'frame_extension' => pathinfo(
+                    $file,
+                    PATHINFO_EXTENSION,
+                ),
+            ];
+        }
+
+        return $frames;
+    }
+
     public function updateAvatar(
         int $userId,
         string $avatar,
@@ -177,6 +209,23 @@ final class UserRepository extends Model
             [
                 'banner' => $banner,
                 'banner_extension' => $bannerExtension,
+            ],
+            [
+                'id' => $userId,
+            ],
+        );
+    }
+
+    public function updateFrame(
+        int $userId,
+        string $frame,
+        string $frameExtension,
+    ): bool
+    {
+        return $this->update(
+            [
+                'frame' => $frame,
+                'frame_extension' => $frameExtension,
             ],
             [
                 'id' => $userId,

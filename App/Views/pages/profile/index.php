@@ -31,6 +31,9 @@ $avatarPath =
 $bannerPath =
     "{$baseUri}images/banners/thumbnail/{$user->banner}.{$user->banner_extension}";
 
+$framePath =
+    "{$baseUri}images/frames/thumbnail/{$user->frame}.{$user->frame_extension}";
+
 ?>
 
 <section class="layout-container profile-page">
@@ -59,8 +62,16 @@ $bannerPath =
             <div class="profile-avatar">
 
                 <img
+                    class="profile-avatar-image"
                     src="<?= e($avatarPath) ?>"
                     alt="<?= e($user->username) ?>"
+                    draggable="false"
+                >
+
+                <img
+                    class="profile-frame"
+                    src="<?= e($framePath) ?>"
+                    alt=""
                     draggable="false"
                 >
 

@@ -114,6 +114,77 @@ final class ProfileAjaxController extends Controller
         );
     }
 
+    public function frames(): never
+    {
+        $frames =
+            $this->userRepository->frames();
+
+        $this->jsonResult(
+            ServiceResult::success(
+                data: [
+                    'frames' => $frames,
+                ],
+            ),
+        );
+    }
+
+    public function updateFrame(): never
+    {
+        $user = user();
+
+        assert($user !== null);
+
+        $frameName =
+            (string) $this->request->input(
+                'frame',
+            );
+
+        $frame =
+            null;
+
+        foreach (
+            $this->userRepository->frames() as $item
+        )
+        {
+            if (
+                $item['frame']
+                === $frameName
+            )
+            {
+                $frame =
+                    $item;
+
+                break;
+            }
+        }
+
+        if ($frame === null)
+        {
+            $this->jsonResult(
+                ServiceResult::error(
+                    message: 'Cadre invalide',
+                    status: 422,
+                ),
+            );
+        }
+
+        $this->userRepository->updateFrame(
+            $user->id,
+            $frame['frame'],
+            $frame['frame_extension'],
+        );
+
+        $this->jsonResult(
+            ServiceResult::success(
+                message: 'Cadre mis à jour',
+                data: [
+                    'frame' => $frame['frame'],
+                    'frame_extension' => $frame['frame_extension'],
+                ],
+            ),
+        );
+    }
+
     public function updateAvatar(): never
     {
         $user = user();

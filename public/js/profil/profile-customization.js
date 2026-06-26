@@ -27,6 +27,10 @@ import {
     bannerModal,
 } from '../core/modal/banner-modal.js';
 
+import {
+    frameModal,
+} from '../core/modal/frame-modal.js';
+
 // =========================================
 // OPEN TITLE MODAL
 // =========================================
@@ -188,6 +192,40 @@ async function openBannerModal()
     );
 }
 
+async function openFrameModal()
+{
+    const data =
+        await get(
+            '/lolissr/profil/ajax/frames',
+        );
+
+    const frame =
+        await frameModal(
+            data.data.frames,
+        );
+
+    if (
+        ! frame
+    )
+    {
+        return;
+    }
+
+    await post(
+        '/lolissr/profil/ajax/update-frame',
+        {
+            frame,
+        },
+    );
+
+    invalidateProfilePages();
+
+    showToast(
+        'Cadre mis à jour',
+        'success',
+    );
+}
+
 // =========================================
 // INIT
 // =========================================
@@ -227,6 +265,18 @@ export function initProfileCustomization()
             () =>
             {
                 void openBannerModal();
+            },
+        );
+
+    document
+        .querySelector(
+            '.js-profile-frame',
+        )
+        ?.addEventListener(
+            'click',
+            () =>
+            {
+                void openFrameModal();
             },
         );
 }

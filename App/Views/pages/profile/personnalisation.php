@@ -15,6 +15,9 @@ $avatarPath = "{$baseUri}images/avatars/thumbnail/{$user->avatar}.{$user->avatar
 
 $bannerPath = "{$baseUri}images/banners/thumbnail/{$user->banner}.{$user->banner_extension}";
 
+$framePath =
+    "{$baseUri}images/frames/thumbnail/{$user->frame}.{$user->frame_extension}";
+
 ?>
 
 <section class="layout-container">
@@ -42,8 +45,16 @@ $bannerPath = "{$baseUri}images/banners/thumbnail/{$user->banner}.{$user->banner
             <div class="profile-customization-avatar">
 
                 <img
+                    class="profile-avatar-image"
                     src="<?= e($avatarPath) ?>"
                     alt="<?= e($user->username) ?>"
+                    draggable="false"
+                >
+
+                <img
+                    class="profile-frame"
+                    src="<?= e($framePath) ?>"
+                    alt=""
                     draggable="false"
                 >
 
@@ -118,9 +129,23 @@ $bannerPath = "{$baseUri}images/banners/thumbnail/{$user->banner}.{$user->banner
 
             </article>
 
-            <article class="card transition-card">
-                <h2>⭐ Cadre</h2>
-                <p>Cadres spéciaux.</p>
+            <article
+                class="
+                    card
+                    transition-card
+                    profile-customization-card
+                    js-profile-frame
+                "
+            >
+
+                <h2>
+                    ⭐ Cadre
+                </h2>
+
+                <p>
+                    Choisir un cadre.
+                </p>
+
             </article>
 
         </section>
