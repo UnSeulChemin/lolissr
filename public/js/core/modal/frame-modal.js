@@ -23,29 +23,29 @@ export function frameModal(
                         Choisir un cadre
                     </h3>
 
-                    <div class="avatar-modal-grid">
+                    <div class="avatar-modal-grid frame-modal-grid">
 
                         ${frames.map(
                             (
                                 frame,
                             ) => `
                                 <button
-                                    class="avatar-modal-item"
+                                    class="avatar-modal-item frame-modal-item"
                                     data-frame="${frame.frame}"
                                     type="button"
                                 >
 
-                                    <div class="frame-preview">
+                                    <div class="profile-customization-avatar">
 
                                         <img
-                                            class="frame-preview-avatar"
+                                            class="profile-avatar-image"
                                             src="${avatar}"
                                             alt=""
                                             draggable="false"
                                         >
 
                                         <img
-                                            class="frame-preview-frame"
+                                            class="profile-frame"
                                             src="/lolissr/images/frames/thumbnail/${frame.frame}.${frame.frame_extension}"
                                             alt="${frame.frame}"
                                             draggable="false"
@@ -86,7 +86,7 @@ export function frameModal(
 
             overlay
                 .querySelectorAll(
-                    '.avatar-modal-item',
+                    '.frame-modal-item',
                 )
                 .forEach(
                     (

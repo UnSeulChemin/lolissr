@@ -66,11 +66,18 @@
 
     overflow: visible;
 
-    width: var(--profile-avatar-size);
-    height: var(--profile-avatar-size);
+    width: var(
+        --profile-avatar-size,
+        110px
+    );
+
+    height: var(
+        --profile-avatar-size,
+        110px
+    );
 
     margin:
-        calc(var(--profile-avatar-size) / -2)
+        calc(var(--profile-avatar-size, 110px) / -2)
         auto
         1.5rem;
 
