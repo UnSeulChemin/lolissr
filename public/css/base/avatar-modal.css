@@ -15,26 +15,93 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: .5rem;
-    background: transparent;
+
+    padding: .75rem;
+
+    background: rgba(
+        255,
+        255,
+        255,
+        .04
+    );
+
     border: 2px solid transparent;
-    border-radius: 12px;
+    border-radius: 16px;
+
     cursor: pointer;
+
     transition: .2s;
 }
 
 .avatar-modal-item:hover
 {
     border-color: var(--primary);
-    transform: scale(1.05);
+
+    background: rgba(
+        255,
+        255,
+        255,
+        .08
+    );
+
+    transform:
+        translateY(-2px)
+        scale(1.04);
 }
 
 .avatar-modal-item img
 {
-    width: 72px;
-    height: 72px;
-    object-fit: cover;
-    border-radius: 50%;
+    width: 84px;
+    height: 84px;
+
+    object-fit: contain;
+
     user-select: none;
+    pointer-events: none;
+}
+
+/* =========================================
+    FRAMES
+========================================= */
+
+.frame-preview
+{
+    position: relative;
+
+    width: 84px;
+    height: 84px;
+
+    overflow: visible;
+}
+
+.frame-preview-avatar
+{
+    position: relative;
+
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+
+    border-radius: 50%;
+
+    z-index: 1;
+}
+
+.frame-preview-frame
+{
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+
+    transform: scale(1.08);
+
     pointer-events: none;
 }

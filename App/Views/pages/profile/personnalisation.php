@@ -11,12 +11,17 @@ $baseUri =
         '/',
     ) . '/';
 
-$avatarPath = "{$baseUri}images/avatars/thumbnail/{$user->avatar}.{$user->avatar_extension}";
+$avatarPath =
+    "{$baseUri}images/avatars/thumbnail/{$user->avatar}.{$user->avatar_extension}";
 
-$bannerPath = "{$baseUri}images/banners/thumbnail/{$user->banner}.{$user->banner_extension}";
+$bannerPath =
+    "{$baseUri}images/banners/thumbnail/{$user->banner}.{$user->banner_extension}";
 
 $framePath =
     "{$baseUri}images/frames/thumbnail/{$user->frame}.{$user->frame_extension}";
+
+$username =
+    $user->username;
 
 ?>
 
@@ -47,7 +52,7 @@ $framePath =
                 <img
                     class="profile-avatar-image"
                     src="<?= e($avatarPath) ?>"
-                    alt="<?= e($user->username) ?>"
+                    alt="<?= e($username) ?>"
                     draggable="false"
                 >
 
@@ -61,7 +66,7 @@ $framePath =
             </div>
 
             <h1 class="profile-customization-name">
-                <?= e($user->username) ?>
+                <?= e($username) ?>
             </h1>
 
             <p class="profile-customization-title">

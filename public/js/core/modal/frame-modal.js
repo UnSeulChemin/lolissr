@@ -1,5 +1,6 @@
 export function frameModal(
     frames,
+    avatar,
 )
 {
     return new Promise(
@@ -22,23 +23,35 @@ export function frameModal(
                         Choisir un cadre
                     </h3>
 
-                    <div class="banner-modal-grid">
+                    <div class="avatar-modal-grid">
 
                         ${frames.map(
                             (
                                 frame,
                             ) => `
                                 <button
-                                    class="banner-modal-item"
+                                    class="avatar-modal-item"
                                     data-frame="${frame.frame}"
                                     type="button"
                                 >
 
-                                    <img
-                                        src="/lolissr/images/frames/thumbnail/${frame.frame}.${frame.frame_extension}"
-                                        alt="${frame.frame}"
-                                        draggable="false"
-                                    >
+                                    <div class="frame-preview">
+
+                                        <img
+                                            class="frame-preview-avatar"
+                                            src="${avatar}"
+                                            alt=""
+                                            draggable="false"
+                                        >
+
+                                        <img
+                                            class="frame-preview-frame"
+                                            src="/lolissr/images/frames/thumbnail/${frame.frame}.${frame.frame_extension}"
+                                            alt="${frame.frame}"
+                                            draggable="false"
+                                        >
+
+                                    </div>
 
                                 </button>
                             `,
@@ -73,7 +86,7 @@ export function frameModal(
 
             overlay
                 .querySelectorAll(
-                    '.banner-modal-item',
+                    '.avatar-modal-item',
                 )
                 .forEach(
                     (

@@ -199,9 +199,15 @@ async function openFrameModal()
             '/lolissr/profil/ajax/frames',
         );
 
+    const avatar =
+        document.querySelector(
+            '.profile-avatar-image',
+        );
+
     const frame =
         await frameModal(
             data.data.frames,
+            avatar?.src ?? '',
         );
 
     if (
