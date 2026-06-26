@@ -31,8 +31,8 @@ import {
 } from '../../router/router-navigation.js';
 
 import {
-    invalidatePage,
-} from '../../router/page-invalidation.js';
+    invalidateMangaPages,
+} from '../manga-cache.js';
 
 import {
     deleteModal,
@@ -67,7 +67,7 @@ function setLoadingState(
 }
 
 // =========================================
-// DELETE
+// DELETE MANGA
 // =========================================
 
 async function deleteManga(
@@ -195,13 +195,21 @@ async function deleteManga(
 
         /*
         |--------------------------------------------------------------------------
+        | REDIRECT
+        |--------------------------------------------------------------------------
+        */
+
+        const target =
+            data.data?.redirect
+            || redirectUrl;
+
+        /*
+        |--------------------------------------------------------------------------
         | INVALIDATE
         |--------------------------------------------------------------------------
         */
 
-        invalidatePage(
-            '/',
-        );
+        invalidateMangaPages();
 
         /*
         |--------------------------------------------------------------------------
@@ -217,20 +225,12 @@ async function deleteManga(
 
         /*
         |--------------------------------------------------------------------------
-        | REDIRECT
+        | NAVIGATE
         |--------------------------------------------------------------------------
         */
 
-        const target =
-            data.data?.redirect
-            || redirectUrl;
-
         await navigateTo(
             target,
-            {
-                force:
-                    true,
-            },
         );
 
     } catch (error) {

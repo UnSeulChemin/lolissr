@@ -14,6 +14,23 @@ const invalidatedRoutes =
     new Set();
 
 // =========================================
+// HELPERS
+// =========================================
+
+function matchesInvalidatedRoute(
+    current,
+    invalidated,
+)
+{
+    return (
+        current === invalidated
+        || current.startsWith(
+            `${invalidated}/`,
+        )
+    );
+}
+
+// =========================================
 // INVALIDATE
 // =========================================
 
@@ -21,13 +38,10 @@ export function invalidateRoute(
     href,
 )
 {
-    const normalized =
+    invalidatedRoutes.add(
         normalizeUrl(
             href,
-        );
-
-    invalidatedRoutes.add(
-        normalized,
+        ),
     );
 }
 
@@ -44,9 +58,23 @@ export function shouldRefreshRoute(
             href,
         );
 
-    return invalidatedRoutes.has(
-        normalized,
-    );
+    for (
+        const route
+        of invalidatedRoutes
+    )
+    {
+        if (
+            matchesInvalidatedRoute(
+                normalized,
+                route,
+            )
+        ) {
+
+            return true;
+        }
+    }
+
+    return false;
 }
 
 // =========================================
@@ -62,9 +90,23 @@ export function clearInvalidatedRoute(
             href,
         );
 
-    invalidatedRoutes.delete(
-        normalized,
-    );
+    for (
+        const route
+        of invalidatedRoutes
+    )
+    {
+        if (
+            matchesInvalidatedRoute(
+                normalized,
+                route,
+            )
+        ) {
+
+            invalidatedRoutes.delete(
+                route,
+            );
+        }
+    }
 }
 
 // =========================================
