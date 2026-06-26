@@ -14,29 +14,9 @@ import {
     invalidatePage,
 } from '../../router/page-invalidation.js';
 
-// =========================================
-// CACHE
-// =========================================
-
-function invalidateGrammarPages(baseUri)
-{
-    const routes = [
-        'hsk1',
-        'hsk2',
-        'hsk3',
-        'hsk4',
-    ];
-
-    for (
-        const route
-        of routes
-    ) {
-
-        invalidatePage(
-            `${baseUri}chinois/grammaire/${route}`,
-        );
-    }
-}
+import {
+    invalidateGrammarPages,
+} from '../chinois-cache.js';
 
 // =========================================
 // INIT
@@ -271,10 +251,10 @@ export function initFlashcardsGrammairePage()
                 }
 
                 invalidatePage(
-                    window.location.href,
+                    window.location.pathname,
                 );
 
-                invalidateGrammarPages(baseUri);
+                invalidateGrammarPages();
 
                 cards.splice(
                     currentIndex,

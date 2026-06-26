@@ -147,7 +147,7 @@ async function deleteVocabulaire(
     }
 
     invalidatePage(
-        window.location.href,
+        window.location.pathname,
     );
 
     showToast(

@@ -14,27 +14,9 @@ import {
     invalidatePage,
 } from '../../router/page-invalidation.js';
 
-// =========================================
-// CACHE
-// =========================================
-
-function invalidateVocabularyPages(baseUri)
-{
-    const routes = [
-        'mandarin',
-        'jinyu',
-    ];
-
-    for (
-        const route
-        of routes
-    ) {
-
-        invalidatePage(
-            `${baseUri}chinois/vocabulaire/${route}`,
-        );
-    }
-}
+import {
+    invalidateVocabularyPages,
+} from '../chinois-cache.js';
 
 // =========================================
 // INIT
@@ -256,10 +238,10 @@ export function initFlashcardsVocabulairePage()
                 }
                 
                 invalidatePage(
-                    window.location.href,
+                    window.location.pathname,
                 );
 
-                invalidateVocabularyPages(baseUri);
+                invalidateVocabularyPages();
 
                 cards.splice(
                     currentIndex,
