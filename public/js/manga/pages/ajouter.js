@@ -24,8 +24,8 @@ import {
 } from '../utils/slug.js';
 
 import {
-    invalidatePage,
-} from '../../router/page-invalidation.js';
+    invalidateMangaPages,
+} from '../manga-cache.js';
 
 // =========================================
 // CONFIG
@@ -33,9 +33,6 @@ import {
 
 const FORM_SELECTOR =
     '.form-layout[data-form-page="ajouter"]';
-
-const HOME_ROUTE =
-    '/lolissr/';
 
 // =========================================
 // HELPERS
@@ -251,9 +248,7 @@ export function initAjouterPage()
                 |--------------------------------------------------------------------------
                 */
 
-                invalidatePage(
-                    HOME_ROUTE,
-                );
+                invalidateMangaPages();
 
                 /*
                 |--------------------------------------------------------------------------
