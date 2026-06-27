@@ -28,19 +28,26 @@ $baseUri =
 
 <?php foreach ($artbooks as $artbook):
 
-    $slug = $artbook->slug;
+    $slug =
+        $artbook->slug;
 
-    $title = $artbook->artbook;
+    $title =
+        $artbook->artbook;
 
-    $author = $artbook->auteur;
+    $author =
+        $artbook->auteur;
 
-    $serie = $artbook->serie;
+    $serie =
+        $artbook->serie;
 
-    $thumbnail = $artbook->thumbnail;
+    $thumbnail =
+        $artbook->thumbnail;
 
-    $extension = $artbook->extension;
+    $extension =
+        $artbook->extension;
 
-    $numero = $artbook->numero;
+    $numero =
+        $artbook->numero;
 
     if (
         $slug === ''
@@ -53,6 +60,17 @@ $baseUri =
 
     $thumbnailPath =
         "{$baseUri}images/artbooks/thumbnail/{$thumbnail}.{$extension}";
+
+    $subtitle =
+        $serie !== null
+        && trim($serie) !== ''
+            ? $serie
+            : (
+                $author !== null
+                && trim($author) !== ''
+                    ? $author
+                    : 'Artbook'
+            );
 
 ?>
 
@@ -85,21 +103,7 @@ $baseUri =
     </p>
 
     <p class="collection-card-subtitle">
-
-        <?php if ($author !== ''): ?>
-
-            <?= e($author) ?>
-
-        <?php elseif ($serie !== ''): ?>
-
-            <?= e($serie) ?>
-
-        <?php else: ?>
-
-            Artbook
-
-        <?php endif; ?>
-
+        <?= e($subtitle) ?>
     </p>
 
 </a>

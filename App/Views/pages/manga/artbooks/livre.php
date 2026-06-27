@@ -38,6 +38,16 @@ $returnUrl =
     $baseUri
     . 'manga/artbooks';
 
+$categoryLabel =
+    $hasSerie
+        ? 'Série'
+        : 'Auteur';
+
+$categoryValue =
+    $hasSerie
+        ? (string) $artbook->serie
+        : (string) $artbook->auteur;
+
 ?>
 
 <section class="layout-container dashboard-page">
@@ -74,49 +84,11 @@ $returnUrl =
             <div class="detail-row">
 
                 <div class="detail-label">
-                    Auteur
+                    <?= $categoryLabel ?>
                 </div>
 
                 <div class="detail-value">
-
-                    <?= $hasAuteur
-                        ? e(
-                            (string) $artbook->auteur,
-                        )
-                        : 'Non renseigné'
-                    ?>
-
-                </div>
-
-            </div>
-
-            <div class="detail-row">
-
-                <div class="detail-label">
-                    Série
-                </div>
-
-                <div class="detail-value">
-
-                    <?= $hasSerie
-                        ? e(
-                            (string) $artbook->serie,
-                        )
-                        : 'Non renseignée'
-                    ?>
-
-                </div>
-
-            </div>
-
-            <div class="detail-row">
-
-                <div class="detail-label">
-                    Slug
-                </div>
-
-                <div class="detail-value">
-                    <?= e($artbook->slug) ?>
+                    <?= e($categoryValue) ?>
                 </div>
 
             </div>
