@@ -73,6 +73,30 @@ final class MangaAjaxController extends Controller
 
     /*
     |--------------------------------------------------------------------------
+    | AJAX ARTBOOKS PAGE
+    |--------------------------------------------------------------------------
+    */
+
+    public function artbooksPage(int $page = 1): never
+    {
+        $page = max(1, $page);
+
+        $data = $this->mangaReadService->artbooks($page);
+
+        if ($data === null)
+        {
+            throw new NotFoundException('Page introuvable');
+        }
+
+        $this->renderFragment('pages/manga/artbooks/ajax', [
+            'artbooks' => $data->artbooks,
+            'currentPage' => $data->currentPage,
+            'totalPages' => $data->compteur,
+        ]);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
     | UPDATE NOTE
     |--------------------------------------------------------------------------
     */

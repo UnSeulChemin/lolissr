@@ -125,19 +125,63 @@ return static function (Router $router): void
 
             $router->post('ajouter/manga', [MangaController::class, 'store'], [CsrfMiddleware::class]);
 
-            $router->get('ajouter/artbook', [MangaController::class, 'createArtbook']);
-
-            $router->post('ajouter/artbook', [MangaController::class, 'storeArtbook'], [CsrfMiddleware::class]);
-
             /*
             |--------------------------------------------------------------------------
             | ARTBOOKS
             |--------------------------------------------------------------------------
             */
 
-            $router->get('artbooks', [MangaController::class, 'artbooks']);
+            $router->prefix('artbooks')->group(function (Router $router): void
+            {
+                $router->get('', [MangaController::class, 'artbooks']);
 
-            $router->get('artbooks/{slug}/{numero:int}', [MangaController::class, 'showArtbook']);
+                $router->get('page/{page:int}', [MangaController::class, 'artbooks']);
+
+                /*
+                |--------------------------------------------------------------------------
+                | AJOUT
+                |--------------------------------------------------------------------------
+                */
+
+                $router->get('ajouter', [MangaController::class, 'createArtbook']);
+
+                $router->post(
+                    'ajouter',
+                    [MangaController::class, 'storeArtbook'],
+                    [CsrfMiddleware::class],
+                );
+
+                /*
+                |--------------------------------------------------------------------------
+                | ACTIONS SUR UN ARTBOOK
+                |--------------------------------------------------------------------------
+                */
+
+                $router->get('{slug}/modifier', [MangaController::class, 'editArtbook']);
+
+                $router->post(
+                    '{slug}/modifier',
+                    [MangaController::class, 'updateArtbook'],
+                    [CsrfMiddleware::class],
+                );
+
+                $router->post(
+                    '{slug}/supprimer',
+                    [MangaAjaxController::class, 'deleteArtbook'],
+                    [
+                        ExpectJsonMiddleware::class,
+                        CsrfMiddleware::class,
+                    ],
+                );
+
+                /*
+                |--------------------------------------------------------------------------
+                | CONSULTATION
+                |--------------------------------------------------------------------------
+                */
+
+                $router->get('{slug}', [MangaController::class, 'showArtbook']);
+            });
 
             /*
             |--------------------------------------------------------------------------
@@ -193,7 +237,15 @@ return static function (Router $router): void
 
             $router->prefix('ajax')->group(function (Router $router): void
             {
-                $router->get('series/page/{page:int}', [MangaAjaxController::class, 'seriesPage']);
+                $router->get(
+                    'series/page/{page:int}',
+                    [MangaAjaxController::class, 'seriesPage'],
+                );
+
+                $router->get(
+                    'artbooks/page/{page:int}',
+                    [MangaAjaxController::class, 'artbooksPage'],
+                );
             });
 
             /*
@@ -272,6 +324,20 @@ return static function (Router $router): void
             $router->get('ajouter', [FigurineController::class, 'create']);
 
             $router->post('ajouter', [FigurineController::class, 'store'], [CsrfMiddleware::class]);
+
+            /*
+            |--------------------------------------------------------------------------
+            | AJAX HTML
+            |--------------------------------------------------------------------------
+            */
+
+            $router->prefix('ajax')->group(function (Router $router): void
+            {
+                $router->get(
+                    'waifus/page/{page:int}',
+                    [FigurineAjaxController::class, 'waifusPage'],
+                );
+            });
         });
 
         /*

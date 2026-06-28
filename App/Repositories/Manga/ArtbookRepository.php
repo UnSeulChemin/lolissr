@@ -34,6 +34,38 @@ final class ArtbookRepository extends Model
         return $artbooks;
     }
 
+    /**
+     * @return list<Artbook>
+     */
+    public function findPaginated(
+        int $limit,
+        int $page,
+    ): array
+    {
+        $offset = ($page - 1) * $limit;
+
+        /** @var list<Artbook> $artbooks */
+        $artbooks = $this->fetchAll(
+            "
+            SELECT *
+
+            FROM {$this->table()}
+
+            ORDER BY created_at DESC
+
+            LIMIT :limit
+            OFFSET :offset
+            ",
+            [
+                'limit' => $limit,
+                'offset' => $offset,
+            ],
+            Artbook::class
+        );
+
+        return $artbooks;
+    }
+
     public function countAll(): int
     {
         return $this->countRows();

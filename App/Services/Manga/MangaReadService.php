@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Manga;
 
 use App\DTO\Manga\Responses\ArtbookData;
+use App\DTO\Manga\Responses\ArtbookListData;
 use App\DTO\Manga\Responses\MangaSearchData;
 use App\DTO\Manga\Responses\MangaSearchItemData;
 use App\DTO\Manga\Responses\MangaSeriesData;
@@ -139,12 +140,38 @@ final readonly class MangaReadService
         return array_map($this->mapSeriesItem(...), $this->mangaRepository->findIncompleteSeries());
     }
 
-    /**
-     * @return list<ArtbookData>
-     */
-    public function artbooks(): array
+    public function artbooks(int|string $page = 1): ?ArtbookListData
     {
-        return array_map($this->mapArtbook(...), $this->artbookRepository->findAll());
+        $page = max(1, (int) $page);
+
+        $perPage = App::pagination();
+
+        $totalArtbooks = $this->artbookRepository->countAll();
+
+        if ($totalArtbooks === 0)
+        {
+            return null;
+        }
+
+        $totalPages = (int) ceil($totalArtbooks / $perPage);
+
+        if ($page > $totalPages)
+        {
+            return null;
+        }
+
+        $artbooks = $this->artbookRepository->findPaginated(
+            $perPage,
+            $page,
+        );
+
+        return new ArtbookListData(
+            artbooks: array_map($this->mapArtbook(...), $artbooks),
+            compteur: $totalPages,
+            currentPage: $page,
+            totalArtbooks: $totalArtbooks,
+            perPage: $perPage,
+        );
     }
 
     public function oneArtbook(string $slug, int $numero): ?ArtbookData

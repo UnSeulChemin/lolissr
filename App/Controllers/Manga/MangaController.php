@@ -63,11 +63,25 @@ final class MangaController extends Controller
         ]);
     }
 
-    public function artbooks(): never
+    public function artbooks(int $page = 1): never
     {
-        $this->title = 'Manga | Artbooks';
+        $data = $this->mangaReadService->artbooks($page);
 
-        $this->render('pages/manga/artbooks/index', ['artbooks' => $this->mangaReadService->artbooks()]);
+        if ($data === null)
+        {
+            throw new NotFoundException('Page introuvable');
+        }
+
+        $this->title = 'Manga | Artbooks'
+            . ($data->currentPage > 1 ? ' - Page ' . $data->currentPage : '');
+
+        $this->render('pages/manga/artbooks/index', [
+            'artbooks' => $data->artbooks,
+            'currentPage' => $data->currentPage,
+            'compteur' => $data->compteur,
+            'totalArtbooks' => $data->totalArtbooks,
+            'perPage' => $data->perPage,
+        ]);
     }
 
     public function links(): never
