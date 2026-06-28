@@ -111,11 +111,23 @@ return static function (Router $router): void
 
             $router->get('recherche/{query}', [MangaController::class, 'search']);
 
-            $router->get('ajouter', [MangaController::class, 'create']);
-
-            $router->post('ajouter', [MangaController::class, 'store'], [CsrfMiddleware::class]);
-
             $router->get('lien', [MangaController::class, 'links']);
+
+            /*
+            |--------------------------------------------------------------------------
+            | AJOUT
+            |--------------------------------------------------------------------------
+            */
+
+            $router->get('ajouter', [MangaController::class, 'ajouter']);
+
+            $router->get('ajouter/manga', [MangaController::class, 'createManga']);
+
+            $router->post('ajouter/manga', [MangaController::class, 'store'], [CsrfMiddleware::class]);
+
+            $router->get('ajouter/artbook', [MangaController::class, 'createArtbook']);
+
+            $router->post('ajouter/artbook', [MangaController::class, 'storeArtbook'], [CsrfMiddleware::class]);
 
             /*
             |--------------------------------------------------------------------------

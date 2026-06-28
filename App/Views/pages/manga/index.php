@@ -26,7 +26,7 @@ $baseUri =
             </h1>
 
             <p class="dashboard-description">
-                Gère ta collection, ajoute des mangas et accède à tes liens utiles.
+                Gère ta collection de mangas et d'artbooks.
             </p>
 
         </div>
@@ -53,11 +53,11 @@ $baseUri =
             </span>
 
             <span class="dashboard-card-title">
-                Series
+                Séries
             </span>
 
             <span class="dashboard-card-description">
-                Voir tous les mangas enregistrés.
+                Parcourir toutes les séries de mangas.
             </span>
 
         </a>
@@ -84,7 +84,7 @@ $baseUri =
             </span>
 
             <span class="dashboard-card-description">
-                Voir tous les artbooks enregistrés.
+                Parcourir tous les artbooks de la collection.
             </span>
 
         </a>
@@ -111,7 +111,7 @@ $baseUri =
             </span>
 
             <span class="dashboard-card-description">
-                Ajouter un nouveau manga à la collection.
+                Ajouter un manga ou un artbook à la collection.
             </span>
 
         </a>

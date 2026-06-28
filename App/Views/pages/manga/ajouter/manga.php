@@ -29,7 +29,7 @@ $statutOptions = [
 
 $formAction =
     $baseUri
-    . 'manga/ajouter';
+    . 'manga/ajouter/manga';
 
 $returnUrl =
     $baseUri
