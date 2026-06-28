@@ -110,6 +110,32 @@ $currentSearch =
                     <a
                         class="nav-link-icon"
                         data-prefetch
+                        href="<?= e($baseUri) ?>figurines"
+                        title="Figurines"
+                    >
+                        🎀
+                    </a>
+
+                </li>
+
+                <li>
+
+                    <a
+                        class="nav-link-icon"
+                        data-prefetch
+                        href="<?= e($baseUri) ?>peluches"
+                        title="Peluches"
+                    >
+                        🧸
+                    </a>
+
+                </li>
+
+                <li>
+
+                    <a
+                        class="nav-link-icon"
+                        data-prefetch
                         href="<?= e($baseUri) ?>chinois"
                         title="Chinois"
                     >

@@ -5,9 +5,11 @@ declare(strict_types=1);
 use App\Controllers\AuthController;
 use App\Controllers\Chinois\ChinoisAjaxController;
 use App\Controllers\Chinois\ChinoisController;
+use App\Controllers\Figurine\FigurineController;
 use App\Controllers\MainController;
 use App\Controllers\Manga\MangaAjaxController;
 use App\Controllers\Manga\MangaController;
+use App\Controllers\Peluche\PelucheController;
 use App\Controllers\ProfileController;
 use App\Controllers\ProfileAjaxController;
 use App\Controllers\Sql\SqlAjaxController;
@@ -205,6 +207,28 @@ return static function (Router $router): void
 
                 $router->post('update-read-status/{slug}/{numero:int}', [MangaAjaxController::class, 'updateReadStatus']);
             });
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | FIGURINES
+        |--------------------------------------------------------------------------
+        */
+
+        $router->prefix('figurines')->group(function (Router $router): void
+        {
+            $router->get('', [FigurineController::class, 'index']);
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | PELUCHES
+        |--------------------------------------------------------------------------
+        */
+
+        $router->prefix('peluches')->group(function (Router $router): void
+        {
+            $router->get('', [PelucheController::class, 'index']);
         });
 
         $router->prefix('chinois')->group(function (Router $router): void
