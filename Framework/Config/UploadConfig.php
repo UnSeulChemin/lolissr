@@ -8,6 +8,8 @@ final class UploadConfig
 {
     private static ?string $mangaThumbnailDirectory = null;
 
+    private static ?string $figurineThumbnailDirectory = null;
+
     public static function maxSize(): int
     {
         return max(
@@ -51,6 +53,18 @@ final class UploadConfig
             ??= rtrim(
                 base_path(
                     'public/images/mangas/thumbnail',
+                ),
+                '/\\',
+            )
+            . DIRECTORY_SEPARATOR;
+    }
+
+    public static function figurineThumbnailDirectory(): string
+    {
+        return self::$figurineThumbnailDirectory
+            ??= rtrim(
+                base_path(
+                    'public/images/figurines/thumbnail',
                 ),
                 '/\\',
             )

@@ -56,7 +56,12 @@ final readonly class MangaWriteService
         return $this->database->transaction(
             function () use ($dto, $files): ServiceResult
             {
-                $upload = $this->uploadService->uploadThumbnail($dto->livre, $dto->numero, $files);
+                $upload = $this->uploadService->uploadThumbnail(
+                    $dto->livre,
+                    $dto->numero,
+                    UploadConfig::mangaThumbnailDirectory(),
+                    $files,
+                );
 
                 if (! $upload->success)
                 {

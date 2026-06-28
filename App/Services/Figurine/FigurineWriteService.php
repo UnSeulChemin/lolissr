@@ -6,7 +6,9 @@ namespace App\Services\Figurine;
 
 use App\DTO\Common\ServiceResult;
 use App\DTO\Figurine\Inputs\FigurineCreateDTO;
+use App\DTO\Figurine\Inputs\FigurineUpdateDTO;
 use App\DTO\Upload\UploadThumbnailData;
+use App\Models\Figurine;
 use App\Repositories\Figurine\FigurineRepository;
 use App\Services\UploadService;
 
@@ -45,7 +47,12 @@ final readonly class FigurineWriteService
         return $this->database->transaction(
             function () use ($dto, $files): ServiceResult
             {
-                $upload = $this->uploadService->uploadThumbnail($dto->waifu, 1, $files);
+                $upload = $this->uploadService->uploadThumbnail(
+                    $dto->waifu,
+                    1,
+                    UploadConfig::figurineThumbnailDirectory(),
+                    $files,
+                );
 
                 if (! $upload->success)
                 {
@@ -70,13 +77,18 @@ final readonly class FigurineWriteService
                         'commentaire' => $dto->commentaire,
                     ]);
 
-                    if (! $inserted)
+                    $failure = $this->writeFailed(
+                        $inserted,
+                        'Insertion figurine',
+                        $dto->slug,
+                        'Erreur lors de l’enregistrement'
+                    );
+
+                    if ($failure !== null)
                     {
                         $this->rollbackUpload($uploadData);
 
-                        $this->logFailure('Insertion figurine', $dto->slug);
-
-                        return $this->error('Erreur lors de l’enregistrement');
+                        return $failure;
                     }
 
                     $this->clearCache();
@@ -93,6 +105,87 @@ final readonly class FigurineWriteService
         );
     }
 
+    public function update(
+        string $slug,
+        FigurineUpdateDTO $dto
+    ): ServiceResult
+    {
+        return $this->database->transaction(
+            function () use (
+                $slug,
+                $dto
+            ): ServiceResult
+            {
+                $updated = $this->figurineRepository->updateFigurine(
+                    $slug,
+                    $dto
+                );
+
+                $failure = $this->writeFailed(
+                    $updated,
+                    'Update figurine',
+                    $slug,
+                    'Erreur lors de la mise à jour'
+                );
+
+                if ($failure !== null)
+                {
+                    return $failure;
+                }
+
+                $this->clearCache();
+
+                return $this->success(
+                    'Figurine mise à jour avec succès'
+                );
+            }
+        );
+    }
+
+    public function delete(
+        string $slug
+    ): ServiceResult
+    {
+        return $this->database->transaction(
+            function () use (
+                $slug
+            ): ServiceResult
+            {
+                $figurine = $this->figurineRepository->findBySlug($slug);
+
+                if ($figurine === null)
+                {
+                    return $this->error(
+                        'Figurine introuvable',
+                        404
+                    );
+                }
+
+                $deleted = $this->figurineRepository->deleteBySlug($slug);
+
+                $failure = $this->writeFailed(
+                    $deleted,
+                    'Delete figurine',
+                    $slug,
+                    'Erreur lors de la suppression'
+                );
+
+                if ($failure !== null)
+                {
+                    return $failure;
+                }
+
+                $this->removeThumbnail($figurine);
+
+                $this->clearCache();
+
+                return $this->success(
+                    'Figurine supprimée avec succès'
+                );
+            }
+        );
+    }
+
     /*
     |--------------------------------------------------------------------------
     | FILES
@@ -104,11 +197,51 @@ final readonly class FigurineWriteService
         $this->uploadService->removeFile($upload->destinationPath);
     }
 
+    private function removeThumbnail(
+        Figurine $figurine
+    ): void
+    {
+        if (
+            $figurine->thumbnail === ''
+            || $figurine->extension === ''
+        ) {
+            return;
+        }
+
+        $path =
+            UploadConfig::figurineThumbnailDirectory()
+            . $figurine->thumbnail
+            . '.'
+            . $figurine->extension;
+
+        $this->uploadService->removeFile($path);
+    }
+
     /*
     |--------------------------------------------------------------------------
     | HELPERS
     |--------------------------------------------------------------------------
     */
+
+    private function writeFailed(
+        bool $result,
+        string $action,
+        string $slug,
+        string $message
+    ): ?ServiceResult
+    {
+        if ($result)
+        {
+            return null;
+        }
+
+        $this->logFailure(
+            $action,
+            $slug
+        );
+
+        return $this->error($message);
+    }
 
     private function clearCache(): void
     {

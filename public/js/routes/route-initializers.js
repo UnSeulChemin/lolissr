@@ -66,6 +66,10 @@ import {
     initAjouterPage as initAjouterFigurinePage,
 } from '../figurine/pages/ajouter.js';
 
+import {
+    initDeleteFigurine,
+} from '../figurine/actions/delete-figurine.js';
+
 // ==================================================
 // EXPORT
 // ==================================================
@@ -226,6 +230,11 @@ export const ROUTE_INITIALIZERS = [
             [
                 'DeleteManga',
                 initDeleteManga,
+            ],
+
+            [
+                'DeleteFigurine',
+                initDeleteFigurine,
             ],
 
             [

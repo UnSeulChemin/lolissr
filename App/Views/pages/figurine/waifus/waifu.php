@@ -150,9 +150,11 @@ $hasCompany =
                         class="
                             form-submit
                             form-submit-danger
+                            js-delete-figurine
                         "
                         data-url="<?= e($deleteUrl) ?>"
                         data-redirect="<?= e($redirectUrl) ?>"
+                        data-slug="<?= e($slug) ?>"
                     >
                         Supprimer
                     </button>

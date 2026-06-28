@@ -10,17 +10,20 @@ import {
 // INVALIDATE
 // =========================================
 
-export function invalidateFigurinePages()
+export function invalidateFigurinePages(
+    slug = null,
+)
 {
-    invalidatePage(
-        '/lolissr/',
-    );
+    invalidatePage('/lolissr/');
 
-    invalidatePage(
-        '/lolissr/figurines',
-    );
+    invalidatePage('/lolissr/figurines');
 
-    invalidatePage(
-        '/lolissr/figurines/waifus',
-    );
+    invalidatePage('/lolissr/figurines/waifus');
+
+    if (slug)
+    {
+        invalidatePage(
+            `/lolissr/figurines/waifus/${slug}`,
+        );
+    }
 }

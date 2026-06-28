@@ -6,6 +6,7 @@ use App\Controllers\AuthController;
 use App\Controllers\Chinois\ChinoisAjaxController;
 use App\Controllers\Chinois\ChinoisController;
 use App\Controllers\Figurine\FigurineController;
+use App\Controllers\Figurine\FigurineAjaxController;
 use App\Controllers\MainController;
 use App\Controllers\Manga\MangaAjaxController;
 use App\Controllers\Manga\MangaController;
@@ -232,6 +233,15 @@ return static function (Router $router): void
             $router->get('waifus/{slug}/modifier', [FigurineController::class, 'edit']);
 
             $router->post('waifus/{slug}/modifier', [FigurineController::class, 'update'], [CsrfMiddleware::class]);
+
+            $router->post(
+                'waifus/{slug}/supprimer',
+                [FigurineAjaxController::class, 'delete'],
+                [
+                    ExpectJsonMiddleware::class,
+                    CsrfMiddleware::class,
+                ],
+            );
 
             /*
             |--------------------------------------------------------------------------

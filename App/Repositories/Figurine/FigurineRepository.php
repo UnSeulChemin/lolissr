@@ -7,6 +7,7 @@ namespace App\Repositories\Figurine;
 use App\DTO\Figurine\Responses\FigurineData;
 use App\Models\Figurine;
 use App\Models\Model;
+use App\DTO\Figurine\Inputs\FigurineUpdateDTO;
 
 use Framework\Support\Str;
 
@@ -85,6 +86,27 @@ final class FigurineRepository extends Model
         return parent::insert($this->normalizeInsertData($data));
     }
 
+    public function updateFigurine(
+        string $slug,
+        FigurineUpdateDTO $dto
+    ): bool
+    {
+        return $this->updateBySlug(
+            $slug,
+            [
+                'company' => $dto->company,
+                'commentaire' => $dto->commentaire,
+            ]
+        );
+    }
+
+    public function deleteBySlug(string $slug): bool
+    {
+        return $this->delete([
+            'slug' => $this->normalizeSlug($slug),
+        ]);
+    }
+
     /*
     |--------------------------------------------------------------------------
     | HELPERS
@@ -119,6 +141,22 @@ final class FigurineRepository extends Model
     private function normalizeSlug(string $slug): string
     {
         return Str::slug($slug);
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    private function updateBySlug(
+        string $slug,
+        array $data
+    ): bool
+    {
+        return $this->update(
+            $data,
+            [
+                'slug' => $this->normalizeSlug($slug),
+            ]
+        );
     }
 
     /**

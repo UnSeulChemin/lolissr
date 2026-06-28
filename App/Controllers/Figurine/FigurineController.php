@@ -9,13 +9,17 @@ use App\DTO\Figurine\Responses\FigurineData;
 use App\Http\Requests\Figurine\FigurineCreateRequest;
 use App\Services\Figurine\FigurineReadService;
 use App\Services\Figurine\FigurineWriteService;
+use App\Http\Requests\Figurine\FigurineUpdateRequest;
 
 use Framework\Exceptions\NotFoundException;
 use Framework\Exceptions\ValidationException;
 use Framework\Http\Request;
+use Framework\Exceptions\BaseHttpException;
 
 final class FigurineController extends Controller
 {
+    private const WAIFUS_PATH = 'figurines/waifus';
+
     public function __construct(
         private readonly FigurineReadService $figurineReadService,
         private readonly FigurineWriteService $figurineWriteService,
@@ -77,6 +81,58 @@ final class FigurineController extends Controller
         );
 
         $this->jsonResult($result);
+    }
+
+    public function edit(string $slug): never
+    {
+        $figurine = $this->resolveFigurineOrFail($slug);
+
+        $this->title = 'Figurines | Modifier';
+
+        $this->render(
+            'pages/figurine/waifus/modifier',
+            [
+                'figurine' => $figurine,
+            ]
+        );
+    }
+
+    public function update(
+        FigurineUpdateRequest $request,
+        string $slug
+    ): never
+    {
+        $figurine = $this->resolveFigurineOrFail($slug);
+
+        if ($request->fails())
+        {
+            throw new ValidationException(
+                $request->errors()
+            );
+        }
+
+        $result = $this->figurineWriteService->update(
+            $figurine->slug,
+            $request->dto()
+        );
+
+        if (! $result->success)
+        {
+            throw new BaseHttpException(
+                message: $result->message,
+                statusCode: 422,
+                data: $result->data
+            );
+        }
+
+        $this->redirectWithSuccess(
+            sprintf(
+                '%s/%s',
+                self::WAIFUS_PATH,
+                rawurlencode($figurine->slug)
+            ),
+            $result->message
+        );
     }
 
     /*

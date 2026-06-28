@@ -33,8 +33,9 @@ final readonly class UploadService
      * @param array<string, mixed> $files
      */
     public function uploadThumbnail(
-        string $livre,
-        int $numero,
+        string $name,
+        int $number,
+        string $directory,
         array $files,
         string $fileKey = 'image'
     ): ServiceResult
@@ -48,26 +49,26 @@ final readonly class UploadService
 
         if ($file === null)
         {
-            return $this->failUpload('Upload manga: fichier introuvable.', 'Fichier image introuvable', 422);
+            return $this->failUpload('Upload: fichier introuvable.', 'Fichier image introuvable', 422);
         }
 
         $extension = $this->fileExtension($file);
 
         if ($extension === null)
         {
-            return $this->failUpload('Upload manga: extension introuvable.', 'Extension image introuvable', 422);
+            return $this->failUpload('Upload: extension introuvable.', 'Extension image introuvable', 422);
         }
 
         if (! in_array($extension, UploadConfig::allowedExtensions(), true))
         {
-            return $this->failUpload('Upload manga: extension non autorisée : ' . $extension, 'Format image non autorisé', 422);
+            return $this->failUpload('Upload: extension non autorisée : ' . $extension, 'Format image non autorisé', 422);
         }
 
         $tmpName = $this->tmpName($file);
 
         if (! $this->isValidTmpFile($tmpName))
         {
-            return $this->failUpload('Upload manga: fichier temporaire invalide.', 'Fichier temporaire introuvable', 422);
+            return $this->failUpload('Upload: fichier temporaire invalide.', 'Fichier temporaire introuvable', 422);
         }
 
         assert($tmpName !== null);
@@ -77,29 +78,36 @@ final readonly class UploadService
         if ($mimeType === null || ! in_array($mimeType, UploadConfig::allowedMimeTypes(), true))
         {
             return $this->failUpload(
-                'Upload manga: MIME non autorisé. MIME reçu: ' . ($mimeType ?? 'null'),
+                'Upload: MIME non autorisé. MIME reçu: ' . ($mimeType ?? 'null'),
                 'Type MIME image non autorisé',
                 422
             );
         }
 
-        $thumbnail = Str::thumbnailName($livre, $numero);
+        $thumbnail = Str::thumbnailName(
+            $name,
+            $number,
+        );
 
         if ($thumbnail === '')
         {
             return $this->failUpload(
-                'Upload manga: nom thumbnail invalide.',
+                'Upload: nom thumbnail invalide.',
                 'Nom de fichier invalide',
                 422
             );
         }
 
-        $destination = $this->buildDestinationPath($thumbnail, $extension);
+        $destination = $this->buildDestinationPath(
+            $thumbnail,
+            $extension,
+            $directory
+        );
 
         if ($destination === null)
         {
             return $this->failUpload(
-                'Upload manga: dossier impossible à créer.',
+                'Upload: dossier impossible à créer.',
                 'Dossier image introuvable',
                 500
             );
@@ -108,7 +116,7 @@ final readonly class UploadService
         if (is_file($destination))
         {
             return $this->failUpload(
-                'Upload manga: fichier déjà existant : ' . $destination,
+                'Upload: fichier déjà existant : ' . $destination,
                 'Une image avec ce nom existe déjà',
                 409
             );
@@ -117,7 +125,7 @@ final readonly class UploadService
         if (! move_uploaded_file($tmpName, $destination) || ! is_file($destination))
         {
             return $this->failUpload(
-                'Upload manga: fichier non enregistré. tmp='
+                'Upload: fichier non enregistré. tmp='
                 . $tmpName
                 . ' destination='
                 . $destination,
@@ -242,16 +250,21 @@ final readonly class UploadService
         return mkdir($directory, 0755, true) || is_dir($directory);
     }
 
-    private function buildDestinationPath(string $thumbnail, string $extension): ?string
+    private function buildDestinationPath(
+        string $thumbnail,
+        string $extension,
+        string $directory
+    ): ?string
     {
-        $directory = UploadConfig::mangaThumbnailDirectory();
-
         if (! $this->ensureDirectoryExists($directory))
         {
             return null;
         }
 
-        return $directory . $thumbnail . '.' . $extension;
+        return $directory
+            . $thumbnail
+            . '.'
+            . $extension;
     }
 
     /*
