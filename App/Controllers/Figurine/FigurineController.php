@@ -43,10 +43,22 @@ final class FigurineController extends Controller
 
     public function waifus(int $page = 1): never
     {
-        $this->title = 'Figurines | Waifus';
+        $data = $this->figurineReadService->waifus($page);
+
+        if ($data === null)
+        {
+            throw new NotFoundException('Page introuvable');
+        }
+
+        $this->title = 'Figurines | Waifus'
+            . ($data->currentPage > 1 ? ' - Page ' . $data->currentPage : '');
 
         $this->render('pages/figurine/waifus/index', [
-            'figurines' => $this->figurineReadService->waifus($page),
+            'figurines' => $data->figurines,
+            'currentPage' => $data->currentPage,
+            'compteur' => $data->compteur,
+            'totalWaifus' => $data->totalWaifus,
+            'perPage' => $data->perPage,
         ]);
     }
 

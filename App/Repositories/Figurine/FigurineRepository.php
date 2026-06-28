@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Repositories\Figurine;
 
-use App\DTO\Figurine\Responses\FigurineData;
 use App\Models\Figurine;
 use App\Models\Model;
 use App\DTO\Figurine\Inputs\FigurineUpdateDTO;
@@ -37,11 +36,35 @@ final class FigurineRepository extends Model
     }
 
     /**
-     * @return list<FigurineData>
+     * @return list<Figurine>
      */
-    public function findAllDto(): array
+    public function findPaginated(
+        int $limit,
+        int $page,
+    ): array
     {
-        return $this->mapResultsToDto($this->findAll());
+        $offset = ($page - 1) * $limit;
+
+        /** @var list<Figurine> $figurines */
+        $figurines = $this->fetchAll(
+            "
+            SELECT *
+
+            FROM {$this->table()}
+
+            ORDER BY waifu ASC
+
+            LIMIT :limit
+            OFFSET :offset
+            ",
+            [
+                'limit' => $limit,
+                'offset' => $offset,
+            ],
+            Figurine::class
+        );
+
+        return $figurines;
     }
 
     public function findBySlug(string $slug): ?Figurine
@@ -66,16 +89,9 @@ final class FigurineRepository extends Model
         return $figurine;
     }
 
-    public function findDtoBySlug(string $slug): ?FigurineData
+    public function countAll(): int
     {
-        $figurine = $this->findBySlug($slug);
-
-        if ($figurine === null)
-        {
-            return null;
-        }
-
-        return $this->mapToDto($figurine);
+        return $this->countRows();
     }
 
     /**
@@ -112,31 +128,6 @@ final class FigurineRepository extends Model
     | HELPERS
     |--------------------------------------------------------------------------
     */
-
-    private function mapToDto(Figurine $figurine): FigurineData
-    {
-        return new FigurineData(
-            id: $figurine->id,
-
-            slug: $figurine->slug,
-            waifu: $figurine->waifu,
-            company: $figurine->company,
-
-            thumbnail: $figurine->thumbnail !== '' ? $figurine->thumbnail : null,
-            extension: $figurine->extension !== '' ? $figurine->extension : null,
-
-            commentaire: $figurine->commentaire,
-        );
-    }
-
-    /**
-     * @param list<Figurine> $figurines
-     * @return list<FigurineData>
-     */
-    private function mapResultsToDto(array $figurines): array
-    {
-        return array_map($this->mapToDto(...), $figurines);
-    }
 
     private function normalizeSlug(string $slug): string
     {

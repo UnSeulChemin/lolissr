@@ -25,6 +25,30 @@ final class FigurineAjaxController extends Controller
 
     /*
     |--------------------------------------------------------------------------
+    | AJAX WAIFUS PAGE
+    |--------------------------------------------------------------------------
+    */
+
+    public function waifusPage(int $page = 1): never
+    {
+        $page = max(1, $page);
+
+        $data = $this->figurineReadService->waifus($page);
+
+        if ($data === null)
+        {
+            throw new NotFoundException('Page introuvable');
+        }
+
+        $this->renderFragment('pages/figurine/waifus/ajax', [
+            'figurines' => $data->figurines,
+            'currentPage' => $data->currentPage,
+            'totalPages' => $data->compteur,
+        ]);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
     | DELETE
     |--------------------------------------------------------------------------
     */
