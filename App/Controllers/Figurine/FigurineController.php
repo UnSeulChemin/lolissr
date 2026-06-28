@@ -6,15 +6,19 @@ namespace App\Controllers\Figurine;
 
 use App\Controllers\Controller;
 use App\DTO\Figurine\Responses\FigurineData;
+use App\Http\Requests\Figurine\FigurineCreateRequest;
 use App\Services\Figurine\FigurineReadService;
+use App\Services\Figurine\FigurineWriteService;
 
 use Framework\Exceptions\NotFoundException;
+use Framework\Exceptions\ValidationException;
 use Framework\Http\Request;
 
 final class FigurineController extends Controller
 {
     public function __construct(
         private readonly FigurineReadService $figurineReadService,
+        private readonly FigurineWriteService $figurineWriteService,
         Request $request
     ) {
         parent::__construct($request);
@@ -38,7 +42,7 @@ final class FigurineController extends Controller
         $this->title = 'Figurines | Waifus';
 
         $this->render('pages/figurine/waifus/index', [
-            'figurines' => $this->figurineReadService->waifus(),
+            'figurines' => $this->figurineReadService->waifus($page),
         ]);
     }
 
@@ -60,25 +64,19 @@ final class FigurineController extends Controller
         $this->render('pages/figurine/ajouter');
     }
 
-    public function edit(string $slug): never
+    public function store(FigurineCreateRequest $request): never
     {
-        $figurine = $this->resolveFigurineOrFail($slug);
+        if ($request->fails())
+        {
+            throw new ValidationException($request->errors());
+        }
 
-        $this->title = 'Figurines | Modifier';
+        $result = $this->figurineWriteService->create(
+            $request->dto(),
+            $request->files()
+        );
 
-        $this->render('pages/figurine/waifus/modifier', [
-            'figurine' => $figurine,
-        ]);
-    }
-
-    public function store(): never
-    {
-        //
-    }
-
-    public function update(string $slug): never
-    {
-        //
+        $this->jsonResult($result);
     }
 
     /*

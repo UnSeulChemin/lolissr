@@ -23,7 +23,7 @@ final readonly class FigurineReadService
     /**
      * @return list<FigurineData>
      */
-    public function waifus(): array
+    public function waifus(int|string $page = 1): array
     {
         return $this->figurineRepository->findAllDto();
     }
