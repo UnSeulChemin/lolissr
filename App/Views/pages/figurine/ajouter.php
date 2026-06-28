@@ -27,6 +27,7 @@ $returnUrl = $baseUri . 'figurines';
 
             <form
                 class="form-layout"
+                data-form-page="ajouter"
                 action="<?= e($formAction) ?>"
                 method="post"
                 enctype="multipart/form-data"

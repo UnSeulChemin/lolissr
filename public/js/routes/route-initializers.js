@@ -62,6 +62,9 @@ import {
     initProfileCustomization,
 } from '../profil/profile-customization.js';
 
+import {
+    initAjouterPage as initAjouterFigurinePage,
+} from '../figurine/pages/ajouter.js';
 
 // ==================================================
 // EXPORT
@@ -84,6 +87,25 @@ export const ROUTE_INITIALIZERS = [
             [
                 'AjouterPage',
                 initAjouterPage,
+            ],
+        ],
+    },
+
+    /*
+    |--------------------------------------------------------------------------
+    | AJOUTER FIGURINE
+    |--------------------------------------------------------------------------
+    */
+
+    {
+        match:
+            /^\/lolissr\/figurines\/ajouter\/?$/,
+
+        initializers:
+        [
+            [
+                'AjouterFigurinePage',
+                initAjouterFigurinePage,
             ],
         ],
     },
