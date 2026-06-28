@@ -218,6 +218,38 @@ return static function (Router $router): void
         $router->prefix('figurines')->group(function (Router $router): void
         {
             $router->get('', [FigurineController::class, 'index']);
+
+            $router->get('waifus', [FigurineController::class, 'waifus']);
+
+            $router->get('waifus/page/{page:int}', [FigurineController::class, 'waifus']);
+
+            /*
+            |--------------------------------------------------------------------------
+            | ACTIONS SUR UNE FIGURINE
+            |--------------------------------------------------------------------------
+            */
+
+            $router->get('waifus/{slug}/modifier', [FigurineController::class, 'edit']);
+
+            $router->post('waifus/{slug}/modifier', [FigurineController::class, 'update'], [CsrfMiddleware::class]);
+
+            /*
+            |--------------------------------------------------------------------------
+            | CONSULTATION
+            |--------------------------------------------------------------------------
+            */
+
+            $router->get('waifus/{slug}', [FigurineController::class, 'showWaifu']);
+
+            /*
+            |--------------------------------------------------------------------------
+            | AJOUT
+            |--------------------------------------------------------------------------
+            */
+
+            $router->get('ajouter', [FigurineController::class, 'create']);
+
+            $router->post('ajouter', [FigurineController::class, 'store'], [CsrfMiddleware::class]);
         });
 
         /*
