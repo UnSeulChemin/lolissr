@@ -119,11 +119,32 @@ return static function (Router $router): void
             |--------------------------------------------------------------------------
             */
 
-            $router->get('ajouter', [MangaController::class, 'ajouter']);
+            $router->get(
+                'ajouter',
+                [MangaController::class, 'ajouter'],
+            );
 
-            $router->get('ajouter/manga', [MangaController::class, 'createManga']);
+            $router->get(
+                'ajouter/manga',
+                [MangaController::class, 'createManga'],
+            );
 
-            $router->post('ajouter/manga', [MangaController::class, 'store'], [CsrfMiddleware::class]);
+            $router->post(
+                'ajouter/manga',
+                [MangaController::class, 'store'],
+                [CsrfMiddleware::class],
+            );
+
+            $router->get(
+                'ajouter/artbook',
+                [MangaController::class, 'createArtbook'],
+            );
+
+            $router->post(
+                'ajouter/artbook',
+                [MangaController::class, 'storeArtbook'],
+                [CsrfMiddleware::class],
+            );
 
             /*
             |--------------------------------------------------------------------------
@@ -135,20 +156,9 @@ return static function (Router $router): void
             {
                 $router->get('', [MangaController::class, 'artbooks']);
 
-                $router->get('page/{page:int}', [MangaController::class, 'artbooks']);
-
-                /*
-                |--------------------------------------------------------------------------
-                | AJOUT
-                |--------------------------------------------------------------------------
-                */
-
-                $router->get('ajouter', [MangaController::class, 'createArtbook']);
-
-                $router->post(
-                    'ajouter',
-                    [MangaController::class, 'storeArtbook'],
-                    [CsrfMiddleware::class],
+                $router->get(
+                    'page/{page:int}',
+                    [MangaController::class, 'artbooks']
                 );
 
                 /*
@@ -157,16 +167,19 @@ return static function (Router $router): void
                 |--------------------------------------------------------------------------
                 */
 
-                $router->get('{slug}/modifier', [MangaController::class, 'editArtbook']);
+                $router->get(
+                    '{slug}/{numero:int}/modifier',
+                    [MangaController::class, 'editArtbook']
+                );
 
                 $router->post(
-                    '{slug}/modifier',
+                    '{slug}/{numero:int}/modifier',
                     [MangaController::class, 'updateArtbook'],
                     [CsrfMiddleware::class],
                 );
 
                 $router->post(
-                    '{slug}/supprimer',
+                    '{slug}/{numero:int}/supprimer',
                     [MangaAjaxController::class, 'deleteArtbook'],
                     [
                         ExpectJsonMiddleware::class,
@@ -180,7 +193,10 @@ return static function (Router $router): void
                 |--------------------------------------------------------------------------
                 */
 
-                $router->get('{slug}', [MangaController::class, 'showArtbook']);
+                $router->get(
+                    '{slug}/{numero:int}',
+                    [MangaController::class, 'showArtbook']
+                );
             });
 
             /*

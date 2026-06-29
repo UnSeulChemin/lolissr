@@ -6,10 +6,13 @@ namespace App\Controllers\Manga;
 
 use App\Controllers\Controller;
 use App\DTO\Common\ServiceResult;
+use App\DTO\Manga\Responses\ArtbookData;
 use App\DTO\Manga\Inputs\MangaUpdateNoteDTO;
 use App\DTO\Manga\Responses\MangaShowData;
 use App\Services\Manga\MangaReadService;
 use App\Services\Manga\MangaWriteService;
+use App\Services\Manga\ArtbookReadService;
+use App\Services\Manga\ArtbookWriteService;
 
 use Framework\Exceptions\BaseHttpException;
 use Framework\Exceptions\NotFoundException;
@@ -27,6 +30,8 @@ final class MangaAjaxController extends Controller
     public function __construct(
         private readonly MangaReadService $mangaReadService,
         private readonly MangaWriteService $mangaWriteService,
+        private readonly ArtbookReadService $artbookReadService,
+        private readonly ArtbookWriteService $artbookWriteService,
         Request $request
     ) {
         parent::__construct($request);
@@ -81,7 +86,7 @@ final class MangaAjaxController extends Controller
     {
         $page = max(1, $page);
 
-        $data = $this->mangaReadService->artbooks($page);
+        $data = $this->artbookReadService->artbooks($page);
 
         if ($data === null)
         {
@@ -183,6 +188,18 @@ final class MangaAjaxController extends Controller
         );
     }
 
+    public function deleteArtbook(string $slug, int $numero): never
+    {
+        $artbook = $this->resolveArtbookOrFail($slug, $numero);
+
+        $result = $this->artbookWriteService->delete(
+            $artbook->slug,
+            $artbook->numero
+        );
+
+        $this->jsonResult($result);
+    }
+
     /*
     |--------------------------------------------------------------------------
     | HELPERS
@@ -230,5 +247,23 @@ final class MangaAjaxController extends Controller
         }
 
         return $data;
+    }
+
+    private function resolveArtbookOrFail(
+        string $slug,
+        int $numero
+    ): ArtbookData
+    {
+        $artbook = $this->artbookReadService->one(
+            $slug,
+            $numero
+        );
+
+        if ($artbook === null)
+        {
+            throw new NotFoundException('Artbook introuvable');
+        }
+
+        return $artbook;
     }
 }

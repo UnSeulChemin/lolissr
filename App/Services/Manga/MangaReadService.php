@@ -4,16 +4,12 @@ declare(strict_types=1);
 
 namespace App\Services\Manga;
 
-use App\DTO\Manga\Responses\ArtbookData;
-use App\DTO\Manga\Responses\ArtbookListData;
 use App\DTO\Manga\Responses\MangaSearchData;
 use App\DTO\Manga\Responses\MangaSearchItemData;
 use App\DTO\Manga\Responses\MangaSeriesData;
 use App\DTO\Manga\Responses\MangaSeriesItemData;
 use App\DTO\Manga\Responses\MangaShowData;
-use App\Models\Artbook;
 use App\Models\Manga;
-use App\Repositories\Manga\ArtbookRepository;
 use App\Repositories\Manga\MangaRepository;
 use App\Repositories\Manga\MangaSearchRepository;
 
@@ -23,8 +19,7 @@ final readonly class MangaReadService
 {
     public function __construct(
         private MangaRepository $mangaRepository,
-        private MangaSearchRepository $searchRepository,
-        private ArtbookRepository $artbookRepository
+        private MangaSearchRepository $searchRepository
     ) {
     }
 
@@ -39,6 +34,7 @@ final readonly class MangaReadService
         $page = max(1, (int) $page);
 
         $perPage = App::pagination();
+
         $totalSeries = $this->searchRepository->countFirstTomes();
 
         if ($totalSeries === 0)
@@ -53,7 +49,11 @@ final readonly class MangaReadService
             return null;
         }
 
-        $mangas = $this->searchRepository->findAllFirstTomes('id DESC', $perPage, $page);
+        $mangas = $this->searchRepository->findAllFirstTomes(
+            'id DESC',
+            $perPage,
+            $page,
+        );
 
         return new MangaSeriesData(
             mangas: array_map($this->mapSeriesItem(...), $mangas),
@@ -61,7 +61,7 @@ final readonly class MangaReadService
             currentPage: $page,
             slugFilter: null,
             totalSeries: $totalSeries,
-            perPage: $perPage
+            perPage: $perPage,
         );
     }
 
@@ -87,20 +87,26 @@ final readonly class MangaReadService
             currentPage: 1,
             slugFilter: $slug,
             totalSeries: $totalItems,
-            perPage: $totalItems
+            perPage: $totalItems,
         );
     }
 
     public function one(string $slug, int $numero): ?MangaShowData
     {
-        $manga = $this->mangaRepository->findOneDtoBySlugAndNumero($slug, $numero);
+        $manga = $this->mangaRepository->findOneDtoBySlugAndNumero(
+            $slug,
+            $numero,
+        );
 
         if ($manga === null)
         {
             return null;
         }
 
-        return new MangaShowData(manga: $manga, canonicalSlug: $manga->slug);
+        return new MangaShowData(
+            manga: $manga,
+            canonicalSlug: $manga->slug,
+        );
     }
 
     /*
@@ -115,7 +121,10 @@ final readonly class MangaReadService
 
         $results = $this->searchRepository->searchMangas($query);
 
-        return new MangaSearchData(results: array_map($this->mapSearchItem(...), $results), search: $query);
+        return new MangaSearchData(
+            results: array_map($this->mapSearchItem(...), $results),
+            search: $query,
+        );
     }
 
     /*
@@ -129,7 +138,10 @@ final readonly class MangaReadService
      */
     public function notes(): array
     {
-        return array_map($this->mapSeriesItem(...), $this->mangaRepository->findSeriesWithoutPerfectNote());
+        return array_map(
+            $this->mapSeriesItem(...),
+            $this->mangaRepository->findSeriesWithoutPerfectNote(),
+        );
     }
 
     /**
@@ -137,53 +149,10 @@ final readonly class MangaReadService
      */
     public function aLire(): array
     {
-        return array_map($this->mapSeriesItem(...), $this->mangaRepository->findIncompleteSeries());
-    }
-
-    public function artbooks(int|string $page = 1): ?ArtbookListData
-    {
-        $page = max(1, (int) $page);
-
-        $perPage = App::pagination();
-
-        $totalArtbooks = $this->artbookRepository->countAll();
-
-        if ($totalArtbooks === 0)
-        {
-            return null;
-        }
-
-        $totalPages = (int) ceil($totalArtbooks / $perPage);
-
-        if ($page > $totalPages)
-        {
-            return null;
-        }
-
-        $artbooks = $this->artbookRepository->findPaginated(
-            $perPage,
-            $page,
+        return array_map(
+            $this->mapSeriesItem(...),
+            $this->mangaRepository->findIncompleteSeries(),
         );
-
-        return new ArtbookListData(
-            artbooks: array_map($this->mapArtbook(...), $artbooks),
-            compteur: $totalPages,
-            currentPage: $page,
-            totalArtbooks: $totalArtbooks,
-            perPage: $perPage,
-        );
-    }
-
-    public function oneArtbook(string $slug, int $numero): ?ArtbookData
-    {
-        $artbook = $this->artbookRepository->findOneBySlugAndNumero($slug, $numero);
-
-        if ($artbook === null)
-        {
-            return null;
-        }
-
-        return $this->mapArtbook($artbook);
     }
 
     /*
@@ -205,7 +174,7 @@ final readonly class MangaReadService
             averageNote: $manga->average_note,
             total: $manga->total ?? 0,
             totalLu: $manga->total_lu ?? 0,
-            lu: $manga->lu
+            lu: $manga->lu,
         );
     }
 
@@ -218,22 +187,7 @@ final readonly class MangaReadService
             thumbnail: $manga->thumbnail !== '' ? $manga->thumbnail : null,
             extension: $manga->extension !== '' ? $manga->extension : null,
             note: $manga->note,
-            lu: $manga->lu
-        );
-    }
-
-    private function mapArtbook(Artbook $artbook): ArtbookData
-    {
-        return new ArtbookData(
-            id: $artbook->id,
-            thumbnail: $artbook->thumbnail,
-            extension: $artbook->extension,
-            slug: $artbook->slug,
-            numero: $artbook->numero,
-            artbook: $artbook->artbook,
-            auteur: $artbook->auteur,
-            serie: $artbook->serie,
-            createdAt: $artbook->created_at
+            lu: $manga->lu,
         );
     }
 }

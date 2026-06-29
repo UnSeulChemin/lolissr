@@ -6,9 +6,10 @@ namespace Framework\Config;
 
 final class UploadConfig
 {
-    private static ?string $mangaThumbnailDirectory = null;
-
-    private static ?string $figurineThumbnailDirectory = null;
+    /**
+     * @var array<string, string>
+     */
+    private static array $thumbnailDirectories = [];
 
     public static function maxSize(): int
     {
@@ -47,24 +48,14 @@ final class UploadConfig
         );
     }
 
-    public static function mangaThumbnailDirectory(): string
+    public static function thumbnailDirectory(
+        string $folder,
+    ): string
     {
-        return self::$mangaThumbnailDirectory
+        return self::$thumbnailDirectories[$folder]
             ??= rtrim(
                 base_path(
-                    'public/images/mangas/thumbnail',
-                ),
-                '/\\',
-            )
-            . DIRECTORY_SEPARATOR;
-    }
-
-    public static function figurineThumbnailDirectory(): string
-    {
-        return self::$figurineThumbnailDirectory
-            ??= rtrim(
-                base_path(
-                    'public/images/figurines/thumbnail',
+                    "public/images/{$folder}/thumbnail",
                 ),
                 '/\\',
             )

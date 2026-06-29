@@ -9,8 +9,12 @@ use App\DTO\Manga\Responses\ArtbookData;
 use App\DTO\Manga\Responses\MangaShowData;
 use App\Http\Requests\Manga\MangaCreateRequest;
 use App\Http\Requests\Manga\MangaUpdateRequest;
+use App\Http\Requests\Manga\ArtbookCreateRequest;
+use App\Http\Requests\Manga\ArtbookUpdateRequest;
 use App\Services\Manga\MangaReadService;
 use App\Services\Manga\MangaWriteService;
+use App\Services\Manga\ArtbookReadService;
+use App\Services\Manga\ArtbookWriteService;
 
 use Framework\Exceptions\BaseHttpException;
 use Framework\Exceptions\NotFoundException;
@@ -24,6 +28,8 @@ final class MangaController extends Controller
     public function __construct(
         private readonly MangaReadService $mangaReadService,
         private readonly MangaWriteService $mangaWriteService,
+        private readonly ArtbookReadService $artbookReadService,
+        private readonly ArtbookWriteService $artbookWriteService,
         Request $request
     ) {
         parent::__construct($request);
@@ -65,7 +71,7 @@ final class MangaController extends Controller
 
     public function artbooks(int $page = 1): never
     {
-        $data = $this->mangaReadService->artbooks($page);
+        $data = $this->artbookReadService->artbooks($page);
 
         if ($data === null)
         {
@@ -185,6 +191,26 @@ final class MangaController extends Controller
         $this->render('pages/manga/series/modifier', ['manga' => $data->manga]);
     }
 
+    public function editArtbook(
+        string $slug,
+        int $numero
+    ): never
+    {
+        $artbook = $this->resolveArtbookOrFail(
+            $slug,
+            $numero
+        );
+
+        $this->title = 'Artbook | Modifier';
+
+        $this->render(
+            'pages/manga/artbooks/modifier',
+            [
+                'artbook' => $artbook,
+            ]
+        );
+    }
+
     public function store(MangaCreateRequest $request): never
     {
         if ($request->fails())
@@ -193,6 +219,25 @@ final class MangaController extends Controller
         }
 
         $result = $this->mangaWriteService->create($request->dto(), $request->files());
+
+        $this->jsonResult($result);
+    }
+
+    public function storeArtbook(
+        ArtbookCreateRequest $request
+    ): never
+    {
+        if ($request->fails())
+        {
+            throw new ValidationException(
+                $request->errors()
+            );
+        }
+
+        $result = $this->artbookWriteService->create(
+            $request->dto(),
+            $request->files()
+        );
 
         $this->jsonResult($result);
     }
@@ -221,6 +266,49 @@ final class MangaController extends Controller
                 $numero
             ),
             $result->message
+        );
+    }
+
+    public function updateArtbook(
+        ArtbookUpdateRequest $request,
+        string $slug,
+        int $numero
+    ): never
+    {
+        $artbook = $this->resolveArtbookOrFail(
+            $slug,
+            $numero
+        );
+
+        if ($request->fails())
+        {
+            throw new ValidationException(
+                $request->errors()
+            );
+        }
+
+        $result = $this->artbookWriteService->update(
+            $artbook->slug,
+            $artbook->numero,
+            $request->dto()
+        );
+
+        if (! $result->success)
+        {
+            throw new BaseHttpException(
+                message: $result->message,
+                statusCode: 422,
+                data: $result->data,
+            );
+        }
+
+        $this->redirectWithSuccess(
+            sprintf(
+                'manga/artbooks/%s/%d',
+                rawurlencode($artbook->slug),
+                $artbook->numero,
+            ),
+            $result->message,
         );
     }
 
@@ -260,7 +348,7 @@ final class MangaController extends Controller
 
     private function resolveArtbookOrFail(string $slug, int $numero): ArtbookData
     {
-        $artbook = $this->mangaReadService->oneArtbook($slug, $numero);
+        $artbook = $this->artbookReadService->one($slug, $numero);
 
         if ($artbook === null)
         {
