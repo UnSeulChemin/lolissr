@@ -228,8 +228,9 @@ final class ArtbookRepository extends Model
             $slug,
             $numero,
             [
-                'auteur' => Str::nullableTrim($dto->auteur),
-                'serie' => Str::nullableTrim($dto->serie),
+                'artbook' => trim($dto->artbook),
+                'auteur'  => Str::nullableTrim($dto->auteur),
+                'serie'   => Str::nullableTrim($dto->serie),
             ]
         );
     }

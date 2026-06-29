@@ -70,6 +70,10 @@ import {
     initDeleteFigurine,
 } from '../figurine/actions/delete-figurine.js';
 
+import {
+    initDeleteArtbook,
+} from '../manga/actions/delete-artbook.js';
+
 // ==================================================
 // EXPORT
 // ==================================================
@@ -230,6 +234,11 @@ export const ROUTE_INITIALIZERS = [
             [
                 'DeleteManga',
                 initDeleteManga,
+            ],
+
+            [
+                'DeleteArtbook',
+                initDeleteArtbook,
             ],
 
             [

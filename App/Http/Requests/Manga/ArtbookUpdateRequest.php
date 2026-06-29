@@ -14,6 +14,10 @@ final class ArtbookUpdateRequest extends FormRequest
     {
         $this->validator
 
+            ->required('artbook')
+            ->string('artbook')
+            ->maxLength('artbook', 255)
+
             ->nullable('auteur')
             ->string('auteur')
             ->maxLength('auteur', 100)

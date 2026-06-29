@@ -9,8 +9,9 @@ use Framework\Support\Str;
 final readonly class ArtbookUpdateDTO
 {
     public function __construct(
+        public string $artbook,
         public ?string $auteur,
-        public ?string $serie
+        public ?string $serie,
     ) {
     }
 
@@ -20,6 +21,7 @@ final readonly class ArtbookUpdateDTO
     public static function fromArray(array $data): self
     {
         return new self(
+            artbook: trim((string) ($data['artbook'] ?? '')),
             auteur: Str::nullableTrim($data['auteur'] ?? null),
             serie: Str::nullableTrim($data['serie'] ?? null),
         );

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-if (!isset($artbook))
+if (! isset($artbook))
 {
     throw new \RuntimeException(
         'Artbook manquant dans la vue.',
@@ -15,12 +15,40 @@ $baseUri =
         '/',
     ) . '/';
 
+$slug =
+    rawurlencode(
+        (string) $artbook->slug,
+    );
+
+$numero =
+    (int) $artbook->numero;
+
 $thumbnailPath =
     $baseUri
     . 'images/artbooks/thumbnail/'
     . $artbook->thumbnail
     . '.'
     . $artbook->extension;
+
+$modifierUrl =
+    $baseUri
+    . 'manga/artbooks/'
+    . $slug
+    . '/'
+    . $numero
+    . '/modifier';
+
+$deleteUrl =
+    $baseUri
+    . 'manga/artbooks/'
+    . $slug
+    . '/'
+    . $numero
+    . '/supprimer';
+
+$returnUrl =
+    $baseUri
+    . 'manga/artbooks';
 
 $hasAuteur =
     $artbook->auteur !== null
@@ -34,25 +62,16 @@ $hasSerie =
         (string) $artbook->serie,
     ) !== '';
 
-$returnUrl =
-    $baseUri
-    . 'manga/artbooks';
-
-$categoryLabel =
-    $hasSerie
-        ? 'Série'
-        : 'Auteur';
-
-$categoryValue =
-    $hasSerie
-        ? (string) $artbook->serie
-        : (string) $artbook->auteur;
-
 ?>
 
 <section class="layout-container dashboard-page">
 
-    <section class="detail-card">
+    <section
+        class="
+            detail-card
+            js-detail-card
+        "
+    >
 
         <figure class="detail-image">
 
@@ -84,11 +103,85 @@ $categoryValue =
             <div class="detail-row">
 
                 <div class="detail-label">
-                    <?= $categoryLabel ?>
+                    Numéro
                 </div>
 
                 <div class="detail-value">
-                    <?= e($categoryValue) ?>
+
+                    <?= str_pad(
+                        (string) $numero,
+                        2,
+                        '0',
+                        STR_PAD_LEFT,
+                    ) ?>
+
+                </div>
+
+            </div>
+
+            <div class="detail-row">
+
+                <div class="detail-label">
+                    Auteur
+                </div>
+
+                <div class="detail-value">
+
+                    <?= $hasAuteur
+                        ? e((string) $artbook->auteur)
+                        : 'Non renseigné' ?>
+
+                </div>
+
+            </div>
+
+            <div class="detail-row">
+
+                <div class="detail-label">
+                    Série
+                </div>
+
+                <div class="detail-value">
+
+                    <?= $hasSerie
+                        ? e((string) $artbook->serie)
+                        : 'Non renseignée' ?>
+
+                </div>
+
+            </div>
+
+            <div class="detail-actions">
+
+                <div class="detail-actions-left">
+                </div>
+
+                <div class="detail-actions-right">
+
+                    <a
+                        class="form-submit"
+                        href="<?= e($modifierUrl) ?>"
+                    >
+
+                        Modifier
+
+                    </a>
+
+                    <button
+                        type="button"
+                        class="
+                            form-submit
+                            form-submit-danger
+                            js-delete-artbook
+                        "
+                        data-url="<?= e($deleteUrl) ?>"
+                        data-redirect="<?= e($returnUrl) ?>"
+                    >
+
+                        Supprimer
+
+                    </button>
+
                 </div>
 
             </div>
