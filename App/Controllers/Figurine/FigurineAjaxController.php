@@ -15,6 +15,8 @@ use Framework\Http\Request;
 
 final class FigurineAjaxController extends Controller
 {
+    private const WAIFUS_PATH = 'figurines/waifus';
+
     public function __construct(
         private readonly FigurineReadService $figurineReadService,
         private readonly FigurineWriteService $figurineWriteService,
@@ -53,12 +55,19 @@ final class FigurineAjaxController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function delete(string $slug): never
+    public function delete(
+        string $slug,
+        int $numero
+    ): never
     {
-        $figurine = $this->resolveFigurineOrFail($slug);
+        $figurine = $this->resolveFigurineOrFail(
+            $slug,
+            $numero
+        );
 
         $result = $this->figurineWriteService->delete(
-            $figurine->slug
+            $figurine->slug,
+            $numero
         );
 
         $this->jsonResult(
@@ -67,8 +76,9 @@ final class FigurineAjaxController extends Controller
                 data: [
                     ...$result->data,
                     'redirect' => sprintf(
-                        '%s/figurines/waifus',
-                        $this->baseUri
+                        '%s/%s',
+                        $this->baseUri,
+                        self::WAIFUS_PATH
                     ),
                 ],
                 status: $result->status,
@@ -83,10 +93,14 @@ final class FigurineAjaxController extends Controller
     */
 
     private function resolveFigurineOrFail(
-        string $slug
+        string $slug,
+        int $numero
     ): FigurineData
     {
-        $figurine = $this->figurineReadService->one($slug);
+        $figurine = $this->figurineReadService->one(
+            $slug,
+            $numero
+        );
 
         if ($figurine === null)
         {

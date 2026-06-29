@@ -62,9 +62,15 @@ final class FigurineController extends Controller
         ]);
     }
 
-    public function showWaifu(string $slug): never
+    public function showWaifu(
+        string $slug,
+        int $numero
+    ): never
     {
-        $figurine = $this->resolveFigurineOrFail($slug);
+        $figurine = $this->resolveFigurineOrFail(
+            $slug,
+            $numero
+        );
 
         $this->title = 'Figurines | ' . $figurine->waifu;
 
@@ -95,9 +101,15 @@ final class FigurineController extends Controller
         $this->jsonResult($result);
     }
 
-    public function edit(string $slug): never
+    public function edit(
+        string $slug,
+        int $numero
+    ): never
     {
-        $figurine = $this->resolveFigurineOrFail($slug);
+        $figurine = $this->resolveFigurineOrFail(
+            $slug,
+            $numero
+        );
 
         $this->title = 'Figurines | Modifier';
 
@@ -111,10 +123,14 @@ final class FigurineController extends Controller
 
     public function update(
         FigurineUpdateRequest $request,
-        string $slug
+        string $slug,
+        int $numero
     ): never
     {
-        $figurine = $this->resolveFigurineOrFail($slug);
+        $figurine = $this->resolveFigurineOrFail(
+            $slug,
+            $numero
+        );
 
         if ($request->fails())
         {
@@ -125,6 +141,7 @@ final class FigurineController extends Controller
 
         $result = $this->figurineWriteService->update(
             $figurine->slug,
+            $numero,
             $request->dto()
         );
 
@@ -139,9 +156,10 @@ final class FigurineController extends Controller
 
         $this->redirectWithSuccess(
             sprintf(
-                '%s/%s',
+                '%s/%s/%d',
                 self::WAIFUS_PATH,
-                rawurlencode($figurine->slug)
+                rawurlencode($figurine->slug),
+                $numero
             ),
             $result->message
         );
@@ -153,9 +171,15 @@ final class FigurineController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    private function resolveFigurineOrFail(string $slug): FigurineData
+    private function resolveFigurineOrFail(
+        string $slug,
+        int $numero
+    ): FigurineData
     {
-        $figurine = $this->figurineReadService->one($slug);
+        $figurine = $this->figurineReadService->one(
+            $slug,
+            $numero
+        );
 
         if ($figurine === null)
         {

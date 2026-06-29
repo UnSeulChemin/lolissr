@@ -52,8 +52,11 @@ $baseUri =
         continue;
     }
 
+    $numero =
+        (int) ($figurine->numero ?? 1);
+
     $href =
-        "{$baseUri}figurines/waifus/{$slug}";
+        "{$baseUri}figurines/waifus/{$slug}/{$numero}";
 
     $thumbnailPath =
         "{$baseUri}images/figurines/thumbnail/{$thumbnail}.{$extension}";

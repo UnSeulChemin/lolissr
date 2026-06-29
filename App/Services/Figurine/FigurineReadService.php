@@ -58,9 +58,13 @@ final readonly class FigurineReadService
         );
     }
 
-    public function one(string $slug): ?FigurineData
+    public function one(
+        string $slug,
+        int $numero
+    ): ?FigurineData
     {
-        $figurine = $this->figurineRepository->findBySlug($slug);
+        $figurine = $this->figurineRepository
+            ->findOneBySlugAndNumero($slug, $numero);
 
         if ($figurine === null)
         {
@@ -82,6 +86,8 @@ final readonly class FigurineReadService
             id: $figurine->id,
 
             slug: $figurine->slug,
+            numero: $figurine->numero,
+
             waifu: $figurine->waifu,
             company: $figurine->company,
 

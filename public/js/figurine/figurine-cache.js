@@ -12,6 +12,7 @@ import {
 
 export function invalidateFigurinePages(
     slug = null,
+    numero = null,
 )
 {
     invalidatePage('/lolissr/');
@@ -19,11 +20,4 @@ export function invalidateFigurinePages(
     invalidatePage('/lolissr/figurines');
 
     invalidatePage('/lolissr/figurines/waifus');
-
-    if (slug)
-    {
-        invalidatePage(
-            `/lolissr/figurines/waifus/${slug}`,
-        );
-    }
 }

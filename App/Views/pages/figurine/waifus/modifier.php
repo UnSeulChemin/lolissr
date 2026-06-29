@@ -35,12 +35,15 @@ $formAction =
     $baseUri
     . 'figurines/waifus/'
     . rawurlencode((string) $figurine->slug)
-    . '/modifier';
+    . '/modifier/'
+    . $figurine->numero;
 
 $cancelUrl =
     $baseUri
     . 'figurines/waifus/'
-    . rawurlencode((string) $figurine->slug);
+    . rawurlencode((string) $figurine->slug)
+    . '/'
+    . $figurine->numero;
 
 ?>
 

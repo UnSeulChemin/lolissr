@@ -100,6 +100,37 @@ $returnUrl = $baseUri . 'figurines';
 
                     <label
                         class="form-label"
+                        for="numero"
+                    >
+                        Numéro
+                    </label>
+
+                    <input
+                        class="form-input"
+                        type="number"
+                        name="numero"
+                        id="numero"
+                        min="1"
+                        placeholder="Ex : 1"
+                        value="<?= e((string) ($old['numero'] ?? '')) ?>"
+                        required
+                    >
+
+                    <?php if (isset($errors['numero']) && $errors['numero'] !== ''): ?>
+
+                        <p class="form-error">
+                            <?= e((string) $errors['numero']) ?>
+                        </p>
+
+                    <?php endif; ?>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label
+                        class="form-label"
                         for="company"
                     >
                         Company

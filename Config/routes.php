@@ -300,36 +300,52 @@ return static function (Router $router): void
         {
             $router->get('', [FigurineController::class, 'index']);
 
-            $router->get('waifus', [FigurineController::class, 'waifus']);
+            $router->prefix('waifus')->group(function (Router $router): void
+            {
+                $router->get('', [FigurineController::class, 'waifus']);
 
-            $router->get('waifus/page/{page:int}', [FigurineController::class, 'waifus']);
+                $router->get(
+                    'page/{page:int}',
+                    [FigurineController::class, 'waifus']
+                );
 
-            /*
-            |--------------------------------------------------------------------------
-            | ACTIONS SUR UNE FIGURINE
-            |--------------------------------------------------------------------------
-            */
+                /*
+                |--------------------------------------------------------------------------
+                | ACTIONS SUR UNE FIGURINE
+                |--------------------------------------------------------------------------
+                */
 
-            $router->get('waifus/{slug}/modifier', [FigurineController::class, 'edit']);
+                $router->get(
+                    '{slug}/modifier/{numero:int}',
+                    [FigurineController::class, 'edit']
+                );
 
-            $router->post('waifus/{slug}/modifier', [FigurineController::class, 'update'], [CsrfMiddleware::class]);
+                $router->post(
+                    '{slug}/modifier/{numero:int}',
+                    [FigurineController::class, 'update'],
+                    [CsrfMiddleware::class],
+                );
 
-            $router->post(
-                'waifus/{slug}/supprimer',
-                [FigurineAjaxController::class, 'delete'],
-                [
-                    ExpectJsonMiddleware::class,
-                    CsrfMiddleware::class,
-                ],
-            );
+                $router->post(
+                    '{slug}/supprimer/{numero:int}',
+                    [FigurineAjaxController::class, 'delete'],
+                    [
+                        ExpectJsonMiddleware::class,
+                        CsrfMiddleware::class,
+                    ],
+                );
 
-            /*
-            |--------------------------------------------------------------------------
-            | CONSULTATION
-            |--------------------------------------------------------------------------
-            */
+                /*
+                |--------------------------------------------------------------------------
+                | CONSULTATION
+                |--------------------------------------------------------------------------
+                */
 
-            $router->get('waifus/{slug}', [FigurineController::class, 'showWaifu']);
+                $router->get(
+                    '{slug}/{numero:int}',
+                    [FigurineController::class, 'showWaifu']
+                );
+            });
 
             /*
             |--------------------------------------------------------------------------
@@ -337,9 +353,16 @@ return static function (Router $router): void
             |--------------------------------------------------------------------------
             */
 
-            $router->get('ajouter', [FigurineController::class, 'create']);
+            $router->get(
+                'ajouter',
+                [FigurineController::class, 'create']
+            );
 
-            $router->post('ajouter', [FigurineController::class, 'store'], [CsrfMiddleware::class]);
+            $router->post(
+                'ajouter',
+                [FigurineController::class, 'store'],
+                [CsrfMiddleware::class],
+            );
 
             /*
             |--------------------------------------------------------------------------

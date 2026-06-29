@@ -27,6 +27,10 @@ final class FigurineCreateRequest extends FormRequest
             ->string('slug')
             ->maxLength('slug', 100)
 
+            ->required('numero')
+            ->integer('numero')
+            ->min('numero', 1)
+
             ->nullable('commentaire')
             ->string('commentaire')
             ->maxLength('commentaire', 1000)

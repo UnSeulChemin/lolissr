@@ -10,6 +10,8 @@ final readonly class FigurineData
         public int $id,
 
         public string $slug,
+        public int $numero,
+
         public string $waifu,
         public string $company,
 

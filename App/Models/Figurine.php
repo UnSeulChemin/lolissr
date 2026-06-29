@@ -14,6 +14,8 @@ final class Figurine
 
     public string $slug = '';
 
+    public int $numero = 1;
+
     public string $waifu = '';
 
     public string $company = '';

@@ -31,13 +31,15 @@ $modifierUrl =
     $baseUri
     . 'figurines/waifus/'
     . $slug
-    . '/modifier';
+    . '/modifier/'
+    . $figurine->numero;
 
 $deleteUrl =
     $baseUri
     . 'figurines/waifus/'
     . $slug
-    . '/supprimer';
+    . '/supprimer/'
+    . $figurine->numero;
 
 $redirectUrl =
     $baseUri

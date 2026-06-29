@@ -39,9 +39,18 @@ final readonly class FigurineWriteService
      */
     public function create(FigurineCreateDTO $dto, array $files): ServiceResult
     {
-        if ($this->figurineRepository->findBySlug($dto->slug) !== null)
+        $existing = $this->figurineRepository
+            ->findOneBySlugAndNumero(
+                $dto->slug,
+                $dto->numero,
+            );
+
+        if ($existing !== null)
         {
-            return $this->error('Cette figurine existe déjà', 409);
+            return $this->error(
+                'Cette figurine existe déjà',
+                409,
+            );
         }
 
         return $this->database->transaction(
@@ -49,7 +58,7 @@ final readonly class FigurineWriteService
             {
                 $upload = $this->uploadService->uploadThumbnail(
                     $dto->waifu,
-                    1,
+                    $dto->numero,
                     UploadConfig::thumbnailDirectory('figurines'),
                     $files,
                 );
@@ -72,6 +81,7 @@ final readonly class FigurineWriteService
                         'thumbnail' => $uploadData->thumbnailPath,
                         'extension' => $uploadData->extension,
                         'slug' => $dto->slug,
+                        'numero' => $dto->numero,
                         'waifu' => $dto->waifu,
                         'company' => $dto->company,
                         'commentaire' => $dto->commentaire,
@@ -81,6 +91,7 @@ final readonly class FigurineWriteService
                         $inserted,
                         'Insertion figurine',
                         $dto->slug,
+                        $dto->numero,
                         'Erreur lors de l’enregistrement'
                     );
 
@@ -107,17 +118,20 @@ final readonly class FigurineWriteService
 
     public function update(
         string $slug,
+        int $numero,
         FigurineUpdateDTO $dto
     ): ServiceResult
     {
         return $this->database->transaction(
             function () use (
                 $slug,
+                $numero,
                 $dto
             ): ServiceResult
             {
                 $updated = $this->figurineRepository->updateFigurine(
                     $slug,
+                    $numero,
                     $dto
                 );
 
@@ -125,9 +139,10 @@ final readonly class FigurineWriteService
                     $updated,
                     'Update figurine',
                     $slug,
+                    $numero,
                     'Erreur lors de la mise à jour'
                 );
-
+                
                 if ($failure !== null)
                 {
                     return $failure;
@@ -143,15 +158,21 @@ final readonly class FigurineWriteService
     }
 
     public function delete(
-        string $slug
+        string $slug,
+        int $numero
     ): ServiceResult
     {
         return $this->database->transaction(
             function () use (
-                $slug
+                $slug,
+                $numero
             ): ServiceResult
             {
-                $figurine = $this->figurineRepository->findBySlug($slug);
+                $figurine = $this->figurineRepository
+                    ->findOneBySlugAndNumero(
+                        $slug,
+                        $numero
+                    );
 
                 if ($figurine === null)
                 {
@@ -161,12 +182,17 @@ final readonly class FigurineWriteService
                     );
                 }
 
-                $deleted = $this->figurineRepository->deleteBySlug($slug);
+                $deleted = $this->figurineRepository
+                    ->deleteBySlugAndNumero(
+                        $slug,
+                        $numero
+                    );
 
                 $failure = $this->writeFailed(
                     $deleted,
                     'Delete figurine',
                     $slug,
+                    $numero,
                     'Erreur lors de la suppression'
                 );
 
@@ -227,6 +253,7 @@ final readonly class FigurineWriteService
         bool $result,
         string $action,
         string $slug,
+        int $numero,
         string $message
     ): ?ServiceResult
     {
@@ -237,7 +264,8 @@ final readonly class FigurineWriteService
 
         $this->logFailure(
             $action,
-            $slug
+            $slug,
+            $numero
         );
 
         return $this->error($message);
@@ -248,9 +276,15 @@ final readonly class FigurineWriteService
         Cache::forget('home.dashboard');
     }
 
-    private function logFailure(string $action, string $slug): void
+    private function logFailure(
+        string $action,
+        string $slug,
+        int $numero
+    ): void
     {
-        Logger::error("{$action} échoué slug={$slug}");
+        Logger::error(
+            "{$action} échoué slug={$slug} numero={$numero}"
+        );
     }
 
     /**

@@ -67,7 +67,10 @@ final class FigurineRepository extends Model
         return $figurines;
     }
 
-    public function findBySlug(string $slug): ?Figurine
+    public function findOneBySlugAndNumero(
+        string $slug,
+        int $numero
+    ): ?Figurine
     {
         /** @var Figurine|null $figurine */
         $figurine = $this->fetchOne(
@@ -77,11 +80,13 @@ final class FigurineRepository extends Model
             FROM {$this->table()}
 
             WHERE slug = :slug
+            AND numero = :numero
 
             LIMIT 1
             ",
             [
                 'slug' => $this->normalizeSlug($slug),
+                'numero' => $numero,
             ],
             Figurine::class
         );
@@ -104,11 +109,13 @@ final class FigurineRepository extends Model
 
     public function updateFigurine(
         string $slug,
+        int $numero,
         FigurineUpdateDTO $dto
     ): bool
     {
-        return $this->updateBySlug(
+        return $this->updateBySlugAndNumero(
             $slug,
+            $numero,
             [
                 'company' => $dto->company,
                 'commentaire' => $dto->commentaire,
@@ -116,10 +123,14 @@ final class FigurineRepository extends Model
         );
     }
 
-    public function deleteBySlug(string $slug): bool
+    public function deleteBySlugAndNumero(
+        string $slug,
+        int $numero
+    ): bool
     {
         return $this->delete([
             'slug' => $this->normalizeSlug($slug),
+            'numero' => $numero,
         ]);
     }
 
@@ -137,8 +148,9 @@ final class FigurineRepository extends Model
     /**
      * @param array<string, mixed> $data
      */
-    private function updateBySlug(
+    private function updateBySlugAndNumero(
         string $slug,
+        int $numero,
         array $data
     ): bool
     {
@@ -146,6 +158,7 @@ final class FigurineRepository extends Model
             $data,
             [
                 'slug' => $this->normalizeSlug($slug),
+                'numero' => $numero,
             ]
         );
     }
@@ -160,6 +173,7 @@ final class FigurineRepository extends Model
             'thumbnail' => trim((string) ($data['thumbnail'] ?? '')),
             'extension' => strtolower(trim((string) ($data['extension'] ?? ''))),
             'slug' => $this->normalizeSlug((string) ($data['slug'] ?? '')),
+            'numero' => max(1, (int) ($data['numero'] ?? 1)),
             'waifu' => trim((string) ($data['waifu'] ?? '')),
             'company' => trim((string) ($data['company'] ?? '')),
             'commentaire' => Str::nullableTrim($data['commentaire'] ?? null),
