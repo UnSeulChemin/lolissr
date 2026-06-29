@@ -77,8 +77,9 @@ export function initAjouterPage()
     form.dataset.initialized =
         'true';
 
-    const livreInput =
-        $('#livre');
+    const titleInput =
+        $('#livre')
+        ?? $('#artbook');
 
     const slugInput =
         $('#slug');
@@ -114,25 +115,22 @@ export function initAjouterPage()
     }
 
     if (
-        livreInput
-        instanceof HTMLInputElement
-        && slugInput
-        instanceof HTMLInputElement
+        titleInput instanceof HTMLInputElement
+        && slugInput instanceof HTMLInputElement
     ) {
 
-        livreInput.addEventListener(
+        titleInput.addEventListener(
             'input',
             () =>
             {
-                if (
-                    slugEditedManually
-                ) {
+                if (slugEditedManually)
+                {
                     return;
                 }
 
                 slugInput.value =
                     generateSlug(
-                        livreInput.value,
+                        titleInput.value,
                     );
             },
         );
