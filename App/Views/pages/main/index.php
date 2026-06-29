@@ -81,7 +81,7 @@ $isAuthor =
 
             $thumbnailPath =
                 $baseUri
-                . 'images/mangas/thumbnail/'
+                . 'images/manga/thumbnail/'
                 . $serie->thumbnail
                 . '.'
                 . $serie->extension;
@@ -180,7 +180,7 @@ $isAuthor =
 
             $thumbnailPath =
                 $baseUri
-                . 'images/mangas/thumbnail/'
+                . 'images/manga/thumbnail/'
                 . $tome->thumbnail
                 . '.'
                 . $tome->extension;
@@ -379,7 +379,7 @@ $isAuthor =
 
                 $thumbnailPath =
                     $baseUri
-                    . 'images/mangas/thumbnail/'
+                    . 'images/manga/thumbnail/'
                     . $serie->thumbnail
                     . '.'
                     . $serie->extension;

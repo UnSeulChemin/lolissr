@@ -26,7 +26,7 @@ $numero =
 
 $thumbnailPath =
     $baseUri
-    . 'images/mangas/thumbnail/'
+    . 'images/manga/thumbnail/'
     . $manga->thumbnail
     . '.'
     . $manga->extension;

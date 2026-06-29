@@ -59,7 +59,7 @@ final readonly class PelucheWriteService
                 $upload = $this->uploadService->uploadThumbnail(
                     $dto->waifu,
                     $dto->numero,
-                    UploadConfig::thumbnailDirectory('peluches'),
+                    UploadConfig::thumbnailDirectory('peluche'),
                     $files,
                 );
 
@@ -247,7 +247,7 @@ final readonly class PelucheWriteService
         }
 
         $path =
-            UploadConfig::thumbnailDirectory('peluches')
+            UploadConfig::thumbnailDirectory('peluche')
             . $peluche->thumbnail
             . '.'
             . $peluche->extension;

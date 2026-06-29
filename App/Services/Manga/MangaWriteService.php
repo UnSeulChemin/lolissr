@@ -59,7 +59,7 @@ final readonly class MangaWriteService
                 $upload = $this->uploadService->uploadThumbnail(
                     $dto->livre,
                     $dto->numero,
-                    UploadConfig::thumbnailDirectory('mangas'),
+                    UploadConfig::thumbnailDirectory('manga'),
                     $files,
                 );
 
@@ -346,7 +346,7 @@ final readonly class MangaWriteService
             return;
         }
 
-        $path = UploadConfig::thumbnailDirectory('mangas') . $manga->thumbnail . '.' . $manga->extension;
+        $path = UploadConfig::thumbnailDirectory('manga') . $manga->thumbnail . '.' . $manga->extension;
 
         $this->uploadService->removeFile($path);
     }

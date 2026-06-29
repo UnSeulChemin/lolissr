@@ -103,7 +103,7 @@ $baseUri =
 
                         $thumbnailPath =
                             $baseUri
-                            . 'images/mangas/thumbnail/'
+                            . 'images/manga/thumbnail/'
                             . $thumbnail
                             . '.'
                             . $extension;

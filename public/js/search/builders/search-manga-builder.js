@@ -37,7 +37,7 @@ export function buildMangaResult(
         manga.extension ?? 'jpg';
 
     const imageUrl =
-        `${basePath}images/mangas/thumbnail/${thumbnail}.${extension}`;
+        `${basePath}images/manga/thumbnail/${thumbnail}.${extension}`;
 
     const mangaUrl =
         `${basePath}manga/series/${slug}/${numero}`;

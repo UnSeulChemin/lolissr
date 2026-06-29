@@ -111,7 +111,7 @@ $baseUri =
             : "{$baseUri}manga/series/{$slug}";
 
     $thumbnailPath =
-        "{$baseUri}images/mangas/thumbnail/{$thumbnail}.{$extension}";
+        "{$baseUri}images/manga/thumbnail/{$thumbnail}.{$extension}";
 
     $displayNote =
         $isSerieView
