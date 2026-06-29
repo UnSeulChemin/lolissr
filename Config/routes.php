@@ -12,6 +12,8 @@ use App\Controllers\Manga\MangaAjaxController;
 use App\Controllers\Manga\MangaController;
 use App\Controllers\Peluche\PelucheController;
 use App\Controllers\Peluche\PelucheAjaxController;
+use App\Controllers\Nendoroid\NendoroidController;
+use App\Controllers\Nendoroid\NendoroidAjaxController;
 use App\Controllers\ProfileController;
 use App\Controllers\ProfileAjaxController;
 use App\Controllers\Sql\SqlAjaxController;
@@ -376,6 +378,71 @@ return static function (Router $router): void
                 $router->get(
                     'waifus/page/{page:int}',
                     [FigurineAjaxController::class, 'waifusPage'],
+                );
+            });
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | NENDOROIDS
+        |--------------------------------------------------------------------------
+        */
+
+        $router->prefix('nendoroid')->group(function (Router $router): void
+        {
+            $router->get('', [NendoroidController::class, 'index']);
+
+            $router->prefix('waifus')->group(function (Router $router): void
+            {
+                $router->get('', [NendoroidController::class, 'waifus']);
+
+                $router->get(
+                    'page/{page:int}',
+                    [NendoroidController::class, 'waifus']
+                );
+
+                $router->get(
+                    '{slug}/modifier/{numero:int}',
+                    [NendoroidController::class, 'edit']
+                );
+
+                $router->post(
+                    '{slug}/modifier/{numero:int}',
+                    [NendoroidController::class, 'update'],
+                    [CsrfMiddleware::class],
+                );
+
+                $router->post(
+                    '{slug}/supprimer/{numero:int}',
+                    [NendoroidAjaxController::class, 'delete'],
+                    [
+                        ExpectJsonMiddleware::class,
+                        CsrfMiddleware::class,
+                    ],
+                );
+
+                $router->get(
+                    '{slug}/{numero:int}',
+                    [NendoroidController::class, 'showWaifu']
+                );
+            });
+
+            $router->get(
+                'ajouter',
+                [NendoroidController::class, 'create']
+            );
+
+            $router->post(
+                'ajouter',
+                [NendoroidController::class, 'store'],
+                [CsrfMiddleware::class],
+            );
+
+            $router->prefix('ajax')->group(function (Router $router): void
+            {
+                $router->get(
+                    'waifus/page/{page:int}',
+                    [NendoroidAjaxController::class, 'waifusPage'],
                 );
             });
         });

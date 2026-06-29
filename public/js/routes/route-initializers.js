@@ -82,6 +82,14 @@ import {
     initDeletePeluche,
 } from '../peluche/actions/delete-peluche.js';
 
+import {
+    initAjouterPage as initAjouterNendoroidPage,
+} from '../nendoroid/pages/ajouter.js';
+
+import {
+    initDeleteNendoroid,
+} from '../nendoroid/actions/delete-nendoroid.js';
+
 // ==================================================
 // EXPORT
 // ==================================================
@@ -135,6 +143,19 @@ export const ROUTE_INITIALIZERS = [
             [
                 'AjouterPeluchePage',
                 initAjouterPeluchePage,
+            ],
+        ],
+    },
+
+    {
+        match:
+            /^\/lolissr\/nendoroid\/ajouter\/?$/,
+
+        initializers:
+        [
+            [
+                'AjouterNendoroidPage',
+                initAjouterNendoroidPage,
             ],
         ],
     },
@@ -270,6 +291,11 @@ export const ROUTE_INITIALIZERS = [
             [
                 'DeletePeluche',
                 initDeletePeluche,
+            ],
+
+            [
+                'DeleteNendoroid',
+                initDeleteNendoroid,
             ],
 
             [
