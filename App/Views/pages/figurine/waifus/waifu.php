@@ -22,7 +22,7 @@ $slug =
 
 $thumbnailPath =
     $baseUri
-    . 'images/figurines/thumbnail/'
+    . 'images/figurine/thumbnail/'
     . $figurine->thumbnail
     . '.'
     . $figurine->extension;

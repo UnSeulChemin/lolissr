@@ -59,7 +59,7 @@ final readonly class FigurineWriteService
                 $upload = $this->uploadService->uploadThumbnail(
                     $dto->waifu,
                     $dto->numero,
-                    UploadConfig::thumbnailDirectory('figurines'),
+                    UploadConfig::thumbnailDirectory('figurine'),
                     $files,
                 );
 
@@ -235,7 +235,7 @@ final readonly class FigurineWriteService
         }
 
         $path =
-            UploadConfig::thumbnailDirectory('figurines')
+            UploadConfig::thumbnailDirectory('figurine')
             . $figurine->thumbnail
             . '.'
             . $figurine->extension;

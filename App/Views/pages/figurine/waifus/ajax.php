@@ -59,7 +59,7 @@ $baseUri =
         "{$baseUri}figurines/waifus/{$slug}/{$numero}";
 
     $thumbnailPath =
-        "{$baseUri}images/figurines/thumbnail/{$thumbnail}.{$extension}";
+        "{$baseUri}images/figurine/thumbnail/{$thumbnail}.{$extension}";
 
 ?>
 
