@@ -123,6 +123,19 @@ $currentSearch =
                     <a
                         class="nav-link-icon"
                         data-prefetch
+                        href="<?= e($baseUri) ?>nendoroid"
+                        title="Nendoroid"
+                    >
+                        🪆
+                    </a>
+
+                </li>
+
+                <li>
+
+                    <a
+                        class="nav-link-icon"
+                        data-prefetch
                         href="<?= e($baseUri) ?>peluches"
                         title="Peluches"
                     >
