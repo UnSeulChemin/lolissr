@@ -26,7 +26,7 @@ $baseUri =
             </h1>
 
             <p class="dashboard-description">
-                Gère ta collection de peluches et ajoute facilement de nouveaux compagnons.
+                Gère ta collection de peluches, ajoute de nouveaux modèles et consulte ta collection.
             </p>
 
         </div>
@@ -42,7 +42,7 @@ $baseUri =
                 dashboard-card
             "
             data-prefetch
-            href="<?= e($baseUri) ?>peluches/collection"
+            href="<?= e($baseUri) ?>peluches/waifus"
         >
 
             <span
@@ -53,7 +53,7 @@ $baseUri =
             </span>
 
             <span class="dashboard-card-title">
-                Collection
+                Waifus
             </span>
 
             <span class="dashboard-card-description">

@@ -74,6 +74,14 @@ import {
     initDeleteArtbook,
 } from '../manga/actions/delete-artbook.js';
 
+import {
+    initAjouterPage as initAjouterPeluchePage,
+} from '../peluche/pages/ajouter.js';
+
+import {
+    initDeletePeluche,
+} from '../peluche/actions/delete-peluche.js';
+
 // ==================================================
 // EXPORT
 // ==================================================
@@ -114,6 +122,19 @@ export const ROUTE_INITIALIZERS = [
             [
                 'AjouterFigurinePage',
                 initAjouterFigurinePage,
+            ],
+        ],
+    },
+
+    {
+        match:
+            /^\/lolissr\/peluches\/ajouter\/?$/,
+
+        initializers:
+        [
+            [
+                'AjouterPeluchePage',
+                initAjouterPeluchePage,
             ],
         ],
     },
@@ -244,6 +265,11 @@ export const ROUTE_INITIALIZERS = [
             [
                 'DeleteFigurine',
                 initDeleteFigurine,
+            ],
+
+            [
+                'DeletePeluche',
+                initDeletePeluche,
             ],
 
             [

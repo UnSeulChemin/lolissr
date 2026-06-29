@@ -1,5 +1,5 @@
 // =========================================
-// FIGURINE CACHE
+// PELUCHE CACHE
 // =========================================
 
 import {
@@ -10,11 +10,11 @@ import {
 // INVALIDATE
 // =========================================
 
-export function invalidateFigurinePages()
+export function invalidatePeluchePages()
 {
     invalidatePage('/lolissr/');
 
-    invalidatePage('/lolissr/figurines');
+    invalidatePage('/lolissr/peluches');
 
-    invalidatePage('/lolissr/figurines/waifus');
+    invalidatePage('/lolissr/peluches/waifus');
 }
