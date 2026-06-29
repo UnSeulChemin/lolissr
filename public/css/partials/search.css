@@ -4,14 +4,9 @@
 
 .header-search-area
 {
-    position: absolute;
-    top: 50%;
-    right: 24px;
+    position: static;
 
     width: 320px;
-
-    transform: translateY(-50%);
-    z-index: 1000;
 }
 
 .header-search

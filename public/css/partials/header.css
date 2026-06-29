@@ -14,8 +14,6 @@ header
 
 header nav
 {
-    position: relative;
-
     width: 100%;
     max-width: 1400px;
     min-height: 84px;
@@ -23,9 +21,9 @@ header nav
     margin: 0 auto;
     padding: 16px 24px;
 
-    display: flex;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
     align-items: center;
-    justify-content: center;
 
     box-sizing: border-box;
 }
@@ -33,7 +31,9 @@ header nav
 header ul
 {
     display: flex;
+    justify-content: center;
     align-items: center;
+
     gap: 56px;
 
     margin: 0;
@@ -49,31 +49,31 @@ header ul
 
 .site-profile
 {
-    position: absolute;
-    top: 50%;
-    left: 24px;
+    position: static;
 
     display: inline-flex;
     align-items: stretch;
-
-    transform: translateY(-50%);
-    border-radius: 16px;
 }
 
 /* =========================================
-   PROFILE HOVER
+   PROFILE STATES
 ========================================= */
 
-.site-profile:hover
+.site-profile-link:hover,
+.site-profile-link.active
 {
     box-shadow:
         0 0 0 2px rgba(255,255,255,.22);
+
+    border-radius: 16px;
 }
 
-.site-profile:hover .site-logo,
-.site-profile:hover .site-logo-level
+.site-profile-link:hover .site-logo,
+.site-profile-link:hover .site-logo-level,
+.site-profile-link.active .site-logo,
+.site-profile-link.active .site-logo-level
 {
-    border-color: rgba(255,255,255,.28);
+    border-color: rgba(255,255,255,.35);
 }
 
 /* =========================================
@@ -303,18 +303,4 @@ header ul
     align-items: stretch;
 
     text-decoration: none;
-}
-
-.site-profile-link.active
-{
-    box-shadow:
-        0 0 0 2px rgba(255,255,255,.22);
-        
-    border-radius: 16px;
-}
-
-.site-profile-link.active .site-logo,
-.site-profile-link.active .site-logo-level
-{
-    border-color: rgba(255,255,255,.35);
 }
