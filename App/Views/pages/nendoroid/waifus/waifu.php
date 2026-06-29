@@ -22,7 +22,7 @@ $slug =
 
 $thumbnailPath =
     $baseUri
-    . 'images/nendoroids/thumbnail/'
+    . 'images/nendoroid/thumbnail/'
     . $nendoroid->thumbnail
     . '.'
     . $nendoroid->extension;

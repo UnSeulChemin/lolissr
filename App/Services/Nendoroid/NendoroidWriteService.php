@@ -65,7 +65,7 @@ final readonly class NendoroidWriteService
                 $upload = $this->uploadService->uploadThumbnail(
                     $dto->waifu,
                     $dto->numero,
-                    UploadConfig::thumbnailDirectory('nendoroids'),
+                    UploadConfig::thumbnailDirectory('nendoroid'),
                     $files,
                 );
 
@@ -253,7 +253,7 @@ final readonly class NendoroidWriteService
         }
 
         $path =
-            UploadConfig::thumbnailDirectory('nendoroids')
+            UploadConfig::thumbnailDirectory('nendoroid')
             . $nendoroid->thumbnail
             . '.'
             . $nendoroid->extension;
