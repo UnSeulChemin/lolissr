@@ -84,7 +84,7 @@ export const ROUTE_INITIALIZERS = [
 
     {
         match:
-            /^\/lolissr\/manga\/ajouter\/manga\/?$/,
+            /^\/lolissr\/manga\/ajouter\/(manga|artbook)\/?$/,
 
         initializers:
         [

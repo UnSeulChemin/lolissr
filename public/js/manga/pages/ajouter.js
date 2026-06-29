@@ -21,7 +21,7 @@ import {
 
 import {
     generateSlug,
-} from '../utils/slug.js';
+} from '../../core/slug.js';
 
 import {
     invalidateMangaPages,

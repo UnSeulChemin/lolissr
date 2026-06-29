@@ -21,7 +21,7 @@ import {
 
 import {
     generateSlug,
-} from '../../manga/utils/slug.js';
+} from '../../core/slug.js';
 
 // À créer ensuite
 import {
