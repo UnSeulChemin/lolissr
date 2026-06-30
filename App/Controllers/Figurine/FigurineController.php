@@ -18,7 +18,7 @@ use Framework\Exceptions\BaseHttpException;
 
 final class FigurineController extends Controller
 {
-    private const WAIFUS_PATH = 'figurines/waifus';
+    private const WAIFUS_PATH = 'figurine/waifus';
 
     public function __construct(
         private readonly FigurineReadService $figurineReadService,

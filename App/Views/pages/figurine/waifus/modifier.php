@@ -33,14 +33,14 @@ $commentaireValue =
 
 $formAction =
     $baseUri
-    . 'figurines/waifus/'
+    . 'figurine/waifus/'
     . rawurlencode((string) $figurine->slug)
     . '/modifier/'
     . $figurine->numero;
 
 $cancelUrl =
     $baseUri
-    . 'figurines/waifus/'
+    . 'figurine/waifus/'
     . rawurlencode((string) $figurine->slug)
     . '/'
     . $figurine->numero;

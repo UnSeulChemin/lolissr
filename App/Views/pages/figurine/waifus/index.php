@@ -58,7 +58,7 @@ $totalPages =
                                 : '' ?>
                         "
                         data-prefetch
-                        href="<?= e($baseUri) ?>figurines/waifus/page/<?= $i ?>"
+                        href="<?= e($baseUri) ?>figurine/waifus/page/<?= $i ?>"
                     >
                         <?= $i ?>
                     </a>

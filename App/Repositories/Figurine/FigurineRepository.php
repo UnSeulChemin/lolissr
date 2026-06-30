@@ -19,7 +19,7 @@ final class FigurineRepository extends Model
      */
     public function findAll(): array
     {
-        /** @var list<Figurine> $figurines */
+        /** @var list<Figurine> $figurine */
         $figurines = $this->fetchAll(
             "
             SELECT *

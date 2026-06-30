@@ -295,11 +295,11 @@ return static function (Router $router): void
 
         /*
         |--------------------------------------------------------------------------
-        | FIGURINES
+        | FIGURINE
         |--------------------------------------------------------------------------
         */
 
-        $router->prefix('figurines')->group(function (Router $router): void
+        $router->prefix('figurine')->group(function (Router $router): void
         {
             $router->get('', [FigurineController::class, 'index']);
 

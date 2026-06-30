@@ -13,9 +13,9 @@ $baseUri = rtrim(
     '/',
 ) . '/';
 
-$formAction = $baseUri . 'figurines/ajouter';
+$formAction = $baseUri . 'figurine/ajouter';
 
-$returnUrl = $baseUri . 'figurines';
+$returnUrl = $baseUri . 'figurine';
 
 ?>
 

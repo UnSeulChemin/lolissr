@@ -14,7 +14,7 @@ export function invalidateFigurinePages()
 {
     invalidatePage('/lolissr/');
 
-    invalidatePage('/lolissr/figurines');
+    invalidatePage('/lolissr/figurine');
 
-    invalidatePage('/lolissr/figurines/waifus');
+    invalidatePage('/lolissr/figurine/waifus');
 }

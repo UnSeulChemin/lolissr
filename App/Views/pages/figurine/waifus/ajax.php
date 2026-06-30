@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-/** @var array<int, object> $figurines */
+/** @var array<int, object> $figurine */
 
 $baseUri =
     rtrim(
@@ -56,7 +56,7 @@ $baseUri =
         (int) ($figurine->numero ?? 1);
 
     $href =
-        "{$baseUri}figurines/waifus/{$slug}/{$numero}";
+        "{$baseUri}figurine/waifus/{$slug}/{$numero}";
 
     $thumbnailPath =
         "{$baseUri}images/figurine/thumbnail/{$thumbnail}.{$extension}";

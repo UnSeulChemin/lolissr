@@ -42,7 +42,7 @@ $baseUri =
                 dashboard-card
             "
             data-prefetch
-            href="<?= e($baseUri) ?>figurines/waifus"
+            href="<?= e($baseUri) ?>figurine/waifus"
         >
 
             <span
@@ -69,7 +69,7 @@ $baseUri =
                 dashboard-card
             "
             data-prefetch
-            href="<?= e($baseUri) ?>figurines/ajouter"
+            href="<?= e($baseUri) ?>figurine/ajouter"
         >
 
             <span
