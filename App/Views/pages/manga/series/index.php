@@ -2,32 +2,19 @@
 
 declare(strict_types=1);
 
-$mangas =
-    is_array($mangas ?? null)
-        ? $mangas
-        : [];
+use App\DTO\Manga\Responses\MangaSeriesItemData;
 
-$currentPage =
-    (int) ($currentPage ?? 1);
-
-$totalSeries =
-    (int) ($totalSeries ?? 0);
-
-$perPage =
-    (int) ($perPage ?? 10);
-
-$slugFilter =
-    $slugFilter ?? null;
+/** @var list<MangaSeriesItemData> $mangas */
+/** @var int $currentPage */
+/** @var int $totalSeries */
+/** @var int $perPage */
+/** @var ?string $slugFilter */
 
 $isSerieView =
-    is_string($slugFilter)
+    $slugFilter !== null
     && trim($slugFilter) !== '';
 
-$baseUri =
-    rtrim(
-        (string) ($baseUri ?? ''),
-        '/',
-    ) . '/';
+$baseUri = view_base_uri();
 
 $totalPages =
     max(

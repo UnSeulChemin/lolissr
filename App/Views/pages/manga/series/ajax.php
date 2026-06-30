@@ -2,20 +2,13 @@
 
 declare(strict_types=1);
 
-/** @var array<int, object> $mangas */
+use App\DTO\Manga\Responses\MangaSeriesItemData;
 
-$isSerieView =
-    (bool) (
-        $isSerieView
-        ?? false
-    );
+/** @var list<MangaSeriesItemData> $mangas */
 
-$baseUri =
-    rtrim(
-        $baseUri
-        ?? '',
-        '/',
-    ) . '/';
+$isSerieView ??= false;
+
+$baseUri = view_base_uri();
 
 ?>
 
@@ -35,61 +28,21 @@ $baseUri =
 
 <?php foreach ($mangas as $manga):
 
-    $slug =
-        isset($manga->slug)
-            ? (string) $manga->slug
-            : '';
-
-    $numero =
-        isset($manga->numero)
-            ? (int) $manga->numero
-            : 0;
-
-    $livre =
-        isset($manga->livre)
-            ? (string) $manga->livre
-            : '';
-
-    $thumbnail =
-        isset($manga->thumbnail)
-            ? (string) $manga->thumbnail
-            : '';
-
-    $extension =
-        isset($manga->extension)
-            ? (string) $manga->extension
-            : '';
-
-    $statut =
-        isset($manga->statut)
-            ? (string) $manga->statut
-            : 'en_cours';
-
-    $note =
-        isset($manga->note)
-            ? (float) $manga->note
-            : null;
-
-    $averageNote =
-        $manga->averageNote ?? null;
-
-    $total =
-        isset($manga->total)
-            ? (int) $manga->total
-            : 0;
-
-    $totalLu =
-        isset($manga->totalLu)
-            ? (int) $manga->totalLu
-            : 0;
+    $slug = $manga->slug;
+    $numero = $manga->numero;
+    $livre = $manga->livre;
+    $thumbnail = $manga->thumbnail;
+    $extension = $manga->extension;
+    $statut = $manga->statut;
+    $note = $manga->note;
+    $averageNote = $manga->averageNote;
+    $total = $manga->total;
+    $totalLu = $manga->totalLu;
+    $isRead = $manga->lu;
 
     $isFullyRead =
         $total > 0
         && $totalLu >= $total;
-
-    $isRead =
-        isset($manga->lu)
-        && (int) $manga->lu === 1;
 
     $showReadBadge =
         $isSerieView
@@ -176,7 +129,7 @@ $baseUri =
     href="<?= e($href) ?>"
 >
 
-    <?php if ($isSerieView === false): ?>
+    <?php if (! $isSerieView): ?>
 
         <span
             class="

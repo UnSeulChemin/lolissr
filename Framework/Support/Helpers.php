@@ -418,6 +418,17 @@ if (! function_exists('base_uri')) {
     }
 }
 
+if (! function_exists('view_base_uri')) {
+
+    /**
+     * @return non-empty-string
+     */
+    function view_base_uri(): string
+    {
+        return rtrim(base_uri(), '/') . '/';
+    }
+}
+
 /*
 |------------------------------------------------------------------
 | Auth

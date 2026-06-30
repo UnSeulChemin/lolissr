@@ -4,36 +4,19 @@ declare(strict_types=1);
 
 use Framework\Support\Session;
 
-$errors =
-    Session::pull('errors', []);
+$errors = Session::pull('errors', []);
 
-$old =
-    Session::pull('old', []);
+$old = Session::pull('old', []);
 
-$baseUri =
-    rtrim(
-        (string) ($baseUri ?? ''),
-        '/',
-    ) . '/';
+$baseUri = view_base_uri();
 
-$statutValue =
-    (string) (
-        $old['statut']
-        ?? 'en_cours'
-    );
+$statutValue = $old['statut'] ?? 'en_cours';
 
-$statutOptions = [
-    'en_cours' => 'En cours',
-    'termine' => 'Terminé',
-];
+$statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
 
-$formAction =
-    $baseUri
-    . 'manga/ajouter/manga';
+$formAction = $baseUri . 'manga/ajouter/manga';
 
-$returnUrl =
-    $baseUri
-    . 'manga';
+$returnUrl = $baseUri . 'manga';
 
 ?>
 
@@ -70,7 +53,7 @@ $returnUrl =
                         name="livre"
                         id="livre"
                         placeholder="Ex : To Love Ru"
-                        value="<?= e((string) ($old['livre'] ?? '')) ?>"
+                        value="<?= e($old['livre'] ?? '') ?>"
                         autofocus
                         required
                     >
@@ -82,7 +65,7 @@ $returnUrl =
 
                         <p class="form-error">
 
-                            <?= e((string) $errors['livre']) ?>
+                            <?= e($errors['livre']) ?>
 
                         </p>
 
@@ -108,7 +91,7 @@ $returnUrl =
                         name="slug"
                         id="slug"
                         placeholder="Ex : to-love-ru"
-                        value="<?= e((string) ($old['slug'] ?? '')) ?>"
+                        value="<?= e($old['slug'] ?? '') ?>"
                         required
                     >
 
@@ -119,7 +102,7 @@ $returnUrl =
 
                         <p class="form-error">
 
-                            <?= e((string) $errors['slug']) ?>
+                            <?= e($errors['slug']) ?>
 
                         </p>
 
@@ -145,7 +128,7 @@ $returnUrl =
                         name="editeur"
                         id="editeur"
                         placeholder="Ex : Delcourt/Tonkam"
-                        value="<?= e((string) ($old['editeur'] ?? '')) ?>"
+                        value="<?= e($old['editeur'] ?? '') ?>"
                         maxlength="100"
                         required
                     >
@@ -157,7 +140,7 @@ $returnUrl =
 
                         <p class="form-error">
 
-                            <?= e((string) $errors['editeur']) ?>
+                            <?= e($errors['editeur']) ?>
 
                         </p>
 
@@ -213,7 +196,7 @@ $returnUrl =
 
                         <p class="form-error">
 
-                            <?= e((string) $errors['statut']) ?>
+                            <?= e($errors['statut']) ?>
 
                         </p>
 
@@ -240,7 +223,7 @@ $returnUrl =
                         id="numero"
                         min="1"
                         placeholder="Ex : 1"
-                        value="<?= e((string) ($old['numero'] ?? '')) ?>"
+                        value="<?= e($old['numero'] ?? '') ?>"
                         required
                     >
 
@@ -251,7 +234,7 @@ $returnUrl =
 
                         <p class="form-error">
 
-                            <?= e((string) $errors['numero']) ?>
+                            <?= e($errors['numero']) ?>
 
                         </p>
 
@@ -298,7 +281,7 @@ $returnUrl =
 
                         <p class="form-error">
 
-                            <?= e((string) $errors['image']) ?>
+                            <?= e($errors['image']) ?>
 
                         </p>
 
@@ -325,7 +308,7 @@ $returnUrl =
                         rows="4"
                         maxlength="1000"
                         placeholder="Ex : défaut en haut de la jacquette"
-                    ><?= e((string) ($old['commentaire'] ?? '')) ?></textarea>
+                    ><?= e($old['commentaire'] ?? '') ?></textarea>
 
                     <?php if (
                         isset($errors['commentaire'])
@@ -334,7 +317,7 @@ $returnUrl =
 
                         <p class="form-error">
 
-                            <?= e((string) $errors['commentaire']) ?>
+                            <?= e($errors['commentaire']) ?>
 
                         </p>
 
@@ -375,12 +358,3 @@ $returnUrl =
     </section>
 
 </section>
-
-<?php
-
-Session::forget([
-    'errors',
-    'old',
-]);
-
-?>

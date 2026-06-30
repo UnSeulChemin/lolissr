@@ -15,8 +15,8 @@ final readonly class PelucheData
         public string $waifu,
         public string $company,
 
-        public ?string $thumbnail,
-        public ?string $extension,
+        public string $thumbnail,
+        public string $extension,
 
         public ?string $commentaire,
     ) {

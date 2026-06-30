@@ -2,19 +2,12 @@
 
 declare(strict_types=1);
 
-$search =
-    (string) ($search ?? '');
+use App\DTO\Manga\Responses\MangaSearchItemData;
 
-$mangas =
-    is_array($mangas ?? null)
-        ? $mangas
-        : [];
+/** @var list<MangaSearchItemData> $mangas */
+/** @var string $search */
 
-$baseUri =
-    rtrim(
-        (string) ($baseUri ?? ''),
-        '/',
-    ) . '/';
+$baseUri = view_base_uri();
 
 ?>
 
@@ -53,75 +46,32 @@ $baseUri =
 
                         <?php
 
-                        $slug =
-                            isset($manga->slug)
-                                ? (string) $manga->slug
-                                : '';
-
-                        $numero =
-                            isset($manga->numero)
-                                ? (int) $manga->numero
-                                : 0;
-
-                        $livre =
-                            isset($manga->livre)
-                                ? (string) $manga->livre
-                                : '';
-
-                        $thumbnail =
-                            isset($manga->thumbnail)
-                                ? (string) $manga->thumbnail
-                                : '';
-
-                        $extension =
-                            isset($manga->extension)
-                                ? (string) $manga->extension
-                                : '';
-
-                        $note =
-                            isset($manga->note)
-                                ? (float) $manga->note
-                                : null;
-
-                        $isRead = (int) $manga->lu === 1;
-
-                        if (
-                            $slug === ''
-                            || $livre === ''
-                            || $thumbnail === ''
-                            || $extension === ''
-                        ) {
-                            continue;
-                        }
-
                         $href =
                             $baseUri
                             . 'manga/series/'
-                            . rawurlencode($slug)
+                            . rawurlencode($manga->slug)
                             . '/'
-                            . $numero;
+                            . $manga->numero;
 
                         $thumbnailPath =
                             $baseUri
                             . 'images/manga/thumbnail/'
-                            . $thumbnail
+                            . $manga->thumbnail
                             . '.'
-                            . $extension;
+                            . $manga->extension;
 
                         $noteClass =
                             'collection-note-mid';
 
-                        if ($note !== null)
+                        if ($manga->note !== null)
                         {
-                            if ($note >= 8)
+                            if ($manga->note >= 8)
                             {
-                                $noteClass =
-                                    'collection-note-good glow-red';
+                                $noteClass = 'collection-note-good glow-red';
                             }
-                            elseif ($note <= 4)
+                            elseif ($manga->note <= 4)
                             {
-                                $noteClass =
-                                    'collection-note-low';
+                                $noteClass = 'collection-note-low';
                             }
                         }
 
@@ -139,23 +89,23 @@ $baseUri =
                             href="<?= e($href) ?>"
                         >
 
-                            <?php if ($note !== null): ?>
+                        <?php if ($manga->note !== null): ?>
 
-                                <span
-                                    class="
-                                        collection-card-badge
-                                        <?= e($noteClass) ?>
-                                    "
-                                >
-                                    ⭐ <?= (int) $note ?>/10
-                                </span>
+                            <span
+                                class="
+                                    collection-card-badge
+                                    <?= e($noteClass) ?>
+                                "
+                            >
+                                ⭐ <?= (int) $manga->note ?>/10
+                            </span>
 
-                            <?php endif; ?>
+                        <?php endif; ?>
 
                             <span
                                 class="
                                     collection-read-badge
-                                    <?= $isRead ? 'active glow-blue' : '' ?>
+                                    <?= $manga->lu ? 'active glow-blue' : '' ?>
                                 "
                             >
 
@@ -174,7 +124,7 @@ $baseUri =
                                 <img
                                     class="card-image-portrait"
                                     src="<?= e($thumbnailPath) ?>"
-                                    alt="<?= e($livre) ?>"
+                                    alt="<?= e($manga->livre) ?>"
                                     loading="lazy"
                                     draggable="false"
                                 >
@@ -182,13 +132,13 @@ $baseUri =
                             </div>
 
                             <p class="collection-card-title">
-                                <?= e($livre) ?>
+                                <?= e($manga->livre) ?>
                             </p>
 
                             <p class="collection-card-subtitle">
 
                                 Tome <?= str_pad(
-                                    (string) $numero,
+                                    (string) $manga->numero,
                                     2,
                                     '0',
                                     STR_PAD_LEFT,

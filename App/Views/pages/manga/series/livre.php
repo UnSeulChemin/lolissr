@@ -2,27 +2,15 @@
 
 declare(strict_types=1);
 
-if (!isset($manga))
-{
+use App\DTO\Manga\Responses\MangaData;
 
-    throw new \RuntimeException(
-        'Manga manquant dans la vue.',
-    );
-}
+/** @var MangaData $manga */
 
-$baseUri =
-    rtrim(
-        (string) ($baseUri ?? ''),
-        '/',
-    ) . '/';
+$baseUri = view_base_uri();
 
-$slug =
-    rawurlencode(
-        (string) $manga->slug,
-    );
+$slug = rawurlencode($manga->slug);
 
-$numero =
-    (int) $manga->numero;
+$numero = $manga->numero;
 
 $thumbnailPath =
     $baseUri
@@ -57,11 +45,7 @@ $updateReadStatusUrl =
     . '/'
     . $numero;
 
-$isLu =
-    (int) (
-        $manga->lu
-        ?? 0
-    ) === 1;
+$isLu = $manga->lu;
 
 $readStatusLabel =
     $isLu
@@ -69,36 +53,28 @@ $readStatusLabel =
         : 'Marquer comme lu';
 
 $statutLabel =
-    ($manga->statut ?? 'en_cours') === 'termine'
+    $manga->statut === 'termine'
         ? 'Terminé'
         : 'En cours';
 
 $hasCommentaire =
     $manga->commentaire !== null
-    && trim(
-        (string) $manga->commentaire,
-    ) !== '';
+    && trim($manga->commentaire) !== '';
 
 $commentaire =
     $hasCommentaire
         ? nl2br(
-            e(
-                (string) $manga->commentaire,
-            ),
+            e($manga->commentaire),
         )
         : 'Aucun commentaire';
 
-$hasEditeur =
-    $manga->editeur !== null
-    && trim(
-        (string) $manga->editeur,
-    ) !== '';
+$hasEditeur = trim($manga->editeur) !== '';
 
 $isPerfectJacquette =
-    (int) ($manga->jacquette ?? 0) === 5;
+    $manga->jacquette === 5;
 
 $isPerfectLivre =
-    (int) ($manga->livreNote ?? 0) === 5;
+    $manga->livreNote === 5;
 
 ?>
 
@@ -112,8 +88,8 @@ $isPerfectLivre =
         data-slug="<?= e($slug) ?>"
         data-numero="<?= $numero ?>"
         data-base-path="<?= e($baseUri) ?>"
-        data-jacquette="<?= (int) ($manga->jacquette ?? 1) ?>"
-        data-livre-note="<?= (int) ($manga->livreNote ?? 1) ?>"
+        data-jacquette="<?= $manga->jacquette ?? 1 ?>"
+        data-livre-note="<?= $manga->livreNote ?? 1 ?>"
     >
 
         <figure class="detail-image">
@@ -154,7 +130,7 @@ $isPerfectLivre =
                 <div class="detail-value">
 
                     <?= $hasEditeur
-                        ? e((string) $manga->editeur)
+                        ? e($manga->editeur)
                         : 'Non renseigné'
 ?>
 

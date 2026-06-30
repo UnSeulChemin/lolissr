@@ -10,7 +10,7 @@ use Framework\Support\Str;
 final readonly class MangaUpdateDTO
 {
     public function __construct(
-        public ?string $editeur,
+        public string $editeur,
         public string $statut,
         public ?int $jacquette,
         public ?int $livreNote,

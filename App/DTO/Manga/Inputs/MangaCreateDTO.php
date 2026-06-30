@@ -10,7 +10,7 @@ final readonly class MangaCreateDTO
 {
     public function __construct(
         public string $livre,
-        public ?string $editeur,
+        public string $editeur,
         public string $statut,
         public string $slug,
         public int $numero,

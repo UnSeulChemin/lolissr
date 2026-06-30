@@ -2,21 +2,13 @@
 
 declare(strict_types=1);
 
+use App\DTO\Manga\Responses\MangaData;
+
 use Framework\Support\Session;
 
-if (!isset($manga))
-{
+/** @var MangaData $manga */
 
-    throw new \RuntimeException(
-        'Manga manquant dans la vue.',
-    );
-}
-
-$baseUri =
-    rtrim(
-        (string) ($baseUri ?? ''),
-        '/',
-    ) . '/';
+$baseUri = view_base_uri();
 
 $errors =
     Session::pull('errors', []);
@@ -26,11 +18,11 @@ $old =
 
 $editeurValue =
     $old['editeur']
-    ?? ($manga->editeur ?? '');
+    ?? $manga->editeur;
 
 $statutValue =
     $old['statut']
-    ?? ($manga->statut ?? 'en_cours');
+    ?? $manga->statut;
 
 $jacquetteValue =
     $old['jacquette']
@@ -52,22 +44,20 @@ $statutOptions = [
 $formAction =
     $baseUri
     . 'manga/series/'
-    . rawurlencode((string) $manga->slug)
+    . rawurlencode($manga->slug)
     . '/modifier/'
-    . (int) $manga->numero;
+    . $manga->numero;
 
 $cancelUrl =
     $baseUri
     . 'manga/series/'
-    . rawurlencode(
-        (string) $manga->slug,
-    )
+    . rawurlencode($manga->slug)
     . '/'
-    . (int) $manga->numero;
+    . $manga->numero;
 
 $noteTotal =
     $manga->note !== null
-        ? (int) $manga->note . '/10'
+        ? $manga->note . '/10'
         : 'Non calculée';
 
 ?>

@@ -11,10 +11,10 @@ final readonly class MangaData
         public string $slug,
         public string $livre,
 
-        public ?string $thumbnail,
-        public ?string $extension,
+        public string $thumbnail,
+        public string $extension,
 
-        public ?string $editeur,
+        public string $editeur,
 
         public int $numero,
         public bool $lu,

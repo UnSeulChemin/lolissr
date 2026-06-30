@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-$mangas =
-    is_array($mangas ?? null)
-        ? $mangas
-        : [];
+use App\DTO\Manga\Responses\MangaSeriesItemData;
+
+/** @var list<MangaSeriesItemData> $mangas */
 
 ?>
 
@@ -30,9 +29,13 @@ $mangas =
 
         <?php else: ?>
 
-            <?php require view_path(
+            <?php
+            $isSerieView = false;
+
+            require view_path(
                 'pages/manga/series/ajax.php',
-            ); ?>
+            );
+            ?>
 
         <?php endif; ?>
 
