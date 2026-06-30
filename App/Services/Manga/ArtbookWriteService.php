@@ -65,7 +65,7 @@ final readonly class ArtbookWriteService
                 $upload = $this->uploadService->uploadThumbnail(
                     $dto->artbook,
                     $dto->numero,
-                    UploadConfig::thumbnailDirectory('artbooks'),
+                    UploadConfig::thumbnailDirectory('artbook'),
                     $files,
                 );
 
@@ -265,7 +265,7 @@ final readonly class ArtbookWriteService
         }
 
         $path =
-            UploadConfig::thumbnailDirectory('artbooks')
+            UploadConfig::thumbnailDirectory('artbook')
             . $artbook->thumbnail
             . '.'
             . $artbook->extension;

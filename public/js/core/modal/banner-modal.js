@@ -35,7 +35,7 @@ export function bannerModal(
                                 >
 
                                     <img
-                                        src="/lolissr/images/banners/thumbnail/${banner.banner}.${banner.banner_extension}"
+                                        src="/lolissr/images/banner/thumbnail/${banner.banner}.${banner.banner_extension}"
                                         alt="${banner.banner}"
                                         draggable="false"
                                     >

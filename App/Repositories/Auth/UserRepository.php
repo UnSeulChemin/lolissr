@@ -96,7 +96,7 @@ final class UserRepository extends Model
     {
         $path =
             dirname(__DIR__, 3)
-            . '/public/images/avatars/thumbnail';
+            . '/public/images/avatar/thumbnail';
 
         $avatars = [];
 
@@ -126,7 +126,7 @@ final class UserRepository extends Model
     {
         $path =
             dirname(__DIR__, 3)
-            . '/public/images/banners/thumbnail';
+            . '/public/images/banner/thumbnail';
 
         $banners = [];
 
@@ -156,7 +156,7 @@ final class UserRepository extends Model
     {
         $path =
             dirname(__DIR__, 3)
-            . '/public/images/frames/thumbnail';
+            . '/public/images/frame/thumbnail';
 
         $frames = [];
 

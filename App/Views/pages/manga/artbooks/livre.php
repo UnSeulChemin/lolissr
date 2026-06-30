@@ -25,7 +25,7 @@ $numero =
 
 $thumbnailPath =
     $baseUri
-    . 'images/artbooks/thumbnail/'
+    . 'images/artbook/thumbnail/'
     . $artbook->thumbnail
     . '.'
     . $artbook->extension;

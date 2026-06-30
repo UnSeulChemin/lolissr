@@ -59,7 +59,7 @@ $baseUri =
     }
 
     $thumbnailPath =
-        "{$baseUri}images/artbooks/thumbnail/{$thumbnail}.{$extension}";
+        "{$baseUri}images/artbook/thumbnail/{$thumbnail}.{$extension}";
 
     $subtitle =
         $serie !== null

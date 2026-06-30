@@ -43,7 +43,7 @@ if (
 {
     $mostRepresentedThumbnailPath =
         $baseUri
-        . 'images/artbooks/thumbnail/'
+        . 'images/artbook/thumbnail/'
         . $mostRepresented->thumbnail
         . '.'
         . $mostRepresented->extension;
@@ -567,7 +567,7 @@ $isAuthor =
 
                         <img
                             class="card-image-portrait"
-                            src="<?= e($baseUri) ?>images/artbooks/placeholder-artbook.webp"
+                            src="<?= e($baseUri) ?>images/artbook/placeholder-artbook.webp"
                             alt=""
                         >
 
@@ -614,7 +614,7 @@ $isAuthor =
 
             $coverPath =
                 $baseUri
-                . 'images/artbooks/thumbnail/'
+                . 'images/artbook/thumbnail/'
                 . $artbook->thumbnail
                 . '.'
                 . $artbook->extension;

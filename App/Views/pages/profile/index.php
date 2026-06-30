@@ -26,13 +26,13 @@ $baseUri =
 $username = $user->username;
 
 $avatarPath =
-    "{$baseUri}images/avatars/thumbnail/{$user->avatar}.{$user->avatar_extension}";
+    "{$baseUri}images/avatar/thumbnail/{$user->avatar}.{$user->avatar_extension}";
 
 $bannerPath =
-    "{$baseUri}images/banners/thumbnail/{$user->banner}.{$user->banner_extension}";
+    "{$baseUri}images/banner/thumbnail/{$user->banner}.{$user->banner_extension}";
 
 $framePath =
-    "{$baseUri}images/frames/thumbnail/{$user->frame}.{$user->frame_extension}";
+    "{$baseUri}images/frame/thumbnail/{$user->frame}.{$user->frame_extension}";
 
 ?>
 

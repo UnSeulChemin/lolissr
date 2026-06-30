@@ -46,7 +46,7 @@ export function frameModal(
 
                                         <img
                                             class="profile-frame"
-                                            src="/lolissr/images/frames/thumbnail/${frame.frame}.${frame.frame_extension}"
+                                            src="/lolissr/images/frame/thumbnail/${frame.frame}.${frame.frame_extension}"
                                             alt="${frame.frame}"
                                             draggable="false"
                                         >

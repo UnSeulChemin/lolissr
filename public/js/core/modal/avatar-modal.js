@@ -35,7 +35,7 @@ export function avatarModal(
                                 >
 
                                     <img
-                                        src="/lolissr/images/avatars/thumbnail/${avatar.avatar}.${avatar.avatar_extension}"
+                                        src="/lolissr/images/avatar/thumbnail/${avatar.avatar}.${avatar.avatar_extension}"
                                         alt="${avatar.avatar}"
                                         draggable="false"
                                     >

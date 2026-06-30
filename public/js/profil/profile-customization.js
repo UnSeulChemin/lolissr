@@ -122,7 +122,7 @@ async function openAvatarModal()
             },
         );
 
-    const avatarPath = `/lolissr/images/avatars/thumbnail/${response.data.avatar}.${response.data.avatar_extension}`;
+    const avatarPath = `/lolissr/images/avatar/thumbnail/${response.data.avatar}.${response.data.avatar_extension}`;
 
     const customizationAvatar =
         document.querySelector(
