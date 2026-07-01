@@ -11,6 +11,7 @@ use App\DTO\Manga\Responses\MangaSeriesItemData;
 use App\DTO\Manga\Responses\MangaShowData;
 use App\Models\Manga;
 use App\Repositories\Manga\MangaRepository;
+use App\Repositories\Manga\MangaCollectionRepository;
 use App\Repositories\Manga\MangaSearchRepository;
 
 use Framework\Application\App;
@@ -19,7 +20,8 @@ final readonly class MangaReadService
 {
     public function __construct(
         private MangaRepository $mangaRepository,
-        private MangaSearchRepository $searchRepository
+        private MangaSearchRepository $searchRepository,
+        private MangaCollectionRepository $collectionRepository,
     ) {
     }
 
@@ -35,7 +37,7 @@ final readonly class MangaReadService
 
         $perPage = App::pagination();
 
-        $totalSeries = $this->searchRepository->countFirstTomes();
+        $totalSeries = $this->collectionRepository->countFirstTomes();
 
         if ($totalSeries === 0)
         {
@@ -49,7 +51,7 @@ final readonly class MangaReadService
             return null;
         }
 
-        $mangas = $this->searchRepository->findAllFirstTomes(
+        $mangas = $this->collectionRepository->findAllFirstTomes(
             'id DESC',
             $perPage,
             $page,
@@ -119,7 +121,7 @@ final readonly class MangaReadService
     {
         $query = trim($query);
 
-        $results = $this->searchRepository->searchMangas($query);
+        $results = $this->searchRepository->search($query);
 
         return new MangaSearchData(
             results: array_map($this->mapSearchItem(...), $results),
@@ -140,7 +142,7 @@ final readonly class MangaReadService
     {
         return array_map(
             $this->mapSeriesItem(...),
-            $this->mangaRepository->findSeriesWithoutPerfectNote(),
+            $this->collectionRepository->findSeriesWithoutPerfectNote(),
         );
     }
 
@@ -151,7 +153,7 @@ final readonly class MangaReadService
     {
         return array_map(
             $this->mapSeriesItem(...),
-            $this->mangaRepository->findIncompleteSeries(),
+            $this->collectionRepository->findIncompleteSeries(),
         );
     }
 

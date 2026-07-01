@@ -7,12 +7,15 @@ namespace App\Repositories\Manga;
 use App\DTO\Manga\Responses\MangaData;
 use App\Models\Manga;
 use App\Models\Model;
+use App\Repositories\Manga\Concerns\HasMangaStatsSubQuery;
 
 use Framework\Support\MangaNoteNormalizer;
 use Framework\Support\Str;
 
 final class MangaRepository extends Model
 {
+    use HasMangaStatsSubQuery;
+
     protected string $table = 'manga';
 
     /**
@@ -179,74 +182,6 @@ final class MangaRepository extends Model
         );
 
         return $result !== null;
-    }
-
-    /**
-     * @return list<Manga>
-     */
-    public function findSeriesWithoutPerfectNote(): array
-    {
-        /** @var list<Manga> $mangas */
-        $mangas = $this->fetchAll(
-            "
-            SELECT
-                m.*,
-                stats.total,
-                stats.total_lu,
-                stats.average_note
-
-            FROM {$this->table()} m
-
-            INNER JOIN (
-                {$this->statsSubQuery()}
-            ) stats
-                ON stats.slug = m.slug
-
-            WHERE m.numero = 1
-            AND stats.average_note < 10
-
-            ORDER BY
-                stats.average_note ASC,
-                m.livre ASC
-            ",
-            [],
-            Manga::class
-        );
-
-        return $mangas;
-    }
-
-    /**
-     * @return list<Manga>
-     */
-    public function findIncompleteSeries(): array
-    {
-        /** @var list<Manga> $mangas */
-        $mangas = $this->fetchAll(
-            "
-            SELECT
-                m.*,
-                stats.total,
-                stats.total_lu,
-                stats.average_note
-
-            FROM {$this->table()} m
-
-            INNER JOIN (
-                {$this->statsSubQuery()}
-            ) stats
-                ON stats.slug = m.slug
-
-            WHERE m.numero = 1
-            AND stats.total_lu < stats.total
-
-            ORDER BY m.livre ASC
-            ",
-            [],
-            Manga::class
-        );
-
-        return $mangas;
     }
 
     /**
@@ -423,30 +358,5 @@ final class MangaRepository extends Model
             'note' => $this->calculateNote($jacquette, $livreNote),
             'commentaire' => Str::nullableTrim($data['commentaire'] ?? null),
         ];
-    }
-
-    private function statsSubQuery(): string
-    {
-        return "
-            SELECT
-                slug,
-                COUNT(*) AS total,
-                SUM(
-                    CASE
-                        WHEN lu = 1 THEN 1
-                        ELSE 0
-                    END
-                ) AS total_lu,
-                ROUND(
-                    AVG(
-                        COALESCE(note, 0)
-                    ),
-                    1
-                ) AS average_note
-
-            FROM {$this->table()}
-
-            GROUP BY slug
-        ";
     }
 }
