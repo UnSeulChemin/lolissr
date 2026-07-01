@@ -78,8 +78,7 @@ final class MangaController extends Controller
             throw new NotFoundException('Page introuvable');
         }
 
-        $this->title = 'Manga | Artbooks'
-            . ($data->currentPage > 1 ? ' - Page ' . $data->currentPage : '');
+        $this->title = 'Manga | Artbooks' . ($data->currentPage > 1 ? ' - Page ' . $data->currentPage : '');
 
         $this->render('pages/manga/artbooks/index', [
             'artbooks' => $data->artbooks,
@@ -90,11 +89,32 @@ final class MangaController extends Controller
         ]);
     }
 
+    public function ajouter(): never
+    {
+        $this->title = 'Manga | Ajouter';
+
+        $this->render('pages/manga/ajouter/index');
+    }
+
     public function links(): never
     {
-        $this->title = 'Manga | Lien';
+        $this->title = 'Manga | Liens utiles';
 
         $this->render('pages/manga/lien');
+    }
+
+    public function notes(): never
+    {
+        $this->title = 'Manga | Notes';
+
+        $this->render('pages/manga/series/notes', ['mangas' => $this->mangaReadService->notes()]);
+    }
+
+    public function aLire(): never
+    {
+        $this->title = 'Manga | À lire';
+
+        $this->render('pages/manga/series/a-lire', ['mangas' => $this->mangaReadService->aLire()]);
     }
 
     public function search(string $query = ''): never
@@ -107,6 +127,12 @@ final class MangaController extends Controller
 
         $this->render('pages/manga/series/recherche', ['mangas' => $data->results, 'search' => $data->search]);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | AFFICHAGE
+    |--------------------------------------------------------------------------
+    */
 
     public function showSeries(string $slug): never
     {
@@ -129,15 +155,6 @@ final class MangaController extends Controller
         ]);
     }
 
-    public function showArtbook(string $slug, int $numero): never
-    {
-        $artbook = $this->resolveArtbookOrFail($slug, $numero);
-
-        $this->title = 'Artbook | ' . $artbook->artbook;
-
-        $this->render('pages/manga/artbooks/livre', ['artbook' => $artbook]);
-    }
-
     public function showManga(string $slug, int $numero): never
     {
         $data = $this->resolveMangaOrFail($slug, $numero);
@@ -147,26 +164,20 @@ final class MangaController extends Controller
         $this->render('pages/manga/series/livre', ['manga' => $data->manga]);
     }
 
-    public function notes(): never
+    public function showArtbook(string $slug, int $numero): never
     {
-        $this->title = 'Manga | Notes';
+        $artbook = $this->resolveArtbookOrFail($slug, $numero);
 
-        $this->render('pages/manga/series/notes', ['mangas' => $this->mangaReadService->notes()]);
+        $this->title = 'Artbook | ' . $artbook->artbook;
+
+        $this->render('pages/manga/artbooks/livre', ['artbook' => $artbook]);
     }
 
-    public function aLire(): never
-    {
-        $this->title = 'Manga | À lire';
-
-        $this->render('pages/manga/series/a-lire', ['mangas' => $this->mangaReadService->aLire()]);
-    }
-
-    public function ajouter(): never
-    {
-        $this->title = 'Manga | Ajouter';
-
-        $this->render('pages/manga/ajouter/index');
-    }
+    /*
+    |--------------------------------------------------------------------------
+    | AJOUT
+    |--------------------------------------------------------------------------
+    */
 
     public function createManga(): never
     {
@@ -182,34 +193,35 @@ final class MangaController extends Controller
         $this->render('pages/manga/ajouter/artbook');
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | MODIFICATION
+    |--------------------------------------------------------------------------
+    */
+
     public function edit(string $slug, int $numero): never
     {
         $data = $this->resolveMangaOrFail($slug, $numero);
 
-        $this->title = 'Manga | Modifier';
+        $this->title = 'Manga | ' . $data->manga->livre;
 
         $this->render('pages/manga/series/modifier', ['manga' => $data->manga]);
     }
 
-    public function editArtbook(
-        string $slug,
-        int $numero
-    ): never
+    public function editArtbook(string $slug, int $numero): never
     {
-        $artbook = $this->resolveArtbookOrFail(
-            $slug,
-            $numero
-        );
+        $artbook = $this->resolveArtbookOrFail($slug, $numero);
 
-        $this->title = 'Artbook | Modifier';
+        $this->title = 'Artbook | ' . $artbook->artbook;
 
-        $this->render(
-            'pages/manga/artbooks/modifier',
-            [
-                'artbook' => $artbook,
-            ]
-        );
+        $this->render('pages/manga/artbooks/modifier', ['artbook' => $artbook]);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | TRAITEMENTS
+    |--------------------------------------------------------------------------
+    */
 
     public function store(MangaCreateRequest $request): never
     {
@@ -223,21 +235,14 @@ final class MangaController extends Controller
         $this->jsonResult($result);
     }
 
-    public function storeArtbook(
-        ArtbookCreateRequest $request
-    ): never
+    public function storeArtbook(ArtbookCreateRequest $request): never
     {
         if ($request->fails())
         {
-            throw new ValidationException(
-                $request->errors()
-            );
+            throw new ValidationException($request->errors());
         }
 
-        $result = $this->artbookWriteService->create(
-            $request->dto(),
-            $request->files()
-        );
+        $result = $this->artbookWriteService->create($request->dto(), $request->files());
 
         $this->jsonResult($result);
     }
@@ -269,37 +274,20 @@ final class MangaController extends Controller
         );
     }
 
-    public function updateArtbook(
-        ArtbookUpdateRequest $request,
-        string $slug,
-        int $numero
-    ): never
+    public function updateArtbook(ArtbookUpdateRequest $request, string $slug, int $numero): never
     {
-        $artbook = $this->resolveArtbookOrFail(
-            $slug,
-            $numero
-        );
+        $artbook = $this->resolveArtbookOrFail($slug, $numero);
 
         if ($request->fails())
         {
-            throw new ValidationException(
-                $request->errors()
-            );
+            throw new ValidationException($request->errors());
         }
 
-        $result = $this->artbookWriteService->update(
-            $artbook->slug,
-            $artbook->numero,
-            $request->dto()
-        );
+        $result = $this->artbookWriteService->update($artbook->slug, $artbook->numero, $request->dto());
 
         if (! $result->success)
         {
-            throw new BaseHttpException(
-                message: $result->message,
-                statusCode: 422,
-                data: $result->data,
-            );
+            throw new BaseHttpException(message: $result->message, statusCode: 422, data: $result->data);
         }
 
         $this->redirectWithSuccess(

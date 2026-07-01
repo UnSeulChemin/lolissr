@@ -36,7 +36,7 @@ final class FigurineController extends Controller
 
     public function index(): never
     {
-        $this->title = 'Figurines';
+        $this->title = 'Figurine';
 
         $this->render('pages/figurine/index');
     }
@@ -50,7 +50,7 @@ final class FigurineController extends Controller
             throw new NotFoundException('Page introuvable');
         }
 
-        $this->title = 'Figurines | Waifus'
+        $this->title = 'Figurine | Waifus'
             . ($data->currentPage > 1 ? ' - Page ' . $data->currentPage : '');
 
         $this->render('pages/figurine/waifus/index', [
@@ -72,7 +72,7 @@ final class FigurineController extends Controller
             $numero
         );
 
-        $this->title = 'Figurines | ' . $figurine->waifu;
+        $this->title = 'Figurine | ' . $figurine->waifu;
 
         $this->render('pages/figurine/waifus/waifu', [
             'figurine' => $figurine,
@@ -81,7 +81,7 @@ final class FigurineController extends Controller
 
     public function create(): never
     {
-        $this->title = 'Figurines | Ajouter';
+        $this->title = 'Figurine | Ajouter';
 
         $this->render('pages/figurine/ajouter');
     }
@@ -111,7 +111,7 @@ final class FigurineController extends Controller
             $numero
         );
 
-        $this->title = 'Figurines | Modifier';
+        $this->title = 'Figurine | Modifier';
 
         $this->render(
             'pages/figurine/waifus/modifier',
