@@ -100,56 +100,37 @@ $hasSerie =
 
             </div>
 
-            <div class="detail-row">
+            <?php if ($hasAuteur): ?>
 
-                <div class="detail-label">
-                    Numéro
-                </div>
+                <div class="detail-row">
 
-                <div class="detail-value">
+                    <div class="detail-label">
+                        Auteur
+                    </div>
 
-                    <?= str_pad(
-                        (string) $numero,
-                        2,
-                        '0',
-                        STR_PAD_LEFT,
-                    ) ?>
+                    <div class="detail-value">
+                        <?= e((string) $artbook->auteur) ?>
+                    </div>
 
                 </div>
 
-            </div>
+            <?php endif; ?>
 
-            <div class="detail-row">
+            <?php if ($hasSerie): ?>
 
-                <div class="detail-label">
-                    Auteur
-                </div>
+                <div class="detail-row">
 
-                <div class="detail-value">
+                    <div class="detail-label">
+                        Série
+                    </div>
 
-                    <?= $hasAuteur
-                        ? e((string) $artbook->auteur)
-                        : 'Non renseigné' ?>
-
-                </div>
-
-            </div>
-
-            <div class="detail-row">
-
-                <div class="detail-label">
-                    Série
-                </div>
-
-                <div class="detail-value">
-
-                    <?= $hasSerie
-                        ? e((string) $artbook->serie)
-                        : 'Non renseignée' ?>
+                    <div class="detail-value">
+                        <?= e((string) $artbook->serie) ?>
+                    </div>
 
                 </div>
 
-            </div>
+            <?php endif; ?>
 
             <div class="detail-actions">
 
