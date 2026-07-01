@@ -39,9 +39,8 @@ $formAction =
     $baseUri
     . 'manga/artbooks/'
     . rawurlencode((string) $artbook->slug)
-    . '/'
-    . (int) $artbook->numero
-    . '/modifier';
+    . '/modifier/'
+    . (int) $artbook->numero;
 
 $cancelUrl =
     $baseUri

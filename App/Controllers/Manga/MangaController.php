@@ -20,6 +20,7 @@ use Framework\Exceptions\BaseHttpException;
 use Framework\Exceptions\NotFoundException;
 use Framework\Exceptions\ValidationException;
 use Framework\Http\Request;
+use Framework\Http\FormRequest;
 
 final class MangaController extends Controller
 {
@@ -325,7 +326,7 @@ final class MangaController extends Controller
         return $artbook;
     }
 
-    private function validateRequest(object $request): void
+    private function validateRequest(FormRequest $request): void
     {
         if ($request->fails())
         {

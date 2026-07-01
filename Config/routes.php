@@ -171,18 +171,18 @@ return static function (Router $router): void
                 */
 
                 $router->get(
-                    '{slug}/{numero:int}/modifier',
+                    '{slug}/modifier/{numero:int}',
                     [MangaController::class, 'editArtbook']
                 );
 
                 $router->post(
-                    '{slug}/{numero:int}/modifier',
+                    '{slug}/modifier/{numero:int}',
                     [MangaController::class, 'updateArtbook'],
                     [CsrfMiddleware::class],
                 );
 
                 $router->post(
-                    '{slug}/{numero:int}/supprimer',
+                    '{slug}/supprimer/{numero:int}',
                     [MangaAjaxController::class, 'deleteArtbook'],
                     [
                         ExpectJsonMiddleware::class,

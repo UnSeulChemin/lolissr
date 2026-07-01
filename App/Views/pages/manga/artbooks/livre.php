@@ -34,17 +34,15 @@ $modifierUrl =
     $baseUri
     . 'manga/artbooks/'
     . $slug
-    . '/'
-    . $numero
-    . '/modifier';
+    . '/modifier/'
+    . $numero;
 
 $deleteUrl =
     $baseUri
     . 'manga/artbooks/'
     . $slug
-    . '/'
-    . $numero
-    . '/supprimer';
+    . '/supprimer/'
+    . $numero;
 
 $returnUrl =
     $baseUri
