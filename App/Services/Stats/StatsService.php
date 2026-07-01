@@ -27,42 +27,32 @@ final readonly class StatsService
     |--------------------------------------------------------------------------
     */
 
-    public function totalTomes(): int
+    public function totalMangaTomes(): int
     {
         return $this->mangaStatsRepository->countAllTomes();
     }
 
-    public function totalSeries(): int
+    public function totalMangaSeries(): int
     {
         return $this->mangaStatsRepository->countSeries();
     }
 
-    public function totalRead(): int
+    public function totalMangaRead(): int
     {
         return $this->mangaStatsRepository->countRead();
     }
 
-    public function totalUnread(): int
-    {
-        return max(0, $this->totalTomes() - $this->totalRead());
-    }
-
-    public function readingProgress(): int
-    {
-        return $this->percentage($this->totalTomes(), $this->totalRead());
-    }
-
-    public function averageNote(): ?float
+    public function averageMangaNote(): ?float
     {
         return $this->mangaStatsRepository->averageNote();
     }
 
-    public function lastTome(): ?MangaStatsData
+    public function lastMangaTome(): ?MangaStatsData
     {
         return $this->mangaStatsRepository->findLastAddedDto();
     }
 
-    public function longestSeries(): ?MangaStatsData
+    public function longestMangaSeries(): ?MangaStatsData
     {
         return $this->mangaStatsRepository->findLongestSeriesDto();
     }
@@ -70,7 +60,7 @@ final readonly class StatsService
     /**
      * @return list<MangaStatsData>
      */
-    public function topLongestSeries(int $limit = 5): array
+    public function topLongestMangaSeries(int $limit = 5): array
     {
         return $this->mangaStatsRepository->topLongestSeriesDto($limit);
     }
@@ -83,29 +73,57 @@ final readonly class StatsService
 
     public function dashboard(): DashboardStatsData
     {
+        // MANGA
+        $totalMangaTomes = $this->totalMangaTomes();
+        $totalMangaSeries = $this->totalMangaSeries();
+        $totalMangaRead = $this->totalMangaRead();
+        $totalMangaUnread = max(0, $totalMangaTomes - $totalMangaRead);
+        $mangaReadingProgress = $this->readingPercentage($totalMangaTomes, $totalMangaRead);
+        $averageMangaNote = $this->averageMangaNote();
+        $lastMangaTome = $this->lastMangaTome();
+        $longestMangaSeries = $this->longestMangaSeries();
+        $topLongestMangaSeries = $this->topLongestMangaSeries();
+
+        // ARTBOOK
         $totalArtbooks = $this->artbookStatsRepository->countAll();
         $totalArtbookAuthors = $this->artbookStatsRepository->countAuthors();
         $totalArtbookSeries = $this->artbookStatsRepository->countSeries();
         $latestArtbook = $this->artbookStatsRepository->findLatest();
-        $mostRepresented = $this->artbookStatsRepository->findMostRepresented();
+        $mostRepresentedArtbook = $this->artbookStatsRepository->findMostRepresented();
 
-        $totalTomes = $this->totalTomes();
-        $totalSeries = $this->totalSeries();
-        $totalRead = $this->totalRead();
-
+        // CHINOIS
         $totalVocabulary = $this->vocabulaireStatsRepository->countAll();
         $remainingVocabulary = $this->vocabulaireStatsRepository->countRemaining();
-
+        $vocabularyProgress = $this->completionPercentage($totalVocabulary, $remainingVocabulary);
         $totalGrammar = $this->grammaireStatsRepository->countAll();
         $remainingGrammar = $this->grammaireStatsRepository->countRemaining();
-
-        $vocabularyProgress = $this->progress($totalVocabulary, $remainingVocabulary);
-        $grammarProgress = $this->progress($totalGrammar, $remainingGrammar);
-
+        $grammarProgress = $this->completionPercentage($totalGrammar, $remainingGrammar);
         $totalChinese = $totalVocabulary + $totalGrammar;
         $totalRemainingChinese = $remainingVocabulary + $remainingGrammar;
+        $globalChineseProgress = $this->completionPercentage($totalChinese, $totalRemainingChinese);
 
         return new DashboardStatsData(
+            totalTomes: $totalMangaTomes,
+            totalSeries: $totalMangaSeries,
+            totalRead: $totalMangaRead,
+            totalUnread: $totalMangaUnread,
+            readingProgress: $mangaReadingProgress,
+
+            averageNote: $averageMangaNote,
+            lastTome: $lastMangaTome,
+            longestSeries: $longestMangaSeries,
+            topLongestSeries: $topLongestMangaSeries,
+
+            lowRatedMangas: [],
+            lowJacquetteMangas: [],
+            lowLivreStateMangas: [],
+
+            totalArtbooks: $totalArtbooks,
+            totalArtbookAuthors: $totalArtbookAuthors,
+            totalArtbookSeries: $totalArtbookSeries,
+            latestArtbook: $latestArtbook,
+            mostRepresented: $mostRepresentedArtbook,
+
             totalVocabulary: $totalVocabulary,
             remainingVocabulary: $remainingVocabulary,
             vocabularyProgress: $vocabularyProgress,
@@ -114,33 +132,7 @@ final readonly class StatsService
             remainingGrammar: $remainingGrammar,
             grammarProgress: $grammarProgress,
 
-            globalChineseProgress: $this->progress($totalChinese, $totalRemainingChinese),
-
-            totalTomes: $totalTomes,
-            totalSeries: $totalSeries,
-
-            totalRead: $totalRead,
-            totalUnread: $this->totalUnread(),
-
-            readingProgress: $this->readingProgress(),
-
-            totalArtbooks: $totalArtbooks,
-            totalArtbookAuthors: $totalArtbookAuthors,
-            totalArtbookSeries: $totalArtbookSeries,
-
-            latestArtbook: $latestArtbook,
-            mostRepresented: $mostRepresented,
-
-            averageNote: $this->averageNote(),
-
-            lastTome: $this->lastTome(),
-            longestSeries: $this->longestSeries(),
-
-            topLongestSeries: $this->topLongestSeries(),
-
-            lowRatedMangas: [],
-            lowJacquetteMangas: [],
-            lowLivreStateMangas: []
+            globalChineseProgress: $globalChineseProgress,
         );
     }
 
@@ -150,7 +142,7 @@ final readonly class StatsService
     |--------------------------------------------------------------------------
     */
 
-    private function progress(int $total, int $remaining): int
+    private function completionPercentage(int $total, int $remaining): int
     {
         if ($total <= 0)
         {
@@ -160,13 +152,13 @@ final readonly class StatsService
         return (int) round((($total - $remaining) / $total) * 100);
     }
 
-    private function percentage(int $total, int $value): int
+    private function readingPercentage(int $total, int $read): int
     {
         if ($total <= 0)
         {
             return 0;
         }
 
-        return (int) round(($value / $total) * 100);
+        return (int) round(($read / $total) * 100);
     }
 }
