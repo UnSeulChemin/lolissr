@@ -56,7 +56,7 @@ $baseUri =
         (int) ($peluche->numero ?? 1);
 
     $href =
-        "{$baseUri}peluches/waifus/{$slug}/{$numero}";
+        "{$baseUri}peluche/waifus/{$slug}/{$numero}";
 
     $thumbnailPath =
         "{$baseUri}images/peluche/thumbnail/{$thumbnail}.{$extension}";

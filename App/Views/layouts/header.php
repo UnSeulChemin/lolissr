@@ -136,8 +136,8 @@ $currentSearch =
                     <a
                         class="nav-link-icon"
                         data-prefetch
-                        href="<?= e($baseUri) ?>peluches"
-                        title="Peluches"
+                        href="<?= e($baseUri) ?>peluche"
+                        title="Peluche"
                     >
                         🧸
                     </a>

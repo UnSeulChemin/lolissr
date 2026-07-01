@@ -29,21 +29,21 @@ $thumbnailPath =
 
 $modifierUrl =
     $baseUri
-    . 'peluches/waifus/'
+    . 'peluche/waifus/'
     . $slug
     . '/modifier/'
     . $peluche->numero;
 
 $deleteUrl =
     $baseUri
-    . 'peluches/waifus/'
+    . 'peluche/waifus/'
     . $slug
     . '/supprimer/'
     . $peluche->numero;
 
 $redirectUrl =
     $baseUri
-    . 'peluches/waifus';
+    . 'peluche/waifus';
 
 $hasCommentaire =
     $peluche->commentaire !== null

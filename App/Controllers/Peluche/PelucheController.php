@@ -18,7 +18,7 @@ use Framework\Http\Request;
 
 final class PelucheController extends Controller
 {
-    private const WAIFUS_PATH = 'peluches/waifus';
+    private const WAIFUS_PATH = 'peluche/waifus';
 
     public function __construct(
         private readonly PelucheReadService $pelucheReadService,

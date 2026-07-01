@@ -14,7 +14,7 @@ export function invalidatePeluchePages()
 {
     invalidatePage('/lolissr/');
 
-    invalidatePage('/lolissr/peluches');
+    invalidatePage('/lolissr/peluche');
 
-    invalidatePage('/lolissr/peluches/waifus');
+    invalidatePage('/lolissr/peluche/waifus');
 }

@@ -136,7 +136,7 @@ export const ROUTE_INITIALIZERS = [
 
     {
         match:
-            /^\/lolissr\/peluches\/ajouter\/?$/,
+            /^\/lolissr\/peluche\/ajouter\/?$/,
 
         initializers:
         [

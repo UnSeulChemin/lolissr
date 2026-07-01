@@ -449,11 +449,11 @@ return static function (Router $router): void
 
         /*
         |--------------------------------------------------------------------------
-        | PELUCHES
+        | PELUCHE
         |--------------------------------------------------------------------------
         */
 
-        $router->prefix('peluches')->group(function (Router $router): void
+        $router->prefix('peluche')->group(function (Router $router): void
         {
             $router->get('', [PelucheController::class, 'index']);
 
