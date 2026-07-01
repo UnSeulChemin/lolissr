@@ -7,14 +7,18 @@ namespace App\Services\Manga;
 use App\DTO\Manga\Responses\ArtbookData;
 use App\DTO\Manga\Responses\ArtbookListData;
 use App\Models\Artbook;
+use App\Repositories\Manga\ArtbookCollectionRepository;
 use App\Repositories\Manga\ArtbookRepository;
+use App\Repositories\Manga\ArtbookStatsRepository;
 
 use Framework\Application\App;
 
 final readonly class ArtbookReadService
 {
     public function __construct(
-        private ArtbookRepository $artbookRepository
+        private ArtbookRepository $artbookRepository,
+        private ArtbookCollectionRepository $collectionRepository,
+        private ArtbookStatsRepository $statsRepository,
     ) {
     }
 
@@ -24,7 +28,7 @@ final readonly class ArtbookReadService
 
         $perPage = App::pagination();
 
-        $totalArtbooks = $this->artbookRepository->countAll();
+        $totalArtbooks = $this->statsRepository->countAll();
 
         if ($totalArtbooks === 0)
         {
@@ -38,7 +42,7 @@ final readonly class ArtbookReadService
             return null;
         }
 
-        $artbooks = $this->artbookRepository->findPaginated(
+        $artbooks = $this->collectionRepository->findPaginated(
             $perPage,
             $page,
         );

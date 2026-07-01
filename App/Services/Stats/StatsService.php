@@ -8,7 +8,7 @@ use App\DTO\Home\Responses\DashboardStatsData;
 use App\DTO\Manga\Responses\MangaStatsData;
 use App\Repositories\Chinois\ChinoisGrammaireRepository;
 use App\Repositories\Chinois\ChinoisVocabulaireRepository;
-use App\Repositories\Manga\ArtbookRepository;
+use App\Repositories\Manga\ArtbookStatsRepository;
 use App\Repositories\Manga\MangaStatsRepository;
 
 final readonly class StatsService
@@ -17,7 +17,7 @@ final readonly class StatsService
         private MangaStatsRepository $mangaStatsRepository,
         private ChinoisVocabulaireRepository $vocabulaireRepository,
         private ChinoisGrammaireRepository $grammaireRepository,
-        private ArtbookRepository $artbookRepository
+        private ArtbookStatsRepository $artbookStatsRepository,
     ) {
     }
 
@@ -83,12 +83,11 @@ final readonly class StatsService
 
     public function dashboard(): DashboardStatsData
     {
-        $totalArtbooks = $this->artbookRepository->countAll();
-        $totalArtbookAuthors = $this->artbookRepository->countAuthors();
-        $totalArtbookSeries = $this->artbookRepository->countSeries();
-
-        $latestArtbook = $this->artbookRepository->findLatest();
-        $mostRepresented = $this->artbookRepository->findMostRepresented();
+        $totalArtbooks = $this->artbookStatsRepository->countAll();
+        $totalArtbookAuthors = $this->artbookStatsRepository->countAuthors();
+        $totalArtbookSeries = $this->artbookStatsRepository->countSeries();
+        $latestArtbook = $this->artbookStatsRepository->findLatest();
+        $mostRepresented = $this->artbookStatsRepository->findMostRepresented();
 
         $totalTomes = $this->totalTomes();
         $totalSeries = $this->totalSeries();
