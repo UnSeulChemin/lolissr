@@ -24,6 +24,7 @@ use Framework\Http\Request;
 final class MangaController extends Controller
 {
     private const SERIES_PATH = 'manga/series';
+    private const ARTBOOKS_PATH = 'manga/artbooks';
 
     public function __construct(
         private readonly MangaReadService $mangaReadService,
@@ -138,7 +139,7 @@ final class MangaController extends Controller
     {
         $data = $this->mangaReadService->showSeries($slug);
 
-        if ($data === null || $data->mangas === [])
+        if ($data === null || empty($data->mangas))
         {
             throw new NotFoundException('Manga introuvable');
         }
@@ -225,10 +226,7 @@ final class MangaController extends Controller
 
     public function store(MangaCreateRequest $request): never
     {
-        if ($request->fails())
-        {
-            throw new ValidationException($request->errors());
-        }
+        $this->validateRequest($request);
 
         $result = $this->mangaWriteService->create($request->dto(), $request->files());
 
@@ -237,10 +235,7 @@ final class MangaController extends Controller
 
     public function storeArtbook(ArtbookCreateRequest $request): never
     {
-        if ($request->fails())
-        {
-            throw new ValidationException($request->errors());
-        }
+        $this->validateRequest($request);
 
         $result = $this->artbookWriteService->create($request->dto(), $request->files());
 
@@ -251,10 +246,7 @@ final class MangaController extends Controller
     {
         $data = $this->resolveMangaOrFail($slug, $numero);
 
-        if ($request->fails())
-        {
-            throw new ValidationException($request->errors());
-        }
+        $this->validateRequest($request);
 
         $result = $this->mangaWriteService->update($data->canonicalSlug, $numero, $request->dto());
 
@@ -263,25 +255,14 @@ final class MangaController extends Controller
             throw new BaseHttpException(message: $result->message, statusCode: 422, data: $result->data);
         }
 
-        $this->redirectWithSuccess(
-            sprintf(
-                '%s/%s/%d',
-                self::SERIES_PATH,
-                rawurlencode($data->canonicalSlug),
-                $numero
-            ),
-            $result->message
-        );
+        $this->redirectWithSuccess($this->mangaUrl($data->canonicalSlug, $numero), $result->message);
     }
 
     public function updateArtbook(ArtbookUpdateRequest $request, string $slug, int $numero): never
     {
         $artbook = $this->resolveArtbookOrFail($slug, $numero);
 
-        if ($request->fails())
-        {
-            throw new ValidationException($request->errors());
-        }
+        $this->validateRequest($request);
 
         $result = $this->artbookWriteService->update($artbook->slug, $artbook->numero, $request->dto());
 
@@ -290,14 +271,7 @@ final class MangaController extends Controller
             throw new BaseHttpException(message: $result->message, statusCode: 422, data: $result->data);
         }
 
-        $this->redirectWithSuccess(
-            sprintf(
-                'manga/artbooks/%s/%d',
-                rawurlencode($artbook->slug),
-                $artbook->numero,
-            ),
-            $result->message,
-        );
+        $this->redirectWithSuccess($this->artbookUrl($artbook->slug, $artbook->numero), $result->message);
     }
 
     /*
@@ -305,6 +279,16 @@ final class MangaController extends Controller
     | HELPERS
     |--------------------------------------------------------------------------
     */
+
+    private function mangaUrl(string $slug, int $numero): string
+    {
+        return sprintf('%s/%s/%d', self::SERIES_PATH, rawurlencode($slug), $numero);
+    }
+
+    private function artbookUrl(string $slug, int $numero): string
+    {
+        return sprintf('%s/%s/%d', self::ARTBOOKS_PATH, rawurlencode($slug), $numero);
+    }
 
     private function resolveMangaOrFail(string $slug, int $numero): MangaShowData
     {
@@ -321,12 +305,7 @@ final class MangaController extends Controller
                 message: 'URL non canonique',
                 statusCode: 409,
                 data: [
-                    'redirect' => sprintf(
-                        '%s/%s/%d',
-                        self::SERIES_PATH,
-                        rawurlencode($data->canonicalSlug),
-                        $numero
-                    ),
+                    'redirect' => $this->mangaUrl($data->canonicalSlug, $numero),
                 ]
             );
         }
@@ -344,5 +323,13 @@ final class MangaController extends Controller
         }
 
         return $artbook;
+    }
+
+    private function validateRequest(object $request): void
+    {
+        if ($request->fails())
+        {
+            throw new ValidationException($request->errors());
+        }
     }
 }

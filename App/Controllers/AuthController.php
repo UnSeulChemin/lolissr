@@ -12,10 +12,8 @@ final class AuthController extends Controller
 {
     private const PRODUCTION_ENV = 'production';
 
-    public function __construct(
-        private readonly AuthService $authService,
-        Request $request,
-    ) {
+    public function __construct(private readonly AuthService $authService, Request $request)
+    {
         parent::__construct($request);
     }
 
