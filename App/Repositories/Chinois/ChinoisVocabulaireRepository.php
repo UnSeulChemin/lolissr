@@ -6,11 +6,14 @@ namespace App\Repositories\Chinois;
 
 use App\DTO\Chinois\Responses\ChinoisVocabulaireData;
 use App\Models\Model;
+use App\Repositories\Chinois\Concerns\HasDtoMapper;
 
 use stdClass;
 
 final class ChinoisVocabulaireRepository extends Model
 {
+    use HasDtoMapper;
+
     protected string $table = 'chinois_vocabulaire';
 
     private const SELECT_FIELDS = '
@@ -113,21 +116,6 @@ final class ChinoisVocabulaireRepository extends Model
         return $this->update($data, ['id' => $id]);
     }
 
-    public function countAll(): int
-    {
-        return $this->countRows();
-    }
-
-    public function countRemaining(): int
-    {
-        return $this->countWhere('maitrise = 0');
-    }
-
-    public function countMastered(): int
-    {
-        return $this->countWhere('maitrise = 1');
-    }
-
     public function markXpRewarded(int $id): bool
     {
         return $this->update(['xp_rewarded' => 1], ['id' => $id]);
@@ -152,14 +140,5 @@ final class ChinoisVocabulaireRepository extends Model
             maitrise: (bool) $row->maitrise,
             xpRewarded: (bool) $row->xp_rewarded
         );
-    }
-
-    /**
-     * @param list<stdClass> $results
-     * @return list<ChinoisVocabulaireData>
-     */
-    private function mapResultsToDto(array $results): array
-    {
-        return array_map($this->mapRowToDto(...), $results);
     }
 }

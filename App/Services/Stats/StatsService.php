@@ -6,18 +6,18 @@ namespace App\Services\Stats;
 
 use App\DTO\Home\Responses\DashboardStatsData;
 use App\DTO\Manga\Responses\MangaStatsData;
-use App\Repositories\Chinois\ChinoisGrammaireRepository;
-use App\Repositories\Chinois\ChinoisVocabulaireRepository;
-use App\Repositories\Manga\ArtbookStatsRepository;
 use App\Repositories\Manga\MangaStatsRepository;
+use App\Repositories\Manga\ArtbookStatsRepository;
+use App\Repositories\Chinois\ChinoisGrammaireStatsRepository;
+use App\Repositories\Chinois\ChinoisVocabulaireStatsRepository;
 
 final readonly class StatsService
 {
     public function __construct(
         private MangaStatsRepository $mangaStatsRepository,
-        private ChinoisVocabulaireRepository $vocabulaireRepository,
-        private ChinoisGrammaireRepository $grammaireRepository,
         private ArtbookStatsRepository $artbookStatsRepository,
+        private ChinoisVocabulaireStatsRepository $vocabulaireStatsRepository,
+        private ChinoisGrammaireStatsRepository $grammaireStatsRepository,
     ) {
     }
 
@@ -93,11 +93,11 @@ final readonly class StatsService
         $totalSeries = $this->totalSeries();
         $totalRead = $this->totalRead();
 
-        $totalVocabulary = $this->vocabulaireRepository->countAll();
-        $remainingVocabulary = $this->vocabulaireRepository->countRemaining();
+        $totalVocabulary = $this->vocabulaireStatsRepository->countAll();
+        $remainingVocabulary = $this->vocabulaireStatsRepository->countRemaining();
 
-        $totalGrammar = $this->grammaireRepository->countAll();
-        $remainingGrammar = $this->grammaireRepository->countRemaining();
+        $totalGrammar = $this->grammaireStatsRepository->countAll();
+        $remainingGrammar = $this->grammaireStatsRepository->countRemaining();
 
         $vocabularyProgress = $this->progress($totalVocabulary, $remainingVocabulary);
         $grammarProgress = $this->progress($totalGrammar, $remainingGrammar);
