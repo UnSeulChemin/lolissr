@@ -10,33 +10,28 @@ use Framework\Support\Session;
 
 final class CsrfMiddleware implements MiddlewareInterface
 {
+    // =========================================
+    // MIDDLEWARE
+    // =========================================
+
     public function handle(Request $request): void
     {
-        if (!$request->isPost()) {
+        if (! $request->isPost())
+        {
             return;
         }
 
-        $sessionToken = Session::get(
-            'csrf_token',
-        );
+        $sessionToken = Session::get('csrf_token');
+        $postedToken = $request->input('csrf_token') ?? $request->header('X-CSRF-TOKEN');
 
-        $postedToken = $request->input(
-            'csrf_token',
-        ) ?? $request->header(
-            'X-CSRF-TOKEN',
-        );
-
-        $validToken =
+        if (
             is_string($sessionToken)
             && $sessionToken !== ''
             && is_string($postedToken)
             && $postedToken !== ''
-            && hash_equals(
-                $sessionToken,
-                $postedToken,
-            );
-
-        if ($validToken) {
+            && hash_equals($sessionToken, $postedToken)
+        )
+        {
             return;
         }
 

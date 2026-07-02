@@ -8,24 +8,19 @@ use Framework\Exceptions\JsonResponseException;
 use Framework\Http\JsonResponse;
 use Framework\Http\Request;
 
-final class ExpectJsonMiddleware
-implements MiddlewareInterface
+final class ExpectJsonMiddleware implements MiddlewareInterface
 {
-    public function handle(
-        Request $request,
-    ): void {
+    // =========================================
+    // MIDDLEWARE
+    // =========================================
 
-        if (
-            $request->expectsJson()
-        ) {
+    public function handle(Request $request): void
+    {
+        if ($request->expectsJson())
+        {
             return;
         }
 
-        throw new JsonResponseException(
-            JsonResponse::error(
-                'Requête JSON requise',
-                400,
-            ),
-        );
+        throw new JsonResponseException(JsonResponse::error('Requête JSON requise', 400));
     }
 }

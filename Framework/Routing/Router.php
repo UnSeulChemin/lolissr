@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Framework\Routing;
 
-use Closure;
-use Framework\Container\Container;
 use Framework\Container\AppContainer;
+use Framework\Container\Container;
 use Framework\Exceptions\NotFoundException;
 use Framework\Http\Middleware\MiddlewareInterface;
 use Framework\Http\Request;
+
+use Closure;
 use ReflectionMethod;
 use ReflectionNamedType;
 use RuntimeException;
@@ -28,11 +29,19 @@ final class Router
      */
     private array $groupMiddlewares = [];
 
-    public function __construct(
-        RouteCollection $collection,
-    ) {
+    /**
+     * @var array<string, ReflectionMethod>
+     */
+    private array $methods = [];
+
+    public function __construct(RouteCollection $collection)
+    {
         $this->collection = $collection;
     }
+
+    // =========================================
+    // GROUPES
+    // =========================================
 
     public function prefix(string $prefix): self
     {
@@ -60,6 +69,10 @@ final class Router
         $callback($this);
     }
 
+    // =========================================
+    // ROUTES
+    // =========================================
+
     /**
      * @param array{class-string,string}|string|Closure $action
      * @param list<class-string> $middlewares
@@ -82,23 +95,39 @@ final class Router
      * @param array{class-string,string}|string|Closure $action
      * @param list<class-string> $middlewares
      */
-    private function addRoute(string $method, string $path, array|string|Closure $action, array $middlewares): void
-    {
-        $segments =
-            array_filter(
-                array_merge($this->groupPrefixes, [trim($path, '/')]),
-                static fn (string $segment): bool
-                    => $segment !== ''
-            );
+    private function addRoute(
+        string $method,
+        string $path,
+        array|string|Closure $action,
+        array $middlewares,
+    ): void {
+        $segments = array_filter(
+            array_merge(
+                $this->groupPrefixes,
+                [trim($path, '/')],
+            ),
+            static fn (string $segment): bool => $segment !== '',
+        );
 
         $fullPath = '/' . implode('/', $segments);
 
-        $this->collection->add(new Route($method, $fullPath, $action, array_merge($this->groupMiddlewares, $middlewares)));
+        $this->collection->add(
+            new Route(
+                $method,
+                $fullPath,
+                $action,
+                array_merge(
+                    $this->groupMiddlewares,
+                    $middlewares,
+                ),
+            ),
+        );
     }
 
-    /**
-     * Match and execute current request.
-     */
+    // =========================================
+    // DISPATCH
+    // =========================================
+
     public function dispatch(): void
     {
         $container = AppContainer::get();
@@ -107,12 +136,10 @@ final class Router
         $request = $container->get(Request::class);
 
         $uri = $request->path();
-
         $method = $request->method();
 
         foreach ($this->collection->forMethod($method) as $route)
         {
-
             if (preg_match($route->pattern, $uri, $matches) !== 1)
             {
                 continue;
@@ -129,7 +156,9 @@ final class Router
                     {
                         $value = rawurldecode($value);
 
-                        return ctype_digit($value) ? (int) $value : $value;
+                        return ctype_digit($value)
+                            ? (int) $value
+                            : $value;
                     },
                     $matches,
                 ),
@@ -143,9 +172,10 @@ final class Router
         throw new NotFoundException("Route non trouvée : {$uri}");
     }
 
-    /**
-     * Execute all route middlewares.
-     */
+    // =========================================
+    // MIDDLEWARES
+    // =========================================
+
     private function runMiddlewares(Container $container, Route $route, Request $request): void
     {
         foreach ($route->getMiddlewares() as $middlewareClass)
@@ -161,9 +191,11 @@ final class Router
         }
     }
 
+    // =========================================
+    // ACTIONS
+    // =========================================
+
     /**
-     * Execute route action.
-     *
      * @param list<string|int> $params
      */
     private function executeAction(Container $container, Route $route, array $params, Request $request): void
@@ -184,19 +216,22 @@ final class Router
                 throw new RuntimeException("Invalid route action: {$action}");
             }
 
-            $action = explode('@', $action, 2);
+            [$controllerClass, $methodName] = explode('@', $action, 2);
         }
-
-        [$controllerClass, $methodName] = $action;
+        else
+        {
+            [$controllerClass, $methodName] = $action;
+        }
 
         $controller = $container->get($controllerClass);
 
-        if (! method_exists($controller, $methodName))
-        {
-            throw new RuntimeException(sprintf('Method %s::%s does not exist.', $controller::class, $methodName));
-        }
-
-        $arguments = $this->resolveArguments($container, $controller, $methodName, $params, $request);
+        $arguments = $this->resolveArguments(
+            $container,
+            $controller,
+            $methodName,
+            $params,
+            $request,
+        );
 
         /** @phpstan-ignore-next-line */
         $controller->{$methodName}(...$arguments);
@@ -214,9 +249,11 @@ final class Router
         string $method,
         array $params,
         Request $request,
-    ): array {
+    ): array
+    {
+        $key = $controller::class . '::' . $method;
 
-        $reflection = new ReflectionMethod($controller, $method);
+        $reflection = $this->methods[$key] ??= new ReflectionMethod($controller, $method);
 
         $arguments = [];
 

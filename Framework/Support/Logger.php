@@ -7,6 +7,7 @@ namespace Framework\Support;
 use Framework\Application\App;
 use Framework\Container\AppContainer;
 use Framework\Http\Request;
+
 use JsonException;
 use Throwable;
 
@@ -35,13 +36,7 @@ final class Logger
     {
         $directory = self::directory();
 
-        return is_dir($directory)
-            || mkdir(
-                $directory,
-                0755,
-                true,
-            )
-            || is_dir($directory);
+        return is_dir($directory) || mkdir($directory, 0755, true) || is_dir($directory);
     }
 
     /**
@@ -49,17 +44,14 @@ final class Logger
      */
     private static function requestContext(): ?array
     {
-        try {
-
+        try
+        {
             if (! AppContainer::has())
             {
                 return null;
             }
 
-            $request =
-                app(
-                    Request::class,
-                );
+            $request = app(Request::class);
 
             if (! $request instanceof Request)
             {
@@ -67,18 +59,10 @@ final class Logger
             }
 
             return [
-                'method' =>
-                    $request->method(),
-
-                'uri' =>
-                    $request->uri(),
-
-                'ip' =>
-                    $request->server(
-                        'REMOTE_ADDR',
-                    ),
+                'method' => $request->method(),
+                'uri' => $request->uri(),
+                'ip' => $request->server('REMOTE_ADDR'),
             ];
-
         }
         catch (Throwable)
         {
@@ -89,26 +73,19 @@ final class Logger
     /**
      * @param array<string, mixed> $context
      */
-    private static function write(
-        string $level,
-        string $message,
-        array $context = [],
-    ): void {
-
+    private static function write(string $level, string $message, array $context = []): void
+    {
         if (! self::enabled())
         {
             return;
         }
 
-        if (
-            strtoupper($level) === 'DEBUG'
-            && ! App::debug()
-        ) {
+        if (strtoupper($level) === 'DEBUG' && ! App::debug())
+        {
             return;
         }
 
-        $message =
-            trim($message);
+        $message = trim($message);
 
         if ($message === '')
         {
@@ -120,77 +97,44 @@ final class Logger
             return;
         }
 
-        $payload = [
-            'date' =>
-                date(
-                    'Y-m-d H:i:s',
-                ),
-
-            'level' =>
-                strtoupper(
-                    $level,
-                ),
-
-            'message' =>
-                $message,
-
-            'context' =>
-                $context,
-
-            'request' =>
-                self::requestContext(),
-        ];
-
-        try {
-
-            $content =
-                json_encode(
-                    $payload,
-                    JSON_UNESCAPED_UNICODE
-                    | JSON_UNESCAPED_SLASHES
-                    | JSON_INVALID_UTF8_SUBSTITUTE
-                    | JSON_THROW_ON_ERROR,
-                );
-
+        try
+        {
+            $content = json_encode(
+                [
+                    'date' => date('Y-m-d H:i:s'),
+                    'level' => strtoupper($level),
+                    'message' => $message,
+                    'context' => $context,
+                    'request' => self::requestContext(),
+                ],
+                JSON_UNESCAPED_UNICODE
+                | JSON_UNESCAPED_SLASHES
+                | JSON_INVALID_UTF8_SUBSTITUTE
+                | JSON_THROW_ON_ERROR,
+            );
         }
         catch (JsonException)
         {
             return;
         }
 
-        file_put_contents(
-            self::file(),
-            $content . PHP_EOL,
-            FILE_APPEND | LOCK_EX,
-        );
+        file_put_contents(self::file(), $content . PHP_EOL, FILE_APPEND | LOCK_EX);
     }
 
     /**
      * @param array<string, mixed> $context
      */
-    public static function debug(
-        string $message,
-        array $context = [],
-    ): void {
-        self::write(
-            'DEBUG',
-            $message,
-            $context,
-        );
+    public static function debug(string $message, array $context = []): void
+    {
+        self::write('DEBUG', $message, $context);
     }
 
     /**
      * @param array<string, mixed> $context
      */
-    public static function info(
-        string $message,
-        array $context = [],
-    ): void {
-        self::write(
-            'INFO',
-            $message,
-            $context,
-        );
+    public static function info(string $message, array $context = []): void
+    {
+        self::write('INFO', $message, $context);
     }
 
     /**
@@ -220,11 +164,8 @@ final class Logger
                 $context,
                 [
                     'exception' => $exception::class,
-
                     'file' => $exception->getFile(),
-
                     'line' => $exception->getLine(),
-
                     'trace' => $exception->getTraceAsString(),
                 ],
             ),

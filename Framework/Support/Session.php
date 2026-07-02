@@ -14,68 +14,13 @@ final class Session
 
     private static ?string $directory = null;
 
-    private static function ensureStarted(): void
+    // =========================================
+    // SESSION
+    // =========================================
+
+    public static function start(): void
     {
-        if (self::$started)
-        {
-            return;
-        }
-
-        if (session_status() === PHP_SESSION_ACTIVE)
-        {
-            self::$started = true;
-
-            return;
-        }
-
-        $directory = self::directory();
-
-        if (! is_dir($directory) && ! mkdir($directory, 0755, true) && ! is_dir($directory)
-        )
-        {
-            throw new RuntimeException('Impossible de créer le dossier de session.');
-        }
-
-        session_save_path($directory);
-
-        session_name((string) env('SESSION_NAME', 'LOLISSR_SESSION'));
-
-        $secure = self::isHttps();
-
-        ini_set('session.use_strict_mode', '1');
-        ini_set('session.use_only_cookies', '1');
-        ini_set('session.use_trans_sid', '0');
-        ini_set('session.cookie_httponly', '1');
-        ini_set('session.cookie_secure', $secure ? '1' : '0');
-
-        session_set_cookie_params([
-            'lifetime' => 0,
-            'path' => '/',
-            'domain' => '',
-            'secure' => $secure,
-            'httponly' => true,
-            'samesite' => 'Lax',
-        ]);
-
-        session_start([
-            'use_strict_mode' => true,
-            'use_only_cookies' => true,
-            'use_trans_sid' => false,
-            'cookie_httponly' => true,
-            'cookie_secure' => $secure,
-            'cookie_samesite' => 'Lax',
-        ]);
-
-        self::$started = true;
-    }
-
-    private static function isHttps(): bool
-    {
-        $https = $_SERVER['HTTPS'] ?? null;
-
-        return (is_string($https) && $https !== '' && strtolower($https) !== 'off')
-            || (int) ($_SERVER['SERVER_PORT'] ?? 0) === 443
-            || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https';
+        self::ensureStarted();
     }
 
     public static function set(string $key, mixed $value): void
@@ -130,6 +75,10 @@ final class Session
         return $value;
     }
 
+    // =========================================
+    // FLASH
+    // =========================================
+
     public static function flash(string $key, mixed $value): void
     {
         self::ensureStarted();
@@ -150,6 +99,10 @@ final class Session
 
         return $flash;
     }
+
+    // =========================================
+    // CYCLE DE VIE
+    // =========================================
 
     public static function regenerate(): void
     {
@@ -196,9 +149,71 @@ final class Session
         self::$started = false;
     }
 
-    public static function start(): void
+    // =========================================
+    // UTILITAIRES
+    // =========================================
+
+    private static function ensureStarted(): void
     {
-        self::ensureStarted();
+        if (self::$started)
+        {
+            return;
+        }
+
+        if (session_status() === PHP_SESSION_ACTIVE)
+        {
+            self::$started = true;
+
+            return;
+        }
+
+        $directory = self::directory();
+
+        if (! is_dir($directory) && ! mkdir($directory, 0755, true) && ! is_dir($directory))
+        {
+            throw new RuntimeException('Impossible de créer le dossier de session.');
+        }
+
+        session_save_path($directory);
+
+        session_name((string) env('SESSION_NAME', 'LOLISSR_SESSION'));
+
+        $secure = self::isHttps();
+
+        ini_set('session.use_strict_mode', '1');
+        ini_set('session.use_only_cookies', '1');
+        ini_set('session.use_trans_sid', '0');
+        ini_set('session.cookie_httponly', '1');
+        ini_set('session.cookie_secure', $secure ? '1' : '0');
+
+        session_set_cookie_params([
+            'lifetime' => 0,
+            'path' => '/',
+            'domain' => '',
+            'secure' => $secure,
+            'httponly' => true,
+            'samesite' => 'Lax',
+        ]);
+
+        session_start([
+            'use_strict_mode' => true,
+            'use_only_cookies' => true,
+            'use_trans_sid' => false,
+            'cookie_httponly' => true,
+            'cookie_secure' => $secure,
+            'cookie_samesite' => 'Lax',
+        ]);
+
+        self::$started = true;
+    }
+
+    private static function isHttps(): bool
+    {
+        $https = $_SERVER['HTTPS'] ?? null;
+
+        return (is_string($https) && $https !== '' && strtolower($https) !== 'off')
+            || (int) ($_SERVER['SERVER_PORT'] ?? 0) === 443
+            || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https';
     }
 
     private static function directory(): string

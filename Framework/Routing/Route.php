@@ -8,9 +8,9 @@ use Closure;
 
 final class Route
 {
-    public readonly string $pattern;
-
     private const PARAM_PATTERNS = ['int' => '([0-9]+)'];
+
+    public readonly string $pattern;
 
     /**
      * @var array{class-string, string}|string|Closure
@@ -28,30 +28,12 @@ final class Route
         private readonly array $middlewares = [],
     ) {
         $this->action = $action;
-
         $this->pattern = $this->compilePattern();
     }
 
-    private function compilePattern(): string
-    {
-        $path = rtrim($this->path, '/');
-
-        if ($path === '')
-        {
-            $path = '/';
-        }
-
-        $pattern = preg_replace_callback(
-            '#\{([a-zA-Z0-9_]+)(?::([a-zA-Z]+))?\}#',
-            static function (array $matches): string
-            {
-                return self::PARAM_PATTERNS[$matches[2] ?? ''] ?? '([^/]+)';
-            },
-            $path,
-        );
-
-        return '#^' . $pattern . '/?$#';
-    }
+    // =========================================
+    // ROUTE
+    // =========================================
 
     public function getMethod(): string
     {
@@ -77,5 +59,31 @@ final class Route
     public function getMiddlewares(): array
     {
         return $this->middlewares;
+    }
+
+    // =========================================
+    // UTILITAIRES
+    // =========================================
+
+    private function compilePattern(): string
+    {
+        $path = rtrim($this->path, '/');
+
+        if ($path === '')
+        {
+            $path = '/';
+        }
+
+        $pattern = preg_replace_callback(
+            '#\{([a-zA-Z0-9_]+)(?::([a-zA-Z]+))?\}#',
+            static function (array $matches): string
+            {
+                return self::PARAM_PATTERNS[$matches[2] ?? '']
+                    ?? '([^/]+)';
+            },
+            $path,
+        );
+
+        return '#^' . $pattern . '/?$#';
     }
 }

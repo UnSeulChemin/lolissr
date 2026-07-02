@@ -18,29 +18,27 @@ final class RouteCollection
      */
     private array $routesByMethod = [];
 
-    public function add(
-        Route $route,
-    ): void {
+    // =========================================
+    // ROUTES
+    // =========================================
 
-        $key =
-            $route->getMethod()
-            . ':'
-            . $route->getPath();
+    public function add(Route $route): void
+    {
+        $key = sprintf('%s:%s', $route->getMethod(), $route->getPath());
 
         if (isset($this->routes[$key]))
         {
-            throw new RuntimeException(
-                "Duplicate route detected: {$key}",
-            );
+            throw new RuntimeException("Duplicate route detected: {$key}");
         }
 
-        $this->routes[$key] =
-            $route;
+        $this->routes[$key] = $route;
 
-        $this->routesByMethod[
-            $route->getMethod()
-        ][] = $route;
+        $this->routesByMethod[$route->getMethod()][] = $route;
     }
+
+    // =========================================
+    // RÉSULTATS
+    // =========================================
 
     /**
      * @return array<string, Route>
@@ -53,11 +51,9 @@ final class RouteCollection
     /**
      * @return list<Route>
      */
-    public function forMethod(
-        string $method,
-    ): array {
-        return $this->routesByMethod[$method]
-            ?? [];
+    public function forMethod(string $method): array
+    {
+        return $this->routesByMethod[$method] ?? [];
     }
 
     /**
@@ -67,23 +63,18 @@ final class RouteCollection
     {
         $routes = [];
 
-        foreach (
-            $this->routes
-            as $route
-        ) {
+        foreach ($this->routes as $route)
+        {
+            $action = $route->getAction();
 
-            $action =
-                $route->getAction();
-
-            $routes[] =
-                sprintf(
-                    '%s %s -> %s',
-                    $route->getMethod(),
-                    $route->getPath(),
-                    is_string($action)
-                        ? $action
-                        : '[callable]',
-                );
+            $routes[] = sprintf(
+                '%s %s -> %s',
+                $route->getMethod(),
+                $route->getPath(),
+                is_string($action)
+                    ? $action
+                    : '[callable]',
+            );
         }
 
         return $routes;

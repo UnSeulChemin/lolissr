@@ -48,7 +48,7 @@ abstract class FormRequest
      */
     final public function validated(): array
     {
-        return $this->fails() ? [] : $this->request->postAll();
+        return $this->fails() ? [] : $this->validator->validated();
     }
 
     // =========================================

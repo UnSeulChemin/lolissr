@@ -8,10 +8,12 @@ use Framework\Http\Request;
 
 final class AuthMiddleware implements MiddlewareInterface
 {
-    public function handle(
-        Request $request,
-    ): void {
+    // =========================================
+    // MIDDLEWARE
+    // =========================================
 
+    public function handle(Request $request): void
+    {
         if (is_logged())
         {
             return;
