@@ -12,6 +12,7 @@ final readonly class FigurineData
         public string $slug,
         public int $numero,
 
+        public string $origin,
         public string $waifu,
         public string $scale,
         public ?string $height_cm,

@@ -31,6 +31,9 @@ $baseUri =
     $slug =
         (string) ($figurine->slug ?? '');
 
+    $origin =
+        (string) ($figurine->origin ?? '');
+
     $waifu =
         (string) ($figurine->waifu ?? '');
 
@@ -88,11 +91,14 @@ $baseUri =
     </div>
 
     <p class="collection-card-title">
-        <?= e($waifu) ?>
+        <?= $origin !== ''
+            ? e($origin)
+            : e($waifu)
+        ?>
     </p>
 
     <p class="collection-card-subtitle">
-        <?= e($company) ?>
+        <?= e($waifu) ?>
     </p>
 
 </a>

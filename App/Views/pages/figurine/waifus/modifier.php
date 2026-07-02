@@ -57,6 +57,10 @@ $releaseDateValue =
     $old['release_date']
     ?? ($figurine->release_date ?? '');
 
+$originValue =
+    $old['origin']
+    ?? ($figurine->origin ?? '');
+
 ?>
 
 <section class="layout-container dashboard-page">
@@ -73,6 +77,35 @@ $releaseDateValue =
             >
 
                 <?= csrf_field() ?>
+
+                <div class="form-group">
+
+                    <label
+                        class="form-label"
+                        for="origin"
+                    >
+                        Origin
+                    </label>
+
+                    <input
+                        class="form-input"
+                        type="text"
+                        name="origin"
+                        id="origin"
+                        value="<?= e((string) $originValue) ?>"
+                        maxlength="150"
+                        required
+                    >
+
+                    <?php if (isset($errors['origin']) && $errors['origin'] !== ''): ?>
+
+                        <p class="form-error">
+                            <?= e((string) $errors['origin']) ?>
+                        </p>
+
+                    <?php endif; ?>
+
+                </div>
 
                 <div class="form-group">
 
@@ -215,10 +248,12 @@ $releaseDateValue =
 
                     <input
                         class="form-input"
-                        type="date"
+                        type="text"
                         name="release_date"
                         id="release_date"
+                        placeholder="Ex : 29/07/2021"
                         value="<?= e((string) $releaseDateValue) ?>"
+                        maxlength="10"
                     >
 
                     <?php if (isset($errors['release_date']) && $errors['release_date'] !== ''): ?>

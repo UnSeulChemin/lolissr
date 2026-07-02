@@ -118,6 +118,7 @@ final class FigurineRepository extends Model
             $numero,
             [
                 'waifu' => $dto->waifu,
+                'origin' => $dto->origin,
                 'scale' => $dto->scale,
                 'height_cm' => $dto->height_cm,
                 'company' => $dto->company,
@@ -180,6 +181,7 @@ final class FigurineRepository extends Model
             'numero' => max(1, (int) ($data['numero'] ?? 1)),
 
             'waifu' => trim((string) ($data['waifu'] ?? '')),
+            'origin' => trim((string) ($data['origin'] ?? '')),
             'scale' => trim((string) ($data['scale'] ?? '')),
             'height_cm' => isset($data['height_cm']) && $data['height_cm'] !== ''
                 ? (float) $data['height_cm']

@@ -83,6 +83,7 @@ final readonly class FigurineWriteService
                         'slug' => $dto->slug,
                         'numero' => $dto->numero,
 
+                        'origin' => $dto->origin,
                         'waifu' => $dto->waifu,
                         'scale' => $dto->scale,
                         'height_cm' => $dto->height_cm,

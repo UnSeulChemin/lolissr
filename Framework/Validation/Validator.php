@@ -573,37 +573,36 @@ final class Validator
         }
 
         $value = trim(
-            (string) (
-                $this->data[$field]
-                ?? ''
-            ),
+            (string) ($this->data[$field] ?? ''),
         );
 
-        $date = DateTime::createFromFormat(
-            'Y-m-d',
-            $value,
-        );
+        foreach (['Y-m-d', 'd/m/Y'] as $format)
+        {
+            $date = DateTime::createFromFormat($format, $value);
 
-        $errors = DateTime::getLastErrors();
+            $errors = DateTime::getLastErrors();
 
-        $warningCount = is_array($errors)
-            ? (int) $errors['warning_count']
-            : 0;
+            $warningCount = is_array($errors)
+                ? (int) $errors['warning_count']
+                : 0;
 
-        $errorCount = is_array($errors)
-            ? (int) $errors['error_count']
-            : 0;
+            $errorCount = is_array($errors)
+                ? (int) $errors['error_count']
+                : 0;
 
-        if (
-            $date === false
-            || $warningCount > 0
-            || $errorCount > 0
-            || $date->format('Y-m-d') !== $value
-        ) {
-            $this->errors[$field] =
-                $message
-                ?? "Le champ {$field} doit être une date valide (YYYY-MM-DD).";
+            if (
+                $date !== false
+                && $warningCount === 0
+                && $errorCount === 0
+                && $date->format($format) === $value
+            ) {
+                return $this;
+            }
         }
+
+        $this->errors[$field] =
+            $message
+            ?? "Le champ {$field} doit être une date valide.";
 
         return $this;
     }

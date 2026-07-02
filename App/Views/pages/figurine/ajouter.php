@@ -39,6 +39,36 @@ $returnUrl = $baseUri . 'figurine';
 
                     <label
                         class="form-label"
+                        for="origin"
+                    >
+                        Origin
+                    </label>
+
+                    <input
+                        class="form-input"
+                        type="text"
+                        name="origin"
+                        id="origin"
+                        placeholder="Ex : Yosuga no Sora"
+                        value="<?= e((string) ($old['origin'] ?? '')) ?>"
+                        maxlength="150"
+                        required
+                    >
+
+                    <?php if (isset($errors['origin']) && $errors['origin'] !== ''): ?>
+
+                        <p class="form-error">
+                            <?= e((string) $errors['origin']) ?>
+                        </p>
+
+                    <?php endif; ?>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label
+                        class="form-label"
                         for="waifu"
                     >
                         Waifu
@@ -228,10 +258,12 @@ $returnUrl = $baseUri . 'figurine';
 
                     <input
                         class="form-input"
-                        type="date"
+                        type="text"
                         name="release_date"
                         id="release_date"
+                        placeholder="JJ/MM/AAAA"
                         value="<?= e((string) ($old['release_date'] ?? '')) ?>"
+                        maxlength="10"
                     >
 
                     <?php if (isset($errors['release_date']) && $errors['release_date'] !== ''): ?>

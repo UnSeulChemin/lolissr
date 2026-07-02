@@ -18,6 +18,10 @@ final class FigurineUpdateRequest extends FormRequest
             ->string('waifu')
             ->maxLength('waifu', 100)
 
+            ->required('origin')
+            ->string('origin')
+            ->maxLength('origin', 150)
+
             ->nullable('scale')
             ->string('scale')
             ->maxLength('scale', 10)

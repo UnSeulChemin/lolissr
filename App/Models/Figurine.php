@@ -16,6 +16,8 @@ final class Figurine
 
     public int $numero = 1;
 
+    public string $origin = '';
+
     public string $waifu = '';
 
     public string $scale = '';

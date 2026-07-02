@@ -82,6 +82,23 @@ $commentaire =
             <div class="detail-row">
 
                 <div class="detail-label">
+                    Source
+                </div>
+
+                <div class="detail-value">
+
+                    <?= $figurine->origin !== ''
+                        ? e($figurine->origin)
+                        : 'Non renseignée'
+                    ?>
+
+                </div>
+
+            </div>
+
+            <div class="detail-row">
+
+                <div class="detail-label">
                     Waifu
                 </div>
 

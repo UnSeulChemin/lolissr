@@ -96,6 +96,7 @@ final readonly class FigurineReadService
             slug: $figurine->slug,
             numero: $figurine->numero,
 
+            origin: $figurine->origin,
             waifu: $figurine->waifu,
             scale: $figurine->scale,
             height_cm: $figurine->height_cm !== null

@@ -19,6 +19,10 @@ final class FigurineCreateRequest extends FormRequest
             ->string('waifu')
             ->maxLength('waifu', 100)
 
+            ->required('origin')
+            ->string('origin')
+            ->maxLength('origin', 150)
+
             ->required('scale')
             ->string('scale')
             ->maxLength('scale', 10)
