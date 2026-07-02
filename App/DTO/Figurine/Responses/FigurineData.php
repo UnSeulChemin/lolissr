@@ -14,7 +14,8 @@ final readonly class FigurineData
 
         public string $waifu,
         public string $scale,
-        public ?float $height_cm,
+        public ?string $height_cm,
+
         public string $company,
         public ?string $release_date,
 

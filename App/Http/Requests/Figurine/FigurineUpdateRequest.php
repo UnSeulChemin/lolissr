@@ -14,6 +14,10 @@ final class FigurineUpdateRequest extends FormRequest
     {
         $this->validator
 
+            ->required('waifu')
+            ->string('waifu')
+            ->maxLength('waifu', 100)
+
             ->nullable('scale')
             ->string('scale')
             ->maxLength('scale', 10)

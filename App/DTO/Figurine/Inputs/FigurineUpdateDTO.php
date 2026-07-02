@@ -9,6 +9,7 @@ use Framework\Support\Str;
 final readonly class FigurineUpdateDTO
 {
     public function __construct(
+        public ?string $waifu,
         public ?string $scale,
         public ?float $height_cm,
         public ?string $company,
@@ -23,6 +24,7 @@ final readonly class FigurineUpdateDTO
     public static function fromArray(array $data): self
     {
         return new self(
+            waifu: Str::nullableTrim($data['waifu'] ?? null),
             scale: Str::nullableTrim($data['scale'] ?? null),
             height_cm: isset($data['height_cm']) && $data['height_cm'] !== ''
                 ? (float) $data['height_cm']

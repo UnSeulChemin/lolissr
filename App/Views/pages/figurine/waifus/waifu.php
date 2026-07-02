@@ -98,7 +98,12 @@ $commentaire =
                 </div>
 
                 <div class="detail-value">
-                    <?= e($figurine->scale) ?>
+
+                    <?= $figurine->scale !== ''
+                        ? e($figurine->scale)
+                        : 'Non renseignée'
+                    ?>
+
                 </div>
 
             </div>
@@ -112,7 +117,7 @@ $commentaire =
                 <div class="detail-value">
 
                     <?= $figurine->height_cm !== null
-                        ? e((string) $figurine->height_cm) . ' cm'
+                        ? e($figurine->height_cm) . ' cm'
                         : 'Non renseignée'
                     ?>
 

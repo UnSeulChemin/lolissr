@@ -78,6 +78,35 @@ $releaseDateValue =
 
                     <label
                         class="form-label"
+                        for="waifu"
+                    >
+                        Waifu
+                    </label>
+
+                    <input
+                        class="form-input"
+                        type="text"
+                        name="waifu"
+                        id="waifu"
+                        value="<?= e((string) ($old['waifu'] ?? $figurine->waifu)) ?>"
+                        maxlength="100"
+                        required
+                    >
+
+                    <?php if (isset($errors['waifu']) && $errors['waifu'] !== ''): ?>
+
+                        <p class="form-error">
+                            <?= e((string) $errors['waifu']) ?>
+                        </p>
+
+                    <?php endif; ?>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label
+                        class="form-label"
                         for="scale"
                     >
 

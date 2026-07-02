@@ -11,6 +11,8 @@ use App\Repositories\Figurine\FigurineRepository;
 
 use Framework\Application\App;
 
+use DateTime;
+
 final readonly class FigurineReadService
 {
     public function __construct(
@@ -96,9 +98,19 @@ final readonly class FigurineReadService
 
             waifu: $figurine->waifu,
             scale: $figurine->scale,
-            height_cm: $figurine->height_cm,
+            height_cm: $figurine->height_cm !== null
+                ? number_format(
+                    $figurine->height_cm,
+                    1,
+                    '.',
+                    '',
+                )
+                : null,
             company: $figurine->company,
-            release_date: $figurine->release_date,
+            release_date: $figurine->release_date !== null
+                ? (new DateTime($figurine->release_date))
+                    ->format('d/m/Y')
+                : null,
 
             thumbnail: $figurine->thumbnail,
             extension: $figurine->extension,
