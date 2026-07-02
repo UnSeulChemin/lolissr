@@ -27,6 +27,25 @@ final class FigurineAjaxController extends Controller
 
     /*
     |--------------------------------------------------------------------------
+    | AJAX SEARCH
+    |--------------------------------------------------------------------------
+    */
+
+    public function search(string $query = ''): never
+    {
+        $searchData = $this->figurineReadService->search($query);
+
+        $this->jsonResult(
+            ServiceResult::success(
+                data: [
+                    'results' => $searchData->results,
+                ],
+            ),
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
     | AJAX WAIFUS PAGE
     |--------------------------------------------------------------------------
     */

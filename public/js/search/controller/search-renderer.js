@@ -10,6 +10,7 @@ import {
     buildMangaResult,
     buildShortcutSearchResult,
     buildChineseResult,
+    buildFigurineResult,
 } from '../builders/search-result-builders.js';
 
 import {
@@ -79,6 +80,7 @@ export function renderResults(
     {
         mangas,
         chinois,
+        figurines,
         shortcuts,
         rawValue,
         basePath,
@@ -139,6 +141,32 @@ export function renderResults(
                 (item) =>
                     buildChineseResult(
                         item,
+                        basePath,
+                    ),
+
+            searchInput,
+            searchResults,
+            searchDropdown,
+            setupResultItem,
+            index,
+        });
+
+    index =
+        appendSection({
+            title:
+                '🎀 FIGURINES',
+
+            results:
+                figurines.slice(
+                    0,
+                    5,
+                ),
+
+            buildItem:
+                (figurine) =>
+                    buildFigurineResult(
+                        figurine,
+                        rawValue,
                         basePath,
                     ),
 

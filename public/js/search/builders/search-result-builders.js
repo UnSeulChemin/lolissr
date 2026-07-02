@@ -11,5 +11,9 @@ export {
 } from './search-chinese-builder.js';
 
 export {
+    buildFigurineResult,
+} from './search-figurine-builder.js';
+
+export {
     buildShortcutSearchResult,
 } from './search-shortcut-builder.js';

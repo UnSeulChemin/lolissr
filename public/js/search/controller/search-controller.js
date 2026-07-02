@@ -228,6 +228,7 @@ async function handleSearch(
         const [
             mangas,
             chinois,
+            figurines,
             shortcuts,
         ] = await Promise.all([
             fetchSearchResults(
@@ -240,13 +241,17 @@ async function handleSearch(
                 abortController.signal,
             ),
 
-            findSearchShortcuts(
-                query,
+            fetchSearchResults(
+                `${basePath}figurine/ajax/recherche/${encodeURIComponent(query)}`,
+                abortController.signal,
             ),
+
+            findSearchShortcuts(query),
         ]);
 
         renderResults({
             mangas,
+            figurines,
             chinois,
             shortcuts,
             rawValue,

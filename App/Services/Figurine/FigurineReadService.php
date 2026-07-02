@@ -6,8 +6,11 @@ namespace App\Services\Figurine;
 
 use App\DTO\Figurine\Responses\FigurineData;
 use App\DTO\Figurine\Responses\FigurineListData;
+use App\DTO\Figurine\Responses\FigurineSearchData;
+use App\DTO\Figurine\Responses\FigurineSearchItemData;
 use App\Models\Figurine;
 use App\Repositories\Figurine\FigurineRepository;
+use App\Repositories\Figurine\FigurineSearchRepository;
 
 use Framework\Application\App;
 
@@ -16,7 +19,8 @@ use DateTime;
 final readonly class FigurineReadService
 {
     public function __construct(
-        private FigurineRepository $figurineRepository
+        private FigurineRepository $figurineRepository,
+        private FigurineSearchRepository $searchRepository,
     ) {
     }
 
@@ -84,6 +88,24 @@ final readonly class FigurineReadService
 
     /*
     |--------------------------------------------------------------------------
+    | SEARCH
+    |--------------------------------------------------------------------------
+    */
+
+    public function search(string $query = ''): FigurineSearchData
+    {
+        $query = trim($query);
+
+        $results = $this->searchRepository->search($query);
+
+        return new FigurineSearchData(
+            results: array_map($this->mapSearchItem(...), $results),
+            search: $query,
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
     | HELPERS
     |--------------------------------------------------------------------------
     */
@@ -117,6 +139,20 @@ final readonly class FigurineReadService
             extension: $figurine->extension,
 
             commentaire: $figurine->commentaire,
+        );
+    }
+
+    private function mapSearchItem(
+        Figurine $figurine
+    ): FigurineSearchItemData
+    {
+        return new FigurineSearchItemData(
+            slug: $figurine->slug,
+            numero: $figurine->numero,
+            origin: $figurine->origin,
+            waifu: $figurine->waifu,
+            thumbnail: $figurine->thumbnail !== '' ? $figurine->thumbnail : null,
+            extension: $figurine->extension !== '' ? $figurine->extension : null,
         );
     }
 }

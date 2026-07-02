@@ -382,6 +382,20 @@ return static function (Router $router): void
                     [FigurineAjaxController::class, 'waifusPage'],
                 );
             });
+
+            /*
+            |--------------------------------------------------------------------------
+            | AJAX JSON
+            |--------------------------------------------------------------------------
+            */
+
+            $router->prefix('ajax')->middleware(ExpectJsonMiddleware::class)->group(function (Router $router): void
+            {
+                $router->get(
+                    'recherche/{query}',
+                    [FigurineAjaxController::class, 'search'],
+                );
+            });
         });
 
         /*
