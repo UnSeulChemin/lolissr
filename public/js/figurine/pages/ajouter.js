@@ -70,7 +70,7 @@ export function initAjouterPage()
 
     form.dataset.initialized = 'true';
 
-    const waifuInput = $('#waifu');
+    const originInput = $('#origin');
     const slugInput = $('#slug');
     const imageInput = $('#image');
     const uploadText = $('.form-upload-text');
@@ -86,18 +86,18 @@ export function initAjouterPage()
     }
 
     if (
-        waifuInput instanceof HTMLInputElement
+        originInput instanceof HTMLInputElement
         && slugInput instanceof HTMLInputElement
     )
     {
-        waifuInput.addEventListener('input', () =>
+        originInput.addEventListener('input', () =>
         {
             if (slugEditedManually)
             {
                 return;
             }
 
-            slugInput.value = generateSlug(waifuInput.value);
+            slugInput.value = generateSlug(originInput.value);
         });
     }
 

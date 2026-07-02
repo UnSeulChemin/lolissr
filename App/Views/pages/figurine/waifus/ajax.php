@@ -91,14 +91,14 @@ $baseUri =
     </div>
 
     <p class="collection-card-title">
+        <?= e($waifu) ?>
+    </p>
+
+    <p class="collection-card-subtitle">
         <?= $origin !== ''
             ? e($origin)
             : e($waifu)
         ?>
-    </p>
-
-    <p class="collection-card-subtitle">
-        <?= e($waifu) ?>
     </p>
 
 </a>

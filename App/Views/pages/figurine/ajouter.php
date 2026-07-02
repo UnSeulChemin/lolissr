@@ -39,6 +39,36 @@ $returnUrl = $baseUri . 'figurine';
 
                     <label
                         class="form-label"
+                        for="waifu"
+                    >
+                        Waifu
+                    </label>
+
+                    <input
+                        class="form-input"
+                        type="text"
+                        name="waifu"
+                        id="waifu"
+                        placeholder="Ex : Asuna"
+                        value="<?= e((string) ($old['waifu'] ?? '')) ?>"
+                        autofocus
+                        required
+                    >
+
+                    <?php if (isset($errors['waifu']) && $errors['waifu'] !== ''): ?>
+
+                        <p class="form-error">
+                            <?= e((string) $errors['waifu']) ?>
+                        </p>
+
+                    <?php endif; ?>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label
+                        class="form-label"
                         for="origin"
                     >
                         Origin
@@ -69,37 +99,6 @@ $returnUrl = $baseUri . 'figurine';
 
                     <label
                         class="form-label"
-                        for="waifu"
-                    >
-                        Waifu
-                    </label>
-
-                    <input
-                        class="form-input"
-                        type="text"
-                        name="waifu"
-                        id="waifu"
-                        placeholder="Ex : Asuna"
-                        value="<?= e((string) ($old['waifu'] ?? '')) ?>"
-                        autofocus
-                        required
-                    >
-
-                    <?php if (isset($errors['waifu']) && $errors['waifu'] !== ''): ?>
-
-                        <p class="form-error">
-                            <?= e((string) $errors['waifu']) ?>
-                        </p>
-
-                    <?php endif; ?>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label
-                        class="form-label"
                         for="slug"
                     >
                         Slug
@@ -119,37 +118,6 @@ $returnUrl = $baseUri . 'figurine';
 
                         <p class="form-error">
                             <?= e((string) $errors['slug']) ?>
-                        </p>
-
-                    <?php endif; ?>
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label
-                        class="form-label"
-                        for="numero"
-                    >
-                        Numéro
-                    </label>
-
-                    <input
-                        class="form-input"
-                        type="number"
-                        name="numero"
-                        id="numero"
-                        min="1"
-                        placeholder="Ex : 1"
-                        value="<?= e((string) ($old['numero'] ?? '')) ?>"
-                        required
-                    >
-
-                    <?php if (isset($errors['numero']) && $errors['numero'] !== ''): ?>
-
-                        <p class="form-error">
-                            <?= e((string) $errors['numero']) ?>
                         </p>
 
                     <?php endif; ?>
@@ -241,6 +209,36 @@ $returnUrl = $baseUri . 'figurine';
 
                         <p class="form-error">
                             <?= e((string) $errors['company']) ?>
+                        </p>
+
+                    <?php endif; ?>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label
+                        class="form-label"
+                        for="numero"
+                    >
+                        Numéro
+                    </label>
+
+                    <input
+                        class="form-input"
+                        type="number"
+                        name="numero"
+                        id="numero"
+                        min="1"
+                        placeholder="Ex : 1"
+                        value="<?= e((string) ($old['numero'] ?? '')) ?>"
+                        required
+                    >
+
+                    <?php if (isset($errors['numero']) && $errors['numero'] !== ''): ?>
+
+                        <p class="form-error">
+                            <?= e((string) $errors['numero']) ?>
                         </p>
 
                     <?php endif; ?>

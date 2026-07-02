@@ -82,6 +82,18 @@ $commentaire =
             <div class="detail-row">
 
                 <div class="detail-label">
+                    Waifu
+                </div>
+
+                <div class="detail-value">
+                    <?= e($figurine->waifu) ?>
+                </div>
+
+            </div>
+
+            <div class="detail-row">
+
+                <div class="detail-label">
                     Source
                 </div>
 
@@ -92,18 +104,6 @@ $commentaire =
                         : 'Non renseignée'
                     ?>
 
-                </div>
-
-            </div>
-
-            <div class="detail-row">
-
-                <div class="detail-label">
-                    Waifu
-                </div>
-
-                <div class="detail-value">
-                    <?= e($figurine->waifu) ?>
                 </div>
 
             </div>
