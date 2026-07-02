@@ -14,9 +14,20 @@ final class FigurineUpdateRequest extends FormRequest
     {
         $this->validator
 
+            ->nullable('scale')
+            ->string('scale')
+            ->maxLength('scale', 10)
+
+            ->nullable('height_cm')
+            ->numeric('height_cm')
+            ->min('height_cm', 0)
+
             ->nullable('company')
             ->string('company')
             ->maxLength('company', 100)
+
+            ->nullable('release_date')
+            ->date('release_date')
 
             ->nullable('commentaire')
             ->string('commentaire')

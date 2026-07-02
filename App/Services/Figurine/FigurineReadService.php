@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\Figurine;
 
-use App\Models\Figurine;
 use App\DTO\Figurine\Responses\FigurineData;
 use App\DTO\Figurine\Responses\FigurineListData;
+use App\Models\Figurine;
 use App\Repositories\Figurine\FigurineRepository;
 
 use Framework\Application\App;
@@ -95,10 +95,13 @@ final readonly class FigurineReadService
             numero: $figurine->numero,
 
             waifu: $figurine->waifu,
+            scale: $figurine->scale,
+            height_cm: $figurine->height_cm,
             company: $figurine->company,
+            release_date: $figurine->release_date,
 
-            thumbnail: $figurine->thumbnail !== '' ? $figurine->thumbnail : null,
-            extension: $figurine->extension !== '' ? $figurine->extension : null,
+            thumbnail: $figurine->thumbnail,
+            extension: $figurine->extension,
 
             commentaire: $figurine->commentaire,
         );

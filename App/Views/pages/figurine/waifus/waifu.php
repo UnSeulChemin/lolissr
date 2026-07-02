@@ -58,9 +58,6 @@ $commentaire =
         )
         : 'Aucun commentaire';
 
-$hasCompany =
-    trim((string) $figurine->company) !== '';
-
 ?>
 
 <section class="layout-container dashboard-page">
@@ -97,13 +94,59 @@ $hasCompany =
             <div class="detail-row">
 
                 <div class="detail-label">
-                    Company
+                    Échelle
+                </div>
+
+                <div class="detail-value">
+                    <?= e($figurine->scale) ?>
+                </div>
+
+            </div>
+
+            <div class="detail-row">
+
+                <div class="detail-label">
+                    Hauteur
                 </div>
 
                 <div class="detail-value">
 
-                    <?= $hasCompany
+                    <?= $figurine->height_cm !== null
+                        ? e((string) $figurine->height_cm) . ' cm'
+                        : 'Non renseignée'
+                    ?>
+
+                </div>
+
+            </div>
+
+            <div class="detail-row">
+
+                <div class="detail-label">
+                    Entreprise
+                </div>
+
+                <div class="detail-value">
+
+                    <?= $figurine->company !== ''
                         ? e($figurine->company)
+                        : 'Non renseignée'
+                    ?>
+
+                </div>
+
+            </div>
+
+            <div class="detail-row">
+
+                <div class="detail-label">
+                    Date de sortie
+                </div>
+
+                <div class="detail-value">
+
+                    <?= $figurine->release_date !== null
+                        ? e($figurine->release_date)
                         : 'Non renseignée'
                     ?>
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Framework\Validation;
 
 use finfo;
+use DateTime;
 
 final class Validator
 {
@@ -32,6 +33,11 @@ final class Validator
      * @var array<string, ?int>
      */
     private array $integerCache = [];
+
+    /**
+     * @var array<string, ?float>
+     */
+    private array $floatCache = [];
 
     private finfo $finfo;
 
@@ -105,9 +111,7 @@ final class Validator
             || ! $this->hasUploadedFile($field);
     }
 
-    public function nullable(
-    string $field,
-    ): self
+    public function nullable(string $field): self
     {
         $this->nullable[$field] = true;
 
@@ -145,7 +149,7 @@ final class Validator
 
         $value = $this->data[$field] ?? null;
 
-        if (!is_string($value)) {
+        if (! is_string($value)) {
             $this->errors[$field] =
                 $message
                 ?? "Le champ {$field} doit être une chaîne.";
@@ -202,9 +206,34 @@ final class Validator
                 : null;
     }
 
-    public function min(
+    private function floatValue(
         string $field,
-        int $min,
+    ): ?float
+    {
+        if (
+            array_key_exists(
+                $field,
+                $this->floatCache,
+            )
+        ) {
+            return $this->floatCache[$field];
+        }
+
+        $value =
+            $this->data[$field]
+            ?? null;
+
+        return $this->floatCache[$field] =
+            filter_var(
+                $value,
+                FILTER_VALIDATE_FLOAT,
+            ) !== false
+                ? (float) $value
+                : null;
+    }
+
+    public function numeric(
+        string $field,
         ?string $message = null,
     ): self
     {
@@ -213,10 +242,40 @@ final class Validator
             return $this;
         }
 
-        $value =
-            $this->integerValue(
-                $field,
-            );
+        $value = $this->floatValue($field);
+
+        if ($value === null)
+        {
+            $value = $this->integerValue($field);
+        }
+
+        if ($value === null)
+        {
+            $this->errors[$field] =
+                $message
+                ?? "Le champ {$field} doit être un nombre.";
+        }
+
+        return $this;
+    }
+
+    public function min(
+        string $field,
+        int|float $min,
+        ?string $message = null,
+    ): self
+    {
+        if ($this->shouldSkip($field))
+        {
+            return $this;
+        }
+
+        $value = $this->floatValue($field);
+
+        if ($value === null)
+        {
+            $value = $this->integerValue($field);
+        }
 
         if (
             $value === null
@@ -232,7 +291,7 @@ final class Validator
 
     public function max(
         string $field,
-        int $max,
+        int|float $max,
         ?string $message = null,
     ): self
     {
@@ -241,10 +300,12 @@ final class Validator
             return $this;
         }
 
-        $value =
-            $this->integerValue(
-                $field,
-            );
+        $value = $this->floatValue($field);
+
+        if ($value === null)
+        {
+            $value = $this->integerValue($field);
+        }
 
         if (
             $value === null
@@ -496,6 +557,52 @@ final class Validator
             $this->errors[$field] =
                 $message
                 ?? "Le fichier {$field} dépasse la taille autorisée.";
+        }
+
+        return $this;
+    }
+
+    public function date(
+        string $field,
+        ?string $message = null,
+    ): self
+    {
+        if ($this->shouldSkip($field))
+        {
+            return $this;
+        }
+
+        $value = trim(
+            (string) (
+                $this->data[$field]
+                ?? ''
+            ),
+        );
+
+        $date = DateTime::createFromFormat(
+            'Y-m-d',
+            $value,
+        );
+
+        $errors = DateTime::getLastErrors();
+
+        $warningCount = is_array($errors)
+            ? (int) $errors['warning_count']
+            : 0;
+
+        $errorCount = is_array($errors)
+            ? (int) $errors['error_count']
+            : 0;
+
+        if (
+            $date === false
+            || $warningCount > 0
+            || $errorCount > 0
+            || $date->format('Y-m-d') !== $value
+        ) {
+            $this->errors[$field] =
+                $message
+                ?? "Le champ {$field} doit être une date valide (YYYY-MM-DD).";
         }
 
         return $this;

@@ -45,6 +45,18 @@ $cancelUrl =
     . '/'
     . $figurine->numero;
 
+$scaleValue =
+    $old['scale']
+    ?? ($figurine->scale ?? '');
+
+$heightValue =
+    $old['height_cm']
+    ?? ($figurine->height_cm ?? '');
+
+$releaseDateValue =
+    $old['release_date']
+    ?? ($figurine->release_date ?? '');
+
 ?>
 
 <section class="layout-container dashboard-page">
@@ -61,6 +73,72 @@ $cancelUrl =
             >
 
                 <?= csrf_field() ?>
+
+                <div class="form-group">
+
+                    <label
+                        class="form-label"
+                        for="scale"
+                    >
+
+                        Échelle
+
+                    </label>
+
+                    <input
+                        class="form-input"
+                        type="text"
+                        name="scale"
+                        id="scale"
+                        value="<?= e((string) $scaleValue) ?>"
+                        maxlength="10"
+                        required
+                    >
+
+                    <?php if (isset($errors['scale']) && $errors['scale'] !== ''): ?>
+
+                        <p class="form-error">
+
+                            <?= e($errors['scale']) ?>
+
+                        </p>
+
+                    <?php endif; ?>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label
+                        class="form-label"
+                        for="height_cm"
+                    >
+
+                        Hauteur (cm)
+
+                    </label>
+
+                    <input
+                        class="form-input"
+                        type="number"
+                        name="height_cm"
+                        id="height_cm"
+                        min="0"
+                        step="0.1"
+                        value="<?= e((string) $heightValue) ?>"
+                    >
+
+                    <?php if (isset($errors['height_cm']) && $errors['height_cm'] !== ''): ?>
+
+                        <p class="form-error">
+
+                            <?= e($errors['height_cm']) ?>
+
+                        </p>
+
+                    <?php endif; ?>
+
+                </div>
 
                 <div class="form-group">
 
@@ -88,6 +166,37 @@ $cancelUrl =
                         <p class="form-error">
 
                             <?= e($errors['company']) ?>
+
+                        </p>
+
+                    <?php endif; ?>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label
+                        class="form-label"
+                        for="release_date"
+                    >
+
+                        Date de sortie
+
+                    </label>
+
+                    <input
+                        class="form-input"
+                        type="date"
+                        name="release_date"
+                        id="release_date"
+                        value="<?= e((string) $releaseDateValue) ?>"
+                    >
+
+                    <?php if (isset($errors['release_date']) && $errors['release_date'] !== ''): ?>
+
+                        <p class="form-error">
+
+                            <?= e($errors['release_date']) ?>
 
                         </p>
 

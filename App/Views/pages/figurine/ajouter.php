@@ -126,6 +126,66 @@ $returnUrl = $baseUri . 'figurine';
 
                 </div>
 
+                <div class="form-group">
+
+                    <label
+                        class="form-label"
+                        for="scale"
+                    >
+                        Échelle
+                    </label>
+
+                    <input
+                        class="form-input"
+                        type="text"
+                        name="scale"
+                        id="scale"
+                        placeholder="Ex : 1/7"
+                        value="<?= e((string) ($old['scale'] ?? '')) ?>"
+                        maxlength="10"
+                        required
+                    >
+
+                    <?php if (isset($errors['scale']) && $errors['scale'] !== ''): ?>
+
+                        <p class="form-error">
+                            <?= e((string) $errors['scale']) ?>
+                        </p>
+
+                    <?php endif; ?>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label
+                        class="form-label"
+                        for="height_cm"
+                    >
+                        Hauteur (cm)
+                    </label>
+
+                    <input
+                        class="form-input"
+                        type="number"
+                        name="height_cm"
+                        id="height_cm"
+                        min="0"
+                        step="0.1"
+                        placeholder="Ex : 24.5"
+                        value="<?= e((string) ($old['height_cm'] ?? '')) ?>"
+                    >
+
+                    <?php if (isset($errors['height_cm']) && $errors['height_cm'] !== ''): ?>
+
+                        <p class="form-error">
+                            <?= e((string) $errors['height_cm']) ?>
+                        </p>
+
+                    <?php endif; ?>
+
+                </div>
+
 
                 <div class="form-group">
 
@@ -157,6 +217,32 @@ $returnUrl = $baseUri . 'figurine';
 
                 </div>
 
+                <div class="form-group">
+
+                    <label
+                        class="form-label"
+                        for="release_date"
+                    >
+                        Date de sortie
+                    </label>
+
+                    <input
+                        class="form-input"
+                        type="date"
+                        name="release_date"
+                        id="release_date"
+                        value="<?= e((string) ($old['release_date'] ?? '')) ?>"
+                    >
+
+                    <?php if (isset($errors['release_date']) && $errors['release_date'] !== ''): ?>
+
+                        <p class="form-error">
+                            <?= e((string) $errors['release_date']) ?>
+                        </p>
+
+                    <?php endif; ?>
+
+                </div>
 
                 <div class="form-group">
 

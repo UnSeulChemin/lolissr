@@ -19,9 +19,20 @@ final class FigurineCreateRequest extends FormRequest
             ->string('waifu')
             ->maxLength('waifu', 100)
 
+            ->required('scale')
+            ->string('scale')
+            ->maxLength('scale', 10)
+
+            ->nullable('height_cm')
+            ->numeric('height_cm')
+            ->min('height_cm', 0)
+
             ->required('company')
             ->string('company')
             ->maxLength('company', 100)
+
+            ->nullable('release_date')
+            ->date('release_date')
 
             ->required('slug')
             ->string('slug')

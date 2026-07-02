@@ -82,8 +82,13 @@ final readonly class FigurineWriteService
                         'extension' => $uploadData->extension,
                         'slug' => $dto->slug,
                         'numero' => $dto->numero,
+
                         'waifu' => $dto->waifu,
+                        'scale' => $dto->scale,
+                        'height_cm' => $dto->height_cm,
                         'company' => $dto->company,
+                        'release_date' => $dto->release_date,
+
                         'commentaire' => $dto->commentaire,
                     ]);
 

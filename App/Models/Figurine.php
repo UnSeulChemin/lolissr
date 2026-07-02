@@ -18,7 +18,13 @@ final class Figurine
 
     public string $waifu = '';
 
+    public string $scale = '';
+
+    public ?float $height_cm = null;
+
     public string $company = '';
+
+    public ?string $release_date = null;
 
     public ?string $commentaire = null;
 

@@ -117,7 +117,10 @@ final class FigurineRepository extends Model
             $slug,
             $numero,
             [
+                'scale' => $dto->scale,
+                'height_cm' => $dto->height_cm,
                 'company' => $dto->company,
+                'release_date' => $dto->release_date,
                 'commentaire' => $dto->commentaire,
             ]
         );
@@ -174,8 +177,15 @@ final class FigurineRepository extends Model
             'extension' => strtolower(trim((string) ($data['extension'] ?? ''))),
             'slug' => $this->normalizeSlug((string) ($data['slug'] ?? '')),
             'numero' => max(1, (int) ($data['numero'] ?? 1)),
+
             'waifu' => trim((string) ($data['waifu'] ?? '')),
+            'scale' => trim((string) ($data['scale'] ?? '')),
+            'height_cm' => isset($data['height_cm']) && $data['height_cm'] !== ''
+                ? (float) $data['height_cm']
+                : null,
             'company' => trim((string) ($data['company'] ?? '')),
+            'release_date' => Str::nullableTrim($data['release_date'] ?? null),
+
             'commentaire' => Str::nullableTrim($data['commentaire'] ?? null),
         ];
     }

@@ -13,11 +13,15 @@ final readonly class FigurineData
         public int $numero,
 
         public string $waifu,
+        public string $scale,
+        public ?float $height_cm,
         public string $company,
+        public ?string $release_date,
 
         public string $thumbnail,
         public string $extension,
 
         public ?string $commentaire,
-    ) {}
+    ) {
+    }
 }
