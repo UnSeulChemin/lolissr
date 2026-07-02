@@ -12,120 +12,42 @@ final class Cache
 {
     private static ?string $directory = null;
 
-    private static function enabled(): bool
+    // =========================================
+    // CACHE
+    // =========================================
+
+    public static function get(string $key): mixed
     {
-        return (bool) config('cache.enabled', false);
-    }
-
-    private static function ttl(): int
-    {
-        return max(
-            1,
-            (int) config(
-                'cache.ttl',
-                300,
-            ),
-        );
-    }
-
-    private static function directory(): string
-    {
-        return self::$directory
-            ??= base_path(
-                'storage/cache',
-            );
-    }
-
-    private static function path(
-        string $key,
-    ): string {
-        return self::directory()
-            . DIRECTORY_SEPARATOR
-            . sha1($key)
-            . '.cache';
-    }
-
-    private static function ensureDirectory(): bool
-    {
-        $directory =
-            self::directory();
-
-        return is_dir($directory)
-            || mkdir(
-                $directory,
-                0755,
-                true,
-            );
-    }
-
-    private static function deleteFile(
-        string $path,
-    ): void {
-        @unlink(
-            $path,
-        );
-    }
-
-    public static function get(
-        string $key,
-    ): mixed {
-
         if (! self::enabled())
         {
             return null;
         }
 
-        $path =
-            self::path(
-                $key,
-            );
+        $path = self::path($key);
 
         if (! is_file($path))
         {
             return null;
         }
 
-        $content =
-            file_get_contents(
-                $path,
-            );
+        $content = file_get_contents($path);
 
         if ($content === false)
         {
-            Logger::warning(
-                'Cache unreadable',
-                [
-                    'key' => $key,
-                ],
-            );
+            Logger::warning('Cache unreadable', ['key' => $key]);
 
             return null;
         }
 
-        try {
-
-            $payload =
-                json_decode(
-                    $content,
-                    false,
-                    512,
-                    JSON_THROW_ON_ERROR,
-                );
-
+        try
+        {
+            $payload = json_decode($content, false, 512, JSON_THROW_ON_ERROR);
         }
         catch (JsonException $exception)
         {
-            self::deleteFile(
-                $path,
-            );
+            self::deleteFile($path);
 
-            Logger::warning(
-                'Cache corrupted JSON',
-                [
-                    'key' => $key,
-                    'error' => $exception->getMessage(),
-                ],
-            );
+            Logger::warning('Cache corrupted JSON', ['key' => $key, 'error' => $exception->getMessage()]);
 
             return null;
         }
@@ -167,7 +89,13 @@ final class Cache
 
         try
         {
-            $json = json_encode(['expires_at' => time() + $ttl, 'value' => $value], JSON_UNESCAPED_UNICODE  | JSON_THROW_ON_ERROR);
+            $json = json_encode(
+                [
+                    'expires_at' => time() + $ttl,
+                    'value' => $value,
+                ],
+                JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR,
+            );
         }
         catch (JsonException $exception)
         {
@@ -229,12 +157,7 @@ final class Cache
             return;
         }
 
-        $files = glob($directory . DIRECTORY_SEPARATOR . '*.cache');
-
-        if ($files === false)
-        {
-            $files = [];
-        }
+        $files = glob($directory . DIRECTORY_SEPARATOR . '*.cache') ?: [];
 
         foreach ($files as $file)
         {
@@ -242,5 +165,41 @@ final class Cache
         }
 
         Logger::info('Cache cleared');
+    }
+
+    // =========================================
+    // CONFIGURATION
+    // =========================================
+
+    private static function enabled(): bool
+    {
+        return (bool) config('cache.enabled', false);
+    }
+
+    private static function ttl(): int
+    {
+        return max(1, (int) config('cache.ttl', 300));
+    }
+
+    private static function directory(): string
+    {
+        return self::$directory ??= base_path('storage/cache');
+    }
+
+    private static function path(string $key): string
+    {
+        return self::directory() . DIRECTORY_SEPARATOR . sha1($key) . '.cache';
+    }
+
+    private static function ensureDirectory(): bool
+    {
+        $directory = self::directory();
+
+        return is_dir($directory) || mkdir($directory, 0755, true);
+    }
+
+    private static function deleteFile(string $path): void
+    {
+        @unlink($path);
     }
 }

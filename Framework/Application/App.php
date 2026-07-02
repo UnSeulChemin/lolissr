@@ -6,71 +6,50 @@ namespace Framework\Application;
 
 final class App
 {
+    // =========================================
+    // CONFIGURATION
+    // =========================================
+
     public static function baseUri(): string
     {
-        $baseUri = trim(
-            (string) config(
-                'app.base_uri',
-                '/',
-            ),
-        );
+        $baseUri = trim((string) config('app.base_uri', '/'));
 
-        if (
-            $baseUri === ''
-            || $baseUri === '/'
-        ) {
+        if ($baseUri === '' || $baseUri === '/')
+        {
             return '/';
         }
 
-        return '/'
-            . trim($baseUri, '/')
-            . '/';
+        return '/' . trim($baseUri, '/') . '/';
     }
 
     public static function timezone(): string
     {
-        return (string) config(
-            'app.timezone',
-            'Europe/Paris',
-        );
+        return (string) config('app.timezone', 'Europe/Paris');
     }
 
     public static function siteName(): string
     {
-        return (string) config(
-            'app.name',
-            'Site',
-        );
+        return (string) config('app.name', 'Site');
     }
 
     public static function pagination(): int
     {
-        return max(
-            1,
-            (int) config(
-                'app.pagination',
-                8,
-            ),
-        );
+        return max(1, (int) config('app.pagination', 8));
     }
 
     public static function env(): string
     {
-        return strtolower(
-            (string) config(
-                'app.env',
-                'local',
-            ),
-        );
+        return strtolower((string) config('app.env', 'local'));
     }
 
     public static function debug(): bool
     {
-        return (bool) config(
-            'app.debug',
-            false,
-        );
+        return (bool) config('app.debug', false);
     }
+
+    // =========================================
+    // ENVIRONNEMENT
+    // =========================================
 
     public static function isProduction(): bool
     {
@@ -81,5 +60,4 @@ final class App
     {
         return self::env() === 'testing';
     }
-
 }
