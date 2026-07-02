@@ -7,6 +7,7 @@ namespace Framework\Database;
 use Framework\Application\App;
 use Framework\Config\DatabaseConfig;
 use Framework\Support\Logger;
+
 use PDO;
 use PDOException;
 use RuntimeException;
@@ -14,6 +15,10 @@ use Throwable;
 
 final class Database extends PDO
 {
+    // =========================================
+    // CONNEXION
+    // =========================================
+
     public function __construct()
     {
         $dsn = sprintf(
@@ -24,7 +29,8 @@ final class Database extends PDO
             DatabaseConfig::charset(),
         );
 
-        try {
+        try
+        {
             parent::__construct(
                 $dsn,
                 DatabaseConfig::user(),
@@ -48,6 +54,10 @@ final class Database extends PDO
             );
         }
     }
+
+    // =========================================
+    // TRANSACTIONS
+    // =========================================
 
     public function startTransaction(): void
     {

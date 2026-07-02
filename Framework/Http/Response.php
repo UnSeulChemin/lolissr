@@ -5,30 +5,18 @@ declare(strict_types=1);
 namespace Framework\Http;
 
 use Framework\Support\Logger;
+
 use JsonException;
 
 final class Response
 {
-    private static function setStatusCode(int $statusCode): void
-    {
-        if (! headers_sent())
-        {
-            http_response_code($statusCode);
-        }
-    }
-
-    private static function sendContentType(string $contentType): void
-    {
-        if (! headers_sent())
-        {
-            header("Content-Type: {$contentType}; charset=UTF-8");
-        }
-    }
+    // =========================================
+    // RÉPONSE
+    // =========================================
 
     public static function html(string $content, int $statusCode = 200): never
     {
         self::setStatusCode($statusCode);
-
         self::sendContentType('text/html');
 
         echo $content;
@@ -42,11 +30,10 @@ final class Response
     public static function json(array $data, int $statusCode = 200): never
     {
         self::setStatusCode($statusCode);
-
         self::sendContentType('application/json');
 
-        try {
-
+        try
+        {
             echo json_encode(
                 $data,
                 JSON_UNESCAPED_UNICODE
@@ -54,7 +41,6 @@ final class Response
                 | JSON_INVALID_UTF8_SUBSTITUTE
                 | JSON_THROW_ON_ERROR,
             );
-
         }
         catch (JsonException $exception)
         {
@@ -65,7 +51,6 @@ final class Response
             echo json_encode(
                 [
                     'success' => false,
-
                     'message' => 'JSON encode error',
                 ],
                 JSON_UNESCAPED_UNICODE
@@ -90,11 +75,30 @@ final class Response
             '<script>window.location.href=%s;</script>',
             json_encode(
                 $url,
-                JSON_UNESCAPED_UNICODE
-                | JSON_UNESCAPED_SLASHES,
+                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES,
             ),
         );
 
         exit;
+    }
+
+    // =========================================
+    // UTILITAIRES
+    // =========================================
+
+    private static function setStatusCode(int $statusCode): void
+    {
+        if (! headers_sent())
+        {
+            http_response_code($statusCode);
+        }
+    }
+
+    private static function sendContentType(string $contentType): void
+    {
+        if (! headers_sent())
+        {
+            header("Content-Type: {$contentType}; charset=UTF-8");
+        }
     }
 }

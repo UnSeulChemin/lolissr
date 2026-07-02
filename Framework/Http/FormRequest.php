@@ -10,16 +10,16 @@ abstract class FormRequest
 {
     protected Validator $validator;
 
-    public function __construct(
-        protected readonly Request $request,
-    ) {
-        $this->validator = new Validator(
-            $this->request->postAll(),
-            $this->request->files(),
-        );
+    public function __construct(protected readonly Request $request)
+    {
+        $this->validator = new Validator($this->request->postAll(), $this->request->files());
 
         $this->validate();
     }
+
+    // =========================================
+    // VALIDATION
+    // =========================================
 
     abstract protected function validate(): void;
 
@@ -44,20 +44,18 @@ abstract class FormRequest
     }
 
     /**
-     * Retourne les données validées.
-     *
      * @return array<string, mixed>
      */
     final public function validated(): array
     {
-        return $this->fails()
-            ? []
-            : $this->request->postAll();
+        return $this->fails() ? [] : $this->request->postAll();
     }
 
+    // =========================================
+    // DONNÉES
+    // =========================================
+
     /**
-     * Retourne les données POST brutes.
-     *
      * @return array<string, mixed>
      */
     final public function data(): array
@@ -81,13 +79,12 @@ abstract class FormRequest
         return $this->request->all();
     }
 
-    final protected function input(
-        string $key,
-        mixed $default = null,
-    ): mixed {
-        return $this->request->input(
-            $key,
-            $default,
-        );
+    // =========================================
+    // UTILITAIRES
+    // =========================================
+
+    final protected function input(string $key, mixed $default = null): mixed
+    {
+        return $this->request->input($key, $default);
     }
 }

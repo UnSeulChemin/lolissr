@@ -51,6 +51,10 @@ final class Request
         $this->server = $server;
     }
 
+    // =========================================
+    // REQUÊTE
+    // =========================================
+
     public static function capture(): self
     {
         /** @var array<string, mixed> $get */
@@ -68,11 +72,9 @@ final class Request
         return new self($get, $post, $files, $server);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | METHOD
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // MÉTHODE
+    // =========================================
 
     public function method(): string
     {
@@ -89,62 +91,45 @@ final class Request
         return $this->method() === 'POST';
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | AJAX
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // EN-TÊTES
+    // =========================================
 
     public function isAjax(): bool
     {
-        return strtolower($this->header('X-Requested-With') ?? '') === 'xmlhttprequest'
-
-            || strtolower($this->header('X-Ajax') ?? '') === 'true';
+        return $this->headerLower('X-Requested-With') === 'xmlhttprequest'
+            || $this->headerLower('X-Ajax') === 'true';
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | PREFETCH
-    |--------------------------------------------------------------------------
-    */
 
     public function isPrefetch(): bool
     {
-        return
-            strtolower($this->header('Purpose') ?? '') === 'prefetch'
-
-            || strtolower($this->header('X-Prefetch') ?? '') === 'true';
+        return $this->headerLower('Purpose') === 'prefetch'
+            || $this->headerLower('X-Prefetch') === 'true';
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | PARTIAL
-    |--------------------------------------------------------------------------
-    */
 
     public function wantsPartial(): bool
     {
-        return strtolower($this->header('X-Partial') ?? '') === 'true';
+        return $this->headerLower('X-Partial') === 'true';
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | JSON
-    |--------------------------------------------------------------------------
-    */
 
     public function expectsJson(): bool
     {
         return $this->isAjax()
-
-            || str_contains(strtolower($this->header('Accept') ?? ''), 'application/json');
+            || str_contains($this->headerLower('Accept'), 'application/json');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | URI
-    |--------------------------------------------------------------------------
-    */
+    public function header(string $key): ?string
+    {
+        $normalized = strtoupper(str_replace('-', '_', $key));
+
+        $value = $this->server['HTTP_' . $normalized] ?? $this->server[$normalized] ?? null;
+
+        return is_string($value) ? $value : null;
+    }
+
+    // =========================================
+    // URI
+    // =========================================
 
     public function uri(): string
     {
@@ -154,11 +139,7 @@ final class Request
     public function path(): string
     {
         $path = parse_url($this->uri(), PHP_URL_PATH);
-
-        if (! is_string($path))
-        {
-            $path = '/';
-        }
+        $path = is_string($path) ? $path : '/';
 
         $baseUri = rtrim(App::baseUri(), '/');
 
@@ -172,11 +153,9 @@ final class Request
         return $path === '' ? '/' : '/' . $path;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | SERVER
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // SERVEUR
+    // =========================================
 
     /**
      * @return array<string, mixed>|mixed
@@ -191,54 +170,9 @@ final class Request
         return $this->server[$key] ?? $default;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | HEADERS
-    |--------------------------------------------------------------------------
-    */
-
-    public function header(string $key): ?string
-    {
-        $normalized = strtoupper(str_replace('-', '_', $key));
-
-        $value = $this->server['HTTP_' . $normalized] ?? $this->server[$normalized] ?? null;
-
-        return is_string($value) ? $value : null;
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | JSON BODY
-    |--------------------------------------------------------------------------
-    */
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function json(): array
-    {
-        if ($this->json !== null)
-        {
-            return $this->json;
-        }
-
-        $raw = file_get_contents('php://input');
-
-        if (! is_string($raw) || trim($raw) === '')
-        {
-            return $this->json = [];
-        }
-
-        $decoded = json_decode($raw, true);
-
-        return $this->json = is_array($decoded) ? $decoded : [];
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | INPUT
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // DONNÉES
+    // =========================================
 
     public function input(string $key, mixed $default = null): mixed
     {
@@ -281,11 +215,9 @@ final class Request
         return $this->get;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | FILES
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // FICHIERS
+    // =========================================
 
     /**
      * @return array<string, mixed>
@@ -298,5 +230,36 @@ final class Request
     public function file(string $key): mixed
     {
         return $this->files[$key] ?? null;
+    }
+
+    // =========================================
+    // UTILITAIRES
+    // =========================================
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function json(): array
+    {
+        if ($this->json !== null)
+        {
+            return $this->json;
+        }
+
+        $raw = file_get_contents('php://input');
+
+        if (! is_string($raw) || trim($raw) === '')
+        {
+            return $this->json = [];
+        }
+
+        $decoded = json_decode($raw, true);
+
+        return $this->json = is_array($decoded) ? $decoded : [];
+    }
+
+    private function headerLower(string $key): string
+    {
+        return strtolower($this->header($key) ?? '');
     }
 }

@@ -18,10 +18,7 @@ class BaseHttpException extends Exception
         private readonly array $data = [],
         private readonly array $headers = [],
     ) {
-        parent::__construct(
-            $message,
-            $statusCode,
-        );
+        parent::__construct($message, $statusCode);
     }
 
     public function getStatusCode(): int

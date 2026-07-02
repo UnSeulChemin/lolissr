@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Framework\Http;
 
 use App\Controllers\ErrorController;
+
 use ErrorException;
 use Framework\Application\App;
 use Framework\Exceptions\BaseHttpException;
@@ -14,19 +15,15 @@ use Throwable;
 
 final class ErrorHandler
 {
+    // =========================================
+    // GESTION DES ERREURS
+    // =========================================
+
     public static function register(): void
     {
-        set_error_handler(
-            [self::class, 'handleError'],
-        );
-
-        set_exception_handler(
-            [self::class, 'handleException'],
-        );
-
-        register_shutdown_function(
-            [self::class, 'handleShutdown'],
-        );
+        set_error_handler([self::class, 'handleError']);
+        set_exception_handler([self::class, 'handleException']);
+        register_shutdown_function([self::class, 'handleShutdown']);
     }
 
     public static function handleError(
@@ -35,56 +32,32 @@ final class ErrorHandler
         string $file,
         int $line,
     ): bool {
-
-        if (
-            (error_reporting() & $severity) === 0
-        ) {
+        if ((error_reporting() & $severity) === 0)
+        {
             return false;
         }
 
-        throw new ErrorException(
-            $message,
-            0,
-            $severity,
-            $file,
-            $line,
-        );
+        throw new ErrorException($message, 0, $severity, $file, $line);
     }
 
     public static function handleException(Throwable $exception): never
     {
         try
         {
-            /*
-            |--------------------------------------------------------------------------
-            | JSON RESPONSE EXCEPTION
-            |--------------------------------------------------------------------------
-            */
-
             if ($exception instanceof JsonResponseException)
             {
                 $exception->response()->send();
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | HTTP EXCEPTION
-            |--------------------------------------------------------------------------
-            */
-
-            if ($exception instanceof BaseHttpException)
-            {
-                self::logHttpException($exception);
-
-                self::renderHttpException($exception);
-            }
-            else
+            if (! $exception instanceof BaseHttpException)
             {
                 Logger::exception($exception, ['type' => 'uncaught_exception']);
 
                 self::render500(App::debug() ? $exception->getMessage() : 'Une erreur interne est survenue.');
             }
 
+            self::logHttpException($exception);
+            self::renderHttpException($exception);
         }
         catch (Throwable $fallbackException)
         {
@@ -116,10 +89,21 @@ final class ErrorHandler
             return;
         }
 
-        Logger::error('Fatal Error', ['message' => $error['message'], 'file' => $error['file'], 'line' => $error['line']]);
+        Logger::error(
+            'Fatal Error',
+            [
+                'message' => $error['message'],
+                'file' => $error['file'],
+                'line' => $error['line'],
+            ],
+        );
 
         self::render500(App::debug() ? $error['message'] : 'Une erreur interne est survenue.');
     }
+
+    // =========================================
+    // HTTP
+    // =========================================
 
     private static function logHttpException(BaseHttpException $exception): void
     {
@@ -127,15 +111,13 @@ final class ErrorHandler
             'HTTP Exception',
             [
                 'status' => $exception->getStatusCode(),
-
                 'message' => $exception->getMessage(),
-
                 'data' => $exception->getData(),
             ],
         );
     }
 
-    private static function displayMessage(BaseHttpException $exception): string
+    private static function message(BaseHttpException $exception): string
     {
         if (App::debug())
         {
@@ -154,22 +136,11 @@ final class ErrorHandler
         };
     }
 
-    private static function controller(): ErrorController
-    {
-        return new ErrorController(Request::capture());
-    }
-
     private static function renderHttpException(BaseHttpException $exception): never
     {
         $request = Request::capture();
-
-        $message = self::displayMessage($exception);
-
-        /*
-        |--------------------------------------------------------------------------
-        | AJAX / JSON
-        |--------------------------------------------------------------------------
-        */
+        $controller = new ErrorController($request);
+        $message = self::message($exception);
 
         if ($request->expectsJson())
         {
@@ -181,43 +152,29 @@ final class ErrorHandler
             Response::json(
                 [
                     'success' => false,
-
                     'message' => $message,
-
                     'data' => $exception->getData(),
                 ],
                 $exception->getStatusCode(),
             );
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | HTML
-        |--------------------------------------------------------------------------
-        */
-
-        $controller = self::controller();
-
         match ($exception->getStatusCode())
         {
             401 => $controller->unauthorized($message),
-
             403 => $controller->forbidden($message),
-
             404 => $controller->notFound($message),
-
             405 => $controller->methodNotAllowed($message),
-
             419 => $controller->csrfExpired($message),
-
             422 => $controller->validationError($message),
-
             default => $controller->serverError($message),
         };
     }
 
     private static function render500(string $message): never
     {
-        self::controller()->serverError($message);
+        $controller = new ErrorController(Request::capture());
+
+        $controller->serverError($message);
     }
 }

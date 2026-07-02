@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Framework\Exceptions;
 
-final class ValidationException
-    extends BaseHttpException
+final class ValidationException extends BaseHttpException
 {
     /**
      * @param array<string, string> $errors
@@ -17,9 +16,7 @@ final class ValidationException
         parent::__construct(
             message: $message,
             statusCode: 422,
-            data: [
-                'errors' => $errors,
-            ],
+            data: ['errors' => $errors],
         );
     }
 

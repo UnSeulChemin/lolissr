@@ -6,12 +6,8 @@ namespace Framework\Exceptions;
 
 final class UnauthorizedException extends BaseHttpException
 {
-    public function __construct(
-        string $message = 'Accès non autorisé',
-    ) {
-        parent::__construct(
-            message: $message,
-            statusCode: 401,
-        );
+    public function __construct(string $message = 'Accès non autorisé')
+    {
+        parent::__construct(message: $message, statusCode: 401);
     }
 }
