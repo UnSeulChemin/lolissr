@@ -14,6 +14,7 @@ use App\Http\Requests\Figurine\FigurineUpdateRequest;
 use Framework\Exceptions\NotFoundException;
 use Framework\Exceptions\ValidationException;
 use Framework\Http\Request;
+use Framework\Http\FormRequest;
 use Framework\Exceptions\BaseHttpException;
 
 final class FigurineController extends Controller
@@ -88,10 +89,7 @@ final class FigurineController extends Controller
 
     public function store(FigurineCreateRequest $request): never
     {
-        if ($request->fails())
-        {
-            throw new ValidationException($request->errors());
-        }
+        $this->validateRequest($request);
 
         $result = $this->figurineWriteService->create(
             $request->dto(),
@@ -127,17 +125,9 @@ final class FigurineController extends Controller
         int $numero
     ): never
     {
-        $figurine = $this->resolveFigurineOrFail(
-            $slug,
-            $numero
-        );
+        $figurine = $this->resolveFigurineOrFail($slug, $numero);
 
-        if ($request->fails())
-        {
-            throw new ValidationException(
-                $request->errors()
-            );
-        }
+        $this->validateRequest($request);
 
         $result = $this->figurineWriteService->update(
             $figurine->slug,
@@ -187,5 +177,13 @@ final class FigurineController extends Controller
         }
 
         return $figurine;
+    }
+
+    private function validateRequest(FormRequest $request): void
+    {
+        if ($request->fails())
+        {
+            throw new ValidationException($request->errors());
+        }
     }
 }

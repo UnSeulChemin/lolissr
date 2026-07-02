@@ -57,7 +57,7 @@ final readonly class FigurineWriteService
             function () use ($dto, $files): ServiceResult
             {
                 $upload = $this->uploadService->uploadThumbnail(
-                    $dto->waifu,
+                    $dto->origin,
                     $dto->numero,
                     UploadConfig::thumbnailDirectory('figurine'),
                     $files,
