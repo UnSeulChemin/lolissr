@@ -10,8 +10,6 @@ use Framework\Http\Request;
 
 final class AuthController extends Controller
 {
-    private const PRODUCTION_ENV = 'production';
-
     public function __construct(private readonly AuthService $authService, Request $request)
     {
         parent::__construct($request);
@@ -92,7 +90,7 @@ final class AuthController extends Controller
 
     private function guardRegistration(): void
     {
-        if (env('APP_ENV') === self::PRODUCTION_ENV)
+        if (env('APP_ENV') === 'production')
         {
             $this->notFound();
         }

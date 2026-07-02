@@ -6,173 +6,72 @@ namespace App\Controllers;
 
 use App\Constants\UserTitle;
 use App\DTO\Common\ServiceResult;
+use App\Models\User;
 use App\Repositories\Auth\UserRepository;
 
 use Framework\Http\Request;
 
 final class ProfileAjaxController extends Controller
 {
-    public function __construct(
-        private readonly UserRepository $userRepository,
-        Request $request
-    ) {
+    public function __construct(private readonly UserRepository $userRepository, Request $request)
+    {
         parent::__construct($request);
     }
 
     public function titles(): never
     {
-        $user = user();
+        $user = $this->user();
 
-        assert($user !== null);
+        $titles = UserTitle::unlockedTitles($user->level);
 
-        $titles =
-            UserTitle::unlockedTitles(
-                $user->level,
-            );
-
-        $this->jsonResult(
-            ServiceResult::success(
-                data: [
-                    'titles' => $titles,
-                ],
-            ),
-        );
+        $this->jsonResult(ServiceResult::success(data: ['titles' => $titles]));
     }
 
     public function updateTitle(): never
     {
-        $user = user();
+        $user = $this->user();
 
-        assert($user !== null);
+        $title = (string) $this->request->input('title');
 
-        $title =
-            (string) $this->request->input(
-                'title',
-            );
+        $availableTitles = UserTitle::unlockedTitles($user->level);
 
-        $availableTitles =
-            UserTitle::unlockedTitles(
-                $user->level,
-            );
-
-        if (
-            ! in_array(
-                $title,
-                $availableTitles,
-                true,
-            )
-        )
+        if (! in_array($title, $availableTitles, true))
         {
-            $this->jsonResult(
-                ServiceResult::error(
-                    message: 'Titre invalide',
-                    status: 422,
-                ),
-            );
+            $this->jsonResult(ServiceResult::error(message: 'Titre invalide', status: 422));
         }
 
-        $this->userRepository->updateTitle(
-            $user->id,
-            $title,
-        );
+        $this->userRepository->updateTitle($user->id, $title);
 
-        $this->jsonResult(
-            ServiceResult::success(
-                message: 'Titre mis à jour',
-                data: [
-                    'title' => $title,
-                ],
-            ),
-        );
+        $this->jsonResult(ServiceResult::success(message: 'Titre mis à jour', data: ['title' => $title]));
     }
 
     public function avatars(): never
     {
-        $avatars =
-            $this->userRepository->avatars();
-
-        $this->jsonResult(
-            ServiceResult::success(
-                data: [
-                    'avatars' => $avatars,
-                ],
-            ),
-        );
+        $this->jsonResult(ServiceResult::success(data: ['avatars' => $this->userRepository->avatars()]));
     }
 
     public function banners(): never
     {
-        $banners =
-            $this->userRepository->banners();
-
-        $this->jsonResult(
-            ServiceResult::success(
-                data: [
-                    'banners' => $banners,
-                ],
-            ),
-        );
+        $this->jsonResult(ServiceResult::success(data: ['banners' => $this->userRepository->banners()]));
     }
 
     public function frames(): never
     {
-        $frames =
-            $this->userRepository->frames();
-
-        $this->jsonResult(
-            ServiceResult::success(
-                data: [
-                    'frames' => $frames,
-                ],
-            ),
-        );
+        $this->jsonResult(ServiceResult::success(data: ['frames' => $this->userRepository->frames()]));
     }
 
     public function updateFrame(): never
     {
-        $user = user();
+        $user = $this->user();
 
-        assert($user !== null);
-
-        $frameName =
-            (string) $this->request->input(
-                'frame',
-            );
-
-        $frame =
-            null;
-
-        foreach (
-            $this->userRepository->frames() as $item
-        )
-        {
-            if (
-                $item['frame']
-                === $frameName
-            )
-            {
-                $frame =
-                    $item;
-
-                break;
-            }
-        }
+        $frame = $this->findItem($this->userRepository->frames(), 'frame', (string) $this->request->input('frame'));
 
         if ($frame === null)
         {
-            $this->jsonResult(
-                ServiceResult::error(
-                    message: 'Cadre invalide',
-                    status: 422,
-                ),
-            );
+            $this->jsonResult(ServiceResult::error(message: 'Cadre invalide', status: 422));
         }
 
-        $this->userRepository->updateFrame(
-            $user->id,
-            $frame['frame'],
-            $frame['frame_extension'],
-        );
+        $this->userRepository->updateFrame($user->id, $frame['frame'], $frame['frame_extension']);
 
         $this->jsonResult(
             ServiceResult::success(
@@ -187,42 +86,13 @@ final class ProfileAjaxController extends Controller
 
     public function updateAvatar(): never
     {
-        $user = user();
+        $user = $this->user();
 
-        assert($user !== null);
-
-        $avatarName =
-            (string) $this->request->input(
-                'avatar',
-            );
-
-        $avatar =
-            null;
-
-        foreach (
-            $this->userRepository->avatars() as $item
-        )
-        {
-            if (
-                $item['avatar']
-                === $avatarName
-            )
-            {
-                $avatar =
-                    $item;
-
-                break;
-            }
-        }
+        $avatar = $this->findItem($this->userRepository->avatars(), 'avatar', (string) $this->request->input('avatar'));
 
         if ($avatar === null)
         {
-            $this->jsonResult(
-                ServiceResult::error(
-                    message: 'Avatar invalide',
-                    status: 422,
-                ),
-            );
+            $this->jsonResult(ServiceResult::error(message: 'Avatar invalide', status: 422));
         }
 
         $this->userRepository->updateAvatar(
@@ -244,33 +114,13 @@ final class ProfileAjaxController extends Controller
 
     public function updateBanner(): never
     {
-        $user = user();
+        $user = $this->user();
 
-        assert($user !== null);
-
-        $bannerName =
-            (string) $this->request->input(
-                'banner',
-            );
-
-        $banner =
-            null;
-
-        foreach (
-            $this->userRepository->banners() as $item
-        )
-        {
-            if (
-                $item['banner']
-                === $bannerName
-            )
-            {
-                $banner =
-                    $item;
-
-                break;
-            }
-        }
+        $banner = $this->findItem(
+            $this->userRepository->banners(),
+            'banner',
+            (string) $this->request->input('banner'),
+        );
 
         if ($banner === null)
         {
@@ -297,5 +147,43 @@ final class ProfileAjaxController extends Controller
                 ],
             ),
         );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | HELPERS
+    |--------------------------------------------------------------------------
+    */
+
+    private function user(): User
+    {
+        $user = user();
+
+        assert($user instanceof User);
+
+        return $user;
+    }
+
+    /**
+     * Recherche un élément par sa clé.
+     *
+     * @param array<int, array<string, string>> $items
+     * @return array<string, string>|null
+     */
+    private function findItem(
+        array $items,
+        string $key,
+        string $value,
+    ): ?array
+    {
+        foreach ($items as $item)
+        {
+            if ($item[$key] === $value)
+            {
+                return $item;
+            }
+        }
+
+        return null;
     }
 }

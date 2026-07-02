@@ -6,47 +6,89 @@ namespace App\Services\Profile;
 
 use App\Constants\UserXp;
 use App\DTO\Profile\ProfileStatsData;
-use App\Repositories\Chinois\ChinoisGrammaireRepository;
-use App\Repositories\Chinois\ChinoisVocabulaireRepository;
 use App\Repositories\Manga\MangaStatsRepository;
+use App\Repositories\Chinois\ChinoisVocabulaireStatsRepository;
+use App\Repositories\Chinois\ChinoisGrammaireStatsRepository;
 
 final readonly class ProfileStatsService
 {
     public function __construct(
         private MangaStatsRepository $mangaStatsRepository,
-        private ChinoisVocabulaireRepository $vocabularyRepository,
-        private ChinoisGrammaireRepository $grammarRepository
+        private ChinoisVocabulaireStatsRepository $vocabularyStatsRepository,
+        private ChinoisGrammaireStatsRepository $grammarStatsRepository,
     ) {
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | MANGA
+    |--------------------------------------------------------------------------
+    */
+
+    public function readTomes(): int
+    {
+        return $this->mangaStatsRepository->countRead();
+    }
+
+    public function completedSeries(): int
+    {
+        return $this->mangaStatsRepository->countCompletedSeries();
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | CHINESE
+    |--------------------------------------------------------------------------
+    */
+
+    public function learnedVocabulary(): int
+    {
+        return $this->vocabularyStatsRepository->countMastered();
+    }
+
+    public function learnedGrammar(): int
+    {
+        return $this->grammarStatsRepository->countMastered();
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | PROFILE
+    |--------------------------------------------------------------------------
+    */
+
     public function getStats(): ProfileStatsData
     {
-        $readTomes = $this->mangaStatsRepository->countRead();
-        $completedSeries = $this->mangaStatsRepository->countCompletedSeries();
+        // MANGA
+        $readTomes = $this->readTomes();
+        $completedSeries = $this->completedSeries();
 
-        $vocabularyLearned = $this->vocabularyRepository->countMastered();
-        $grammarLearned = $this->grammarRepository->countMastered();
-
+        // MANGA XP
         $tomeXp = $readTomes * UserXp::READ_TOME;
         $seriesXp = $completedSeries * UserXp::COMPLETE_SERIES;
 
+        // CHINESE
+        $vocabularyLearned = $this->learnedVocabulary();
+        $grammarLearned = $this->learnedGrammar();
+
+        // CHINESE XP
         $vocabularyXp = $vocabularyLearned * UserXp::LEARN_VOCABULARY;
         $grammarXp = $grammarLearned * UserXp::LEARN_GRAMMAR;
 
         return new ProfileStatsData(
             readTomes: $readTomes,
-            tomeXp: $tomeXp,
-
             completedSeries: $completedSeries,
+
+            tomeXp: $tomeXp,
             seriesXp: $seriesXp,
 
             vocabularyLearned: $vocabularyLearned,
-            vocabularyXp: $vocabularyXp,
-
             grammarLearned: $grammarLearned,
+
+            vocabularyXp: $vocabularyXp,
             grammarXp: $grammarXp,
 
-            totalXp: $tomeXp + $seriesXp + $vocabularyXp + $grammarXp
+            totalXp: $tomeXp + $seriesXp + $vocabularyXp + $grammarXp,
         );
     }
 }

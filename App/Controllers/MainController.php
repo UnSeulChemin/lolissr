@@ -12,10 +12,8 @@ use Framework\Http\Request;
 
 final class MainController extends Controller
 {
-    public function __construct(
-        private readonly StatsService $statsService,
-        Request $request
-    ) {
+    public function __construct(private readonly StatsService $statsService, Request $request)
+    {
         parent::__construct($request);
     }
 

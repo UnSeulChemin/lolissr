@@ -139,12 +139,10 @@ final readonly class UploadService
 
     public function removeFile(string $path): void
     {
-        if (! is_file($path))
+        if (is_file($path))
         {
-            return;
+            unlink($path);
         }
-
-        unlink($path);
     }
 
     /*
@@ -218,7 +216,8 @@ final readonly class UploadService
 
     private function isValidTmpFile(?string $tmpName): bool
     {
-        return $tmpName !== null && is_uploaded_file($tmpName);
+        return is_string($tmpName)
+            && is_uploaded_file($tmpName);
     }
 
     /**
@@ -250,21 +249,14 @@ final readonly class UploadService
         return mkdir($directory, 0755, true) || is_dir($directory);
     }
 
-    private function buildDestinationPath(
-        string $thumbnail,
-        string $extension,
-        string $directory
-    ): ?string
+    private function buildDestinationPath(string $thumbnail, string $extension, string $directory): ?string
     {
         if (! $this->ensureDirectoryExists($directory))
         {
             return null;
         }
 
-        return $directory
-            . $thumbnail
-            . '.'
-            . $extension;
+        return $directory . $thumbnail . '.' . $extension;
     }
 
     /*
@@ -278,7 +270,11 @@ final readonly class UploadService
         return ServiceResult::error(message: $message, status: $status);
     }
 
-    private function success(string $thumbnail, string $extension, string $destination): ServiceResult
+    private function success(
+        string $thumbnail,
+        string $extension,
+        string $destination,
+    ): ServiceResult
     {
         return ServiceResult::success(
             message: 'Upload réussi',
@@ -286,10 +282,9 @@ final readonly class UploadService
                 'upload' => new UploadThumbnailData(
                     thumbnailPath: $thumbnail,
                     extension: $extension,
-                    destinationPath: $destination
+                    destinationPath: $destination,
                 ),
             ],
-            status: 200
         );
     }
 
