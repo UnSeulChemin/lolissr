@@ -31,9 +31,9 @@ final class FigurineAjaxController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function search(string $query = ''): never
+    public function search(string|int $query = ''): never
     {
-        $searchData = $this->figurineReadService->search($query);
+        $searchData = $this->figurineReadService->search((string) $query);
 
         $this->jsonResult(
             ServiceResult::success(

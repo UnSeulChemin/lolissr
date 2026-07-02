@@ -70,10 +70,13 @@ final readonly class ChinoisReadService
         return $this->vocabulaireRepository->findNotMasteredDto();
     }
 
-    public function search(string $query = ''): ChinoisSearchData
+    public function search(string|int $query = ''): ChinoisSearchData
     {
-        $query = trim($query);
+        $query = trim((string) $query);
 
-        return new ChinoisSearchData(results: $this->searchRepository->search($query), search: $query);
+        return new ChinoisSearchData(
+            results: $this->searchRepository->search($query),
+            search: $query,
+        );
     }
 }

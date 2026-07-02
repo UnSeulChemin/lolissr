@@ -117,9 +117,9 @@ final readonly class MangaReadService
     |--------------------------------------------------------------------------
     */
 
-    public function search(string $query = ''): MangaSearchData
+    public function search(string|int $query = ''): MangaSearchData
     {
-        $query = trim($query);
+        $query = trim((string) $query);
 
         $results = $this->searchRepository->search($query);
 

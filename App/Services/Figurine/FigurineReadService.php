@@ -92,9 +92,9 @@ final readonly class FigurineReadService
     |--------------------------------------------------------------------------
     */
 
-    public function search(string $query = ''): FigurineSearchData
+    public function search(string|int $query = ''): FigurineSearchData
     {
-        $query = trim($query);
+        $query = trim((string) $query);
 
         $results = $this->searchRepository->search($query);
 

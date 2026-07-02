@@ -31,11 +31,17 @@ final class ChinoisAjaxController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function search(string $query = ''): never
+    public function search(string|int $query = ''): never
     {
-        $searchData = $this->chinoisReadService->search($query);
+        $searchData = $this->chinoisReadService->search((string) $query);
 
-        $this->jsonResult(ServiceResult::success(data: ['results' => $searchData->results]));
+        $this->jsonResult(
+            ServiceResult::success(
+                data: [
+                    'results' => $searchData->results,
+                ],
+            ),
+        );
     }
 
     /*
