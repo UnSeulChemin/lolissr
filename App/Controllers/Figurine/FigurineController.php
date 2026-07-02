@@ -42,6 +42,13 @@ final class FigurineController extends Controller
         $this->render('pages/figurine/index');
     }
 
+    public function links(): never
+    {
+        $this->title = 'Figurine | Liens utiles';
+
+        $this->render('pages/figurine/lien');
+    }
+
     public function waifus(int $page = 1): never
     {
         $data = $this->figurineReadService->waifus($page);
@@ -144,15 +151,7 @@ final class FigurineController extends Controller
             );
         }
 
-        $this->redirectWithSuccess(
-            sprintf(
-                '%s/%s/%d',
-                self::WAIFUS_PATH,
-                rawurlencode($figurine->slug),
-                $numero
-            ),
-            $result->message
-        );
+        $this->redirectWithSuccess($this->waifuUrl($figurine->slug, $numero), $result->message);
     }
 
     /*
@@ -160,6 +159,16 @@ final class FigurineController extends Controller
     | HELPERS
     |--------------------------------------------------------------------------
     */
+
+    private function waifuUrl(string $slug, int $numero): string
+    {
+        return sprintf(
+            '%s/%s/%d',
+            self::WAIFUS_PATH,
+            rawurlencode($slug),
+            $numero
+        );
+    }
 
     private function resolveFigurineOrFail(
         string $slug,

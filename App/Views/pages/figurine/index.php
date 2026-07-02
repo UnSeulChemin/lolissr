@@ -89,6 +89,33 @@ $baseUri =
 
         </a>
 
+        <a
+            class="
+                card
+                transition-card
+                dashboard-card
+            "
+            data-prefetch
+            href="<?= e($baseUri) ?>figurine/lien"
+        >
+
+            <span
+                class="dashboard-card-icon"
+                aria-hidden="true"
+            >
+                🔗
+            </span>
+
+            <span class="dashboard-card-title">
+                Liens utiles
+            </span>
+
+            <span class="dashboard-card-description">
+                Sites, boutiques et ressources utiles autour des figurines.
+            </span>
+
+        </a>
+
     </section>
 
 </section>

@@ -303,6 +303,8 @@ return static function (Router $router): void
         {
             $router->get('', [FigurineController::class, 'index']);
 
+            $router->get('lien', [FigurineController::class, 'links']);
+
             $router->prefix('waifus')->group(function (Router $router): void
             {
                 $router->get('', [FigurineController::class, 'waifus']);
