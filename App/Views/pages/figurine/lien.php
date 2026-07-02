@@ -14,62 +14,6 @@ declare(strict_types=1);
                 transition-card
                 dashboard-card
             "
-            href="https://myfigurecollection.net/"
-            target="_blank"
-            rel="noopener noreferrer"
-        >
-
-            <span
-                class="dashboard-card-icon"
-                aria-hidden="true"
-            >
-                💎
-            </span>
-
-            <span class="dashboard-card-title">
-                MyFigureCollection
-            </span>
-
-            <span class="dashboard-card-description">
-                Base de données et gestion de collection de figurines.
-            </span>
-
-        </a>
-
-        <a
-            class="
-                card
-                transition-card
-                dashboard-card
-            "
-            href="https://www.goodsmile.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-        >
-
-            <span
-                class="dashboard-card-icon"
-                aria-hidden="true"
-            >
-                😊
-            </span>
-
-            <span class="dashboard-card-title">
-                Good Smile Company
-            </span>
-
-            <span class="dashboard-card-description">
-                Catalogue officiel des figurines Good Smile Company.
-            </span>
-
-        </a>
-
-        <a
-            class="
-                card
-                transition-card
-                dashboard-card
-            "
             href="https://www.amiami.com/"
             target="_blank"
             rel="noopener noreferrer"
@@ -98,7 +42,7 @@ declare(strict_types=1);
                 transition-card
                 dashboard-card
             "
-            href="https://www.hlj.com/"
+            href="https://myfigurecollection.net/"
             target="_blank"
             rel="noopener noreferrer"
         >
@@ -107,15 +51,15 @@ declare(strict_types=1);
                 class="dashboard-card-icon"
                 aria-hidden="true"
             >
-                📦
+                💎
             </span>
 
             <span class="dashboard-card-title">
-                HobbyLink Japan
+                MyFigureCollection
             </span>
 
             <span class="dashboard-card-description">
-                Boutique japonaise de figurines et produits dérivés.
+                Base de données et gestion de collection de figurines.
             </span>
 
         </a>

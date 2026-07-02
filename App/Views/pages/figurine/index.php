@@ -22,7 +22,7 @@ $baseUri =
         >
 
             <h1 class="dashboard-title">
-                💎 Figurines
+                🎀 Figurines
             </h1>
 
             <p class="dashboard-description">
@@ -49,7 +49,7 @@ $baseUri =
                 class="dashboard-card-icon"
                 aria-hidden="true"
             >
-                💎
+                🎀
             </span>
 
             <span class="dashboard-card-title">
