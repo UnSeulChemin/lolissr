@@ -89,6 +89,7 @@ final class MangaController extends Controller
             'compteur' => $data->compteur,
             'totalArtbooks' => $data->totalArtbooks,
             'perPage' => $data->perPage,
+            'totalPages' => $data->totalPages,
         ]);
     }
 

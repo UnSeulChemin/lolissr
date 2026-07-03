@@ -7,7 +7,7 @@ namespace App\DTO\Manga\Responses;
 final readonly class ArtbookListData
 {
     /**
-     * @param list<ArtbookData> $artbooks
+     * @param list<ArtbookSeriesItemData> $artbooks
      */
     public function __construct(
         public array $artbooks,
@@ -15,6 +15,7 @@ final readonly class ArtbookListData
         public int $currentPage,
         public int $totalArtbooks,
         public int $perPage,
+        public int $totalPages,
     ) {
     }
 }

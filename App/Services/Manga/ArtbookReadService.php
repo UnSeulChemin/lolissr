@@ -57,6 +57,7 @@ final readonly class ArtbookReadService
             currentPage: $page,
             totalArtbooks: $totalArtbooks,
             perPage: $perPage,
+            totalPages: $totalPages,
         );
     }
 
