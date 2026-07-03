@@ -10,14 +10,23 @@ final readonly class MangaSeriesItemData
         public string $slug,
         public int $numero,
         public string $livre,
-        public string $thumbnail,
-        public string $extension,
+
+        public ?string $thumbnail,
+        public ?string $extension,
+        public ?string $thumbnailUrl,
+
         public string $statut,
+        public string $statusLabel,
+        public string $statusClass,
+
         public ?float $note,
         public ?float $averageNote,
+
         public int $total,
         public int $totalLu,
-        public bool $lu
+
+        public bool $lu,
+        public bool $isFullyRead,
     ) {
     }
 }

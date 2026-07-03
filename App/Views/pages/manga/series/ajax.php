@@ -16,9 +16,7 @@ $baseUri = view_base_uri();
 
 <?php if ($mangas === []): ?>
 
-    <p class="collection-empty">
-        Aucun manga trouvé.
-    </p>
+    <p class="collection-empty">Aucun manga trouvé.</p>
 
 </div>
 
@@ -31,153 +29,67 @@ $baseUri = view_base_uri();
     $slug = $manga->slug;
     $numero = $manga->numero;
     $livre = $manga->livre;
-    $thumbnail = $manga->thumbnail;
-    $extension = $manga->extension;
-    $statut = $manga->statut;
     $note = $manga->note;
     $averageNote = $manga->averageNote;
     $total = $manga->total;
-    $totalLu = $manga->totalLu;
     $isRead = $manga->lu;
 
-    $isFullyRead =
-        $total > 0
-        && $totalLu >= $total;
+    $thumbnailPath = $manga->thumbnailUrl;
 
-    $showReadBadge =
-        $isSerieView
-            ? $isRead
-            : $isFullyRead;
-
-    if (
-        $slug === ''
-        || $livre === ''
-        || $thumbnail === ''
-        || $extension === ''
-    ) {
+    if ($slug === '' || $livre === '' || $thumbnailPath === null)
+    {
         continue;
     }
 
-    $href =
-        $isSerieView
-            ? "{$baseUri}manga/series/{$slug}/{$numero}"
-            : "{$baseUri}manga/series/{$slug}";
+    $showReadBadge = $isSerieView ? $isRead : $manga->isFullyRead;
 
-    $thumbnailPath =
-        "{$baseUri}images/manga/thumbnail/{$thumbnail}.{$extension}";
+    $href = $isSerieView ? "{$baseUri}manga/series/{$slug}/{$numero}" : "{$baseUri}manga/series/{$slug}";
 
-    $displayNote =
-        $isSerieView
-            ? $note
-            : $averageNote;
+    $displayNote = $isSerieView ? $note : $averageNote;
 
-    $noteClass =
-        'collection-note-mid';
+    $noteClass = 'collection-note-mid';
 
     if ($displayNote !== null)
     {
-
         if ($displayNote >= 8)
         {
-
-            $noteClass =
-                'collection-note-good glow-red';
-
-        } elseif ($displayNote <= 4)
+            $noteClass = 'collection-note-good glow-red';
+        }
+        elseif ($displayNote <= 4)
         {
-
-            $noteClass =
-                'collection-note-low';
+            $noteClass = 'collection-note-low';
         }
     }
 
     $noteLabel =
         $displayNote !== null
-            ? (
-                $isSerieView
-                    ? (string) ((int) $displayNote)
-                    : number_format(
-                        $displayNote,
-                        1,
-                        ',',
-                        '',
-                    )
-            )
-            : '0';
-
-    $statusLabel =
-        $statut === 'termine'
-            ? 'Terminé'
-            : 'En cours';
-
-    $statusClass =
-        $statut === 'termine'
-            ? 'collection-status-finished'
-            : 'collection-status-progress';
+            ? ($isSerieView ? (string) ((int) $displayNote)
+            : number_format($displayNote, 1, ',', '')) : '0';
 
     ?>
 
-<a
-    class="
-        card
-        transition-card
-        card-link
-        collection-card
-        collection-card-link
-    "
-    data-prefetch
-    href="<?= e($href) ?>"
->
+<a class="card transition-card card-link collection-card collection-card-link" data-prefetch href="<?= e($href) ?>">
 
     <?php if (! $isSerieView): ?>
 
-        <span
-            class="
-                collection-status-badge
-                <?= e($statusClass) ?>
-            "
-        >
-            <?= e($statusLabel) ?>
+        <span class="collection-status-badge <?= e($manga->statusClass) ?>">
+            <?= e($manga->statusLabel) ?>
         </span>
 
     <?php endif; ?>
 
-    <span
-        class="
-            collection-card-badge
-            <?= e($noteClass) ?>
-        "
-    >
+    <span class="collection-card-badge <?= e($noteClass) ?>">
         ⭐ <?= e($noteLabel) ?>/10
     </span>
 
-    <span
-        class="
-            collection-read-badge
-            <?= $showReadBadge ? 'active glow-blue' : '' ?>
-        "
-    >
-
-        <svg
-            class="collection-read-icon"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-        >
+    <span class="collection-read-badge <?= $showReadBadge ? 'active glow-blue' : '' ?>">
+        <svg class="collection-read-icon" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M7 3C6.45 3 6 3.45 6 4V21L12 17L18 21V4C18 3.45 17.55 3 17 3H7Z"/>
         </svg>
-
     </span>
 
     <div class="card-image-box-portrait">
-
-        <img
-            class="card-image-portrait"
-            src="<?= e($thumbnailPath) ?>"
-            alt="<?= e($livre) ?>"
-            loading="lazy"
-            draggable="false"
-        >
-
+        <img class="card-image-portrait" src="<?= e($thumbnailPath) ?>" alt="<?= e($livre) ?>" loading="lazy" draggable="false">
     </div>
 
     <p class="collection-card-title">
@@ -185,18 +97,7 @@ $baseUri = view_base_uri();
     </p>
 
     <p class="collection-card-subtitle">
-
-        <?= $isSerieView
-                ? 'Tome '
-                    . str_pad(
-                        (string) $numero,
-                        2,
-                        '0',
-                        STR_PAD_LEFT,
-                    )
-                : $total . ' tomes'
-    ?>
-
+        <?= $isSerieView ? 'Tome ' . str_pad((string) $numero, 2, '0', STR_PAD_LEFT) : $total . ' tomes'?>
     </p>
 
 </a>

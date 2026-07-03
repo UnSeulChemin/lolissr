@@ -6,23 +6,12 @@ use App\DTO\Manga\Responses\MangaSeriesItemData;
 
 /** @var list<MangaSeriesItemData> $mangas */
 /** @var int $currentPage */
-/** @var int $totalSeries */
-/** @var int $perPage */
+/** @var int $totalPages */
 /** @var ?string $slugFilter */
 
-$isSerieView =
-    $slugFilter !== null
-    && trim($slugFilter) !== '';
+$isSerieView = $slugFilter !== null;
 
 $baseUri = view_base_uri();
-
-$totalPages =
-    max(
-        1,
-        (int) ceil(
-            $totalSeries / $perPage,
-        ),
-    );
 
 ?>
 

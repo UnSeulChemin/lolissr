@@ -68,6 +68,7 @@ final class MangaController extends Controller
             'totalSeries' => $data->totalSeries,
             'perPage' => $data->perPage,
             'slugFilter' => $data->slugFilter,
+            'totalPages' => $data->totalPages,
         ]);
     }
 
@@ -143,6 +144,7 @@ final class MangaController extends Controller
             'totalSeries' => $data->totalSeries,
             'perPage' => $data->perPage,
             'slugFilter' => $data->slugFilter,
+            'totalPages' => $data->totalPages,
         ]);
     }
 

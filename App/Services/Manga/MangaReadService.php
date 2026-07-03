@@ -65,6 +65,7 @@ final readonly class MangaReadService
             slugFilter: null,
             totalSeries: $totalSeries,
             perPage: $perPage,
+            totalPages: $totalPages,
         );
     }
 
@@ -91,6 +92,7 @@ final readonly class MangaReadService
             slugFilter: $slug,
             totalSeries: $totalItems,
             perPage: $totalItems,
+            totalPages: 1,
         );
     }
 
@@ -140,10 +142,7 @@ final readonly class MangaReadService
      */
     public function notes(): array
     {
-        return array_map(
-            $this->mapSeriesItem(...),
-            $this->collectionRepository->findSeriesWithoutPerfectNote(),
-        );
+        return array_map($this->mapSeriesItem(...), $this->collectionRepository->findSeriesWithoutPerfectNote());
     }
 
     /**
@@ -151,10 +150,7 @@ final readonly class MangaReadService
      */
     public function aLire(): array
     {
-        return array_map(
-            $this->mapSeriesItem(...),
-            $this->collectionRepository->findIncompleteSeries(),
-        );
+        return array_map($this->mapSeriesItem(...), $this->collectionRepository->findIncompleteSeries());
     }
 
     /*
@@ -165,18 +161,43 @@ final readonly class MangaReadService
 
     private function mapSeriesItem(Manga $manga): MangaSeriesItemData
     {
+        $baseUri = App::baseUri();
+
+        $thumbnail = $manga->thumbnail !== '' ? $manga->thumbnail : null;
+
+        $extension = $manga->extension !== '' ? $manga->extension : null;
+
+        $status = $manga->statut !== '' ? $manga->statut : 'en_cours';
+
         return new MangaSeriesItemData(
             slug: $manga->slug,
             numero: $manga->numero,
             livre: $manga->livre,
-            thumbnail: $manga->thumbnail !== '' ? $manga->thumbnail : null,
-            extension: $manga->extension !== '' ? $manga->extension : null,
-            statut: $manga->statut !== '' ? $manga->statut : 'en_cours',
+
+            thumbnail: $thumbnail,
+            extension: $extension,
+
+            thumbnailUrl:
+                $thumbnail !== null && $extension !== null
+                    ? "{$baseUri}images/manga/thumbnail/{$thumbnail}.{$extension}"
+                    : null,
+
+            statut: $status,
+
+            statusLabel: $status === 'termine' ? 'Terminé' : 'En cours',
+
+            statusClass: $status === 'termine' ? 'collection-status-finished' : 'collection-status-progress',
+
             note: $manga->note === null ? null : (float) $manga->note,
+
             averageNote: $manga->average_note,
+
             total: $manga->total ?? 0,
             totalLu: $manga->total_lu ?? 0,
+
             lu: $manga->lu,
+
+            isFullyRead: ($manga->total ?? 0) > 0 && ($manga->total_lu ?? 0) >= ($manga->total ?? 0),
         );
     }
 
