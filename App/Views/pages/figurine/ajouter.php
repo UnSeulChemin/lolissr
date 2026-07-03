@@ -2,35 +2,22 @@
 
 declare(strict_types=1);
 
-use Framework\Support\Session;
+use App\DTO\Common\Responses\FormViewData;
 
-$baseUri = view_base_uri();
+/** @var FormViewData $form */
 
-$errors = Session::pull('errors', []);
-
-$old = Session::pull('old', []);
+$errors = $form->errors;
+$old = $form->old;
 
 $waifuValue = $old['waifu'] ?? '';
-
 $originValue = $old['origin'] ?? '';
-
 $slugValue = $old['slug'] ?? '';
-
 $scaleValue = $old['scale'] ?? '';
-
 $heightValue = $old['height_cm'] ?? '';
-
 $companyValue = $old['company'] ?? '';
-
 $numeroValue = $old['numero'] ?? '';
-
 $releaseDateValue = $old['release_date'] ?? '';
-
 $commentaireValue = $old['commentaire'] ?? '';
-
-$formAction = $baseUri . 'figurine/ajouter';
-
-$returnUrl = $baseUri . 'figurine';
 
 ?>
 
@@ -43,7 +30,7 @@ $returnUrl = $baseUri . 'figurine';
             <form
                 class="form-layout"
                 data-form-page="ajouter"
-                action="<?= e($formAction) ?>"
+                action="<?= e($form->formAction) ?>"
                 method="post"
                 enctype="multipart/form-data"
             >
@@ -372,7 +359,7 @@ $returnUrl = $baseUri . 'figurine';
                             form-submit
                             form-submit-secondary
                         "
-                        href="<?= e($returnUrl) ?>"
+                        href="<?= e($form->cancelUrl) ?>"
                     >
                         Retour
                     </a>

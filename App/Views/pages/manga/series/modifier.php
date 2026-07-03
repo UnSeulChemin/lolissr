@@ -2,80 +2,43 @@
 
 declare(strict_types=1);
 
+use App\DTO\Common\Responses\FormViewData;
 use App\DTO\Manga\Responses\MangaData;
 
-use Framework\Support\Session;
-
 /** @var MangaData $manga */
+/** @var FormViewData $form */
 
-$baseUri = view_base_uri();
+$errors = $form->errors;
+$old = $form->old;
 
-$errors =
-    Session::pull('errors', []);
+$editeurValue = $old['editeur'] ?? $manga->editeur;
 
-$old =
-    Session::pull('old', []);
+$statutValue = $old['statut'] ?? $manga->statut;
 
-$editeurValue =
-    $old['editeur']
-    ?? $manga->editeur;
+$jacquetteValue = $old['jacquette'] ?? ($manga->jacquette ?? '');
 
-$statutValue =
-    $old['statut']
-    ?? $manga->statut;
+$livreNoteValue = $old['livre_note'] ?? ($manga->livreNote ?? '');
 
-$jacquetteValue =
-    $old['jacquette']
-    ?? ($manga->jacquette ?? '');
+$commentaireValue = $old['commentaire'] ?? ($manga->commentaire ?? '');
 
-$livreNoteValue =
-    $old['livre_note']
-    ?? ($manga->livreNote ?? '');
-
-$commentaireValue =
-    $old['commentaire']
-    ?? ($manga->commentaire ?? '');
-
-$statutOptions = [
-    'en_cours' => 'En cours',
-    'termine' => 'Terminé',
-];
-
-$formAction =
-    $baseUri
-    . 'manga/series/'
-    . rawurlencode($manga->slug)
-    . '/modifier/'
-    . $manga->numero;
-
-$cancelUrl =
-    $baseUri
-    . 'manga/series/'
-    . rawurlencode($manga->slug)
-    . '/'
-    . $manga->numero;
+$statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
 
 ?>
 
 <section class="layout-container dashboard-page">
 
-    <section
-        class="
-            form-page
-        "
-    >
+    <section class="form-page">
 
         <section class="form-card transition-form">
 
             <form
                 class="form-layout"
                 data-form-page="modifier"
-                action="<?= e($formAction) ?>"
+                action="<?= e($form->formAction) ?>"
                 method="post"
             >
 
                 <?= csrf_field() ?>
-
 
                 <div class="form-group">
 
@@ -101,18 +64,11 @@ $cancelUrl =
                             Choisir
                         </option>
 
-                        <?php for (
-                            $i = 1;
-                            $i <= 5;
-                            $i++
-                        ): ?>
+                        <?php for ($i = 1; $i <= 5; $i++): ?>
 
                             <option
                                 value="<?= $i ?>"
-                                <?= (string) $jacquetteValue === (string) $i
-                                    ? 'selected'
-                                    : ''
-                            ?>
+                                <?= (string) $jacquetteValue === (string) $i ? 'selected' : '' ?>
                             >
 
                                 <?= $i ?>
@@ -123,10 +79,7 @@ $cancelUrl =
 
                     </select>
 
-                    <?php if (
-                        isset($errors['jacquette'])
-                        && $errors['jacquette'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['jacquette']) && $errors['jacquette'] !== ''): ?>
 
                         <p class="form-error">
 
@@ -137,7 +90,6 @@ $cancelUrl =
                     <?php endif; ?>
 
                 </div>
-
 
                 <div class="form-group">
 
@@ -163,18 +115,11 @@ $cancelUrl =
                             Choisir
                         </option>
 
-                        <?php for (
-                            $i = 1;
-                            $i <= 5;
-                            $i++
-                        ): ?>
+                        <?php for ($i = 1; $i <= 5; $i++): ?>
 
                             <option
                                 value="<?= $i ?>"
-                                <?= (string) $livreNoteValue === (string) $i
-                                    ? 'selected'
-                                    : ''
-                            ?>
+                                <?= (string) $livreNoteValue === (string) $i ? 'selected' : '' ?>
                             >
 
                                 <?= $i ?>
@@ -185,10 +130,7 @@ $cancelUrl =
 
                     </select>
 
-                    <?php if (
-                        isset($errors['livre_note'])
-                        && $errors['livre_note'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['livre_note']) && $errors['livre_note'] !== ''): ?>
 
                         <p class="form-error">
 
@@ -199,7 +141,6 @@ $cancelUrl =
                     <?php endif; ?>
 
                 </div>
-
 
                 <div class="form-group">
 
@@ -223,10 +164,7 @@ $cancelUrl =
                         required
                     >
 
-                    <?php if (
-                        isset($errors['editeur'])
-                        && $errors['editeur'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['editeur']) && $errors['editeur'] !== ''): ?>
 
                         <p class="form-error">
 
@@ -237,7 +175,6 @@ $cancelUrl =
                     <?php endif; ?>
 
                 </div>
-
 
                 <div class="form-group">
 
@@ -260,16 +197,11 @@ $cancelUrl =
                         required
                     >
 
-                        <?php foreach (
-                            $statutOptions as $value => $label
-                        ): ?>
+                        <?php foreach ($statutOptions as $value => $label): ?>
 
                             <option
                                 value="<?= e($value) ?>"
-                                <?= (string) $statutValue === $value
-                                    ? 'selected'
-                                    : ''
-                            ?>
+                                <?= (string) $statutValue === $value ? 'selected' : '' ?>
                             >
 
                                 <?= e($label) ?>
@@ -280,10 +212,7 @@ $cancelUrl =
 
                     </select>
 
-                    <?php if (
-                        isset($errors['statut'])
-                        && $errors['statut'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['statut']) && $errors['statut'] !== ''): ?>
 
                         <p class="form-error">
 
@@ -294,7 +223,6 @@ $cancelUrl =
                     <?php endif; ?>
 
                 </div>
-
 
                 <div class="form-group">
 
@@ -316,10 +244,7 @@ $cancelUrl =
                         placeholder="Ex : défaut en haut de la jacquette"
                     ><?= e($commentaireValue) ?></textarea>
 
-                    <?php if (
-                        isset($errors['commentaire'])
-                        && $errors['commentaire'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['commentaire']) && $errors['commentaire'] !== ''): ?>
 
                         <p class="form-error">
 
@@ -330,7 +255,6 @@ $cancelUrl =
                     <?php endif; ?>
 
                 </div>
-
 
                 <div class="form-group">
 
@@ -353,7 +277,6 @@ $cancelUrl =
 
                 </div>
 
-
                 <div class="form-actions">
 
                     <button
@@ -370,7 +293,7 @@ $cancelUrl =
                             form-submit
                             form-submit-secondary
                         "
-                        href="<?= e($cancelUrl) ?>"
+                        href="<?= e($form->cancelUrl) ?>"
                     >
 
                         Annuler

@@ -2,34 +2,18 @@
 
 declare(strict_types=1);
 
+use App\DTO\Common\Responses\FormViewData;
 use App\DTO\Manga\Responses\ArtbookData;
-use Framework\Support\Session;
 
 /** @var ArtbookData $artbook */
+/** @var FormViewData $form */
 
-$baseUri = view_base_uri();
-
-$errors = Session::pull('errors', []);
-
-$old = Session::pull('old', []);
+$errors = $form->errors;
+$old = $form->old;
 
 $artbookValue = $old['artbook'] ?? $artbook->artbook;
-
 $auteurValue = $old['auteur'] ?? ($artbook->auteur ?? '');
-
 $serieValue = $old['serie'] ?? ($artbook->serie ?? '');
-
-$formAction = $baseUri
-    . 'manga/artbooks/'
-    . rawurlencode($artbook->slug)
-    . '/modifier/'
-    . $artbook->numero;
-
-$cancelUrl = $baseUri
-    . 'manga/artbooks/'
-    . rawurlencode($artbook->slug)
-    . '/'
-    . $artbook->numero;
 
 ?>
 
@@ -41,7 +25,7 @@ $cancelUrl = $baseUri
 
             <form
                 class="form-layout"
-                action="<?= e($formAction) ?>"
+                action="<?= e($form->formAction) ?>"
                 method="post"
             >
 
@@ -80,7 +64,6 @@ $cancelUrl = $baseUri
 
                 </div>
 
-
                 <div class="form-group">
 
                     <label
@@ -112,7 +95,6 @@ $cancelUrl = $baseUri
                     <?php endif; ?>
 
                 </div>
-
 
                 <div class="form-group">
 
@@ -146,7 +128,6 @@ $cancelUrl = $baseUri
 
                 </div>
 
-
                 <div class="form-actions">
 
                     <button
@@ -163,7 +144,7 @@ $cancelUrl = $baseUri
                             form-submit
                             form-submit-secondary
                         "
-                        href="<?= e($cancelUrl) ?>"
+                        href="<?= e($form->cancelUrl) ?>"
                     >
 
                         Annuler

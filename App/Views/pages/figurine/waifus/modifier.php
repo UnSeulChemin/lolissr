@@ -2,34 +2,22 @@
 
 declare(strict_types=1);
 
+use App\DTO\Common\Responses\FormViewData;
 use App\DTO\Figurine\Responses\FigurineData;
-use Framework\Support\Session;
 
 /** @var FigurineData $figurine */
+/** @var FormViewData $form */
 
-$baseUri = view_base_uri();
-
-$errors = Session::pull('errors', []);
-
-$old = Session::pull('old', []);
+$errors = $form->errors;
+$old = $form->old;
 
 $originValue = $old['origin'] ?? $figurine->origin;
-
 $waifuValue = $old['waifu'] ?? $figurine->waifu;
-
 $scaleValue = $old['scale'] ?? $figurine->scale;
-
 $heightValue = $old['height_cm'] ?? $figurine->height_cm;
-
 $companyValue = $old['company'] ?? $figurine->company;
-
 $releaseDateValue = $old['release_date'] ?? $figurine->release_date;
-
 $commentaireValue = $old['commentaire'] ?? $figurine->commentaire;
-
-$formAction = $baseUri . 'figurine/waifus/' . rawurlencode($figurine->slug) . '/modifier/' . $figurine->numero;
-
-$cancelUrl = $baseUri . 'figurine/waifus/' . rawurlencode($figurine->slug) . '/' . $figurine->numero;
 
 ?>
 
@@ -42,7 +30,7 @@ $cancelUrl = $baseUri . 'figurine/waifus/' . rawurlencode($figurine->slug) . '/'
             <form
                 class="form-layout"
                 data-form-page="modifier"
-                action="<?= e($formAction) ?>"
+                action="<?= e($form->formAction) ?>"
                 method="post"
             >
 
@@ -263,7 +251,7 @@ $cancelUrl = $baseUri . 'figurine/waifus/' . rawurlencode($figurine->slug) . '/'
                             form-submit
                             form-submit-secondary
                         "
-                        href="<?= e($cancelUrl) ?>"
+                        href="<?= e($form->cancelUrl) ?>"
                     >
                         Annuler
                     </a>

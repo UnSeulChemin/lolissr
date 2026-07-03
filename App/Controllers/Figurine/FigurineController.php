@@ -91,7 +91,12 @@ final class FigurineController extends Controller
     {
         $this->title = 'Figurine | Ajouter';
 
-        $this->render('pages/figurine/ajouter');
+        $this->render('pages/figurine/ajouter', [
+            'form' => $this->formViewData(
+                'figurine/ajouter',
+                'figurine',
+            ),
+        ]);
     }
 
     public function store(FigurineCreateRequest $request): never
@@ -122,6 +127,18 @@ final class FigurineController extends Controller
             'pages/figurine/waifus/modifier',
             [
                 'figurine' => $figurine,
+                'form' => $this->formViewData(
+                    sprintf(
+                        '%s/%s/modifier/%d',
+                        self::WAIFUS_PATH,
+                        rawurlencode($figurine->slug),
+                        $numero,
+                    ),
+                    $this->waifuUrl(
+                        $figurine->slug,
+                        $numero,
+                    ),
+                ),
             ]
         );
     }

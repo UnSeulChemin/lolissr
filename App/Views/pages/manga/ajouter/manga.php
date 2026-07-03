@@ -2,31 +2,25 @@
 
 declare(strict_types=1);
 
-use Framework\Support\Session;
+use App\DTO\Common\Responses\FormViewData;
 
-$baseUri = view_base_uri();
+/** @var FormViewData $form */
 
-$errors = Session::pull('errors', []);
-
-$old = Session::pull('old', []);
+$errors = $form->errors;
+$old = $form->old;
 
 $livreValue = $old['livre'] ?? '';
-
 $slugValue = $old['slug'] ?? '';
-
 $editeurValue = $old['editeur'] ?? '';
-
 $numeroValue = $old['numero'] ?? '';
-
 $commentaireValue = $old['commentaire'] ?? '';
 
 $statutValue = $old['statut'] ?? 'en_cours';
 
-$statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
-
-$formAction = $baseUri . 'manga/ajouter/manga';
-
-$returnUrl = $baseUri . 'manga';
+$statutOptions = [
+    'en_cours' => 'En cours',
+    'termine' => 'Terminé',
+];
 
 ?>
 
@@ -39,7 +33,7 @@ $returnUrl = $baseUri . 'manga';
             <form
                 class="form-layout"
                 data-form-page="ajouter"
-                action="<?= e($formAction) ?>"
+                action="<?= e($form->formAction) ?>"
                 method="post"
                 enctype="multipart/form-data"
             >
@@ -352,7 +346,7 @@ $returnUrl = $baseUri . 'manga';
                             form-submit
                             form-submit-secondary
                         "
-                        href="<?= e($returnUrl) ?>"
+                        href="<?= e($form->cancelUrl) ?>"
                     >
 
                         Retour

@@ -174,14 +174,24 @@ final class MangaController extends Controller
     {
         $this->title = 'Manga | Ajouter un manga';
 
-        $this->render('pages/manga/ajouter/manga');
+        $this->render('pages/manga/ajouter/manga', [
+            'form' => $this->formViewData(
+                'manga/ajouter/manga',
+                'manga',
+            ),
+        ]);
     }
 
     public function createArtbook(): never
     {
         $this->title = 'Manga | Ajouter un artbook';
 
-        $this->render('pages/manga/ajouter/artbook');
+        $this->render('pages/manga/ajouter/artbook', [
+            'form' => $this->formViewData(
+                'manga/ajouter/artbook',
+                'manga',
+            ),
+        ]);
     }
 
     /*
@@ -196,7 +206,18 @@ final class MangaController extends Controller
 
         $this->title = 'Manga | ' . $data->manga->livre;
 
-        $this->render('pages/manga/series/modifier', ['manga' => $data->manga]);
+        $this->render('pages/manga/series/modifier', [
+            'manga' => $data->manga,
+            'form' => $this->formViewData(
+                sprintf(
+                    '%s/%s/modifier/%d',
+                    self::SERIES_PATH,
+                    rawurlencode($data->manga->slug),
+                    $numero,
+                ),
+                $this->mangaUrl($data->manga->slug, $numero),
+            ),
+        ]);
     }
 
     public function editArtbook(string $slug, int $numero): never
@@ -205,7 +226,18 @@ final class MangaController extends Controller
 
         $this->title = 'Artbook | ' . $artbook->artbook;
 
-        $this->render('pages/manga/artbooks/modifier', ['artbook' => $artbook]);
+        $this->render('pages/manga/artbooks/modifier', [
+            'artbook' => $artbook,
+            'form' => $this->formViewData(
+                sprintf(
+                    '%s/%s/modifier/%d',
+                    self::ARTBOOKS_PATH,
+                    rawurlencode($artbook->slug),
+                    $artbook->numero,
+                ),
+                $this->artbookUrl($artbook->slug, $artbook->numero),
+            ),
+        ]);
     }
 
     /*

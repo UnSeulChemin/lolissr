@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\DTO\Common\ServiceResult;
+use App\DTO\Common\Responses\FormViewData;
 
 use Framework\Application\App;
 use Framework\Exceptions\MethodNotAllowedException;
@@ -223,6 +224,22 @@ abstract class Controller
     protected function jsonResult(ServiceResult $result): never
     {
         $this->json($result->toArray(), $result->status);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | FORM
+    |--------------------------------------------------------------------------
+    */
+
+    protected function formViewData(string $formAction, string $cancelUrl): FormViewData
+    {
+        return new FormViewData(
+            errors: Session::pull('errors', []),
+            old: Session::pull('old', []),
+            formAction: rtrim($this->baseUri, '/') . '/' . ltrim($formAction, '/'),
+            cancelUrl: rtrim($this->baseUri, '/') . '/' . ltrim($cancelUrl, '/'),
+        );
     }
 
     /*
