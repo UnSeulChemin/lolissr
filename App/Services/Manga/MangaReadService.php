@@ -60,7 +60,6 @@ final readonly class MangaReadService
 
         return new MangaSeriesData(
             mangas: array_map($this->mapSeriesItem(...), $mangas),
-            compteur: $totalPages,
             currentPage: $page,
             slugFilter: null,
             totalSeries: $totalSeries,
@@ -87,7 +86,6 @@ final readonly class MangaReadService
 
         return new MangaSeriesData(
             mangas: array_map($this->mapSeriesItem(...), $mangas),
-            compteur: 1,
             currentPage: 1,
             slugFilter: $slug,
             totalSeries: $totalItems,

@@ -2,61 +2,26 @@
 
 declare(strict_types=1);
 
-if (! isset($figurine))
-{
-    throw new \RuntimeException(
-        'Figurine manquante dans la vue.',
-    );
-}
+use App\DTO\Figurine\Responses\FigurineData;
 
-$baseUri =
-    rtrim(
-        (string) ($baseUri ?? ''),
-        '/',
-    ) . '/';
+/** @var FigurineData $figurine */
 
-$slug =
-    rawurlencode(
-        (string) $figurine->slug,
-    );
+$baseUri = view_base_uri();
 
-$thumbnailPath =
-    $baseUri
-    . 'images/figurine/thumbnail/'
-    . $figurine->thumbnail
-    . '.'
-    . $figurine->extension;
+$slug = rawurlencode($figurine->slug);
 
-$modifierUrl =
-    $baseUri
-    . 'figurine/waifus/'
-    . $slug
-    . '/modifier/'
-    . $figurine->numero;
+$modifierUrl = $baseUri . 'figurine/waifus/' . $slug . '/modifier/' . $figurine->numero;
 
-$deleteUrl =
-    $baseUri
-    . 'figurine/waifus/'
-    . $slug
-    . '/supprimer/'
-    . $figurine->numero;
+$deleteUrl = $baseUri . 'figurine/waifus/' . $slug . '/supprimer/' . $figurine->numero;
 
-$redirectUrl =
-    $baseUri
-    . 'figurine/waifus';
+$redirectUrl = $baseUri . 'figurine/waifus';
 
-$hasCommentaire =
-    $figurine->commentaire !== null
-    && trim((string) $figurine->commentaire) !== '';
+$hasCommentaire = $figurine->commentaire !== null
+    && trim($figurine->commentaire) !== '';
 
-$commentaire =
-    $hasCommentaire
-        ? nl2br(
-            e(
-                (string) $figurine->commentaire,
-            ),
-        )
-        : 'Aucun commentaire';
+$commentaire = $hasCommentaire
+    ? nl2br(e($figurine->commentaire))
+    : 'Aucun commentaire';
 
 ?>
 
@@ -69,7 +34,7 @@ $commentaire =
             <div class="detail-image-inner">
 
                 <img
-                    src="<?= e($thumbnailPath) ?>"
+                    src="<?= e($figurine->thumbnailUrl) ?>"
                     alt="<?= e($figurine->waifu) ?>"
                 >
 
@@ -101,8 +66,7 @@ $commentaire =
 
                     <?= $figurine->origin !== ''
                         ? e($figurine->origin)
-                        : 'Non renseignée'
-                    ?>
+                        : 'Non renseignée' ?>
 
                 </div>
 
@@ -118,8 +82,7 @@ $commentaire =
 
                     <?= $figurine->scale !== ''
                         ? e($figurine->scale)
-                        : 'Non renseignée'
-                    ?>
+                        : 'Non renseignée' ?>
 
                 </div>
 
@@ -134,9 +97,8 @@ $commentaire =
                 <div class="detail-value">
 
                     <?= $figurine->height_cm !== null
-                        ? e($figurine->height_cm) . ' cm'
-                        : 'Non renseignée'
-                    ?>
+                        ? e((string) $figurine->height_cm) . ' cm'
+                        : 'Non renseignée' ?>
 
                 </div>
 
@@ -152,8 +114,7 @@ $commentaire =
 
                     <?= $figurine->company !== ''
                         ? e($figurine->company)
-                        : 'Non renseignée'
-                    ?>
+                        : 'Non renseignée' ?>
 
                 </div>
 
@@ -169,31 +130,19 @@ $commentaire =
 
                     <?= $figurine->release_date !== null
                         ? e($figurine->release_date)
-                        : 'Non renseignée'
-                    ?>
+                        : 'Non renseignée' ?>
 
                 </div>
 
             </div>
 
-            <div
-                class="
-                    detail-row
-                    detail-row-comment
-                "
-            >
+            <div class="detail-row detail-row-comment">
 
                 <div class="detail-label">
                     Commentaire
                 </div>
 
-                <div
-                    class="
-                        detail-value
-                        detail-comment-box
-                        <?= !$hasCommentaire ? 'is-empty' : '' ?>
-                    "
-                >
+                <div class="detail-value detail-comment-box <?= ! $hasCommentaire ? 'is-empty' : '' ?>">
 
                     <?= $commentaire ?>
 

@@ -64,9 +64,9 @@ final class FigurineController extends Controller
         $this->render('pages/figurine/waifus/index', [
             'figurines' => $data->figurines,
             'currentPage' => $data->currentPage,
-            'compteur' => $data->compteur,
             'totalWaifus' => $data->totalWaifus,
             'perPage' => $data->perPage,
+            'totalPages' => $data->totalPages,
         ]);
     }
 

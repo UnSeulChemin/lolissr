@@ -64,7 +64,6 @@ final class MangaController extends Controller
         $this->render('pages/manga/series/index', [
             'mangas' => $data->mangas,
             'currentPage' => $data->currentPage,
-            'compteur' => $data->compteur,
             'totalSeries' => $data->totalSeries,
             'perPage' => $data->perPage,
             'slugFilter' => $data->slugFilter,
@@ -86,7 +85,6 @@ final class MangaController extends Controller
         $this->render('pages/manga/artbooks/index', [
             'artbooks' => $data->artbooks,
             'currentPage' => $data->currentPage,
-            'compteur' => $data->compteur,
             'totalArtbooks' => $data->totalArtbooks,
             'perPage' => $data->perPage,
             'totalPages' => $data->totalPages,
@@ -131,7 +129,7 @@ final class MangaController extends Controller
     {
         $data = $this->mangaReadService->showSeries($slug);
 
-        if ($data === null || empty($data->mangas))
+        if ($data === null)
         {
             throw new NotFoundException('Manga introuvable');
         }
@@ -141,7 +139,6 @@ final class MangaController extends Controller
         $this->render('pages/manga/series/index', [
             'mangas' => $data->mangas,
             'currentPage' => 1,
-            'compteur' => 1,
             'totalSeries' => $data->totalSeries,
             'perPage' => $data->perPage,
             'slugFilter' => $data->slugFilter,

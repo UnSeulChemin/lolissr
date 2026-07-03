@@ -11,7 +11,6 @@ final readonly class MangaSeriesData
      */
     public function __construct(
         public array $mangas,
-        public int $compteur,
         public ?string $slugFilter,
         public int $currentPage,
         public int $totalSeries,

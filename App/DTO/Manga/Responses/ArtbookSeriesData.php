@@ -11,7 +11,6 @@ final readonly class ArtbookSeriesData
      */
     public function __construct(
         public array $artbooks,
-        public int $compteur,
         public int $currentPage,
         public int $totalArtbooks,
         public int $perPage,

@@ -4,26 +4,18 @@ declare(strict_types=1);
 
 namespace App\DTO\Figurine\Responses;
 
-final readonly class FigurineData
+final readonly class FigurineSeriesItemData
 {
     public function __construct(
-        public int $id,
-
         public string $slug,
         public int $numero,
 
-        public string $origin,
         public string $waifu,
-        public string $scale,
-        public ?float $height_cm,
-        public string $company,
-        public ?string $release_date,
+        public string $origin,
 
         public ?string $thumbnail,
         public ?string $extension,
         public ?string $thumbnailUrl,
-
-        public ?string $commentaire,
     ) {
     }
 }

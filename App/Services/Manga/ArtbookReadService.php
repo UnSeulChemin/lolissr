@@ -53,7 +53,6 @@ final readonly class ArtbookReadService
 
         return new ArtbookSeriesData(
             artbooks: array_map($this->mapSeriesItem(...), $artbooks),
-            compteur: $totalPages,
             currentPage: $page,
             totalArtbooks: $totalArtbooks,
             perPage: $perPage,

@@ -2,33 +2,11 @@
 
 declare(strict_types=1);
 
-$figurines =
-    is_array($figurines ?? null)
-        ? $figurines
-        : [];
+use App\DTO\Figurine\Responses\FigurineSeriesItemData;
 
-$currentPage =
-    (int) ($currentPage ?? 1);
+/** @var list<FigurineSeriesItemData> $figurines */
 
-$totalWaifus =
-    (int) ($totalWaifus ?? 0);
-
-$perPage =
-    (int) ($perPage ?? 10);
-
-$baseUri =
-    rtrim(
-        (string) ($baseUri ?? ''),
-        '/',
-    ) . '/';
-
-$totalPages =
-    max(
-        1,
-        (int) ceil(
-            $totalWaifus / $perPage,
-        ),
-    );
+$baseUri = view_base_uri();
 
 ?>
 
@@ -36,27 +14,16 @@ $totalPages =
 
     <div class="collection-ajax-container">
 
-        <?php require view_path(
-            'pages/figurine/waifus/ajax.php',
-        ); ?>
+        <?php require view_path('pages/figurine/waifus/ajax.php'); ?>
 
         <?php if ($totalPages > 1): ?>
 
             <nav class="collection-pagination-wrapper">
 
-                <?php for (
-                    $i = 1;
-                    $i <= $totalPages;
-                    $i++
-                ): ?>
+                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
 
                     <a
-                        class="
-                            collection-pagination-link
-                            <?= $currentPage === $i
-                                ? 'active'
-                                : '' ?>
-                        "
+                        class="collection-pagination-link <?= $currentPage === $i ? 'active' : '' ?>"
                         data-prefetch
                         href="<?= e($baseUri) ?>figurine/waifus/page/<?= $i ?>"
                     >

@@ -2,64 +2,34 @@
 
 declare(strict_types=1);
 
+use App\DTO\Figurine\Responses\FigurineData;
 use Framework\Support\Session;
 
-if (! isset($figurine))
-{
-    throw new RuntimeException(
-        'Figurine manquante dans la vue.',
-    );
-}
+/** @var FigurineData $figurine */
 
-$baseUri =
-    rtrim(
-        (string) ($baseUri ?? ''),
-        '/',
-    ) . '/';
+$baseUri = view_base_uri();
 
-$errors =
-    Session::pull('errors', []);
+$errors = Session::pull('errors', []);
 
-$old =
-    Session::pull('old', []);
+$old = Session::pull('old', []);
 
-$companyValue =
-    $old['company']
-    ?? ($figurine->company ?? '');
+$originValue = $old['origin'] ?? $figurine->origin;
 
-$commentaireValue =
-    $old['commentaire']
-    ?? ($figurine->commentaire ?? '');
+$waifuValue = $old['waifu'] ?? $figurine->waifu;
 
-$formAction =
-    $baseUri
-    . 'figurine/waifus/'
-    . rawurlencode((string) $figurine->slug)
-    . '/modifier/'
-    . $figurine->numero;
+$scaleValue = $old['scale'] ?? $figurine->scale;
 
-$cancelUrl =
-    $baseUri
-    . 'figurine/waifus/'
-    . rawurlencode((string) $figurine->slug)
-    . '/'
-    . $figurine->numero;
+$heightValue = $old['height_cm'] ?? $figurine->height_cm;
 
-$scaleValue =
-    $old['scale']
-    ?? ($figurine->scale ?? '');
+$companyValue = $old['company'] ?? $figurine->company;
 
-$heightValue =
-    $old['height_cm']
-    ?? ($figurine->height_cm ?? '');
+$releaseDateValue = $old['release_date'] ?? $figurine->release_date;
 
-$releaseDateValue =
-    $old['release_date']
-    ?? ($figurine->release_date ?? '');
+$commentaireValue = $old['commentaire'] ?? $figurine->commentaire;
 
-$originValue =
-    $old['origin']
-    ?? ($figurine->origin ?? '');
+$formAction = $baseUri . 'figurine/waifus/' . rawurlencode($figurine->slug) . '/modifier/' . $figurine->numero;
+
+$cancelUrl = $baseUri . 'figurine/waifus/' . rawurlencode($figurine->slug) . '/' . $figurine->numero;
 
 ?>
 
@@ -92,7 +62,7 @@ $originValue =
                         type="text"
                         name="origin"
                         id="origin"
-                        value="<?= e((string) $originValue) ?>"
+                        value="<?= e($originValue) ?>"
                         maxlength="150"
                         required
                     >
@@ -100,7 +70,7 @@ $originValue =
                     <?php if (isset($errors['origin']) && $errors['origin'] !== ''): ?>
 
                         <p class="form-error">
-                            <?= e((string) $errors['origin']) ?>
+                            <?= e($errors['origin']) ?>
                         </p>
 
                     <?php endif; ?>
@@ -121,7 +91,7 @@ $originValue =
                         type="text"
                         name="waifu"
                         id="waifu"
-                        value="<?= e((string) ($old['waifu'] ?? $figurine->waifu)) ?>"
+                        value="<?= e($waifuValue) ?>"
                         maxlength="100"
                         required
                     >
@@ -129,7 +99,7 @@ $originValue =
                     <?php if (isset($errors['waifu']) && $errors['waifu'] !== ''): ?>
 
                         <p class="form-error">
-                            <?= e((string) $errors['waifu']) ?>
+                            <?= e($errors['waifu']) ?>
                         </p>
 
                     <?php endif; ?>
@@ -142,9 +112,7 @@ $originValue =
                         class="form-label"
                         for="scale"
                     >
-
                         Échelle
-
                     </label>
 
                     <input
@@ -152,7 +120,7 @@ $originValue =
                         type="text"
                         name="scale"
                         id="scale"
-                        value="<?= e((string) $scaleValue) ?>"
+                        value="<?= e($scaleValue) ?>"
                         maxlength="10"
                         required
                     >
@@ -160,9 +128,7 @@ $originValue =
                     <?php if (isset($errors['scale']) && $errors['scale'] !== ''): ?>
 
                         <p class="form-error">
-
                             <?= e($errors['scale']) ?>
-
                         </p>
 
                     <?php endif; ?>
@@ -175,9 +141,7 @@ $originValue =
                         class="form-label"
                         for="height_cm"
                     >
-
                         Hauteur (cm)
-
                     </label>
 
                     <input
@@ -187,15 +151,13 @@ $originValue =
                         id="height_cm"
                         min="0"
                         step="0.1"
-                        value="<?= e((string) $heightValue) ?>"
+                        value="<?= e($heightValue) ?>"
                     >
 
                     <?php if (isset($errors['height_cm']) && $errors['height_cm'] !== ''): ?>
 
                         <p class="form-error">
-
                             <?= e($errors['height_cm']) ?>
-
                         </p>
 
                     <?php endif; ?>
@@ -208,9 +170,7 @@ $originValue =
                         class="form-label"
                         for="company"
                     >
-
                         Company
-
                     </label>
 
                     <input
@@ -226,9 +186,7 @@ $originValue =
                     <?php if (isset($errors['company']) && $errors['company'] !== ''): ?>
 
                         <p class="form-error">
-
                             <?= e($errors['company']) ?>
-
                         </p>
 
                     <?php endif; ?>
@@ -241,9 +199,7 @@ $originValue =
                         class="form-label"
                         for="release_date"
                     >
-
                         Date de sortie
-
                     </label>
 
                     <input
@@ -252,16 +208,14 @@ $originValue =
                         name="release_date"
                         id="release_date"
                         placeholder="Ex : 29/07/2021"
-                        value="<?= e((string) $releaseDateValue) ?>"
+                        value="<?= e($releaseDateValue) ?>"
                         maxlength="10"
                     >
 
                     <?php if (isset($errors['release_date']) && $errors['release_date'] !== ''): ?>
 
                         <p class="form-error">
-
                             <?= e($errors['release_date']) ?>
-
                         </p>
 
                     <?php endif; ?>
@@ -274,9 +228,7 @@ $originValue =
                         class="form-label"
                         for="commentaire"
                     >
-
                         Commentaire
-
                     </label>
 
                     <textarea
@@ -290,9 +242,7 @@ $originValue =
                     <?php if (isset($errors['commentaire']) && $errors['commentaire'] !== ''): ?>
 
                         <p class="form-error">
-
                             <?= e($errors['commentaire']) ?>
-
                         </p>
 
                     <?php endif; ?>
@@ -305,9 +255,7 @@ $originValue =
                         type="submit"
                         class="form-submit"
                     >
-
                         Enregistrer
-
                     </button>
 
                     <a
@@ -317,9 +265,7 @@ $originValue =
                         "
                         href="<?= e($cancelUrl) ?>"
                     >
-
                         Annuler
-
                     </a>
 
                 </div>
