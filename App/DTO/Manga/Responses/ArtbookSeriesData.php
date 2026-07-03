@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\DTO\Manga\Responses;
 
-final readonly class ArtbookListData
+final readonly class ArtbookSeriesData
 {
     /**
      * @param list<ArtbookSeriesItemData> $artbooks

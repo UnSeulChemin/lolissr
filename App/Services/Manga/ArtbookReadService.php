@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Manga;
 
 use App\DTO\Manga\Responses\ArtbookData;
-use App\DTO\Manga\Responses\ArtbookListData;
+use App\DTO\Manga\Responses\ArtbookSeriesData;
 use App\DTO\Manga\Responses\ArtbookSeriesItemData;
 use App\Models\Artbook;
 use App\Repositories\Manga\ArtbookCollectionRepository;
@@ -29,7 +29,7 @@ final readonly class ArtbookReadService
     |--------------------------------------------------------------------------
     */
 
-    public function artbooks(int|string $page = 1): ?ArtbookListData
+    public function artbooks(int|string $page = 1): ?ArtbookSeriesData
     {
         $page = max(1, (int) $page);
 
@@ -51,7 +51,7 @@ final readonly class ArtbookReadService
 
         $artbooks = $this->collectionRepository->findPaginated($perPage, $page);
 
-        return new ArtbookListData(
+        return new ArtbookSeriesData(
             artbooks: array_map($this->mapSeriesItem(...), $artbooks),
             compteur: $totalPages,
             currentPage: $page,
