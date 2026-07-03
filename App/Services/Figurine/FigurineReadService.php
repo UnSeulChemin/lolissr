@@ -14,8 +14,7 @@ use App\Repositories\Figurine\FigurineSearchRepository;
 use App\Repositories\Figurine\FigurineCollectionRepository;
 
 use Framework\Application\App;
-
-use DateTime;
+use Framework\Support\DateFormatter;
 
 final readonly class FigurineReadService
 {
@@ -110,19 +109,11 @@ final readonly class FigurineReadService
             origin: $figurine->origin,
             waifu: $figurine->waifu,
             scale: $figurine->scale,
-            height_cm: $figurine->height_cm !== null
-                ? number_format(
-                    $figurine->height_cm,
-                    1,
-                    '.',
-                    '',
-                )
-                : null,
+            height_cm: $figurine->height_cm,
             company: $figurine->company,
-            release_date: $figurine->release_date !== null
-                ? (new DateTime($figurine->release_date))
-                    ->format('d/m/Y')
-                : null,
+            release_date: DateFormatter::display(
+                $figurine->release_date,
+            ),
 
             thumbnail: $figurine->thumbnail,
             extension: $figurine->extension,
