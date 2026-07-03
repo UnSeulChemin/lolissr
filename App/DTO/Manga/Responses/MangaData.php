@@ -11,28 +11,35 @@ final readonly class MangaData
         public string $slug,
         public string $livre,
 
-        public string $thumbnail,
-        public string $extension,
+        public ?string $thumbnail,
+        public ?string $extension,
+        public ?string $thumbnailUrl,
 
         public string $editeur,
+        public bool $hasEditeur,
 
         public int $numero,
         public bool $lu,
 
         public string $statut,
+        public string $statusLabel,
 
         public ?int $jacquette,
         public ?int $livreNote,
         public ?int $note,
 
+        public bool $isPerfectJacquette,
+        public bool $isPerfectLivre,
+
         public ?string $commentaire,
+        public bool $hasCommentaire,
 
         public ?int $total,
         public ?int $totalLu,
         public ?float $averageNote,
 
         public bool $xpReadRewarded,
-        public bool $xpSeriesRewarded
+        public bool $xpSeriesRewarded,
     ) {
     }
 }

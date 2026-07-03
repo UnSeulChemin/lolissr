@@ -12,69 +12,19 @@ $slug = rawurlencode($manga->slug);
 
 $numero = $manga->numero;
 
-$thumbnailPath =
-    $baseUri
-    . 'images/manga/thumbnail/'
-    . $manga->thumbnail
-    . '.'
-    . $manga->extension;
+$modifierUrl = $baseUri . 'manga/series/' . $slug . '/modifier/' . $numero;
 
-$modifierUrl =
-    $baseUri
-    . 'manga/series/'
-    . $slug
-    . '/modifier/'
-    . $numero;
+$deleteUrl = $baseUri . 'manga/series/' . $slug . '/supprimer/' . $numero;
 
-$deleteUrl =
-    $baseUri
-    . 'manga/series/'
-    . $slug
-    . '/supprimer/'
-    . $numero;
+$redirectUrl = $baseUri . 'manga/series/' . $slug;
 
-$redirectUrl =
-    $baseUri
-    . 'manga/series/'
-    . $slug;
-
-$updateReadStatusUrl =
-    $baseUri
-    . 'manga/ajax/update-read-status/'
-    . $slug
-    . '/'
-    . $numero;
+$updateReadStatusUrl = $baseUri . 'manga/ajax/update-read-status/' . $slug . '/' . $numero;
 
 $isLu = $manga->lu;
 
-$readStatusLabel =
-    $isLu
-        ? 'Marquer comme non lu'
-        : 'Marquer comme lu';
+$readStatusLabel = $isLu ? 'Marquer comme non lu' : 'Marquer comme lu';
 
-$statutLabel =
-    $manga->statut === 'termine'
-        ? 'Terminé'
-        : 'En cours';
-
-$hasCommentaire =
-    $manga->commentaire !== null
-    && trim($manga->commentaire) !== '';
-
-$commentaire =
-    $hasCommentaire
-        ? nl2br(
-            e($manga->commentaire),
-        )
-        : 'Aucun commentaire';
-
-$hasEditeur = trim($manga->editeur) !== '';
-
-$isPerfectJacquette =
-    $manga->jacquette === 5;
-
-$isPerfectLivre =
-    $manga->livreNote === 5;
+$commentaire = $manga->hasCommentaire ? nl2br(e($manga->commentaire)) : 'Aucun commentaire';
 
 ?>
 
@@ -95,12 +45,7 @@ $isPerfectLivre =
         <figure class="detail-image">
 
             <div class="detail-image-inner">
-
-                <img
-                    src="<?= e($thumbnailPath) ?>"
-                    alt="<?= e($manga->livre) ?>"
-                >
-
+                <img src="<?= e($manga->thumbnailUrl) ?>" alt="<?= e($manga->livre) ?>">
             </div>
 
         </figure>
@@ -129,7 +74,7 @@ $isPerfectLivre =
 
                 <div class="detail-value">
 
-                    <?= $hasEditeur
+                    <?= $manga->hasEditeur
                         ? e($manga->editeur)
                         : 'Non renseigné'
 ?>
@@ -166,7 +111,7 @@ $isPerfectLivre =
                 </div>
 
                 <div class="detail-value">
-                    <?= $statutLabel ?>
+                    <?= $manga->statusLabel ?>
                 </div>
 
             </div>
@@ -185,7 +130,7 @@ $isPerfectLivre =
                     <div
                         class="
                             js-note-group
-                            <?= $isPerfectJacquette
+                            <?= $manga->isPerfectJacquette
                                 ? 'perfect-score-group'
                                 : ''
                             ?>
@@ -223,7 +168,6 @@ $isPerfectLivre =
 
             </div>
 
-
             <!-- Livre Note -->
 
             <div class="detail-row">
@@ -234,37 +178,17 @@ $isPerfectLivre =
 
                 <div class="detail-value detail-value-notes">
 
-                    <div
-                        class="
-                            js-note-group
-                            <?= $isPerfectLivre
-                                ? 'perfect-score-group'
-                                : ''
-                            ?>
-                        "
+                    <div class="js-note-group <?= $manga->isPerfectLivre ? 'perfect-score-group' : '' ?>"
                         data-field="livreNote"
                     >
 
-                        <?php for (
-                            $note = 1;
-                            $note <= 5;
-                            $note++
-                        ): ?>
+                        <?php for ($note = 1; $note <= 5; $note++): ?>
 
-                            <button
-                                class="
-                                    js-note-button
-                                    <?= ($manga->livreNote === $note)
-                                        ? 'active'
-                                        : ''
-                                    ?>
-                                "
+                            <button class="js-note-button <?= ($manga->livreNote === $note) ? 'active' : '' ?>"
                                 type="button"
                                 data-value="<?= $note ?>"
                             >
-
                                 <?= $note ?>
-
                             </button>
 
                         <?php endfor; ?>
@@ -275,7 +199,6 @@ $isPerfectLivre =
 
             </div>
 
-
             <!-- Note totale -->
 
             <div class="detail-row">
@@ -284,83 +207,42 @@ $isPerfectLivre =
                     Note totale
                 </div>
 
-                <div
-                    class="detail-value"
-                    id="js-note-total"
-                >
+                <div class="detail-value" id="js-note-total">
 
-                    <?= ($manga->jacquette ?? 0)
-                        + ($manga->livreNote ?? 0)
-                    ?>/10
+                    <?= ($manga->jacquette ?? 0) + ($manga->livreNote ?? 0) ?>/10
 
                 </div>
 
             </div>
 
+            <!-- COMMENTAIRE -->
 
-            <!-- Commentaire -->
-
-            <div
-                class="
-                    detail-row
-                    detail-row-comment
-                "
-            >
+            <div class="detail-row detail-row-comment">
 
                 <div class="detail-label">
                     Commentaire
                 </div>
 
-                <div
-                    class="
-                        detail-value
-                        detail-comment-box
-                        <?= !$hasCommentaire
-        ? 'is-empty'
-        : ''
-?>
-                    "
-                >
-
+                <div class="detail-value detail-comment-box <?= ! $manga->hasCommentaire ? 'is-empty' : '' ?>">
                     <?= $commentaire ?>
-
                 </div>
 
             </div>
 
-
-            <!-- Actions -->
+            <!-- ACTIONS -->
 
             <div class="detail-actions">
 
                 <div class="detail-actions-left">
 
-                    <button
-                        type="button"
-                        class="
-                            js-read-status-button
-                            <?= $isLu
-        ? 'active'
-        : ''
-?>
-                        "
+                    <button type="button" class="js-read-status-button <?= $isLu ? 'active' : '' ?>"
                         data-url="<?= e($updateReadStatusUrl) ?>"
-                        data-read-status="<?= $isLu
-? '1'
-: '0'
-?>"
+                        data-read-status="<?= $isLu ? '1' : '0' ?>"
                         title="<?= e($readStatusLabel) ?>"
                         aria-label="<?= e($readStatusLabel) ?>"
                     >
-
-                        <svg
-                            class="lu-icon"
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                        >
-
+                        <svg class="lu-icon" viewBox="0 0 24 24" aria-hidden="true">
                             <path d="M7 3C6.45 3 6 3.45 6 4V21L12 17L18 21V4C18 3.45 17.55 3 17 3H7Z"/>
-
                         </svg>
 
                     </button>
@@ -370,28 +252,17 @@ $isPerfectLivre =
 
                 <div class="detail-actions-right">
 
-                    <a
-                        class="form-submit"
-                        href="<?= e($modifierUrl) ?>"
-                    >
-
+                    <a class="form-submit" href="<?= e($modifierUrl) ?>">
                         Modifier
-
                     </a>
 
                     <button
                         type="button"
-                        class="
-                            form-submit
-                            form-submit-danger
-                            js-delete-manga
-                        "
+                        class="form-submit form-submit-danger js-delete-manga"
                         data-url="<?= e($deleteUrl) ?>"
                         data-redirect="<?= e($redirectUrl) ?>"
                     >
-
                         Supprimer
-
                     </button>
 
                 </div>
@@ -403,22 +274,10 @@ $isPerfectLivre =
     </section>
 
 
-    <div
-        class="
-            collection-back-wrapper
-        "
-    >
+    <div class="collection-back-wrapper">
 
-        <a
-            class="
-                form-submit
-                collection-back-button
-            "
-            href="<?= e($redirectUrl) ?>"
-        >
-
+        <a class="form-submit collection-back-button" href="<?= e($redirectUrl) ?>">
             Retour
-
         </a>
 
     </div>

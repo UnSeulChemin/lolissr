@@ -203,20 +203,50 @@ final readonly class MangaReadService
 
     private function mapManga(Manga $manga): MangaData
     {
+        $baseUri = App::baseUri();
+
+        $thumbnail =
+            $manga->thumbnail !== ''
+                ? $manga->thumbnail
+                : null;
+
+        $extension =
+            $manga->extension !== ''
+                ? $manga->extension
+                : null;
+
+        $status =
+            $manga->statut !== ''
+                ? $manga->statut
+                : 'en_cours';
+
         return new MangaData(
             id: $manga->id,
             slug: $manga->slug,
             livre: $manga->livre,
 
-            thumbnail: $manga->thumbnail !== '' ? $manga->thumbnail : null,
-            extension: $manga->extension !== '' ? $manga->extension : null,
+            thumbnail: $thumbnail,
+            extension: $extension,
+
+            thumbnailUrl:
+                $thumbnail !== null && $extension !== null
+                    ? "{$baseUri}images/manga/thumbnail/{$thumbnail}.{$extension}"
+                    : null,
 
             editeur: $manga->editeur,
+
+            hasEditeur:
+                trim($manga->editeur) !== '',
 
             numero: $manga->numero,
             lu: $manga->lu,
 
-            statut: $manga->statut,
+            statut: $status,
+
+            statusLabel:
+                $status === 'termine'
+                    ? 'Terminé'
+                    : 'En cours',
 
             jacquette: $manga->jacquette,
             livreNote: $manga->livre_note,
@@ -224,9 +254,19 @@ final readonly class MangaReadService
 
             commentaire: $manga->commentaire,
 
+            hasCommentaire:
+                $manga->commentaire !== null
+                && trim($manga->commentaire) !== '',
+
             total: $manga->total,
             totalLu: $manga->total_lu,
             averageNote: $manga->average_note,
+
+            isPerfectJacquette:
+                $manga->jacquette === 5,
+
+            isPerfectLivre:
+                $manga->livre_note === 5,
 
             xpReadRewarded: $manga->xp_read_rewarded,
             xpSeriesRewarded: $manga->xp_series_rewarded,
