@@ -11,6 +11,7 @@ use App\DTO\Figurine\Responses\FigurineSearchItemData;
 use App\Models\Figurine;
 use App\Repositories\Figurine\FigurineRepository;
 use App\Repositories\Figurine\FigurineSearchRepository;
+use App\Repositories\Figurine\FigurineCollectionRepository;
 
 use Framework\Application\App;
 
@@ -20,6 +21,7 @@ final readonly class FigurineReadService
 {
     public function __construct(
         private FigurineRepository $figurineRepository,
+        private FigurineCollectionRepository $collectionRepository,
         private FigurineSearchRepository $searchRepository,
     ) {
     }
@@ -36,17 +38,11 @@ final readonly class FigurineReadService
 
         $perPage = App::pagination();
 
-        $totalWaifus = $this->figurineRepository->countAll();
+        $totalWaifus = $this->collectionRepository->countAll();
 
         if ($totalWaifus === 0)
         {
-            return new FigurineListData(
-                figurines: [],
-                compteur: 1,
-                currentPage: 1,
-                totalWaifus: 0,
-                perPage: $perPage,
-            );
+            return null;
         }
 
         $totalPages = (int) ceil($totalWaifus / $perPage);
@@ -56,7 +52,7 @@ final readonly class FigurineReadService
             return null;
         }
 
-        $figurines = $this->figurineRepository->findPaginated(
+        $figurines = $this->collectionRepository->findPaginated(
             $perPage,
             $page,
         );
@@ -70,13 +66,9 @@ final readonly class FigurineReadService
         );
     }
 
-    public function one(
-        string $slug,
-        int $numero
-    ): ?FigurineData
+    public function one(string $slug, int $numero): ?FigurineData
     {
-        $figurine = $this->figurineRepository
-            ->findOneBySlugAndNumero($slug, $numero);
+        $figurine = $this->figurineRepository->findOneBySlugAndNumero($slug, $numero);
 
         if ($figurine === null)
         {
@@ -98,15 +90,12 @@ final readonly class FigurineReadService
 
         $results = $this->searchRepository->search($query);
 
-        return new FigurineSearchData(
-            results: array_map($this->mapSearchItem(...), $results),
-            search: $query,
-        );
+        return new FigurineSearchData(results: array_map($this->mapSearchItem(...), $results), search: $query);
     }
 
     /*
     |--------------------------------------------------------------------------
-    | HELPERS
+    | MAPPERS
     |--------------------------------------------------------------------------
     */
 
@@ -142,9 +131,7 @@ final readonly class FigurineReadService
         );
     }
 
-    private function mapSearchItem(
-        Figurine $figurine
-    ): FigurineSearchItemData
+    private function mapSearchItem(Figurine $figurine): FigurineSearchItemData
     {
         return new FigurineSearchItemData(
             slug: $figurine->slug,

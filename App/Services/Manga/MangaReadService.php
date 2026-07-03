@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Manga;
 
+use App\DTO\Manga\Responses\MangaData;
 use App\DTO\Manga\Responses\MangaSearchData;
 use App\DTO\Manga\Responses\MangaSearchItemData;
 use App\DTO\Manga\Responses\MangaSeriesData;
@@ -95,7 +96,7 @@ final readonly class MangaReadService
 
     public function one(string $slug, int $numero): ?MangaShowData
     {
-        $manga = $this->mangaRepository->findOneDtoBySlugAndNumero(
+        $manga = $this->mangaRepository->findOneBySlugAndNumero(
             $slug,
             $numero,
         );
@@ -106,7 +107,7 @@ final readonly class MangaReadService
         }
 
         return new MangaShowData(
-            manga: $manga,
+            manga: $this->mapManga($manga),
         );
     }
 
@@ -176,6 +177,38 @@ final readonly class MangaReadService
             total: $manga->total ?? 0,
             totalLu: $manga->total_lu ?? 0,
             lu: $manga->lu,
+        );
+    }
+
+    private function mapManga(Manga $manga): MangaData
+    {
+        return new MangaData(
+            id: $manga->id,
+            slug: $manga->slug,
+            livre: $manga->livre,
+
+            thumbnail: $manga->thumbnail !== '' ? $manga->thumbnail : null,
+            extension: $manga->extension !== '' ? $manga->extension : null,
+
+            editeur: $manga->editeur,
+
+            numero: $manga->numero,
+            lu: $manga->lu,
+
+            statut: $manga->statut,
+
+            jacquette: $manga->jacquette,
+            livreNote: $manga->livre_note,
+            note: $manga->note,
+
+            commentaire: $manga->commentaire,
+
+            total: $manga->total,
+            totalLu: $manga->total_lu,
+            averageNote: $manga->average_note,
+
+            xpReadRewarded: $manga->xp_read_rewarded,
+            xpSeriesRewarded: $manga->xp_series_rewarded,
         );
     }
 

@@ -37,23 +37,13 @@ final readonly class ArtbookWriteService
     /**
      * @param array<string,mixed> $files
      */
-    public function create(
-        ArtbookCreateDTO $dto,
-        array $files
-    ): ServiceResult
+    public function create(ArtbookCreateDTO $dto, array $files): ServiceResult
     {
-        $existing = $this->artbookRepository
-            ->findOneBySlugAndNumero(
-                $dto->slug,
-                $dto->numero,
-            );
+        $existingArtbook = $this->artbookRepository->findOneBySlugAndNumero($dto->slug, $dto->numero);
 
-        if ($existing !== null)
+        if ($existingArtbook !== null)
         {
-            return $this->error(
-                'Cet artbook existe déjà',
-                409,
-            );
+            return $this->error('Cet artbook existe déjà', 409);
         }
 
         return $this->database->transaction(

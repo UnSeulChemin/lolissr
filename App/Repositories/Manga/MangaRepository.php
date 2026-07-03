@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Repositories\Manga;
 
-use App\DTO\Manga\Responses\MangaData;
 use App\Models\Manga;
 use App\Models\Model;
 use App\Repositories\Manga\Concerns\HasMangaStatsSubQuery;
@@ -52,25 +51,26 @@ final class MangaRepository extends Model
         return $mangas;
     }
 
-    /**
-     * @return list<MangaData>
-     */
-    public function findBySlugDto(string $slug): array
-    {
-        return $this->mapResultsToDto($this->findBySlug($slug));
-    }
-
     public function findOneBySlugAndNumero(string $slug, int $numero): ?Manga
     {
         /** @var Manga|null $manga */
         $manga = $this->fetchOne(
             "
-            SELECT *
+            SELECT
+                m.*,
+                stats.total,
+                stats.total_lu,
+                stats.average_note
 
-            FROM {$this->table()}
+            FROM {$this->table()} m
 
-            WHERE slug = :slug
-            AND numero = :numero
+            INNER JOIN (
+                {$this->statsSubQuery()}
+            ) stats
+                ON stats.slug = m.slug
+
+            WHERE m.slug = :slug
+            AND m.numero = :numero
 
             LIMIT 1
             ",
@@ -82,18 +82,6 @@ final class MangaRepository extends Model
         );
 
         return $manga;
-    }
-
-    public function findOneDtoBySlugAndNumero(string $slug, int $numero): ?MangaData
-    {
-        $manga = $this->findOneBySlugAndNumero($slug, $numero);
-
-        if ($manga === null)
-        {
-            return null;
-        }
-
-        return $this->mapToDto($manga);
     }
 
     /**
@@ -260,47 +248,6 @@ final class MangaRepository extends Model
     | HELPERS
     |--------------------------------------------------------------------------
     */
-
-    private function mapToDto(Manga $manga): MangaData
-    {
-        return new MangaData(
-            id: $manga->id,
-            slug: $manga->slug,
-            livre: $manga->livre,
-
-            thumbnail: $manga->thumbnail !== '' ? $manga->thumbnail : null,
-            extension: $manga->extension !== '' ? $manga->extension : null,
-
-            editeur: $manga->editeur,
-
-            numero: $manga->numero,
-            lu: $manga->lu,
-
-            statut: $manga->statut,
-
-            jacquette: $manga->jacquette,
-            livreNote: $manga->livre_note,
-            note: $manga->note,
-
-            commentaire: $manga->commentaire,
-
-            total: $manga->total,
-            totalLu: $manga->total_lu,
-            averageNote: $manga->average_note,
-
-            xpReadRewarded: $manga->xp_read_rewarded,
-            xpSeriesRewarded: $manga->xp_series_rewarded
-        );
-    }
-
-    /**
-     * @param list<Manga> $mangas
-     * @return list<MangaData>
-     */
-    private function mapResultsToDto(array $mangas): array
-    {
-        return array_map($this->mapToDto(...), $mangas);
-    }
 
     private function normalizeSlug(string $slug): string
     {

@@ -39,18 +39,11 @@ final readonly class FigurineWriteService
      */
     public function create(FigurineCreateDTO $dto, array $files): ServiceResult
     {
-        $existing = $this->figurineRepository
-            ->findOneBySlugAndNumero(
-                $dto->slug,
-                $dto->numero,
-            );
+        $existingFigurine = $this->figurineRepository->findOneBySlugAndNumero($dto->slug, $dto->numero);
 
-        if ($existing !== null)
+        if ($existingFigurine !== null)
         {
-            return $this->error(
-                'Cette figurine existe déjà',
-                409,
-            );
+            return $this->error('Cette figurine existe déjà', 409);
         }
 
         return $this->database->transaction(
@@ -122,11 +115,7 @@ final readonly class FigurineWriteService
         );
     }
 
-    public function update(
-        string $slug,
-        int $numero,
-        FigurineUpdateDTO $dto
-    ): ServiceResult
+    public function update(string $slug, int $numero, FigurineUpdateDTO $dto): ServiceResult
     {
         return $this->database->transaction(
             function () use (
@@ -135,11 +124,7 @@ final readonly class FigurineWriteService
                 $dto
             ): ServiceResult
             {
-                $updated = $this->figurineRepository->updateFigurine(
-                    $slug,
-                    $numero,
-                    $dto
-                );
+                $updated = $this->figurineRepository->updateFigurine($slug, $numero, $dto);
 
                 $failure = $this->writeFailed(
                     $updated,
@@ -156,17 +141,12 @@ final readonly class FigurineWriteService
 
                 $this->clearCache();
 
-                return $this->success(
-                    'Figurine mise à jour avec succès'
-                );
+                return $this->success('Figurine mise à jour avec succès');
             }
         );
     }
 
-    public function delete(
-        string $slug,
-        int $numero
-    ): ServiceResult
+    public function delete(string $slug, int $numero): ServiceResult
     {
         return $this->database->transaction(
             function () use (
@@ -182,17 +162,10 @@ final readonly class FigurineWriteService
 
                 if ($figurine === null)
                 {
-                    return $this->error(
-                        'Figurine introuvable',
-                        404
-                    );
+                    return $this->error('Figurine introuvable', 404);
                 }
 
-                $deleted = $this->figurineRepository
-                    ->deleteBySlugAndNumero(
-                        $slug,
-                        $numero
-                    );
+                $deleted = $this->figurineRepository->deleteBySlugAndNumero($slug, $numero);
 
                 $failure = $this->writeFailed(
                     $deleted,
@@ -211,9 +184,7 @@ final readonly class FigurineWriteService
 
                 $this->clearCache();
 
-                return $this->success(
-                    'Figurine supprimée avec succès'
-                );
+                return $this->success('Figurine supprimée avec succès');
             }
         );
     }
@@ -229,14 +200,10 @@ final readonly class FigurineWriteService
         $this->uploadService->removeFile($upload->destinationPath);
     }
 
-    private function removeThumbnail(
-        Figurine $figurine
-    ): void
+    private function removeThumbnail(Figurine $figurine): void
     {
-        if (
-            $figurine->thumbnail === ''
-            || $figurine->extension === ''
-        ) {
+        if ($figurine->thumbnail === '' || $figurine->extension === '')
+        {
             return;
         }
 
@@ -268,11 +235,7 @@ final readonly class FigurineWriteService
             return null;
         }
 
-        $this->logFailure(
-            $action,
-            $slug,
-            $numero
-        );
+        $this->logFailure($action, $slug, $numero);
 
         return $this->error($message);
     }
@@ -282,15 +245,9 @@ final readonly class FigurineWriteService
         Cache::forget('home.dashboard');
     }
 
-    private function logFailure(
-        string $action,
-        string $slug,
-        int $numero
-    ): void
+    private function logFailure(string $action, string $slug, int $numero): void
     {
-        Logger::error(
-            "{$action} échoué slug={$slug} numero={$numero}"
-        );
+        Logger::error("{$action} échoué slug={$slug} numero={$numero}");
     }
 
     /**
@@ -298,11 +255,7 @@ final readonly class FigurineWriteService
      */
     private function success(string $message, array $data = [], int $status = 200): ServiceResult
     {
-        return ServiceResult::success(
-            message: $message,
-            data: $data,
-            status: $status
-        );
+        return ServiceResult::success(message: $message, data: $data, status: $status);
     }
 
     /**
@@ -310,10 +263,6 @@ final readonly class FigurineWriteService
      */
     private function error(string $message, int $status = 500, array $data = []): ServiceResult
     {
-        return ServiceResult::error(
-            message: $message,
-            data: $data,
-            status: $status
-        );
+        return ServiceResult::error(message: $message, data: $data, status: $status);
     }
 }

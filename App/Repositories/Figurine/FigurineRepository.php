@@ -14,59 +14,6 @@ final class FigurineRepository extends Model
 {
     protected string $table = 'figurine';
 
-    /**
-     * @return list<Figurine>
-     */
-    public function findAll(): array
-    {
-        /** @var list<Figurine> $figurine */
-        $figurines = $this->fetchAll(
-            "
-            SELECT *
-
-            FROM {$this->table()}
-
-            ORDER BY waifu ASC, numero ASC
-            ",
-            [],
-            Figurine::class
-        );
-
-        return $figurines;
-    }
-
-    /**
-     * @return list<Figurine>
-     */
-    public function findPaginated(
-        int $limit,
-        int $page,
-    ): array
-    {
-        $offset = ($page - 1) * $limit;
-
-        /** @var list<Figurine> $figurines */
-        $figurines = $this->fetchAll(
-            "
-            SELECT *
-
-            FROM {$this->table()}
-
-            ORDER BY waifu ASC, numero ASC
-
-            LIMIT :limit
-            OFFSET :offset
-            ",
-            [
-                'limit' => $limit,
-                'offset' => $offset,
-            ],
-            Figurine::class
-        );
-
-        return $figurines;
-    }
-
     public function findOneBySlugAndNumero(
         string $slug,
         int $numero
@@ -92,11 +39,6 @@ final class FigurineRepository extends Model
         );
 
         return $figurine;
-    }
-
-    public function countAll(): int
-    {
-        return $this->countRows();
     }
 
     /**

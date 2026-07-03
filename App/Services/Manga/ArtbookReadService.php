@@ -22,6 +22,12 @@ final readonly class ArtbookReadService
     ) {
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | ARTBOOKS
+    |--------------------------------------------------------------------------
+    */
+
     public function artbooks(int|string $page = 1): ?ArtbookListData
     {
         $page = max(1, (int) $page);
@@ -42,10 +48,7 @@ final readonly class ArtbookReadService
             return null;
         }
 
-        $artbooks = $this->collectionRepository->findPaginated(
-            $perPage,
-            $page,
-        );
+        $artbooks = $this->collectionRepository->findPaginated($perPage, $page);
 
         return new ArtbookListData(
             artbooks: array_map($this->mapArtbook(...), $artbooks),
@@ -56,10 +59,15 @@ final readonly class ArtbookReadService
         );
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | SHOW
+    |--------------------------------------------------------------------------
+    */
+
     public function one(string $slug, int $numero): ?ArtbookData
     {
-        $artbook = $this->artbookRepository
-            ->findOneBySlugAndNumero($slug, $numero);
+        $artbook = $this->artbookRepository->findOneBySlugAndNumero($slug, $numero);
 
         if ($artbook === null)
         {
@@ -69,9 +77,13 @@ final readonly class ArtbookReadService
         return $this->mapArtbook($artbook);
     }
 
-    private function mapArtbook(
-        Artbook $artbook
-    ): ArtbookData
+    /*
+    |--------------------------------------------------------------------------
+    | MAPPERS
+    |--------------------------------------------------------------------------
+    */
+
+    private function mapArtbook(Artbook $artbook): ArtbookData
     {
         return new ArtbookData(
             id: $artbook->id,
