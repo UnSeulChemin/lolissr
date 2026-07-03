@@ -23,7 +23,7 @@ final class ArtbookCollectionRepository extends Model
 
             FROM {$this->table()}
 
-            ORDER BY created_at DESC
+            ORDER BY id DESC
             ",
             [],
             Artbook::class
@@ -52,7 +52,7 @@ final class ArtbookCollectionRepository extends Model
 
             FROM {$this->table()}
 
-            ORDER BY created_at DESC
+            ORDER BY id DESC
 
             LIMIT :limit
             OFFSET :offset

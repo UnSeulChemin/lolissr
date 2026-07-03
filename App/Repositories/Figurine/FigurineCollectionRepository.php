@@ -28,7 +28,7 @@ final class FigurineCollectionRepository extends Model
 
             FROM {$this->table()}
 
-            ORDER BY waifu ASC, numero ASC
+            ORDER BY id DESC
             ",
             [],
             Figurine::class
@@ -51,7 +51,7 @@ final class FigurineCollectionRepository extends Model
 
             FROM {$this->table()}
 
-            ORDER BY waifu ASC, numero ASC
+            ORDER BY id DESC
 
             LIMIT :limit
             OFFSET :offset
