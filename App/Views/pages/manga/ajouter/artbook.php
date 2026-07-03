@@ -4,25 +4,25 @@ declare(strict_types=1);
 
 use Framework\Support\Session;
 
-$errors =
-    Session::pull('errors', []);
+$baseUri = view_base_uri();
 
-$old =
-    Session::pull('old', []);
+$errors = Session::pull('errors', []);
 
-$baseUri =
-    rtrim(
-        (string) ($baseUri ?? ''),
-        '/',
-    ) . '/';
+$old = Session::pull('old', []);
 
-$formAction =
-    $baseUri
-    . 'manga/ajouter/artbook';
+$artbookValue = $old['artbook'] ?? '';
 
-$returnUrl =
-    $baseUri
-    . 'manga';
+$slugValue = $old['slug'] ?? '';
+
+$auteurValue = $old['auteur'] ?? '';
+
+$serieValue = $old['serie'] ?? '';
+
+$numeroValue = $old['numero'] ?? '';
+
+$formAction = $baseUri . 'manga/ajouter/artbook';
+
+$returnUrl = $baseUri . 'manga';
 
 ?>
 
@@ -59,7 +59,7 @@ $returnUrl =
                         name="artbook"
                         id="artbook"
                         placeholder="Ex : Carnelian Art Works"
-                        value="<?= e((string) ($old['artbook'] ?? '')) ?>"
+                        value="<?= e($artbookValue) ?>"
                         autofocus
                         required
                     >
@@ -71,7 +71,7 @@ $returnUrl =
 
                         <p class="form-error">
 
-                            <?= e((string) $errors['artbook']) ?>
+                            <?= e($errors['artbook']) ?>
 
                         </p>
 
@@ -97,7 +97,7 @@ $returnUrl =
                         name="slug"
                         id="slug"
                         placeholder="Ex : carnelian-art-works"
-                        value="<?= e((string) ($old['slug'] ?? '')) ?>"
+                        value="<?= e($slugValue) ?>"
                         required
                     >
 
@@ -108,7 +108,7 @@ $returnUrl =
 
                         <p class="form-error">
 
-                            <?= e((string) $errors['slug']) ?>
+                            <?= e($errors['slug']) ?>
 
                         </p>
 
@@ -134,7 +134,7 @@ $returnUrl =
                         name="auteur"
                         id="auteur"
                         placeholder="Ex : Carnelian"
-                        value="<?= e((string) ($old['auteur'] ?? '')) ?>"
+                        value="<?= e($auteurValue) ?>"
                         maxlength="100"
                     >
 
@@ -145,7 +145,7 @@ $returnUrl =
 
                         <p class="form-error">
 
-                            <?= e((string) $errors['auteur']) ?>
+                            <?= e($errors['auteur']) ?>
 
                         </p>
 
@@ -171,7 +171,7 @@ $returnUrl =
                         name="serie"
                         id="serie"
                         placeholder="Ex : Original"
-                        value="<?= e((string) ($old['serie'] ?? '')) ?>"
+                        value="<?= e($serieValue) ?>"
                         maxlength="100"
                     >
 
@@ -182,7 +182,7 @@ $returnUrl =
 
                         <p class="form-error">
 
-                            <?= e((string) $errors['serie']) ?>
+                            <?= e($errors['serie']) ?>
 
                         </p>
 
@@ -209,7 +209,7 @@ $returnUrl =
                         id="numero"
                         min="1"
                         placeholder="Ex : 1"
-                        value="<?= e((string) ($old['numero'] ?? '')) ?>"
+                        value="<?= e($numeroValue) ?>"
                         required
                     >
 
@@ -220,7 +220,7 @@ $returnUrl =
 
                         <p class="form-error">
 
-                            <?= e((string) $errors['numero']) ?>
+                            <?= e($errors['numero']) ?>
 
                         </p>
 
@@ -267,7 +267,7 @@ $returnUrl =
 
                         <p class="form-error">
 
-                            <?= e((string) $errors['image']) ?>
+                            <?= e($errors['image']) ?>
 
                         </p>
 

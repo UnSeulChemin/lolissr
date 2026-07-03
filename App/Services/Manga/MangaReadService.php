@@ -159,48 +159,6 @@ final readonly class MangaReadService
     |--------------------------------------------------------------------------
     */
 
-    private function mapSeriesItem(Manga $manga): MangaSeriesItemData
-    {
-        $baseUri = App::baseUri();
-
-        $thumbnail = $manga->thumbnail !== '' ? $manga->thumbnail : null;
-
-        $extension = $manga->extension !== '' ? $manga->extension : null;
-
-        $status = $manga->statut !== '' ? $manga->statut : 'en_cours';
-
-        return new MangaSeriesItemData(
-            slug: $manga->slug,
-            numero: $manga->numero,
-            livre: $manga->livre,
-
-            thumbnail: $thumbnail,
-            extension: $extension,
-
-            thumbnailUrl:
-                $thumbnail !== null && $extension !== null
-                    ? "{$baseUri}images/manga/thumbnail/{$thumbnail}.{$extension}"
-                    : null,
-
-            statut: $status,
-
-            statusLabel: $status === 'termine' ? 'Terminé' : 'En cours',
-
-            statusClass: $status === 'termine' ? 'collection-status-finished' : 'collection-status-progress',
-
-            note: $manga->note === null ? null : (float) $manga->note,
-
-            averageNote: $manga->average_note,
-
-            total: $manga->total ?? 0,
-            totalLu: $manga->total_lu ?? 0,
-
-            lu: $manga->lu,
-
-            isFullyRead: ($manga->total ?? 0) > 0 && ($manga->total_lu ?? 0) >= ($manga->total ?? 0),
-        );
-    }
-
     private function mapManga(Manga $manga): MangaData
     {
         $baseUri = App::baseUri();
@@ -272,6 +230,48 @@ final readonly class MangaReadService
 
             xpReadRewarded: $manga->xp_read_rewarded,
             xpSeriesRewarded: $manga->xp_series_rewarded,
+        );
+    }
+
+    private function mapSeriesItem(Manga $manga): MangaSeriesItemData
+    {
+        $baseUri = App::baseUri();
+
+        $thumbnail = $manga->thumbnail !== '' ? $manga->thumbnail : null;
+
+        $extension = $manga->extension !== '' ? $manga->extension : null;
+
+        $status = $manga->statut !== '' ? $manga->statut : 'en_cours';
+
+        return new MangaSeriesItemData(
+            slug: $manga->slug,
+            numero: $manga->numero,
+            livre: $manga->livre,
+
+            thumbnail: $thumbnail,
+            extension: $extension,
+
+            thumbnailUrl:
+                $thumbnail !== null && $extension !== null
+                    ? "{$baseUri}images/manga/thumbnail/{$thumbnail}.{$extension}"
+                    : null,
+
+            statut: $status,
+
+            statusLabel: $status === 'termine' ? 'Terminé' : 'En cours',
+
+            statusClass: $status === 'termine' ? 'collection-status-finished' : 'collection-status-progress',
+
+            note: $manga->note === null ? null : (float) $manga->note,
+
+            averageNote: $manga->average_note,
+
+            total: $manga->total ?? 0,
+            totalLu: $manga->total_lu ?? 0,
+
+            lu: $manga->lu,
+
+            isFullyRead: ($manga->total ?? 0) > 0 && ($manga->total_lu ?? 0) >= ($manga->total ?? 0),
         );
     }
 

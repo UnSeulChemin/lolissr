@@ -6,6 +6,7 @@ namespace App\Services\Manga;
 
 use App\DTO\Manga\Responses\ArtbookData;
 use App\DTO\Manga\Responses\ArtbookListData;
+use App\DTO\Manga\Responses\ArtbookSeriesItemData;
 use App\Models\Artbook;
 use App\Repositories\Manga\ArtbookCollectionRepository;
 use App\Repositories\Manga\ArtbookRepository;
@@ -51,7 +52,7 @@ final readonly class ArtbookReadService
         $artbooks = $this->collectionRepository->findPaginated($perPage, $page);
 
         return new ArtbookListData(
-            artbooks: array_map($this->mapArtbook(...), $artbooks),
+            artbooks: array_map($this->mapSeriesItem(...), $artbooks),
             compteur: $totalPages,
             currentPage: $page,
             totalArtbooks: $totalArtbooks,
@@ -95,6 +96,52 @@ final readonly class ArtbookReadService
             auteur: $artbook->auteur,
             serie: $artbook->serie,
             createdAt: $artbook->created_at,
+        );
+    }
+
+    private function mapSeriesItem(Artbook $artbook): ArtbookSeriesItemData
+    {
+        $baseUri = App::baseUri();
+
+        $thumbnail = $artbook->thumbnail !== ''
+            ? $artbook->thumbnail
+            : null;
+
+        $extension = $artbook->extension !== ''
+            ? $artbook->extension
+            : null;
+
+        $auteur =
+            trim((string) $artbook->auteur) !== ''
+                ? $artbook->auteur
+                : null;
+
+        $serie =
+            trim((string) $artbook->serie) !== ''
+                ? $artbook->serie
+                : null;
+
+        return new ArtbookSeriesItemData(
+            slug: $artbook->slug,
+            numero: $artbook->numero,
+
+            artbook: $artbook->artbook,
+
+            thumbnail: $thumbnail,
+            extension: $extension,
+
+            thumbnailUrl:
+                $thumbnail !== null && $extension !== null
+                    ? "{$baseUri}images/artbook/thumbnail/{$thumbnail}.{$extension}"
+                    : null,
+
+            auteur: $auteur,
+            serie: $serie,
+
+            subtitle:
+                $serie
+                ?? $auteur
+                ?? 'Artbook',
         );
     }
 }

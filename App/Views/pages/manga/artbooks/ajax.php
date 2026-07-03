@@ -2,114 +2,66 @@
 
 declare(strict_types=1);
 
-/** @var list<App\Models\Artbook> $artbooks */
+use App\DTO\Manga\Responses\ArtbookSeriesItemData;
 
-$baseUri =
-    rtrim(
-        $baseUri ?? '',
-        '/',
-    ) . '/';
+/** @var list<ArtbookSeriesItemData> $artbooks */
+
+$baseUri = view_base_uri();
 
 ?>
 
 <div class="collection-ajax-content">
 
-<?php if ($artbooks === []): ?>
+    <?php if ($artbooks === []): ?>
 
-    <p class="collection-empty">
-        Aucun artbook trouvé.
-    </p>
-
-</div>
-
-<?php return; endif; ?>
-
-<section class="collection-grid">
-
-<?php foreach ($artbooks as $artbook):
-
-    $slug =
-        $artbook->slug;
-
-    $title =
-        $artbook->artbook;
-
-    $author =
-        $artbook->auteur;
-
-    $serie =
-        $artbook->serie;
-
-    $thumbnail =
-        $artbook->thumbnail;
-
-    $extension =
-        $artbook->extension;
-
-    $numero =
-        $artbook->numero;
-
-    if (
-        $slug === ''
-        || $title === ''
-        || $thumbnail === ''
-        || $extension === ''
-    ) {
-        continue;
-    }
-
-    $thumbnailPath =
-        "{$baseUri}images/artbook/thumbnail/{$thumbnail}.{$extension}";
-
-    $subtitle =
-        $serie !== null
-        && trim($serie) !== ''
-            ? $serie
-            : (
-                $author !== null
-                && trim($author) !== ''
-                    ? $author
-                    : 'Artbook'
-            );
-
-?>
-
-<a
-    class="
-        card
-        transition-card
-        card-link
-        collection-card
-        collection-card-link
-    "
-    data-prefetch
-    href="<?= e($baseUri) ?>manga/artbooks/<?= e($slug) ?>/<?= $numero ?>"
->
-
-    <div class="card-image-box-portrait">
-
-        <img
-            class="card-image-portrait"
-            src="<?= e($thumbnailPath) ?>"
-            alt="<?= e($title) ?>"
-            loading="lazy"
-            draggable="false"
-        >
+        <p class="collection-empty">
+            Aucun artbook trouvé.
+        </p>
 
     </div>
 
-    <p class="collection-card-title">
-        <?= e($title) ?>
-    </p>
+    <?php return; endif; ?>
 
-    <p class="collection-card-subtitle">
-        <?= e($subtitle) ?>
-    </p>
+    <section class="collection-grid">
 
-</a>
+        <?php foreach ($artbooks as $artbook): ?>
 
-<?php endforeach; ?>
+            <a
+                class="
+                    card
+                    transition-card
+                    card-link
+                    collection-card
+                    collection-card-link
+                "
+                data-prefetch
+                href="<?= e($baseUri) ?>manga/artbooks/<?= e($artbook->slug) ?>/<?= $artbook->numero ?>"
+            >
 
-</section>
+                <div class="card-image-box-portrait">
+
+                    <img
+                        class="card-image-portrait"
+                        src="<?= e($artbook->thumbnailUrl) ?>"
+                        alt="<?= e($artbook->artbook) ?>"
+                        loading="lazy"
+                        draggable="false"
+                    >
+
+                </div>
+
+                <p class="collection-card-title">
+                    <?= e($artbook->artbook) ?>
+                </p>
+
+                <p class="collection-card-subtitle">
+                    <?= e($artbook->subtitle) ?>
+                </p>
+
+            </a>
+
+        <?php endforeach; ?>
+
+    </section>
 
 </div>

@@ -4,14 +4,29 @@ declare(strict_types=1);
 
 use Framework\Support\Session;
 
+$baseUri = view_base_uri();
+
 $errors = Session::pull('errors', []);
 
 $old = Session::pull('old', []);
 
-$baseUri = rtrim(
-    (string) ($baseUri ?? ''),
-    '/',
-) . '/';
+$waifuValue = $old['waifu'] ?? '';
+
+$originValue = $old['origin'] ?? '';
+
+$slugValue = $old['slug'] ?? '';
+
+$scaleValue = $old['scale'] ?? '';
+
+$heightValue = $old['height_cm'] ?? '';
+
+$companyValue = $old['company'] ?? '';
+
+$numeroValue = $old['numero'] ?? '';
+
+$releaseDateValue = $old['release_date'] ?? '';
+
+$commentaireValue = $old['commentaire'] ?? '';
 
 $formAction = $baseUri . 'figurine/ajouter';
 
@@ -50,7 +65,7 @@ $returnUrl = $baseUri . 'figurine';
                         name="waifu"
                         id="waifu"
                         placeholder="Ex : Asuna"
-                        value="<?= e((string) ($old['waifu'] ?? '')) ?>"
+                        value="<?= e($waifuValue) ?>"
                         autofocus
                         required
                     >
@@ -58,7 +73,7 @@ $returnUrl = $baseUri . 'figurine';
                     <?php if (isset($errors['waifu']) && $errors['waifu'] !== ''): ?>
 
                         <p class="form-error">
-                            <?= e((string) $errors['waifu']) ?>
+                            <?= e($errors['waifu']) ?>
                         </p>
 
                     <?php endif; ?>
@@ -80,7 +95,7 @@ $returnUrl = $baseUri . 'figurine';
                         name="origin"
                         id="origin"
                         placeholder="Ex : Yosuga no Sora"
-                        value="<?= e((string) ($old['origin'] ?? '')) ?>"
+                        value="<?= e($originValue) ?>"
                         maxlength="150"
                         required
                     >
@@ -88,7 +103,7 @@ $returnUrl = $baseUri . 'figurine';
                     <?php if (isset($errors['origin']) && $errors['origin'] !== ''): ?>
 
                         <p class="form-error">
-                            <?= e((string) $errors['origin']) ?>
+                            <?= e($errors['origin']) ?>
                         </p>
 
                     <?php endif; ?>
@@ -110,14 +125,14 @@ $returnUrl = $baseUri . 'figurine';
                         name="slug"
                         id="slug"
                         placeholder="Ex : asuna"
-                        value="<?= e((string) ($old['slug'] ?? '')) ?>"
+                        value="<?= e($slugValue) ?>"
                         required
                     >
 
                     <?php if (isset($errors['slug']) && $errors['slug'] !== ''): ?>
 
                         <p class="form-error">
-                            <?= e((string) $errors['slug']) ?>
+                            <?= e($errors['slug']) ?>
                         </p>
 
                     <?php endif; ?>
@@ -139,7 +154,7 @@ $returnUrl = $baseUri . 'figurine';
                         name="scale"
                         id="scale"
                         placeholder="Ex : 1/7"
-                        value="<?= e((string) ($old['scale'] ?? '')) ?>"
+                        value="<?= e($scaleValue) ?>"
                         maxlength="10"
                         required
                     >
@@ -147,7 +162,7 @@ $returnUrl = $baseUri . 'figurine';
                     <?php if (isset($errors['scale']) && $errors['scale'] !== ''): ?>
 
                         <p class="form-error">
-                            <?= e((string) $errors['scale']) ?>
+                            <?= e($errors['scale']) ?>
                         </p>
 
                     <?php endif; ?>
@@ -171,13 +186,13 @@ $returnUrl = $baseUri . 'figurine';
                         min="0"
                         step="0.1"
                         placeholder="Ex : 24.5"
-                        value="<?= e((string) ($old['height_cm'] ?? '')) ?>"
+                        value="<?= e($heightValue) ?>"
                     >
 
                     <?php if (isset($errors['height_cm']) && $errors['height_cm'] !== ''): ?>
 
                         <p class="form-error">
-                            <?= e((string) $errors['height_cm']) ?>
+                            <?= e($errors['height_cm']) ?>
                         </p>
 
                     <?php endif; ?>
@@ -200,7 +215,7 @@ $returnUrl = $baseUri . 'figurine';
                         name="company"
                         id="company"
                         placeholder="Ex : Good Smile Company"
-                        value="<?= e((string) ($old['company'] ?? '')) ?>"
+                        value="<?= e($companyValue) ?>"
                         maxlength="100"
                         required
                     >
@@ -208,7 +223,7 @@ $returnUrl = $baseUri . 'figurine';
                     <?php if (isset($errors['company']) && $errors['company'] !== ''): ?>
 
                         <p class="form-error">
-                            <?= e((string) $errors['company']) ?>
+                            <?= e($errors['company']) ?>
                         </p>
 
                     <?php endif; ?>
@@ -231,14 +246,14 @@ $returnUrl = $baseUri . 'figurine';
                         id="numero"
                         min="1"
                         placeholder="Ex : 1"
-                        value="<?= e((string) ($old['numero'] ?? '')) ?>"
+                        value="<?= e($numeroValue) ?>"
                         required
                     >
 
                     <?php if (isset($errors['numero']) && $errors['numero'] !== ''): ?>
 
                         <p class="form-error">
-                            <?= e((string) $errors['numero']) ?>
+                            <?= e($errors['numero']) ?>
                         </p>
 
                     <?php endif; ?>
@@ -260,14 +275,14 @@ $returnUrl = $baseUri . 'figurine';
                         name="release_date"
                         id="release_date"
                         placeholder="JJ/MM/AAAA"
-                        value="<?= e((string) ($old['release_date'] ?? '')) ?>"
+                        value="<?= e($releaseDateValue) ?>"
                         maxlength="10"
                     >
 
                     <?php if (isset($errors['release_date']) && $errors['release_date'] !== ''): ?>
 
                         <p class="form-error">
-                            <?= e((string) $errors['release_date']) ?>
+                            <?= e($errors['release_date']) ?>
                         </p>
 
                     <?php endif; ?>
@@ -306,7 +321,7 @@ $returnUrl = $baseUri . 'figurine';
                     <?php if (isset($errors['image']) && $errors['image'] !== ''): ?>
 
                         <p class="form-error">
-                            <?= e((string) $errors['image']) ?>
+                            <?= e($errors['image']) ?>
                         </p>
 
                     <?php endif; ?>
@@ -330,12 +345,12 @@ $returnUrl = $baseUri . 'figurine';
                         rows="4"
                         maxlength="1000"
                         placeholder="Ex : Très belle figurine, édition limitée..."
-                    ><?= e((string) ($old['commentaire'] ?? '')) ?></textarea>
+                    ><?= e($commentaireValue) ?></textarea>
 
                     <?php if (isset($errors['commentaire']) && $errors['commentaire'] !== ''): ?>
 
                         <p class="form-error">
-                            <?= e((string) $errors['commentaire']) ?>
+                            <?= e($errors['commentaire']) ?>
                         </p>
 
                     <?php endif; ?>
