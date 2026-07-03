@@ -110,10 +110,6 @@ return static function (Router $router): void
         {
             $router->get('', [MangaController::class, 'index']);
 
-            $router->get('recherche', [MangaController::class, 'search']);
-
-            $router->get('recherche/{query}', [MangaController::class, 'search']);
-
             $router->get('lien', [MangaController::class, 'links']);
 
             /*

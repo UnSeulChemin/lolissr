@@ -176,8 +176,6 @@ $currentSearch =
 
                 <form
                     class="header-search js-header-search"
-                    method="GET"
-                    action="<?= e($baseUri) ?>manga/recherche"
                     data-base-path="<?= e($baseUri) ?>"
                 >
 
@@ -189,10 +187,6 @@ $currentSearch =
                         value="<?= e($currentSearch) ?>"
                         autocomplete="off"
                     >
-
-                    <button type="submit">
-                        🔎
-                    </button>
 
                     <div class="header-search-dropdown js-header-search-dropdown">
 

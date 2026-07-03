@@ -119,17 +119,6 @@ final class MangaController extends Controller
         $this->render('pages/manga/series/a-lire', ['mangas' => $this->mangaReadService->aLire()]);
     }
 
-    public function search(string $query = ''): never
-    {
-        $data = $this->mangaReadService->search($query);
-
-        $this->title = $data->search !== ''
-            ? 'Manga | Recherche : ' . $data->search
-            : 'Manga | Recherche';
-
-        $this->render('pages/manga/series/recherche', ['mangas' => $data->results, 'search' => $data->search]);
-    }
-
     /*
     |--------------------------------------------------------------------------
     | AFFICHAGE

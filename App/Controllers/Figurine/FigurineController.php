@@ -70,6 +70,23 @@ final class FigurineController extends Controller
         ]);
     }
 
+    public function search(string $query = ''): never
+    {
+        $data = $this->figurineReadService->search($query);
+
+        $this->title = $data->search !== ''
+            ? 'Figurine | Recherche : ' . $data->search
+            : 'Figurine | Recherche';
+
+        $this->render(
+            'pages/figurine/waifus/recherche',
+            [
+                'figurines' => $data->results,
+                'search' => $data->search,
+            ]
+        );
+    }
+
     public function showWaifu(
         string $slug,
         int $numero
