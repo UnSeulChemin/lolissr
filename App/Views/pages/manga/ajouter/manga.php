@@ -4,11 +4,21 @@ declare(strict_types=1);
 
 use Framework\Support\Session;
 
+$baseUri = view_base_uri();
+
 $errors = Session::pull('errors', []);
 
 $old = Session::pull('old', []);
 
-$baseUri = view_base_uri();
+$livreValue = $old['livre'] ?? '';
+
+$slugValue = $old['slug'] ?? '';
+
+$editeurValue = $old['editeur'] ?? '';
+
+$numeroValue = $old['numero'] ?? '';
+
+$commentaireValue = $old['commentaire'] ?? '';
 
 $statutValue = $old['statut'] ?? 'en_cours';
 
@@ -53,7 +63,7 @@ $returnUrl = $baseUri . 'manga';
                         name="livre"
                         id="livre"
                         placeholder="Ex : To Love Ru"
-                        value="<?= e($old['livre'] ?? '') ?>"
+                        value="<?= e($livreValue) ?>"
                         autofocus
                         required
                     >
@@ -91,7 +101,7 @@ $returnUrl = $baseUri . 'manga';
                         name="slug"
                         id="slug"
                         placeholder="Ex : to-love-ru"
-                        value="<?= e($old['slug'] ?? '') ?>"
+                        value="<?= e($slugValue) ?>"
                         required
                     >
 
@@ -128,7 +138,7 @@ $returnUrl = $baseUri . 'manga';
                         name="editeur"
                         id="editeur"
                         placeholder="Ex : Delcourt/Tonkam"
-                        value="<?= e($old['editeur'] ?? '') ?>"
+                        value="<?= e($editeurValue) ?>"
                         maxlength="100"
                         required
                     >
@@ -223,7 +233,7 @@ $returnUrl = $baseUri . 'manga';
                         id="numero"
                         min="1"
                         placeholder="Ex : 1"
-                        value="<?= e($old['numero'] ?? '') ?>"
+                        value="<?= e($numeroValue) ?>"
                         required
                     >
 
@@ -308,7 +318,7 @@ $returnUrl = $baseUri . 'manga';
                         rows="4"
                         maxlength="1000"
                         placeholder="Ex : défaut en haut de la jacquette"
-                    ><?= e($old['commentaire'] ?? '') ?></textarea>
+                    ><?= e($commentaireValue) ?></textarea>
 
                     <?php if (
                         isset($errors['commentaire'])
