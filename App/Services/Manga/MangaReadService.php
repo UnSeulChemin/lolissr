@@ -252,6 +252,8 @@ final readonly class MangaReadService
             livreNote: $manga->livre_note,
             note: $manga->note,
 
+            noteLabel: $manga->note !== null ? $manga->note . '/10' : 'Non calculée',
+
             commentaire: $manga->commentaire,
 
             hasCommentaire:

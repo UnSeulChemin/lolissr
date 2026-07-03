@@ -27,6 +27,7 @@ final readonly class MangaData
         public ?int $jacquette,
         public ?int $livreNote,
         public ?int $note,
+        public string $noteLabel,
 
         public bool $isPerfectJacquette,
         public bool $isPerfectLivre,

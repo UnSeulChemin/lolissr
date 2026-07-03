@@ -55,11 +55,6 @@ $cancelUrl =
     . '/'
     . $manga->numero;
 
-$noteTotal =
-    $manga->note !== null
-        ? $manga->note . '/10'
-        : 'Non calculée';
-
 ?>
 
 <section class="layout-container dashboard-page">
@@ -352,7 +347,7 @@ $noteTotal =
                         class="form-input"
                         type="text"
                         id="note-total"
-                        value="<?= e($noteTotal) ?>"
+                        value="<?= e($manga->noteLabel) ?>"
                         readonly
                     >
 
