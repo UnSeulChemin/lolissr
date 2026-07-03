@@ -320,12 +320,3 @@ $niveauOptions = [
     </section>
 
 </section>
-
-<?php
-
-Session::forget([
-    'errors',
-    'old',
-]);
-
-?>

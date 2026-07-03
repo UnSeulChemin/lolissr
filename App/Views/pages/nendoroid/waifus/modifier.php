@@ -158,10 +158,3 @@ $cancelUrl =
     </section>
 
 </section>
-
-<?php
-
-Session::forget([
-    'errors',
-    'old',
-]);

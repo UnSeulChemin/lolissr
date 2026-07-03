@@ -386,10 +386,3 @@ $returnUrl = $baseUri . 'figurine';
     </section>
 
 </section>
-
-<?php
-
-Session::forget([
-    'errors',
-    'old',
-]);

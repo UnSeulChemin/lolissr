@@ -87,15 +87,46 @@ final readonly class ArtbookReadService
 
     private function mapArtbook(Artbook $artbook): ArtbookData
     {
+        $baseUri = App::baseUri();
+
+        $thumbnail = $artbook->thumbnail !== ''
+            ? $artbook->thumbnail
+            : null;
+
+        $extension = $artbook->extension !== ''
+            ? $artbook->extension
+            : null;
+
+        $auteur = trim((string) $artbook->auteur) !== ''
+            ? $artbook->auteur
+            : null;
+
+        $serie = trim((string) $artbook->serie) !== ''
+            ? $artbook->serie
+            : null;
+
         return new ArtbookData(
             id: $artbook->id,
-            thumbnail: $artbook->thumbnail,
-            extension: $artbook->extension,
+
             slug: $artbook->slug,
             numero: $artbook->numero,
+
             artbook: $artbook->artbook,
-            auteur: $artbook->auteur,
-            serie: $artbook->serie,
+
+            thumbnail: $thumbnail,
+            extension: $extension,
+
+            thumbnailUrl:
+                $thumbnail !== null && $extension !== null
+                    ? "{$baseUri}images/artbook/thumbnail/{$thumbnail}.{$extension}"
+                    : null,
+
+            auteur: $auteur,
+            hasAuteur: $auteur !== null,
+
+            serie: $serie,
+            hasSerie: $serie !== null,
+
             createdAt: $artbook->created_at,
         );
     }

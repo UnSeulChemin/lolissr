@@ -123,10 +123,3 @@ $baseUri =
     </section>
 
 </section>
-
-<?php
-
-Session::forget([
-    'errors',
-    'old',
-]);

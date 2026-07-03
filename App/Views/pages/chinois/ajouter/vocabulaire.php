@@ -316,12 +316,3 @@ $langueOptions = [
     </section>
 
 </section>
-
-<?php
-
-Session::forget([
-    'errors',
-    'old',
-]);
-
-?>

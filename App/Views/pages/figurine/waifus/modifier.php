@@ -331,10 +331,3 @@ $originValue =
     </section>
 
 </section>
-
-<?php
-
-Session::forget([
-    'errors',
-    'old',
-]);

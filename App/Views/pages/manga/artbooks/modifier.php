@@ -2,52 +2,34 @@
 
 declare(strict_types=1);
 
+use App\DTO\Manga\Responses\ArtbookData;
 use Framework\Support\Session;
 
-if (! isset($artbook))
-{
-    throw new \RuntimeException(
-        'Artbook manquant dans la vue.',
-    );
-}
+/** @var ArtbookData $artbook */
 
-$baseUri =
-    rtrim(
-        (string) ($baseUri ?? ''),
-        '/',
-    ) . '/';
+$baseUri = view_base_uri();
 
-$errors =
-    Session::pull('errors', []);
+$errors = Session::pull('errors', []);
 
-$old =
-    Session::pull('old', []);
+$old = Session::pull('old', []);
 
-$artbookValue =
-    $old['artbook']
-    ?? $artbook->artbook;
+$artbookValue = $old['artbook'] ?? $artbook->artbook;
 
-$auteurValue =
-    $old['auteur']
-    ?? ($artbook->auteur ?? '');
+$auteurValue = $old['auteur'] ?? ($artbook->auteur ?? '');
 
-$serieValue =
-    $old['serie']
-    ?? ($artbook->serie ?? '');
+$serieValue = $old['serie'] ?? ($artbook->serie ?? '');
 
-$formAction =
-    $baseUri
+$formAction = $baseUri
     . 'manga/artbooks/'
-    . rawurlencode((string) $artbook->slug)
+    . rawurlencode($artbook->slug)
     . '/modifier/'
-    . (int) $artbook->numero;
+    . $artbook->numero;
 
-$cancelUrl =
-    $baseUri
+$cancelUrl = $baseUri
     . 'manga/artbooks/'
-    . rawurlencode((string) $artbook->slug)
+    . rawurlencode($artbook->slug)
     . '/'
-    . (int) $artbook->numero;
+    . $artbook->numero;
 
 ?>
 
@@ -197,10 +179,3 @@ $cancelUrl =
     </section>
 
 </section>
-
-<?php
-
-Session::forget([
-    'errors',
-    'old',
-]);

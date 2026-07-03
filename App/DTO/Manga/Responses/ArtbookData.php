@@ -8,13 +8,22 @@ final readonly class ArtbookData
 {
     public function __construct(
         public int $id,
+
         public string $slug,
         public int $numero,
+
         public string $artbook,
-        public string $thumbnail,
-        public string $extension,
+
+        public ?string $thumbnail,
+        public ?string $extension,
+        public ?string $thumbnailUrl,
+
         public ?string $auteur,
+        public bool $hasAuteur,
+
         public ?string $serie,
+        public bool $hasSerie,
+
         public string $createdAt,
     ) {
     }

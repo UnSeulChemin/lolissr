@@ -2,83 +2,33 @@
 
 declare(strict_types=1);
 
-if (! isset($artbook))
-{
-    throw new \RuntimeException(
-        'Artbook manquant dans la vue.',
-    );
-}
+use App\DTO\Manga\Responses\ArtbookData;
 
-$baseUri =
-    rtrim(
-        (string) ($baseUri ?? ''),
-        '/',
-    ) . '/';
+/** @var ArtbookData $artbook */
 
-$slug =
-    rawurlencode(
-        (string) $artbook->slug,
-    );
+$baseUri = view_base_uri();
 
-$numero =
-    (int) $artbook->numero;
+$slug = rawurlencode($artbook->slug);
 
-$thumbnailPath =
-    $baseUri
-    . 'images/artbook/thumbnail/'
-    . $artbook->thumbnail
-    . '.'
-    . $artbook->extension;
+$numero = $artbook->numero;
 
-$modifierUrl =
-    $baseUri
-    . 'manga/artbooks/'
-    . $slug
-    . '/modifier/'
-    . $numero;
+$modifierUrl = $baseUri . 'manga/artbooks/' . $slug . '/modifier/' . $numero;
 
-$deleteUrl =
-    $baseUri
-    . 'manga/artbooks/'
-    . $slug
-    . '/supprimer/'
-    . $numero;
+$deleteUrl = $baseUri . 'manga/artbooks/' . $slug . '/supprimer/' . $numero;
 
-$returnUrl =
-    $baseUri
-    . 'manga/artbooks';
-
-$hasAuteur =
-    $artbook->auteur !== null
-    && trim(
-        (string) $artbook->auteur,
-    ) !== '';
-
-$hasSerie =
-    $artbook->serie !== null
-    && trim(
-        (string) $artbook->serie,
-    ) !== '';
+$returnUrl = $baseUri . 'manga/artbooks';
 
 ?>
 
 <section class="layout-container dashboard-page">
 
-    <section
-        class="
-            detail-card
-            js-detail-card
-        "
-    >
+    <section class="detail-card js-detail-card">
 
         <figure class="detail-image">
 
             <div class="detail-image-inner">
 
-                <img
-                    src="<?= e($thumbnailPath) ?>"
-                    alt="<?= e($artbook->artbook) ?>"
-                >
+                <img src="<?= e($artbook->thumbnailUrl) ?>" alt="<?= e($artbook->artbook) ?>">
 
             </div>
 
@@ -98,7 +48,7 @@ $hasSerie =
 
             </div>
 
-            <?php if ($hasAuteur): ?>
+            <?php if ($artbook->hasAuteur): ?>
 
                 <div class="detail-row">
 
@@ -107,14 +57,14 @@ $hasSerie =
                     </div>
 
                     <div class="detail-value">
-                        <?= e((string) $artbook->auteur) ?>
+                        <?= e($artbook->auteur) ?>
                     </div>
 
                 </div>
 
             <?php endif; ?>
 
-            <?php if ($hasSerie): ?>
+            <?php if ($artbook->hasSerie): ?>
 
                 <div class="detail-row">
 
@@ -123,7 +73,7 @@ $hasSerie =
                     </div>
 
                     <div class="detail-value">
-                        <?= e((string) $artbook->serie) ?>
+                        <?= e($artbook->serie) ?>
                     </div>
 
                 </div>
@@ -137,28 +87,17 @@ $hasSerie =
 
                 <div class="detail-actions-right">
 
-                    <a
-                        class="form-submit"
-                        href="<?= e($modifierUrl) ?>"
-                    >
-
+                    <a class="form-submit" href="<?= e($modifierUrl) ?>">
                         Modifier
-
                     </a>
 
                     <button
                         type="button"
-                        class="
-                            form-submit
-                            form-submit-danger
-                            js-delete-artbook
-                        "
+                        class="form-submit form-submit-danger js-delete-artbook"
                         data-url="<?= e($deleteUrl) ?>"
                         data-redirect="<?= e($returnUrl) ?>"
                     >
-
                         Supprimer
-
                     </button>
 
                 </div>
@@ -171,16 +110,8 @@ $hasSerie =
 
     <div class="collection-back-wrapper">
 
-        <a
-            class="
-                form-submit
-                collection-back-button
-            "
-            href="<?= e($returnUrl) ?>"
-        >
-
+        <a class="form-submit collection-back-button" href="<?= e($returnUrl) ?>">
             Retour
-
         </a>
 
     </div>

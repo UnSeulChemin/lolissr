@@ -249,10 +249,3 @@ $returnUrl = $baseUri . 'peluche';
     </section>
 
 </section>
-
-<?php
-
-Session::forget([
-    'errors',
-    'old',
-]);

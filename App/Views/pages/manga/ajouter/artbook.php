@@ -308,10 +308,3 @@ $returnUrl = $baseUri . 'manga';
     </section>
 
 </section>
-
-<?php
-
-Session::forget([
-    'errors',
-    'old',
-]);
