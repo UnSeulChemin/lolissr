@@ -170,7 +170,7 @@ final class MangaController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function createManga(): never
+    public function create(): never
     {
         $this->title = 'Manga | Ajouter un manga';
 

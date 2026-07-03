@@ -125,7 +125,7 @@ return static function (Router $router): void
 
             $router->get(
                 'ajouter/manga',
-                [MangaController::class, 'createManga'],
+                [MangaController::class, 'create'],
             );
 
             $router->post(
