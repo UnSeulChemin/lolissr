@@ -25,7 +25,12 @@ final class AuthController extends Controller
     {
         $this->title = 'Connexion';
 
-        $this->render('pages/auth/connexion');
+        $this->render('pages/auth/connexion', [
+            'form' => $this->formViewData(
+                'connexion',
+                '',
+            ),
+        ]);
     }
 
     public function authenticate(): never
@@ -62,7 +67,12 @@ final class AuthController extends Controller
 
         $this->title = 'Inscription';
 
-        $this->render('pages/auth/inscription');
+        $this->render('pages/auth/inscription', [
+            'form' => $this->formViewData(
+                'inscription',
+                '',
+            ),
+        ]);
     }
 
     public function store(): never

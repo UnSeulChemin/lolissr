@@ -2,19 +2,12 @@
 
 declare(strict_types=1);
 
-use Framework\Support\Session;
+use App\DTO\Common\Responses\FormViewData;
 
-$errors =
-    Session::pull('errors', []);
+/** @var FormViewData $form */
 
-$old =
-    Session::pull('old', []);
-
-$baseUri =
-    rtrim(
-        (string) ($baseUri ?? ''),
-        '/',
-    ) . '/';
+$errors = $form->errors;
+$old = $form->old;
 
 ?>
 
@@ -24,11 +17,11 @@ $baseUri =
 
         <section class="form-card transition-form">
 
-                <form
-                    class="form-layout"
-                    action="<?= e($baseUri) ?>connexion"
-                    method="post"
-                >
+            <form
+                class="form-layout"
+                action="<?= e($form->formAction) ?>"
+                method="post"
+            >
 
                 <?= csrf_field() ?>
 
