@@ -9,12 +9,12 @@ use Framework\Support\Str;
 final readonly class MangaCreateDTO
 {
     public function __construct(
+        public string $slug,
         public string $livre,
         public string $editeur,
-        public string $statut,
-        public string $slug,
         public int $numero,
-        public ?string $commentaire
+        public string $statut,
+        public ?string $commentaire,
     ) {
     }
 
@@ -26,12 +26,12 @@ final readonly class MangaCreateDTO
         $livre = trim((string) ($data['livre'] ?? ''));
 
         return new self(
+            slug: Str::slug((string) ($data['slug'] ?? $livre)),
             livre: $livre,
             editeur: Str::nullableTrim($data['editeur'] ?? null),
-            statut: trim((string) ($data['statut'] ?? 'en_cours')),
-            slug: Str::slug((string) ($data['slug'] ?? $livre)),
             numero: max(1, (int) ($data['numero'] ?? 1)),
-            commentaire: Str::nullableTrim($data['commentaire'] ?? null)
+            statut: trim((string) ($data['statut'] ?? 'en_cours')),
+            commentaire: Str::nullableTrim($data['commentaire'] ?? null),
         );
     }
 }

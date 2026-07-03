@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace App\DTO\Figurine\Inputs;
 
 use Framework\Support\Str;
-
-use DateTime;
+use Framework\Support\DateNormalizer;
 
 final readonly class FigurineCreateDTO
 {
@@ -39,30 +38,11 @@ final readonly class FigurineCreateDTO
                 ? (float) $data['height_cm']
                 : null,
             company: trim((string) ($data['company'] ?? '')),
-            release_date: self::normalizeDate(
+            release_date: DateNormalizer::normalize(
                 Str::nullableTrim($data['release_date'] ?? null),
             ),
             slug: Str::slug((string) ($data['slug'] ?? $waifu)),
             commentaire: Str::nullableTrim($data['commentaire'] ?? null),
         );
-    }
-
-    private static function normalizeDate(
-        ?string $date,
-    ): ?string
-    {
-        if ($date === null)
-        {
-            return null;
-        }
-
-        $parsed = DateTime::createFromFormat(
-            'd/m/Y',
-            $date,
-        );
-
-        return $parsed !== false
-            ? $parsed->format('Y-m-d')
-            : $date;
     }
 }

@@ -22,7 +22,7 @@ final class MangaUpdateNoteRequest extends FormRequest
             ->nullable('livre_note')
             ->integer('livre_note', 'La note du livre doit être un entier.')
             ->min('livre_note', 1, 'La note du livre doit être supérieure ou égale à 1.')
-            ->max( 'livre_note', 5,  'La note du livre doit être inférieure ou égale à 5.');
+            ->max('livre_note', 5,  'La note du livre doit être inférieure ou égale à 5.');
     }
 
     public function dto(): MangaUpdateNoteDTO

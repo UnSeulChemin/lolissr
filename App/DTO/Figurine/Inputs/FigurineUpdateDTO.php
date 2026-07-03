@@ -5,17 +5,16 @@ declare(strict_types=1);
 namespace App\DTO\Figurine\Inputs;
 
 use Framework\Support\Str;
-
-use DateTime;
+use Framework\Support\DateNormalizer;
 
 final readonly class FigurineUpdateDTO
 {
     public function __construct(
-        public ?string $waifu,
-        public ?string $origin,
-        public ?string $scale,
+        public string $waifu,
+        public string $origin,
+        public string $scale,
         public ?float $height_cm,
-        public ?string $company,
+        public string $company,
         public ?string $release_date,
         public ?string $commentaire
     ) {
@@ -27,36 +26,17 @@ final readonly class FigurineUpdateDTO
     public static function fromArray(array $data): self
     {
         return new self(
-            waifu: Str::nullableTrim($data['waifu'] ?? null),
-            origin: Str::nullableTrim($data['origin'] ?? null),
-            scale: Str::nullableTrim($data['scale'] ?? null),
+            waifu: trim((string) $data['waifu']),
+            origin: trim((string) $data['origin']),
+            scale: trim((string) $data['scale']),
             height_cm: isset($data['height_cm']) && $data['height_cm'] !== ''
                 ? (float) $data['height_cm']
                 : null,
-            company: Str::nullableTrim($data['company'] ?? null),
-            release_date: self::normalizeDate(
+            company: trim((string) $data['company']),
+            release_date: DateNormalizer::normalize(
                 Str::nullableTrim($data['release_date'] ?? null),
             ),
             commentaire: Str::nullableTrim($data['commentaire'] ?? null),
         );
-    }
-
-    private static function normalizeDate(
-        ?string $date,
-    ): ?string
-    {
-        if ($date === null)
-        {
-            return null;
-        }
-
-        $parsed = DateTime::createFromFormat(
-            'd/m/Y',
-            $date,
-        );
-
-        return $parsed !== false
-            ? $parsed->format('Y-m-d')
-            : $date;
     }
 }

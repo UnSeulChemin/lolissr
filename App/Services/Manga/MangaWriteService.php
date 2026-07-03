@@ -9,7 +9,7 @@ use App\DTO\Common\ServiceResult;
 use App\DTO\Manga\Inputs\MangaCreateDTO;
 use App\DTO\Manga\Inputs\MangaUpdateDTO;
 use App\DTO\Manga\Inputs\MangaUpdateNoteDTO;
-use App\DTO\Manga\Responses\UpdateNoteData;
+use App\DTO\Manga\Responses\MangaUpdateNoteData;
 use App\DTO\Upload\UploadThumbnailData;
 use App\Models\Manga;
 use App\Repositories\Manga\MangaRepository;
@@ -200,7 +200,7 @@ final readonly class MangaWriteService
                 return $this->success(
                     'Notes mises à jour',
                     [
-                        'notes' => new UpdateNoteData(
+                        'notes' => new MangaUpdateNoteData(
                             jacquette: $dto->jacquette ?? 0,
                             livreNote: $dto->livreNote ?? 0,
                             note: $manga->note

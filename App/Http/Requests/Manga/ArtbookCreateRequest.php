@@ -45,8 +45,6 @@ final class ArtbookCreateRequest extends FormRequest
 
     public function dto(): ArtbookCreateDTO
     {
-        return ArtbookCreateDTO::fromArray(
-            $this->validated()
-        );
+        return ArtbookCreateDTO::fromArray($this->validated());
     }
 }

@@ -29,8 +29,6 @@ final class ArtbookUpdateRequest extends FormRequest
 
     public function dto(): ArtbookUpdateDTO
     {
-        return ArtbookUpdateDTO::fromArray(
-            $this->validated()
-        );
+        return ArtbookUpdateDTO::fromArray($this->validated());
     }
 }

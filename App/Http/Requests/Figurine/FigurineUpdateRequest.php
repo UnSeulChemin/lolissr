@@ -16,13 +16,13 @@ final class FigurineUpdateRequest extends FormRequest
 
             ->required('waifu')
             ->string('waifu')
-            ->maxLength('waifu', 100)
+            ->maxLength('waifu', 150)
 
             ->required('origin')
             ->string('origin')
             ->maxLength('origin', 150)
 
-            ->nullable('scale')
+            ->required('scale')
             ->string('scale')
             ->maxLength('scale', 10)
 
@@ -30,7 +30,7 @@ final class FigurineUpdateRequest extends FormRequest
             ->numeric('height_cm')
             ->min('height_cm', 0)
 
-            ->nullable('company')
+            ->required('company')
             ->string('company')
             ->maxLength('company', 100)
 
