@@ -249,14 +249,14 @@ final class MangaController extends Controller
 
         $this->validateRequest($request);
 
-        $result = $this->mangaWriteService->update($data->canonicalSlug, $numero, $request->dto());
+        $result = $this->mangaWriteService->update($data->manga->slug, $numero, $request->dto());
 
         if (! $result->success)
         {
             throw new BaseHttpException(message: $result->message, statusCode: 422, data: $result->data);
         }
 
-        $this->redirectWithSuccess($this->mangaUrl($data->canonicalSlug, $numero), $result->message);
+        $this->redirectWithSuccess($this->mangaUrl($data->manga->slug, $numero), $result->message);
     }
 
     public function updateArtbook(ArtbookUpdateRequest $request, string $slug, int $numero): never
@@ -298,17 +298,6 @@ final class MangaController extends Controller
         if ($data === null)
         {
             throw new NotFoundException('Manga introuvable');
-        }
-
-        if ($slug !== $data->canonicalSlug)
-        {
-            throw new BaseHttpException(
-                message: 'URL non canonique',
-                statusCode: 409,
-                data: [
-                    'redirect' => $this->mangaUrl($data->canonicalSlug, $numero),
-                ]
-            );
         }
 
         return $data;

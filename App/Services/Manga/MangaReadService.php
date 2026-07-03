@@ -107,7 +107,6 @@ final readonly class MangaReadService
 
         return new MangaShowData(
             manga: $manga,
-            canonicalSlug: $manga->slug,
         );
     }
 

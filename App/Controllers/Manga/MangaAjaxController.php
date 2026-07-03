@@ -14,7 +14,6 @@ use App\Services\Manga\MangaWriteService;
 use App\Services\Manga\ArtbookReadService;
 use App\Services\Manga\ArtbookWriteService;
 
-use Framework\Exceptions\BaseHttpException;
 use Framework\Exceptions\NotFoundException;
 use Framework\Exceptions\ValidationException;
 use Framework\Http\Request;
@@ -127,7 +126,7 @@ final class MangaAjaxController extends Controller
             'livre_note' => $livreNote,
         ]);
 
-        $result = $this->mangaWriteService->updateNote($data->canonicalSlug, $numero, $dto);
+        $result = $this->mangaWriteService->updateNote($data->manga->slug, $numero, $dto);
 
         $this->jsonResult(
             ServiceResult::success(
@@ -158,7 +157,7 @@ final class MangaAjaxController extends Controller
         $readStatus = (int) $this->request->input('readStatus', 0);
 
         $result = $this->mangaWriteService->updateReadStatus(
-            $data->canonicalSlug,
+            $data->manga->slug,
             $numero,
             $readStatus
         );
@@ -176,11 +175,11 @@ final class MangaAjaxController extends Controller
     {
         $data = $this->resolveMangaOrFail($slug, $numero);
 
-        $result = $this->mangaWriteService->delete($data->canonicalSlug, $numero);
+        $result = $this->mangaWriteService->delete($data->manga->slug, $numero);
 
-        $seriesStillExists = $this->mangaReadService->seriesExists($data->canonicalSlug);
+        $seriesStillExists = $this->mangaReadService->seriesExists($data->manga->slug);
 
-        $redirect = $this->buildRedirectPath($data->canonicalSlug, $seriesStillExists);
+        $redirect = $this->buildRedirectPath($data->manga->slug, $seriesStillExists);
 
         $this->jsonResult(
             ServiceResult::success(
@@ -234,22 +233,6 @@ final class MangaAjaxController extends Controller
         if ($data === null)
         {
             throw new NotFoundException('Manga introuvable');
-        }
-
-        if ($slug !== $data->canonicalSlug)
-        {
-            throw new BaseHttpException(
-                message: 'URL non canonique',
-                statusCode: 409,
-                data: [
-                    'redirect' => sprintf(
-                        '%s/%s/%d',
-                        self::SERIES_PATH,
-                        rawurlencode($data->canonicalSlug),
-                        $numero
-                    ),
-                ]
-            );
         }
 
         return $data;

@@ -6,9 +6,5 @@ namespace App\DTO\Manga\Responses;
 
 final readonly class MangaShowData
 {
-    public function __construct(
-        public MangaData $manga,
-        public string $canonicalSlug
-    ) {
-    }
+    public function __construct(public MangaData $manga) {}
 }
