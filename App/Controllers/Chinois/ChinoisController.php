@@ -133,14 +133,24 @@ final class ChinoisController extends Controller
     {
         $this->title = 'Chinois | Ajouter une grammaire';
 
-        $this->render('pages/chinois/ajouter/grammaire');
+        $this->render('pages/chinois/ajouter/grammaire', [
+            'form' => $this->formViewData(
+                'chinois/ajouter/grammaire',
+                'chinois/ajouter',
+            ),
+        ]);
     }
 
     public function createVocabulaire(): never
     {
         $this->title = 'Chinois | Ajouter du vocabulaire';
 
-        $this->render('pages/chinois/ajouter/vocabulaire');
+        $this->render('pages/chinois/ajouter/vocabulaire', [
+            'form' => $this->formViewData(
+                'chinois/ajouter/vocabulaire',
+                'chinois/ajouter',
+            ),
+        ]);
     }
 
     /*

@@ -17,10 +17,7 @@ $commentaireValue = $old['commentaire'] ?? '';
 
 $statutValue = $old['statut'] ?? 'en_cours';
 
-$statutOptions = [
-    'en_cours' => 'En cours',
-    'termine' => 'Terminé',
-];
+$statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
 
 ?>
 

@@ -2,27 +2,18 @@
 
 declare(strict_types=1);
 
-use Framework\Support\Session;
+use App\DTO\Common\Responses\FormViewData;
 
-$baseUri = view_base_uri();
+/** @var FormViewData $form */
 
-$errors = Session::pull('errors', []);
-
-$old = Session::pull('old', []);
+$errors = $form->errors;
+$old = $form->old;
 
 $artbookValue = $old['artbook'] ?? '';
-
 $slugValue = $old['slug'] ?? '';
-
 $auteurValue = $old['auteur'] ?? '';
-
 $serieValue = $old['serie'] ?? '';
-
 $numeroValue = $old['numero'] ?? '';
-
-$formAction = $baseUri . 'manga/ajouter/artbook';
-
-$returnUrl = $baseUri . 'manga';
 
 ?>
 
@@ -35,7 +26,7 @@ $returnUrl = $baseUri . 'manga';
             <form
                 class="form-layout"
                 data-form-page="ajouter"
-                action="<?= e($formAction) ?>"
+                action="<?= e($form->formAction) ?>"
                 method="post"
                 enctype="multipart/form-data"
             >
@@ -64,10 +55,7 @@ $returnUrl = $baseUri . 'manga';
                         required
                     >
 
-                    <?php if (
-                        isset($errors['artbook'])
-                        && $errors['artbook'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['artbook']) && $errors['artbook'] !== ''): ?>
 
                         <p class="form-error">
 
@@ -78,7 +66,6 @@ $returnUrl = $baseUri . 'manga';
                     <?php endif; ?>
 
                 </div>
-
 
                 <div class="form-group">
 
@@ -101,10 +88,7 @@ $returnUrl = $baseUri . 'manga';
                         required
                     >
 
-                    <?php if (
-                        isset($errors['slug'])
-                        && $errors['slug'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['slug']) && $errors['slug'] !== ''): ?>
 
                         <p class="form-error">
 
@@ -115,7 +99,6 @@ $returnUrl = $baseUri . 'manga';
                     <?php endif; ?>
 
                 </div>
-
 
                 <div class="form-group">
 
@@ -138,10 +121,7 @@ $returnUrl = $baseUri . 'manga';
                         maxlength="100"
                     >
 
-                    <?php if (
-                        isset($errors['auteur'])
-                        && $errors['auteur'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['auteur']) && $errors['auteur'] !== ''): ?>
 
                         <p class="form-error">
 
@@ -152,7 +132,6 @@ $returnUrl = $baseUri . 'manga';
                     <?php endif; ?>
 
                 </div>
-
 
                 <div class="form-group">
 
@@ -175,10 +154,7 @@ $returnUrl = $baseUri . 'manga';
                         maxlength="100"
                     >
 
-                    <?php if (
-                        isset($errors['serie'])
-                        && $errors['serie'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['serie']) && $errors['serie'] !== ''): ?>
 
                         <p class="form-error">
 
@@ -189,7 +165,6 @@ $returnUrl = $baseUri . 'manga';
                     <?php endif; ?>
 
                 </div>
-
 
                 <div class="form-group">
 
@@ -213,10 +188,7 @@ $returnUrl = $baseUri . 'manga';
                         required
                     >
 
-                    <?php if (
-                        isset($errors['numero'])
-                        && $errors['numero'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['numero']) && $errors['numero'] !== ''): ?>
 
                         <p class="form-error">
 
@@ -227,7 +199,6 @@ $returnUrl = $baseUri . 'manga';
                     <?php endif; ?>
 
                 </div>
-
 
                 <div class="form-group">
 
@@ -260,10 +231,7 @@ $returnUrl = $baseUri . 'manga';
 
                     </label>
 
-                    <?php if (
-                        isset($errors['image'])
-                        && $errors['image'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['image']) && $errors['image'] !== ''): ?>
 
                         <p class="form-error">
 
@@ -274,7 +242,6 @@ $returnUrl = $baseUri . 'manga';
                     <?php endif; ?>
 
                 </div>
-
 
                 <div class="form-actions">
 
@@ -292,7 +259,7 @@ $returnUrl = $baseUri . 'manga';
                             form-submit
                             form-submit-secondary
                         "
-                        href="<?= e($returnUrl) ?>"
+                        href="<?= e($form->cancelUrl) ?>"
                     >
 
                         Retour

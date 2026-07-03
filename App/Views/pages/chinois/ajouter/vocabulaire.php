@@ -2,38 +2,17 @@
 
 declare(strict_types=1);
 
-use Framework\Support\Session;
+use App\DTO\Common\Responses\FormViewData;
 
-$errors =
-    Session::pull('errors', []);
+/** @var FormViewData $form */
 
-$old =
-    Session::pull('old', []);
+$errors = $form->errors;
 
-$baseUri =
-    rtrim(
-        (string) ($baseUri ?? ''),
-        '/',
-    ) . '/';
+$old = $form->old;
 
-$formAction =
-    $baseUri
-    . 'chinois/ajouter/vocabulaire';
+$langueValue = (string) ($old['langue'] ?? 'mandarin');
 
-$returnUrl =
-    $baseUri
-    . 'chinois/ajouter';
-
-$langueValue =
-    (string) (
-        $old['langue']
-        ?? 'mandarin'
-    );
-
-$langueOptions = [
-    'mandarin' => 'Mandarin',
-    'jinyu'    => 'JinYu',
-];
+$langueOptions = ['mandarin' => 'Mandarin', 'jinyu' => 'JinYu'];
 
 ?>
 
@@ -46,7 +25,7 @@ $langueOptions = [
             <form
                 class="form-layout"
                 data-form-page="ajouter-vocabulaire"
-                action="<?= e($formAction) ?>"
+                action="<?= e($form->formAction) ?>"
                 method="post"
             >
 
@@ -300,7 +279,7 @@ $langueOptions = [
                             form-submit
                             form-submit-secondary
                         "
-                        href="<?= e($returnUrl) ?>"
+                        href="<?= e($form->cancelUrl) ?>"
                     >
 
                         Retour

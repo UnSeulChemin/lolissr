@@ -2,40 +2,17 @@
 
 declare(strict_types=1);
 
-use Framework\Support\Session;
+use App\DTO\Common\Responses\FormViewData;
 
-$errors =
-    Session::pull('errors', []);
+/** @var FormViewData $form */
 
-$old =
-    Session::pull('old', []);
+$errors = $form->errors;
 
-$baseUri =
-    rtrim(
-        (string) ($baseUri ?? ''),
-        '/',
-    ) . '/';
+$old = $form->old;
 
-$formAction =
-    $baseUri
-    . 'chinois/ajouter/grammaire';
+$niveauValue = (string) ($old['niveau'] ?? 'HSK1');
 
-$returnUrl =
-    $baseUri
-    . 'chinois/ajouter';
-
-$niveauValue =
-    (string) (
-        $old['niveau']
-        ?? 'HSK1'
-    );
-
-$niveauOptions = [
-    'HSK1',
-    'HSK2',
-    'HSK3',
-    'HSK4',
-];
+$niveauOptions = ['HSK1', 'HSK2', 'HSK3', 'HSK4'];
 
 ?>
 
@@ -48,7 +25,7 @@ $niveauOptions = [
             <form
                 class="form-layout"
                 data-form-page="ajouter-grammaire"
-                action="<?= e($formAction) ?>"
+                action="<?= e($form->formAction) ?>"
                 method="post"
             >
 
@@ -306,7 +283,7 @@ $niveauOptions = [
                             form-submit
                             form-submit-secondary
                         "
-                        href="<?= e($returnUrl) ?>"
+                        href="<?= e($form->cancelUrl) ?>"
                     >
                         Retour
                     </a>
