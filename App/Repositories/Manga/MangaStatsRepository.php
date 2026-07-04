@@ -72,7 +72,9 @@ final class MangaStatsRepository extends Model
     {
         $manga = $this->findLastAdded();
 
-        return $manga !== null ? $this->mapToStatsDto($manga) : null;
+        return $manga !== null
+            ? $this->mapToStatsDto($manga, true)
+            : null;
     }
 
     public function findLongestSeries(): ?Manga
@@ -116,7 +118,9 @@ final class MangaStatsRepository extends Model
     {
         $manga = $this->findLongestSeries();
 
-        return $manga !== null ? $this->mapToStatsDto($manga) : null;
+        return $manga !== null
+            ? $this->mapToStatsDto($manga)
+            : null;
     }
 
     /**
@@ -124,7 +128,10 @@ final class MangaStatsRepository extends Model
      */
     public function topLongestSeriesDto(int $limit = 5): array
     {
-        return $this->mapResultsToStatsDto($this->topLongestSeries($limit));
+        return array_map(
+            fn (Manga $manga) => $this->mapToStatsDto($manga),
+            $this->topLongestSeries($limit),
+        );
     }
 
     /**
@@ -132,7 +139,7 @@ final class MangaStatsRepository extends Model
      */
     public function topLongestSeries(int $limit = 5): array
     {
-        $limit = max(1, $limit);
+        $limit = max(1, (int) $limit);
 
         /** @var list<Manga> $mangas */
         $mangas = $this->fetchAll(
@@ -228,28 +235,59 @@ final class MangaStatsRepository extends Model
     |--------------------------------------------------------------------------
     */
 
-    private function mapToStatsDto(Manga $manga): MangaStatsData
+    private function mapToStatsDto(
+        Manga $manga,
+        bool $linkToTome = false,
+    ): MangaStatsData
     {
+        $thumbnailUrl = 'images/manga/placeholder-manga.webp';
+
+        if (
+            $manga->thumbnail !== ''
+            && $manga->extension !== ''
+        )
+        {
+            $thumbnailUrl =
+                'images/manga/thumbnail/'
+                . $manga->thumbnail
+                . '.'
+                . $manga->extension;
+        }
+
+        $url =
+            'manga/series/'
+            . rawurlencode($manga->slug);
+
+        if ($linkToTome)
+        {
+            $url .= '/' . $manga->numero;
+        }
+
         return new MangaStatsData(
             id: $manga->id,
             slug: $manga->slug,
             livre: $manga->livre,
 
-            thumbnail: $manga->thumbnail !== '' ? $manga->thumbnail : null,
-            extension: $manga->extension !== '' ? $manga->extension : null,
+            thumbnailUrl: $thumbnailUrl,
+            url: $url,
 
             numero: $manga->numero,
-            total: $manga->total
-        );
-    }
 
-    /**
-     * @param list<Manga> $mangas
-     * @return list<MangaStatsData>
-     */
-    private function mapResultsToStatsDto(array $mangas): array
-    {
-        return array_map($this->mapToStatsDto(...), $mangas);
+            numeroLabel:
+                'Tome '
+                . str_pad(
+                    (string) $manga->numero,
+                    2,
+                    '0',
+                    STR_PAD_LEFT,
+                ),
+
+            total: $manga->total,
+
+            totalLabel:
+                ($manga->total ?? 0)
+                . ' tomes',
+        );
     }
 
     /**
@@ -266,11 +304,6 @@ final class MangaStatsRepository extends Model
 
         $resultArray = (array) $result;
 
-        if (! array_key_exists($field, $resultArray))
-        {
-            return $default;
-        }
-
-        return $resultArray[$field];
+        return $resultArray[$field] ?? $default;
     }
 }

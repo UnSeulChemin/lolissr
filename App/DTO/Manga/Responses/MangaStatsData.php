@@ -10,10 +10,15 @@ final readonly class MangaStatsData
         public int $id,
         public string $slug,
         public string $livre,
-        public string $thumbnail,
-        public string $extension,
+
+        public string $thumbnailUrl,
+        public string $url,
+
         public int $numero,
-        public ?int $total
+        public string $numeroLabel,
+
+        public ?int $total,
+        public string $totalLabel,
     ) {
     }
 }

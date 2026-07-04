@@ -48,20 +48,6 @@ $mostRepresented =
             $serie =
                 $stats->longestSeries;
 
-            $href =
-                $view->baseUri
-                . 'manga/series/'
-                . rawurlencode(
-                    (string) $serie->slug,
-                );
-
-            $thumbnailPath =
-                $view->baseUri
-                . 'images/manga/thumbnail/'
-                . $serie->thumbnail
-                . '.'
-                . $serie->extension;
-
             ?>
 
             <a
@@ -73,7 +59,7 @@ $mostRepresented =
                     card-wide
                 "
                 data-prefetch
-                href="<?= e($href) ?>"
+                href="<?= e($view->baseUri . $serie->url) ?>"
             >
 
                 <h2 class="home-card-title">
@@ -91,7 +77,7 @@ $mostRepresented =
 
                         <img
                             class="card-image-portrait"
-                            src="<?= e($thumbnailPath) ?>"
+                            src="<?= e($view->baseUri . $serie->thumbnailUrl) ?>"
                             alt="<?= e($serie->livre) ?>"
                         >
 
@@ -104,7 +90,7 @@ $mostRepresented =
                         </p>
 
                         <p class="home-longest-count">
-                            <?= (int) $serie->total ?> tomes
+                            <?= e($serie->totalLabel) ?>
                         </p>
 
                     </div>
@@ -145,22 +131,6 @@ $mostRepresented =
             $tome =
                 $stats->lastTome;
 
-            $href =
-                $view->baseUri
-                . 'manga/series/'
-                . rawurlencode(
-                    (string) $tome->slug,
-                )
-                . '/'
-                . (int) $tome->numero;
-
-            $thumbnailPath =
-                $view->baseUri
-                . 'images/manga/thumbnail/'
-                . $tome->thumbnail
-                . '.'
-                . $tome->extension;
-
             ?>
 
             <a
@@ -171,7 +141,7 @@ $mostRepresented =
                     card-medium
                 "
                 data-prefetch
-                href="<?= e($href) ?>"
+                href="<?= e($view->baseUri . $tome->url) ?>"
             >
 
                 <h2 class="home-card-title">
@@ -189,7 +159,7 @@ $mostRepresented =
 
                         <img
                             class="card-image-portrait"
-                            src="<?= e($thumbnailPath) ?>"
+                            src="<?= e($view->baseUri . $tome->thumbnailUrl) ?>"
                             alt="<?= e($tome->livre) ?>"
                         >
 
@@ -202,15 +172,7 @@ $mostRepresented =
                         </p>
 
                         <p class="home-feature-meta">
-
-                            Tome
-                            <?= str_pad(
-                                (string) $tome->numero,
-                                2,
-                                '0',
-                                STR_PAD_LEFT,
-                            ) ?>
-
+                            <?= e($tome->numeroLabel) ?>
                         </p>
 
                     </div>
@@ -334,24 +296,6 @@ $mostRepresented =
                 $stats->topLongestSeries as $index => $serie
             ): ?>
 
-                <?php
-
-                $href =
-                    $view->baseUri
-                    . 'manga/series/'
-                    . rawurlencode(
-                        (string) $serie->slug,
-                    );
-
-                $thumbnailPath =
-                    $view->baseUri
-                    . 'images/manga/thumbnail/'
-                    . $serie->thumbnail
-                    . '.'
-                    . $serie->extension;
-
-                ?>
-
                 <a
                     class="
                         card
@@ -360,7 +304,7 @@ $mostRepresented =
                         card-bottom
                     "
                     data-prefetch
-                    href="<?= e($href) ?>"
+                    href="<?= e($view->baseUri . $serie->url) ?>"
                 >
 
                     <p class="home-series-rank">
@@ -371,7 +315,7 @@ $mostRepresented =
 
                         <img
                             class="card-image-portrait"
-                            src="<?= e($thumbnailPath) ?>"
+                            src="<?= e($view->baseUri . $serie->thumbnailUrl) ?>"
                             alt="<?= e($serie->livre) ?>"
                         >
 
@@ -382,7 +326,7 @@ $mostRepresented =
                     </p>
 
                     <p class="home-list-card-meta">
-                        <?= (int) $serie->total ?> tomes
+                        <?= e($serie->totalLabel) ?>
                     </p>
 
                 </a>
