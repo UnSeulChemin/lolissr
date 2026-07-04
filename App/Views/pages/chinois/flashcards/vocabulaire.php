@@ -97,14 +97,16 @@ use App\DTO\Common\Responses\ViewData;
                         <?= e($card->traduction) ?>
                     </div>
 
-                    <div
-                        id="flashcard-exemple"
-                        class="chinois-vocab-example"
-                    >
-                        <?= nl2br(
-                            e($card->exemple),
-                        ) ?>
-                    </div>
+                    <?php if ($card->hasExemple): ?>
+
+                        <div
+                            id="flashcard-exemple"
+                            class="chinois-vocab-example"
+                        >
+                            <?= nl2br(e($card->exemple)) ?>
+                        </div>
+
+                    <?php endif; ?>
 
                     <div class="chinois-vocab-actions">
 
@@ -137,10 +139,13 @@ use App\DTO\Common\Responses\ViewData;
                             id="flashcard-mastered"
                             class="
                                 grammar-mastered
+                                <?= $card->masteredClass ?>
                             "
                             type="button"
                             data-id="<?= $card->id ?>"
                             data-url="<?= e($view->baseUri) ?>chinois/ajax/toggle-vocabulaire-maitrise"
+                            data-maitrise="<?= $card->masteredValue ?>"
+                            aria-pressed="<?= $card->masteredPressed ?>"
                         >
 
                             <svg

@@ -111,12 +111,16 @@ use App\DTO\Common\Responses\ViewData;
                     <?= e($card->traduction) ?>
                 </div>
 
-                <div
-                    id="flashcard-explication"
-                    class="grammar-explanation"
-                >
-                    <?= e($card->explication) ?>
-                </div>
+                <?php if ($card->hasExplication): ?>
+
+                    <div
+                        id="flashcard-explication"
+                        class="grammar-explanation"
+                    >
+                        <?= e($card->explication) ?>
+                    </div>
+
+                <?php endif; ?>
 
                 <a
                     id="flashcard-edit"
@@ -147,12 +151,13 @@ use App\DTO\Common\Responses\ViewData;
                     id="flashcard-mastered"
                     class="
                         grammar-mastered
+                        <?= $card->masteredClass ?>
                     "
                     type="button"
                     data-id="<?= $card->id ?>"
                     data-url="<?= e($view->baseUri) ?>chinois/ajax/toggle-grammaire-maitrise"
-                    data-maitrise="0"
-                    aria-pressed="false"
+                    data-maitrise="<?= $card->masteredValue ?>"
+                    aria-pressed="<?= $card->masteredPressed ?>"
                 >
 
                     <svg
