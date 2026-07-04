@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 /** @var App\DTO\Chinois\Responses\ChinoisVocabulaireData $vocabulaire */
 
-$isMaitrise =
-    $vocabulaire->maitrise;
-
 ?>
 
 <section class="layout-container dashboard-page">
@@ -51,9 +48,7 @@ $isMaitrise =
                     <?= e($vocabulaire->traduction) ?>
                 </div>
 
-                <?php if (
-                    trim($vocabulaire->exemple ?? '') !== ''
-                ): ?>
+                <?php if ($vocabulaire->hasExemple): ?>
 
                     <div
                         class="chinois-vocab-example"
@@ -95,19 +90,13 @@ $isMaitrise =
                         class="
                             grammar-mastered
                             vocabulary-ajax
-                            <?= $isMaitrise
-                                ? 'active'
-                                : '' ?>
+                            <?= $vocabulaire->masteredClass ?>
                         "
                         type="button"
                         data-id="<?= $vocabulaire->id ?>"
                         data-url="<?= e($view->baseUri) ?>chinois/ajax/toggle-vocabulaire-maitrise"
-                        data-maitrise="<?= $isMaitrise
-                            ? '1'
-                            : '0' ?>"
-                        aria-pressed="<?= $isMaitrise
-                            ? 'true'
-                            : 'false' ?>"
+                        data-maitrise="<?= $vocabulaire->masteredValue ?>"
+                        aria-pressed="<?= $vocabulaire->masteredPressed ?>"
                     >
 
                         <svg

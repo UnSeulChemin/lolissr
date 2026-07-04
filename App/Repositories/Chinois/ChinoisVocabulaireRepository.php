@@ -195,16 +195,49 @@ final class ChinoisVocabulaireRepository extends Model
 
     private function mapRowToDto(stdClass $row): ChinoisVocabulaireData
     {
+        $exemple =
+            $row->exemple !== null
+                ? (string) $row->exemple
+                : null;
+
+        $maitrise = (bool) $row->maitrise;
+
         return new ChinoisVocabulaireData(
             id: (int) $row->id,
+
             langue: (string) $row->langue,
             mot: (string) $row->mot,
             pinyin: (string) $row->pinyin,
             type: (string) $row->type,
             traduction: (string) $row->traduction,
-            exemple: (string) $row->exemple,
-            maitrise: (bool) $row->maitrise,
+            exemple: $exemple,
+
+            maitrise: $maitrise,
             xpRewarded: (bool) $row->xp_rewarded,
+
+            hasExemple:
+                $exemple !== null
+                && trim($exemple) !== '',
+
+            masteredClass:
+                $maitrise
+                    ? 'active'
+                    : '',
+
+            masteredValue:
+                $maitrise
+                    ? '1'
+                    : '0',
+
+            masteredPressed:
+                $maitrise
+                    ? 'true'
+                    : 'false',
+
+            masteredLabel:
+                $maitrise
+                    ? 'Retirer la maîtrise'
+                    : 'Marquer comme maîtrisé',
         );
     }
 }
