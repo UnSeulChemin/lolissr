@@ -22,9 +22,7 @@ final class ChinoisGrammaireRepository extends Model
         id,
         niveau,
         section,
-        section_position,
         categorie,
-        categorie_position,
         titre,
         structure,
         abreviation,
@@ -234,10 +232,8 @@ final class ChinoisGrammaireRepository extends Model
             niveau: (string) $row->niveau,
 
             section: (string) $row->section,
-            sectionPosition: (int) $row->section_position,
 
             categorie: (string) $row->categorie,
-            categoriePosition: (int) $row->categorie_position,
 
             titre: (string) $row->titre,
             structure: (string) $row->structure,

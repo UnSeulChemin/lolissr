@@ -16,25 +16,34 @@ use App\Repositories\Chinois\ChinoisVocabulaireRepository;
 
 final readonly class ChinoisReadService
 {
-    private const DESCRIPTIONS = [
-        'HSK1' => 'Structures courantes, phrases du quotidien et grammaire HSK1.',
-        'HSK2' => 'Structures courantes, phrases du quotidien et grammaire HSK2.',
-        'HSK3' => 'Structures intermédiaires, phrases naturelles et grammaire HSK3.',
-        'HSK4' => 'Structures avancées, nuances et grammaire HSK4.',
-    ];
-
-    private const SOURCES = [
-        'HSK1' => 'https://chine.in/mandarin/grammaire/RGLA1',
-        'HSK2' => 'https://chine.in/mandarin/grammaire/RGLA2',
-        'HSK3' => 'https://chine.in/mandarin/grammaire/RGLB1',
-        'HSK4' => 'https://chine.in/mandarin/grammaire/RGLB2',
-    ];
-
-    private const SOURCE_DESCRIPTIONS = [
-        'HSK1' => 'Références, structures et exemples de grammaire chinoise pour débutants.',
-        'HSK2' => 'Références, structures et exemples de grammaire chinoise pour débutants intermédiaires.',
-        'HSK3' => 'Références, structures et exemples de grammaire chinoise intermédiaire.',
-        'HSK4' => 'Références, structures et exemples de grammaire chinoise avancée.',
+    /**
+     * @var array<string, array{
+     *     description: string,
+     *     sourceUrl: string,
+     *     sourceDescription: string
+     * }>
+     */
+    private const HSK = [
+        'HSK1' => [
+            'description' => 'Structures courantes, phrases du quotidien et grammaire HSK1.',
+            'sourceUrl' => 'https://chine.in/mandarin/grammaire/RGLA1',
+            'sourceDescription' => 'Références, structures et exemples de grammaire chinoise pour débutants.',
+        ],
+        'HSK2' => [
+            'description' => 'Structures courantes, phrases du quotidien et grammaire HSK2.',
+            'sourceUrl' => 'https://chine.in/mandarin/grammaire/RGLA2',
+            'sourceDescription' => 'Références, structures et exemples de grammaire chinoise pour débutants intermédiaires.',
+        ],
+        'HSK3' => [
+            'description' => 'Structures intermédiaires, phrases naturelles et grammaire HSK3.',
+            'sourceUrl' => 'https://chine.in/mandarin/grammaire/RGLB1',
+            'sourceDescription' => 'Références, structures et exemples de grammaire chinoise intermédiaire.',
+        ],
+        'HSK4' => [
+            'description' => 'Structures avancées, nuances et grammaire HSK4.',
+            'sourceUrl' => 'https://chine.in/mandarin/grammaire/RGLB2',
+            'sourceDescription' => 'Références, structures et exemples de grammaire chinoise avancée.',
+        ],
     ];
 
     public function __construct(
@@ -54,23 +63,14 @@ final readonly class ChinoisReadService
     {
         $grammaires = $this->grammaireRepository->findByLevel($niveau);
 
+        $config = self::HSK[$niveau];
+
         return new ChinoisHskData(
-            level: substr($niveau, 3),
-
-            description:
-                self::DESCRIPTIONS[$niveau]
-                ?? '',
-
-            sourceUrl:
-                self::SOURCES[$niveau]
-                ?? '',
-
-            sourceDescription:
-                self::SOURCE_DESCRIPTIONS[$niveau]
-                ?? '',
-
-            sections:
-                $this->buildSections($grammaires),
+            level: str_replace('HSK', '', $niveau),
+            description: $config['description'],
+            sourceUrl: $config['sourceUrl'],
+            sourceDescription: $config['sourceDescription'],
+            sections: $this->buildSections($grammaires),
         );
     }
 
@@ -217,9 +217,6 @@ final readonly class ChinoisReadService
             $slug,
         ) ?? '';
 
-        return trim(
-            $slug,
-            '-',
-        );
+        return trim($slug, '-');
     }
 }

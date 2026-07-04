@@ -12,10 +12,8 @@ final readonly class ChinoisGrammaireData
         public string $niveau,
 
         public string $section,
-        public int $sectionPosition,
 
         public string $categorie,
-        public int $categoriePosition,
 
         public string $titre,
         public string $structure,
