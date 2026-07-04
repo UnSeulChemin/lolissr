@@ -171,10 +171,47 @@ final class ChinoisGrammaireRepository extends Model
         string $categorie
     ): bool
     {
+        $current = $this->findById($id);
+
+        if ($current === null)
+        {
+            return false;
+        }
+
+        $position =
+            $current->niveau === $niveau
+            && $current->section === trim($section)
+            && $current->categorie === trim($categorie)
+                ? $current->position
+                : $this->getNextPosition(
+                    $niveau,
+                    $section,
+                    $categorie,
+                    $id,
+                );
+
         return $this->updateById(
             $id,
             [
                 'niveau' => trim($niveau),
+
+                'section' => trim($section),
+                'section_position' => $this->getSectionPosition(
+                    $niveau,
+                    $section,
+                    $id,
+                ),
+
+                'categorie' => trim($categorie),
+                'categorie_position' => $this->getCategoriePosition(
+                    $niveau,
+                    $section,
+                    $categorie,
+                    $id,
+                ),
+
+                'position' => $position,
+
                 'titre' => trim($titre),
                 'structure' => trim($structure),
                 'abreviation' => Str::nullableTrim($abreviation),
@@ -182,10 +219,154 @@ final class ChinoisGrammaireRepository extends Model
                 'pinyin' => trim($pinyin),
                 'traduction' => trim($traduction),
                 'explication' => trim($explication),
-                'section' => trim($section),
-                'categorie' => trim($categorie),
             ]
         );
+    }
+
+    public function getSectionPosition(
+        string $niveau,
+        string $section,
+        ?int $ignoreId = null,
+    ): int
+    {
+        $params = [
+            'niveau' => trim($niveau),
+            'section' => trim($section),
+        ];
+
+        $sql = "
+            SELECT section_position
+
+            FROM {$this->table()}
+
+            WHERE niveau = :niveau
+            AND section = :section
+        ";
+
+        if ($ignoreId !== null)
+        {
+            $sql .= "\nAND id <> :id";
+            $params['id'] = $ignoreId;
+        }
+
+        $sql .= "\nLIMIT 1";
+
+        /** @var stdClass|null $result */
+        $result = $this->fetchOne($sql, $params);
+
+        if ($result !== null)
+        {
+            return (int) $result->section_position;
+        }
+
+        /** @var stdClass|null $max */
+        $max = $this->fetchOne(
+            "
+            SELECT MAX(section_position) AS position
+
+            FROM {$this->table()}
+
+            WHERE niveau = :niveau
+            ",
+            [
+                'niveau' => trim($niveau),
+            ]
+        );
+
+        return (int) (($max->position ?? -1) + 1);
+    }
+
+    public function getCategoriePosition(
+        string $niveau,
+        string $section,
+        string $categorie,
+        ?int $ignoreId = null,
+    ): int
+    {
+        $params = [
+            'niveau' => trim($niveau),
+            'section' => trim($section),
+            'categorie' => trim($categorie),
+        ];
+
+        $sql = "
+            SELECT categorie_position
+
+            FROM {$this->table()}
+
+            WHERE niveau = :niveau
+            AND section = :section
+            AND categorie = :categorie
+        ";
+
+        if ($ignoreId !== null)
+        {
+            $sql .= "\nAND id <> :id";
+            $params['id'] = $ignoreId;
+        }
+
+        $sql .= "\nLIMIT 1";
+
+        /** @var stdClass|null $result */
+        $result = $this->fetchOne($sql, $params);
+
+        if ($result !== null)
+        {
+            return (int) $result->categorie_position;
+        }
+
+        /** @var stdClass|null $max */
+        $max = $this->fetchOne(
+            "
+            SELECT MAX(categorie_position) AS position
+
+            FROM {$this->table()}
+
+            WHERE niveau = :niveau
+            AND section = :section
+            ",
+            [
+                'niveau' => trim($niveau),
+                'section' => trim($section),
+            ]
+        );
+
+        return (int) (($max->position ?? -1) + 1);
+    }
+
+    public function getNextPosition(
+        string $niveau,
+        string $section,
+        string $categorie,
+        ?int $ignoreId = null,
+    ): int
+    {
+        $params = [
+            'niveau' => trim($niveau),
+            'section' => trim($section),
+            'categorie' => trim($categorie),
+        ];
+
+        $sql = "
+            SELECT MAX(position) AS position
+
+            FROM {$this->table()}
+
+            WHERE niveau = :niveau
+            AND section = :section
+            AND categorie = :categorie
+        ";
+
+        if ($ignoreId !== null)
+        {
+            $sql .= "\nAND id <> :id";
+            $params['id'] = $ignoreId;
+        }
+
+        /** @var stdClass|null $max */
+        $max = $this->fetchOne($sql, $params);
+
+        return (int) (($max->position ?? -1) + 1);
     }
 
     public function markXpRewarded(int $id): bool

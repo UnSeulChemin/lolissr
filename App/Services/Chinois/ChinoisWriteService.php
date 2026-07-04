@@ -35,9 +35,9 @@ final readonly class ChinoisWriteService
                 $inserted = $this->grammaireRepository->insert([
                     'niveau' => $dto->niveau,
                     'section' => $dto->section,
-                    'section_position' => 0,
+                    'section_position' => $this->grammaireRepository->getSectionPosition($dto->niveau, $dto->section),
                     'categorie' => $dto->categorie,
-                    'categorie_position' => 0,
+                    'categorie_position' => $this->grammaireRepository->getCategoriePosition($dto->niveau, $dto->section, $dto->categorie),
                     'titre' => $dto->titre,
                     'structure' => $dto->structure,
                     'abreviation' => $dto->abreviation,
@@ -45,7 +45,7 @@ final readonly class ChinoisWriteService
                     'pinyin' => $dto->pinyin,
                     'traduction' => $dto->traduction,
                     'explication' => $dto->explication,
-                    'position' => 0,
+                    'position' => $this->grammaireRepository->getNextPosition($dto->niveau, $dto->section, $dto->categorie),
                     'maitrise' => false,
                 ]);
 
