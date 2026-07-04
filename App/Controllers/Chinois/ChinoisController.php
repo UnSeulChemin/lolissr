@@ -15,6 +15,7 @@ use App\Services\Chinois\ChinoisWriteService;
 use Framework\Exceptions\NotFoundException;
 use Framework\Exceptions\ValidationException;
 use Framework\Http\Request;
+use Framework\Http\FormRequest;
 
 final class ChinoisController extends Controller
 {
@@ -168,10 +169,7 @@ final class ChinoisController extends Controller
     {
         $this->vocabulaireOrFail($id);
 
-        if ($request->fails())
-        {
-            throw new ValidationException($request->errors());
-        }
+        $this->validateRequest($request);
 
         $this->chinoisWriteService->updateVocabulaire($id, $request->dto());
 
@@ -187,10 +185,7 @@ final class ChinoisController extends Controller
     {
         $this->grammaireOrFail($id);
 
-        if ($request->fails())
-        {
-            throw new ValidationException($request->errors());
-        }
+        $this->validateRequest($request);
 
         $this->chinoisWriteService->updateGrammaire($id, $request->dto());
 
@@ -205,20 +200,14 @@ final class ChinoisController extends Controller
 
     public function storeGrammaire(ChinoisGrammaireCreateRequest $request): never
     {
-        if ($request->fails())
-        {
-            throw new ValidationException($request->errors());
-        }
+        $this->validateRequest($request);
 
         $this->jsonResult($this->chinoisWriteService->createGrammaire($request->dto()));
     }
 
     public function storeVocabulaire(ChinoisVocabulaireCreateRequest $request): never
     {
-        if ($request->fails())
-        {
-            throw new ValidationException($request->errors());
-        }
+        $this->validateRequest($request);
 
         $this->jsonResult($this->chinoisWriteService->createVocabulaire($request->dto()));
     }
@@ -243,10 +232,7 @@ final class ChinoisController extends Controller
     {
         $this->grammaireOrFail($id);
 
-        if ($request->fails())
-        {
-            throw new ValidationException($request->errors());
-        }
+        $this->validateRequest($request);
 
         $dto = $request->dto();
 
@@ -263,10 +249,7 @@ final class ChinoisController extends Controller
     {
         $this->vocabulaireOrFail($id);
 
-        if ($request->fails())
-        {
-            throw new ValidationException($request->errors());
-        }
+        $this->validateRequest($request);
 
         $dto = $request->dto();
 
@@ -307,6 +290,14 @@ final class ChinoisController extends Controller
     |--------------------------------------------------------------------------
     */
 
+    private function validateRequest(FormRequest $request): void
+    {
+        if ($request->fails())
+        {
+            throw new ValidationException($request->errors());
+        }
+    }
+
     private function vocabulaireOrFail(int $id): ChinoisVocabulaireData
     {
         return $this->chinoisReadService->vocabulaire($id) ?? throw new NotFoundException('Vocabulaire introuvable');
@@ -319,25 +310,45 @@ final class ChinoisController extends Controller
 
     private function renderEditVocabulaire(int $id, string $returnTo): never
     {
+        $vocabulaire = $this->vocabulaireOrFail($id);
+
         $this->title = 'Chinois | Modifier du vocabulaire';
 
-        $this->render('pages/chinois/vocabulaire/modifier',
-            [
-                'vocabulaire' => $this->vocabulaireOrFail($id),
-                'returnTo' => $returnTo
-            ],
-        );
+        $this->render('pages/chinois/vocabulaire/modifier', [
+            'vocabulaire' => $vocabulaire,
+            'returnTo' => $returnTo,
+            'form' => $this->formViewData(
+                sprintf(
+                    'chinois/vocabulaire/%s/modifier/%d',
+                    $vocabulaire->langue,
+                    $vocabulaire->id,
+                ),
+                $returnTo !== ''
+                    ? $returnTo
+                    : 'chinois/vocabulaire/' . $vocabulaire->langue,
+            ),
+        ]);
     }
 
     private function renderEditGrammaire(int $id, string $returnTo): never
     {
+        $grammaire = $this->grammaireOrFail($id);
+
         $this->title = 'Chinois | Modifier une grammaire';
 
-        $this->render('pages/chinois/grammaire/modifier',
-            [
-                'grammaire' => $this->grammaireOrFail($id),
-                'returnTo' => $returnTo
-            ]
-        );
+        $this->render('pages/chinois/grammaire/modifier', [
+            'grammaire' => $grammaire,
+            'returnTo' => $returnTo,
+            'form' => $this->formViewData(
+                sprintf(
+                    'chinois/grammaire/%s/modifier/%d',
+                    strtolower($grammaire->niveau),
+                    $grammaire->id,
+                ),
+                $returnTo !== ''
+                    ? $returnTo
+                    : 'chinois/grammaire/hsk' . substr($grammaire->niveau, 3),
+            ),
+        ]);
     }
 }

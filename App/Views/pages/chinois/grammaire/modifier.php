@@ -2,56 +2,20 @@
 
 declare(strict_types=1);
 
+use App\DTO\Common\Responses\FormViewData;
 use App\Models\ChinoisGrammaire;
 
-use Framework\Support\Session;
-
 /** @var ChinoisGrammaire $grammaire */
+/** @var FormViewData $form */
+/** @var string $returnTo */
 
-$errors =
-    Session::pull('errors', []);
+$errors = $form->errors;
 
-$old =
-    Session::pull('old', []);
+$old = $form->old;
 
-$baseUri =
-    rtrim(
-        (string) ($baseUri ?? ''),
-        '/',
-    ) . '/';
+$returnTo = (string) ($returnTo ?? '');
 
-$returnTo =
-    (string) (
-        $returnTo
-        ?? ''
-    );
-
-$formAction =
-    $baseUri
-    . 'chinois/grammaire/'
-    . strtolower($grammaire->niveau)
-    . '/modifier/'
-    . $grammaire->id;
-
-$returnUrl =
-    $returnTo !== ''
-        ? $baseUri
-            . ltrim(
-                $returnTo,
-                '/',
-            )
-        : $baseUri
-            . 'chinois/grammaire/hsk'
-            . substr(
-                $grammaire->niveau,
-                3,
-            );
-
-$niveauValue =
-    (string) (
-        $old['niveau']
-        ?? $grammaire->niveau
-    );
+$niveauValue = (string) ($old['niveau'] ?? $grammaire->niveau);
 
 $niveauOptions = [
     'HSK1',
@@ -70,7 +34,7 @@ $niveauOptions = [
 
             <form
                 class="form-layout"
-                action="<?= e($formAction) ?>"
+                action="<?= e($form->formAction) ?>"
                 method="post"
             >
 
@@ -358,7 +322,7 @@ $niveauOptions = [
                             form-submit
                             form-submit-secondary
                         "
-                        href="<?= e($returnUrl) ?>"
+                        href="<?= e($form->cancelUrl) ?>"
                     >
                         Retour
                     </a>

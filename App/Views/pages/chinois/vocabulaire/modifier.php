@@ -2,65 +2,24 @@
 
 declare(strict_types=1);
 
+use App\DTO\Common\Responses\FormViewData;
 use App\Models\ChinoisVocabulaire;
-use Framework\Support\Session;
 
 /** @var ChinoisVocabulaire $vocabulaire */
+/** @var FormViewData $form */
+/** @var string $returnTo */
 
-$errors =
-    Session::pull(
-        'errors',
-        [],
-    );
+$errors = $form->errors;
 
-$old =
-    Session::pull(
-        'old',
-        [],
-    );
+$old = $form->old;
 
-$baseUri =
-    rtrim(
-        (string) (
-            $baseUri
-            ?? ''
-        ),
-        '/',
-    ) . '/';
+$returnTo = (string) ($returnTo ?? '');
 
-$returnTo =
-    (string) (
-        $returnTo
-        ?? ''
-    );
-
-$formAction =
-    $baseUri
-    . 'chinois/vocabulaire/'
-    . $vocabulaire->langue
-    . '/modifier/'
-    . $vocabulaire->id;
-
-$returnUrl =
-    $returnTo !== ''
-        ? $baseUri
-            . ltrim(
-                $returnTo,
-                '/',
-            )
-        : $baseUri
-            . 'chinois/vocabulaire/'
-            . $vocabulaire->langue;
-
-$langueValue =
-    (string) (
-        $old['langue']
-        ?? $vocabulaire->langue
-    );
+$langueValue = (string) ($old['langue'] ?? $vocabulaire->langue);
 
 $langueOptions = [
     'mandarin' => 'Mandarin',
-    'jinyu'    => 'JinYu',
+    'jinyu' => 'JinYu',
 ];
 
 ?>
@@ -74,7 +33,7 @@ $langueOptions = [
             <form
                 class="form-layout"
                 data-form-page="modifier-vocabulaire"
-                action="<?= e($formAction) ?>"
+                action="<?= e($form->formAction) ?>"
                 method="post"
             >
 
@@ -348,7 +307,7 @@ $langueOptions = [
                             form-submit
                             form-submit-secondary
                         "
-                        href="<?= e($returnUrl) ?>"
+                        href="<?= e($form->cancelUrl) ?>"
                     >
 
                         Retour
