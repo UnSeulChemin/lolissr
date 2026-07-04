@@ -29,27 +29,6 @@ $hasLatestArtbook =
 $mostRepresented =
     $stats->mostRepresented;
 
-$mostRepresentedThumbnailPath =
-    null;
-
-if (
-    $mostRepresented !== null
-    && $mostRepresented->thumbnail !== ''
-    && $mostRepresented->extension !== ''
-)
-{
-    $mostRepresentedThumbnailPath =
-        $view->baseUri
-        . 'images/artbook/thumbnail/'
-        . $mostRepresented->thumbnail
-        . '.'
-        . $mostRepresented->extension;
-}
-
-$isAuthor =
-    $mostRepresented !== null
-    && $mostRepresented->type === 'author';
-
 ?>
 
 <section class="layout-container">
@@ -330,17 +309,7 @@ $isAuthor =
 
             <p class="home-card-value">
 
-                <?= $stats->averageNote !== null
-                    ? e(
-                        number_format(
-                            (float) $stats->averageNote,
-                            1,
-                            ',',
-                            ' ',
-                        ) . '/10',
-                    )
-                    : 'Aucune note'
-                ?>
+                <?= e($stats->averageNoteLabel) ?>
 
             </p>
 
@@ -536,10 +505,7 @@ $isAuthor =
 
             <h2 class="home-card-title">
 
-                <?= $isAuthor
-                    ? '🎨 Auteur le plus représenté'
-                    : '📚 Série la plus représentée'
-                ?>
+                <?= e($mostRepresented?->title ?? 'Aucune donnée') ?>
 
             </h2>
 
@@ -552,11 +518,11 @@ $isAuthor =
                     "
                 >
 
-                    <?php if ($mostRepresentedThumbnailPath !== null): ?>
+                    <?php if ($mostRepresented?->thumbnailUrl !== ''): ?>
 
                         <img
                             class="card-image-portrait"
-                            src="<?= e($mostRepresentedThumbnailPath) ?>"
+                            src="<?= e($view->baseUri . $mostRepresented->thumbnailUrl) ?>"
                             alt="<?= e($mostRepresented->name) ?>"
                         >
 
@@ -584,14 +550,7 @@ $isAuthor =
                     </p>
 
                     <p class="home-longest-count">
-
-                        <?= (int) (
-                            $mostRepresented->total
-                            ?? 0
-                        ) ?>
-
-                        artbooks
-
+                        <?= e($mostRepresented?->countLabel ?? '0 artbooks') ?>
                     </p>
 
                 </div>
@@ -608,13 +567,6 @@ $isAuthor =
 
             $artbook =
                 $stats->latestArtbook;
-
-            $coverPath =
-                $view->baseUri
-                . 'images/artbook/thumbnail/'
-                . $artbook->thumbnail
-                . '.'
-                . $artbook->extension;
 
             ?>
 
@@ -641,11 +593,23 @@ $isAuthor =
                         "
                     >
 
-                        <img
-                            class="card-image-portrait"
-                            src="<?= e($coverPath) ?>"
-                            alt="<?= e($artbook->artbook) ?>"
-                        >
+                        <?php if ($artbook->thumbnailUrl !== ''): ?>
+
+                            <img
+                                class="card-image-portrait"
+                                src="<?= e($view->baseUri . $artbook->thumbnailUrl) ?>"
+                                alt="<?= e($artbook->artbook) ?>"
+                            >
+
+                        <?php else: ?>
+
+                            <img
+                                class="card-image-portrait"
+                                src="<?= e($view->baseUri) ?>images/artbook/placeholder-artbook.webp"
+                                alt=""
+                            >
+
+                        <?php endif; ?>
 
                     </div>
 
@@ -656,10 +620,7 @@ $isAuthor =
                         </p>
 
                         <p class="home-feature-meta">
-                            <?= e(
-                                $artbook->auteur
-                                ?? 'Auteur inconnu'
-                            ) ?>
+                            <?= e($artbook->authorLabel) ?>
                         </p>
 
                     </div>
@@ -797,12 +758,7 @@ $isAuthor =
 
             <p class="home-card-value">
 
-                <?= number_format(
-                    $stats->globalChineseProgress / 10,
-                    1,
-                    ',',
-                    ' ',
-                ) ?>/10
+                <?= e($stats->globalChineseProgressLabel) ?>
 
             </p>
 
@@ -825,10 +781,7 @@ $isAuthor =
             </h2>
 
             <p class="home-card-value">
-                <?= (int) (
-                    $stats->totalVocabulary
-                    - $stats->remainingVocabulary
-                ) ?>
+                <?= $stats->learnedVocabulary ?>
             </p>
 
         </article>
@@ -886,10 +839,7 @@ $isAuthor =
             </h2>
 
             <p class="home-card-value">
-                <?= (int) (
-                    $stats->totalGrammar
-                    - $stats->remainingGrammar
-                ) ?>
+                <?= $stats->learnedGrammar ?>
             </p>
 
         </article>

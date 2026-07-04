@@ -73,66 +73,177 @@ final readonly class StatsService
 
     public function dashboard(): DashboardStatsData
     {
-        // MANGA
+        /*
+        |--------------------------------------------------------------------------
+        | MANGA
+        |--------------------------------------------------------------------------
+        */
+
         $totalMangaTomes = $this->totalMangaTomes();
+
         $totalMangaSeries = $this->totalMangaSeries();
+
         $totalMangaRead = $this->totalMangaRead();
-        $totalMangaUnread = max(0, $totalMangaTomes - $totalMangaRead);
-        $mangaReadingProgress = $this->readingPercentage($totalMangaTomes, $totalMangaRead);
-        $averageMangaNote = $this->averageMangaNote();
-        $lastMangaTome = $this->lastMangaTome();
-        $longestMangaSeries = $this->longestMangaSeries();
-        $topLongestMangaSeries = $this->topLongestMangaSeries();
 
-        // ARTBOOK
-        $totalArtbooks = $this->artbookStatsRepository->countAll();
-        $totalArtbookAuthors = $this->artbookStatsRepository->countAuthors();
-        $totalArtbookSeries = $this->artbookStatsRepository->countSeries();
-        $latestArtbook = $this->artbookStatsRepository->findLatest();
-        $mostRepresentedArtbook = $this->artbookStatsRepository->findMostRepresented();
+        $totalMangaUnread =
+            max(
+                0,
+                $totalMangaTomes - $totalMangaRead,
+            );
 
-        // CHINOIS
-        $totalVocabulary = $this->vocabulaireStatsRepository->countAll();
-        $remainingVocabulary = $this->vocabulaireStatsRepository->countRemaining();
-        $vocabularyProgress = $this->completionPercentage($totalVocabulary, $remainingVocabulary);
-        $totalGrammar = $this->grammaireStatsRepository->countAll();
-        $remainingGrammar = $this->grammaireStatsRepository->countRemaining();
-        $grammarProgress = $this->completionPercentage($totalGrammar, $remainingGrammar);
-        $totalChinese = $totalVocabulary + $totalGrammar;
-        $totalRemainingChinese = $remainingVocabulary + $remainingGrammar;
-        $globalChineseProgress = $this->completionPercentage($totalChinese, $totalRemainingChinese);
+        $mangaReadingProgress =
+            $this->readingPercentage(
+                $totalMangaTomes,
+                $totalMangaRead,
+            );
+
+        $averageMangaNote =
+            $this->averageMangaNote();
+
+        $averageNoteLabel =
+            $averageMangaNote !== null
+                ? number_format(
+                    $averageMangaNote,
+                    1,
+                    ',',
+                    ' ',
+                ) . '/10'
+                : 'Aucune note';
+
+        $lastMangaTome =
+            $this->lastMangaTome();
+
+        $longestMangaSeries =
+            $this->longestMangaSeries();
+
+        $topLongestMangaSeries =
+            $this->topLongestMangaSeries();
+
+        /*
+        |--------------------------------------------------------------------------
+        | ARTBOOK
+        |--------------------------------------------------------------------------
+        */
+
+        $totalArtbooks =
+            $this->artbookStatsRepository->countAll();
+
+        $totalArtbookAuthors =
+            $this->artbookStatsRepository->countAuthors();
+
+        $totalArtbookSeries =
+            $this->artbookStatsRepository->countSeries();
+
+        $latestArtbook =
+            $this->artbookStatsRepository->findLatest();
+
+        $mostRepresentedArtbook =
+            $this->artbookStatsRepository->findMostRepresented();
+
+        /*
+        |--------------------------------------------------------------------------
+        | CHINOIS
+        |--------------------------------------------------------------------------
+        */
+
+        $totalVocabulary =
+            $this->vocabulaireStatsRepository->countAll();
+
+        $remainingVocabulary =
+            $this->vocabulaireStatsRepository->countRemaining();
+
+        $learnedVocabulary =
+            max(
+                0,
+                $totalVocabulary - $remainingVocabulary,
+            );
+
+        $vocabularyProgress =
+            $this->completionPercentage(
+                $totalVocabulary,
+                $remainingVocabulary,
+            );
+
+        $totalGrammar =
+            $this->grammaireStatsRepository->countAll();
+
+        $remainingGrammar =
+            $this->grammaireStatsRepository->countRemaining();
+
+        $learnedGrammar =
+            max(
+                0,
+                $totalGrammar - $remainingGrammar,
+            );
+
+        $grammarProgress =
+            $this->completionPercentage(
+                $totalGrammar,
+                $remainingGrammar,
+            );
+
+        $totalChinese =
+            $totalVocabulary + $totalGrammar;
+
+        $totalRemainingChinese =
+            $remainingVocabulary + $remainingGrammar;
+
+        $globalChineseProgress =
+            $this->completionPercentage(
+                $totalChinese,
+                $totalRemainingChinese,
+            );
+
+        $globalChineseProgressLabel =
+            number_format(
+                $globalChineseProgress / 10,
+                1,
+                ',',
+                ' ',
+            ) . '/10';
 
         return new DashboardStatsData(
+            // Chinois
+            totalVocabulary: $totalVocabulary,
+            remainingVocabulary: $remainingVocabulary,
+            learnedVocabulary: $learnedVocabulary,
+            vocabularyProgress: $vocabularyProgress,
+
+            totalGrammar: $totalGrammar,
+            remainingGrammar: $remainingGrammar,
+            learnedGrammar: $learnedGrammar,
+            grammarProgress: $grammarProgress,
+
+            globalChineseProgress: $globalChineseProgress,
+            globalChineseProgressLabel: $globalChineseProgressLabel,
+
+            // Manga
             totalTomes: $totalMangaTomes,
             totalSeries: $totalMangaSeries,
+
             totalRead: $totalMangaRead,
             totalUnread: $totalMangaUnread,
             readingProgress: $mangaReadingProgress,
 
             averageNote: $averageMangaNote,
+            averageNoteLabel: $averageNoteLabel,
+
             lastTome: $lastMangaTome,
             longestSeries: $longestMangaSeries,
+
             topLongestSeries: $topLongestMangaSeries,
 
             lowRatedMangas: [],
             lowJacquetteMangas: [],
             lowLivreStateMangas: [],
 
+            // Artbooks
             totalArtbooks: $totalArtbooks,
             totalArtbookAuthors: $totalArtbookAuthors,
             totalArtbookSeries: $totalArtbookSeries,
+
             latestArtbook: $latestArtbook,
             mostRepresented: $mostRepresentedArtbook,
-
-            totalVocabulary: $totalVocabulary,
-            remainingVocabulary: $remainingVocabulary,
-            vocabularyProgress: $vocabularyProgress,
-
-            totalGrammar: $totalGrammar,
-            remainingGrammar: $remainingGrammar,
-            grammarProgress: $grammarProgress,
-
-            globalChineseProgress: $globalChineseProgress,
         );
     }
 

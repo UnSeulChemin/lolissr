@@ -146,11 +146,24 @@ final class ArtbookStatsRepository extends Model
          */
         $data = (array) $row;
 
+        $thumbnailUrl = '';
+
+        if (
+            $data['thumbnail'] !== null
+            && $data['extension'] !== null
+        ) {
+            $thumbnailUrl =
+                '/images/artbook/thumbnail/'
+                . $data['thumbnail']
+                . '.'
+                . $data['extension'];
+        }
+
         return new LatestArtbookData(
             artbook: $data['artbook'],
             auteur: $data['auteur'],
-            thumbnail: $data['thumbnail'],
-            extension: $data['extension'],
+            thumbnailUrl: $thumbnailUrl,
+            authorLabel: $data['auteur'] ?? 'Auteur inconnu',
         );
     }
 
@@ -166,12 +179,32 @@ final class ArtbookStatsRepository extends Model
          */
         $data = (array) $row;
 
+        $thumbnailUrl = '';
+
+        if (
+            $data['thumbnail'] !== null
+            && $data['extension'] !== null
+        ) {
+            $thumbnailUrl =
+                '/images/artbook/thumbnail/'
+                . $data['thumbnail']
+                . '.'
+                . $data['extension'];
+        }
+
         return new MostRepresentedArtbookData(
-            type: $data['type'],
             name: $data['name'],
             total: (int) $data['total'],
-            thumbnail: $data['thumbnail'],
-            extension: $data['extension'],
+
+            title:
+                $data['type'] === 'author'
+                    ? '🎨 Auteur le plus représenté'
+                    : '📚 Série la plus représentée',
+
+            countLabel:
+                (int) $data['total'] . ' artbooks',
+
+            thumbnailUrl: $thumbnailUrl,
         );
     }
 

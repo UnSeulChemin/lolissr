@@ -15,16 +15,21 @@ final readonly class DashboardStatsData
      * @param list<MangaStatsData> $lowLivreStateMangas
      */
     public function __construct(
+        // Chinois
         public int $totalVocabulary,
         public int $remainingVocabulary,
+        public int $learnedVocabulary,
         public int $vocabularyProgress,
 
         public int $totalGrammar,
         public int $remainingGrammar,
+        public int $learnedGrammar,
         public int $grammarProgress,
 
         public int $globalChineseProgress,
+        public string $globalChineseProgressLabel,
 
+        // Manga
         public int $totalTomes,
         public int $totalSeries,
 
@@ -32,14 +37,8 @@ final readonly class DashboardStatsData
         public int $totalUnread,
         public int $readingProgress,
 
-        public int $totalArtbooks,
-        public int $totalArtbookAuthors,
-        public int $totalArtbookSeries,
-
-        public ?LatestArtbookData $latestArtbook,
-        public ?MostRepresentedArtbookData $mostRepresented,
-
         public ?float $averageNote,
+        public string $averageNoteLabel,
 
         public ?MangaStatsData $lastTome,
         public ?MangaStatsData $longestSeries,
@@ -54,7 +53,15 @@ final readonly class DashboardStatsData
         public array $lowJacquetteMangas,
 
         /** @var list<MangaStatsData> */
-        public array $lowLivreStateMangas
+        public array $lowLivreStateMangas,
+
+        // Artbooks
+        public int $totalArtbooks,
+        public int $totalArtbookAuthors,
+        public int $totalArtbookSeries,
+
+        public ?LatestArtbookData $latestArtbook,
+        public ?MostRepresentedArtbookData $mostRepresented,
     ) {
     }
 }

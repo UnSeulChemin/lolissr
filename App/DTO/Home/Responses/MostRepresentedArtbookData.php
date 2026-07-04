@@ -7,11 +7,12 @@ namespace App\DTO\Home\Responses;
 final readonly class MostRepresentedArtbookData
 {
     public function __construct(
-        public string $type,
         public string $name,
         public int $total,
-        public string $thumbnail,
-        public ?string $extension
+
+        public string $title,
+        public string $countLabel,
+        public string $thumbnailUrl,
     ) {
     }
 }
