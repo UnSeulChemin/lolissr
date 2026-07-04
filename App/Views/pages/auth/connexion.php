@@ -6,6 +6,12 @@ use App\DTO\Common\Responses\FormViewData;
 
 /** @var FormViewData $form */
 
+$usernameValue = (string) ($form->old['username'] ?? '');
+
+$usernameError = $form->errors['username'] ?? '';
+
+$passwordError = $form->errors['password'] ?? '';
+
 ?>
 
 <section class="layout-container dashboard-page">
@@ -38,16 +44,16 @@ use App\DTO\Common\Responses\FormViewData;
                         type="text"
                         name="username"
                         id="username"
-                        value="<?= e((string) ($form->old['username'] ?? '')) ?>"
+                        value="<?= e($usernameValue) ?>"
                         autofocus
                         required
                     >
 
-                    <?php if (!empty($form->errors['username'])): ?>
+                    <?php if ($usernameError !== ''): ?>
 
                         <p class="form-error">
 
-                            <?= e($form->errors['username']) ?>
+                            <?= e($usernameError) ?>
 
                         </p>
 
@@ -74,11 +80,11 @@ use App\DTO\Common\Responses\FormViewData;
                         required
                     >
 
-                    <?php if (!empty($form->errors['password'])): ?>
+                    <?php if ($passwordError !== ''): ?>
 
                         <p class="form-error">
 
-                            <?= e($form->errors['password']) ?>
+                            <?= e($passwordError) ?>
 
                         </p>
 

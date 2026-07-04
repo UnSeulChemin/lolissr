@@ -7,41 +7,33 @@ use Framework\Support\Session;
 
 /** @var ViewData $view */
 
-// =========================================
-// DEFAULT VARIABLES
-// =========================================
+$title =
+    is_string($title ?? null)
+        ? $title
+        : '';
 
-$title = is_string($title ?? null)
-    ? $title
-    : '';
-
-$content = is_string($content ?? null)
-    ? $content
-    : '';
-
-// =========================================
-// FLASH TOAST
-// =========================================
+$content =
+    is_string($content ?? null)
+        ? $content
+        : '';
 
 $flashToast = null;
 
-$success = Session::pull('success');
+$success =
+    Session::pull('success');
 
-$error = Session::pull('error');
+$error =
+    Session::pull('error');
 
-if (
-    is_string($success)
-    && $success !== ''
-) {
+if (is_string($success) && $success !== '')
+{
     $flashToast = [
         'message' => $success,
         'type' => 'success',
     ];
 }
-elseif (
-    is_string($error)
-    && $error !== ''
-) {
+elseif (is_string($error) && $error !== '')
+{
     $flashToast = [
         'message' => $error,
         'type' => 'error',
@@ -75,9 +67,7 @@ elseif (
     <?= csrf_meta_tag() ?>
 
     <title>
-
         <?= e($title) ?>
-
     </title>
 
     <link
@@ -113,7 +103,7 @@ elseif (
 
         window.csrfToken = document
             .querySelector('meta[name="csrf-token"]')
-            ?.getAttribute('content') || '';
+            ?.getAttribute('content') ?? '';
 
     </script>
 
