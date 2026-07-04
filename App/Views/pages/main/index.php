@@ -26,6 +26,9 @@ $hasTopLongestSeries =
 $hasLatestArtbook =
     $stats->latestArtbook !== null;
 
+$hasMostRepresented =
+    $stats->mostRepresented !== null;
+
 ?>
 
 <section class="layout-container">
@@ -433,60 +436,73 @@ $hasLatestArtbook =
 
         <!-- Auteur / Série le plus représenté -->
 
-        <a
-            class="
-                card
-                transition-card
-                card-link
-                card-link-wide
-                card-wide
-            "
-            href="#"
-        >
+        <?php if ($hasMostRepresented): ?>
 
-            <h2 class="home-card-title">
+            <?php $mostRepresented = $stats->mostRepresented; ?>
 
-                <?= e($stats->mostRepresented?->title ?? 'Aucune donnée') ?>
+            <article
+                class="
+                    card
+                    transition-card
+                    card-link
+                    card-link-wide
+                    card-wide
+                "
+            >
 
-            </h2>
+                <h2 class="home-card-title">
+                    <?= e($mostRepresented->title) ?>
+                </h2>
 
-            <div class="home-longest-content">
+                <div class="home-longest-content">
 
-                <div
-                    class="
-                        card-image-box-portrait
-                        home-feature-image-box
-                    "
-                >
+                    <div class="card-image-box-portrait home-feature-image-box">
 
-                    <img
-                        class="card-image-portrait"
-                        src="<?= e($view->baseUri . $stats->mostRepresented->thumbnailUrl) ?>"
-                        alt="<?= e($stats->mostRepresented->name) ?>"
-                    >
+                        <img
+                            class="card-image-portrait"
+                            src="<?= e($view->baseUri . $mostRepresented->thumbnailUrl) ?>"
+                            alt="<?= e($mostRepresented->name) ?>"
+                        >
 
-                </div>
+                    </div>
 
-                <div class="home-longest-info">
+                    <div class="home-longest-info">
 
-                    <p class="home-longest-name">
+                        <p class="home-longest-name">
+                            <?= e($mostRepresented->name) ?>
+                        </p>
 
-                        <?= e(
-                            $stats->mostRepresented->name
-                            ?? 'Aucune donnée'
-                        ) ?>
+                        <p class="home-longest-count">
+                            <?= e($mostRepresented->countLabel) ?>
+                        </p>
 
-                    </p>
-
-                    <p class="home-longest-count">
-                        <?= e($stats->mostRepresented?->countLabel ?? '0 artbooks') ?>
-                    </p>
+                    </div>
 
                 </div>
 
-            </div>
+            </article>
 
-        </a>
+        <?php else: ?>
+
+            <article
+                class="
+                    card
+                    transition-card
+                    card-wide
+                "
+            >
+
+                <h2 class="home-card-title">
+                    🎨 Artbooks
+                </h2>
+
+                <p class="home-empty">
+                    Aucune donnée
+                </p>
+
+            </article>
+
+        <?php endif; ?>
 
         <!-- Dernier artbook ajouté -->
 
@@ -499,14 +515,13 @@ $hasLatestArtbook =
 
             ?>
 
-            <a
+            <article
                 class="
                     card
                     transition-card
                     card-link
                     card-medium
                 "
-                href="#"
             >
 
                 <h2 class="home-card-title">
@@ -544,7 +559,7 @@ $hasLatestArtbook =
 
                 </div>
 
-            </a>
+            </article>
 
         <?php else: ?>
 
