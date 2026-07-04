@@ -216,8 +216,21 @@ final class ChinoisGrammaireRepository extends Model
 
     private function mapRowToDto(stdClass $row): ChinoisGrammaireData
     {
+        $abreviation =
+            $row->abreviation !== null
+                ? (string) $row->abreviation
+                : null;
+
+        $explication =
+            $row->explication !== null
+                ? (string) $row->explication
+                : null;
+
+        $maitrise = (bool) $row->maitrise;
+
         return new ChinoisGrammaireData(
             id: (int) $row->id,
+
             niveau: (string) $row->niveau,
 
             section: (string) $row->section,
@@ -228,23 +241,45 @@ final class ChinoisGrammaireRepository extends Model
 
             titre: (string) $row->titre,
             structure: (string) $row->structure,
-
-            abreviation:
-                $row->abreviation !== null
-                    ? (string) $row->abreviation
-                    : null,
+            abreviation: $abreviation,
 
             phrase: (string) $row->phrase,
-
             pinyin: (string) $row->pinyin,
-
             traduction: (string) $row->traduction,
-
-            explication: (string) $row->explication,
+            explication: $explication,
 
             position: (int) $row->position,
-            maitrise: (bool) $row->maitrise,
+
+            maitrise: $maitrise,
             xpRewarded: (bool) $row->xp_rewarded,
+
+            hasAbreviation:
+                $abreviation !== null
+                && trim($abreviation) !== '',
+
+            hasExplication:
+                $explication !== null
+                && trim($explication) !== '',
+
+            masteredClass:
+                $maitrise
+                    ? 'active'
+                    : '',
+
+            masteredValue:
+                $maitrise
+                    ? '1'
+                    : '0',
+
+            masteredPressed:
+                $maitrise
+                    ? 'true'
+                    : 'false',
+
+            masteredLabel:
+                $maitrise
+                    ? 'Retirer la maîtrise'
+                    : 'Marquer comme maîtrisé',
         );
     }
 }

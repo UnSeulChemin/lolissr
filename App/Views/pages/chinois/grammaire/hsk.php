@@ -2,93 +2,9 @@
 
 declare(strict_types=1);
 
-use App\DTO\Chinois\Responses\ChinoisGrammaireData;
+use App\DTO\Chinois\Responses\ChinoisHskData;
 
-/** @var list<ChinoisGrammaireData> $grammaires */
-
-$level =
-    (string) (
-        $level
-        ?? '1'
-    );
-
-$sections = [];
-
-foreach ($grammaires as $grammaire)
-{
-    $section = $grammaire->section;
-    $categorie = $grammaire->categorie;
-
-    $sections[$section][$categorie][] =
-        $grammaire;
-}
-
-$sectionIds = [];
-
-foreach (array_keys($sections) as $section)
-{
-    $sectionId =
-        transliterator_transliterate(
-            'Any-Latin; Latin-ASCII',
-            $section,
-        );
-
-    if ($sectionId === false)
-    {
-        $sectionId = $section;
-    }
-
-    $sectionId =
-        mb_strtolower(
-            $sectionId,
-        );
-
-    $sectionId =
-        preg_replace(
-            '/[^a-z0-9]+/',
-            '-',
-            $sectionId,
-        ) ?? '';
-
-    $sectionIds[$section] =
-        trim(
-            $sectionId,
-            '-',
-        );
-}
-
-$descriptions = [
-    '1' => 'Structures courantes, phrases du quotidien et grammaire HSK1.',
-    '2' => 'Structures courantes, phrases du quotidien et grammaire HSK2.',
-    '3' => 'Structures intermédiaires, phrases naturelles et grammaire HSK3.',
-    '4' => 'Structures avancées, nuances et grammaire HSK4.',
-];
-
-$sources = [
-    '1' => 'https://chine.in/mandarin/grammaire/RGLA1',
-    '2' => 'https://chine.in/mandarin/grammaire/RGLA2',
-    '3' => 'https://chine.in/mandarin/grammaire/RGLB1',
-    '4' => 'https://chine.in/mandarin/grammaire/RGLB2',
-];
-
-$sourceDescriptions = [
-    '1' => 'Références, structures et exemples de grammaire chinoise pour débutants.',
-    '2' => 'Références, structures et exemples de grammaire chinoise pour débutants intermédiaires.',
-    '3' => 'Références, structures et exemples de grammaire chinoise intermédiaire.',
-    '4' => 'Références, structures et exemples de grammaire chinoise avancée.',
-];
-
-$description =
-    $descriptions[$level]
-    ?? $descriptions['1'];
-
-$sourceUrl =
-    $sources[$level]
-    ?? $sources['1'];
-
-$sourceDescription =
-    $sourceDescriptions[$level]
-    ?? $sourceDescriptions['1'];
+/** @var ChinoisHskData $hsk */
 
 ?>
 
@@ -99,11 +15,11 @@ $sourceDescription =
         <div class="grammar-hero-main">
 
             <h1 class="grammar-hero-title">
-                📘 HSK<?= e($level) ?>
+                📘 HSK<?= e($hsk->level) ?>
             </h1>
 
             <p class="grammar-hero-description">
-                <?= e($description) ?>
+                <?= e($hsk->description) ?>
             </p>
 
         </div>
@@ -117,18 +33,18 @@ $sourceDescription =
                 </span>
 
                 <h2 class="grammar-source-title">
-                    Chine Informations — HSK<?= e($level) ?>
+                    Chine Informations — HSK<?= e($hsk->level) ?>
                 </h2>
 
                 <p class="grammar-source-description">
-                    <?= e($sourceDescription) ?>
+                    <?= e($hsk->sourceDescription) ?>
                 </p>
 
             </div>
 
             <a
                 class="grammar-source-link"
-                href="<?= e($sourceUrl) ?>"
+                href="<?= e($hsk->sourceUrl) ?>"
                 target="_blank"
                 rel="noopener noreferrer"
             >
@@ -147,14 +63,14 @@ $sourceDescription =
 
         <nav class="grammar-summary-links">
 
-            <?php foreach ($sections as $section => $categories): ?>
+            <?php foreach ($hsk->sections as $section): ?>
 
-            <a
-                href="#<?= e($sectionIds[$section]) ?>"
-                class="grammar-summary-link"
-            >
-                <?= e($section) ?>
-            </a>
+                <a
+                    href="#<?= e($section->id) ?>"
+                    class="grammar-summary-link"
+                >
+                    <?= e($section->title) ?>
+                </a>
 
             <?php endforeach; ?>
 
@@ -162,200 +78,171 @@ $sourceDescription =
 
     </section>
 
-    <?php foreach ($sections as $section => $categories): ?>
+    <?php foreach ($hsk->sections as $section): ?>
 
-        <section class="grammar-main-section">
+    <section class="grammar-main-section">
 
-            <h2
-                id="<?= e($sectionIds[$section]) ?>"
-                class="grammar-section-title"
-            >
+        <h2
+            id="<?= e($section->id) ?>"
+            class="grammar-section-title"
+        >
 
-                <span class="grammar-section-bar"></span>
+            <span class="grammar-section-bar"></span>
 
-                <?= e($section) ?>
+            <?= e($section->title) ?>
 
-            </h2>
+        </h2>
 
-            <?php foreach ($categories as $categorie => $items): ?>
+        <?php foreach ($section->categories as $categorie): ?>
 
-                <section class="grammar-category">
+            <section class="grammar-category">
 
-                    <h3 class="grammar-category-title">
+                <h3 class="grammar-category-title">
 
-                        <span class="grammar-category-bar"></span>
+                    <span class="grammar-category-bar"></span>
 
-                        <?= e($categorie) ?>
+                    <?= e($categorie->title) ?>
 
-                    </h3>
+                </h3>
 
-                    <section class="grammar-list">
+                <section class="grammar-list">
 
-                        <?php foreach ($items as $grammaire): ?>
+                    <?php foreach ($categorie->grammaires as $grammaire): ?>
 
-                            <?php
+                        <article
+                            class="
+                                grammar-item
+                                transition-card
+                            "
+                        >
 
-                            $hasExplication =
-                                $grammaire->explication !== null
-                                && trim($grammaire->explication) !== '';
+                            <button
+                                class="grammar-delete grammaire-delete"
+                                type="button"
+                                data-id="<?= $grammaire->id ?>"
+                                data-url="<?= e($view->baseUri) ?>chinois/ajax/delete-grammaire"
+                                aria-label="Supprimer la règle"
+                                title="Supprimer la règle"
+                            >
+                                ✕
+                            </button>
 
-                            $hasAbreviation =
-                                $grammaire->abreviation !== null
-                                && trim($grammaire->abreviation) !== '';
-
-                            $isMaitrise = $grammaire->maitrise;
-
-                            ?>
-
-                            <article
-                                class="
-                                    grammar-item
-                                    transition-card
-                                "
+                            <a
+                                class="grammar-edit"
+                                href="<?= e($view->baseUri) ?>chinois/grammaire/<?= strtolower($grammaire->niveau) ?>/modifier/<?= $grammaire->id ?>"
+                                aria-label="Modifier la règle"
+                                title="Modifier la règle"
                             >
 
-                                <button
-                                    class="grammar-delete grammaire-delete"
-                                    type="button"
-                                    data-id="<?= $grammaire->id ?>"
-                                    data-url="<?= e($view->baseUri) ?>chinois/ajax/delete-grammaire"
-                                    aria-label="Supprimer la règle"
-                                    title="Supprimer la règle"
-                                >
-                                    ✕
-                                </button>
-
-                                <a
-                                    class="grammar-edit"
-                                    href="<?= e($view->baseUri) ?>chinois/grammaire/<?= strtolower($grammaire->niveau) ?>/modifier/<?= $grammaire->id ?>"
-                                    aria-label="Modifier la règle"
-                                    title="Modifier la règle"
+                                <svg
+                                    class="grammar-edit-icon"
+                                    viewBox="0 0 24 24"
+                                    aria-hidden="true"
                                 >
 
-                                    <svg
-                                        class="grammar-edit-icon"
-                                        viewBox="0 0 24 24"
-                                        aria-hidden="true"
-                                    >
+                                    <path
+                                        d="M4 20H8L18.5 9.5C19.1 8.9 19.1 7.9 18.5 7.3L16.7 5.5C16.1 4.9 15.1 4.9 14.5 5.5L4 16V20Z"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    />
 
-                                        <path
-                                            d="M4 20H8L18.5 9.5C19.1 8.9 19.1 7.9 18.5 7.3L16.7 5.5C16.1 4.9 15.1 4.9 14.5 5.5L4 16V20Z"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            stroke-width="2"
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                        />
+                                </svg>
 
-                                    </svg>
+                            </a>
 
-                                </a>
+                            <h4 class="grammar-topic">
+                                <?= e($grammaire->titre) ?>
+                            </h4>
 
-                                <h4 class="grammar-topic">
-                                    <?= e($grammaire->titre) ?>
-                                </h4>
+                            <div class="grammar-structure">
+                                <?= e($grammaire->structure) ?>
+                            </div>
 
-                                <div class="grammar-structure">
-                                    <?= e($grammaire->structure) ?>
+                            <?php if ($grammaire->hasAbreviation): ?>
+
+                                <div class="grammar-abbreviation">
+
+                                    <span class="grammar-abbreviation-label">
+                                        Abréviation courante :
+                                    </span>
+
+                                    <span class="grammar-abbreviation-value">
+                                        <?= e($grammaire->abreviation) ?>
+                                    </span>
+
                                 </div>
 
-                                <?php if ($hasAbreviation): ?>
+                            <?php endif; ?>
 
-                                    <div class="grammar-abbreviation">
+                            <div class="grammar-example">
+                                <?= e($grammaire->phrase) ?>
+                            </div>
 
-                                        <span class="grammar-abbreviation-label">
-                                            Abréviation courante :
-                                        </span>
+                            <div class="grammar-pinyin">
+                                <?= e($grammaire->pinyin) ?>
+                            </div>
 
-                                        <span class="grammar-abbreviation-value">
-                                            <?= e($grammaire->abreviation) ?>
-                                        </span>
+                            <div class="grammar-translation">
+                                <?= e($grammaire->traduction) ?>
+                            </div>
 
-                                    </div>
+                            <?php if ($grammaire->hasExplication): ?>
 
-                                <?php endif; ?>
-
-                                <div class="grammar-example">
-                                    <?= e($grammaire->phrase) ?>
+                                <div class="grammar-explanation">
+                                    <?= e($grammaire->explication) ?>
                                 </div>
 
-                                <div class="grammar-pinyin">
-                                    <?= e($grammaire->pinyin) ?>
-                                </div>
+                            <?php endif; ?>
 
-                                <div class="grammar-translation">
-                                    <?= e($grammaire->traduction) ?>
-                                </div>
+                            <button
+                                class="
+                                    grammar-mastered
+                                    grammar-ajax
+                                    <?= $grammaire->masteredClass ?>
+                                "
+                                type="button"
+                                data-id="<?= $grammaire->id ?>"
+                                data-url="<?= e($view->baseUri) ?>chinois/ajax/toggle-grammaire-maitrise"
+                                data-maitrise="<?= $grammaire->masteredValue ?>"
+                                aria-pressed="<?= $grammaire->masteredPressed ?>"
+                                aria-label="<?= $grammaire->masteredLabel ?>"
+                                title="<?= $grammaire->masteredLabel ?>"
+                            >
 
-                                <?php if ($hasExplication): ?>
-
-                                    <div class="grammar-explanation">
-                                        <?= e($grammaire->explication) ?>
-                                    </div>
-
-                                <?php endif; ?>
-
-                                <button
-                                    class="
-                                        grammar-mastered
-                                        grammar-ajax
-                                        <?= $isMaitrise
-                                            ? 'active'
-                                            : ''
-                            ?>
-                                    "
-                                    data-id="<?= $grammaire->id ?>"
-                                    data-url="<?= e($view->baseUri) ?>chinois/ajax/toggle-grammaire-maitrise"
-                                    data-maitrise="<?= $isMaitrise
-                            ? '1'
-                            : '0'
-                            ?>"
-                                    type="button"
-                                    aria-pressed="<?= $isMaitrise
-                                ? 'true'
-                                : 'false'
-                            ?>"
-                                    aria-label="<?= $isMaitrise
-                                ? 'Retirer la maîtrise'
-                                : 'Marquer comme maîtrisé'
-                            ?>"
-                                    title="<?= $isMaitrise
-                                ? 'Retirer la maîtrise'
-                                : 'Marquer comme maîtrisé'
-                            ?>"
+                                <svg
+                                    class="grammar-mastered-icon"
+                                    viewBox="0 0 24 24"
+                                    aria-hidden="true"
                                 >
 
-                                    <svg
-                                        class="grammar-mastered-icon"
-                                        viewBox="0 0 24 24"
-                                        aria-hidden="true"
-                                    >
+                                    <path
+                                        d="M20 6L9 17L4 12"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="3"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                    />
 
-                                        <path
-                                            d="M20 6L9 17L4 12"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            stroke-width="3"
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                        />
+                                </svg>
 
-                                    </svg>
+                            </button>
 
-                                </button>
+                        </article>
 
-                            </article>
-
-                        <?php endforeach; ?>
-
-                    </section>
+                    <?php endforeach; ?>
 
                 </section>
 
-            <?php endforeach; ?>
+            </section>
 
-        </section>
+        <?php endforeach; ?>
 
-    <?php endforeach; ?>
+    </section>
+
+<?php endforeach; ?>
 
 </section>
