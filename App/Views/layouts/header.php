@@ -177,7 +177,7 @@ $currentSearch = isset($currentSearch)
                         id="header-search-input"
                         type="search"
                         name="q"
-                        placeholder="Rechercher..."
+                        placeholder="Rechercher... • v<?= e(config('app.version')) ?>"
                         value="<?= e($currentSearch) ?>"
                         autocomplete="off"
                     >
