@@ -4,21 +4,14 @@ declare(strict_types=1);
 
 /** @var App\Models\User $user */
 
-$baseUri =
-    rtrim(
-        $baseUri
-        ?? '',
-        '/',
-    ) . '/';
-
 $avatarPath =
-    "{$baseUri}images/avatar/thumbnail/{$user->avatar}.{$user->avatar_extension}";
+    "{$view->baseUri}images/avatar/thumbnail/{$user->avatar}.{$user->avatar_extension}";
 
 $bannerPath =
-    "{$baseUri}images/banner/thumbnail/{$user->banner}.{$user->banner_extension}";
+    "{$view->baseUri}images/banner/thumbnail/{$user->banner}.{$user->banner_extension}";
 
 $framePath =
-    "{$baseUri}images/frame/thumbnail/{$user->frame}.{$user->frame_extension}";
+    "{$view->baseUri}images/frame/thumbnail/{$user->frame}.{$user->frame_extension}";
 
 $username =
     $user->username;

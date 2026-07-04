@@ -11,8 +11,6 @@ use App\DTO\Manga\Responses\MangaSeriesItemData;
 
 $isSerieView = $slugFilter !== null;
 
-$baseUri = view_base_uri();
-
 ?>
 
 <section class="layout-container dashboard-page">
@@ -44,7 +42,7 @@ $baseUri = view_base_uri();
                                 : '' ?>
                         "
                         data-prefetch
-                        href="<?= e($baseUri) ?>manga/series/page/<?= $i ?>"
+                        href="<?= e($view->baseUri) ?>manga/series/page/<?= $i ?>"
                     >
                         <?= $i ?>
                     </a>

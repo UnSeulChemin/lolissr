@@ -9,40 +9,34 @@ if (! isset($nendoroid))
     );
 }
 
-$baseUri =
-    rtrim(
-        (string) ($baseUri ?? ''),
-        '/',
-    ) . '/';
-
 $slug =
     rawurlencode(
         (string) $nendoroid->slug,
     );
 
 $thumbnailPath =
-    $baseUri
+    $view->baseUri
     . 'images/nendoroid/thumbnail/'
     . $nendoroid->thumbnail
     . '.'
     . $nendoroid->extension;
 
 $modifierUrl =
-    $baseUri
+    $view->baseUri
     . 'nendoroid/waifus/'
     . $slug
     . '/modifier/'
     . $nendoroid->numero;
 
 $deleteUrl =
-    $baseUri
+    $view->baseUri
     . 'nendoroid/waifus/'
     . $slug
     . '/supprimer/'
     . $nendoroid->numero;
 
 $redirectUrl =
-    $baseUri
+    $view->baseUri
     . 'nendoroid/waifus';
 
 $hasCommentaire =

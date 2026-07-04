@@ -10,8 +10,6 @@ use App\DTO\Manga\Responses\ArtbookSeriesItemData;
  * @var int $totalPages
  */
 
-$baseUri = view_base_uri();
-
 ?>
 
 <section class="layout-container dashboard-page">
@@ -29,7 +27,7 @@ $baseUri = view_base_uri();
                     <a
                         class="collection-pagination-link <?= $currentPage === $i ? 'active' : '' ?>"
                         data-prefetch
-                        href="<?= e($baseUri) ?>manga/artbooks/page/<?= $i ?>"
+                        href="<?= e($view->baseUri) ?>manga/artbooks/page/<?= $i ?>"
                     >
                         <?= $i ?>
                     </a>

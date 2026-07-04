@@ -6,19 +6,17 @@ use App\DTO\Manga\Responses\MangaData;
 
 /** @var MangaData $manga */
 
-$baseUri = view_base_uri();
-
 $slug = rawurlencode($manga->slug);
 
 $numero = $manga->numero;
 
-$modifierUrl = $baseUri . 'manga/series/' . $slug . '/modifier/' . $numero;
+$modifierUrl = $view->baseUri . 'manga/series/' . $slug . '/modifier/' . $numero;
 
-$deleteUrl = $baseUri . 'manga/series/' . $slug . '/supprimer/' . $numero;
+$deleteUrl = $view->baseUri . 'manga/series/' . $slug . '/supprimer/' . $numero;
 
-$redirectUrl = $baseUri . 'manga/series/' . $slug;
+$redirectUrl = $view->baseUri . 'manga/series/' . $slug;
 
-$updateReadStatusUrl = $baseUri . 'manga/ajax/update-read-status/' . $slug . '/' . $numero;
+$updateReadStatusUrl = $view->baseUri . 'manga/ajax/update-read-status/' . $slug . '/' . $numero;
 
 $isLu = $manga->lu;
 
@@ -37,7 +35,7 @@ $commentaire = $manga->hasCommentaire ? nl2br(e($manga->commentaire)) : 'Aucun c
         "
         data-slug="<?= e($slug) ?>"
         data-numero="<?= $numero ?>"
-        data-base-path="<?= e($baseUri) ?>"
+        data-base-path="<?= e($view->baseUri) ?>"
         data-jacquette="<?= $manga->jacquette ?? 1 ?>"
         data-livre-note="<?= $manga->livreNote ?? 1 ?>"
     >

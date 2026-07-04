@@ -12,13 +12,6 @@ $level =
         ?? '1'
     );
 
-$baseUri =
-    rtrim(
-        $baseUri
-        ?? '',
-        '/',
-    ) . '/';
-
 $sections = [];
 
 foreach ($grammaires as $grammaire)
@@ -225,7 +218,7 @@ $sourceDescription =
                                     class="grammar-delete grammaire-delete"
                                     type="button"
                                     data-id="<?= $grammaire->id ?>"
-                                    data-url="<?= e($baseUri) ?>chinois/ajax/delete-grammaire"
+                                    data-url="<?= e($view->baseUri) ?>chinois/ajax/delete-grammaire"
                                     aria-label="Supprimer la règle"
                                     title="Supprimer la règle"
                                 >
@@ -234,7 +227,7 @@ $sourceDescription =
 
                                 <a
                                     class="grammar-edit"
-                                    href="<?= e($baseUri) ?>chinois/grammaire/<?= strtolower($grammaire->niveau) ?>/modifier/<?= $grammaire->id ?>"
+                                    href="<?= e($view->baseUri) ?>chinois/grammaire/<?= strtolower($grammaire->niveau) ?>/modifier/<?= $grammaire->id ?>"
                                     aria-label="Modifier la règle"
                                     title="Modifier la règle"
                                 >
@@ -312,7 +305,7 @@ $sourceDescription =
                             ?>
                                     "
                                     data-id="<?= $grammaire->id ?>"
-                                    data-url="<?= e($baseUri) ?>chinois/ajax/toggle-grammaire-maitrise"
+                                    data-url="<?= e($view->baseUri) ?>chinois/ajax/toggle-grammaire-maitrise"
                                     data-maitrise="<?= $isMaitrise
                             ? '1'
                             : '0'

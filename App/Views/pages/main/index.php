@@ -2,19 +2,16 @@
 
 declare(strict_types=1);
 
+use App\DTO\Common\Responses\ViewData;
+
+/** @var ViewData $view */
+
 if (!isset($stats))
 {
-
     throw new \RuntimeException(
         'Stats manquantes dans la vue.',
     );
 }
-
-$baseUri =
-    rtrim(
-        (string) ($baseUri ?? ''),
-        '/',
-    ) . '/';
 
 $hasLongestSeries =
     $stats->longestSeries !== null;
@@ -42,7 +39,7 @@ if (
 )
 {
     $mostRepresentedThumbnailPath =
-        $baseUri
+        $view->baseUri
         . 'images/artbook/thumbnail/'
         . $mostRepresented->thumbnail
         . '.'
@@ -73,14 +70,14 @@ $isAuthor =
                 $stats->longestSeries;
 
             $href =
-                $baseUri
+                $view->baseUri
                 . 'manga/series/'
                 . rawurlencode(
                     (string) $serie->slug,
                 );
 
             $thumbnailPath =
-                $baseUri
+                $view->baseUri
                 . 'images/manga/thumbnail/'
                 . $serie->thumbnail
                 . '.'
@@ -170,7 +167,7 @@ $isAuthor =
                 $stats->lastTome;
 
             $href =
-                $baseUri
+                $view->baseUri
                 . 'manga/series/'
                 . rawurlencode(
                     (string) $tome->slug,
@@ -179,7 +176,7 @@ $isAuthor =
                 . (int) $tome->numero;
 
             $thumbnailPath =
-                $baseUri
+                $view->baseUri
                 . 'images/manga/thumbnail/'
                 . $tome->thumbnail
                 . '.'
@@ -282,7 +279,7 @@ $isAuthor =
                 card-link
             "
             data-prefetch
-            href="<?= e($baseUri . 'manga/series') ?>"
+            href="<?= e($view->baseUri . 'manga/series') ?>"
         >
 
             <h2 class="home-card-title">
@@ -303,7 +300,7 @@ $isAuthor =
                 card-link
             "
             data-prefetch
-            href="<?= e($baseUri . 'manga/series') ?>"
+            href="<?= e($view->baseUri . 'manga/series') ?>"
         >
 
             <h2 class="home-card-title">
@@ -324,7 +321,7 @@ $isAuthor =
                 card-link
             "
             data-prefetch
-            href="<?= e($baseUri . 'manga/series/notes') ?>"
+            href="<?= e($view->baseUri . 'manga/series/notes') ?>"
         >
 
             <h2 class="home-card-title">
@@ -371,14 +368,14 @@ $isAuthor =
                 <?php
 
                 $href =
-                    $baseUri
+                    $view->baseUri
                     . 'manga/series/'
                     . rawurlencode(
                         (string) $serie->slug,
                     );
 
                 $thumbnailPath =
-                    $baseUri
+                    $view->baseUri
                     . 'images/manga/thumbnail/'
                     . $serie->thumbnail
                     . '.'
@@ -446,7 +443,7 @@ $isAuthor =
                 card-link
             "
             data-prefetch
-            href="<?= e($baseUri . 'manga/series/a-lire') ?>"
+            href="<?= e($view->baseUri . 'manga/series/a-lire') ?>"
         >
 
             <h2 class="home-card-title">
@@ -467,7 +464,7 @@ $isAuthor =
                 card-link
             "
             data-prefetch
-            href="<?= e($baseUri . 'manga/series/a-lire') ?>"
+            href="<?= e($view->baseUri . 'manga/series/a-lire') ?>"
         >
 
             <h2 class="home-card-title">
@@ -489,7 +486,7 @@ $isAuthor =
                 home-reading-progress-card
             "
             data-prefetch
-            href="<?= e($baseUri . 'manga/series/a-lire') ?>"
+            href="<?= e($view->baseUri . 'manga/series/a-lire') ?>"
         >
 
             <h2 class="home-card-title">
@@ -567,7 +564,7 @@ $isAuthor =
 
                         <img
                             class="card-image-portrait"
-                            src="<?= e($baseUri) ?>images/artbook/placeholder-artbook.webp"
+                            src="<?= e($view->baseUri) ?>images/artbook/placeholder-artbook.webp"
                             alt=""
                         >
 
@@ -613,7 +610,7 @@ $isAuthor =
                 $stats->latestArtbook;
 
             $coverPath =
-                $baseUri
+                $view->baseUri
                 . 'images/artbook/thumbnail/'
                 . $artbook->thumbnail
                 . '.'
@@ -705,7 +702,7 @@ $isAuthor =
                 card-link
             "
             data-prefetch
-            href="<?= e($baseUri . 'manga/artbooks') ?>"
+            href="<?= e($view->baseUri . 'manga/artbooks') ?>"
         >
 
             <h2 class="home-card-title">

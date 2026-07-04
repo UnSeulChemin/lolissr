@@ -8,14 +8,9 @@ $errors = Session::pull('errors', []);
 
 $old = Session::pull('old', []);
 
-$baseUri = rtrim(
-    (string) ($baseUri ?? ''),
-    '/',
-) . '/';
+$formAction = $view->baseUri . 'nendoroid/ajouter';
 
-$formAction = $baseUri . 'nendoroid/ajouter';
-
-$returnUrl = $baseUri . 'nendoroid';
+$returnUrl = $view->baseUri . 'nendoroid';
 
 ?>
 

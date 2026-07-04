@@ -6,6 +6,7 @@ namespace App\Controllers;
 
 use App\DTO\Common\ServiceResult;
 use App\DTO\Common\Responses\FormViewData;
+use App\DTO\Common\Responses\ViewData;
 
 use Framework\Application\App;
 use Framework\Exceptions\MethodNotAllowedException;
@@ -13,6 +14,7 @@ use Framework\Exceptions\NotFoundException;
 use Framework\Http\Request;
 use Framework\Http\Response;
 use Framework\Support\Session;
+
 
 use RuntimeException;
 use Throwable;
@@ -76,11 +78,6 @@ abstract class Controller
     {
         extract($variables, EXTR_SKIP);
 
-        if (isset($variables['view']) && is_array($variables['view']))
-        {
-            extract($variables['view'], EXTR_SKIP);
-        }
-
         ob_start();
 
         try
@@ -116,10 +113,10 @@ abstract class Controller
     private function baseViewData(array $data = []): array
     {
         return [
-            'view' => $data,
+            'view' => $this->viewData(),
             'title' => $this->title,
-            'baseUri' => $this->baseUri,
             'currentPath' => $this->request->path(),
+            ...$data,
         ];
     }
 
@@ -232,9 +229,17 @@ abstract class Controller
     |--------------------------------------------------------------------------
     */
 
+    protected function viewData(): ViewData
+    {
+        return new ViewData(
+            baseUri: view_base_uri(),
+        );
+    }
+
     protected function formViewData(string $formAction, string $cancelUrl): FormViewData
     {
         return new FormViewData(
+            baseUri: view_base_uri(),
             errors: Session::pull('errors', []),
             old: Session::pull('old', []),
             formAction: rtrim($this->baseUri, '/') . '/' . ltrim($formAction, '/'),

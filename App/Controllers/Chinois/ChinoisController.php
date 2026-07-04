@@ -14,8 +14,8 @@ use App\Services\Chinois\ChinoisWriteService;
 
 use Framework\Exceptions\NotFoundException;
 use Framework\Exceptions\ValidationException;
-use Framework\Http\Request;
 use Framework\Http\FormRequest;
+use Framework\Http\Request;
 
 final class ChinoisController extends Controller
 {

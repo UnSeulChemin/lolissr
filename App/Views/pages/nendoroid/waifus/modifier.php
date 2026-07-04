@@ -11,12 +11,6 @@ if (! isset($nendoroid))
     );
 }
 
-$baseUri =
-    rtrim(
-        (string) ($baseUri ?? ''),
-        '/',
-    ) . '/';
-
 $errors =
     Session::pull('errors', []);
 
@@ -32,14 +26,14 @@ $commentaireValue =
     ?? ($nendoroid->commentaire ?? '');
 
 $formAction =
-    $baseUri
+    $view->baseUri
     . 'nendoroid/waifus/'
     . rawurlencode((string) $nendoroid->slug)
     . '/modifier/'
     . $nendoroid->numero;
 
 $cancelUrl =
-    $baseUri
+    $view->baseUri
     . 'nendoroid/waifus/'
     . rawurlencode((string) $nendoroid->slug)
     . '/'

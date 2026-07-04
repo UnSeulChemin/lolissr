@@ -6,8 +6,6 @@ use App\DTO\Figurine\Responses\FigurineSeriesItemData;
 
 /** @var list<FigurineSeriesItemData> $figurines */
 
-$baseUri = view_base_uri();
-
 ?>
 
 <div class="collection-ajax-content">
@@ -35,7 +33,7 @@ $baseUri = view_base_uri();
                     collection-card-link
                 "
                 data-prefetch
-                href="<?= e($baseUri) ?>figurine/waifus/<?= e($figurine->slug) ?>/<?= $figurine->numero ?>"
+                href="<?= e($view->baseUri) ?>figurine/waifus/<?= e($figurine->slug) ?>/<?= $figurine->numero ?>"
             >
 
                 <div class="card-image-box-portrait">

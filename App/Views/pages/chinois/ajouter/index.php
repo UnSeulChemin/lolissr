@@ -2,12 +2,6 @@
 
 declare(strict_types=1);
 
-$baseUri =
-    rtrim(
-        (string) ($baseUri ?? ''),
-        '/',
-    ) . '/';
-
 ?>
 
 <section class="layout-container dashboard-page">
@@ -21,7 +15,7 @@ $baseUri =
                 dashboard-card
             "
             data-prefetch
-            href="<?= e($baseUri) ?>chinois/ajouter/vocabulaire"
+            href="<?= e($view->baseUri) ?>chinois/ajouter/vocabulaire"
         >
 
             <span
@@ -48,7 +42,7 @@ $baseUri =
                 dashboard-card
             "
             data-prefetch
-            href="<?= e($baseUri) ?>chinois/ajouter/grammaire"
+            href="<?= e($view->baseUri) ?>chinois/ajouter/grammaire"
         >
 
             <span

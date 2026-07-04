@@ -6,15 +6,13 @@ use App\DTO\Figurine\Responses\FigurineData;
 
 /** @var FigurineData $figurine */
 
-$baseUri = view_base_uri();
-
 $slug = rawurlencode($figurine->slug);
 
-$modifierUrl = $baseUri . 'figurine/waifus/' . $slug . '/modifier/' . $figurine->numero;
+$modifierUrl = $view->baseUri . 'figurine/waifus/' . $slug . '/modifier/' . $figurine->numero;
 
-$deleteUrl = $baseUri . 'figurine/waifus/' . $slug . '/supprimer/' . $figurine->numero;
+$deleteUrl = $view->baseUri . 'figurine/waifus/' . $slug . '/supprimer/' . $figurine->numero;
 
-$redirectUrl = $baseUri . 'figurine/waifus';
+$redirectUrl = $view->baseUri . 'figurine/waifus';
 
 $hasCommentaire = $figurine->commentaire !== null
     && trim($figurine->commentaire) !== '';

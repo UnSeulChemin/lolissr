@@ -4,13 +4,6 @@ declare(strict_types=1);
 
 /** @var string|null $message */
 
-$baseUri =
-    rtrim(
-        $baseUri
-        ?? '',
-        '/',
-    ) . '/';
-
 $message ??=
     'Une erreur interne est survenue.';
 
@@ -50,7 +43,7 @@ $message ??=
                         form-submit
                         form-submit-secondary
                     "
-                    href="<?= e($baseUri) ?>"
+                    href="<?= e($view->baseUri) ?>"
                 >
 
                     Retour à l’accueil

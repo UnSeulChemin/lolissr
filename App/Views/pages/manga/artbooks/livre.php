@@ -6,17 +6,15 @@ use App\DTO\Manga\Responses\ArtbookData;
 
 /** @var ArtbookData $artbook */
 
-$baseUri = view_base_uri();
-
 $slug = rawurlencode($artbook->slug);
 
 $numero = $artbook->numero;
 
-$modifierUrl = $baseUri . 'manga/artbooks/' . $slug . '/modifier/' . $numero;
+$modifierUrl = $view->baseUri . 'manga/artbooks/' . $slug . '/modifier/' . $numero;
 
-$deleteUrl = $baseUri . 'manga/artbooks/' . $slug . '/supprimer/' . $numero;
+$deleteUrl = $view->baseUri . 'manga/artbooks/' . $slug . '/supprimer/' . $numero;
 
-$returnUrl = $baseUri . 'manga/artbooks';
+$returnUrl = $view->baseUri . 'manga/artbooks';
 
 ?>
 

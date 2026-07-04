@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-$baseUri = view_base_uri();
-
 ?>
 
 <section class="layout-container dashboard-page">
@@ -17,7 +15,7 @@ $baseUri = view_base_uri();
                 dashboard-card
             "
             data-prefetch
-            href="<?= e($baseUri) ?>manga/ajouter/manga"
+            href="<?= e($view->baseUri) ?>manga/ajouter/manga"
         >
 
             <span
@@ -44,7 +42,7 @@ $baseUri = view_base_uri();
                 dashboard-card
             "
             data-prefetch
-            href="<?= e($baseUri) ?>manga/ajouter/artbook"
+            href="<?= e($view->baseUri) ?>manga/ajouter/artbook"
         >
 
             <span

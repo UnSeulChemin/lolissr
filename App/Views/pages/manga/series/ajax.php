@@ -8,8 +8,6 @@ use App\DTO\Manga\Responses\MangaSeriesItemData;
 
 $isSerieView ??= false;
 
-$baseUri = view_base_uri();
-
 ?>
 
 <div class="collection-ajax-content">
@@ -43,7 +41,7 @@ $baseUri = view_base_uri();
 
     $showReadBadge = $isSerieView ? $isRead : $manga->isFullyRead;
 
-    $href = $isSerieView ? "{$baseUri}manga/series/{$slug}/{$numero}" : "{$baseUri}manga/series/{$slug}";
+    $href = $isSerieView ? "{$view->baseUri}manga/series/{$slug}/{$numero}" : "{$view->baseUri}manga/series/{$slug}";
 
     $displayNote = $isSerieView ? $note : $averageNote;
 

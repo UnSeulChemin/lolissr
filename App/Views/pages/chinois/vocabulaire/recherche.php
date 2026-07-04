@@ -4,12 +4,6 @@ declare(strict_types=1);
 
 /** @var App\DTO\Chinois\Responses\ChinoisVocabulaireData $vocabulaire */
 
-$baseUri =
-    rtrim(
-        (string) ($baseUri ?? ''),
-        '/',
-    ) . '/';
-
 $isMaitrise =
     $vocabulaire->maitrise;
 
@@ -32,7 +26,7 @@ $isMaitrise =
                     class="grammar-delete vocabulaire-delete"
                     type="button"
                     data-id="<?= $vocabulaire->id ?>"
-                    data-url="<?= e($baseUri) ?>chinois/ajax/delete-vocabulaire"
+                    data-url="<?= e($view->baseUri) ?>chinois/ajax/delete-vocabulaire"
                 >
                     ✕
                 </button>
@@ -75,7 +69,7 @@ $isMaitrise =
 
                     <a
                         class="grammar-edit"
-                        href="<?= e($baseUri) ?>chinois/vocabulaire/<?= $vocabulaire->langue ?>/modifier/<?= $vocabulaire->id ?>"
+                        href="<?= e($view->baseUri) ?>chinois/vocabulaire/<?= $vocabulaire->langue ?>/modifier/<?= $vocabulaire->id ?>"
                     >
 
                         <svg
@@ -107,7 +101,7 @@ $isMaitrise =
                         "
                         type="button"
                         data-id="<?= $vocabulaire->id ?>"
-                        data-url="<?= e($baseUri) ?>chinois/ajax/toggle-vocabulaire-maitrise"
+                        data-url="<?= e($view->baseUri) ?>chinois/ajax/toggle-vocabulaire-maitrise"
                         data-maitrise="<?= $isMaitrise
                             ? '1'
                             : '0' ?>"

@@ -20,12 +20,6 @@ $result =
 $error =
     $error ?? null;
 
-$baseUri =
-    rtrim(
-        (string) ($baseUri ?? ''),
-        '/',
-    ) . '/';
-
 ?>
 
 <section class="layout-container dashboard-page">
@@ -38,7 +32,7 @@ $baseUri =
                 class="form-layout"
                 method="post"
                 data-sql-form
-                data-url="<?= e($baseUri) ?>sql/ajax/execute"
+                data-url="<?= e($view->baseUri) ?>sql/ajax/execute"
             >
 
                 <?= csrf_field() ?>

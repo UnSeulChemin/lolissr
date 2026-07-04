@@ -8,14 +8,9 @@ $errors = Session::pull('errors', []);
 
 $old = Session::pull('old', []);
 
-$baseUri = rtrim(
-    (string) ($baseUri ?? ''),
-    '/',
-) . '/';
+$formAction = $view->baseUri . 'peluche/ajouter';
 
-$formAction = $baseUri . 'peluche/ajouter';
-
-$returnUrl = $baseUri . 'peluche';
+$returnUrl = $view->baseUri . 'peluche';
 
 ?>
 

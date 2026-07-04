@@ -6,8 +6,6 @@ use App\DTO\Figurine\Responses\FigurineSeriesItemData;
 
 /** @var list<FigurineSeriesItemData> $figurines */
 
-$baseUri = view_base_uri();
-
 ?>
 
 <section class="layout-container dashboard-page">
@@ -25,7 +23,7 @@ $baseUri = view_base_uri();
                     <a
                         class="collection-pagination-link <?= $currentPage === $i ? 'active' : '' ?>"
                         data-prefetch
-                        href="<?= e($baseUri) ?>figurine/waifus/page/<?= $i ?>"
+                        href="<?= e($view->baseUri) ?>figurine/waifus/page/<?= $i ?>"
                     >
                         <?= $i ?>
                     </a>

@@ -2,15 +2,13 @@
 
 declare(strict_types=1);
 
-$baseUri = rtrim(
-    (string) ($baseUri ?? ''),
-    '/',
-) . '/';
+use App\DTO\Common\Responses\ViewData;
 
-$currentSearch =
-    isset($currentSearch)
-        ? (string) $currentSearch
-        : '';
+/** @var ViewData $view */
+
+$currentSearch = isset($currentSearch)
+    ? (string) $currentSearch
+    : '';
 
 ?>
 
@@ -27,21 +25,17 @@ $currentSearch =
 
             assert($user !== null);
 
-            $username =
-                $user->username;
+            $username = $user->username;
 
-            $usernameMain =
-                strlen($username) > 3
-                    ? substr($username, 0, -3)
-                    : $username;
+            $usernameMain = strlen($username) > 3
+                ? substr($username, 0, -3)
+                : $username;
 
-            $usernameSuffix =
-                strlen($username) > 3
-                    ? substr($username, -3)
-                    : '';
+            $usernameSuffix = strlen($username) > 3
+                ? substr($username, -3)
+                : '';
 
-            $level =
-                $user->level;
+            $level = $user->level;
 
             ?>
 
@@ -49,7 +43,7 @@ $currentSearch =
 
                 <a
                     class="site-profile-link"
-                    href="<?= e($baseUri) ?>profil"
+                    href="<?= e($view->baseUri) ?>profil"
                     title="<?= e($username) ?>"
                 >
 
@@ -84,7 +78,7 @@ $currentSearch =
                     <a
                         class="nav-link-icon"
                         data-prefetch
-                        href="<?= e($baseUri) ?>"
+                        href="<?= e($view->baseUri) ?>"
                         title="Accueil"
                     >
                         🏠
@@ -97,7 +91,7 @@ $currentSearch =
                     <a
                         class="nav-link-icon"
                         data-prefetch
-                        href="<?= e($baseUri) ?>manga"
+                        href="<?= e($view->baseUri) ?>manga"
                         title="Manga"
                     >
                         📚
@@ -110,7 +104,7 @@ $currentSearch =
                     <a
                         class="nav-link-icon"
                         data-prefetch
-                        href="<?= e($baseUri) ?>figurine"
+                        href="<?= e($view->baseUri) ?>figurine"
                         title="Figurine"
                     >
                         🎀
@@ -123,7 +117,7 @@ $currentSearch =
                     <a
                         class="nav-link-icon"
                         data-prefetch
-                        href="<?= e($baseUri) ?>nendoroid"
+                        href="<?= e($view->baseUri) ?>nendoroid"
                         title="Nendoroid"
                     >
                         🪆
@@ -136,7 +130,7 @@ $currentSearch =
                     <a
                         class="nav-link-icon"
                         data-prefetch
-                        href="<?= e($baseUri) ?>peluche"
+                        href="<?= e($view->baseUri) ?>peluche"
                         title="Peluche"
                     >
                         🧸
@@ -149,7 +143,7 @@ $currentSearch =
                     <a
                         class="nav-link-icon"
                         data-prefetch
-                        href="<?= e($baseUri) ?>chinois"
+                        href="<?= e($view->baseUri) ?>chinois"
                         title="Chinois"
                     >
                         ⛩️
@@ -162,7 +156,7 @@ $currentSearch =
                     <a
                         class="nav-link-icon"
                         data-confirm-logout
-                        href="<?= e($baseUri) ?>deconnexion"
+                        href="<?= e($view->baseUri) ?>deconnexion"
                         title="Déconnexion"
                     >
                         🚪
@@ -176,7 +170,7 @@ $currentSearch =
 
                 <form
                     class="header-search js-header-search"
-                    data-base-path="<?= e($baseUri) ?>"
+                    data-base-path="<?= e($view->baseUri) ?>"
                 >
 
                     <input
@@ -245,7 +239,7 @@ $currentSearch =
                     <a
                         class="nav-link-icon"
                         data-prefetch
-                        href="<?= e($baseUri) ?>connexion"
+                        href="<?= e($view->baseUri) ?>connexion"
                         title="Connexion"
                     >
                         🔐

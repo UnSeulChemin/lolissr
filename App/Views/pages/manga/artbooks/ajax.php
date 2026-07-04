@@ -6,8 +6,6 @@ use App\DTO\Manga\Responses\ArtbookSeriesItemData;
 
 /** @var list<ArtbookSeriesItemData> $artbooks */
 
-$baseUri = view_base_uri();
-
 ?>
 
 <div class="collection-ajax-content">
@@ -35,7 +33,7 @@ $baseUri = view_base_uri();
                     collection-card-link
                 "
                 data-prefetch
-                href="<?= e($baseUri) ?>manga/artbooks/<?= e($artbook->slug) ?>/<?= $artbook->numero ?>"
+                href="<?= e($view->baseUri) ?>manga/artbooks/<?= e($artbook->slug) ?>/<?= $artbook->numero ?>"
             >
 
                 <div class="card-image-box-portrait">

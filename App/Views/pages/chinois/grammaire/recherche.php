@@ -15,12 +15,6 @@ $hasAbreviation =
 $isMaitrise =
     $grammaire->maitrise;
 
-$baseUri =
-    rtrim(
-        (string) ($baseUri ?? ''),
-        '/',
-    ) . '/';
-
 ?>
 
 <section class="layout-container dashboard-page">
@@ -38,14 +32,14 @@ $baseUri =
                 class="grammar-delete grammaire-delete"
                 type="button"
                 data-id="<?= $grammaire->id ?>"
-                data-url="<?= e($baseUri) ?>chinois/ajax/delete-grammaire"
+                data-url="<?= e($view->baseUri) ?>chinois/ajax/delete-grammaire"
             >
                 ✕
             </button>
 
             <a
                 class="grammar-edit"
-                href="<?= e($baseUri) ?>chinois/grammaire/<?= strtolower($grammaire->niveau) ?>/modifier/<?= $grammaire->id ?>"
+                href="<?= e($view->baseUri) ?>chinois/grammaire/<?= strtolower($grammaire->niveau) ?>/modifier/<?= $grammaire->id ?>"
             >
 
                 <svg
@@ -113,7 +107,7 @@ $baseUri =
                     <?= $isMaitrise ? 'active' : '' ?>
                 "
                 data-id="<?= $grammaire->id ?>"
-                data-url="<?= e($baseUri) ?>chinois/ajax/toggle-grammaire-maitrise"
+                data-url="<?= e($view->baseUri) ?>chinois/ajax/toggle-grammaire-maitrise"
                 data-maitrise="<?= $isMaitrise ? '1' : '0' ?>"
                 type="button"
             >

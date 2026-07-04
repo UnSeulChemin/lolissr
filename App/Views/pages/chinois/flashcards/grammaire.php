@@ -4,12 +4,6 @@ declare(strict_types=1);
 
 /** @var list<App\Models\ChinoisGrammaire> $grammaires */
 
-$baseUri =
-    rtrim(
-        (string) ($baseUri ?? ''),
-        '/',
-    ) . '/';
-
 ?>
 
 <section class="layout-container dashboard-page">
@@ -21,7 +15,7 @@ $baseUri =
             JSON_UNESCAPED_UNICODE
             | JSON_THROW_ON_ERROR,
         )) ?>'
-        data-base-uri="<?= e($baseUri) ?>"
+        data-base-uri="<?= e($view->baseUri) ?>"
     >
 
         <?php if ($grammaires === []) : ?>
@@ -74,7 +68,7 @@ $baseUri =
                     class="grammar-delete grammaire-delete"
                     type="button"
                     data-id="<?= $card->id ?>"
-                    data-url="<?= e($baseUri) ?>chinois/ajax/delete-grammaire"
+                    data-url="<?= e($view->baseUri) ?>chinois/ajax/delete-grammaire"
                 >
                     ✕
                 </button>
@@ -124,7 +118,7 @@ $baseUri =
                 <a
                     id="flashcard-edit"
                     class="grammar-edit"
-                    href="<?= e($baseUri) ?>chinois/flashcards/grammaire/modifier/<?= $card->id ?>"
+                    href="<?= e($view->baseUri) ?>chinois/flashcards/grammaire/modifier/<?= $card->id ?>"
                 >
 
                     <svg
@@ -153,7 +147,7 @@ $baseUri =
                     "
                     type="button"
                     data-id="<?= $card->id ?>"
-                    data-url="<?= e($baseUri) ?>chinois/ajax/toggle-grammaire-maitrise"
+                    data-url="<?= e($view->baseUri) ?>chinois/ajax/toggle-grammaire-maitrise"
                     data-maitrise="0"
                     aria-pressed="false"
                 >

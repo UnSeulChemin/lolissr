@@ -11,12 +11,6 @@ if (! isset($peluche))
     );
 }
 
-$baseUri =
-    rtrim(
-        (string) ($baseUri ?? ''),
-        '/',
-    ) . '/';
-
 $errors =
     Session::pull('errors', []);
 
@@ -32,14 +26,14 @@ $commentaireValue =
     ?? ($peluche->commentaire ?? '');
 
 $formAction =
-    $baseUri
+    $view->baseUri
     . 'peluche/waifus/'
     . rawurlencode((string) $peluche->slug)
     . '/modifier/'
     . $peluche->numero;
 
 $cancelUrl =
-    $baseUri
+    $view->baseUri
     . 'peluche/waifus/'
     . rawurlencode((string) $peluche->slug)
     . '/'

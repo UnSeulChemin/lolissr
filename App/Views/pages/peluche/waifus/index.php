@@ -16,12 +16,6 @@ $totalWaifus =
 $perPage =
     (int) ($perPage ?? 10);
 
-$baseUri =
-    rtrim(
-        (string) ($baseUri ?? ''),
-        '/',
-    ) . '/';
-
 $totalPages =
     max(
         1,
@@ -58,7 +52,7 @@ $totalPages =
                                 : '' ?>
                         "
                         data-prefetch
-                        href="<?= e($baseUri) ?>peluche/waifus/page/<?= $i ?>"
+                        href="<?= e($view->baseUri) ?>peluche/waifus/page/<?= $i ?>"
                     >
                         <?= $i ?>
                     </a>

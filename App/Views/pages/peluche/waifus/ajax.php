@@ -4,12 +4,6 @@ declare(strict_types=1);
 
 /** @var array<int, object> $peluches */
 
-$baseUri =
-    rtrim(
-        $baseUri ?? '',
-        '/',
-    ) . '/';
-
 ?>
 
 <div class="collection-ajax-content">
@@ -56,10 +50,10 @@ $baseUri =
         (int) ($peluche->numero ?? 1);
 
     $href =
-        "{$baseUri}peluche/waifus/{$slug}/{$numero}";
+        "{$view->baseUri}peluche/waifus/{$slug}/{$numero}";
 
     $thumbnailPath =
-        "{$baseUri}images/peluche/thumbnail/{$thumbnail}.{$extension}";
+        "{$view->baseUri}images/peluche/thumbnail/{$thumbnail}.{$extension}";
 
 ?>
 

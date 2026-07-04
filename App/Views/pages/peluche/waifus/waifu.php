@@ -9,40 +9,34 @@ if (! isset($peluche))
     );
 }
 
-$baseUri =
-    rtrim(
-        (string) ($baseUri ?? ''),
-        '/',
-    ) . '/';
-
 $slug =
     rawurlencode(
         (string) $peluche->slug,
     );
 
 $thumbnailPath =
-    $baseUri
+    $view->baseUri
     . 'images/peluche/thumbnail/'
     . $peluche->thumbnail
     . '.'
     . $peluche->extension;
 
 $modifierUrl =
-    $baseUri
+    $view->baseUri
     . 'peluche/waifus/'
     . $slug
     . '/modifier/'
     . $peluche->numero;
 
 $deleteUrl =
-    $baseUri
+    $view->baseUri
     . 'peluche/waifus/'
     . $slug
     . '/supprimer/'
     . $peluche->numero;
 
 $redirectUrl =
-    $baseUri
+    $view->baseUri
     . 'peluche/waifus';
 
 $hasCommentaire =

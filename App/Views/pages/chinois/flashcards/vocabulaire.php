@@ -4,12 +4,6 @@ declare(strict_types=1);
 
 /** @var list<App\Models\ChinoisVocabulaire> $vocabulaires */
 
-$baseUri =
-    rtrim(
-        (string) ($baseUri ?? ''),
-        '/',
-    ) . '/';
-
 ?>
 
 <section class="layout-container dashboard-page">
@@ -21,7 +15,7 @@ $baseUri =
             JSON_UNESCAPED_UNICODE
             | JSON_THROW_ON_ERROR,
         )) ?>'
-        data-base-uri="<?= e($baseUri) ?>"
+        data-base-uri="<?= e(view_base_uri()) ?>"
     >
 
         <section class="chinois-vocab-list chinois-vocab-list--flashcard">
@@ -74,7 +68,7 @@ $baseUri =
                         class="grammar-delete vocabulaire-delete"
                         type="button"
                         data-id="<?= $card->id ?>"
-                        data-url="<?= e($baseUri) ?>chinois/ajax/delete-vocabulaire"
+                        data-url="<?= e(view_base_uri()) ?>chinois/ajax/delete-vocabulaire"
                     >
                         ✕
                     </button>
@@ -114,7 +108,7 @@ $baseUri =
                         <a
                             id="flashcard-edit"
                             class="grammar-edit"
-                            href="<?= e($baseUri) ?>chinois/flashcards/vocabulaire/modifier/<?= $card->id ?>"
+                            href="<?= e(view_base_uri()) ?>chinois/flashcards/vocabulaire/modifier/<?= $card->id ?>"
                         >
 
                             <svg
@@ -143,7 +137,7 @@ $baseUri =
                             "
                             type="button"
                             data-id="<?= $card->id ?>"
-                            data-url="<?= e($baseUri) ?>chinois/ajax/toggle-vocabulaire-maitrise"
+                            data-url="<?= e(view_base_uri()) ?>chinois/ajax/toggle-vocabulaire-maitrise"
                         >
 
                             <svg

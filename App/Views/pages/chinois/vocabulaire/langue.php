@@ -6,12 +6,6 @@ use App\DTO\Chinois\Responses\ChinoisVocabulaireData;
 
 /** @var list<ChinoisVocabulaireData> $vocabulaires */
 
-$baseUri =
-    rtrim(
-        (string) ($baseUri ?? ''),
-        '/',
-    ) . '/';
-
 ?>
 
 <section class="layout-container dashboard-page">
@@ -51,7 +45,7 @@ $baseUri =
                             class="grammar-delete vocabulaire-delete"
                             type="button"
                             data-id="<?= $vocabulaire->id ?>"
-                            data-url="<?= e($baseUri) ?>chinois/ajax/delete-vocabulaire"
+                            data-url="<?= e($view->baseUri) ?>chinois/ajax/delete-vocabulaire"
                         >
                             ✕
                         </button>
@@ -94,7 +88,7 @@ $baseUri =
 
                             <a
                                 class="grammar-edit"
-                                href="<?= e($baseUri) ?>chinois/vocabulaire/<?= $vocabulaire->langue ?>/modifier/<?= $vocabulaire->id ?>"
+                                href="<?= e($view->baseUri) ?>chinois/vocabulaire/<?= $vocabulaire->langue ?>/modifier/<?= $vocabulaire->id ?>"
                             >
 
                                 <svg
@@ -126,7 +120,7 @@ $baseUri =
                                 "
                                 type="button"
                                 data-id="<?= $vocabulaire->id ?>"
-                                data-url="<?= e($baseUri) ?>chinois/ajax/toggle-vocabulaire-maitrise"
+                                data-url="<?= e($view->baseUri) ?>chinois/ajax/toggle-vocabulaire-maitrise"
                                 data-maitrise="<?= $isMaitrise
                                     ? '1'
                                     : '0' ?>"

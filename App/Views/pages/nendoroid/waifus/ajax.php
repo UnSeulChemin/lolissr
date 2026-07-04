@@ -4,12 +4,6 @@ declare(strict_types=1);
 
 /** @var array<int, object> $nendoroids */
 
-$baseUri =
-    rtrim(
-        $baseUri ?? '',
-        '/',
-    ) . '/';
-
 ?>
 
 <div class="collection-ajax-content">
@@ -56,10 +50,10 @@ $baseUri =
         (int) ($nendoroid->numero ?? 1);
 
     $href =
-        "{$baseUri}nendoroid/waifus/{$slug}/{$numero}";
+        "{$view->baseUri}nendoroid/waifus/{$slug}/{$numero}";
 
     $thumbnailPath =
-        "{$baseUri}images/nendoroid/thumbnail/{$thumbnail}.{$extension}";
+        "{$view->baseUri}images/nendoroid/thumbnail/{$thumbnail}.{$extension}";
 
 ?>
 

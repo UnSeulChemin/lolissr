@@ -17,22 +17,16 @@ declare(strict_types=1);
 /** @var int $grammarLearned */
 /** @var int $grammarXp */
 
-$baseUri =
-    rtrim(
-        (string) ($baseUri ?? ''),
-        '/',
-    ) . '/';
-
 $username = $user->username;
 
 $avatarPath =
-    "{$baseUri}images/avatar/thumbnail/{$user->avatar}.{$user->avatar_extension}";
+    "{$view->baseUri}images/avatar/thumbnail/{$user->avatar}.{$user->avatar_extension}";
 
 $bannerPath =
-    "{$baseUri}images/banner/thumbnail/{$user->banner}.{$user->banner_extension}";
+    "{$view->baseUri}images/banner/thumbnail/{$user->banner}.{$user->banner_extension}";
 
 $framePath =
-    "{$baseUri}images/frame/thumbnail/{$user->frame}.{$user->frame_extension}";
+    "{$view->baseUri}images/frame/thumbnail/{$user->frame}.{$user->frame_extension}";
 
 ?>
 
@@ -41,7 +35,7 @@ $framePath =
     <section class="profile-header-grid">
 
         <a
-            href="<?= $baseUri ?>profil/personnalisation"
+            href="<?= $view->baseUri ?>profil/personnalisation"
             class="
                 card
                 transition-card
