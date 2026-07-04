@@ -4,17 +4,6 @@ declare(strict_types=1);
 
 /** @var App\DTO\Chinois\Responses\ChinoisGrammaireData $grammaire */
 
-$hasExplication =
-    $grammaire->explication !== null
-    && trim($grammaire->explication) !== '';
-
-$hasAbreviation =
-    $grammaire->abreviation !== null
-    && trim($grammaire->abreviation) !== '';
-
-$isMaitrise =
-    $grammaire->maitrise;
-
 ?>
 
 <section class="layout-container dashboard-page">
@@ -64,7 +53,7 @@ $isMaitrise =
                 <?= e($grammaire->structure) ?>
             </div>
 
-            <?php if ($hasAbreviation): ?>
+            <?php if ($grammaire->hasAbreviation): ?>
 
                 <div class="grammar-abbreviation">
 
@@ -92,7 +81,7 @@ $isMaitrise =
                 <?= e($grammaire->traduction) ?>
             </div>
 
-            <?php if ($hasExplication): ?>
+            <?php if ($grammaire->hasExplication): ?>
 
                 <div class="grammar-explanation">
                     <?= e($grammaire->explication) ?>
@@ -104,11 +93,11 @@ $isMaitrise =
                 class="
                     grammar-mastered
                     grammar-ajax
-                    <?= $isMaitrise ? 'active' : '' ?>
+                    <?= $grammaire->masteredClass ?>
                 "
                 data-id="<?= $grammaire->id ?>"
                 data-url="<?= e($view->baseUri) ?>chinois/ajax/toggle-grammaire-maitrise"
-                data-maitrise="<?= $isMaitrise ? '1' : '0' ?>"
+                data-maitrise="<?= $grammaire->masteredValue ?>"
                 type="button"
             >
 

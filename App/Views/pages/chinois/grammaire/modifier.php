@@ -9,8 +9,6 @@ use App\Models\ChinoisGrammaire;
 /** @var FormViewData $form */
 /** @var string $returnTo */
 
-$errors = $form->errors;
-
 $old = $form->old;
 
 $returnTo = (string) ($returnTo ?? '');
