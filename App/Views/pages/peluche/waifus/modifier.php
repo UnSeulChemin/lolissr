@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-use Framework\Support\Session;
+use App\DTO\Common\Responses\FormViewData;
+
+/** @var FormViewData $form */
 
 if (! isset($peluche))
 {
@@ -11,33 +13,13 @@ if (! isset($peluche))
     );
 }
 
-$errors =
-    Session::pull('errors', []);
-
-$old =
-    Session::pull('old', []);
-
 $companyValue =
-    $old['company']
+    $form->old['company']
     ?? ($peluche->company ?? '');
 
 $commentaireValue =
-    $old['commentaire']
+    $form->old['commentaire']
     ?? ($peluche->commentaire ?? '');
-
-$formAction =
-    $view->baseUri
-    . 'peluche/waifus/'
-    . rawurlencode((string) $peluche->slug)
-    . '/modifier/'
-    . $peluche->numero;
-
-$cancelUrl =
-    $view->baseUri
-    . 'peluche/waifus/'
-    . rawurlencode((string) $peluche->slug)
-    . '/'
-    . $peluche->numero;
 
 ?>
 
@@ -50,7 +32,7 @@ $cancelUrl =
             <form
                 class="form-layout"
                 data-form-page="modifier"
-                action="<?= e($formAction) ?>"
+                action="<?= e($form->formAction) ?>"
                 method="post"
             >
 
@@ -77,11 +59,11 @@ $cancelUrl =
                         required
                     >
 
-                    <?php if (isset($errors['company']) && $errors['company'] !== ''): ?>
+                    <?php if (! empty($form->errors['company'])): ?>
 
                         <p class="form-error">
 
-                            <?= e($errors['company']) ?>
+                            <?= e($form->errors['company']) ?>
 
                         </p>
 
@@ -108,11 +90,11 @@ $cancelUrl =
                         maxlength="1000"
                     ><?= e($commentaireValue) ?></textarea>
 
-                    <?php if (isset($errors['commentaire']) && $errors['commentaire'] !== ''): ?>
+                    <?php if (! empty($form->errors['commentaire'])): ?>
 
                         <p class="form-error">
 
-                            <?= e($errors['commentaire']) ?>
+                            <?= e($form->errors['commentaire']) ?>
 
                         </p>
 
@@ -136,7 +118,7 @@ $cancelUrl =
                             form-submit
                             form-submit-secondary
                         "
-                        href="<?= e($cancelUrl) ?>"
+                        href="<?= e($form->cancelUrl) ?>"
                     >
 
                         Annuler

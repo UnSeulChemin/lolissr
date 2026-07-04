@@ -2,15 +2,9 @@
 
 declare(strict_types=1);
 
-use Framework\Support\Session;
+use App\DTO\Common\Responses\FormViewData;
 
-$errors = Session::pull('errors', []);
-
-$old = Session::pull('old', []);
-
-$formAction = $view->baseUri . 'nendoroid/ajouter';
-
-$returnUrl = $view->baseUri . 'nendoroid';
+/** @var FormViewData $form */
 
 ?>
 
@@ -23,7 +17,7 @@ $returnUrl = $view->baseUri . 'nendoroid';
             <form
                 class="form-layout"
                 data-form-page="ajouter"
-                action="<?= e($formAction) ?>"
+                action="<?= e($form->formAction) ?>"
                 method="post"
                 enctype="multipart/form-data"
             >
@@ -36,7 +30,9 @@ $returnUrl = $view->baseUri . 'nendoroid';
                         class="form-label"
                         for="waifu"
                     >
+
                         Waifu
+
                     </label>
 
                     <input
@@ -45,15 +41,17 @@ $returnUrl = $view->baseUri . 'nendoroid';
                         name="waifu"
                         id="waifu"
                         placeholder="Ex : Asuna"
-                        value="<?= e((string) ($old['waifu'] ?? '')) ?>"
+                        value="<?= e((string) ($form->old['waifu'] ?? '')) ?>"
                         autofocus
                         required
                     >
 
-                    <?php if (isset($errors['waifu']) && $errors['waifu'] !== ''): ?>
+                    <?php if (! empty($form->errors['waifu'])): ?>
 
                         <p class="form-error">
-                            <?= e((string) $errors['waifu']) ?>
+
+                            <?= e($form->errors['waifu']) ?>
+
                         </p>
 
                     <?php endif; ?>
@@ -66,7 +64,9 @@ $returnUrl = $view->baseUri . 'nendoroid';
                         class="form-label"
                         for="slug"
                     >
+
                         Slug
+
                     </label>
 
                     <input
@@ -75,14 +75,16 @@ $returnUrl = $view->baseUri . 'nendoroid';
                         name="slug"
                         id="slug"
                         placeholder="Ex : asuna"
-                        value="<?= e((string) ($old['slug'] ?? '')) ?>"
+                        value="<?= e((string) ($form->old['slug'] ?? '')) ?>"
                         required
                     >
 
-                    <?php if (isset($errors['slug']) && $errors['slug'] !== ''): ?>
+                    <?php if (! empty($form->errors['slug'])): ?>
 
                         <p class="form-error">
-                            <?= e((string) $errors['slug']) ?>
+
+                            <?= e($form->errors['slug']) ?>
+
                         </p>
 
                     <?php endif; ?>
@@ -95,7 +97,9 @@ $returnUrl = $view->baseUri . 'nendoroid';
                         class="form-label"
                         for="numero"
                     >
+
                         Numéro
+
                     </label>
 
                     <input
@@ -105,14 +109,16 @@ $returnUrl = $view->baseUri . 'nendoroid';
                         id="numero"
                         min="1"
                         placeholder="Ex : 1"
-                        value="<?= e((string) ($old['numero'] ?? '')) ?>"
+                        value="<?= e((string) ($form->old['numero'] ?? '')) ?>"
                         required
                     >
 
-                    <?php if (isset($errors['numero']) && $errors['numero'] !== ''): ?>
+                    <?php if (! empty($form->errors['numero'])): ?>
 
                         <p class="form-error">
-                            <?= e((string) $errors['numero']) ?>
+
+                            <?= e($form->errors['numero']) ?>
+
                         </p>
 
                     <?php endif; ?>
@@ -125,7 +131,9 @@ $returnUrl = $view->baseUri . 'nendoroid';
                         class="form-label"
                         for="company"
                     >
+
                         Company
+
                     </label>
 
                     <input
@@ -134,15 +142,17 @@ $returnUrl = $view->baseUri . 'nendoroid';
                         name="company"
                         id="company"
                         placeholder="Ex : Good Smile Company"
-                        value="<?= e((string) ($old['company'] ?? '')) ?>"
+                        value="<?= e((string) ($form->old['company'] ?? '')) ?>"
                         maxlength="100"
                         required
                     >
 
-                    <?php if (isset($errors['company']) && $errors['company'] !== ''): ?>
+                    <?php if (! empty($form->errors['company'])): ?>
 
                         <p class="form-error">
-                            <?= e((string) $errors['company']) ?>
+
+                            <?= e($form->errors['company']) ?>
+
                         </p>
 
                     <?php endif; ?>
@@ -155,7 +165,9 @@ $returnUrl = $view->baseUri . 'nendoroid';
                         class="form-label"
                         for="image"
                     >
+
                         Image
+
                     </label>
 
                     <label
@@ -173,15 +185,19 @@ $returnUrl = $view->baseUri . 'nendoroid';
                         >
 
                         <span class="form-upload-text">
+
                             Choisir une image
+
                         </span>
 
                     </label>
 
-                    <?php if (isset($errors['image']) && $errors['image'] !== ''): ?>
+                    <?php if (! empty($form->errors['image'])): ?>
 
                         <p class="form-error">
-                            <?= e((string) $errors['image']) ?>
+
+                            <?= e($form->errors['image']) ?>
+
                         </p>
 
                     <?php endif; ?>
@@ -194,7 +210,9 @@ $returnUrl = $view->baseUri . 'nendoroid';
                         class="form-label"
                         for="commentaire"
                     >
+
                         Commentaire
+
                     </label>
 
                     <textarea
@@ -204,12 +222,14 @@ $returnUrl = $view->baseUri . 'nendoroid';
                         rows="4"
                         maxlength="1000"
                         placeholder="Ex : Très belle Nendoroid, édition limitée..."
-                    ><?= e((string) ($old['commentaire'] ?? '')) ?></textarea>
+                    ><?= e((string) ($form->old['commentaire'] ?? '')) ?></textarea>
 
-                    <?php if (isset($errors['commentaire']) && $errors['commentaire'] !== ''): ?>
+                    <?php if (! empty($form->errors['commentaire'])): ?>
 
                         <p class="form-error">
-                            <?= e((string) $errors['commentaire']) ?>
+
+                            <?= e($form->errors['commentaire']) ?>
+
                         </p>
 
                     <?php endif; ?>
@@ -222,7 +242,9 @@ $returnUrl = $view->baseUri . 'nendoroid';
                         type="submit"
                         class="form-submit"
                     >
+
                         Ajouter
+
                     </button>
 
                     <a
@@ -230,9 +252,11 @@ $returnUrl = $view->baseUri . 'nendoroid';
                             form-submit
                             form-submit-secondary
                         "
-                        href="<?= e($returnUrl) ?>"
+                        href="<?= e($form->cancelUrl) ?>"
                     >
+
                         Retour
+
                     </a>
 
                 </div>

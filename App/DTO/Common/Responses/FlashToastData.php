@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\DTO\Common\Responses;
 
-readonly class ViewData
+readonly class FlashToastData
 {
     public function __construct(
-        public string $baseUri,
-        public FlashToastData $toast,
+        public ?string $message,
+        public ?string $type,
     ) {
     }
 }

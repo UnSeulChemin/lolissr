@@ -7,6 +7,7 @@ namespace App\Controllers;
 use App\DTO\Common\ServiceResult;
 use App\DTO\Common\Responses\FormViewData;
 use App\DTO\Common\Responses\ViewData;
+use App\DTO\Common\Responses\FlashToastData;
 
 use Framework\Application\App;
 use Framework\Exceptions\MethodNotAllowedException;
@@ -233,6 +234,7 @@ abstract class Controller
     {
         return new ViewData(
             baseUri: view_base_uri(),
+            toast: $this->flashToastData(),
         );
     }
 
@@ -240,10 +242,26 @@ abstract class Controller
     {
         return new FormViewData(
             baseUri: view_base_uri(),
+            toast: $this->flashToastData(),
             errors: Session::pull('errors', []),
             old: Session::pull('old', []),
             formAction: rtrim($this->baseUri, '/') . '/' . ltrim($formAction, '/'),
             cancelUrl: rtrim($this->baseUri, '/') . '/' . ltrim($cancelUrl, '/'),
+        );
+    }
+
+    protected function flashToastData(): FlashToastData
+    {
+        $success = Session::pull('success');
+        $error = Session::pull('error');
+
+        return new FlashToastData(
+            message: is_string($success)
+                ? $success
+                : (is_string($error) ? $error : null),
+            type: is_string($success)
+                ? 'success'
+                : (is_string($error) ? 'error' : null),
         );
     }
 
