@@ -16,7 +16,7 @@ final readonly class ChinoisGrammaireCreateDTO
         public string $phrase,
         public string $pinyin,
         public string $traduction,
-        public ?string $explication,
+        public string $explication,
         public string $section,
         public string $categorie
     ) {
@@ -35,9 +35,9 @@ final readonly class ChinoisGrammaireCreateDTO
             phrase: trim((string) ($data['phrase'] ?? '')),
             pinyin: trim((string) ($data['pinyin'] ?? '')),
             traduction: trim((string) ($data['traduction'] ?? '')),
-            explication: Str::nullableTrim($data['explication'] ?? null),
+            explication: trim((string) ($data['explication'] ?? '')),
             section: trim((string) ($data['section'] ?? '')),
-            categorie: trim((string) ($data['categorie'] ?? ''))
+            categorie: trim((string) ($data['categorie'] ?? '')),
         );
     }
 }

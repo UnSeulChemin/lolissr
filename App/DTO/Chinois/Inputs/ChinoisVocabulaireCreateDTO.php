@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\DTO\Chinois\Inputs;
 
-use Framework\Support\Str;
-
 final readonly class ChinoisVocabulaireCreateDTO
 {
     public function __construct(
@@ -14,7 +12,7 @@ final readonly class ChinoisVocabulaireCreateDTO
         public string $pinyin,
         public string $type,
         public string $traduction,
-        public ?string $exemple
+        public string $exemple
     ) {
     }
 
@@ -29,7 +27,7 @@ final readonly class ChinoisVocabulaireCreateDTO
             pinyin: trim((string) ($data['pinyin'] ?? '')),
             type: trim((string) ($data['type'] ?? '')),
             traduction: trim((string) ($data['traduction'] ?? '')),
-            exemple: Str::nullableTrim($data['exemple'] ?? null)
+            exemple: trim((string) ($data['exemple'] ?? '')),
         );
     }
 }

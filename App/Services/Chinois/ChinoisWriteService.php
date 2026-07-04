@@ -21,6 +21,12 @@ final readonly class ChinoisWriteService
     ) {
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | GRAMMAIRE
+    |--------------------------------------------------------------------------
+    */
+
     public function createGrammaire(ChinoisGrammaireCreateDTO $dto): ServiceResult
     {
         return $this->database->transaction(
@@ -53,6 +59,58 @@ final readonly class ChinoisWriteService
         );
     }
 
+    public function updateGrammaire(int $id, ChinoisGrammaireCreateDTO $dto): ServiceResult
+    {
+        return $this->database->transaction(
+            function () use ($id, $dto): ServiceResult
+            {
+                $updated = $this->grammaireRepository->updateGrammaire(
+                    $id,
+                    $dto->niveau,
+                    $dto->titre,
+                    $dto->structure,
+                    $dto->abreviation,
+                    $dto->phrase,
+                    $dto->pinyin,
+                    $dto->traduction,
+                    $dto->explication,
+                    $dto->section,
+                    $dto->categorie,
+                );
+
+                if (! $updated)
+                {
+                    return $this->error('Erreur lors de la mise à jour');
+                }
+
+                return $this->success('Grammaire mise à jour avec succès');
+            }
+        );
+    }
+
+    public function deleteGrammaire(int $id): ServiceResult
+    {
+        return $this->database->transaction(
+            function () use ($id): ServiceResult
+            {
+                $deleted = $this->grammaireRepository->deleteGrammaire($id);
+
+                if (! $deleted)
+                {
+                    return $this->error('Erreur lors de la suppression');
+                }
+
+                return $this->success('Grammaire supprimée avec succès');
+            }
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | VOCABULAIRE
+    |--------------------------------------------------------------------------
+    */
+
     public function createVocabulaire(ChinoisVocabulaireCreateDTO $dto): ServiceResult
     {
         return $this->database->transaction(
@@ -77,19 +135,27 @@ final readonly class ChinoisWriteService
         );
     }
 
-    public function deleteGrammaire(int $id): ServiceResult
+    public function updateVocabulaire(int $id, ChinoisVocabulaireCreateDTO $dto): ServiceResult
     {
         return $this->database->transaction(
-            function () use ($id): ServiceResult
+            function () use ($id, $dto): ServiceResult
             {
-                $deleted = $this->grammaireRepository->deleteGrammaire($id);
+                $updated = $this->vocabulaireRepository->updateVocabulaire(
+                    $id,
+                    $dto->langue,
+                    $dto->mot,
+                    $dto->pinyin,
+                    $dto->type,
+                    $dto->traduction,
+                    $dto->exemple,
+                );
 
-                if (! $deleted)
+                if (! $updated)
                 {
-                    return $this->error('Erreur lors de la suppression');
+                    return $this->error('Erreur lors de la mise à jour');
                 }
 
-                return $this->success('Grammaire supprimée avec succès');
+                return $this->success('Vocabulaire mis à jour avec succès');
             }
         );
     }
@@ -111,39 +177,11 @@ final readonly class ChinoisWriteService
         );
     }
 
-    public function updateGrammaire(int $id, ChinoisGrammaireCreateDTO $dto): bool
-    {
-        return $this->grammaireRepository->updateGrammaire(
-            $id,
-            [
-                'niveau' => $dto->niveau,
-                'titre' => $dto->titre,
-                'structure' => $dto->structure,
-                'abreviation' => $dto->abreviation,
-                'phrase' => $dto->phrase,
-                'pinyin' => $dto->pinyin,
-                'traduction' => $dto->traduction,
-                'explication' => $dto->explication,
-                'section' => $dto->section,
-                'categorie' => $dto->categorie,
-            ]
-        );
-    }
-
-    public function updateVocabulaire(int $id, ChinoisVocabulaireCreateDTO $dto): bool
-    {
-        return $this->vocabulaireRepository->updateVocabulaire(
-            $id,
-            [
-                'langue' => $dto->langue,
-                'mot' => $dto->mot,
-                'pinyin' => $dto->pinyin,
-                'type' => $dto->type,
-                'traduction' => $dto->traduction,
-                'exemple' => $dto->exemple,
-            ]
-        );
-    }
+    /*
+    |--------------------------------------------------------------------------
+    | XP
+    |--------------------------------------------------------------------------
+    */
 
     public function toggleGrammaireMaitrise(int $id): bool
     {

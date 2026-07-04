@@ -16,14 +16,20 @@ final readonly class ChinoisReadService
     public function __construct(
         private ChinoisVocabulaireRepository $vocabulaireRepository,
         private ChinoisGrammaireRepository $grammaireRepository,
-        private ChinoisSearchRepository $searchRepository
+        private ChinoisSearchRepository $searchRepository,
     ) {
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | VOCABULAIRE
+    |--------------------------------------------------------------------------
+    */
 
     /**
      * @return list<ChinoisVocabulaireData>
      */
-    public function mandarin(): array
+    public function vocabulaireMandarin(): array
     {
         return $this->vocabulaireRepository->findByLangue('mandarin');
     }
@@ -31,10 +37,21 @@ final readonly class ChinoisReadService
     /**
      * @return list<ChinoisVocabulaireData>
      */
-    public function jinyu(): array
+    public function vocabulaireJinyu(): array
     {
         return $this->vocabulaireRepository->findByLangue('jinyu');
     }
+
+    public function vocabulaire(int $id): ?ChinoisVocabulaireData
+    {
+        return $this->vocabulaireRepository->findById($id);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | GRAMMAIRE
+    |--------------------------------------------------------------------------
+    */
 
     /**
      * @return list<ChinoisGrammaireData>
@@ -49,10 +66,11 @@ final readonly class ChinoisReadService
         return $this->grammaireRepository->findById($id);
     }
 
-    public function vocabulaire(int $id): ?ChinoisVocabulaireData
-    {
-        return $this->vocabulaireRepository->findById($id);
-    }
+    /*
+    |--------------------------------------------------------------------------
+    | FLASHCARDS
+    |--------------------------------------------------------------------------
+    */
 
     /**
      * @return list<ChinoisGrammaireData>
@@ -69,6 +87,12 @@ final readonly class ChinoisReadService
     {
         return $this->vocabulaireRepository->findNotMasteredDto();
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | SEARCH
+    |--------------------------------------------------------------------------
+    */
 
     public function search(string|int $query = ''): ChinoisSearchData
     {

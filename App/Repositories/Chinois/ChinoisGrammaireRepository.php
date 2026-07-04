@@ -8,6 +8,8 @@ use App\DTO\Chinois\Responses\ChinoisGrammaireData;
 use App\Models\Model;
 use App\Repositories\Chinois\Concerns\HasDtoMapper;
 
+use Framework\Support\Str;
+
 use stdClass;
 
 final class ChinoisGrammaireRepository extends Model
@@ -40,15 +42,19 @@ final class ChinoisGrammaireRepository extends Model
      */
     public function findNotMasteredDto(): array
     {
-        $query = $this->query("SELECT " . self::SELECT_FIELDS . " FROM {$this->table()} WHERE maitrise = 0 ORDER BY id ASC");
-
-        if ($query === false)
-        {
-            return [];
-        }
-
         /** @var list<stdClass> $results */
-        $results = $query->fetchAll();
+        $results = $this->fetchAll(
+            "
+            SELECT
+                " . self::SELECT_FIELDS . "
+
+            FROM {$this->table()}
+
+            WHERE maitrise = 0
+
+            ORDER BY id ASC
+            "
+        );
 
         return $this->mapResultsToDto($results);
     }
@@ -58,50 +64,84 @@ final class ChinoisGrammaireRepository extends Model
      */
     public function findByLevel(string $niveau): array
     {
-        $query = $this->query(
-            "SELECT " . self::SELECT_FIELDS . "
+        /** @var list<stdClass> $results */
+        $results = $this->fetchAll(
+            "
+            SELECT
+                " . self::SELECT_FIELDS . "
 
             FROM {$this->table()}
 
-            WHERE niveau = ?
+            WHERE niveau = :niveau
 
             ORDER BY
                 section_position ASC,
                 categorie_position ASC,
                 position ASC,
-                id ASC",
-            [$niveau]
+                id ASC
+            ",
+            [
+                'niveau' => trim($niveau),
+            ]
         );
-
-        if ($query === false)
-        {
-            return [];
-        }
-
-        /** @var list<stdClass> $results */
-        $results = $query->fetchAll();
 
         return $this->mapResultsToDto($results);
     }
 
     public function findById(int $id): ?ChinoisGrammaireData
     {
-        $result = $this->fetchOne("SELECT " . self::SELECT_FIELDS . " FROM {$this->table()} WHERE id = ? LIMIT 1", [$id]);
+        /** @var stdClass|null $result */
+        $result = $this->fetchOne(
+            "
+            SELECT
+                " . self::SELECT_FIELDS . "
+
+            FROM {$this->table()}
+
+            WHERE id = :id
+
+            LIMIT 1
+            ",
+            [
+                'id' => $id,
+            ]
+        );
 
         if ($result === null)
         {
             return null;
         }
 
-        /** @var stdClass $result */
         return $this->mapRowToDto($result);
     }
 
     public function toggleMaitrise(int $id): bool
     {
-        $this->execute("UPDATE {$this->table()} SET maitrise = NOT maitrise WHERE id = ?", [$id]);
+        $this->execute(
+            "
+            UPDATE {$this->table()}
 
-        $result = $this->fetchOne("SELECT maitrise FROM {$this->table()} WHERE id = ?", [$id]);
+            SET maitrise = NOT maitrise
+
+            WHERE id = :id
+            ",
+            [
+                'id' => $id,
+            ]
+        );
+
+        $result = $this->fetchOne(
+            "
+            SELECT maitrise
+
+            FROM {$this->table()}
+
+            WHERE id = :id
+            ",
+            [
+                'id' => $id,
+            ]
+        );
 
         if ($result === null)
         {
@@ -119,17 +159,45 @@ final class ChinoisGrammaireRepository extends Model
         return $this->delete(['id' => $id]);
     }
 
-    /**
-     * @param array<string, mixed> $data
-     */
-    public function updateGrammaire(int $id, array $data): bool
+    public function updateGrammaire(
+        int $id,
+        string $niveau,
+        string $titre,
+        string $structure,
+        ?string $abreviation,
+        string $phrase,
+        string $pinyin,
+        string $traduction,
+        string $explication,
+        string $section,
+        string $categorie
+    ): bool
     {
-        return $this->update($data, ['id' => $id]);
+        return $this->updateById(
+            $id,
+            [
+                'niveau' => trim($niveau),
+                'titre' => trim($titre),
+                'structure' => trim($structure),
+                'abreviation' => Str::nullableTrim($abreviation),
+                'phrase' => trim($phrase),
+                'pinyin' => trim($pinyin),
+                'traduction' => trim($traduction),
+                'explication' => trim($explication),
+                'section' => trim($section),
+                'categorie' => trim($categorie),
+            ]
+        );
     }
 
     public function markXpRewarded(int $id): bool
     {
-        return $this->update(['xp_rewarded' => 1], ['id' => $id]);
+        return $this->updateById(
+            $id,
+            [
+                'xp_rewarded' => 1,
+            ]
+        );
     }
 
     /*
@@ -137,6 +205,14 @@ final class ChinoisGrammaireRepository extends Model
     | HELPERS
     |--------------------------------------------------------------------------
     */
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    private function updateById(int $id, array $data): bool
+    {
+        return $this->update($data, ['id' => $id]);
+    }
 
     private function mapRowToDto(stdClass $row): ChinoisGrammaireData
     {
@@ -160,22 +236,15 @@ final class ChinoisGrammaireRepository extends Model
 
             phrase: (string) $row->phrase,
 
-            pinyin:
-                $row->pinyin !== null
-                    ? (string) $row->pinyin
-                    : '',
+            pinyin: (string) $row->pinyin,
 
             traduction: (string) $row->traduction,
 
-            explication:
-                $row->explication !== null
-                    ? (string) $row->explication
-                    : null,
+            explication: (string) $row->explication,
 
             position: (int) $row->position,
             maitrise: (bool) $row->maitrise,
-
-            xpRewarded: (bool) $row->xp_rewarded
+            xpRewarded: (bool) $row->xp_rewarded,
         );
     }
 }

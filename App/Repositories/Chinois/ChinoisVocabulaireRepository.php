@@ -33,15 +33,19 @@ final class ChinoisVocabulaireRepository extends Model
      */
     public function findNotMasteredDto(): array
     {
-        $query = $this->query("SELECT " . self::SELECT_FIELDS . " FROM {$this->table()} WHERE maitrise = 0 ORDER BY id ASC");
-
-        if ($query === false)
-        {
-            return [];
-        }
-
         /** @var list<stdClass> $results */
-        $results = $query->fetchAll();
+        $results = $this->fetchAll(
+            "
+            SELECT
+                " . self::SELECT_FIELDS . "
+
+            FROM {$this->table()}
+
+            WHERE maitrise = 0
+
+            ORDER BY id ASC
+            "
+        );
 
         return $this->mapResultsToDto($results);
     }
@@ -51,46 +55,80 @@ final class ChinoisVocabulaireRepository extends Model
      */
     public function findByLangue(string $langue): array
     {
-        $query = $this->query(
-            "SELECT " . self::SELECT_FIELDS . "
+        /** @var list<stdClass> $results */
+        $results = $this->fetchAll(
+            "
+            SELECT
+                " . self::SELECT_FIELDS . "
 
             FROM {$this->table()}
 
-            WHERE langue = ?
+            WHERE langue = :langue
 
-            ORDER BY id DESC",
-            [$langue]
+            ORDER BY id DESC
+            ",
+            [
+                'langue' => trim($langue),
+            ]
         );
-
-        if ($query === false)
-        {
-            return [];
-        }
-
-        /** @var list<stdClass> $results */
-        $results = $query->fetchAll();
 
         return $this->mapResultsToDto($results);
     }
 
     public function findById(int $id): ?ChinoisVocabulaireData
     {
-        $result = $this->fetchOne("SELECT " . self::SELECT_FIELDS . " FROM {$this->table()} WHERE id = ? LIMIT 1", [$id]);
+        /** @var stdClass|null $result */
+        $result = $this->fetchOne(
+            "
+            SELECT
+                " . self::SELECT_FIELDS . "
+
+            FROM {$this->table()}
+
+            WHERE id = :id
+
+            LIMIT 1
+            ",
+            [
+                'id' => $id,
+            ]
+        );
 
         if ($result === null)
         {
             return null;
         }
 
-        /** @var stdClass $result */
         return $this->mapRowToDto($result);
     }
 
     public function toggleMaitrise(int $id): bool
     {
-        $this->execute("UPDATE {$this->table()} SET maitrise = NOT maitrise WHERE id = ?", [$id]);
+        $this->execute(
+            "
+            UPDATE {$this->table()}
 
-        $result = $this->fetchOne("SELECT maitrise FROM {$this->table()} WHERE id = ?", [$id]);
+            SET maitrise = NOT maitrise
+
+            WHERE id = :id
+            ",
+            [
+                'id' => $id,
+            ]
+        );
+
+        $result = $this->fetchOne(
+            "
+            SELECT maitrise
+
+            FROM {$this->table()}
+
+            WHERE id = :id
+            ",
+            [
+                'id' => $id,
+            ]
+        );
 
         if ($result === null)
         {
@@ -108,17 +146,37 @@ final class ChinoisVocabulaireRepository extends Model
         return $this->delete(['id' => $id]);
     }
 
-    /**
-     * @param array<string, mixed> $data
-     */
-    public function updateVocabulaire(int $id, array $data): bool
+    public function updateVocabulaire(
+        int $id,
+        string $langue,
+        string $mot,
+        string $pinyin,
+        string $type,
+        string $traduction,
+        string $exemple
+    ): bool
     {
-        return $this->update($data, ['id' => $id]);
+        return $this->updateById(
+            $id,
+            [
+                'langue' => trim($langue),
+                'mot' => trim($mot),
+                'pinyin' => trim($pinyin),
+                'type' => trim($type),
+                'traduction' => trim($traduction),
+                'exemple' => trim($exemple),
+            ]
+        );
     }
 
     public function markXpRewarded(int $id): bool
     {
-        return $this->update(['xp_rewarded' => 1], ['id' => $id]);
+        return $this->updateById(
+            $id,
+            [
+                'xp_rewarded' => 1,
+            ]
+        );
     }
 
     /*
@@ -126,6 +184,14 @@ final class ChinoisVocabulaireRepository extends Model
     | HELPERS
     |--------------------------------------------------------------------------
     */
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    private function updateById(int $id, array $data): bool
+    {
+        return $this->update($data, ['id' => $id]);
+    }
 
     private function mapRowToDto(stdClass $row): ChinoisVocabulaireData
     {
@@ -136,9 +202,9 @@ final class ChinoisVocabulaireRepository extends Model
             pinyin: (string) $row->pinyin,
             type: (string) $row->type,
             traduction: (string) $row->traduction,
-            exemple: $row->exemple !== null ? (string) $row->exemple : null,
+            exemple: (string) $row->exemple,
             maitrise: (bool) $row->maitrise,
-            xpRewarded: (bool) $row->xp_rewarded
+            xpRewarded: (bool) $row->xp_rewarded,
         );
     }
 }
