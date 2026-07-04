@@ -17,8 +17,6 @@ declare(strict_types=1);
 /** @var int $grammarLearned */
 /** @var int $grammarXp */
 
-$username = $user->username;
-
 $avatarPath =
     "{$view->baseUri}images/avatar/thumbnail/{$user->avatar}.{$user->avatar_extension}";
 
@@ -35,7 +33,7 @@ $framePath =
     <section class="profile-header-grid">
 
         <a
-            href="<?= $view->baseUri ?>profil/personnalisation"
+            href="<?= e($view->baseUri . 'profil/personnalisation') ?>"
             class="
                 card
                 transition-card
@@ -78,7 +76,7 @@ $framePath =
                 </p>
 
                 <h1 class="profile-name">
-                    <?= e($username) ?>
+                    <?= e($user->username) ?>
                 </h1>
 
             </div>
@@ -181,7 +179,7 @@ $framePath =
 
     <section class="profile-stats">
 
-        <div class="profile-stat-row">
+        <section class="profile-stat-row">
 
             <article class="card transition-card profile-stat-card">
 
@@ -216,7 +214,7 @@ $framePath =
 
             </article>
 
-        </div>
+        </section>
 
         <div class="profile-stat-row">
 

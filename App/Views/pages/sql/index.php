@@ -2,23 +2,22 @@
 
 declare(strict_types=1);
 
-$sql =
-    (string) ($sql ?? '');
+$sql = (string) ($sql ?? '');
 
-$result =
-    $result ?? null;
+$result = $result ?? [];
 
-$hasExecuted =
-    $result !== null;
+$error = $error ?? null;
 
-$resultCount =
-    count($result ?? []);
+$hasExecuted = $error !== null || $result !== [];
 
-$result =
-    $result ?? [];
+$resultCount = count($result);
 
-$error =
-    $error ?? null;
+if ($resultCount > 0)
+{
+    $firstRow = (array) $result[0];
+
+    $columns = array_keys($firstRow);
+}
 
 ?>
 
@@ -83,10 +82,7 @@ $error =
 
         <div id="sql-results">
 
-            <?php if (
-                $error !== null
-                || $hasExecuted
-            ): ?>
+            <?php if ($hasExecuted): ?>
 
                 <section
                     class="
@@ -160,15 +156,6 @@ $error =
 
                                 </p>
 
-                                <?php
-
-                                $columns =
-                                    array_keys(
-                                        (array) $result[0],
-                                    );
-
-                                ?>
-
                                 <div class="sql-table-wrapper">
 
                                     <table class="sql-table">
@@ -195,9 +182,16 @@ $error =
 
                                             <?php foreach ($result as $row): ?>
 
+                                                <?php
+
+                                                $row =
+                                                    (array) $row;
+
+                                                ?>
+
                                                 <tr>
 
-                                                    <?php foreach ((array) $row as $value): ?>
+                                                    <?php foreach ($row as $value): ?>
 
                                                         <td>
 

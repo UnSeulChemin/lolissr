@@ -2,7 +2,11 @@
 
 declare(strict_types=1);
 
-/** @var App\Models\User $user */
+use App\DTO\Common\Responses\ViewData;
+use App\Models\User;
+
+/** @var ViewData $view */
+/** @var User $user */
 
 $avatarPath =
     "{$view->baseUri}images/avatar/thumbnail/{$user->avatar}.{$user->avatar_extension}";
@@ -79,7 +83,7 @@ $username =
                 "
             >
 
-                <h2>
+                <h2 class="home-card-title">
                     👤 Avatar
                 </h2>
 
@@ -98,7 +102,7 @@ $username =
                 "
             >
 
-                <h2>
+                <h2 class="home-card-title">
                     🏆 Titre
                 </h2>
 
@@ -117,7 +121,7 @@ $username =
                 "
             >
 
-                <h2>
+                <h2 class="home-card-title">
                     🎨 Bannière
                 </h2>
 
@@ -136,7 +140,7 @@ $username =
                 "
             >
 
-                <h2>
+                <h2 class="home-card-title">
                     ⭐ Cadre
                 </h2>
 
