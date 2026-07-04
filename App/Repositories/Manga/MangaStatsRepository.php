@@ -289,21 +289,4 @@ final class MangaStatsRepository extends Model
                 . ' tomes',
         );
     }
-
-    /**
-     * @param array<string, mixed> $params
-     */
-    private function fetchSingleValue(string $sql, string $field, array $params = [], mixed $default = 0): mixed
-    {
-        $result = $this->fetchOne($sql, $params);
-
-        if ($result === null)
-        {
-            return $default;
-        }
-
-        $resultArray = (array) $result;
-
-        return $resultArray[$field] ?? $default;
-    }
 }

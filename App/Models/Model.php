@@ -364,6 +364,28 @@ abstract class Model
         return (int) ($data['total'] ?? 0);
     }
 
+    /**
+     * @param array<int|string, mixed> $params
+     */
+    protected function fetchSingleValue(
+        string $sql,
+        string $field,
+        array $params = [],
+        mixed $default = 0,
+    ): mixed
+    {
+        $result = $this->fetchOne($sql, $params);
+
+        if ($result === null)
+        {
+            return $default;
+        }
+
+        $resultArray = (array) $result;
+
+        return $resultArray[$field] ?? $default;
+    }
+
     /*
     |--------------------------------------------------------------------------
     | HELPERS INTERNES
