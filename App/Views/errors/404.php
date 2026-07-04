@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 /** @var string|null $message */
 
-$message ??=
-    'Le contenu demandé est introuvable.';
+$message ??= 'Le contenu demandé est introuvable.';
 
 ?>
 
