@@ -89,7 +89,15 @@ final class NendoroidController extends Controller
     {
         $this->title = 'Nendoroids | Ajouter';
 
-        $this->render('pages/nendoroid/ajouter');
+        $this->render(
+            'pages/nendoroid/ajouter',
+            [
+                'form' => $this->formViewData(
+                    'nendoroid/ajouter',
+                    'nendoroid',
+                ),
+            ]
+        );
     }
 
     public function store(
@@ -127,6 +135,20 @@ final class NendoroidController extends Controller
             'pages/nendoroid/waifus/modifier',
             [
                 'nendoroid' => $nendoroid,
+                'form' => $this->formViewData(
+                    sprintf(
+                        '%s/%s/modifier/%d',
+                        self::WAIFUS_PATH,
+                        rawurlencode($nendoroid->slug),
+                        $numero,
+                    ),
+                    sprintf(
+                        '%s/%s/%d',
+                        self::WAIFUS_PATH,
+                        rawurlencode($nendoroid->slug),
+                        $numero,
+                    ),
+                ),
             ]
         );
     }

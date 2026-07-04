@@ -86,7 +86,15 @@ final class PelucheController extends Controller
     {
         $this->title = 'Peluches | Ajouter';
 
-        $this->render('pages/peluche/ajouter');
+        $this->render(
+            'pages/peluche/ajouter',
+            [
+                'form' => $this->formViewData(
+                    'peluche/ajouter',
+                    'peluche',
+                ),
+            ]
+        );
     }
 
     public function store(
@@ -124,6 +132,20 @@ final class PelucheController extends Controller
             'pages/peluche/waifus/modifier',
             [
                 'peluche' => $peluche,
+                'form' => $this->formViewData(
+                    sprintf(
+                        '%s/%s/modifier/%d',
+                        self::WAIFUS_PATH,
+                        rawurlencode($peluche->slug),
+                        $numero,
+                    ),
+                    sprintf(
+                        '%s/%s/%d',
+                        self::WAIFUS_PATH,
+                        rawurlencode($peluche->slug),
+                        $numero,
+                    ),
+                ),
             ]
         );
     }
