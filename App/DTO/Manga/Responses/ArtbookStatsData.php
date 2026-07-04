@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\DTO\Home\Responses;
+namespace App\DTO\Manga\Responses;
 
-final readonly class LatestArtbookData
+final readonly class ArtbookStatsData
 {
     public function __construct(
         public string $artbook,
-        public ?string $auteur,
 
         public string $thumbnailUrl,
+
         public string $authorLabel,
     ) {
     }

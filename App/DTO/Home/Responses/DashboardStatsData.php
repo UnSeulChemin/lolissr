@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\DTO\Home\Responses;
 
+use App\DTO\Manga\Responses\ArtbookStatsData;
+use App\DTO\Manga\Responses\ArtbookRepresentationData;
 use App\DTO\Manga\Responses\MangaStatsData;
 
 final readonly class DashboardStatsData
@@ -60,8 +62,8 @@ final readonly class DashboardStatsData
         public int $totalArtbookAuthors,
         public int $totalArtbookSeries,
 
-        public ?LatestArtbookData $latestArtbook,
-        public ?MostRepresentedArtbookData $mostRepresented,
+        public ?ArtbookStatsData $latestArtbook,
+        public ?ArtbookRepresentationData $mostRepresented,
     ) {
     }
 }

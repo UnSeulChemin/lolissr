@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Repositories\Manga;
 
-use App\DTO\Home\Responses\LatestArtbookData;
-use App\DTO\Home\Responses\MostRepresentedArtbookData;
+use App\DTO\Manga\Responses\ArtbookStatsData;
+use App\DTO\Manga\Responses\ArtbookRepresentationData;
 use App\Models\Model;
 
 final class ArtbookStatsRepository extends Model
@@ -47,7 +47,7 @@ final class ArtbookStatsRepository extends Model
         );
     }
 
-    public function findLatest(): ?LatestArtbookData
+    public function findLatest(): ?ArtbookStatsData
     {
         $row = $this->fetchOne(
             "
@@ -65,10 +65,12 @@ final class ArtbookStatsRepository extends Model
             "
         );
 
-        return $row !== null ? $this->mapLatestArtbook($row) : null;
+        return $row !== null
+            ? $this->mapToStatsDto($row)
+            : null;
     }
 
-    public function findMostRepresented(): ?MostRepresentedArtbookData
+    public function findMostRepresented(): ?ArtbookRepresentationData
     {
         $author = $this->fetchOne(
             "
@@ -125,7 +127,7 @@ final class ArtbookStatsRepository extends Model
         $winner = $authorTotal >= $seriesTotal ? $author : $series;
 
         return $winner !== null
-            ? $this->mapMostRepresented($winner)
+            ? $this->mapToRepresentationDto($winner)
             : null;
     }
 
@@ -135,7 +137,9 @@ final class ArtbookStatsRepository extends Model
     |--------------------------------------------------------------------------
     */
 
-    private function mapLatestArtbook(object $row): LatestArtbookData
+    private function mapToStatsDto(
+        object $row,
+    ): ArtbookStatsData
     {
         /** @var array{
          *     artbook:string,
@@ -146,28 +150,25 @@ final class ArtbookStatsRepository extends Model
          */
         $data = (array) $row;
 
-        $thumbnailUrl = '';
+        $thumbnailUrl = $this->buildThumbnailUrl(
+            $data['thumbnail'],
+            $data['extension'],
+        );
 
-        if (
-            $data['thumbnail'] !== null
-            && $data['extension'] !== null
-        ) {
-            $thumbnailUrl =
-                '/images/artbook/thumbnail/'
-                . $data['thumbnail']
-                . '.'
-                . $data['extension'];
-        }
-
-        return new LatestArtbookData(
+        return new ArtbookStatsData(
             artbook: $data['artbook'],
-            auteur: $data['auteur'],
+
             thumbnailUrl: $thumbnailUrl,
-            authorLabel: $data['auteur'] ?? 'Auteur inconnu',
+
+            authorLabel:
+                $data['auteur']
+                ?? 'Auteur inconnu',
         );
     }
 
-    private function mapMostRepresented(object $row): MostRepresentedArtbookData
+    private function mapToRepresentationDto(
+        object $row,
+    ): ArtbookRepresentationData
     {
         /** @var array{
          *     type:string,
@@ -179,33 +180,47 @@ final class ArtbookStatsRepository extends Model
          */
         $data = (array) $row;
 
-        $thumbnailUrl = '';
+        $thumbnailUrl = $this->buildThumbnailUrl(
+            $data['thumbnail'],
+            $data['extension'],
+        );
 
-        if (
-            $data['thumbnail'] !== null
-            && $data['extension'] !== null
-        ) {
-            $thumbnailUrl =
-                '/images/artbook/thumbnail/'
-                . $data['thumbnail']
-                . '.'
-                . $data['extension'];
-        }
-
-        return new MostRepresentedArtbookData(
-            name: $data['name'],
-            total: (int) $data['total'],
-
+        return new ArtbookRepresentationData(
             title:
                 $data['type'] === 'author'
                     ? '🎨 Auteur le plus représenté'
                     : '📚 Série la plus représentée',
 
-            countLabel:
-                (int) $data['total'] . ' artbooks',
+            name: $data['name'],
 
             thumbnailUrl: $thumbnailUrl,
+
+            total: (int) $data['total'],
+
+            countLabel:
+                (int) $data['total']
+                . ' artbooks',
         );
+    }
+
+    private function buildThumbnailUrl(
+        ?string $thumbnail,
+        ?string $extension,
+    ): string
+    {
+        if (
+            $thumbnail === null
+            || $extension === null
+        )
+        {
+            return 'images/artbook/placeholder-artbook.webp';
+        }
+
+        return
+            'images/artbook/thumbnail/'
+            . $thumbnail
+            . '.'
+            . $extension;
     }
 
     /**

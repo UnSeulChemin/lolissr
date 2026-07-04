@@ -26,9 +26,6 @@ $hasTopLongestSeries =
 $hasLatestArtbook =
     $stats->latestArtbook !== null;
 
-$mostRepresented =
-    $stats->mostRepresented;
-
 ?>
 
 <section class="layout-container">
@@ -449,7 +446,7 @@ $mostRepresented =
 
             <h2 class="home-card-title">
 
-                <?= e($mostRepresented?->title ?? 'Aucune donnée') ?>
+                <?= e($stats->mostRepresented?->title ?? 'Aucune donnée') ?>
 
             </h2>
 
@@ -462,23 +459,11 @@ $mostRepresented =
                     "
                 >
 
-                    <?php if ($mostRepresented?->thumbnailUrl !== ''): ?>
-
-                        <img
-                            class="card-image-portrait"
-                            src="<?= e($view->baseUri . $mostRepresented->thumbnailUrl) ?>"
-                            alt="<?= e($mostRepresented->name) ?>"
-                        >
-
-                    <?php else: ?>
-
-                        <img
-                            class="card-image-portrait"
-                            src="<?= e($view->baseUri) ?>images/artbook/placeholder-artbook.webp"
-                            alt=""
-                        >
-
-                    <?php endif; ?>
+                    <img
+                        class="card-image-portrait"
+                        src="<?= e($view->baseUri . $stats->mostRepresented->thumbnailUrl) ?>"
+                        alt="<?= e($stats->mostRepresented->name) ?>"
+                    >
 
                 </div>
 
@@ -487,14 +472,14 @@ $mostRepresented =
                     <p class="home-longest-name">
 
                         <?= e(
-                            $mostRepresented->name
+                            $stats->mostRepresented->name
                             ?? 'Aucune donnée'
                         ) ?>
 
                     </p>
 
                     <p class="home-longest-count">
-                        <?= e($mostRepresented?->countLabel ?? '0 artbooks') ?>
+                        <?= e($stats->mostRepresented?->countLabel ?? '0 artbooks') ?>
                     </p>
 
                 </div>
@@ -537,23 +522,11 @@ $mostRepresented =
                         "
                     >
 
-                        <?php if ($artbook->thumbnailUrl !== ''): ?>
-
-                            <img
-                                class="card-image-portrait"
-                                src="<?= e($view->baseUri . $artbook->thumbnailUrl) ?>"
-                                alt="<?= e($artbook->artbook) ?>"
-                            >
-
-                        <?php else: ?>
-
-                            <img
-                                class="card-image-portrait"
-                                src="<?= e($view->baseUri) ?>images/artbook/placeholder-artbook.webp"
-                                alt=""
-                            >
-
-                        <?php endif; ?>
+                        <img
+                            class="card-image-portrait"
+                            src="<?= e($view->baseUri . $artbook->thumbnailUrl) ?>"
+                            alt="<?= e($artbook->artbook) ?>"
+                        >
 
                     </div>
 
