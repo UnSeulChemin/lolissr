@@ -64,69 +64,77 @@ $serieValue = $old['serie'] ?? ($artbook->serie ?? '');
 
                 </div>
 
-                <div class="form-group">
+                <?php if ($artbook->hasAuteur): ?>
 
-                    <label
-                        class="form-label"
-                        for="auteur"
-                    >
+                    <div class="form-group">
 
-                        Auteur
+                        <label
+                            class="form-label"
+                            for="auteur"
+                        >
 
-                    </label>
+                            Auteur
 
-                    <input
-                        class="form-input"
-                        type="text"
-                        id="auteur"
-                        name="auteur"
-                        value="<?= e($auteurValue) ?>"
-                        maxlength="100"
-                    >
+                        </label>
 
-                    <?php if (isset($errors['auteur']) && $errors['auteur'] !== ''): ?>
+                        <input
+                            class="form-input"
+                            type="text"
+                            id="auteur"
+                            name="auteur"
+                            value="<?= e($auteurValue) ?>"
+                            maxlength="100"
+                        >
 
-                        <p class="form-error">
+                        <?php if (isset($errors['auteur']) && $errors['auteur'] !== ''): ?>
 
-                            <?= e($errors['auteur']) ?>
+                            <p class="form-error">
 
-                        </p>
+                                <?= e($errors['auteur']) ?>
 
-                    <?php endif; ?>
+                            </p>
 
-                </div>
+                        <?php endif; ?>
 
-                <div class="form-group">
+                    </div>
 
-                    <label
-                        class="form-label"
-                        for="serie"
-                    >
+                <?php endif; ?>
 
-                        Série
+                <?php if ($artbook->hasSerie): ?>
 
-                    </label>
+                    <div class="form-group">
 
-                    <input
-                        class="form-input"
-                        type="text"
-                        id="serie"
-                        name="serie"
-                        value="<?= e($serieValue) ?>"
-                        maxlength="100"
-                    >
+                        <label
+                            class="form-label"
+                            for="serie"
+                        >
 
-                    <?php if (isset($errors['serie']) && $errors['serie'] !== ''): ?>
+                            Série
 
-                        <p class="form-error">
+                        </label>
 
-                            <?= e($errors['serie']) ?>
+                        <input
+                            class="form-input"
+                            type="text"
+                            id="serie"
+                            name="serie"
+                            value="<?= e($serieValue) ?>"
+                            maxlength="100"
+                        >
 
-                        </p>
+                        <?php if (isset($errors['serie']) && $errors['serie'] !== ''): ?>
 
-                    <?php endif; ?>
+                            <p class="form-error">
 
-                </div>
+                                <?= e($errors['serie']) ?>
+
+                            </p>
+
+                        <?php endif; ?>
+
+                    </div>
+
+                <?php endif; ?>
 
                 <div class="form-actions">
 
