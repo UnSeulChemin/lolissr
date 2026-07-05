@@ -22,11 +22,24 @@ final class PelucheRepository extends Model
         /** @var list<Peluche> $peluches */
         $peluches = $this->fetchAll(
             "
-            SELECT *
+            SELECT p.*
 
-            FROM {$this->table()}
+            FROM {$this->table()} p
 
-            ORDER BY waifu ASC
+            INNER JOIN (
+                SELECT
+                    slug,
+                    MAX(id) AS last_id
+
+                FROM {$this->table()}
+
+                GROUP BY slug
+            ) grouped
+                ON grouped.slug = p.slug
+
+            ORDER BY
+                grouped.last_id DESC,
+                p.numero DESC
             ",
             [],
             Peluche::class
@@ -43,16 +56,32 @@ final class PelucheRepository extends Model
         int $page,
     ): array
     {
+        $page = max(1, $page);
+        $limit = max(1, $limit);
+
         $offset = ($page - 1) * $limit;
 
         /** @var list<Peluche> $peluches */
         $peluches = $this->fetchAll(
             "
-            SELECT *
+            SELECT p.*
 
-            FROM {$this->table()}
+            FROM {$this->table()} p
 
-            ORDER BY waifu ASC
+            INNER JOIN (
+                SELECT
+                    slug,
+                    MAX(id) AS last_id
+
+                FROM {$this->table()}
+
+                GROUP BY slug
+            ) grouped
+                ON grouped.slug = p.slug
+
+            ORDER BY
+                grouped.last_id DESC,
+                p.numero DESC
 
             LIMIT :limit
             OFFSET :offset

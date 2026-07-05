@@ -22,11 +22,24 @@ final class NendoroidRepository extends Model
         /** @var list<Nendoroid> $nendoroids */
         $nendoroids = $this->fetchAll(
             "
-            SELECT *
+            SELECT n.*
 
-            FROM {$this->table()}
+            FROM {$this->table()} n
 
-            ORDER BY waifu ASC
+            INNER JOIN (
+                SELECT
+                    slug,
+                    MAX(id) AS last_id
+
+                FROM {$this->table()}
+
+                GROUP BY slug
+            ) grouped
+                ON grouped.slug = n.slug
+
+            ORDER BY
+                grouped.last_id DESC,
+                n.numero DESC
             ",
             [],
             Nendoroid::class
@@ -43,16 +56,32 @@ final class NendoroidRepository extends Model
         int $page,
     ): array
     {
+        $page = max(1, $page);
+        $limit = max(1, $limit);
+
         $offset = ($page - 1) * $limit;
 
         /** @var list<Nendoroid> $nendoroids */
         $nendoroids = $this->fetchAll(
             "
-            SELECT *
+            SELECT n.*
 
-            FROM {$this->table()}
+            FROM {$this->table()} n
 
-            ORDER BY waifu ASC
+            INNER JOIN (
+                SELECT
+                    slug,
+                    MAX(id) AS last_id
+
+                FROM {$this->table()}
+
+                GROUP BY slug
+            ) grouped
+                ON grouped.slug = n.slug
+
+            ORDER BY
+                grouped.last_id DESC,
+                n.numero DESC
 
             LIMIT :limit
             OFFSET :offset
