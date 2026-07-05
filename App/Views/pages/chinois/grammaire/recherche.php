@@ -38,6 +38,7 @@ use App\DTO\Chinois\Responses\ChinoisGrammaireData;
                 <svg
                     class="grammar-edit-icon"
                     viewBox="0 0 24 24"
+                    aria-hidden="true"
                 >
                     <path
                         d="M4 20H8L18.5 9.5C19.1 8.9 19.1 7.9 18.5 7.3L16.7 5.5C16.1 4.9 15.1 4.9 14.5 5.5L4 16V20Z"
@@ -49,9 +50,9 @@ use App\DTO\Chinois\Responses\ChinoisGrammaireData;
 
             </a>
 
-            <h1 class="grammar-topic">
+            <h3 class="grammar-topic">
                 <?= e($grammaire->titre) ?>
-            </h1>
+            </h3>
 
             <div class="grammar-structure">
                 <?= e($grammaire->structure) ?>
@@ -108,6 +109,7 @@ use App\DTO\Chinois\Responses\ChinoisGrammaireData;
                 <svg
                     class="grammar-mastered-icon"
                     viewBox="0 0 24 24"
+                    aria-hidden="true"
                 >
                     <path
                         d="M20 6L9 17L4 12"

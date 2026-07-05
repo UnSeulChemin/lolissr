@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\DTO\Common\Responses\ViewData;
 use App\DTO\Chinois\Responses\ChinoisVocabulaireData;
+use App\DTO\Common\Responses\ViewData;
 
 /** @var ViewData $view */
 /** @var ChinoisVocabulaireData $vocabulaire */
@@ -14,7 +14,7 @@ use App\DTO\Chinois\Responses\ChinoisVocabulaireData;
 
     <section class="chinois-vocab-panel">
 
-        <section class="chinois-vocab-list">
+        <section class="chinois-vocab-list chinois-vocab-list--flashcard">
 
             <article
                 class="
@@ -32,13 +32,13 @@ use App\DTO\Chinois\Responses\ChinoisVocabulaireData;
                     ✕
                 </button>
 
-                <h1
+                <h3
                     class="chinois-vocab-word"
                     data-copy="<?= e($vocabulaire->mot) ?>"
                     title="Cliquer pour copier"
                 >
                     <?= e($vocabulaire->mot) ?>
-                </h1>
+                </h3>
 
                 <div class="chinois-vocab-pinyin">
                     <?= e($vocabulaire->pinyin) ?>
@@ -59,7 +59,7 @@ use App\DTO\Chinois\Responses\ChinoisVocabulaireData;
                         data-copy="<?= e($vocabulaire->exemple ?? '') ?>"
                         title="Cliquer pour copier"
                     >
-                        <?= e($vocabulaire->exemple ?? '') ?>
+                        <?= nl2br(e($vocabulaire->exemple ?? '')) ?>
                     </div>
 
                 <?php endif; ?>
