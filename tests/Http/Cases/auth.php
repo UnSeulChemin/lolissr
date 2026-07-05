@@ -10,3 +10,12 @@ $tests[] = [
 
     'path' => '/profil',
 ];
+
+$tests[] = [
+
+    'category' => 'Auth',
+
+    'label' => 'Personnalisation du profil accessible',
+
+    'path' => '/profil/personnalisation',
+];

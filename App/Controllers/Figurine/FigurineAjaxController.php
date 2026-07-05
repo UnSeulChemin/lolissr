@@ -61,11 +61,14 @@ final class FigurineAjaxController extends Controller
             throw new NotFoundException('Page introuvable');
         }
 
-        $this->renderFragment('pages/figurine/waifus/ajax', [
-            'figurines' => $data->figurines,
-            'currentPage' => $data->currentPage,
-            'totalPages' => $data->compteur,
-        ]);
+        $this->renderFragment(
+            'pages/figurine/waifus/ajax',
+            [
+                'figurines' => $data->figurines,
+                'currentPage' => $data->currentPage,
+                'totalPages' => $data->totalPages,
+            ]
+        );
     }
 
     /*

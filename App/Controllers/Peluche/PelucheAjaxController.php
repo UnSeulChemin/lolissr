@@ -47,7 +47,7 @@ final class PelucheAjaxController extends Controller
             [
                 'peluches' => $data->peluches,
                 'currentPage' => $data->currentPage,
-                'totalPages' => $data->compteur,
+                'totalPages' => $data->totalPages,
             ]
         );
     }

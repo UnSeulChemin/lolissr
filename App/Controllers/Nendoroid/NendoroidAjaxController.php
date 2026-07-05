@@ -47,7 +47,7 @@ final class NendoroidAjaxController extends Controller
             [
                 'nendoroids' => $data->nendoroids,
                 'currentPage' => $data->currentPage,
-                'totalPages' => $data->compteur,
+                'totalPages' => $data->totalPages,
             ]
         );
     }

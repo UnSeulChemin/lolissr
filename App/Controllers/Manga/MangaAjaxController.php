@@ -75,7 +75,7 @@ final class MangaAjaxController extends Controller
         $this->renderFragment('pages/manga/series/ajax', [
             'mangas' => $data->mangas,
             'currentPage' => $data->currentPage,
-            'totalPages' => $data->compteur,
+            'totalPages' => $data->totalPages,
             'slugFilter' => $data->slugFilter,
             'isSerieView' => $data->slugFilter !== null,
         ]);
@@ -101,7 +101,7 @@ final class MangaAjaxController extends Controller
         $this->renderFragment('pages/manga/artbooks/ajax', [
             'artbooks' => $data->artbooks,
             'currentPage' => $data->currentPage,
-            'totalPages' => $data->compteur,
+            'totalPages' => $data->totalPages,
         ]);
     }
 

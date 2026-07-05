@@ -39,9 +39,64 @@ $tests[] = [
 
     'category' => 'Errors',
 
+    'label' => 'Artbook inexistant retourne 404',
+
+    'path' => '/manga/artbooks/artbook-qui-nexiste-pas/999',
+
+    'expected_status' => 404,
+];
+
+$tests[] = [
+
+    'category' => 'Errors',
+
+    'label' => 'Figurine inexistante retourne 404',
+
+    'path' => '/figurine/waifus/waifu-qui-nexiste-pas/999',
+
+    'expected_status' => 404,
+];
+
+$tests[] = [
+
+    'category' => 'Errors',
+
+    'label' => 'Nendoroid inexistant retourne 404',
+
+    'path' => '/nendoroid/waifus/waifu-qui-nexiste-pas/999',
+
+    'expected_status' => 404,
+];
+
+$tests[] = [
+
+    'category' => 'Errors',
+
+    'label' => 'Peluche inexistante retourne 404',
+
+    'path' => '/peluche/waifus/waifu-qui-nexiste-pas/999',
+
+    'expected_status' => 404,
+];
+
+$tests[] = [
+
+    'category' => 'Errors',
+
     'label' => 'Page série hors limite retourne 404',
 
     'path' => '/manga/series/page/999999',
+
+    'expected_status' => 404,
+];
+
+$tests[] = [
+
+    'category' => 'Errors',
+
+    'label' => 'Page artbooks hors limite retourne 404',
+
+    'path' => '/manga/artbooks/page/999999',
 
     'expected_status' => 404,
 ];

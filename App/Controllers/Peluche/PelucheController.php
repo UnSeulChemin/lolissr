@@ -54,11 +54,11 @@ final class PelucheController extends Controller
             . ($data->currentPage > 1 ? ' - Page ' . $data->currentPage : '');
 
         $this->render('pages/peluche/waifus/index', [
-            'peluches'    => $data->peluches,
+            'peluches' => $data->peluches,
             'currentPage' => $data->currentPage,
-            'compteur'    => $data->compteur,
+            'totalPages' => $data->totalPages,
             'totalWaifus' => $data->totalWaifus,
-            'perPage'     => $data->perPage,
+            'perPage' => $data->perPage,
         ]);
     }
 

@@ -58,7 +58,7 @@ final class NendoroidController extends Controller
             [
                 'nendoroids' => $data->nendoroids,
                 'currentPage' => $data->currentPage,
-                'compteur' => $data->compteur,
+                'totalPages' => $data->totalPages,
                 'totalWaifus' => $data->totalWaifus,
                 'perPage' => $data->perPage,
             ]
