@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
+use App\DTO\Common\Responses\ViewData;
 use App\DTO\Manga\Responses\ArtbookData;
 
+/** @var ViewData $view */
 /** @var ArtbookData $artbook */
 
 $slug = rawurlencode($artbook->slug);

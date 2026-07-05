@@ -7,13 +7,13 @@ use App\Models\ChinoisGrammaire;
 
 /** @var ChinoisGrammaire $grammaire */
 /** @var FormViewData $form */
-/** @var string $returnTo */
+/** @var string|null $returnTo */
 
 $old = $form->old;
 
-$returnTo = (string) ($returnTo ?? '');
+$returnTo ??= '';
 
-$niveauValue = (string) ($old['niveau'] ?? $grammaire->niveau);
+$niveauValue = $old['niveau'] ?? $grammaire->niveau;
 
 $niveauOptions = [
     'HSK1',
@@ -36,17 +36,17 @@ $niveauOptions = [
                 method="post"
             >
 
-            <?= csrf_field() ?>
+                <?= csrf_field() ?>
 
-            <?php if ($returnTo !== '') : ?>
+                <?php if ($returnTo !== ''): ?>
 
-                <input
-                    type="hidden"
-                    name="return_to"
-                    value="<?= e($returnTo) ?>"
-                >
+                    <input
+                        type="hidden"
+                        name="return_to"
+                        value="<?= e($returnTo) ?>"
+                    >
 
-            <?php endif; ?>
+                <?php endif; ?>
 
                 <div class="form-group">
 
@@ -99,10 +99,8 @@ $niveauOptions = [
                         name="titre"
                         id="titre"
                         value="<?= e(
-                            (string) (
-                                $old['titre']
-                                ?? $grammaire->titre
-                            ),
+                            $old['titre']
+                            ?? $grammaire->titre
                         ) ?>"
                         required
                     >
@@ -124,10 +122,8 @@ $niveauOptions = [
                         name="structure"
                         id="structure"
                         value="<?= e(
-                            (string) (
-                                $old['structure']
-                                ?? $grammaire->structure
-                            ),
+                            $old['structure']
+                            ?? $grammaire->structure
                         ) ?>"
                         required
                     >
@@ -149,10 +145,8 @@ $niveauOptions = [
                         name="abreviation"
                         id="abreviation"
                         value="<?= e(
-                            (string) (
-                                $old['abreviation']
-                                ?? $grammaire->abreviation
-                            ),
+                            $old['abreviation']
+                            ?? $grammaire->abreviation
                         ) ?>"
                     >
 
@@ -173,15 +167,11 @@ $niveauOptions = [
                         name="phrase"
                         id="phrase"
                         value="<?= e(
-                            (string) (
-                                $old['phrase']
-                                ?? $grammaire->phrase
-                            ),
+                            $old['phrase']
+                            ?? $grammaire->phrase
                         ) ?>"
                         required
                     >
-
-                </div>
 
                 <div class="form-group">
 
@@ -198,10 +188,8 @@ $niveauOptions = [
                         name="pinyin"
                         id="pinyin"
                         value="<?= e(
-                            (string) (
-                                $old['pinyin']
-                                ?? $grammaire->pinyin
-                            ),
+                            $old['pinyin']
+                            ?? $grammaire->pinyin
                         ) ?>"
                         required
                     >
@@ -223,10 +211,8 @@ $niveauOptions = [
                         name="traduction"
                         id="traduction"
                         value="<?= e(
-                            (string) (
-                                $old['traduction']
-                                ?? $grammaire->traduction
-                            ),
+                            $old['traduction']
+                            ?? $grammaire->traduction
                         ) ?>"
                         required
                     >
@@ -248,10 +234,8 @@ $niveauOptions = [
                         id="explication"
                         rows="6"
                     ><?= e(
-                        (string) (
-                            $old['explication']
-                            ?? $grammaire->explication
-                        ),
+                        $old['explication']
+                        ?? $grammaire->explication
                     ) ?></textarea>
 
                 </div>
@@ -271,10 +255,8 @@ $niveauOptions = [
                         name="section"
                         id="section"
                         value="<?= e(
-                            (string) (
-                                $old['section']
-                                ?? $grammaire->section
-                            ),
+                            $old['section']
+                            ?? $grammaire->section
                         ) ?>"
                         required
                     >
@@ -296,10 +278,8 @@ $niveauOptions = [
                         name="categorie"
                         id="categorie"
                         value="<?= e(
-                            (string) (
-                                $old['categorie']
-                                ?? $grammaire->categorie
-                            ),
+                            $old['categorie']
+                            ?? $grammaire->categorie
                         ) ?>"
                         required
                     >

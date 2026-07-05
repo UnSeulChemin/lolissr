@@ -10,9 +10,12 @@ $errors = $form->errors;
 
 $old = $form->old;
 
-$langueValue = (string) ($old['langue'] ?? 'mandarin');
+$langueValue = $old['langue'] ?? 'mandarin';
 
-$langueOptions = ['mandarin' => 'Mandarin', 'jinyu' => 'JinYu'];
+$langueOptions = [
+    'mandarin' => 'Mandarin',
+    'jinyu' => 'JinYu',
+];
 
 ?>
 
@@ -101,7 +104,7 @@ $langueOptions = ['mandarin' => 'Mandarin', 'jinyu' => 'JinYu'];
                         name="mot"
                         id="mot"
                         placeholder="Ex : 苹果"
-                        value="<?= e((string) ($old['mot'] ?? '')) ?>"
+                        value="<?= e($old['mot'] ?? '') ?>"
                         autofocus
                         required
                     >
@@ -138,7 +141,7 @@ $langueOptions = ['mandarin' => 'Mandarin', 'jinyu' => 'JinYu'];
                         name="pinyin"
                         id="pinyin"
                         placeholder="Ex : Píngguǒ"
-                        value="<?= e((string) ($old['pinyin'] ?? '')) ?>"
+                        value="<?= e($old['pinyin'] ?? '') ?>"
                         required
                     >
 
@@ -174,7 +177,7 @@ $langueOptions = ['mandarin' => 'Mandarin', 'jinyu' => 'JinYu'];
                         name="type"
                         id="type"
                         placeholder="Ex : Nom"
-                        value="<?= e((string) ($old['type'] ?? '')) ?>"
+                        value="<?= e($old['type'] ?? '') ?>"
                         required
                     >
 
@@ -210,7 +213,7 @@ $langueOptions = ['mandarin' => 'Mandarin', 'jinyu' => 'JinYu'];
                         name="traduction"
                         id="traduction"
                         placeholder="Ex : Pomme"
-                        value="<?= e((string) ($old['traduction'] ?? '')) ?>"
+                        value="<?= e($old['traduction'] ?? '') ?>"
                         required
                     >
 
@@ -246,7 +249,7 @@ $langueOptions = ['mandarin' => 'Mandarin', 'jinyu' => 'JinYu'];
                         id="exemple"
                         rows="6"
                         placeholder="Ex : 我喜欢吃苹果。"
-                    ><?= e((string) ($old['exemple'] ?? '')) ?></textarea>
+                    ><?= e($old['exemple'] ?? '') ?></textarea>
 
                     <?php if (
                         isset($errors['exemple'])

@@ -443,9 +443,8 @@ final class Validator
 
             $errors = DateTime::getLastErrors();
 
-            $warningCount = is_array($errors) ? (int) $errors['warning_count'] : 0;
-
-            $errorCount = is_array($errors) ? (int) $errors['error_count'] : 0;
+            $warningCount = is_array($errors) ? $errors['warning_count'] : 0;
+            $errorCount   = is_array($errors) ? $errors['error_count'] : 0;
 
             if ($date !== false && $warningCount === 0 && $errorCount === 0 && $date->format($format) === $value)
             {

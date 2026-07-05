@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+use App\DTO\Common\Responses\ViewData;
+
+/** @var ViewData $view */
+
 $sql = (string) ($sql ?? '');
 
 $result = $result ?? [];

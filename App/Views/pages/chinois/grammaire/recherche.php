@@ -2,7 +2,11 @@
 
 declare(strict_types=1);
 
-/** @var App\DTO\Chinois\Responses\ChinoisGrammaireData $grammaire */
+use App\DTO\Common\Responses\ViewData;
+use App\DTO\Chinois\Responses\ChinoisGrammaireData;
+
+/** @var ViewData $view */
+/** @var ChinoisGrammaireData $grammaire */
 
 ?>
 

@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
+use App\DTO\Common\Responses\ViewData;
 use App\DTO\Figurine\Responses\FigurineData;
 
+/** @var ViewData $view */
 /** @var FigurineData $figurine */
 
 $slug = rawurlencode($figurine->slug);

@@ -157,7 +157,12 @@ final class Cache
             return;
         }
 
-        $files = glob($directory . DIRECTORY_SEPARATOR . '*.cache') ?: [];
+        $files = glob($directory . DIRECTORY_SEPARATOR . '*.cache');
+
+        if ($files === false)
+        {
+            $files = [];
+        }
 
         foreach ($files as $file)
         {

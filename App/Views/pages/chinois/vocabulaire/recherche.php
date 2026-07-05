@@ -2,7 +2,11 @@
 
 declare(strict_types=1);
 
-/** @var App\DTO\Chinois\Responses\ChinoisVocabulaireData $vocabulaire */
+use App\DTO\Common\Responses\ViewData;
+use App\DTO\Chinois\Responses\ChinoisVocabulaireData;
+
+/** @var ViewData $view */
+/** @var ChinoisVocabulaireData $vocabulaire */
 
 ?>
 

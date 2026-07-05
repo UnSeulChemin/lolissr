@@ -7,15 +7,15 @@ use App\Models\ChinoisVocabulaire;
 
 /** @var ChinoisVocabulaire $vocabulaire */
 /** @var FormViewData $form */
-/** @var string $returnTo */
+/** @var string|null $returnTo */
 
 $errors = $form->errors;
 
 $old = $form->old;
 
-$returnTo = (string) ($returnTo ?? '');
+$returnTo ??= '';
 
-$langueValue = (string) ($old['langue'] ?? $vocabulaire->langue);
+$langueValue = $old['langue'] ?? $vocabulaire->langue;
 
 $langueOptions = [
     'mandarin' => 'Mandarin',
@@ -118,10 +118,10 @@ $langueOptions = [
                         type="text"
                         name="mot"
                         id="mot"
-                        value="<?= e((string) (
+                        value="<?= e(
                             $old['mot']
                             ?? $vocabulaire->mot
-                        )) ?>"
+                        ) ?>"
                         autofocus
                         required
                     >
@@ -157,10 +157,10 @@ $langueOptions = [
                         type="text"
                         name="pinyin"
                         id="pinyin"
-                        value="<?= e((string) (
+                        value="<?= e(
                             $old['pinyin']
                             ?? $vocabulaire->pinyin
-                        )) ?>"
+                        ) ?>"
                         required
                     >
 
@@ -195,10 +195,10 @@ $langueOptions = [
                         type="text"
                         name="type"
                         id="type"
-                        value="<?= e((string) (
+                        value="<?= e(
                             $old['type']
                             ?? $vocabulaire->type
-                        )) ?>"
+                        ) ?>"
                         required
                     >
 
@@ -233,10 +233,10 @@ $langueOptions = [
                         type="text"
                         name="traduction"
                         id="traduction"
-                        value="<?= e((string) (
+                        value="<?= e(
                             $old['traduction']
                             ?? $vocabulaire->traduction
-                        )) ?>"
+                        ) ?>"
                         required
                     >
 
@@ -271,10 +271,10 @@ $langueOptions = [
                         name="exemple"
                         id="exemple"
                         rows="6"
-                    ><?= e((string) (
+                    ><?= e(
                         $old['exemple']
                         ?? $vocabulaire->exemple
-                    )) ?></textarea>
+                    ) ?></textarea>
 
                     <?php if (
                         isset($errors['exemple'])

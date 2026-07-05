@@ -2,9 +2,13 @@
 
 declare(strict_types=1);
 
+use App\DTO\Common\Responses\ViewData;
 use App\DTO\Figurine\Responses\FigurineSeriesItemData;
 
+/** @var ViewData $view */
 /** @var list<FigurineSeriesItemData> $figurines */
+/** @var int $currentPage */
+/** @var int $totalPages */
 
 ?>
 

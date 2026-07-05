@@ -2,7 +2,11 @@
 
 declare(strict_types=1);
 
-/** @var App\Models\User $user */
+use App\DTO\Common\Responses\ViewData;
+use App\Models\User;
+
+/** @var ViewData $view */
+/** @var User $user */
 /** @var int $level */
 /** @var int $currentXp */
 /** @var int $xpRequired */

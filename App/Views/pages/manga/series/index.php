@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
+use App\DTO\Common\Responses\ViewData;
 use App\DTO\Manga\Responses\MangaSeriesItemData;
 
+/** @var ViewData $view */
 /** @var list<MangaSeriesItemData> $mangas */
 /** @var int $currentPage */
 /** @var int $totalPages */

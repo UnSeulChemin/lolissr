@@ -10,9 +10,14 @@ $errors = $form->errors;
 
 $old = $form->old;
 
-$niveauValue = (string) ($old['niveau'] ?? 'HSK1');
+$niveauValue = $old['niveau'] ?? 'HSK1';
 
-$niveauOptions = ['HSK1', 'HSK2', 'HSK3', 'HSK4'];
+$niveauOptions = [
+    'HSK1',
+    'HSK2',
+    'HSK3',
+    'HSK4',
+];
 
 ?>
 
@@ -90,7 +95,7 @@ $niveauOptions = ['HSK1', 'HSK2', 'HSK3', 'HSK4'];
                         name="titre"
                         id="titre"
                         placeholder="Ex : Verbe 是"
-                        value="<?= e((string) ($old['titre'] ?? '')) ?>"
+                        value="<?= e($old['titre'] ?? '') ?>"
                         required
                     >
 
@@ -119,7 +124,7 @@ $niveauOptions = ['HSK1', 'HSK2', 'HSK3', 'HSK4'];
                         name="structure"
                         id="structure"
                         placeholder="Ex : Sujet + 是 + Nom"
-                        value="<?= e((string) ($old['structure'] ?? '')) ?>"
+                        value="<?= e($old['structure'] ?? '') ?>"
                         required
                     >
 
@@ -140,7 +145,7 @@ $niveauOptions = ['HSK1', 'HSK2', 'HSK3', 'HSK4'];
                         name="abreviation"
                         id="abreviation"
                         placeholder="Ex : SHI"
-                        value="<?= e((string) ($old['abreviation'] ?? '')) ?>"
+                        value="<?= e($old['abreviation'] ?? '') ?>"
                     >
 
                 </div>
@@ -160,7 +165,7 @@ $niveauOptions = ['HSK1', 'HSK2', 'HSK3', 'HSK4'];
                         name="phrase"
                         id="phrase"
                         placeholder="Ex : 我是法国人"
-                        value="<?= e((string) ($old['phrase'] ?? '')) ?>"
+                        value="<?= e($old['phrase'] ?? '') ?>"
                         required
                     >
 
@@ -181,7 +186,7 @@ $niveauOptions = ['HSK1', 'HSK2', 'HSK3', 'HSK4'];
                         name="pinyin"
                         id="pinyin"
                         placeholder="Ex : Wǒ shì Fǎguórén"
-                        value="<?= e((string) ($old['pinyin'] ?? '')) ?>"
+                        value="<?= e($old['pinyin'] ?? '') ?>"
                         required
                     >
 
@@ -202,7 +207,7 @@ $niveauOptions = ['HSK1', 'HSK2', 'HSK3', 'HSK4'];
                         name="traduction"
                         id="traduction"
                         placeholder="Ex : Je suis français"
-                        value="<?= e((string) ($old['traduction'] ?? '')) ?>"
+                        value="<?= e($old['traduction'] ?? '') ?>"
                         required
                     >
 
@@ -223,7 +228,7 @@ $niveauOptions = ['HSK1', 'HSK2', 'HSK3', 'HSK4'];
                         id="explication"
                         rows="6"
                         placeholder="Ex : 是 est le verbe être..."
-                    ><?= e((string) ($old['explication'] ?? '')) ?></textarea>
+                    ><?= e($old['explication'] ?? '') ?></textarea>
 
                 </div>
 
@@ -242,7 +247,7 @@ $niveauOptions = ['HSK1', 'HSK2', 'HSK3', 'HSK4'];
                         name="section"
                         id="section"
                         placeholder="Ex : Verbes de base"
-                        value="<?= e((string) ($old['section'] ?? '')) ?>"
+                        value="<?= e($old['section'] ?? '') ?>"
                         required
                     >
 
@@ -263,7 +268,7 @@ $niveauOptions = ['HSK1', 'HSK2', 'HSK3', 'HSK4'];
                         name="categorie"
                         id="categorie"
                         placeholder="Ex : Être et identité"
-                        value="<?= e((string) ($old['categorie'] ?? '')) ?>"
+                        value="<?= e($old['categorie'] ?? '') ?>"
                         required
                     >
 
