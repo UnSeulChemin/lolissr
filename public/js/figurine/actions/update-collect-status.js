@@ -1,5 +1,5 @@
 // =========================================
-// UPDATE READ STATUS
+// UPDATE COLLECT STATUS
 // =========================================
 
 import {
@@ -36,7 +36,7 @@ import {
 // =========================================
 
 const BUTTON_SELECTOR =
-    '.js-read-status-button';
+    '.js-collect-status-button';
 
 // =========================================
 // STATE
@@ -49,30 +49,30 @@ let initialized =
 // HELPERS
 // =========================================
 
-function updateButtonState(
+function updateCollectButtonState(
     button,
-    readStatus,
+    collectStatus,
 )
 {
-    const isRead =
+    const isCollected =
         Number(
-            readStatus,
+            collectStatus,
         ) === 1;
 
-    button.dataset.readStatus =
+    button.dataset.collectStatus =
         String(
-            readStatus,
+            collectStatus,
         );
 
     button.classList.toggle(
         'active',
-        isRead,
+        isCollected,
     );
 
     const label =
-        isRead
-            ? 'Marquer comme non lu'
-            : 'Marquer comme lu';
+        isCollected
+            ? 'Retirer de la collection'
+            : 'Ajouter à la collection';
 
     button.title =
         label;
@@ -84,7 +84,7 @@ function updateButtonState(
 
     button.setAttribute(
         'aria-pressed',
-        isRead
+        isCollected
             ? 'true'
             : 'false',
     );
@@ -109,10 +109,10 @@ function refreshButtons()
                 return;
             }
 
-            updateButtonState(
+            updateCollectButtonState(
                 button,
                 Number(
-                    button.dataset.readStatus
+                    button.dataset.collectStatus
                     ?? 0,
                 ),
             );
@@ -124,7 +124,7 @@ function refreshButtons()
 // UPDATE
 // =========================================
 
-async function updateReadStatus(
+async function updateCollectStatus(
     button,
 )
 {
@@ -143,14 +143,14 @@ async function updateReadStatus(
         return;
     }
 
-    const currentReadStatus =
+    const currentCollectStatus =
         Number(
-            button.dataset.readStatus
+            button.dataset.collectStatus
             ?? 0,
         );
 
-    const nextReadStatus =
-        currentReadStatus === 1
+    const nextCollectStatus =
+        currentCollectStatus === 1
             ? 0
             : 1;
 
@@ -163,9 +163,9 @@ async function updateReadStatus(
     button.disabled =
         true;
 
-    updateButtonState(
+    updateCollectButtonState(
         button,
-        nextReadStatus,
+        nextCollectStatus,
     );
 
     try {
@@ -174,8 +174,8 @@ async function updateReadStatus(
             await post(
                 url,
                 {
-                    readStatus:
-                        nextReadStatus,
+                    collectStatus:
+                        nextCollectStatus,
                 },
                 {
                     headers:
@@ -202,7 +202,7 @@ async function updateReadStatus(
                 || 'Erreur mise à jour',
                 {
                     code:
-                        'READ_STATUS_UPDATE_FAILED',
+                        'COLLECT_STATUS_UPDATE_FAILED',
                 },
             );
         }
@@ -213,15 +213,15 @@ async function updateReadStatus(
         |--------------------------------------------------------------------------
         */
 
-        const readStatus =
+        const collectStatus =
             Number(
-                data?.data?.readStatus
-                ?? nextReadStatus,
+                data?.data?.collectStatus
+                ?? nextCollectStatus,
             );
 
-        updateButtonState(
+        updateCollectButtonState(
             button,
-            readStatus,
+            collectStatus,
         );
 
         invalidatePage(
@@ -240,12 +240,7 @@ async function updateReadStatus(
 
         if (data?.data?.xpEarned)
         {
-            message += ' ⭐ +5 XP';
-        }
-
-        if (data?.data?.seriesXpEarned)
-        {
-            message += ' 📚 +20 XP';
+            message += ' ⭐ +50 XP';
         }
 
         showToast(
@@ -261,9 +256,9 @@ async function updateReadStatus(
         |--------------------------------------------------------------------------
         */
 
-        updateButtonState(
+        updateCollectButtonState(
             button,
-            currentReadStatus,
+            currentCollectStatus,
         );
 
         handleError(
@@ -281,7 +276,7 @@ async function updateReadStatus(
 // INIT
 // =========================================
 
-export function initUpdateReadStatus()
+export function initUpdateCollectStatus()
 {
     if (initialized) {
 
@@ -310,7 +305,7 @@ export function initUpdateReadStatus()
                 return;
             }
 
-            void updateReadStatus(
+            void updateCollectStatus(
                 button,
             );
         },
@@ -328,7 +323,7 @@ export function initUpdateReadStatus()
     refreshButtons();
 
     debug(
-        'READ_STATUS',
+        'COLLECT_STATUS',
         'initialized',
     );
 }

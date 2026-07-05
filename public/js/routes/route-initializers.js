@@ -71,6 +71,10 @@ import {
 } from '../figurine/actions/delete-figurine.js';
 
 import {
+    initUpdateCollectStatus,
+} from '../figurine/actions/update-collect-status.js';
+
+import {
     initDeleteArtbook,
 } from '../manga/actions/delete-artbook.js';
 
@@ -286,6 +290,11 @@ export const ROUTE_INITIALIZERS = [
             [
                 'DeleteFigurine',
                 initDeleteFigurine,
+            ],
+
+            [
+                'UpdateCollectStatus',
+                initUpdateCollectStatus,
             ],
 
             [

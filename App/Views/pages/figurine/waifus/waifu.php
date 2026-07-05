@@ -23,6 +23,18 @@ $commentaire = $hasCommentaire
     ? nl2br(e($figurine->commentaire))
     : 'Aucun commentaire';
 
+$updateCollectStatusUrl = $view->baseUri
+    . 'figurine/ajax/update-collect-status/'
+    . $slug
+    . '/'
+    . $figurine->numero;
+
+$isCollected = $figurine->collect;
+
+$collectStatusLabel = $isCollected
+    ? 'Retirer de la collection'
+    : 'Ajouter à la collection';
+
 ?>
 
 <section class="layout-container dashboard-page">
@@ -151,6 +163,31 @@ $commentaire = $hasCommentaire
             </div>
 
             <div class="detail-actions">
+
+                <div class="detail-actions-left">
+
+                    <button
+                        type="button"
+                        class="js-collect-status-button <?= $isCollected ? 'active' : '' ?>"
+                        data-url="<?= e($updateCollectStatusUrl) ?>"
+                        data-slug="<?= e($slug) ?>"
+                        data-numero="<?= $figurine->numero ?>"
+                        data-collect-status="<?= $isCollected ? '1' : '0' ?>"
+                        title="<?= e($collectStatusLabel) ?>"
+                        aria-label="<?= e($collectStatusLabel) ?>"
+                    >
+
+                        <svg
+                            class="collect-icon"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path d="M12 2.5L14.9 8.63L21.5 9.27L16.5 13.8L17.9 20.3L12 17L6.1 20.3L7.5 13.8L2.5 9.27L9.1 8.63L12 2.5Z"/>
+                        </svg>
+
+                    </button>
+
+                </div>
 
                 <div class="detail-actions-right">
 
