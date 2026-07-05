@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Figurine;
 
+use App\Constants\UserXp;
 use App\DTO\Common\ServiceResult;
 use App\DTO\Figurine\Inputs\FigurineCreateDTO;
 use App\DTO\Figurine\Inputs\FigurineUpdateDTO;
@@ -11,6 +12,7 @@ use App\DTO\Upload\UploadThumbnailData;
 use App\Models\Figurine;
 use App\Repositories\Figurine\FigurineRepository;
 use App\Services\UploadService;
+use App\Services\User\UserLevelService;
 
 use Framework\Cache\Cache;
 use Framework\Config\UploadConfig;
@@ -24,7 +26,8 @@ final readonly class FigurineWriteService
     public function __construct(
         private FigurineRepository $figurineRepository,
         private UploadService $uploadService,
-        private Database $database
+        private Database $database,
+        private UserLevelService $userLevelService
     ) {
     }
 
@@ -146,6 +149,81 @@ final readonly class FigurineWriteService
         );
     }
 
+    public function updateCollectStatus(
+        string $slug,
+        int $numero,
+        int $collectStatus
+    ): ServiceResult
+    {
+        if (! in_array($collectStatus, [0, 1], true))
+        {
+            return $this->error('Statut de collection invalide', 422);
+        }
+
+        return $this->database->transaction(
+            function () use (
+                $slug,
+                $numero,
+                $collectStatus
+            ): ServiceResult
+            {
+                $figurine = $this->figurineRepository->findOneBySlugAndNumero(
+                    $slug,
+                    $numero
+                );
+
+                if ($figurine === null)
+                {
+                    return $this->error('Figurine introuvable', 404);
+                }
+
+                $updated = $this->figurineRepository->updateCollectStatus(
+                    $slug,
+                    $numero,
+                    $collectStatus === 1
+                );
+
+                $failure = $this->writeFailed(
+                    $updated,
+                    'Update collect status',
+                    $slug,
+                    $numero,
+                    'Erreur lors de la mise à jour'
+                );
+
+                if ($failure !== null)
+                {
+                    return $failure;
+                }
+
+                $xpEarned = false;
+
+                if (
+                    ! $figurine->collect
+                    && $collectStatus === 1
+                    && ! $figurine->collect_rewarded
+                )
+                {
+                    $this->rewardCollectXp($figurine);
+
+                    $xpEarned = true;
+                }
+
+                $this->clearCache();
+
+                return $this->success(
+                    $collectStatus === 1
+                        ? 'Figurine marquée comme collectée'
+                        : 'Figurine marquée comme non collectée',
+                    [
+                        'collectStatus' => $collectStatus,
+                        'xpEarned' => $xpEarned,
+                    ]
+                );
+            }
+        );
+    }
+
     public function delete(string $slug, int $numero): ServiceResult
     {
         return $this->database->transaction(
@@ -221,6 +299,25 @@ final readonly class FigurineWriteService
     | HELPERS
     |--------------------------------------------------------------------------
     */
+
+    private function rewardCollectXp(Figurine $figurine): void
+    {
+        $user = user();
+
+        if ($user === null)
+        {
+            return;
+        }
+
+        $this->userLevelService->addXp(
+            $user,
+            UserXp::COLLECT_FIGURINE
+        );
+
+        $this->figurineRepository->markXpRewarded(
+            $figurine->id
+        );
+    }
 
     private function writeFailed(
         bool $result,

@@ -17,6 +17,9 @@ final readonly class FigurineData
         public string $scale,
         public ?float $height_cm,
         public string $company,
+
+        public bool $collect,
+
         public ?string $release_date,
 
         public ?string $thumbnail,
@@ -24,6 +27,8 @@ final readonly class FigurineData
         public ?string $thumbnailUrl,
 
         public ?string $commentaire,
+
+        public bool $xpCollectRewarded,
     ) {
     }
 }

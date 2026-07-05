@@ -125,6 +125,8 @@ final readonly class FigurineReadService
                 $thumbnail !== null && $extension !== null
                     ? "{$baseUri}images/figurine/thumbnail/{$thumbnail}.{$extension}"
                     : null,
+
+            collect: $figurine->collect,
         );
     }
 
@@ -151,6 +153,9 @@ final readonly class FigurineReadService
             scale: $figurine->scale,
             height_cm: $figurine->height_cm,
             company: $figurine->company,
+
+            collect: $figurine->collect,
+
             release_date: DateFormatter::display(
                 $figurine->release_date,
             ),
@@ -164,6 +169,8 @@ final readonly class FigurineReadService
                     : null,
 
             commentaire: $figurine->commentaire,
+
+            xpCollectRewarded: $figurine->collect_rewarded,
         );
     }
 

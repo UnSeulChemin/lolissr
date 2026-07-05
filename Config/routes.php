@@ -392,6 +392,23 @@ return static function (Router $router): void
                     [FigurineAjaxController::class, 'search'],
                 );
             });
+
+            /*
+            |--------------------------------------------------------------------------
+            | AJAX JSON + CSRF
+            |--------------------------------------------------------------------------
+            */
+
+            $router->prefix('ajax')->middleware([
+                ExpectJsonMiddleware::class,
+                CsrfMiddleware::class,
+            ])->group(function (Router $router): void
+            {
+                $router->post(
+                    'update-collect-status/{slug}/{numero:int}',
+                    [FigurineAjaxController::class, 'updateCollectStatus'],
+                );
+            });
         });
 
         /*

@@ -16,6 +16,8 @@ final readonly class FigurineSeriesItemData
         public ?string $thumbnail,
         public ?string $extension,
         public ?string $thumbnailUrl,
+
+        public bool $collect,
     ) {
     }
 }

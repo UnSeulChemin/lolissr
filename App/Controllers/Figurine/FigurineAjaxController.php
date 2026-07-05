@@ -71,6 +71,27 @@ final class FigurineAjaxController extends Controller
         );
     }
 
+    public function updateCollectStatus(
+        string $slug,
+        int $numero
+    ): never
+    {
+        $figurine = $this->resolveFigurineOrFail(
+            $slug,
+            $numero
+        );
+
+        $collectStatus = (int) $this->request->input('collectStatus', 0);
+
+        $result = $this->figurineWriteService->updateCollectStatus(
+            $figurine->slug,
+            $numero,
+            $collectStatus
+        );
+
+        $this->jsonResult($result);
+    }
+
     /*
     |--------------------------------------------------------------------------
     | DELETE

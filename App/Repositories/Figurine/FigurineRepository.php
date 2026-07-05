@@ -70,6 +70,21 @@ final class FigurineRepository extends Model
         );
     }
 
+    public function updateCollectStatus(
+        string $slug,
+        int $numero,
+        bool $collectStatus
+    ): bool
+    {
+        return $this->updateBySlugAndNumero(
+            $slug,
+            $numero,
+            [
+                'collect' => (int) $collectStatus,
+            ]
+        );
+    }
+
     public function deleteBySlugAndNumero(
         string $slug,
         int $numero
@@ -79,6 +94,36 @@ final class FigurineRepository extends Model
             'slug' => $this->normalizeSlug($slug),
             'numero' => $numero,
         ]);
+    }
+
+    /**
+     * @return list<Figurine>
+     */
+    public function findCollectedWithoutReward(): array
+    {
+        /** @var list<Figurine> $figurines */
+        $figurines = $this->fetchAll(
+            "
+            SELECT *
+
+            FROM {$this->table()}
+
+            WHERE collect = 1
+            AND collect_rewarded = 0
+            ",
+            [],
+            Figurine::class
+        );
+
+        return $figurines;
+    }
+
+    public function markXpRewarded(int $id): bool
+    {
+        return $this->update(
+            ['collect_rewarded' => 1],
+            ['id' => $id]
+        );
     }
 
     /*
