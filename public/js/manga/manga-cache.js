@@ -21,6 +21,10 @@ export function invalidateMangaPages()
     );
 
     invalidatePage(
+        '/lolissr/profil',
+    );
+
+    invalidatePage(
         '/lolissr/manga',
     );
 
