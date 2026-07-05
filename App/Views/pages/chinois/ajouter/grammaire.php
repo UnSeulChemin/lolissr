@@ -73,7 +73,7 @@ $niveauOptions = [
                     <?php if (isset($errors['niveau'])): ?>
 
                         <p class="form-error">
-                            <?= e((string) $errors['niveau']) ?>
+                            <?= e($errors['niveau']) ?>
                         </p>
 
                     <?php endif; ?>
@@ -102,7 +102,7 @@ $niveauOptions = [
                     <?php if (isset($errors['titre'])): ?>
 
                         <p class="form-error">
-                            <?= e((string) $errors['titre']) ?>
+                            <?= e($errors['titre']) ?>
                         </p>
 
                     <?php endif; ?>

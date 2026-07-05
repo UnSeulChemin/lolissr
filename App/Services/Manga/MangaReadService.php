@@ -279,8 +279,8 @@ final readonly class MangaReadService
             slug: $manga->slug,
             numero: $manga->numero,
             livre: $manga->livre,
-            thumbnail: $manga->thumbnail !== '' ? $manga->thumbnail : null,
-            extension: $manga->extension !== '' ? $manga->extension : null,
+            thumbnail: $manga->thumbnail,
+            extension: $manga->extension,
             note: $manga->note,
             lu: $manga->lu,
         );

@@ -139,7 +139,7 @@ final class MangaStatsRepository extends Model
      */
     public function topLongestSeries(int $limit = 5): array
     {
-        $limit = max(1, (int) $limit);
+        $limit = max(1, $limit);
 
         /** @var list<Manga> $mangas */
         $mangas = $this->fetchAll(

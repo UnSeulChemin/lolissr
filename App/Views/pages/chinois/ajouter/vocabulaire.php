@@ -79,7 +79,7 @@ $langueOptions = [
 
                         <p class="form-error">
 
-                            <?= e((string) $errors['langue']) ?>
+                            <?= e($errors['langue']) ?>
 
                         </p>
 
@@ -116,7 +116,7 @@ $langueOptions = [
 
                         <p class="form-error">
 
-                            <?= e((string) $errors['mot']) ?>
+                            <?= e($errors['mot']) ?>
 
                         </p>
 
@@ -152,7 +152,7 @@ $langueOptions = [
 
                         <p class="form-error">
 
-                            <?= e((string) $errors['pinyin']) ?>
+                            <?= e($errors['pinyin']) ?>
 
                         </p>
 
@@ -188,7 +188,7 @@ $langueOptions = [
 
                         <p class="form-error">
 
-                            <?= e((string) $errors['type']) ?>
+                            <?= e($errors['type']) ?>
 
                         </p>
 
@@ -224,7 +224,7 @@ $langueOptions = [
 
                         <p class="form-error">
 
-                            <?= e((string) $errors['traduction']) ?>
+                            <?= e($errors['traduction']) ?>
 
                         </p>
 
@@ -258,7 +258,7 @@ $langueOptions = [
 
                         <p class="form-error">
 
-                            <?= e((string) $errors['exemple']) ?>
+                            <?= e($errors['exemple']) ?>
 
                         </p>
 

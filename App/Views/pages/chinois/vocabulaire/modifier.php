@@ -39,7 +39,7 @@ $langueOptions = [
 
                 <?= csrf_field() ?>
 
-                <?php if ($returnTo !== '') : ?>
+                <?php if ($returnTo !== ''): ?>
 
                     <input
                         type="hidden"
@@ -94,7 +94,7 @@ $langueOptions = [
 
                         <p class="form-error">
 
-                            <?= e((string) $errors['langue']) ?>
+                            <?= e($errors['langue']) ?>
 
                         </p>
 
@@ -118,10 +118,7 @@ $langueOptions = [
                         type="text"
                         name="mot"
                         id="mot"
-                        value="<?= e(
-                            $old['mot']
-                            ?? $vocabulaire->mot
-                        ) ?>"
+                        value="<?= e($old['mot'] ?? $vocabulaire->mot) ?>"
                         autofocus
                         required
                     >
@@ -133,7 +130,7 @@ $langueOptions = [
 
                         <p class="form-error">
 
-                            <?= e((string) $errors['mot']) ?>
+                            <?= e($errors['mot']) ?>
 
                         </p>
 
@@ -157,10 +154,7 @@ $langueOptions = [
                         type="text"
                         name="pinyin"
                         id="pinyin"
-                        value="<?= e(
-                            $old['pinyin']
-                            ?? $vocabulaire->pinyin
-                        ) ?>"
+                        value="<?= e($old['pinyin'] ?? $vocabulaire->pinyin) ?>"
                         required
                     >
 
@@ -171,7 +165,7 @@ $langueOptions = [
 
                         <p class="form-error">
 
-                            <?= e((string) $errors['pinyin']) ?>
+                            <?= e($errors['pinyin']) ?>
 
                         </p>
 
@@ -195,10 +189,7 @@ $langueOptions = [
                         type="text"
                         name="type"
                         id="type"
-                        value="<?= e(
-                            $old['type']
-                            ?? $vocabulaire->type
-                        ) ?>"
+                        value="<?= e($old['type'] ?? $vocabulaire->type) ?>"
                         required
                     >
 
@@ -209,7 +200,7 @@ $langueOptions = [
 
                         <p class="form-error">
 
-                            <?= e((string) $errors['type']) ?>
+                            <?= e($errors['type']) ?>
 
                         </p>
 
@@ -233,10 +224,7 @@ $langueOptions = [
                         type="text"
                         name="traduction"
                         id="traduction"
-                        value="<?= e(
-                            $old['traduction']
-                            ?? $vocabulaire->traduction
-                        ) ?>"
+                        value="<?= e($old['traduction'] ?? $vocabulaire->traduction) ?>"
                         required
                     >
 
@@ -247,7 +235,7 @@ $langueOptions = [
 
                         <p class="form-error">
 
-                            <?= e((string) $errors['traduction']) ?>
+                            <?= e($errors['traduction']) ?>
 
                         </p>
 
@@ -271,10 +259,7 @@ $langueOptions = [
                         name="exemple"
                         id="exemple"
                         rows="6"
-                    ><?= e(
-                        $old['exemple']
-                        ?? $vocabulaire->exemple
-                    ) ?></textarea>
+                    ><?= e($old['exemple'] ?? $vocabulaire->exemple) ?></textarea>
 
                     <?php if (
                         isset($errors['exemple'])
@@ -283,7 +268,7 @@ $langueOptions = [
 
                         <p class="form-error">
 
-                            <?= e((string) $errors['exemple']) ?>
+                            <?= e($errors['exemple']) ?>
 
                         </p>
 

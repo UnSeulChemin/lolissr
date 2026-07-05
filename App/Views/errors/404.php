@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use App\DTO\Common\Responses\ViewData;
+
+/** @var ViewData $view */
 /** @var string|null $message */
 
 $message ??= 'Le contenu demandé est introuvable.';

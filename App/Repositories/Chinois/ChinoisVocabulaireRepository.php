@@ -6,14 +6,11 @@ namespace App\Repositories\Chinois;
 
 use App\DTO\Chinois\Responses\ChinoisVocabulaireData;
 use App\Models\Model;
-use App\Repositories\Chinois\Concerns\HasDtoMapper;
 
 use stdClass;
 
 final class ChinoisVocabulaireRepository extends Model
 {
-    use HasDtoMapper;
-
     protected string $table = 'chinois_vocabulaire';
 
     private const SELECT_FIELDS = '
@@ -47,7 +44,11 @@ final class ChinoisVocabulaireRepository extends Model
             "
         );
 
-        return $this->mapResultsToDto($results);
+        /** @var list<ChinoisVocabulaireData> */
+        return array_map(
+            $this->mapRowToDto(...),
+            $results,
+        );
     }
 
     /**
@@ -72,7 +73,11 @@ final class ChinoisVocabulaireRepository extends Model
             ]
         );
 
-        return $this->mapResultsToDto($results);
+        /** @var list<ChinoisVocabulaireData> */
+        return array_map(
+            $this->mapRowToDto(...),
+            $results,
+        );
     }
 
     public function findById(int $id): ?ChinoisVocabulaireData

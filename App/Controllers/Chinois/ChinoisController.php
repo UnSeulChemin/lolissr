@@ -372,6 +372,9 @@ final class ChinoisController extends Controller
     |--------------------------------------------------------------------------
     */
 
+    /**
+     * @return list<ChinoisVocabulaireData>
+     */
     private function resolveLangue(string $langue): array
     {
         return match ($langue)
@@ -379,7 +382,9 @@ final class ChinoisController extends Controller
             'mandarin' => $this->chinoisReadService->mandarin(),
             'jinyu'    => $this->chinoisReadService->jinyu(),
 
-            default => throw new NotFoundException('Langue introuvable'),
+            default => throw new NotFoundException(
+                'Langue introuvable'
+            ),
         };
     }
 

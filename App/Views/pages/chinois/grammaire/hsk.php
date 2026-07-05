@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 use App\DTO\Chinois\Responses\ChinoisHskData;
+use App\DTO\Common\Responses\ViewData;
 
 /** @var ChinoisHskData $hsk */
+/** @var ViewData $view */
 
 ?>
 

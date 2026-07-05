@@ -6,7 +6,6 @@ namespace App\Repositories\Chinois;
 
 use App\DTO\Chinois\Responses\ChinoisGrammaireData;
 use App\Models\Model;
-use App\Repositories\Chinois\Concerns\HasDtoMapper;
 
 use Framework\Support\Str;
 
@@ -14,8 +13,6 @@ use stdClass;
 
 final class ChinoisGrammaireRepository extends Model
 {
-    use HasDtoMapper;
-
     protected string $table = 'chinois_grammaire';
 
     private const SELECT_FIELDS = '
@@ -54,7 +51,11 @@ final class ChinoisGrammaireRepository extends Model
             "
         );
 
-        return $this->mapResultsToDto($results);
+        /** @var list<ChinoisGrammaireData> */
+        return array_map(
+            $this->mapRowToDto(...),
+            $results,
+        );
     }
 
     /**
@@ -83,7 +84,11 @@ final class ChinoisGrammaireRepository extends Model
             ]
         );
 
-        return $this->mapResultsToDto($results);
+        /** @var list<ChinoisGrammaireData> */
+        return array_map(
+            $this->mapRowToDto(...),
+            $results,
+        );
     }
 
     public function findById(int $id): ?ChinoisGrammaireData

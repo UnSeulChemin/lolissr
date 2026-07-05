@@ -24,7 +24,7 @@ final readonly class MangaUpdateDTO
     public static function fromArray(array $data): self
     {
         return new self(
-            editeur: Str::nullableTrim($data['editeur'] ?? null),
+            editeur: trim((string) ($data['editeur'] ?? '')),
             statut: trim((string) ($data['statut'] ?? 'en_cours')),
             jacquette: MangaNoteNormalizer::normalize($data['jacquette'] ?? null),
             livreNote: MangaNoteNormalizer::normalize($data['livre_note'] ?? null),

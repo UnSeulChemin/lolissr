@@ -92,6 +92,12 @@ final class UserRepository extends Model
         );
     }
 
+    /**
+     * @return list<array{
+     *     avatar: string,
+     *     avatar_extension: string
+     * }>
+     */
     public function avatars(): array
     {
         $path =
@@ -100,12 +106,17 @@ final class UserRepository extends Model
 
         $avatars = [];
 
-        foreach (
-            glob(
-                $path . '/*.{webp,jpg,png}',
-                GLOB_BRACE,
-            ) ?: [] as $file
-        )
+        $files = glob(
+            $path . '/*.{webp,jpg,png}',
+            GLOB_BRACE,
+        );
+
+        if ($files === false)
+        {
+            return [];
+        }
+
+        foreach ($files as $file)
         {
             $avatars[] = [
                 'avatar' => pathinfo(
@@ -122,6 +133,12 @@ final class UserRepository extends Model
         return $avatars;
     }
 
+    /**
+     * @return list<array{
+     *     banner: string,
+     *     banner_extension: string
+     * }>
+     */
     public function banners(): array
     {
         $path =
@@ -130,12 +147,17 @@ final class UserRepository extends Model
 
         $banners = [];
 
-        foreach (
-            glob(
-                $path . '/*.{webp,jpg,png}',
-                GLOB_BRACE,
-            ) ?: [] as $file
-        )
+        $files = glob(
+            $path . '/*.{webp,jpg,png}',
+            GLOB_BRACE,
+        );
+
+        if ($files === false)
+        {
+            return [];
+        }
+
+        foreach ($files as $file)
         {
             $banners[] = [
                 'banner' => pathinfo(
@@ -152,6 +174,12 @@ final class UserRepository extends Model
         return $banners;
     }
 
+    /**
+     * @return list<array{
+     *     frame: string,
+     *     frame_extension: string
+     * }>
+     */
     public function frames(): array
     {
         $path =
@@ -160,12 +188,17 @@ final class UserRepository extends Model
 
         $frames = [];
 
-        foreach (
-            glob(
-                $path . '/*.{webp,jpg,png}',
-                GLOB_BRACE,
-            ) ?: [] as $file
-        )
+        $files = glob(
+            $path . '/*.{webp,jpg,png}',
+            GLOB_BRACE,
+        );
+
+        if ($files === false)
+        {
+            return [];
+        }
+
+        foreach ($files as $file)
         {
             $frames[] = [
                 'frame' => pathinfo(

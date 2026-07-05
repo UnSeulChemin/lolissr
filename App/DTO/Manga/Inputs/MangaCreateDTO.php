@@ -28,7 +28,7 @@ final readonly class MangaCreateDTO
         return new self(
             slug: Str::slug((string) ($data['slug'] ?? $livre)),
             livre: $livre,
-            editeur: Str::nullableTrim($data['editeur'] ?? null),
+            editeur: trim((string) ($data['editeur'] ?? '')),
             numero: max(1, (int) ($data['numero'] ?? 1)),
             statut: trim((string) ($data['statut'] ?? 'en_cours')),
             commentaire: Str::nullableTrim($data['commentaire'] ?? null),
