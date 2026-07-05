@@ -271,3 +271,19 @@ export function showToast(
             TOAST_DURATION,
         );
 }
+
+// =========================================
+// FLASH TOAST
+// =========================================
+
+const flashToast =
+    window.flashToast;
+
+if (
+    flashToast?.message
+) {
+    showToast(
+        flashToast.message,
+        flashToast.type,
+    );
+}
