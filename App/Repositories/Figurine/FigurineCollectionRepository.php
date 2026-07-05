@@ -24,11 +24,24 @@ final class FigurineCollectionRepository extends Model
         /** @var list<Figurine> $figurines */
         $figurines = $this->fetchAll(
             "
-            SELECT *
+            SELECT f.*
 
-            FROM {$this->table()}
+            FROM {$this->table()} f
 
-            ORDER BY id DESC
+            INNER JOIN (
+                SELECT
+                    slug,
+                    MAX(id) AS last_id
+
+                FROM {$this->table()}
+
+                GROUP BY slug
+            ) grouped
+                ON grouped.slug = f.slug
+
+            ORDER BY
+                grouped.last_id DESC,
+                f.numero DESC
             ",
             [],
             Figurine::class
@@ -40,18 +53,37 @@ final class FigurineCollectionRepository extends Model
     /**
      * @return list<Figurine>
      */
-    public function findPaginated(int $limit, int $page): array
+    public function findPaginated(
+        int $limit,
+        int $page
+    ): array
     {
+        $page = max(1, $page);
+        $limit = max(1, $limit);
+
         $offset = ($page - 1) * $limit;
 
         /** @var list<Figurine> $figurines */
         $figurines = $this->fetchAll(
             "
-            SELECT *
+            SELECT f.*
 
-            FROM {$this->table()}
+            FROM {$this->table()} f
 
-            ORDER BY id DESC
+            INNER JOIN (
+                SELECT
+                    slug,
+                    MAX(id) AS last_id
+
+                FROM {$this->table()}
+
+                GROUP BY slug
+            ) grouped
+                ON grouped.slug = f.slug
+
+            ORDER BY
+                grouped.last_id DESC,
+                f.numero DESC
 
             LIMIT :limit
             OFFSET :offset

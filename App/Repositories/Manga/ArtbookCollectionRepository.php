@@ -19,11 +19,24 @@ final class ArtbookCollectionRepository extends Model
         /** @var list<Artbook> $artbooks */
         $artbooks = $this->fetchAll(
             "
-            SELECT *
+            SELECT a.*
 
-            FROM {$this->table()}
+            FROM {$this->table()} a
 
-            ORDER BY id DESC
+            INNER JOIN (
+                SELECT
+                    slug,
+                    MAX(id) AS last_id
+
+                FROM {$this->table()}
+
+                GROUP BY slug
+            ) grouped
+                ON grouped.slug = a.slug
+
+            ORDER BY
+                grouped.last_id DESC,
+                a.numero DESC
             ",
             [],
             Artbook::class
@@ -48,11 +61,24 @@ final class ArtbookCollectionRepository extends Model
         /** @var list<Artbook> $artbooks */
         $artbooks = $this->fetchAll(
             "
-            SELECT *
+            SELECT a.*
 
-            FROM {$this->table()}
+            FROM {$this->table()} a
 
-            ORDER BY id DESC
+            INNER JOIN (
+                SELECT
+                    slug,
+                    MAX(id) AS last_id
+
+                FROM {$this->table()}
+
+                GROUP BY slug
+            ) grouped
+                ON grouped.slug = a.slug
+
+            ORDER BY
+                grouped.last_id DESC,
+                a.numero DESC
 
             LIMIT :limit
             OFFSET :offset
