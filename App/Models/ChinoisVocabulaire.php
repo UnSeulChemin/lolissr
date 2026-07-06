@@ -18,7 +18,7 @@ final class ChinoisVocabulaire
 
     public string $traduction = '';
 
-    public ?string $exemple = null;
+    public string $exemple = '';
 
     public bool $maitrise = false;
 

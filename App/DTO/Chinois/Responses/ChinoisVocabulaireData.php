@@ -13,7 +13,7 @@ final readonly class ChinoisVocabulaireData
         public string $pinyin,
         public string $type,
         public string $traduction,
-        public ?string $exemple,
+        public string $exemple,
 
         public bool $maitrise,
         public bool $xpRewarded,

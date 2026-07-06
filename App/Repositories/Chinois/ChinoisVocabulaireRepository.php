@@ -226,10 +226,7 @@ final class ChinoisVocabulaireRepository extends Model
 
     private function mapRowToDto(stdClass $row): ChinoisVocabulaireData
     {
-        $exemple =
-            $row->exemple !== null
-                ? (string) $row->exemple
-                : null;
+        $exemple = (string) $row->exemple;
 
         $maitrise = (bool) $row->maitrise;
 
@@ -246,9 +243,7 @@ final class ChinoisVocabulaireRepository extends Model
             maitrise: $maitrise,
             xpRewarded: (bool) $row->xp_rewarded,
 
-            hasExemple:
-                $exemple !== null
-                && trim($exemple) !== '',
+            hasExemple: $exemple !== '',
 
             masteredClass:
                 $maitrise
