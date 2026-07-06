@@ -192,12 +192,6 @@
     box-sizing: border-box;
 }
 
-.form-textarea--example
-{
-    min-height: 0;
-    height: 52px;
-}
-
 /* =========================================
    ACTIONS
 ========================================= */

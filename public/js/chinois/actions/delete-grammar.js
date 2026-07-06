@@ -27,12 +27,12 @@ import {
 } from '../../core/errors/FrontendError.js';
 
 import {
-    invalidatePage,
-} from '../../router/page-invalidation.js';
-
-import {
     deleteModal,
 } from '../../core/modal/modal.js';
+
+import {
+    invalidateGrammarPages,
+} from '../chinois-cache.js';
 
 // =========================================
 // STATE
@@ -151,43 +151,47 @@ async function deleteGrammaire(
             );
         }
 
-    /*
-    |--------------------------------------------------------------------------
-    | REMOVE CARD
-    |--------------------------------------------------------------------------
-    */
+        /*
+        |--------------------------------------------------------------------------
+        | INVALIDATE
+        |--------------------------------------------------------------------------
+        */
 
-    const isFlashcard =
-        document.getElementById(
-            'flashcard-counter',
-        ) !== null;
+        invalidateGrammarPages();
 
-    if (!isFlashcard)
-    {
-        item?.remove();
-    }
-    else
-    {
-        location.reload();
+        /*
+        |--------------------------------------------------------------------------
+        | REMOVE CARD
+        |--------------------------------------------------------------------------
+        */
 
-        return;
-    }
+        const isFlashcard =
+            document.getElementById(
+                'flashcard-counter',
+            ) !== null;
 
-    invalidatePage(
-        window.location.pathname,
-    );
+        if (!isFlashcard)
+        {
+            item?.remove();
+        }
+        else
+        {
+            location.reload();
 
-    /*
-    |--------------------------------------------------------------------------
-    | SUCCESS
-    |--------------------------------------------------------------------------
-    */
+            return;
+        }
 
-    showToast(
-        data.message
-        || 'Grammaire supprimée',
-        'success',
-    );
+        /*
+        |--------------------------------------------------------------------------
+        | SUCCESS
+        |--------------------------------------------------------------------------
+        */
+
+        showToast(
+            data.message
+            || 'Grammaire supprimée',
+            'success',
+        );
 
     } catch (error) {
 

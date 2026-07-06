@@ -245,16 +245,16 @@ $langueOptions = [
 
                     </label>
 
-                    <textarea
-                        class="
-                            form-textarea
-                            form-textarea--example
-                        "
+                    <input
+                        class="form-input"
+                        type="text"
                         name="exemple"
                         id="exemple"
-                        rows="1"
+                        maxlength="255"
                         placeholder="Ex : 我喜欢吃苹果。"
-                    ><?= e($old['exemple'] ?? '') ?></textarea>
+                        value="<?= e($old['exemple'] ?? '') ?>"
+                        required
+                    >
 
                     <?php if (
                         isset($errors['exemple'])

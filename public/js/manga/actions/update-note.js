@@ -3,10 +3,6 @@
 // =========================================
 
 import {
-    invalidatePage,
-} from '../../router/page-invalidation.js';
-
-import {
     post,
 } from '../../core/http.js';
 
@@ -24,6 +20,10 @@ import {
     debug,
     debugError,
 } from '../../core/debug/debug.js';
+
+import {
+    invalidateMangaPages,
+} from '../manga-cache.js';
 
 // =========================================
 // CONFIG
@@ -308,9 +308,7 @@ async function updateNote(
 
     refreshButtons();
 
-    invalidatePage(
-        window.location.pathname,
-    );
+    invalidateMangaPages();
 
     showToast(
         data?.message

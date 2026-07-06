@@ -27,12 +27,12 @@ import {
 } from '../../core/errors/FrontendError.js';
 
 import {
-    invalidatePage,
-} from '../../router/page-invalidation.js';
-
-import {
     deleteModal,
 } from '../../core/modal/modal.js';
+
+import {
+    invalidateVocabularyPages,
+} from '../chinois-cache.js';
 
 // =========================================
 // STATE
@@ -68,10 +68,17 @@ async function deleteVocabulaire(
             '.chinois-vocab-card',
         );
 
+    /*
+    |--------------------------------------------------------------------------
+    | VALIDATION
+    |--------------------------------------------------------------------------
+    */
+
     if (
         !url
         || id <= 0
     ) {
+
         handleError(
             new FrontendError(
                 'Paramètres invalides',
@@ -85,6 +92,12 @@ async function deleteVocabulaire(
         return;
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | CONFIRM
+    |--------------------------------------------------------------------------
+    */
+
     const confirmed =
         await deleteModal(
             'Supprimer ce vocabulaire ?',
@@ -94,6 +107,12 @@ async function deleteVocabulaire(
     {
         return;
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | LOADING
+    |--------------------------------------------------------------------------
+    */
 
     button.disabled =
         true;
@@ -120,6 +139,7 @@ async function deleteVocabulaire(
             data?.success
             !== true
         ) {
+
             throw new FrontendError(
                 data?.message
                 || 'Erreur suppression',
@@ -130,31 +150,47 @@ async function deleteVocabulaire(
             );
         }
 
-    const isFlashcard =
-        document.getElementById(
-            'flashcard-counter',
-        ) !== null;
+        /*
+        |--------------------------------------------------------------------------
+        | INVALIDATE
+        |--------------------------------------------------------------------------
+        */
 
-    if (!isFlashcard)
-    {
-        item?.remove();
-    }
-    else
-    {
-        location.reload();
+        invalidateVocabularyPages();
 
-        return;
-    }
+        /*
+        |--------------------------------------------------------------------------
+        | REMOVE CARD
+        |--------------------------------------------------------------------------
+        */
 
-    invalidatePage(
-        window.location.pathname,
-    );
+        const isFlashcard =
+            document.getElementById(
+                'flashcard-counter',
+            ) !== null;
 
-    showToast(
-        data.message
-        || 'Vocabulaire supprimé',
-        'success',
-    );
+        if (!isFlashcard)
+        {
+            item?.remove();
+        }
+        else
+        {
+            location.reload();
+
+            return;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | SUCCESS
+        |--------------------------------------------------------------------------
+        */
+
+        showToast(
+            data.message
+            || 'Vocabulaire supprimé',
+            'success',
+        );
 
     } catch (error) {
 

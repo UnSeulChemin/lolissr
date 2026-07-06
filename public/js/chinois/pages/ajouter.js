@@ -19,12 +19,41 @@ import {
     debugError,
 } from '../../core/debug/debug.js';
 
+import {
+    invalidateGrammarPages,
+    invalidateVocabularyPages,
+} from '../chinois-cache.js';
+
 // =========================================
 // CONFIG
 // =========================================
 
 const FORM_SELECTOR =
     '.form-layout[data-form-page]';
+
+// =========================================
+// INVALIDATE
+// =========================================
+
+function invalidatePages(
+    formPage,
+)
+{
+    switch (formPage)
+    {
+        case 'ajouter-vocabulaire':
+
+            invalidateVocabularyPages();
+
+            break;
+
+        case 'ajouter-grammaire':
+
+            invalidateGrammarPages();
+
+            break;
+    }
+}
 
 // =========================================
 // INIT
@@ -83,6 +112,10 @@ export function initAjouterPage()
                     'submit-start',
                 );
 
+                // =========================================
+                // REQUEST
+                // =========================================
+
                 const data =
                     await request(
                         form.action,
@@ -103,11 +136,45 @@ export function initAjouterPage()
                     data,
                 );
 
+                // =========================================
+                // ERROR
+                // =========================================
+
+                if (
+                    !data?.success
+                ) {
+
+                    showToast(
+                        data?.message
+                        || 'Une erreur est survenue',
+                        'error',
+                    );
+
+                    return;
+                }
+
+                // =========================================
+                // INVALIDATE
+                // =========================================
+
+                invalidatePages(
+                    form.dataset.formPage
+                    ?? '',
+                );
+
+                // =========================================
+                // SUCCESS
+                // =========================================
+
                 showToast(
-                    data?.message
+                    data.message
                     || 'Ajout effectué',
                     'success',
                 );
+
+                // =========================================
+                // RESET
+                // =========================================
 
                 form.reset();
 
