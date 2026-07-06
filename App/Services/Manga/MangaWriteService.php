@@ -56,53 +56,19 @@ final readonly class MangaWriteService
         return $this->database->transaction(
             function () use ($dto, $files): ServiceResult
             {
-                $upload = $this->uploadService->uploadThumbnail(
-                    $dto->livre,
-                    $dto->numero,
-                    UploadConfig::thumbnailDirectory('manga'),
-                    $files,
-                );
+                $upload = $this->uploadThumbnail($dto, $files);
 
-                if (! $upload->success)
+                if ($upload instanceof ServiceResult)
                 {
-                    return $this->error($upload->message, $upload->status);
-                }
-
-                $uploadData = $upload->data['upload'] ?? null;
-
-                if (! $uploadData instanceof UploadThumbnailData)
-                {
-                    return $this->error('Upload invalide');
+                    return $upload;
                 }
 
                 try
                 {
-                    $inserted = $this->mangaRepository->insert([
-                        'thumbnail' => $uploadData->thumbnailPath,
-                        'extension' => $uploadData->extension,
-                        'slug' => $dto->slug,
-                        'livre' => $dto->livre,
-                        'editeur' => $dto->editeur,
-                        'numero' => $dto->numero,
-                        'statut' => $dto->statut,
-                        'jacquette' => 1,
-                        'livre_note' => 1,
-                        'note' => 2,
-                        'commentaire' => $dto->commentaire,
-                    ]);
-
-                    $failure = $this->writeFailed(
-                        $inserted,
-                        'Insertion manga',
-                        $dto->slug,
-                        $dto->numero,
-                        'Erreur lors de l’enregistrement'
-                    );
+                    $failure = $this->createManga($dto, $upload);
 
                     if ($failure !== null)
                     {
-                        $this->rollbackUpload($uploadData);
-
                         return $failure;
                     }
 
@@ -112,7 +78,7 @@ final readonly class MangaWriteService
                 }
                 catch (Throwable $exception)
                 {
-                    $this->rollbackUpload($uploadData);
+                    $this->rollbackUpload($upload);
 
                     throw $exception;
                 }
@@ -444,6 +410,70 @@ final readonly class MangaWriteService
         $this->logFailure($action, $slug, $numero);
 
         return $this->error($message);
+    }
+
+    private function uploadThumbnail(
+        MangaCreateDTO $dto,
+        array $files
+    ): ServiceResult|UploadThumbnailData
+    {
+        $upload = $this->uploadService->uploadThumbnail(
+            $dto->livre,
+            $dto->numero,
+            UploadConfig::thumbnailDirectory('manga'),
+            $files,
+        );
+
+        if (! $upload->success)
+        {
+            return $this->error($upload->message, $upload->status);
+        }
+
+        $uploadData = $upload->data['upload'] ?? null;
+
+        if (! $uploadData instanceof UploadThumbnailData)
+        {
+            return $this->error('Upload invalide');
+        }
+
+        return $uploadData;
+    }
+
+    private function createManga(
+        MangaCreateDTO $dto,
+        UploadThumbnailData $uploadData
+    ): ?ServiceResult
+    {
+        $inserted = $this->mangaRepository->insert([
+            'thumbnail' => $uploadData->thumbnailPath,
+            'extension' => $uploadData->extension,
+            'slug' => $dto->slug,
+            'livre' => $dto->livre,
+            'editeur' => $dto->editeur,
+            'numero' => $dto->numero,
+            'statut' => $dto->statut,
+            'jacquette' => 1,
+            'livre_note' => 1,
+            'note' => 2,
+            'commentaire' => $dto->commentaire,
+        ]);
+
+        $failure = $this->writeFailed(
+            $inserted,
+            'Insertion manga',
+            $dto->slug,
+            $dto->numero,
+            'Erreur lors de l’enregistrement'
+        );
+
+        if ($failure !== null)
+        {
+            $this->rollbackUpload($uploadData);
+
+            return $failure;
+        }
+
+        return null;
     }
 
     /**
