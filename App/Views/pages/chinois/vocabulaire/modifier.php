@@ -219,14 +219,16 @@ $langueOptions = [
 
                     </label>
 
-                    <input
-                        class="form-input"
-                        type="text"
+                    <textarea
+                        class="
+                            form-textarea
+                            form-textarea--translation
+                        "
                         name="traduction"
                         id="traduction"
-                        value="<?= e($old['traduction'] ?? $vocabulaire->traduction) ?>"
+                        rows="2"
                         required
-                    >
+                    ><?= e($old['traduction'] ?? $vocabulaire->traduction) ?></textarea>
 
                     <?php if (
                         isset($errors['traduction'])
