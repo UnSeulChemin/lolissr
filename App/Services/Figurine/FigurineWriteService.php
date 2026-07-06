@@ -204,12 +204,16 @@ final readonly class FigurineWriteService
                     && ! $figurine->collect_rewarded
                 )
                 {
-                    $this->rewardCollectXp($figurine);
-
-                    $xpEarned = true;
+                    [
+                        'xpEarned' => $xpEarned,
+                    ] = $this->rewardCollectXp(
+                        $figurine
+                    );
                 }
 
                 $this->clearCache();
+
+                $user = user();
 
                 return $this->success(
                     $collectStatus === 1
@@ -217,7 +221,9 @@ final readonly class FigurineWriteService
                         : 'Figurine marquée comme non collectée',
                     [
                         'collectStatus' => $collectStatus,
-                        'xpEarned' => $xpEarned,
+                        'xpEarned'      => $xpEarned,
+                        'level'         => $user?->level,
+                        'xp'            => $user?->xp,
                     ]
                 );
             }
@@ -300,13 +306,22 @@ final readonly class FigurineWriteService
     |--------------------------------------------------------------------------
     */
 
-    private function rewardCollectXp(Figurine $figurine): void
+    /**
+     * @return array{
+     *     xpEarned: bool
+     * }
+     */
+    private function rewardCollectXp(
+        Figurine $figurine
+    ): array
     {
         $user = user();
 
         if ($user === null)
         {
-            return;
+            return [
+                'xpEarned' => false,
+            ];
         }
 
         $this->userLevelService->addXp(
@@ -317,6 +332,10 @@ final readonly class FigurineWriteService
         $this->figurineRepository->markXpRewarded(
             $figurine->id
         );
+
+        return [
+            'xpEarned' => true,
+        ];
     }
 
     private function writeFailed(

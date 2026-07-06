@@ -63,7 +63,7 @@ $currentSearch = isset($currentSearch)
 
                     </span>
 
-                    <span class="site-logo-level">
+                    <span class="site-logo-level js-user-level">
                         <?= e((string) $level) ?>
                     </span>
 

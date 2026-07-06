@@ -226,14 +226,21 @@ final readonly class MangaWriteService
                 $readStatus
             ): ServiceResult
             {
-                $manga = $this->mangaRepository->findOneBySlugAndNumero($slug, $numero);
+                $manga = $this->mangaRepository->findOneBySlugAndNumero(
+                    $slug,
+                    $numero
+                );
 
                 if ($manga === null)
                 {
                     return $this->error('Manga introuvable', 404);
                 }
 
-                $updated = $this->mangaRepository->updateReadStatus($slug, $numero, $readStatus === 1);
+                $updated = $this->mangaRepository->updateReadStatus(
+                    $slug,
+                    $numero,
+                    $readStatus === 1
+                );
 
                 $failure = $this->writeFailed(
                     $updated,
@@ -248,12 +255,27 @@ final readonly class MangaWriteService
                     return $failure;
                 }
 
-                if (! $manga->lu && $readStatus === 1 && ! $manga->xp_read_rewarded)
+                $xpEarned = false;
+                $seriesXpEarned = false;
+
+                if (
+                    ! $manga->lu
+                    && $readStatus === 1
+                    && ! $manga->xp_read_rewarded
+                )
                 {
-                    $this->rewardReadXp($manga, $slug);
+                    [
+                        'xpEarned' => $xpEarned,
+                        'seriesXpEarned' => $seriesXpEarned,
+                    ] = $this->rewardReadXp(
+                        $manga,
+                        $slug
+                    );
                 }
 
                 $this->clearCache();
+
+                $user = user();
 
                 return $this->success(
                     $readStatus === 1
@@ -261,6 +283,10 @@ final readonly class MangaWriteService
                         : 'Manga marqué comme non lu',
                     [
                         'readStatus' => $readStatus,
+                        'xpEarned' => $xpEarned,
+                        'seriesXpEarned' => $seriesXpEarned,
+                        'level' => $user?->level,
+                        'xp' => $user?->xp,
                     ]
                 );
             }
@@ -312,25 +338,55 @@ final readonly class MangaWriteService
     |--------------------------------------------------------------------------
     */
 
-    private function rewardReadXp(Manga $manga, string $slug): void
+    /**
+     * @return array{
+     *     xpEarned: bool,
+     *     seriesXpEarned: bool
+     * }
+     */
+    private function rewardReadXp(Manga $manga, string $slug): array
     {
         $user = user();
 
         if ($user === null)
         {
-            return;
+            return [
+                'xpEarned' => false,
+                'seriesXpEarned' => false,
+            ];
         }
 
-        $this->userLevelService->addXp($user, UserXp::READ_TOME);
+        $xpEarned = false;
+        $seriesXpEarned = false;
 
-        if ($this->mangaStatsRepository->isSeriesCompleted($slug) && ! $this->mangaRepository->isSeriesRewarded($slug))
+        $this->userLevelService->addXp(
+            $user,
+            UserXp::READ_TOME,
+        );
+
+        $xpEarned = true;
+
+        if (
+            $this->mangaStatsRepository->isSeriesCompleted($slug)
+            && ! $this->mangaRepository->isSeriesRewarded($slug)
+        )
         {
-            $this->userLevelService->addXp($user, UserXp::COMPLETE_SERIES);
+            $this->userLevelService->addXp(
+                $user,
+                UserXp::COMPLETE_SERIES,
+            );
 
             $this->mangaRepository->markSeriesRewardedBySlug($slug);
+
+            $seriesXpEarned = true;
         }
 
         $this->mangaRepository->markXpRewarded($manga->id);
+
+        return [
+            'xpEarned' => $xpEarned,
+            'seriesXpEarned' => $seriesXpEarned,
+        ];
     }
 
     /*

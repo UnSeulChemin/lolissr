@@ -28,8 +28,12 @@ import {
 } from '../../core/errors/FrontendError.js';
 
 import {
-    invalidatePage,
-} from '../../router/page-invalidation.js';
+    invalidateMangaPages,
+} from '../manga-cache.js';
+
+import {
+    updateHeaderUser,
+} from '../../profil/header-user.js';
 
 // =========================================
 // CONFIG
@@ -224,9 +228,11 @@ async function updateReadStatus(
             readStatus,
         );
 
-        invalidatePage(
-            window.location.pathname,
+        updateHeaderUser(
+            data?.data?.level,
         );
+
+        invalidateMangaPages();
 
         /*
         |--------------------------------------------------------------------------

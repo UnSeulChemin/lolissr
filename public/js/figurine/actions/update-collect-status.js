@@ -28,8 +28,12 @@ import {
 } from '../../core/errors/FrontendError.js';
 
 import {
-    invalidatePage,
-} from '../../router/page-invalidation.js';
+    invalidateFigurinePages,
+} from '../figurine-cache.js';
+
+import {
+    updateHeaderUser,
+} from '../../profil/header-user.js';
 
 // =========================================
 // CONFIG
@@ -224,9 +228,11 @@ async function updateCollectStatus(
             collectStatus,
         );
 
-        invalidatePage(
-            window.location.pathname,
+        updateHeaderUser(
+            data?.data?.level,
         );
+
+        invalidateFigurinePages();
 
         /*
         |--------------------------------------------------------------------------
