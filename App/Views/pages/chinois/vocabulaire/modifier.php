@@ -257,10 +257,14 @@ $langueOptions = [
                     </label>
 
                     <textarea
-                        class="form-textarea"
+                        class="
+                            form-textarea
+                            form-textarea--example
+                        "
                         name="exemple"
                         id="exemple"
-                        rows="6"
+                        rows="1"
+                        placeholder="Ex : 我喜欢吃苹果。"
                     ><?= e($old['exemple'] ?? $vocabulaire->exemple) ?></textarea>
 
                     <?php if (

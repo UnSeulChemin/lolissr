@@ -94,7 +94,7 @@
 
 .chinois-vocab-pinyin
 {
-    margin-bottom: 10px;
+    margin-bottom: 4px;
 
     color: var(--color-violet);
 
@@ -190,6 +190,12 @@
         1px solid rgba(123,44,255,.12);
 
     box-sizing: border-box;
+}
+
+.form-textarea--example
+{
+    min-height: 0;
+    height: 52px;
 }
 
 /* =========================================
