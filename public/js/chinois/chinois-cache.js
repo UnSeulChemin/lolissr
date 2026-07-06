@@ -6,17 +6,46 @@ import {
     invalidatePage,
 } from '../router/page-invalidation.js';
 
-const BASE = '/lolissr/chinois';
+// =========================================
+// CONFIG
+// =========================================
+
+const BASE =
+    '/lolissr/chinois';
+
+// =========================================
+// GRAMMAR
+// =========================================
 
 export function invalidateGrammarPages()
 {
+    invalidatePage(
+        '/lolissr/',
+    );
+
+    invalidatePage(
+        '/lolissr/profil',
+    );
+
     invalidatePage(
         `${BASE}/grammaire`,
     );
 }
 
+// =========================================
+// VOCABULARY
+// =========================================
+
 export function invalidateVocabularyPages()
 {
+    invalidatePage(
+        '/lolissr/',
+    );
+
+    invalidatePage(
+        '/lolissr/profil',
+    );
+
     invalidatePage(
         `${BASE}/vocabulaire`,
     );

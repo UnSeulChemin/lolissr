@@ -11,8 +11,8 @@ import {
 } from '../../core/toast.js';
 
 import {
-    invalidatePage,
-} from '../../router/page-invalidation.js';
+    updateHeaderUser,
+} from '../../profil/header-user.js';
 
 import {
     invalidateGrammarPages,
@@ -250,8 +250,8 @@ export function initFlashcardsGrammairePage()
                     return;
                 }
 
-                invalidatePage(
-                    window.location.pathname,
+                updateHeaderUser(
+                    data?.data?.level,
                 );
 
                 invalidateGrammarPages();

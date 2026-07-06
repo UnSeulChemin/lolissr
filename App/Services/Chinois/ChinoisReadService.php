@@ -134,7 +134,7 @@ final readonly class ChinoisReadService
     |--------------------------------------------------------------------------
     */
 
-    public function search(string|int $query = ''): ChinoisSearchData
+    public function search(string $query = ''): ChinoisSearchData
     {
         $query = trim((string) $query);
 

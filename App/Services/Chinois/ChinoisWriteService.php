@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Services\Chinois;
 
+use App\Constants\UserXp;
 use App\DTO\Chinois\Inputs\ChinoisGrammaireCreateDTO;
 use App\DTO\Chinois\Inputs\ChinoisVocabulaireCreateDTO;
 use App\DTO\Common\ServiceResult;
 use App\Repositories\Chinois\ChinoisGrammaireRepository;
 use App\Repositories\Chinois\ChinoisVocabulaireRepository;
+use App\Services\User\UserLevelService;
 
 use Framework\Database\Database;
 
@@ -17,6 +19,7 @@ final readonly class ChinoisWriteService
     public function __construct(
         private ChinoisGrammaireRepository $grammaireRepository,
         private ChinoisVocabulaireRepository $vocabulaireRepository,
+        private UserLevelService $userLevelService,
         private Database $database
     ) {
     }
@@ -183,24 +186,68 @@ final readonly class ChinoisWriteService
     |--------------------------------------------------------------------------
     */
 
-    public function toggleGrammaireMaitrise(int $id): bool
+    /**
+     * @return array{
+     *     maitrise: bool,
+     *     xpEarned: bool
+     * }
+     */
+    public function toggleGrammaireMaitrise(int $id): array
     {
-        return $this->grammaireRepository->toggleMaitrise($id);
+        $grammaire = $this->grammaireRepository->find($id);
+
+        $maitrise = $this->grammaireRepository->toggleMaitrise($id);
+
+        $xpEarned = false;
+
+        if (
+            $maitrise
+            && $grammaire !== null
+            && ! $grammaire->xpRewarded
+        ) {
+            [
+                'xpEarned' => $xpEarned,
+            ] = $this->rewardGrammarXp(
+                $id,
+            );
+        }
+
+        return [
+            'maitrise' => $maitrise,
+            'xpEarned' => $xpEarned,
+        ];
     }
 
-    public function toggleVocabulaireMaitrise(int $id): bool
+    /**
+     * @return array{
+     *     maitrise: bool,
+     *     xpEarned: bool
+     * }
+     */
+    public function toggleVocabulaireMaitrise(int $id): array
     {
-        return $this->vocabulaireRepository->toggleMaitrise($id);
-    }
+        $vocabulaire = $this->vocabulaireRepository->find($id);
 
-    public function markGrammaireXpRewarded(int $id): bool
-    {
-        return $this->grammaireRepository->markXpRewarded($id);
-    }
+        $maitrise = $this->vocabulaireRepository->toggleMaitrise($id);
 
-    public function markVocabulaireXpRewarded(int $id): bool
-    {
-        return $this->vocabulaireRepository->markXpRewarded($id);
+        $xpEarned = false;
+
+        if (
+            $maitrise
+            && $vocabulaire !== null
+            && ! $vocabulaire->xpRewarded
+        ) {
+            [
+                'xpEarned' => $xpEarned,
+            ] = $this->rewardVocabularyXp(
+                $id,
+            );
+        }
+
+        return [
+            'maitrise' => $maitrise,
+            'xpEarned' => $xpEarned,
+        ];
     }
 
     /*
@@ -208,6 +255,70 @@ final readonly class ChinoisWriteService
     | HELPERS
     |--------------------------------------------------------------------------
     */
+
+    /**
+     * @return array{
+     *     xpEarned: bool
+     * }
+     */
+    private function rewardGrammarXp(
+        int $id
+    ): array
+    {
+        $user = user();
+
+        if ($user === null)
+        {
+            return [
+                'xpEarned' => false,
+            ];
+        }
+
+        $this->userLevelService->addXp(
+            $user,
+            UserXp::LEARN_GRAMMAR,
+        );
+
+        $this->grammaireRepository->markXpRewarded(
+            $id,
+        );
+
+        return [
+            'xpEarned' => true,
+        ];
+    }
+
+    /**
+     * @return array{
+     *     xpEarned: bool
+     * }
+     */
+    private function rewardVocabularyXp(
+        int $id
+    ): array
+    {
+        $user = user();
+
+        if ($user === null)
+        {
+            return [
+                'xpEarned' => false,
+            ];
+        }
+
+        $this->userLevelService->addXp(
+            $user,
+            UserXp::LEARN_VOCABULARY,
+        );
+
+        $this->vocabulaireRepository->markXpRewarded(
+            $id,
+        );
+
+        return [
+            'xpEarned' => true,
+        ];
+    }
 
     private function success(string $message): ServiceResult
     {

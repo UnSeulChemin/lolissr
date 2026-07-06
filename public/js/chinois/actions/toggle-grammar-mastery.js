@@ -164,10 +164,9 @@ async function toggleMastery(
         }
 
         const mastered =
-            Number(
-                data.data?.maitrise
-                    ?? 0,
-            ) === 1;
+            Boolean(
+                data?.data?.maitrise,
+            );
 
         updateButtonState(
             button,
@@ -179,9 +178,17 @@ async function toggleMastery(
             `${window.baseUri}chinois/flashcards/grammaire`,
         );
         
-        showToast(
+        let message =
             data.message
-                ?? 'Mise à jour effectuée',
+            ?? 'Mise à jour effectuée';
+
+        if (data?.data?.xpEarned)
+        {
+            message += ' ⭐ +5 XP';
+        }
+
+        showToast(
+            message,
             'success',
         );
 
