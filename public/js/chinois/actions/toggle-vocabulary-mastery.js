@@ -3,10 +3,6 @@
 // =========================================
 
 import {
-    invalidatePages,
-} from '../../router/page-utils.js';
-
-import {
     post,
 } from '../../core/http.js';
 
@@ -22,6 +18,10 @@ import {
     debug,
     debugError,
 } from '../../core/debug/debug.js';
+
+import {
+    invalidateVocabularyPages,
+} from '../chinois-cache.js';
 
 // =========================================
 // STATE
@@ -173,10 +173,7 @@ async function toggleMastery(
             mastered,
         );
 
-        invalidatePages(
-            window.location.href,
-            `${window.baseUri}chinois/flashcards/vocabulaire`,
-        );
+        invalidateVocabularyPages();
 
         let message =
             data.message

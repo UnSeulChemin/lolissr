@@ -7,29 +7,21 @@ import {
 } from '../router/page-invalidation.js';
 
 // =========================================
-// CONFIG
-// =========================================
-
-const BASE =
-    '/lolissr/chinois';
-
-// =========================================
 // GRAMMAR
 // =========================================
 
 export function invalidateGrammarPages()
 {
-    invalidatePage(
-        '/lolissr/',
-    );
+    invalidatePage('/lolissr/');
 
-    invalidatePage(
-        '/lolissr/profil',
-    );
+    invalidatePage('/lolissr/profil');
 
-    invalidatePage(
-        `${BASE}/grammaire`,
-    );
+    invalidatePage('/lolissr/chinois/grammaire/hsk1');
+    invalidatePage('/lolissr/chinois/grammaire/hsk2');
+    invalidatePage('/lolissr/chinois/grammaire/hsk3');
+    invalidatePage('/lolissr/chinois/grammaire/hsk4');
+
+    invalidatePage('/lolissr/chinois/flashcards/grammaire');
 }
 
 // =========================================
@@ -38,15 +30,12 @@ export function invalidateGrammarPages()
 
 export function invalidateVocabularyPages()
 {
-    invalidatePage(
-        '/lolissr/',
-    );
+    invalidatePage('/lolissr/');
 
-    invalidatePage(
-        '/lolissr/profil',
-    );
+    invalidatePage('/lolissr/profil');
 
-    invalidatePage(
-        `${BASE}/vocabulaire`,
-    );
+    invalidatePage('/lolissr/chinois/vocabulaire/mandarin');
+    invalidatePage('/lolissr/chinois/vocabulaire/jinyu');
+
+    invalidatePage('/lolissr/chinois/flashcards/vocabulaire');
 }
