@@ -174,6 +174,32 @@ final class ChinoisVocabulaireRepository extends Model
         );
     }
 
+    public function isXpRewarded(int $id): bool
+    {
+        /** @var stdClass|null $result */
+        $result = $this->fetchOne(
+            "
+            SELECT xp_rewarded
+
+            FROM {$this->table()}
+
+            WHERE id = :id
+
+            LIMIT 1
+            ",
+            [
+                'id' => $id,
+            ]
+        );
+
+        if ($result === null)
+        {
+            return true;
+        }
+
+        return (bool) $result->xp_rewarded;
+    }
+
     public function markXpRewarded(int $id): bool
     {
         return $this->updateById(

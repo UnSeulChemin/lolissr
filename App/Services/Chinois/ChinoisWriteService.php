@@ -194,22 +194,17 @@ final readonly class ChinoisWriteService
      */
     public function toggleGrammaireMaitrise(int $id): array
     {
-        $grammaire = $this->grammaireRepository->find($id);
-
         $maitrise = $this->grammaireRepository->toggleMaitrise($id);
 
         $xpEarned = false;
 
         if (
             $maitrise
-            && $grammaire !== null
-            && ! $grammaire->xpRewarded
+            && ! $this->grammaireRepository->isXpRewarded($id)
         ) {
-            [
-                'xpEarned' => $xpEarned,
-            ] = $this->rewardGrammarXp(
-                $id,
-            );
+            $this->rewardGrammarXp($id);
+
+            $xpEarned = true;
         }
 
         return [
@@ -226,22 +221,17 @@ final readonly class ChinoisWriteService
      */
     public function toggleVocabulaireMaitrise(int $id): array
     {
-        $vocabulaire = $this->vocabulaireRepository->find($id);
-
         $maitrise = $this->vocabulaireRepository->toggleMaitrise($id);
 
         $xpEarned = false;
 
         if (
             $maitrise
-            && $vocabulaire !== null
-            && ! $vocabulaire->xpRewarded
+            && ! $this->vocabulaireRepository->isXpRewarded($id)
         ) {
-            [
-                'xpEarned' => $xpEarned,
-            ] = $this->rewardVocabularyXp(
-                $id,
-            );
+            $this->rewardVocabularyXp($id);
+
+            $xpEarned = true;
         }
 
         return [
@@ -256,22 +246,13 @@ final readonly class ChinoisWriteService
     |--------------------------------------------------------------------------
     */
 
-    /**
-     * @return array{
-     *     xpEarned: bool
-     * }
-     */
-    private function rewardGrammarXp(
-        int $id
-    ): array
+    private function rewardGrammarXp(int $id): void
     {
         $user = user();
 
         if ($user === null)
         {
-            return [
-                'xpEarned' => false,
-            ];
+            return;
         }
 
         $this->userLevelService->addXp(
@@ -279,31 +260,16 @@ final readonly class ChinoisWriteService
             UserXp::LEARN_GRAMMAR,
         );
 
-        $this->grammaireRepository->markXpRewarded(
-            $id,
-        );
-
-        return [
-            'xpEarned' => true,
-        ];
+        $this->grammaireRepository->markXpRewarded($id);
     }
 
-    /**
-     * @return array{
-     *     xpEarned: bool
-     * }
-     */
-    private function rewardVocabularyXp(
-        int $id
-    ): array
+    private function rewardVocabularyXp(int $id): void
     {
         $user = user();
 
         if ($user === null)
         {
-            return [
-                'xpEarned' => false,
-            ];
+            return;
         }
 
         $this->userLevelService->addXp(
@@ -311,13 +277,7 @@ final readonly class ChinoisWriteService
             UserXp::LEARN_VOCABULARY,
         );
 
-        $this->vocabulaireRepository->markXpRewarded(
-            $id,
-        );
-
-        return [
-            'xpEarned' => true,
-        ];
+        $this->vocabulaireRepository->markXpRewarded($id);
     }
 
     private function success(string $message): ServiceResult
