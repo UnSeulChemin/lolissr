@@ -9,11 +9,13 @@ use App\DTO\Profile\ProfileStatsData;
 use App\Repositories\Manga\MangaStatsRepository;
 use App\Repositories\Chinois\ChinoisVocabulaireStatsRepository;
 use App\Repositories\Chinois\ChinoisGrammaireStatsRepository;
+use App\Repositories\Figurine\FigurineStatsRepository;
 
 final readonly class ProfileStatsService
 {
     public function __construct(
         private MangaStatsRepository $mangaStatsRepository,
+        private FigurineStatsRepository $figurineStatsRepository,
         private ChinoisVocabulaireStatsRepository $vocabularyStatsRepository,
         private ChinoisGrammaireStatsRepository $grammarStatsRepository,
     ) {
@@ -33,6 +35,17 @@ final readonly class ProfileStatsService
     public function completedSeries(): int
     {
         return $this->mangaStatsRepository->countCompletedSeries();
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | FIGURINES
+    |--------------------------------------------------------------------------
+    */
+
+    public function collectedFigurines(): int
+    {
+        return $this->figurineStatsRepository->countCollected();
     }
 
     /*
@@ -67,6 +80,12 @@ final readonly class ProfileStatsService
         $tomeXp = $readTomes * UserXp::READ_TOME;
         $seriesXp = $completedSeries * UserXp::COMPLETE_SERIES;
 
+        // FIGURINES
+        $figurinesCollected = $this->collectedFigurines();
+
+        // FIGURINES XP
+        $figurinesXp = $figurinesCollected * UserXp::COLLECT_FIGURINE;
+
         // CHINESE
         $vocabularyLearned = $this->learnedVocabulary();
         $grammarLearned = $this->learnedGrammar();
@@ -82,13 +101,21 @@ final readonly class ProfileStatsService
             tomeXp: $tomeXp,
             seriesXp: $seriesXp,
 
+            figurinesCollected: $figurinesCollected,
+            figurinesXp: $figurinesXp,
+
             vocabularyLearned: $vocabularyLearned,
             grammarLearned: $grammarLearned,
 
             vocabularyXp: $vocabularyXp,
             grammarXp: $grammarXp,
 
-            totalXp: $tomeXp + $seriesXp + $vocabularyXp + $grammarXp,
+            totalXp:
+                $tomeXp
+                + $seriesXp
+                + $figurinesXp
+                + $vocabularyXp
+                + $grammarXp,
         );
     }
 }

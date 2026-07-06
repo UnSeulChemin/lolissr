@@ -20,6 +20,8 @@ use App\Models\User;
 /** @var int $vocabularyXp */
 /** @var int $grammarLearned */
 /** @var int $grammarXp */
+/** @var int $figurinesCollected */
+/** @var int $figurinesXp */
 
 $avatarPath =
     "{$view->baseUri}images/avatar/thumbnail/{$user->avatar}.{$user->avatar_extension}";
@@ -225,7 +227,7 @@ $framePath =
             <article class="card transition-card profile-stat-card">
 
                 <h2 class="profile-stat-title">
-                    📚 Tomes lu
+                    📚 Tomes lus
                 </h2>
 
                 <p class="profile-stat-value">
@@ -299,7 +301,44 @@ $framePath =
             <article class="card transition-card profile-stat-card">
 
                 <h2 class="profile-stat-title">
-                    🎓 Vocabulaires
+                    🧸 Figurines
+                </h2>
+
+                <p class="profile-stat-value">
+                    <?= number_format($figurinesCollected) ?>
+                </p>
+
+            </article>
+
+            <article class="card transition-card profile-stat-card">
+
+                <h2 class="profile-stat-title">
+                    ⭐ XP Figurines
+                </h2>
+
+                <p class="profile-stat-value">
+
+                    <?= number_format(
+                        $figurinesXp,
+                        0,
+                        ',',
+                        ' ',
+                    ) ?>
+
+                    XP
+
+                </p>
+
+            </article>
+
+        </div>
+
+        <div class="profile-stat-row">
+
+            <article class="card transition-card profile-stat-card">
+
+                <h2 class="profile-stat-title">
+                    🎓 Vocabulaire appris
                 </h2>
 
                 <p class="profile-stat-value">

@@ -11,11 +11,13 @@ final readonly class ProfileStatsData
         public int $tomeXp,
         public int $completedSeries,
         public int $seriesXp,
+        public int $figurinesCollected,
+        public int $figurinesXp,
         public int $vocabularyLearned,
         public int $vocabularyXp,
         public int $grammarLearned,
         public int $grammarXp,
-        public int $totalXp
+        public int $totalXp,
     ) {
     }
 }

@@ -43,6 +43,9 @@ final class ProfileController extends Controller
             'completedSeries' => $stats->completedSeries,
             'seriesXp' => $stats->seriesXp,
 
+            'figurinesCollected' => $stats->figurinesCollected,
+            'figurinesXp' => $stats->figurinesXp,
+
             'vocabularyLearned' => $stats->vocabularyLearned,
             'vocabularyXp' => $stats->vocabularyXp,
 
