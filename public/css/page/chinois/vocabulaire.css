@@ -29,6 +29,9 @@
 {
     position: relative;
 
+    display: flex;
+    flex-direction: column;
+
     overflow: hidden;
 
     padding: 22px;
@@ -146,7 +149,9 @@
 
 .chinois-vocab-translation
 {
-    min-height: 2.8em;
+    min-height: 58px;
+
+    margin-bottom: 10px;
 
     color: var(--color-title);
 
@@ -170,7 +175,8 @@
 
 .chinois-vocab-example
 {
-    margin-top: 8px;
+    margin-top: auto;
+
     padding-top: 10px;
     padding-right: 100px;
 
