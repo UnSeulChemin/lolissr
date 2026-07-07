@@ -213,7 +213,7 @@ $typeSourceOptions = [
                         for="company"
                     >
 
-                        Company
+                        Entreprise
 
                     </label>
 
