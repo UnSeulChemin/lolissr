@@ -13,6 +13,7 @@ use App\Repositories\Manga\ArtbookRepository;
 use App\Repositories\Manga\ArtbookStatsRepository;
 
 use Framework\Application\App;
+use Framework\Support\DateFormatter;
 
 final readonly class ArtbookReadService
 {
@@ -104,6 +105,10 @@ final readonly class ArtbookReadService
             ? $artbook->serie
             : null;
 
+        $commentaire = trim((string) $artbook->commentaire) !== ''
+            ? $artbook->commentaire
+            : null;
+
         return new ArtbookData(
             id: $artbook->id,
 
@@ -126,6 +131,15 @@ final readonly class ArtbookReadService
             serie: $serie,
             hasSerie: $serie !== null,
 
+            company: $artbook->company,
+
+            releaseDate: DateFormatter::display(
+                $artbook->release_date,
+            ),
+
+            commentaire: $commentaire,
+            hasCommentaire: $commentaire !== null,
+
             createdAt: $artbook->created_at,
         );
     }
@@ -142,15 +156,13 @@ final readonly class ArtbookReadService
             ? $artbook->extension
             : null;
 
-        $auteur =
-            trim((string) $artbook->auteur) !== ''
-                ? $artbook->auteur
-                : null;
+        $auteur = trim((string) $artbook->auteur) !== ''
+            ? $artbook->auteur
+            : null;
 
-        $serie =
-            trim((string) $artbook->serie) !== ''
-                ? $artbook->serie
-                : null;
+        $serie = trim((string) $artbook->serie) !== ''
+            ? $artbook->serie
+            : null;
 
         return new ArtbookSeriesItemData(
             slug: $artbook->slug,

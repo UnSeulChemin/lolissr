@@ -13,7 +13,10 @@ $artbookValue = $old['artbook'] ?? '';
 $slugValue = $old['slug'] ?? '';
 $auteurValue = $old['auteur'] ?? '';
 $serieValue = $old['serie'] ?? '';
+$companyValue = $old['company'] ?? '';
 $numeroValue = $old['numero'] ?? '';
+$releaseDateValue = $old['release_date'] ?? '';
+$commentaireValue = $old['commentaire'] ?? '';
 
 ?>
 
@@ -39,9 +42,7 @@ $numeroValue = $old['numero'] ?? '';
                         class="form-label"
                         for="artbook"
                     >
-
                         Artbook
-
                     </label>
 
                     <input
@@ -58,9 +59,7 @@ $numeroValue = $old['numero'] ?? '';
                     <?php if (isset($errors['artbook']) && $errors['artbook'] !== ''): ?>
 
                         <p class="form-error">
-
                             <?= e($errors['artbook']) ?>
-
                         </p>
 
                     <?php endif; ?>
@@ -73,9 +72,7 @@ $numeroValue = $old['numero'] ?? '';
                         class="form-label"
                         for="slug"
                     >
-
                         Slug
-
                     </label>
 
                     <input
@@ -91,9 +88,7 @@ $numeroValue = $old['numero'] ?? '';
                     <?php if (isset($errors['slug']) && $errors['slug'] !== ''): ?>
 
                         <p class="form-error">
-
                             <?= e($errors['slug']) ?>
-
                         </p>
 
                     <?php endif; ?>
@@ -106,9 +101,7 @@ $numeroValue = $old['numero'] ?? '';
                         class="form-label"
                         for="auteur"
                     >
-
                         Auteur
-
                     </label>
 
                     <input
@@ -124,9 +117,7 @@ $numeroValue = $old['numero'] ?? '';
                     <?php if (isset($errors['auteur']) && $errors['auteur'] !== ''): ?>
 
                         <p class="form-error">
-
                             <?= e($errors['auteur']) ?>
-
                         </p>
 
                     <?php endif; ?>
@@ -139,9 +130,7 @@ $numeroValue = $old['numero'] ?? '';
                         class="form-label"
                         for="serie"
                     >
-
                         Série
-
                     </label>
 
                     <input
@@ -157,9 +146,37 @@ $numeroValue = $old['numero'] ?? '';
                     <?php if (isset($errors['serie']) && $errors['serie'] !== ''): ?>
 
                         <p class="form-error">
-
                             <?= e($errors['serie']) ?>
+                        </p>
 
+                    <?php endif; ?>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label
+                        class="form-label"
+                        for="company"
+                    >
+                        Company
+                    </label>
+
+                    <input
+                        class="form-input"
+                        type="text"
+                        name="company"
+                        id="company"
+                        placeholder="Ex : Kadokawa"
+                        value="<?= e($companyValue) ?>"
+                        maxlength="100"
+                        required
+                    >
+
+                    <?php if (isset($errors['company']) && $errors['company'] !== ''): ?>
+
+                        <p class="form-error">
+                            <?= e($errors['company']) ?>
                         </p>
 
                     <?php endif; ?>
@@ -172,9 +189,7 @@ $numeroValue = $old['numero'] ?? '';
                         class="form-label"
                         for="numero"
                     >
-
                         Numéro
-
                     </label>
 
                     <input
@@ -191,9 +206,36 @@ $numeroValue = $old['numero'] ?? '';
                     <?php if (isset($errors['numero']) && $errors['numero'] !== ''): ?>
 
                         <p class="form-error">
-
                             <?= e($errors['numero']) ?>
+                        </p>
 
+                    <?php endif; ?>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label
+                        class="form-label"
+                        for="release_date"
+                    >
+                        Date de sortie
+                    </label>
+
+                    <input
+                        class="form-input"
+                        type="text"
+                        name="release_date"
+                        id="release_date"
+                        placeholder="JJ/MM/AAAA"
+                        value="<?= e($releaseDateValue) ?>"
+                        maxlength="10"
+                    >
+
+                    <?php if (isset($errors['release_date']) && $errors['release_date'] !== ''): ?>
+
+                        <p class="form-error">
+                            <?= e($errors['release_date']) ?>
                         </p>
 
                     <?php endif; ?>
@@ -206,9 +248,7 @@ $numeroValue = $old['numero'] ?? '';
                         class="form-label"
                         for="image"
                     >
-
                         Image
-
                     </label>
 
                     <label
@@ -234,9 +274,35 @@ $numeroValue = $old['numero'] ?? '';
                     <?php if (isset($errors['image']) && $errors['image'] !== ''): ?>
 
                         <p class="form-error">
-
                             <?= e($errors['image']) ?>
+                        </p>
 
+                    <?php endif; ?>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label
+                        class="form-label"
+                        for="commentaire"
+                    >
+                        Commentaire
+                    </label>
+
+                    <textarea
+                        class="form-textarea"
+                        name="commentaire"
+                        id="commentaire"
+                        rows="4"
+                        maxlength="255"
+                        placeholder="Ex : Très bel artbook, édition limitée..."
+                    ><?= e($commentaireValue) ?></textarea>
+
+                    <?php if (isset($errors['commentaire']) && $errors['commentaire'] !== ''): ?>
+
+                        <p class="form-error">
+                            <?= e($errors['commentaire']) ?>
                         </p>
 
                     <?php endif; ?>
@@ -249,9 +315,7 @@ $numeroValue = $old['numero'] ?? '';
                         type="submit"
                         class="form-submit"
                     >
-
                         Ajouter
-
                     </button>
 
                     <a
@@ -261,9 +325,7 @@ $numeroValue = $old['numero'] ?? '';
                         "
                         href="<?= e($form->cancelUrl) ?>"
                     >
-
                         Retour
-
                     </a>
 
                 </div>

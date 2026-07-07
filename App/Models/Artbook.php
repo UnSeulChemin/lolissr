@@ -22,5 +22,11 @@ final class Artbook
 
     public ?string $serie = null;
 
+    public string $company = '';
+
+    public ?string $release_date = null;
+
+    public ?string $commentaire = null;
+
     public string $created_at = '';
 }

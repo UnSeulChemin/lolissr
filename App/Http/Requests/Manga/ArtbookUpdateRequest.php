@@ -16,7 +16,7 @@ final class ArtbookUpdateRequest extends FormRequest
 
             ->required('artbook')
             ->string('artbook')
-            ->maxLength('artbook', 255)
+            ->maxLength('artbook', 150)
 
             ->nullable('auteur')
             ->string('auteur')
@@ -24,7 +24,18 @@ final class ArtbookUpdateRequest extends FormRequest
 
             ->nullable('serie')
             ->string('serie')
-            ->maxLength('serie', 100);
+            ->maxLength('serie', 100)
+
+            ->required('company')
+            ->string('company')
+            ->maxLength('company', 100)
+
+            ->nullable('release_date')
+            ->date('release_date')
+
+            ->nullable('commentaire')
+            ->string('commentaire')
+            ->maxLength('commentaire', 255);
     }
 
     public function dto(): ArtbookUpdateDTO

@@ -24,6 +24,13 @@ final readonly class ArtbookData
         public ?string $serie,
         public bool $hasSerie,
 
+        public string $company,
+
+        public ?string $releaseDate,
+
+        public ?string $commentaire,
+        public bool $hasCommentaire,
+
         public string $createdAt,
     ) {
     }

@@ -27,6 +27,17 @@ final class ArtbookCreateRequest extends FormRequest
             ->string('serie')
             ->maxLength('serie', 100)
 
+            ->required('company')
+            ->string('company')
+            ->maxLength('company', 100)
+
+            ->nullable('release_date')
+            ->date('release_date')
+
+            ->nullable('commentaire')
+            ->string('commentaire')
+            ->maxLength('commentaire', 255)
+
             ->required('slug')
             ->string('slug')
             ->maxLength('slug', 150)

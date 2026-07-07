@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Repositories\Manga;
 
+use App\DTO\Manga\Inputs\ArtbookUpdateDTO;
 use App\Models\Artbook;
 use App\Models\Model;
-use App\DTO\Manga\Inputs\ArtbookUpdateDTO;
 
 use Framework\Support\Str;
 
@@ -14,7 +14,10 @@ final class ArtbookRepository extends Model
 {
     protected string $table = 'artbook';
 
-    public function findOneBySlugAndNumero(string $slug, int $numero): ?Artbook
+    public function findOneBySlugAndNumero(
+        string $slug,
+        int $numero
+    ): ?Artbook
     {
         /** @var Artbook|null $artbook */
         $artbook = $this->fetchOne(
@@ -39,13 +42,11 @@ final class ArtbookRepository extends Model
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param array<string,mixed> $data
      */
     public function insert(array $data): bool
     {
-        return parent::insert(
-            $this->normalizeInsertData($data)
-        );
+        return parent::insert($this->normalizeInsertData($data));
     }
 
     public function updateArtbook(
@@ -58,9 +59,12 @@ final class ArtbookRepository extends Model
             $slug,
             $numero,
             [
-                'artbook' => trim($dto->artbook),
-                'auteur'  => Str::nullableTrim($dto->auteur),
-                'serie'   => Str::nullableTrim($dto->serie),
+                'artbook' => $dto->artbook,
+                'auteur' => $dto->auteur,
+                'serie' => $dto->serie,
+                'company' => $dto->company,
+                'release_date' => $dto->release_date,
+                'commentaire' => $dto->commentaire,
             ]
         );
     }
@@ -82,31 +86,13 @@ final class ArtbookRepository extends Model
     |--------------------------------------------------------------------------
     */
 
-
     private function normalizeSlug(string $slug): string
     {
         return Str::slug($slug);
     }
 
     /**
-     * @param array<string,mixed> $data
-     * @return array<string,mixed>
-     */
-    private function normalizeInsertData(array $data): array
-    {
-        return [
-            'thumbnail' => trim((string) ($data['thumbnail'] ?? '')),
-            'extension' => strtolower(trim((string) ($data['extension'] ?? ''))),
-            'slug' => $this->normalizeSlug((string) ($data['slug'] ?? '')),
-            'numero' => max(1, (int) ($data['numero'] ?? 1)),
-            'artbook' => trim((string) ($data['artbook'] ?? '')),
-            'auteur' => Str::nullableTrim($data['auteur'] ?? null),
-            'serie' => Str::nullableTrim($data['serie'] ?? null),
-        ];
-    }
-
-    /**
-     * @param array<string,mixed> $data
+     * @param array<string, mixed> $data
      */
     private function updateBySlugAndNumero(
         string $slug,
@@ -121,5 +107,27 @@ final class ArtbookRepository extends Model
                 'numero' => $numero,
             ]
         );
+    }
+
+    /**
+     * @param array<string,mixed> $data
+     * @return array<string,mixed>
+     */
+    private function normalizeInsertData(array $data): array
+    {
+        return [
+            'thumbnail' => trim((string) ($data['thumbnail'] ?? '')),
+            'extension' => strtolower(trim((string) ($data['extension'] ?? ''))),
+            'slug' => $this->normalizeSlug((string) ($data['slug'] ?? '')),
+            'numero' => max(1, (int) ($data['numero'] ?? 1)),
+
+            'artbook' => trim((string) ($data['artbook'] ?? '')),
+            'auteur' => Str::nullableTrim($data['auteur'] ?? null),
+            'serie' => Str::nullableTrim($data['serie'] ?? null),
+            'company' => trim((string) ($data['company'] ?? '')),
+            'release_date' => Str::nullableTrim($data['release_date'] ?? null),
+
+            'commentaire' => Str::nullableTrim($data['commentaire'] ?? null),
+        ];
     }
 }

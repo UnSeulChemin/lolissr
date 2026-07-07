@@ -86,9 +86,14 @@ final readonly class ArtbookWriteService
                             'extension' => $uploadData->extension,
                             'slug' => $dto->slug,
                             'numero' => $dto->numero,
+
                             'artbook' => $dto->artbook,
                             'auteur' => $dto->auteur,
                             'serie' => $dto->serie,
+                            'company' => $dto->company,
+                            'release_date' => $dto->release_date,
+
+                            'commentaire' => $dto->commentaire,
                         ]);
 
                     $failure = $this->writeFailed(

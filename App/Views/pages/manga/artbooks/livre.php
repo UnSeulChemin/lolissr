@@ -18,6 +18,13 @@ $deleteUrl = $view->baseUri . 'manga/artbooks/' . $slug . '/supprimer/' . $numer
 
 $returnUrl = $view->baseUri . 'manga/artbooks';
 
+$hasCommentaire = $artbook->commentaire !== null
+    && trim($artbook->commentaire) !== '';
+
+$commentaire = $hasCommentaire
+    ? nl2br(e($artbook->commentaire))
+    : 'Aucun commentaire';
+
 ?>
 
 <section class="layout-container dashboard-page">
@@ -28,7 +35,10 @@ $returnUrl = $view->baseUri . 'manga/artbooks';
 
             <div class="detail-image-inner">
 
-                <img src="<?= e($artbook->thumbnailUrl) ?>" alt="<?= e($artbook->artbook) ?>">
+                <img
+                    src="<?= e($artbook->thumbnailUrl) ?>"
+                    alt="<?= e($artbook->artbook) ?>"
+                >
 
             </div>
 
@@ -80,6 +90,52 @@ $returnUrl = $view->baseUri . 'manga/artbooks';
 
             <?php endif; ?>
 
+            <div class="detail-row">
+
+                <div class="detail-label">
+                    Entreprise
+                </div>
+
+                <div class="detail-value">
+
+                    <?= $artbook->company !== ''
+                        ? e($artbook->company)
+                        : 'Non renseignée' ?>
+
+                </div>
+
+            </div>
+
+            <div class="detail-row">
+
+                <div class="detail-label">
+                    Date de sortie
+                </div>
+
+                <div class="detail-value">
+
+                    <?= $artbook->releaseDate !== null
+                        ? e($artbook->releaseDate)
+                        : 'Non renseignée' ?>
+
+                </div>
+
+            </div>
+
+            <div class="detail-row detail-row-comment">
+
+                <div class="detail-label">
+                    Commentaire
+                </div>
+
+                <div class="detail-value detail-comment-box <?= ! $hasCommentaire ? 'is-empty' : '' ?>">
+
+                    <?= $commentaire ?>
+
+                </div>
+
+            </div>
+
             <div class="detail-actions">
 
                 <div class="detail-actions-left">
@@ -87,13 +143,20 @@ $returnUrl = $view->baseUri . 'manga/artbooks';
 
                 <div class="detail-actions-right">
 
-                    <a class="form-submit" href="<?= e($modifierUrl) ?>">
+                    <a
+                        class="form-submit"
+                        href="<?= e($modifierUrl) ?>"
+                    >
                         Modifier
                     </a>
 
                     <button
                         type="button"
-                        class="form-submit form-submit-danger js-delete-artbook"
+                        class="
+                            form-submit
+                            form-submit-danger
+                            js-delete-artbook
+                        "
                         data-url="<?= e($deleteUrl) ?>"
                         data-redirect="<?= e($returnUrl) ?>"
                     >
@@ -110,7 +173,13 @@ $returnUrl = $view->baseUri . 'manga/artbooks';
 
     <div class="collection-back-wrapper">
 
-        <a class="form-submit collection-back-button" href="<?= e($returnUrl) ?>">
+        <a
+            class="
+                form-submit
+                collection-back-button
+            "
+            href="<?= e($returnUrl) ?>"
+        >
             Retour
         </a>
 

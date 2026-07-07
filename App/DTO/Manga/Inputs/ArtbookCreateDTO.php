@@ -12,8 +12,11 @@ final readonly class ArtbookCreateDTO
         public string $artbook,
         public ?string $auteur,
         public ?string $serie,
+        public string $company,
+        public ?string $release_date,
+        public ?string $commentaire,
         public string $slug,
-        public int $numero
+        public int $numero,
     ) {
     }
 
@@ -28,6 +31,9 @@ final readonly class ArtbookCreateDTO
             artbook: $artbook,
             auteur: Str::nullableTrim($data['auteur'] ?? null),
             serie: Str::nullableTrim($data['serie'] ?? null),
+            company: trim((string) ($data['company'] ?? '')),
+            release_date: Str::nullableTrim($data['release_date'] ?? null),
+            commentaire: Str::nullableTrim($data['commentaire'] ?? null),
             slug: Str::slug((string) ($data['slug'] ?? $artbook)),
             numero: max(1, (int) ($data['numero'] ?? 1)),
         );
