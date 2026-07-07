@@ -12,11 +12,27 @@ $errors = $form->errors;
 $old = $form->old;
 
 $artbookValue = $old['artbook'] ?? $artbook->artbook;
-$auteurValue = $old['auteur'] ?? ($artbook->auteur ?? '');
-$serieValue = $old['serie'] ?? ($artbook->serie ?? '');
+
+$typeSourceValue = $old['type_source']
+    ?? ($artbook->hasSerie ? 'serie' : 'auteur');
+
+$sourceValue = $old['source']
+    ?? ($artbook->hasSerie
+        ? ($artbook->serie ?? '')
+        : ($artbook->auteur ?? ''));
+
 $companyValue = $old['company'] ?? $artbook->company;
-$releaseDateValue = $old['release_date'] ?? ($artbook->releaseDate ?? '');
-$commentaireValue = $old['commentaire'] ?? ($artbook->commentaire ?? '');
+
+$releaseDateValue = $old['release_date']
+    ?? ($artbook->releaseDate ?? '');
+
+$commentaireValue = $old['commentaire']
+    ?? ($artbook->commentaire ?? '');
+
+$typeSourceOptions = [
+    'auteur' => 'Auteur',
+    'serie' => 'Série',
+];
 
 ?>
 
@@ -41,23 +57,31 @@ $commentaireValue = $old['commentaire'] ?? ($artbook->commentaire ?? '');
                         class="form-label"
                         for="artbook"
                     >
+
                         Artbook
+
                     </label>
 
                     <input
                         class="form-input"
                         type="text"
-                        id="artbook"
                         name="artbook"
+                        id="artbook"
                         value="<?= e($artbookValue) ?>"
                         maxlength="150"
+                        autofocus
                         required
                     >
 
-                    <?php if (isset($errors['artbook']) && $errors['artbook'] !== ''): ?>
+                    <?php if (
+                        isset($errors['artbook'])
+                        && $errors['artbook'] !== ''
+                    ): ?>
 
                         <p class="form-error">
+
                             <?= e($errors['artbook']) ?>
+
                         </p>
 
                     <?php endif; ?>
@@ -68,24 +92,49 @@ $commentaireValue = $old['commentaire'] ?? ($artbook->commentaire ?? '');
 
                     <label
                         class="form-label"
-                        for="auteur"
+                        for="type_source"
                     >
-                        Auteur
+
+                        Type
+
                     </label>
 
-                    <input
-                        class="form-input"
-                        type="text"
-                        id="auteur"
-                        name="auteur"
-                        value="<?= e($auteurValue) ?>"
-                        maxlength="100"
+                    <select
+                        class="
+                            form-input
+                            form-select
+                        "
+                        name="type_source"
+                        id="type_source"
+                        required
                     >
 
-                    <?php if (isset($errors['auteur']) && $errors['auteur'] !== ''): ?>
+                        <?php foreach ($typeSourceOptions as $value => $label): ?>
+
+                            <option
+                                value="<?= e($value) ?>"
+                                <?= $typeSourceValue === $value
+                                    ? 'selected'
+                                    : '' ?>
+                            >
+
+                                <?= e($label) ?>
+
+                            </option>
+
+                        <?php endforeach; ?>
+
+                    </select>
+
+                    <?php if (
+                        isset($errors['type_source'])
+                        && $errors['type_source'] !== ''
+                    ): ?>
 
                         <p class="form-error">
-                            <?= e($errors['auteur']) ?>
+
+                            <?= e($errors['type_source']) ?>
+
                         </p>
 
                     <?php endif; ?>
@@ -96,24 +145,32 @@ $commentaireValue = $old['commentaire'] ?? ($artbook->commentaire ?? '');
 
                     <label
                         class="form-label"
-                        for="serie"
+                        for="source"
                     >
-                        Série
+
+                        Auteur / Série
+
                     </label>
 
                     <input
                         class="form-input"
                         type="text"
-                        id="serie"
-                        name="serie"
-                        value="<?= e($serieValue) ?>"
+                        name="source"
+                        id="source"
+                        value="<?= e($sourceValue) ?>"
                         maxlength="100"
+                        required
                     >
 
-                    <?php if (isset($errors['serie']) && $errors['serie'] !== ''): ?>
+                    <?php if (
+                        isset($errors['source'])
+                        && $errors['source'] !== ''
+                    ): ?>
 
                         <p class="form-error">
-                            <?= e($errors['serie']) ?>
+
+                            <?= e($errors['source']) ?>
+
                         </p>
 
                     <?php endif; ?>
@@ -126,23 +183,30 @@ $commentaireValue = $old['commentaire'] ?? ($artbook->commentaire ?? '');
                         class="form-label"
                         for="company"
                     >
+
                         Company
+
                     </label>
 
                     <input
                         class="form-input"
                         type="text"
-                        id="company"
                         name="company"
+                        id="company"
                         value="<?= e($companyValue) ?>"
                         maxlength="100"
                         required
                     >
 
-                    <?php if (isset($errors['company']) && $errors['company'] !== ''): ?>
+                    <?php if (
+                        isset($errors['company'])
+                        && $errors['company'] !== ''
+                    ): ?>
 
                         <p class="form-error">
+
                             <?= e($errors['company']) ?>
+
                         </p>
 
                     <?php endif; ?>
@@ -155,23 +219,30 @@ $commentaireValue = $old['commentaire'] ?? ($artbook->commentaire ?? '');
                         class="form-label"
                         for="release_date"
                     >
+
                         Date de sortie
+
                     </label>
 
                     <input
                         class="form-input"
                         type="text"
-                        id="release_date"
                         name="release_date"
+                        id="release_date"
                         placeholder="JJ/MM/AAAA"
                         value="<?= e($releaseDateValue) ?>"
                         maxlength="10"
                     >
 
-                    <?php if (isset($errors['release_date']) && $errors['release_date'] !== ''): ?>
+                    <?php if (
+                        isset($errors['release_date'])
+                        && $errors['release_date'] !== ''
+                    ): ?>
 
                         <p class="form-error">
+
                             <?= e($errors['release_date']) ?>
+
                         </p>
 
                     <?php endif; ?>
@@ -184,7 +255,9 @@ $commentaireValue = $old['commentaire'] ?? ($artbook->commentaire ?? '');
                         class="form-label"
                         for="commentaire"
                     >
+
                         Commentaire
+
                     </label>
 
                     <textarea
@@ -195,10 +268,15 @@ $commentaireValue = $old['commentaire'] ?? ($artbook->commentaire ?? '');
                         maxlength="255"
                     ><?= e($commentaireValue) ?></textarea>
 
-                    <?php if (isset($errors['commentaire']) && $errors['commentaire'] !== ''): ?>
+                    <?php if (
+                        isset($errors['commentaire'])
+                        && $errors['commentaire'] !== ''
+                    ): ?>
 
                         <p class="form-error">
+
                             <?= e($errors['commentaire']) ?>
+
                         </p>
 
                     <?php endif; ?>
@@ -211,7 +289,9 @@ $commentaireValue = $old['commentaire'] ?? ($artbook->commentaire ?? '');
                         type="submit"
                         class="form-submit"
                     >
+
                         Enregistrer
+
                     </button>
 
                     <a
@@ -221,7 +301,9 @@ $commentaireValue = $old['commentaire'] ?? ($artbook->commentaire ?? '');
                         "
                         href="<?= e($form->cancelUrl) ?>"
                     >
+
                         Annuler
+
                     </a>
 
                 </div>

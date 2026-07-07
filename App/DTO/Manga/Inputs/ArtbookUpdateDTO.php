@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\DTO\Manga\Inputs;
 
+use Framework\Support\DateNormalizer;
 use Framework\Support\Str;
 
 final readonly class ArtbookUpdateDTO
@@ -23,12 +24,25 @@ final readonly class ArtbookUpdateDTO
      */
     public static function fromArray(array $data): self
     {
+        $typeSource = (string) ($data['type_source'] ?? '');
+        $source = Str::nullableTrim($data['source'] ?? null);
+
+        $auteur = $typeSource === 'auteur'
+            ? $source
+            : null;
+
+        $serie = $typeSource === 'serie'
+            ? $source
+            : null;
+
         return new self(
             artbook: trim((string) ($data['artbook'] ?? '')),
-            auteur: Str::nullableTrim($data['auteur'] ?? null),
-            serie: Str::nullableTrim($data['serie'] ?? null),
+            auteur: $auteur,
+            serie: $serie,
             company: trim((string) ($data['company'] ?? '')),
-            release_date: Str::nullableTrim($data['release_date'] ?? null),
+            release_date: DateNormalizer::normalize(
+                Str::nullableTrim($data['release_date'] ?? null),
+            ),
             commentaire: Str::nullableTrim($data['commentaire'] ?? null),
         );
     }

@@ -19,13 +19,13 @@ final class ArtbookCreateRequest extends FormRequest
             ->string('artbook')
             ->maxLength('artbook', 150)
 
-            ->nullable('auteur')
-            ->string('auteur')
-            ->maxLength('auteur', 100)
+            ->required('type_source')
+            ->string('type_source')
+            ->in('type_source', ['auteur', 'serie'])
 
-            ->nullable('serie')
-            ->string('serie')
-            ->maxLength('serie', 100)
+            ->required('source')
+            ->string('source')
+            ->maxLength('source', 100)
 
             ->required('company')
             ->string('company')

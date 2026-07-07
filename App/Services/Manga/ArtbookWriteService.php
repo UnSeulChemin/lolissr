@@ -53,7 +53,7 @@ final readonly class ArtbookWriteService
             ): ServiceResult
             {
                 $upload = $this->uploadService->uploadThumbnail(
-                    $dto->artbook,
+                    $dto->slug,
                     $dto->numero,
                     UploadConfig::thumbnailDirectory('artbook'),
                     $files,
