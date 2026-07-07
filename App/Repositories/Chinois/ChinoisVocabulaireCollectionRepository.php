@@ -68,7 +68,7 @@ final class ChinoisVocabulaireCollectionRepository extends Model
 
             WHERE langue = :langue
 
-            ORDER BY id DESC
+            ORDER BY maitrise ASC, id DESC
 
             LIMIT {$perPage}
             OFFSET {$offset}
