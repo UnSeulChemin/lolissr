@@ -51,35 +51,6 @@ final class ChinoisVocabulaireRepository extends Model
         );
     }
 
-    /**
-     * @return list<ChinoisVocabulaireData>
-     */
-    public function findByLangue(string $langue): array
-    {
-        /** @var list<stdClass> $results */
-        $results = $this->fetchAll(
-            "
-            SELECT
-                " . self::SELECT_FIELDS . "
-
-            FROM {$this->table()}
-
-            WHERE langue = :langue
-
-            ORDER BY id DESC
-            ",
-            [
-                'langue' => trim($langue),
-            ]
-        );
-
-        /** @var list<ChinoisVocabulaireData> */
-        return array_map(
-            $this->mapRowToDto(...),
-            $results,
-        );
-    }
-
     public function findById(int $id): ?ChinoisVocabulaireData
     {
         /** @var stdClass|null $result */

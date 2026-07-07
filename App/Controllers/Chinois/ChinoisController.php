@@ -50,15 +50,28 @@ final class ChinoisController extends Controller
         $this->render('pages/chinois/vocabulaire/index');
     }
 
-    public function langue(string $langue): never
+    public function langue(string $langue, int $page = 1): never
     {
         $langue = mb_strtolower($langue);
 
-        $this->title = 'Chinois | ' . ($langue === 'jinyu' ? '晋语' : 'Mandarin');
+        $data = $this->chinoisReadService->langue($langue, $page);
+
+        if ($data === null)
+        {
+            throw new NotFoundException('Page introuvable');
+        }
+
+        $this->title = 'Chinois | '
+            . ($langue === 'jinyu' ? '晋语' : 'Mandarin')
+            . ($data->currentPage > 1 ? ' - Page ' . $data->currentPage : '');
 
         $this->render('pages/chinois/vocabulaire/langue', [
             'langue' => $langue,
-            'vocabulaires' => $this->resolveLangue($langue),
+            'vocabulaires' => $data->vocabulaires,
+            'currentPage' => $data->currentPage,
+            'totalVocabulaires' => $data->totalVocabulaires,
+            'perPage' => $data->perPage,
+            'totalPages' => $data->totalPages,
         ]);
     }
 
@@ -371,22 +384,6 @@ final class ChinoisController extends Controller
     | HELPERS
     |--------------------------------------------------------------------------
     */
-
-    /**
-     * @return list<ChinoisVocabulaireData>
-     */
-    private function resolveLangue(string $langue): array
-    {
-        return match ($langue)
-        {
-            'mandarin' => $this->chinoisReadService->mandarin(),
-            'jinyu'    => $this->chinoisReadService->jinyu(),
-
-            default => throw new NotFoundException(
-                'Langue introuvable'
-            ),
-        };
-    }
 
     private function resolveHskLevel(int $level): string
     {

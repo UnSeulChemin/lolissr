@@ -10,9 +10,13 @@ use App\DTO\Chinois\Responses\ChinoisHskData;
 use App\DTO\Chinois\Responses\ChinoisSearchData;
 use App\DTO\Chinois\Responses\ChinoisSectionData;
 use App\DTO\Chinois\Responses\ChinoisVocabulaireData;
+use App\DTO\Chinois\Responses\ChinoisVocabulairePageData;
 use App\Repositories\Chinois\ChinoisGrammaireRepository;
 use App\Repositories\Chinois\ChinoisSearchRepository;
+use App\Repositories\Chinois\ChinoisVocabulaireCollectionRepository;
 use App\Repositories\Chinois\ChinoisVocabulaireRepository;
+
+use Framework\Application\App;
 
 final readonly class ChinoisReadService
 {
@@ -48,6 +52,7 @@ final readonly class ChinoisReadService
 
     public function __construct(
         private ChinoisVocabulaireRepository $vocabulaireRepository,
+        private ChinoisVocabulaireCollectionRepository $collectionRepository,
         private ChinoisGrammaireRepository $grammaireRepository,
         private ChinoisSearchRepository $searchRepository,
     ) {
@@ -85,20 +90,46 @@ final readonly class ChinoisReadService
     |--------------------------------------------------------------------------
     */
 
-    /**
-     * @return list<ChinoisVocabulaireData>
-     */
-    public function mandarin(): array
+    public function langue(string $langue, int|string $page = 1): ?ChinoisVocabulairePageData
     {
-        return $this->vocabulaireRepository->findByLangue('mandarin');
-    }
+        $langue = mb_strtolower($langue);
 
-    /**
-     * @return list<ChinoisVocabulaireData>
-     */
-    public function jinyu(): array
-    {
-        return $this->vocabulaireRepository->findByLangue('jinyu');
+        if (! in_array($langue, ['mandarin', 'jinyu'], true))
+        {
+            return null;
+        }
+
+        $page = max(1, (int) $page);
+
+        $perPage = App::pagination();
+
+        $totalVocabulaires = $this->collectionRepository->countByLangue($langue);
+
+        if ($totalVocabulaires === 0)
+        {
+            return null;
+        }
+
+        $totalPages = (int) ceil($totalVocabulaires / $perPage);
+
+        if ($page > $totalPages)
+        {
+            return null;
+        }
+
+        $vocabulaires = $this->collectionRepository->findByLanguePaginated(
+            $langue,
+            $perPage,
+            $page,
+        );
+
+        return new ChinoisVocabulairePageData(
+            vocabulaires: $vocabulaires,
+            currentPage: $page,
+            totalVocabulaires: $totalVocabulaires,
+            perPage: $perPage,
+            totalPages: $totalPages,
+        );
     }
 
     public function vocabulaire(int $id): ?ChinoisVocabulaireData

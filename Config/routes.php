@@ -573,6 +573,8 @@ return static function (Router $router): void
 
             $router->get('vocabulaire/{langue}', [ChinoisController::class, 'langue']);
 
+            $router->get('vocabulaire/{langue}/page/{page:int}', [ChinoisController::class, 'langue']);
+
             $router->get('grammaire', [ChinoisController::class, 'grammaire']);
 
             $router->get('grammaire/hsk{level:int}', [ChinoisController::class, 'hsk']);
