@@ -18,10 +18,6 @@ final class ArtbookUpdateRequest extends FormRequest
             ->string('artbook')
             ->maxLength('artbook', 150)
 
-            ->required('type_source')
-            ->string('type_source')
-            ->in('type_source', ['auteur', 'serie'])
-
             ->required('source')
             ->string('source')
             ->maxLength('source', 100)
@@ -40,6 +36,8 @@ final class ArtbookUpdateRequest extends FormRequest
 
     public function dto(): ArtbookUpdateDTO
     {
-        return ArtbookUpdateDTO::fromArray($this->validated());
+        return ArtbookUpdateDTO::fromArray(
+            $this->validated(),
+        );
     }
 }

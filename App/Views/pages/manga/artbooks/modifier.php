@@ -13,13 +13,20 @@ $old = $form->old;
 
 $artbookValue = $old['artbook'] ?? $artbook->artbook;
 
-$typeSourceValue = $old['type_source']
-    ?? ($artbook->hasSerie ? 'serie' : 'auteur');
+$isSerie = $artbook->hasSerie;
 
 $sourceValue = $old['source']
-    ?? ($artbook->hasSerie
+    ?? ($isSerie
         ? ($artbook->serie ?? '')
         : ($artbook->auteur ?? ''));
+
+$sourceLabel = $isSerie
+    ? 'Série'
+    : 'Auteur';
+
+$sourcePlaceholder = $isSerie
+    ? 'Ex : To Love-Ru'
+    : 'Ex : Carnelian';
 
 $companyValue = $old['company'] ?? $artbook->company;
 
@@ -28,11 +35,6 @@ $releaseDateValue = $old['release_date']
 
 $commentaireValue = $old['commentaire']
     ?? ($artbook->commentaire ?? '');
-
-$typeSourceOptions = [
-    'auteur' => 'Auteur',
-    'serie' => 'Série',
-];
 
 ?>
 
@@ -92,63 +94,10 @@ $typeSourceOptions = [
 
                     <label
                         class="form-label"
-                        for="type_source"
-                    >
-
-                        Type
-
-                    </label>
-
-                    <select
-                        class="
-                            form-input
-                            form-select
-                        "
-                        name="type_source"
-                        id="type_source"
-                        required
-                    >
-
-                        <?php foreach ($typeSourceOptions as $value => $label): ?>
-
-                            <option
-                                value="<?= e($value) ?>"
-                                <?= $typeSourceValue === $value
-                                    ? 'selected'
-                                    : '' ?>
-                            >
-
-                                <?= e($label) ?>
-
-                            </option>
-
-                        <?php endforeach; ?>
-
-                    </select>
-
-                    <?php if (
-                        isset($errors['type_source'])
-                        && $errors['type_source'] !== ''
-                    ): ?>
-
-                        <p class="form-error">
-
-                            <?= e($errors['type_source']) ?>
-
-                        </p>
-
-                    <?php endif; ?>
-
-                </div>
-
-                <div class="form-group">
-
-                    <label
-                        class="form-label"
                         for="source"
                     >
 
-                        Auteur / Série
+                        <?= e($sourceLabel) ?>
 
                     </label>
 
@@ -157,6 +106,7 @@ $typeSourceOptions = [
                         type="text"
                         name="source"
                         id="source"
+                        placeholder="<?= e($sourcePlaceholder) ?>"
                         value="<?= e($sourceValue) ?>"
                         maxlength="100"
                         required

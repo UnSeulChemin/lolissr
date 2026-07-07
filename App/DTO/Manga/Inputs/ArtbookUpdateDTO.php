@@ -11,8 +11,7 @@ final readonly class ArtbookUpdateDTO
 {
     public function __construct(
         public string $artbook,
-        public ?string $auteur,
-        public ?string $serie,
+        public string $source,
         public string $company,
         public ?string $release_date,
         public ?string $commentaire,
@@ -24,21 +23,9 @@ final readonly class ArtbookUpdateDTO
      */
     public static function fromArray(array $data): self
     {
-        $typeSource = (string) ($data['type_source'] ?? '');
-        $source = Str::nullableTrim($data['source'] ?? null);
-
-        $auteur = $typeSource === 'auteur'
-            ? $source
-            : null;
-
-        $serie = $typeSource === 'serie'
-            ? $source
-            : null;
-
         return new self(
             artbook: trim((string) ($data['artbook'] ?? '')),
-            auteur: $auteur,
-            serie: $serie,
+            source: trim((string) ($data['source'] ?? '')),
             company: trim((string) ($data['company'] ?? '')),
             release_date: DateNormalizer::normalize(
                 Str::nullableTrim($data['release_date'] ?? null),

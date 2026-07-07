@@ -23,6 +23,16 @@ $typeSourceOptions = [
     'serie' => 'Série',
 ];
 
+$sourceLabel =
+    $typeSourceValue === 'serie'
+        ? 'Série'
+        : 'Auteur';
+
+$sourcePlaceholder =
+    $typeSourceValue === 'serie'
+        ? 'Ex : To Love-Ru'
+        : 'Ex : Carnelian';
+
 ?>
 
 <section class="layout-container dashboard-page">
@@ -59,6 +69,7 @@ $typeSourceOptions = [
                         id="artbook"
                         placeholder="Ex : Carnelian Art Works"
                         value="<?= e($artbookValue) ?>"
+                        maxlength="150"
                         autofocus
                         required
                     >
@@ -85,7 +96,7 @@ $typeSourceOptions = [
                         for="type_source"
                     >
 
-                        Type
+                        Source
 
                     </label>
 
@@ -138,7 +149,7 @@ $typeSourceOptions = [
                         for="source"
                     >
 
-                        Auteur / Série
+                        <?= e($sourceLabel) ?>
 
                     </label>
 
@@ -147,7 +158,7 @@ $typeSourceOptions = [
                         type="text"
                         name="source"
                         id="source"
-                        placeholder="Ex : Carnelian ou To Love-Ru"
+                        placeholder="<?= e($sourcePlaceholder) ?>"
                         value="<?= e($sourceValue) ?>"
                         maxlength="100"
                         data-slug-source
@@ -187,6 +198,7 @@ $typeSourceOptions = [
                         id="slug"
                         placeholder="Ex : carnelian"
                         value="<?= e($slugValue) ?>"
+                        maxlength="150"
                         data-slug-target
                         required
                     >
@@ -260,6 +272,7 @@ $typeSourceOptions = [
                         name="numero"
                         id="numero"
                         min="1"
+                        max="999"
                         placeholder="Ex : 1"
                         value="<?= e($numeroValue) ?>"
                         required

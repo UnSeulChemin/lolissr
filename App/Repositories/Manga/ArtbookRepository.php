@@ -46,7 +46,9 @@ final class ArtbookRepository extends Model
      */
     public function insert(array $data): bool
     {
-        return parent::insert($this->normalizeInsertData($data));
+        return parent::insert(
+            $this->normalizeInsertData($data)
+        );
     }
 
     public function updateArtbook(
@@ -55,13 +57,31 @@ final class ArtbookRepository extends Model
         ArtbookUpdateDTO $dto
     ): bool
     {
+        $artbook =
+            $this->findOneBySlugAndNumero(
+                $slug,
+                $numero
+            );
+
+        if ($artbook === null)
+        {
+            return false;
+        }
+
+        $sourceData =
+            $this->sourceUpdateData(
+                $artbook,
+                $dto->source
+            );
+
         return $this->updateBySlugAndNumero(
             $slug,
             $numero,
             [
                 'artbook' => $dto->artbook,
-                'auteur' => $dto->auteur,
-                'serie' => $dto->serie,
+
+                ...$sourceData,
+
                 'company' => $dto->company,
                 'release_date' => $dto->release_date,
                 'commentaire' => $dto->commentaire,
@@ -78,6 +98,36 @@ final class ArtbookRepository extends Model
             'slug' => $this->normalizeSlug($slug),
             'numero' => $numero,
         ]);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | SOURCE
+    |--------------------------------------------------------------------------
+    */
+
+    /**
+     * @return array<string, ?string>
+     */
+    private function sourceUpdateData(
+        Artbook $artbook,
+        string $source
+    ): array
+    {
+        if (
+            trim((string) $artbook->serie)
+            !== ''
+        ) {
+            return [
+                'auteur' => null,
+                'serie' => $source,
+            ];
+        }
+
+        return [
+            'auteur' => $source,
+            'serie' => null,
+        ];
     }
 
     /*
@@ -117,17 +167,28 @@ final class ArtbookRepository extends Model
     {
         return [
             'thumbnail' => trim((string) ($data['thumbnail'] ?? '')),
-            'extension' => strtolower(trim((string) ($data['extension'] ?? ''))),
-            'slug' => $this->normalizeSlug((string) ($data['slug'] ?? '')),
-            'numero' => max(1, (int) ($data['numero'] ?? 1)),
+            'extension' => strtolower(
+                trim((string) ($data['extension'] ?? ''))
+            ),
+            'slug' => $this->normalizeSlug(
+                (string) ($data['slug'] ?? '')
+            ),
+            'numero' => max(
+                1,
+                (int) ($data['numero'] ?? 1)
+            ),
 
             'artbook' => trim((string) ($data['artbook'] ?? '')),
             'auteur' => Str::nullableTrim($data['auteur'] ?? null),
             'serie' => Str::nullableTrim($data['serie'] ?? null),
             'company' => trim((string) ($data['company'] ?? '')),
-            'release_date' => Str::nullableTrim($data['release_date'] ?? null),
+            'release_date' => Str::nullableTrim(
+                $data['release_date'] ?? null
+            ),
 
-            'commentaire' => Str::nullableTrim($data['commentaire'] ?? null),
+            'commentaire' => Str::nullableTrim(
+                $data['commentaire'] ?? null
+            ),
         ];
     }
 }

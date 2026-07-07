@@ -49,6 +49,27 @@ function updateUploadText(
             : 'Choisir une image';
 }
 
+function updateSourceField(
+    typeInput,
+    sourceInput,
+    sourceLabel,
+)
+{
+    const isSerie =
+        typeInput.value
+        === 'serie';
+
+    sourceLabel.textContent =
+        isSerie
+            ? 'Série'
+            : 'Auteur';
+
+    sourceInput.placeholder =
+        isSerie
+            ? 'Ex : To Love-Ru'
+            : 'Ex : Carnelian';
+}
+
 // =========================================
 // INIT
 // =========================================
@@ -87,6 +108,17 @@ export function initAjouterPage()
             '[data-slug-target]',
         );
 
+    const typeSourceInput =
+        $('#type_source');
+
+    const sourceInput =
+        $('#source');
+
+    const sourceLabel =
+        form.querySelector(
+            'label[for="source"]',
+        );
+
     const imageInput =
         $('#image');
 
@@ -118,8 +150,10 @@ export function initAjouterPage()
     }
 
     if (
-        slugSourceInput instanceof HTMLInputElement
-        && slugInput instanceof HTMLInputElement
+        slugSourceInput
+        instanceof HTMLInputElement
+        && slugInput
+        instanceof HTMLInputElement
     ) {
 
         slugSourceInput.addEventListener(
@@ -137,6 +171,40 @@ export function initAjouterPage()
                         slugSourceInput.value,
                     );
             },
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | SOURCE FIELD
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        typeSourceInput
+        instanceof HTMLSelectElement
+        && sourceInput
+        instanceof HTMLInputElement
+        && sourceLabel
+        instanceof HTMLLabelElement
+    ) {
+
+        typeSourceInput.addEventListener(
+            'change',
+            () =>
+            {
+                updateSourceField(
+                    typeSourceInput,
+                    sourceInput,
+                    sourceLabel,
+                );
+            },
+        );
+
+        updateSourceField(
+            typeSourceInput,
+            sourceInput,
+            sourceLabel,
         );
     }
 
@@ -274,6 +342,22 @@ export function initAjouterPage()
 
                 slugEditedManually =
                     false;
+
+                if (
+                    typeSourceInput
+                    instanceof HTMLSelectElement
+                    && sourceInput
+                    instanceof HTMLInputElement
+                    && sourceLabel
+                    instanceof HTMLLabelElement
+                ) {
+
+                    updateSourceField(
+                        typeSourceInput,
+                        sourceInput,
+                        sourceLabel,
+                    );
+                }
 
                 if (
                     imageInput
