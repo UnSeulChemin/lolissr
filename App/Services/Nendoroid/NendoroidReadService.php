@@ -6,15 +6,22 @@ namespace App\Services\Nendoroid;
 
 use App\DTO\Nendoroid\Responses\NendoroidData;
 use App\DTO\Nendoroid\Responses\NendoroidListData;
+use App\DTO\Nendoroid\Responses\NendoroidSearchData;
+use App\DTO\Nendoroid\Responses\NendoroidSearchItemData;
 use App\Models\Nendoroid;
+use App\Repositories\Nendoroid\NendoroidCollectionRepository;
 use App\Repositories\Nendoroid\NendoroidRepository;
+use App\Repositories\Nendoroid\NendoroidSearchRepository;
 
 use Framework\Application\App;
+use Framework\Support\DateFormatter;
 
 final readonly class NendoroidReadService
 {
     public function __construct(
-        private NendoroidRepository $nendoroidRepository
+        private NendoroidRepository $nendoroidRepository,
+        private NendoroidCollectionRepository $collectionRepository,
+        private NendoroidSearchRepository $searchRepository,
     ) {
     }
 
@@ -30,16 +37,16 @@ final readonly class NendoroidReadService
 
         $perPage = App::pagination();
 
-        $totalWaifus = $this->nendoroidRepository->countAll();
+        $totalWaifus = $this->collectionRepository->countAll();
 
         if ($totalWaifus === 0)
         {
             return new NendoroidListData(
                 nendoroids: [],
-                compteur: 1,
                 currentPage: 1,
                 totalWaifus: 0,
                 perPage: $perPage,
+                totalPages: 1,
             );
         }
 
@@ -50,7 +57,7 @@ final readonly class NendoroidReadService
             return null;
         }
 
-        $nendoroids = $this->nendoroidRepository->findPaginated(
+        $nendoroids = $this->collectionRepository->findPaginated(
             $perPage,
             $page,
         );
@@ -60,10 +67,10 @@ final readonly class NendoroidReadService
                 $this->mapNendoroid(...),
                 $nendoroids
             ),
-            compteur: $totalPages,
             currentPage: $page,
             totalWaifus: $totalWaifus,
             perPage: $perPage,
+            totalPages: $totalPages,
         );
     }
 
@@ -88,7 +95,28 @@ final readonly class NendoroidReadService
 
     /*
     |--------------------------------------------------------------------------
-    | HELPERS
+    | SEARCH
+    |--------------------------------------------------------------------------
+    */
+
+    public function search(string|int $query = ''): NendoroidSearchData
+    {
+        $query = trim((string) $query);
+
+        $results = $this->searchRepository->search($query);
+
+        return new NendoroidSearchData(
+            results: array_map(
+                $this->mapSearchItem(...),
+                $results
+            ),
+            search: $query,
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | MAPPERS
     |--------------------------------------------------------------------------
     */
 
@@ -103,17 +131,45 @@ final readonly class NendoroidReadService
             numero: $nendoroid->numero,
 
             waifu: $nendoroid->waifu,
+            origin: $nendoroid->origin,
             company: $nendoroid->company,
 
-            thumbnail: $nendoroid->thumbnail !== ''
-                ? $nendoroid->thumbnail
-                : null,
+            collect: $nendoroid->collect,
 
-            extension: $nendoroid->extension !== ''
-                ? $nendoroid->extension
-                : null,
+            release_date: DateFormatter::display(
+                $nendoroid->release_date,
+            ),
+
+            thumbnail: $nendoroid->thumbnail,
+            extension: $nendoroid->extension,
 
             commentaire: $nendoroid->commentaire,
+
+            xpCollectRewarded: $nendoroid->collect_rewarded,
+        );
+    }
+
+    private function mapSearchItem(
+        Nendoroid $nendoroid
+    ): NendoroidSearchItemData
+    {
+        $thumbnail = $nendoroid->thumbnail !== ''
+            ? $nendoroid->thumbnail
+            : null;
+
+        $extension = $nendoroid->extension !== ''
+            ? $nendoroid->extension
+            : null;
+
+        return new NendoroidSearchItemData(
+            slug: $nendoroid->slug,
+            numero: $nendoroid->numero,
+
+            origin: $nendoroid->origin,
+            waifu: $nendoroid->waifu,
+
+            thumbnail: $thumbnail,
+            extension: $extension,
         );
     }
 }

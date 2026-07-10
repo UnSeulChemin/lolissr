@@ -27,6 +27,25 @@ final class NendoroidAjaxController extends Controller
 
     /*
     |--------------------------------------------------------------------------
+    | AJAX SEARCH
+    |--------------------------------------------------------------------------
+    */
+
+    public function search(string|int $query = ''): never
+    {
+        $searchData = $this->nendoroidReadService->search((string) $query);
+
+        $this->jsonResult(
+            ServiceResult::success(
+                data: [
+                    'results' => $searchData->results,
+                ],
+            ),
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
     | AJAX WAIFUS PAGE
     |--------------------------------------------------------------------------
     */
@@ -50,6 +69,27 @@ final class NendoroidAjaxController extends Controller
                 'totalPages' => $data->totalPages,
             ]
         );
+    }
+
+    public function updateCollectStatus(
+        string $slug,
+        int $numero
+    ): never
+    {
+        $nendoroid = $this->resolveNendoroidOrFail(
+            $slug,
+            $numero
+        );
+
+        $collectStatus = (int) $this->request->input('collectStatus', 0);
+
+        $result = $this->nendoroidWriteService->updateCollectStatus(
+            $nendoroid->slug,
+            $numero,
+            $collectStatus
+        );
+
+        $this->jsonResult($result);
     }
 
     /*

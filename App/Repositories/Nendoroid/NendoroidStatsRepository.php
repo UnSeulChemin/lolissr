@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Repositories\Figurine;
+namespace App\Repositories\Nendoroid;
 
 use App\Models\Model;
 
-final class FigurineStatsRepository extends Model
+final class NendoroidStatsRepository extends Model
 {
-    protected string $table = 'figurine';
+    protected string $table = 'nendoroid';
 
     public function countCollected(): int
     {

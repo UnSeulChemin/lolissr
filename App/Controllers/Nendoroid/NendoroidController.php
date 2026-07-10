@@ -14,6 +14,7 @@ use App\Services\Nendoroid\NendoroidWriteService;
 use Framework\Exceptions\BaseHttpException;
 use Framework\Exceptions\NotFoundException;
 use Framework\Exceptions\ValidationException;
+use Framework\Http\FormRequest;
 use Framework\Http\Request;
 
 final class NendoroidController extends Controller
@@ -53,16 +54,13 @@ final class NendoroidController extends Controller
         $this->title = 'Nendoroids | Waifus'
             . ($data->currentPage > 1 ? ' - Page ' . $data->currentPage : '');
 
-        $this->render(
-            'pages/nendoroid/waifus/index',
-            [
-                'nendoroids' => $data->nendoroids,
-                'currentPage' => $data->currentPage,
-                'totalPages' => $data->totalPages,
-                'totalWaifus' => $data->totalWaifus,
-                'perPage' => $data->perPage,
-            ]
-        );
+        $this->render('pages/nendoroid/waifus/index', [
+            'nendoroids' => $data->nendoroids,
+            'currentPage' => $data->currentPage,
+            'totalWaifus' => $data->totalWaifus,
+            'perPage' => $data->perPage,
+            'totalPages' => $data->totalPages,
+        ]);
     }
 
     public function showWaifu(
@@ -77,39 +75,26 @@ final class NendoroidController extends Controller
 
         $this->title = 'Nendoroids | ' . $nendoroid->waifu;
 
-        $this->render(
-            'pages/nendoroid/waifus/waifu',
-            [
-                'nendoroid' => $nendoroid,
-            ]
-        );
+        $this->render('pages/nendoroid/waifus/waifu', [
+            'nendoroid' => $nendoroid,
+        ]);
     }
 
     public function create(): never
     {
         $this->title = 'Nendoroids | Ajouter';
 
-        $this->render(
-            'pages/nendoroid/ajouter',
-            [
-                'form' => $this->formViewData(
-                    'nendoroid/ajouter',
-                    'nendoroid',
-                ),
-            ]
-        );
+        $this->render('pages/nendoroid/ajouter', [
+            'form' => $this->formViewData(
+                'nendoroid/ajouter',
+                'nendoroid',
+            ),
+        ]);
     }
 
-    public function store(
-        NendoroidCreateRequest $request
-    ): never
+    public function store(NendoroidCreateRequest $request): never
     {
-        if ($request->fails())
-        {
-            throw new ValidationException(
-                $request->errors()
-            );
-        }
+        $this->validateRequest($request);
 
         $result = $this->nendoroidWriteService->create(
             $request->dto(),
@@ -142,10 +127,8 @@ final class NendoroidController extends Controller
                         rawurlencode($nendoroid->slug),
                         $numero,
                     ),
-                    sprintf(
-                        '%s/%s/%d',
-                        self::WAIFUS_PATH,
-                        rawurlencode($nendoroid->slug),
+                    $this->waifuUrl(
+                        $nendoroid->slug,
                         $numero,
                     ),
                 ),
@@ -164,12 +147,7 @@ final class NendoroidController extends Controller
             $numero
         );
 
-        if ($request->fails())
-        {
-            throw new ValidationException(
-                $request->errors()
-            );
-        }
+        $this->validateRequest($request);
 
         $result = $this->nendoroidWriteService->update(
             $nendoroid->slug,
@@ -187,10 +165,8 @@ final class NendoroidController extends Controller
         }
 
         $this->redirectWithSuccess(
-            sprintf(
-                '%s/%s/%d',
-                self::WAIFUS_PATH,
-                rawurlencode($nendoroid->slug),
+            $this->waifuUrl(
+                $nendoroid->slug,
                 $numero
             ),
             $result->message
@@ -202,6 +178,16 @@ final class NendoroidController extends Controller
     | HELPERS
     |--------------------------------------------------------------------------
     */
+
+    private function waifuUrl(string $slug, int $numero): string
+    {
+        return sprintf(
+            '%s/%s/%d',
+            self::WAIFUS_PATH,
+            rawurlencode($slug),
+            $numero
+        );
+    }
 
     private function resolveNendoroidOrFail(
         string $slug,
@@ -215,11 +201,17 @@ final class NendoroidController extends Controller
 
         if ($nendoroid === null)
         {
-            throw new NotFoundException(
-                'Nendoroid introuvable'
-            );
+            throw new NotFoundException('Nendoroid introuvable');
         }
 
         return $nendoroid;
+    }
+
+    private function validateRequest(FormRequest $request): void
+    {
+        if ($request->fails())
+        {
+            throw new ValidationException($request->errors());
+        }
     }
 }

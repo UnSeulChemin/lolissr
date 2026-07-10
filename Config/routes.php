@@ -479,6 +479,37 @@ return static function (Router $router): void
                     [NendoroidAjaxController::class, 'waifusPage'],
                 );
             });
+
+            /*
+            |--------------------------------------------------------------------------
+            | AJAX JSON
+            |--------------------------------------------------------------------------
+            */
+
+            $router->prefix('ajax')->middleware(ExpectJsonMiddleware::class)->group(function (Router $router): void
+            {
+                $router->get(
+                    'recherche/{query}',
+                    [NendoroidAjaxController::class, 'search'],
+                );
+            });
+
+            /*
+            |--------------------------------------------------------------------------
+            | AJAX JSON + CSRF
+            |--------------------------------------------------------------------------
+            */
+
+            $router->prefix('ajax')->middleware([
+                ExpectJsonMiddleware::class,
+                CsrfMiddleware::class,
+            ])->group(function (Router $router): void
+            {
+                $router->post(
+                    'update-collect-status/{slug}/{numero:int}',
+                    [NendoroidAjaxController::class, 'updateCollectStatus'],
+                );
+            });
         });
 
         /*

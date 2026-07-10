@@ -11,10 +11,10 @@ final readonly class NendoroidListData
      */
     public function __construct(
         public array $nendoroids,
-        public int $compteur,
         public int $currentPage,
         public int $totalWaifus,
         public int $perPage,
+        public int $totalPages,
     ) {
     }
 }

@@ -19,6 +19,10 @@ final class NendoroidCreateRequest extends FormRequest
             ->string('waifu')
             ->maxLength('waifu', 100)
 
+            ->required('origin')
+            ->string('origin')
+            ->maxLength('origin', 150)
+
             ->required('company')
             ->string('company')
             ->maxLength('company', 100)
@@ -30,6 +34,9 @@ final class NendoroidCreateRequest extends FormRequest
             ->required('numero')
             ->integer('numero')
             ->min('numero', 1)
+
+            ->nullable('release_date')
+            ->string('release_date')
 
             ->nullable('commentaire')
             ->string('commentaire')
