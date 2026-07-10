@@ -167,6 +167,27 @@ final class MangaAjaxController extends Controller
 
     /*
     |--------------------------------------------------------------------------
+    | UPDATE ARTBOOK READ STATUS
+    |--------------------------------------------------------------------------
+    */
+
+    public function updateArtbookReadStatus(string $slug, int $numero): never
+    {
+        $artbook = $this->resolveArtbookOrFail($slug, $numero);
+
+        $readStatus = (int) $this->request->input('readStatus', 0);
+
+        $result = $this->artbookWriteService->updateReadStatus(
+            $artbook->slug,
+            $artbook->numero,
+            $readStatus
+        );
+
+        $this->jsonResult($result);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
     | DELETE MANGA
     |--------------------------------------------------------------------------
     */

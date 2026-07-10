@@ -89,6 +89,29 @@ final class ArtbookRepository extends Model
         );
     }
 
+    public function updateReadStatus(
+        string $slug,
+        int $numero,
+        bool $readStatus
+    ): bool
+    {
+        return $this->updateBySlugAndNumero(
+            $slug,
+            $numero,
+            [
+                'lu' => (int) $readStatus,
+            ]
+        );
+    }
+
+    public function markXpRewarded(int $id): bool
+    {
+        return $this->update(
+            ['xp_read_rewarded' => 1],
+            ['id' => $id]
+        );
+    }
+
     public function deleteBySlugAndNumero(
         string $slug,
         int $numero
@@ -177,6 +200,8 @@ final class ArtbookRepository extends Model
                 1,
                 (int) ($data['numero'] ?? 1)
             ),
+
+            'lu' => 0,
 
             'artbook' => trim((string) ($data['artbook'] ?? '')),
             'auteur' => Str::nullableTrim($data['auteur'] ?? null),

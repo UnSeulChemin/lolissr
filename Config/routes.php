@@ -286,6 +286,11 @@ return static function (Router $router): void
                 $router->post('update-note/{slug}/{numero:int}', [MangaAjaxController::class, 'updateNote']);
 
                 $router->post('update-read-status/{slug}/{numero:int}', [MangaAjaxController::class, 'updateReadStatus']);
+
+                $router->post(
+                    'artbook/update-read-status/{slug}/{numero:int}',
+                    [MangaAjaxController::class, 'updateArtbookReadStatus'],
+                );
             });
         });
 

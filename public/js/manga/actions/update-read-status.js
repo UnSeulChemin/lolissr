@@ -246,7 +246,14 @@ async function updateReadStatus(
 
         if (data?.data?.xpEarned)
         {
-            message += ' ⭐ +5 XP';
+            const xpAmount =
+                Number(
+                    data?.data?.xpAmount
+                    ?? 0,
+                );
+
+            message +=
+                ` ⭐ +${xpAmount} XP`;
         }
 
         if (data?.data?.seriesXpEarned)

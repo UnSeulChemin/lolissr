@@ -115,6 +115,8 @@ final readonly class ArtbookReadService
             slug: $artbook->slug,
             numero: $artbook->numero,
 
+            lu: $artbook->lu,
+
             artbook: $artbook->artbook,
 
             thumbnail: $thumbnail,

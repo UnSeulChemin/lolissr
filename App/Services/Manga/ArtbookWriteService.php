@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Manga;
 
+use App\Constants\UserXp;
 use App\DTO\Common\ServiceResult;
 use App\DTO\Manga\Inputs\ArtbookCreateDTO;
 use App\DTO\Manga\Inputs\ArtbookUpdateDTO;
@@ -11,6 +12,7 @@ use App\DTO\Upload\UploadThumbnailData;
 use App\Models\Artbook;
 use App\Repositories\Manga\ArtbookRepository;
 use App\Services\UploadService;
+use App\Services\User\UserLevelService;
 
 use Framework\Cache\Cache;
 use Framework\Config\UploadConfig;
@@ -25,6 +27,7 @@ final readonly class ArtbookWriteService
         private ArtbookRepository $artbookRepository,
         private UploadService $uploadService,
         private Database $database,
+        private UserLevelService $userLevelService,
     ) {
     }
 
@@ -67,34 +70,29 @@ final readonly class ArtbookWriteService
                     );
                 }
 
-                $uploadData =
-                    $upload->data['upload']
-                    ?? null;
+                $uploadData = $upload->data['upload'] ?? null;
 
                 if (! $uploadData instanceof UploadThumbnailData)
                 {
-                    return $this->error(
-                        'Upload invalide'
-                    );
+                    return $this->error('Upload invalide');
                 }
 
                 try
                 {
-                    $inserted =
-                        $this->artbookRepository->insert([
-                            'thumbnail' => $uploadData->thumbnailPath,
-                            'extension' => $uploadData->extension,
-                            'slug' => $dto->slug,
-                            'numero' => $dto->numero,
+                    $inserted = $this->artbookRepository->insert([
+                        'thumbnail' => $uploadData->thumbnailPath,
+                        'extension' => $uploadData->extension,
+                        'slug' => $dto->slug,
+                        'numero' => $dto->numero,
 
-                            'artbook' => $dto->artbook,
-                            'auteur' => $dto->auteur,
-                            'serie' => $dto->serie,
-                            'company' => $dto->company,
-                            'release_date' => $dto->release_date,
+                        'artbook' => $dto->artbook,
+                        'auteur' => $dto->auteur,
+                        'serie' => $dto->serie,
+                        'company' => $dto->company,
+                        'release_date' => $dto->release_date,
 
-                            'commentaire' => $dto->commentaire,
-                        ]);
+                        'commentaire' => $dto->commentaire,
+                    ]);
 
                     $failure = $this->writeFailed(
                         $inserted,
@@ -106,24 +104,18 @@ final readonly class ArtbookWriteService
 
                     if ($failure !== null)
                     {
-                        $this->rollbackUpload(
-                            $uploadData,
-                        );
+                        $this->rollbackUpload($uploadData);
 
                         return $failure;
                     }
 
                     $this->clearCache();
 
-                    return $this->success(
-                        'Artbook ajouté avec succès',
-                    );
+                    return $this->success('Artbook ajouté avec succès');
                 }
                 catch (Throwable $exception)
                 {
-                    $this->rollbackUpload(
-                        $uploadData,
-                    );
+                    $this->rollbackUpload($uploadData);
 
                     throw $exception;
                 }
@@ -144,13 +136,11 @@ final readonly class ArtbookWriteService
                 $dto,
             ): ServiceResult
             {
-                $updated =
-                    $this->artbookRepository
-                        ->updateArtbook(
-                            $slug,
-                            $numero,
-                            $dto,
-                        );
+                $updated = $this->artbookRepository->updateArtbook(
+                    $slug,
+                    $numero,
+                    $dto,
+                );
 
                 $failure = $this->writeFailed(
                     $updated,
@@ -167,8 +157,92 @@ final readonly class ArtbookWriteService
 
                 $this->clearCache();
 
+                return $this->success('Artbook mis à jour avec succès');
+            }
+        );
+    }
+
+    public function updateReadStatus(
+        string $slug,
+        int $numero,
+        int $readStatus,
+    ): ServiceResult
+    {
+        if (! in_array($readStatus, [0, 1], true))
+        {
+            return $this->error(
+                'Statut de lecture invalide',
+                422,
+            );
+        }
+
+        return $this->database->transaction(
+            function () use (
+                $slug,
+                $numero,
+                $readStatus,
+            ): ServiceResult
+            {
+                $artbook = $this->artbookRepository->findOneBySlugAndNumero(
+                    $slug,
+                    $numero,
+                );
+
+                if ($artbook === null)
+                {
+                    return $this->error(
+                        'Artbook introuvable',
+                        404,
+                    );
+                }
+
+                $updated = $this->artbookRepository->updateReadStatus(
+                    $slug,
+                    $numero,
+                    $readStatus === 1,
+                );
+
+                $failure = $this->writeFailed(
+                    $updated,
+                    'Update artbook read status',
+                    $slug,
+                    $numero,
+                    'Erreur lors de la mise à jour',
+                );
+
+                if ($failure !== null)
+                {
+                    return $failure;
+                }
+
+                $xpEarned = false;
+
+                if (
+                    ! $artbook->lu
+                    && $readStatus === 1
+                    && ! $artbook->xp_read_rewarded
+                )
+                {
+                    $xpEarned = $this->rewardReadXp($artbook);
+                }
+
+                $this->clearCache();
+
+                $user = user();
+
                 return $this->success(
-                    'Artbook mis à jour avec succès',
+                    $readStatus === 1
+                        ? 'Artbook marqué comme lu'
+                        : 'Artbook marqué comme non lu',
+                    [
+                        'readStatus' => $readStatus,
+                        'xpEarned' => $xpEarned,
+                        'xpAmount' => $xpEarned
+                            ? UserXp::READ_ARTBOOK
+                            : 0,
+                        'level' => $user?->level,
+                        'xp' => $user?->xp,
+                    ]
                 );
             }
         );
@@ -185,12 +259,10 @@ final readonly class ArtbookWriteService
                 $numero,
             ): ServiceResult
             {
-                $artbook =
-                    $this->artbookRepository
-                        ->findOneBySlugAndNumero(
-                            $slug,
-                            $numero,
-                        );
+                $artbook = $this->artbookRepository->findOneBySlugAndNumero(
+                    $slug,
+                    $numero,
+                );
 
                 if ($artbook === null)
                 {
@@ -200,12 +272,10 @@ final readonly class ArtbookWriteService
                     );
                 }
 
-                $deleted =
-                    $this->artbookRepository
-                        ->deleteBySlugAndNumero(
-                            $slug,
-                            $numero,
-                        );
+                $deleted = $this->artbookRepository->deleteBySlugAndNumero(
+                    $slug,
+                    $numero,
+                );
 
                 $failure = $this->writeFailed(
                     $deleted,
@@ -220,17 +290,38 @@ final readonly class ArtbookWriteService
                     return $failure;
                 }
 
-                $this->removeThumbnail(
-                    $artbook,
-                );
+                $this->removeThumbnail($artbook);
 
                 $this->clearCache();
 
-                return $this->success(
-                    'Artbook supprimé avec succès',
-                );
+                return $this->success('Artbook supprimé avec succès');
             }
         );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | XP
+    |--------------------------------------------------------------------------
+    */
+
+    private function rewardReadXp(Artbook $artbook): bool
+    {
+        $user = user();
+
+        if ($user === null)
+        {
+            return false;
+        }
+
+        $this->userLevelService->addXp(
+            $user,
+            UserXp::READ_ARTBOOK,
+        );
+
+        $this->artbookRepository->markXpRewarded($artbook->id);
+
+        return true;
     }
 
     /*
@@ -239,35 +330,24 @@ final readonly class ArtbookWriteService
     |--------------------------------------------------------------------------
     */
 
-    private function rollbackUpload(
-        UploadThumbnailData $upload
-    ): void
+    private function rollbackUpload(UploadThumbnailData $upload): void
     {
-        $this->uploadService->removeFile(
-            $upload->destinationPath
-        );
+        $this->uploadService->removeFile($upload->destinationPath);
     }
 
-    private function removeThumbnail(
-        Artbook $artbook
-    ): void
+    private function removeThumbnail(Artbook $artbook): void
     {
-        if (
-            $artbook->thumbnail === ''
-            || $artbook->extension === ''
-        ) {
+        if ($artbook->thumbnail === '' || $artbook->extension === '')
+        {
             return;
         }
 
-        $path =
-            UploadConfig::thumbnailDirectory('artbook')
+        $path = UploadConfig::thumbnailDirectory('artbook')
             . $artbook->thumbnail
             . '.'
             . $artbook->extension;
 
-        $this->uploadService->removeFile(
-            $path
-        );
+        $this->uploadService->removeFile($path);
     }
 
     /*
@@ -278,9 +358,7 @@ final readonly class ArtbookWriteService
 
     private function clearCache(): void
     {
-        Cache::forget(
-            'home.dashboard'
-        );
+        Cache::forget('home.dashboard');
     }
 
     private function logFailure(
@@ -289,9 +367,7 @@ final readonly class ArtbookWriteService
         int $numero
     ): void
     {
-        Logger::error(
-            "{$action} échoué slug={$slug} numero={$numero}"
-        );
+        Logger::error("{$action} échoué slug={$slug} numero={$numero}");
     }
 
     private function writeFailed(
@@ -307,15 +383,9 @@ final readonly class ArtbookWriteService
             return null;
         }
 
-        $this->logFailure(
-            $action,
-            $slug,
-            $numero
-        );
+        $this->logFailure($action, $slug, $numero);
 
-        return $this->error(
-            $message
-        );
+        return $this->error($message);
     }
 
     /**

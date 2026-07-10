@@ -250,6 +250,9 @@ final readonly class MangaWriteService
                     [
                         'readStatus' => $readStatus,
                         'xpEarned' => $xpEarned,
+                        'xpAmount' => $xpEarned
+                            ? UserXp::READ_TOME
+                            : 0,
                         'seriesXpEarned' => $seriesXpEarned,
                         'level' => $user?->level,
                         'xp' => $user?->xp,

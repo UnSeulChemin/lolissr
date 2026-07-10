@@ -10,10 +10,6 @@ import {
 // INVALIDATE
 // =========================================
 
-// =========================================
-// INVALIDATE
-// =========================================
-
 export function invalidateMangaPages()
 {
     invalidatePage(
@@ -42,5 +38,9 @@ export function invalidateMangaPages()
 
     invalidatePage(
         '/lolissr/manga/artbooks',
+    );
+
+    invalidatePage(
+        window.location.pathname,
     );
 }

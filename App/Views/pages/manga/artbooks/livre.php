@@ -18,6 +18,12 @@ $deleteUrl = $view->baseUri . 'manga/artbooks/' . $slug . '/supprimer/' . $numer
 
 $returnUrl = $view->baseUri . 'manga/artbooks';
 
+$updateReadStatusUrl = $view->baseUri . 'manga/ajax/artbook/update-read-status/' . $slug . '/' . $numero;
+
+$isLu = $artbook->lu;
+
+$readStatusLabel = $isLu ? 'Marquer comme non lu' : 'Marquer comme lu';
+
 $hasCommentaire = $artbook->commentaire !== null
     && trim($artbook->commentaire) !== '';
 
@@ -100,7 +106,8 @@ $commentaire = $hasCommentaire
 
                     <?= $artbook->company !== ''
                         ? e($artbook->company)
-                        : 'Non renseignée' ?>
+                        : 'Non renseignée'
+                    ?>
 
                 </div>
 
@@ -116,11 +123,14 @@ $commentaire = $hasCommentaire
 
                     <?= $artbook->releaseDate !== null
                         ? e($artbook->releaseDate)
-                        : 'Non renseignée' ?>
+                        : 'Non renseignée'
+                    ?>
 
                 </div>
 
             </div>
+
+            <!-- COMMENTAIRE -->
 
             <div class="detail-row detail-row-comment">
 
@@ -136,9 +146,25 @@ $commentaire = $hasCommentaire
 
             </div>
 
+            <!-- ACTIONS -->
+
             <div class="detail-actions">
 
                 <div class="detail-actions-left">
+
+                    <button
+                        type="button"
+                        class="js-read-status-button <?= $isLu ? 'active' : '' ?>"
+                        data-url="<?= e($updateReadStatusUrl) ?>"
+                        data-read-status="<?= $isLu ? '1' : '0' ?>"
+                        title="<?= e($readStatusLabel) ?>"
+                        aria-label="<?= e($readStatusLabel) ?>"
+                    >
+                        <svg class="lu-icon" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M7 3C6.45 3 6 3.45 6 4V21L12 17L18 21V4C18 3.45 17.55 3 17 3H7Z"/>
+                        </svg>
+                    </button>
+
                 </div>
 
                 <div class="detail-actions-right">

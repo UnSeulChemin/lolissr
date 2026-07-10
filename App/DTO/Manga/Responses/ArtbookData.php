@@ -12,6 +12,8 @@ final readonly class ArtbookData
         public string $slug,
         public int $numero,
 
+        public bool $lu,
+
         public string $artbook,
 
         public ?string $thumbnail,

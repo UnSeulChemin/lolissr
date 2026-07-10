@@ -16,6 +16,10 @@ final class Artbook
 
     public int $numero = 1;
 
+    public bool $lu = false;
+
+    public bool $xp_read_rewarded = false;
+
     public string $artbook = '';
 
     public ?string $auteur = null;
