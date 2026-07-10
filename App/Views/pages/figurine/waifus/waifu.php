@@ -168,7 +168,11 @@ $collectStatusLabel = $isCollected
 
                     <button
                         type="button"
-                        class="js-collect-status-button <?= $isCollected ? 'active' : '' ?>"
+                        class="
+                            js-collect-status-button
+                            js-figurine-collect-status-button
+                            <?= $isCollected ? 'active' : '' ?>
+                        "
                         data-url="<?= e($updateCollectStatusUrl) ?>"
                         data-slug="<?= e($slug) ?>"
                         data-numero="<?= $figurine->numero ?>"

@@ -11,6 +11,10 @@ import {
 } from '../manga/pages/modifier.js';
 
 import {
+    initUpdateNendoroidCollectStatus,
+} from '../nendoroid/actions/update-collect-status.js';
+
+import {
     initUpdateNote,
 } from '../manga/actions/update-note.js';
 
@@ -305,6 +309,11 @@ export const ROUTE_INITIALIZERS = [
             [
                 'DeleteNendoroid',
                 initDeleteNendoroid,
+            ],
+
+            [
+                'UpdateNendoroidCollectStatus',
+                initUpdateNendoroidCollectStatus,
             ],
 
             [

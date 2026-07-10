@@ -19,4 +19,6 @@ export function invalidateFigurinePages()
     invalidatePage('/lolissr/figurine');
 
     invalidatePage('/lolissr/figurine/waifus');
+
+    invalidatePage(window.location.pathname);
 }

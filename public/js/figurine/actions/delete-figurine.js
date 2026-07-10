@@ -167,9 +167,7 @@ async function deleteFigurine(
             data.data?.redirect
             || redirectUrl;
 
-        invalidateFigurinePages(
-            button.dataset.slug,
-        );
+        invalidateFigurinePages();
 
         showToast(
             data.message

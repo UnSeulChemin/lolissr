@@ -28,8 +28,8 @@ import {
 } from '../../core/errors/FrontendError.js';
 
 import {
-    invalidateFigurinePages,
-} from '../figurine-cache.js';
+    invalidateNendoroidPages,
+} from '../nendoroid-cache.js';
 
 import {
     updateHeaderUser,
@@ -40,7 +40,7 @@ import {
 // =========================================
 
 const BUTTON_SELECTOR =
-    '.js-figurine-collect-status-button';
+    '.js-nendoroid-collect-status-button';
 
 // =========================================
 // STATE
@@ -108,8 +108,8 @@ function refreshButtons()
                     button
                     instanceof HTMLButtonElement
                 )
-            ) {
-
+            )
+            {
                 return;
             }
 
@@ -132,18 +132,16 @@ async function updateCollectStatus(
     button,
 )
 {
-    if (
-        button.disabled
-    ) {
-
+    if (button.disabled)
+    {
         return;
     }
 
     const url =
         button.dataset.url;
 
-    if (!url) {
-
+    if (!url)
+    {
         return;
     }
 
@@ -172,8 +170,8 @@ async function updateCollectStatus(
         nextCollectStatus,
     );
 
-    try {
-
+    try
+    {
         const data =
             await post(
                 url,
@@ -199,14 +197,14 @@ async function updateCollectStatus(
         if (
             data?.success
             !== true
-        ) {
-
+        )
+        {
             throw new FrontendError(
                 data?.message
                 || 'Erreur mise à jour',
                 {
                     code:
-                        'COLLECT_STATUS_UPDATE_FAILED',
+                        'NENDOROID_COLLECT_STATUS_UPDATE_FAILED',
                 },
             );
         }
@@ -232,7 +230,7 @@ async function updateCollectStatus(
             data?.data?.level,
         );
 
-        invalidateFigurinePages();
+        invalidateNendoroidPages();
 
         /*
         |--------------------------------------------------------------------------
@@ -246,22 +244,16 @@ async function updateCollectStatus(
 
         if (data?.data?.xpEarned)
         {
-            message += ' ⭐ +50 XP';
+            message += ' ⭐ +20 XP';
         }
 
         showToast(
             message,
             'success',
         );
-
-    } catch (error) {
-
-        /*
-        |--------------------------------------------------------------------------
-        | RESTORE PREVIOUS STATE
-        |--------------------------------------------------------------------------
-        */
-
+    }
+    catch (error)
+    {
         updateCollectButtonState(
             button,
             currentCollectStatus,
@@ -270,9 +262,9 @@ async function updateCollectStatus(
         handleError(
             error,
         );
-
-    } finally {
-
+    }
+    finally
+    {
         button.disabled =
             false;
     }
@@ -282,10 +274,10 @@ async function updateCollectStatus(
 // INIT
 // =========================================
 
-export function initUpdateCollectStatus()
+export function initUpdateNendoroidCollectStatus()
 {
-    if (initialized) {
-
+    if (initialized)
+    {
         return;
     }
 
@@ -306,8 +298,8 @@ export function initUpdateCollectStatus()
                     button
                     instanceof HTMLButtonElement
                 )
-            ) {
-
+            )
+            {
                 return;
             }
 
@@ -329,7 +321,7 @@ export function initUpdateCollectStatus()
     refreshButtons();
 
     debug(
-        'COLLECT_STATUS',
+        'NENDOROID_COLLECT_STATUS',
         'initialized',
     );
 }

@@ -167,9 +167,7 @@ async function deleteNendoroid(
             data.data?.redirect
             || redirectUrl;
 
-        invalidateNendoroidPages(
-            button.dataset.slug,
-        );
+        invalidateNendoroidPages();
 
         showToast(
             data.message
