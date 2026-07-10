@@ -6,6 +6,17 @@ use App\DTO\Common\Responses\FormViewData;
 
 /** @var FormViewData $form */
 
+$errors = $form->errors;
+$old = $form->old;
+
+$waifuValue = $old['waifu'] ?? '';
+$originValue = $old['origin'] ?? '';
+$slugValue = $old['slug'] ?? '';
+$companyValue = $old['company'] ?? '';
+$numeroValue = $old['numero'] ?? '';
+$releaseDateValue = $old['release_date'] ?? '';
+$commentaireValue = $old['commentaire'] ?? '';
+
 ?>
 
 <section class="layout-container dashboard-page">
@@ -30,9 +41,7 @@ use App\DTO\Common\Responses\FormViewData;
                         class="form-label"
                         for="waifu"
                     >
-
                         Waifu
-
                     </label>
 
                     <input
@@ -41,17 +50,45 @@ use App\DTO\Common\Responses\FormViewData;
                         name="waifu"
                         id="waifu"
                         placeholder="Ex : Asuna"
-                        value="<?= e((string) ($form->old['waifu'] ?? '')) ?>"
+                        value="<?= e($waifuValue) ?>"
                         autofocus
                         required
                     >
 
-                    <?php if (! empty($form->errors['waifu'])): ?>
+                    <?php if (isset($errors['waifu']) && $errors['waifu'] !== ''): ?>
 
                         <p class="form-error">
+                            <?= e($errors['waifu']) ?>
+                        </p>
 
-                            <?= e($form->errors['waifu']) ?>
+                    <?php endif; ?>
 
+                </div>
+
+                <div class="form-group">
+
+                    <label
+                        class="form-label"
+                        for="origin"
+                    >
+                        Origin
+                    </label>
+
+                    <input
+                        class="form-input"
+                        type="text"
+                        name="origin"
+                        id="origin"
+                        placeholder="Ex : Sword Art Online"
+                        value="<?= e($originValue) ?>"
+                        maxlength="150"
+                        required
+                    >
+
+                    <?php if (isset($errors['origin']) && $errors['origin'] !== ''): ?>
+
+                        <p class="form-error">
+                            <?= e($errors['origin']) ?>
                         </p>
 
                     <?php endif; ?>
@@ -64,9 +101,7 @@ use App\DTO\Common\Responses\FormViewData;
                         class="form-label"
                         for="slug"
                     >
-
                         Slug
-
                     </label>
 
                     <input
@@ -75,50 +110,14 @@ use App\DTO\Common\Responses\FormViewData;
                         name="slug"
                         id="slug"
                         placeholder="Ex : asuna"
-                        value="<?= e((string) ($form->old['slug'] ?? '')) ?>"
+                        value="<?= e($slugValue) ?>"
                         required
                     >
 
-                    <?php if (! empty($form->errors['slug'])): ?>
+                    <?php if (isset($errors['slug']) && $errors['slug'] !== ''): ?>
 
                         <p class="form-error">
-
-                            <?= e($form->errors['slug']) ?>
-
-                        </p>
-
-                    <?php endif; ?>
-
-                </div>
-
-                <div class="form-group">
-
-                    <label
-                        class="form-label"
-                        for="numero"
-                    >
-
-                        Numéro
-
-                    </label>
-
-                    <input
-                        class="form-input"
-                        type="number"
-                        name="numero"
-                        id="numero"
-                        min="1"
-                        placeholder="Ex : 1"
-                        value="<?= e((string) ($form->old['numero'] ?? '')) ?>"
-                        required
-                    >
-
-                    <?php if (! empty($form->errors['numero'])): ?>
-
-                        <p class="form-error">
-
-                            <?= e($form->errors['numero']) ?>
-
+                            <?= e($errors['slug']) ?>
                         </p>
 
                     <?php endif; ?>
@@ -131,9 +130,7 @@ use App\DTO\Common\Responses\FormViewData;
                         class="form-label"
                         for="company"
                     >
-
                         Company
-
                     </label>
 
                     <input
@@ -142,17 +139,74 @@ use App\DTO\Common\Responses\FormViewData;
                         name="company"
                         id="company"
                         placeholder="Ex : Good Smile Company"
-                        value="<?= e((string) ($form->old['company'] ?? '')) ?>"
+                        value="<?= e($companyValue) ?>"
                         maxlength="100"
                         required
                     >
 
-                    <?php if (! empty($form->errors['company'])): ?>
+                    <?php if (isset($errors['company']) && $errors['company'] !== ''): ?>
 
                         <p class="form-error">
+                            <?= e($errors['company']) ?>
+                        </p>
 
-                            <?= e($form->errors['company']) ?>
+                    <?php endif; ?>
 
+                </div>
+
+                <div class="form-group">
+
+                    <label
+                        class="form-label"
+                        for="numero"
+                    >
+                        Numéro
+                    </label>
+
+                    <input
+                        class="form-input"
+                        type="number"
+                        name="numero"
+                        id="numero"
+                        min="1"
+                        placeholder="Ex : 1"
+                        value="<?= e($numeroValue) ?>"
+                        required
+                    >
+
+                    <?php if (isset($errors['numero']) && $errors['numero'] !== ''): ?>
+
+                        <p class="form-error">
+                            <?= e($errors['numero']) ?>
+                        </p>
+
+                    <?php endif; ?>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label
+                        class="form-label"
+                        for="release_date"
+                    >
+                        Date de sortie
+                    </label>
+
+                    <input
+                        class="form-input"
+                        type="text"
+                        name="release_date"
+                        id="release_date"
+                        placeholder="JJ/MM/AAAA"
+                        value="<?= e($releaseDateValue) ?>"
+                        maxlength="10"
+                    >
+
+                    <?php if (isset($errors['release_date']) && $errors['release_date'] !== ''): ?>
+
+                        <p class="form-error">
+                            <?= e($errors['release_date']) ?>
                         </p>
 
                     <?php endif; ?>
@@ -165,9 +219,7 @@ use App\DTO\Common\Responses\FormViewData;
                         class="form-label"
                         for="image"
                     >
-
                         Image
-
                     </label>
 
                     <label
@@ -185,19 +237,15 @@ use App\DTO\Common\Responses\FormViewData;
                         >
 
                         <span class="form-upload-text">
-
                             Choisir une image
-
                         </span>
 
                     </label>
 
-                    <?php if (! empty($form->errors['image'])): ?>
+                    <?php if (isset($errors['image']) && $errors['image'] !== ''): ?>
 
                         <p class="form-error">
-
-                            <?= e($form->errors['image']) ?>
-
+                            <?= e($errors['image']) ?>
                         </p>
 
                     <?php endif; ?>
@@ -210,9 +258,7 @@ use App\DTO\Common\Responses\FormViewData;
                         class="form-label"
                         for="commentaire"
                     >
-
                         Commentaire
-
                     </label>
 
                     <textarea
@@ -222,14 +268,12 @@ use App\DTO\Common\Responses\FormViewData;
                         rows="4"
                         maxlength="1000"
                         placeholder="Ex : Très belle Nendoroid, édition limitée..."
-                    ><?= e((string) ($form->old['commentaire'] ?? '')) ?></textarea>
+                    ><?= e($commentaireValue) ?></textarea>
 
-                    <?php if (! empty($form->errors['commentaire'])): ?>
+                    <?php if (isset($errors['commentaire']) && $errors['commentaire'] !== ''): ?>
 
                         <p class="form-error">
-
-                            <?= e($form->errors['commentaire']) ?>
-
+                            <?= e($errors['commentaire']) ?>
                         </p>
 
                     <?php endif; ?>
@@ -242,9 +286,7 @@ use App\DTO\Common\Responses\FormViewData;
                         type="submit"
                         class="form-submit"
                     >
-
                         Ajouter
-
                     </button>
 
                     <a
@@ -254,9 +296,7 @@ use App\DTO\Common\Responses\FormViewData;
                         "
                         href="<?= e($form->cancelUrl) ?>"
                     >
-
                         Retour
-
                     </a>
 
                 </div>
