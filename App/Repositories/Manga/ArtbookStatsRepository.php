@@ -32,6 +32,20 @@ final class ArtbookStatsRepository extends Model
         return $this->countRows();
     }
 
+    public function countRead(): int
+    {
+        return (int) $this->fetchSingleValue(
+            "
+            SELECT COUNT(*) AS total
+
+            FROM {$this->table()}
+
+            WHERE lu = 1
+            ",
+            'total',
+        );
+    }
+
     public function countSeries(): int
     {
         return (int) $this->fetchSingleValue(

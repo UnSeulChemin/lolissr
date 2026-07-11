@@ -6,16 +6,20 @@ namespace App\Services\Profile;
 
 use App\Constants\UserXp;
 use App\DTO\Profile\ProfileStatsData;
-use App\Repositories\Manga\MangaStatsRepository;
-use App\Repositories\Chinois\ChinoisVocabulaireStatsRepository;
 use App\Repositories\Chinois\ChinoisGrammaireStatsRepository;
+use App\Repositories\Chinois\ChinoisVocabulaireStatsRepository;
 use App\Repositories\Figurine\FigurineStatsRepository;
+use App\Repositories\Manga\ArtbookStatsRepository;
+use App\Repositories\Manga\MangaStatsRepository;
+use App\Repositories\Nendoroid\NendoroidStatsRepository;
 
 final readonly class ProfileStatsService
 {
     public function __construct(
         private MangaStatsRepository $mangaStatsRepository,
+        private ArtbookStatsRepository $artbookStatsRepository,
         private FigurineStatsRepository $figurineStatsRepository,
+        private NendoroidStatsRepository $nendoroidStatsRepository,
         private ChinoisVocabulaireStatsRepository $vocabularyStatsRepository,
         private ChinoisGrammaireStatsRepository $grammarStatsRepository,
     ) {
@@ -39,6 +43,17 @@ final readonly class ProfileStatsService
 
     /*
     |--------------------------------------------------------------------------
+    | ARTBOOKS
+    |--------------------------------------------------------------------------
+    */
+
+    public function readArtbooks(): int
+    {
+        return $this->artbookStatsRepository->countRead();
+    }
+
+    /*
+    |--------------------------------------------------------------------------
     | FIGURINES
     |--------------------------------------------------------------------------
     */
@@ -46,6 +61,17 @@ final readonly class ProfileStatsService
     public function collectedFigurines(): int
     {
         return $this->figurineStatsRepository->countCollected();
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | NENDOROIDS
+    |--------------------------------------------------------------------------
+    */
+
+    public function collectedNendoroids(): int
+    {
+        return $this->nendoroidStatsRepository->countCollected();
     }
 
     /*
@@ -80,11 +106,23 @@ final readonly class ProfileStatsService
         $tomeXp = $readTomes * UserXp::READ_TOME;
         $seriesXp = $completedSeries * UserXp::COMPLETE_SERIES;
 
+        // ARTBOOKS
+        $readArtbooks = $this->readArtbooks();
+
+        // ARTBOOKS XP
+        $artbookXp = $readArtbooks * UserXp::READ_ARTBOOK;
+
         // FIGURINES
         $figurinesCollected = $this->collectedFigurines();
 
         // FIGURINES XP
         $figurinesXp = $figurinesCollected * UserXp::COLLECT_FIGURINE;
+
+        // NENDOROIDS
+        $nendoroidsCollected = $this->collectedNendoroids();
+
+        // NENDOROIDS XP
+        $nendoroidsXp = $nendoroidsCollected * UserXp::COLLECT_NENDOROID;
 
         // CHINESE
         $vocabularyLearned = $this->learnedVocabulary();
@@ -101,8 +139,14 @@ final readonly class ProfileStatsService
             tomeXp: $tomeXp,
             seriesXp: $seriesXp,
 
+            readArtbooks: $readArtbooks,
+            artbookXp: $artbookXp,
+
             figurinesCollected: $figurinesCollected,
             figurinesXp: $figurinesXp,
+
+            nendoroidsCollected: $nendoroidsCollected,
+            nendoroidsXp: $nendoroidsXp,
 
             vocabularyLearned: $vocabularyLearned,
             grammarLearned: $grammarLearned,
@@ -113,7 +157,9 @@ final readonly class ProfileStatsService
             totalXp:
                 $tomeXp
                 + $seriesXp
+                + $artbookXp
                 + $figurinesXp
+                + $nendoroidsXp
                 + $vocabularyXp
                 + $grammarXp,
         );

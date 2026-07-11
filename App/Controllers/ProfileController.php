@@ -43,8 +43,14 @@ final class ProfileController extends Controller
             'completedSeries' => $stats->completedSeries,
             'seriesXp' => $stats->seriesXp,
 
+            'readArtbooks' => $stats->readArtbooks,
+            'artbookXp' => $stats->artbookXp,
+
             'figurinesCollected' => $stats->figurinesCollected,
             'figurinesXp' => $stats->figurinesXp,
+
+            'nendoroidsCollected' => $stats->nendoroidsCollected,
+            'nendoroidsXp' => $stats->nendoroidsXp,
 
             'vocabularyLearned' => $stats->vocabularyLearned,
             'vocabularyXp' => $stats->vocabularyXp,
@@ -64,6 +70,8 @@ final class ProfileController extends Controller
 
         assert($user !== null);
 
-        $this->render('pages/profile/personnalisation', ['user' => $user]);
+        $this->render('pages/profile/personnalisation', [
+            'user' => $user,
+        ]);
     }
 }

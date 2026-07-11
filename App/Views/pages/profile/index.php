@@ -15,13 +15,17 @@ use App\Models\User;
 /** @var int $tomeXp */
 /** @var int $completedSeries */
 /** @var int $seriesXp */
-/** @var int $totalProfileXp */
+/** @var int $readArtbooks */
+/** @var int $artbookXp */
+/** @var int $figurinesCollected */
+/** @var int $figurinesXp */
+/** @var int $nendoroidsCollected */
+/** @var int $nendoroidsXp */
 /** @var int $vocabularyLearned */
 /** @var int $vocabularyXp */
 /** @var int $grammarLearned */
 /** @var int $grammarXp */
-/** @var int $figurinesCollected */
-/** @var int $figurinesXp */
+/** @var int $totalProfileXp */
 
 $avatarPath =
     "{$view->baseUri}images/avatar/thumbnail/{$user->avatar}.{$user->avatar_extension}";
@@ -119,7 +123,6 @@ $framePath =
                     |...]
                 </div>
 
-
             </div>
 
         </article>
@@ -185,7 +188,7 @@ $framePath =
 
     <section class="profile-stats">
 
-        <section class="profile-stat-row">
+        <div class="profile-stat-row">
 
             <article class="card transition-card profile-stat-card">
 
@@ -206,21 +209,13 @@ $framePath =
                 </h2>
 
                 <p class="profile-stat-value">
-
-                    <?= number_format(
-                        $totalProfileXp,
-                        0,
-                        ',',
-                        ' ',
-                    ) ?>
-
+                    <?= number_format($totalProfileXp, 0, ',', ' ') ?>
                     XP
-
                 </p>
 
             </article>
 
-        </section>
+        </div>
 
         <div class="profile-stat-row">
 
@@ -243,16 +238,8 @@ $framePath =
                 </h2>
 
                 <p class="profile-stat-value">
-
-                    <?= number_format(
-                        $tomeXp,
-                        0,
-                        ',',
-                        ' ',
-                    ) ?>
-
+                    <?= number_format($tomeXp, 0, ',', ' ') ?>
                     XP
-
                 </p>
 
             </article>
@@ -280,16 +267,8 @@ $framePath =
                 </h2>
 
                 <p class="profile-stat-value">
-
-                    <?= number_format(
-                        $seriesXp,
-                        0,
-                        ',',
-                        ' ',
-                    ) ?>
-
+                    <?= number_format($seriesXp, 0, ',', ' ') ?>
                     XP
-
                 </p>
 
             </article>
@@ -301,7 +280,36 @@ $framePath =
             <article class="card transition-card profile-stat-card">
 
                 <h2 class="profile-stat-title">
-                    🧸 Figurines
+                    📕 Artbooks lus
+                </h2>
+
+                <p class="profile-stat-value">
+                    <?= number_format($readArtbooks) ?>
+                </p>
+
+            </article>
+
+            <article class="card transition-card profile-stat-card">
+
+                <h2 class="profile-stat-title">
+                    ⭐ XP Artbooks
+                </h2>
+
+                <p class="profile-stat-value">
+                    <?= number_format($artbookXp, 0, ',', ' ') ?>
+                    XP
+                </p>
+
+            </article>
+
+        </div>
+
+        <div class="profile-stat-row">
+
+            <article class="card transition-card profile-stat-card">
+
+                <h2 class="profile-stat-title">
+                    🎀 Figurines
                 </h2>
 
                 <p class="profile-stat-value">
@@ -317,16 +325,37 @@ $framePath =
                 </h2>
 
                 <p class="profile-stat-value">
-
-                    <?= number_format(
-                        $figurinesXp,
-                        0,
-                        ',',
-                        ' ',
-                    ) ?>
-
+                    <?= number_format($figurinesXp, 0, ',', ' ') ?>
                     XP
+                </p>
 
+            </article>
+
+        </div>
+
+        <div class="profile-stat-row">
+
+            <article class="card transition-card profile-stat-card">
+
+                <h2 class="profile-stat-title">
+                    🪆 Nendoroids
+                </h2>
+
+                <p class="profile-stat-value">
+                    <?= number_format($nendoroidsCollected) ?>
+                </p>
+
+            </article>
+
+            <article class="card transition-card profile-stat-card">
+
+                <h2 class="profile-stat-title">
+                    ⭐ XP Nendoroids
+                </h2>
+
+                <p class="profile-stat-value">
+                    <?= number_format($nendoroidsXp, 0, ',', ' ') ?>
+                    XP
                 </p>
 
             </article>
