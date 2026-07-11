@@ -227,6 +227,7 @@ async function handleSearch(
 
         const [
             mangas,
+            artbooks,
             chinois,
             figurines,
             nendoroids,
@@ -234,6 +235,11 @@ async function handleSearch(
         ] = await Promise.all([
             fetchSearchResults(
                 `${searchUrl}/${encodeURIComponent(query)}`,
+                abortController.signal,
+            ),
+
+            fetchSearchResults(
+                `${basePath}manga/ajax/recherche/artbooks/${encodeURIComponent(query)}`,
                 abortController.signal,
             ),
 
@@ -257,6 +263,7 @@ async function handleSearch(
 
         renderResults({
             mangas,
+            artbooks,
             chinois,
             figurines,
             nendoroids,

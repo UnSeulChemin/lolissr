@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace App\Services\Manga;
 
 use App\DTO\Manga\Responses\ArtbookData;
+use App\DTO\Manga\Responses\ArtbookSearchData;
+use App\DTO\Manga\Responses\ArtbookSearchItemData;
 use App\DTO\Manga\Responses\ArtbookSeriesData;
 use App\DTO\Manga\Responses\ArtbookSeriesItemData;
 use App\Models\Artbook;
 use App\Repositories\Manga\ArtbookCollectionRepository;
 use App\Repositories\Manga\ArtbookRepository;
+use App\Repositories\Manga\ArtbookSearchRepository;
 use App\Repositories\Manga\ArtbookStatsRepository;
 
 use Framework\Application\App;
@@ -20,6 +23,7 @@ final readonly class ArtbookReadService
     public function __construct(
         private ArtbookRepository $artbookRepository,
         private ArtbookCollectionRepository $collectionRepository,
+        private ArtbookSearchRepository $searchRepository,
         private ArtbookStatsRepository $statsRepository,
     ) {
     }
@@ -50,10 +54,16 @@ final readonly class ArtbookReadService
             return null;
         }
 
-        $artbooks = $this->collectionRepository->findPaginated($perPage, $page);
+        $artbooks = $this->collectionRepository->findPaginated(
+            $perPage,
+            $page,
+        );
 
         return new ArtbookSeriesData(
-            artbooks: array_map($this->mapSeriesItem(...), $artbooks),
+            artbooks: array_map(
+                $this->mapSeriesItem(...),
+                $artbooks
+            ),
             currentPage: $page,
             totalArtbooks: $totalArtbooks,
             perPage: $perPage,
@@ -69,7 +79,10 @@ final readonly class ArtbookReadService
 
     public function one(string $slug, int $numero): ?ArtbookData
     {
-        $artbook = $this->artbookRepository->findOneBySlugAndNumero($slug, $numero);
+        $artbook = $this->artbookRepository->findOneBySlugAndNumero(
+            $slug,
+            $numero
+        );
 
         if ($artbook === null)
         {
@@ -77,6 +90,27 @@ final readonly class ArtbookReadService
         }
 
         return $this->mapArtbook($artbook);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | SEARCH
+    |--------------------------------------------------------------------------
+    */
+
+    public function search(string|int $query = ''): ArtbookSearchData
+    {
+        $query = trim((string) $query);
+
+        $results = $this->searchRepository->search($query);
+
+        return new ArtbookSearchData(
+            results: array_map(
+                $this->mapSearchItem(...),
+                $results
+            ),
+            search: $query,
+        );
     }
 
     /*
@@ -187,6 +221,37 @@ final readonly class ArtbookReadService
                 $serie
                 ?? $auteur
                 ?? 'Artbook',
+        );
+    }
+
+    private function mapSearchItem(Artbook $artbook): ArtbookSearchItemData
+    {
+        $thumbnail = $artbook->thumbnail !== ''
+            ? $artbook->thumbnail
+            : null;
+
+        $extension = $artbook->extension !== ''
+            ? $artbook->extension
+            : null;
+
+        $auteur = trim((string) $artbook->auteur) !== ''
+            ? $artbook->auteur
+            : null;
+
+        $serie = trim((string) $artbook->serie) !== ''
+            ? $artbook->serie
+            : null;
+
+        return new ArtbookSearchItemData(
+            slug: $artbook->slug,
+            numero: $artbook->numero,
+
+            artbook: $artbook->artbook,
+            auteur: $auteur,
+            serie: $serie,
+
+            thumbnail: $thumbnail,
+            extension: $extension,
         );
     }
 }

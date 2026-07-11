@@ -12,6 +12,7 @@ import {
     buildChineseResult,
     buildFigurineResult,
     buildNendoroidResult,
+    buildArtbookResult,
 } from '../builders/search-result-builders.js';
 
 import {
@@ -80,6 +81,7 @@ function appendSection(
 export function renderResults(
     {
         mangas,
+        artbooks,
         chinois,
         figurines,
         nendoroids,
@@ -117,6 +119,32 @@ export function renderResults(
                 (manga) =>
                     buildMangaResult(
                         manga,
+                        rawValue,
+                        basePath,
+                    ),
+
+            searchInput,
+            searchResults,
+            searchDropdown,
+            setupResultItem,
+            index,
+        });
+
+    index =
+        appendSection({
+            title:
+                '📕 ARTBOOKS',
+
+            results:
+                artbooks.slice(
+                    0,
+                    5,
+                ),
+
+            buildItem:
+                (artbook) =>
+                    buildArtbookResult(
+                        artbook,
                         rawValue,
                         basePath,
                     ),

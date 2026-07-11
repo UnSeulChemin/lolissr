@@ -74,7 +74,7 @@ use App\DTO\Common\Responses\ViewData;
                 class="dashboard-card-icon"
                 aria-hidden="true"
             >
-                🎨
+                📕
             </span>
 
             <span class="dashboard-card-title">

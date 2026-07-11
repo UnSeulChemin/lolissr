@@ -15,9 +15,13 @@ export {
 } from './search-figurine-builder.js';
 
 export {
-    buildShortcutSearchResult,
-} from './search-shortcut-builder.js';
-
-export {
     buildNendoroidResult,
 } from './search-nendoroid-builder.js';
+
+export {
+    buildArtbookResult,
+} from './search-artbook-builder.js';
+
+export {
+    buildShortcutSearchResult,
+} from './search-shortcut-builder.js';

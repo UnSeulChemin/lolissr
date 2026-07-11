@@ -55,6 +55,19 @@ final class MangaAjaxController extends Controller
         );
     }
 
+    public function searchArtbooks(string|int $query = ''): never
+    {
+        $searchData = $this->artbookReadService->search((string) $query);
+
+        $this->jsonResult(
+            ServiceResult::success(
+                data: [
+                    'results' => $searchData->results,
+                ],
+            ),
+        );
+    }
+
     /*
     |--------------------------------------------------------------------------
     | AJAX SERIES PAGE

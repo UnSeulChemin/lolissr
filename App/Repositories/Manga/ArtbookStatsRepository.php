@@ -188,7 +188,7 @@ final class ArtbookStatsRepository extends Model
         return new ArtbookRepresentationData(
             title:
                 $data['type'] === 'author'
-                    ? '🎨 Auteur le plus représenté'
+                    ? '📕 Auteur le plus représenté'
                     : '📚 Série la plus représentée',
 
             name: $data['name'],

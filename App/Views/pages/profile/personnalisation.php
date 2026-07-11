@@ -122,7 +122,7 @@ $username =
             >
 
                 <h2 class="home-card-title">
-                    🎨 Bannière
+                    📕 Bannière
                 </h2>
 
                 <p>

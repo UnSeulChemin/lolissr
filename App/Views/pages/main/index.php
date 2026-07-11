@@ -429,7 +429,7 @@ $hasMostRepresented =
     </section>
 
     <h2 class="home-section-title">
-        🎨 Artbooks
+        📕 Artbooks
     </h2>
 
     <section class="home-grid home-grid-top card-grid-3">
@@ -493,7 +493,7 @@ $hasMostRepresented =
             >
 
                 <h2 class="home-card-title">
-                    🎨 Artbooks
+                    📕 Artbooks
                 </h2>
 
                 <p class="home-empty">
@@ -525,7 +525,7 @@ $hasMostRepresented =
             >
 
                 <h2 class="home-card-title">
-                    🎨 Dernier artbook ajouté
+                    📕 Dernier artbook ajouté
                 </h2>
 
                 <div class="home-feature-content">
@@ -572,7 +572,7 @@ $hasMostRepresented =
             >
 
                 <h2 class="home-card-title">
-                    🎨 Dernier artbook ajouté
+                    📕 Dernier artbook ajouté
                 </h2>
 
                 <p class="home-empty">
@@ -623,7 +623,7 @@ $hasMostRepresented =
         <article class="card transition-card card-small">
 
             <h2 class="home-card-title">
-                🎨 Auteurs représentés
+                📕 Auteurs représentés
             </h2>
 
             <p class="home-card-value">

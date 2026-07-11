@@ -271,6 +271,8 @@ return static function (Router $router): void
 
             $router->prefix('ajax')->middleware(ExpectJsonMiddleware::class)->group(function (Router $router): void
             {
+                $router->get('recherche/artbooks/{query}', [MangaAjaxController::class, 'searchArtbooks']);
+
                 $router->get('recherche/{query}', [MangaAjaxController::class, 'search']);
             });
 
