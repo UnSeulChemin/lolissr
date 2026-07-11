@@ -426,6 +426,12 @@ return static function (Router $router): void
         {
             $router->get('', [NendoroidController::class, 'index']);
 
+            /*
+            |--------------------------------------------------------------------------
+            | WAIFUS
+            |--------------------------------------------------------------------------
+            */
+
             $router->prefix('waifus')->group(function (Router $router): void
             {
                 $router->get('', [NendoroidController::class, 'waifus']);
@@ -434,6 +440,12 @@ return static function (Router $router): void
                     'page/{page:int}',
                     [NendoroidController::class, 'waifus']
                 );
+
+                /*
+                |--------------------------------------------------------------------------
+                | ACTIONS SUR UNE NENDOROID
+                |--------------------------------------------------------------------------
+                */
 
                 $router->get(
                     '{slug}/modifier/{numero:int}',
@@ -455,11 +467,23 @@ return static function (Router $router): void
                     ],
                 );
 
+                /*
+                |--------------------------------------------------------------------------
+                | CONSULTATION
+                |--------------------------------------------------------------------------
+                */
+
                 $router->get(
                     '{slug}/{numero:int}',
                     [NendoroidController::class, 'showWaifu']
                 );
             });
+
+            /*
+            |--------------------------------------------------------------------------
+            | AJOUT
+            |--------------------------------------------------------------------------
+            */
 
             $router->get(
                 'ajouter',
@@ -471,6 +495,12 @@ return static function (Router $router): void
                 [NendoroidController::class, 'store'],
                 [CsrfMiddleware::class],
             );
+
+            /*
+            |--------------------------------------------------------------------------
+            | AJAX HTML
+            |--------------------------------------------------------------------------
+            */
 
             $router->prefix('ajax')->group(function (Router $router): void
             {

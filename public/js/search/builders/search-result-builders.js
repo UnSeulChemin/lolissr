@@ -17,3 +17,7 @@ export {
 export {
     buildShortcutSearchResult,
 } from './search-shortcut-builder.js';
+
+export {
+    buildNendoroidResult,
+} from './search-nendoroid-builder.js';

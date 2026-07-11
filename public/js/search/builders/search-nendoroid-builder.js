@@ -1,5 +1,5 @@
 // =========================================
-// SEARCH FIGURINE BUILDER
+// SEARCH NENDOROID BUILDER
 // =========================================
 
 import {
@@ -11,42 +11,42 @@ import {
     createResultItem,
 } from './search-result-item.js';
 
-export function buildFigurineResult(
-    figurine,
+export function buildNendoroidResult(
+    nendoroid,
     rawValue,
     basePath,
 )
 {
     const slug =
         encodeURIComponent(
-            figurine.slug ?? '',
+            nendoroid.slug ?? '',
         );
 
     const numero =
         Number(
-            figurine.numero ?? 0,
+            nendoroid.numero ?? 0,
         );
 
     const waifu =
-        figurine.waifu ?? '';
+        nendoroid.waifu ?? '';
 
     const origin =
-        figurine.origin ?? '';
+        nendoroid.origin ?? '';
 
     const thumbnail =
-        figurine.thumbnail ?? 'default';
+        nendoroid.thumbnail ?? 'default';
 
     const extension =
-        figurine.extension ?? 'jpg';
+        nendoroid.extension ?? 'jpg';
 
     const imageUrl =
-        `${basePath}images/figurine/thumbnail/${thumbnail}.${extension}`;
+        `${basePath}images/nendoroid/thumbnail/${thumbnail}.${extension}`;
 
-    const figurineUrl =
-        `${basePath}figurine/waifus/${slug}/${numero}`;
+    const nendoroidUrl =
+        `${basePath}nendoroid/waifus/${slug}/${numero}`;
 
     return createResultItem(
-        figurineUrl,
+        nendoroidUrl,
 
         `
             <img

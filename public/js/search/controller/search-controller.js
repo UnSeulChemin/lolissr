@@ -229,6 +229,7 @@ async function handleSearch(
             mangas,
             chinois,
             figurines,
+            nendoroids,
             shortcuts,
         ] = await Promise.all([
             fetchSearchResults(
@@ -246,13 +247,19 @@ async function handleSearch(
                 abortController.signal,
             ),
 
+            fetchSearchResults(
+                `${basePath}nendoroid/ajax/recherche/${encodeURIComponent(query)}`,
+                abortController.signal,
+            ),
+
             findSearchShortcuts(query),
         ]);
 
         renderResults({
             mangas,
-            figurines,
             chinois,
+            figurines,
+            nendoroids,
             shortcuts,
             rawValue,
             basePath,

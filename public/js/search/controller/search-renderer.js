@@ -11,6 +11,7 @@ import {
     buildShortcutSearchResult,
     buildChineseResult,
     buildFigurineResult,
+    buildNendoroidResult,
 } from '../builders/search-result-builders.js';
 
 import {
@@ -81,6 +82,7 @@ export function renderResults(
         mangas,
         chinois,
         figurines,
+        nendoroids,
         shortcuts,
         rawValue,
         basePath,
@@ -166,6 +168,32 @@ export function renderResults(
                 (figurine) =>
                     buildFigurineResult(
                         figurine,
+                        rawValue,
+                        basePath,
+                    ),
+
+            searchInput,
+            searchResults,
+            searchDropdown,
+            setupResultItem,
+            index,
+        });
+
+    index =
+        appendSection({
+            title:
+                '🪆 NENDOROIDS',
+
+            results:
+                nendoroids.slice(
+                    0,
+                    5,
+                ),
+
+            buildItem:
+                (nendoroid) =>
+                    buildNendoroidResult(
+                        nendoroid,
                         rawValue,
                         basePath,
                     ),
