@@ -18,7 +18,15 @@ final class Peluche
 
     public string $waifu = '';
 
+    public string $origin = '';
+
     public string $company = '';
+
+    public bool $collect = false;
+
+    public bool $collect_rewarded = false;
+
+    public ?string $release_date = null;
 
     public ?string $commentaire = null;
 

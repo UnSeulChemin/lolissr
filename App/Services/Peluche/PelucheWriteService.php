@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Peluche;
 
+use App\Constants\UserXp;
 use App\DTO\Common\ServiceResult;
 use App\DTO\Peluche\Inputs\PelucheCreateDTO;
 use App\DTO\Peluche\Inputs\PelucheUpdateDTO;
@@ -11,6 +12,7 @@ use App\DTO\Upload\UploadThumbnailData;
 use App\Models\Peluche;
 use App\Repositories\Peluche\PelucheRepository;
 use App\Services\UploadService;
+use App\Services\User\UserLevelService;
 
 use Framework\Cache\Cache;
 use Framework\Config\UploadConfig;
@@ -24,7 +26,8 @@ final readonly class PelucheWriteService
     public function __construct(
         private PelucheRepository $pelucheRepository,
         private UploadService $uploadService,
-        private Database $database
+        private Database $database,
+        private UserLevelService $userLevelService
     ) {
     }
 
@@ -39,13 +42,13 @@ final readonly class PelucheWriteService
      */
     public function create(PelucheCreateDTO $dto, array $files): ServiceResult
     {
-        $existing = $this->pelucheRepository
+        $existingPeluche = $this->pelucheRepository
             ->findOneBySlugAndNumero(
                 $dto->slug,
                 $dto->numero,
             );
 
-        if ($existing !== null)
+        if ($existingPeluche !== null)
         {
             return $this->error(
                 'Cette peluche existe déjà',
@@ -57,7 +60,7 @@ final readonly class PelucheWriteService
             function () use ($dto, $files): ServiceResult
             {
                 $upload = $this->uploadService->uploadThumbnail(
-                    $dto->waifu,
+                    $dto->origin,
                     $dto->numero,
                     UploadConfig::thumbnailDirectory('peluche'),
                     $files,
@@ -67,7 +70,7 @@ final readonly class PelucheWriteService
                 {
                     return $this->error(
                         $upload->message,
-                        $upload->status
+                        $upload->status,
                     );
                 }
 
@@ -75,9 +78,7 @@ final readonly class PelucheWriteService
 
                 if (! $uploadData instanceof UploadThumbnailData)
                 {
-                    return $this->error(
-                        'Upload invalide'
-                    );
+                    return $this->error('Upload invalide');
                 }
 
                 try
@@ -87,8 +88,12 @@ final readonly class PelucheWriteService
                         'extension' => $uploadData->extension,
                         'slug' => $dto->slug,
                         'numero' => $dto->numero,
+
+                        'origin' => $dto->origin,
                         'waifu' => $dto->waifu,
                         'company' => $dto->company,
+                        'release_date' => $dto->release_date,
+
                         'commentaire' => $dto->commentaire,
                     ]);
 
@@ -97,7 +102,7 @@ final readonly class PelucheWriteService
                         'Insertion peluche',
                         $dto->slug,
                         $dto->numero,
-                        'Erreur lors de l’enregistrement'
+                        'Erreur lors de l’enregistrement',
                     );
 
                     if ($failure !== null)
@@ -110,7 +115,7 @@ final readonly class PelucheWriteService
                     $this->clearCache();
 
                     return $this->success(
-                        'Peluche ajoutée avec succès'
+                        'Peluche ajoutée avec succès',
                     );
                 }
                 catch (Throwable $exception)
@@ -119,7 +124,7 @@ final readonly class PelucheWriteService
 
                     throw $exception;
                 }
-            }
+            },
         );
     }
 
@@ -136,19 +141,18 @@ final readonly class PelucheWriteService
                 $dto
             ): ServiceResult
             {
-                $updated = $this->pelucheRepository
-                    ->updatePeluche(
-                        $slug,
-                        $numero,
-                        $dto
-                    );
+                $updated = $this->pelucheRepository->updatePeluche(
+                    $slug,
+                    $numero,
+                    $dto,
+                );
 
                 $failure = $this->writeFailed(
                     $updated,
                     'Update peluche',
                     $slug,
                     $numero,
-                    'Erreur lors de la mise à jour'
+                    'Erreur lors de la mise à jour',
                 );
 
                 if ($failure !== null)
@@ -159,16 +163,101 @@ final readonly class PelucheWriteService
                 $this->clearCache();
 
                 return $this->success(
-                    'Peluche mise à jour avec succès'
+                    'Peluche mise à jour avec succès',
                 );
-            }
+            },
         );
     }
 
-    public function delete(
+    public function updateCollectStatus(
         string $slug,
-        int $numero
+        int $numero,
+        int $collectStatus
     ): ServiceResult
+    {
+        if (! in_array($collectStatus, [0, 1], true))
+        {
+            return $this->error(
+                'Statut de collection invalide',
+                422,
+            );
+        }
+
+        return $this->database->transaction(
+            function () use (
+                $slug,
+                $numero,
+                $collectStatus
+            ): ServiceResult
+            {
+                $peluche = $this->pelucheRepository
+                    ->findOneBySlugAndNumero(
+                        $slug,
+                        $numero,
+                    );
+
+                if ($peluche === null)
+                {
+                    return $this->error(
+                        'Peluche introuvable',
+                        404,
+                    );
+                }
+
+                $updated = $this->pelucheRepository->updateCollectStatus(
+                    $slug,
+                    $numero,
+                    $collectStatus === 1,
+                );
+
+                $failure = $this->writeFailed(
+                    $updated,
+                    'Update collect status',
+                    $slug,
+                    $numero,
+                    'Erreur lors de la mise à jour',
+                );
+
+                if ($failure !== null)
+                {
+                    return $failure;
+                }
+
+                $xpEarned = false;
+
+                if (
+                    ! $peluche->collect
+                    && $collectStatus === 1
+                    && ! $peluche->collect_rewarded
+                )
+                {
+                    [
+                        'xpEarned' => $xpEarned,
+                    ] = $this->rewardCollectXp(
+                        $peluche,
+                    );
+                }
+
+                $this->clearCache();
+
+                $user = user();
+
+                return $this->success(
+                    $collectStatus === 1
+                        ? 'Peluche marquée comme collectée'
+                        : 'Peluche marquée comme non collectée',
+                    [
+                        'collectStatus' => $collectStatus,
+                        'xpEarned' => $xpEarned,
+                        'level' => $user?->level,
+                        'xp' => $user?->xp,
+                    ],
+                );
+            },
+        );
+    }
+
+    public function delete(string $slug, int $numero): ServiceResult
     {
         return $this->database->transaction(
             function () use (
@@ -179,21 +268,21 @@ final readonly class PelucheWriteService
                 $peluche = $this->pelucheRepository
                     ->findOneBySlugAndNumero(
                         $slug,
-                        $numero
+                        $numero,
                     );
 
                 if ($peluche === null)
                 {
                     return $this->error(
                         'Peluche introuvable',
-                        404
+                        404,
                     );
                 }
 
                 $deleted = $this->pelucheRepository
                     ->deleteBySlugAndNumero(
                         $slug,
-                        $numero
+                        $numero,
                     );
 
                 $failure = $this->writeFailed(
@@ -201,7 +290,7 @@ final readonly class PelucheWriteService
                     'Delete peluche',
                     $slug,
                     $numero,
-                    'Erreur lors de la suppression'
+                    'Erreur lors de la suppression',
                 );
 
                 if ($failure !== null)
@@ -214,9 +303,9 @@ final readonly class PelucheWriteService
                 $this->clearCache();
 
                 return $this->success(
-                    'Peluche supprimée avec succès'
+                    'Peluche supprimée avec succès',
                 );
-            }
+            },
         );
     }
 
@@ -226,23 +315,20 @@ final readonly class PelucheWriteService
     |--------------------------------------------------------------------------
     */
 
-    private function rollbackUpload(
-        UploadThumbnailData $upload
-    ): void
+    private function rollbackUpload(UploadThumbnailData $upload): void
     {
         $this->uploadService->removeFile(
-            $upload->destinationPath
+            $upload->destinationPath,
         );
     }
 
-    private function removeThumbnail(
-        Peluche $peluche
-    ): void
+    private function removeThumbnail(Peluche $peluche): void
     {
         if (
             $peluche->thumbnail === ''
             || $peluche->extension === ''
-        ) {
+        )
+        {
             return;
         }
 
@@ -253,6 +339,42 @@ final readonly class PelucheWriteService
             . $peluche->extension;
 
         $this->uploadService->removeFile($path);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | XP
+    |--------------------------------------------------------------------------
+    */
+
+    /**
+     * @return array{
+     *     xpEarned: bool
+     * }
+     */
+    private function rewardCollectXp(Peluche $peluche): array
+    {
+        $user = user();
+
+        if ($user === null)
+        {
+            return [
+                'xpEarned' => false,
+            ];
+        }
+
+        $this->userLevelService->addXp(
+            $user,
+            UserXp::COLLECT_PELUCHE,
+        );
+
+        $this->pelucheRepository->markXpRewarded(
+            $peluche->id,
+        );
+
+        return [
+            'xpEarned' => true,
+        ];
     }
 
     /*
@@ -277,7 +399,7 @@ final readonly class PelucheWriteService
         $this->logFailure(
             $action,
             $slug,
-            $numero
+            $numero,
         );
 
         return $this->error($message);
@@ -295,7 +417,7 @@ final readonly class PelucheWriteService
     ): void
     {
         Logger::error(
-            "{$action} échoué slug={$slug} numero={$numero}"
+            "{$action} échoué slug={$slug} numero={$numero}",
         );
     }
 
@@ -311,7 +433,7 @@ final readonly class PelucheWriteService
         return ServiceResult::success(
             message: $message,
             data: $data,
-            status: $status
+            status: $status,
         );
     }
 
@@ -327,7 +449,7 @@ final readonly class PelucheWriteService
         return ServiceResult::error(
             message: $message,
             data: $data,
-            status: $status
+            status: $status,
         );
     }
 }

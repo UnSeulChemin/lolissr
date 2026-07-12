@@ -14,6 +14,7 @@ use App\Services\Peluche\PelucheWriteService;
 use Framework\Exceptions\BaseHttpException;
 use Framework\Exceptions\NotFoundException;
 use Framework\Exceptions\ValidationException;
+use Framework\Http\FormRequest;
 use Framework\Http\Request;
 
 final class PelucheController extends Controller
@@ -51,15 +52,20 @@ final class PelucheController extends Controller
         }
 
         $this->title = 'Peluches | Waifus'
-            . ($data->currentPage > 1 ? ' - Page ' . $data->currentPage : '');
+            . ($data->currentPage > 1
+                ? ' - Page ' . $data->currentPage
+                : '');
 
-        $this->render('pages/peluche/waifus/index', [
-            'peluches' => $data->peluches,
-            'currentPage' => $data->currentPage,
-            'totalPages' => $data->totalPages,
-            'totalWaifus' => $data->totalWaifus,
-            'perPage' => $data->perPage,
-        ]);
+        $this->render(
+            'pages/peluche/waifus/index',
+            [
+                'peluches' => $data->peluches,
+                'currentPage' => $data->currentPage,
+                'totalWaifus' => $data->totalWaifus,
+                'perPage' => $data->perPage,
+                'totalPages' => $data->totalPages,
+            ],
+        );
     }
 
     public function showWaifu(
@@ -69,7 +75,7 @@ final class PelucheController extends Controller
     {
         $peluche = $this->resolvePelucheOrFail(
             $slug,
-            $numero
+            $numero,
         );
 
         $this->title = 'Peluches | ' . $peluche->waifu;
@@ -78,9 +84,15 @@ final class PelucheController extends Controller
             'pages/peluche/waifus/waifu',
             [
                 'peluche' => $peluche,
-            ]
+            ],
         );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | CREATE
+    |--------------------------------------------------------------------------
+    */
 
     public function create(): never
     {
@@ -93,28 +105,27 @@ final class PelucheController extends Controller
                     'peluche/ajouter',
                     'peluche',
                 ),
-            ]
+            ],
         );
     }
 
-    public function store(
-        PelucheCreateRequest $request
-    ): never
+    public function store(PelucheCreateRequest $request): never
     {
-        if ($request->fails())
-        {
-            throw new ValidationException(
-                $request->errors()
-            );
-        }
+        $this->validateRequest($request);
 
         $result = $this->pelucheWriteService->create(
             $request->dto(),
-            $request->files()
+            $request->files(),
         );
 
         $this->jsonResult($result);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | UPDATE
+    |--------------------------------------------------------------------------
+    */
 
     public function edit(
         string $slug,
@@ -123,7 +134,7 @@ final class PelucheController extends Controller
     {
         $peluche = $this->resolvePelucheOrFail(
             $slug,
-            $numero
+            $numero,
         );
 
         $this->title = 'Peluches | Modifier';
@@ -132,6 +143,7 @@ final class PelucheController extends Controller
             'pages/peluche/waifus/modifier',
             [
                 'peluche' => $peluche,
+
                 'form' => $this->formViewData(
                     sprintf(
                         '%s/%s/modifier/%d',
@@ -139,14 +151,12 @@ final class PelucheController extends Controller
                         rawurlencode($peluche->slug),
                         $numero,
                     ),
-                    sprintf(
-                        '%s/%s/%d',
-                        self::WAIFUS_PATH,
-                        rawurlencode($peluche->slug),
+                    $this->waifuUrl(
+                        $peluche->slug,
                         $numero,
                     ),
                 ),
-            ]
+            ],
         );
     }
 
@@ -158,20 +168,15 @@ final class PelucheController extends Controller
     {
         $peluche = $this->resolvePelucheOrFail(
             $slug,
-            $numero
+            $numero,
         );
 
-        if ($request->fails())
-        {
-            throw new ValidationException(
-                $request->errors()
-            );
-        }
+        $this->validateRequest($request);
 
         $result = $this->pelucheWriteService->update(
             $peluche->slug,
             $numero,
-            $request->dto()
+            $request->dto(),
         );
 
         if (! $result->success)
@@ -179,18 +184,16 @@ final class PelucheController extends Controller
             throw new BaseHttpException(
                 message: $result->message,
                 statusCode: 422,
-                data: $result->data
+                data: $result->data,
             );
         }
 
         $this->redirectWithSuccess(
-            sprintf(
-                '%s/%s/%d',
-                self::WAIFUS_PATH,
-                rawurlencode($peluche->slug),
-                $numero
+            $this->waifuUrl(
+                $peluche->slug,
+                $numero,
             ),
-            $result->message
+            $result->message,
         );
     }
 
@@ -200,6 +203,19 @@ final class PelucheController extends Controller
     |--------------------------------------------------------------------------
     */
 
+    private function waifuUrl(
+        string $slug,
+        int $numero
+    ): string
+    {
+        return sprintf(
+            '%s/%s/%d',
+            self::WAIFUS_PATH,
+            rawurlencode($slug),
+            $numero,
+        );
+    }
+
     private function resolvePelucheOrFail(
         string $slug,
         int $numero
@@ -207,16 +223,26 @@ final class PelucheController extends Controller
     {
         $peluche = $this->pelucheReadService->one(
             $slug,
-            $numero
+            $numero,
         );
 
         if ($peluche === null)
         {
             throw new NotFoundException(
-                'Peluche introuvable'
+                'Peluche introuvable',
             );
         }
 
         return $peluche;
+    }
+
+    private function validateRequest(FormRequest $request): void
+    {
+        if ($request->fails())
+        {
+            throw new ValidationException(
+                $request->errors(),
+            );
+        }
     }
 }

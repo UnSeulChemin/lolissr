@@ -4,97 +4,15 @@ declare(strict_types=1);
 
 namespace App\Repositories\Peluche;
 
-use App\Models\Peluche;
-use App\Models\Model;
 use App\DTO\Peluche\Inputs\PelucheUpdateDTO;
+use App\Models\Model;
+use App\Models\Peluche;
 
 use Framework\Support\Str;
 
 final class PelucheRepository extends Model
 {
     protected string $table = 'peluche';
-
-    /**
-     * @return list<Peluche>
-     */
-    public function findAll(): array
-    {
-        /** @var list<Peluche> $peluches */
-        $peluches = $this->fetchAll(
-            "
-            SELECT p.*
-
-            FROM {$this->table()} p
-
-            INNER JOIN (
-                SELECT
-                    slug,
-                    MAX(id) AS last_id
-
-                FROM {$this->table()}
-
-                GROUP BY slug
-            ) grouped
-                ON grouped.slug = p.slug
-
-            ORDER BY
-                grouped.last_id DESC,
-                p.numero DESC
-            ",
-            [],
-            Peluche::class
-        );
-
-        return $peluches;
-    }
-
-    /**
-     * @return list<Peluche>
-     */
-    public function findPaginated(
-        int $limit,
-        int $page,
-    ): array
-    {
-        $page = max(1, $page);
-        $limit = max(1, $limit);
-
-        $offset = ($page - 1) * $limit;
-
-        /** @var list<Peluche> $peluches */
-        $peluches = $this->fetchAll(
-            "
-            SELECT p.*
-
-            FROM {$this->table()} p
-
-            INNER JOIN (
-                SELECT
-                    slug,
-                    MAX(id) AS last_id
-
-                FROM {$this->table()}
-
-                GROUP BY slug
-            ) grouped
-                ON grouped.slug = p.slug
-
-            ORDER BY
-                grouped.last_id DESC,
-                p.numero DESC
-
-            LIMIT :limit
-            OFFSET :offset
-            ",
-            [
-                'limit' => $limit,
-                'offset' => $offset,
-            ],
-            Peluche::class
-        );
-
-        return $peluches;
-    }
 
     public function findOneBySlugAndNumero(
         string $slug,
@@ -123,19 +41,12 @@ final class PelucheRepository extends Model
         return $peluche;
     }
 
-    public function countAll(): int
-    {
-        return $this->countRows();
-    }
-
     /**
      * @param array<string,mixed> $data
      */
     public function insert(array $data): bool
     {
-        return parent::insert(
-            $this->normalizeInsertData($data)
-        );
+        return parent::insert($this->normalizeInsertData($data));
     }
 
     public function updatePeluche(
@@ -148,8 +59,26 @@ final class PelucheRepository extends Model
             $slug,
             $numero,
             [
+                'waifu' => $dto->waifu,
+                'origin' => $dto->origin,
                 'company' => $dto->company,
+                'release_date' => $dto->release_date,
                 'commentaire' => $dto->commentaire,
+            ]
+        );
+    }
+
+    public function updateCollectStatus(
+        string $slug,
+        int $numero,
+        bool $collectStatus
+    ): bool
+    {
+        return $this->updateBySlugAndNumero(
+            $slug,
+            $numero,
+            [
+                'collect' => (int) $collectStatus,
             ]
         );
     }
@@ -165,6 +94,36 @@ final class PelucheRepository extends Model
         ]);
     }
 
+    /**
+     * @return list<Peluche>
+     */
+    public function findCollectedWithoutReward(): array
+    {
+        /** @var list<Peluche> $peluches */
+        $peluches = $this->fetchAll(
+            "
+            SELECT *
+
+            FROM {$this->table()}
+
+            WHERE collect = 1
+            AND collect_rewarded = 0
+            ",
+            [],
+            Peluche::class
+        );
+
+        return $peluches;
+    }
+
+    public function markXpRewarded(int $id): bool
+    {
+        return $this->update(
+            ['collect_rewarded' => 1],
+            ['id' => $id]
+        );
+    }
+
     /*
     |--------------------------------------------------------------------------
     | HELPERS
@@ -177,7 +136,7 @@ final class PelucheRepository extends Model
     }
 
     /**
-     * @param array<string,mixed> $data
+     * @param array<string, mixed> $data
      */
     private function updateBySlugAndNumero(
         string $slug,
@@ -205,8 +164,12 @@ final class PelucheRepository extends Model
             'extension' => strtolower(trim((string) ($data['extension'] ?? ''))),
             'slug' => $this->normalizeSlug((string) ($data['slug'] ?? '')),
             'numero' => max(1, (int) ($data['numero'] ?? 1)),
+
             'waifu' => trim((string) ($data['waifu'] ?? '')),
+            'origin' => trim((string) ($data['origin'] ?? '')),
             'company' => trim((string) ($data['company'] ?? '')),
+            'release_date' => Str::nullableTrim($data['release_date'] ?? null),
+
             'commentaire' => Str::nullableTrim($data['commentaire'] ?? null),
         ];
     }

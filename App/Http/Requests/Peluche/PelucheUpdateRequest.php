@@ -14,9 +14,20 @@ final class PelucheUpdateRequest extends FormRequest
     {
         $this->validator
 
-            ->nullable('company')
+            ->required('waifu')
+            ->string('waifu')
+            ->maxLength('waifu', 100)
+
+            ->required('origin')
+            ->string('origin')
+            ->maxLength('origin', 150)
+
+            ->required('company')
             ->string('company')
             ->maxLength('company', 100)
+
+            ->nullable('release_date')
+            ->string('release_date')
 
             ->nullable('commentaire')
             ->string('commentaire')

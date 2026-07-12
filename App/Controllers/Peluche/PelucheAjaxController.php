@@ -27,6 +27,25 @@ final class PelucheAjaxController extends Controller
 
     /*
     |--------------------------------------------------------------------------
+    | AJAX SEARCH
+    |--------------------------------------------------------------------------
+    */
+
+    public function search(string|int $query = ''): never
+    {
+        $searchData = $this->pelucheReadService->search((string) $query);
+
+        $this->jsonResult(
+            ServiceResult::success(
+                data: [
+                    'results' => $searchData->results,
+                ],
+            ),
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
     | AJAX WAIFUS PAGE
     |--------------------------------------------------------------------------
     */
@@ -50,6 +69,30 @@ final class PelucheAjaxController extends Controller
                 'totalPages' => $data->totalPages,
             ]
         );
+    }
+
+    public function updateCollectStatus(
+        string $slug,
+        int $numero
+    ): never
+    {
+        $peluche = $this->resolvePelucheOrFail(
+            $slug,
+            $numero
+        );
+
+        $collectStatus = (int) $this->request->input(
+            'collectStatus',
+            0,
+        );
+
+        $result = $this->pelucheWriteService->updateCollectStatus(
+            $peluche->slug,
+            $numero,
+            $collectStatus
+        );
+
+        $this->jsonResult($result);
     }
 
     /*

@@ -546,13 +546,19 @@ return static function (Router $router): void
 
         /*
         |--------------------------------------------------------------------------
-        | PELUCHE
+        | PELUCHES
         |--------------------------------------------------------------------------
         */
 
         $router->prefix('peluche')->group(function (Router $router): void
         {
             $router->get('', [PelucheController::class, 'index']);
+
+            /*
+            |--------------------------------------------------------------------------
+            | WAIFUS
+            |--------------------------------------------------------------------------
+            */
 
             $router->prefix('waifus')->group(function (Router $router): void
             {
@@ -629,6 +635,37 @@ return static function (Router $router): void
                 $router->get(
                     'waifus/page/{page:int}',
                     [PelucheAjaxController::class, 'waifusPage'],
+                );
+            });
+
+            /*
+            |--------------------------------------------------------------------------
+            | AJAX JSON
+            |--------------------------------------------------------------------------
+            */
+
+            $router->prefix('ajax')->middleware(ExpectJsonMiddleware::class)->group(function (Router $router): void
+            {
+                $router->get(
+                    'recherche/{query}',
+                    [PelucheAjaxController::class, 'search'],
+                );
+            });
+
+            /*
+            |--------------------------------------------------------------------------
+            | AJAX JSON + CSRF
+            |--------------------------------------------------------------------------
+            */
+
+            $router->prefix('ajax')->middleware([
+                ExpectJsonMiddleware::class,
+                CsrfMiddleware::class,
+            ])->group(function (Router $router): void
+            {
+                $router->post(
+                    'update-collect-status/{slug}/{numero:int}',
+                    [PelucheAjaxController::class, 'updateCollectStatus'],
                 );
             });
         });
