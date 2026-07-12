@@ -2,97 +2,70 @@
 
 declare(strict_types=1);
 
-/** @var array<int, object> $peluches */
+use App\DTO\Common\Responses\ViewData;
+use App\DTO\Peluche\Responses\PelucheListItemData;
+
+/** @var ViewData $view */
+/** @var list<PelucheListItemData> $peluches */
 
 ?>
 
 <div class="collection-ajax-content">
 
-<?php if ($peluches === []): ?>
+    <?php if ($peluches === []): ?>
 
-    <p class="collection-empty">
-        Aucune peluche trouvée.
-    </p>
-
-</div>
-
-<?php return; endif; ?>
-
-<section class="collection-grid">
-
-<?php foreach ($peluches as $peluche):
-
-    $slug =
-        (string) ($peluche->slug ?? '');
-
-    $waifu =
-        (string) ($peluche->waifu ?? '');
-
-    $company =
-        (string) ($peluche->company ?? '');
-
-    $thumbnail =
-        (string) ($peluche->thumbnail ?? '');
-
-    $extension =
-        (string) ($peluche->extension ?? '');
-
-    if (
-        $slug === ''
-        || $waifu === ''
-        || $thumbnail === ''
-        || $extension === ''
-    ) {
-        continue;
-    }
-
-    $numero =
-        (int) ($peluche->numero ?? 1);
-
-    $href =
-        "{$view->baseUri}peluche/waifus/{$slug}/{$numero}";
-
-    $thumbnailPath =
-        "{$view->baseUri}images/peluche/thumbnail/{$thumbnail}.{$extension}";
-
-?>
-
-<a
-    class="
-        card
-        transition-card
-        card-link
-        collection-card
-        collection-card-link
-    "
-    data-prefetch
-    href="<?= e($href) ?>"
->
-
-    <div class="card-image-box-portrait">
-
-        <img
-            class="card-image-portrait"
-            src="<?= e($thumbnailPath) ?>"
-            alt="<?= e($waifu) ?>"
-            loading="lazy"
-            draggable="false"
-        >
+        <p class="collection-empty">
+            Aucune peluche trouvée.
+        </p>
 
     </div>
 
-    <p class="collection-card-title">
-        <?= e($waifu) ?>
-    </p>
+    <?php return; endif; ?>
 
-    <p class="collection-card-subtitle">
-        <?= e($company) ?>
-    </p>
+    <section class="collection-grid">
 
-</a>
+        <?php foreach ($peluches as $peluche): ?>
 
-<?php endforeach; ?>
+            <a
+                class="
+                    card
+                    transition-card
+                    card-link
+                    collection-card
+                    collection-card-link
+                "
+                data-prefetch
+                href="<?= e($view->baseUri) ?>peluche/waifus/<?= e($peluche->slug) ?>/<?= $peluche->numero ?>"
+            >
 
-</section>
+                <div class="card-image-box-portrait">
+
+                    <?php if ($peluche->thumbnailUrl !== null): ?>
+
+                        <img
+                            class="card-image-portrait"
+                            src="<?= e($peluche->thumbnailUrl) ?>"
+                            alt="<?= e($peluche->waifu) ?>"
+                            loading="lazy"
+                            draggable="false"
+                        >
+
+                    <?php endif; ?>
+
+                </div>
+
+                <p class="collection-card-title">
+                    <?= e($peluche->waifu) ?>
+                </p>
+
+                <p class="collection-card-subtitle">
+                    <?= e($peluche->origin) ?>
+                </p>
+
+            </a>
+
+        <?php endforeach; ?>
+
+    </section>
 
 </div>

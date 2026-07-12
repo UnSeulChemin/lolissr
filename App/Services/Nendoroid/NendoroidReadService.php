@@ -42,7 +42,13 @@ final readonly class NendoroidReadService
 
         if ($totalWaifus === 0)
         {
-            return null;
+            return new NendoroidListData(
+                nendoroids: [],
+                currentPage: 1,
+                totalWaifus: 0,
+                perPage: $perPage,
+                totalPages: 1,
+            );
         }
 
         $totalPages = (int) ceil($totalWaifus / $perPage);

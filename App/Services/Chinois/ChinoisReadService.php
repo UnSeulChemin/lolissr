@@ -90,7 +90,10 @@ final readonly class ChinoisReadService
     |--------------------------------------------------------------------------
     */
 
-    public function langue(string $langue, int|string $page = 1): ?ChinoisVocabulairePageData
+    public function langue(
+        string $langue,
+        int|string $page = 1
+    ): ?ChinoisVocabulairePageData
     {
         $langue = mb_strtolower($langue);
 
@@ -103,14 +106,24 @@ final readonly class ChinoisReadService
 
         $perPage = App::pagination();
 
-        $totalVocabulaires = $this->collectionRepository->countByLangue($langue);
+        $totalVocabulaires = $this->collectionRepository->countByLangue(
+            $langue,
+        );
 
         if ($totalVocabulaires === 0)
         {
-            return null;
+            return new ChinoisVocabulairePageData(
+                vocabulaires: [],
+                currentPage: 1,
+                totalVocabulaires: 0,
+                perPage: $perPage,
+                totalPages: 1,
+            );
         }
 
-        $totalPages = (int) ceil($totalVocabulaires / $perPage);
+        $totalPages = (int) ceil(
+            $totalVocabulaires / $perPage,
+        );
 
         if ($page > $totalPages)
         {

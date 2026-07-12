@@ -42,7 +42,13 @@ final readonly class FigurineReadService
 
         if ($totalWaifus === 0)
         {
-            return null;
+            return new FigurineSeriesData(
+                figurines: [],
+                currentPage: 1,
+                totalWaifus: 0,
+                perPage: $perPage,
+                totalPages: 1,
+            );
         }
 
         $totalPages = (int) ceil($totalWaifus / $perPage);
@@ -58,7 +64,10 @@ final readonly class FigurineReadService
         );
 
         return new FigurineSeriesData(
-            figurines: array_map($this->mapSeriesItem(...), $figurines),
+            figurines: array_map(
+                $this->mapSeriesItem(...),
+                $figurines
+            ),
             currentPage: $page,
             totalWaifus: $totalWaifus,
             perPage: $perPage,

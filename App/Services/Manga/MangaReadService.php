@@ -42,7 +42,14 @@ final readonly class MangaReadService
 
         if ($totalSeries === 0)
         {
-            return null;
+            return new MangaSeriesData(
+                mangas: [],
+                currentPage: 1,
+                slugFilter: null,
+                totalSeries: 0,
+                perPage: $perPage,
+                totalPages: 1,
+            );
         }
 
         $totalPages = (int) ceil($totalSeries / $perPage);
@@ -59,7 +66,10 @@ final readonly class MangaReadService
         );
 
         return new MangaSeriesData(
-            mangas: array_map($this->mapSeriesItem(...), $mangas),
+            mangas: array_map(
+                $this->mapSeriesItem(...),
+                $mangas
+            ),
             currentPage: $page,
             slugFilter: null,
             totalSeries: $totalSeries,

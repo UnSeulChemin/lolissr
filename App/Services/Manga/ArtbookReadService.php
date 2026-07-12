@@ -44,7 +44,13 @@ final readonly class ArtbookReadService
 
         if ($totalArtbooks === 0)
         {
-            return null;
+            return new ArtbookSeriesData(
+                artbooks: [],
+                currentPage: 1,
+                totalArtbooks: 0,
+                perPage: $perPage,
+                totalPages: 1,
+            );
         }
 
         $totalPages = (int) ceil($totalArtbooks / $perPage);
