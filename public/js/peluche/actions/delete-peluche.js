@@ -167,9 +167,7 @@ async function deletePeluche(
             data.data?.redirect
             || redirectUrl;
 
-        invalidatePeluchePages(
-            button.dataset.slug,
-        );
+        invalidatePeluchePages();
 
         showToast(
             data.message

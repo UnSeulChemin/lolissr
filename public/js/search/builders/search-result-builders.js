@@ -19,6 +19,10 @@ export {
 } from './search-nendoroid-builder.js';
 
 export {
+    buildPelucheResult,
+} from './search-peluche-builder.js';
+
+export {
     buildArtbookResult,
 } from './search-artbook-builder.js';
 

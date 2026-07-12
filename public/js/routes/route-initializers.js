@@ -91,6 +91,10 @@ import {
 } from '../peluche/actions/delete-peluche.js';
 
 import {
+    initUpdatePelucheCollectStatus,
+} from '../peluche/actions/update-collect-status.js';
+
+import {
     initAjouterPage as initAjouterNendoroidPage,
 } from '../nendoroid/pages/ajouter.js';
 
@@ -304,6 +308,11 @@ export const ROUTE_INITIALIZERS = [
             [
                 'DeletePeluche',
                 initDeletePeluche,
+            ],
+
+            [
+                'UpdatePelucheCollectStatus',
+                initUpdatePelucheCollectStatus,
             ],
 
             [

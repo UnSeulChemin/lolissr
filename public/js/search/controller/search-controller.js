@@ -231,6 +231,7 @@ async function handleSearch(
             chinois,
             figurines,
             nendoroids,
+            peluches,
             shortcuts,
         ] = await Promise.all([
             fetchSearchResults(
@@ -258,6 +259,11 @@ async function handleSearch(
                 abortController.signal,
             ),
 
+            fetchSearchResults(
+                `${basePath}peluche/ajax/recherche/${encodeURIComponent(query)}`,
+                abortController.signal,
+            ),
+
             findSearchShortcuts(query),
         ]);
 
@@ -267,6 +273,7 @@ async function handleSearch(
             chinois,
             figurines,
             nendoroids,
+            peluches,
             shortcuts,
             rawValue,
             basePath,

@@ -12,6 +12,7 @@ import {
     buildChineseResult,
     buildFigurineResult,
     buildNendoroidResult,
+    buildPelucheResult,
     buildArtbookResult,
 } from '../builders/search-result-builders.js';
 
@@ -85,6 +86,7 @@ export function renderResults(
         chinois,
         figurines,
         nendoroids,
+        peluches,
         shortcuts,
         rawValue,
         basePath,
@@ -222,6 +224,32 @@ export function renderResults(
                 (nendoroid) =>
                     buildNendoroidResult(
                         nendoroid,
+                        rawValue,
+                        basePath,
+                    ),
+
+            searchInput,
+            searchResults,
+            searchDropdown,
+            setupResultItem,
+            index,
+        });
+
+    index =
+        appendSection({
+            title:
+                '🧸 PELUCHES',
+
+            results:
+                peluches.slice(
+                    0,
+                    5,
+                ),
+
+            buildItem:
+                (peluche) =>
+                    buildPelucheResult(
+                        peluche,
                         rawValue,
                         basePath,
                     ),
