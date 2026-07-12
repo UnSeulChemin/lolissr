@@ -21,6 +21,8 @@ use App\Models\User;
 /** @var int $figurinesXp */
 /** @var int $nendoroidsCollected */
 /** @var int $nendoroidsXp */
+/** @var int $peluchesCollected */
+/** @var int $peluchesXp */
 /** @var int $vocabularyLearned */
 /** @var int $vocabularyXp */
 /** @var int $grammarLearned */
@@ -355,6 +357,35 @@ $framePath =
 
                 <p class="profile-stat-value">
                     <?= number_format($nendoroidsXp, 0, ',', ' ') ?>
+                    XP
+                </p>
+
+            </article>
+
+        </div>
+
+        <div class="profile-stat-row">
+
+            <article class="card transition-card profile-stat-card">
+
+                <h2 class="profile-stat-title">
+                    🧸 Peluches
+                </h2>
+
+                <p class="profile-stat-value">
+                    <?= number_format($peluchesCollected) ?>
+                </p>
+
+            </article>
+
+            <article class="card transition-card profile-stat-card">
+
+                <h2 class="profile-stat-title">
+                    ⭐ XP Peluches
+                </h2>
+
+                <p class="profile-stat-value">
+                    <?= number_format($peluchesXp, 0, ',', ' ') ?>
                     XP
                 </p>
 

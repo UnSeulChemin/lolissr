@@ -22,6 +22,9 @@ final readonly class ProfileStatsData
         public int $nendoroidsCollected,
         public int $nendoroidsXp,
 
+        public int $peluchesCollected,
+        public int $peluchesXp,
+
         public int $vocabularyLearned,
         public int $vocabularyXp,
 

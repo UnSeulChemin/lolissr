@@ -12,6 +12,7 @@ use App\Repositories\Figurine\FigurineStatsRepository;
 use App\Repositories\Manga\ArtbookStatsRepository;
 use App\Repositories\Manga\MangaStatsRepository;
 use App\Repositories\Nendoroid\NendoroidStatsRepository;
+use App\Repositories\Peluche\PelucheStatsRepository;
 
 final readonly class ProfileStatsService
 {
@@ -20,6 +21,7 @@ final readonly class ProfileStatsService
         private ArtbookStatsRepository $artbookStatsRepository,
         private FigurineStatsRepository $figurineStatsRepository,
         private NendoroidStatsRepository $nendoroidStatsRepository,
+        private PelucheStatsRepository $pelucheStatsRepository,
         private ChinoisVocabulaireStatsRepository $vocabularyStatsRepository,
         private ChinoisGrammaireStatsRepository $grammarStatsRepository,
     ) {
@@ -76,6 +78,17 @@ final readonly class ProfileStatsService
 
     /*
     |--------------------------------------------------------------------------
+    | PELUCHES
+    |--------------------------------------------------------------------------
+    */
+
+    public function collectedPeluches(): int
+    {
+        return $this->pelucheStatsRepository->countCollected();
+    }
+
+    /*
+    |--------------------------------------------------------------------------
     | CHINESE
     |--------------------------------------------------------------------------
     */
@@ -116,21 +129,38 @@ final readonly class ProfileStatsService
         $figurinesCollected = $this->collectedFigurines();
 
         // FIGURINES XP
-        $figurinesXp = $figurinesCollected * UserXp::COLLECT_FIGURINE;
+        $figurinesXp =
+            $figurinesCollected
+            * UserXp::COLLECT_FIGURINE;
 
         // NENDOROIDS
         $nendoroidsCollected = $this->collectedNendoroids();
 
         // NENDOROIDS XP
-        $nendoroidsXp = $nendoroidsCollected * UserXp::COLLECT_NENDOROID;
+        $nendoroidsXp =
+            $nendoroidsCollected
+            * UserXp::COLLECT_NENDOROID;
+
+        // PELUCHES
+        $peluchesCollected = $this->collectedPeluches();
+
+        // PELUCHES XP
+        $peluchesXp =
+            $peluchesCollected
+            * UserXp::COLLECT_PELUCHE;
 
         // CHINESE
         $vocabularyLearned = $this->learnedVocabulary();
         $grammarLearned = $this->learnedGrammar();
 
         // CHINESE XP
-        $vocabularyXp = $vocabularyLearned * UserXp::LEARN_VOCABULARY;
-        $grammarXp = $grammarLearned * UserXp::LEARN_GRAMMAR;
+        $vocabularyXp =
+            $vocabularyLearned
+            * UserXp::LEARN_VOCABULARY;
+
+        $grammarXp =
+            $grammarLearned
+            * UserXp::LEARN_GRAMMAR;
 
         return new ProfileStatsData(
             readTomes: $readTomes,
@@ -148,6 +178,9 @@ final readonly class ProfileStatsService
             nendoroidsCollected: $nendoroidsCollected,
             nendoroidsXp: $nendoroidsXp,
 
+            peluchesCollected: $peluchesCollected,
+            peluchesXp: $peluchesXp,
+
             vocabularyLearned: $vocabularyLearned,
             grammarLearned: $grammarLearned,
 
@@ -160,6 +193,7 @@ final readonly class ProfileStatsService
                 + $artbookXp
                 + $figurinesXp
                 + $nendoroidsXp
+                + $peluchesXp
                 + $vocabularyXp
                 + $grammarXp,
         );

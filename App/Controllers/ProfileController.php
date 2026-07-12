@@ -29,37 +29,50 @@ final class ProfileController extends Controller
 
         $stats = $this->profileStatsService->getStats();
 
-        $this->render('pages/profile/index', [
-            'user' => $user,
-            'level' => $user->level,
-            'currentXp' => $user->xp,
+        $this->render(
+            'pages/profile/index',
+            [
+                'user' => $user,
+                'level' => $user->level,
+                'currentXp' => $user->xp,
 
-            'xpRequired' => $this->userLevelService->xpRequiredForLevel($user->level),
-            'progress' => $this->userLevelService->progress($user),
+                'xpRequired' => $this->userLevelService
+                    ->xpRequiredForLevel(
+                        $user->level,
+                    ),
 
-            'readTomes' => $stats->readTomes,
-            'tomeXp' => $stats->tomeXp,
+                'progress' => $this->userLevelService
+                    ->progress(
+                        $user,
+                    ),
 
-            'completedSeries' => $stats->completedSeries,
-            'seriesXp' => $stats->seriesXp,
+                'readTomes' => $stats->readTomes,
+                'tomeXp' => $stats->tomeXp,
 
-            'readArtbooks' => $stats->readArtbooks,
-            'artbookXp' => $stats->artbookXp,
+                'completedSeries' => $stats->completedSeries,
+                'seriesXp' => $stats->seriesXp,
 
-            'figurinesCollected' => $stats->figurinesCollected,
-            'figurinesXp' => $stats->figurinesXp,
+                'readArtbooks' => $stats->readArtbooks,
+                'artbookXp' => $stats->artbookXp,
 
-            'nendoroidsCollected' => $stats->nendoroidsCollected,
-            'nendoroidsXp' => $stats->nendoroidsXp,
+                'figurinesCollected' => $stats->figurinesCollected,
+                'figurinesXp' => $stats->figurinesXp,
 
-            'vocabularyLearned' => $stats->vocabularyLearned,
-            'vocabularyXp' => $stats->vocabularyXp,
+                'nendoroidsCollected' => $stats->nendoroidsCollected,
+                'nendoroidsXp' => $stats->nendoroidsXp,
 
-            'grammarLearned' => $stats->grammarLearned,
-            'grammarXp' => $stats->grammarXp,
+                'peluchesCollected' => $stats->peluchesCollected,
+                'peluchesXp' => $stats->peluchesXp,
 
-            'totalProfileXp' => $stats->totalXp,
-        ]);
+                'vocabularyLearned' => $stats->vocabularyLearned,
+                'vocabularyXp' => $stats->vocabularyXp,
+
+                'grammarLearned' => $stats->grammarLearned,
+                'grammarXp' => $stats->grammarXp,
+
+                'totalProfileXp' => $stats->totalXp,
+            ],
+        );
     }
 
     public function customization(): never
@@ -70,8 +83,11 @@ final class ProfileController extends Controller
 
         assert($user !== null);
 
-        $this->render('pages/profile/personnalisation', [
-            'user' => $user,
-        ]);
+        $this->render(
+            'pages/profile/personnalisation',
+            [
+                'user' => $user,
+            ],
+        );
     }
 }
