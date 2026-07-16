@@ -53,6 +53,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                         type="text"
                         name="livre"
                         id="livre"
+                        data-slug-source
                         placeholder="Ex : To Love Ru"
                         value="<?= e($livreValue) ?>"
                         autofocus
@@ -91,6 +92,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                         type="text"
                         name="slug"
                         id="slug"
+                        data-slug-target
                         placeholder="Ex : to-love-ru"
                         value="<?= e($slugValue) ?>"
                         required
