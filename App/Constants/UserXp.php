@@ -38,7 +38,7 @@ final class UserXp
     public const COLLECT_PELUCHE = 20;
 
     // =========================================
-    // CHINESE
+    // CHINOIS
     // =========================================
 
     public const LEARN_VOCABULARY = 5;

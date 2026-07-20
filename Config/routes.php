@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Controllers\AuthController;
+use App\Controllers\Auth\AuthController;
 use App\Controllers\Chinois\ChinoisAjaxController;
 use App\Controllers\Chinois\ChinoisController;
 use App\Controllers\Figurine\FigurineController;

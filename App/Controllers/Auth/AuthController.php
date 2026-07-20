@@ -2,16 +2,19 @@
 
 declare(strict_types=1);
 
-namespace App\Controllers;
+namespace App\Controllers\Auth;
 
+use App\Controllers\Controller;
 use App\Services\Auth\AuthService;
 
 use Framework\Http\Request;
 
 final class AuthController extends Controller
 {
-    public function __construct(private readonly AuthService $authService, Request $request)
-    {
+    public function __construct(
+        private readonly AuthService $authService,
+        Request $request
+    ) {
         parent::__construct($request);
     }
 
