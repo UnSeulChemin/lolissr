@@ -17,6 +17,12 @@ final class MainController extends Controller
         parent::__construct($request);
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | ACCUEIL
+    |--------------------------------------------------------------------------
+    */
+
     public function index(): never
     {
         $this->title = 'Accueil';

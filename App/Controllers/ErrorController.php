@@ -84,22 +84,11 @@ final class ErrorController extends Controller
 
         if ($this->expectsJson())
         {
-            $this->jsonResult(
-                ServiceResult::error(
-                    message: $message,
-                    status: $status
-                )
-            );
+            $this->jsonResult(ServiceResult::error(message: $message, status: $status));
         }
 
         $this->title = $title;
 
-        $this->renderError(
-            $view,
-            $status,
-            [
-                'message' => $message,
-            ]
-        );
+        $this->renderError($view, $status, ['message' => $message]);
     }
 }
