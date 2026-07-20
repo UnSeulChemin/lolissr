@@ -1,16 +1,22 @@
-export function avatarModal(
-    avatars,
-)
+// =========================================
+// AVATAR MODAL
+// =========================================
+
+import {
+    appUrl,
+} from '../url.js';
+
+// =========================================
+// MODAL
+// =========================================
+
+export function avatarModal(avatars)
 {
     return new Promise(
-        (
-            resolve,
-        ) =>
+        (resolve) =>
         {
             const overlay =
-                document.createElement(
-                    'div',
-                );
+                document.createElement('div');
 
             overlay.className =
                 'confirm-modal-overlay';
@@ -25,9 +31,7 @@ export function avatarModal(
                     <div class="avatar-modal-grid">
 
                         ${avatars.map(
-                            (
-                                avatar,
-                            ) => `
+                            (avatar) => `
                                 <button
                                     class="avatar-modal-item"
                                     data-avatar="${avatar.avatar}"
@@ -35,7 +39,7 @@ export function avatarModal(
                                 >
 
                                     <img
-                                        src="/lolissr/images/avatar/thumbnail/${avatar.avatar}.${avatar.avatar_extension}"
+                                        src="${appUrl(`images/avatar/thumbnail/${avatar.avatar}.${avatar.avatar_extension}`)}"
                                         alt="${avatar.avatar}"
                                         draggable="false"
                                     >
@@ -49,57 +53,39 @@ export function avatarModal(
                 </div>
             `;
 
-            document.body.append(
-                overlay,
-            );
+            document.body.append(overlay);
 
             document.body.style.overflow =
                 'hidden';
 
             const close =
-                (
-                    result = null,
-                ) =>
+                (result = null) =>
                 {
                     document.body.style.overflow =
                         '';
 
                     overlay.remove();
 
-                    resolve(
-                        result,
-                    );
+                    resolve(result);
                 };
 
             overlay
-                .querySelectorAll(
-                    '.avatar-modal-item',
-                )
+                .querySelectorAll('.avatar-modal-item')
                 .forEach(
-                    (
-                        button,
-                    ) =>
+                    (button) =>
                     {
                         button.addEventListener(
                             'click',
-                            () =>
-                                close(
-                                    button.dataset.avatar,
-                                ),
+                            () => close(button.dataset.avatar),
                         );
                     },
                 );
 
             overlay.addEventListener(
                 'click',
-                (
-                    event,
-                ) =>
+                (event) =>
                 {
-                    if (
-                        event.target
-                        === overlay
-                    )
+                    if (event.target === overlay)
                     {
                         close();
                     }

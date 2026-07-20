@@ -1,16 +1,22 @@
-export function bannerModal(
-    banners,
-)
+// =========================================
+// BANNER MODAL
+// =========================================
+
+import {
+    appUrl,
+} from '../url.js';
+
+// =========================================
+// MODAL
+// =========================================
+
+export function bannerModal(banners)
 {
     return new Promise(
-        (
-            resolve,
-        ) =>
+        (resolve) =>
         {
             const overlay =
-                document.createElement(
-                    'div',
-                );
+                document.createElement('div');
 
             overlay.className =
                 'confirm-modal-overlay';
@@ -25,9 +31,7 @@ export function bannerModal(
                     <div class="banner-modal-grid">
 
                         ${banners.map(
-                            (
-                                banner,
-                            ) => `
+                            (banner) => `
                                 <button
                                     class="banner-modal-item"
                                     data-banner="${banner.banner}"
@@ -35,7 +39,7 @@ export function bannerModal(
                                 >
 
                                     <img
-                                        src="/lolissr/images/banner/thumbnail/${banner.banner}.${banner.banner_extension}"
+                                        src="${appUrl(`images/banner/thumbnail/${banner.banner}.${banner.banner_extension}`)}"
                                         alt="${banner.banner}"
                                         draggable="false"
                                     >
@@ -49,57 +53,39 @@ export function bannerModal(
                 </div>
             `;
 
-            document.body.append(
-                overlay,
-            );
+            document.body.append(overlay);
 
             document.body.style.overflow =
                 'hidden';
 
             const close =
-                (
-                    result = null,
-                ) =>
+                (result = null) =>
                 {
                     document.body.style.overflow =
                         '';
 
                     overlay.remove();
 
-                    resolve(
-                        result,
-                    );
+                    resolve(result);
                 };
 
-                overlay
-                    .querySelectorAll(
-                        '.banner-modal-item',
-                )
+            overlay
+                .querySelectorAll('.banner-modal-item')
                 .forEach(
-                    (
-                        button,
-                    ) =>
+                    (button) =>
                     {
                         button.addEventListener(
                             'click',
-                            () =>
-                                close(
-                                    button.dataset.banner,
-                                ),
+                            () => close(button.dataset.banner),
                         );
                     },
                 );
 
             overlay.addEventListener(
                 'click',
-                (
-                    event,
-                ) =>
+                (event) =>
                 {
-                    if (
-                        event.target
-                        === overlay
-                    )
+                    if (event.target === overlay)
                     {
                         close();
                     }

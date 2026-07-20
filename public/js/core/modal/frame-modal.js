@@ -1,17 +1,22 @@
-export function frameModal(
-    frames,
-    avatar,
-)
+// =========================================
+// FRAME MODAL
+// =========================================
+
+import {
+    appUrl,
+} from '../url.js';
+
+// =========================================
+// MODAL
+// =========================================
+
+export function frameModal(frames, avatar)
 {
     return new Promise(
-        (
-            resolve,
-        ) =>
+        (resolve) =>
         {
             const overlay =
-                document.createElement(
-                    'div',
-                );
+                document.createElement('div');
 
             overlay.className =
                 'confirm-modal-overlay';
@@ -26,9 +31,7 @@ export function frameModal(
                     <div class="avatar-modal-grid frame-modal-grid">
 
                         ${frames.map(
-                            (
-                                frame,
-                            ) => `
+                            (frame) => `
                                 <button
                                     class="avatar-modal-item frame-modal-item"
                                     data-frame="${frame.frame}"
@@ -46,7 +49,7 @@ export function frameModal(
 
                                         <img
                                             class="profile-frame"
-                                            src="/lolissr/images/frame/thumbnail/${frame.frame}.${frame.frame_extension}"
+                                            src="${appUrl(`images/frame/thumbnail/${frame.frame}.${frame.frame_extension}`)}"
                                             alt="${frame.frame}"
                                             draggable="false"
                                         >
@@ -62,57 +65,39 @@ export function frameModal(
                 </div>
             `;
 
-            document.body.append(
-                overlay,
-            );
+            document.body.append(overlay);
 
             document.body.style.overflow =
                 'hidden';
 
             const close =
-                (
-                    result = null,
-                ) =>
+                (result = null) =>
                 {
                     document.body.style.overflow =
                         '';
 
                     overlay.remove();
 
-                    resolve(
-                        result,
-                    );
+                    resolve(result);
                 };
 
             overlay
-                .querySelectorAll(
-                    '.frame-modal-item',
-                )
+                .querySelectorAll('.frame-modal-item')
                 .forEach(
-                    (
-                        button,
-                    ) =>
+                    (button) =>
                     {
                         button.addEventListener(
                             'click',
-                            () =>
-                                close(
-                                    button.dataset.frame,
-                                ),
+                            () => close(button.dataset.frame),
                         );
                     },
                 );
 
             overlay.addEventListener(
                 'click',
-                (
-                    event,
-                ) =>
+                (event) =>
                 {
-                    if (
-                        event.target
-                        === overlay
-                    )
+                    if (event.target === overlay)
                     {
                         close();
                     }
