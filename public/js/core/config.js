@@ -5,9 +5,6 @@
 const hostname =
     window.location.hostname;
 
-const pathname =
-    window.location.pathname;
-
 // =========================================
 // ENV
 // =========================================
@@ -27,14 +24,12 @@ const debugEnabled =
     ) === '1';
 
 // =========================================
-// BASE URL
+// BASE URI
 // =========================================
 
-const baseUrl =
-    pathname.startsWith(
-        '/lolissr/',
-    )
-        ? '/lolissr/'
+const baseUri =
+    typeof window.appConfig?.baseUri === 'string'
+        ? window.appConfig.baseUri
         : '/';
 
 // =========================================
@@ -64,7 +59,7 @@ export const config =
 
         isLocalhost,
 
-        baseUrl,
+        baseUri,
 
         // =================================
         // ROUTER
@@ -81,7 +76,7 @@ export const config =
 
         // =================================
         // PREFETCH
-        // =================================
+        // =========================================
 
         prefetch:
         {

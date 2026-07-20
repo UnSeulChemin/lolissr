@@ -77,13 +77,21 @@ $content =
 
     <script>
 
+        window.appConfig = Object.freeze({
+            baseUri: <?= json_encode(
+                $view->baseUri,
+                JSON_UNESCAPED_SLASHES
+                | JSON_HEX_TAG
+                | JSON_HEX_AMP
+                | JSON_HEX_APOS
+                | JSON_HEX_QUOT
+                | JSON_THROW_ON_ERROR,
+            ) ?>,
+        });
+
         window.csrfToken = document
             .querySelector('meta[name="csrf-token"]')
             ?.getAttribute('content') ?? '';
-
-    </script>
-
-    <script>
 
         window.flashToast = <?= json_encode(
             $view->toast,

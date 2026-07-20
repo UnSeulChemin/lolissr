@@ -154,7 +154,7 @@ function navigateBack()
     */
 
     void navigateTo(
-        config.baseUrl,
+        config.baseUri,
     ).finally(
         unlock,
     );
