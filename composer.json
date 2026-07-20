@@ -2,7 +2,6 @@
     "name": "lolissr/lolissr",
     "description": "Site personnel",
     "license": "proprietary",
-
     "type": "project",
 
     "require": {
@@ -19,5 +18,9 @@
             "App\\": "App/",
             "Framework\\": "Framework/"
         }
+    },
+
+    "scripts": {
+        "analyse": "vendor\\bin\\phpstan analyse --no-progress --memory-limit=512M"
     }
 }

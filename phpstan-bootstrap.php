@@ -8,4 +8,4 @@ if (! defined('ROOT'))
 }
 
 require ROOT . '/vendor/autoload.php';
-require ROOT . '/Framework/Support/helpers.php';
+require ROOT . '/Framework/Support/Helpers.php';

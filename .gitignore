@@ -10,52 +10,52 @@
 # IMAGES
 #################################
 
-/public/images/**
+/public/images/*
 !/public/images/.gitkeep
 
 #################################
 # NOTES / TEMP
 #################################
 
-notes.txt
-note.txt
+/notes.txt
+/note.txt
 
 #################################
 # CACHE
 #################################
 
-/storage/cache/**
+/storage/cache/*
 !/storage/cache/.gitkeep
 
 #################################
 # SESSIONS
 #################################
 
-/storage/sessions/**
+/storage/sessions/*
 !/storage/sessions/.gitkeep
 
 #################################
 # LOGS
 #################################
 
-/storage/logs/**
+/storage/logs/*
 !/storage/logs/.gitkeep
 
 #################################
 # BACKUPS
 #################################
 
-/storage/backups/**
+/storage/backups/*
 !/storage/backups/.gitkeep
 
 #################################
 # TESTS
 #################################
 
-tests/Http/reports/
+/tests/Http/reports/
 
 #################################
-# DEPENDANCES
+# DÉPENDANCES
 #################################
 
 /vendor/
@@ -66,10 +66,19 @@ tests/Http/reports/
 
 *.zip
 *.rar
+*.7z
 
 #################################
-# SYSTEME D'EXPLOITATION
+# IDE
+#################################
+
+/.idea/
+/.vscode/
+
+#################################
+# SYSTÈME D'EXPLOITATION
 #################################
 
 .DS_Store
 Thumbs.db
+desktop.ini
