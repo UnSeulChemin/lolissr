@@ -180,7 +180,7 @@ final readonly class ChinoisReadService
 
     public function search(string $query = ''): ChinoisSearchData
     {
-        $query = trim((string) $query);
+        $query = trim($query);
 
         return new ChinoisSearchData(
             results: $this->searchRepository->search($query),

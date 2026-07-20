@@ -415,6 +415,9 @@ final readonly class MangaWriteService
         return $this->error($message);
     }
 
+    /**
+     * @param array<string, mixed> $files
+     */
     private function uploadThumbnail(
         MangaCreateDTO $dto,
         array $files

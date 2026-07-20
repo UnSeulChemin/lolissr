@@ -6,22 +6,29 @@ use App\DTO\Chinois\Responses\ChinoisVocabulaireData;
 use App\DTO\Common\Responses\ViewData;
 
 /** @var ViewData $view */
-/** @var ChinoisVocabulaireData $vocabulaire */
+/** @var list<ChinoisVocabulaireData> $vocabulaires */
 
 ?>
 
-<section class="layout-container dashboard-page">
+<div class="collection-ajax-content">
 
-    <section class="chinois-vocab-panel">
+<?php if ($vocabulaires === []): ?>
 
-        <section class="chinois-vocab-list chinois-vocab-list--flashcard">
+    <div class="chinois-vocab-empty">
+        Aucun vocabulaire enregistré.
+    </div>
 
-            <article
-                class="
-                    chinois-vocab-card
-                    transition-card
-                "
-            >
+</div>
+
+<?php return; endif; ?>
+
+<section class="chinois-vocab-panel">
+
+    <section class="chinois-vocab-list">
+
+        <?php foreach ($vocabulaires as $vocabulaire): ?>
+
+            <article class="chinois-vocab-card transition-card">
 
                 <button
                     class="grammar-delete vocabulaire-delete"
@@ -56,10 +63,10 @@ use App\DTO\Common\Responses\ViewData;
 
                     <div
                         class="chinois-vocab-example"
-                        data-copy="<?= e($vocabulaire->exemple ?? '') ?>"
+                        data-copy="<?= e($vocabulaire->exemple) ?>"
                         title="Cliquer pour copier"
                     >
-                        <?= nl2br(e($vocabulaire->exemple ?? '')) ?>
+                        <?= nl2br(e($vocabulaire->exemple)) ?>
                     </div>
 
                 <?php endif; ?>
@@ -68,7 +75,7 @@ use App\DTO\Common\Responses\ViewData;
 
                     <a
                         class="grammar-edit"
-                        href="<?= e($view->baseUri) ?>chinois/vocabulaire/<?= $vocabulaire->langue ?>/modifier/<?= $vocabulaire->id ?>"
+                        href="<?= e($view->baseUri) ?>chinois/vocabulaire/<?= e($vocabulaire->langue) ?>/modifier/<?= $vocabulaire->id ?>"
                     >
 
                         <svg
@@ -126,8 +133,10 @@ use App\DTO\Common\Responses\ViewData;
 
             </article>
 
-        </section>
+        <?php endforeach; ?>
 
     </section>
 
 </section>
+
+</div>

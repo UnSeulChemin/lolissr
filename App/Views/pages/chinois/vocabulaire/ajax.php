@@ -2,33 +2,26 @@
 
 declare(strict_types=1);
 
-use App\DTO\Common\Responses\ViewData;
 use App\DTO\Chinois\Responses\ChinoisVocabulaireData;
+use App\DTO\Common\Responses\ViewData;
 
 /** @var ViewData $view */
-/** @var list<ChinoisVocabulaireData> $vocabulaires */
+/** @var ChinoisVocabulaireData $vocabulaire */
 
 ?>
 
-<div class="collection-ajax-content">
+<section class="layout-container dashboard-page">
 
-<?php if ($vocabulaires === []): ?>
+    <section class="chinois-vocab-panel">
 
-    <div class="chinois-vocab-empty">
-        Aucun vocabulaire enregistré.
-    </div>
+        <section class="chinois-vocab-list chinois-vocab-list--flashcard">
 
-</div>
-
-<?php return; endif; ?>
-
-<section class="chinois-vocab-panel">
-
-    <section class="chinois-vocab-list">
-
-        <?php foreach ($vocabulaires as $vocabulaire): ?>
-
-            <article class="chinois-vocab-card transition-card">
+            <article
+                class="
+                    chinois-vocab-card
+                    transition-card
+                "
+            >
 
                 <button
                     class="grammar-delete vocabulaire-delete"
@@ -63,10 +56,10 @@ use App\DTO\Chinois\Responses\ChinoisVocabulaireData;
 
                     <div
                         class="chinois-vocab-example"
-                        data-copy="<?= e($vocabulaire->exemple ?? '') ?>"
+                        data-copy="<?= e($vocabulaire->exemple) ?>"
                         title="Cliquer pour copier"
                     >
-                        <?= e($vocabulaire->exemple ?? '') ?>
+                        <?= nl2br(e($vocabulaire->exemple)) ?>
                     </div>
 
                 <?php endif; ?>
@@ -83,6 +76,7 @@ use App\DTO\Chinois\Responses\ChinoisVocabulaireData;
                             viewBox="0 0 24 24"
                             aria-hidden="true"
                         >
+
                             <path
                                 d="M4 20H8L18.5 9.5C19.1 8.9 19.1 7.9 18.5 7.3L16.7 5.5C16.1 4.9 15.1 4.9 14.5 5.5L4 16V20Z"
                                 fill="none"
@@ -91,6 +85,7 @@ use App\DTO\Chinois\Responses\ChinoisVocabulaireData;
                                 stroke-linecap="round"
                                 stroke-linejoin="round"
                             />
+
                         </svg>
 
                     </a>
@@ -113,6 +108,7 @@ use App\DTO\Chinois\Responses\ChinoisVocabulaireData;
                             viewBox="0 0 24 24"
                             aria-hidden="true"
                         >
+
                             <path
                                 d="M20 6L9 17L4 12"
                                 fill="none"
@@ -121,6 +117,7 @@ use App\DTO\Chinois\Responses\ChinoisVocabulaireData;
                                 stroke-linecap="round"
                                 stroke-linejoin="round"
                             />
+
                         </svg>
 
                     </button>
@@ -129,10 +126,8 @@ use App\DTO\Chinois\Responses\ChinoisVocabulaireData;
 
             </article>
 
-        <?php endforeach; ?>
+        </section>
 
     </section>
 
 </section>
-
-</div>

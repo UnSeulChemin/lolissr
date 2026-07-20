@@ -76,19 +76,42 @@ abstract class Controller
     |--------------------------------------------------------------------------
     */
 
+    /**
+     * @param array<string, mixed> $data
+     */
     protected function render(string $file, array $data = []): never
     {
         $this->respondView($this->viewPath($file), data: $data);
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     protected function renderFragment(string $file, array $data = []): never
     {
-        Response::html($this->renderContent($this->viewPath($file), $data, false));
+        Response::html(
+            $this->renderContent(
+                $this->viewPath($file),
+                $data,
+                false
+            )
+        );
     }
 
-    protected function renderError(string $file, int $statusCode, array $data = []): never
+    /**
+     * @param array<string, mixed> $data
+     */
+    protected function renderError(
+        string $file,
+        int $statusCode,
+        array $data = []
+    ): never
     {
-        $this->respondView($this->errorViewPath($file), $statusCode, $data);
+        $this->respondView(
+            $this->errorViewPath($file),
+            $statusCode,
+            $data
+        );
     }
 
     /*
@@ -97,6 +120,9 @@ abstract class Controller
     |--------------------------------------------------------------------------
     */
 
+    /**
+     * @param array<string, mixed> $data
+     */
     protected function json(array $data, int $statusCode = 200): never
     {
         Response::json($data, $statusCode);
