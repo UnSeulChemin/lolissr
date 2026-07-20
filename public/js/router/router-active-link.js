@@ -6,6 +6,10 @@ import {
     normalizeUrl,
 } from '../core/navigation.js';
 
+import {
+    appUrl,
+} from '../core/url.js';
+
 // =========================================
 // UPDATE ACTIVE NAVIGATION
 // =========================================
@@ -13,41 +17,29 @@ import {
 export function updateActiveNavigation()
 {
     const currentPath =
-        location.pathname;
+        normalizeUrl(location.pathname);
 
-        document.querySelectorAll(
-            '.nav-link-icon, .site-profile-link',
-        )
+    const homePath =
+        normalizeUrl(appUrl());
+
+    document
+        .querySelectorAll('.nav-link-icon, .site-profile-link')
         .forEach(
-            (
-                link,
-            ) =>
+            (link) =>
             {
-                if (
-                    !(
-                        link
-                        instanceof HTMLAnchorElement
-                    )
-                ) {
-
+                if (! (link instanceof HTMLAnchorElement))
+                {
                     return;
                 }
 
-                const normalizedLink =
-                    normalizeUrl(
-                        link.pathname,
-                    );
+                const linkPath =
+                    normalizeUrl(link.pathname);
 
                 const active =
-                    normalizedLink
-                    === normalizeUrl(
-                        '/lolissr/',
-                    )
-                        ? currentPath
-                            === link.pathname
-                        : currentPath.startsWith(
-                            link.pathname,
-                        );
+                    linkPath === homePath
+                        ? currentPath === homePath
+                        : currentPath === linkPath
+                            || currentPath.startsWith(`${linkPath}/`);
 
                 link.classList.toggle(
                     'active',

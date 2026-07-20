@@ -8,18 +8,6 @@ import {
 } from '../core/http.js';
 
 import {
-    titleModal,
-} from '../core/modal/modal.js';
-
-import {
-    showToast,
-} from '../core/toast.js';
-
-import {
-    invalidateProfilePages,
-} from './profile-cache.js';
-
-import {
     avatarModal,
 } from '../core/modal/avatar-modal.js';
 
@@ -31,6 +19,22 @@ import {
     frameModal,
 } from '../core/modal/frame-modal.js';
 
+import {
+    titleModal,
+} from '../core/modal/modal.js';
+
+import {
+    showToast,
+} from '../core/toast.js';
+
+import {
+    appUrl,
+} from '../core/url.js';
+
+import {
+    invalidateProfilePages,
+} from './profile-cache.js';
+
 // =========================================
 // OPEN TITLE MODAL
 // =========================================
@@ -38,50 +42,36 @@ import {
 async function openTitleModal()
 {
     const data =
-        await get(
-            '/lolissr/profil/ajax/titles',
-        );
+        await get(appUrl('profil/ajax/titles'));
 
     const title =
-        await titleModal(
-            data.data.titles,
-        );
+        await titleModal(data.data.titles);
 
-    if (
-        ! title
-    )
+    if (! title)
     {
         return;
     }
 
     await post(
-        '/lolissr/profil/ajax/update-title',
+        appUrl('profil/ajax/update-title'),
         {
             title,
         },
     );
 
     const customizationTitle =
-        document.querySelector(
-            '.profile-customization-title',
-        );
+        document.querySelector('.profile-customization-title');
 
-    if (
-        customizationTitle
-    )
+    if (customizationTitle)
     {
         customizationTitle.textContent =
             title;
     }
 
     const profileSubtitle =
-        document.querySelector(
-            '.profile-subtitle',
-        );
+        document.querySelector('.profile-subtitle');
 
-    if (
-        profileSubtitle
-    )
+    if (profileSubtitle)
     {
         profileSubtitle.textContent =
             title;
@@ -95,56 +85,49 @@ async function openTitleModal()
     );
 }
 
+// =========================================
+// OPEN AVATAR MODAL
+// =========================================
+
 async function openAvatarModal()
 {
     const data =
-        await get(
-            '/lolissr/profil/ajax/avatars',
-        );
+        await get(appUrl('profil/ajax/avatars'));
 
     const avatar =
-        await avatarModal(
-            data.data.avatars,
-        );
+        await avatarModal(data.data.avatars);
 
-    if (
-        ! avatar
-    )
+    if (! avatar)
     {
         return;
     }
 
     const response =
         await post(
-            '/lolissr/profil/ajax/update-avatar',
+            appUrl('profil/ajax/update-avatar'),
             {
                 avatar,
             },
         );
 
-    const avatarPath = `/lolissr/images/avatar/thumbnail/${response.data.avatar}.${response.data.avatar_extension}`;
-
-    const customizationAvatar =
-        document.querySelector(
-            '.profile-customization-avatar img',
+    const avatarPath =
+        appUrl(
+            `images/avatar/thumbnail/${response.data.avatar}.${response.data.avatar_extension}`,
         );
 
-    if (
-        customizationAvatar
-    )
+    const customizationAvatar =
+        document.querySelector('.profile-customization-avatar img');
+
+    if (customizationAvatar)
     {
         customizationAvatar.src =
             avatarPath;
     }
 
     const profileAvatar =
-        document.querySelector(
-            '.profile-avatar img',
-        );
+        document.querySelector('.profile-avatar img');
 
-    if (
-        profileAvatar
-    )
+    if (profileAvatar)
     {
         profileAvatar.src =
             avatarPath;
@@ -158,27 +141,25 @@ async function openAvatarModal()
     );
 }
 
+// =========================================
+// OPEN BANNER MODAL
+// =========================================
+
 async function openBannerModal()
 {
     const data =
-        await get(
-            '/lolissr/profil/ajax/banners',
-        );
+        await get(appUrl('profil/ajax/banners'));
 
     const banner =
-        await bannerModal(
-            data.data.banners,
-        );
+        await bannerModal(data.data.banners);
 
-    if (
-        ! banner
-    )
+    if (! banner)
     {
         return;
     }
 
     await post(
-        '/lolissr/profil/ajax/update-banner',
+        appUrl('profil/ajax/update-banner'),
         {
             banner,
         },
@@ -192,17 +173,17 @@ async function openBannerModal()
     );
 }
 
+// =========================================
+// OPEN FRAME MODAL
+// =========================================
+
 async function openFrameModal()
 {
     const data =
-        await get(
-            '/lolissr/profil/ajax/frames',
-        );
+        await get(appUrl('profil/ajax/frames'));
 
     const avatar =
-        document.querySelector(
-            '.profile-avatar-image',
-        );
+        document.querySelector('.profile-avatar-image');
 
     const frame =
         await frameModal(
@@ -210,15 +191,13 @@ async function openFrameModal()
             avatar?.src ?? '',
         );
 
-    if (
-        ! frame
-    )
+    if (! frame)
     {
         return;
     }
 
     await post(
-        '/lolissr/profil/ajax/update-frame',
+        appUrl('profil/ajax/update-frame'),
         {
             frame,
         },
@@ -239,9 +218,7 @@ async function openFrameModal()
 export function initProfileCustomization()
 {
     document
-        .querySelector(
-            '.js-profile-title',
-        )
+        .querySelector('.js-profile-title')
         ?.addEventListener(
             'click',
             () =>
@@ -251,9 +228,7 @@ export function initProfileCustomization()
         );
 
     document
-        .querySelector(
-            '.js-profile-avatar',
-        )
+        .querySelector('.js-profile-avatar')
         ?.addEventListener(
             'click',
             () =>
@@ -263,9 +238,7 @@ export function initProfileCustomization()
         );
 
     document
-        .querySelector(
-            '.js-profile-banner',
-        )
+        .querySelector('.js-profile-banner')
         ?.addEventListener(
             'click',
             () =>
@@ -275,9 +248,7 @@ export function initProfileCustomization()
         );
 
     document
-        .querySelector(
-            '.js-profile-frame',
-        )
+        .querySelector('.js-profile-frame')
         ?.addEventListener(
             'click',
             () =>

@@ -3,6 +3,10 @@
 // =========================================
 
 import {
+    appUrl,
+} from '../core/url.js';
+
+import {
     invalidatePage,
 } from '../router/page-invalidation.js';
 
@@ -12,13 +16,13 @@ import {
 
 export function invalidateFigurinePages()
 {
-    invalidatePage('/lolissr/');
+    invalidatePage(appUrl());
 
-    invalidatePage('/lolissr/profil');
+    invalidatePage(appUrl('profil'));
 
-    invalidatePage('/lolissr/figurine');
+    invalidatePage(appUrl('figurine'));
 
-    invalidatePage('/lolissr/figurine/waifus');
+    invalidatePage(appUrl('figurine/waifus'));
 
     invalidatePage(window.location.pathname);
 }

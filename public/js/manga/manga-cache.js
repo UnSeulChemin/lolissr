@@ -3,6 +3,10 @@
 // =========================================
 
 import {
+    appUrl,
+} from '../core/url.js';
+
+import {
     invalidatePage,
 } from '../router/page-invalidation.js';
 
@@ -12,35 +16,19 @@ import {
 
 export function invalidateMangaPages()
 {
-    invalidatePage(
-        '/lolissr/',
-    );
+    invalidatePage(appUrl());
 
-    invalidatePage(
-        '/lolissr/profil',
-    );
+    invalidatePage(appUrl('profil'));
 
-    invalidatePage(
-        '/lolissr/manga',
-    );
+    invalidatePage(appUrl('manga'));
 
-    invalidatePage(
-        '/lolissr/manga/series',
-    );
+    invalidatePage(appUrl('manga/series'));
 
-    invalidatePage(
-        '/lolissr/manga/series/notes',
-    );
+    invalidatePage(appUrl('manga/series/notes'));
 
-    invalidatePage(
-        '/lolissr/manga/series/a-lire',
-    );
+    invalidatePage(appUrl('manga/series/a-lire'));
 
-    invalidatePage(
-        '/lolissr/manga/artbooks',
-    );
+    invalidatePage(appUrl('manga/artbooks'));
 
-    invalidatePage(
-        window.location.pathname,
-    );
+    invalidatePage(window.location.pathname);
 }

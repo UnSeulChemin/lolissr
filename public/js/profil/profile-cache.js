@@ -3,6 +3,10 @@
 // =========================================
 
 import {
+    appUrl,
+} from '../core/url.js';
+
+import {
     invalidatePage,
 } from '../router/page-invalidation.js';
 
@@ -12,11 +16,7 @@ import {
 
 export function invalidateProfilePages()
 {
-    invalidatePage(
-        '/lolissr/profil',
-    );
+    invalidatePage(appUrl('profil'));
 
-    invalidatePage(
-        '/lolissr/profil/personnalisation',
-    );
+    invalidatePage(appUrl('profil/personnalisation'));
 }
