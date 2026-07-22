@@ -24,15 +24,11 @@ final class SecurityHeadersMiddleware implements MiddlewareInterface
         header('X-Frame-Options: DENY');
         header('Referrer-Policy: no-referrer');
         header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
-
         header('Content-Security-Policy: ' . ContentSecurityPolicy::policy());
 
         if ($this->isHttps())
         {
-            header(
-                'Strict-Transport-Security: '
-                . 'max-age=31536000; includeSubDomains'
-            );
+            header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
         }
     }
 

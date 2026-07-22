@@ -13,8 +13,11 @@ final readonly class AuthService
 {
     public function __construct(
         private UserRepository $userRepository
-    ) {
-    }
+    ) {}
+
+    // =========================================
+    // AUTHENTIFICATION
+    // =========================================
 
     public function register(string $username, string $password): bool
     {
@@ -30,24 +33,23 @@ final readonly class AuthService
             return false;
         }
 
-        return $this->userRepository->create($username, password_hash($password, PASSWORD_DEFAULT));
+        return $this->userRepository->create(
+            $username,
+            password_hash($password, PASSWORD_DEFAULT)
+        );
     }
 
     public function login(string $username, string $password): bool
     {
         $user = $this->userRepository->findByUsername(trim($username));
 
-        if ($user === null)
-        {
-            return false;
-        }
-
-        if (! password_verify($password, $user->password))
+        if ($user === null || ! password_verify($password, $user->password))
         {
             return false;
         }
 
         Session::regenerate();
+        Session::remove('csrf_token');
         Session::set('user_id', $user->id);
 
         return true;
@@ -57,6 +59,10 @@ final readonly class AuthService
     {
         Session::destroy();
     }
+
+    // =========================================
+    // UTILISATEUR
+    // =========================================
 
     public function user(): ?User
     {

@@ -14,11 +14,18 @@ final class AuthMiddleware implements MiddlewareInterface
 
     public function handle(Request $request): void
     {
-        if (is_logged())
+        if (! is_logged())
+        {
+            redirect('/connexion');
+        }
+
+        if (headers_sent())
         {
             return;
         }
 
-        redirect('/connexion');
+        header('Cache-Control: private, no-store, max-age=0');
+        header('Pragma: no-cache');
+        header('Expires: 0');
     }
 }
