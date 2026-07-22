@@ -9,6 +9,7 @@ use Framework\Config\Env;
 use Framework\Container\AppContainer;
 use Framework\Container\Container;
 use Framework\Http\ErrorHandler;
+use Framework\Http\Middleware\SecurityHeadersMiddleware;
 use Framework\Http\Request;
 use Framework\Routing\RouteCollection;
 use Framework\Routing\Router;
@@ -38,6 +39,8 @@ final class Bootstrap
 
         ErrorHandler::register();
 
+    header_remove('X-Powered-By');
+
         $container = new Container();
 
         AppContainer::set($container);
@@ -55,7 +58,13 @@ final class Bootstrap
 
         $routes($router);
 
-        $kernel = new AppKernel($router);
+        /** @var Request $request */
+        $request = $container->get(Request::class);
+
+        /** @var SecurityHeadersMiddleware $securityHeaders */
+        $securityHeaders = $container->get(SecurityHeadersMiddleware::class);
+
+        $kernel = new AppKernel($router, $request, $securityHeaders);
 
         $kernel->boot();
         $kernel->handle();

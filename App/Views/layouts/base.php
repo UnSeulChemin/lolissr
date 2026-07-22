@@ -4,17 +4,12 @@ declare(strict_types=1);
 
 use App\DTO\Common\Responses\ViewData;
 
+use Framework\Security\ContentSecurityPolicy;
+
 /** @var ViewData $view */
 
-$title =
-    is_string($title ?? null)
-        ? $title
-        : '';
-
-$content =
-    is_string($content ?? null)
-        ? $content
-        : '';
+$title = is_string($title ?? null) ? $title : '';
+$content = is_string($content ?? null) ? $content : '';
 
 ?>
 
@@ -25,36 +20,19 @@ $content =
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta
-        http-equiv="x-dns-prefetch-control"
-        content="off"
-    >
+    <meta http-equiv="x-dns-prefetch-control" content="off">
 
-    <meta
-        name="referrer"
-        content="no-referrer"
-    >
+    <meta name="referrer" content="no-referrer">
 
     <?= csrf_meta_tag() ?>
 
-    <title>
-        <?= e($title) ?>
-    </title>
+    <title><?= e($title) ?></title>
 
-    <link
-        rel="shortcut icon"
-        href="<?= e($view->baseUri) ?>images/favicon/favicon.png"
-    >
+    <link rel="shortcut icon" href="<?= e($view->baseUri) ?>images/favicon/favicon.png">
 
-    <link
-        rel="stylesheet"
-        href="<?= e($view->baseUri) ?>css/app.css"
-    >
+    <link rel="stylesheet" href="<?= e($view->baseUri) ?>css/app.css">
 
 </head>
 
@@ -68,14 +46,9 @@ $content =
 
     </main>
 
-    <div
-        id="toast"
-        class="toast"
-        aria-live="polite"
-        aria-atomic="true"
-    ></div>
+    <div id="toast" class="toast" aria-live="polite" aria-atomic="true"></div>
 
-    <script>
+    <script nonce="<?= ContentSecurityPolicy::escapedNonce() ?>">
 
         window.appConfig = Object.freeze({
             baseUri: <?= json_encode(
@@ -85,7 +58,7 @@ $content =
                 | JSON_HEX_AMP
                 | JSON_HEX_APOS
                 | JSON_HEX_QUOT
-                | JSON_THROW_ON_ERROR,
+                | JSON_THROW_ON_ERROR
             ) ?>,
         });
 
@@ -100,15 +73,12 @@ $content =
             | JSON_HEX_AMP
             | JSON_HEX_APOS
             | JSON_HEX_QUOT
-            | JSON_THROW_ON_ERROR,
+            | JSON_THROW_ON_ERROR
         ) ?>;
 
     </script>
 
-    <script
-        type="module"
-        src="<?= e($view->baseUri) ?>js/app.js"
-    ></script>
+    <script type="module" src="<?= e($view->baseUri) ?>js/app.js"></script>
 
 </body>
 
