@@ -21,6 +21,11 @@
     },
 
     "scripts": {
-        "analyse": "vendor\\bin\\phpstan analyse --no-progress --memory-limit=512M"
+        "analyse": "phpstan analyse --no-progress --memory-limit=512M",
+        "test": "php tests/run-tests.php",
+        "check": [
+            "@analyse",
+            "@test"
+        ]
     }
 }
