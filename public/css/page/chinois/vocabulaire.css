@@ -2,6 +2,13 @@
    VOCABULAIRE
 ========================================= */
 
+.collection-ajax-content--single .chinois-vocab-list
+{
+    grid-template-columns: minmax(0, 620px);
+
+    justify-content: center;
+}
+
 .chinois-vocab-list
 {
     display: grid;
@@ -238,8 +245,8 @@
 
 .chinois-vocab-list--flashcard
 {
-    grid-template-columns:
-        minmax(0, 620px);
+    grid-template-columns: minmax(0, 620px);
+    justify-content: center;
 }
 
 .flashcard-navigation

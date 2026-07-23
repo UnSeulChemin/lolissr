@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\DTO\Common\Responses\ViewData;
 use App\DTO\Chinois\Responses\ChinoisGrammaireData;
+use App\DTO\Common\Responses\ViewData;
 
 /** @var ViewData $view */
 /** @var ChinoisGrammaireData $grammaire */
@@ -40,12 +40,14 @@ use App\DTO\Chinois\Responses\ChinoisGrammaireData;
                     viewBox="0 0 24 24"
                     aria-hidden="true"
                 >
+
                     <path
                         d="M4 20H8L18.5 9.5C19.1 8.9 19.1 7.9 18.5 7.3L16.7 5.5C16.1 4.9 15.1 4.9 14.5 5.5L4 16V20Z"
                         fill="none"
                         stroke="currentColor"
                         stroke-width="2"
                     />
+
                 </svg>
 
             </a>
@@ -100,10 +102,10 @@ use App\DTO\Chinois\Responses\ChinoisGrammaireData;
                     grammar-ajax
                     <?= $grammaire->masteredClass ?>
                 "
+                type="button"
                 data-id="<?= $grammaire->id ?>"
                 data-url="<?= e($view->baseUri) ?>chinois/ajax/toggle-grammaire-maitrise"
                 data-maitrise="<?= $grammaire->masteredValue ?>"
-                type="button"
             >
 
                 <svg
@@ -111,12 +113,14 @@ use App\DTO\Chinois\Responses\ChinoisGrammaireData;
                     viewBox="0 0 24 24"
                     aria-hidden="true"
                 >
+
                     <path
                         d="M20 6L9 17L4 12"
                         fill="none"
                         stroke="currentColor"
                         stroke-width="3"
                     />
+
                 </svg>
 
             </button>
