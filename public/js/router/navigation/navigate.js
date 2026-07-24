@@ -3,19 +3,19 @@
 // =========================================
 
 import {
-    normalizeUrl,
-} from '../../core/navigation.js';
-
-import {
     debug,
     debugError,
 } from '../../core/debug/debug.js';
 
 import {
+    normalizeUrl,
+} from '../../core/navigation.js';
+
+import {
     end,
+    finish,
     reset,
     start,
-    finish,
 } from '../../core/debug/profiler.js';
 
 import {
@@ -28,6 +28,10 @@ import {
 } from './navigation-events.js';
 
 import {
+    renderPage,
+} from './navigation-render.js';
+
+import {
     resolvePage,
 } from './resolve-page.js';
 
@@ -36,16 +40,8 @@ import {
 } from './validate-page-response.js';
 
 import {
-    renderPage,
-} from './navigation-render.js';
-
-import {
-    clearController,
-    lockRouter,
-    navigationState,
-    setController,
-    unlockRouter,
-} from '../router-state.js';
+    dispatchRouterLoaded,
+} from '../router-events.js';
 
 import {
     runCleanup,
@@ -57,6 +53,14 @@ import {
 } from '../router-hooks.js';
 
 import {
+    clearController,
+    lockRouter,
+    navigationState,
+    setController,
+    unlockRouter,
+} from '../router-state.js';
+
+import {
     clearInvalidatedRoute,
     shouldRefreshRoute,
 } from '../route-invalidation.js';
@@ -64,10 +68,6 @@ import {
 import {
     saveScrollPosition,
 } from '../route-scroll.js';
-
-import {
-    dispatchRouterLoaded,
-} from '../router-events.js';
 
 // =========================================
 // NAVIGATE
@@ -104,7 +104,6 @@ export async function navigateTo(
         current === target
         && options.force !== true
     ) {
-
         debug(
             'ROUTER',
             'same-route',
@@ -116,34 +115,29 @@ export async function navigateTo(
 
     /*
     |--------------------------------------------------------------------------
-    | LOCK
+    | ABORT PREVIOUS NAVIGATION
     |--------------------------------------------------------------------------
     */
 
-    if (
-        navigationState.locked
-        && options.force !== true
-    ) {
-
-        debug(
-            'ROUTER',
-            'locked',
-            target,
-        );
-
-        return;
-    }
+    navigationState.controller?.abort();
 
     /*
     |--------------------------------------------------------------------------
-    | LOCK ROUTER
+    | REGISTER NAVIGATION
     |--------------------------------------------------------------------------
     */
 
-    lockRouter();
-
     const navigationId =
         ++navigationState.navigationId;
+
+    lockRouter();
+
+    const controller =
+        new AbortController();
+
+    setController(
+        controller,
+    );
 
     /*
     |--------------------------------------------------------------------------
@@ -154,7 +148,6 @@ export async function navigateTo(
     if (
         options.updateHistory !== false
     ) {
-
         saveScrollPosition(
             current,
         );
@@ -171,23 +164,8 @@ export async function navigateTo(
         target,
     );
 
-    /*
-    |--------------------------------------------------------------------------
-    | ABORT PREVIOUS
-    |--------------------------------------------------------------------------
-    */
-
-    navigationState.controller?.abort();
-
-    const controller =
-        new AbortController();
-
-    setController(
-        controller,
-    );
-
-    try {
-
+    try
+    {
         /*
         |--------------------------------------------------------------------------
         | BEFORE HOOKS
@@ -203,6 +181,24 @@ export async function navigateTo(
                     target,
             },
         );
+
+        /*
+        |--------------------------------------------------------------------------
+        | STALE NAVIGATION
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            navigationId
+            !== navigationState.navigationId
+        ) {
+            emitNavigationAbort(
+                current,
+                target,
+            );
+
+            return;
+        }
 
         /*
         |--------------------------------------------------------------------------
@@ -234,7 +230,6 @@ export async function navigateTo(
         if (
             forceRefresh
         ) {
-
             clearInvalidatedRoute(
                 target,
             );
@@ -268,7 +263,6 @@ export async function navigateTo(
             navigationId
             !== navigationState.navigationId
         ) {
-
             emitNavigationAbort(
                 current,
                 target,
@@ -321,6 +315,24 @@ export async function navigateTo(
 
         /*
         |--------------------------------------------------------------------------
+        | STALE NAVIGATION
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            navigationId
+            !== navigationState.navigationId
+        ) {
+            emitNavigationAbort(
+                current,
+                target,
+            );
+
+            return;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
         | EVENTS
         |--------------------------------------------------------------------------
         */
@@ -335,11 +347,21 @@ export async function navigateTo(
             },
         );
 
+        if (
+            navigationId
+            !== navigationState.navigationId
+        ) {
+            emitNavigationAbort(
+                current,
+                target,
+            );
+
+            return;
+        }
+
         dispatchRouterLoaded(
             target,
         );
-
-        unlockRouter();
 
         emitNavigationReady(
             current,
@@ -353,11 +375,9 @@ export async function navigateTo(
         );
 
         finish();
-
-    } catch (error) {
-
-        unlockRouter();
-
+    }
+    catch (error)
+    {
         /*
         |--------------------------------------------------------------------------
         | ABORT
@@ -368,7 +388,24 @@ export async function navigateTo(
             error?.name
             === 'AbortError'
         ) {
+            emitNavigationAbort(
+                current,
+                target,
+            );
 
+            return;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | STALE NAVIGATION
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            navigationId
+            !== navigationState.navigationId
+        ) {
             emitNavigationAbort(
                 current,
                 target,
@@ -403,16 +440,15 @@ export async function navigateTo(
         if (
             options.fallback !== false
         ) {
-
             window.location.href =
                 target;
         }
-
-    } finally {
-
+    }
+    finally
+    {
         /*
         |--------------------------------------------------------------------------
-        | CLEAN CONTROLLER
+        | RELEASE CURRENT NAVIGATION
         |--------------------------------------------------------------------------
         */
 
@@ -420,8 +456,8 @@ export async function navigateTo(
             navigationId
             === navigationState.navigationId
         ) {
-
             clearController();
+            unlockRouter();
         }
     }
 }
