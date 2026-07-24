@@ -103,23 +103,27 @@ export async function triggerBeforeRouteChange(
 // TRIGGER AFTER
 // =========================================
 
-export function triggerRouteChange(
+export async function triggerRouteChange(
     context,
 )
 {
+    const tasks =
+        [];
+
     for (
         const callback
         of routeChangeCallbacks
     )
     {
-        queueMicrotask(
-            () =>
-            {
-                Promise.resolve(
-                    callback(
-                        context,
-                    ),
-                ).catch(
+        tasks.push(
+            Promise.resolve()
+                .then(
+                    () =>
+                        callback(
+                            context,
+                        ),
+                )
+                .catch(
                     (
                         error,
                     ) =>
@@ -129,8 +133,11 @@ export function triggerRouteChange(
                             error,
                         );
                     },
-                );
-            },
+                ),
         );
     }
+
+    await Promise.all(
+        tasks,
+    );
 }

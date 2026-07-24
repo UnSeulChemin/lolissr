@@ -4,13 +4,28 @@
 
 import {
     emitNavigationEvent,
-    NAVIGATION_START,
-    NAVIGATION_FETCH,
-    NAVIGATION_RENDER,
-    NAVIGATION_READY,
-    NAVIGATION_ERROR,
     NAVIGATION_ABORT,
+    NAVIGATION_ERROR,
+    NAVIGATION_FETCH,
+    NAVIGATION_READY,
+    NAVIGATION_RENDER,
+    NAVIGATION_START,
 } from '../../core/navigation-protocol.js';
+
+// =========================================
+// INTERNAL
+// =========================================
+
+function emit(
+    type,
+    payload,
+)
+{
+    emitNavigationEvent(
+        type,
+        payload,
+    );
+}
 
 // =========================================
 // START
@@ -21,7 +36,7 @@ export function emitNavigationStart(
     to,
 )
 {
-    emitNavigationEvent(
+    emit(
         NAVIGATION_START,
         {
             from,
@@ -39,7 +54,7 @@ export function emitNavigationFetch(
     to,
 )
 {
-    emitNavigationEvent(
+    emit(
         NAVIGATION_FETCH,
         {
             from,
@@ -57,7 +72,7 @@ export function emitNavigationRender(
     to,
 )
 {
-    emitNavigationEvent(
+    emit(
         NAVIGATION_RENDER,
         {
             from,
@@ -75,7 +90,7 @@ export function emitNavigationReady(
     to,
 )
 {
-    emitNavigationEvent(
+    emit(
         NAVIGATION_READY,
         {
             from,
@@ -94,7 +109,7 @@ export function emitNavigationError(
     error,
 )
 {
-    emitNavigationEvent(
+    emit(
         NAVIGATION_ERROR,
         {
             from,
@@ -113,7 +128,7 @@ export function emitNavigationAbort(
     to,
 )
 {
-    emitNavigationEvent(
+    emit(
         NAVIGATION_ABORT,
         {
             from,

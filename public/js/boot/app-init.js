@@ -8,16 +8,21 @@ import {
 } from '../core/debug/debug.js';
 
 import {
-    showToast,
-} from '../core/toast.js';
+    end,
+    start,
+} from '../core/debug/profiler.js';
+
+import {
+    FrontendError,
+} from '../core/errors/FrontendError.js';
 
 import {
     handleError,
 } from '../core/errors/error-handler.js';
 
 import {
-    onRouteChange,
-} from '../router/router-hooks.js';
+    showToast,
+} from '../core/toast.js';
 
 import {
     GLOBAL_INITIALIZERS,
@@ -26,6 +31,10 @@ import {
 import {
     ROUTE_INITIALIZERS,
 } from '../routes/route-initializers.js';
+
+import {
+    onRouteChange,
+} from '../router/router-hooks.js';
 
 import {
     initAppDebug,
@@ -40,6 +49,10 @@ function safeInit(
     callback,
 )
 {
+    start(
+        label,
+    );
+
     try {
 
         callback();
@@ -52,12 +65,25 @@ function safeInit(
     } catch (error) {
 
         debugError(
-            label,
+            'INIT',
             error,
         );
 
         handleError(
-            error,
+            error instanceof Error
+                ? error
+                : new FrontendError(
+                    `Erreur pendant "${label}"`,
+                    {
+                        cause: error,
+                    },
+                ),
+        );
+
+    } finally {
+
+        end(
+            label,
         );
     }
 }
@@ -81,7 +107,7 @@ function initFlashToast()
     showToast(
         flashToast.message,
         flashToast.type
-        || 'success',
+        ?? 'success',
     );
 }
 
@@ -116,12 +142,15 @@ function runRouteInitializers()
         location.pathname;
 
     for (
-        const route
+        const {
+            match,
+            initializers,
+        }
         of ROUTE_INITIALIZERS
     )
     {
         if (
-            !route.match.test(
+            !match.test(
                 path,
             )
         ) {
@@ -134,7 +163,7 @@ function runRouteInitializers()
                 label,
                 init,
             ]
-            of route.initializers
+            of initializers
         )
         {
             safeInit(
@@ -163,10 +192,7 @@ export function initApp()
     runRouteInitializers();
 
     onRouteChange(
-        () =>
-        {
-            runRouteInitializers();
-        },
+        runRouteInitializers,
     );
 
     safeInit(

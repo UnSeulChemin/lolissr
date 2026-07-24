@@ -3,23 +3,23 @@
 // =========================================
 
 import {
-    post,
-} from '../../core/http.js';
-
-import {
     $,
     $$,
     delegate,
 } from '../../core/dom.js';
 
 import {
-    showToast,
-} from '../../core/toast.js';
-
-import {
     debug,
     debugError,
 } from '../../core/debug/debug.js';
+
+import {
+    post,
+} from '../../core/http.js';
+
+import {
+    showToast,
+} from '../../core/toast.js';
 
 import {
     invalidateMangaPages,
@@ -28,6 +28,9 @@ import {
 // =========================================
 // CONFIG
 // =========================================
+
+const DETAIL_CARD_SELECTOR =
+    '.js-detail-card';
 
 const NOTE_GROUP_SELECTOR =
     '.js-note-group';
@@ -55,7 +58,7 @@ let isSaving =
 function getDetailCard()
 {
     return $(
-        '.js-detail-card',
+        DETAIL_CARD_SELECTOR,
     );
 }
 
@@ -75,6 +78,9 @@ function refreshButtons()
         return;
     }
 
+    const dataset =
+        card.dataset;
+
     $$(
         NOTE_GROUP_SELECTOR,
         card,
@@ -92,7 +98,7 @@ function refreshButtons()
 
             const currentValue =
                 Number(
-                    card.dataset[
+                    dataset[
                         fieldName
                     ] ?? 0,
                 );
@@ -114,15 +120,12 @@ function refreshButtons()
                         return;
                     }
 
-                    const buttonValue =
-                        Number(
-                            button.dataset.value,
-                        );
-
                     button.classList.toggle(
                         'active',
                         currentValue
-                        === buttonValue,
+                        === Number(
+                            button.dataset.value,
+                        ),
                     );
 
                     button.disabled =
@@ -148,18 +151,20 @@ function updateTotalNote()
         return;
     }
 
-    const total =
-        Number(
-            card.dataset.jacquette
-            ?? 0,
-        )
-        + Number(
-            card.dataset.livreNote
-            ?? 0,
-        );
+    const {
+        jacquette,
+        livreNote,
+    } = card.dataset;
 
     totalElement.textContent =
-        `${total}/10`;
+        `${Number(jacquette ?? 0) + Number(livreNote ?? 0)}/10`;
+}
+
+function refreshNoteUi()
+{
+    refreshButtons();
+
+    updateTotalNote();
 }
 
 // =========================================
@@ -178,21 +183,29 @@ async function saveNotes(
         return null;
     }
 
+    const {
+        basePath,
+        slug,
+        numero,
+        jacquette,
+        livreNote,
+    } = card.dataset;
+
     return post(
-        `${card.dataset.basePath}manga/ajax/update-note/${card.dataset.slug}/${card.dataset.numero}`,
+        `${basePath}manga/ajax/update-note/${slug}/${numero}`,
         {
             jacquette:
                 fieldName === 'jacquette'
                     ? value
                     : Number(
-                        card.dataset.jacquette,
+                        jacquette,
                     ) || 0,
 
             livre_note:
                 fieldName === 'livreNote'
                     ? value
                     : Number(
-                        card.dataset.livreNote,
+                        livreNote,
                     ) || 0,
         },
         {
@@ -240,8 +253,11 @@ async function updateNote(
         return;
     }
 
+    const dataset =
+        card.dataset;
+
     const previousValue =
-        card.dataset[
+        dataset[
             fieldName
         ] || '0';
 
@@ -250,20 +266,14 @@ async function updateNote(
             button.dataset.value,
         );
 
-    // =====================================
-    // OPTIMISTIC UPDATE
-    // =====================================
-
-    card.dataset[
+    dataset[
         fieldName
     ] =
         String(
             value,
         );
 
-    refreshButtons();
-
-    updateTotalNote();
+    refreshNoteUi();
 
     try {
 
@@ -286,8 +296,7 @@ async function updateNote(
             notes.jacquette
             !== undefined
         ) {
-
-            card.dataset.jacquette =
+            dataset.jacquette =
                 String(
                     notes.jacquette,
                 );
@@ -297,24 +306,21 @@ async function updateNote(
             notes.livreNote
             !== undefined
         ) {
-
-            card.dataset.livreNote =
+            dataset.livreNote =
                 String(
                     notes.livreNote,
                 );
         }
 
-    updateTotalNote();
+        refreshNoteUi();
 
-    refreshButtons();
+        invalidateMangaPages();
 
-    invalidateMangaPages();
-
-    showToast(
-        data?.message
-        || 'Sauvegardé',
-        'success',
-    );
+        showToast(
+            data?.message
+            ?? 'Sauvegardé',
+            'success',
+        );
 
     } catch (error) {
 
@@ -323,14 +329,12 @@ async function updateNote(
             error,
         );
 
-        card.dataset[
+        dataset[
             fieldName
         ] =
             previousValue;
 
-        updateTotalNote();
-
-        refreshButtons();
+        refreshNoteUi();
 
         showToast(
             error instanceof Error
@@ -387,21 +391,14 @@ export function initUpdateNote()
 
     document.addEventListener(
         'router:loaded',
-        () =>
-        {
-            refreshButtons();
-
-            updateTotalNote();
-        },
+        refreshNoteUi,
         {
             passive:
                 true,
         },
     );
 
-    refreshButtons();
-
-    updateTotalNote();
+    refreshNoteUi();
 
     debug(
         'NOTE',

@@ -3,17 +3,22 @@
 // =========================================
 
 import {
-    getPrefetchedPage,
+    debug,
+} from '../../core/debug/debug.js';
+
+import {
+    end,
+    start,
+} from '../../core/debug/profiler.js';
+
+import {
     getInFlightPrefetch,
+    getPrefetchedPage,
 } from '../prefetch/prefetch-cache.js';
 
 import {
     fetchPage,
 } from '../router-fetch.js';
-
-import {
-    debug,
-} from '../../core/debug/debug.js';
 
 // =========================================
 // RESOLVE
@@ -25,6 +30,10 @@ export async function resolvePage(
     signal,
 )
 {
+    start(
+        'resolve',
+    );
+
     /*
     |--------------------------------------------------------------------------
     | FORCE REFRESH
@@ -41,12 +50,27 @@ export async function resolvePage(
             target,
         );
 
-        return fetchPage(
-            target,
-            {
-                signal,
-            },
+        start(
+            'network',
         );
+
+        const response =
+            await fetchPage(
+                target,
+                {
+                    signal,
+                },
+            );
+
+        end(
+            'network',
+        );
+
+        end(
+            'resolve',
+        );
+
+        return response;
     }
 
     /*
@@ -55,17 +79,31 @@ export async function resolvePage(
     |--------------------------------------------------------------------------
     */
 
+    start(
+        'cache',
+    );
+
     const cached =
         getPrefetchedPage(
             target,
         );
 
-    if (cached) {
+    end(
+        'cache',
+    );
+
+    if (
+        cached
+    ) {
 
         debug(
             'ROUTER',
             'cache-hit',
             target,
+        );
+
+        end(
+            'resolve',
         );
 
         return cached;
@@ -77,17 +115,31 @@ export async function resolvePage(
     |--------------------------------------------------------------------------
     */
 
+    start(
+        'prefetch',
+    );
+
     const inFlight =
         getInFlightPrefetch(
             target,
         );
 
-    if (inFlight) {
+    end(
+        'prefetch',
+    );
+
+    if (
+        inFlight
+    ) {
 
         debug(
             'ROUTER',
             'reuse-prefetch',
             target,
+        );
+
+        end(
+            'resolve',
         );
 
         return inFlight;
@@ -105,10 +157,25 @@ export async function resolvePage(
         target,
     );
 
-    return fetchPage(
-        target,
-        {
-            signal,
-        },
+    start(
+        'network',
     );
+
+    const response =
+        await fetchPage(
+            target,
+            {
+                signal,
+            },
+        );
+
+    end(
+        'network',
+    );
+
+    end(
+        'resolve',
+    );
+
+    return response;
 }

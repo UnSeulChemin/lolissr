@@ -7,12 +7,24 @@ import {
 } from '../../core/navigation.js';
 
 import {
-    emitNavigationStart,
-    emitNavigationFetch,
-    emitNavigationRender,
-    emitNavigationReady,
-    emitNavigationError,
+    debug,
+    debugError,
+} from '../../core/debug/debug.js';
+
+import {
+    end,
+    reset,
+    start,
+    finish,
+} from '../../core/debug/profiler.js';
+
+import {
     emitNavigationAbort,
+    emitNavigationError,
+    emitNavigationFetch,
+    emitNavigationReady,
+    emitNavigationRender,
+    emitNavigationStart,
 } from './navigation-events.js';
 
 import {
@@ -28,11 +40,11 @@ import {
 } from './navigation-render.js';
 
 import {
-    navigationState,
-    lockRouter,
-    unlockRouter,
-    setController,
     clearController,
+    lockRouter,
+    navigationState,
+    setController,
+    unlockRouter,
 } from '../router-state.js';
 
 import {
@@ -45,8 +57,8 @@ import {
 } from '../router-hooks.js';
 
 import {
-    shouldRefreshRoute,
     clearInvalidatedRoute,
+    shouldRefreshRoute,
 } from '../route-invalidation.js';
 
 import {
@@ -57,11 +69,6 @@ import {
     dispatchRouterLoaded,
 } from '../router-events.js';
 
-import {
-    debug,
-    debugError,
-} from '../../core/debug/debug.js';
-
 // =========================================
 // NAVIGATE
 // =========================================
@@ -71,6 +78,12 @@ export async function navigateTo(
     options = {},
 )
 {
+    reset();
+
+    start(
+        'total',
+    );
+
     const current =
         normalizeUrl(
             location.href,
@@ -139,8 +152,7 @@ export async function navigateTo(
     */
 
     if (
-        options.updateHistory
-        !== false
+        options.updateHistory !== false
     ) {
 
         saveScrollPosition(
@@ -198,7 +210,15 @@ export async function navigateTo(
         |--------------------------------------------------------------------------
         */
 
+        start(
+            'cleanup',
+        );
+
         runCleanup();
+
+        end(
+            'cleanup',
+        );
 
         /*
         |--------------------------------------------------------------------------
@@ -222,7 +242,7 @@ export async function navigateTo(
 
         /*
         |--------------------------------------------------------------------------
-        | FETCH
+        | RESOLVE PAGE
         |--------------------------------------------------------------------------
         */
 
@@ -284,6 +304,10 @@ export async function navigateTo(
         |--------------------------------------------------------------------------
         */
 
+        start(
+            'render',
+        );
+
         await renderPage(
             current,
             target,
@@ -291,13 +315,9 @@ export async function navigateTo(
             options,
         );
 
-        /*
-        |--------------------------------------------------------------------------
-        | UNLOCK
-        |--------------------------------------------------------------------------
-        */
-
-        unlockRouter();
+        end(
+            'render',
+        );
 
         /*
         |--------------------------------------------------------------------------
@@ -305,28 +325,25 @@ export async function navigateTo(
         |--------------------------------------------------------------------------
         */
 
-        queueMicrotask(
-            () =>
+        await triggerRouteChange(
             {
-                triggerRouteChange(
-                    {
-                        from:
-                            current,
-
-                        to:
-                            target,
-                    },
-                );
-
-                dispatchRouterLoaded(
-                    target,
-                );
-
-                emitNavigationReady(
+                from:
                     current,
+
+                to:
                     target,
-                );
             },
+        );
+
+        dispatchRouterLoaded(
+            target,
+        );
+
+        unlockRouter();
+
+        emitNavigationReady(
+            current,
+            target,
         );
 
         debug(
@@ -334,6 +351,8 @@ export async function navigateTo(
             'done',
             target,
         );
+
+        finish();
 
     } catch (error) {
 
@@ -388,6 +407,7 @@ export async function navigateTo(
             window.location.href =
                 target;
         }
+
     } finally {
 
         /*

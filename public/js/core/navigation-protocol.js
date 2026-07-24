@@ -29,6 +29,23 @@ export const NAVIGATION_ABORT =
     'navigation:abort';
 
 // =========================================
+// INTERNAL
+// =========================================
+
+function createNavigationEvent(
+    type,
+    detail,
+)
+{
+    return new CustomEvent(
+        type,
+        {
+            detail,
+        },
+    );
+}
+
+// =========================================
 // EMIT
 // =========================================
 
@@ -44,11 +61,9 @@ export function emitNavigationEvent(
     );
 
     document.dispatchEvent(
-        new CustomEvent(
+        createNavigationEvent(
             type,
-            {
-                detail,
-            },
+            detail,
         ),
     );
 }

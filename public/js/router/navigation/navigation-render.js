@@ -3,6 +3,10 @@
 // =========================================
 
 import {
+    cachePage,
+} from '../page-cache.js';
+
+import {
     replaceContent,
 } from '../router-dom.js';
 
@@ -22,10 +26,6 @@ import {
     emitNavigationRender,
 } from './navigation-events.js';
 
-import {
-    cachePage,
-} from '../page-cache.js';
-
 // =========================================
 // RENDER
 // =========================================
@@ -38,8 +38,7 @@ export async function renderPage(
 )
 {
     if (
-        options.updateHistory
-        !== false
+        options.updateHistory !== false
     ) {
 
         history.pushState(
@@ -50,18 +49,12 @@ export async function renderPage(
     }
 
     if (
-        typeof response.page.title
-        === 'string'
+        typeof response.page.title === 'string'
     ) {
 
         document.title =
             response.page.title;
     }
-
-    emitNavigationRender(
-        current,
-        target,
-    );
 
     cachePage(
         target,
@@ -76,15 +69,22 @@ export async function renderPage(
 
     clearActiveFocus();
 
-    // =====================================
-    // HASH SCROLL
-    // =====================================
+    emitNavigationRender(
+        current,
+        target,
+    );
+
+    /*
+    |--------------------------------------------------------------------------
+    | HASH SCROLL
+    |--------------------------------------------------------------------------
+    */
 
     if (
         window.location.hash
     ) {
 
-        setTimeout(
+        queueMicrotask(
             () =>
             {
                 document
@@ -93,34 +93,35 @@ export async function renderPage(
                     )
                     ?.scrollIntoView();
             },
-            0,
         );
 
         return;
     }
 
-    // =====================================
-    // RESTORE SCROLL (BACK/FORWARD)
-    // =====================================
+    /*
+    |--------------------------------------------------------------------------
+    | RESTORE SCROLL
+    |--------------------------------------------------------------------------
+    */
 
     if (
-        options.updateHistory
-        === false
+        options.updateHistory === false
     ) {
 
         restoreScrollPosition(
             target,
         );
+    } else {
 
-        return;
+        /*
+        |--------------------------------------------------------------------------
+        | DEFAULT SCROLL
+        |--------------------------------------------------------------------------
+        */
+
+        window.scrollTo(
+            0,
+            0,
+        );
     }
-
-    // =====================================
-    // DEFAULT SCROLL
-    // =====================================
-
-    window.scrollTo(
-        0,
-        0,
-    );
 }
