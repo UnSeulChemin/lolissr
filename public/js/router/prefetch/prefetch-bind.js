@@ -3,18 +3,16 @@
 // =========================================
 
 import {
+    config,
+} from '../../core/config.js';
+
+import {
     shouldIgnoreLink,
 } from '../../core/navigation.js';
 
 import {
     prefetchPage,
 } from './prefetch-request.js';
-
-// =========================================
-// CONFIG
-// =========================================
-
-const PREFETCH_DELAY = 0;
 
 // =========================================
 // BIND LINK
@@ -121,7 +119,7 @@ function bindLink(
                             link.href,
                         );
                     },
-                    PREFETCH_DELAY,
+                    config.prefetch.hoverDelay,
                 );
         },
         {
@@ -137,7 +135,7 @@ function bindLink(
     */
 
     link.addEventListener(
-        'mouseleave',
+        'pointerleave',
         () =>
         {
             clearTimeout(
