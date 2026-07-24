@@ -11,6 +11,11 @@ use Framework\Support\Session;
 
 final readonly class AuthService
 {
+    private const USERNAME_MAX_LENGTH = 50;
+
+    private const PASSWORD_MIN_LENGTH = 6;
+    private const PASSWORD_MAX_LENGTH = 1024;
+
     public function __construct(
         private UserRepository $userRepository
     ) {}
@@ -23,7 +28,7 @@ final readonly class AuthService
     {
         $username = trim($username);
 
-        if ($username === '' || $password === '')
+        if (! $this->hasValidCredentials($username, $password))
         {
             return false;
         }
@@ -33,10 +38,14 @@ final readonly class AuthService
             return false;
         }
 
-        return $this->userRepository->create(
-            $username,
-            password_hash($password, PASSWORD_DEFAULT)
-        );
+        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+
+        if ($passwordHash === false)
+        {
+            return false;
+        }
+
+        return $this->userRepository->create($username, $passwordHash);
     }
 
     public function login(string $username, string $password): bool
@@ -47,6 +56,8 @@ final readonly class AuthService
         {
             return false;
         }
+
+        $this->rehashPasswordIfNeeded($user, $password);
 
         Session::regenerate();
         Session::remove('csrf_token');
@@ -60,15 +71,11 @@ final readonly class AuthService
         Session::destroy();
     }
 
-    // =========================================
-    // UTILISATEUR
-    // =========================================
-
     public function user(): ?User
     {
-        $userId = (int) Session::get('user_id', 0);
+        $userId = Session::get('user_id');
 
-        if ($userId <= 0)
+        if (! is_int($userId))
         {
             return null;
         }
@@ -79,5 +86,41 @@ final readonly class AuthService
     public function check(): bool
     {
         return $this->user() !== null;
+    }
+
+    // =========================================
+    // VALIDATION
+    // =========================================
+
+    private function hasValidCredentials(string $username, string $password): bool
+    {
+        $usernameLength = mb_strlen($username);
+        $passwordLength = mb_strlen($password);
+
+        return $usernameLength >= 1
+            && $usernameLength <= self::USERNAME_MAX_LENGTH
+            && $passwordLength >= self::PASSWORD_MIN_LENGTH
+            && $passwordLength <= self::PASSWORD_MAX_LENGTH;
+    }
+
+    // =========================================
+    // MOT DE PASSE
+    // =========================================
+
+    private function rehashPasswordIfNeeded(User $user, string $password): void
+    {
+        if (! password_needs_rehash($user->password, PASSWORD_DEFAULT))
+        {
+            return;
+        }
+
+        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+
+        if ($passwordHash === false)
+        {
+            return;
+        }
+
+        $this->userRepository->updatePasswordHash($user->id, $passwordHash);
     }
 }

@@ -12,6 +12,10 @@ final class UserRepository extends Model
 {
     protected string $table = 'users';
 
+    // =========================================
+    // RECHERCHE
+    // =========================================
+
     public function findByUsername(string $username): ?User
     {
         /** @var User|null $user */
@@ -22,9 +26,7 @@ final class UserRepository extends Model
             WHERE username = :username
             LIMIT 1
             ",
-            [
-                'username' => trim($username),
-            ],
+            ['username' => trim($username)],
             User::class
         );
 
@@ -41,14 +43,16 @@ final class UserRepository extends Model
             WHERE id = :id
             LIMIT 1
             ",
-            [
-                'id' => $id,
-            ],
+            ['id' => $id],
             User::class
         );
 
         return $user;
     }
+
+    // =========================================
+    // CRÉATION
+    // =========================================
 
     public function create(string $username, string $password): bool
     {
@@ -67,6 +71,22 @@ final class UserRepository extends Model
         ]);
     }
 
+    // =========================================
+    // AUTHENTIFICATION
+    // =========================================
+
+    public function updatePasswordHash(int $userId, string $passwordHash): bool
+    {
+        return $this->update(
+            ['password' => $passwordHash],
+            ['id' => $userId]
+        );
+    }
+
+    // =========================================
+    // PROFIL
+    // =========================================
+
     public function updateLevelAndXp(int $userId, int $level, int $xp): bool
     {
         return $this->update(
@@ -74,23 +94,54 @@ final class UserRepository extends Model
                 'level' => $level,
                 'xp' => $xp,
             ],
-            [
-                'id' => $userId,
-            ],
+            ['id' => $userId]
         );
     }
 
     public function updateTitle(int $userId, string $title): bool
     {
         return $this->update(
-            [
-                'title' => $title,
-            ],
-            [
-                'id' => $userId,
-            ],
+            ['title' => $title],
+            ['id' => $userId]
         );
     }
+
+    public function updateAvatar(int $userId, string $avatar, string $avatarExtension): bool
+    {
+        return $this->update(
+            [
+                'avatar' => $avatar,
+                'avatar_extension' => $avatarExtension,
+            ],
+            ['id' => $userId]
+        );
+    }
+
+    public function updateBanner(int $userId, string $banner, string $bannerExtension): bool
+    {
+        return $this->update(
+            [
+                'banner' => $banner,
+                'banner_extension' => $bannerExtension,
+            ],
+            ['id' => $userId]
+        );
+    }
+
+    public function updateFrame(int $userId, string $frame, string $frameExtension): bool
+    {
+        return $this->update(
+            [
+                'frame' => $frame,
+                'frame_extension' => $frameExtension,
+            ],
+            ['id' => $userId]
+        );
+    }
+
+    // =========================================
+    // PERSONNALISATION
+    // =========================================
 
     /**
      * @return list<array{
@@ -100,33 +151,21 @@ final class UserRepository extends Model
      */
     public function avatars(): array
     {
-        $path =
-            dirname(__DIR__, 3)
-            . '/public/images/avatar/thumbnail';
-
-        $avatars = [];
-
-        $files = glob(
-            $path . '/*.{webp,jpg,png}',
-            GLOB_BRACE,
-        );
+        $path = dirname(__DIR__, 3) . '/public/images/avatar/thumbnail';
+        $files = glob($path . '/*.{webp,jpg,png}', GLOB_BRACE);
 
         if ($files === false)
         {
             return [];
         }
 
+        $avatars = [];
+
         foreach ($files as $file)
         {
             $avatars[] = [
-                'avatar' => pathinfo(
-                    $file,
-                    PATHINFO_FILENAME,
-                ),
-                'avatar_extension' => pathinfo(
-                    $file,
-                    PATHINFO_EXTENSION,
-                ),
+                'avatar' => pathinfo($file, PATHINFO_FILENAME),
+                'avatar_extension' => pathinfo($file, PATHINFO_EXTENSION),
             ];
         }
 
@@ -141,33 +180,21 @@ final class UserRepository extends Model
      */
     public function banners(): array
     {
-        $path =
-            dirname(__DIR__, 3)
-            . '/public/images/banner/thumbnail';
-
-        $banners = [];
-
-        $files = glob(
-            $path . '/*.{webp,jpg,png}',
-            GLOB_BRACE,
-        );
+        $path = dirname(__DIR__, 3) . '/public/images/banner/thumbnail';
+        $files = glob($path . '/*.{webp,jpg,png}', GLOB_BRACE);
 
         if ($files === false)
         {
             return [];
         }
 
+        $banners = [];
+
         foreach ($files as $file)
         {
             $banners[] = [
-                'banner' => pathinfo(
-                    $file,
-                    PATHINFO_FILENAME,
-                ),
-                'banner_extension' => pathinfo(
-                    $file,
-                    PATHINFO_EXTENSION,
-                ),
+                'banner' => pathinfo($file, PATHINFO_FILENAME),
+                'banner_extension' => pathinfo($file, PATHINFO_EXTENSION),
             ];
         }
 
@@ -182,87 +209,24 @@ final class UserRepository extends Model
      */
     public function frames(): array
     {
-        $path =
-            dirname(__DIR__, 3)
-            . '/public/images/frame/thumbnail';
-
-        $frames = [];
-
-        $files = glob(
-            $path . '/*.{webp,jpg,png}',
-            GLOB_BRACE,
-        );
+        $path = dirname(__DIR__, 3) . '/public/images/frame/thumbnail';
+        $files = glob($path . '/*.{webp,jpg,png}', GLOB_BRACE);
 
         if ($files === false)
         {
             return [];
         }
 
+        $frames = [];
+
         foreach ($files as $file)
         {
             $frames[] = [
-                'frame' => pathinfo(
-                    $file,
-                    PATHINFO_FILENAME,
-                ),
-                'frame_extension' => pathinfo(
-                    $file,
-                    PATHINFO_EXTENSION,
-                ),
+                'frame' => pathinfo($file, PATHINFO_FILENAME),
+                'frame_extension' => pathinfo($file, PATHINFO_EXTENSION),
             ];
         }
 
         return $frames;
-    }
-
-    public function updateAvatar(
-        int $userId,
-        string $avatar,
-        string $avatarExtension,
-    ): bool
-    {
-        return $this->update(
-            [
-                'avatar' => $avatar,
-                'avatar_extension' => $avatarExtension,
-            ],
-            [
-                'id' => $userId,
-            ],
-        );
-    }
-
-    public function updateBanner(
-        int $userId,
-        string $banner,
-        string $bannerExtension,
-    ): bool
-    {
-        return $this->update(
-            [
-                'banner' => $banner,
-                'banner_extension' => $bannerExtension,
-            ],
-            [
-                'id' => $userId,
-            ],
-        );
-    }
-
-    public function updateFrame(
-        int $userId,
-        string $frame,
-        string $frameExtension,
-    ): bool
-    {
-        return $this->update(
-            [
-                'frame' => $frame,
-                'frame_extension' => $frameExtension,
-            ],
-            [
-                'id' => $userId,
-            ],
-        );
     }
 }
