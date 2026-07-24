@@ -27,6 +27,8 @@ abstract class Controller
 
     protected string $baseUri;
 
+    private ?FlashToastData $flashToast = null;
+
     public function __construct(protected Request $request)
     {
         $this->title = App::siteName();
@@ -161,20 +163,34 @@ abstract class Controller
 
     protected function flashToastData(): FlashToastData
     {
+        if ($this->flashToast !== null)
+        {
+            return $this->flashToast;
+        }
+
         $success = Session::pull('success');
         $error = Session::pull('error');
 
         if (is_string($success))
         {
-            return new FlashToastData(message: $success, type: 'success');
+            return $this->flashToast = new FlashToastData(
+                message: $success,
+                type: 'success'
+            );
         }
 
         if (is_string($error))
         {
-            return new FlashToastData(message: $error, type: 'error');
+            return $this->flashToast = new FlashToastData(
+                message: $error,
+                type: 'error'
+            );
         }
 
-        return new FlashToastData(message: null, type: null);
+        return $this->flashToast = new FlashToastData(
+            message: null,
+            type: null
+        );
     }
 
     /*

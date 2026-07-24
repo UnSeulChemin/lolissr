@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Auth;
 
+use App\Enums\Auth\LoginResult;
 use App\Models\User;
 use App\Repositories\Auth\UserRepository;
 
@@ -17,7 +18,8 @@ final readonly class AuthService
     private const PASSWORD_MAX_LENGTH = 1024;
 
     public function __construct(
-        private UserRepository $userRepository
+        private UserRepository $userRepository,
+        private LoginThrottleService $loginThrottleService
     ) {}
 
     // =========================================
@@ -48,22 +50,40 @@ final readonly class AuthService
         return $this->userRepository->create($username, $passwordHash);
     }
 
-    public function login(string $username, string $password): bool
-    {
-        $user = $this->userRepository->findByUsername(trim($username));
+    public function login(
+        string $username,
+        string $password,
+        string $ipAddress
+    ): LoginResult {
+        $username = trim($username);
+
+        if ($this->loginThrottleService->isLocked($username, $ipAddress))
+        {
+            return LoginResult::LOCKED;
+        }
+
+        $user = $this->userRepository->findByUsername($username);
 
         if ($user === null || ! password_verify($password, $user->password))
         {
-            return false;
+            $this->loginThrottleService->recordFailure($username, $ipAddress);
+
+            if ($this->loginThrottleService->isLocked($username, $ipAddress))
+            {
+                return LoginResult::LOCKED;
+            }
+
+            return LoginResult::INVALID_CREDENTIALS;
         }
 
+        $this->loginThrottleService->clear($username, $ipAddress);
         $this->rehashPasswordIfNeeded($user, $password);
 
         Session::regenerate();
         Session::remove('csrf_token');
         Session::set('user_id', $user->id);
 
-        return true;
+        return LoginResult::SUCCESS;
     }
 
     public function logout(): void
@@ -121,6 +141,9 @@ final readonly class AuthService
             return;
         }
 
-        $this->userRepository->updatePasswordHash($user->id, $passwordHash);
+        $this->userRepository->updatePasswordHash(
+            $user->id,
+            $passwordHash
+        );
     }
 }

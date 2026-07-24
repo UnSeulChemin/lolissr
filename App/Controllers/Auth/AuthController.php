@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Controllers\Auth;
 
+use App\Enums\Auth\LoginResult;
 use App\Controllers\Controller;
 use App\Services\Auth\AuthService;
+use App\Services\Auth\LoginThrottleService;
 
 use Framework\Http\Request;
 
@@ -13,15 +15,16 @@ final class AuthController extends Controller
 {
     public function __construct(
         private readonly AuthService $authService,
+        private readonly LoginThrottleService $loginThrottleService,
         Request $request
     ) {
         parent::__construct($request);
     }
 
     /*
-    |--------------------------------------------------------------------------
-    | AUTHENTICATION
-    |--------------------------------------------------------------------------
+    |-------------------------------------------------------------------------- 
+    | AUTHENTIFICATION
+    |-------------------------------------------------------------------------- 
     */
 
     public function login(): never
@@ -38,12 +41,29 @@ final class AuthController extends Controller
 
     public function authenticate(): never
     {
-        $success = $this->authService->login(
-            (string) $this->request->input('username'),
+        $username = (string) $this->request->input('username');
+        $ipAddress = (string) ($_SERVER['REMOTE_ADDR'] ?? 'unknown');
+
+        $result = $this->authService->login(
+            $username,
             (string) $this->request->input('password'),
+            $ipAddress
         );
 
-        if (! $success)
+        if ($result === LoginResult::LOCKED)
+        {
+            $remainingMinutes = $this->loginThrottleService->remainingLockMinutes(
+                $username,
+                $ipAddress
+            );
+
+            $this->redirectWithError(
+                'connexion',
+                "Trop de tentatives. Réessaie dans {$remainingMinutes} minute(s)."
+            );
+        }
+
+        if ($result === LoginResult::INVALID_CREDENTIALS)
         {
             $this->redirectWithError('connexion', 'Identifiants invalides.');
         }
@@ -59,9 +79,9 @@ final class AuthController extends Controller
     }
 
     /*
-    |--------------------------------------------------------------------------
-    | REGISTRATION
-    |--------------------------------------------------------------------------
+    |-------------------------------------------------------------------------- 
+    | INSCRIPTION
+    |-------------------------------------------------------------------------- 
     */
 
     public function register(): never
@@ -96,9 +116,9 @@ final class AuthController extends Controller
     }
 
     /*
-    |--------------------------------------------------------------------------
+    |-------------------------------------------------------------------------- 
     | HELPERS
-    |--------------------------------------------------------------------------
+    |-------------------------------------------------------------------------- 
     */
 
     private function guardRegistration(): void
