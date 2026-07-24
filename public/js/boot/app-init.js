@@ -44,26 +44,24 @@ import {
 // SAFE INIT
 // ==================================================
 
-function safeInit(
+async function safeInit(
     label,
     callback,
 )
 {
-    start(
-        label,
-    );
+    start(label);
 
-    try {
-
-        callback();
+    try
+    {
+        await callback();
 
         debug(
             'INIT',
             `✅ ${label}`,
         );
-
-    } catch (error) {
-
+    }
+    catch (error)
+    {
         debugError(
             'INIT',
             error,
@@ -79,12 +77,10 @@ function safeInit(
                     },
                 ),
         );
-
-    } finally {
-
-        end(
-            label,
-        );
+    }
+    finally
+    {
+        end(label);
     }
 }
 
@@ -94,20 +90,16 @@ function safeInit(
 
 function initFlashToast()
 {
-    const flashToast =
-        window.flashToast;
+    const flashToast = window.flashToast;
 
-    if (
-        !flashToast?.message
-    ) {
-
+    if (! flashToast?.message)
+    {
         return;
     }
 
     showToast(
         flashToast.message,
-        flashToast.type
-        ?? 'success',
+        flashToast.type ?? 'success',
     );
 }
 
@@ -115,17 +107,11 @@ function initFlashToast()
 // GLOBAL INITIALIZERS
 // ==================================================
 
-function runGlobalInitializers()
+async function runGlobalInitializers()
 {
-    for (
-        const [
-            label,
-            init,
-        ]
-        of GLOBAL_INITIALIZERS
-    )
+    for (const [label, init] of GLOBAL_INITIALIZERS)
     {
-        safeInit(
+        await safeInit(
             label,
             init,
         );
@@ -136,37 +122,20 @@ function runGlobalInitializers()
 // ROUTE INITIALIZERS
 // ==================================================
 
-function runRouteInitializers()
+async function runRouteInitializers()
 {
-    const path =
-        location.pathname;
+    const path = location.pathname;
 
-    for (
-        const {
-            match,
-            initializers,
-        }
-        of ROUTE_INITIALIZERS
-    )
+    for (const { match, initializers } of ROUTE_INITIALIZERS)
     {
-        if (
-            !match.test(
-                path,
-            )
-        ) {
-
+        if (! match.test(path))
+        {
             continue;
         }
 
-        for (
-            const [
-                label,
-                init,
-            ]
-            of initializers
-        )
+        for (const [label, init] of initializers)
         {
-            safeInit(
+            await safeInit(
                 label,
                 init,
             );
@@ -178,7 +147,7 @@ function runRouteInitializers()
 // INIT
 // ==================================================
 
-export function initApp()
+export async function initApp()
 {
     debug(
         'APP',
@@ -187,15 +156,14 @@ export function initApp()
 
     initAppDebug();
 
-    runGlobalInitializers();
-
-    runRouteInitializers();
+    await runGlobalInitializers();
+    await runRouteInitializers();
 
     onRouteChange(
         runRouteInitializers,
     );
 
-    safeInit(
+    await safeInit(
         'FlashToast',
         initFlashToast,
     );

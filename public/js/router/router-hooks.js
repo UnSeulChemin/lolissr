@@ -10,134 +10,100 @@ import {
 // STATE
 // =========================================
 
-const beforeRouteChangeCallbacks =
-    new Set();
-
-const routeChangeCallbacks =
-    new Set();
+const beforeRouteChangeCallbacks = new Set();
+const routeChangeCallbacks = new Set();
 
 // =========================================
-// REGISTER BEFORE
+// REGISTRATION
 // =========================================
+
+function registerCallback(
+    callbacks,
+    callback,
+)
+{
+    callbacks.add(callback);
+
+    return () =>
+    {
+        callbacks.delete(callback);
+    };
+}
 
 export function onBeforeRouteChange(
     callback,
 )
 {
-    beforeRouteChangeCallbacks.add(
+    return registerCallback(
+        beforeRouteChangeCallbacks,
         callback,
     );
-
-    return () =>
-    {
-        beforeRouteChangeCallbacks.delete(
-            callback,
-        );
-    };
 }
-
-// =========================================
-// REGISTER AFTER
-// =========================================
 
 export function onRouteChange(
     callback,
 )
 {
-    routeChangeCallbacks.add(
+    return registerCallback(
+        routeChangeCallbacks,
         callback,
     );
-
-    return () =>
-    {
-        routeChangeCallbacks.delete(
-            callback,
-        );
-    };
 }
 
 // =========================================
-// TRIGGER BEFORE
+// EXECUTION
+// =========================================
+
+async function runCallbacks(
+    callbacks,
+    context,
+)
+{
+    const tasks = [];
+
+    for (const callback of callbacks)
+    {
+        tasks.push(
+            Promise.resolve()
+                .then(
+                    () =>
+                        callback(context),
+                )
+                .catch(
+                    error =>
+                    {
+                        debugError(
+                            'ROUTER-HOOK',
+                            error,
+                        );
+                    },
+                ),
+        );
+    }
+
+    await Promise.all(tasks);
+}
+
+// =========================================
+// TRIGGERS
 // =========================================
 
 export async function triggerBeforeRouteChange(
     context,
 )
 {
-    const tasks =
-        [];
-
-    for (
-        const callback
-        of beforeRouteChangeCallbacks
-    )
-    {
-        tasks.push(
-            Promise.resolve()
-                .then(
-                    () =>
-                        callback(
-                            context,
-                        ),
-                )
-                .catch(
-                    (
-                        error,
-                    ) =>
-                    {
-                        debugError(
-                            'ROUTER-HOOK',
-                            error,
-                        );
-                    },
-                ),
-        );
-    }
-
-    await Promise.all(
-        tasks,
+    await runCallbacks(
+        beforeRouteChangeCallbacks,
+        context,
     );
 }
-
-// =========================================
-// TRIGGER AFTER
-// =========================================
 
 export async function triggerRouteChange(
     context,
 )
 {
-    const tasks =
-        [];
-
-    for (
-        const callback
-        of routeChangeCallbacks
-    )
-    {
-        tasks.push(
-            Promise.resolve()
-                .then(
-                    () =>
-                        callback(
-                            context,
-                        ),
-                )
-                .catch(
-                    (
-                        error,
-                    ) =>
-                    {
-                        debugError(
-                            'ROUTER-HOOK',
-                            error,
-                        );
-                    },
-                ),
-        );
-    }
-
-    await Promise.all(
-        tasks,
+    await runCallbacks(
+        routeChangeCallbacks,
+        context,
     );
 }

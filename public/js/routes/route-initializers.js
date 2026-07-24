@@ -2,140 +2,262 @@
 // ROUTE INITIALIZERS
 // ==================================================
 
-import {
-    initAjouterPage,
-} from '../manga/pages/ajouter.js';
+// ==================================================
+// LAZY INITIALIZER
+// ==================================================
 
-import {
-    initModifierPage,
-} from '../manga/pages/modifier.js';
+function lazyInitializer(
+    modulePath,
+    exportName,
+)
+{
+    return async () =>
+    {
+        const module = await import(modulePath);
+        const initializer = module[exportName];
 
-import {
-    initUpdateNendoroidCollectStatus,
-} from '../nendoroid/actions/update-collect-status.js';
+        if (typeof initializer !== 'function')
+        {
+            throw new TypeError(
+                `Initialiseur "${exportName}" introuvable dans "${modulePath}".`,
+            );
+        }
 
-import {
-    initUpdateNote,
-} from '../manga/actions/update-note.js';
+        await initializer();
+    };
+}
 
-import {
-    initDeleteManga,
-} from '../manga/actions/delete-manga.js';
+// ==================================================
+// MANGA INITIALIZERS
+// ==================================================
 
-import {
-    initUpdateReadStatus,
-} from '../manga/actions/update-read-status.js';
+const initAjouterMangaPage = lazyInitializer(
+    '../manga/pages/ajouter.js',
+    'initAjouterPage',
+);
 
-import {
-    initSearchController,
-} from '../search/controller/search-controller.js';
+const initModifierMangaPage = lazyInitializer(
+    '../manga/pages/modifier.js',
+    'initModifierPage',
+);
 
-import {
-    initToggleGrammaireMaitrise,
-} from '../chinois/actions/toggle-grammar-mastery.js';
+const initUpdateNote = lazyInitializer(
+    '../manga/actions/update-note.js',
+    'initUpdateNote',
+);
 
-import {
-    initToggleVocabulaireMaitrise,
-} from '../chinois/actions/toggle-vocabulary-mastery.js';
+const initDeleteManga = lazyInitializer(
+    '../manga/actions/delete-manga.js',
+    'initDeleteManga',
+);
 
-import {
-    initDeleteGrammaire,
-} from '../chinois/actions/delete-grammar.js';
+const initDeleteArtbook = lazyInitializer(
+    '../manga/actions/delete-artbook.js',
+    'initDeleteArtbook',
+);
 
-import {
-    initAjouterPage as initAjouterChinoisPage,
-} from '../chinois/pages/ajouter.js';
+const initUpdateReadStatus = lazyInitializer(
+    '../manga/actions/update-read-status.js',
+    'initUpdateReadStatus',
+);
 
-import {
-    initDeleteVocabulaire,
-} from '../chinois/actions/delete-vocabulary.js';
+// ==================================================
+// FIGURINE INITIALIZERS
+// ==================================================
 
-import {
-    initFlashcardsVocabulairePage,
-} from '../chinois/pages/flashcards-vocabulaire.js';
+const initAjouterFigurinePage = lazyInitializer(
+    '../figurine/pages/ajouter.js',
+    'initAjouterPage',
+);
 
-import {
-    initFlashcardsGrammairePage,
-} from '../chinois/pages/flashcards-grammaire.js';
+const initDeleteFigurine = lazyInitializer(
+    '../figurine/actions/delete-figurine.js',
+    'initDeleteFigurine',
+);
 
-import {
-    initSqlPage,
-} from '../sql/pages/sql.js';
+const initUpdateFigurineCollectStatus = lazyInitializer(
+    '../figurine/actions/update-collect-status.js',
+    'initUpdateCollectStatus',
+);
 
-import {
-    initProfileCustomization,
-} from '../profil/profile-customization.js';
+// ==================================================
+// PELUCHE INITIALIZERS
+// ==================================================
 
-import {
-    initAjouterPage as initAjouterFigurinePage,
-} from '../figurine/pages/ajouter.js';
+const initAjouterPeluchePage = lazyInitializer(
+    '../peluche/pages/ajouter.js',
+    'initAjouterPage',
+);
 
-import {
-    initDeleteFigurine,
-} from '../figurine/actions/delete-figurine.js';
+const initDeletePeluche = lazyInitializer(
+    '../peluche/actions/delete-peluche.js',
+    'initDeletePeluche',
+);
 
-import {
-    initUpdateCollectStatus,
-} from '../figurine/actions/update-collect-status.js';
+const initUpdatePelucheCollectStatus = lazyInitializer(
+    '../peluche/actions/update-collect-status.js',
+    'initUpdatePelucheCollectStatus',
+);
 
-import {
-    initDeleteArtbook,
-} from '../manga/actions/delete-artbook.js';
+// ==================================================
+// NENDOROID INITIALIZERS
+// ==================================================
 
-import {
-    initAjouterPage as initAjouterPeluchePage,
-} from '../peluche/pages/ajouter.js';
+const initAjouterNendoroidPage = lazyInitializer(
+    '../nendoroid/pages/ajouter.js',
+    'initAjouterPage',
+);
 
-import {
-    initDeletePeluche,
-} from '../peluche/actions/delete-peluche.js';
+const initDeleteNendoroid = lazyInitializer(
+    '../nendoroid/actions/delete-nendoroid.js',
+    'initDeleteNendoroid',
+);
 
-import {
-    initUpdatePelucheCollectStatus,
-} from '../peluche/actions/update-collect-status.js';
+const initUpdateNendoroidCollectStatus = lazyInitializer(
+    '../nendoroid/actions/update-collect-status.js',
+    'initUpdateNendoroidCollectStatus',
+);
 
-import {
-    initAjouterPage as initAjouterNendoroidPage,
-} from '../nendoroid/pages/ajouter.js';
+// ==================================================
+// CHINOIS INITIALIZERS
+// ==================================================
 
-import {
-    initDeleteNendoroid,
-} from '../nendoroid/actions/delete-nendoroid.js';
+const initAjouterChinoisPage = lazyInitializer(
+    '../chinois/pages/ajouter.js',
+    'initAjouterPage',
+);
+
+const initFlashcardsVocabulairePage = lazyInitializer(
+    '../chinois/pages/flashcards-vocabulaire.js',
+    'initFlashcardsVocabulairePage',
+);
+
+const initFlashcardsGrammairePage = lazyInitializer(
+    '../chinois/pages/flashcards-grammaire.js',
+    'initFlashcardsGrammairePage',
+);
+
+const initToggleGrammaireMaitrise = lazyInitializer(
+    '../chinois/actions/toggle-grammar-mastery.js',
+    'initToggleGrammaireMaitrise',
+);
+
+const initToggleVocabulaireMaitrise = lazyInitializer(
+    '../chinois/actions/toggle-vocabulary-mastery.js',
+    'initToggleVocabulaireMaitrise',
+);
+
+const initDeleteGrammaire = lazyInitializer(
+    '../chinois/actions/delete-grammar.js',
+    'initDeleteGrammaire',
+);
+
+const initDeleteVocabulaire = lazyInitializer(
+    '../chinois/actions/delete-vocabulary.js',
+    'initDeleteVocabulaire',
+);
+
+// ==================================================
+// PROFILE INITIALIZERS
+// ==================================================
+
+const initProfileCustomization = lazyInitializer(
+    '../profil/profile-customization.js',
+    'initProfileCustomization',
+);
+
+// ==================================================
+// SQL INITIALIZERS
+// ==================================================
+
+const initSqlPage = lazyInitializer(
+    '../sql/pages/sql.js',
+    'initSqlPage',
+);
 
 // ==================================================
 // EXPORT
 // ==================================================
 
 export const ROUTE_INITIALIZERS = [
-
     /*
     |--------------------------------------------------------------------------
-    | AJOUTER MANGA
+    | MANGA
     |--------------------------------------------------------------------------
     */
 
     {
-        match:
-            /^\/lolissr\/manga\/ajouter\/(manga|artbook)\/?$/,
+        match: /^\/lolissr\/manga(?:\/|$)/,
 
         initializers:
         [
             [
-                'AjouterPage',
-                initAjouterPage,
+                'UpdateNote',
+                initUpdateNote,
+            ],
+            [
+                'DeleteManga',
+                initDeleteManga,
+            ],
+            [
+                'DeleteArtbook',
+                initDeleteArtbook,
+            ],
+            [
+                'UpdateReadStatus',
+                initUpdateReadStatus,
+            ],
+        ],
+    },
+
+    {
+        match: /^\/lolissr\/manga\/ajouter\/(manga|artbook)\/?$/,
+
+        initializers:
+        [
+            [
+                'AjouterMangaPage',
+                initAjouterMangaPage,
+            ],
+        ],
+    },
+
+    {
+        match: /^\/lolissr\/manga\/series\/.+\/modifier\/\d+\/?$/,
+
+        initializers:
+        [
+            [
+                'ModifierMangaPage',
+                initModifierMangaPage,
             ],
         ],
     },
 
     /*
     |--------------------------------------------------------------------------
-    | AJOUTER FIGURINE
+    | FIGURINE
     |--------------------------------------------------------------------------
     */
 
     {
-        match:
-            /^\/lolissr\/figurine\/ajouter\/?$/,
+        match: /^\/lolissr\/figurine(?:\/|$)/,
+
+        initializers:
+        [
+            [
+                'DeleteFigurine',
+                initDeleteFigurine,
+            ],
+            [
+                'UpdateFigurineCollectStatus',
+                initUpdateFigurineCollectStatus,
+            ],
+        ],
+    },
+
+    {
+        match: /^\/lolissr\/figurine\/ajouter\/?$/,
 
         initializers:
         [
@@ -146,9 +268,30 @@ export const ROUTE_INITIALIZERS = [
         ],
     },
 
+    /*
+    |--------------------------------------------------------------------------
+    | PELUCHE
+    |--------------------------------------------------------------------------
+    */
+
     {
-        match:
-            /^\/lolissr\/peluche\/ajouter\/?$/,
+        match: /^\/lolissr\/peluche(?:\/|$)/,
+
+        initializers:
+        [
+            [
+                'DeletePeluche',
+                initDeletePeluche,
+            ],
+            [
+                'UpdatePelucheCollectStatus',
+                initUpdatePelucheCollectStatus,
+            ],
+        ],
+    },
+
+    {
+        match: /^\/lolissr\/peluche\/ajouter\/?$/,
 
         initializers:
         [
@@ -159,9 +302,30 @@ export const ROUTE_INITIALIZERS = [
         ],
     },
 
+    /*
+    |--------------------------------------------------------------------------
+    | NENDOROID
+    |--------------------------------------------------------------------------
+    */
+
     {
-        match:
-            /^\/lolissr\/nendoroid\/ajouter\/?$/,
+        match: /^\/lolissr\/nendoroid(?:\/|$)/,
+
+        initializers:
+        [
+            [
+                'DeleteNendoroid',
+                initDeleteNendoroid,
+            ],
+            [
+                'UpdateNendoroidCollectStatus',
+                initUpdateNendoroidCollectStatus,
+            ],
+        ],
+    },
+
+    {
+        match: /^\/lolissr\/nendoroid\/ajouter\/?$/,
 
         initializers:
         [
@@ -174,13 +338,36 @@ export const ROUTE_INITIALIZERS = [
 
     /*
     |--------------------------------------------------------------------------
-    | AJOUTER CHINOIS
+    | CHINOIS
     |--------------------------------------------------------------------------
     */
 
     {
-        match:
-            /^\/lolissr\/chinois\/ajouter\/(grammaire|vocabulaire)\/?$/,
+        match: /^\/lolissr\/chinois(?:\/|$)/,
+
+        initializers:
+        [
+            [
+                'ToggleGrammaireMaitrise',
+                initToggleGrammaireMaitrise,
+            ],
+            [
+                'ToggleVocabulaireMaitrise',
+                initToggleVocabulaireMaitrise,
+            ],
+            [
+                'DeleteGrammaire',
+                initDeleteGrammaire,
+            ],
+            [
+                'DeleteVocabulaire',
+                initDeleteVocabulaire,
+            ],
+        ],
+    },
+
+    {
+        match: /^\/lolissr\/chinois\/ajouter\/(grammaire|vocabulaire)\/?$/,
 
         initializers:
         [
@@ -192,8 +379,7 @@ export const ROUTE_INITIALIZERS = [
     },
 
     {
-        match:
-            /^\/lolissr\/chinois\/flashcards\/vocabulaire\/?$/,
+        match: /^\/lolissr\/chinois\/flashcards\/vocabulaire\/?$/,
 
         initializers:
         [
@@ -205,8 +391,7 @@ export const ROUTE_INITIALIZERS = [
     },
 
     {
-        match:
-            /^\/lolissr\/chinois\/flashcards\/grammaire\/?$/,
+        match: /^\/lolissr\/chinois\/flashcards\/grammaire\/?$/,
 
         initializers:
         [
@@ -219,45 +404,12 @@ export const ROUTE_INITIALIZERS = [
 
     /*
     |--------------------------------------------------------------------------
-    | MODIFIER MANGA
+    | PROFILE
     |--------------------------------------------------------------------------
     */
 
     {
-        match:
-            /^\/lolissr\/manga\/series\/.+\/modifier\/\d+\/?$/,
-
-        initializers:
-        [
-            [
-                'ModifierPage',
-                initModifierPage,
-            ],
-        ],
-    },
-
-    /*
-    |--------------------------------------------------------------------------
-    | SQL
-    |--------------------------------------------------------------------------
-    */
-
-    {
-        match:
-            /^\/lolissr\/sql\/?$/,
-
-        initializers:
-        [
-            [
-                'SqlPage',
-                initSqlPage,
-            ],
-        ],
-    },
-
-    {
-        match:
-            /^\/lolissr\/profil\/personnalisation\/?$/,
+        match: /^\/lolissr\/profil\/personnalisation\/?$/,
 
         initializers:
         [
@@ -270,89 +422,18 @@ export const ROUTE_INITIALIZERS = [
 
     /*
     |--------------------------------------------------------------------------
-    | GLOBAL ROUTES
+    | SQL
     |--------------------------------------------------------------------------
     */
 
     {
-        match:
-            /^\/lolissr\/?/,
+        match: /^\/lolissr\/sql\/?$/,
 
         initializers:
         [
             [
-                'UpdateNote',
-                initUpdateNote,
-            ],
-
-            [
-                'DeleteManga',
-                initDeleteManga,
-            ],
-
-            [
-                'DeleteArtbook',
-                initDeleteArtbook,
-            ],
-
-            [
-                'DeleteFigurine',
-                initDeleteFigurine,
-            ],
-
-            [
-                'UpdateCollectStatus',
-                initUpdateCollectStatus,
-            ],
-
-            [
-                'DeletePeluche',
-                initDeletePeluche,
-            ],
-
-            [
-                'UpdatePelucheCollectStatus',
-                initUpdatePelucheCollectStatus,
-            ],
-
-            [
-                'DeleteNendoroid',
-                initDeleteNendoroid,
-            ],
-
-            [
-                'UpdateNendoroidCollectStatus',
-                initUpdateNendoroidCollectStatus,
-            ],
-
-            [
-                'UpdateReadStatus',
-                initUpdateReadStatus,
-            ],
-
-            [
-                'SearchController',
-                initSearchController,
-            ],
-
-            [
-                'ToggleGrammaireMaitrise',
-                initToggleGrammaireMaitrise,
-            ],
-
-            [
-                'ToggleVocabulaireMaitrise',
-                initToggleVocabulaireMaitrise,
-            ],
-
-            [
-                'DeleteGrammaire',
-                initDeleteGrammaire,
-            ],
-
-            [
-                'DeleteVocabulaire',
-                initDeleteVocabulaire,
+                'SqlPage',
+                initSqlPage,
             ],
         ],
     },
