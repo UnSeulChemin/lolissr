@@ -119,11 +119,14 @@ export function getPrefetchedPage(
 }
 
 export function setPrefetchedPage(
-    url,
+    href,
     response,
 )
 {
-    trimCache();
+    const url =
+        normalizeUrl(
+            href,
+        );
 
     cache.set(
         url,
@@ -139,6 +142,8 @@ export function setPrefetchedPage(
     invalidated.delete(
         url,
     );
+
+    trimCache();
 }
 
 // =========================================
