@@ -79,6 +79,7 @@ $hasMostRepresented =
                             class="card-image-portrait"
                             src="<?= e($view->baseUri . $serie->thumbnailUrl) ?>"
                             alt="<?= e($serie->livre) ?>"
+                            decoding="async"
                         >
 
                     </div>
@@ -161,6 +162,7 @@ $hasMostRepresented =
                             class="card-image-portrait"
                             src="<?= e($view->baseUri . $tome->thumbnailUrl) ?>"
                             alt="<?= e($tome->livre) ?>"
+                            decoding="async"
                         >
 
                     </div>
@@ -270,15 +272,12 @@ $hasMostRepresented =
             </h2>
 
             <p class="home-card-value">
-
                 <?= e($stats->averageNoteLabel) ?>
-
             </p>
 
         </a>
 
     </section>
-
 
     <!-- =========================================
          TOP LONGEST SERIES
@@ -317,6 +316,8 @@ $hasMostRepresented =
                             class="card-image-portrait"
                             src="<?= e($view->baseUri . $serie->thumbnailUrl) ?>"
                             alt="<?= e($serie->livre) ?>"
+                            loading="lazy"
+                            decoding="async"
                         >
 
                     </div>
@@ -428,6 +429,11 @@ $hasMostRepresented =
 
     </section>
 
+
+    <!-- =========================================
+         ARTBOOKS
+    ========================================== -->
+
     <h2 class="home-section-title">
         📕 Artbooks
     </h2>
@@ -438,7 +444,12 @@ $hasMostRepresented =
 
         <?php if ($hasMostRepresented): ?>
 
-            <?php $mostRepresented = $stats->mostRepresented; ?>
+            <?php
+
+            $mostRepresented =
+                $stats->mostRepresented;
+
+            ?>
 
             <article
                 class="
@@ -456,12 +467,19 @@ $hasMostRepresented =
 
                 <div class="home-longest-content">
 
-                    <div class="card-image-box-portrait home-feature-image-box">
+                    <div
+                        class="
+                            card-image-box-portrait
+                            home-feature-image-box
+                        "
+                    >
 
                         <img
                             class="card-image-portrait"
                             src="<?= e($view->baseUri . $mostRepresented->thumbnailUrl) ?>"
                             alt="<?= e($mostRepresented->name) ?>"
+                            loading="lazy"
+                            decoding="async"
                         >
 
                     </div>
@@ -541,6 +559,8 @@ $hasMostRepresented =
                             class="card-image-portrait"
                             src="<?= e($view->baseUri . $artbook->thumbnailUrl) ?>"
                             alt="<?= e($artbook->artbook) ?>"
+                            loading="lazy"
+                            decoding="async"
                         >
 
                     </div>
@@ -634,6 +654,11 @@ $hasMostRepresented =
 
     </section>
 
+
+    <!-- =========================================
+         MAÎTRISE DU MANDARIN
+    ========================================== -->
+
     <h2 class="home-section-title">
         👑 Maîtrise du mandarin
     </h2>
@@ -689,14 +714,17 @@ $hasMostRepresented =
             </h2>
 
             <p class="home-card-value">
-
                 <?= e($stats->globalChineseProgressLabel) ?>
-
             </p>
 
         </article>
 
     </section>
+
+
+    <!-- =========================================
+         MAÎTRISE DU CHINOIS
+    ========================================== -->
 
     <h2 class="home-section-title">
         🎓 Maîtrise du chinois
@@ -756,7 +784,9 @@ $hasMostRepresented =
                 class="home-reading-progress"
                 style="--progress: <?= (int) $stats->vocabularyProgress ?>%;"
             >
+
                 <div class="home-reading-progress-bar"></div>
+
             </div>
 
         </article>
@@ -814,7 +844,9 @@ $hasMostRepresented =
                 class="home-reading-progress"
                 style="--progress: <?= (int) $stats->grammarProgress ?>%;"
             >
+
                 <div class="home-reading-progress-bar"></div>
+
             </div>
 
         </article>

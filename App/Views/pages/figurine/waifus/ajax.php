@@ -26,6 +26,13 @@ use App\DTO\Figurine\Responses\FigurineSeriesItemData;
 
         <?php foreach ($figurines as $figurine): ?>
 
+            <?php
+
+            $href =
+                "{$view->baseUri}figurine/waifus/{$figurine->slug}/{$figurine->numero}";
+
+            ?>
+
             <a
                 class="
                     card
@@ -35,7 +42,7 @@ use App\DTO\Figurine\Responses\FigurineSeriesItemData;
                     collection-card-link
                 "
                 data-prefetch
-                href="<?= e($view->baseUri) ?>figurine/waifus/<?= e($figurine->slug) ?>/<?= $figurine->numero ?>"
+                href="<?= e($href) ?>"
             >
 
                 <div class="card-image-box-portrait">
@@ -45,6 +52,7 @@ use App\DTO\Figurine\Responses\FigurineSeriesItemData;
                         src="<?= e($figurine->thumbnailUrl) ?>"
                         alt="<?= e($figurine->waifu) ?>"
                         loading="lazy"
+                        decoding="async"
                         draggable="false"
                     >
 

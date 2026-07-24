@@ -26,8 +26,16 @@ use App\DTO\Manga\Responses\ArtbookSeriesItemData;
 
                 <?php for ($i = 1; $i <= $totalPages; $i++): ?>
 
+                    <?php
+
+                    $class =
+                        'collection-pagination-link'
+                        . ($currentPage === $i ? ' active' : '');
+
+                    ?>
+
                     <a
-                        class="collection-pagination-link <?= $currentPage === $i ? 'active' : '' ?>"
+                        class="<?= $class ?>"
                         data-prefetch
                         href="<?= e($view->baseUri) ?>manga/artbooks/page/<?= $i ?>"
                     >

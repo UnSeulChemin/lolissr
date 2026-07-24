@@ -14,12 +14,7 @@ use App\DTO\Manga\Responses\MangaSeriesItemData;
 
         <?php if ($mangas === []): ?>
 
-            <article
-                class="
-                    card
-                    transition-card
-                "
-            >
+            <article class="card transition-card">
 
                 <p class="home-empty">
                     🎉 Toutes les séries sont terminées.
@@ -30,11 +25,11 @@ use App\DTO\Manga\Responses\MangaSeriesItemData;
         <?php else: ?>
 
             <?php
+
             $isSerieView = false;
 
-            require view_path(
-                'pages/manga/series/ajax.php',
-            );
+            require view_path('pages/manga/series/ajax.php');
+
             ?>
 
         <?php endif; ?>

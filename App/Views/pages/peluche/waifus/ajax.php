@@ -26,6 +26,13 @@ use App\DTO\Peluche\Responses\PelucheListItemData;
 
         <?php foreach ($peluches as $peluche): ?>
 
+            <?php
+
+            $href =
+                "{$view->baseUri}peluche/waifus/{$peluche->slug}/{$peluche->numero}";
+
+            ?>
+
             <a
                 class="
                     card
@@ -35,7 +42,7 @@ use App\DTO\Peluche\Responses\PelucheListItemData;
                     collection-card-link
                 "
                 data-prefetch
-                href="<?= e($view->baseUri) ?>peluche/waifus/<?= e($peluche->slug) ?>/<?= $peluche->numero ?>"
+                href="<?= e($href) ?>"
             >
 
                 <div class="card-image-box-portrait">
@@ -47,6 +54,7 @@ use App\DTO\Peluche\Responses\PelucheListItemData;
                             src="<?= e($peluche->thumbnailUrl) ?>"
                             alt="<?= e($peluche->waifu) ?>"
                             loading="lazy"
+                            decoding="async"
                             draggable="false"
                         >
 

@@ -24,10 +24,18 @@ use App\DTO\Nendoroid\Responses\NendoroidData;
 
                 <?php for ($i = 1; $i <= $totalPages; $i++): ?>
 
+                    <?php
+
+                    $paginationClass =
+                        'collection-pagination-link'
+                        . ($currentPage === $i ? ' active' : '');
+
+                    ?>
+
                     <a
-                        class="collection-pagination-link <?= $currentPage === $i ? 'active' : '' ?>"
+                        class="<?= e($paginationClass) ?>"
                         data-prefetch
-                        href="<?= e($view->baseUri) ?>nendoroid/waifus/page/<?= $i ?>"
+                        href="<?= e("{$view->baseUri}nendoroid/waifus/page/{$i}") ?>"
                     >
                         <?= $i ?>
                     </a>

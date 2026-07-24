@@ -26,6 +26,16 @@ use App\DTO\Nendoroid\Responses\NendoroidData;
 
         <?php foreach ($nendoroids as $nendoroid): ?>
 
+            <?php
+
+            $href =
+                "{$view->baseUri}nendoroid/waifus/{$nendoroid->slug}/{$nendoroid->numero}";
+
+            $thumbnail =
+                "{$view->baseUri}images/nendoroid/thumbnail/{$nendoroid->thumbnail}.{$nendoroid->extension}";
+
+            ?>
+
             <a
                 class="
                     card
@@ -35,16 +45,17 @@ use App\DTO\Nendoroid\Responses\NendoroidData;
                     collection-card-link
                 "
                 data-prefetch
-                href="<?= e($view->baseUri) ?>nendoroid/waifus/<?= e($nendoroid->slug) ?>/<?= $nendoroid->numero ?>"
+                href="<?= e($href) ?>"
             >
 
                 <div class="card-image-box-portrait">
 
                     <img
                         class="card-image-portrait"
-                        src="<?= e($view->baseUri) ?>images/nendoroid/thumbnail/<?= e($nendoroid->thumbnail) ?>.<?= e($nendoroid->extension) ?>"
+                        src="<?= e($thumbnail) ?>"
                         alt="<?= e($nendoroid->waifu) ?>"
                         loading="lazy"
+                        decoding="async"
                         draggable="false"
                     >
 

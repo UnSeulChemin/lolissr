@@ -11,7 +11,8 @@ use App\DTO\Manga\Responses\MangaSeriesItemData;
 /** @var int $totalPages */
 /** @var ?string $slugFilter */
 
-$isSerieView = $slugFilter !== null;
+$isSerieView =
+    $slugFilter !== null;
 
 ?>
 
@@ -19,30 +20,24 @@ $isSerieView = $slugFilter !== null;
 
     <div class="collection-ajax-container">
 
-        <?php require view_path(
-            'pages/manga/series/ajax.php',
-        ); ?>
+        <?php require view_path('pages/manga/series/ajax.php'); ?>
 
-        <?php if (
-            !$isSerieView
-            && $totalPages > 1
-        ): ?>
+        <?php if (! $isSerieView && $totalPages > 1): ?>
 
             <nav class="collection-pagination-wrapper">
 
-                <?php for (
-                    $i = 1;
-                    $i <= $totalPages;
-                    $i++
-                ): ?>
+                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+
+                    <?php
+
+                    $class =
+                        'collection-pagination-link'
+                        . ($currentPage === $i ? ' active' : '');
+
+                    ?>
 
                     <a
-                        class="
-                            collection-pagination-link
-                            <?= $currentPage === $i
-                                ? 'active'
-                                : '' ?>
-                        "
+                        class="<?= $class ?>"
                         data-prefetch
                         href="<?= e($view->baseUri) ?>manga/series/page/<?= $i ?>"
                     >

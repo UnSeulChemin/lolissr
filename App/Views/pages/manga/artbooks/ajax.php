@@ -35,7 +35,7 @@ use App\DTO\Manga\Responses\ArtbookSeriesItemData;
                     collection-card-link
                 "
                 data-prefetch
-                href="<?= e($view->baseUri) ?>manga/artbooks/<?= e($artbook->slug) ?>/<?= $artbook->numero ?>"
+                href="<?= e("{$view->baseUri}manga/artbooks/{$artbook->slug}/{$artbook->numero}") ?>"
             >
 
                 <div class="card-image-box-portrait">
@@ -45,6 +45,7 @@ use App\DTO\Manga\Responses\ArtbookSeriesItemData;
                         src="<?= e($artbook->thumbnailUrl) ?>"
                         alt="<?= e($artbook->artbook) ?>"
                         loading="lazy"
+                        decoding="async"
                         draggable="false"
                     >
 
