@@ -8,11 +8,6 @@ import {
 } from '../core/debug/debug.js';
 
 import {
-    end,
-    start,
-} from '../core/debug/profiler.js';
-
-import {
     FrontendError,
 } from '../core/errors/FrontendError.js';
 
@@ -21,8 +16,17 @@ import {
 } from '../core/errors/error-handler.js';
 
 import {
+    end,
+    start,
+} from '../core/debug/profiler.js';
+
+import {
     showToast,
 } from '../core/toast.js';
+
+import {
+    appPath,
+} from '../core/url.js';
 
 import {
     GLOBAL_INITIALIZERS,
@@ -90,7 +94,8 @@ async function safeInit(
 
 function initFlashToast()
 {
-    const flashToast = window.flashToast;
+    const flashToast =
+        window.flashToast;
 
     if (! flashToast?.message)
     {
@@ -109,7 +114,10 @@ function initFlashToast()
 
 async function runGlobalInitializers()
 {
-    for (const [label, init] of GLOBAL_INITIALIZERS)
+    for (
+        const [label, init]
+        of GLOBAL_INITIALIZERS
+    )
     {
         await safeInit(
             label,
@@ -124,16 +132,26 @@ async function runGlobalInitializers()
 
 async function runRouteInitializers()
 {
-    const path = location.pathname;
+    const path =
+        appPath();
 
-    for (const { match, initializers } of ROUTE_INITIALIZERS)
+    for (
+        const {
+            match,
+            initializers,
+        }
+        of ROUTE_INITIALIZERS
+    )
     {
         if (! match.test(path))
         {
             continue;
         }
 
-        for (const [label, init] of initializers)
+        for (
+            const [label, init]
+            of initializers
+        )
         {
             await safeInit(
                 label,

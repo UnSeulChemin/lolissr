@@ -13,8 +13,11 @@ function lazyInitializer(
 {
     return async () =>
     {
-        const module = await import(modulePath);
-        const initializer = module[exportName];
+        const module =
+            await import(modulePath);
+
+        const initializer =
+            module[exportName];
 
         if (typeof initializer !== 'function')
         {
@@ -187,7 +190,7 @@ export const ROUTE_INITIALIZERS = [
     */
 
     {
-        match: /^\/lolissr\/manga(?:\/|$)/,
+        match: /^\/manga(?:\/|$)/,
 
         initializers:
         [
@@ -211,7 +214,7 @@ export const ROUTE_INITIALIZERS = [
     },
 
     {
-        match: /^\/lolissr\/manga\/ajouter\/(manga|artbook)\/?$/,
+        match: /^\/manga\/ajouter\/(manga|artbook)\/?$/,
 
         initializers:
         [
@@ -223,7 +226,7 @@ export const ROUTE_INITIALIZERS = [
     },
 
     {
-        match: /^\/lolissr\/manga\/series\/.+\/modifier\/\d+\/?$/,
+        match: /^\/manga\/series\/.+\/modifier\/\d+\/?$/,
 
         initializers:
         [
@@ -241,7 +244,7 @@ export const ROUTE_INITIALIZERS = [
     */
 
     {
-        match: /^\/lolissr\/figurine(?:\/|$)/,
+        match: /^\/figurine(?:\/|$)/,
 
         initializers:
         [
@@ -257,7 +260,7 @@ export const ROUTE_INITIALIZERS = [
     },
 
     {
-        match: /^\/lolissr\/figurine\/ajouter\/?$/,
+        match: /^\/figurine\/ajouter\/?$/,
 
         initializers:
         [
@@ -275,7 +278,7 @@ export const ROUTE_INITIALIZERS = [
     */
 
     {
-        match: /^\/lolissr\/peluche(?:\/|$)/,
+        match: /^\/peluche(?:\/|$)/,
 
         initializers:
         [
@@ -291,7 +294,7 @@ export const ROUTE_INITIALIZERS = [
     },
 
     {
-        match: /^\/lolissr\/peluche\/ajouter\/?$/,
+        match: /^\/peluche\/ajouter\/?$/,
 
         initializers:
         [
@@ -309,7 +312,7 @@ export const ROUTE_INITIALIZERS = [
     */
 
     {
-        match: /^\/lolissr\/nendoroid(?:\/|$)/,
+        match: /^\/nendoroid(?:\/|$)/,
 
         initializers:
         [
@@ -325,7 +328,7 @@ export const ROUTE_INITIALIZERS = [
     },
 
     {
-        match: /^\/lolissr\/nendoroid\/ajouter\/?$/,
+        match: /^\/nendoroid\/ajouter\/?$/,
 
         initializers:
         [
@@ -343,7 +346,7 @@ export const ROUTE_INITIALIZERS = [
     */
 
     {
-        match: /^\/lolissr\/chinois(?:\/|$)/,
+        match: /^\/chinois(?:\/|$)/,
 
         initializers:
         [
@@ -367,7 +370,7 @@ export const ROUTE_INITIALIZERS = [
     },
 
     {
-        match: /^\/lolissr\/chinois\/ajouter\/(grammaire|vocabulaire)\/?$/,
+        match: /^\/chinois\/ajouter\/(grammaire|vocabulaire)\/?$/,
 
         initializers:
         [
@@ -379,7 +382,7 @@ export const ROUTE_INITIALIZERS = [
     },
 
     {
-        match: /^\/lolissr\/chinois\/flashcards\/vocabulaire\/?$/,
+        match: /^\/chinois\/flashcards\/vocabulaire\/?$/,
 
         initializers:
         [
@@ -391,7 +394,7 @@ export const ROUTE_INITIALIZERS = [
     },
 
     {
-        match: /^\/lolissr\/chinois\/flashcards\/grammaire\/?$/,
+        match: /^\/chinois\/flashcards\/grammaire\/?$/,
 
         initializers:
         [
@@ -409,7 +412,7 @@ export const ROUTE_INITIALIZERS = [
     */
 
     {
-        match: /^\/lolissr\/profil\/personnalisation\/?$/,
+        match: /^\/profil\/personnalisation\/?$/,
 
         initializers:
         [
@@ -427,7 +430,7 @@ export const ROUTE_INITIALIZERS = [
     */
 
     {
-        match: /^\/lolissr\/sql\/?$/,
+        match: /^\/sql\/?$/,
 
         initializers:
         [
