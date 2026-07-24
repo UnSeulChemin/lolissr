@@ -3,12 +3,12 @@
 // =========================================
 
 import {
-    normalizeUrl,
-} from '../../core/navigation.js';
-
-import {
     debug,
 } from '../../core/debug/debug.js';
+
+import {
+    normalizeUrl,
+} from '../../core/navigation.js';
 
 import {
     cache,
@@ -53,8 +53,8 @@ function trimCache()
                 .next()
                 .value;
 
-        if (!oldestKey) {
-
+        if (! oldestKey)
+        {
             return;
         }
 
@@ -81,8 +81,8 @@ export function getPrefetchedPage(
         invalidated.has(
             url,
         )
-    ) {
-
+    )
+    {
         return null;
     }
 
@@ -91,8 +91,8 @@ export function getPrefetchedPage(
             url,
         );
 
-    if (!cached) {
-
+    if (! cached)
+    {
         return null;
     }
 
@@ -100,8 +100,8 @@ export function getPrefetchedPage(
         isExpired(
             cached,
         )
-    ) {
-
+    )
+    {
         cache.delete(
             url,
         );
@@ -162,6 +162,13 @@ export function invalidatePrefetch(
         url,
     );
 
+    const entry =
+        inFlight.get(
+            url,
+        );
+
+    entry?.controller.abort();
+
     inFlight.delete(
         url,
     );
@@ -179,10 +186,16 @@ export function invalidatePrefetch(
 
 export function clearPrefetchCache()
 {
+    for (
+        const entry
+        of inFlight.values()
+    )
+    {
+        entry.controller.abort();
+    }
+
     cache.clear();
-
     inFlight.clear();
-
     invalidated.clear();
 }
 
@@ -203,15 +216,15 @@ export function getInFlightPrefetch(
         invalidated.has(
             url,
         )
-    ) {
-
+    )
+    {
         return null;
     }
 
     return (
         inFlight.get(
             url,
-        )
-        || null
+        )?.promise
+        ?? null
     );
 }

@@ -3,6 +3,11 @@
 // =========================================
 
 import {
+    debug,
+    debugError,
+} from '../../core/debug/debug.js';
+
+import {
     request,
 } from '../../core/http.js';
 
@@ -11,20 +16,15 @@ import {
 } from '../../core/navigation.js';
 
 import {
-    debug,
-    debugError,
-} from '../../core/debug/debug.js';
+    getInFlightPrefetch,
+    getPrefetchedPage,
+    setPrefetchedPage,
+} from './prefetch-cache.js';
 
 import {
     inFlight,
     invalidated,
 } from './prefetch-state.js';
-
-import {
-    getPrefetchedPage,
-    getInFlightPrefetch,
-    setPrefetchedPage,
-} from './prefetch-cache.js';
 
 // =========================================
 // PREFETCH
@@ -50,8 +50,8 @@ export async function prefetchPage(
         === normalizeUrl(
             location.href,
         )
-    ) {
-
+    )
+    {
         return null;
     }
 
@@ -65,8 +65,8 @@ export async function prefetchPage(
         invalidated.has(
             url,
         )
-    ) {
-
+    )
+    {
         return null;
     }
 
@@ -81,8 +81,8 @@ export async function prefetchPage(
             url,
         );
 
-    if (cached) {
-
+    if (cached)
+    {
         debug(
             'PREFETCH',
             'cache-hit',
@@ -103,8 +103,8 @@ export async function prefetchPage(
             url,
         );
 
-    if (existing) {
-
+    if (existing)
+    {
         debug(
             'PREFETCH',
             'reuse',
@@ -126,11 +126,16 @@ export async function prefetchPage(
         url,
     );
 
-    const promise =
+    const controller =
+        new AbortController();
+
+    let promise;
+
+    promise =
         (async () =>
         {
-            try {
-
+            try
+            {
                 const response =
                     await request(
                         url,
@@ -146,6 +151,9 @@ export async function prefetchPage(
                                 'Cache-Control':
                                     'no-cache',
                             },
+
+                            signal:
+                                controller.signal,
                         },
                     );
 
@@ -158,8 +166,8 @@ export async function prefetchPage(
                 if (
                     response?.type
                     !== 'page'
-                ) {
-
+                )
+                {
                     debug(
                         'PREFETCH',
                         'invalid-response',
@@ -179,8 +187,8 @@ export async function prefetchPage(
                     invalidated.has(
                         url,
                     )
-                ) {
-
+                )
+                {
                     debug(
                         'PREFETCH',
                         'skip-invalidated',
@@ -208,8 +216,22 @@ export async function prefetchPage(
                 );
 
                 return response;
+            }
+            catch (error)
+            {
+                if (
+                    error?.name
+                    === 'AbortError'
+                )
+                {
+                    debug(
+                        'PREFETCH',
+                        'aborted',
+                        url,
+                    );
 
-            } catch (error) {
+                    return null;
+                }
 
                 debugError(
                     'PREFETCH',
@@ -217,18 +239,32 @@ export async function prefetchPage(
                 );
 
                 return null;
+            }
+            finally
+            {
+                const currentEntry =
+                    inFlight.get(
+                        url,
+                    );
 
-            } finally {
-
-                inFlight.delete(
-                    url,
-                );
+                if (
+                    currentEntry?.promise
+                    === promise
+                )
+                {
+                    inFlight.delete(
+                        url,
+                    );
+                }
             }
         })();
 
     inFlight.set(
         url,
-        promise,
+        {
+            promise,
+            controller,
+        },
     );
 
     return promise;
