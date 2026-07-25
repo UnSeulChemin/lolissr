@@ -14,7 +14,6 @@ use App\Repositories\Peluche\PelucheRepository;
 use App\Services\UploadService;
 use App\Services\User\UserLevelService;
 
-use Framework\Cache\Cache;
 use Framework\Config\UploadConfig;
 use Framework\Database\Database;
 use Framework\Support\Logger;
@@ -112,8 +111,6 @@ final readonly class PelucheWriteService
                         return $failure;
                     }
 
-                    $this->clearCache();
-
                     return $this->success(
                         'Peluche ajoutée avec succès',
                     );
@@ -159,8 +156,6 @@ final readonly class PelucheWriteService
                 {
                     return $failure;
                 }
-
-                $this->clearCache();
 
                 return $this->success(
                     'Peluche mise à jour avec succès',
@@ -238,8 +233,6 @@ final readonly class PelucheWriteService
                     );
                 }
 
-                $this->clearCache();
-
                 $user = user();
 
                 return $this->success(
@@ -300,8 +293,6 @@ final readonly class PelucheWriteService
 
                 $this->removeThumbnail($peluche);
 
-                $this->clearCache();
-
                 return $this->success(
                     'Peluche supprimée avec succès',
                 );
@@ -317,17 +308,12 @@ final readonly class PelucheWriteService
 
     private function rollbackUpload(UploadThumbnailData $upload): void
     {
-        $this->uploadService->removeFile(
-            $upload->destinationPath,
-        );
+        $this->uploadService->removeFile($upload->destinationPath);
     }
 
     private function removeThumbnail(Peluche $peluche): void
     {
-        if (
-            $peluche->thumbnail === ''
-            || $peluche->extension === ''
-        )
+        if ($peluche->thumbnail === '' || $peluche->extension === '')
         {
             return;
         }
@@ -365,12 +351,10 @@ final readonly class PelucheWriteService
 
         $this->userLevelService->addXp(
             $user,
-            UserXp::COLLECT_PELUCHE,
+            UserXp::COLLECT_PELUCHE
         );
 
-        $this->pelucheRepository->markXpRewarded(
-            $peluche->id,
-        );
+        $this->pelucheRepository->markXpRewarded($peluche->id);
 
         return [
             'xpEarned' => true,
@@ -389,67 +373,49 @@ final readonly class PelucheWriteService
         string $slug,
         int $numero,
         string $message
-    ): ?ServiceResult
-    {
+    ): ?ServiceResult {
         if ($result)
         {
             return null;
         }
 
-        $this->logFailure(
-            $action,
-            $slug,
-            $numero,
-        );
+        $this->logFailure($action, $slug, $numero);
 
         return $this->error($message);
     }
 
-    private function clearCache(): void
+    private function logFailure(string $action, string $slug, int $numero): void
     {
-        Cache::forget('home.dashboard');
-    }
-
-    private function logFailure(
-        string $action,
-        string $slug,
-        int $numero
-    ): void
-    {
-        Logger::error(
-            "{$action} échoué slug={$slug} numero={$numero}",
-        );
+        Logger::error("{$action} échoué slug={$slug} numero={$numero}");
     }
 
     /**
-     * @param array<string,mixed> $data
+     * @param array<string, mixed> $data
      */
     private function success(
         string $message,
         array $data = [],
         int $status = 200
-    ): ServiceResult
-    {
+    ): ServiceResult {
         return ServiceResult::success(
             message: $message,
             data: $data,
-            status: $status,
+            status: $status
         );
     }
 
     /**
-     * @param array<string,mixed> $data
+     * @param array<string, mixed> $data
      */
     private function error(
         string $message,
         int $status = 500,
         array $data = []
-    ): ServiceResult
-    {
+    ): ServiceResult {
         return ServiceResult::error(
             message: $message,
             data: $data,
-            status: $status,
+            status: $status
         );
     }
 }
