@@ -82,18 +82,12 @@ abstract class Model
 
             return $statement;
         }
-        catch (Throwable $exception)
-        {
-            throw new RuntimeException(
-                $exception->getMessage(),
-                previous: $exception
-            );
-        }
         finally
         {
             $durationMs = (hrtime(true) - $start) / 1_000_000;
+            $threshold = (float) config('database.slow_query_threshold', 50);
 
-            if ((bool) config('app.debug', false) && $durationMs >= (float) config('database.slow_query_threshold', 50))
+            if ((bool) config('app.debug', false) && $durationMs >= $threshold)
             {
                 Logger::warning(
                     'Requête SQL lente',
