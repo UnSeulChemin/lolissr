@@ -96,15 +96,11 @@ final readonly class ChinoisWriteService
         return $result;
     }
 
-    public function updateGrammaire(
-        int $id,
-        ChinoisGrammaireCreateDTO $dto
-    ): ServiceResult {
-        return $this->database->transaction(
-            function () use (
-                $id,
-                $dto
-            ): ServiceResult {
+    public function updateGrammaire(int $id, ChinoisGrammaireCreateDTO $dto): ServiceResult
+    {
+        $result = $this->database->transaction(
+            function () use ($id, $dto): ServiceResult
+            {
                 $updated = $this->grammaireRepository->updateGrammaire(
                     $id,
                     $dto->niveau,
@@ -121,16 +117,19 @@ final readonly class ChinoisWriteService
 
                 if (! $updated)
                 {
-                    return $this->error(
-                        'Erreur lors de la mise à jour'
-                    );
+                    return $this->error('Erreur lors de la mise à jour');
                 }
 
-                return $this->success(
-                    'Grammaire mise à jour avec succès'
-                );
+                return $this->success('Grammaire mise à jour avec succès');
             }
         );
+
+        if ($result->success)
+        {
+            $this->forgetDashboardCache();
+        }
+
+        return $result;
     }
 
     public function deleteGrammaire(int $id): ServiceResult
@@ -206,38 +205,36 @@ final readonly class ChinoisWriteService
         return $result;
     }
 
-    public function updateVocabulaire(
-        int $id,
-        ChinoisVocabulaireCreateDTO $dto
-    ): ServiceResult {
-        return $this->database->transaction(
-            function () use (
-                $id,
-                $dto
-            ): ServiceResult {
-                $updated =
-                    $this->vocabulaireRepository->updateVocabulaire(
-                        $id,
-                        $dto->langue,
-                        $dto->mot,
-                        $dto->pinyin,
-                        $dto->type,
-                        $dto->traduction,
-                        $dto->exemple
-                    );
+    public function updateVocabulaire(int $id, ChinoisVocabulaireCreateDTO $dto): ServiceResult
+    {
+        $result = $this->database->transaction(
+            function () use ($id, $dto): ServiceResult
+            {
+                $updated = $this->vocabulaireRepository->updateVocabulaire(
+                    $id,
+                    $dto->langue,
+                    $dto->mot,
+                    $dto->pinyin,
+                    $dto->type,
+                    $dto->traduction,
+                    $dto->exemple
+                );
 
                 if (! $updated)
                 {
-                    return $this->error(
-                        'Erreur lors de la mise à jour'
-                    );
+                    return $this->error('Erreur lors de la mise à jour');
                 }
 
-                return $this->success(
-                    'Vocabulaire mis à jour avec succès'
-                );
+                return $this->success('Vocabulaire mis à jour avec succès');
             }
         );
+
+        if ($result->success)
+        {
+            $this->forgetDashboardCache();
+        }
+
+        return $result;
     }
 
     public function deleteVocabulaire(int $id): ServiceResult
