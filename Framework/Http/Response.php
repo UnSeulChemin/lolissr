@@ -7,6 +7,7 @@ namespace Framework\Http;
 use Framework\Support\Logger;
 
 use JsonException;
+use RuntimeException;
 
 final class Response
 {
@@ -64,20 +65,14 @@ final class Response
 
     public static function redirect(string $url, int $statusCode = 302): never
     {
-        if (! headers_sent())
+        if (headers_sent($file, $line))
         {
-            header('Location: ' . $url, true, $statusCode);
-
-            exit;
+            throw new RuntimeException(
+                "Unable to redirect to \"{$url}\": headers already sent in {$file}:{$line}.",
+            );
         }
 
-        echo sprintf(
-            '<script>window.location.href=%s;</script>',
-            json_encode(
-                $url,
-                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES,
-            ),
-        );
+        header('Location: ' . $url, true, $statusCode);
 
         exit;
     }

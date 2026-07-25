@@ -8,7 +8,7 @@ use Closure;
 
 final class Route
 {
-    private const PARAM_PATTERNS = ['int' => '([0-9]+)'];
+    private const PARAM_PATTERNS = ['int' => '[0-9]+'];
 
     public readonly string $pattern;
 
@@ -75,11 +75,14 @@ final class Route
         }
 
         $pattern = preg_replace_callback(
-            '#\{([a-zA-Z0-9_]+)(?::([a-zA-Z]+))?\}#',
+            '#\{([a-zA-Z_][a-zA-Z0-9_]*)(?::([a-zA-Z]+))?\}#',
             static function (array $matches): string
             {
-                return self::PARAM_PATTERNS[$matches[2] ?? '']
-                    ?? '([^/]+)';
+                $name = $matches[1];
+                $type = $matches[2] ?? '';
+                $pattern = self::PARAM_PATTERNS[$type] ?? '[^/]+';
+
+                return "(?P<{$name}>{$pattern})";
             },
             $path,
         );
