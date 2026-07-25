@@ -12,8 +12,6 @@ use App\Services\Chinois\ChinoisWriteService;
 
 use Framework\Exceptions\BaseHttpException;
 use Framework\Exceptions\NotFoundException;
-use Framework\Exceptions\ValidationException;
-use Framework\Http\FormRequest;
 use Framework\Http\Request;
 
 final class GrammaireController extends Controller
@@ -173,17 +171,6 @@ final class GrammaireController extends Controller
         }
 
         return 'HSK' . $level;
-    }
-
-    private function validateRequest(
-        FormRequest $request
-    ): void {
-        if ($request->fails())
-        {
-            throw new ValidationException(
-                $request->errors()
-            );
-        }
     }
 
     private function grammaireOrFail(

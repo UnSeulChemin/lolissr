@@ -13,8 +13,6 @@ use App\Services\Manga\ArtbookWriteService;
 
 use Framework\Exceptions\BaseHttpException;
 use Framework\Exceptions\NotFoundException;
-use Framework\Exceptions\ValidationException;
-use Framework\Http\FormRequest;
 use Framework\Http\Request;
 
 final class ArtbookController extends Controller
@@ -205,17 +203,5 @@ final class ArtbookController extends Controller
         ?? throw new NotFoundException(
             'Artbook introuvable'
         );
-    }
-
-
-    private function validateRequest(
-        FormRequest $request
-    ): void {
-        if ($request->fails())
-        {
-            throw new ValidationException(
-                $request->errors()
-            );
-        }
     }
 }

@@ -13,8 +13,6 @@ use App\Services\Manga\MangaWriteService;
 
 use Framework\Exceptions\BaseHttpException;
 use Framework\Exceptions\NotFoundException;
-use Framework\Exceptions\ValidationException;
-use Framework\Http\FormRequest;
 use Framework\Http\Request;
 
 final class MangaController extends Controller
@@ -299,16 +297,5 @@ final class MangaController extends Controller
         ?? throw new NotFoundException(
             'Manga introuvable'
         );
-    }
-
-    private function validateRequest(
-        FormRequest $request
-    ): void {
-        if ($request->fails())
-        {
-            throw new ValidationException(
-                $request->errors()
-            );
-        }
     }
 }

@@ -13,6 +13,8 @@ use Framework\Application\App;
 use Framework\Debug\Profiler;
 use Framework\Exceptions\MethodNotAllowedException;
 use Framework\Exceptions\NotFoundException;
+use Framework\Exceptions\ValidationException;
+use Framework\Http\FormRequest;
 use Framework\Http\Request;
 use Framework\Http\Response;
 use Framework\Support\Session;
@@ -225,6 +227,23 @@ abstract class Controller
                 message: null,
                 type: null
             );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | VALIDATION
+    |--------------------------------------------------------------------------
+    */
+
+    protected function validateRequest(
+        FormRequest $request
+    ): void {
+        if ($request->fails())
+        {
+            throw new ValidationException(
+                $request->errors()
+            );
+        }
     }
 
     /*

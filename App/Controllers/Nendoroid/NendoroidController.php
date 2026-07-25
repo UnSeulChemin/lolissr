@@ -13,8 +13,6 @@ use App\Services\Nendoroid\NendoroidWriteService;
 
 use Framework\Exceptions\BaseHttpException;
 use Framework\Exceptions\NotFoundException;
-use Framework\Exceptions\ValidationException;
-use Framework\Http\FormRequest;
 use Framework\Http\Request;
 
 final class NendoroidController extends Controller
@@ -234,15 +232,5 @@ final class NendoroidController extends Controller
         }
 
         return $nendoroid;
-    }
-
-    private function validateRequest(FormRequest $request): void
-    {
-        if ($request->fails())
-        {
-            throw new ValidationException(
-                $request->errors(),
-            );
-        }
     }
 }

@@ -12,8 +12,6 @@ use App\Services\Chinois\ChinoisWriteService;
 
 use Framework\Exceptions\BaseHttpException;
 use Framework\Exceptions\NotFoundException;
-use Framework\Exceptions\ValidationException;
-use Framework\Http\FormRequest;
 use Framework\Http\Request;
 
 final class VocabulaireController extends Controller
@@ -182,17 +180,6 @@ final class VocabulaireController extends Controller
     // =========================================
     // HELPERS
     // =========================================
-
-    private function validateRequest(
-        FormRequest $request
-    ): void {
-        if ($request->fails())
-        {
-            throw new ValidationException(
-                $request->errors()
-            );
-        }
-    }
 
     private function vocabulaireOrFail(
         int $id

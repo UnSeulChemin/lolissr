@@ -7,15 +7,13 @@ namespace App\Controllers\Figurine;
 use App\Controllers\Controller;
 use App\DTO\Figurine\Responses\FigurineData;
 use App\Http\Requests\Figurine\FigurineCreateRequest;
+use App\Http\Requests\Figurine\FigurineUpdateRequest;
 use App\Services\Figurine\FigurineReadService;
 use App\Services\Figurine\FigurineWriteService;
-use App\Http\Requests\Figurine\FigurineUpdateRequest;
 
-use Framework\Exceptions\NotFoundException;
-use Framework\Exceptions\ValidationException;
-use Framework\Http\Request;
-use Framework\Http\FormRequest;
 use Framework\Exceptions\BaseHttpException;
+use Framework\Exceptions\NotFoundException;
+use Framework\Http\Request;
 
 final class FigurineController extends Controller
 {
@@ -203,13 +201,5 @@ final class FigurineController extends Controller
         }
 
         return $figurine;
-    }
-
-    private function validateRequest(FormRequest $request): void
-    {
-        if ($request->fails())
-        {
-            throw new ValidationException($request->errors());
-        }
     }
 }
