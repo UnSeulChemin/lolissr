@@ -9,10 +9,8 @@ use App\Constants\UserXp;
 use App\DTO\Common\ServiceResult;
 use App\DTO\Peluche\Inputs\PelucheCreateDTO;
 use App\DTO\Peluche\Inputs\PelucheUpdateDTO;
-use App\Models\Peluche;
 use App\Repositories\Peluche\PelucheRepository;
 use App\Services\Media\ThumbnailManager;
-use App\Services\User\UserLevelService;
 
 use Framework\Database\Database;
 use Framework\Support\Logger;
@@ -26,13 +24,14 @@ final readonly class PelucheWriteService
         private PelucheRepository $pelucheRepository,
         private ThumbnailManager $thumbnailManager,
         private Database $database,
-        private UserLevelService $userLevelService,
+        private PelucheXpRewardService $pelucheXpRewardService,
         private DashboardCache $dashboardCache
     ) {
     }
 
+
     // =========================================
-    // PELUCHE
+    // CREATE
     // =========================================
 
     /**
@@ -77,12 +76,10 @@ final readonly class PelucheWriteService
                         'extension' => $upload->extension,
                         'slug' => $dto->slug,
                         'numero' => $dto->numero,
-
                         'origin' => $dto->origin,
                         'waifu' => $dto->waifu,
                         'company' => $dto->company,
                         'release_date' => $dto->release_date,
-
                         'commentaire' => $dto->commentaire,
                     ]);
 
@@ -96,7 +93,9 @@ final readonly class PelucheWriteService
 
                     if ($failure !== null)
                     {
-                        $this->thumbnailManager->rollback($upload);
+                        $this->thumbnailManager->rollback(
+                            $upload
+                        );
 
                         return $failure;
                     }
@@ -107,7 +106,9 @@ final readonly class PelucheWriteService
                 }
                 catch (PDOException $exception)
                 {
-                    $this->thumbnailManager->rollback($upload);
+                    $this->thumbnailManager->rollback(
+                        $upload
+                    );
 
                     if ($this->isDuplicateKeyException($exception))
                     {
@@ -121,7 +122,9 @@ final readonly class PelucheWriteService
                 }
                 catch (Throwable $exception)
                 {
-                    $this->thumbnailManager->rollback($upload);
+                    $this->thumbnailManager->rollback(
+                        $upload
+                    );
 
                     throw $exception;
                 }
@@ -135,6 +138,11 @@ final readonly class PelucheWriteService
 
         return $result;
     }
+
+
+    // =========================================
+    // UPDATE
+    // =========================================
 
     public function update(
         string $slug,
@@ -176,6 +184,10 @@ final readonly class PelucheWriteService
 
         return $result;
     }
+
+    // =========================================
+    // UPDATE COLLECT STATUS
+    // =========================================
 
     public function updateCollectStatus(
         string $slug,
@@ -229,9 +241,10 @@ final readonly class PelucheWriteService
 
                 if (! $peluche->collect && $collectStatus === 1)
                 {
-                    $xpEarned = $this->rewardCollectXp(
-                        $peluche
-                    );
+                    $xpEarned =
+                        $this->pelucheXpRewardService->rewardCollect(
+                            $peluche
+                        );
                 }
 
                 $user = user();
@@ -243,7 +256,9 @@ final readonly class PelucheWriteService
                     [
                         'collectStatus' => $collectStatus,
                         'xpEarned' => $xpEarned,
-                        'xpAmount' => $xpEarned ? UserXp::COLLECT_PELUCHE : 0,
+                        'xpAmount' => $xpEarned
+                            ? UserXp::COLLECT_PELUCHE
+                            : 0,
                         'level' => $user?->level,
                         'xp' => $user?->xp,
                     ]
@@ -258,6 +273,11 @@ final readonly class PelucheWriteService
 
         return $result;
     }
+
+
+    // =========================================
+    // DELETE
+    // =========================================
 
     public function delete(
         string $slug,
@@ -317,32 +337,6 @@ final readonly class PelucheWriteService
         return $result;
     }
 
-    // =========================================
-    // XP
-    // =========================================
-
-    private function rewardCollectXp(
-        Peluche $peluche
-    ): bool {
-        $user = user();
-
-        if ($user === null)
-        {
-            return false;
-        }
-
-        if (! $this->pelucheRepository->claimCollectReward($peluche->id))
-        {
-            return false;
-        }
-
-        $this->userLevelService->addXp(
-            $user,
-            UserXp::COLLECT_PELUCHE
-        );
-
-        return true;
-    }
 
     // =========================================
     // CACHE
@@ -364,6 +358,7 @@ final readonly class PelucheWriteService
             && ($exception->errorInfo[1] ?? null) === 1062;
     }
 
+
     private function logFailure(
         string $action,
         string $slug,
@@ -373,6 +368,7 @@ final readonly class PelucheWriteService
             "{$action} échoué slug={$slug} numero={$numero}"
         );
     }
+
 
     private function writeFailed(
         bool $result,
@@ -397,6 +393,7 @@ final readonly class PelucheWriteService
         );
     }
 
+
     // =========================================
     // RESULT
     // =========================================
@@ -415,6 +412,7 @@ final readonly class PelucheWriteService
             status: $status
         );
     }
+
 
     /**
      * @param array<string, mixed> $data

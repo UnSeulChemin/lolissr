@@ -12,11 +12,8 @@ use App\DTO\Manga\Inputs\MangaUpdateDTO;
 use App\DTO\Manga\Inputs\MangaUpdateNoteDTO;
 use App\DTO\Manga\Responses\MangaUpdateNoteData;
 use App\DTO\Upload\UploadThumbnailData;
-use App\Models\Manga;
 use App\Repositories\Manga\MangaRepository;
-use App\Repositories\Manga\MangaStatsRepository;
 use App\Services\Media\ThumbnailManager;
-use App\Services\User\UserLevelService;
 
 use Framework\Database\Database;
 use Framework\Support\Logger;
@@ -29,17 +26,19 @@ final readonly class MangaWriteService
 {
     public function __construct(
         private MangaRepository $mangaRepository,
-        private MangaStatsRepository $mangaStatsRepository,
         private ThumbnailManager $thumbnailManager,
         private Database $database,
-        private UserLevelService $userLevelService,
+        private MangaXpRewardService $mangaXpRewardService,
         private DashboardCache $dashboardCache
     ) {
     }
 
-    // =========================================
-    // MANGA
-    // =========================================
+
+    /*
+    |--------------------------------------------------------------------------
+    | CREATE
+    |--------------------------------------------------------------------------
+    */
 
     /**
      * @param array<string, mixed> $files
@@ -48,12 +47,12 @@ final readonly class MangaWriteService
         MangaCreateDTO $dto,
         array $files
     ): ServiceResult {
-        $existingManga = $this->mangaRepository->findOneBySlugAndNumero(
-            $dto->slug,
-            $dto->numero
-        );
-
-        if ($existingManga !== null)
+        if (
+            $this->mangaRepository->findOneBySlugAndNumero(
+                $dto->slug,
+                $dto->numero
+            ) !== null
+        )
         {
             return $this->error(
                 'Ce manga existe déjà',
@@ -123,6 +122,13 @@ final readonly class MangaWriteService
         return $result;
     }
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | UPDATE
+    |--------------------------------------------------------------------------
+    */
+
     public function update(
         string $slug,
         int $numero,
@@ -168,17 +174,18 @@ final readonly class MangaWriteService
         return $result;
     }
 
+
     public function updateNote(
         string $slug,
         int $numero,
         MangaUpdateNoteDTO $dto
     ): ServiceResult {
-        $existingManga = $this->mangaRepository->findOneBySlugAndNumero(
-            $slug,
-            $numero
-        );
-
-        if ($existingManga === null)
+        if (
+            $this->mangaRepository->findOneBySlugAndNumero(
+                $slug,
+                $numero
+            ) === null
+        )
         {
             return $this->error(
                 'Manga introuvable',
@@ -227,7 +234,10 @@ final readonly class MangaWriteService
                         'notes' => new MangaUpdateNoteData(
                             jacquette: $dto->jacquette ?? 0,
                             livreNote: $dto->livreNote ?? 0,
-                            note: $manga->note ?? (($dto->jacquette ?? 0) + ($dto->livreNote ?? 0))
+                            note: $manga->note ?? (
+                                ($dto->jacquette ?? 0)
+                                + ($dto->livreNote ?? 0)
+                            )
                         ),
                     ]
                 );
@@ -241,6 +251,12 @@ final readonly class MangaWriteService
 
         return $result;
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | UPDATE READ STATUS
+    |--------------------------------------------------------------------------
+    */
 
     public function updateReadStatus(
         string $slug,
@@ -298,7 +314,7 @@ final readonly class MangaWriteService
                     [
                         'xpEarned' => $xpEarned,
                         'seriesXpEarned' => $seriesXpEarned,
-                    ] = $this->rewardReadXp(
+                    ] = $this->mangaXpRewardService->rewardTomeRead(
                         $manga,
                         $slug
                     );
@@ -313,7 +329,9 @@ final readonly class MangaWriteService
                     [
                         'readStatus' => $readStatus,
                         'xpEarned' => $xpEarned,
-                        'xpAmount' => $xpEarned ? UserXp::READ_TOME : 0,
+                        'xpAmount' => $xpEarned
+                            ? UserXp::READ_TOME
+                            : 0,
                         'seriesXpEarned' => $seriesXpEarned,
                         'level' => $user?->level,
                         'xp' => $user?->xp,
@@ -329,6 +347,13 @@ final readonly class MangaWriteService
 
         return $result;
     }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | DELETE
+    |--------------------------------------------------------------------------
+    */
 
     public function delete(
         string $slug,
@@ -388,67 +413,12 @@ final readonly class MangaWriteService
         return $result;
     }
 
-    // =========================================
-    // XP
-    // =========================================
 
-    /**
-     * @return array{
-     *     xpEarned: bool,
-     *     seriesXpEarned: bool
-     * }
-     */
-    private function rewardReadXp(
-        Manga $manga,
-        string $slug
-    ): array {
-        $user = user();
-
-        if ($user === null)
-        {
-            return [
-                'xpEarned' => false,
-                'seriesXpEarned' => false,
-            ];
-        }
-
-        if (! $this->mangaRepository->claimReadReward($manga->id))
-        {
-            return [
-                'xpEarned' => false,
-                'seriesXpEarned' => false,
-            ];
-        }
-
-        $this->userLevelService->addXp(
-            $user,
-            UserXp::READ_TOME
-        );
-
-        $seriesXpEarned = false;
-
-        if (
-            $this->mangaStatsRepository->isSeriesCompleted($slug)
-            && $this->mangaRepository->claimSeriesReward($slug)
-        )
-        {
-            $this->userLevelService->addXp(
-                $user,
-                UserXp::COMPLETE_SERIES
-            );
-
-            $seriesXpEarned = true;
-        }
-
-        return [
-            'xpEarned' => true,
-            'seriesXpEarned' => $seriesXpEarned,
-        ];
-    }
-
-    // =========================================
-    // HELPERS
-    // =========================================
+    /*
+    |--------------------------------------------------------------------------
+    | HELPERS
+    |--------------------------------------------------------------------------
+    */
 
     private function isDuplicateKeyException(
         PDOException $exception
@@ -456,6 +426,7 @@ final readonly class MangaWriteService
         return $exception->getCode() === '23000'
             && ($exception->errorInfo[1] ?? null) === 1062;
     }
+
 
     private function logFailure(
         string $action,
@@ -466,6 +437,7 @@ final readonly class MangaWriteService
             "{$action} échoué slug={$slug} numero={$numero}"
         );
     }
+
 
     private function writeFailed(
         bool $result,
@@ -487,6 +459,7 @@ final readonly class MangaWriteService
 
         return $this->error($message);
     }
+
 
     private function createManga(
         MangaCreateDTO $dto,
@@ -526,18 +499,24 @@ final readonly class MangaWriteService
         return null;
     }
 
-    // =========================================
-    // CACHE
-    // =========================================
+
+    /*
+    |--------------------------------------------------------------------------
+    | CACHE
+    |--------------------------------------------------------------------------
+    */
 
     private function forgetDashboardCache(): void
     {
         $this->dashboardCache->forget();
     }
 
-    // =========================================
-    // RESULT
-    // =========================================
+
+    /*
+    |--------------------------------------------------------------------------
+    | RESULT
+    |--------------------------------------------------------------------------
+    */
 
     /**
      * @param array<string, mixed> $data
@@ -553,6 +532,7 @@ final readonly class MangaWriteService
             status: $status
         );
     }
+
 
     /**
      * @param array<string, mixed> $data

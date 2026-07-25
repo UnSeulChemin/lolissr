@@ -5,14 +5,11 @@ declare(strict_types=1);
 namespace App\Services\Nendoroid;
 
 use App\Cache\DashboardCache;
-use App\Constants\UserXp;
 use App\DTO\Common\ServiceResult;
 use App\DTO\Nendoroid\Inputs\NendoroidCreateDTO;
 use App\DTO\Nendoroid\Inputs\NendoroidUpdateDTO;
-use App\Models\Nendoroid;
 use App\Repositories\Nendoroid\NendoroidRepository;
 use App\Services\Media\ThumbnailManager;
-use App\Services\User\UserLevelService;
 
 use Framework\Database\Database;
 use Framework\Support\Logger;
@@ -26,13 +23,14 @@ final readonly class NendoroidWriteService
         private NendoroidRepository $nendoroidRepository,
         private ThumbnailManager $thumbnailManager,
         private Database $database,
-        private UserLevelService $userLevelService,
+        private NendoroidXpRewardService $nendoroidXpRewardService,
         private DashboardCache $dashboardCache
     ) {
     }
 
+
     // =========================================
-    // NENDOROID
+    // CREATE
     // =========================================
 
     /**
@@ -94,7 +92,9 @@ final readonly class NendoroidWriteService
 
                     if ($failure !== null)
                     {
-                        $this->thumbnailManager->rollback($upload);
+                        $this->thumbnailManager->rollback(
+                            $upload
+                        );
 
                         return $failure;
                     }
@@ -105,7 +105,9 @@ final readonly class NendoroidWriteService
                 }
                 catch (PDOException $exception)
                 {
-                    $this->thumbnailManager->rollback($upload);
+                    $this->thumbnailManager->rollback(
+                        $upload
+                    );
 
                     if ($this->isDuplicateKeyException($exception))
                     {
@@ -119,7 +121,9 @@ final readonly class NendoroidWriteService
                 }
                 catch (Throwable $exception)
                 {
-                    $this->thumbnailManager->rollback($upload);
+                    $this->thumbnailManager->rollback(
+                        $upload
+                    );
 
                     throw $exception;
                 }
@@ -133,6 +137,10 @@ final readonly class NendoroidWriteService
 
         return $result;
     }
+
+    // =========================================
+    // UPDATE
+    // =========================================
 
     public function update(
         string $slug,
@@ -174,6 +182,11 @@ final readonly class NendoroidWriteService
 
         return $result;
     }
+
+
+    // =========================================
+    // UPDATE COLLECT STATUS
+    // =========================================
 
     public function updateCollectStatus(
         string $slug,
@@ -227,9 +240,10 @@ final readonly class NendoroidWriteService
 
                 if (! $nendoroid->collect && $collectStatus === 1)
                 {
-                    $xpEarned = $this->rewardCollectXp(
-                        $nendoroid
-                    );
+                    $xpEarned =
+                        $this->nendoroidXpRewardService->rewardCollect(
+                            $nendoroid
+                        );
                 }
 
                 $user = user();
@@ -241,7 +255,9 @@ final readonly class NendoroidWriteService
                     [
                         'collectStatus' => $collectStatus,
                         'xpEarned' => $xpEarned,
-                        'xpAmount' => $xpEarned ? UserXp::COLLECT_NENDOROID : 0,
+                        'xpAmount' => $xpEarned
+                            ? UserXp::COLLECT_NENDOROID
+                            : 0,
                         'level' => $user?->level,
                         'xp' => $user?->xp,
                     ]
@@ -256,6 +272,11 @@ final readonly class NendoroidWriteService
 
         return $result;
     }
+
+
+    // =========================================
+    // DELETE
+    // =========================================
 
     public function delete(
         string $slug,
@@ -316,33 +337,6 @@ final readonly class NendoroidWriteService
     }
 
     // =========================================
-    // XP
-    // =========================================
-
-    private function rewardCollectXp(
-        Nendoroid $nendoroid
-    ): bool {
-        $user = user();
-
-        if ($user === null)
-        {
-            return false;
-        }
-
-        if (! $this->nendoroidRepository->claimCollectReward($nendoroid->id))
-        {
-            return false;
-        }
-
-        $this->userLevelService->addXp(
-            $user,
-            UserXp::COLLECT_NENDOROID
-        );
-
-        return true;
-    }
-
-    // =========================================
     // CACHE
     // =========================================
 
@@ -350,6 +344,7 @@ final readonly class NendoroidWriteService
     {
         $this->dashboardCache->forget();
     }
+
 
     // =========================================
     // HELPERS
@@ -362,6 +357,7 @@ final readonly class NendoroidWriteService
             && ($exception->errorInfo[1] ?? null) === 1062;
     }
 
+
     private function logFailure(
         string $action,
         string $slug,
@@ -371,6 +367,7 @@ final readonly class NendoroidWriteService
             "{$action} échoué slug={$slug} numero={$numero}"
         );
     }
+
 
     private function writeFailed(
         bool $result,
@@ -395,6 +392,7 @@ final readonly class NendoroidWriteService
         );
     }
 
+
     // =========================================
     // RESULT
     // =========================================
@@ -413,6 +411,7 @@ final readonly class NendoroidWriteService
             status: $status
         );
     }
+
 
     /**
      * @param array<string, mixed> $data

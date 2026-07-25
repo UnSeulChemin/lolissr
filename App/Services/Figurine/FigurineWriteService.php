@@ -9,10 +9,8 @@ use App\Constants\UserXp;
 use App\DTO\Common\ServiceResult;
 use App\DTO\Figurine\Inputs\FigurineCreateDTO;
 use App\DTO\Figurine\Inputs\FigurineUpdateDTO;
-use App\Models\Figurine;
 use App\Repositories\Figurine\FigurineRepository;
 use App\Services\Media\ThumbnailManager;
-use App\Services\User\UserLevelService;
 
 use Framework\Database\Database;
 use Framework\Support\Logger;
@@ -26,13 +24,14 @@ final readonly class FigurineWriteService
         private FigurineRepository $figurineRepository,
         private ThumbnailManager $thumbnailManager,
         private Database $database,
-        private UserLevelService $userLevelService,
+        private FigurineXpRewardService $figurineXpRewardService,
         private DashboardCache $dashboardCache
     ) {
     }
 
+
     // =========================================
-    // FIGURINE
+    // CREATE
     // =========================================
 
     /**
@@ -77,14 +76,12 @@ final readonly class FigurineWriteService
                         'extension' => $upload->extension,
                         'slug' => $dto->slug,
                         'numero' => $dto->numero,
-
                         'origin' => $dto->origin,
                         'waifu' => $dto->waifu,
                         'scale' => $dto->scale,
                         'height_cm' => $dto->height_cm,
                         'company' => $dto->company,
                         'release_date' => $dto->release_date,
-
                         'commentaire' => $dto->commentaire,
                     ]);
 
@@ -98,7 +95,9 @@ final readonly class FigurineWriteService
 
                     if ($failure !== null)
                     {
-                        $this->thumbnailManager->rollback($upload);
+                        $this->thumbnailManager->rollback(
+                            $upload
+                        );
 
                         return $failure;
                     }
@@ -109,7 +108,9 @@ final readonly class FigurineWriteService
                 }
                 catch (PDOException $exception)
                 {
-                    $this->thumbnailManager->rollback($upload);
+                    $this->thumbnailManager->rollback(
+                        $upload
+                    );
 
                     if ($this->isDuplicateKeyException($exception))
                     {
@@ -123,7 +124,9 @@ final readonly class FigurineWriteService
                 }
                 catch (Throwable $exception)
                 {
-                    $this->thumbnailManager->rollback($upload);
+                    $this->thumbnailManager->rollback(
+                        $upload
+                    );
 
                     throw $exception;
                 }
@@ -137,6 +140,10 @@ final readonly class FigurineWriteService
 
         return $result;
     }
+
+    // =========================================
+    // UPDATE
+    // =========================================
 
     public function update(
         string $slug,
@@ -178,6 +185,11 @@ final readonly class FigurineWriteService
 
         return $result;
     }
+
+
+    // =========================================
+    // UPDATE COLLECT STATUS
+    // =========================================
 
     public function updateCollectStatus(
         string $slug,
@@ -231,9 +243,10 @@ final readonly class FigurineWriteService
 
                 if (! $figurine->collect && $collectStatus === 1)
                 {
-                    $xpEarned = $this->rewardCollectXp(
-                        $figurine
-                    );
+                    $xpEarned =
+                        $this->figurineXpRewardService->rewardCollect(
+                            $figurine
+                        );
                 }
 
                 $user = user();
@@ -245,7 +258,9 @@ final readonly class FigurineWriteService
                     [
                         'collectStatus' => $collectStatus,
                         'xpEarned' => $xpEarned,
-                        'xpAmount' => $xpEarned ? UserXp::COLLECT_FIGURINE : 0,
+                        'xpAmount' => $xpEarned
+                            ? UserXp::COLLECT_FIGURINE
+                            : 0,
                         'level' => $user?->level,
                         'xp' => $user?->xp,
                     ]
@@ -260,6 +275,11 @@ final readonly class FigurineWriteService
 
         return $result;
     }
+
+
+    // =========================================
+    // DELETE
+    // =========================================
 
     public function delete(
         string $slug,
@@ -320,33 +340,6 @@ final readonly class FigurineWriteService
     }
 
     // =========================================
-    // XP
-    // =========================================
-
-    private function rewardCollectXp(
-        Figurine $figurine
-    ): bool {
-        $user = user();
-
-        if ($user === null)
-        {
-            return false;
-        }
-
-        if (! $this->figurineRepository->claimCollectReward($figurine->id))
-        {
-            return false;
-        }
-
-        $this->userLevelService->addXp(
-            $user,
-            UserXp::COLLECT_FIGURINE
-        );
-
-        return true;
-    }
-
-    // =========================================
     // HELPERS
     // =========================================
 
@@ -356,6 +349,7 @@ final readonly class FigurineWriteService
         return $exception->getCode() === '23000'
             && ($exception->errorInfo[1] ?? null) === 1062;
     }
+
 
     private function writeFailed(
         bool $result,
@@ -378,6 +372,11 @@ final readonly class FigurineWriteService
         );
     }
 
+
+    // =========================================
+    // RESULT
+    // =========================================
+
     /**
      * @param array<string, mixed> $data
      */
@@ -392,6 +391,7 @@ final readonly class FigurineWriteService
             status: $status
         );
     }
+
 
     /**
      * @param array<string, mixed> $data

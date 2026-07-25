@@ -9,10 +9,8 @@ use App\Constants\UserXp;
 use App\DTO\Common\ServiceResult;
 use App\DTO\Manga\Inputs\ArtbookCreateDTO;
 use App\DTO\Manga\Inputs\ArtbookUpdateDTO;
-use App\Models\Artbook;
 use App\Repositories\Manga\ArtbookRepository;
 use App\Services\Media\ThumbnailManager;
-use App\Services\User\UserLevelService;
 
 use Framework\Database\Database;
 use Framework\Support\Logger;
@@ -26,14 +24,16 @@ final readonly class ArtbookWriteService
         private ArtbookRepository $artbookRepository,
         private ThumbnailManager $thumbnailManager,
         private Database $database,
-        private UserLevelService $userLevelService,
+        private ArtbookXpRewardService $artbookXpRewardService,
         private DashboardCache $dashboardCache
     ) {
     }
 
-    // =========================================
-    // ARTBOOK
-    // =========================================
+    /*
+    |--------------------------------------------------------------------------
+    | CREATE
+    |--------------------------------------------------------------------------
+    */
 
     /**
      * @param array<string, mixed> $files
@@ -42,12 +42,12 @@ final readonly class ArtbookWriteService
         ArtbookCreateDTO $dto,
         array $files
     ): ServiceResult {
-        $existingArtbook = $this->artbookRepository->findOneBySlugAndNumero(
-            $dto->slug,
-            $dto->numero
-        );
-
-        if ($existingArtbook !== null)
+        if (
+            $this->artbookRepository->findOneBySlugAndNumero(
+                $dto->slug,
+                $dto->numero
+            ) !== null
+        )
         {
             return $this->error(
                 'Cet artbook existe déjà',
@@ -95,7 +95,9 @@ final readonly class ArtbookWriteService
 
                     if ($failure !== null)
                     {
-                        $this->thumbnailManager->rollback($upload);
+                        $this->thumbnailManager->rollback(
+                            $upload
+                        );
 
                         return $failure;
                     }
@@ -106,7 +108,9 @@ final readonly class ArtbookWriteService
                 }
                 catch (PDOException $exception)
                 {
-                    $this->thumbnailManager->rollback($upload);
+                    $this->thumbnailManager->rollback(
+                        $upload
+                    );
 
                     if ($this->isDuplicateKeyException($exception))
                     {
@@ -120,7 +124,9 @@ final readonly class ArtbookWriteService
                 }
                 catch (Throwable $exception)
                 {
-                    $this->thumbnailManager->rollback($upload);
+                    $this->thumbnailManager->rollback(
+                        $upload
+                    );
 
                     throw $exception;
                 }
@@ -134,6 +140,12 @@ final readonly class ArtbookWriteService
 
         return $result;
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | UPDATE
+    |--------------------------------------------------------------------------
+    */
 
     public function update(
         string $slug,
@@ -175,6 +187,13 @@ final readonly class ArtbookWriteService
 
         return $result;
     }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | UPDATE READ STATUS
+    |--------------------------------------------------------------------------
+    */
 
     public function updateReadStatus(
         string $slug,
@@ -228,9 +247,10 @@ final readonly class ArtbookWriteService
 
                 if (! $artbook->lu && $readStatus === 1)
                 {
-                    $xpEarned = $this->rewardReadXp(
-                        $artbook
-                    );
+                    $xpEarned =
+                        $this->artbookXpRewardService->rewardArtbookRead(
+                            $artbook
+                        );
                 }
 
                 $user = user();
@@ -242,7 +262,9 @@ final readonly class ArtbookWriteService
                     [
                         'readStatus' => $readStatus,
                         'xpEarned' => $xpEarned,
-                        'xpAmount' => $xpEarned ? UserXp::READ_ARTBOOK : 0,
+                        'xpAmount' => $xpEarned
+                            ? UserXp::READ_ARTBOOK
+                            : 0,
                         'level' => $user?->level,
                         'xp' => $user?->xp,
                     ]
@@ -257,6 +279,12 @@ final readonly class ArtbookWriteService
 
         return $result;
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | DELETE
+    |--------------------------------------------------------------------------
+    */
 
     public function delete(
         string $slug,
@@ -316,45 +344,24 @@ final readonly class ArtbookWriteService
         return $result;
     }
 
-    // =========================================
-    // XP
-    // =========================================
 
-    private function rewardReadXp(
-        Artbook $artbook
-    ): bool {
-        $user = user();
-
-        if ($user === null)
-        {
-            return false;
-        }
-
-        if (! $this->artbookRepository->claimReadReward($artbook->id))
-        {
-            return false;
-        }
-
-        $this->userLevelService->addXp(
-            $user,
-            UserXp::READ_ARTBOOK
-        );
-
-        return true;
-    }
-
-    // =========================================
-    // CACHE
-    // =========================================
+    /*
+    |--------------------------------------------------------------------------
+    | CACHE
+    |--------------------------------------------------------------------------
+    */
 
     private function forgetDashboardCache(): void
     {
         $this->dashboardCache->forget();
     }
 
-    // =========================================
-    // HELPERS
-    // =========================================
+
+    /*
+    |--------------------------------------------------------------------------
+    | HELPERS
+    |--------------------------------------------------------------------------
+    */
 
     private function isDuplicateKeyException(
         PDOException $exception
@@ -362,6 +369,7 @@ final readonly class ArtbookWriteService
         return $exception->getCode() === '23000'
             && ($exception->errorInfo[1] ?? null) === 1062;
     }
+
 
     private function logFailure(
         string $action,
@@ -372,6 +380,7 @@ final readonly class ArtbookWriteService
             "{$action} échoué slug={$slug} numero={$numero}"
         );
     }
+
 
     private function writeFailed(
         bool $result,
@@ -396,9 +405,12 @@ final readonly class ArtbookWriteService
         );
     }
 
-    // =========================================
-    // RESULT
-    // =========================================
+
+    /*
+    |--------------------------------------------------------------------------
+    | RESULT
+    |--------------------------------------------------------------------------
+    */
 
     /**
      * @param array<string, mixed> $data
@@ -414,6 +426,7 @@ final readonly class ArtbookWriteService
             status: $status
         );
     }
+
 
     /**
      * @param array<string, mixed> $data
