@@ -192,15 +192,9 @@ final readonly class NendoroidWriteService
 
                 $xpEarned = false;
 
-                if (
-                    ! $nendoroid->collect
-                    && $collectStatus === 1
-                    && ! $nendoroid->collect_rewarded
-                )
+                if (! $nendoroid->collect && $collectStatus === 1)
                 {
-                    [
-                        'xpEarned' => $xpEarned,
-                    ] = $this->rewardCollectXp($nendoroid);
+                    $xpEarned = $this->rewardCollectXp($nendoroid);
                 }
 
                 $user = user();
@@ -293,20 +287,18 @@ final readonly class NendoroidWriteService
     |--------------------------------------------------------------------------
     */
 
-    /**
-     * @return array{
-     *     xpEarned: bool
-     * }
-     */
-    private function rewardCollectXp(Nendoroid $nendoroid): array
+    private function rewardCollectXp(Nendoroid $nendoroid): bool
     {
         $user = user();
 
         if ($user === null)
         {
-            return [
-                'xpEarned' => false,
-            ];
+            return false;
+        }
+
+        if (! $this->nendoroidRepository->claimCollectReward($nendoroid->id))
+        {
+            return false;
         }
 
         $this->userLevelService->addXp(
@@ -314,11 +306,7 @@ final readonly class NendoroidWriteService
             UserXp::COLLECT_NENDOROID
         );
 
-        $this->nendoroidRepository->markXpRewarded($nendoroid->id);
-
-        return [
-            'xpEarned' => true,
-        ];
+        return true;
     }
 
     /*

@@ -57,10 +57,7 @@ final class ChinoisGrammaireRepository extends Model
             "
         );
 
-        return array_map(
-            $this->mapRowToDto(...),
-            $results
-        );
+        return array_map($this->mapRowToDto(...), $results);
     }
 
     /**
@@ -89,10 +86,7 @@ final class ChinoisGrammaireRepository extends Model
             ]
         );
 
-        return array_map(
-            $this->mapRowToDto(...),
-            $results
-        );
+        return array_map($this->mapRowToDto(...), $results);
     }
 
     public function findById(int $id): ?ChinoisGrammaireData
@@ -210,12 +204,7 @@ final class ChinoisGrammaireRepository extends Model
 
         $position = $sameLocation
             ? $current->position
-            : $this->getNextPosition(
-                $niveau,
-                $section,
-                $categorie,
-                $id
-            );
+            : $this->getNextPosition($niveau, $section, $categorie, $id);
 
         return $this->updateById(
             $id,
@@ -223,11 +212,7 @@ final class ChinoisGrammaireRepository extends Model
                 'niveau' => $niveau,
 
                 'section' => $section,
-                'section_position' => $this->getSectionPosition(
-                    $niveau,
-                    $section,
-                    $id
-                ),
+                'section_position' => $this->getSectionPosition($niveau, $section, $id),
 
                 'categorie' => $categorie,
                 'categorie_position' => $this->getCategoriePosition(
@@ -257,11 +242,8 @@ final class ChinoisGrammaireRepository extends Model
     |--------------------------------------------------------------------------
     */
 
-    public function getSectionPosition(
-        string $niveau,
-        string $section,
-        ?int $ignoreId = null
-    ): int {
+    public function getSectionPosition(string $niveau, string $section, ?int $ignoreId = null): int
+    {
         $niveau = trim($niveau);
         $section = trim($section);
 
@@ -282,17 +264,13 @@ final class ChinoisGrammaireRepository extends Model
         if ($ignoreId !== null)
         {
             $sql .= "\nAND id <> :id";
-
             $params['id'] = $ignoreId;
         }
 
         $sql .= "\nLIMIT 1";
 
         /** @var stdClass|null $result */
-        $result = $this->fetchOne(
-            $sql,
-            $params
-        );
+        $result = $this->fetchOne($sql, $params);
 
         if ($result !== null)
         {
@@ -345,17 +323,13 @@ final class ChinoisGrammaireRepository extends Model
         if ($ignoreId !== null)
         {
             $sql .= "\nAND id <> :id";
-
             $params['id'] = $ignoreId;
         }
 
         $sql .= "\nLIMIT 1";
 
         /** @var stdClass|null $result */
-        $result = $this->fetchOne(
-            $sql,
-            $params
-        );
+        $result = $this->fetchOne($sql, $params);
 
         if ($result !== null)
         {
@@ -406,15 +380,11 @@ final class ChinoisGrammaireRepository extends Model
         if ($ignoreId !== null)
         {
             $sql .= "\nAND id <> :id";
-
             $params['id'] = $ignoreId;
         }
 
         /** @var stdClass|null $max */
-        $max = $this->fetchOne(
-            $sql,
-            $params
-        );
+        $max = $this->fetchOne($sql, $params);
 
         return (int) (($max->position ?? -1) + 1);
     }
@@ -425,40 +395,23 @@ final class ChinoisGrammaireRepository extends Model
     |--------------------------------------------------------------------------
     */
 
-    public function isXpRewarded(int $id): bool
+    public function claimXpReward(int $id): bool
     {
-        /** @var stdClass|null $result */
-        $result = $this->fetchOne(
+        $statement = $this->query(
             "
-            SELECT xp_rewarded
+            UPDATE {$this->table()}
 
-            FROM {$this->table()}
+            SET xp_rewarded = 1
 
             WHERE id = :id
-
-            LIMIT 1
+            AND xp_rewarded = 0
             ",
             [
                 'id' => $id,
             ]
         );
 
-        if ($result === null)
-        {
-            return true;
-        }
-
-        return (bool) $result->xp_rewarded;
-    }
-
-    public function markXpRewarded(int $id): bool
-    {
-        return $this->updateById(
-            $id,
-            [
-                'xp_rewarded' => 1,
-            ]
-        );
+        return $statement !== false && $statement->rowCount() === 1;
     }
 
     /*
@@ -491,10 +444,8 @@ final class ChinoisGrammaireRepository extends Model
     /**
      * @param array<string, mixed> $data
      */
-    private function updateById(
-        int $id,
-        array $data
-    ): bool {
+    private function updateById(int $id, array $data): bool
+    {
         return $this->update(
             $data,
             [
@@ -503,17 +454,10 @@ final class ChinoisGrammaireRepository extends Model
         );
     }
 
-    private function mapRowToDto(
-        stdClass $row
-    ): ChinoisGrammaireData {
-        $abreviation = $row->abreviation !== null
-            ? (string) $row->abreviation
-            : null;
-
-        $explication = $row->explication !== null
-            ? (string) $row->explication
-            : null;
-
+    private function mapRowToDto(stdClass $row): ChinoisGrammaireData
+    {
+        $abreviation = $row->abreviation !== null ? (string) $row->abreviation : null;
+        $explication = $row->explication !== null ? (string) $row->explication : null;
         $maitrise = (bool) $row->maitrise;
 
         return new ChinoisGrammaireData(
@@ -538,33 +482,13 @@ final class ChinoisGrammaireRepository extends Model
             maitrise: $maitrise,
             xpRewarded: (bool) $row->xp_rewarded,
 
-            hasAbreviation:
-                $abreviation !== null
-                && $abreviation !== '',
+            hasAbreviation: $abreviation !== null && $abreviation !== '',
+            hasExplication: $explication !== null && $explication !== '',
 
-            hasExplication:
-                $explication !== null
-                && $explication !== '',
-
-            masteredClass:
-                $maitrise
-                    ? 'active'
-                    : '',
-
-            masteredValue:
-                $maitrise
-                    ? '1'
-                    : '0',
-
-            masteredPressed:
-                $maitrise
-                    ? 'true'
-                    : 'false',
-
-            masteredLabel:
-                $maitrise
-                    ? 'Retirer la maîtrise'
-                    : 'Marquer comme maîtrisé'
+            masteredClass: $maitrise ? 'active' : '',
+            masteredValue: $maitrise ? '1' : '0',
+            masteredPressed: $maitrise ? 'true' : 'false',
+            masteredLabel: $maitrise ? 'Retirer la maîtrise' : 'Marquer comme maîtrisé'
         );
     }
 }

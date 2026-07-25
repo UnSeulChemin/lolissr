@@ -100,8 +100,7 @@ final class MangaRepository extends Model
         ?int $jacquette,
         ?int $livreNote,
         ?string $commentaire
-    ): bool
-    {
+    ): bool {
         [$jacquette, $livreNote] = $this->normalizeNotes($jacquette, $livreNote);
 
         return $this->updateBySlugAndNumero(
@@ -118,21 +117,18 @@ final class MangaRepository extends Model
         );
     }
 
-    public function updateReadStatus(
-        string $slug,
-        int $numero,
-        bool $readStatus
-    ): bool
+    public function updateReadStatus(string $slug, int $numero, bool $readStatus): bool
     {
-        return $this->updateBySlugAndNumero($slug, $numero, ['lu' => (int) $readStatus]);
+        return $this->updateBySlugAndNumero(
+            $slug,
+            $numero,
+            [
+                'lu' => (int) $readStatus,
+            ]
+        );
     }
 
-    public function updateNote(
-        string $slug,
-        int $numero,
-        ?int $jacquette,
-        ?int $livreNote
-    ): bool
+    public function updateNote(string $slug, int $numero, ?int $jacquette, ?int $livreNote): bool
     {
         [$jacquette, $livreNote] = $this->normalizeNotes($jacquette, $livreNote);
 
@@ -149,7 +145,10 @@ final class MangaRepository extends Model
 
     public function deleteBySlugAndNumero(string $slug, int $numero): bool
     {
-        return $this->delete(['slug' => $this->normalizeSlug($slug), 'numero' => $numero]);
+        return $this->delete([
+            'slug' => $this->normalizeSlug($slug),
+            'numero' => $numero,
+        ]);
     }
 
     public function seriesExists(string $slug): bool
@@ -194,53 +193,42 @@ final class MangaRepository extends Model
         return $mangas;
     }
 
-    public function markXpRewarded(int $id): bool
+    public function claimReadReward(int $id): bool
     {
-        return $this->update(['xp_read_rewarded' => 1], ['id' => $id]);
-    }
-
-    public function isSeriesRewarded(string $slug): bool
-    {
-        $result = $this->fetchOne(
+        $statement = $this->query(
             "
-            SELECT xp_series_rewarded
+            UPDATE {$this->table()}
 
-            FROM {$this->table()}
+            SET xp_read_rewarded = 1
 
-            WHERE slug = :slug
-
-            LIMIT 1
+            WHERE id = :id
+            AND xp_read_rewarded = 0
             ",
             [
-                'slug' => $this->normalizeSlug($slug),
+                'id' => $id,
             ]
         );
 
-        if ($result === null)
-        {
-            return true;
-        }
-
-        /** @var array{xp_series_rewarded?: mixed} $data */
-        $data = (array) $result;
-
-        return (bool) ($data['xp_series_rewarded'] ?? false);
+        return $statement !== false && $statement->rowCount() === 1;
     }
 
-    public function markSeriesRewardedBySlug(string $slug): bool
+    public function claimSeriesReward(string $slug): bool
     {
-        return $this->execute(
+        $statement = $this->query(
             "
             UPDATE {$this->table()}
 
             SET xp_series_rewarded = 1
 
             WHERE slug = :slug
+            AND xp_series_rewarded = 0
             ",
             [
                 'slug' => $this->normalizeSlug($slug),
             ]
         );
+
+        return $statement !== false && $statement->rowCount() >= 1;
     }
 
     /*
@@ -280,16 +268,26 @@ final class MangaRepository extends Model
      */
     private function updateBySlugAndNumero(string $slug, int $numero, array $data): bool
     {
-        return $this->update($data, ['slug' => $this->normalizeSlug($slug), 'numero' => $numero]);
+        return $this->update(
+            $data,
+            [
+                'slug' => $this->normalizeSlug($slug),
+                'numero' => $numero,
+            ]
+        );
     }
 
     /**
      * @param array<string, mixed> $data
+     *
      * @return array<string, mixed>
      */
     private function normalizeInsertData(array $data): array
     {
-        [$jacquette, $livreNote] = $this->normalizeNotes($data['jacquette'] ?? null, $data['livre_note'] ?? null);
+        [$jacquette, $livreNote] = $this->normalizeNotes(
+            $data['jacquette'] ?? null,
+            $data['livre_note'] ?? null
+        );
 
         return [
             'thumbnail' => trim((string) ($data['thumbnail'] ?? '')),

@@ -32,9 +32,8 @@ final readonly class ChinoisWriteService
     |--------------------------------------------------------------------------
     */
 
-    public function createGrammaire(
-        ChinoisGrammaireCreateDTO $dto
-    ): ServiceResult {
+    public function createGrammaire(ChinoisGrammaireCreateDTO $dto): ServiceResult
+    {
         $result = $this->database->transaction(
             function () use ($dto): ServiceResult
             {
@@ -42,19 +41,17 @@ final readonly class ChinoisWriteService
                     'niveau' => $dto->niveau,
 
                     'section' => $dto->section,
-                    'section_position' =>
-                        $this->grammaireRepository->getSectionPosition(
-                            $dto->niveau,
-                            $dto->section
-                        ),
+                    'section_position' => $this->grammaireRepository->getSectionPosition(
+                        $dto->niveau,
+                        $dto->section
+                    ),
 
                     'categorie' => $dto->categorie,
-                    'categorie_position' =>
-                        $this->grammaireRepository->getCategoriePosition(
-                            $dto->niveau,
-                            $dto->section,
-                            $dto->categorie
-                        ),
+                    'categorie_position' => $this->grammaireRepository->getCategoriePosition(
+                        $dto->niveau,
+                        $dto->section,
+                        $dto->categorie
+                    ),
 
                     'titre' => $dto->titre,
                     'structure' => $dto->structure,
@@ -65,26 +62,21 @@ final readonly class ChinoisWriteService
                     'traduction' => $dto->traduction,
                     'explication' => $dto->explication,
 
-                    'position' =>
-                        $this->grammaireRepository->getNextPosition(
-                            $dto->niveau,
-                            $dto->section,
-                            $dto->categorie
-                        ),
+                    'position' => $this->grammaireRepository->getNextPosition(
+                        $dto->niveau,
+                        $dto->section,
+                        $dto->categorie
+                    ),
 
                     'maitrise' => false,
                 ]);
 
                 if (! $inserted)
                 {
-                    return $this->error(
-                        'Erreur lors de l’ajout'
-                    );
+                    return $this->error('Erreur lors de l’ajout');
                 }
 
-                return $this->success(
-                    'Grammaire ajoutée avec succès'
-                );
+                return $this->success('Grammaire ajoutée avec succès');
             }
         );
 
@@ -137,21 +129,14 @@ final readonly class ChinoisWriteService
         $result = $this->database->transaction(
             function () use ($id): ServiceResult
             {
-                $deleted =
-                    $this->grammaireRepository->deleteGrammaire(
-                        $id
-                    );
+                $deleted = $this->grammaireRepository->deleteGrammaire($id);
 
                 if (! $deleted)
                 {
-                    return $this->error(
-                        'Erreur lors de la suppression'
-                    );
+                    return $this->error('Erreur lors de la suppression');
                 }
 
-                return $this->success(
-                    'Grammaire supprimée avec succès'
-                );
+                return $this->success('Grammaire supprimée avec succès');
             }
         );
 
@@ -169,9 +154,8 @@ final readonly class ChinoisWriteService
     |--------------------------------------------------------------------------
     */
 
-    public function createVocabulaire(
-        ChinoisVocabulaireCreateDTO $dto
-    ): ServiceResult {
+    public function createVocabulaire(ChinoisVocabulaireCreateDTO $dto): ServiceResult
+    {
         $result = $this->database->transaction(
             function () use ($dto): ServiceResult
             {
@@ -186,14 +170,10 @@ final readonly class ChinoisWriteService
 
                 if (! $inserted)
                 {
-                    return $this->error(
-                        'Erreur lors de l’ajout'
-                    );
+                    return $this->error('Erreur lors de l’ajout');
                 }
 
-                return $this->success(
-                    'Vocabulaire ajouté avec succès'
-                );
+                return $this->success('Vocabulaire ajouté avec succès');
             }
         );
 
@@ -242,21 +222,14 @@ final readonly class ChinoisWriteService
         $result = $this->database->transaction(
             function () use ($id): ServiceResult
             {
-                $deleted =
-                    $this->vocabulaireRepository->deleteVocabulaire(
-                        $id
-                    );
+                $deleted = $this->vocabulaireRepository->deleteVocabulaire($id);
 
                 if (! $deleted)
                 {
-                    return $this->error(
-                        'Erreur lors de la suppression'
-                    );
+                    return $this->error('Erreur lors de la suppression');
                 }
 
-                return $this->success(
-                    'Vocabulaire supprimé avec succès'
-                );
+                return $this->success('Vocabulaire supprimé avec succès');
             }
         );
 
@@ -290,10 +263,7 @@ final readonly class ChinoisWriteService
         $result = $this->database->transaction(
             function () use ($id): array
             {
-                $maitrise =
-                    $this->grammaireRepository->toggleMaitrise(
-                        $id
-                    );
+                $maitrise = $this->grammaireRepository->toggleMaitrise($id);
 
                 if ($maitrise === null)
                 {
@@ -303,15 +273,9 @@ final readonly class ChinoisWriteService
                     ];
                 }
 
-                $xpEarned = false;
-
-                if (
-                    $maitrise
-                    && ! $this->grammaireRepository->isXpRewarded($id)
-                )
-                {
-                    $xpEarned = $this->rewardGrammarXp($id);
-                }
+                $xpEarned = $maitrise
+                    ? $this->rewardGrammarXp($id)
+                    : false;
 
                 return [
                     'maitrise' => $maitrise,
@@ -352,10 +316,7 @@ final readonly class ChinoisWriteService
         $result = $this->database->transaction(
             function () use ($id): array
             {
-                $maitrise =
-                    $this->vocabulaireRepository->toggleMaitrise(
-                        $id
-                    );
+                $maitrise = $this->vocabulaireRepository->toggleMaitrise($id);
 
                 if ($maitrise === null)
                 {
@@ -365,15 +326,9 @@ final readonly class ChinoisWriteService
                     ];
                 }
 
-                $xpEarned = false;
-
-                if (
-                    $maitrise
-                    && ! $this->vocabulaireRepository->isXpRewarded($id)
-                )
-                {
-                    $xpEarned = $this->rewardVocabularyXp($id);
-                }
+                $xpEarned = $maitrise
+                    ? $this->rewardVocabularyXp($id)
+                    : false;
 
                 return [
                     'maitrise' => $maitrise,
@@ -413,14 +368,12 @@ final readonly class ChinoisWriteService
             return false;
         }
 
-        $this->userLevelService->addXp(
-            $user,
-            UserXp::LEARN_GRAMMAR
-        );
+        if (! $this->grammaireRepository->claimXpReward($id))
+        {
+            return false;
+        }
 
-        $this->grammaireRepository->markXpRewarded(
-            $id
-        );
+        $this->userLevelService->addXp($user, UserXp::LEARN_GRAMMAR);
 
         return true;
     }
@@ -434,14 +387,12 @@ final readonly class ChinoisWriteService
             return false;
         }
 
-        $this->userLevelService->addXp(
-            $user,
-            UserXp::LEARN_VOCABULARY
-        );
+        if (! $this->vocabulaireRepository->claimXpReward($id))
+        {
+            return false;
+        }
 
-        $this->vocabulaireRepository->markXpRewarded(
-            $id
-        );
+        $this->userLevelService->addXp($user, UserXp::LEARN_VOCABULARY);
 
         return true;
     }

@@ -14,10 +14,7 @@ final class ArtbookRepository extends Model
 {
     protected string $table = 'artbook';
 
-    public function findOneBySlugAndNumero(
-        string $slug,
-        int $numero
-    ): ?Artbook
+    public function findOneBySlugAndNumero(string $slug, int $numero): ?Artbook
     {
         /** @var Artbook|null $artbook */
         $artbook = $this->fetchOne(
@@ -42,37 +39,23 @@ final class ArtbookRepository extends Model
     }
 
     /**
-     * @param array<string,mixed> $data
+     * @param array<string, mixed> $data
      */
     public function insert(array $data): bool
     {
-        return parent::insert(
-            $this->normalizeInsertData($data)
-        );
+        return parent::insert($this->normalizeInsertData($data));
     }
 
-    public function updateArtbook(
-        string $slug,
-        int $numero,
-        ArtbookUpdateDTO $dto
-    ): bool
+    public function updateArtbook(string $slug, int $numero, ArtbookUpdateDTO $dto): bool
     {
-        $artbook =
-            $this->findOneBySlugAndNumero(
-                $slug,
-                $numero
-            );
+        $artbook = $this->findOneBySlugAndNumero($slug, $numero);
 
         if ($artbook === null)
         {
             return false;
         }
 
-        $sourceData =
-            $this->sourceUpdateData(
-                $artbook,
-                $dto->source
-            );
+        $sourceData = $this->sourceUpdateData($artbook, $dto->source);
 
         return $this->updateBySlugAndNumero(
             $slug,
@@ -89,11 +72,7 @@ final class ArtbookRepository extends Model
         );
     }
 
-    public function updateReadStatus(
-        string $slug,
-        int $numero,
-        bool $readStatus
-    ): bool
+    public function updateReadStatus(string $slug, int $numero, bool $readStatus): bool
     {
         return $this->updateBySlugAndNumero(
             $slug,
@@ -104,18 +83,26 @@ final class ArtbookRepository extends Model
         );
     }
 
-    public function markXpRewarded(int $id): bool
+    public function claimReadReward(int $id): bool
     {
-        return $this->update(
-            ['xp_read_rewarded' => 1],
-            ['id' => $id]
+        $statement = $this->query(
+            "
+            UPDATE {$this->table()}
+
+            SET xp_read_rewarded = 1
+
+            WHERE id = :id
+            AND xp_read_rewarded = 0
+            ",
+            [
+                'id' => $id,
+            ]
         );
+
+        return $statement !== false && $statement->rowCount() === 1;
     }
 
-    public function deleteBySlugAndNumero(
-        string $slug,
-        int $numero
-    ): bool
+    public function deleteBySlugAndNumero(string $slug, int $numero): bool
     {
         return $this->delete([
             'slug' => $this->normalizeSlug($slug),
@@ -132,15 +119,10 @@ final class ArtbookRepository extends Model
     /**
      * @return array<string, ?string>
      */
-    private function sourceUpdateData(
-        Artbook $artbook,
-        string $source
-    ): array
+    private function sourceUpdateData(Artbook $artbook, string $source): array
     {
-        if (
-            trim((string) $artbook->serie)
-            !== ''
-        ) {
+        if (trim((string) $artbook->serie) !== '')
+        {
             return [
                 'auteur' => null,
                 'serie' => $source,
@@ -167,11 +149,7 @@ final class ArtbookRepository extends Model
     /**
      * @param array<string, mixed> $data
      */
-    private function updateBySlugAndNumero(
-        string $slug,
-        int $numero,
-        array $data
-    ): bool
+    private function updateBySlugAndNumero(string $slug, int $numero, array $data): bool
     {
         return $this->update(
             $data,
@@ -183,23 +161,17 @@ final class ArtbookRepository extends Model
     }
 
     /**
-     * @param array<string,mixed> $data
-     * @return array<string,mixed>
+     * @param array<string, mixed> $data
+     *
+     * @return array<string, mixed>
      */
     private function normalizeInsertData(array $data): array
     {
         return [
             'thumbnail' => trim((string) ($data['thumbnail'] ?? '')),
-            'extension' => strtolower(
-                trim((string) ($data['extension'] ?? ''))
-            ),
-            'slug' => $this->normalizeSlug(
-                (string) ($data['slug'] ?? '')
-            ),
-            'numero' => max(
-                1,
-                (int) ($data['numero'] ?? 1)
-            ),
+            'extension' => strtolower(trim((string) ($data['extension'] ?? ''))),
+            'slug' => $this->normalizeSlug((string) ($data['slug'] ?? '')),
+            'numero' => max(1, (int) ($data['numero'] ?? 1)),
 
             'lu' => 0,
 
@@ -207,13 +179,9 @@ final class ArtbookRepository extends Model
             'auteur' => Str::nullableTrim($data['auteur'] ?? null),
             'serie' => Str::nullableTrim($data['serie'] ?? null),
             'company' => trim((string) ($data['company'] ?? '')),
-            'release_date' => Str::nullableTrim(
-                $data['release_date'] ?? null
-            ),
+            'release_date' => Str::nullableTrim($data['release_date'] ?? null),
 
-            'commentaire' => Str::nullableTrim(
-                $data['commentaire'] ?? null
-            ),
+            'commentaire' => Str::nullableTrim($data['commentaire'] ?? null),
         ];
     }
 }

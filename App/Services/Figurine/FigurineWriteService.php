@@ -41,10 +41,7 @@ final readonly class FigurineWriteService
      */
     public function create(FigurineCreateDTO $dto, array $files): ServiceResult
     {
-        $existingFigurine = $this->figurineRepository->findOneBySlugAndNumero(
-            $dto->slug,
-            $dto->numero
-        );
+        $existingFigurine = $this->figurineRepository->findOneBySlugAndNumero($dto->slug, $dto->numero);
 
         if ($existingFigurine !== null)
         {
@@ -123,11 +120,7 @@ final readonly class FigurineWriteService
         return $this->database->transaction(
             function () use ($slug, $numero, $dto): ServiceResult
             {
-                $updated = $this->figurineRepository->updateFigurine(
-                    $slug,
-                    $numero,
-                    $dto
-                );
+                $updated = $this->figurineRepository->updateFigurine($slug, $numero, $dto);
 
                 $failure = $this->writeFailed(
                     $updated,
@@ -147,11 +140,8 @@ final readonly class FigurineWriteService
         );
     }
 
-    public function updateCollectStatus(
-        string $slug,
-        int $numero,
-        int $collectStatus
-    ): ServiceResult {
+    public function updateCollectStatus(string $slug, int $numero, int $collectStatus): ServiceResult
+    {
         if (! in_array($collectStatus, [0, 1], true))
         {
             return $this->error('Statut de collection invalide', 422);
@@ -160,10 +150,7 @@ final readonly class FigurineWriteService
         return $this->database->transaction(
             function () use ($slug, $numero, $collectStatus): ServiceResult
             {
-                $figurine = $this->figurineRepository->findOneBySlugAndNumero(
-                    $slug,
-                    $numero
-                );
+                $figurine = $this->figurineRepository->findOneBySlugAndNumero($slug, $numero);
 
                 if ($figurine === null)
                 {
@@ -191,15 +178,9 @@ final readonly class FigurineWriteService
 
                 $xpEarned = false;
 
-                if (
-                    ! $figurine->collect
-                    && $collectStatus === 1
-                    && ! $figurine->collect_rewarded
-                )
+                if (! $figurine->collect && $collectStatus === 1)
                 {
-                    [
-                        'xpEarned' => $xpEarned,
-                    ] = $this->rewardCollectXp($figurine);
+                    $xpEarned = $this->rewardCollectXp($figurine);
                 }
 
                 $user = user();
@@ -224,20 +205,14 @@ final readonly class FigurineWriteService
         return $this->database->transaction(
             function () use ($slug, $numero): ServiceResult
             {
-                $figurine = $this->figurineRepository->findOneBySlugAndNumero(
-                    $slug,
-                    $numero
-                );
+                $figurine = $this->figurineRepository->findOneBySlugAndNumero($slug, $numero);
 
                 if ($figurine === null)
                 {
                     return $this->error('Figurine introuvable', 404);
                 }
 
-                $deleted = $this->figurineRepository->deleteBySlugAndNumero(
-                    $slug,
-                    $numero
-                );
+                $deleted = $this->figurineRepository->deleteBySlugAndNumero($slug, $numero);
 
                 $failure = $this->writeFailed(
                     $deleted,
@@ -277,11 +252,7 @@ final readonly class FigurineWriteService
             return;
         }
 
-        $path =
-            UploadConfig::thumbnailDirectory('figurine')
-            . $figurine->thumbnail
-            . '.'
-            . $figurine->extension;
+        $path = UploadConfig::thumbnailDirectory('figurine') . $figurine->thumbnail . '.' . $figurine->extension;
 
         $this->uploadService->removeFile($path);
     }
@@ -292,32 +263,23 @@ final readonly class FigurineWriteService
     |--------------------------------------------------------------------------
     */
 
-    /**
-     * @return array{
-     *     xpEarned: bool
-     * }
-     */
-    private function rewardCollectXp(Figurine $figurine): array
+    private function rewardCollectXp(Figurine $figurine): bool
     {
         $user = user();
 
         if ($user === null)
         {
-            return [
-                'xpEarned' => false,
-            ];
+            return false;
         }
 
-        $this->userLevelService->addXp(
-            $user,
-            UserXp::COLLECT_FIGURINE
-        );
+        if (! $this->figurineRepository->claimCollectReward($figurine->id))
+        {
+            return false;
+        }
 
-        $this->figurineRepository->markXpRewarded($figurine->id);
+        $this->userLevelService->addXp($user, UserXp::COLLECT_FIGURINE);
 
-        return [
-            'xpEarned' => true,
-        ];
+        return true;
     }
 
     /*
@@ -351,30 +313,16 @@ final readonly class FigurineWriteService
     /**
      * @param array<string, mixed> $data
      */
-    private function success(
-        string $message,
-        array $data = [],
-        int $status = 200
-    ): ServiceResult {
-        return ServiceResult::success(
-            message: $message,
-            data: $data,
-            status: $status
-        );
+    private function success(string $message, array $data = [], int $status = 200): ServiceResult
+    {
+        return ServiceResult::success(message: $message, data: $data, status: $status);
     }
 
     /**
      * @param array<string, mixed> $data
      */
-    private function error(
-        string $message,
-        int $status = 500,
-        array $data = []
-    ): ServiceResult {
-        return ServiceResult::error(
-            message: $message,
-            data: $data,
-            status: $status
-        );
+    private function error(string $message, int $status = 500, array $data = []): ServiceResult
+    {
+        return ServiceResult::error(message: $message, data: $data, status: $status);
     }
 }

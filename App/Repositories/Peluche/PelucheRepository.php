@@ -14,10 +14,7 @@ final class PelucheRepository extends Model
 {
     protected string $table = 'peluche';
 
-    public function findOneBySlugAndNumero(
-        string $slug,
-        int $numero
-    ): ?Peluche
+    public function findOneBySlugAndNumero(string $slug, int $numero): ?Peluche
     {
         /** @var Peluche|null $peluche */
         $peluche = $this->fetchOne(
@@ -42,18 +39,14 @@ final class PelucheRepository extends Model
     }
 
     /**
-     * @param array<string,mixed> $data
+     * @param array<string, mixed> $data
      */
     public function insert(array $data): bool
     {
         return parent::insert($this->normalizeInsertData($data));
     }
 
-    public function updatePeluche(
-        string $slug,
-        int $numero,
-        PelucheUpdateDTO $dto
-    ): bool
+    public function updatePeluche(string $slug, int $numero, PelucheUpdateDTO $dto): bool
     {
         return $this->updateBySlugAndNumero(
             $slug,
@@ -68,11 +61,7 @@ final class PelucheRepository extends Model
         );
     }
 
-    public function updateCollectStatus(
-        string $slug,
-        int $numero,
-        bool $collectStatus
-    ): bool
+    public function updateCollectStatus(string $slug, int $numero, bool $collectStatus): bool
     {
         return $this->updateBySlugAndNumero(
             $slug,
@@ -83,10 +72,7 @@ final class PelucheRepository extends Model
         );
     }
 
-    public function deleteBySlugAndNumero(
-        string $slug,
-        int $numero
-    ): bool
+    public function deleteBySlugAndNumero(string $slug, int $numero): bool
     {
         return $this->delete([
             'slug' => $this->normalizeSlug($slug),
@@ -116,12 +102,23 @@ final class PelucheRepository extends Model
         return $peluches;
     }
 
-    public function markXpRewarded(int $id): bool
+    public function claimCollectReward(int $id): bool
     {
-        return $this->update(
-            ['collect_rewarded' => 1],
-            ['id' => $id]
+        $statement = $this->query(
+            "
+            UPDATE {$this->table()}
+
+            SET collect_rewarded = 1
+
+            WHERE id = :id
+            AND collect_rewarded = 0
+            ",
+            [
+                'id' => $id,
+            ]
         );
+
+        return $statement !== false && $statement->rowCount() === 1;
     }
 
     /*
@@ -138,11 +135,7 @@ final class PelucheRepository extends Model
     /**
      * @param array<string, mixed> $data
      */
-    private function updateBySlugAndNumero(
-        string $slug,
-        int $numero,
-        array $data
-    ): bool
+    private function updateBySlugAndNumero(string $slug, int $numero, array $data): bool
     {
         return $this->update(
             $data,
@@ -154,8 +147,9 @@ final class PelucheRepository extends Model
     }
 
     /**
-     * @param array<string,mixed> $data
-     * @return array<string,mixed>
+     * @param array<string, mixed> $data
+     *
+     * @return array<string, mixed>
      */
     private function normalizeInsertData(array $data): array
     {

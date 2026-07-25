@@ -116,12 +116,23 @@ final class NendoroidRepository extends Model
         return $nendoroids;
     }
 
-    public function markXpRewarded(int $id): bool
+    public function claimCollectReward(int $id): bool
     {
-        return $this->update(
-            ['collect_rewarded' => 1],
-            ['id' => $id]
+        $statement = $this->query(
+            "
+            UPDATE {$this->table()}
+
+            SET collect_rewarded = 1
+
+            WHERE id = :id
+            AND collect_rewarded = 0
+            ",
+            [
+                'id' => $id,
+            ]
         );
+
+        return $statement !== false && $statement->rowCount() === 1;
     }
 
     /*

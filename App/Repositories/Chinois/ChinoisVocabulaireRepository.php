@@ -50,10 +50,7 @@ final class ChinoisVocabulaireRepository extends Model
             "
         );
 
-        return array_map(
-            $this->mapRowToDto(...),
-            $results
-        );
+        return array_map($this->mapRowToDto(...), $results);
     }
 
     public function findById(int $id): ?ChinoisVocabulaireData
@@ -168,40 +165,23 @@ final class ChinoisVocabulaireRepository extends Model
     |--------------------------------------------------------------------------
     */
 
-    public function isXpRewarded(int $id): bool
+    public function claimXpReward(int $id): bool
     {
-        /** @var stdClass|null $result */
-        $result = $this->fetchOne(
+        $statement = $this->query(
             "
-            SELECT xp_rewarded
+            UPDATE {$this->table()}
 
-            FROM {$this->table()}
+            SET xp_rewarded = 1
 
             WHERE id = :id
-
-            LIMIT 1
+            AND xp_rewarded = 0
             ",
             [
                 'id' => $id,
             ]
         );
 
-        if ($result === null)
-        {
-            return true;
-        }
-
-        return (bool) $result->xp_rewarded;
-    }
-
-    public function markXpRewarded(int $id): bool
-    {
-        return $this->updateById(
-            $id,
-            [
-                'xp_rewarded' => 1,
-            ]
-        );
+        return $statement !== false && $statement->rowCount() === 1;
     }
 
     /*
@@ -234,10 +214,8 @@ final class ChinoisVocabulaireRepository extends Model
     /**
      * @param array<string, mixed> $data
      */
-    private function updateById(
-        int $id,
-        array $data
-    ): bool {
+    private function updateById(int $id, array $data): bool
+    {
         return $this->update(
             $data,
             [
@@ -246,13 +224,9 @@ final class ChinoisVocabulaireRepository extends Model
         );
     }
 
-    private function mapRowToDto(
-        stdClass $row
-    ): ChinoisVocabulaireData {
-        $exemple = $row->exemple !== null
-            ? trim((string) $row->exemple)
-            : '';
-
+    private function mapRowToDto(stdClass $row): ChinoisVocabulaireData
+    {
+        $exemple = $row->exemple !== null ? trim((string) $row->exemple) : '';
         $maitrise = (bool) $row->maitrise;
 
         return new ChinoisVocabulaireData(
@@ -270,25 +244,10 @@ final class ChinoisVocabulaireRepository extends Model
 
             hasExemple: $exemple !== '',
 
-            masteredClass:
-                $maitrise
-                    ? 'active'
-                    : '',
-
-            masteredValue:
-                $maitrise
-                    ? '1'
-                    : '0',
-
-            masteredPressed:
-                $maitrise
-                    ? 'true'
-                    : 'false',
-
-            masteredLabel:
-                $maitrise
-                    ? 'Retirer la maîtrise'
-                    : 'Marquer comme maîtrisé'
+            masteredClass: $maitrise ? 'active' : '',
+            masteredValue: $maitrise ? '1' : '0',
+            masteredPressed: $maitrise ? 'true' : 'false',
+            masteredLabel: $maitrise ? 'Retirer la maîtrise' : 'Marquer comme maîtrisé'
         );
     }
 }
