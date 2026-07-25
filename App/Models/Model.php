@@ -7,6 +7,7 @@ namespace App\Models;
 use Framework\Application\App;
 use Framework\Database\Database;
 use Framework\Debug\Profiler;
+use Framework\Support\Logger;
 
 use LogicException;
 use PDO;
@@ -61,12 +62,12 @@ abstract class Model
     /**
      * @param array<int|string, mixed> $params
      */
-    protected function query(
-        string $sql,
-        array $params = []
-    ): PDOStatement|false {
+    protected function query(string $sql, array $params = []): PDOStatement|false
+    {
         Profiler::increment('database.query.count');
         Profiler::start('database.query');
+
+        $start = hrtime(true);
 
         try
         {
@@ -90,6 +91,20 @@ abstract class Model
         }
         finally
         {
+            $durationMs = (hrtime(true) - $start) / 1_000_000;
+
+            if ((bool) config('app.debug', false) && $durationMs >= (float) config('database.slow_query_threshold', 50))
+            {
+                Logger::warning(
+                    'Requête SQL lente',
+                    [
+                        'duration_ms' => round($durationMs, 2),
+                        'sql' => $sql,
+                        'parameter_count' => count($params),
+                    ]
+                );
+            }
+
             Profiler::end('database.query');
         }
     }
