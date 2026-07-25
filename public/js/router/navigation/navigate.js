@@ -8,15 +8,15 @@ import {
 } from '../../core/debug/debug.js';
 
 import {
-    normalizeUrl,
-} from '../../core/navigation.js';
-
-import {
     end,
     finish,
     reset,
     start,
 } from '../../core/debug/profiler.js';
+
+import {
+    normalizeUrl,
+} from '../../core/navigation.js';
 
 import {
     emitNavigationAbort,
@@ -40,12 +40,17 @@ import {
 } from './validate-page-response.js';
 
 import {
-    dispatchRouterLoaded,
-} from '../router-events.js';
+    clearInvalidatedRoute,
+    shouldRefreshRoute,
+} from '../route-invalidation.js';
 
 import {
     runCleanup,
 } from '../router-cleanup.js';
+
+import {
+    dispatchRouterLoaded,
+} from '../router-events.js';
 
 import {
     triggerBeforeRouteChange,
@@ -59,11 +64,6 @@ import {
     setController,
     unlockRouter,
 } from '../router-state.js';
-
-import {
-    clearInvalidatedRoute,
-    shouldRefreshRoute,
-} from '../route-invalidation.js';
 
 import {
     saveScrollPosition,
@@ -103,7 +103,8 @@ export async function navigateTo(
     if (
         current === target
         && options.force !== true
-    ) {
+    )
+    {
         debug(
             'ROUTER',
             'same-route',
@@ -147,7 +148,8 @@ export async function navigateTo(
 
     if (
         options.updateHistory !== false
-    ) {
+    )
+    {
         saveScrollPosition(
             current,
         );
@@ -191,7 +193,8 @@ export async function navigateTo(
         if (
             navigationId
             !== navigationState.navigationId
-        ) {
+        )
+        {
             emitNavigationAbort(
                 current,
                 target,
@@ -199,22 +202,6 @@ export async function navigateTo(
 
             return;
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | CLEANUP
-        |--------------------------------------------------------------------------
-        */
-
-        start(
-            'cleanup',
-        );
-
-        runCleanup();
-
-        end(
-            'cleanup',
-        );
 
         /*
         |--------------------------------------------------------------------------
@@ -229,7 +216,8 @@ export async function navigateTo(
 
         if (
             forceRefresh
-        ) {
+        )
+        {
             clearInvalidatedRoute(
                 target,
             );
@@ -262,7 +250,8 @@ export async function navigateTo(
         if (
             navigationId
             !== navigationState.navigationId
-        ) {
+        )
+        {
             emitNavigationAbort(
                 current,
                 target,
@@ -279,6 +268,41 @@ export async function navigateTo(
 
         validatePageResponse(
             response,
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | STALE NAVIGATION
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            navigationId
+            !== navigationState.navigationId
+        )
+        {
+            emitNavigationAbort(
+                current,
+                target,
+            );
+
+            return;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | CLEANUP
+        |--------------------------------------------------------------------------
+        */
+
+        start(
+            'cleanup',
+        );
+
+        runCleanup();
+
+        end(
+            'cleanup',
         );
 
         /*
@@ -322,7 +346,8 @@ export async function navigateTo(
         if (
             navigationId
             !== navigationState.navigationId
-        ) {
+        )
+        {
             emitNavigationAbort(
                 current,
                 target,
@@ -347,10 +372,17 @@ export async function navigateTo(
             },
         );
 
+        /*
+        |--------------------------------------------------------------------------
+        | STALE NAVIGATION
+        |--------------------------------------------------------------------------
+        */
+
         if (
             navigationId
             !== navigationState.navigationId
-        ) {
+        )
+        {
             emitNavigationAbort(
                 current,
                 target,
@@ -387,7 +419,8 @@ export async function navigateTo(
         if (
             error?.name
             === 'AbortError'
-        ) {
+        )
+        {
             emitNavigationAbort(
                 current,
                 target,
@@ -405,7 +438,8 @@ export async function navigateTo(
         if (
             navigationId
             !== navigationState.navigationId
-        ) {
+        )
+        {
             emitNavigationAbort(
                 current,
                 target,
@@ -439,7 +473,8 @@ export async function navigateTo(
 
         if (
             options.fallback !== false
-        ) {
+        )
+        {
             window.location.href =
                 target;
         }
@@ -455,8 +490,10 @@ export async function navigateTo(
         if (
             navigationId
             === navigationState.navigationId
-        ) {
+        )
+        {
             clearController();
+
             unlockRouter();
         }
     }

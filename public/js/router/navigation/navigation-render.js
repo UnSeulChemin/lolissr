@@ -7,12 +7,12 @@ import {
 } from '../page-cache.js';
 
 import {
-    replaceContent,
-} from '../router-dom.js';
-
-import {
     updateActiveNavigation,
 } from '../router-active-link.js';
+
+import {
+    replaceContent,
+} from '../router-dom.js';
 
 import {
     clearActiveFocus,
@@ -21,10 +21,6 @@ import {
 import {
     restoreScrollPosition,
 } from '../route-scroll.js';
-
-import {
-    emitNavigationRender,
-} from './navigation-events.js';
 
 // =========================================
 // RENDER
@@ -39,8 +35,8 @@ export async function renderPage(
 {
     if (
         options.updateHistory !== false
-    ) {
-
+    )
+    {
         history.pushState(
             {},
             '',
@@ -50,8 +46,8 @@ export async function renderPage(
 
     if (
         typeof response.page.title === 'string'
-    ) {
-
+    )
+    {
         document.title =
             response.page.title;
     }
@@ -69,11 +65,6 @@ export async function renderPage(
 
     clearActiveFocus();
 
-    emitNavigationRender(
-        current,
-        target,
-    );
-
     /*
     |--------------------------------------------------------------------------
     | HASH SCROLL
@@ -82,8 +73,8 @@ export async function renderPage(
 
     if (
         window.location.hash
-    ) {
-
+    )
+    {
         queueMicrotask(
             () =>
             {
@@ -106,22 +97,23 @@ export async function renderPage(
 
     if (
         options.updateHistory === false
-    ) {
-
+    )
+    {
         restoreScrollPosition(
             target,
         );
-    } else {
 
-        /*
-        |--------------------------------------------------------------------------
-        | DEFAULT SCROLL
-        |--------------------------------------------------------------------------
-        */
-
-        window.scrollTo(
-            0,
-            0,
-        );
+        return;
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | DEFAULT SCROLL
+    |--------------------------------------------------------------------------
+    */
+
+    window.scrollTo(
+        0,
+        0,
+    );
 }
