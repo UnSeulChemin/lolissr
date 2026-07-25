@@ -22,6 +22,7 @@ use Framework\Config\UploadConfig;
 use Framework\Database\Database;
 use Framework\Support\Logger;
 
+use PDOException;
 use RuntimeException;
 use Throwable;
 
@@ -48,10 +49,7 @@ final readonly class MangaWriteService
      */
     public function create(MangaCreateDTO $dto, array $files): ServiceResult
     {
-        $existingManga = $this->mangaRepository->findOneBySlugAndNumero(
-            $dto->slug,
-            $dto->numero
-        );
+        $existingManga = $this->mangaRepository->findOneBySlugAndNumero($dto->slug, $dto->numero);
 
         if ($existingManga !== null)
         {
@@ -78,6 +76,17 @@ final readonly class MangaWriteService
                     }
 
                     return $this->success('Manga ajouté avec succès');
+                }
+                catch (PDOException $exception)
+                {
+                    $this->rollbackUpload($upload);
+
+                    if ($this->isDuplicateKeyException($exception))
+                    {
+                        return $this->error('Ce manga existe déjà', 409);
+                    }
+
+                    throw $exception;
                 }
                 catch (Throwable $exception)
                 {
@@ -213,11 +222,7 @@ final readonly class MangaWriteService
                     return $this->error('Manga introuvable', 404);
                 }
 
-                $updated = $this->mangaRepository->updateReadStatus(
-                    $slug,
-                    $numero,
-                    $readStatus === 1
-                );
+                $updated = $this->mangaRepository->updateReadStatus($slug, $numero, $readStatus === 1);
 
                 $failure = $this->writeFailed(
                     $updated,
@@ -400,6 +405,11 @@ final readonly class MangaWriteService
     | HELPERS
     |--------------------------------------------------------------------------
     */
+
+    private function isDuplicateKeyException(PDOException $exception): bool
+    {
+        return $exception->getCode() === '23000' && ($exception->errorInfo[1] ?? null) === 1062;
+    }
 
     private function logFailure(string $action, string $slug, int $numero): void
     {

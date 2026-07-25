@@ -19,6 +19,7 @@ use Framework\Config\UploadConfig;
 use Framework\Database\Database;
 use Framework\Support\Logger;
 
+use PDOException;
 use Throwable;
 
 final readonly class ArtbookWriteService
@@ -105,6 +106,17 @@ final readonly class ArtbookWriteService
                     }
 
                     return $this->success('Artbook ajouté avec succès');
+                }
+                catch (PDOException $exception)
+                {
+                    $this->rollbackUpload($uploadData);
+
+                    if ($this->isDuplicateKeyException($exception))
+                    {
+                        return $this->error('Cet artbook existe déjà', 409);
+                    }
+
+                    throw $exception;
                 }
                 catch (Throwable $exception)
                 {
@@ -327,6 +339,11 @@ final readonly class ArtbookWriteService
     | HELPERS
     |--------------------------------------------------------------------------
     */
+
+    private function isDuplicateKeyException(PDOException $exception): bool
+    {
+        return $exception->getCode() === '23000' && ($exception->errorInfo[1] ?? null) === 1062;
+    }
 
     private function logFailure(string $action, string $slug, int $numero): void
     {

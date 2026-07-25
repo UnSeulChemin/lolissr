@@ -18,6 +18,7 @@ use Framework\Config\UploadConfig;
 use Framework\Database\Database;
 use Framework\Support\Logger;
 
+use PDOException;
 use Throwable;
 
 final readonly class FigurineWriteService
@@ -104,6 +105,17 @@ final readonly class FigurineWriteService
                     }
 
                     return $this->success('Figurine ajoutée avec succès');
+                }
+                catch (PDOException $exception)
+                {
+                    $this->rollbackUpload($uploadData);
+
+                    if ($this->isDuplicateKeyException($exception))
+                    {
+                        return $this->error('Cette figurine existe déjà', 409);
+                    }
+
+                    throw $exception;
                 }
                 catch (Throwable $exception)
                 {
@@ -287,6 +299,12 @@ final readonly class FigurineWriteService
     | HELPERS
     |--------------------------------------------------------------------------
     */
+
+    private function isDuplicateKeyException(PDOException $exception): bool
+    {
+        return $exception->getCode() === '23000'
+            && ($exception->errorInfo[1] ?? null) === 1062;
+    }
 
     private function writeFailed(
         bool $result,
