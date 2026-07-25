@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Manga;
 
+use App\Cache\DashboardCache;
 use App\Constants\UserXp;
 use App\DTO\Common\ServiceResult;
 use App\DTO\Manga\Inputs\ArtbookCreateDTO;
@@ -11,7 +12,6 @@ use App\DTO\Manga\Inputs\ArtbookUpdateDTO;
 use App\DTO\Upload\UploadThumbnailData;
 use App\Models\Artbook;
 use App\Repositories\Manga\ArtbookRepository;
-use App\Services\Stats\DashboardCache;
 use App\Services\UploadService;
 use App\Services\User\UserLevelService;
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Services\Stats\DashboardCache;
+use App\Cache\DashboardCache;
 
 use Framework\Http\Request;
 

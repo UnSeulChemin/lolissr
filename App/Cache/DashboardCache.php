@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Services\Stats;
+namespace App\Cache;
 
-use App\Cache\CacheKey;
 use App\DTO\Home\Responses\DashboardStatsData;
+use App\Services\Stats\StatsService;
 
 use Framework\Cache\Cache;
 
@@ -13,8 +13,11 @@ final readonly class DashboardCache
 {
     public function __construct(
         private StatsService $statsService
-    ) {
-    }
+    ) {}
+
+    // =========================================
+    // CACHE
+    // =========================================
 
     public function get(): DashboardStatsData
     {

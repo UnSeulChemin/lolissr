@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Services\Chinois;
 
+use App\Cache\DashboardCache;
 use App\Constants\UserXp;
 use App\DTO\Chinois\Inputs\ChinoisGrammaireCreateDTO;
 use App\DTO\Chinois\Inputs\ChinoisVocabulaireCreateDTO;
 use App\DTO\Common\ServiceResult;
 use App\Repositories\Chinois\ChinoisGrammaireRepository;
 use App\Repositories\Chinois\ChinoisVocabulaireRepository;
-use App\Services\Stats\DashboardCache;
 use App\Services\User\UserLevelService;
 
 use Framework\Database\Database;
