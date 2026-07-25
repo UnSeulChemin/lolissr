@@ -65,6 +65,7 @@ abstract class Model
         string $sql,
         array $params = []
     ): PDOStatement|false {
+        Profiler::increment('database.query.count');
         Profiler::start('database.query');
 
         try

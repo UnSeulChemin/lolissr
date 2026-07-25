@@ -22,6 +22,8 @@ final class Database extends PDO
 
     public function __construct()
     {
+        Profiler::increment('database.connection');
+
         $dsn = sprintf(
             'mysql:host=%s;port=%d;dbname=%s;charset=%s',
             DatabaseConfig::host(),
