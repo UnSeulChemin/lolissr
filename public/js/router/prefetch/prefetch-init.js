@@ -3,16 +3,20 @@
 // =========================================
 
 import {
+    config,
+} from '../../core/config.js';
+
+import {
     debug,
 } from '../../core/debug/debug.js';
 
 import {
-    PREFETCH_STATE,
-} from './prefetch-state.js';
-
-import {
     bindPrefetch,
 } from './prefetch-bind.js';
+
+import {
+    PREFETCH_STATE,
+} from './prefetch-state.js';
 
 // =========================================
 // INIT
@@ -21,9 +25,10 @@ import {
 export function initPrefetch()
 {
     if (
-        PREFETCH_STATE.initialized
-    ) {
-
+        ! config.prefetch.enabled
+        || PREFETCH_STATE.initialized
+    )
+    {
         return;
     }
 

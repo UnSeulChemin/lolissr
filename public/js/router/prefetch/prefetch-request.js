@@ -3,6 +3,10 @@
 // =========================================
 
 import {
+    config,
+} from '../../core/config.js';
+
+import {
     debug,
     debugError,
 } from '../../core/debug/debug.js';
@@ -34,6 +38,11 @@ export async function prefetchPage(
     href,
 )
 {
+    if (! config.prefetch.enabled)
+    {
+        return null;
+    }
+
     const url =
         normalizeUrl(
             href,
@@ -140,6 +149,9 @@ export async function prefetchPage(
                     await request(
                         url,
                         {
+                            timeout:
+                                config.prefetch.timeout,
+
                             headers:
                             {
                                 Accept:

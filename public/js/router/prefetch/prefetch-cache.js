@@ -3,6 +3,10 @@
 // =========================================
 
 import {
+    config,
+} from '../../core/config.js';
+
+import {
     debug,
 } from '../../core/debug/debug.js';
 
@@ -17,16 +21,6 @@ import {
 } from './prefetch-state.js';
 
 // =========================================
-// CONFIG
-// =========================================
-
-const CACHE_DURATION =
-    300000;
-
-const MAX_CACHE_SIZE =
-    100;
-
-// =========================================
 // HELPERS
 // =========================================
 
@@ -37,7 +31,7 @@ function isExpired(
     return (
         Date.now()
         - entry.timestamp
-        > CACHE_DURATION
+        > config.prefetch.cacheDuration
     );
 }
 
@@ -45,7 +39,7 @@ function trimCache()
 {
     while (
         cache.size
-        > MAX_CACHE_SIZE
+        > config.prefetch.cacheLimit
     )
     {
         const oldestKey =
@@ -142,6 +136,10 @@ export function setPrefetchedPage(
         normalizeUrl(
             href,
         );
+
+    cache.delete(
+        url,
+    );
 
     cache.set(
         url,
