@@ -5,342 +5,310 @@ declare(strict_types=1);
 namespace App\Controllers\Manga;
 
 use App\Controllers\Controller;
-use App\DTO\Manga\Responses\ArtbookData;
 use App\DTO\Manga\Responses\MangaShowData;
 use App\Http\Requests\Manga\MangaCreateRequest;
 use App\Http\Requests\Manga\MangaUpdateRequest;
-use App\Http\Requests\Manga\ArtbookCreateRequest;
-use App\Http\Requests\Manga\ArtbookUpdateRequest;
 use App\Services\Manga\MangaReadService;
 use App\Services\Manga\MangaWriteService;
-use App\Services\Manga\ArtbookReadService;
-use App\Services\Manga\ArtbookWriteService;
 
 use Framework\Exceptions\BaseHttpException;
 use Framework\Exceptions\NotFoundException;
 use Framework\Exceptions\ValidationException;
-use Framework\Http\Request;
 use Framework\Http\FormRequest;
+use Framework\Http\Request;
 
 final class MangaController extends Controller
 {
     private const SERIES_PATH = 'manga/series';
-    private const ARTBOOKS_PATH = 'manga/artbooks';
 
     public function __construct(
         private readonly MangaReadService $mangaReadService,
         private readonly MangaWriteService $mangaWriteService,
-        private readonly ArtbookReadService $artbookReadService,
-        private readonly ArtbookWriteService $artbookWriteService,
         Request $request
     ) {
         parent::__construct($request);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | PAGES PUBLIQUES
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // PAGES PUBLIQUES
+    // =========================================
 
     public function index(): never
     {
         $this->title = 'Manga';
 
-        $this->render('pages/manga/index');
+        $this->render(
+            'pages/manga/index'
+        );
     }
 
-    public function series(int $page = 1): never
-    {
+    public function series(
+        int $page = 1
+    ): never {
         $data = $this->mangaReadService->series($page);
 
         if ($data === null)
         {
-            throw new NotFoundException('Page introuvable');
+            throw new NotFoundException(
+                'Page introuvable'
+            );
         }
 
-        $this->title = 'Manga | Series' . ($data->currentPage > 1 ? ' - Page ' . $data->currentPage : '');
+        $this->title =
+            'Manga | Series'
+            . ($data->currentPage > 1
+                ? ' - Page ' . $data->currentPage
+                : '');
 
-        $this->render('pages/manga/series/index', [
-            'mangas' => $data->mangas,
-            'currentPage' => $data->currentPage,
-            'totalSeries' => $data->totalSeries,
-            'perPage' => $data->perPage,
-            'slugFilter' => $data->slugFilter,
-            'totalPages' => $data->totalPages,
-        ]);
-    }
-
-    public function artbooks(int $page = 1): never
-    {
-        $data = $this->artbookReadService->artbooks($page);
-
-        if ($data === null)
-        {
-            throw new NotFoundException('Page introuvable');
-        }
-
-        $this->title = 'Manga | Artbooks' . ($data->currentPage > 1 ? ' - Page ' . $data->currentPage : '');
-
-        $this->render('pages/manga/artbooks/index', [
-            'artbooks' => $data->artbooks,
-            'currentPage' => $data->currentPage,
-            'totalArtbooks' => $data->totalArtbooks,
-            'perPage' => $data->perPage,
-            'totalPages' => $data->totalPages,
-        ]);
+        $this->render(
+            'pages/manga/series/index',
+            [
+                'mangas' => $data->mangas,
+                'currentPage' => $data->currentPage,
+                'totalSeries' => $data->totalSeries,
+                'perPage' => $data->perPage,
+                'slugFilter' => $data->slugFilter,
+                'totalPages' => $data->totalPages,
+            ]
+        );
     }
 
     public function ajouter(): never
     {
         $this->title = 'Manga | Ajouter';
 
-        $this->render('pages/manga/ajouter/index');
+        $this->render(
+            'pages/manga/ajouter/index'
+        );
     }
 
     public function links(): never
     {
         $this->title = 'Manga | Liens utiles';
 
-        $this->render('pages/manga/lien');
+        $this->render(
+            'pages/manga/lien'
+        );
     }
 
     public function notes(): never
     {
         $this->title = 'Manga | Notes';
 
-        $this->render('pages/manga/series/notes', ['mangas' => $this->mangaReadService->notes()]);
+        $this->render(
+            'pages/manga/series/notes',
+            [
+                'mangas' => $this->mangaReadService->notes(),
+            ]
+        );
     }
 
     public function aLire(): never
     {
         $this->title = 'Manga | À lire';
 
-        $this->render('pages/manga/series/a-lire', ['mangas' => $this->mangaReadService->aLire()]);
+        $this->render(
+            'pages/manga/series/a-lire',
+            [
+                'mangas' => $this->mangaReadService->aLire(),
+            ]
+        );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | AFFICHAGE
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // AFFICHAGE
+    // =========================================
 
-    public function showSeries(string $slug): never
-    {
+    public function showSeries(
+        string $slug
+    ): never {
         $data = $this->mangaReadService->showSeries($slug);
 
         if ($data === null)
         {
-            throw new NotFoundException('Manga introuvable');
+            throw new NotFoundException(
+                'Manga introuvable'
+            );
         }
 
         $this->title = 'Manga | ' . $data->mangas[0]->livre;
 
-        $this->render('pages/manga/series/index', [
-            'mangas' => $data->mangas,
-            'currentPage' => 1,
-            'totalSeries' => $data->totalSeries,
-            'perPage' => $data->perPage,
-            'slugFilter' => $data->slugFilter,
-            'totalPages' => $data->totalPages,
-        ]);
+        $this->render(
+            'pages/manga/series/index',
+            [
+                'mangas' => $data->mangas,
+                'currentPage' => 1,
+                'totalSeries' => $data->totalSeries,
+                'perPage' => $data->perPage,
+                'slugFilter' => $data->slugFilter,
+                'totalPages' => $data->totalPages,
+            ]
+        );
     }
 
-    public function showManga(string $slug, int $numero): never
-    {
-        $data = $this->resolveMangaOrFail($slug, $numero);
+    public function showManga(
+        string $slug,
+        int $numero
+    ): never {
+        $data = $this->resolveMangaOrFail(
+            $slug,
+            $numero
+        );
 
         $this->title = 'Manga | ' . $data->manga->livre;
 
-        $this->render('pages/manga/series/livre', ['manga' => $data->manga]);
+        $this->render(
+            'pages/manga/series/livre',
+            [
+                'manga' => $data->manga,
+            ]
+        );
     }
 
-    public function showArtbook(string $slug, int $numero): never
-    {
-        $artbook = $this->resolveArtbookOrFail($slug, $numero);
-
-        $this->title = 'Artbook | ' . $artbook->artbook;
-
-        $this->render('pages/manga/artbooks/livre', ['artbook' => $artbook]);
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | AJOUT
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // AJOUT
+    // =========================================
 
     public function create(): never
     {
         $this->title = 'Manga | Ajouter un manga';
 
-        $this->render('pages/manga/ajouter/manga', [
-            'form' => $this->formViewData(
-                'manga/ajouter/manga',
-                'manga',
-            ),
-        ]);
+        $this->render(
+            'pages/manga/ajouter/manga',
+            [
+                'form' => $this->formViewData(
+                    'manga/ajouter/manga',
+                    'manga'
+                ),
+            ]
+        );
     }
 
-    public function createArtbook(): never
-    {
-        $this->title = 'Manga | Ajouter un artbook';
+    // =========================================
+    // MODIFICATION
+    // =========================================
 
-        $this->render('pages/manga/ajouter/artbook', [
-            'form' => $this->formViewData(
-                'manga/ajouter/artbook',
-                'manga',
-            ),
-        ]);
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | MODIFICATION
-    |--------------------------------------------------------------------------
-    */
-
-    public function edit(string $slug, int $numero): never
-    {
-        $data = $this->resolveMangaOrFail($slug, $numero);
+    public function edit(
+        string $slug,
+        int $numero
+    ): never {
+        $data = $this->resolveMangaOrFail(
+            $slug,
+            $numero
+        );
 
         $this->title = 'Manga | ' . $data->manga->livre;
 
-        $this->render('pages/manga/series/modifier', [
-            'manga' => $data->manga,
-            'form' => $this->formViewData(
-                sprintf(
-                    '%s/%s/modifier/%d',
-                    self::SERIES_PATH,
-                    rawurlencode($data->manga->slug),
-                    $numero,
+        $this->render(
+            'pages/manga/series/modifier',
+            [
+                'manga' => $data->manga,
+                'form' => $this->formViewData(
+                    sprintf(
+                        '%s/%s/modifier/%d',
+                        self::SERIES_PATH,
+                        rawurlencode($data->manga->slug),
+                        $numero
+                    ),
+                    $this->mangaUrl(
+                        $data->manga->slug,
+                        $numero
+                    )
                 ),
-                $this->mangaUrl($data->manga->slug, $numero),
-            ),
-        ]);
+            ]
+        );
     }
 
-    public function editArtbook(string $slug, int $numero): never
-    {
-        $artbook = $this->resolveArtbookOrFail($slug, $numero);
+    // =========================================
+    // TRAITEMENTS
+    // =========================================
 
-        $this->title = 'Artbook | ' . $artbook->artbook;
-
-        $this->render('pages/manga/artbooks/modifier', [
-            'artbook' => $artbook,
-            'form' => $this->formViewData(
-                sprintf(
-                    '%s/%s/modifier/%d',
-                    self::ARTBOOKS_PATH,
-                    rawurlencode($artbook->slug),
-                    $artbook->numero,
-                ),
-                $this->artbookUrl($artbook->slug, $artbook->numero),
-            ),
-        ]);
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | TRAITEMENTS
-    |--------------------------------------------------------------------------
-    */
-
-    public function store(MangaCreateRequest $request): never
-    {
+    public function store(
+        MangaCreateRequest $request
+    ): never {
         $this->validateRequest($request);
 
-        $result = $this->mangaWriteService->create($request->dto(), $request->files());
-
-        $this->jsonResult($result);
+        $this->jsonResult(
+            $this->mangaWriteService->create(
+                $request->dto(),
+                $request->files()
+            )
+        );
     }
 
-    public function storeArtbook(ArtbookCreateRequest $request): never
-    {
-        $this->validateRequest($request);
-
-        $result = $this->artbookWriteService->create($request->dto(), $request->files());
-
-        $this->jsonResult($result);
-    }
-
-    public function update(MangaUpdateRequest $request, string $slug, int $numero): never
-    {
-        $data = $this->resolveMangaOrFail($slug, $numero);
+    public function update(
+        MangaUpdateRequest $request,
+        string $slug,
+        int $numero
+    ): never {
+        $data = $this->resolveMangaOrFail(
+            $slug,
+            $numero
+        );
 
         $this->validateRequest($request);
 
-        $result = $this->mangaWriteService->update($data->manga->slug, $numero, $request->dto());
+        $result = $this->mangaWriteService->update(
+            $data->manga->slug,
+            $numero,
+            $request->dto()
+        );
 
         if (! $result->success)
         {
-            throw new BaseHttpException(message: $result->message, statusCode: 422, data: $result->data);
+            throw new BaseHttpException(
+                message: $result->message,
+                statusCode: 422,
+                data: $result->data
+            );
         }
 
-        $this->redirectWithSuccess($this->mangaUrl($data->manga->slug, $numero), $result->message);
+        $this->redirectWithSuccess(
+            $this->mangaUrl(
+                $data->manga->slug,
+                $numero
+            ),
+            $result->message
+        );
     }
 
-    public function updateArtbook(ArtbookUpdateRequest $request, string $slug, int $numero): never
-    {
-        $artbook = $this->resolveArtbookOrFail($slug, $numero);
+    // =========================================
+    // HELPERS
+    // =========================================
 
-        $this->validateRequest($request);
-
-        $result = $this->artbookWriteService->update($artbook->slug, $artbook->numero, $request->dto());
-
-        if (! $result->success)
-        {
-            throw new BaseHttpException(message: $result->message, statusCode: 422, data: $result->data);
-        }
-
-        $this->redirectWithSuccess($this->artbookUrl($artbook->slug, $artbook->numero), $result->message);
+    private function mangaUrl(
+        string $slug,
+        int $numero
+    ): string {
+        return sprintf(
+            '%s/%s/%d',
+            self::SERIES_PATH,
+            rawurlencode($slug),
+            $numero
+        );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | HELPERS
-    |--------------------------------------------------------------------------
-    */
-
-    private function mangaUrl(string $slug, int $numero): string
-    {
-        return sprintf('%s/%s/%d', self::SERIES_PATH, rawurlencode($slug), $numero);
+    private function resolveMangaOrFail(
+        string $slug,
+        int $numero
+    ): MangaShowData {
+        return $this->mangaReadService->one(
+            $slug,
+            $numero
+        )
+        ?? throw new NotFoundException(
+            'Manga introuvable'
+        );
     }
 
-    private function artbookUrl(string $slug, int $numero): string
-    {
-        return sprintf('%s/%s/%d', self::ARTBOOKS_PATH, rawurlencode($slug), $numero);
-    }
-
-    private function resolveMangaOrFail(string $slug, int $numero): MangaShowData
-    {
-        $data = $this->mangaReadService->one($slug, $numero);
-
-        if ($data === null)
-        {
-            throw new NotFoundException('Manga introuvable');
-        }
-
-        return $data;
-    }
-
-    private function resolveArtbookOrFail(string $slug, int $numero): ArtbookData
-    {
-        $artbook = $this->artbookReadService->one($slug, $numero);
-
-        if ($artbook === null)
-        {
-            throw new NotFoundException('Artbook introuvable');
-        }
-
-        return $artbook;
-    }
-
-    private function validateRequest(FormRequest $request): void
-    {
+    private function validateRequest(
+        FormRequest $request
+    ): void {
         if ($request->fails())
         {
-            throw new ValidationException($request->errors());
+            throw new ValidationException(
+                $request->errors()
+            );
         }
     }
 }
