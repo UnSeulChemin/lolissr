@@ -8,7 +8,5 @@ final class CacheKey
 {
     public const HOME_DASHBOARD = 'home.dashboard';
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 }
