@@ -143,7 +143,14 @@ final class Request
 
         $baseUri = rtrim(App::baseUri(), '/');
 
-        if ($baseUri !== '' && $baseUri !== '/' && str_starts_with($path, $baseUri))
+        if (
+            $baseUri !== ''
+            && $baseUri !== '/'
+            && (
+                $path === $baseUri
+                || str_starts_with($path, $baseUri . '/')
+            )
+        )
         {
             $path = substr($path, strlen($baseUri));
         }

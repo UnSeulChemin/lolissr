@@ -59,6 +59,24 @@ final class RouteCollection
     /**
      * @return list<string>
      */
+    public function allowedMethodsFor(string $uri): array
+    {
+        $methods = [];
+
+        foreach ($this->routes as $route)
+        {
+            if (preg_match($route->pattern, $uri) === 1)
+            {
+                $methods[] = $route->getMethod();
+            }
+        }
+
+        return array_values(array_unique($methods));
+    }
+
+    /**
+     * @return list<string>
+     */
     public function list(): array
     {
         $routes = [];

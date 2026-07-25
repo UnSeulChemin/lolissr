@@ -7,6 +7,7 @@ namespace Framework\Routing;
 use Framework\Container\AppContainer;
 use Framework\Container\Container;
 use Framework\Debug\Profiler;
+use Framework\Exceptions\MethodNotAllowedException;
 use Framework\Exceptions\NotFoundException;
 use Framework\Http\Middleware\MiddlewareInterface;
 use Framework\Http\Request;
@@ -47,6 +48,7 @@ final class Router
     public function prefix(string $prefix): self
     {
         $clone = clone $this;
+
         $clone->groupPrefixes[] = trim($prefix, '/');
 
         return $clone;
@@ -58,7 +60,11 @@ final class Router
     public function middleware(array|string $middleware): self
     {
         $clone = clone $this;
-        $clone->groupMiddlewares = array_merge($clone->groupMiddlewares, (array) $middleware);
+
+        $clone->groupMiddlewares = array_merge(
+            $clone->groupMiddlewares,
+            (array) $middleware
+        );
 
         return $clone;
     }
@@ -76,8 +82,11 @@ final class Router
      * @param array{class-string, string}|string|Closure $action
      * @param list<class-string> $middlewares
      */
-    public function get(string $path, array|string|Closure $action, array $middlewares = []): void
-    {
+    public function get(
+        string $path,
+        array|string|Closure $action,
+        array $middlewares = []
+    ): void {
         $this->addRoute('GET', $path, $action, $middlewares);
     }
 
@@ -85,8 +94,11 @@ final class Router
      * @param array{class-string, string}|string|Closure $action
      * @param list<class-string> $middlewares
      */
-    public function post(string $path, array|string|Closure $action, array $middlewares = []): void
-    {
+    public function post(
+        string $path,
+        array|string|Closure $action,
+        array $middlewares = []
+    ): void {
         $this->addRoute('POST', $path, $action, $middlewares);
     }
 
@@ -101,7 +113,10 @@ final class Router
         array $middlewares
     ): void {
         $segments = array_filter(
-            array_merge($this->groupPrefixes, [trim($path, '/')]),
+            array_merge(
+                $this->groupPrefixes,
+                [trim($path, '/')]
+            ),
             static fn (string $segment): bool => $segment !== ''
         );
 
@@ -112,7 +127,10 @@ final class Router
                 $method,
                 $fullPath,
                 $action,
-                array_merge($this->groupMiddlewares, $middlewares)
+                array_merge(
+                    $this->groupMiddlewares,
+                    $middlewares
+                )
             )
         );
     }
@@ -133,12 +151,28 @@ final class Router
 
         $match = Profiler::measure(
             'route.match',
-            fn (): ?array => $this->matchRoute($method, $uri)
+            fn (): ?array => $this->matchRoute(
+                $method,
+                $uri
+            )
         );
 
         if ($match === null)
         {
-            throw new NotFoundException("Route non trouvée : {$uri}");
+            $allowedMethods = $this->collection->allowedMethodsFor($uri);
+
+            if ($allowedMethods !== [])
+            {
+                throw new MethodNotAllowedException(
+                    headers: [
+                        'Allow' => implode(', ', $allowedMethods),
+                    ]
+                );
+            }
+
+            throw new NotFoundException(
+                "Route non trouvée : {$uri}"
+            );
         }
 
         [
@@ -148,12 +182,21 @@ final class Router
 
         Profiler::measure(
             'middleware',
-            fn (): null => $this->runMiddlewares($container, $route, $request)
+            fn (): null => $this->runMiddlewares(
+                $container,
+                $route,
+                $request
+            )
         );
 
         Profiler::measure(
             'controller',
-            fn (): null => $this->executeAction($container, $route, $params, $request)
+            fn (): null => $this->executeAction(
+                $container,
+                $route,
+                $params,
+                $request
+            )
         );
     }
 
@@ -163,8 +206,10 @@ final class Router
      *     params: array<string, string|int>
      * }|null
      */
-    private function matchRoute(string $method, string $uri): ?array
-    {
+    private function matchRoute(
+        string $method,
+        string $uri
+    ): ?array {
         foreach ($this->collection->forMethod($method) as $route)
         {
             if (preg_match($route->pattern, $uri, $matches) !== 1)
@@ -203,7 +248,9 @@ final class Router
 
             if (! $middleware instanceof MiddlewareInterface)
             {
-                throw new RuntimeException("Invalid middleware: {$middlewareClass}");
+                throw new RuntimeException(
+                    "Invalid middleware: {$middlewareClass}"
+                );
             }
 
             $middleware->handle($request);
@@ -236,10 +283,16 @@ final class Router
         {
             if (! str_contains($action, '@'))
             {
-                throw new RuntimeException("Invalid route action: {$action}");
+                throw new RuntimeException(
+                    "Invalid route action: {$action}"
+                );
             }
 
-            [$controllerClass, $methodName] = explode('@', $action, 2);
+            [$controllerClass, $methodName] = explode(
+                '@',
+                $action,
+                2
+            );
         }
         else
         {
@@ -264,8 +317,11 @@ final class Router
 
         Profiler::measure(
             'controller.action',
-            function () use ($controller, $methodName, $arguments): void
-            {
+            function () use (
+                $controller,
+                $methodName,
+                $arguments
+            ): void {
                 /** @phpstan-ignore-next-line */
                 $controller->{$methodName}(...$arguments);
             }
@@ -287,7 +343,10 @@ final class Router
         $key = $controller::class . '::' . $method;
 
         $reflection = $this->methods[$key]
-            ??= new ReflectionMethod($controller, $method);
+            ??= new ReflectionMethod(
+                $controller,
+                $method
+            );
 
         $arguments = [];
 
