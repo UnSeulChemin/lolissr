@@ -8,7 +8,9 @@ use Closure;
 
 final class Route
 {
-    private const PARAM_PATTERNS = ['int' => '[0-9]+'];
+    private const PARAM_PATTERNS = [
+        'int' => '[0-9]+',
+    ];
 
     public readonly string $pattern;
 
@@ -30,7 +32,7 @@ final class Route
         private readonly string $method,
         private readonly string $path,
         array|string|Closure $action,
-        private readonly array $middlewares = [],
+        private readonly array $middlewares = []
     ) {
         $this->action = $action;
         $this->pattern = $this->compilePattern();
@@ -108,6 +110,7 @@ final class Route
         }
 
         $segments = explode('/', $path);
+
         $compiledSegments = array_map(
             fn (string $segment): string => $this->compileSegment($segment),
             $segments
@@ -118,23 +121,56 @@ final class Route
 
     private function compileSegment(string $segment): string
     {
-        if (
-            preg_match(
-                '#^\{([a-zA-Z_][a-zA-Z0-9_]*)(?::([a-zA-Z]+))?\}$#',
-                $segment,
-                $matches
-            ) !== 1
-        ) {
+        preg_match_all(
+            '#\{([a-zA-Z_][a-zA-Z0-9_]*)(?::([a-zA-Z]+))?\}#',
+            $segment,
+            $matches,
+            PREG_SET_ORDER | PREG_OFFSET_CAPTURE
+        );
+
+        if ($matches === [])
+        {
             return preg_quote($segment, '#');
         }
 
-        $name = $matches[1];
-        $type = $matches[2] ?? 'string';
+        $pattern = '';
+        $offset = 0;
 
-        $this->parameters[$name] = $type;
+        foreach ($matches as $match)
+        {
+            $text = substr(
+                $segment,
+                $offset,
+                $match[0][1] - $offset
+            );
 
-        $parameterPattern = self::PARAM_PATTERNS[$type] ?? '[^/]+';
+            $pattern .= preg_quote(
+                $text,
+                '#'
+            );
 
-        return "(?P<{$name}>{$parameterPattern})";
+            $name = $match[1][0];
+
+            $type = isset($match[2][0])
+                && $match[2][0] !== ''
+                    ? $match[2][0]
+                    : 'string';
+
+            $this->parameters[$name] = $type;
+
+            $parameterPattern = self::PARAM_PATTERNS[$type]
+                ?? '[^/]+';
+
+            $pattern .= "(?P<{$name}>{$parameterPattern})";
+
+            $offset = $match[0][1] + strlen($match[0][0]);
+        }
+
+        $pattern .= preg_quote(
+            substr($segment, $offset),
+            '#'
+        );
+
+        return $pattern;
     }
 }
