@@ -9,6 +9,7 @@ use Framework\Config\DatabaseConfig;
 use Framework\Debug\Profiler;
 use Framework\Support\Logger;
 
+use LogicException;
 use PDO;
 use PDOException;
 use RuntimeException;
@@ -67,36 +68,6 @@ final class Database extends PDO
     // TRANSACTIONS
     // =========================================
 
-    public function startTransaction(): void
-    {
-        if ($this->inTransaction())
-        {
-            return;
-        }
-
-        $this->beginTransaction();
-    }
-
-    public function commitTransaction(): void
-    {
-        if (! $this->inTransaction())
-        {
-            return;
-        }
-
-        $this->commit();
-    }
-
-    public function rollbackTransaction(): void
-    {
-        if (! $this->inTransaction())
-        {
-            return;
-        }
-
-        $this->rollBack();
-    }
-
     /**
      * @template T
      *
@@ -104,24 +75,33 @@ final class Database extends PDO
      *
      * @return T
      */
-    public function transaction(
-        callable $callback
-    ): mixed {
+    public function transaction(callable $callback): mixed
+    {
+        if ($this->inTransaction())
+        {
+            throw new LogicException(
+                'Les transactions imbriquées ne sont pas supportées.'
+            );
+        }
+
         Profiler::start('database.transaction');
 
-        $this->startTransaction();
+        $this->beginTransaction();
 
         try
         {
             $result = $callback();
 
-            $this->commitTransaction();
+            $this->commit();
 
             return $result;
         }
         catch (Throwable $exception)
         {
-            $this->rollbackTransaction();
+            if ($this->inTransaction())
+            {
+                $this->rollBack();
+            }
 
             throw $exception;
         }
