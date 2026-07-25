@@ -18,6 +18,11 @@ final class Route
     private readonly array|string|Closure $action;
 
     /**
+     * @var array<string, string>
+     */
+    private array $parameters = [];
+
+    /**
      * @param array{class-string, string}|string|Closure $action
      * @param list<class-string> $middlewares
      */
@@ -61,6 +66,34 @@ final class Route
         return $this->middlewares;
     }
 
+    /**
+     * @param array<string, string> $matches
+     *
+     * @return array<string, string|int>
+     */
+    public function castParameters(array $matches): array
+    {
+        $parameters = [];
+
+        foreach ($this->parameters as $name => $type)
+        {
+            if (! array_key_exists($name, $matches))
+            {
+                continue;
+            }
+
+            $value = rawurldecode($matches[$name]);
+
+            $parameters[$name] = match ($type)
+            {
+                'int' => (int) $value,
+                default => $value,
+            };
+        }
+
+        return $parameters;
+    }
+
     // =========================================
     // UTILITAIRES
     // =========================================
@@ -76,13 +109,16 @@ final class Route
 
         $pattern = preg_replace_callback(
             '#\{([a-zA-Z_][a-zA-Z0-9_]*)(?::([a-zA-Z]+))?\}#',
-            static function (array $matches): string
+            function (array $matches): string
             {
                 $name = $matches[1];
-                $type = $matches[2] ?? '';
-                $pattern = self::PARAM_PATTERNS[$type] ?? '[^/]+';
+                $type = $matches[2] ?? 'string';
 
-                return "(?P<{$name}>{$pattern})";
+                $this->parameters[$name] = $type;
+
+                $parameterPattern = self::PARAM_PATTERNS[$type] ?? '[^/]+';
+
+                return "(?P<{$name}>{$parameterPattern})";
             },
             $path,
         );

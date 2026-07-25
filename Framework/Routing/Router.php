@@ -47,7 +47,6 @@ final class Router
     public function prefix(string $prefix): self
     {
         $clone = clone $this;
-
         $clone->groupPrefixes[] = trim($prefix, '/');
 
         return $clone;
@@ -59,11 +58,7 @@ final class Router
     public function middleware(array|string $middleware): self
     {
         $clone = clone $this;
-
-        $clone->groupMiddlewares = array_merge(
-            $clone->groupMiddlewares,
-            (array) $middleware
-        );
+        $clone->groupMiddlewares = array_merge($clone->groupMiddlewares, (array) $middleware);
 
         return $clone;
     }
@@ -81,11 +76,8 @@ final class Router
      * @param array{class-string, string}|string|Closure $action
      * @param list<class-string> $middlewares
      */
-    public function get(
-        string $path,
-        array|string|Closure $action,
-        array $middlewares = []
-    ): void {
+    public function get(string $path, array|string|Closure $action, array $middlewares = []): void
+    {
         $this->addRoute('GET', $path, $action, $middlewares);
     }
 
@@ -93,11 +85,8 @@ final class Router
      * @param array{class-string, string}|string|Closure $action
      * @param list<class-string> $middlewares
      */
-    public function post(
-        string $path,
-        array|string|Closure $action,
-        array $middlewares = []
-    ): void {
+    public function post(string $path, array|string|Closure $action, array $middlewares = []): void
+    {
         $this->addRoute('POST', $path, $action, $middlewares);
     }
 
@@ -112,10 +101,7 @@ final class Router
         array $middlewares
     ): void {
         $segments = array_filter(
-            array_merge(
-                $this->groupPrefixes,
-                [trim($path, '/')]
-            ),
+            array_merge($this->groupPrefixes, [trim($path, '/')]),
             static fn (string $segment): bool => $segment !== ''
         );
 
@@ -167,12 +153,7 @@ final class Router
 
         Profiler::measure(
             'controller',
-            fn (): null => $this->executeAction(
-                $container,
-                $route,
-                $params,
-                $request
-            )
+            fn (): null => $this->executeAction($container, $route, $params, $request)
         );
     }
 
@@ -191,25 +172,16 @@ final class Router
                 continue;
             }
 
-            $params = [];
-
-            foreach ($matches as $name => $value)
-            {
-                if (! is_string($name))
-                {
-                    continue;
-                }
-
-                $value = rawurldecode($value);
-
-                $params[$name] = ctype_digit($value)
-                    ? (int) $value
-                    : $value;
-            }
+            /** @var array<string, string> $namedMatches */
+            $namedMatches = array_filter(
+                $matches,
+                static fn (int|string $key): bool => is_string($key),
+                ARRAY_FILTER_USE_KEY
+            );
 
             return [
                 'route' => $route,
-                'params' => $params,
+                'params' => $route->castParameters($namedMatches),
             ];
         }
 
