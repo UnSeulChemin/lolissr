@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Framework\Application;
 
+use Framework\Debug\Profiler;
 use Framework\Http\Middleware\SecurityHeadersMiddleware;
 use Framework\Http\Request;
 use Framework\Routing\Router;
@@ -15,7 +16,8 @@ final readonly class AppKernel
         private Router $router,
         private Request $request,
         private SecurityHeadersMiddleware $securityHeaders
-    ) {}
+    ) {
+    }
 
     // =========================================
     // APPLICATION
@@ -23,15 +25,37 @@ final readonly class AppKernel
 
     public function boot(): void
     {
-        Session::start();
+        Profiler::start('kernel.boot');
 
-        date_default_timezone_set(App::timezone());
+        try
+        {
+            Session::start();
 
-        $this->securityHeaders->handle($this->request);
+            date_default_timezone_set(
+                App::timezone()
+            );
+
+            $this->securityHeaders->handle(
+                $this->request
+            );
+        }
+        finally
+        {
+            Profiler::end('kernel.boot');
+        }
     }
 
     public function handle(): void
     {
-        $this->router->dispatch();
+        Profiler::start('router.dispatch');
+
+        try
+        {
+            $this->router->dispatch();
+        }
+        finally
+        {
+            Profiler::end('router.dispatch');
+        }
     }
 }

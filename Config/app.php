@@ -8,5 +8,14 @@ return [
     'base_uri' => env('APP_BASE_URI', '/lolissr'),
     'env' => env('APP_ENV', 'local'),
     'debug' => env_bool('APP_DEBUG', false),
-    'pagination' => max(1, env_int('APP_PAGINATION', 8)),
+
+    'profiler' => env_bool(
+        'PROFILER_ENABLED',
+        false
+    ),
+
+    'pagination' => max(
+        1,
+        env_int('APP_PAGINATION', 8)
+    ),
 ];

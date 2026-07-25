@@ -14,15 +14,16 @@ use App\DTO\Upload\UploadThumbnailData;
 use App\Models\Manga;
 use App\Repositories\Manga\MangaRepository;
 use App\Repositories\Manga\MangaStatsRepository;
+use App\Services\Stats\DashboardCache;
 use App\Services\UploadService;
 use App\Services\User\UserLevelService;
 
-use Framework\Cache\Cache;
 use Framework\Config\UploadConfig;
 use Framework\Database\Database;
 use Framework\Support\Logger;
 
 use Throwable;
+use RuntimeException;
 
 final readonly class MangaWriteService
 {
@@ -31,7 +32,8 @@ final readonly class MangaWriteService
         private MangaStatsRepository $mangaStatsRepository,
         private UploadService $uploadService,
         private Database $database,
-        private UserLevelService $userLevelService
+        private UserLevelService $userLevelService,
+        private DashboardCache $dashboardCache
     ) {
     }
 
@@ -44,19 +46,33 @@ final readonly class MangaWriteService
     /**
      * @param array<string, mixed> $files
      */
-    public function create(MangaCreateDTO $dto, array $files): ServiceResult
-    {
-        $existingManga = $this->mangaRepository->findOneBySlugAndNumero($dto->slug, $dto->numero);
+    public function create(
+        MangaCreateDTO $dto,
+        array $files
+    ): ServiceResult {
+        $existingManga =
+            $this->mangaRepository->findOneBySlugAndNumero(
+                $dto->slug,
+                $dto->numero
+            );
 
         if ($existingManga !== null)
         {
-            return $this->error('Ce manga existe déjà', 409);
+            return $this->error(
+                'Ce manga existe déjà',
+                409
+            );
         }
 
-        return $this->database->transaction(
-            function () use ($dto, $files): ServiceResult
-            {
-                $upload = $this->uploadThumbnail($dto, $files);
+        $result = $this->database->transaction(
+            function () use (
+                $dto,
+                $files
+            ): ServiceResult {
+                $upload = $this->uploadThumbnail(
+                    $dto,
+                    $files
+                );
 
                 if ($upload instanceof ServiceResult)
                 {
@@ -65,16 +81,19 @@ final readonly class MangaWriteService
 
                 try
                 {
-                    $failure = $this->createManga($dto, $upload);
+                    $failure = $this->createManga(
+                        $dto,
+                        $upload
+                    );
 
                     if ($failure !== null)
                     {
                         return $failure;
                     }
 
-                    $this->clearCache();
-
-                    return $this->success('Manga ajouté avec succès');
+                    return $this->success(
+                        'Manga ajouté avec succès'
+                    );
                 }
                 catch (Throwable $exception)
                 {
@@ -84,17 +103,26 @@ final readonly class MangaWriteService
                 }
             }
         );
+
+        if ($result->success)
+        {
+            $this->forgetDashboardCache();
+        }
+
+        return $result;
     }
 
-    public function update(string $slug, int $numero, MangaUpdateDTO $dto): ServiceResult
-    {
-        return $this->database->transaction(
+    public function update(
+        string $slug,
+        int $numero,
+        MangaUpdateDTO $dto
+    ): ServiceResult {
+        $result = $this->database->transaction(
             function () use (
                 $slug,
                 $numero,
                 $dto
-            ): ServiceResult
-            {
+            ): ServiceResult {
                 $updated = $this->mangaRepository->updateManga(
                     $slug,
                     $numero,
@@ -118,22 +146,45 @@ final readonly class MangaWriteService
                     return $failure;
                 }
 
-                $this->clearCache();
-
-                return $this->success('Manga mis à jour avec succès');
+                return $this->success(
+                    'Manga mis à jour avec succès'
+                );
             }
         );
+
+        if ($result->success)
+        {
+            $this->forgetDashboardCache();
+        }
+
+        return $result;
     }
 
-    public function updateNote(string $slug, int $numero, MangaUpdateNoteDTO $dto): ServiceResult
-    {
-        return $this->database->transaction(
+    public function updateNote(
+        string $slug,
+        int $numero,
+        MangaUpdateNoteDTO $dto
+    ): ServiceResult {
+        $existingManga =
+            $this->mangaRepository->findOneBySlugAndNumero(
+                $slug,
+                $numero
+            );
+
+        if ($existingManga === null)
+        {
+            return $this->error(
+                'Manga introuvable',
+                404
+            );
+        }
+
+        $result = $this->database->transaction(
             function () use (
                 $slug,
                 $numero,
                 $dto
-            ): ServiceResult
-            {
+            ): ServiceResult {
                 $updated = $this->mangaRepository->updateNote(
                     $slug,
                     $numero,
@@ -154,13 +205,17 @@ final readonly class MangaWriteService
                     return $failure;
                 }
 
-                $this->clearCache();
-
-                $manga = $this->mangaRepository->findOneBySlugAndNumero($slug, $numero);
+                $manga =
+                    $this->mangaRepository->findOneBySlugAndNumero(
+                        $slug,
+                        $numero
+                    );
 
                 if ($manga === null)
                 {
-                    return $this->error('Manga introuvable', 404);
+                    throw new RuntimeException(
+                        'Manga introuvable après la mise à jour'
+                    );
                 }
 
                 return $this->success(
@@ -170,43 +225,63 @@ final readonly class MangaWriteService
                             jacquette: $dto->jacquette ?? 0,
                             livreNote: $dto->livreNote ?? 0,
                             note: $manga->note
-                                ?? (($dto->jacquette ?? 0) + ($dto->livreNote ?? 0))
+                                ?? (
+                                    ($dto->jacquette ?? 0)
+                                    + ($dto->livreNote ?? 0)
+                                )
                         ),
                     ]
                 );
             }
         );
-    }
 
-    public function updateReadStatus(string $slug, int $numero, int $readStatus): ServiceResult
-    {
-        if (! in_array($readStatus, [0, 1], true))
+        if ($result->success)
         {
-            return $this->error('Statut de lecture invalide', 422);
+            $this->forgetDashboardCache();
         }
 
-        return $this->database->transaction(
+        return $result;
+    }
+
+    public function updateReadStatus(
+        string $slug,
+        int $numero,
+        int $readStatus
+    ): ServiceResult {
+        if (! in_array($readStatus, [0, 1], true))
+        {
+            return $this->error(
+                'Statut de lecture invalide',
+                422
+            );
+        }
+
+        $result = $this->database->transaction(
             function () use (
                 $slug,
                 $numero,
                 $readStatus
-            ): ServiceResult
-            {
-                $manga = $this->mangaRepository->findOneBySlugAndNumero(
-                    $slug,
-                    $numero
-                );
+            ): ServiceResult {
+                $manga =
+                    $this->mangaRepository->findOneBySlugAndNumero(
+                        $slug,
+                        $numero
+                    );
 
                 if ($manga === null)
                 {
-                    return $this->error('Manga introuvable', 404);
+                    return $this->error(
+                        'Manga introuvable',
+                        404
+                    );
                 }
 
-                $updated = $this->mangaRepository->updateReadStatus(
-                    $slug,
-                    $numero,
-                    $readStatus === 1
-                );
+                $updated =
+                    $this->mangaRepository->updateReadStatus(
+                        $slug,
+                        $numero,
+                        $readStatus === 1
+                    );
 
                 $failure = $this->writeFailed(
                     $updated,
@@ -239,8 +314,6 @@ final readonly class MangaWriteService
                     );
                 }
 
-                $this->clearCache();
-
                 $user = user();
 
                 return $this->success(
@@ -260,24 +333,42 @@ final readonly class MangaWriteService
                 );
             }
         );
+
+        if ($result->success)
+        {
+            $this->forgetDashboardCache();
+        }
+
+        return $result;
     }
 
-    public function delete(string $slug, int $numero): ServiceResult
-    {
-        return $this->database->transaction(
+    public function delete(
+        string $slug,
+        int $numero
+    ): ServiceResult {
+        $manga = $this->mangaRepository->findOneBySlugAndNumero(
+            $slug,
+            $numero
+        );
+
+        if ($manga === null)
+        {
+            return $this->error(
+                'Manga introuvable',
+                404
+            );
+        }
+
+        $result = $this->database->transaction(
             function () use (
                 $slug,
                 $numero
-            ): ServiceResult
-            {
-                $manga = $this->mangaRepository->findOneBySlugAndNumero($slug, $numero);
-
-                if ($manga === null)
-                {
-                    return $this->error('Manga introuvable', 404);
-                }
-
-                $deleted = $this->mangaRepository->deleteBySlugAndNumero($slug, $numero);
+            ): ServiceResult {
+                $deleted =
+                    $this->mangaRepository->deleteBySlugAndNumero(
+                        $slug,
+                        $numero
+                    );
 
                 $failure = $this->writeFailed(
                     $deleted,
@@ -292,13 +383,19 @@ final readonly class MangaWriteService
                     return $failure;
                 }
 
-                $this->removeThumbnail($manga);
-
-                $this->clearCache();
-
-                return $this->success('Manga supprimé avec succès');
+                return $this->success(
+                    'Manga supprimé avec succès'
+                );
             }
         );
+
+        if ($result->success)
+        {
+            $this->removeThumbnail($manga);
+            $this->forgetDashboardCache();
+        }
+
+        return $result;
     }
 
     /*
@@ -313,8 +410,10 @@ final readonly class MangaWriteService
      *     seriesXpEarned: bool
      * }
      */
-    private function rewardReadXp(Manga $manga, string $slug): array
-    {
+    private function rewardReadXp(
+        Manga $manga,
+        string $slug
+    ): array {
         $user = user();
 
         if ($user === null)
@@ -330,7 +429,7 @@ final readonly class MangaWriteService
 
         $this->userLevelService->addXp(
             $user,
-            UserXp::READ_TOME,
+            UserXp::READ_TOME
         );
 
         $xpEarned = true;
@@ -342,15 +441,19 @@ final readonly class MangaWriteService
         {
             $this->userLevelService->addXp(
                 $user,
-                UserXp::COMPLETE_SERIES,
+                UserXp::COMPLETE_SERIES
             );
 
-            $this->mangaRepository->markSeriesRewardedBySlug($slug);
+            $this->mangaRepository->markSeriesRewardedBySlug(
+                $slug
+            );
 
             $seriesXpEarned = true;
         }
 
-        $this->mangaRepository->markXpRewarded($manga->id);
+        $this->mangaRepository->markXpRewarded(
+            $manga->id
+        );
 
         return [
             'xpEarned' => $xpEarned,
@@ -366,19 +469,40 @@ final readonly class MangaWriteService
 
     private function removeThumbnail(Manga $manga): void
     {
-        if ($manga->thumbnail === '' || $manga->extension === '')
+        if (
+            $manga->thumbnail === ''
+            || $manga->extension === ''
+        )
         {
             return;
         }
 
-        $path = UploadConfig::thumbnailDirectory('manga') . $manga->thumbnail . '.' . $manga->extension;
+        $path =
+            UploadConfig::thumbnailDirectory('manga')
+            . $manga->thumbnail
+            . '.'
+            . $manga->extension;
 
         $this->uploadService->removeFile($path);
     }
 
-    private function rollbackUpload(UploadThumbnailData $upload): void
+    private function rollbackUpload(
+        UploadThumbnailData $upload
+    ): void {
+        $this->uploadService->removeFile(
+            $upload->destinationPath
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | CACHE
+    |--------------------------------------------------------------------------
+    */
+
+    private function forgetDashboardCache(): void
     {
-        $this->uploadService->removeFile($upload->destinationPath);
+        $this->dashboardCache->forget();
     }
 
     /*
@@ -387,14 +511,14 @@ final readonly class MangaWriteService
     |--------------------------------------------------------------------------
     */
 
-    private function clearCache(): void
-    {
-        Cache::forget('home.dashboard');
-    }
-
-    private function logFailure(string $action, string $slug, int $numero): void
-    {
-        Logger::error("{$action} échoué slug={$slug} numero={$numero}");
+    private function logFailure(
+        string $action,
+        string $slug,
+        int $numero
+    ): void {
+        Logger::error(
+            "{$action} échoué slug={$slug} numero={$numero}"
+        );
     }
 
     private function writeFailed(
@@ -403,14 +527,17 @@ final readonly class MangaWriteService
         string $slug,
         int $numero,
         string $message
-    ): ?ServiceResult
-    {
+    ): ?ServiceResult {
         if ($result)
         {
             return null;
         }
 
-        $this->logFailure($action, $slug, $numero);
+        $this->logFailure(
+            $action,
+            $slug,
+            $numero
+        );
 
         return $this->error($message);
     }
@@ -421,25 +548,29 @@ final readonly class MangaWriteService
     private function uploadThumbnail(
         MangaCreateDTO $dto,
         array $files
-    ): ServiceResult|UploadThumbnailData
-    {
+    ): ServiceResult|UploadThumbnailData {
         $upload = $this->uploadService->uploadThumbnail(
             $dto->livre,
             $dto->numero,
             UploadConfig::thumbnailDirectory('manga'),
-            $files,
+            $files
         );
 
         if (! $upload->success)
         {
-            return $this->error($upload->message, $upload->status);
+            return $this->error(
+                $upload->message,
+                $upload->status
+            );
         }
 
         $uploadData = $upload->data['upload'] ?? null;
 
         if (! $uploadData instanceof UploadThumbnailData)
         {
-            return $this->error('Upload invalide');
+            return $this->error(
+                'Upload invalide'
+            );
         }
 
         return $uploadData;
@@ -448,8 +579,7 @@ final readonly class MangaWriteService
     private function createManga(
         MangaCreateDTO $dto,
         UploadThumbnailData $uploadData
-    ): ?ServiceResult
-    {
+    ): ?ServiceResult {
         $inserted = $this->mangaRepository->insert([
             'thumbnail' => $uploadData->thumbnailPath,
             'extension' => $uploadData->extension,
@@ -485,16 +615,30 @@ final readonly class MangaWriteService
     /**
      * @param array<string, mixed> $data
      */
-    private function success(string $message, array $data = [], int $status = 200): ServiceResult
-    {
-        return ServiceResult::success(message: $message, data: $data, status: $status);
+    private function success(
+        string $message,
+        array $data = [],
+        int $status = 200
+    ): ServiceResult {
+        return ServiceResult::success(
+            message: $message,
+            data: $data,
+            status: $status
+        );
     }
 
     /**
      * @param array<string, mixed> $data
      */
-    private function error(string $message, int $status = 500, array $data = []): ServiceResult
-    {
-        return ServiceResult::error(message: $message, data: $data, status: $status);
+    private function error(
+        string $message,
+        int $status = 500,
+        array $data = []
+    ): ServiceResult {
+        return ServiceResult::error(
+            message: $message,
+            data: $data,
+            status: $status
+        );
     }
 }

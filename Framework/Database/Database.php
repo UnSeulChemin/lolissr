@@ -6,6 +6,7 @@ namespace Framework\Database;
 
 use Framework\Application\App;
 use Framework\Config\DatabaseConfig;
+use Framework\Debug\Profiler;
 use Framework\Support\Logger;
 
 use PDO;
@@ -26,7 +27,7 @@ final class Database extends PDO
             DatabaseConfig::host(),
             DatabaseConfig::port(),
             DatabaseConfig::name(),
-            DatabaseConfig::charset(),
+            DatabaseConfig::charset()
         );
 
         try
@@ -39,18 +40,23 @@ final class Database extends PDO
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_EMULATE_PREPARES => false,
-                ],
+                ]
             );
         }
         catch (PDOException $exception)
         {
-            Logger::exception($exception, ['type' => 'database_connection']);
+            Logger::exception(
+                $exception,
+                [
+                    'type' => 'database_connection',
+                ]
+            );
 
             throw new RuntimeException(
                 App::debug()
                     ? $exception->getMessage()
                     : 'Erreur de connexion à la base de données.',
-                previous: $exception,
+                previous: $exception
             );
         }
     }
@@ -89,8 +95,18 @@ final class Database extends PDO
         $this->rollBack();
     }
 
-    public function transaction(callable $callback): mixed
-    {
+    /**
+     * @template T
+     *
+     * @param callable(): T $callback
+     *
+     * @return T
+     */
+    public function transaction(
+        callable $callback
+    ): mixed {
+        Profiler::start('database.transaction');
+
         $this->startTransaction();
 
         try
@@ -106,6 +122,10 @@ final class Database extends PDO
             $this->rollbackTransaction();
 
             throw $exception;
+        }
+        finally
+        {
+            Profiler::end('database.transaction');
         }
     }
 }

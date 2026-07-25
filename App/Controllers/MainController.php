@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\DTO\Home\Responses\DashboardStatsData;
-use App\Services\Stats\StatsService;
+use App\Services\Stats\DashboardCache;
 
-use Framework\Cache\Cache;
 use Framework\Http\Request;
 
 final class MainController extends Controller
 {
-    public function __construct(private readonly StatsService $statsService, Request $request)
-    {
+    public function __construct(
+        private readonly DashboardCache $dashboardCache,
+        Request $request
+    ) {
         parent::__construct($request);
     }
 
@@ -27,13 +27,11 @@ final class MainController extends Controller
     {
         $this->title = 'Accueil';
 
-        /** @var DashboardStatsData $stats */
-        $stats = Cache::remember(
-            key: 'home.dashboard',
-            ttl: null,
-            callback: fn (): DashboardStatsData => $this->statsService->dashboard()
+        $this->render(
+            'pages/main/index',
+            [
+                'stats' => $this->dashboardCache->get(),
+            ]
         );
-
-        $this->render('pages/main/index', ['stats' => $stats]);
     }
 }

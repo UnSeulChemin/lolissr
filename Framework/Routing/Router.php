@@ -6,6 +6,7 @@ namespace Framework\Routing;
 
 use Framework\Container\AppContainer;
 use Framework\Container\Container;
+use Framework\Debug\Profiler;
 use Framework\Exceptions\NotFoundException;
 use Framework\Http\Middleware\MiddlewareInterface;
 use Framework\Http\Request;
@@ -59,7 +60,10 @@ final class Router
     {
         $clone = clone $this;
 
-        $clone->groupMiddlewares = array_merge($clone->groupMiddlewares, (array) $middleware);
+        $clone->groupMiddlewares = array_merge(
+            $clone->groupMiddlewares,
+            (array) $middleware
+        );
 
         return $clone;
     }
@@ -74,39 +78,55 @@ final class Router
     // =========================================
 
     /**
-     * @param array{class-string,string}|string|Closure $action
+     * @param array{class-string, string}|string|Closure $action
      * @param list<class-string> $middlewares
      */
-    public function get(string $path, array|string|Closure $action, array $middlewares = []): void
-    {
-        $this->addRoute('GET', $path, $action, $middlewares);
+    public function get(
+        string $path,
+        array|string|Closure $action,
+        array $middlewares = []
+    ): void {
+        $this->addRoute(
+            'GET',
+            $path,
+            $action,
+            $middlewares
+        );
     }
 
     /**
-     * @param array{class-string,string}|string|Closure $action
+     * @param array{class-string, string}|string|Closure $action
      * @param list<class-string> $middlewares
      */
-    public function post(string $path, array|string|Closure $action, array $middlewares = []): void
-    {
-        $this->addRoute('POST', $path, $action, $middlewares);
+    public function post(
+        string $path,
+        array|string|Closure $action,
+        array $middlewares = []
+    ): void {
+        $this->addRoute(
+            'POST',
+            $path,
+            $action,
+            $middlewares
+        );
     }
 
     /**
-     * @param array{class-string,string}|string|Closure $action
+     * @param array{class-string, string}|string|Closure $action
      * @param list<class-string> $middlewares
      */
     private function addRoute(
         string $method,
         string $path,
         array|string|Closure $action,
-        array $middlewares,
+        array $middlewares
     ): void {
         $segments = array_filter(
             array_merge(
                 $this->groupPrefixes,
-                [trim($path, '/')],
+                [trim($path, '/')]
             ),
-            static fn (string $segment): bool => $segment !== '',
+            static fn (string $segment): bool => $segment !== ''
         );
 
         $fullPath = '/' . implode('/', $segments);
@@ -118,9 +138,9 @@ final class Router
                 $action,
                 array_merge(
                     $this->groupMiddlewares,
-                    $middlewares,
-                ),
-            ),
+                    $middlewares
+                )
+            )
         );
     }
 
@@ -138,6 +158,56 @@ final class Router
         $uri = $request->path();
         $method = $request->method();
 
+        $match = Profiler::measure(
+            'route.match',
+            fn (): ?array => $this->matchRoute(
+                $method,
+                $uri
+            )
+        );
+
+        if ($match === null)
+        {
+            throw new NotFoundException(
+                "Route non trouvée : {$uri}"
+            );
+        }
+
+        [
+            'route' => $route,
+            'params' => $params,
+        ] = $match;
+
+        Profiler::measure(
+            'middleware',
+            fn (): null => $this->runMiddlewares(
+                $container,
+                $route,
+                $request
+            )
+        );
+
+        Profiler::measure(
+            'controller',
+            fn (): null => $this->executeAction(
+                $container,
+                $route,
+                $params,
+                $request
+            )
+        );
+    }
+
+    /**
+     * @return array{
+     *     route: Route,
+     *     params: list<string|int>
+     * }|null
+     */
+    private function matchRoute(
+        string $method,
+        string $uri
+    ): ?array {
         foreach ($this->collection->forMethod($method) as $route)
         {
             if (preg_match($route->pattern, $uri, $matches) !== 1)
@@ -147,9 +217,7 @@ final class Router
 
             array_shift($matches);
 
-            $this->runMiddlewares($container, $route, $request);
-
-            /** @var list<int|string> $params */
+            /** @var list<string|int> $params */
             $params = array_values(
                 array_map(
                     static function (string $value): string|int
@@ -160,31 +228,37 @@ final class Router
                             ? (int) $value
                             : $value;
                     },
-                    $matches,
-                ),
+                    $matches
+                )
             );
 
-            $this->executeAction($container, $route, $params, $request);
-
-            return;
+            return [
+                'route' => $route,
+                'params' => $params,
+            ];
         }
 
-        throw new NotFoundException("Route non trouvée : {$uri}");
+        return null;
     }
 
     // =========================================
     // MIDDLEWARES
     // =========================================
 
-    private function runMiddlewares(Container $container, Route $route, Request $request): void
-    {
+    private function runMiddlewares(
+        Container $container,
+        Route $route,
+        Request $request
+    ): void {
         foreach ($route->getMiddlewares() as $middlewareClass)
         {
             $middleware = $container->get($middlewareClass);
 
             if (! $middleware instanceof MiddlewareInterface)
             {
-                throw new RuntimeException("Invalid middleware: {$middlewareClass}");
+                throw new RuntimeException(
+                    "Invalid middleware: {$middlewareClass}"
+                );
             }
 
             $middleware->handle($request);
@@ -198,8 +272,12 @@ final class Router
     /**
      * @param list<string|int> $params
      */
-    private function executeAction(Container $container, Route $route, array $params, Request $request): void
-    {
+    private function executeAction(
+        Container $container,
+        Route $route,
+        array $params,
+        Request $request
+    ): void {
         $action = $route->getAction();
 
         if ($action instanceof Closure)
@@ -213,34 +291,54 @@ final class Router
         {
             if (! str_contains($action, '@'))
             {
-                throw new RuntimeException("Invalid route action: {$action}");
+                throw new RuntimeException(
+                    "Invalid route action: {$action}"
+                );
             }
 
-            [$controllerClass, $methodName] = explode('@', $action, 2);
+            [$controllerClass, $methodName] = explode(
+                '@',
+                $action,
+                2
+            );
         }
         else
         {
             [$controllerClass, $methodName] = $action;
         }
 
-        $controller = $container->get($controllerClass);
-
-        $arguments = $this->resolveArguments(
-            $container,
-            $controller,
-            $methodName,
-            $params,
-            $request,
+        $controller = Profiler::measure(
+            'controller.resolve',
+            fn (): object => $container->get($controllerClass)
         );
 
-        /** @phpstan-ignore-next-line */
-        $controller->{$methodName}(...$arguments);
+        $arguments = Profiler::measure(
+            'controller.arguments',
+            fn (): array => $this->resolveArguments(
+                $container,
+                $controller,
+                $methodName,
+                $params,
+                $request
+            )
+        );
+
+        Profiler::measure(
+            'controller.action',
+            function () use (
+                $controller,
+                $methodName,
+                $arguments
+            ): void {
+                /** @phpstan-ignore-next-line */
+                $controller->{$methodName}(...$arguments);
+            }
+        );
     }
 
     /**
-     * Resolve controller arguments.
-     *
      * @param list<string|int> $params
+     *
      * @return list<mixed>
      */
     private function resolveArguments(
@@ -248,12 +346,16 @@ final class Router
         object $controller,
         string $method,
         array $params,
-        Request $request,
-    ): array
-    {
+        Request $request
+    ): array {
         $key = $controller::class . '::' . $method;
 
-        $reflection = $this->methods[$key] ??= new ReflectionMethod($controller, $method);
+        $reflection =
+            $this->methods[$key]
+            ??= new ReflectionMethod(
+                $controller,
+                $method
+            );
 
         $arguments = [];
 
@@ -261,7 +363,10 @@ final class Router
         {
             $type = $parameter->getType();
 
-            if ($type instanceof ReflectionNamedType && ! $type->isBuiltin())
+            if (
+                $type instanceof ReflectionNamedType
+                && ! $type->isBuiltin()
+            )
             {
                 $className = $type->getName();
 
@@ -296,8 +401,8 @@ final class Router
                     'Unable to resolve parameter "%s" in %s::%s()',
                     $parameter->getName(),
                     $controller::class,
-                    $method,
-                ),
+                    $method
+                )
             );
         }
 

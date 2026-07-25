@@ -8,6 +8,7 @@ use Framework\Config\Config;
 use Framework\Config\Env;
 use Framework\Container\AppContainer;
 use Framework\Container\Container;
+use Framework\Debug\Profiler;
 use Framework\Http\ErrorHandler;
 use Framework\Http\Middleware\SecurityHeadersMiddleware;
 use Framework\Http\Request;
@@ -39,21 +40,30 @@ final class Bootstrap
 
         ErrorHandler::register();
 
-    header_remove('X-Powered-By');
+        header_remove('X-Powered-By');
+
+        self::startProfiler();
 
         $container = new Container();
 
         AppContainer::set($container);
 
-        $container->singleton(Request::class, static fn (): Request => Request::capture());
+        $container->singleton(
+            Request::class,
+            static fn (): Request => Request::capture()
+        );
 
-        $router = new Router(new RouteCollection());
+        $router = new Router(
+            new RouteCollection()
+        );
 
         $routes = require base_path('Config/routes.php');
 
         if (! is_callable($routes))
         {
-            throw new RuntimeException('Config/routes.php must return a callable.');
+            throw new RuntimeException(
+                'Config/routes.php must return a callable.'
+            );
         }
 
         $routes($router);
@@ -62,14 +72,52 @@ final class Bootstrap
         $request = $container->get(Request::class);
 
         /** @var SecurityHeadersMiddleware $securityHeaders */
-        $securityHeaders = $container->get(SecurityHeadersMiddleware::class);
+        $securityHeaders =
+            $container->get(SecurityHeadersMiddleware::class);
 
-        $kernel = new AppKernel($router, $request, $securityHeaders);
+        $kernel = new AppKernel(
+            $router,
+            $request,
+            $securityHeaders
+        );
 
         $kernel->boot();
         $kernel->handle();
 
         exit;
+    }
+
+    // =========================================
+    // PROFILER
+    // =========================================
+
+    private static function startProfiler(): void
+    {
+        if (! App::debug())
+        {
+            return;
+        }
+
+        Profiler::startRequest();
+
+        register_shutdown_function(
+            static function (): void
+            {
+                $method =
+                    $_SERVER['REQUEST_METHOD']
+                    ?? 'UNKNOWN';
+
+                $uri =
+                    $_SERVER['REQUEST_URI']
+                    ?? '/';
+
+                Profiler::finishRequest(
+                    method: $method,
+                    uri: $uri,
+                    status: http_response_code()
+                );
+            }
+        );
     }
 
     // =========================================
@@ -83,7 +131,10 @@ final class Bootstrap
             return;
         }
 
-        $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        $lines = file(
+            $envFile,
+            FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES
+        );
 
         if ($lines === false)
         {
@@ -94,15 +145,27 @@ final class Bootstrap
         {
             $line = trim($line);
 
-            if ($line === '' || str_starts_with($line, '#') || ! str_contains($line, '='))
+            if (
+                $line === ''
+                || str_starts_with($line, '#')
+                || ! str_contains($line, '=')
+            )
             {
                 continue;
             }
 
-            [$name, $value] = explode('=', $line, 2);
+            [$name, $value] = explode(
+                '=',
+                $line,
+                2
+            );
 
             $name = trim($name);
-            $value = trim($value, " \t\n\r\0\x0B\"'");
+
+            $value = trim(
+                $value,
+                " \t\n\r\0\x0B\"'"
+            );
 
             $_ENV[$name] = $value;
             $_SERVER[$name] = $value;
@@ -115,10 +178,22 @@ final class Bootstrap
     {
         $debug = App::debug();
 
-        error_reporting($debug ? E_ALL : 0);
+        error_reporting(
+            $debug
+                ? E_ALL
+                : 0
+        );
 
-        ini_set('display_errors', $debug ? '1' : '0');
+        ini_set(
+            'display_errors',
+            $debug
+                ? '1'
+                : '0'
+        );
 
-        ini_set('log_errors', '1');
+        ini_set(
+            'log_errors',
+            '1'
+        );
     }
 }

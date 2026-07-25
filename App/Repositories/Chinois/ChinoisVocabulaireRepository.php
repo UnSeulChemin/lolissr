@@ -25,6 +25,12 @@ final class ChinoisVocabulaireRepository extends Model
         xp_rewarded
     ';
 
+    /*
+    |--------------------------------------------------------------------------
+    | LECTURE
+    |--------------------------------------------------------------------------
+    */
+
     /**
      * @return list<ChinoisVocabulaireData>
      */
@@ -44,10 +50,9 @@ final class ChinoisVocabulaireRepository extends Model
             "
         );
 
-        /** @var list<ChinoisVocabulaireData> */
         return array_map(
             $this->mapRowToDto(...),
-            $results,
+            $results
         );
     }
 
@@ -78,8 +83,19 @@ final class ChinoisVocabulaireRepository extends Model
         return $this->mapRowToDto($result);
     }
 
-    public function toggleMaitrise(int $id): bool
+    /*
+    |--------------------------------------------------------------------------
+    | ÉCRITURE
+    |--------------------------------------------------------------------------
+    */
+
+    public function toggleMaitrise(int $id): ?bool
     {
+        if (! $this->existsById($id))
+        {
+            return null;
+        }
+
         $this->execute(
             "
             UPDATE {$this->table()}
@@ -93,6 +109,7 @@ final class ChinoisVocabulaireRepository extends Model
             ]
         );
 
+        /** @var stdClass|null $result */
         $result = $this->fetchOne(
             "
             SELECT maitrise
@@ -100,6 +117,8 @@ final class ChinoisVocabulaireRepository extends Model
             FROM {$this->table()}
 
             WHERE id = :id
+
+            LIMIT 1
             ",
             [
                 'id' => $id,
@@ -108,18 +127,17 @@ final class ChinoisVocabulaireRepository extends Model
 
         if ($result === null)
         {
-            return false;
+            return null;
         }
 
-        /** @var array{maitrise?: mixed} $data */
-        $data = (array) $result;
-
-        return (bool) ($data['maitrise'] ?? false);
+        return (bool) $result->maitrise;
     }
 
     public function deleteVocabulaire(int $id): bool
     {
-        return $this->delete(['id' => $id]);
+        return $this->delete([
+            'id' => $id,
+        ]);
     }
 
     public function updateVocabulaire(
@@ -130,8 +148,7 @@ final class ChinoisVocabulaireRepository extends Model
         string $type,
         string $traduction,
         string $exemple
-    ): bool
-    {
+    ): bool {
         return $this->updateById(
             $id,
             [
@@ -144,6 +161,12 @@ final class ChinoisVocabulaireRepository extends Model
             ]
         );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | XP
+    |--------------------------------------------------------------------------
+    */
 
     public function isXpRewarded(int $id): bool
     {
@@ -187,17 +210,48 @@ final class ChinoisVocabulaireRepository extends Model
     |--------------------------------------------------------------------------
     */
 
+    private function existsById(int $id): bool
+    {
+        /** @var stdClass|null $result */
+        $result = $this->fetchOne(
+            "
+            SELECT 1
+
+            FROM {$this->table()}
+
+            WHERE id = :id
+
+            LIMIT 1
+            ",
+            [
+                'id' => $id,
+            ]
+        );
+
+        return $result !== null;
+    }
+
     /**
      * @param array<string, mixed> $data
      */
-    private function updateById(int $id, array $data): bool
-    {
-        return $this->update($data, ['id' => $id]);
+    private function updateById(
+        int $id,
+        array $data
+    ): bool {
+        return $this->update(
+            $data,
+            [
+                'id' => $id,
+            ]
+        );
     }
 
-    private function mapRowToDto(stdClass $row): ChinoisVocabulaireData
-    {
-        $exemple = (string) $row->exemple;
+    private function mapRowToDto(
+        stdClass $row
+    ): ChinoisVocabulaireData {
+        $exemple = $row->exemple !== null
+            ? trim((string) $row->exemple)
+            : '';
 
         $maitrise = (bool) $row->maitrise;
 
@@ -234,7 +288,7 @@ final class ChinoisVocabulaireRepository extends Model
             masteredLabel:
                 $maitrise
                     ? 'Retirer la maîtrise'
-                    : 'Marquer comme maîtrisé',
+                    : 'Marquer comme maîtrisé'
         );
     }
 }

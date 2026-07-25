@@ -10,6 +10,7 @@ use App\DTO\Chinois\Inputs\ChinoisVocabulaireCreateDTO;
 use App\DTO\Common\ServiceResult;
 use App\Repositories\Chinois\ChinoisGrammaireRepository;
 use App\Repositories\Chinois\ChinoisVocabulaireRepository;
+use App\Services\Stats\DashboardCache;
 use App\Services\User\UserLevelService;
 
 use Framework\Database\Database;
@@ -20,7 +21,8 @@ final readonly class ChinoisWriteService
         private ChinoisGrammaireRepository $grammaireRepository,
         private ChinoisVocabulaireRepository $vocabulaireRepository,
         private UserLevelService $userLevelService,
-        private Database $database
+        private Database $database,
+        private DashboardCache $dashboardCache
     ) {
     }
 
@@ -30,43 +32,79 @@ final readonly class ChinoisWriteService
     |--------------------------------------------------------------------------
     */
 
-    public function createGrammaire(ChinoisGrammaireCreateDTO $dto): ServiceResult
-    {
-        return $this->database->transaction(
+    public function createGrammaire(
+        ChinoisGrammaireCreateDTO $dto
+    ): ServiceResult {
+        $result = $this->database->transaction(
             function () use ($dto): ServiceResult
             {
                 $inserted = $this->grammaireRepository->insert([
                     'niveau' => $dto->niveau,
+
                     'section' => $dto->section,
-                    'section_position' => $this->grammaireRepository->getSectionPosition($dto->niveau, $dto->section),
+                    'section_position' =>
+                        $this->grammaireRepository->getSectionPosition(
+                            $dto->niveau,
+                            $dto->section
+                        ),
+
                     'categorie' => $dto->categorie,
-                    'categorie_position' => $this->grammaireRepository->getCategoriePosition($dto->niveau, $dto->section, $dto->categorie),
+                    'categorie_position' =>
+                        $this->grammaireRepository->getCategoriePosition(
+                            $dto->niveau,
+                            $dto->section,
+                            $dto->categorie
+                        ),
+
                     'titre' => $dto->titre,
                     'structure' => $dto->structure,
                     'abreviation' => $dto->abreviation,
+
                     'phrase' => $dto->phrase,
                     'pinyin' => $dto->pinyin,
                     'traduction' => $dto->traduction,
                     'explication' => $dto->explication,
-                    'position' => $this->grammaireRepository->getNextPosition($dto->niveau, $dto->section, $dto->categorie),
+
+                    'position' =>
+                        $this->grammaireRepository->getNextPosition(
+                            $dto->niveau,
+                            $dto->section,
+                            $dto->categorie
+                        ),
+
                     'maitrise' => false,
                 ]);
 
                 if (! $inserted)
                 {
-                    return $this->error('Erreur lors de l’ajout');
+                    return $this->error(
+                        'Erreur lors de l’ajout'
+                    );
                 }
 
-                return $this->success('Grammaire ajoutée avec succès');
+                return $this->success(
+                    'Grammaire ajoutée avec succès'
+                );
             }
         );
+
+        if ($result->success)
+        {
+            $this->forgetDashboardCache();
+        }
+
+        return $result;
     }
 
-    public function updateGrammaire(int $id, ChinoisGrammaireCreateDTO $dto): ServiceResult
-    {
+    public function updateGrammaire(
+        int $id,
+        ChinoisGrammaireCreateDTO $dto
+    ): ServiceResult {
         return $this->database->transaction(
-            function () use ($id, $dto): ServiceResult
-            {
+            function () use (
+                $id,
+                $dto
+            ): ServiceResult {
                 $updated = $this->grammaireRepository->updateGrammaire(
                     $id,
                     $dto->niveau,
@@ -78,34 +116,52 @@ final readonly class ChinoisWriteService
                     $dto->traduction,
                     $dto->explication,
                     $dto->section,
-                    $dto->categorie,
+                    $dto->categorie
                 );
 
                 if (! $updated)
                 {
-                    return $this->error('Erreur lors de la mise à jour');
+                    return $this->error(
+                        'Erreur lors de la mise à jour'
+                    );
                 }
 
-                return $this->success('Grammaire mise à jour avec succès');
+                return $this->success(
+                    'Grammaire mise à jour avec succès'
+                );
             }
         );
     }
 
     public function deleteGrammaire(int $id): ServiceResult
     {
-        return $this->database->transaction(
+        $result = $this->database->transaction(
             function () use ($id): ServiceResult
             {
-                $deleted = $this->grammaireRepository->deleteGrammaire($id);
+                $deleted =
+                    $this->grammaireRepository->deleteGrammaire(
+                        $id
+                    );
 
                 if (! $deleted)
                 {
-                    return $this->error('Erreur lors de la suppression');
+                    return $this->error(
+                        'Erreur lors de la suppression'
+                    );
                 }
 
-                return $this->success('Grammaire supprimée avec succès');
+                return $this->success(
+                    'Grammaire supprimée avec succès'
+                );
             }
         );
+
+        if ($result->success)
+        {
+            $this->forgetDashboardCache();
+        }
+
+        return $result;
     }
 
     /*
@@ -114,9 +170,10 @@ final readonly class ChinoisWriteService
     |--------------------------------------------------------------------------
     */
 
-    public function createVocabulaire(ChinoisVocabulaireCreateDTO $dto): ServiceResult
-    {
-        return $this->database->transaction(
+    public function createVocabulaire(
+        ChinoisVocabulaireCreateDTO $dto
+    ): ServiceResult {
+        $result = $this->database->transaction(
             function () use ($dto): ServiceResult
             {
                 $inserted = $this->vocabulaireRepository->insert([
@@ -130,59 +187,93 @@ final readonly class ChinoisWriteService
 
                 if (! $inserted)
                 {
-                    return $this->error('Erreur lors de l’ajout');
+                    return $this->error(
+                        'Erreur lors de l’ajout'
+                    );
                 }
 
-                return $this->success('Vocabulaire ajouté avec succès');
+                return $this->success(
+                    'Vocabulaire ajouté avec succès'
+                );
             }
         );
+
+        if ($result->success)
+        {
+            $this->forgetDashboardCache();
+        }
+
+        return $result;
     }
 
-    public function updateVocabulaire(int $id, ChinoisVocabulaireCreateDTO $dto): ServiceResult
-    {
+    public function updateVocabulaire(
+        int $id,
+        ChinoisVocabulaireCreateDTO $dto
+    ): ServiceResult {
         return $this->database->transaction(
-            function () use ($id, $dto): ServiceResult
-            {
-                $updated = $this->vocabulaireRepository->updateVocabulaire(
-                    $id,
-                    $dto->langue,
-                    $dto->mot,
-                    $dto->pinyin,
-                    $dto->type,
-                    $dto->traduction,
-                    $dto->exemple,
-                );
+            function () use (
+                $id,
+                $dto
+            ): ServiceResult {
+                $updated =
+                    $this->vocabulaireRepository->updateVocabulaire(
+                        $id,
+                        $dto->langue,
+                        $dto->mot,
+                        $dto->pinyin,
+                        $dto->type,
+                        $dto->traduction,
+                        $dto->exemple
+                    );
 
                 if (! $updated)
                 {
-                    return $this->error('Erreur lors de la mise à jour');
+                    return $this->error(
+                        'Erreur lors de la mise à jour'
+                    );
                 }
 
-                return $this->success('Vocabulaire mis à jour avec succès');
+                return $this->success(
+                    'Vocabulaire mis à jour avec succès'
+                );
             }
         );
     }
 
     public function deleteVocabulaire(int $id): ServiceResult
     {
-        return $this->database->transaction(
+        $result = $this->database->transaction(
             function () use ($id): ServiceResult
             {
-                $deleted = $this->vocabulaireRepository->deleteVocabulaire($id);
+                $deleted =
+                    $this->vocabulaireRepository->deleteVocabulaire(
+                        $id
+                    );
 
                 if (! $deleted)
                 {
-                    return $this->error('Erreur lors de la suppression');
+                    return $this->error(
+                        'Erreur lors de la suppression'
+                    );
                 }
 
-                return $this->success('Vocabulaire supprimé avec succès');
+                return $this->success(
+                    'Vocabulaire supprimé avec succès'
+                );
             }
         );
+
+        if ($result->success)
+        {
+            $this->forgetDashboardCache();
+        }
+
+        return $result;
     }
 
     /*
     |--------------------------------------------------------------------------
-    | XP
+    | MAÎTRISE
     |--------------------------------------------------------------------------
     */
 
@@ -194,22 +285,57 @@ final readonly class ChinoisWriteService
      */
     public function toggleGrammaireMaitrise(int $id): array
     {
-        $maitrise = $this->grammaireRepository->toggleMaitrise($id);
+        /** @var array{
+         *     maitrise: bool|null,
+         *     xpEarned: bool
+         * } $result
+         */
+        $result = $this->database->transaction(
+            function () use ($id): array
+            {
+                $maitrise =
+                    $this->grammaireRepository->toggleMaitrise(
+                        $id
+                    );
 
-        $xpEarned = false;
+                if ($maitrise === null)
+                {
+                    return [
+                        'maitrise' => null,
+                        'xpEarned' => false,
+                    ];
+                }
 
-        if (
-            $maitrise
-            && ! $this->grammaireRepository->isXpRewarded($id)
-        ) {
-            $this->rewardGrammarXp($id);
+                $xpEarned = false;
 
-            $xpEarned = true;
+                if (
+                    $maitrise
+                    && ! $this->grammaireRepository->isXpRewarded($id)
+                )
+                {
+                    $xpEarned = $this->rewardGrammarXp($id);
+                }
+
+                return [
+                    'maitrise' => $maitrise,
+                    'xpEarned' => $xpEarned,
+                ];
+            }
+        );
+
+        if ($result['maitrise'] === null)
+        {
+            return [
+                'maitrise' => false,
+                'xpEarned' => false,
+            ];
         }
 
+        $this->forgetDashboardCache();
+
         return [
-            'maitrise' => $maitrise,
-            'xpEarned' => $xpEarned,
+            'maitrise' => $result['maitrise'],
+            'xpEarned' => $result['xpEarned'],
         ];
     }
 
@@ -221,23 +347,117 @@ final readonly class ChinoisWriteService
      */
     public function toggleVocabulaireMaitrise(int $id): array
     {
-        $maitrise = $this->vocabulaireRepository->toggleMaitrise($id);
+        /** @var array{
+         *     maitrise: bool|null,
+         *     xpEarned: bool
+         * } $result
+         */
+        $result = $this->database->transaction(
+            function () use ($id): array
+            {
+                $maitrise =
+                    $this->vocabulaireRepository->toggleMaitrise(
+                        $id
+                    );
 
-        $xpEarned = false;
+                if ($maitrise === null)
+                {
+                    return [
+                        'maitrise' => null,
+                        'xpEarned' => false,
+                    ];
+                }
 
-        if (
-            $maitrise
-            && ! $this->vocabulaireRepository->isXpRewarded($id)
-        ) {
-            $this->rewardVocabularyXp($id);
+                $xpEarned = false;
 
-            $xpEarned = true;
+                if (
+                    $maitrise
+                    && ! $this->vocabulaireRepository->isXpRewarded($id)
+                )
+                {
+                    $xpEarned = $this->rewardVocabularyXp($id);
+                }
+
+                return [
+                    'maitrise' => $maitrise,
+                    'xpEarned' => $xpEarned,
+                ];
+            }
+        );
+
+        if ($result['maitrise'] === null)
+        {
+            return [
+                'maitrise' => false,
+                'xpEarned' => false,
+            ];
         }
 
+        $this->forgetDashboardCache();
+
         return [
-            'maitrise' => $maitrise,
-            'xpEarned' => $xpEarned,
+            'maitrise' => $result['maitrise'],
+            'xpEarned' => $result['xpEarned'],
         ];
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | XP
+    |--------------------------------------------------------------------------
+    */
+
+    private function rewardGrammarXp(int $id): bool
+    {
+        $user = user();
+
+        if ($user === null)
+        {
+            return false;
+        }
+
+        $this->userLevelService->addXp(
+            $user,
+            UserXp::LEARN_GRAMMAR
+        );
+
+        $this->grammaireRepository->markXpRewarded(
+            $id
+        );
+
+        return true;
+    }
+
+    private function rewardVocabularyXp(int $id): bool
+    {
+        $user = user();
+
+        if ($user === null)
+        {
+            return false;
+        }
+
+        $this->userLevelService->addXp(
+            $user,
+            UserXp::LEARN_VOCABULARY
+        );
+
+        $this->vocabulaireRepository->markXpRewarded(
+            $id
+        );
+
+        return true;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | CACHE
+    |--------------------------------------------------------------------------
+    */
+
+    private function forgetDashboardCache(): void
+    {
+        $this->dashboardCache->forget();
     }
 
     /*
@@ -245,40 +465,6 @@ final readonly class ChinoisWriteService
     | HELPERS
     |--------------------------------------------------------------------------
     */
-
-    private function rewardGrammarXp(int $id): void
-    {
-        $user = user();
-
-        if ($user === null)
-        {
-            return;
-        }
-
-        $this->userLevelService->addXp(
-            $user,
-            UserXp::LEARN_GRAMMAR,
-        );
-
-        $this->grammaireRepository->markXpRewarded($id);
-    }
-
-    private function rewardVocabularyXp(int $id): void
-    {
-        $user = user();
-
-        if ($user === null)
-        {
-            return;
-        }
-
-        $this->userLevelService->addXp(
-            $user,
-            UserXp::LEARN_VOCABULARY,
-        );
-
-        $this->vocabulaireRepository->markXpRewarded($id);
-    }
 
     private function success(string $message): ServiceResult
     {

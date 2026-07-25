@@ -14,4 +14,32 @@ final readonly class ArtbookStatsData
         public string $authorLabel,
     ) {
     }
+
+    /**
+     * @return array{
+     *     artbook: string,
+     *     thumbnailUrl: string,
+     *     authorLabel: string
+     * }
+     */
+    public function toArray(): array
+    {
+        return [
+            'artbook' => $this->artbook,
+            'thumbnailUrl' => $this->thumbnailUrl,
+            'authorLabel' => $this->authorLabel,
+        ];
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            artbook: (string) $data['artbook'],
+            thumbnailUrl: (string) $data['thumbnailUrl'],
+            authorLabel: (string) $data['authorLabel'],
+        );
+    }
 }

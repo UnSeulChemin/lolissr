@@ -32,6 +32,12 @@ final class ChinoisGrammaireRepository extends Model
         xp_rewarded
     ';
 
+    /*
+    |--------------------------------------------------------------------------
+    | LECTURE
+    |--------------------------------------------------------------------------
+    */
+
     /**
      * @return list<ChinoisGrammaireData>
      */
@@ -51,10 +57,9 @@ final class ChinoisGrammaireRepository extends Model
             "
         );
 
-        /** @var list<ChinoisGrammaireData> */
         return array_map(
             $this->mapRowToDto(...),
-            $results,
+            $results
         );
     }
 
@@ -84,10 +89,9 @@ final class ChinoisGrammaireRepository extends Model
             ]
         );
 
-        /** @var list<ChinoisGrammaireData> */
         return array_map(
             $this->mapRowToDto(...),
-            $results,
+            $results
         );
     }
 
@@ -118,8 +122,19 @@ final class ChinoisGrammaireRepository extends Model
         return $this->mapRowToDto($result);
     }
 
-    public function toggleMaitrise(int $id): bool
+    /*
+    |--------------------------------------------------------------------------
+    | ÉCRITURE
+    |--------------------------------------------------------------------------
+    */
+
+    public function toggleMaitrise(int $id): ?bool
     {
+        if (! $this->existsById($id))
+        {
+            return null;
+        }
+
         $this->execute(
             "
             UPDATE {$this->table()}
@@ -133,6 +148,7 @@ final class ChinoisGrammaireRepository extends Model
             ]
         );
 
+        /** @var stdClass|null $result */
         $result = $this->fetchOne(
             "
             SELECT maitrise
@@ -140,6 +156,8 @@ final class ChinoisGrammaireRepository extends Model
             FROM {$this->table()}
 
             WHERE id = :id
+
+            LIMIT 1
             ",
             [
                 'id' => $id,
@@ -148,18 +166,17 @@ final class ChinoisGrammaireRepository extends Model
 
         if ($result === null)
         {
-            return false;
+            return null;
         }
 
-        /** @var array{maitrise?: mixed} $data */
-        $data = (array) $result;
-
-        return (bool) ($data['maitrise'] ?? false);
+        return (bool) $result->maitrise;
     }
 
     public function deleteGrammaire(int $id): bool
     {
-        return $this->delete(['id' => $id]);
+        return $this->delete([
+            'id' => $id,
+        ]);
     }
 
     public function updateGrammaire(
@@ -174,8 +191,7 @@ final class ChinoisGrammaireRepository extends Model
         string $explication,
         string $section,
         string $categorie
-    ): bool
-    {
+    ): bool {
         $current = $this->findById($id);
 
         if ($current === null)
@@ -183,36 +199,42 @@ final class ChinoisGrammaireRepository extends Model
             return false;
         }
 
-        $position =
+        $niveau = trim($niveau);
+        $section = trim($section);
+        $categorie = trim($categorie);
+
+        $sameLocation =
             $current->niveau === $niveau
-            && $current->section === trim($section)
-            && $current->categorie === trim($categorie)
-                ? $current->position
-                : $this->getNextPosition(
-                    $niveau,
-                    $section,
-                    $categorie,
-                    $id,
-                );
+            && $current->section === $section
+            && $current->categorie === $categorie;
+
+        $position = $sameLocation
+            ? $current->position
+            : $this->getNextPosition(
+                $niveau,
+                $section,
+                $categorie,
+                $id
+            );
 
         return $this->updateById(
             $id,
             [
-                'niveau' => trim($niveau),
+                'niveau' => $niveau,
 
-                'section' => trim($section),
+                'section' => $section,
                 'section_position' => $this->getSectionPosition(
                     $niveau,
                     $section,
-                    $id,
+                    $id
                 ),
 
-                'categorie' => trim($categorie),
+                'categorie' => $categorie,
                 'categorie_position' => $this->getCategoriePosition(
                     $niveau,
                     $section,
                     $categorie,
-                    $id,
+                    $id
                 ),
 
                 'position' => $position,
@@ -220,6 +242,7 @@ final class ChinoisGrammaireRepository extends Model
                 'titre' => trim($titre),
                 'structure' => trim($structure),
                 'abreviation' => Str::nullableTrim($abreviation),
+
                 'phrase' => trim($phrase),
                 'pinyin' => trim($pinyin),
                 'traduction' => trim($traduction),
@@ -228,15 +251,23 @@ final class ChinoisGrammaireRepository extends Model
         );
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | POSITIONS
+    |--------------------------------------------------------------------------
+    */
+
     public function getSectionPosition(
         string $niveau,
         string $section,
-        ?int $ignoreId = null,
-    ): int
-    {
+        ?int $ignoreId = null
+    ): int {
+        $niveau = trim($niveau);
+        $section = trim($section);
+
         $params = [
-            'niveau' => trim($niveau),
-            'section' => trim($section),
+            'niveau' => $niveau,
+            'section' => $section,
         ];
 
         $sql = "
@@ -251,13 +282,17 @@ final class ChinoisGrammaireRepository extends Model
         if ($ignoreId !== null)
         {
             $sql .= "\nAND id <> :id";
+
             $params['id'] = $ignoreId;
         }
 
         $sql .= "\nLIMIT 1";
 
         /** @var stdClass|null $result */
-        $result = $this->fetchOne($sql, $params);
+        $result = $this->fetchOne(
+            $sql,
+            $params
+        );
 
         if ($result !== null)
         {
@@ -274,7 +309,7 @@ final class ChinoisGrammaireRepository extends Model
             WHERE niveau = :niveau
             ",
             [
-                'niveau' => trim($niveau),
+                'niveau' => $niveau,
             ]
         );
 
@@ -285,13 +320,16 @@ final class ChinoisGrammaireRepository extends Model
         string $niveau,
         string $section,
         string $categorie,
-        ?int $ignoreId = null,
-    ): int
-    {
+        ?int $ignoreId = null
+    ): int {
+        $niveau = trim($niveau);
+        $section = trim($section);
+        $categorie = trim($categorie);
+
         $params = [
-            'niveau' => trim($niveau),
-            'section' => trim($section),
-            'categorie' => trim($categorie),
+            'niveau' => $niveau,
+            'section' => $section,
+            'categorie' => $categorie,
         ];
 
         $sql = "
@@ -307,13 +345,17 @@ final class ChinoisGrammaireRepository extends Model
         if ($ignoreId !== null)
         {
             $sql .= "\nAND id <> :id";
+
             $params['id'] = $ignoreId;
         }
 
         $sql .= "\nLIMIT 1";
 
         /** @var stdClass|null $result */
-        $result = $this->fetchOne($sql, $params);
+        $result = $this->fetchOne(
+            $sql,
+            $params
+        );
 
         if ($result !== null)
         {
@@ -331,8 +373,8 @@ final class ChinoisGrammaireRepository extends Model
             AND section = :section
             ",
             [
-                'niveau' => trim($niveau),
-                'section' => trim($section),
+                'niveau' => $niveau,
+                'section' => $section,
             ]
         );
 
@@ -343,9 +385,8 @@ final class ChinoisGrammaireRepository extends Model
         string $niveau,
         string $section,
         string $categorie,
-        ?int $ignoreId = null,
-    ): int
-    {
+        ?int $ignoreId = null
+    ): int {
         $params = [
             'niveau' => trim($niveau),
             'section' => trim($section),
@@ -365,14 +406,24 @@ final class ChinoisGrammaireRepository extends Model
         if ($ignoreId !== null)
         {
             $sql .= "\nAND id <> :id";
+
             $params['id'] = $ignoreId;
         }
 
         /** @var stdClass|null $max */
-        $max = $this->fetchOne($sql, $params);
+        $max = $this->fetchOne(
+            $sql,
+            $params
+        );
 
         return (int) (($max->position ?? -1) + 1);
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | XP
+    |--------------------------------------------------------------------------
+    */
 
     public function isXpRewarded(int $id): bool
     {
@@ -416,25 +467,52 @@ final class ChinoisGrammaireRepository extends Model
     |--------------------------------------------------------------------------
     */
 
+    private function existsById(int $id): bool
+    {
+        /** @var stdClass|null $result */
+        $result = $this->fetchOne(
+            "
+            SELECT 1
+
+            FROM {$this->table()}
+
+            WHERE id = :id
+
+            LIMIT 1
+            ",
+            [
+                'id' => $id,
+            ]
+        );
+
+        return $result !== null;
+    }
+
     /**
      * @param array<string, mixed> $data
      */
-    private function updateById(int $id, array $data): bool
-    {
-        return $this->update($data, ['id' => $id]);
+    private function updateById(
+        int $id,
+        array $data
+    ): bool {
+        return $this->update(
+            $data,
+            [
+                'id' => $id,
+            ]
+        );
     }
 
-    private function mapRowToDto(stdClass $row): ChinoisGrammaireData
-    {
-        $abreviation =
-            $row->abreviation !== null
-                ? (string) $row->abreviation
-                : null;
+    private function mapRowToDto(
+        stdClass $row
+    ): ChinoisGrammaireData {
+        $abreviation = $row->abreviation !== null
+            ? (string) $row->abreviation
+            : null;
 
-        $explication =
-            $row->explication !== null
-                ? (string) $row->explication
-                : null;
+        $explication = $row->explication !== null
+            ? (string) $row->explication
+            : null;
 
         $maitrise = (bool) $row->maitrise;
 
@@ -444,7 +522,6 @@ final class ChinoisGrammaireRepository extends Model
             niveau: (string) $row->niveau,
 
             section: (string) $row->section,
-
             categorie: (string) $row->categorie,
 
             titre: (string) $row->titre,
@@ -463,11 +540,11 @@ final class ChinoisGrammaireRepository extends Model
 
             hasAbreviation:
                 $abreviation !== null
-                && trim($abreviation) !== '',
+                && $abreviation !== '',
 
             hasExplication:
                 $explication !== null
-                && trim($explication) !== '',
+                && $explication !== '',
 
             masteredClass:
                 $maitrise
@@ -487,7 +564,7 @@ final class ChinoisGrammaireRepository extends Model
             masteredLabel:
                 $maitrise
                     ? 'Retirer la maîtrise'
-                    : 'Marquer comme maîtrisé',
+                    : 'Marquer comme maîtrisé'
         );
     }
 }

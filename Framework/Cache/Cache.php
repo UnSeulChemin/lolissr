@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Framework\Cache;
 
+use Framework\Debug\Profiler;
 use Framework\Support\Logger;
 
 use JsonException;
@@ -23,97 +24,185 @@ final class Cache
             return null;
         }
 
-        $path = self::path($key);
-
-        if (! is_file($path))
-        {
-            return null;
-        }
-
-        $content = file_get_contents($path);
-
-        if ($content === false)
-        {
-            Logger::warning('Cache unreadable', ['key' => $key]);
-
-            return null;
-        }
+        Profiler::start('cache.get');
 
         try
         {
-            $payload = json_decode($content, false, 512, JSON_THROW_ON_ERROR);
+            $path = self::path($key);
+
+            if (! is_file($path))
+            {
+                return null;
+            }
+
+            $content = file_get_contents($path);
+
+            if ($content === false)
+            {
+                Logger::warning(
+                    'Cache unreadable',
+                    [
+                        'key' => $key,
+                    ]
+                );
+
+                return null;
+            }
+
+            try
+            {
+                $payload = json_decode(
+                    $content,
+                    true,
+                    512,
+                    JSON_THROW_ON_ERROR
+                );
+            }
+            catch (JsonException $exception)
+            {
+                self::deleteFile($path);
+
+                Logger::warning(
+                    'Cache corrupted JSON',
+                    [
+                        'key' => $key,
+                        'error' => $exception->getMessage(),
+                    ]
+                );
+
+                return null;
+            }
+
+            if (
+                ! is_array($payload)
+                || ! array_key_exists('value', $payload)
+            )
+            {
+                self::deleteFile($path);
+
+                Logger::warning(
+                    'Cache invalid payload',
+                    [
+                        'key' => $key,
+                    ]
+                );
+
+                return null;
+            }
+
+            $expiresAt = $payload['expires_at'] ?? null;
+
+            if (
+                ! is_int($expiresAt)
+                && ! is_numeric($expiresAt)
+            )
+            {
+                self::deleteFile($path);
+
+                Logger::warning(
+                    'Cache invalid expiration',
+                    [
+                        'key' => $key,
+                    ]
+                );
+
+                return null;
+            }
+
+            if ((int) $expiresAt < time())
+            {
+                self::deleteFile($path);
+
+                return null;
+            }
+
+            return $payload['value'];
         }
-        catch (JsonException $exception)
+        finally
         {
-            self::deleteFile($path);
-
-            Logger::warning('Cache corrupted JSON', ['key' => $key, 'error' => $exception->getMessage()]);
-
-            return null;
+            Profiler::end('cache.get');
         }
-
-        if (! is_object($payload) || ! property_exists($payload, 'value'))
-        {
-            self::deleteFile($path);
-
-            Logger::warning('Cache invalid payload', ['key' => $key]);
-
-            return null;
-        }
-
-        if (($payload->expires_at ?? 0) < time())
-        {
-            self::deleteFile($path);
-
-            return null;
-        }
-
-        return $payload->value;
     }
 
-    public static function put(string $key, mixed $value, ?int $ttl = null): void
-    {
+    public static function put(
+        string $key,
+        mixed $value,
+        ?int $ttl = null
+    ): void {
         if (! self::enabled())
         {
             return;
         }
 
-        if (! self::ensureDirectory())
-        {
-            Logger::warning('Cache directory unavailable');
-
-            return;
-        }
-
-        $ttl ??= self::ttl();
+        Profiler::start('cache.put');
 
         try
         {
-            $json = json_encode(
-                [
-                    'expires_at' => time() + $ttl,
-                    'value' => $value,
-                ],
-                JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR,
+            if (! self::ensureDirectory())
+            {
+                Logger::warning(
+                    'Cache directory unavailable'
+                );
+
+                return;
+            }
+
+            $ttl = max(
+                1,
+                $ttl ?? self::ttl()
             );
+
+            try
+            {
+                $json = json_encode(
+                    [
+                        'expires_at' => time() + $ttl,
+                        'value' => $value,
+                    ],
+                    JSON_UNESCAPED_UNICODE
+                    | JSON_THROW_ON_ERROR
+                );
+            }
+            catch (JsonException $exception)
+            {
+                Logger::warning(
+                    'Cache encoding failed',
+                    [
+                        'key' => $key,
+                        'error' => $exception->getMessage(),
+                    ]
+                );
+
+                return;
+            }
+
+            $written = file_put_contents(
+                self::path($key),
+                $json,
+                LOCK_EX
+            );
+
+            if ($written === false)
+            {
+                Logger::warning(
+                    'Cache write failed',
+                    [
+                        'key' => $key,
+                    ]
+                );
+            }
         }
-        catch (JsonException $exception)
+        finally
         {
-            Logger::warning('Cache encoding failed', ['key' => $key, 'error' => $exception->getMessage()]);
-
-            return;
-        }
-
-        $written = file_put_contents(self::path($key), $json, LOCK_EX);
-
-        if ($written === false)
-        {
-            Logger::warning('Cache write failed', ['key' => $key]);
+            Profiler::end('cache.put');
         }
     }
 
-    public static function remember(string $key, ?int $ttl, callable $callback): mixed
-    {
+    public static function remember(
+        string $key,
+        ?int $ttl,
+        callable $callback
+    ): mixed {
         if (! self::enabled())
         {
             return $callback();
@@ -123,12 +212,20 @@ final class Cache
 
         if ($cached !== null)
         {
+            Profiler::increment('cache.hit');
+
             return $cached;
         }
 
+        Profiler::increment('cache.miss');
+
         $value = $callback();
 
-        self::put($key, $value, $ttl);
+        self::put(
+            $key,
+            $value,
+            $ttl
+        );
 
         return $value;
     }
@@ -140,12 +237,14 @@ final class Cache
             return false;
         }
 
-        return is_file(self::path($key));
+        return self::get($key) !== null;
     }
 
     public static function forget(string $key): void
     {
-        self::deleteFile(self::path($key));
+        self::deleteFile(
+            self::path($key)
+        );
     }
 
     public static function clear(): void
@@ -157,11 +256,15 @@ final class Cache
             return;
         }
 
-        $files = glob($directory . DIRECTORY_SEPARATOR . '*.cache');
+        $files = glob(
+            $directory
+            . DIRECTORY_SEPARATOR
+            . '*.cache'
+        );
 
         if ($files === false)
         {
-            $files = [];
+            return;
         }
 
         foreach ($files as $file)
@@ -169,7 +272,9 @@ final class Cache
             self::deleteFile($file);
         }
 
-        Logger::info('Cache cleared');
+        Logger::info(
+            'Cache cleared'
+        );
     }
 
     // =========================================
@@ -178,33 +283,69 @@ final class Cache
 
     private static function enabled(): bool
     {
-        return (bool) config('cache.enabled', false);
+        return (bool) config(
+            'cache.enabled',
+            false
+        );
     }
 
     private static function ttl(): int
     {
-        return max(1, (int) config('cache.ttl', 300));
+        return max(
+            1,
+            (int) config(
+                'cache.ttl',
+                300
+            )
+        );
     }
 
     private static function directory(): string
     {
-        return self::$directory ??= base_path('storage/cache');
+        return self::$directory ??= base_path(
+            'storage/cache'
+        );
     }
 
     private static function path(string $key): string
     {
-        return self::directory() . DIRECTORY_SEPARATOR . sha1($key) . '.cache';
+        return self::directory()
+            . DIRECTORY_SEPARATOR
+            . sha1($key)
+            . '.cache';
     }
 
     private static function ensureDirectory(): bool
     {
         $directory = self::directory();
 
-        return is_dir($directory) || mkdir($directory, 0755, true);
+        if (is_dir($directory))
+        {
+            return true;
+        }
+
+        return mkdir(
+            $directory,
+            0755,
+            true
+        );
     }
 
     private static function deleteFile(string $path): void
     {
-        @unlink($path);
+        if (! is_file($path))
+        {
+            return;
+        }
+
+        if (! unlink($path))
+        {
+            Logger::warning(
+                'Cache delete failed',
+                [
+                    'path' => $path,
+                ]
+            );
+        }
     }
 }

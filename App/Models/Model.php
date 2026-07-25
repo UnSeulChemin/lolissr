@@ -6,13 +6,14 @@ namespace App\Models;
 
 use Framework\Application\App;
 use Framework\Database\Database;
+use Framework\Debug\Profiler;
 
 use LogicException;
 use PDO;
 use PDOStatement;
 use RuntimeException;
-use Throwable;
 use stdClass;
+use Throwable;
 
 abstract class Model
 {
@@ -22,19 +23,11 @@ abstract class Model
     |--------------------------------------------------------------------------
     */
 
-    /**
-     * Nom de la table SQL.
-     */
     protected string $table = '';
 
-    /**
-     * Nom de table validé et mis en cache.
-     */
     private ?string $resolvedTable = null;
 
     /**
-     * Cache des identifiants SQL nettoyés.
-     *
      * @var array<string, string>
      */
     private static array $identifierCache = [];
@@ -53,7 +46,9 @@ abstract class Model
     {
         if (App::isTesting())
         {
-            throw new LogicException('Écriture en base interdite pendant les tests.');
+            throw new LogicException(
+                'Écriture en base interdite pendant les tests.'
+            );
         }
     }
 
@@ -66,8 +61,12 @@ abstract class Model
     /**
      * @param array<int|string, mixed> $params
      */
-    protected function query(string $sql, array $params = []): PDOStatement|false
-    {
+    protected function query(
+        string $sql,
+        array $params = []
+    ): PDOStatement|false {
+        Profiler::start('database.query');
+
         try
         {
             $statement = $this->db->prepare($sql);
@@ -83,7 +82,14 @@ abstract class Model
         }
         catch (Throwable $exception)
         {
-            throw new RuntimeException($exception->getMessage(), previous: $exception);
+            throw new RuntimeException(
+                $exception->getMessage(),
+                previous: $exception
+            );
+        }
+        finally
+        {
+            Profiler::end('database.query');
         }
     }
 
@@ -95,9 +101,15 @@ abstract class Model
      *
      * @return ($class is class-string<T> ? T|null : stdClass|null)
      */
-    protected function fetchOne(string $sql, array $params = [], ?string $class = null): ?object
-    {
-        $statement = $this->query($sql, $params);
+    protected function fetchOne(
+        string $sql,
+        array $params = [],
+        ?string $class = null
+    ): ?object {
+        $statement = $this->query(
+            $sql,
+            $params
+        );
 
         if ($statement === false)
         {
@@ -106,12 +118,17 @@ abstract class Model
 
         if ($class !== null)
         {
-            $statement->setFetchMode(PDO::FETCH_CLASS, $class);
+            $statement->setFetchMode(
+                PDO::FETCH_CLASS,
+                $class
+            );
         }
 
         $result = $statement->fetch();
 
-        return $result !== false ? $result : null;
+        return $result !== false
+            ? $result
+            : null;
     }
 
     /**
@@ -122,9 +139,15 @@ abstract class Model
      *
      * @return ($class is class-string<T> ? list<T> : list<stdClass>)
      */
-    protected function fetchAll(string $sql, array $params = [], ?string $class = null): array
-    {
-        $statement = $this->query($sql, $params);
+    protected function fetchAll(
+        string $sql,
+        array $params = [],
+        ?string $class = null
+    ): array {
+        $statement = $this->query(
+            $sql,
+            $params
+        );
 
         if ($statement === false)
         {
@@ -133,7 +156,10 @@ abstract class Model
 
         if ($class !== null)
         {
-            $statement->setFetchMode(PDO::FETCH_CLASS, $class);
+            $statement->setFetchMode(
+                PDO::FETCH_CLASS,
+                $class
+            );
 
             /** @var list<T> $results */
             $results = $statement->fetchAll();
@@ -150,11 +176,16 @@ abstract class Model
     /**
      * @param array<int|string, mixed> $params
      */
-    protected function execute(string $sql, array $params = []): bool
-    {
+    protected function execute(
+        string $sql,
+        array $params = []
+    ): bool {
         $this->guardWrite();
 
-        return $this->query($sql, $params) !== false;
+        return $this->query(
+            $sql,
+            $params
+        ) !== false;
     }
 
     /*
@@ -170,9 +201,15 @@ abstract class Model
      *
      * @return ($class is class-string<T> ? T|null : stdClass|null)
      */
-    public function find(int $id, ?string $class = null): ?object
-    {
-        return $this->fetchOne("SELECT * FROM {$this->table()} WHERE id = ? LIMIT 1", [$id], $class);
+    public function find(
+        int $id,
+        ?string $class = null
+    ): ?object {
+        return $this->fetchOne(
+            "SELECT * FROM {$this->table()} WHERE id = ? LIMIT 1",
+            [$id],
+            $class
+        );
     }
 
     /**
@@ -183,8 +220,10 @@ abstract class Model
      *
      * @return ($class is class-string<T> ? list<T> : list<stdClass>)
      */
-    public function findBy(array $where, ?string $class = null): array
-    {
+    public function findBy(
+        array $where,
+        ?string $class = null
+    ): array {
         if ($where === [])
         {
             return [];
@@ -201,7 +240,10 @@ abstract class Model
             'SELECT * FROM '
             . $this->table()
             . ' WHERE '
-            . implode(' AND ', $builtWhere['conditions']),
+            . implode(
+                ' AND ',
+                $builtWhere['conditions']
+            ),
             $builtWhere['values'],
             $class
         );
@@ -238,7 +280,11 @@ abstract class Model
             return false;
         }
 
-        $placeholders = array_fill(0, count($fields), '?');
+        $placeholders = array_fill(
+            0,
+            count($fields),
+            '?'
+        );
 
         return $this->execute(
             'INSERT INTO '
@@ -256,8 +302,10 @@ abstract class Model
      * @param array<string, mixed> $data
      * @param array<string, mixed> $where
      */
-    public function update(array $data, array $where): bool
-    {
+    public function update(
+        array $data,
+        array $where
+    ): bool {
         if ($data === [] || $where === [])
         {
             return false;
@@ -281,7 +329,10 @@ abstract class Model
 
         $builtWhere = $this->buildWhere($where);
 
-        if ($fields === [] || $builtWhere['conditions'] === [])
+        if (
+            $fields === []
+            || $builtWhere['conditions'] === []
+        )
         {
             return false;
         }
@@ -292,7 +343,10 @@ abstract class Model
             . ' SET '
             . implode(', ', $fields)
             . ' WHERE '
-            . implode(' AND ', $builtWhere['conditions']),
+            . implode(
+                ' AND ',
+                $builtWhere['conditions']
+            ),
             array_merge(
                 $values,
                 $builtWhere['values']
@@ -321,7 +375,10 @@ abstract class Model
             'DELETE FROM '
             . $this->table()
             . ' WHERE '
-            . implode(' AND ', $builtWhere['conditions']),
+            . implode(
+                ' AND ',
+                $builtWhere['conditions']
+            ),
             $builtWhere['values']
         );
     }
@@ -334,7 +391,9 @@ abstract class Model
 
     protected function countRows(): int
     {
-        $result = $this->fetchOne("SELECT COUNT(*) AS total FROM {$this->table()}");
+        $result = $this->fetchOne(
+            "SELECT COUNT(*) AS total FROM {$this->table()}"
+        );
 
         /** @var array{total?: mixed} $data */
         $data = (array) $result;
@@ -345,18 +404,21 @@ abstract class Model
     /**
      * @param array<int|string, mixed> $params
      */
-    protected function countWhere(string $where, array $params = []): int
-    {
-        $result =
-            $this->fetchOne(
-                "
-                SELECT
-                    COUNT(*) AS total
-                FROM {$this->table()}
-                WHERE {$where}
-                ",
-                $params
-            );
+    protected function countWhere(
+        string $where,
+        array $params = []
+    ): int {
+        $result = $this->fetchOne(
+            "
+            SELECT
+                COUNT(*) AS total
+
+            FROM {$this->table()}
+
+            WHERE {$where}
+            ",
+            $params
+        );
 
         /** @var array{total?: mixed} $data */
         $data = (array) $result;
@@ -371,10 +433,12 @@ abstract class Model
         string $sql,
         string $field,
         array $params = [],
-        mixed $default = 0,
-    ): mixed
-    {
-        $result = $this->fetchOne($sql, $params);
+        mixed $default = 0
+    ): mixed {
+        $result = $this->fetchOne(
+            $sql,
+            $params
+        );
 
         if ($result === null)
         {
@@ -418,23 +482,31 @@ abstract class Model
             $values[] = $value;
         }
 
-        return ['conditions' => $conditions, 'values' => $values];
+        return [
+            'conditions' => $conditions,
+            'values' => $values,
+        ];
     }
 
     private function resolveTable(): string
     {
-        $table = $this->sanitizeIdentifier($this->table);
+        $table = $this->sanitizeIdentifier(
+            $this->table
+        );
 
         if ($table === '')
         {
-            throw new RuntimeException('Nom de table invalide.');
+            throw new RuntimeException(
+                'Nom de table invalide.'
+            );
         }
 
         return $table;
     }
 
-    private function sanitizeIdentifier(string $value): string
-    {
+    private function sanitizeIdentifier(
+        string $value
+    ): string {
         return self::$identifierCache[$value]
             ??= preg_replace(
                 '/[^a-zA-Z0-9_]/',

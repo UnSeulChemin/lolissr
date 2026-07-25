@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Framework\Container;
 
+use Framework\Debug\Profiler;
+
 use ReflectionClass;
 use ReflectionNamedType;
 use RuntimeException;
@@ -33,23 +35,43 @@ final class Container
      */
     private array $reflections = [];
 
+    private int $resolutionDepth = 0;
+
     // =========================================
     // CONTAINER
     // =========================================
 
-    public function bind(string $abstract, callable|string|null $concrete = null): void
-    {
-        $this->bindings[$abstract] = ['concrete' => $concrete ?? $abstract, 'singleton' => false];
+    public function bind(
+        string $abstract,
+        callable|string|null $concrete = null
+    ): void {
+        $this->bindings[$abstract] = [
+            'concrete' => $concrete ?? $abstract,
+            'singleton' => false,
+        ];
+
+        unset($this->instances[$abstract]);
     }
 
-    public function singleton(string $abstract, callable|string|null $concrete = null): void
-    {
-        $this->bindings[$abstract] = ['concrete' => $concrete ?? $abstract, 'singleton' => true];
+    public function singleton(
+        string $abstract,
+        callable|string|null $concrete = null
+    ): void {
+        $this->bindings[$abstract] = [
+            'concrete' => $concrete ?? $abstract,
+            'singleton' => true,
+        ];
+
+        unset($this->instances[$abstract]);
     }
 
-    public function instance(string $abstract, object $instance): void
-    {
+    public function instance(
+        string $abstract,
+        object $instance
+    ): void {
         $this->instances[$abstract] = $instance;
+
+        unset($this->bindings[$abstract]);
     }
 
     public function get(string $abstract): object
@@ -59,31 +81,60 @@ final class Container
             return $this->instances[$abstract];
         }
 
-        $binding = $this->bindings[$abstract] ?? ['concrete' => $abstract, 'singleton' => false];
+        $isRootResolution = $this->resolutionDepth === 0;
 
-        $object = $this->resolve($binding['concrete']);
-
-        if ($binding['singleton'])
+        if ($isRootResolution)
         {
-            $this->instances[$abstract] = $object;
+            Profiler::start('container.resolve');
         }
 
-        return $object;
+        $this->resolutionDepth++;
+
+        try
+        {
+            $binding = $this->bindings[$abstract] ?? [
+                'concrete' => $abstract,
+                'singleton' => false,
+            ];
+
+            $object = $this->resolve(
+                $binding['concrete']
+            );
+
+            if ($binding['singleton'])
+            {
+                $this->instances[$abstract] = $object;
+            }
+
+            return $object;
+        }
+        finally
+        {
+            $this->resolutionDepth--;
+
+            if ($isRootResolution)
+            {
+                Profiler::end('container.resolve');
+            }
+        }
     }
 
     // =========================================
     // RÉSOLUTION
     // =========================================
 
-    private function resolve(callable|string $concrete): object
-    {
+    private function resolve(
+        callable|string $concrete
+    ): object {
         if (is_callable($concrete))
         {
             $object = $concrete($this);
 
             if (! is_object($object))
             {
-                throw new RuntimeException('Container factory must return an object.');
+                throw new RuntimeException(
+                    'Container factory must return an object.'
+                );
             }
 
             return $object;
@@ -91,28 +142,38 @@ final class Container
 
         if (interface_exists($concrete))
         {
-            throw new RuntimeException("No binding registered for interface: {$concrete}");
+            throw new RuntimeException(
+                "No binding registered for interface: {$concrete}"
+            );
         }
 
         if (! class_exists($concrete))
         {
-            throw new RuntimeException("Class not found: {$concrete}");
+            throw new RuntimeException(
+                "Class not found: {$concrete}"
+            );
         }
 
         if (isset($this->resolving[$concrete]))
         {
-            throw new RuntimeException("Circular dependency detected: {$concrete}");
+            throw new RuntimeException(
+                "Circular dependency detected: {$concrete}"
+            );
         }
 
         $this->resolving[$concrete] = true;
 
         try
         {
-            $reflection = $this->reflections[$concrete] ??= new ReflectionClass($concrete);
+            $reflection =
+                $this->reflections[$concrete]
+                ??= new ReflectionClass($concrete);
 
             if (! $reflection->isInstantiable())
             {
-                throw new RuntimeException("Class is not instantiable: {$concrete}");
+                throw new RuntimeException(
+                    "Class is not instantiable: {$concrete}"
+                );
             }
 
             $constructor = $reflection->getConstructor();
@@ -128,22 +189,54 @@ final class Container
             {
                 $type = $parameter->getType();
 
-                if (! $type instanceof ReflectionNamedType || $type->isBuiltin())
+                if (
+                    ! $type instanceof ReflectionNamedType
+                    || $type->isBuiltin()
+                )
                 {
                     if ($parameter->isDefaultValueAvailable())
                     {
-                        $dependencies[] = $parameter->getDefaultValue();
+                        $dependencies[] =
+                            $parameter->getDefaultValue();
 
                         continue;
                     }
 
-                    throw new RuntimeException(sprintf('Unable to resolve %s::$%s', $concrete, $parameter->getName()));
+                    throw new RuntimeException(
+                        sprintf(
+                            'Unable to resolve %s::$%s',
+                            $concrete,
+                            $parameter->getName()
+                        )
+                    );
                 }
 
-                $dependencies[] = $this->get($type->getName());
+                $dependency = $type->getName();
+
+                if ($type->allowsNull())
+                {
+                    try
+                    {
+                        $dependencies[] = $this->get(
+                            $dependency
+                        );
+                    }
+                    catch (RuntimeException)
+                    {
+                        $dependencies[] = null;
+                    }
+
+                    continue;
+                }
+
+                $dependencies[] = $this->get(
+                    $dependency
+                );
             }
 
-            return $reflection->newInstanceArgs($dependencies);
+            return $reflection->newInstanceArgs(
+                $dependencies
+            );
         }
         finally
         {
