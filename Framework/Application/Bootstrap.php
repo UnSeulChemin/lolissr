@@ -26,21 +26,13 @@ final class Bootstrap
 
     public static function loadEnvOnly(): void
     {
-        Env::clear();
-
-        self::loadEnvironment(
-            base_path('.env')
-        );
+        Env::load(base_path('.env'));
     }
 
     public static function run(): never
     {
-        Env::clear();
+        Env::load(base_path('.env'));
         Config::clear();
-
-        self::loadEnvironment(
-            base_path('.env')
-        );
 
         self::configureDebug();
 
@@ -59,17 +51,11 @@ final class Bootstrap
             static fn (): Request => Request::capture()
         );
 
-        $container->singleton(
-            Database::class
-        );
+        $container->singleton(Database::class);
 
-        $router = new Router(
-            new RouteCollection()
-        );
+        $router = new Router(new RouteCollection());
 
-        $routes = require base_path(
-            'Config/routes.php'
-        );
+        $routes = require base_path('Config/routes.php');
 
         if (! is_callable($routes))
         {
@@ -81,14 +67,10 @@ final class Bootstrap
         $routes($router);
 
         /** @var Request $request */
-        $request = $container->get(
-            Request::class
-        );
+        $request = $container->get(Request::class);
 
         /** @var SecurityHeadersMiddleware $securityHeaders */
-        $securityHeaders = $container->get(
-            SecurityHeadersMiddleware::class
-        );
+        $securityHeaders = $container->get(SecurityHeadersMiddleware::class);
 
         $kernel = new AppKernel(
             $router,
@@ -118,13 +100,8 @@ final class Bootstrap
         register_shutdown_function(
             static function (): void
             {
-                $method =
-                    $_SERVER['REQUEST_METHOD']
-                    ?? 'UNKNOWN';
-
-                $uri =
-                    $_SERVER['REQUEST_URI']
-                    ?? '/';
+                $method = $_SERVER['REQUEST_METHOD'] ?? 'UNKNOWN';
+                $uri = $_SERVER['REQUEST_URI'] ?? '/';
 
                 Profiler::finishRequest(
                     method: $method,
@@ -136,81 +113,20 @@ final class Bootstrap
     }
 
     // =========================================
-    // ENVIRONNEMENT
+    // CONFIGURATION
     // =========================================
-
-    private static function loadEnvironment(
-        string $envFile
-    ): void {
-        if (! is_file($envFile))
-        {
-            return;
-        }
-
-        $lines = file(
-            $envFile,
-            FILE_IGNORE_NEW_LINES
-            | FILE_SKIP_EMPTY_LINES
-        );
-
-        if ($lines === false)
-        {
-            return;
-        }
-
-        foreach ($lines as $line)
-        {
-            $line = trim($line);
-
-            if (
-                $line === ''
-                || str_starts_with($line, '#')
-                || ! str_contains($line, '=')
-            )
-            {
-                continue;
-            }
-
-            [$name, $value] = explode(
-                '=',
-                $line,
-                2
-            );
-
-            $name = trim($name);
-
-            $value = trim(
-                $value,
-                " \t\n\r\0\x0B\"'"
-            );
-
-            $_ENV[$name] = $value;
-            $_SERVER[$name] = $value;
-
-            putenv("{$name}={$value}");
-        }
-    }
 
     private static function configureDebug(): void
     {
         $debug = App::debug();
 
-        error_reporting(
-            $debug
-                ? E_ALL
-                : 0
-        );
+        error_reporting($debug ? E_ALL : 0);
 
         ini_set(
             'display_errors',
-            $debug
-                ? '1'
-                : '0'
+            $debug ? '1' : '0'
         );
 
-        ini_set(
-            'log_errors',
-            '1'
-        );
+        ini_set('log_errors', '1');
     }
 }

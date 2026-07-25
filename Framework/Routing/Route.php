@@ -95,34 +95,46 @@ final class Route
     }
 
     // =========================================
-    // UTILITAIRES
+    // COMPILATION
     // =========================================
 
     private function compilePattern(): string
     {
-        $path = rtrim($this->path, '/');
+        $path = trim($this->path, '/');
 
         if ($path === '')
         {
-            $path = '/';
+            return '#^/?$#';
         }
 
-        $pattern = preg_replace_callback(
-            '#\{([a-zA-Z_][a-zA-Z0-9_]*)(?::([a-zA-Z]+))?\}#',
-            function (array $matches): string
-            {
-                $name = $matches[1];
-                $type = $matches[2] ?? 'string';
-
-                $this->parameters[$name] = $type;
-
-                $parameterPattern = self::PARAM_PATTERNS[$type] ?? '[^/]+';
-
-                return "(?P<{$name}>{$parameterPattern})";
-            },
-            $path,
+        $segments = explode('/', $path);
+        $compiledSegments = array_map(
+            fn (string $segment): string => $this->compileSegment($segment),
+            $segments
         );
 
-        return '#^' . $pattern . '/?$#';
+        return '#^/' . implode('/', $compiledSegments) . '/?$#';
+    }
+
+    private function compileSegment(string $segment): string
+    {
+        if (
+            preg_match(
+                '#^\{([a-zA-Z_][a-zA-Z0-9_]*)(?::([a-zA-Z]+))?\}$#',
+                $segment,
+                $matches
+            ) !== 1
+        ) {
+            return preg_quote($segment, '#');
+        }
+
+        $name = $matches[1];
+        $type = $matches[2] ?? 'string';
+
+        $this->parameters[$name] = $type;
+
+        $parameterPattern = self::PARAM_PATTERNS[$type] ?? '[^/]+';
+
+        return "(?P<{$name}>{$parameterPattern})";
     }
 }
