@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace App\Services\Nendoroid;
 
+use App\Cache\DashboardCache;
 use App\Constants\UserXp;
 use App\DTO\Common\ServiceResult;
 use App\DTO\Nendoroid\Inputs\NendoroidCreateDTO;
 use App\DTO\Nendoroid\Inputs\NendoroidUpdateDTO;
-use App\DTO\Upload\UploadThumbnailData;
 use App\Models\Nendoroid;
 use App\Repositories\Nendoroid\NendoroidRepository;
-use App\Services\UploadService;
+use App\Services\Media\ThumbnailManager;
 use App\Services\User\UserLevelService;
 
-use Framework\Config\UploadConfig;
 use Framework\Database\Database;
 use Framework\Support\Logger;
 
@@ -25,65 +24,63 @@ final readonly class NendoroidWriteService
 {
     public function __construct(
         private NendoroidRepository $nendoroidRepository,
-        private UploadService $uploadService,
+        private ThumbnailManager $thumbnailManager,
         private Database $database,
-        private UserLevelService $userLevelService
+        private UserLevelService $userLevelService,
+        private DashboardCache $dashboardCache
     ) {
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | NENDOROID
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // NENDOROID
+    // =========================================
 
     /**
      * @param array<string, mixed> $files
      */
-    public function create(NendoroidCreateDTO $dto, array $files): ServiceResult
-    {
-        $existingNendoroid = $this->nendoroidRepository->findOneBySlugAndNumero($dto->slug, $dto->numero);
+    public function create(
+        NendoroidCreateDTO $dto,
+        array $files
+    ): ServiceResult {
+        $existingNendoroid = $this->nendoroidRepository->findOneBySlugAndNumero(
+            $dto->slug,
+            $dto->numero
+        );
 
         if ($existingNendoroid !== null)
         {
-            return $this->error('Ce Nendoroid existe déjà', 409);
+            return $this->error(
+                'Ce Nendoroid existe déjà',
+                409
+            );
         }
 
-        return $this->database->transaction(
+        $result = $this->database->transaction(
             function () use ($dto, $files): ServiceResult
             {
-                $upload = $this->uploadService->uploadThumbnail(
+                $upload = $this->thumbnailManager->upload(
+                    'nendoroid',
                     $dto->origin,
                     $dto->numero,
-                    UploadConfig::thumbnailDirectory('nendoroid'),
                     $files
                 );
 
-                if (! $upload->success)
+                if ($upload instanceof ServiceResult)
                 {
-                    return $this->error($upload->message, $upload->status);
-                }
-
-                $uploadData = $upload->data['upload'] ?? null;
-
-                if (! $uploadData instanceof UploadThumbnailData)
-                {
-                    return $this->error('Upload invalide');
+                    return $upload;
                 }
 
                 try
                 {
                     $inserted = $this->nendoroidRepository->insert([
-                        'thumbnail' => $uploadData->thumbnailPath,
-                        'extension' => $uploadData->extension,
+                        'thumbnail' => $upload->thumbnailPath,
+                        'extension' => $upload->extension,
                         'slug' => $dto->slug,
                         'numero' => $dto->numero,
-
                         'origin' => $dto->origin,
                         'waifu' => $dto->waifu,
                         'company' => $dto->company,
                         'release_date' => $dto->release_date,
-
                         'commentaire' => $dto->commentaire,
                     ]);
 
@@ -97,40 +94,59 @@ final readonly class NendoroidWriteService
 
                     if ($failure !== null)
                     {
-                        $this->rollbackUpload($uploadData);
+                        $this->thumbnailManager->rollback($upload);
 
                         return $failure;
                     }
 
-                    return $this->success('Nendoroid ajouté avec succès');
+                    return $this->success(
+                        'Nendoroid ajouté avec succès'
+                    );
                 }
                 catch (PDOException $exception)
                 {
-                    $this->rollbackUpload($uploadData);
+                    $this->thumbnailManager->rollback($upload);
 
                     if ($this->isDuplicateKeyException($exception))
                     {
-                        return $this->error('Ce Nendoroid existe déjà', 409);
+                        return $this->error(
+                            'Ce Nendoroid existe déjà',
+                            409
+                        );
                     }
 
                     throw $exception;
                 }
                 catch (Throwable $exception)
                 {
-                    $this->rollbackUpload($uploadData);
+                    $this->thumbnailManager->rollback($upload);
 
                     throw $exception;
                 }
             }
         );
+
+        if ($result->success)
+        {
+            $this->forgetDashboardCache();
+        }
+
+        return $result;
     }
 
-    public function update(string $slug, int $numero, NendoroidUpdateDTO $dto): ServiceResult
-    {
-        return $this->database->transaction(
+    public function update(
+        string $slug,
+        int $numero,
+        NendoroidUpdateDTO $dto
+    ): ServiceResult {
+        $result = $this->database->transaction(
             function () use ($slug, $numero, $dto): ServiceResult
             {
-                $updated = $this->nendoroidRepository->updateNendoroid($slug, $numero, $dto);
+                $updated = $this->nendoroidRepository->updateNendoroid(
+                    $slug,
+                    $numero,
+                    $dto
+                );
 
                 $failure = $this->writeFailed(
                     $updated,
@@ -145,26 +161,47 @@ final readonly class NendoroidWriteService
                     return $failure;
                 }
 
-                return $this->success('Nendoroid mis à jour avec succès');
+                return $this->success(
+                    'Nendoroid mis à jour avec succès'
+                );
             }
         );
-    }
 
-    public function updateCollectStatus(string $slug, int $numero, int $collectStatus): ServiceResult
-    {
-        if (! in_array($collectStatus, [0, 1], true))
+        if ($result->success)
         {
-            return $this->error('Statut de collection invalide', 422);
+            $this->forgetDashboardCache();
         }
 
-        return $this->database->transaction(
+        return $result;
+    }
+
+    public function updateCollectStatus(
+        string $slug,
+        int $numero,
+        int $collectStatus
+    ): ServiceResult {
+        if (! in_array($collectStatus, [0, 1], true))
+        {
+            return $this->error(
+                'Statut de collection invalide',
+                422
+            );
+        }
+
+        $result = $this->database->transaction(
             function () use ($slug, $numero, $collectStatus): ServiceResult
             {
-                $nendoroid = $this->nendoroidRepository->findOneBySlugAndNumero($slug, $numero);
+                $nendoroid = $this->nendoroidRepository->findOneBySlugAndNumero(
+                    $slug,
+                    $numero
+                );
 
                 if ($nendoroid === null)
                 {
-                    return $this->error('Nendoroid introuvable', 404);
+                    return $this->error(
+                        'Nendoroid introuvable',
+                        404
+                    );
                 }
 
                 $updated = $this->nendoroidRepository->updateCollectStatus(
@@ -190,7 +227,9 @@ final readonly class NendoroidWriteService
 
                 if (! $nendoroid->collect && $collectStatus === 1)
                 {
-                    $xpEarned = $this->rewardCollectXp($nendoroid);
+                    $xpEarned = $this->rewardCollectXp(
+                        $nendoroid
+                    );
                 }
 
                 $user = user();
@@ -202,27 +241,46 @@ final readonly class NendoroidWriteService
                     [
                         'collectStatus' => $collectStatus,
                         'xpEarned' => $xpEarned,
+                        'xpAmount' => $xpEarned ? UserXp::COLLECT_NENDOROID : 0,
                         'level' => $user?->level,
                         'xp' => $user?->xp,
                     ]
                 );
             }
         );
+
+        if ($result->success)
+        {
+            $this->forgetDashboardCache();
+        }
+
+        return $result;
     }
 
-    public function delete(string $slug, int $numero): ServiceResult
-    {
-        return $this->database->transaction(
+    public function delete(
+        string $slug,
+        int $numero
+    ): ServiceResult {
+        $nendoroid = $this->nendoroidRepository->findOneBySlugAndNumero(
+            $slug,
+            $numero
+        );
+
+        if ($nendoroid === null)
+        {
+            return $this->error(
+                'Nendoroid introuvable',
+                404
+            );
+        }
+
+        $result = $this->database->transaction(
             function () use ($slug, $numero): ServiceResult
             {
-                $nendoroid = $this->nendoroidRepository->findOneBySlugAndNumero($slug, $numero);
-
-                if ($nendoroid === null)
-                {
-                    return $this->error('Nendoroid introuvable', 404);
-                }
-
-                $deleted = $this->nendoroidRepository->deleteBySlugAndNumero($slug, $numero);
+                $deleted = $this->nendoroidRepository->deleteBySlugAndNumero(
+                    $slug,
+                    $numero
+                );
 
                 $failure = $this->writeFailed(
                     $deleted,
@@ -237,44 +295,33 @@ final readonly class NendoroidWriteService
                     return $failure;
                 }
 
-                $this->removeThumbnail($nendoroid);
-
-                return $this->success('Nendoroid supprimé avec succès');
+                return $this->success(
+                    'Nendoroid supprimé avec succès'
+                );
             }
         );
-    }
 
-    /*
-    |--------------------------------------------------------------------------
-    | FILES
-    |--------------------------------------------------------------------------
-    */
-
-    private function rollbackUpload(UploadThumbnailData $upload): void
-    {
-        $this->uploadService->removeFile($upload->destinationPath);
-    }
-
-    private function removeThumbnail(Nendoroid $nendoroid): void
-    {
-        if ($nendoroid->thumbnail === '' || $nendoroid->extension === '')
+        if ($result->success)
         {
-            return;
+            $this->thumbnailManager->remove(
+                $nendoroid->thumbnail,
+                $nendoroid->extension,
+                'nendoroid'
+            );
+
+            $this->forgetDashboardCache();
         }
 
-        $path = UploadConfig::thumbnailDirectory('nendoroid') . $nendoroid->thumbnail . '.' . $nendoroid->extension;
-
-        $this->uploadService->removeFile($path);
+        return $result;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | XP
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // XP
+    // =========================================
 
-    private function rewardCollectXp(Nendoroid $nendoroid): bool
-    {
+    private function rewardCollectXp(
+        Nendoroid $nendoroid
+    ): bool {
         $user = user();
 
         if ($user === null)
@@ -287,21 +334,42 @@ final readonly class NendoroidWriteService
             return false;
         }
 
-        $this->userLevelService->addXp($user, UserXp::COLLECT_NENDOROID);
+        $this->userLevelService->addXp(
+            $user,
+            UserXp::COLLECT_NENDOROID
+        );
 
         return true;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | HELPERS
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // CACHE
+    // =========================================
 
-    private function isDuplicateKeyException(PDOException $exception): bool
+    private function forgetDashboardCache(): void
     {
+        $this->dashboardCache->forget();
+    }
+
+    // =========================================
+    // HELPERS
+    // =========================================
+
+    private function isDuplicateKeyException(
+        PDOException $exception
+    ): bool {
         return $exception->getCode() === '23000'
             && ($exception->errorInfo[1] ?? null) === 1062;
+    }
+
+    private function logFailure(
+        string $action,
+        string $slug,
+        int $numero
+    ): void {
+        Logger::error(
+            "{$action} échoué slug={$slug} numero={$numero}"
+        );
     }
 
     private function writeFailed(
@@ -316,29 +384,48 @@ final readonly class NendoroidWriteService
             return null;
         }
 
-        $this->logFailure($action, $slug, $numero);
+        $this->logFailure(
+            $action,
+            $slug,
+            $numero
+        );
 
-        return $this->error($message);
+        return $this->error(
+            $message
+        );
     }
 
-    private function logFailure(string $action, string $slug, int $numero): void
-    {
-        Logger::error("{$action} échoué slug={$slug} numero={$numero}");
+    // =========================================
+    // RESULT
+    // =========================================
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    private function success(
+        string $message,
+        array $data = [],
+        int $status = 200
+    ): ServiceResult {
+        return ServiceResult::success(
+            message: $message,
+            data: $data,
+            status: $status
+        );
     }
 
     /**
      * @param array<string, mixed> $data
      */
-    private function success(string $message, array $data = [], int $status = 200): ServiceResult
-    {
-        return ServiceResult::success(message: $message, data: $data, status: $status);
-    }
-
-    /**
-     * @param array<string, mixed> $data
-     */
-    private function error(string $message, int $status = 500, array $data = []): ServiceResult
-    {
-        return ServiceResult::error(message: $message, data: $data, status: $status);
+    private function error(
+        string $message,
+        int $status = 500,
+        array $data = []
+    ): ServiceResult {
+        return ServiceResult::error(
+            message: $message,
+            data: $data,
+            status: $status
+        );
     }
 }

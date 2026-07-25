@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace App\Services\Figurine;
 
+use App\Cache\DashboardCache;
 use App\Constants\UserXp;
 use App\DTO\Common\ServiceResult;
 use App\DTO\Figurine\Inputs\FigurineCreateDTO;
 use App\DTO\Figurine\Inputs\FigurineUpdateDTO;
-use App\DTO\Upload\UploadThumbnailData;
 use App\Models\Figurine;
 use App\Repositories\Figurine\FigurineRepository;
-use App\Services\UploadService;
+use App\Services\Media\ThumbnailManager;
 use App\Services\User\UserLevelService;
 
-use Framework\Config\UploadConfig;
 use Framework\Database\Database;
 use Framework\Support\Logger;
 
@@ -25,57 +24,57 @@ final readonly class FigurineWriteService
 {
     public function __construct(
         private FigurineRepository $figurineRepository,
-        private UploadService $uploadService,
+        private ThumbnailManager $thumbnailManager,
         private Database $database,
-        private UserLevelService $userLevelService
+        private UserLevelService $userLevelService,
+        private DashboardCache $dashboardCache
     ) {
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | FIGURINE
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // FIGURINE
+    // =========================================
 
     /**
      * @param array<string, mixed> $files
      */
-    public function create(FigurineCreateDTO $dto, array $files): ServiceResult
-    {
-        $existingFigurine = $this->figurineRepository->findOneBySlugAndNumero($dto->slug, $dto->numero);
+    public function create(
+        FigurineCreateDTO $dto,
+        array $files
+    ): ServiceResult {
+        $existingFigurine = $this->figurineRepository->findOneBySlugAndNumero(
+            $dto->slug,
+            $dto->numero
+        );
 
         if ($existingFigurine !== null)
         {
-            return $this->error('Cette figurine existe déjà', 409);
+            return $this->error(
+                'Cette figurine existe déjà',
+                409
+            );
         }
 
-        return $this->database->transaction(
+        $result = $this->database->transaction(
             function () use ($dto, $files): ServiceResult
             {
-                $upload = $this->uploadService->uploadThumbnail(
+                $upload = $this->thumbnailManager->upload(
+                    'figurine',
                     $dto->origin,
                     $dto->numero,
-                    UploadConfig::thumbnailDirectory('figurine'),
                     $files
                 );
 
-                if (! $upload->success)
+                if ($upload instanceof ServiceResult)
                 {
-                    return $this->error($upload->message, $upload->status);
-                }
-
-                $uploadData = $upload->data['upload'] ?? null;
-
-                if (! $uploadData instanceof UploadThumbnailData)
-                {
-                    return $this->error('Upload invalide');
+                    return $upload;
                 }
 
                 try
                 {
                     $inserted = $this->figurineRepository->insert([
-                        'thumbnail' => $uploadData->thumbnailPath,
-                        'extension' => $uploadData->extension,
+                        'thumbnail' => $upload->thumbnailPath,
+                        'extension' => $upload->extension,
                         'slug' => $dto->slug,
                         'numero' => $dto->numero,
 
@@ -99,40 +98,59 @@ final readonly class FigurineWriteService
 
                     if ($failure !== null)
                     {
-                        $this->rollbackUpload($uploadData);
+                        $this->thumbnailManager->rollback($upload);
 
                         return $failure;
                     }
 
-                    return $this->success('Figurine ajoutée avec succès');
+                    return $this->success(
+                        'Figurine ajoutée avec succès'
+                    );
                 }
                 catch (PDOException $exception)
                 {
-                    $this->rollbackUpload($uploadData);
+                    $this->thumbnailManager->rollback($upload);
 
                     if ($this->isDuplicateKeyException($exception))
                     {
-                        return $this->error('Cette figurine existe déjà', 409);
+                        return $this->error(
+                            'Cette figurine existe déjà',
+                            409
+                        );
                     }
 
                     throw $exception;
                 }
                 catch (Throwable $exception)
                 {
-                    $this->rollbackUpload($uploadData);
+                    $this->thumbnailManager->rollback($upload);
 
                     throw $exception;
                 }
             }
         );
+
+        if ($result->success)
+        {
+            $this->dashboardCache->forget();
+        }
+
+        return $result;
     }
 
-    public function update(string $slug, int $numero, FigurineUpdateDTO $dto): ServiceResult
-    {
-        return $this->database->transaction(
+    public function update(
+        string $slug,
+        int $numero,
+        FigurineUpdateDTO $dto
+    ): ServiceResult {
+        $result = $this->database->transaction(
             function () use ($slug, $numero, $dto): ServiceResult
             {
-                $updated = $this->figurineRepository->updateFigurine($slug, $numero, $dto);
+                $updated = $this->figurineRepository->updateFigurine(
+                    $slug,
+                    $numero,
+                    $dto
+                );
 
                 $failure = $this->writeFailed(
                     $updated,
@@ -147,26 +165,47 @@ final readonly class FigurineWriteService
                     return $failure;
                 }
 
-                return $this->success('Figurine mise à jour avec succès');
+                return $this->success(
+                    'Figurine mise à jour avec succès'
+                );
             }
         );
-    }
 
-    public function updateCollectStatus(string $slug, int $numero, int $collectStatus): ServiceResult
-    {
-        if (! in_array($collectStatus, [0, 1], true))
+        if ($result->success)
         {
-            return $this->error('Statut de collection invalide', 422);
+            $this->dashboardCache->forget();
         }
 
-        return $this->database->transaction(
+        return $result;
+    }
+
+    public function updateCollectStatus(
+        string $slug,
+        int $numero,
+        int $collectStatus
+    ): ServiceResult {
+        if (! in_array($collectStatus, [0, 1], true))
+        {
+            return $this->error(
+                'Statut de collection invalide',
+                422
+            );
+        }
+
+        $result = $this->database->transaction(
             function () use ($slug, $numero, $collectStatus): ServiceResult
             {
-                $figurine = $this->figurineRepository->findOneBySlugAndNumero($slug, $numero);
+                $figurine = $this->figurineRepository->findOneBySlugAndNumero(
+                    $slug,
+                    $numero
+                );
 
                 if ($figurine === null)
                 {
-                    return $this->error('Figurine introuvable', 404);
+                    return $this->error(
+                        'Figurine introuvable',
+                        404
+                    );
                 }
 
                 $updated = $this->figurineRepository->updateCollectStatus(
@@ -192,7 +231,9 @@ final readonly class FigurineWriteService
 
                 if (! $figurine->collect && $collectStatus === 1)
                 {
-                    $xpEarned = $this->rewardCollectXp($figurine);
+                    $xpEarned = $this->rewardCollectXp(
+                        $figurine
+                    );
                 }
 
                 $user = user();
@@ -204,27 +245,46 @@ final readonly class FigurineWriteService
                     [
                         'collectStatus' => $collectStatus,
                         'xpEarned' => $xpEarned,
+                        'xpAmount' => $xpEarned ? UserXp::COLLECT_FIGURINE : 0,
                         'level' => $user?->level,
                         'xp' => $user?->xp,
                     ]
                 );
             }
         );
+
+        if ($result->success)
+        {
+            $this->dashboardCache->forget();
+        }
+
+        return $result;
     }
 
-    public function delete(string $slug, int $numero): ServiceResult
-    {
-        return $this->database->transaction(
+    public function delete(
+        string $slug,
+        int $numero
+    ): ServiceResult {
+        $figurine = $this->figurineRepository->findOneBySlugAndNumero(
+            $slug,
+            $numero
+        );
+
+        if ($figurine === null)
+        {
+            return $this->error(
+                'Figurine introuvable',
+                404
+            );
+        }
+
+        $result = $this->database->transaction(
             function () use ($slug, $numero): ServiceResult
             {
-                $figurine = $this->figurineRepository->findOneBySlugAndNumero($slug, $numero);
-
-                if ($figurine === null)
-                {
-                    return $this->error('Figurine introuvable', 404);
-                }
-
-                $deleted = $this->figurineRepository->deleteBySlugAndNumero($slug, $numero);
+                $deleted = $this->figurineRepository->deleteBySlugAndNumero(
+                    $slug,
+                    $numero
+                );
 
                 $failure = $this->writeFailed(
                     $deleted,
@@ -239,44 +299,33 @@ final readonly class FigurineWriteService
                     return $failure;
                 }
 
-                $this->removeThumbnail($figurine);
-
-                return $this->success('Figurine supprimée avec succès');
+                return $this->success(
+                    'Figurine supprimée avec succès'
+                );
             }
         );
-    }
 
-    /*
-    |--------------------------------------------------------------------------
-    | FILES
-    |--------------------------------------------------------------------------
-    */
-
-    private function rollbackUpload(UploadThumbnailData $upload): void
-    {
-        $this->uploadService->removeFile($upload->destinationPath);
-    }
-
-    private function removeThumbnail(Figurine $figurine): void
-    {
-        if ($figurine->thumbnail === '' || $figurine->extension === '')
+        if ($result->success)
         {
-            return;
+            $this->thumbnailManager->remove(
+                $figurine->thumbnail,
+                $figurine->extension,
+                'figurine'
+            );
+
+            $this->dashboardCache->forget();
         }
 
-        $path = UploadConfig::thumbnailDirectory('figurine') . $figurine->thumbnail . '.' . $figurine->extension;
-
-        $this->uploadService->removeFile($path);
+        return $result;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | XP
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // XP
+    // =========================================
 
-    private function rewardCollectXp(Figurine $figurine): bool
-    {
+    private function rewardCollectXp(
+        Figurine $figurine
+    ): bool {
         $user = user();
 
         if ($user === null)
@@ -289,19 +338,21 @@ final readonly class FigurineWriteService
             return false;
         }
 
-        $this->userLevelService->addXp($user, UserXp::COLLECT_FIGURINE);
+        $this->userLevelService->addXp(
+            $user,
+            UserXp::COLLECT_FIGURINE
+        );
 
         return true;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | HELPERS
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // HELPERS
+    // =========================================
 
-    private function isDuplicateKeyException(PDOException $exception): bool
-    {
+    private function isDuplicateKeyException(
+        PDOException $exception
+    ): bool {
         return $exception->getCode() === '23000'
             && ($exception->errorInfo[1] ?? null) === 1062;
     }
@@ -318,29 +369,42 @@ final readonly class FigurineWriteService
             return null;
         }
 
-        $this->logFailure($action, $slug, $numero);
+        Logger::error(
+            "{$action} échoué slug={$slug} numero={$numero}"
+        );
 
-        return $this->error($message);
-    }
-
-    private function logFailure(string $action, string $slug, int $numero): void
-    {
-        Logger::error("{$action} échoué slug={$slug} numero={$numero}");
-    }
-
-    /**
-     * @param array<string, mixed> $data
-     */
-    private function success(string $message, array $data = [], int $status = 200): ServiceResult
-    {
-        return ServiceResult::success(message: $message, data: $data, status: $status);
+        return $this->error(
+            $message
+        );
     }
 
     /**
      * @param array<string, mixed> $data
      */
-    private function error(string $message, int $status = 500, array $data = []): ServiceResult
-    {
-        return ServiceResult::error(message: $message, data: $data, status: $status);
+    private function success(
+        string $message,
+        array $data = [],
+        int $status = 200
+    ): ServiceResult {
+        return ServiceResult::success(
+            message: $message,
+            data: $data,
+            status: $status
+        );
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    private function error(
+        string $message,
+        int $status = 500,
+        array $data = []
+    ): ServiceResult {
+        return ServiceResult::error(
+            message: $message,
+            data: $data,
+            status: $status
+        );
     }
 }
