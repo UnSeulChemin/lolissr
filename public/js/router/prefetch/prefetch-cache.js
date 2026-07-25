@@ -109,6 +109,21 @@ export function getPrefetchedPage(
         return null;
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | LRU REFRESH
+    |--------------------------------------------------------------------------
+    */
+
+    cache.delete(
+        url,
+    );
+
+    cache.set(
+        url,
+        cached,
+    );
+
     return {
         type:
             'page',
