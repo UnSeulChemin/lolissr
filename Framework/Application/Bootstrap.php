@@ -8,6 +8,7 @@ use Framework\Config\Config;
 use Framework\Config\Env;
 use Framework\Container\AppContainer;
 use Framework\Container\Container;
+use Framework\Database\Database;
 use Framework\Debug\Profiler;
 use Framework\Http\ErrorHandler;
 use Framework\Http\Middleware\SecurityHeadersMiddleware;
@@ -27,7 +28,9 @@ final class Bootstrap
     {
         Env::clear();
 
-        self::loadEnvironment(base_path('.env'));
+        self::loadEnvironment(
+            base_path('.env')
+        );
     }
 
     public static function run(): never
@@ -35,7 +38,10 @@ final class Bootstrap
         Env::clear();
         Config::clear();
 
-        self::loadEnvironment(base_path('.env'));
+        self::loadEnvironment(
+            base_path('.env')
+        );
+
         self::configureDebug();
 
         ErrorHandler::register();
@@ -53,11 +59,17 @@ final class Bootstrap
             static fn (): Request => Request::capture()
         );
 
+        $container->singleton(
+            Database::class
+        );
+
         $router = new Router(
             new RouteCollection()
         );
 
-        $routes = require base_path('Config/routes.php');
+        $routes = require base_path(
+            'Config/routes.php'
+        );
 
         if (! is_callable($routes))
         {
@@ -69,11 +81,14 @@ final class Bootstrap
         $routes($router);
 
         /** @var Request $request */
-        $request = $container->get(Request::class);
+        $request = $container->get(
+            Request::class
+        );
 
         /** @var SecurityHeadersMiddleware $securityHeaders */
-        $securityHeaders =
-            $container->get(SecurityHeadersMiddleware::class);
+        $securityHeaders = $container->get(
+            SecurityHeadersMiddleware::class
+        );
 
         $kernel = new AppKernel(
             $router,
@@ -124,8 +139,9 @@ final class Bootstrap
     // ENVIRONNEMENT
     // =========================================
 
-    private static function loadEnvironment(string $envFile): void
-    {
+    private static function loadEnvironment(
+        string $envFile
+    ): void {
         if (! is_file($envFile))
         {
             return;
@@ -133,7 +149,8 @@ final class Bootstrap
 
         $lines = file(
             $envFile,
-            FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES
+            FILE_IGNORE_NEW_LINES
+            | FILE_SKIP_EMPTY_LINES
         );
 
         if ($lines === false)
