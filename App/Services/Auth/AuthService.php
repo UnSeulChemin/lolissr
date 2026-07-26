@@ -10,16 +10,20 @@ use App\Repositories\Auth\UserRepository;
 
 use Framework\Support\Session;
 
-final readonly class AuthService
+final class AuthService
 {
     private const USERNAME_MAX_LENGTH = 50;
 
     private const PASSWORD_MIN_LENGTH = 6;
     private const PASSWORD_MAX_LENGTH = 1024;
 
+    private bool $userResolved = false;
+
+    private ?User $currentUser = null;
+
     public function __construct(
-        private UserRepository $userRepository,
-        private LoginThrottleService $loginThrottleService
+        private readonly UserRepository $userRepository,
+        private readonly LoginThrottleService $loginThrottleService
     ) {}
 
     // =========================================
@@ -50,11 +54,8 @@ final readonly class AuthService
         return $this->userRepository->create($username, $passwordHash);
     }
 
-    public function login(
-        string $username,
-        string $password,
-        string $ipAddress
-    ): LoginResult {
+    public function login(string $username, string $password, string $ipAddress): LoginResult
+    {
         $username = trim($username);
 
         if ($this->loginThrottleService->isLocked($username, $ipAddress))
@@ -83,16 +84,29 @@ final readonly class AuthService
         Session::remove('csrf_token');
         Session::set('user_id', $user->id);
 
+        $this->userResolved = true;
+        $this->currentUser = $user;
+
         return LoginResult::SUCCESS;
     }
 
     public function logout(): void
     {
         Session::destroy();
+
+        $this->userResolved = true;
+        $this->currentUser = null;
     }
 
     public function user(): ?User
     {
+        if ($this->userResolved)
+        {
+            return $this->currentUser;
+        }
+
+        $this->userResolved = true;
+
         $userId = Session::get('user_id');
 
         if (! is_int($userId))
@@ -100,7 +114,14 @@ final readonly class AuthService
             return null;
         }
 
-        return $this->userRepository->findById($userId);
+        $this->currentUser = $this->userRepository->findById($userId);
+
+        if ($this->currentUser === null)
+        {
+            Session::remove('user_id');
+        }
+
+        return $this->currentUser;
     }
 
     public function check(): bool
@@ -141,9 +162,6 @@ final readonly class AuthService
             return;
         }
 
-        $this->userRepository->updatePasswordHash(
-            $user->id,
-            $passwordHash
-        );
+        $this->userRepository->updatePasswordHash($user->id, $passwordHash);
     }
 }
