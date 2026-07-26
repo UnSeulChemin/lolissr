@@ -1,4 +1,6 @@
 @echo off
+setlocal EnableExtensions
+
 title LoliSSR - Database Backup Quest
 cls
 
@@ -25,6 +27,23 @@ echo.
 
 php scripts\backup-database.php
 
+if errorlevel 1 (
+    echo.
+    echo ============================================================
+    echo.
+    echo                    QUEST FAILED
+    echo.
+    echo        The database artifact could not be created.
+    echo.
+    echo        Review the errors displayed above.
+    echo.
+    echo ============================================================
+    echo.
+
+    pause
+    exit /b 1
+)
+
 echo.
 echo ============================================================
 echo.
@@ -38,3 +57,4 @@ echo ============================================================
 echo.
 
 pause
+exit /b 0

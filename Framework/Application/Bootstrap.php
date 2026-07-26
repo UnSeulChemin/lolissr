@@ -14,6 +14,7 @@ use Framework\Debug\Profiler;
 use Framework\Http\ErrorHandler;
 use Framework\Http\Middleware\SecurityHeadersMiddleware;
 use Framework\Http\Request;
+use Framework\Http\RequestContext;
 use Framework\Routing\RouteCollection;
 use Framework\Routing\Router;
 
@@ -28,6 +29,8 @@ final class Bootstrap
     public static function loadEnvOnly(): void
     {
         Env::load(base_path('.env'));
+        Config::clear();
+
         EnvironmentValidator::validate();
     }
 
@@ -37,6 +40,8 @@ final class Bootstrap
         Config::clear();
 
         EnvironmentValidator::validate();
+
+        RequestContext::start();
 
         self::configureTimezone();
         self::configureDebug();
@@ -64,9 +69,7 @@ final class Bootstrap
 
         if (! is_callable($routes))
         {
-            throw new RuntimeException(
-                'Config/routes.php must return a callable.'
-            );
+            throw new RuntimeException('Config/routes.php must return a callable.');
         }
 
         $routes($router);
@@ -133,10 +136,12 @@ final class Bootstrap
 
     private static function configureTimezone(): void
     {
-        if (! date_default_timezone_set(App::timezone()))
+        $timezone = App::timezone();
+
+        if (! date_default_timezone_set($timezone))
         {
             throw new RuntimeException(
-                'Invalid application timezone: ' . App::timezone()
+                'Invalid application timezone: ' . $timezone
             );
         }
     }

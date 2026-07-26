@@ -7,6 +7,7 @@ namespace Framework\Support;
 use Framework\Application\App;
 use Framework\Container\AppContainer;
 use Framework\Http\Request;
+use Framework\Http\RequestContext;
 
 use JsonException;
 use Throwable;
@@ -15,6 +16,25 @@ final class Logger
 {
     private const FILE_PREFIX = 'app-';
     private const FILE_EXTENSION = '.log';
+
+    private const SENSITIVE_KEYS = [
+        'password',
+        'password_confirmation',
+        'current_password',
+        'new_password',
+        'csrf_token',
+        'csrf-token',
+        'token',
+        'access_token',
+        'refresh_token',
+        'cookie',
+        'set-cookie',
+        'authorization',
+        'db_pass',
+        'db_password',
+        'api_key',
+        'secret',
+    ];
 
     private static ?string $directory = null;
 
@@ -99,9 +119,12 @@ final class Logger
                 continue;
             }
 
-            if (! unlink($file))
+            if (! unlink($file) && App::debug())
             {
-                error_log('Logger: impossible de supprimer le fichier expiré : ' . $file);
+                error_log(
+                    'LoliSSR Logger: impossible de supprimer le fichier expiré : '
+                    . $file
+                );
             }
         }
     }
@@ -141,6 +164,32 @@ final class Logger
         }
     }
 
+    /**
+     * @param array<mixed> $context
+     * @return array<mixed>
+     */
+    private static function sanitize(array $context): array
+    {
+        foreach ($context as $key => $value)
+        {
+            $normalizedKey = strtolower(trim((string) $key));
+
+            if (in_array($normalizedKey, self::SENSITIVE_KEYS, true))
+            {
+                $context[$key] = '[REDACTED]';
+
+                continue;
+            }
+
+            if (is_array($value))
+            {
+                $context[$key] = self::sanitize($value);
+            }
+        }
+
+        return $context;
+    }
+
     // =========================================
     // ÉCRITURE
     // =========================================
@@ -171,6 +220,14 @@ final class Logger
 
         if (! self::ensureDirectory())
         {
+            if (App::debug())
+            {
+                error_log(
+                    'LoliSSR Logger: impossible de créer le dossier de logs : '
+                    . self::directory()
+                );
+            }
+
             return;
         }
 
@@ -180,10 +237,11 @@ final class Logger
         {
             $content = json_encode(
                 [
+                    'request_id' => RequestContext::requestId(),
                     'date' => date('Y-m-d H:i:s'),
                     'level' => $level,
                     'message' => $message,
-                    'context' => $context,
+                    'context' => self::sanitize($context),
                     'request' => self::requestContext(),
                 ],
                 JSON_PRETTY_PRINT
@@ -193,14 +251,24 @@ final class Logger
                 | JSON_THROW_ON_ERROR
             );
         }
-        catch (JsonException)
+        catch (JsonException $exception)
         {
+            if (App::debug())
+            {
+                error_log(
+                    'LoliSSR Logger: encodage JSON impossible : '
+                    . $exception->getMessage()
+                );
+            }
+
             return;
         }
 
+        $file = self::file();
+
         $written = file_put_contents(
-            self::file(),
-            $content . PHP_EOL,
+            $file,
+            $content . PHP_EOL . PHP_EOL,
             FILE_APPEND | LOCK_EX
         );
 
@@ -208,7 +276,7 @@ final class Logger
         {
             error_log(
                 'LoliSSR Logger: impossible d\'écrire dans le fichier de log : '
-                . self::file()
+                . $file
             );
         }
     }

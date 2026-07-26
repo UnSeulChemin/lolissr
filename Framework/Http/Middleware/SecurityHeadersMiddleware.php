@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Framework\Http\Middleware;
 
 use Framework\Http\Request;
+use Framework\Http\RequestContext;
 use Framework\Security\ContentSecurityPolicy;
 
 final class SecurityHeadersMiddleware implements MiddlewareInterface
@@ -20,6 +21,7 @@ final class SecurityHeadersMiddleware implements MiddlewareInterface
             return;
         }
 
+        header('X-Request-ID: ' . RequestContext::requestId());
         header('X-Content-Type-Options: nosniff');
         header('X-Frame-Options: DENY');
         header('Referrer-Policy: no-referrer');
