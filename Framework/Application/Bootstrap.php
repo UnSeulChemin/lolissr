@@ -6,6 +6,7 @@ namespace Framework\Application;
 
 use Framework\Config\Config;
 use Framework\Config\Env;
+use Framework\Config\EnvironmentValidator;
 use Framework\Container\AppContainer;
 use Framework\Container\Container;
 use Framework\Database\Database;
@@ -27,12 +28,15 @@ final class Bootstrap
     public static function loadEnvOnly(): void
     {
         Env::load(base_path('.env'));
+        EnvironmentValidator::validate();
     }
 
     public static function run(): never
     {
         Env::load(base_path('.env'));
         Config::clear();
+
+        EnvironmentValidator::validate();
 
         self::configureDebug();
 
@@ -90,7 +94,7 @@ final class Bootstrap
 
     private static function startProfiler(): void
     {
-        if (! App::debug())
+        if (! App::debug() || ! env_bool('PROFILER_ENABLED', false))
         {
             return;
         }
@@ -100,8 +104,8 @@ final class Bootstrap
         register_shutdown_function(
             static function (): void
             {
-                $method = $_SERVER['REQUEST_METHOD'] ?? 'UNKNOWN';
-                $uri = $_SERVER['REQUEST_URI'] ?? '/';
+                $method = (string) ($_SERVER['REQUEST_METHOD'] ?? 'UNKNOWN');
+                $uri = (string) ($_SERVER['REQUEST_URI'] ?? '/');
 
                 Profiler::finishRequest(
                     method: $method,
@@ -122,11 +126,7 @@ final class Bootstrap
 
         error_reporting($debug ? E_ALL : 0);
 
-        ini_set(
-            'display_errors',
-            $debug ? '1' : '0'
-        );
-
+        ini_set('display_errors', $debug ? '1' : '0');
         ini_set('log_errors', '1');
     }
 }

@@ -6,6 +6,10 @@ namespace Framework\Application;
 
 final class App
 {
+    private const ENV_LOCAL = 'local';
+    private const ENV_TESTING = 'testing';
+    private const ENV_PRODUCTION = 'production';
+
     // =========================================
     // CONFIGURATION
     // =========================================
@@ -39,7 +43,7 @@ final class App
 
     public static function env(): string
     {
-        return strtolower((string) config('app.env', 'local'));
+        return strtolower(trim((string) config('app.env', self::ENV_LOCAL)));
     }
 
     public static function debug(): bool
@@ -51,13 +55,18 @@ final class App
     // ENVIRONNEMENT
     // =========================================
 
-    public static function isProduction(): bool
+    public static function isLocal(): bool
     {
-        return self::env() === 'production';
+        return self::env() === self::ENV_LOCAL;
     }
 
     public static function isTesting(): bool
     {
-        return self::env() === 'testing';
+        return self::env() === self::ENV_TESTING;
+    }
+
+    public static function isProduction(): bool
+    {
+        return self::env() === self::ENV_PRODUCTION;
     }
 }

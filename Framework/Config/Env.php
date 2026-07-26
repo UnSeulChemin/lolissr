@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Framework\Config;
 
+use RuntimeException;
+
 final class Env
 {
     /**
@@ -31,12 +33,14 @@ final class Env
 
         if ($lines === false)
         {
-            return;
+            throw new RuntimeException(
+                "Unable to read environment file: {$path}"
+            );
         }
 
-        foreach ($lines as $line)
+        foreach ($lines as $lineNumber => $line)
         {
-            self::parseLine($line);
+            self::parseLine($line, $lineNumber + 1);
         }
     }
 
@@ -58,9 +62,8 @@ final class Env
 
         if ($value === null)
         {
-            $env = getenv($key);
-
-            $value = $env !== false ? $env : null;
+            $environmentValue = getenv($key);
+            $value = $environmentValue !== false ? $environmentValue : null;
         }
 
         if ($value === null)
@@ -89,7 +92,11 @@ final class Env
             return $value;
         }
 
-        $result = filter_var($value, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
+        $result = filter_var(
+            $value,
+            FILTER_VALIDATE_BOOL,
+            FILTER_NULL_ON_FAILURE
+        );
 
         return $result ?? $default;
     }
@@ -97,10 +104,9 @@ final class Env
     public static function int(string $key, int $default = 0): int
     {
         $value = self::get($key, $default);
+        $result = filter_var($value, FILTER_VALIDATE_INT);
 
-        return filter_var($value, FILTER_VALIDATE_INT) !== false
-            ? (int) $value
-            : $default;
+        return $result !== false ? (int) $result : $default;
     }
 
     public static function has(string $key): bool
@@ -126,33 +132,69 @@ final class Env
     // CHARGEMENT
     // =========================================
 
-    private static function parseLine(string $line): void
+    private static function parseLine(string $line, int $lineNumber): void
     {
         $line = trim($line);
 
-        if (
-            $line === ''
-            || str_starts_with($line, '#')
-            || ! str_contains($line, '=')
-        )
+        if ($line === '' || str_starts_with($line, '#'))
         {
             return;
+        }
+
+        if (! str_contains($line, '='))
+        {
+            throw new RuntimeException(
+                "Invalid environment declaration at line {$lineNumber}."
+            );
         }
 
         [$name, $value] = explode('=', $line, 2);
 
         $name = trim($name);
-        $value = trim($value, " \t\n\r\0\x0B\"'");
 
         if ($name === '')
         {
-            return;
+            throw new RuntimeException(
+                "Missing environment variable name at line {$lineNumber}."
+            );
         }
+
+        if (preg_match('/^[A-Z][A-Z0-9_]*$/', $name) !== 1)
+        {
+            throw new RuntimeException(
+                "Invalid environment variable name at line {$lineNumber}: {$name}"
+            );
+        }
+
+        $value = self::normalizeValue($value);
 
         $_ENV[$name] = $value;
         $_SERVER[$name] = $value;
 
         putenv("{$name}={$value}");
+    }
+
+    private static function normalizeValue(string $value): string
+    {
+        $value = trim($value);
+
+        if (strlen($value) < 2)
+        {
+            return $value;
+        }
+
+        $firstCharacter = $value[0];
+        $lastCharacter = $value[strlen($value) - 1];
+
+        if (
+            ($firstCharacter === '"' && $lastCharacter === '"')
+            || ($firstCharacter === "'" && $lastCharacter === "'")
+        )
+        {
+            return substr($value, 1, -1);
+        }
+
+        return $value;
     }
 
     // =========================================
