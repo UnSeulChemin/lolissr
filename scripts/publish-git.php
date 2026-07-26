@@ -56,6 +56,16 @@ echo 'Commit message : ' . $commitMessage . PHP_EOL;
 echo PHP_EOL;
 
 echo '[SYSTEM]' . PHP_EOL;
+echo 'Repository status:' . PHP_EOL;
+echo PHP_EOL;
+
+runCommand(
+    ['git', 'status', '--short'],
+    'Unable to inspect repository status.'
+);
+
+echo PHP_EOL;
+echo '[SYSTEM]' . PHP_EOL;
 echo 'Staging files...' . PHP_EOL;
 
 runCommand(
@@ -75,6 +85,16 @@ echo 'Creating commit...' . PHP_EOL;
 runCommand(
     ['git', 'commit', '-m', $commitMessage],
     'Git could not create the commit.'
+);
+
+echo PHP_EOL;
+echo '[SYSTEM]' . PHP_EOL;
+echo 'Latest commit:' . PHP_EOL;
+echo PHP_EOL;
+
+runCommand(
+    ['git', 'log', '-1', '--oneline'],
+    'Unable to retrieve latest commit.'
 );
 
 echo PHP_EOL;
@@ -134,7 +154,9 @@ function hasStagedChanges(): bool
  */
 function runCommand(array $command, string $failureMessage, bool $displayOutput = true): void
 {
-    $nullDevice = PHP_OS_FAMILY === 'Windows' ? 'NUL' : '/dev/null';
+    $nullDevice = PHP_OS_FAMILY === 'Windows'
+        ? 'NUL'
+        : '/dev/null';
 
     $descriptors = $displayOutput
         ? [
@@ -148,7 +170,12 @@ function runCommand(array $command, string $failureMessage, bool $displayOutput 
             2 => ['file', $nullDevice, 'w'],
         ];
 
-    $process = proc_open($command, $descriptors, $pipes, ROOT);
+    $process = proc_open(
+        $command,
+        $descriptors,
+        $pipes,
+        ROOT
+    );
 
     if (! is_resource($process))
     {
@@ -165,7 +192,13 @@ function runCommand(array $command, string $failureMessage, bool $displayOutput 
 
 function fail(string $message): never
 {
-    fwrite(STDERR, PHP_EOL . '[FAILED] ' . $message . PHP_EOL);
+    fwrite(
+        STDERR,
+        PHP_EOL
+        . '[FAILED] '
+        . $message
+        . PHP_EOL
+    );
 
     exit(1);
 }
