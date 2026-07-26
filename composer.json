@@ -23,9 +23,21 @@
     "scripts": {
         "analyse": "phpstan analyse --no-progress --memory-limit=512M",
         "test": "php tests/run-tests.php",
+
         "check": [
             "@analyse",
             "@test"
-        ]
+        ],
+
+        "backup": "php scripts/backup-database.php",
+
+        "cache:clear": "php scripts/clear-runtime.php cache",
+        "logs:clear": "php scripts/clear-runtime.php logs",
+        "sessions:clear": "php scripts/clear-runtime.php sessions",
+
+        "dev:reset": "php scripts/dev-reset.php",
+
+        "release": "php scripts/build-release.php",
+        "publish:git": "php scripts/publish-git.php"
     }
 }
