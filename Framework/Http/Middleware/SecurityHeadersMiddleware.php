@@ -38,16 +38,19 @@ final class SecurityHeadersMiddleware implements MiddlewareInterface
 
     private function isHttps(): bool
     {
-        if (
-            isset($_SERVER['HTTPS'])
-            && $_SERVER['HTTPS'] !== ''
-            && strtolower((string) $_SERVER['HTTPS']) !== 'off'
-        )
+        $https = $_SERVER['HTTPS'] ?? null;
+
+        if (is_string($https) && $https !== '' && strtolower($https) !== 'off')
         {
             return true;
         }
 
-        return isset($_SERVER['SERVER_PORT'])
-            && (int) $_SERVER['SERVER_PORT'] === 443;
+        if ((int) ($_SERVER['SERVER_PORT'] ?? 0) === 443)
+        {
+            return true;
+        }
+
+        return env_bool('TRUST_PROXY', false)
+            && strtolower((string) ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '')) === 'https';
     }
 }

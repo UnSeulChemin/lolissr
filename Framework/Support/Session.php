@@ -120,7 +120,6 @@ final class Session
         if (ini_get('session.use_cookies') === '1')
         {
             $params = session_get_cookie_params();
-
             $sessionName = session_name();
 
             if (! is_string($sessionName))
@@ -150,7 +149,7 @@ final class Session
     }
 
     // =========================================
-    // UTILITAIRES
+    // INITIALISATION
     // =========================================
 
     private static function ensureStarted(): void
@@ -175,7 +174,6 @@ final class Session
         }
 
         session_save_path($directory);
-
         session_name((string) env('SESSION_NAME', 'LOLISSR_SESSION'));
 
         $secure = self::isHttps();
@@ -207,14 +205,31 @@ final class Session
         self::$started = true;
     }
 
+    // =========================================
+    // HTTPS
+    // =========================================
+
     private static function isHttps(): bool
     {
         $https = $_SERVER['HTTPS'] ?? null;
 
-        return (is_string($https) && $https !== '' && strtolower($https) !== 'off')
-            || (int) ($_SERVER['SERVER_PORT'] ?? 0) === 443
-            || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https';
+        if (is_string($https) && $https !== '' && strtolower($https) !== 'off')
+        {
+            return true;
+        }
+
+        if ((int) ($_SERVER['SERVER_PORT'] ?? 0) === 443)
+        {
+            return true;
+        }
+
+        return env_bool('TRUST_PROXY', false)
+            && strtolower((string) ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '')) === 'https';
     }
+
+    // =========================================
+    // DIRECTORY
+    // =========================================
 
     private static function directory(): string
     {
