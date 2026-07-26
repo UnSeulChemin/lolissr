@@ -1,7 +1,7 @@
 @echo off
 setlocal EnableExtensions
 
-title LoliSSR - Publish Quest
+title LoliSSR - Publish Git Quest
 cls
 
 cd /d "%~dp0.."
@@ -11,7 +11,7 @@ echo ============================================================
 echo.
 echo               ^>^> LOLISSR ADVENTURER GUILD ^<^<
 echo.
-echo                 Quest : Publish Changes
+echo                   Quest : Publish Git
 echo.
 echo ============================================================
 echo.
@@ -47,9 +47,10 @@ echo Preparing commit...
 echo Preparing remote portal...
 echo.
 
-set /p MESSAGE=Commit message: 
+set "MESSAGE="
+set /p "MESSAGE=Commit message: "
 
-if "%MESSAGE%"=="" (
+if not defined MESSAGE (
     echo.
     echo [FAILED]
     echo.
@@ -130,7 +131,7 @@ echo ============================================================
 echo.
 echo                  QUEST COMPLETED
 echo.
-echo         The changes have reached the kingdom.
+echo         The changes have reached the Git kingdom.
 echo.
 echo ============================================================
 echo.
