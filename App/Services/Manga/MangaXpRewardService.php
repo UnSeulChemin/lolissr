@@ -6,7 +6,6 @@ namespace App\Services\Manga;
 
 use App\Constants\UserXp;
 use App\Models\Manga;
-use App\Models\User;
 use App\Repositories\Manga\MangaRepository;
 use App\Repositories\Manga\MangaStatsRepository;
 use App\Services\User\UserLevelService;
@@ -20,35 +19,30 @@ final readonly class MangaXpRewardService
     ) {
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | XP REWARDS
-    |--------------------------------------------------------------------------
-    */
-
     /**
-     * Récompense la lecture d'un tome.
-     * Ajoute également le bonus si la série est terminée.
-     *
      * @return array{
      *     xpEarned: bool,
      *     seriesXpEarned: bool
      * }
      */
-    public function rewardTomeRead(
-        Manga $manga,
-        string $slug
-    ): array {
+    public function rewardRead(Manga $manga, string $slug): array
+    {
         $user = user();
 
-        if (! $user instanceof User)
+        if ($user === null)
         {
-            return $this->noReward();
+            return [
+                'xpEarned' => false,
+                'seriesXpEarned' => false,
+            ];
         }
 
         if (! $this->mangaRepository->claimReadReward($manga->id))
         {
-            return $this->noReward();
+            return [
+                'xpEarned' => false,
+                'seriesXpEarned' => false,
+            ];
         }
 
         $this->userLevelService->addXp(
@@ -56,60 +50,24 @@ final readonly class MangaXpRewardService
             UserXp::READ_TOME
         );
 
-        return [
-            'xpEarned' => true,
-            'seriesXpEarned' => $this->rewardSeriesCompleted(
-                $user,
-                $slug
-            ),
-        ];
-    }
+        $seriesXpEarned = false;
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | SERIES COMPLETION
-    |--------------------------------------------------------------------------
-    */
-
-    private function rewardSeriesCompleted(
-        User $user,
-        string $slug
-    ): bool {
         if (
-            ! $this->mangaStatsRepository->isSeriesCompleted($slug)
-            || ! $this->mangaRepository->claimSeriesReward($slug)
+            $this->mangaStatsRepository->isSeriesCompleted($slug)
+            && $this->mangaRepository->claimSeriesReward($slug)
         )
         {
-            return false;
+            $this->userLevelService->addXp(
+                $user,
+                UserXp::COMPLETE_SERIES
+            );
+
+            $seriesXpEarned = true;
         }
 
-        $this->userLevelService->addXp(
-            $user,
-            UserXp::COMPLETE_SERIES
-        );
-
-        return true;
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | RESULT
-    |--------------------------------------------------------------------------
-    */
-
-    /**
-     * @return array{
-     *     xpEarned: bool,
-     *     seriesXpEarned: bool
-     * }
-     */
-    private function noReward(): array
-    {
         return [
-            'xpEarned' => false,
-            'seriesXpEarned' => false,
+            'xpEarned' => true,
+            'seriesXpEarned' => $seriesXpEarned,
         ];
     }
 }
