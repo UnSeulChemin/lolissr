@@ -13,7 +13,6 @@ Bootstrap::loadEnvOnly();
 
 $projectName = trim((string) env('APP_NAME', 'LoliSSR'));
 $version = trim((string) env('APP_VERSION', '0.0.0'));
-$timestamp = date('Y-m-d H:i');
 
 if ($projectName === '')
 {
@@ -25,7 +24,7 @@ if ($version === '')
     fail('APP_VERSION is required.');
 }
 
-$commitMessage = "chore: publish {$projectName} v{$version} ({$timestamp})";
+$commitMessage = "chore: {$projectName} v{$version}";
 
 echo PHP_EOL;
 echo '============================================================' . PHP_EOL;
