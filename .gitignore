@@ -45,7 +45,8 @@
 # RELEASES
 #################################
 
-/releases/
+/releases/*
+!/releases/.gitkeep
 
 #################################
 # TESTS
