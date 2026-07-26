@@ -63,7 +63,9 @@ final class Env
         if ($value === null)
         {
             $environmentValue = getenv($key);
-            $value = $environmentValue !== false ? $environmentValue : null;
+            $value = $environmentValue !== false
+                ? $environmentValue
+                : null;
         }
 
         if ($value === null)
@@ -106,7 +108,9 @@ final class Env
         $value = self::get($key, $default);
         $result = filter_var($value, FILTER_VALIDATE_INT);
 
-        return $result !== false ? (int) $result : $default;
+        return $result !== false
+            ? $result
+            : $default;
     }
 
     public static function has(string $key): bool

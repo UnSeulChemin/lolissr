@@ -58,10 +58,10 @@ use App\DTO\Common\Responses\ViewData;
 
                         <div
                             class="chinois-vocab-example"
-                            data-copy="<?= e($vocabulaire->exemple ?? '') ?>"
+                            data-copy="<?= e($vocabulaire->exemple) ?>"
                             title="Cliquer pour copier"
                         >
-                            <?= nl2br(e($vocabulaire->exemple ?? '')) ?>
+                            <?= nl2br(e($vocabulaire->exemple)) ?>
                         </div>
 
                     <?php endif; ?>

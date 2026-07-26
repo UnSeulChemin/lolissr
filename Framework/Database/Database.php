@@ -86,19 +86,35 @@ final class Database extends PDO
 
         Profiler::start('database.transaction');
 
-        $this->beginTransaction();
+        $transactionActive = false;
 
         try
         {
+            if (! $this->beginTransaction())
+            {
+                throw new RuntimeException(
+                    'Impossible de démarrer la transaction.'
+                );
+            }
+
+            $transactionActive = true;
+
             $result = $callback();
 
-            $this->commit();
+            if (! $this->commit())
+            {
+                throw new RuntimeException(
+                    'Impossible de valider la transaction.'
+                );
+            }
+
+            $transactionActive = false;
 
             return $result;
         }
         catch (Throwable $exception)
         {
-            if ($this->inTransaction())
+            if ($transactionActive)
             {
                 $this->rollBack();
             }

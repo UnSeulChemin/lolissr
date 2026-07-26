@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Nendoroid;
 
 use App\Cache\DashboardCache;
+use App\Constants\UserXp;
 use App\DTO\Common\ServiceResult;
 use App\DTO\Nendoroid\Inputs\NendoroidCreateDTO;
 use App\DTO\Nendoroid\Inputs\NendoroidUpdateDTO;

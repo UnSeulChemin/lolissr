@@ -69,7 +69,9 @@ final class Bootstrap
 
         if (! is_callable($routes))
         {
-            throw new RuntimeException('Config/routes.php must return a callable.');
+            throw new RuntimeException(
+                'Config/routes.php must return a callable.'
+            );
         }
 
         $routes($router);
@@ -78,7 +80,9 @@ final class Bootstrap
         $request = $container->get(Request::class);
 
         /** @var SecurityHeadersMiddleware $securityHeaders */
-        $securityHeaders = $container->get(SecurityHeadersMiddleware::class);
+        $securityHeaders = $container->get(
+            SecurityHeadersMiddleware::class
+        );
 
         $kernel = new AppKernel(
             $router,
@@ -110,11 +114,12 @@ final class Bootstrap
             {
                 $method = (string) ($_SERVER['REQUEST_METHOD'] ?? 'UNKNOWN');
                 $uri = (string) ($_SERVER['REQUEST_URI'] ?? '/');
+                $status = http_response_code();
 
                 Profiler::finishRequest(
                     method: $method,
                     uri: $uri,
-                    status: http_response_code()
+                    status: is_int($status) ? $status : 200
                 );
             }
         );

@@ -333,19 +333,10 @@ final readonly class UploadService
             return null;
         }
 
-        $width = $imageInfo[0] ?? 0;
-        $height = $imageInfo[1] ?? 0;
-        $mime = $imageInfo['mime'] ?? null;
-
-        if (! is_int($width) || ! is_int($height) || ! is_string($mime))
-        {
-            return null;
-        }
-
         return [
-            'width' => $width,
-            'height' => $height,
-            'mime' => strtolower($mime),
+            'width' => $imageInfo[0],
+            'height' => $imageInfo[1],
+            'mime' => strtolower($imageInfo['mime']),
         ];
     }
 

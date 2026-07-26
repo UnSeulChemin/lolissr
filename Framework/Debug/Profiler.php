@@ -11,7 +11,7 @@ final class Profiler
     private static bool $active = false;
 
     /**
-     * @var array<string, int>
+     * @var array<string, int|float>
      */
     private static array $starts = [];
 
@@ -25,7 +25,7 @@ final class Profiler
      */
     private static array $counters = [];
 
-    private static ?int $requestStart = null;
+    private static int|float|null $requestStart = null;
 
     private function __construct()
     {
@@ -235,7 +235,7 @@ final class Profiler
         self::$counters = [];
     }
 
-    private static function elapsedMilliseconds(int $start): float
+    private static function elapsedMilliseconds(int|float $start): float
     {
         return (hrtime(true) - $start) / 1_000_000;
     }

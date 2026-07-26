@@ -26,6 +26,7 @@ final class AuthService
         private readonly LoginThrottleService $loginThrottleService
     ) {}
 
+
     // =========================================
     // AUTHENTIFICATION
     // =========================================
@@ -46,16 +47,17 @@ final class AuthService
 
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-        if ($passwordHash === false)
-        {
-            return false;
-        }
-
-        return $this->userRepository->create($username, $passwordHash);
+        return $this->userRepository->create(
+            $username,
+            $passwordHash
+        );
     }
 
-    public function login(string $username, string $password, string $ipAddress): LoginResult
-    {
+    public function login(
+        string $username,
+        string $password,
+        string $ipAddress
+    ): LoginResult {
         $username = trim($username);
 
         if ($this->loginThrottleService->isLocked($username, $ipAddress))
@@ -67,7 +69,10 @@ final class AuthService
 
         if ($user === null || ! password_verify($password, $user->password))
         {
-            $this->loginThrottleService->recordFailure($username, $ipAddress);
+            $this->loginThrottleService->recordFailure(
+                $username,
+                $ipAddress
+            );
 
             if ($this->loginThrottleService->isLocked($username, $ipAddress))
             {
@@ -77,8 +82,15 @@ final class AuthService
             return LoginResult::INVALID_CREDENTIALS;
         }
 
-        $this->loginThrottleService->clear($username, $ipAddress);
-        $this->rehashPasswordIfNeeded($user, $password);
+        $this->loginThrottleService->clear(
+            $username,
+            $ipAddress
+        );
+
+        $this->rehashPasswordIfNeeded(
+            $user,
+            $password
+        );
 
         Session::regenerate();
         Session::remove('csrf_token');
@@ -129,12 +141,15 @@ final class AuthService
         return $this->user() !== null;
     }
 
+
     // =========================================
     // VALIDATION
     // =========================================
 
-    private function hasValidCredentials(string $username, string $password): bool
-    {
+    private function hasValidCredentials(
+        string $username,
+        string $password
+    ): bool {
         $usernameLength = mb_strlen($username);
         $passwordLength = mb_strlen($password);
 
@@ -144,12 +159,15 @@ final class AuthService
             && $passwordLength <= self::PASSWORD_MAX_LENGTH;
     }
 
+
     // =========================================
     // MOT DE PASSE
     // =========================================
 
-    private function rehashPasswordIfNeeded(User $user, string $password): void
-    {
+    private function rehashPasswordIfNeeded(
+        User $user,
+        string $password
+    ): void {
         if (! password_needs_rehash($user->password, PASSWORD_DEFAULT))
         {
             return;
@@ -157,11 +175,9 @@ final class AuthService
 
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-        if ($passwordHash === false)
-        {
-            return;
-        }
-
-        $this->userRepository->updatePasswordHash($user->id, $passwordHash);
+        $this->userRepository->updatePasswordHash(
+            $user->id,
+            $passwordHash
+        );
     }
 }

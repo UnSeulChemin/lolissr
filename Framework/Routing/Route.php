@@ -151,10 +151,7 @@ final class Route
 
             $name = $match[1][0];
 
-            $type = isset($match[2][0])
-                && $match[2][0] !== ''
-                    ? $match[2][0]
-                    : 'string';
+            $type = $match[2][0] ?? 'string';
 
             $this->parameters[$name] = $type;
 
