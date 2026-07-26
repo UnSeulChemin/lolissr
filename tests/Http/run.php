@@ -19,6 +19,62 @@ $globalStart = microtime(true);
 /** @var string|null $currentCategory */
 $currentCategory = null;
 
+function sanitizeReportBody(string $body): string
+{
+    $patterns = [
+        '/(<meta[^>]+name=["\']csrf-token["\'][^>]+content=["\'])[^"\']+(["\'])/i',
+        '/(name=["\']csrf_token["\'][^>]+value=["\'])[^"\']+(["\'])/i',
+        '/(["\']csrf_token["\']\s*[:=]\s*["\'])[^"\']+(["\'])/i',
+        '/(["\']password["\']\s*[:=]\s*["\'])[^"\']+(["\'])/i',
+        '/(Set-Cookie:\s*[^=]+=)[^;\r\n]+/i',
+        '/(Cookie:\s*[^=]+=)[^;\r\n]+/i',
+    ];
+
+    $replacements = [
+        '$1[REDACTED]$2',
+        '$1[REDACTED]$2',
+        '$1[REDACTED]$2',
+        '$1[REDACTED]$2',
+        '$1[REDACTED]',
+        '$1[REDACTED]',
+    ];
+
+    $sanitizedBody = preg_replace($patterns, $replacements, $body);
+
+    if (! is_string($sanitizedBody))
+    {
+        $sanitizedBody = '';
+    }
+
+    return mb_substr($sanitizedBody, 0, 3000);
+}
+
+/**
+ * @param list<string> $headers
+ */
+function sanitizeReportHeaders(array $headers): string
+{
+    $sanitizedHeaders = [];
+
+    foreach ($headers as $header)
+    {
+        if (preg_match('/^(Set-Cookie|Cookie):/i', $header) === 1)
+        {
+            $sanitizedHeaders[] = preg_replace(
+                '/(:\s*[^=]+=)[^;\r\n]+/i',
+                '$1[REDACTED]',
+                $header
+            ) ?? '[REDACTED]';
+
+            continue;
+        }
+
+        $sanitizedHeaders[] = $header;
+    }
+
+    return implode("\n", $sanitizedHeaders);
+}
+
 /**
  * @param array<int, array<string, mixed>> $results
  * @param list<string> $headers
@@ -47,8 +103,10 @@ function addResult(
         'expected_status' => $expectedStatus,
         'duration' => $duration,
         'reason' => $reason,
-        'headers' => implode("\n", $headers),
-        'body' => mb_substr($body, 0, 3000),
+        'headers' => sanitizeReportHeaders($headers),
+        'body' => $status === 'FAIL'
+            ? sanitizeReportBody($body)
+            : '',
     ];
 }
 
