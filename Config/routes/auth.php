@@ -13,16 +13,18 @@ use Framework\Routing\Router;
 
 $router->get('connexion', [AuthController::class, 'login'], [GuestMiddleware::class]);
 
-$router->post('connexion',
+$router->post(
+    'connexion',
     [AuthController::class, 'authenticate'],
     [GuestMiddleware::class, CsrfMiddleware::class]
 );
 
-if (! App::isProduction())
+if (! App::isProduction() && env_bool('REGISTRATION_ENABLED', false))
 {
     $router->get('inscription', [AuthController::class, 'register'], [GuestMiddleware::class]);
 
-    $router->post('inscription',
+    $router->post(
+        'inscription',
         [AuthController::class, 'store'],
         [GuestMiddleware::class, CsrfMiddleware::class]
     );

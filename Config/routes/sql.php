@@ -12,7 +12,7 @@ use Framework\Routing\Router;
 
 /** @var Router $router */
 
-if (App::isProduction())
+if (App::isProduction() || ! env_bool('SQL_TOOL_ENABLED', false))
 {
     return;
 }
