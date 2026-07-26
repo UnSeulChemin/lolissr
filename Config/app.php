@@ -8,6 +8,7 @@ return [
     'base_uri' => env('APP_BASE_URI', '/lolissr'),
     'env' => env('APP_ENV', 'local'),
     'debug' => env_bool('APP_DEBUG', false),
+    'timezone' => (string) env('APP_TIMEZONE', 'Europe/Paris'),
 
     'profiler' => env_bool(
         'PROFILER_ENABLED',

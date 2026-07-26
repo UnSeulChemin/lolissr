@@ -38,6 +38,7 @@ final class Bootstrap
 
         EnvironmentValidator::validate();
 
+        self::configureTimezone();
         self::configureDebug();
 
         ErrorHandler::register();
@@ -128,5 +129,15 @@ final class Bootstrap
 
         ini_set('display_errors', $debug ? '1' : '0');
         ini_set('log_errors', '1');
+    }
+
+    private static function configureTimezone(): void
+    {
+        if (! date_default_timezone_set(App::timezone()))
+        {
+            throw new RuntimeException(
+                'Invalid application timezone: ' . App::timezone()
+            );
+        }
     }
 }

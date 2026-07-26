@@ -14,6 +14,7 @@ final class EnvironmentValidator
         'APP_NAME',
         'APP_ENV',
         'APP_BASE_URI',
+        'APP_TIMEZONE',
         'DB_HOST',
         'DB_PORT',
         'DB_NAME',
@@ -40,6 +41,7 @@ final class EnvironmentValidator
         self::validateRequiredVariables();
         self::validateEnvironment();
         self::validateBaseUri();
+        self::validateTimezone();
         self::validatePositiveIntegers();
         self::validateDatabasePort();
         self::validateUploads();
@@ -139,6 +141,18 @@ final class EnvironmentValidator
             throw new RuntimeException(
                 "Invalid APP_BASE_URI value: {$baseUri}. "
                 . 'Expected "/" or a path such as "/lolissr".'
+            );
+        }
+    }
+
+    private static function validateTimezone(): void
+    {
+        $timezone = trim((string) Env::get('APP_TIMEZONE', ''));
+
+        if ($timezone === '' || ! in_array($timezone, timezone_identifiers_list(), true))
+        {
+            throw new RuntimeException(
+                "Invalid APP_TIMEZONE value: {$timezone}"
             );
         }
     }
