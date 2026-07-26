@@ -2,31 +2,25 @@
 
 declare(strict_types=1);
 
-$bootstrap =
-    require __DIR__
-    . '/bootstrap-runner.php';
+$bootstrap = require __DIR__ . '/bootstrap-runner.php';
 
-$base =
-    $bootstrap['base'];
+$base = $bootstrap['base'];
 
-/** @var list<array<string,mixed>> $tests */
-$tests =
-    $bootstrap['tests'];
+/** @var list<array<string, mixed>> $tests */
+$tests = $bootstrap['tests'];
 
-$stats =
-    new Stats();
+$stats = new Stats();
 
-/** @var array<int,array<string,mixed>> $results */
+/** @var array<int, array<string, mixed>> $results */
 $results = [];
 
-$globalStart =
-    microtime(true);
+$globalStart = microtime(true);
 
 /** @var string|null $currentCategory */
 $currentCategory = null;
 
 /**
- * @param array<int,array<string,mixed>> $results
+ * @param array<int, array<string, mixed>> $results
  * @param list<string> $headers
  */
 function addResult(
@@ -40,47 +34,19 @@ function addResult(
     float $duration,
     string $reason,
     array $headers,
-    string $body,
+    string $body
 ): void {
-
     $results[] = [
-
-        'status' =>
-            $status,
-
-        'category' =>
-            $category,
-
-        'label' =>
-            $label,
-
-        'path' =>
-            $path,
-
-        'http_status' =>
-            $httpStatus,
-
-        'expected_status' =>
-            $expectedStatus,
-
-        'duration' =>
-            $duration,
-
-        'reason' =>
-            $reason,
-
-        'headers' =>
-            implode(
-                "\n",
-                $headers,
-            ),
-
-        'body' =>
-            mb_substr(
-                $body,
-                0,
-                3000,
-            ),
+        'status' => $status,
+        'category' => $category,
+        'label' => $label,
+        'path' => $path,
+        'http_status' => $httpStatus,
+        'expected_status' => $expectedStatus,
+        'duration' => $duration,
+        'reason' => $reason,
+        'headers' => implode("\n", $headers),
+        'body' => mb_substr($body, 0, 3000),
     ];
 }
 
@@ -92,101 +58,38 @@ echo PHP_EOL;
 
 foreach ($tests as $test)
 {
-    $category =
-        (string) (
-            $test['category']
-            ?? 'General'
-        );
+    $category = (string) ($test['category'] ?? 'General');
 
     if ($category !== $currentCategory)
     {
-        $currentCategory =
-            $category;
+        $currentCategory = $category;
 
         echo PHP_EOL;
-        echo '--- '
-            . $category
-            . ' ---'
-            . PHP_EOL;
+        echo '--- ' . $category . ' ---' . PHP_EOL;
     }
 
-    $label =
-        (string) (
-            $test['label']
-            ?? 'Sans label'
-        );
-
-    $path =
-        (string) (
-            $test['path']
-            ?? '/'
-        );
-
-    $expectedStatus =
-        (int) (
-            $test['expected_status']
-            ?? 200
-        );
+    $label = (string) ($test['label'] ?? 'Sans label');
+    $path = (string) ($test['path'] ?? '/');
+    $expectedStatus = (int) ($test['expected_status'] ?? 200);
 
     /** @var list<string> $headers */
-    $headers =
-        (array) (
-            $test['headers']
-            ?? []
-        );
+    $headers = (array) ($test['headers'] ?? []);
 
-    $url =
-        rtrim(
-            $base,
-            '/',
-        )
-        . '/'
-        . ltrim(
-            $path,
-            '/',
-        );
+    $url = rtrim($base, '/') . '/' . ltrim($path, '/');
 
-    $start =
-        microtime(true);
+    $start = microtime(true);
 
-    /** @var array{
-     *     status:int,
-     *     body:string,
-     *     headers:list<string>
-     * } $response
-     */
-    $response =
-        http_get(
-            $url,
-            $headers,
-        );
+    /** @var array{status: int, body: string, headers: list<string>} $response */
+    $response = http_get($url, $headers);
 
-    $duration =
-        microtime(true)
-        - $start;
-
-    $status =
-        (int) (
-            $response['status']
-            ?? 0
-        );
-
-    $body =
-        (string) (
-            $response['body']
-            ?? ''
-        );
+    $duration = microtime(true) - $start;
+    $status = (int) ($response['status'] ?? 0);
+    $body = (string) ($response['body'] ?? '');
 
     /** @var list<string> $responseHeaders */
-    $responseHeaders =
-        (array) (
-            $response['headers']
-            ?? []
-        );
+    $responseHeaders = (array) ($response['headers'] ?? []);
 
-    $success =
-        $status === $expectedStatus;
-
+    $success = $status === $expectedStatus;
     $failureReason = '';
 
     /*
@@ -195,17 +98,10 @@ foreach ($tests as $test)
     |--------------------------------------------------------------------------
     */
 
-    if (
-        $success
-        && !assert_not_empty_body(
-            $body,
-        )
-    ) {
-
+    if ($success && ! assert_not_empty_body($body))
+    {
         $success = false;
-
-        $failureReason =
-            'Empty response body';
+        $failureReason = 'Empty response body';
     }
 
     /*
@@ -214,28 +110,14 @@ foreach ($tests as $test)
     |--------------------------------------------------------------------------
     */
 
-    if (
-        $success
-        && isset($test['contains'])
-    ) {
-
-        foreach (
-            $test['contains']
-            as $needle
-        ) {
-
-            if (
-                !assert_contains(
-                    $body,
-                    $needle,
-                )
-            ) {
-
+    if ($success && isset($test['contains']))
+    {
+        foreach ($test['contains'] as $needle)
+        {
+            if (! assert_contains($body, $needle))
+            {
                 $success = false;
-
-                $failureReason =
-                    'Missing text: '
-                    . $needle;
+                $failureReason = 'Missing text: ' . $needle;
 
                 break;
             }
@@ -248,22 +130,10 @@ foreach ($tests as $test)
     |--------------------------------------------------------------------------
     */
 
-    if (
-        $success
-        && ($test['json'] ?? false)
-    ) {
-
-        if (
-            !assert_json(
-                $body,
-            )
-        ) {
-
-            $success = false;
-
-            $failureReason =
-                'Invalid JSON';
-        }
+    if ($success && ($test['json'] ?? false) && ! assert_json($body))
+    {
+        $success = false;
+        $failureReason = 'Invalid JSON';
     }
 
     /*
@@ -272,22 +142,16 @@ foreach ($tests as $test)
     |--------------------------------------------------------------------------
     */
 
-    if (
-        $success
-        && !($test['json'] ?? false)
-        && !($test['fragment'] ?? false)
-    ) {
-
-        if (!assert_html($body))
+    if ($success && ! ($test['json'] ?? false) && ! ($test['fragment'] ?? false))
+    {
+        if (! assert_html($body))
         {
             $success = false;
             $failureReason = 'Invalid HTML';
         }
 
-        if (
-            $success
-            && !assert_title($body)
-        ) {
+        if ($success && ! assert_title($body))
+        {
             $success = false;
             $failureReason = 'Missing title tag';
         }
@@ -299,30 +163,14 @@ foreach ($tests as $test)
     |--------------------------------------------------------------------------
     */
 
-    if (
-        $success
-        && isset(
-            $test['header_contains']
-        )
-    ) {
-
-        foreach (
-            $test['header_contains']
-            as $header
-        ) {
-
-            if (
-                !assert_header(
-                    $responseHeaders,
-                    $header,
-                )
-            ) {
-
+    if ($success && isset($test['header_contains']))
+    {
+        foreach ($test['header_contains'] as $header)
+        {
+            if (! assert_header($responseHeaders, $header))
+            {
                 $success = false;
-
-                $failureReason =
-                    'Missing header: '
-                    . $header;
+                $failureReason = 'Missing header: ' . $header;
 
                 break;
             }
@@ -337,14 +185,9 @@ foreach ($tests as $test)
 
     if ($success)
     {
-        $stats->success(
-            $duration,
-        );
+        $stats->success($duration);
 
-        echo
-            "✅ {$label}"
-            . " [{$status}]"
-            . PHP_EOL;
+        echo "✅ {$label} [{$status}]" . PHP_EOL;
 
         addResult(
             results: $results,
@@ -357,7 +200,7 @@ foreach ($tests as $test)
             duration: $duration,
             reason: '',
             headers: $responseHeaders,
-            body: $body,
+            body: $body
         );
 
         continue;
@@ -369,19 +212,13 @@ foreach ($tests as $test)
     |--------------------------------------------------------------------------
     */
 
-    $stats->fail(
-        $duration,
-    );
+    $stats->fail($duration);
 
-    echo
-        "❌ {$label}"
-        . " [{$status}]";
+    echo "❌ {$label} [{$status}]";
 
     if ($failureReason !== '')
     {
-        echo
-            ' -> '
-            . $failureReason;
+        echo ' -> ' . $failureReason;
     }
 
     echo PHP_EOL;
@@ -397,84 +234,35 @@ foreach ($tests as $test)
         duration: $duration,
         reason: $failureReason,
         headers: $responseHeaders,
-        body: $body,
+        body: $body
     );
 }
 
-$totalDuration =
-    microtime(true)
-    - $globalStart;
+$totalDuration = microtime(true) - $globalStart;
 
 echo PHP_EOL;
 echo str_repeat('=', 50) . PHP_EOL;
-echo 'Tests   : '
-    . $stats->total()
-    . PHP_EOL;
+echo 'Tests   : ' . $stats->total() . PHP_EOL;
+echo 'OK      : ' . $stats->successCount() . PHP_EOL;
+echo 'FAIL    : ' . $stats->failCount() . PHP_EOL;
+echo 'Success : ' . $stats->successRate() . '%' . PHP_EOL;
+echo 'Moyenne : ' . round($stats->averageDuration() * 1000, 2) . 'ms' . PHP_EOL;
+echo 'Temps   : ' . round($totalDuration, 3) . 's' . PHP_EOL;
+echo str_repeat('=', 50) . PHP_EOL;
 
-echo 'OK      : '
-    . $stats->successCount()
-    . PHP_EOL;
+$reportDirectory = __DIR__ . '/reports';
 
-echo 'FAIL    : '
-    . $stats->failCount()
-    . PHP_EOL;
-
-echo 'Success : '
-    . $stats->successRate()
-    . '%'
-    . PHP_EOL;
-
-echo 'Moyenne : '
-    . round(
-        $stats->averageDuration()
-        * 1000,
-        2,
-    )
-    . 'ms'
-    . PHP_EOL;
-
-echo 'Temps   : '
-    . round(
-        $totalDuration,
-        3,
-    )
-    . 's'
-    . PHP_EOL;
-
-echo str_repeat('=', 50)
-    . PHP_EOL;
-
-$reportDirectory =
-    __DIR__
-    . '/reports';
-
-if (
-    !is_dir($reportDirectory)
-    && !mkdir(
-        $reportDirectory,
-        0755,
-        true,
-    )
-    && !is_dir($reportDirectory)
-) {
-    throw new RuntimeException(
-        'Impossible de créer le dossier reports.',
-    );
+if (! is_dir($reportDirectory) && ! mkdir($reportDirectory, 0755, true) && ! is_dir($reportDirectory))
+{
+    throw new RuntimeException('Impossible de créer le dossier reports.');
 }
 
-$reportFile =
-    $reportDirectory
-    . '/lolissr-http-report.html';
+$reportFile = $reportDirectory . '/lolissr-http-report.html';
 
-HtmlReport::generate(
-    $results,
-    $stats,
-    $reportFile,
-);
+HtmlReport::generate($results, $stats, $reportFile);
 
 echo PHP_EOL;
-echo '📄 Rapport HTML généré'
-    . PHP_EOL;
+echo '📄 Rapport HTML généré' . PHP_EOL;
+echo $reportFile . PHP_EOL;
 
-echo $reportFile
-    . PHP_EOL;
+exit($stats->hasFailures() ? 1 : 0);
