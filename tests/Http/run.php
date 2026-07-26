@@ -28,6 +28,7 @@ function addResult(
     string $status,
     string $category,
     string $label,
+    string $method,
     string $path,
     int $httpStatus,
     int $expectedStatus,
@@ -40,6 +41,7 @@ function addResult(
         'status' => $status,
         'category' => $category,
         'label' => $label,
+        'method' => $method,
         'path' => $path,
         'http_status' => $httpStatus,
         'expected_status' => $expectedStatus,
@@ -69,8 +71,10 @@ foreach ($tests as $test)
     }
 
     $label = (string) ($test['label'] ?? 'Sans label');
+    $method = strtoupper((string) ($test['method'] ?? 'GET'));
     $path = (string) ($test['path'] ?? '/');
     $expectedStatus = (int) ($test['expected_status'] ?? 200);
+    $requestBody = isset($test['body']) ? (string) $test['body'] : null;
 
     /** @var list<string> $headers */
     $headers = (array) ($test['headers'] ?? []);
@@ -80,7 +84,7 @@ foreach ($tests as $test)
     $start = microtime(true);
 
     /** @var array{status: int, body: string, headers: list<string>} $response */
-    $response = http_get($url, $headers);
+    $response = http_request($method, $url, $headers, $requestBody);
 
     $duration = microtime(true) - $start;
     $status = (int) ($response['status'] ?? 0);
@@ -91,6 +95,17 @@ foreach ($tests as $test)
 
     $success = $status === $expectedStatus;
     $failureReason = '';
+
+    /*
+    |--------------------------------------------------------------------------
+    | HTTP STATUS
+    |--------------------------------------------------------------------------
+    */
+
+    if (! $success)
+    {
+        $failureReason = "Unexpected status: expected {$expectedStatus}, received {$status}";
+    }
 
     /*
     |--------------------------------------------------------------------------
@@ -112,12 +127,36 @@ foreach ($tests as $test)
 
     if ($success && isset($test['contains']))
     {
-        foreach ($test['contains'] as $needle)
+        foreach ((array) $test['contains'] as $needle)
         {
+            $needle = (string) $needle;
+
             if (! assert_contains($body, $needle))
             {
                 $success = false;
                 $failureReason = 'Missing text: ' . $needle;
+
+                break;
+            }
+        }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | NOT CONTAINS
+    |--------------------------------------------------------------------------
+    */
+
+    if ($success && isset($test['not_contains']))
+    {
+        foreach ((array) $test['not_contains'] as $needle)
+        {
+            $needle = (string) $needle;
+
+            if (! assert_not_contains($body, $needle))
+            {
+                $success = false;
+                $failureReason = 'Unexpected text: ' . $needle;
 
                 break;
             }
@@ -165,8 +204,10 @@ foreach ($tests as $test)
 
     if ($success && isset($test['header_contains']))
     {
-        foreach ($test['header_contains'] as $header)
+        foreach ((array) $test['header_contains'] as $header)
         {
+            $header = (string) $header;
+
             if (! assert_header($responseHeaders, $header))
             {
                 $success = false;
@@ -187,13 +228,14 @@ foreach ($tests as $test)
     {
         $stats->success($duration);
 
-        echo "✅ {$label} [{$status}]" . PHP_EOL;
+        echo "✅ {$method} {$label} [{$status}]" . PHP_EOL;
 
         addResult(
             results: $results,
             status: 'OK',
             category: $category,
             label: $label,
+            method: $method,
             path: $path,
             httpStatus: $status,
             expectedStatus: $expectedStatus,
@@ -214,7 +256,7 @@ foreach ($tests as $test)
 
     $stats->fail($duration);
 
-    echo "❌ {$label} [{$status}]";
+    echo "❌ {$method} {$label} [{$status}]";
 
     if ($failureReason !== '')
     {
@@ -228,6 +270,7 @@ foreach ($tests as $test)
         status: 'FAIL',
         category: $category,
         label: $label,
+        method: $method,
         path: $path,
         httpStatus: $status,
         expectedStatus: $expectedStatus,

@@ -55,3 +55,20 @@ $tests[] = [
 
     'path' => '/chinois',
 ];
+
+$tests[] = [
+
+    'category' => 'Main',
+
+    'label' => 'Accueil refuse POST',
+
+    'method' => 'POST',
+
+    'path' => '/',
+
+    'expected_status' => 405,
+
+    'header_contains' => [
+        'Allow: GET',
+    ],
+];
