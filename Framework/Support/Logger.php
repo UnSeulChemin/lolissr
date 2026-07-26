@@ -13,14 +13,30 @@ use Throwable;
 
 final class Logger
 {
+    private const FILE_PREFIX = 'app-';
+    private const FILE_EXTENSION = '.log';
+
     private static ?string $directory = null;
 
-    private static ?string $file = null;
+    private static bool $cleaned = false;
+
+    // =========================================
+    // CONFIGURATION
+    // =========================================
 
     private static function enabled(): bool
     {
         return (bool) config('log.enabled', true);
     }
+
+    private static function retentionDays(): int
+    {
+        return max(1, (int) config('log.retention_days', 14));
+    }
+
+    // =========================================
+    // FICHIERS
+    // =========================================
 
     private static function directory(): string
     {
@@ -29,15 +45,70 @@ final class Logger
 
     private static function file(): string
     {
-        return self::$file ??= self::directory() . DIRECTORY_SEPARATOR . 'app.log';
+        return self::directory()
+            . DIRECTORY_SEPARATOR
+            . self::FILE_PREFIX
+            . date('Y-m-d')
+            . self::FILE_EXTENSION;
     }
 
     private static function ensureDirectory(): bool
     {
         $directory = self::directory();
 
-        return is_dir($directory) || mkdir($directory, 0755, true) || is_dir($directory);
+        return is_dir($directory)
+            || mkdir($directory, 0755, true)
+            || is_dir($directory);
     }
+
+    private static function cleanExpiredFiles(): void
+    {
+        if (self::$cleaned)
+        {
+            return;
+        }
+
+        self::$cleaned = true;
+
+        $files = glob(
+            self::directory()
+            . DIRECTORY_SEPARATOR
+            . self::FILE_PREFIX
+            . '*'
+            . self::FILE_EXTENSION
+        );
+
+        if ($files === false)
+        {
+            return;
+        }
+
+        $expirationTimestamp = time() - (self::retentionDays() * 86400);
+
+        foreach ($files as $file)
+        {
+            if (! is_file($file))
+            {
+                continue;
+            }
+
+            $modifiedAt = filemtime($file);
+
+            if ($modifiedAt === false || $modifiedAt >= $expirationTimestamp)
+            {
+                continue;
+            }
+
+            if (! unlink($file))
+            {
+                error_log('Logger: impossible de supprimer le fichier expiré : ' . $file);
+            }
+        }
+    }
+
+    // =========================================
+    // CONTEXTE
+    // =========================================
 
     /**
      * @return array<string, mixed>|null
@@ -70,6 +141,10 @@ final class Logger
         }
     }
 
+    // =========================================
+    // ÉCRITURE
+    // =========================================
+
     /**
      * @param array<string, mixed> $context
      */
@@ -80,7 +155,9 @@ final class Logger
             return;
         }
 
-        if (strtoupper($level) === 'DEBUG' && ! App::debug())
+        $level = strtoupper(trim($level));
+
+        if ($level === 'DEBUG' && ! App::debug())
         {
             return;
         }
@@ -97,20 +174,23 @@ final class Logger
             return;
         }
 
+        self::cleanExpiredFiles();
+
         try
         {
             $content = json_encode(
                 [
                     'date' => date('Y-m-d H:i:s'),
-                    'level' => strtoupper($level),
+                    'level' => $level,
                     'message' => $message,
                     'context' => $context,
                     'request' => self::requestContext(),
                 ],
-                JSON_UNESCAPED_UNICODE
+                JSON_PRETTY_PRINT
+                | JSON_UNESCAPED_UNICODE
                 | JSON_UNESCAPED_SLASHES
                 | JSON_INVALID_UTF8_SUBSTITUTE
-                | JSON_THROW_ON_ERROR,
+                | JSON_THROW_ON_ERROR
             );
         }
         catch (JsonException)
@@ -118,8 +198,21 @@ final class Logger
             return;
         }
 
-        file_put_contents(self::file(), $content . PHP_EOL, FILE_APPEND | LOCK_EX);
+        $written = file_put_contents(
+            self::file(),
+            $content . PHP_EOL . PHP_EOL,
+            FILE_APPEND | LOCK_EX
+        );
+
+        if ($written === false)
+        {
+            error_log('Logger: impossible d’écrire dans le fichier de log.');
+        }
     }
+
+    // =========================================
+    // NIVEAUX
+    // =========================================
 
     /**
      * @param array<string, mixed> $context
@@ -153,6 +246,10 @@ final class Logger
         self::write('ERROR', $message, $context);
     }
 
+    // =========================================
+    // EXCEPTIONS
+    // =========================================
+
     /**
      * @param array<string, mixed> $context
      */
@@ -167,8 +264,8 @@ final class Logger
                     'file' => $exception->getFile(),
                     'line' => $exception->getLine(),
                     'trace' => $exception->getTraceAsString(),
-                ],
-            ),
+                ]
+            )
         );
     }
 }

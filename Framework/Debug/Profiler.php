@@ -50,62 +50,27 @@ final class Profiler
         self::$requestStart = hrtime(true);
     }
 
-    public static function finishRequest(
-        string $method,
-        string $uri,
-        int $status = 200
-    ): void {
-        if (
-            ! self::$active
-            || self::$requestStart === null
-        )
+    public static function finishRequest(string $method, string $uri, int $status = 200): void
+    {
+        if (! self::$active || self::$requestStart === null)
         {
             return;
         }
 
-        $total = self::elapsedMilliseconds(
-            self::$requestStart
-        );
-
-        $parts = [];
-
-        foreach (self::$durations as $name => $duration)
-        {
-            $parts[] = sprintf(
-                '%s=%.2fms',
-                $name,
-                $duration
-            );
-        }
-
-        foreach (self::$counters as $name => $count)
-        {
-            $parts[] = sprintf(
-                '%s=%d',
-                $name,
-                $count
-            );
-        }
-
-        $details = $parts !== []
-            ? ' | ' . implode(' | ', $parts)
-            : '';
+        $total = self::elapsedMilliseconds(self::$requestStart);
 
         Logger::debug(
-            sprintf(
-                '[PROFILER] %s %s | status=%d | total=%.2fms%s | memory=%s | peak=%s',
-                strtoupper($method),
-                $uri,
-                $status,
-                $total,
-                $details,
-                self::formatBytes(
-                    memory_get_usage(true)
-                ),
-                self::formatBytes(
-                    memory_get_peak_usage(true)
-                )
-            )
+            '[PROFILER] ' . strtoupper($method) . ' ' . $uri,
+            [
+                'status' => $status,
+                'total_ms' => round($total, 2),
+                'durations_ms' => self::roundedDurations(),
+                'counters' => self::$counters,
+                'memory' => [
+                    'current_mb' => round(memory_get_usage(true) / 1024 / 1024, 2),
+                    'peak_mb' => round(memory_get_peak_usage(true) / 1024 / 1024, 2),
+                ],
+            ]
         );
 
         self::reset();
@@ -119,10 +84,7 @@ final class Profiler
 
     public static function start(string $name): void
     {
-        if (
-            ! self::$active
-            || $name === ''
-        )
+        if (! self::$active || $name === '')
         {
             return;
         }
@@ -132,10 +94,7 @@ final class Profiler
 
     public static function end(string $name): float
     {
-        if (
-            ! self::$active
-            || $name === ''
-        )
+        if (! self::$active || $name === '')
         {
             return 0.0;
         }
@@ -149,9 +108,7 @@ final class Profiler
 
         $duration = self::elapsedMilliseconds($start);
 
-        self::$durations[$name] =
-            (self::$durations[$name] ?? 0.0)
-            + $duration;
+        self::$durations[$name] = (self::$durations[$name] ?? 0.0) + $duration;
 
         unset(self::$starts[$name]);
 
@@ -165,14 +122,9 @@ final class Profiler
      *
      * @return T
      */
-    public static function measure(
-        string $name,
-        callable $callback
-    ): mixed {
-        if (
-            ! self::$active
-            || $name === ''
-        )
+    public static function measure(string $name, callable $callback): mixed
+    {
+        if (! self::$active || $name === '')
         {
             return $callback();
         }
@@ -195,22 +147,14 @@ final class Profiler
     |--------------------------------------------------------------------------
     */
 
-    public static function increment(
-        string $name,
-        int $amount = 1
-    ): void {
-        if (
-            ! self::$active
-            || $name === ''
-            || $amount === 0
-        )
+    public static function increment(string $name, int $amount = 1): void
+    {
+        if (! self::$active || $name === '' || $amount === 0)
         {
             return;
         }
 
-        self::$counters[$name] =
-            (self::$counters[$name] ?? 0)
-            + $amount;
+        self::$counters[$name] = (self::$counters[$name] ?? 0) + $amount;
     }
 
     /*
@@ -258,10 +202,7 @@ final class Profiler
 
     private static function enabled(): bool
     {
-        return (bool) config(
-            'app.profiler',
-            false
-        );
+        return (bool) config('app.profiler', false);
     }
 
     /*
@@ -269,6 +210,21 @@ final class Profiler
     | HELPERS
     |--------------------------------------------------------------------------
     */
+
+    /**
+     * @return array<string, float>
+     */
+    private static function roundedDurations(): array
+    {
+        $durations = [];
+
+        foreach (self::$durations as $name => $duration)
+        {
+            $durations[$name] = round($duration, 2);
+        }
+
+        return $durations;
+    }
 
     private static function reset(): void
     {
@@ -279,34 +235,8 @@ final class Profiler
         self::$counters = [];
     }
 
-    private static function elapsedMilliseconds(
-        int $start
-    ): float {
-        return (hrtime(true) - $start) / 1_000_000;
-    }
-
-    private static function formatBytes(int $bytes): string
+    private static function elapsedMilliseconds(int $start): float
     {
-        if ($bytes < 1024)
-        {
-            return $bytes . ' B';
-        }
-
-        if ($bytes < 1024 * 1024)
-        {
-            return number_format(
-                $bytes / 1024,
-                2,
-                ',',
-                ' '
-            ) . ' KB';
-        }
-
-        return number_format(
-            $bytes / 1024 / 1024,
-            2,
-            ',',
-            ' '
-        ) . ' MB';
+        return (hrtime(true) - $start) / 1_000_000;
     }
 }
