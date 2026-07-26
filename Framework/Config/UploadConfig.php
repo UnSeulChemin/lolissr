@@ -20,6 +20,21 @@ final class UploadConfig
         return max(1, (int) config('upload.max_size', 5242880));
     }
 
+    public static function maxWidth(): int
+    {
+        return max(1, (int) config('upload.max_width', 10000));
+    }
+
+    public static function maxHeight(): int
+    {
+        return max(1, (int) config('upload.max_height', 10000));
+    }
+
+    public static function maxPixels(): int
+    {
+        return max(1, (int) config('upload.max_pixels', 50000000));
+    }
+
     /**
      * @return list<string>
      */
@@ -39,10 +54,7 @@ final class UploadConfig
     public static function thumbnailDirectory(string $folder): string
     {
         return self::$thumbnailDirectories[$folder]
-            ??= rtrim(
-                base_path("public/images/{$folder}/thumbnail"),
-                '/\\',
-            ) . DIRECTORY_SEPARATOR;
+            ??= rtrim(base_path("public/images/{$folder}/thumbnail"), '/\\') . DIRECTORY_SEPARATOR;
     }
 
     // =========================================
@@ -61,7 +73,6 @@ final class UploadConfig
         }
 
         $values = array_map(static fn (mixed $value): string => strtolower(trim((string) $value)), $values);
-
         $values = array_filter($values, static fn (string $value): bool => $value !== '');
 
         return array_values(array_unique($values));
