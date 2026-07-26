@@ -1,4 +1,6 @@
 @echo off
+setlocal EnableExtensions
+
 title LoliSSR - Guild Verification Quest
 cls
 
@@ -49,6 +51,23 @@ echo.
 
 php tests\run-tests.php
 
+if errorlevel 1 (
+    echo.
+    echo ============================================================
+    echo.
+    echo                    QUEST FAILED
+    echo.
+    echo       Some locations of the kingdom are corrupted.
+    echo.
+    echo        Review the report and errors displayed above.
+    echo.
+    echo ============================================================
+    echo.
+
+    pause
+    exit /b 1
+)
+
 echo.
 echo ============================================================
 echo.
@@ -56,9 +75,10 @@ echo                  QUEST COMPLETED
 echo.
 echo        The kingdom has been inspected successfully.
 echo.
-echo      Review the report for corrupted locations.
+echo          No corrupted locations were detected.
 echo.
 echo ============================================================
 echo.
 
 pause
+exit /b 0
