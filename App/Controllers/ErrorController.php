@@ -7,7 +7,6 @@ namespace App\Controllers;
 use App\DTO\Common\ServiceResult;
 
 use Framework\Http\Request;
-use Framework\Support\Logger;
 
 final class ErrorController extends Controller
 {
@@ -54,7 +53,7 @@ final class ErrorController extends Controller
 
     public function serverError(string $message = 'Une erreur interne est survenue.'): never
     {
-        $this->error(500, '500', '500 | Erreur serveur', $message, true);
+        $this->error(500, '500', '500 | Erreur serveur', $message);
     }
 
     /*
@@ -67,28 +66,26 @@ final class ErrorController extends Controller
         int $status,
         string $view,
         string $title,
-        string $message,
-        bool $critical = false
-    ): never
-    {
-        $context = ['uri' => $this->request->uri()];
-
-        if ($critical)
-        {
-            Logger::error($title, $context);
-        }
-        else
-        {
-            Logger::warning($title, $context);
-        }
-
+        string $message
+    ): never {
         if ($this->expectsJson())
         {
-            $this->jsonResult(ServiceResult::error(message: $message, status: $status));
+            $this->jsonResult(
+                ServiceResult::error(
+                    message: $message,
+                    status: $status
+                )
+            );
         }
 
         $this->title = $title;
 
-        $this->renderError($view, $status, ['message' => $message]);
+        $this->renderError(
+            $view,
+            $status,
+            [
+                'message' => $message,
+            ]
+        );
     }
 }

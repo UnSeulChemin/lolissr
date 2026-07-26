@@ -200,13 +200,16 @@ final class Logger
 
         $written = file_put_contents(
             self::file(),
-            $content . PHP_EOL . PHP_EOL,
+            $content . PHP_EOL,
             FILE_APPEND | LOCK_EX
         );
 
-        if ($written === false)
+        if ($written === false && App::debug())
         {
-            error_log('Logger: impossible d’écrire dans le fichier de log.');
+            error_log(
+                'LoliSSR Logger: impossible d\'écrire dans le fichier de log : '
+                . self::file()
+            );
         }
     }
 
