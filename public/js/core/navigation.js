@@ -3,51 +3,42 @@
 // =========================================
 
 // =========================================
-// NORMALIZE URL
+// NORMALIZE ROUTE URL
 // =========================================
 
-export function normalizeUrl(
-    href,
-)
+export function normalizeRouteUrl(href)
 {
-    const url =
-        new URL(
-            href,
-            window.location.origin,
-        );
+    const url = new URL(
+        href,
+        window.location.origin,
+    );
 
-    // =====================================
-    // REMOVE HASH
-    // =====================================
+    let pathname = url.pathname.replace(
+        /\/+/g,
+        '/',
+    );
 
-    url.hash =
-        '';
-
-    // =====================================
-    // CLEAN PATH
-    // =====================================
-
-    let pathname =
-        url.pathname
-            .replace(
-                /\/+/g,
-                '/',
-            );
-
-    // =====================================
-    // ROOT
-    // =====================================
-
-    if (
-        pathname === ''
-    ) {
-
-        pathname =
-            '/';
+    if (pathname === '')
+    {
+        pathname = '/';
     }
 
-    url.pathname =
-        pathname;
+    url.pathname = pathname;
+
+    return url.toString();
+}
+
+// =========================================
+// NORMALIZE CACHE KEY
+// =========================================
+
+export function normalizeCacheKey(href)
+{
+    const url = new URL(
+        normalizeRouteUrl(href),
+    );
+
+    url.hash = '';
 
     return url.toString();
 }
@@ -56,37 +47,29 @@ export function normalizeUrl(
 // IGNORE LINK
 // =========================================
 
-export function shouldIgnoreLink(
-    link,
-)
+export function shouldIgnoreLink(link)
 {
-    if (
-        !(
-            link
-            instanceof HTMLAnchorElement
-        )
-    ) {
+    if (! (link instanceof HTMLAnchorElement))
+    {
         return true;
     }
 
-    if (!link.href) {
+    if (! link.href)
+    {
         return true;
     }
 
-    const url =
-        new URL(
-            link.href,
-            window.location.origin,
-        );
+    const url = new URL(
+        link.href,
+        window.location.origin,
+    );
 
     // =====================================
     // EXTERNAL
     // =====================================
 
-    if (
-        url.origin
-        !== window.location.origin
-    ) {
+    if (url.origin !== window.location.origin)
+    {
         return true;
     }
 
@@ -94,9 +77,8 @@ export function shouldIgnoreLink(
     // TARGET
     // =====================================
 
-    if (
-        link.target === '_blank'
-    ) {
+    if (link.target === '_blank')
+    {
         return true;
     }
 
@@ -104,11 +86,8 @@ export function shouldIgnoreLink(
     // DOWNLOAD
     // =====================================
 
-    if (
-        link.hasAttribute(
-            'download',
-        )
-    ) {
+    if (link.hasAttribute('download'))
+    {
         return true;
     }
 
@@ -116,26 +95,20 @@ export function shouldIgnoreLink(
     // ROUTER DISABLED
     // =====================================
 
-    if (
-        link.dataset.noRouter
-        !== undefined
-    ) {
+    if (link.dataset.noRouter !== undefined)
+    {
         return true;
     }
 
     // =====================================
-    // SAME HASH
+    // SAME PAGE HASH
     // =====================================
 
     if (
         url.hash
-        && normalizeUrl(
-            url.pathname,
-        )
-        === normalizeUrl(
-            location.pathname,
-        )
-    ) {
+        && normalizeCacheKey(url.href) === normalizeCacheKey(location.href)
+    )
+    {
         return true;
     }
 
@@ -143,12 +116,8 @@ export function shouldIgnoreLink(
     // STATIC FILES
     // =====================================
 
-    if (
-        /\.(jpg|jpeg|png|gif|webp|svg|pdf|zip|mp4|webm)$/i
-            .test(
-                url.pathname,
-            )
-    ) {
+    if (/\.(jpg|jpeg|png|gif|webp|svg|pdf|zip|mp4|webm)$/i.test(url.pathname))
+    {
         return true;
     }
 

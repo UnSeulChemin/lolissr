@@ -3,37 +3,30 @@
 // =========================================
 
 import {
-    normalizeUrl,
+    normalizeRouteUrl,
 } from '../core/navigation.js';
 
 // =========================================
 // STATE
 // =========================================
 
-const scrollPositions =
-    new Map();
+const scrollPositions = new Map();
 
 // =========================================
 // SAVE
 // =========================================
 
-export function saveScrollPosition(
-    href,
-)
+export function saveScrollPosition(href)
 {
-    const url =
-        normalizeUrl(
-            href,
-        );
+    const url = normalizeRouteUrl(
+        href,
+    );
 
     scrollPositions.set(
         url,
         {
-            x:
-                window.scrollX,
-
-            y:
-                window.scrollY,
+            x: window.scrollX,
+            y: window.scrollY,
         },
     );
 }
@@ -42,22 +35,18 @@ export function saveScrollPosition(
 // RESTORE
 // =========================================
 
-export function restoreScrollPosition(
-    href,
-)
+export function restoreScrollPosition(href)
 {
-    const url =
-        normalizeUrl(
-            href,
-        );
+    const url = normalizeRouteUrl(
+        href,
+    );
 
-    const position =
-        scrollPositions.get(
-            url,
-        );
+    const position = scrollPositions.get(
+        url,
+    );
 
-    if (!position) {
-
+    if (! position)
+    {
         window.scrollTo(
             0,
             0,
@@ -81,13 +70,9 @@ export function restoreScrollPosition(
 // CLEAR
 // =========================================
 
-export function clearScrollPosition(
-    href,
-)
+export function clearScrollPosition(href)
 {
     scrollPositions.delete(
-        normalizeUrl(
-            href,
-        ),
+        normalizeRouteUrl(href),
     );
 }

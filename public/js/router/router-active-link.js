@@ -3,12 +3,36 @@
 // =========================================
 
 import {
-    normalizeUrl,
+    normalizeCacheKey,
 } from '../core/navigation.js';
 
 import {
     appUrl,
 } from '../core/url.js';
+
+// =========================================
+// NORMALIZE PATH
+// =========================================
+
+function normalizePath(
+    href,
+)
+{
+    const url =
+        new URL(
+            normalizeCacheKey(
+                href,
+            ),
+        );
+
+    const pathname =
+        url.pathname.replace(
+            /\/+$/,
+            '',
+        );
+
+    return pathname || '/';
+}
 
 // =========================================
 // UPDATE ACTIVE NAVIGATION
@@ -17,13 +41,19 @@ import {
 export function updateActiveNavigation()
 {
     const currentPath =
-        normalizeUrl(location.pathname);
+        normalizePath(
+            location.href,
+        );
 
     const homePath =
-        normalizeUrl(appUrl());
+        normalizePath(
+            appUrl(),
+        );
 
     document
-        .querySelectorAll('.nav-link-icon, .site-profile-link')
+        .querySelectorAll(
+            '.nav-link-icon, .site-profile-link',
+        )
         .forEach(
             (link) =>
             {
@@ -33,13 +63,17 @@ export function updateActiveNavigation()
                 }
 
                 const linkPath =
-                    normalizeUrl(link.pathname);
+                    normalizePath(
+                        link.href,
+                    );
 
                 const active =
                     linkPath === homePath
                         ? currentPath === homePath
                         : currentPath === linkPath
-                            || currentPath.startsWith(`${linkPath}/`);
+                            || currentPath.startsWith(
+                                `${linkPath}/`,
+                            );
 
                 link.classList.toggle(
                     'active',

@@ -3,14 +3,6 @@
 // =========================================
 
 import {
-    request,
-} from '../core/http.js';
-
-import {
-    normalizeUrl,
-} from '../core/navigation.js';
-
-import {
     debug,
     debugError,
 } from '../core/debug/debug.js';
@@ -18,6 +10,14 @@ import {
 import {
     FrontendError,
 } from '../core/errors/FrontendError.js';
+
+import {
+    request,
+} from '../core/http.js';
+
+import {
+    normalizeCacheKey,
+} from '../core/navigation.js';
 
 // =========================================
 // FETCH PAGE
@@ -29,12 +29,12 @@ export async function fetchPage(
 )
 {
     const url =
-        normalizeUrl(
+        normalizeCacheKey(
             href,
         );
 
-    try {
-
+    try
+    {
         debug(
             'FETCH',
             'network',
@@ -65,8 +65,8 @@ export async function fetchPage(
         if (
             response?.type
             !== 'page'
-        ) {
-
+        )
+        {
             throw new FrontendError(
                 'Réponse page invalide',
                 {
@@ -79,8 +79,8 @@ export async function fetchPage(
         if (
             typeof response.page?.html
             !== 'string'
-        ) {
-
+        )
+        {
             throw new FrontendError(
                 'HTML page invalide',
                 {
@@ -97,9 +97,9 @@ export async function fetchPage(
         );
 
         return response;
-
-    } catch (error) {
-
+    }
+    catch (error)
+    {
         debugError(
             'FETCH',
             error,

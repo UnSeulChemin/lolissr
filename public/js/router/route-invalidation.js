@@ -3,45 +3,43 @@
 // =========================================
 
 import {
-    normalizeUrl,
+    normalizeCacheKey,
 } from '../core/navigation.js';
 
 // =========================================
 // STATE
 // =========================================
 
-const invalidatedRoutes =
-    new Set();
+const invalidatedRoutes = new Set();
 
 // =========================================
 // HELPERS
 // =========================================
+
+function routePath(href)
+{
+    return new URL(
+        normalizeCacheKey(href),
+    ).pathname.replace(/\/+$/, '') || '/';
+}
 
 function matchesInvalidatedRoute(
     current,
     invalidated,
 )
 {
-    return (
-        current === invalidated
-        || current.startsWith(
-            `${invalidated}/`,
-        )
-    );
+    return current === invalidated
+        || current.startsWith(`${invalidated}/`);
 }
 
 // =========================================
 // INVALIDATE
 // =========================================
 
-export function invalidateRoute(
-    href,
-)
+export function invalidateRoute(href)
 {
     invalidatedRoutes.add(
-        normalizeUrl(
-            href,
-        ),
+        routePath(href),
     );
 }
 
@@ -49,27 +47,16 @@ export function invalidateRoute(
 // CHECK
 // =========================================
 
-export function shouldRefreshRoute(
-    href,
-)
+export function shouldRefreshRoute(href)
 {
-    const normalized =
-        normalizeUrl(
-            href,
-        );
+    const normalized = routePath(
+        href,
+    );
 
-    for (
-        const route
-        of invalidatedRoutes
-    )
+    for (const route of invalidatedRoutes)
     {
-        if (
-            matchesInvalidatedRoute(
-                normalized,
-                route,
-            )
-        ) {
-
+        if (matchesInvalidatedRoute(normalized, route))
+        {
             return true;
         }
     }
@@ -81,27 +68,16 @@ export function shouldRefreshRoute(
 // CLEAR
 // =========================================
 
-export function clearInvalidatedRoute(
-    href,
-)
+export function clearInvalidatedRoute(href)
 {
-    const normalized =
-        normalizeUrl(
-            href,
-        );
+    const normalized = routePath(
+        href,
+    );
 
-    for (
-        const route
-        of invalidatedRoutes
-    )
+    for (const route of invalidatedRoutes)
     {
-        if (
-            matchesInvalidatedRoute(
-                normalized,
-                route,
-            )
-        ) {
-
+        if (matchesInvalidatedRoute(normalized, route))
+        {
             invalidatedRoutes.delete(
                 route,
             );

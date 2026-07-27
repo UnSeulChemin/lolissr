@@ -11,7 +11,7 @@ import {
 } from '../../core/debug/debug.js';
 
 import {
-    normalizeUrl,
+    normalizeCacheKey,
 } from '../../core/navigation.js';
 
 import {
@@ -24,28 +24,16 @@ import {
 // HELPERS
 // =========================================
 
-function isExpired(
-    entry,
-)
+function isExpired(entry)
 {
-    return (
-        Date.now()
-        - entry.timestamp
-        > config.prefetch.cacheDuration
-    );
+    return Date.now() - entry.timestamp > config.prefetch.cacheDuration;
 }
 
 function trimCache()
 {
-    while (
-        cache.size
-        > config.prefetch.cacheLimit
-    )
+    while (cache.size > config.prefetch.cacheLimit)
     {
-        const oldestKey =
-            cache.keys()
-                .next()
-                .value;
+        const oldestKey = cache.keys().next().value;
 
         if (! oldestKey)
         {
@@ -62,39 +50,27 @@ function trimCache()
 // CACHE
 // =========================================
 
-export function getPrefetchedPage(
-    href,
-)
+export function getPrefetchedPage(href)
 {
-    const url =
-        normalizeUrl(
-            href,
-        );
+    const url = normalizeCacheKey(
+        href,
+    );
 
-    if (
-        invalidated.has(
-            url,
-        )
-    )
+    if (invalidated.has(url))
     {
         return null;
     }
 
-    const cached =
-        cache.get(
-            url,
-        );
+    const cached = cache.get(
+        url,
+    );
 
     if (! cached)
     {
         return null;
     }
 
-    if (
-        isExpired(
-            cached,
-        )
-    )
+    if (isExpired(cached))
     {
         cache.delete(
             url,
@@ -119,11 +95,8 @@ export function getPrefetchedPage(
     );
 
     return {
-        type:
-            'page',
-
-        page:
-            cached.page,
+        type: 'page',
+        page: cached.page,
     };
 }
 
@@ -132,10 +105,9 @@ export function setPrefetchedPage(
     response,
 )
 {
-    const url =
-        normalizeUrl(
-            href,
-        );
+    const url = normalizeCacheKey(
+        href,
+    );
 
     cache.delete(
         url,
@@ -144,11 +116,8 @@ export function setPrefetchedPage(
     cache.set(
         url,
         {
-            page:
-                response.page,
-
-            timestamp:
-                Date.now(),
+            page: response.page,
+            timestamp: Date.now(),
         },
     );
 
@@ -163,14 +132,11 @@ export function setPrefetchedPage(
 // INVALIDATE
 // =========================================
 
-export function invalidatePrefetch(
-    href,
-)
+export function invalidatePrefetch(href)
 {
-    const url =
-        normalizeUrl(
-            href,
-        );
+    const url = normalizeCacheKey(
+        href,
+    );
 
     invalidated.add(
         url,
@@ -180,10 +146,9 @@ export function invalidatePrefetch(
         url,
     );
 
-    const entry =
-        inFlight.get(
-            url,
-        );
+    const entry = inFlight.get(
+        url,
+    );
 
     entry?.controller.abort();
 
@@ -204,10 +169,7 @@ export function invalidatePrefetch(
 
 export function clearPrefetchCache()
 {
-    for (
-        const entry
-        of inFlight.values()
-    )
+    for (const entry of inFlight.values())
     {
         entry.controller.abort();
     }
@@ -221,28 +183,16 @@ export function clearPrefetchCache()
 // IN FLIGHT
 // =========================================
 
-export function getInFlightPrefetch(
-    href,
-)
+export function getInFlightPrefetch(href)
 {
-    const url =
-        normalizeUrl(
-            href,
-        );
+    const url = normalizeCacheKey(
+        href,
+    );
 
-    if (
-        invalidated.has(
-            url,
-        )
-    )
+    if (invalidated.has(url))
     {
         return null;
     }
 
-    return (
-        inFlight.get(
-            url,
-        )?.promise
-        ?? null
-    );
+    return inFlight.get(url)?.promise ?? null;
 }

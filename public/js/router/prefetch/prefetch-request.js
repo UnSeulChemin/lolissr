@@ -16,7 +16,7 @@ import {
 } from '../../core/http.js';
 
 import {
-    normalizeUrl,
+    normalizeCacheKey,
 } from '../../core/navigation.js';
 
 import {
@@ -34,19 +34,16 @@ import {
 // PREFETCH
 // =========================================
 
-export async function prefetchPage(
-    href,
-)
+export async function prefetchPage(href)
 {
     if (! config.prefetch.enabled)
     {
         return null;
     }
 
-    const url =
-        normalizeUrl(
-            href,
-        );
+    const url = normalizeCacheKey(
+        href,
+    );
 
     /*
     |--------------------------------------------------------------------------
@@ -54,12 +51,7 @@ export async function prefetchPage(
     |--------------------------------------------------------------------------
     */
 
-    if (
-        url
-        === normalizeUrl(
-            location.href,
-        )
-    )
+    if (url === normalizeCacheKey(location.href))
     {
         return null;
     }
@@ -70,11 +62,7 @@ export async function prefetchPage(
     |--------------------------------------------------------------------------
     */
 
-    if (
-        invalidated.has(
-            url,
-        )
-    )
+    if (invalidated.has(url))
     {
         return null;
     }
@@ -85,10 +73,9 @@ export async function prefetchPage(
     |--------------------------------------------------------------------------
     */
 
-    const cached =
-        getPrefetchedPage(
-            url,
-        );
+    const cached = getPrefetchedPage(
+        url,
+    );
 
     if (cached)
     {
@@ -107,10 +94,9 @@ export async function prefetchPage(
     |--------------------------------------------------------------------------
     */
 
-    const existing =
-        getInFlightPrefetch(
-            url,
-        );
+    const existing = getInFlightPrefetch(
+        url,
+    );
 
     if (existing)
     {
@@ -135,141 +121,116 @@ export async function prefetchPage(
         url,
     );
 
-    const controller =
-        new AbortController();
+    const controller = new AbortController();
 
     let promise;
 
-    promise =
-        (async () =>
+    promise = (async () =>
+    {
+        try
         {
-            try
+            const response = await request(
+                url,
+                {
+                    timeout: config.prefetch.timeout,
+
+                    headers: {
+                        Accept: 'application/json',
+                        'X-Prefetch': 'true',
+                        'Cache-Control': 'no-cache',
+                    },
+
+                    signal: controller.signal,
+                },
+            );
+
+            /*
+            |--------------------------------------------------------------------------
+            | VALIDATION
+            |--------------------------------------------------------------------------
+            */
+
+            if (response?.type !== 'page')
             {
-                const response =
-                    await request(
-                        url,
-                        {
-                            timeout:
-                                config.prefetch.timeout,
-
-                            headers:
-                            {
-                                Accept:
-                                    'application/json',
-
-                                'X-Prefetch':
-                                    'true',
-
-                                'Cache-Control':
-                                    'no-cache',
-                            },
-
-                            signal:
-                                controller.signal,
-                        },
-                    );
-
-                /*
-                |--------------------------------------------------------------------------
-                | VALIDATION
-                |--------------------------------------------------------------------------
-                */
-
-                if (
-                    response?.type
-                    !== 'page'
-                )
-                {
-                    debug(
-                        'PREFETCH',
-                        'invalid-response',
-                        url,
-                    );
-
-                    return null;
-                }
-
-                /*
-                |--------------------------------------------------------------------------
-                | INVALIDATED DURING REQUEST
-                |--------------------------------------------------------------------------
-                */
-
-                if (
-                    invalidated.has(
-                        url,
-                    )
-                )
-                {
-                    debug(
-                        'PREFETCH',
-                        'skip-invalidated',
-                        url,
-                    );
-
-                    return null;
-                }
-
-                /*
-                |--------------------------------------------------------------------------
-                | CACHE
-                |--------------------------------------------------------------------------
-                */
-
-                setPrefetchedPage(
-                    url,
-                    response,
-                );
-
                 debug(
                     'PREFETCH',
-                    'success',
+                    'invalid-response',
                     url,
-                );
-
-                return response;
-            }
-            catch (error)
-            {
-                if (
-                    error?.name
-                    === 'AbortError'
-                )
-                {
-                    debug(
-                        'PREFETCH',
-                        'aborted',
-                        url,
-                    );
-
-                    return null;
-                }
-
-                debugError(
-                    'PREFETCH',
-                    error,
                 );
 
                 return null;
             }
-            finally
-            {
-                const currentEntry =
-                    inFlight.get(
-                        url,
-                    );
 
-                if (
-                    currentEntry?.promise
-                    === promise
-                )
-                {
-                    inFlight.delete(
-                        url,
-                    );
-                }
+            /*
+            |--------------------------------------------------------------------------
+            | INVALIDATED DURING REQUEST
+            |--------------------------------------------------------------------------
+            */
+
+            if (invalidated.has(url))
+            {
+                debug(
+                    'PREFETCH',
+                    'skip-invalidated',
+                    url,
+                );
+
+                return null;
             }
-        })();
+
+            /*
+            |--------------------------------------------------------------------------
+            | CACHE
+            |--------------------------------------------------------------------------
+            */
+
+            setPrefetchedPage(
+                url,
+                response,
+            );
+
+            debug(
+                'PREFETCH',
+                'success',
+                url,
+            );
+
+            return response;
+        }
+        catch (error)
+        {
+            if (error?.name === 'AbortError')
+            {
+                debug(
+                    'PREFETCH',
+                    'aborted',
+                    url,
+                );
+
+                return null;
+            }
+
+            debugError(
+                'PREFETCH',
+                error,
+            );
+
+            return null;
+        }
+        finally
+        {
+            const currentEntry = inFlight.get(
+                url,
+            );
+
+            if (currentEntry?.promise === promise)
+            {
+                inFlight.delete(
+                    url,
+                );
+            }
+        }
+    })();
 
     inFlight.set(
         url,

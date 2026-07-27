@@ -15,7 +15,8 @@ import {
 } from '../../core/debug/profiler.js';
 
 import {
-    normalizeUrl,
+    normalizeCacheKey,
+    normalizeRouteUrl,
 } from '../../core/navigation.js';
 
 import {
@@ -80,19 +81,19 @@ export async function navigateTo(
 {
     reset();
 
-    start(
-        'total',
+    start('total');
+
+    const current = normalizeRouteUrl(
+        location.href,
     );
 
-    const current =
-        normalizeUrl(
-            location.href,
-        );
+    const target = normalizeRouteUrl(
+        to,
+    );
 
-    const target =
-        normalizeUrl(
-            to,
-        );
+    const targetCacheKey = normalizeCacheKey(
+        target,
+    );
 
     /*
     |--------------------------------------------------------------------------
@@ -128,13 +129,11 @@ export async function navigateTo(
     |--------------------------------------------------------------------------
     */
 
-    const navigationId =
-        ++navigationState.navigationId;
+    const navigationId = ++navigationState.navigationId;
 
     lockRouter();
 
-    const controller =
-        new AbortController();
+    const controller = new AbortController();
 
     setController(
         controller,
@@ -146,9 +145,7 @@ export async function navigateTo(
     |--------------------------------------------------------------------------
     */
 
-    if (
-        options.updateHistory !== false
-    )
+    if (options.updateHistory !== false)
     {
         saveScrollPosition(
             current,
@@ -174,15 +171,10 @@ export async function navigateTo(
         |--------------------------------------------------------------------------
         */
 
-        await triggerBeforeRouteChange(
-            {
-                from:
-                    current,
-
-                to:
-                    target,
-            },
-        );
+        await triggerBeforeRouteChange({
+            from: current,
+            to: target,
+        });
 
         /*
         |--------------------------------------------------------------------------
@@ -190,10 +182,7 @@ export async function navigateTo(
         |--------------------------------------------------------------------------
         */
 
-        if (
-            navigationId
-            !== navigationState.navigationId
-        )
+        if (navigationId !== navigationState.navigationId)
         {
             emitNavigationAbort(
                 current,
@@ -209,17 +198,14 @@ export async function navigateTo(
         |--------------------------------------------------------------------------
         */
 
-        const forceRefresh =
-            shouldRefreshRoute(
-                target,
-            );
+        const forceRefresh = shouldRefreshRoute(
+            targetCacheKey,
+        );
 
-        if (
-            forceRefresh
-        )
+        if (forceRefresh)
         {
             clearInvalidatedRoute(
-                target,
+                targetCacheKey,
             );
         }
 
@@ -234,12 +220,11 @@ export async function navigateTo(
             target,
         );
 
-        const response =
-            await resolvePage(
-                target,
-                forceRefresh,
-                controller.signal,
-            );
+        const response = await resolvePage(
+            targetCacheKey,
+            forceRefresh,
+            controller.signal,
+        );
 
         /*
         |--------------------------------------------------------------------------
@@ -247,10 +232,7 @@ export async function navigateTo(
         |--------------------------------------------------------------------------
         */
 
-        if (
-            navigationId
-            !== navigationState.navigationId
-        )
+        if (navigationId !== navigationState.navigationId)
         {
             emitNavigationAbort(
                 current,
@@ -276,10 +258,7 @@ export async function navigateTo(
         |--------------------------------------------------------------------------
         */
 
-        if (
-            navigationId
-            !== navigationState.navigationId
-        )
+        if (navigationId !== navigationState.navigationId)
         {
             emitNavigationAbort(
                 current,
@@ -295,15 +274,11 @@ export async function navigateTo(
         |--------------------------------------------------------------------------
         */
 
-        start(
-            'cleanup',
-        );
+        start('cleanup');
 
         runCleanup();
 
-        end(
-            'cleanup',
-        );
+        end('cleanup');
 
         /*
         |--------------------------------------------------------------------------
@@ -322,9 +297,7 @@ export async function navigateTo(
         |--------------------------------------------------------------------------
         */
 
-        start(
-            'render',
-        );
+        start('render');
 
         await renderPage(
             current,
@@ -333,9 +306,7 @@ export async function navigateTo(
             options,
         );
 
-        end(
-            'render',
-        );
+        end('render');
 
         /*
         |--------------------------------------------------------------------------
@@ -343,10 +314,7 @@ export async function navigateTo(
         |--------------------------------------------------------------------------
         */
 
-        if (
-            navigationId
-            !== navigationState.navigationId
-        )
+        if (navigationId !== navigationState.navigationId)
         {
             emitNavigationAbort(
                 current,
@@ -362,15 +330,10 @@ export async function navigateTo(
         |--------------------------------------------------------------------------
         */
 
-        await triggerRouteChange(
-            {
-                from:
-                    current,
-
-                to:
-                    target,
-            },
-        );
+        await triggerRouteChange({
+            from: current,
+            to: target,
+        });
 
         /*
         |--------------------------------------------------------------------------
@@ -378,10 +341,7 @@ export async function navigateTo(
         |--------------------------------------------------------------------------
         */
 
-        if (
-            navigationId
-            !== navigationState.navigationId
-        )
+        if (navigationId !== navigationState.navigationId)
         {
             emitNavigationAbort(
                 current,
@@ -416,10 +376,7 @@ export async function navigateTo(
         |--------------------------------------------------------------------------
         */
 
-        if (
-            error?.name
-            === 'AbortError'
-        )
+        if (error?.name === 'AbortError')
         {
             emitNavigationAbort(
                 current,
@@ -435,10 +392,7 @@ export async function navigateTo(
         |--------------------------------------------------------------------------
         */
 
-        if (
-            navigationId
-            !== navigationState.navigationId
-        )
+        if (navigationId !== navigationState.navigationId)
         {
             emitNavigationAbort(
                 current,
@@ -471,12 +425,9 @@ export async function navigateTo(
         |--------------------------------------------------------------------------
         */
 
-        if (
-            options.fallback !== false
-        )
+        if (options.fallback !== false)
         {
-            window.location.href =
-                target;
+            window.location.href = target;
         }
     }
     finally
@@ -487,13 +438,9 @@ export async function navigateTo(
         |--------------------------------------------------------------------------
         */
 
-        if (
-            navigationId
-            === navigationState.navigationId
-        )
+        if (navigationId === navigationState.navigationId)
         {
             clearController();
-
             unlockRouter();
         }
     }
