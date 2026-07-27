@@ -12,31 +12,22 @@ final class Stats
 
     private float $duration = 0.0;
 
-    private function addDuration(
-        float $duration,
-    ): void {
+    private function addDuration(float $duration): void
+    {
         $this->total++;
         $this->duration += $duration;
     }
 
-    public function success(
-        float $duration,
-    ): void {
-
-        $this->addDuration(
-            $duration,
-        );
+    public function success(float $duration): void
+    {
+        $this->addDuration($duration);
 
         $this->success++;
     }
 
-    public function fail(
-        float $duration,
-    ): void {
-
-        $this->addDuration(
-            $duration,
-        );
+    public function fail(float $duration): void
+    {
+        $this->addDuration($duration);
 
         $this->fail++;
     }
@@ -68,10 +59,7 @@ final class Stats
             return 0.0;
         }
 
-        return round(
-            ($this->success / $this->total) * 100,
-            2,
-        );
+        return round(($this->success / $this->total) * 100, 2);
     }
 
     public function averageDuration(): float
@@ -81,9 +69,7 @@ final class Stats
             return 0.0;
         }
 
-        return
-            $this->duration
-            / $this->total;
+        return $this->duration / $this->total;
     }
 
     public function hasFailures(): bool

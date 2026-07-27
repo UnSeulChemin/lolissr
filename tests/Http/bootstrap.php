@@ -3,13 +3,12 @@
 declare(strict_types=1);
 
 use Framework\Application\Bootstrap;
+use Framework\Config\Config;
+use Framework\Config\Env;
 
 if (! defined('ROOT'))
 {
-    define(
-        'ROOT',
-        dirname(__DIR__, 2),
-    );
+    define('ROOT', dirname(__DIR__, 2));
 }
 
 require ROOT . '/vendor/autoload.php';
@@ -17,17 +16,12 @@ require ROOT . '/Framework/Support/helpers.php';
 
 Bootstrap::loadEnvOnly();
 
-$_ENV['APP_ENV'] = 'testing';
-$_SERVER['APP_ENV'] = 'testing';
+Env::set('APP_ENV', 'testing');
+Config::clear();
 
-putenv('APP_ENV=testing');
-
-if (
-    env('APP_ENV')
-    !== 'testing'
-)
+if (env('APP_ENV') !== 'testing')
 {
     throw new RuntimeException(
-        'HTTP tests must run in testing environment.',
+        'HTTP tests must run in testing environment.'
     );
 }

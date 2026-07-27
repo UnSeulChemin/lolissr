@@ -16,7 +16,7 @@ function http_config(): array
 
 function http_base(): string
 {
-    return (string) (http_config()['base'] ?? '');
+    return rtrim((string) (http_config()['base'] ?? ''), '/');
 }
 
 function http_timeout(): int
@@ -41,12 +41,13 @@ function http_extract_cookie(array $headers): void
 {
     foreach ($headers as $header)
     {
-        if (! preg_match(
-            '/^Set-Cookie:\s*' . preg_quote(HTTP_COOKIE_NAME, '/') . '=([^;]+)/i',
-            $header,
-            $matches
-        ))
-        {
+        if (
+            preg_match(
+                '/^Set-Cookie:\s*' . preg_quote(HTTP_COOKIE_NAME, '/') . '=([^;]+)/i',
+                $header,
+                $matches
+            ) !== 1
+        ) {
             continue;
         }
 
@@ -58,6 +59,39 @@ function http_extract_cookie(array $headers): void
 
 /**
  * @param list<string> $headers
+ */
+function http_header_value(array $headers, string $name): ?string
+{
+    $prefix = strtolower(trim($name)) . ':';
+
+    foreach ($headers as $header)
+    {
+        if (! str_starts_with(strtolower($header), $prefix))
+        {
+            continue;
+        }
+
+        return trim(substr($header, strlen($prefix)));
+    }
+
+    return null;
+}
+
+function http_location_path(string $location): string
+{
+    $path = parse_url($location, PHP_URL_PATH);
+
+    if (! is_string($path) || $path === '')
+    {
+        return '/';
+    }
+
+    return '/' . trim($path, '/') . '/';
+}
+
+/**
+ * @param list<string> $headers
+ *
  * @return array{
  *     status: int,
  *     body: string,
@@ -110,9 +144,8 @@ function http_request(
 
     if (
         isset($responseHeaders[0])
-        && preg_match('/\s(\d{3})(?:\s|$)/', $responseHeaders[0], $matches)
-    )
-    {
+        && preg_match('/\s(\d{3})(?:\s|$)/', $responseHeaders[0], $matches) === 1
+    ) {
         $status = (int) $matches[1];
     }
 
@@ -125,6 +158,7 @@ function http_request(
 
 /**
  * @param list<string> $headers
+ *
  * @return array{
  *     status: int,
  *     body: string,
@@ -138,6 +172,7 @@ function http_get(string $url, array $headers = []): array
 
 /**
  * @param list<string> $headers
+ *
  * @return array{
  *     status: int,
  *     body: string,
@@ -151,23 +186,31 @@ function http_post(string $url, array $headers = [], ?string $body = null): arra
 
 function http_extract_csrf(string $html): ?string
 {
-    if (! preg_match('/name="csrf_token"\s+value="([^"]+)"/i', $html, $matches))
-    {
+    if (
+        preg_match(
+            '/name=["\']csrf_token["\']\s+value=["\']([^"\']+)["\']/i',
+            $html,
+            $matches
+        ) !== 1
+    ) {
         return null;
     }
 
-    return $matches[1];
+    return html_entity_decode($matches[1], ENT_QUOTES | ENT_HTML5, 'UTF-8');
 }
 
 function http_login(): void
 {
     $config = http_config();
-    $username = (string) ($config['username'] ?? '');
+
+    $username = trim((string) ($config['username'] ?? ''));
     $password = (string) ($config['password'] ?? '');
 
     if ($username === '' || $password === '')
     {
-        throw new RuntimeException('HTTP_TEST_USERNAME ou HTTP_TEST_PASSWORD manquant.');
+        throw new RuntimeException(
+            'HTTP_TEST_USERNAME ou HTTP_TEST_PASSWORD manquant.'
+        );
     }
 
     $loginResponse = http_get(http_base() . '/connexion');
@@ -175,7 +218,8 @@ function http_login(): void
     if ($loginResponse['status'] !== 200)
     {
         throw new RuntimeException(
-            'Page de connexion inaccessible. Statut HTTP reçu : ' . $loginResponse['status']
+            'Page de connexion inaccessible. Statut HTTP reçu : '
+            . $loginResponse['status']
         );
     }
 
@@ -183,7 +227,9 @@ function http_login(): void
 
     if ($csrf === null)
     {
-        throw new RuntimeException('Token CSRF introuvable.');
+        throw new RuntimeException(
+            'Token CSRF introuvable sur la page de connexion.'
+        );
     }
 
     $payload = http_build_query([
@@ -194,27 +240,48 @@ function http_login(): void
 
     $authenticationResponse = http_post(
         http_base() . '/connexion',
-        ['Content-Type: application/x-www-form-urlencoded'],
+        [
+            'Content-Type: application/x-www-form-urlencoded',
+            'Content-Length: ' . strlen($payload),
+        ],
         $payload
     );
 
     if (! in_array($authenticationResponse['status'], [302, 303], true))
     {
         throw new RuntimeException(
-            'La connexion HTTP a échoué. Statut reçu : '
-            . $authenticationResponse['status']
+            sprintf(
+                "La connexion HTTP a échoué. Statut reçu : %d.\nRéponse : %s",
+                $authenticationResponse['status'],
+                trim($authenticationResponse['body'])
+            )
         );
     }
 
-    $expectedLocation = rtrim(http_base(), '/') . '/';
-
-    if (! assert_header(
+    $location = http_header_value(
         $authenticationResponse['headers'],
-        'Location: ' . $expectedLocation
-    ))
+        'Location'
+    );
+
+    if ($location === null)
     {
         throw new RuntimeException(
-            'La connexion n’a pas redirigé vers l’accueil.'
+            "La connexion n’a retourné aucun header Location.\nHeaders : "
+            . implode("\n", $authenticationResponse['headers'])
+        );
+    }
+
+    $expectedPath = http_location_path(http_base() . '/');
+    $actualPath = http_location_path($location);
+
+    if ($actualPath !== $expectedPath)
+    {
+        throw new RuntimeException(
+            sprintf(
+                'La connexion a redirigé vers "%s" au lieu de "%s".',
+                $location,
+                $expectedPath
+            )
         );
     }
 

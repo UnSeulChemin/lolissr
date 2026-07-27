@@ -13,19 +13,12 @@ http_login();
 
 $tests = [];
 
-foreach (
-    glob(
-        __DIR__ . '/Cases/*.php',
-    ) ?: []
-    as $file
-) {
+foreach (glob(__DIR__ . '/Cases/*.php') ?: [] as $file)
+{
     require $file;
 }
 
 return [
-
     'base' => http_base(),
-
     'tests' => $tests,
-
 ];

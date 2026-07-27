@@ -44,6 +44,43 @@ final class Env
         }
     }
 
+    public static function set(string $key, mixed $value): void
+    {
+        $key = trim($key);
+
+        if ($key === '')
+        {
+            throw new RuntimeException(
+                'Environment variable name cannot be empty.'
+            );
+        }
+
+        if (preg_match('/^[A-Z][A-Z0-9_]*$/', $key) !== 1)
+        {
+            throw new RuntimeException(
+                "Invalid environment variable name: {$key}"
+            );
+        }
+
+        self::$items[$key] = $value;
+
+        if ($value === null)
+        {
+            unset($_ENV[$key], $_SERVER[$key]);
+
+            putenv($key);
+
+            return;
+        }
+
+        $environmentValue = self::stringify($value);
+
+        $_ENV[$key] = $environmentValue;
+        $_SERVER[$key] = $environmentValue;
+
+        putenv("{$key}={$environmentValue}");
+    }
+
     public static function get(string $key, mixed $default = null): mixed
     {
         $key = trim($key);
@@ -63,6 +100,7 @@ final class Env
         if ($value === null)
         {
             $environmentValue = getenv($key);
+
             $value = $environmentValue !== false
                 ? $environmentValue
                 : null;
@@ -122,7 +160,8 @@ final class Env
             return false;
         }
 
-        return array_key_exists($key, $_ENV)
+        return array_key_exists($key, self::$items)
+            || array_key_exists($key, $_ENV)
             || array_key_exists($key, $_SERVER)
             || getenv($key) !== false;
     }
@@ -170,12 +209,10 @@ final class Env
             );
         }
 
-        $value = self::normalizeValue($value);
-
-        $_ENV[$name] = $value;
-        $_SERVER[$name] = $value;
-
-        putenv("{$name}={$value}");
+        self::set(
+            $name,
+            self::normalizeValue($value)
+        );
     }
 
     private static function normalizeValue(string $value): string
@@ -214,6 +251,19 @@ final class Env
             'null', '(null)' => null,
             'empty', '(empty)' => '',
             default => $value,
+        };
+    }
+
+    private static function stringify(mixed $value): string
+    {
+        return match (true)
+        {
+            $value === true => 'true',
+            $value === false => 'false',
+            is_scalar($value) => (string) $value,
+            default => throw new RuntimeException(
+                'Environment values must be scalar or null.'
+            ),
         };
     }
 }

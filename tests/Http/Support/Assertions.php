@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-use JsonException;
-
 function assert_contains(string $body, string $needle): bool
 {
     return str_contains($body, $needle);
@@ -23,12 +21,7 @@ function assert_json(string $body): bool
 {
     try
     {
-        json_decode(
-            $body,
-            true,
-            512,
-            JSON_THROW_ON_ERROR
-        );
+        json_decode($body, true, 512, JSON_THROW_ON_ERROR);
 
         return true;
     }

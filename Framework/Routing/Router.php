@@ -306,14 +306,15 @@ final class Router
             )
         );
 
+        $key = $controller::class . '::' . $methodName;
+
+        $reflection = $this->methods[$key]
+            ??= new ReflectionMethod($controller, $methodName);
+
         Profiler::measure(
             'controller.action',
-            function () use (
-                $controller,
-                $methodName,
-                $arguments
-            ): void {
-                $controller->{$methodName}(...$arguments);
+            static function () use ($reflection, $controller, $arguments): void {
+                $reflection->invokeArgs($controller, $arguments);
             }
         );
     }
