@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Framework\Routing;
 
-use Framework\Container\AppContainer;
 use Framework\Container\Container;
 use Framework\Debug\Profiler;
 use Framework\Exceptions\MethodNotAllowedException;
@@ -19,8 +18,6 @@ use RuntimeException;
 
 final class Router
 {
-    private RouteCollection $collection;
-
     /**
      * @var list<string>
      */
@@ -36,9 +33,10 @@ final class Router
      */
     private array $methods = [];
 
-    public function __construct(RouteCollection $collection)
-    {
-        $this->collection = $collection;
+    public function __construct(
+        private RouteCollection $collection,
+        private Container $container
+    ) {
     }
 
     // =========================================
@@ -141,10 +139,8 @@ final class Router
 
     public function dispatch(): void
     {
-        $container = AppContainer::get();
-
         /** @var Request $request */
-        $request = $container->get(Request::class);
+        $request = $this->container->get(Request::class);
 
         $uri = $request->path();
         $method = $request->method();
@@ -183,7 +179,6 @@ final class Router
         Profiler::measure(
             'middleware',
             fn (): null => $this->runMiddlewares(
-                $container,
                 $route,
                 $request
             )
@@ -192,7 +187,6 @@ final class Router
         Profiler::measure(
             'controller',
             fn (): null => $this->executeAction(
-                $container,
                 $route,
                 $params,
                 $request
@@ -238,13 +232,12 @@ final class Router
     // =========================================
 
     private function runMiddlewares(
-        Container $container,
         Route $route,
         Request $request
     ): void {
         foreach ($route->getMiddlewares() as $middlewareClass)
         {
-            $middleware = $container->get($middlewareClass);
+            $middleware = $this->container->get($middlewareClass);
 
             if (! $middleware instanceof MiddlewareInterface)
             {
@@ -265,7 +258,6 @@ final class Router
      * @param array<string, string|int> $params
      */
     private function executeAction(
-        Container $container,
         Route $route,
         array $params,
         Request $request
@@ -301,13 +293,12 @@ final class Router
 
         $controller = Profiler::measure(
             'controller.resolve',
-            fn (): object => $container->get($controllerClass)
+            fn (): object => $this->container->get($controllerClass)
         );
 
         $arguments = Profiler::measure(
             'controller.arguments',
             fn (): array => $this->resolveArguments(
-                $container,
                 $controller,
                 $methodName,
                 $params,
@@ -322,7 +313,6 @@ final class Router
                 $methodName,
                 $arguments
             ): void {
-                /** @phpstan-ignore-next-line */
                 $controller->{$methodName}(...$arguments);
             }
         );
@@ -334,7 +324,6 @@ final class Router
      * @return list<mixed>
      */
     private function resolveArguments(
-        Container $container,
         object $controller,
         string $method,
         array $params,
@@ -365,7 +354,9 @@ final class Router
                     continue;
                 }
 
-                $arguments[] = $container->get($className);
+                $arguments[] = $this->container->get(
+                    $className
+                );
 
                 continue;
             }

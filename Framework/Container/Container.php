@@ -37,6 +37,11 @@ final class Container
 
     private int $resolutionDepth = 0;
 
+    public function __construct()
+    {
+        $this->instances[self::class] = $this;
+    }
+
     // =========================================
     // CONTAINER
     // =========================================
@@ -165,8 +170,7 @@ final class Container
 
         try
         {
-            $reflection =
-                $this->reflections[$concrete]
+            $reflection = $this->reflections[$concrete]
                 ??= new ReflectionClass($concrete);
 
             if (! $reflection->isInstantiable())
@@ -196,8 +200,7 @@ final class Container
                 {
                     if ($parameter->isDefaultValueAvailable())
                     {
-                        $dependencies[] =
-                            $parameter->getDefaultValue();
+                        $dependencies[] = $parameter->getDefaultValue();
 
                         continue;
                     }

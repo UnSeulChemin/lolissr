@@ -63,7 +63,10 @@ final class Bootstrap
 
         $container->singleton(Database::class);
 
-        $router = new Router(new RouteCollection());
+        $router = new Router(
+            new RouteCollection(),
+            $container
+        );
 
         $routes = require base_path('Config/routes.php');
 
