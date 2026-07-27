@@ -17,48 +17,85 @@ final class ErrorController extends Controller
 
     /*
     |--------------------------------------------------------------------------
-    | HTTP ERRORS
+    | ERREURS HTTP
     |--------------------------------------------------------------------------
     */
 
     public function unauthorized(string $message = 'Non authentifié'): never
     {
-        $this->error(401, '401', '401 | Non authentifié', $message);
+        $this->error(
+            401,
+            '401',
+            '401 | Non authentifié',
+            $message
+        );
     }
 
     public function forbidden(string $message = 'Accès interdit'): never
     {
-        $this->error(403, '403', '403 | Accès interdit', $message);
+        $this->error(
+            403,
+            '403',
+            '403 | Accès interdit',
+            $message
+        );
     }
 
     public function notFound(string $message = 'Page introuvable'): never
     {
-        $this->error(404, '404', '404 | Page introuvable', $message);
+        $this->error(
+            404,
+            '404',
+            '404 | Page introuvable',
+            $message
+        );
     }
 
     public function methodNotAllowed(string $message = 'Méthode non autorisée'): never
     {
-        $this->error(405, '405', '405 | Méthode non autorisée', $message);
+        $this->error(
+            405,
+            '405',
+            '405 | Méthode non autorisée',
+            $message
+        );
     }
 
-    public function csrfExpired(string $message = 'Session expirée ou requête invalide.'): never
-    {
-        $this->error(419, '419', '419 | Session expirée', $message);
+    public function csrfExpired(
+        string $message = 'Session expirée ou requête invalide.'
+    ): never {
+        $this->error(
+            419,
+            '419',
+            '419 | Session expirée',
+            $message
+        );
     }
 
     public function validationError(string $message = 'Erreur de validation'): never
     {
-        $this->error(422, '422', '422 | Erreur de validation', $message);
+        $this->error(
+            422,
+            '422',
+            '422 | Erreur de validation',
+            $message
+        );
     }
 
-    public function serverError(string $message = 'Une erreur interne est survenue.'): never
-    {
-        $this->error(500, '500', '500 | Erreur serveur', $message);
+    public function serverError(
+        string $message = 'Une erreur interne est survenue.'
+    ): never {
+        $this->error(
+            500,
+            '500',
+            '500 | Erreur serveur',
+            $message
+        );
     }
 
     /*
     |--------------------------------------------------------------------------
-    | HELPERS
+    | RENDU
     |--------------------------------------------------------------------------
     */
 

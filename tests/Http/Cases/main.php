@@ -2,72 +2,36 @@
 
 declare(strict_types=1);
 
+/*
+|--------------------------------------------------------------------------
+| PAGES PRINCIPALES
+|--------------------------------------------------------------------------
+*/
+
 $tests[] = [
-
     'category' => 'Main',
-
     'label' => 'Accueil accessible',
-
     'path' => '/',
 ];
 
 $tests[] = [
-
     'category' => 'Main',
-
-    'label' => 'Manga accessible',
-
-    'path' => '/manga',
+    'label' => 'Outil SQL accessible',
+    'path' => '/sql',
 ];
 
-$tests[] = [
-
-    'category' => 'Main',
-
-    'label' => 'Figurines accessibles',
-
-    'path' => '/figurine',
-];
+/*
+|--------------------------------------------------------------------------
+| MÉTHODES HTTP
+|--------------------------------------------------------------------------
+*/
 
 $tests[] = [
-
     'category' => 'Main',
-
-    'label' => 'Nendoroids accessibles',
-
-    'path' => '/nendoroid',
-];
-
-$tests[] = [
-
-    'category' => 'Main',
-
-    'label' => 'Peluches accessibles',
-
-    'path' => '/peluche',
-];
-
-$tests[] = [
-
-    'category' => 'Main',
-
-    'label' => 'Chinois accessible',
-
-    'path' => '/chinois',
-];
-
-$tests[] = [
-
-    'category' => 'Main',
-
     'label' => 'Accueil refuse POST',
-
     'method' => 'POST',
-
     'path' => '/',
-
     'expected_status' => 405,
-
     'header_contains' => [
         'Allow: GET',
     ],

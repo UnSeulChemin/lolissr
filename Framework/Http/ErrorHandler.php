@@ -150,6 +150,7 @@ final class ErrorHandler
     private static function renderHttpException(BaseHttpException $exception): never
     {
         $request = Request::capture();
+        $status = $exception->getStatusCode();
         $message = self::message($exception);
 
         self::sendHeaders($exception->getHeaders());
@@ -162,13 +163,13 @@ final class ErrorHandler
                     'message' => $message,
                     'data' => $exception->getData(),
                 ],
-                $exception->getStatusCode()
+                $status
             );
         }
 
         $controller = new ErrorController($request);
 
-        match ($exception->getStatusCode())
+        match ($status)
         {
             401 => $controller->unauthorized($message),
             403 => $controller->forbidden($message),
@@ -221,6 +222,11 @@ final class ErrorHandler
 
     private static function render500(string $message): never
     {
+        if (! headers_sent())
+        {
+            http_response_code(500);
+        }
+
         $controller = new ErrorController(Request::capture());
 
         $controller->serverError($message);
