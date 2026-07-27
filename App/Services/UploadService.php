@@ -38,18 +38,24 @@ final readonly class UploadService
         string $directory,
         array $files,
         string $fileKey = 'image'
-    ): ServiceResult
-    {
+    ): ServiceResult {
         if (App::isTesting())
         {
-            return $this->failure('Upload interdit pendant les tests HTTP', 403);
+            return $this->failure(
+                'Upload interdit pendant les tests HTTP',
+                403
+            );
         }
 
         $file = $this->uploadedFile($files, $fileKey);
 
         if ($file === null)
         {
-            return $this->failUpload('Upload: fichier introuvable.', 'Fichier image introuvable', 422);
+            return $this->failUpload(
+                'Upload: fichier introuvable.',
+                'Fichier image introuvable',
+                422
+            );
         }
 
         if (! $this->hasSuccessfulUpload($file))
@@ -76,7 +82,11 @@ final readonly class UploadService
 
         if ($extension === null)
         {
-            return $this->failUpload('Upload: extension introuvable.', 'Extension image introuvable', 422);
+            return $this->failUpload(
+                'Upload: extension introuvable.',
+                'Extension image introuvable',
+                422
+            );
         }
 
         if (! in_array($extension, UploadConfig::allowedExtensions(), true))
@@ -103,10 +113,15 @@ final readonly class UploadService
 
         $realSize = filesize($tmpName);
 
-        if (! is_int($realSize) || $realSize <= 0 || $realSize > UploadConfig::maxSize())
+        if (
+            ! is_int($realSize)
+            || $realSize <= 0
+            || $realSize > UploadConfig::maxSize()
+        )
         {
             return $this->failUpload(
-                'Upload: taille réelle invalide. Taille=' . ($realSize === false ? 'false' : $realSize),
+                'Upload: taille réelle invalide. Taille='
+                . ($realSize === false ? 'false' : $realSize),
                 'Taille réelle de l’image invalide',
                 422
             );
@@ -114,7 +129,10 @@ final readonly class UploadService
 
         $mimeType = $this->fileMimeType($tmpName);
 
-        if ($mimeType === null || ! in_array($mimeType, UploadConfig::allowedMimeTypes(), true))
+        if (
+            $mimeType === null
+            || ! in_array($mimeType, UploadConfig::allowedMimeTypes(), true)
+        )
         {
             return $this->failUpload(
                 'Upload: MIME non autorisé. MIME reçu=' . ($mimeType ?? 'null'),
@@ -134,7 +152,10 @@ final readonly class UploadService
             );
         }
 
-        if (! $this->hasValidImageDimensions($imageInfo['width'], $imageInfo['height']))
+        if (! $this->hasValidImageDimensions(
+            $imageInfo['width'],
+            $imageInfo['height']
+        ))
         {
             return $this->failUpload(
                 'Upload: dimensions invalides. Largeur='
@@ -147,7 +168,11 @@ final readonly class UploadService
         }
 
         if (
-            ! in_array($imageInfo['mime'], UploadConfig::allowedMimeTypes(), true)
+            ! in_array(
+                $imageInfo['mime'],
+                UploadConfig::allowedMimeTypes(),
+                true
+            )
             || $imageInfo['mime'] !== $mimeType
         )
         {
@@ -172,7 +197,11 @@ final readonly class UploadService
             );
         }
 
-        $destination = $this->buildDestinationPath($thumbnail, $extension, $directory);
+        $destination = $this->buildDestinationPath(
+            $thumbnail,
+            $extension,
+            $directory
+        );
 
         if ($destination === null)
         {
@@ -192,24 +221,51 @@ final readonly class UploadService
             );
         }
 
-        if (! move_uploaded_file($tmpName, $destination) || ! is_file($destination))
+        if (
+            ! move_uploaded_file($tmpName, $destination)
+            || ! is_file($destination)
+        )
         {
             return $this->failUpload(
-                'Upload: fichier non enregistré. tmp=' . $tmpName . ' destination=' . $destination,
+                'Upload: fichier non enregistré. tmp='
+                . $tmpName
+                . ' destination='
+                . $destination,
                 'Image non enregistrée sur le disque',
                 500
             );
         }
 
-        return $this->success($thumbnail, $extension, $destination);
+        return $this->success(
+            $thumbnail,
+            $extension,
+            $destination
+        );
     }
 
-    public function removeFile(string $path): void
+    /*
+    |--------------------------------------------------------------------------
+    | SUPPRESSION
+    |--------------------------------------------------------------------------
+    */
+
+    public function removeFile(string $path): bool
     {
-        if (is_file($path) && ! unlink($path))
+        if (! is_file($path))
         {
-            Logger::warning('Upload: impossible de supprimer le fichier : ' . $path);
+            return true;
         }
+
+        if (unlink($path))
+        {
+            return true;
+        }
+
+        Logger::warning(
+            'Upload: impossible de supprimer le fichier : ' . $path
+        );
+
+        return false;
     }
 
     /*
@@ -220,10 +276,13 @@ final readonly class UploadService
 
     /**
      * @param array<string, mixed> $files
+     *
      * @return array<string, mixed>|null
      */
-    private function uploadedFile(array $files, string $fileKey): ?array
-    {
+    private function uploadedFile(
+        array $files,
+        string $fileKey
+    ): ?array {
         $file = $files[$fileKey] ?? null;
 
         return is_array($file) ? $file : null;
@@ -254,7 +313,9 @@ final readonly class UploadService
     {
         $size = $file['size'] ?? 0;
 
-        return is_int($size) || is_numeric($size) ? (int) $size : 0;
+        return is_int($size) || is_numeric($size)
+            ? (int) $size
+            : 0;
     }
 
     /**
@@ -284,14 +345,18 @@ final readonly class UploadService
             return null;
         }
 
-        $extension = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+        $extension = strtolower(
+            pathinfo($name, PATHINFO_EXTENSION)
+        );
 
         if ($extension === '')
         {
             return null;
         }
 
-        return $extension === 'jpeg' ? 'jpg' : $extension;
+        return $extension === 'jpeg'
+            ? 'jpg'
+            : $extension;
     }
 
     /**
@@ -311,18 +376,25 @@ final readonly class UploadService
 
     private function isValidTmpFile(?string $tmpName): bool
     {
-        return is_string($tmpName) && is_uploaded_file($tmpName);
+        return is_string($tmpName)
+            && is_uploaded_file($tmpName);
     }
 
     private function fileMimeType(string $tmpName): ?string
     {
         $mimeType = $this->finfo->file($tmpName);
 
-        return is_string($mimeType) ? strtolower($mimeType) : null;
+        return is_string($mimeType)
+            ? strtolower($mimeType)
+            : null;
     }
 
     /**
-     * @return array{width: int, height: int, mime: string}|null
+     * @return array{
+     *     width: int,
+     *     height: int,
+     *     mime: string
+     * }|null
      */
     private function imageInfo(string $tmpName): ?array
     {
@@ -340,8 +412,10 @@ final readonly class UploadService
         ];
     }
 
-    private function hasValidImageDimensions(int $width, int $height): bool
-    {
+    private function hasValidImageDimensions(
+        int $width,
+        int $height
+    ): bool {
         if (
             $width <= 0
             || $height <= 0
@@ -362,17 +436,24 @@ final readonly class UploadService
             return true;
         }
 
-        return mkdir($directory, 0755, true) || is_dir($directory);
+        return mkdir($directory, 0755, true)
+            || is_dir($directory);
     }
 
-    private function buildDestinationPath(string $thumbnail, string $extension, string $directory): ?string
-    {
+    private function buildDestinationPath(
+        string $thumbnail,
+        string $extension,
+        string $directory
+    ): ?string {
         if (! $this->ensureDirectoryExists($directory))
         {
             return null;
         }
 
-        return $directory . $thumbnail . '.' . $extension;
+        return $directory
+            . $thumbnail
+            . '.'
+            . $extension;
     }
 
     /*
@@ -381,29 +462,43 @@ final readonly class UploadService
     |--------------------------------------------------------------------------
     */
 
-    private function failure(string $message, int $status): ServiceResult
-    {
-        return ServiceResult::error(message: $message, status: $status);
+    private function failure(
+        string $message,
+        int $status
+    ): ServiceResult {
+        return ServiceResult::error(
+            message: $message,
+            status: $status
+        );
     }
 
-    private function success(string $thumbnail, string $extension, string $destination): ServiceResult
-    {
+    private function success(
+        string $thumbnail,
+        string $extension,
+        string $destination
+    ): ServiceResult {
         return ServiceResult::success(
             message: 'Upload réussi',
             data: [
                 'upload' => new UploadThumbnailData(
                     thumbnailPath: $thumbnail,
                     extension: $extension,
-                    destinationPath: $destination,
+                    destinationPath: $destination
                 ),
-            ],
+            ]
         );
     }
 
-    private function failUpload(string $logMessage, string $message, int $status): ServiceResult
-    {
+    private function failUpload(
+        string $logMessage,
+        string $message,
+        int $status
+    ): ServiceResult {
         Logger::error($logMessage);
 
-        return $this->failure($message, $status);
+        return $this->failure(
+            $message,
+            $status
+        );
     }
 }

@@ -17,6 +17,12 @@ final readonly class ThumbnailManager
     ) {
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | UPLOAD
+    |--------------------------------------------------------------------------
+    */
+
     /**
      * @param array<string, mixed> $files
      */
@@ -53,19 +59,31 @@ final readonly class ThumbnailManager
         return $upload;
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | ROLLBACK
+    |--------------------------------------------------------------------------
+    */
+
     public function rollback(
         UploadThumbnailData $upload
-    ): void {
-        $this->uploadService->removeFile(
+    ): bool {
+        return $this->uploadService->removeFile(
             $upload->destinationPath
         );
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | SUPPRESSION
+    |--------------------------------------------------------------------------
+    */
 
     public function remove(
         ?string $thumbnail,
         ?string $extension,
         string $collection
-    ): void {
+    ): bool {
         if (
             $thumbnail === null
             || $thumbnail === ''
@@ -73,7 +91,7 @@ final readonly class ThumbnailManager
             || $extension === ''
         )
         {
-            return;
+            return true;
         }
 
         $path =
@@ -82,6 +100,6 @@ final readonly class ThumbnailManager
             . '.'
             . $extension;
 
-        $this->uploadService->removeFile($path);
+        return $this->uploadService->removeFile($path);
     }
 }

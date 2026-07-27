@@ -33,7 +33,6 @@ final readonly class MangaWriteService
     ) {
     }
 
-
     /*
     |--------------------------------------------------------------------------
     | CREATE
@@ -78,7 +77,7 @@ final readonly class MangaWriteService
                 }
                 catch (PDOException $exception)
                 {
-                    $this->thumbnailManager->rollback($upload);
+                    $this->rollbackThumbnail($upload, $dto->slug, $dto->numero);
 
                     if ($this->isDuplicateKeyException($exception))
                     {
@@ -89,7 +88,7 @@ final readonly class MangaWriteService
                 }
                 catch (Throwable $exception)
                 {
-                    $this->thumbnailManager->rollback($upload);
+                    $this->rollbackThumbnail($upload, $dto->slug, $dto->numero);
 
                     throw $exception;
                 }
@@ -103,7 +102,6 @@ final readonly class MangaWriteService
 
         return $result;
     }
-
 
     /*
     |--------------------------------------------------------------------------
@@ -150,7 +148,6 @@ final readonly class MangaWriteService
 
         return $result;
     }
-
 
     public function updateNote(string $slug, int $numero, MangaUpdateNoteDTO $dto): ServiceResult
     {
@@ -209,7 +206,6 @@ final readonly class MangaWriteService
 
         return $result;
     }
-
 
     /*
     |--------------------------------------------------------------------------
@@ -290,7 +286,6 @@ final readonly class MangaWriteService
         return $result;
     }
 
-
     /*
     |--------------------------------------------------------------------------
     | DELETE
@@ -328,20 +323,41 @@ final readonly class MangaWriteService
             }
         );
 
-        if ($result->success)
+        if (! $result->success)
         {
-            $this->thumbnailManager->remove(
-                $manga->thumbnail,
-                $manga->extension,
-                'manga'
-            );
-
-            $this->forgetDashboardCache();
+            return $result;
         }
+
+        if (! $this->thumbnailManager->remove($manga->thumbnail, $manga->extension, 'manga'))
+        {
+            Logger::warning(
+                "Manga supprimé mais thumbnail non supprimée slug={$slug} numero={$numero}"
+            );
+        }
+
+        $this->forgetDashboardCache();
 
         return $result;
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | THUMBNAIL
+    |--------------------------------------------------------------------------
+    */
+
+    private function rollbackThumbnail(
+        UploadThumbnailData $upload,
+        string $slug,
+        int $numero
+    ): void {
+        if (! $this->thumbnailManager->rollback($upload))
+        {
+            Logger::warning(
+                "Rollback thumbnail manga échoué slug={$slug} numero={$numero}"
+            );
+        }
+    }
 
     /*
     |--------------------------------------------------------------------------
@@ -355,12 +371,10 @@ final readonly class MangaWriteService
             && ($exception->errorInfo[1] ?? null) === 1062;
     }
 
-
     private function logFailure(string $action, string $slug, int $numero): void
     {
         Logger::error("{$action} échoué slug={$slug} numero={$numero}");
     }
-
 
     private function writeFailed(
         bool $result,
@@ -378,7 +392,6 @@ final readonly class MangaWriteService
 
         return $this->error($message);
     }
-
 
     private function createManga(
         MangaCreateDTO $dto,
@@ -408,14 +421,13 @@ final readonly class MangaWriteService
 
         if ($failure !== null)
         {
-            $this->thumbnailManager->rollback($uploadData);
+            $this->rollbackThumbnail($uploadData, $dto->slug, $dto->numero);
 
             return $failure;
         }
 
         return null;
     }
-
 
     /*
     |--------------------------------------------------------------------------
@@ -427,7 +439,6 @@ final readonly class MangaWriteService
     {
         $this->dashboardCache->forget();
     }
-
 
     /*
     |--------------------------------------------------------------------------
@@ -449,7 +460,6 @@ final readonly class MangaWriteService
             status: $status
         );
     }
-
 
     /**
      * @param array<string, mixed> $data
