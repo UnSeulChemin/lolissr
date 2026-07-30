@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\DTO\Manga\Inputs;
 
-use Framework\Support\MangaNoteNormalizer;
+use App\Support\MangaNoteNormalizer;
 use Framework\Support\Str;
 
 final readonly class MangaUpdateDTO

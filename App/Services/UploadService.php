@@ -6,11 +6,11 @@ namespace App\Services;
 
 use App\DTO\Common\ServiceResult;
 use App\DTO\Upload\UploadThumbnailData;
+use App\Support\MangaThumbnailName;
 
 use Framework\Application\App;
 use Framework\Config\UploadConfig;
 use Framework\Support\Logger;
-use Framework\Support\Str;
 
 use finfo;
 
@@ -186,7 +186,7 @@ final readonly class UploadService
             );
         }
 
-        $thumbnail = Str::thumbnailName($name, $number);
+        $thumbnail = MangaThumbnailName::generate($name, $number);
 
         if ($thumbnail === '')
         {

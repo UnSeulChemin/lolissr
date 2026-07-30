@@ -8,7 +8,7 @@ use App\Models\Manga;
 use App\Models\Model;
 use App\Repositories\Manga\Concerns\HasMangaStatsSubQuery;
 
-use Framework\Support\MangaNoteNormalizer;
+use App\Support\MangaNoteNormalizer;
 use Framework\Support\Str;
 
 final class MangaRepository extends Model

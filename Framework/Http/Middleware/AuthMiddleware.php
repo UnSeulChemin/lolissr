@@ -4,18 +4,24 @@ declare(strict_types=1);
 
 namespace Framework\Http\Middleware;
 
+use Framework\Auth\AuthenticationInterface;
 use Framework\Exceptions\UnauthorizedException;
 use Framework\Http\Request;
 
-final class AuthMiddleware implements MiddlewareInterface
+final readonly class AuthMiddleware implements MiddlewareInterface
 {
+    public function __construct(
+        private AuthenticationInterface $authentication
+    ) {
+    }
+
     // =========================================
     // MIDDLEWARE
     // =========================================
 
     public function handle(Request $request): void
     {
-        if (! is_logged())
+        if (! $this->authentication->check())
         {
             throw new UnauthorizedException();
         }

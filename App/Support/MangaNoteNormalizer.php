@@ -2,26 +2,28 @@
 
 declare(strict_types=1);
 
-namespace Framework\Support;
+namespace App\Support;
 
 final class MangaNoteNormalizer
 {
+    private const MIN_NOTE = 1;
+    private const MAX_NOTE = 5;
+
+    private function __construct()
+    {
+    }
+
     // =========================================
     // NOTE
     // =========================================
 
     public static function normalize(mixed $value): ?int
     {
-        if ($value === null || $value === '')
-        {
-            return null;
-        }
-
         if (is_string($value))
         {
             $value = trim($value);
 
-            if (! ctype_digit($value))
+            if ($value === '' || ! ctype_digit($value))
             {
                 return null;
             }
@@ -34,6 +36,8 @@ final class MangaNoteNormalizer
             return null;
         }
 
-        return ($value >= 1 && $value <= 5) ? $value : null;
+        return $value >= self::MIN_NOTE && $value <= self::MAX_NOTE
+            ? $value
+            : null;
     }
 }

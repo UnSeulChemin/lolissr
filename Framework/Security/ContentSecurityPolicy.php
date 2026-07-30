@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace Framework\Security;
 
-use RuntimeException;
+use Random\RandomException;
 
 final class ContentSecurityPolicy
 {
     private static ?string $nonce = null;
+
+    private function __construct()
+    {
+    }
 
     // =========================================
     // NONCE
@@ -18,7 +22,7 @@ final class ContentSecurityPolicy
     {
         if (self::$nonce === null)
         {
-            self::$nonce = base64_encode(random_bytes(18));
+            self::$nonce = self::generateNonce();
         }
 
         return self::$nonce;
@@ -33,6 +37,11 @@ final class ContentSecurityPolicy
         );
     }
 
+    public static function reset(): void
+    {
+        self::$nonce = null;
+    }
+
     // =========================================
     // POLICY
     // =========================================
@@ -40,11 +49,6 @@ final class ContentSecurityPolicy
     public static function policy(): string
     {
         $nonce = self::nonce();
-
-        if (str_contains($nonce, "\r") || str_contains($nonce, "\n"))
-        {
-            throw new RuntimeException('Nonce CSP invalide.');
-        }
 
         return implode(' ', [
             "default-src 'self';",
@@ -56,7 +60,26 @@ final class ContentSecurityPolicy
             "object-src 'none';",
             "base-uri 'self';",
             "frame-ancestors 'none';",
-            "form-action 'self';",
+            "form-action 'self';"
         ]);
+    }
+
+    // =========================================
+    // GÉNÉRATION
+    // =========================================
+
+    private static function generateNonce(): string
+    {
+        try
+        {
+            return base64_encode(random_bytes(18));
+        }
+        catch (RandomException $exception)
+        {
+            throw new RandomException(
+                'Impossible de générer le nonce CSP.',
+                previous: $exception
+            );
+        }
     }
 }

@@ -9,10 +9,15 @@ use RuntimeException;
 final class Session
 {
     private const FLASH_KEY = '_flash';
+    private const DEFAULT_SESSION_NAME = 'APP_SESSION';
 
     private static bool $started = false;
 
     private static ?string $directory = null;
+
+    private function __construct()
+    {
+    }
 
     // =========================================
     // SESSION
@@ -34,7 +39,9 @@ final class Session
     {
         self::ensureStarted();
 
-        return $_SESSION[$key] ?? $default;
+        return array_key_exists($key, $_SESSION)
+            ? $_SESSION[$key]
+            : $default;
     }
 
     public static function has(string $key): bool
@@ -68,7 +75,9 @@ final class Session
     {
         self::ensureStarted();
 
-        $value = $_SESSION[$key] ?? $default;
+        $value = array_key_exists($key, $_SESSION)
+            ? $_SESSION[$key]
+            : $default;
 
         unset($_SESSION[$key]);
 
@@ -83,7 +92,16 @@ final class Session
     {
         self::ensureStarted();
 
-        $_SESSION[self::FLASH_KEY][$key] = $value;
+        $flashes = $_SESSION[self::FLASH_KEY] ?? [];
+
+        if (! is_array($flashes))
+        {
+            $flashes = [];
+        }
+
+        $flashes[$key] = $value;
+
+        $_SESSION[self::FLASH_KEY] = $flashes;
     }
 
     /**
@@ -93,11 +111,11 @@ final class Session
     {
         self::ensureStarted();
 
-        $flash = $_SESSION[self::FLASH_KEY] ?? [];
+        $flashes = $_SESSION[self::FLASH_KEY] ?? [];
 
         unset($_SESSION[self::FLASH_KEY]);
 
-        return $flash;
+        return is_array($flashes) ? $flashes : [];
     }
 
     // =========================================
@@ -108,7 +126,12 @@ final class Session
     {
         self::ensureStarted();
 
-        session_regenerate_id(true);
+        if (! session_regenerate_id(true))
+        {
+            throw new RuntimeException(
+                'Impossible de régénérer l’identifiant de session.'
+            );
+        }
     }
 
     public static function destroy(): void
@@ -117,14 +140,14 @@ final class Session
 
         $_SESSION = [];
 
-        if (ini_get('session.use_cookies') === '1')
+        if (ini_get('session.use_cookies') === '1' && ! headers_sent())
         {
             $params = session_get_cookie_params();
             $sessionName = session_name();
 
-            if (! is_string($sessionName))
+            if ($sessionName === '')
             {
-                $sessionName = 'PHPSESSID';
+                $sessionName = self::DEFAULT_SESSION_NAME;
             }
 
             setcookie(
@@ -136,12 +159,17 @@ final class Session
                     'domain' => $params['domain'],
                     'secure' => $params['secure'],
                     'httponly' => $params['httponly'],
-                    'samesite' => $params['samesite'],
-                ],
+                    'samesite' => $params['samesite'] ?? 'Lax',
+                ]
             );
         }
 
-        session_destroy();
+        if (session_status() === PHP_SESSION_ACTIVE && ! session_destroy())
+        {
+            throw new RuntimeException(
+                'Impossible de détruire la session.'
+            );
+        }
 
         $_SESSION = [];
 
@@ -166,15 +194,44 @@ final class Session
             return;
         }
 
-        $directory = self::directory();
-
-        if (! is_dir($directory) && ! mkdir($directory, 0755, true) && ! is_dir($directory))
+        if (session_status() === PHP_SESSION_DISABLED)
         {
-            throw new RuntimeException('Impossible de créer le dossier de session.');
+            throw new RuntimeException(
+                'Les sessions PHP sont désactivées.'
+            );
         }
 
-        session_save_path($directory);
-        session_name((string) env('SESSION_NAME', 'LOLISSR_SESSION'));
+        if (headers_sent($file, $line))
+        {
+            throw new RuntimeException(
+                "Impossible de démarrer la session : en-têtes déjà envoyés dans {$file}:{$line}."
+            );
+        }
+
+        $directory = self::directory();
+
+        if (! self::ensureDirectory($directory))
+        {
+            throw new RuntimeException(
+                'Impossible de créer le dossier de session.'
+            );
+        }
+
+        if (session_save_path($directory) === false)
+        {
+            throw new RuntimeException(
+                'Impossible de configurer le dossier de session.'
+            );
+        }
+
+        $sessionName = self::sessionName();
+
+        if (session_name($sessionName) === false)
+        {
+            throw new RuntimeException(
+                'Impossible de configurer le nom de session.'
+            );
+        }
 
         $secure = self::isHttps();
 
@@ -193,16 +250,42 @@ final class Session
             'samesite' => 'Lax',
         ]);
 
-        session_start([
+        if (! @session_start([
             'use_strict_mode' => true,
             'use_only_cookies' => true,
             'use_trans_sid' => false,
             'cookie_httponly' => true,
             'cookie_secure' => $secure,
             'cookie_samesite' => 'Lax',
-        ]);
+        ])) {
+            throw new RuntimeException(
+                'Impossible de démarrer la session.'
+            );
+        }
 
         self::$started = true;
+    }
+
+    // =========================================
+    // CONFIGURATION
+    // =========================================
+
+    private static function sessionName(): string
+    {
+        $sessionName = trim(
+            (string) env('SESSION_NAME', self::DEFAULT_SESSION_NAME)
+        );
+
+        if (
+            $sessionName === ''
+            || preg_match('/^[a-zA-Z0-9_-]+$/', $sessionName) !== 1
+        ) {
+            throw new RuntimeException(
+                "Nom de session invalide : {$sessionName}"
+            );
+        }
+
+        return $sessionName;
     }
 
     // =========================================
@@ -223,16 +306,38 @@ final class Session
             return true;
         }
 
-        return env_bool('TRUST_PROXY', false)
-            && strtolower((string) ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '')) === 'https';
+        if (! env_bool('TRUST_PROXY', false))
+        {
+            return false;
+        }
+
+        $forwardedProto = (string) ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '');
+        $forwardedProto = trim(explode(',', $forwardedProto)[0]);
+
+        return strtolower($forwardedProto) === 'https';
     }
 
     // =========================================
-    // DIRECTORY
+    // DOSSIER
     // =========================================
 
     private static function directory(): string
     {
         return self::$directory ??= base_path('storage/sessions');
+    }
+
+    private static function ensureDirectory(string $directory): bool
+    {
+        if (is_dir($directory))
+        {
+            return true;
+        }
+
+        if (@mkdir($directory, 0755, true))
+        {
+            return true;
+        }
+
+        return is_dir($directory);
     }
 }

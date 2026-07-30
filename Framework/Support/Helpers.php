@@ -2,9 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Models\User;
-use App\Services\Auth\AuthService;
-
 use Framework\Application\App;
 use Framework\Config\Config;
 use Framework\Config\Env;
@@ -12,11 +9,9 @@ use Framework\Container\AppContainer;
 use Framework\Http\Response;
 use Framework\Support\Session;
 
-/*
-|--------------------------------------------------------------------------
-| APP
-|--------------------------------------------------------------------------
-*/
+// =========================================
+// CONTAINER
+// =========================================
 
 if (! function_exists('app'))
 {
@@ -24,19 +19,19 @@ if (! function_exists('app'))
     {
         $container = AppContainer::get();
 
-        return $abstract === null ? $container : $container->get($abstract);
+        return $abstract === null
+            ? $container
+            : $container->get($abstract);
     }
 }
 
-/*
-|--------------------------------------------------------------------------
-| DEBUG
-|--------------------------------------------------------------------------
-*/
+// =========================================
+// DEBUG
+// =========================================
 
 if (! function_exists('dump'))
 {
-    function dump(mixed ...$vars): void
+    function dump(mixed ...$variables): void
     {
         if (! App::debug())
         {
@@ -56,9 +51,9 @@ if (! function_exists('dump'))
         ">
         HTML;
 
-        foreach ($vars as $var)
+        foreach ($variables as $variable)
         {
-            var_dump($var);
+            var_dump($variable);
         }
 
         echo '</pre>';
@@ -67,53 +62,35 @@ if (! function_exists('dump'))
 
 if (! function_exists('dd'))
 {
-    function dd(mixed ...$vars): never
+    function dd(mixed ...$variables): never
     {
-        dump(...$vars);
+        dump(...$variables);
 
         exit;
     }
 }
 
-/*
-|--------------------------------------------------------------------------
-| PATHS
-|--------------------------------------------------------------------------
-*/
+// =========================================
+// CHEMINS
+// =========================================
 
 if (! function_exists('base_path'))
 {
     function base_path(string $path = ''): string
     {
-        static $base;
+        static $basePath;
 
-        $base ??= rtrim(ROOT, DIRECTORY_SEPARATOR);
+        $basePath ??= rtrim(ROOT, '/\\');
 
-        return $path === '' ? $base : $base . DIRECTORY_SEPARATOR . ltrim($path, '/\\');
+        return $path === ''
+            ? $basePath
+            : $basePath . DIRECTORY_SEPARATOR . ltrim($path, '/\\');
     }
 }
 
-if (! function_exists('app_path'))
-{
-    function app_path(string $path = ''): string
-    {
-        return base_path('App' . ($path !== '' ? DIRECTORY_SEPARATOR . ltrim($path, '/\\') : ''));
-    }
-}
-
-if (! function_exists('view_path'))
-{
-    function view_path(string $path = ''): string
-    {
-        return app_path('Views' . ($path !== '' ? DIRECTORY_SEPARATOR . ltrim($path, '/\\') : ''));
-    }
-}
-
-/*
-|--------------------------------------------------------------------------
-| REDIRECT
-|--------------------------------------------------------------------------
-*/
+// =========================================
+// REDIRECTION
+// =========================================
 
 if (! function_exists('redirect'))
 {
@@ -128,11 +105,9 @@ if (! function_exists('redirect'))
     }
 }
 
-/*
-|--------------------------------------------------------------------------
-| ENV
-|--------------------------------------------------------------------------
-*/
+// =========================================
+// ENVIRONNEMENT
+// =========================================
 
 if (! function_exists('env'))
 {
@@ -158,11 +133,9 @@ if (! function_exists('env_int'))
     }
 }
 
-/*
-|--------------------------------------------------------------------------
-| CONFIG
-|--------------------------------------------------------------------------
-*/
+// =========================================
+// CONFIGURATION
+// =========================================
 
 if (! function_exists('config'))
 {
@@ -172,36 +145,40 @@ if (! function_exists('config'))
     }
 }
 
-/*
-|--------------------------------------------------------------------------
-| HTML
-|--------------------------------------------------------------------------
-*/
+// =========================================
+// HTML
+// =========================================
 
 if (! function_exists('e'))
 {
     function e(mixed $value): string
     {
-        return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        return htmlspecialchars(
+            (string) $value,
+            ENT_QUOTES | ENT_SUBSTITUTE,
+            'UTF-8'
+        );
     }
 }
 
-/*
-|--------------------------------------------------------------------------
-| CSRF
-|--------------------------------------------------------------------------
-*/
+// =========================================
+// CSRF
+// =========================================
 
 if (! function_exists('csrf_token'))
 {
     function csrf_token(): string
     {
-        if (! Session::has('csrf_token'))
+        $token = Session::get('csrf_token');
+
+        if (! is_string($token) || $token === '')
         {
-            Session::set('csrf_token', bin2hex(random_bytes(32)));
+            $token = bin2hex(random_bytes(32));
+
+            Session::set('csrf_token', $token);
         }
 
-        return (string) Session::get('csrf_token');
+        return $token;
     }
 }
 
@@ -209,7 +186,10 @@ if (! function_exists('csrf_field'))
 {
     function csrf_field(): string
     {
-        return sprintf('<input type="hidden" name="csrf_token" value="%s">', e(csrf_token()));
+        return sprintf(
+            '<input type="hidden" name="csrf_token" value="%s">',
+            e(csrf_token())
+        );
     }
 }
 
@@ -217,15 +197,16 @@ if (! function_exists('csrf_meta_tag'))
 {
     function csrf_meta_tag(): string
     {
-        return sprintf('<meta name="csrf-token" content="%s">', e(csrf_token()));
+        return sprintf(
+            '<meta name="csrf-token" content="%s">',
+            e(csrf_token())
+        );
     }
 }
 
-/*
-|--------------------------------------------------------------------------
-| SESSION
-|--------------------------------------------------------------------------
-*/
+// =========================================
+// SESSION
+// =========================================
 
 if (! function_exists('session'))
 {
@@ -241,22 +222,35 @@ if (! function_exists('old'))
     {
         $old = Session::get('old', []);
 
-        return $old[$key] ?? $default;
+        if (! is_array($old))
+        {
+            return $default;
+        }
+
+        return array_key_exists($key, $old)
+            ? $old[$key]
+            : $default;
     }
 }
 
 if (! function_exists('errors'))
 {
-    function errors(?string $key = null): mixed
+    /**
+     * @return array<string, string>|string|null
+     */
+    function errors(?string $key = null): array|string|null
     {
         $errors = Session::get('errors', []);
 
-        if ($key === null)
+        if (! is_array($errors))
         {
-            return $errors;
+            return $key === null ? [] : null;
         }
 
-        return $errors[$key] ?? null;
+        /** @var array<string, string> $errors */
+        return $key === null
+            ? $errors
+            : ($errors[$key] ?? null);
     }
 }
 
@@ -276,11 +270,9 @@ if (! function_exists('error_class'))
     }
 }
 
-/*
-|--------------------------------------------------------------------------
-| BASE URI
-|--------------------------------------------------------------------------
-*/
+// =========================================
+// BASE URI
+// =========================================
 
 if (! function_exists('base_uri'))
 {
@@ -302,35 +294,5 @@ if (! function_exists('view_base_uri'))
     function view_base_uri(): string
     {
         return rtrim(base_uri(), '/') . '/';
-    }
-}
-
-/*
-|--------------------------------------------------------------------------
-| AUTH
-|--------------------------------------------------------------------------
-*/
-
-if (! function_exists('auth'))
-{
-    function auth(): AuthService
-    {
-        return app(AuthService::class);
-    }
-}
-
-if (! function_exists('user'))
-{
-    function user(): ?User
-    {
-        return auth()->user();
-    }
-}
-
-if (! function_exists('is_logged'))
-{
-    function is_logged(): bool
-    {
-        return auth()->check();
     }
 }

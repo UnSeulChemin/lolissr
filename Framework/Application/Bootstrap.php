@@ -40,9 +40,12 @@ final class Bootstrap
 
     /**
      * @param (callable(int, string, Request): never)|null $errorRenderer
+     * @param (callable(Container): void)|null $containerConfigurator
      */
-    public static function run(?callable $errorRenderer = null): never
-    {
+    public static function run(
+        ?callable $errorRenderer = null,
+        ?callable $containerConfigurator = null
+    ): never {
         self::loadEnvOnly();
 
         RequestContext::start();
@@ -56,6 +59,9 @@ final class Bootstrap
         self::startProfiler();
 
         $container = self::createContainer();
+
+        self::configureContainer($container, $containerConfigurator);
+
         $router = self::createRouter($container);
 
         self::registerRoutes($router);
@@ -92,6 +98,19 @@ final class Bootstrap
         $container->singleton(Database::class);
 
         return $container;
+    }
+
+    /**
+     * @param (callable(Container): void)|null $configurator
+     */
+    private static function configureContainer(
+        Container $container,
+        ?callable $configurator
+    ): void {
+        if ($configurator !== null)
+        {
+            $configurator($container);
+        }
     }
 
     // =========================================

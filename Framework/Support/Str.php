@@ -6,6 +6,10 @@ namespace Framework\Support;
 
 final class Str
 {
+    private function __construct()
+    {
+    }
+
     // =========================================
     // CHAÎNES
     // =========================================
@@ -14,9 +18,22 @@ final class Str
     {
         $value = mb_strtolower(trim($value), 'UTF-8');
 
-        $value = preg_replace('/[^\p{L}\p{N}\s-]/u', '', $value) ?? '';
+        if ($value === '')
+        {
+            return '';
+        }
 
-        $value = preg_replace('/[\s-]+/u', '-', $value) ?? '';
+        $value = preg_replace(
+            '/[^\p{L}\p{N}\s-]/u',
+            '',
+            $value
+        ) ?? '';
+
+        $value = preg_replace(
+            '/[\s-]+/u',
+            '-',
+            $value
+        ) ?? '';
 
         return trim($value, '-');
     }
@@ -36,21 +53,5 @@ final class Str
     public static function isBlank(?string $value): bool
     {
         return self::nullableTrim($value) === null;
-    }
-
-    // =========================================
-    // THUMBNAILS
-    // =========================================
-
-    public static function thumbnailName(string $livre, int $numero): string
-    {
-        $thumbnail = self::slug($livre);
-
-        if ($thumbnail === '' || $numero <= 0)
-        {
-            return '';
-        }
-
-        return sprintf('%s-%02d', $thumbnail, $numero);
     }
 }
