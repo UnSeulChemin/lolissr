@@ -10,6 +10,10 @@ final class App
     private const ENV_TESTING = 'testing';
     private const ENV_PRODUCTION = 'production';
 
+    private function __construct()
+    {
+    }
+
     // =========================================
     // CONFIGURATION
     // =========================================
@@ -43,7 +47,7 @@ final class App
 
     public static function env(): string
     {
-        return strtolower(trim((string) config('app.env', self::ENV_LOCAL)));
+        return mb_strtolower(trim((string) config('app.env', self::ENV_LOCAL)));
     }
 
     public static function debug(): bool

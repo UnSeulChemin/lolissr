@@ -6,6 +6,10 @@ namespace Framework\Config;
 
 final class DatabaseConfig
 {
+    private function __construct()
+    {
+    }
+
     // =========================================
     // CONFIGURATION
     // =========================================
@@ -17,7 +21,10 @@ final class DatabaseConfig
 
     public static function port(): int
     {
-        return max(1, (int) config('database.port', 3306));
+        return min(
+            65535,
+            max(1, (int) config('database.port', 3306))
+        );
     }
 
     public static function name(): string
@@ -39,6 +46,10 @@ final class DatabaseConfig
     {
         return self::getString('database.charset', 'utf8mb4');
     }
+
+    // =========================================
+    // RÉSOLUTION
+    // =========================================
 
     private static function getString(string $key, string $default = ''): string
     {

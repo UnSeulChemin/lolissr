@@ -16,7 +16,9 @@ final class ValidationException extends BaseHttpException
         parent::__construct(
             message: $message,
             statusCode: 422,
-            data: ['errors' => $errors],
+            data: [
+                'errors' => $errors,
+            ]
         );
     }
 

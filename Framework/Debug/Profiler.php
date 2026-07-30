@@ -11,7 +11,7 @@ final class Profiler
     private static bool $active = false;
 
     /**
-     * @var array<string, int|float>
+     * @var array<string, int>
      */
     private static array $starts = [];
 
@@ -25,17 +25,15 @@ final class Profiler
      */
     private static array $counters = [];
 
-    private static int|float|null $requestStart = null;
+    private static ?int $requestStart = null;
 
     private function __construct()
     {
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | REQUEST
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // REQUEST
+    // =========================================
 
     public static function startRequest(): void
     {
@@ -76,11 +74,9 @@ final class Profiler
         self::reset();
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | MEASURES
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // MESURES
+    // =========================================
 
     public static function start(string $name): void
     {
@@ -141,11 +137,9 @@ final class Profiler
         }
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | COUNTERS
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // COMPTEURS
+    // =========================================
 
     public static function increment(string $name, int $amount = 1): void
     {
@@ -157,11 +151,9 @@ final class Profiler
         self::$counters[$name] = (self::$counters[$name] ?? 0) + $amount;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | DATA
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // DONNÉES
+    // =========================================
 
     public static function active(): bool
     {
@@ -194,22 +186,18 @@ final class Profiler
         return self::$counters[$name] ?? 0;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | CONFIGURATION
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // CONFIGURATION
+    // =========================================
 
     private static function enabled(): bool
     {
         return (bool) config('app.profiler', false);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | HELPERS
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // HELPERS
+    // =========================================
 
     /**
      * @return array<string, float>
@@ -235,7 +223,7 @@ final class Profiler
         self::$counters = [];
     }
 
-    private static function elapsedMilliseconds(int|float $start): float
+    private static function elapsedMilliseconds(int $start): float
     {
         return (hrtime(true) - $start) / 1_000_000;
     }

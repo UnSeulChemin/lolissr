@@ -13,6 +13,15 @@ final class Env
      */
     private static array $items = [];
 
+    /**
+     * @var array<string, true>
+     */
+    private static array $managedKeys = [];
+
+    private function __construct()
+    {
+    }
+
     // =========================================
     // ENVIRONNEMENT
     // =========================================
@@ -26,16 +35,14 @@ final class Env
             return;
         }
 
-        $lines = file(
+        $lines = @file(
             $path,
             FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES
         );
 
         if ($lines === false)
         {
-            throw new RuntimeException(
-                "Unable to read environment file: {$path}"
-            );
+            throw new RuntimeException("Unable to read environment file: {$path}");
         }
 
         foreach ($lines as $lineNumber => $line)
@@ -46,39 +53,30 @@ final class Env
 
     public static function set(string $key, mixed $value): void
     {
-        $key = trim($key);
-
-        if ($key === '')
-        {
-            throw new RuntimeException(
-                'Environment variable name cannot be empty.'
-            );
-        }
-
-        if (preg_match('/^[A-Z][A-Z0-9_]*$/', $key) !== 1)
-        {
-            throw new RuntimeException(
-                "Invalid environment variable name: {$key}"
-            );
-        }
-
-        self::$items[$key] = $value;
+        $key = self::validateKey($key);
 
         if ($value === null)
         {
-            unset($_ENV[$key], $_SERVER[$key]);
+            self::$items[$key] = null;
+            self::$managedKeys[$key] = true;
 
-            putenv($key);
+            self::removeEnvironmentValue($key);
 
             return;
         }
 
         $environmentValue = self::stringify($value);
 
+        self::$items[$key] = $value;
+        self::$managedKeys[$key] = true;
+
         $_ENV[$key] = $environmentValue;
         $_SERVER[$key] = $environmentValue;
 
-        putenv("{$key}={$environmentValue}");
+        if (! putenv("{$key}={$environmentValue}"))
+        {
+            throw new RuntimeException("Unable to set environment variable: {$key}");
+        }
     }
 
     public static function get(string $key, mixed $default = null): mixed
@@ -100,16 +98,11 @@ final class Env
         if ($value === null)
         {
             $environmentValue = getenv($key);
-
-            $value = $environmentValue !== false
-                ? $environmentValue
-                : null;
+            $value = $environmentValue !== false ? $environmentValue : null;
         }
 
         if ($value === null)
         {
-            self::$items[$key] = $default;
-
             return $default;
         }
 
@@ -132,6 +125,11 @@ final class Env
             return $value;
         }
 
+        if (! is_scalar($value) && $value !== null)
+        {
+            return $default;
+        }
+
         $result = filter_var(
             $value,
             FILTER_VALIDATE_BOOL,
@@ -144,11 +142,15 @@ final class Env
     public static function int(string $key, int $default = 0): int
     {
         $value = self::get($key, $default);
+
+        if (! is_scalar($value))
+        {
+            return $default;
+        }
+
         $result = filter_var($value, FILTER_VALIDATE_INT);
 
-        return $result !== false
-            ? $result
-            : $default;
+        return $result !== false ? $result : $default;
     }
 
     public static function has(string $key): bool
@@ -168,7 +170,13 @@ final class Env
 
     public static function clear(): void
     {
+        foreach (array_keys(self::$managedKeys) as $key)
+        {
+            self::removeEnvironmentValue($key);
+        }
+
         self::$items = [];
+        self::$managedKeys = [];
     }
 
     // =========================================
@@ -202,40 +210,61 @@ final class Env
             );
         }
 
-        if (preg_match('/^[A-Z][A-Z0-9_]*$/', $name) !== 1)
+        try
+        {
+            self::set($name, self::normalizeValue($value));
+        }
+        catch (RuntimeException $exception)
         {
             throw new RuntimeException(
-                "Invalid environment variable name at line {$lineNumber}: {$name}"
+                "Invalid environment declaration at line {$lineNumber}: {$exception->getMessage()}",
+                previous: $exception
             );
         }
-
-        self::set(
-            $name,
-            self::normalizeValue($value)
-        );
     }
 
     private static function normalizeValue(string $value): string
     {
         $value = trim($value);
+        $length = strlen($value);
 
-        if (strlen($value) < 2)
+        if ($length < 2)
         {
             return $value;
         }
 
         $firstCharacter = $value[0];
-        $lastCharacter = $value[strlen($value) - 1];
+        $lastCharacter = $value[$length - 1];
 
         if (
             ($firstCharacter === '"' && $lastCharacter === '"')
             || ($firstCharacter === "'" && $lastCharacter === "'")
-        )
-        {
+        ) {
             return substr($value, 1, -1);
         }
 
         return $value;
+    }
+
+    // =========================================
+    // VALIDATION
+    // =========================================
+
+    private static function validateKey(string $key): string
+    {
+        $key = trim($key);
+
+        if ($key === '')
+        {
+            throw new RuntimeException('Environment variable name cannot be empty.');
+        }
+
+        if (preg_match('/^[A-Z][A-Z0-9_]*$/', $key) !== 1)
+        {
+            throw new RuntimeException("Invalid environment variable name: {$key}");
+        }
+
+        return $key;
     }
 
     // =========================================
@@ -250,7 +279,7 @@ final class Env
             'false', '(false)' => false,
             'null', '(null)' => null,
             'empty', '(empty)' => '',
-            default => $value,
+            default => $value
         };
     }
 
@@ -263,7 +292,18 @@ final class Env
             is_scalar($value) => (string) $value,
             default => throw new RuntimeException(
                 'Environment values must be scalar or null.'
-            ),
+            )
         };
+    }
+
+    // =========================================
+    // NETTOYAGE
+    // =========================================
+
+    private static function removeEnvironmentValue(string $key): void
+    {
+        unset($_ENV[$key], $_SERVER[$key]);
+
+        putenv($key);
     }
 }

@@ -4,12 +4,18 @@ declare(strict_types=1);
 
 namespace Framework\Config;
 
+use InvalidArgumentException;
+
 final class UploadConfig
 {
     /**
      * @var array<string, string>
      */
     private static array $thumbnailDirectories = [];
+
+    private function __construct()
+    {
+    }
 
     // =========================================
     // CONFIGURATION
@@ -53,8 +59,13 @@ final class UploadConfig
 
     public static function thumbnailDirectory(string $folder): string
     {
+        $folder = self::normalizeFolder($folder);
+
         return self::$thumbnailDirectories[$folder]
-            ??= rtrim(base_path("public/images/{$folder}/thumbnail"), '/\\') . DIRECTORY_SEPARATOR;
+            ??= rtrim(
+                base_path("public/images/{$folder}/thumbnail"),
+                '/\\'
+            ) . DIRECTORY_SEPARATOR;
     }
 
     // =========================================
@@ -62,7 +73,6 @@ final class UploadConfig
     // =========================================
 
     /**
-     * @param mixed $values
      * @return list<string>
      */
     private static function normalizedList(mixed $values): array
@@ -72,9 +82,30 @@ final class UploadConfig
             return [];
         }
 
-        $values = array_map(static fn (mixed $value): string => strtolower(trim((string) $value)), $values);
-        $values = array_filter($values, static fn (string $value): bool => $value !== '');
+        $values = array_map(
+            static fn (mixed $value): string => strtolower(trim((string) $value)),
+            $values
+        );
+
+        $values = array_filter(
+            $values,
+            static fn (string $value): bool => $value !== ''
+        );
 
         return array_values(array_unique($values));
+    }
+
+    private static function normalizeFolder(string $folder): string
+    {
+        $folder = strtolower(trim($folder));
+
+        if ($folder === '' || preg_match('/^[a-z0-9_-]+$/', $folder) !== 1)
+        {
+            throw new InvalidArgumentException(
+                "Invalid upload folder: {$folder}"
+            );
+        }
+
+        return $folder;
     }
 }

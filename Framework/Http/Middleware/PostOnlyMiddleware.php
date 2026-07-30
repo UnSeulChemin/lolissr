@@ -9,6 +9,10 @@ use Framework\Http\Request;
 
 final class PostOnlyMiddleware implements MiddlewareInterface
 {
+    // =========================================
+    // MIDDLEWARE
+    // =========================================
+
     public function handle(Request $request): void
     {
         if ($request->isPost())
@@ -16,6 +20,10 @@ final class PostOnlyMiddleware implements MiddlewareInterface
             return;
         }
 
-        throw new MethodNotAllowedException();
+        throw new MethodNotAllowedException(
+            headers: [
+                'Allow' => 'POST',
+            ]
+        );
     }
 }

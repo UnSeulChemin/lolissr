@@ -21,16 +21,19 @@ final class SecurityHeadersMiddleware implements MiddlewareInterface
             return;
         }
 
-        header('X-Request-ID: ' . RequestContext::requestId());
-        header('X-Content-Type-Options: nosniff');
-        header('X-Frame-Options: DENY');
-        header('Referrer-Policy: no-referrer');
-        header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
-        header('Content-Security-Policy: ' . ContentSecurityPolicy::policy());
+        header('X-Request-ID: ' . RequestContext::requestId(), true);
+        header('X-Content-Type-Options: nosniff', true);
+        header('X-Frame-Options: DENY', true);
+        header('Referrer-Policy: no-referrer', true);
+        header('Permissions-Policy: camera=(), microphone=(), geolocation=()', true);
+        header('Content-Security-Policy: ' . ContentSecurityPolicy::policy(), true);
 
-        if ($this->isHttps())
+        if ($this->isHttps($request))
         {
-            header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
+            header(
+                'Strict-Transport-Security: max-age=31536000; includeSubDomains',
+                true
+            );
         }
     }
 
@@ -38,21 +41,28 @@ final class SecurityHeadersMiddleware implements MiddlewareInterface
     // HTTPS
     // =========================================
 
-    private function isHttps(): bool
+    private function isHttps(Request $request): bool
     {
-        $https = $_SERVER['HTTPS'] ?? null;
+        $https = $request->server('HTTPS');
 
         if (is_string($https) && $https !== '' && strtolower($https) !== 'off')
         {
             return true;
         }
 
-        if ((int) ($_SERVER['SERVER_PORT'] ?? 0) === 443)
+        if ((int) $request->server('SERVER_PORT', 0) === 443)
         {
             return true;
         }
 
-        return env_bool('TRUST_PROXY', false)
-            && strtolower((string) ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '')) === 'https';
+        if (! env_bool('TRUST_PROXY', false))
+        {
+            return false;
+        }
+
+        $forwardedProto = $request->header('X-Forwarded-Proto');
+
+        return is_string($forwardedProto)
+            && strtolower(trim(explode(',', $forwardedProto)[0])) === 'https';
     }
 }

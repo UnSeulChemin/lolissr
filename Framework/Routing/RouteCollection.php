@@ -24,7 +24,7 @@ final class RouteCollection
 
     public function add(Route $route): void
     {
-        $key = sprintf('%s:%s', $route->getMethod(), $route->getPath());
+        $key = $route->getMethod() . ':' . $route->getPath();
 
         if (isset($this->routes[$key]))
         {
@@ -32,12 +32,11 @@ final class RouteCollection
         }
 
         $this->routes[$key] = $route;
-
         $this->routesByMethod[$route->getMethod()][] = $route;
     }
 
     // =========================================
-    // RÉSULTATS
+    // LECTURE
     // =========================================
 
     /**
@@ -89,9 +88,7 @@ final class RouteCollection
                 '%s %s -> %s',
                 $route->getMethod(),
                 $route->getPath(),
-                is_string($action)
-                    ? $action
-                    : '[callable]',
+                is_string($action) ? $action : '[callable]'
             );
         }
 

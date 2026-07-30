@@ -4,18 +4,52 @@ declare(strict_types=1);
 
 namespace Framework\Http;
 
-use App\Controllers\ErrorController;
-
 use Framework\Application\App;
 use Framework\Exceptions\BaseHttpException;
 use Framework\Exceptions\JsonResponseException;
 use Framework\Support\Logger;
 
+use Closure;
 use ErrorException;
 use Throwable;
 
 final class ErrorHandler
 {
+    private const INTERNAL_ERROR_MESSAGE = 'Une erreur interne est survenue.';
+
+    /**
+     * @var list<int>
+     */
+    private const FATAL_ERRORS = [
+        E_ERROR,
+        E_PARSE,
+        E_CORE_ERROR,
+        E_COMPILE_ERROR,
+        E_USER_ERROR,
+        E_RECOVERABLE_ERROR
+    ];
+
+    /**
+     * @var (Closure(int, string, Request): never)|null
+     */
+    private static ?Closure $renderer = null;
+
+    private function __construct()
+    {
+    }
+
+    // =========================================
+    // CONFIGURATION
+    // =========================================
+
+    /**
+     * @param callable(int, string, Request): never $renderer
+     */
+    public static function setRenderer(callable $renderer): void
+    {
+        self::$renderer = Closure::fromCallable($renderer);
+    }
+
     // =========================================
     // GESTION DES ERREURS
     // =========================================
@@ -59,28 +93,20 @@ final class ErrorHandler
             Logger::exception(
                 $exception,
                 [
-                    'type' => 'uncaught_exception',
+                    'type' => 'uncaught_exception'
                 ]
             );
 
-            self::render500(
+            self::renderError(
+                500,
                 App::debug()
                     ? $exception->getMessage()
-                    : 'Une erreur interne est survenue.'
+                    : self::INTERNAL_ERROR_MESSAGE
             );
         }
         catch (Throwable $fallbackException)
         {
-            Logger::exception(
-                $fallbackException,
-                [
-                    'type' => 'error_handler_failure',
-                    'original_exception' => $exception::class,
-                    'original_message' => $exception->getMessage(),
-                ]
-            );
-
-            Response::html('Critical framework error.', 500);
+            self::handleFailure($fallbackException, $exception);
         }
     }
 
@@ -93,22 +119,30 @@ final class ErrorHandler
             return;
         }
 
-        Logger::error(
-            'Fatal Error',
-            [
-                'type' => 'fatal_error',
-                'severity' => $error['type'],
-                'message' => $error['message'],
-                'file' => $error['file'],
-                'line' => $error['line'],
-            ]
-        );
+        try
+        {
+            Logger::error(
+                'Fatal Error',
+                [
+                    'type' => 'fatal_error',
+                    'severity' => $error['type'],
+                    'message' => $error['message'],
+                    'file' => $error['file'],
+                    'line' => $error['line']
+                ]
+            );
 
-        self::render500(
-            App::debug()
-                ? $error['message']
-                : 'Une erreur interne est survenue.'
-        );
+            self::renderError(
+                500,
+                App::debug()
+                    ? $error['message']
+                    : self::INTERNAL_ERROR_MESSAGE
+            );
+        }
+        catch (Throwable $exception)
+        {
+            self::handleFailure($exception);
+        }
     }
 
     // =========================================
@@ -121,29 +155,20 @@ final class ErrorHandler
             'type' => 'http_exception',
             'status' => $exception->getStatusCode(),
             'message' => $exception->getMessage(),
-            'data' => $exception->getData(),
+            'data' => $exception->getData()
         ];
 
         match ($exception->getStatusCode())
         {
-            404 => Logger::info(
-                'HTTP Exception',
-                $context
-            ),
+            404 => Logger::info('HTTP Exception', $context),
 
             401,
             403,
             405,
             419,
-            422 => Logger::warning(
-                'HTTP Exception',
-                $context
-            ),
+            422 => Logger::warning('HTTP Exception', $context),
 
-            default => Logger::error(
-                'HTTP Exception',
-                $context
-            ),
+            default => Logger::error('HTTP Exception', $context)
         };
     }
 
@@ -161,24 +186,13 @@ final class ErrorHandler
                 [
                     'success' => false,
                     'message' => $message,
-                    'data' => $exception->getData(),
+                    'data' => $exception->getData()
                 ],
                 $status
             );
         }
 
-        $controller = new ErrorController($request);
-
-        match ($status)
-        {
-            401 => $controller->unauthorized($message),
-            403 => $controller->forbidden($message),
-            404 => $controller->notFound($message),
-            405 => $controller->methodNotAllowed($message),
-            419 => $controller->csrfExpired($message),
-            422 => $controller->validationError($message),
-            default => $controller->serverError($message),
-        };
+        self::renderError($status, $message, $request);
     }
 
     private static function message(BaseHttpException $exception): string
@@ -196,7 +210,7 @@ final class ErrorHandler
             405 => 'Méthode non autorisée',
             419 => 'Session expirée',
             422 => 'Erreur de validation',
-            default => 'Une erreur interne est survenue.',
+            default => self::INTERNAL_ERROR_MESSAGE
         };
     }
 
@@ -212,42 +226,73 @@ final class ErrorHandler
 
         foreach ($headers as $name => $value)
         {
-            header("{$name}: {$value}");
+            header("{$name}: {$value}", true);
         }
     }
 
     // =========================================
-    // ERREUR SERVEUR
+    // RENDU
     // =========================================
 
-    private static function render500(string $message): never
+    private static function renderError(
+        int $status,
+        string $message,
+        ?Request $request = null
+    ): never {
+        $request ??= Request::capture();
+
+        if (self::$renderer !== null)
+        {
+            (self::$renderer)($status, $message, $request);
+        }
+
+        self::renderPlainError($status, $message);
+    }
+
+    private static function renderPlainError(int $status, string $message): never
     {
         if (! headers_sent())
         {
-            http_response_code(500);
+            http_response_code($status);
+            header('Content-Type: text/plain; charset=UTF-8', true);
         }
 
-        $controller = new ErrorController(Request::capture());
+        echo $message;
 
-        $controller->serverError($message);
+        exit;
+    }
+
+    private static function handleFailure(
+        Throwable $exception,
+        ?Throwable $originalException = null
+    ): never {
+        try
+        {
+            Logger::exception(
+                $exception,
+                [
+                    'type' => 'error_handler_failure',
+                    'original_exception' => $originalException !== null
+                        ? $originalException::class
+                        : null,
+                    'original_message' => $originalException?->getMessage()
+                ]
+            );
+        }
+        catch (Throwable)
+        {
+            // Le logger lui-même est indisponible.
+        }
+
+        self::renderPlainError(500, 'Critical framework error.');
     }
 
     // =========================================
-    // HELPERS
+    // RÉSOLUTION
     // =========================================
 
     private static function isFatalError(int $type): bool
     {
-        return in_array(
-            $type,
-            [
-                E_ERROR,
-                E_PARSE,
-                E_CORE_ERROR,
-                E_COMPILE_ERROR,
-                E_USER_ERROR,
-            ],
-            true
-        );
+        return in_array($type, self::FATAL_ERRORS, true);
     }
 }

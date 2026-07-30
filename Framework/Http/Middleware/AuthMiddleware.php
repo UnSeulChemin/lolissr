@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Framework\Http\Middleware;
 
+use Framework\Exceptions\UnauthorizedException;
 use Framework\Http\Request;
 
 final class AuthMiddleware implements MiddlewareInterface
@@ -16,7 +17,7 @@ final class AuthMiddleware implements MiddlewareInterface
     {
         if (! is_logged())
         {
-            redirect('/connexion');
+            throw new UnauthorizedException();
         }
 
         if (headers_sent())
@@ -24,8 +25,8 @@ final class AuthMiddleware implements MiddlewareInterface
             return;
         }
 
-        header('Cache-Control: private, no-store, max-age=0');
-        header('Pragma: no-cache');
-        header('Expires: 0');
+        header('Cache-Control: private, no-store, max-age=0', true);
+        header('Pragma: no-cache', true);
+        header('Expires: 0', true);
     }
 }

@@ -16,11 +16,14 @@ final class ExpectJsonMiddleware implements MiddlewareInterface
 
     public function handle(Request $request): void
     {
-        if ($request->expectsJson())
+        if (! $request->expectsJson())
         {
-            return;
+            throw new JsonResponseException(
+                JsonResponse::error(
+                    'Requête JSON requise',
+                    400
+                )
+            );
         }
-
-        throw new JsonResponseException(JsonResponse::error('Requête JSON requise', 400));
     }
 }

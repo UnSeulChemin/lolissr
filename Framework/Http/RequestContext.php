@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Framework\Http;
 
-use Throwable;
+use Random\RandomException;
 
 final class RequestContext
 {
@@ -43,7 +43,7 @@ final class RequestContext
         {
             return bin2hex(random_bytes(8));
         }
-        catch (Throwable)
+        catch (RandomException)
         {
             return uniqid('req_', true);
         }

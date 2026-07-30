@@ -10,13 +10,34 @@ use Exception;
 
 final class JsonResponseException extends Exception
 {
-    public function __construct(private readonly JsonResponse $response)
-    {
-        parent::__construct((string) ($response->data()['message'] ?? 'Erreur JSON'), $response->status());
+    public function __construct(
+        private readonly JsonResponse $response
+    ) {
+        parent::__construct(
+            $this->resolveMessage($response),
+            $response->status()
+        );
     }
+
+    // =========================================
+    // RÉPONSE
+    // =========================================
 
     public function response(): JsonResponse
     {
         return $this->response;
+    }
+
+    // =========================================
+    // RÉSOLUTION
+    // =========================================
+
+    private function resolveMessage(JsonResponse $response): string
+    {
+        $message = $response->data()['message'] ?? null;
+
+        return is_scalar($message)
+            ? (string) $message
+            : 'Erreur JSON';
     }
 }

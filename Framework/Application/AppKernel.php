@@ -31,13 +31,7 @@ final readonly class AppKernel
         {
             Session::start();
 
-            date_default_timezone_set(
-                App::timezone()
-            );
-
-            $this->securityHeaders->handle(
-                $this->request
-            );
+            $this->securityHeaders->handle($this->request);
         }
         finally
         {

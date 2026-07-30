@@ -4,124 +4,80 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\DTO\Common\ServiceResult;
-
 use Framework\Http\Request;
 
 final class ErrorController extends Controller
 {
-    public function __construct(Request $request)
+    /**
+     * @var array<int, array{
+     *     view: string,
+     *     title: string
+     * }>
+     */
+    private const ERRORS = [
+        403 => [
+            'view' => '403',
+            'title' => '403 | Accès interdit'
+        ],
+        404 => [
+            'view' => '404',
+            'title' => '404 | Page introuvable'
+        ],
+        405 => [
+            'view' => '405',
+            'title' => '405 | Méthode non autorisée'
+        ],
+        419 => [
+            'view' => '419',
+            'title' => '419 | Session expirée'
+        ],
+        422 => [
+            'view' => '422',
+            'title' => '422 | Erreur de validation'
+        ],
+        500 => [
+            'view' => '500',
+            'title' => '500 | Erreur serveur'
+        ]
+    ];
+
+    private function __construct(Request $request)
     {
         parent::__construct($request);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | ERREURS HTTP
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // RENDU
+    // =========================================
 
-    public function unauthorized(string $message = 'Non authentifié'): never
+    public static function handle(int $status, string $message, Request $request): never
     {
-        $this->error(
-            401,
-            '401',
-            '401 | Non authentifié',
-            $message
-        );
+        $controller = new self($request);
+
+        $controller->renderErrorStatus($status, $message);
     }
 
-    public function forbidden(string $message = 'Accès interdit'): never
+    private function renderErrorStatus(int $status, string $message): never
     {
-        $this->error(
-            403,
-            '403',
-            '403 | Accès interdit',
-            $message
-        );
-    }
-
-    public function notFound(string $message = 'Page introuvable'): never
-    {
-        $this->error(
-            404,
-            '404',
-            '404 | Page introuvable',
-            $message
-        );
-    }
-
-    public function methodNotAllowed(string $message = 'Méthode non autorisée'): never
-    {
-        $this->error(
-            405,
-            '405',
-            '405 | Méthode non autorisée',
-            $message
-        );
-    }
-
-    public function csrfExpired(
-        string $message = 'Session expirée ou requête invalide.'
-    ): never {
-        $this->error(
-            419,
-            '419',
-            '419 | Session expirée',
-            $message
-        );
-    }
-
-    public function validationError(string $message = 'Erreur de validation'): never
-    {
-        $this->error(
-            422,
-            '422',
-            '422 | Erreur de validation',
-            $message
-        );
-    }
-
-    public function serverError(
-        string $message = 'Une erreur interne est survenue.'
-    ): never {
-        $this->error(
-            500,
-            '500',
-            '500 | Erreur serveur',
-            $message
-        );
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | RENDU
-    |--------------------------------------------------------------------------
-    */
-
-    private function error(
-        int $status,
-        string $view,
-        string $title,
-        string $message
-    ): never {
-        if ($this->expectsJson())
+        if ($status === 401)
         {
-            $this->jsonResult(
-                ServiceResult::error(
-                    message: $message,
-                    status: $status
-                )
-            );
+            $this->redirect('connexion');
         }
 
-        $this->title = $title;
+        if ($status === 409)
+        {
+            $this->redirect('/');
+        }
+
+        $error = self::ERRORS[$status] ?? self::ERRORS[500];
+
+        $this->title = $error['title'];
 
         $this->renderError(
-            $view,
+            $error['view'],
             $status,
             [
-                'message' => $message,
+                'message' => $message
             ]
         );
     }

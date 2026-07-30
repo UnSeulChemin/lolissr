@@ -42,7 +42,7 @@ final class Database extends PDO
                 [
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ,
                     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                    PDO::ATTR_EMULATE_PREPARES => false,
+                    PDO::ATTR_EMULATE_PREPARES => false
                 ]
             );
         }
@@ -51,7 +51,7 @@ final class Database extends PDO
             Logger::exception(
                 $exception,
                 [
-                    'type' => 'database_connection',
+                    'type' => 'database_connection'
                 ]
             );
 
@@ -86,8 +86,6 @@ final class Database extends PDO
 
         Profiler::start('database.transaction');
 
-        $transactionActive = false;
-
         try
         {
             if (! $this->beginTransaction())
@@ -97,33 +95,64 @@ final class Database extends PDO
                 );
             }
 
-            $transactionActive = true;
-
-            $result = $callback();
-
-            if (! $this->commit())
+            try
             {
-                throw new RuntimeException(
-                    'Impossible de valider la transaction.'
-                );
+                $result = $callback();
+
+                if (! $this->commit())
+                {
+                    throw new RuntimeException(
+                        'Impossible de valider la transaction.'
+                    );
+                }
+
+                return $result;
             }
-
-            $transactionActive = false;
-
-            return $result;
-        }
-        catch (Throwable $exception)
-        {
-            if ($transactionActive)
+            catch (Throwable $exception)
             {
-                $this->rollBack();
-            }
+                $this->rollbackSafely($exception);
 
-            throw $exception;
+                throw $exception;
+            }
         }
         finally
         {
             Profiler::end('database.transaction');
+        }
+    }
+
+    // =========================================
+    // ROLLBACK
+    // =========================================
+
+    private function rollbackSafely(Throwable $originalException): void
+    {
+        if (! $this->inTransaction())
+        {
+            return;
+        }
+
+        try
+        {
+            if (! $this->rollBack())
+            {
+                Logger::error(
+                    'Database rollback failed',
+                    [
+                        'original_error' => $originalException->getMessage()
+                    ]
+                );
+            }
+        }
+        catch (Throwable $rollbackException)
+        {
+            Logger::exception(
+                $rollbackException,
+                [
+                    'type' => 'database_rollback',
+                    'original_error' => $originalException->getMessage()
+                ]
+            );
         }
     }
 }

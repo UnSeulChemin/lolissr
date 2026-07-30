@@ -12,7 +12,10 @@ abstract class FormRequest
 
     public function __construct(protected readonly Request $request)
     {
-        $this->validator = new Validator($this->request->postAll(), $this->request->files());
+        $this->validator = new Validator(
+            $this->request->postAll(),
+            $this->request->files()
+        );
 
         $this->validate();
     }
@@ -48,7 +51,12 @@ abstract class FormRequest
      */
     final public function validated(): array
     {
-        return $this->fails() ? [] : $this->validator->validated();
+        if ($this->fails())
+        {
+            return [];
+        }
+
+        return $this->validator->validated();
     }
 
     // =========================================

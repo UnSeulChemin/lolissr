@@ -30,7 +30,7 @@ final class AuthController extends Controller
         $this->title = 'Connexion';
 
         $this->render('pages/auth/connexion', [
-            'form' => $this->formViewData('connexion', ''),
+            'form' => $this->formViewData('connexion', '')
         ]);
     }
 
@@ -82,7 +82,7 @@ final class AuthController extends Controller
         $this->title = 'Inscription';
 
         $this->render('pages/auth/inscription', [
-            'form' => $this->formViewData('inscription', ''),
+            'form' => $this->formViewData('inscription', '')
         ]);
     }
 

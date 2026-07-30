@@ -47,9 +47,9 @@ final readonly class UploadedFile
             return null;
         }
 
-        $tmp = trim((string) ($file['tmp_name'] ?? ''));
+        $temporaryPath = trim((string) ($file['tmp_name'] ?? ''));
 
-        return $tmp !== '' ? $tmp : null;
+        return $temporaryPath !== '' ? $temporaryPath : null;
     }
 
     public function error(string $key): ?int
@@ -73,7 +73,7 @@ final readonly class UploadedFile
             return null;
         }
 
-        return (int) ($file['size'] ?? 0);
+        return max(0, (int) ($file['size'] ?? 0));
     }
 
     public function extension(string $key): ?string
@@ -97,29 +97,27 @@ final readonly class UploadedFile
 
     public function mimeType(string $key): ?string
     {
-        $file = $this->uploadedFile($key);
+        $temporaryPath = $this->tmp($key);
 
-        if ($file === null)
+        if ($temporaryPath === null || ! is_file($temporaryPath))
         {
             return null;
         }
 
-        $tmp = (string) ($file['tmp_name'] ?? '');
+        $mimeType = @$this->finfo->file($temporaryPath);
 
-        if ($tmp === '' || ! is_file($tmp))
+        if (! is_string($mimeType))
         {
             return null;
         }
 
-        $mimeType = $this->finfo->file($tmp);
+        $mimeType = strtolower(trim($mimeType));
 
-        return is_string($mimeType) && $mimeType !== ''
-            ? strtolower($mimeType)
-            : null;
+        return $mimeType !== '' ? $mimeType : null;
     }
 
     // =========================================
-    // UTILITAIRES
+    // RÉSOLUTION
     // =========================================
 
     /**
@@ -127,7 +125,9 @@ final readonly class UploadedFile
      */
     private function file(string $key): ?array
     {
-        return $this->request->files()[$key] ?? null;
+        $file = $this->request->file($key);
+
+        return is_array($file) ? $file : null;
     }
 
     /**
@@ -137,11 +137,13 @@ final readonly class UploadedFile
     {
         $file = $this->file($key);
 
-        if ($file === null || ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK)
+        if ($file === null)
         {
             return null;
         }
 
-        return $file;
+        $error = (int) ($file['error'] ?? UPLOAD_ERR_NO_FILE);
+
+        return $error === UPLOAD_ERR_OK ? $file : null;
     }
 }

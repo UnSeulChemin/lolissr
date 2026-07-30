@@ -14,6 +14,10 @@ final class Cache
 {
     private static ?string $directory = null;
 
+    private function __construct()
+    {
+    }
+
     // =========================================
     // CACHE
     // =========================================
@@ -36,14 +40,14 @@ final class Cache
                 return null;
             }
 
-            $content = file_get_contents($path);
+            $content = @file_get_contents($path);
 
             if ($content === false)
             {
                 Logger::warning(
                     'Cache unreadable',
                     [
-                        'key' => $key,
+                        'key' => $key
                     ]
                 );
 
@@ -67,7 +71,7 @@ final class Cache
                     'Cache corrupted JSON',
                     [
                         'key' => $key,
-                        'error' => $exception->getMessage(),
+                        'error' => $exception->getMessage()
                     ]
                 );
 
@@ -81,7 +85,7 @@ final class Cache
                 Logger::warning(
                     'Cache invalid payload',
                     [
-                        'key' => $key,
+                        'key' => $key
                     ]
                 );
 
@@ -97,14 +101,14 @@ final class Cache
                 Logger::warning(
                     'Cache invalid expiration',
                     [
-                        'key' => $key,
+                        'key' => $key
                     ]
                 );
 
                 return null;
             }
 
-            if ((int) $expiresAt < time())
+            if ((int) $expiresAt <= time())
             {
                 self::deleteFile($path);
 
@@ -144,7 +148,7 @@ final class Cache
                 $json = json_encode(
                     [
                         'expires_at' => time() + $ttl,
-                        'value' => $value,
+                        'value' => $value
                     ],
                     JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR
                 );
@@ -155,7 +159,7 @@ final class Cache
                     'Cache encoding failed',
                     [
                         'key' => $key,
-                        'error' => $exception->getMessage(),
+                        'error' => $exception->getMessage()
                     ]
                 );
 
@@ -174,14 +178,14 @@ final class Cache
                     'Cache temporary filename generation failed',
                     [
                         'key' => $key,
-                        'error' => $exception->getMessage(),
+                        'error' => $exception->getMessage()
                     ]
                 );
 
                 return;
             }
 
-            $written = file_put_contents($temporaryPath, $json, LOCK_EX);
+            $written = @file_put_contents($temporaryPath, $json, LOCK_EX);
 
             if ($written === false)
             {
@@ -190,14 +194,14 @@ final class Cache
                 Logger::warning(
                     'Cache write failed',
                     [
-                        'key' => $key,
+                        'key' => $key
                     ]
                 );
 
                 return;
             }
 
-            if (rename($temporaryPath, $path))
+            if (@rename($temporaryPath, $path))
             {
                 return;
             }
@@ -206,28 +210,28 @@ final class Cache
              * Sous Windows, rename() peut refuser de remplacer
              * un fichier déjà existant.
              */
-            if (is_file($path) && ! unlink($path))
+            if (is_file($path) && ! @unlink($path))
             {
                 self::deleteFile($temporaryPath);
 
                 Logger::warning(
                     'Cache replacement failed',
                     [
-                        'key' => $key,
+                        'key' => $key
                     ]
                 );
 
                 return;
             }
 
-            if (! rename($temporaryPath, $path))
+            if (! @rename($temporaryPath, $path))
             {
                 self::deleteFile($temporaryPath);
 
                 Logger::warning(
                     'Cache atomic rename failed',
                     [
-                        'key' => $key,
+                        'key' => $key
                     ]
                 );
             }
@@ -335,7 +339,12 @@ final class Cache
             return true;
         }
 
-        return mkdir($directory, 0755, true);
+        if (@mkdir($directory, 0755, true))
+        {
+            return true;
+        }
+
+        return is_dir($directory);
     }
 
     private static function deleteFile(string $path): void
@@ -345,12 +354,12 @@ final class Cache
             return;
         }
 
-        if (! unlink($path))
+        if (! @unlink($path) && is_file($path))
         {
             Logger::warning(
                 'Cache delete failed',
                 [
-                    'path' => $path,
+                    'path' => $path
                 ]
             );
         }

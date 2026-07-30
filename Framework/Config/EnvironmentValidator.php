@@ -32,6 +32,10 @@ final class EnvironmentValidator
         'CACHE_TTL',
     ];
 
+    private function __construct()
+    {
+    }
+
     // =========================================
     // VALIDATION
     // =========================================
@@ -71,49 +75,13 @@ final class EnvironmentValidator
 
     private static function validateEnvironment(): void
     {
-        $environment = strtolower(trim((string) Env::get('APP_ENV', '')));
+        $environment = self::environment();
 
         if (! in_array($environment, self::ENVIRONMENTS, true))
         {
             throw new RuntimeException(
                 "Invalid APP_ENV value: {$environment}. Allowed values: "
                 . implode(', ', self::ENVIRONMENTS)
-            );
-        }
-    }
-
-    private static function validateProduction(): void
-    {
-        if (strtolower((string) Env::get('APP_ENV', '')) !== 'production')
-        {
-            return;
-        }
-
-        if (Env::bool('APP_DEBUG', false))
-        {
-            throw new RuntimeException(
-                'APP_DEBUG must be false in production.'
-            );
-        }
-
-        if (Env::bool('PROFILER_ENABLED', false))
-        {
-            throw new RuntimeException(
-                'PROFILER_ENABLED must be false in production.'
-            );
-        }
-
-        if (Env::bool('SQL_TOOL_ENABLED', false))
-        {
-            throw new RuntimeException(
-                'SQL_TOOL_ENABLED must be false in production.'
-            );
-        }
-
-        if (Env::bool('REGISTRATION_ENABLED', false))
-        {
-            throw new RuntimeException(
-                'REGISTRATION_ENABLED must be false in production.'
             );
         }
     }
@@ -135,9 +103,11 @@ final class EnvironmentValidator
             ! str_starts_with($baseUri, '/')
             || str_ends_with($baseUri, '/')
             || str_contains($baseUri, '://')
+            || str_contains($baseUri, '//')
+            || str_contains($baseUri, '\\')
             || preg_match('#^/[a-zA-Z0-9._~/-]+$#', $baseUri) !== 1
-        )
-        {
+            || self::containsDotSegment($baseUri)
+        ) {
             throw new RuntimeException(
                 "Invalid APP_BASE_URI value: {$baseUri}. "
                 . 'Expected "/" or a path such as "/lolissr".'
@@ -171,8 +141,9 @@ final class EnvironmentValidator
             }
 
             $value = Env::get($key);
+            $integer = filter_var($value, FILTER_VALIDATE_INT);
 
-            if (filter_var($value, FILTER_VALIDATE_INT) === false || (int) $value <= 0)
+            if ($integer === false || $integer <= 0)
             {
                 throw new RuntimeException(
                     "Environment variable {$key} must be a positive integer."
@@ -226,5 +197,54 @@ final class EnvironmentValidator
                 "Environment variable {$key} must contain at least one value."
             );
         }
+    }
+
+    // =========================================
+    // PRODUCTION
+    // =========================================
+
+    private static function validateProduction(): void
+    {
+        if (self::environment() !== 'production')
+        {
+            return;
+        }
+
+        self::assertDisabledInProduction('APP_DEBUG');
+        self::assertDisabledInProduction('PROFILER_ENABLED');
+        self::assertDisabledInProduction('SQL_TOOL_ENABLED');
+        self::assertDisabledInProduction('REGISTRATION_ENABLED');
+    }
+
+    private static function assertDisabledInProduction(string $key): void
+    {
+        if (Env::bool($key, false))
+        {
+            throw new RuntimeException(
+                "{$key} must be false in production."
+            );
+        }
+    }
+
+    // =========================================
+    // RÉSOLUTION
+    // =========================================
+
+    private static function environment(): string
+    {
+        return strtolower(trim((string) Env::get('APP_ENV', '')));
+    }
+
+    private static function containsDotSegment(string $path): bool
+    {
+        foreach (explode('/', trim($path, '/')) as $segment)
+        {
+            if ($segment === '.' || $segment === '..')
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

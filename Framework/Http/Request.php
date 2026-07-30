@@ -6,6 +6,8 @@ namespace Framework\Http;
 
 use Framework\Application\App;
 
+use JsonException;
+
 final class Request
 {
     /**
@@ -43,7 +45,7 @@ final class Request
         array $get = [],
         array $post = [],
         array $files = [],
-        array $server = [],
+        array $server = []
     ) {
         $this->get = $get;
         $this->post = $post;
@@ -120,9 +122,16 @@ final class Request
 
     public function header(string $key): ?string
     {
-        $normalized = strtoupper(str_replace('-', '_', $key));
+        $normalized = strtoupper(str_replace('-', '_', trim($key)));
 
-        $value = $this->server['HTTP_' . $normalized] ?? $this->server[$normalized] ?? null;
+        if ($normalized === '')
+        {
+            return null;
+        }
+
+        $value = $this->server['HTTP_' . $normalized]
+            ?? $this->server[$normalized]
+            ?? null;
 
         return is_string($value) ? $value : null;
     }
@@ -150,8 +159,7 @@ final class Request
                 $path === $baseUri
                 || str_starts_with($path, $baseUri . '/')
             )
-        )
-        {
+        ) {
             $path = substr($path, strlen($baseUri));
         }
 
@@ -185,7 +193,22 @@ final class Request
     {
         $json = $this->json();
 
-        return $json[$key] ?? $this->post[$key] ?? $this->get[$key] ?? $default;
+        if (array_key_exists($key, $json))
+        {
+            return $json[$key];
+        }
+
+        if (array_key_exists($key, $this->post))
+        {
+            return $this->post[$key];
+        }
+
+        if (array_key_exists($key, $this->get))
+        {
+            return $this->get[$key];
+        }
+
+        return $default;
     }
 
     public function has(string $key): bool
@@ -195,7 +218,24 @@ final class Request
 
     public function filled(string $key): bool
     {
-        return trim((string) $this->input($key, '')) !== '';
+        $value = $this->input($key);
+
+        if ($value === null)
+        {
+            return false;
+        }
+
+        if (is_string($value))
+        {
+            return trim($value) !== '';
+        }
+
+        if (is_array($value))
+        {
+            return $value !== [];
+        }
+
+        return true;
     }
 
     /**
@@ -240,7 +280,7 @@ final class Request
     }
 
     // =========================================
-    // UTILITAIRES
+    // JSON
     // =========================================
 
     /**
@@ -253,17 +293,28 @@ final class Request
             return $this->json;
         }
 
-        $raw = file_get_contents('php://input');
+        $raw = @file_get_contents('php://input');
 
-        if (! is_string($raw) || trim($raw) === '')
+        if ($raw === false || trim($raw) === '')
         {
             return $this->json = [];
         }
 
-        $decoded = json_decode($raw, true);
+        try
+        {
+            $decoded = json_decode($raw, true, 512, JSON_THROW_ON_ERROR);
+        }
+        catch (JsonException)
+        {
+            return $this->json = [];
+        }
 
         return $this->json = is_array($decoded) ? $decoded : [];
     }
+
+    // =========================================
+    // UTILITAIRES
+    // =========================================
 
     private function headerLower(string $key): string
     {

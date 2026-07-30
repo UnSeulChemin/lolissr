@@ -11,6 +11,10 @@ final class Config
      */
     private static array $items = [];
 
+    private function __construct()
+    {
+    }
+
     // =========================================
     // CONFIGURATION
     // =========================================
@@ -26,12 +30,9 @@ final class Config
 
         [$config, $segments] = $resolved;
 
-        if ($segments === [])
-        {
-            return $config;
-        }
-
-        return self::arrayGet($config, $segments, $default);
+        return $segments === []
+            ? $config
+            : self::arrayGet($config, $segments, $default);
     }
 
     public static function has(string $key): bool
@@ -45,12 +46,9 @@ final class Config
 
         [$config, $segments] = $resolved;
 
-        if ($segments === [])
-        {
-            return $config !== [];
-        }
-
-        return self::arrayHas($config, $segments);
+        return $segments === []
+            ? $config !== []
+            : self::arrayHas($config, $segments);
     }
 
     public static function clear(): void
@@ -79,7 +77,7 @@ final class Config
 
         $file = array_shift($segments);
 
-        if ($file === '')
+        if ($file === null || $file === '')
         {
             return null;
         }
@@ -99,7 +97,12 @@ final class Config
             return [];
         }
 
-        return array_values(array_filter(explode('.', $key), static fn (string $segment): bool => $segment !== ''));
+        return array_values(
+            array_filter(
+                explode('.', $key),
+                static fn (string $segment): bool => $segment !== ''
+            )
+        );
     }
 
     /**

@@ -22,6 +22,10 @@ use RuntimeException;
 
 final class Bootstrap
 {
+    private function __construct()
+    {
+    }
+
     // =========================================
     // BOOTSTRAP
     // =========================================
@@ -34,24 +38,48 @@ final class Bootstrap
         EnvironmentValidator::validate();
     }
 
-    public static function run(): never
+    /**
+     * @param (callable(int, string, Request): never)|null $errorRenderer
+     */
+    public static function run(?callable $errorRenderer = null): never
     {
-        Env::load(base_path('.env'));
-        Config::clear();
-
-        EnvironmentValidator::validate();
+        self::loadEnvOnly();
 
         RequestContext::start();
 
         self::configureTimezone();
         self::configureDebug();
-
-        ErrorHandler::register();
+        self::configureErrorHandler($errorRenderer);
 
         header_remove('X-Powered-By');
 
         self::startProfiler();
 
+        $container = self::createContainer();
+        $router = self::createRouter($container);
+
+        self::registerRoutes($router);
+
+        /** @var Request $request */
+        $request = $container->get(Request::class);
+
+        /** @var SecurityHeadersMiddleware $securityHeaders */
+        $securityHeaders = $container->get(SecurityHeadersMiddleware::class);
+
+        $kernel = new AppKernel($router, $request, $securityHeaders);
+
+        $kernel->boot();
+        $kernel->handle();
+
+        exit;
+    }
+
+    // =========================================
+    // CONTAINER
+    // =========================================
+
+    private static function createContainer(): Container
+    {
         $container = new Container();
 
         AppContainer::set($container);
@@ -63,40 +91,31 @@ final class Bootstrap
 
         $container->singleton(Database::class);
 
-        $router = new Router(
+        return $container;
+    }
+
+    // =========================================
+    // ROUTER
+    // =========================================
+
+    private static function createRouter(Container $container): Router
+    {
+        return new Router(
             new RouteCollection(),
             $container
         );
+    }
 
+    private static function registerRoutes(Router $router): void
+    {
         $routes = require base_path('Config/routes.php');
 
         if (! is_callable($routes))
         {
-            throw new RuntimeException(
-                'Config/routes.php must return a callable.'
-            );
+            throw new RuntimeException('Config/routes.php must return a callable.');
         }
 
         $routes($router);
-
-        /** @var Request $request */
-        $request = $container->get(Request::class);
-
-        /** @var SecurityHeadersMiddleware $securityHeaders */
-        $securityHeaders = $container->get(
-            SecurityHeadersMiddleware::class
-        );
-
-        $kernel = new AppKernel(
-            $router,
-            $request,
-            $securityHeaders
-        );
-
-        $kernel->boot();
-        $kernel->handle();
-
-        exit;
     }
 
     // =========================================
@@ -132,6 +151,19 @@ final class Bootstrap
     // CONFIGURATION
     // =========================================
 
+    /**
+     * @param (callable(int, string, Request): never)|null $renderer
+     */
+    private static function configureErrorHandler(?callable $renderer): void
+    {
+        if ($renderer !== null)
+        {
+            ErrorHandler::setRenderer($renderer);
+        }
+
+        ErrorHandler::register();
+    }
+
     private static function configureDebug(): void
     {
         $debug = App::debug();
@@ -148,9 +180,7 @@ final class Bootstrap
 
         if (! date_default_timezone_set($timezone))
         {
-            throw new RuntimeException(
-                'Invalid application timezone: ' . $timezone
-            );
+            throw new RuntimeException('Invalid application timezone: ' . $timezone);
         }
     }
 }

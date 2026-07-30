@@ -11,6 +11,12 @@ use RuntimeException;
 
 final class Response
 {
+    private const JSON_ERROR_RESPONSE = '{"success":false,"message":"JSON encode error"}';
+
+    private function __construct()
+    {
+    }
+
     // =========================================
     // RÉPONSE
     // =========================================
@@ -40,24 +46,21 @@ final class Response
                 JSON_UNESCAPED_UNICODE
                 | JSON_UNESCAPED_SLASHES
                 | JSON_INVALID_UTF8_SUBSTITUTE
-                | JSON_THROW_ON_ERROR,
+                | JSON_THROW_ON_ERROR
             );
         }
         catch (JsonException $exception)
         {
-            Logger::exception($exception, ['type' => 'json_encode']);
+            Logger::exception(
+                $exception,
+                [
+                    'type' => 'json_encode'
+                ]
+            );
 
             self::setStatusCode(500);
 
-            echo json_encode(
-                [
-                    'success' => false,
-                    'message' => 'JSON encode error',
-                ],
-                JSON_UNESCAPED_UNICODE
-                | JSON_UNESCAPED_SLASHES
-                | JSON_INVALID_UTF8_SUBSTITUTE,
-            );
+            echo self::JSON_ERROR_RESPONSE;
         }
 
         exit;
@@ -65,10 +68,17 @@ final class Response
 
     public static function redirect(string $url, int $statusCode = 302): never
     {
+        if ($statusCode < 300 || $statusCode > 399)
+        {
+            throw new RuntimeException(
+                "Invalid redirect status code: {$statusCode}."
+            );
+        }
+
         if (headers_sent($file, $line))
         {
             throw new RuntimeException(
-                "Unable to redirect to \"{$url}\": headers already sent in {$file}:{$line}.",
+                "Unable to redirect to \"{$url}\": headers already sent in {$file}:{$line}."
             );
         }
 
@@ -78,7 +88,7 @@ final class Response
     }
 
     // =========================================
-    // UTILITAIRES
+    // EN-TÊTES
     // =========================================
 
     private static function setStatusCode(int $statusCode): void
@@ -93,7 +103,7 @@ final class Response
     {
         if (! headers_sent())
         {
-            header("Content-Type: {$contentType}; charset=UTF-8");
+            header("Content-Type: {$contentType}; charset=UTF-8", true);
         }
     }
 }

@@ -9,7 +9,11 @@ final readonly class JsonResponse
     /**
      * @param array<string, mixed> $data
      */
-    public function __construct(private array $data, private int $status = 200){}
+    public function __construct(
+        private array $data,
+        private int $status = 200
+    ) {
+    }
 
     // =========================================
     // RÉPONSE
@@ -42,14 +46,30 @@ final readonly class JsonResponse
      */
     public static function success(array $data = [], int $status = 200): self
     {
-        return new self(['success' => true, ...$data], $status);
+        return new self(
+            [
+                ...$data,
+                'success' => true
+            ],
+            $status
+        );
     }
 
     /**
      * @param array<string, mixed> $data
      */
-    public static function error(string $message, int $status = 400, array $data = []): self
-    {
-        return new self(['success' => false, 'message' => $message, ...$data], $status);
+    public static function error(
+        string $message,
+        int $status = 400,
+        array $data = []
+    ): self {
+        return new self(
+            [
+                ...$data,
+                'success' => false,
+                'message' => $message
+            ],
+            $status
+        );
     }
 }
