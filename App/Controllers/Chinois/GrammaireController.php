@@ -50,7 +50,7 @@ final class GrammaireController extends Controller
 
     public function show(string $niveau, int $id): never
     {
-        $grammaire = $this->grammaireOrFail($id);
+        $grammaire = $this->grammaireOrFail($niveau, $id);
 
         $this->title = 'Chinois | ' . $grammaire->titre;
 
@@ -90,7 +90,10 @@ final class GrammaireController extends Controller
 
     public function edit(int $level, int $id): never
     {
+        $niveau = $this->resolveHskLevel($level);
+
         $this->renderEdit(
+            $niveau,
             $id,
             (string) $this->request->input('return_to', '')
         );
@@ -101,7 +104,9 @@ final class GrammaireController extends Controller
         int $level,
         int $id
     ): never {
-        $this->grammaireOrFail($id);
+        $niveau = $this->resolveHskLevel($level);
+
+        $this->grammaireOrFail($niveau, $id);
         $this->validateRequest($request);
 
         $result = $this->chinoisWriteService->updateGrammaire(
@@ -140,9 +145,9 @@ final class GrammaireController extends Controller
         return 'HSK' . $level;
     }
 
-    private function grammaireOrFail(int $id): ChinoisGrammaireData
+    private function grammaireOrFail(string $niveau, int $id): ChinoisGrammaireData
     {
-        return $this->chinoisReadService->grammaire($id)
+        return $this->chinoisReadService->grammaire($niveau, $id)
             ?? throw new NotFoundException('Grammaire introuvable');
     }
 
@@ -150,9 +155,9 @@ final class GrammaireController extends Controller
     // RENDU
     // =========================================
 
-    private function renderEdit(int $id, string $returnTo): never
+    private function renderEdit(string $niveau, int $id, string $returnTo): never
     {
-        $grammaire = $this->grammaireOrFail($id);
+        $grammaire = $this->grammaireOrFail($niveau, $id);
         $hskLevel = substr($grammaire->niveau, 3);
 
         $this->title = 'Chinois | Modifier une grammaire';
