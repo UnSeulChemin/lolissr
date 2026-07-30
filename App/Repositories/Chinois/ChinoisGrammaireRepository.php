@@ -435,8 +435,8 @@ final class ChinoisGrammaireRepository extends Model
 
     private function mapRowToDto(stdClass $row): ChinoisGrammaireData
     {
-        $abreviation = $row->abreviation !== null ? (string) $row->abreviation : null;
-        $explication = $row->explication !== null ? (string) $row->explication : null;
+        $abreviation = $row->abreviation !== null ? trim((string) $row->abreviation) : null;
+        $explication = trim((string) $row->explication);
         $maitrise = (bool) $row->maitrise;
 
         return new ChinoisGrammaireData(
@@ -455,7 +455,7 @@ final class ChinoisGrammaireRepository extends Model
             maitrise: $maitrise,
             xpRewarded: (bool) $row->xp_rewarded,
             hasAbreviation: $abreviation !== null && $abreviation !== '',
-            hasExplication: $explication !== null && $explication !== '',
+            hasExplication: $explication !== '',
             masteredClass: $maitrise ? 'active' : '',
             masteredValue: $maitrise ? '1' : '0',
             masteredPressed: $maitrise ? 'true' : 'false',

@@ -7,17 +7,10 @@ use App\DTO\Common\Responses\FormViewData;
 /** @var FormViewData $form */
 
 $errors = $form->errors;
-
 $old = $form->old;
 
 $niveauValue = $old['niveau'] ?? 'HSK1';
-
-$niveauOptions = [
-    'HSK1',
-    'HSK2',
-    'HSK3',
-    'HSK4',
-];
+$niveauOptions = ['HSK1', 'HSK2', 'HSK3', 'HSK4'];
 
 ?>
 
@@ -59,9 +52,7 @@ $niveauOptions = [
 
                             <option
                                 value="<?= e($niveau) ?>"
-                                <?= $niveauValue === $niveau
-                                    ? 'selected'
-                                    : '' ?>
+                                <?= $niveauValue === $niveau ? 'selected' : '' ?>
                             >
                                 <?= e($niveau) ?>
                             </option>
@@ -228,6 +219,7 @@ $niveauOptions = [
                         id="explication"
                         rows="6"
                         placeholder="Ex : 是 est le verbe être..."
+                        required
                     ><?= e($old['explication'] ?? '') ?></textarea>
 
                 </div>

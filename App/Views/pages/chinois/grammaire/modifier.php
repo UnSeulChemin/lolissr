@@ -208,6 +208,7 @@ $niveauOptions = ['HSK1', 'HSK2', 'HSK3', 'HSK4'];
                         name="explication"
                         id="explication"
                         rows="6"
+                        required
                     ><?= e($old['explication'] ?? $grammaire->explication) ?></textarea>
 
                 </div>

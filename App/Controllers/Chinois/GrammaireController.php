@@ -109,10 +109,8 @@ final class GrammaireController extends Controller
         $this->grammaireOrFail($niveau, $id);
         $this->validateRequest($request);
 
-        $result = $this->chinoisWriteService->updateGrammaire(
-            $id,
-            $request->dto()
-        );
+        $dto = $request->dto();
+        $result = $this->chinoisWriteService->updateGrammaire($id, $dto);
 
         if (! $result->success)
         {
@@ -124,9 +122,10 @@ final class GrammaireController extends Controller
         }
 
         $returnTo = (string) $this->request->input('return_to', '');
+        $destination = 'chinois/grammaire/' . mb_strtolower($dto->niveau);
 
         $this->redirectWithSuccess(
-            $returnTo !== '' ? $returnTo : 'chinois/grammaire/hsk' . $level,
+            $returnTo !== '' ? $returnTo : $destination,
             $result->message
         );
     }

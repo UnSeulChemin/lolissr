@@ -16,13 +16,12 @@ use App\DTO\Common\Responses\ViewData;
         class="grammar-main-section"
         data-flashcards='<?= e(json_encode(
             $grammaires,
-            JSON_UNESCAPED_UNICODE
-            | JSON_THROW_ON_ERROR,
+            JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR
         )) ?>'
         data-base-uri="<?= e($view->baseUri) ?>"
     >
 
-        <?php if ($grammaires === []) : ?>
+        <?php if ($grammaires === []): ?>
 
             <article class="grammar-item">
 
@@ -32,7 +31,7 @@ use App\DTO\Common\Responses\ViewData;
 
             </article>
 
-        <?php else : ?>
+        <?php else: ?>
 
             <?php $card = $grammaires[0]; ?>
 
@@ -112,21 +111,18 @@ use App\DTO\Common\Responses\ViewData;
                     <?= e($card->traduction) ?>
                 </div>
 
-                <?php if ($card->hasExplication): ?>
-
-                    <div
-                        id="flashcard-explication"
-                        class="grammar-explanation"
-                    >
-                        <?= e($card->explication) ?>
-                    </div>
-
-                <?php endif; ?>
+                <div
+                    id="flashcard-explication"
+                    class="grammar-explanation"
+                    <?= $card->hasExplication ? '' : 'hidden' ?>
+                >
+                    <?= e($card->explication) ?>
+                </div>
 
                 <a
                     id="flashcard-edit"
                     class="grammar-edit"
-                    href="<?= e($view->baseUri) ?>chinois/flashcards/grammaire/modifier/<?= $card->id ?>"
+                    href="<?= e($view->baseUri) ?>chinois/grammaire/<?= e(mb_strtolower($card->niveau)) ?>/modifier/<?= $card->id ?>"
                 >
 
                     <svg

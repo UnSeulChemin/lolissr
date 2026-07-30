@@ -16,23 +16,20 @@ use App\DTO\Common\Responses\ViewData;
         class="chinois-vocab-panel"
         data-flashcards='<?= e(json_encode(
             $vocabulaires,
-            JSON_UNESCAPED_UNICODE
-            | JSON_THROW_ON_ERROR,
+            JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR
         )) ?>'
         data-base-uri="<?= e($view->baseUri) ?>"
     >
 
         <section class="chinois-vocab-list chinois-vocab-list--flashcard">
 
-            <?php if ($vocabulaires === []) : ?>
+            <?php if ($vocabulaires === []): ?>
 
                 <div class="chinois-vocab-empty">
-
                     Aucun vocabulaire à réviser.
-
                 </div>
 
-            <?php else : ?>
+            <?php else: ?>
 
                 <?php $card = $vocabulaires[0]; ?>
 
@@ -98,23 +95,20 @@ use App\DTO\Common\Responses\ViewData;
                         <?= e($card->traduction) ?>
                     </div>
 
-                    <?php if ($card->hasExemple): ?>
-
-                        <div
-                            id="flashcard-exemple"
-                            class="chinois-vocab-example"
-                        >
-                            <?= nl2br(e($card->exemple)) ?>
-                        </div>
-
-                    <?php endif; ?>
+                    <div
+                        id="flashcard-exemple"
+                        class="chinois-vocab-example"
+                        <?= $card->hasExemple ? '' : 'hidden' ?>
+                    >
+                        <?= nl2br(e($card->exemple)) ?>
+                    </div>
 
                     <div class="chinois-vocab-actions">
 
                         <a
                             id="flashcard-edit"
                             class="grammar-edit"
-                            href="<?= e($view->baseUri) ?>chinois/flashcards/vocabulaire/modifier/<?= $card->id ?>"
+                            href="<?= e($view->baseUri) ?>chinois/vocabulaire/<?= e($card->langue) ?>/modifier/<?= $card->id ?>"
                         >
 
                             <svg

@@ -24,84 +24,33 @@ import {
 
 export function initFlashcardsVocabulairePage()
 {
-    const container =
-        document.querySelector(
-            '.chinois-vocab-panel',
-        );
+    const container = document.querySelector('.chinois-vocab-panel');
 
-    if (!container)
+    if (! container)
     {
         return;
     }
 
-    const cards =
-        JSON.parse(
-            container.dataset.flashcards
-            ?? '[]',
-        );
+    const cards = JSON.parse(container.dataset.flashcards ?? '[]');
+    const baseUri = container.dataset.baseUri ?? '/';
 
-    const baseUri =
-        container.dataset.baseUri
-        ?? '/';
-
-    if (
-        cards.length === 0
-    ) {
+    if (cards.length === 0)
+    {
         return;
     }
 
-    let currentIndex =
-        0;
+    const previousButton = document.getElementById('flashcard-previous');
+    const nextButton = document.getElementById('flashcard-next');
+    const counterElement = document.getElementById('flashcard-counter');
+    const motElement = document.getElementById('flashcard-mot');
+    const pinyinElement = document.getElementById('flashcard-pinyin');
+    const traductionElement = document.getElementById('flashcard-traduction');
+    const exempleElement = document.getElementById('flashcard-exemple');
+    const editElement = document.getElementById('flashcard-edit');
+    const masteredButton = document.getElementById('flashcard-mastered');
+    const deleteButton = document.getElementById('flashcard-delete');
 
-    const previousButton =
-        document.getElementById(
-            'flashcard-previous',
-        );
-
-    const nextButton =
-        document.getElementById(
-            'flashcard-next',
-        );
-
-    const counterElement =
-        document.getElementById(
-            'flashcard-counter',
-        );
-
-    const motElement =
-        document.getElementById(
-            'flashcard-mot',
-        );
-
-    const pinyinElement =
-        document.getElementById(
-            'flashcard-pinyin',
-        );
-
-    const traductionElement =
-        document.getElementById(
-            'flashcard-traduction',
-        );
-
-    const exempleElement =
-        document.getElementById(
-            'flashcard-exemple',
-        );
-
-    const editElement =
-        document.getElementById(
-            'flashcard-edit',
-        );
-
-    const masteredButton =
-        document.getElementById(
-            'flashcard-mastered',
-        );
-
-    const deleteButton =
-        document.getElementById(
-            'flashcard-delete',
-        );
+    let currentIndex = 0;
 
     // =========================================
     // RENDER
@@ -109,61 +58,55 @@ export function initFlashcardsVocabulairePage()
 
     function renderCard()
     {
-        const card =
-            cards[currentIndex];
+        const card = cards[currentIndex];
 
-        if (!card)
+        if (! card)
         {
             return;
         }
 
-        counterElement.textContent =
-            `Carte ${currentIndex + 1} / ${cards.length}`;
+        if (counterElement)
+        {
+            counterElement.textContent = `Carte ${currentIndex + 1} / ${cards.length}`;
+        }
 
-        motElement.textContent =
-            card.mot;
+        if (motElement)
+        {
+            motElement.textContent = card.mot;
+        }
 
-        pinyinElement.textContent =
-            card.pinyin;
+        if (pinyinElement)
+        {
+            pinyinElement.textContent = card.pinyin;
+        }
 
-        traductionElement.textContent =
-            card.traduction;
+        if (traductionElement)
+        {
+            traductionElement.textContent = card.traduction;
+        }
 
         if (exempleElement)
         {
-            exempleElement.textContent =
-                card.exemple ?? '';
+            exempleElement.textContent = card.exemple ?? '';
+            exempleElement.hidden = ! card.hasExemple;
         }
 
-        editElement.href =
-            `${baseUri}chinois/flashcards/vocabulaire/modifier/${card.id}`;
-
-        if (
-            deleteButton
-            instanceof HTMLButtonElement
-        ) {
-            deleteButton.dataset.id =
-                String(card.id);
+        if (editElement instanceof HTMLAnchorElement)
+        {
+            editElement.href = `${baseUri}chinois/vocabulaire/${card.langue}/modifier/${card.id}`;
         }
 
-        if (
-            masteredButton
-            instanceof HTMLButtonElement
-        ) {
-            masteredButton.dataset.id =
-                String(card.id);
+        if (deleteButton instanceof HTMLButtonElement)
+        {
+            deleteButton.dataset.id = String(card.id);
+        }
 
-            masteredButton.dataset.maitrise =
-                '0';
-
-            masteredButton.classList.remove(
-                'active',
-            );
-
-            masteredButton.setAttribute(
-                'aria-pressed',
-                'false',
-            );
+        if (masteredButton instanceof HTMLButtonElement)
+        {
+            masteredButton.dataset.id = String(card.id);
+            masteredButton.dataset.maitrise = '0';
+            masteredButton.classList.remove('active');
+            masteredButton.setAttribute('aria-pressed', 'false');
         }
     }
 
@@ -171,115 +114,75 @@ export function initFlashcardsVocabulairePage()
     // NAVIGATION
     // =========================================
 
-    previousButton?.addEventListener(
-        'click',
-        () =>
-        {
-            currentIndex =
-                (
-                    currentIndex - 1
-                    + cards.length
-                )
-                % cards.length;
+    previousButton?.addEventListener('click', () =>
+    {
+        currentIndex = (currentIndex - 1 + cards.length) % cards.length;
 
-            renderCard();
-        },
-    );
+        renderCard();
+    });
 
-    nextButton?.addEventListener(
-        'click',
-        () =>
-        {
-            currentIndex =
-                (
-                    currentIndex + 1
-                )
-                % cards.length;
+    nextButton?.addEventListener('click', () =>
+    {
+        currentIndex = (currentIndex + 1) % cards.length;
 
-            renderCard();
-        },
-    );
+        renderCard();
+    });
 
     // =========================================
     // VALIDATION
     // =========================================
 
-    masteredButton?.addEventListener(
-        'click',
-        async () =>
-        {
-            const card =
-                cards[currentIndex];
+    masteredButton?.addEventListener('click', async () =>
+    {
+        const card = cards[currentIndex];
 
-            if (!card)
+        if (! card)
+        {
+            return;
+        }
+
+        try
+        {
+            const data = await post(
+                `${baseUri}chinois/ajax/toggle-vocabulaire-maitrise`,
+                {
+                    id: card.id,
+                }
+            );
+
+            if (! data?.success)
             {
+                showToast('Erreur', 'error');
+
                 return;
             }
 
-            try
+            updateHeaderUser(data?.data?.level);
+            invalidateVocabularyPages();
+
+            cards.splice(currentIndex, 1);
+
+            if (cards.length === 0)
             {
-                const data =
-                    await post(
-                        `${baseUri}chinois/ajax/toggle-vocabulaire-maitrise`,
-                        {
-                            id:
-                                card.id,
-                        },
-                    );
+                location.reload();
 
-                if (!data?.success)
-                {
-                    showToast(
-                        'Erreur',
-                        'error',
-                    );
-
-                    return;
-                }
-
-                updateHeaderUser(
-                    data?.data?.level,
-                );
-
-                invalidateVocabularyPages();
-
-                cards.splice(
-                    currentIndex,
-                    1,
-                );
-
-                if (
-                    cards.length === 0
-                ) {
-                    location.reload();
-
-                    return;
-                }
-
-                if (
-                    currentIndex
-                    >= cards.length
-                ) {
-                    currentIndex =
-                        0;
-                }
-
-                renderCard();
-
-                showToast(
-                    'Carte validée',
-                    'success',
-                );
-
-            } catch {
-
-                showToast(
-                    'Erreur réseau',
-                    'error',
-                );
+                return;
             }
-        },
-    );
+
+            if (currentIndex >= cards.length)
+            {
+                currentIndex = 0;
+            }
+
+            renderCard();
+
+            showToast('Carte validée', 'success');
+        }
+        catch
+        {
+            showToast('Erreur réseau', 'error');
+        }
+    });
 
     // =========================================
     // START
