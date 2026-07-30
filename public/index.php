@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\Controllers\ErrorController;
-use App\Providers\AppServiceProvider;
+use App\Providers\ServiceProvider;
 
 use Framework\Application\Bootstrap;
 
@@ -18,5 +18,5 @@ require_once ROOT . '/App/Support/helpers.php';
 
 Bootstrap::run(
     [ErrorController::class, 'handle'],
-    [AppServiceProvider::class, 'register']
+    [ServiceProvider::class, 'register']
 );

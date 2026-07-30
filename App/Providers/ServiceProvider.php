@@ -9,7 +9,7 @@ use App\Services\Auth\AuthService;
 use Framework\Auth\AuthenticationInterface;
 use Framework\Container\Container;
 
-final class AppServiceProvider
+final class ServiceProvider
 {
     private function __construct()
     {

@@ -40,11 +40,11 @@ final class Bootstrap
 
     /**
      * @param (callable(int, string, Request): never)|null $errorRenderer
-     * @param (callable(Container): void)|null $containerConfigurator
+     * @param (callable(Container): void)|null $serviceProvider
      */
     public static function run(
         ?callable $errorRenderer = null,
-        ?callable $containerConfigurator = null
+        ?callable $serviceProvider = null
     ): never {
         self::loadEnvOnly();
 
@@ -60,7 +60,7 @@ final class Bootstrap
 
         $container = self::createContainer();
 
-        self::configureContainer($container, $containerConfigurator);
+        self::registerServices($container, $serviceProvider);
 
         $router = self::createRouter($container);
 
@@ -101,15 +101,15 @@ final class Bootstrap
     }
 
     /**
-     * @param (callable(Container): void)|null $configurator
+     * @param (callable(Container): void)|null $serviceProvider
      */
-    private static function configureContainer(
+    private static function registerServices(
         Container $container,
-        ?callable $configurator
+        ?callable $serviceProvider
     ): void {
-        if ($configurator !== null)
+        if ($serviceProvider !== null)
         {
-            $configurator($container);
+            $serviceProvider($container);
         }
     }
 
@@ -131,7 +131,9 @@ final class Bootstrap
 
         if (! is_callable($routes))
         {
-            throw new RuntimeException('Config/routes.php must return a callable.');
+            throw new RuntimeException(
+                'Config/routes.php must return a callable.'
+            );
         }
 
         $routes($router);
@@ -199,7 +201,9 @@ final class Bootstrap
 
         if (! date_default_timezone_set($timezone))
         {
-            throw new RuntimeException('Invalid application timezone: ' . $timezone);
+            throw new RuntimeException(
+                'Invalid application timezone: ' . $timezone
+            );
         }
     }
 }
