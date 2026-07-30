@@ -8,7 +8,11 @@ use RuntimeException;
 
 final class EnvironmentValidator
 {
-    private const ENVIRONMENTS = ['local', 'testing', 'production'];
+    private const ENVIRONMENTS = [
+        'local',
+        'testing',
+        'production',
+    ];
 
     private const REQUIRED_VARIABLES = [
         'APP_NAME',
@@ -30,6 +34,13 @@ final class EnvironmentValidator
         'UPLOAD_MAX_HEIGHT',
         'UPLOAD_MAX_PIXELS',
         'CACHE_TTL',
+    ];
+
+    private const PRODUCTION_DISABLED_VARIABLES = [
+        'APP_DEBUG',
+        'PROFILER_ENABLED',
+        'SQL_TOOL_ENABLED',
+        'REGISTRATION_ENABLED',
     ];
 
     private function __construct()
@@ -100,7 +111,8 @@ final class EnvironmentValidator
         }
 
         if (
-            ! str_starts_with($baseUri, '/')
+            $baseUri === ''
+            || ! str_starts_with($baseUri, '/')
             || str_ends_with($baseUri, '/')
             || str_contains($baseUri, '://')
             || str_contains($baseUri, '//')
@@ -110,7 +122,7 @@ final class EnvironmentValidator
         ) {
             throw new RuntimeException(
                 "Invalid APP_BASE_URI value: {$baseUri}. "
-                . 'Expected "/" or a path such as "/lolissr".'
+                . 'Expected "/" or a path such as "/app".'
             );
         }
     }
@@ -119,8 +131,10 @@ final class EnvironmentValidator
     {
         $timezone = trim((string) Env::get('APP_TIMEZONE', ''));
 
-        if ($timezone === '' || ! in_array($timezone, timezone_identifiers_list(), true))
-        {
+        if (
+            $timezone === ''
+            || ! in_array($timezone, timezone_identifiers_list(), true)
+        ) {
             throw new RuntimeException(
                 "Invalid APP_TIMEZONE value: {$timezone}"
             );
@@ -140,8 +154,10 @@ final class EnvironmentValidator
                 continue;
             }
 
-            $value = Env::get($key);
-            $integer = filter_var($value, FILTER_VALIDATE_INT);
+            $integer = filter_var(
+                Env::get($key),
+                FILTER_VALIDATE_INT
+            );
 
             if ($integer === false || $integer <= 0)
             {
@@ -159,7 +175,8 @@ final class EnvironmentValidator
         if ($port < 1 || $port > 65535)
         {
             throw new RuntimeException(
-                "Invalid DB_PORT value: {$port}. Expected a value between 1 and 65535."
+                "Invalid DB_PORT value: {$port}. "
+                . 'Expected a value between 1 and 65535.'
             );
         }
     }
@@ -183,12 +200,14 @@ final class EnvironmentValidator
             );
         }
 
-        $values = array_filter(
-            array_map(
-                static fn (string $value): string => trim($value),
-                explode(',', (string) Env::get($key, ''))
-            ),
-            static fn (string $value): bool => $value !== ''
+        $values = array_values(
+            array_filter(
+                array_map(
+                    static fn (string $value): string => trim($value),
+                    explode(',', (string) Env::get($key, ''))
+                ),
+                static fn (string $value): bool => $value !== ''
+            )
         );
 
         if ($values === [])
@@ -210,10 +229,10 @@ final class EnvironmentValidator
             return;
         }
 
-        self::assertDisabledInProduction('APP_DEBUG');
-        self::assertDisabledInProduction('PROFILER_ENABLED');
-        self::assertDisabledInProduction('SQL_TOOL_ENABLED');
-        self::assertDisabledInProduction('REGISTRATION_ENABLED');
+        foreach (self::PRODUCTION_DISABLED_VARIABLES as $key)
+        {
+            self::assertDisabledInProduction($key);
+        }
     }
 
     private static function assertDisabledInProduction(string $key): void
@@ -232,12 +251,16 @@ final class EnvironmentValidator
 
     private static function environment(): string
     {
-        return strtolower(trim((string) Env::get('APP_ENV', '')));
+        return strtolower(
+            trim((string) Env::get('APP_ENV', ''))
+        );
     }
 
     private static function containsDotSegment(string $path): bool
     {
-        foreach (explode('/', trim($path, '/')) as $segment)
+        $segments = explode('/', trim($path, '/'));
+
+        foreach ($segments as $segment)
         {
             if ($segment === '.' || $segment === '..')
             {

@@ -13,8 +13,8 @@ if (! defined('ROOT'))
 }
 
 require_once ROOT . '/vendor/autoload.php';
-require_once ROOT . '/Framework/Support/helpers.php';
-require_once ROOT . '/App/Support/helpers.php';
+require_once ROOT . '/Framework/Support/Helpers.php';
+require_once ROOT . '/App/Support/Helpers.php';
 
 Bootstrap::run(
     [ErrorController::class, 'handle'],

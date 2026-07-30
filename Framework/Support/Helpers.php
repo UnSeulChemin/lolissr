@@ -101,7 +101,10 @@ if (! function_exists('redirect'))
             Response::redirect($path, $status);
         }
 
-        Response::redirect(view_base_uri() . ltrim($path, '/'), $status);
+        Response::redirect(
+            view_base_uri() . ltrim($path, '/'),
+            $status
+        );
     }
 }
 
@@ -216,60 +219,6 @@ if (! function_exists('session'))
     }
 }
 
-if (! function_exists('old'))
-{
-    function old(string $key, mixed $default = ''): mixed
-    {
-        $old = Session::get('old', []);
-
-        if (! is_array($old))
-        {
-            return $default;
-        }
-
-        return array_key_exists($key, $old)
-            ? $old[$key]
-            : $default;
-    }
-}
-
-if (! function_exists('errors'))
-{
-    /**
-     * @return array<string, string>|string|null
-     */
-    function errors(?string $key = null): array|string|null
-    {
-        $errors = Session::get('errors', []);
-
-        if (! is_array($errors))
-        {
-            return $key === null ? [] : null;
-        }
-
-        /** @var array<string, string> $errors */
-        return $key === null
-            ? $errors
-            : ($errors[$key] ?? null);
-    }
-}
-
-if (! function_exists('has_error'))
-{
-    function has_error(string $key): bool
-    {
-        return errors($key) !== null;
-    }
-}
-
-if (! function_exists('error_class'))
-{
-    function error_class(string $key, string $class = 'is-invalid'): string
-    {
-        return has_error($key) ? $class : '';
-    }
-}
-
 // =========================================
 // BASE URI
 // =========================================
@@ -282,7 +231,9 @@ if (! function_exists('base_uri'))
 
         $baseUri ??= trim(App::baseUri(), '/');
 
-        return $baseUri !== '' ? '/' . $baseUri : '';
+        return $baseUri !== ''
+            ? '/' . $baseUri
+            : '';
     }
 }
 
