@@ -10,9 +10,8 @@ use Framework\Http\Request;
 
 final class ChinoisController extends Controller
 {
-    public function __construct(
-        Request $request
-    ) {
+    public function __construct(Request $request)
+    {
         parent::__construct($request);
     }
 
@@ -24,9 +23,7 @@ final class ChinoisController extends Controller
     {
         $this->title = 'Chinois';
 
-        $this->render(
-            'pages/chinois/index'
-        );
+        $this->render('pages/chinois/index');
     }
 
     // =========================================
@@ -37,8 +34,6 @@ final class ChinoisController extends Controller
     {
         $this->title = 'Chinois | Ajouter';
 
-        $this->render(
-            'pages/chinois/ajouter/index'
-        );
+        $this->render('pages/chinois/ajouter/index');
     }
 }

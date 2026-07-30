@@ -9,7 +9,7 @@ use App\Services\Chinois\ChinoisReadService;
 
 use Framework\Http\Request;
 
-final class FlashcardController extends Controller
+final class FlashcardsController extends Controller
 {
     public function __construct(
         private readonly ChinoisReadService $chinoisReadService,
@@ -26,32 +26,24 @@ final class FlashcardController extends Controller
     {
         $this->title = 'Chinois | Flashcards';
 
-        $this->render(
-            'pages/chinois/flashcards/index'
-        );
+        $this->render('pages/chinois/flashcards/index');
     }
 
     public function vocabulaire(): never
     {
         $this->title = 'Chinois | Flashcards Vocabulaire';
 
-        $this->render(
-            'pages/chinois/flashcards/vocabulaire',
-            [
-                'vocabulaires' => $this->chinoisReadService->flashcardsVocabulaire(),
-            ]
-        );
+        $this->render('pages/chinois/flashcards/vocabulaire', [
+            'vocabulaires' => $this->chinoisReadService->vocabulaireFlashcards(),
+        ]);
     }
 
     public function grammaire(): never
     {
         $this->title = 'Chinois | Flashcards Grammaire';
 
-        $this->render(
-            'pages/chinois/flashcards/grammaire',
-            [
-                'grammaires' => $this->chinoisReadService->flashcardsGrammaire(),
-            ]
-        );
+        $this->render('pages/chinois/flashcards/grammaire', [
+            'grammaires' => $this->chinoisReadService->grammaireFlashcards(),
+        ]);
     }
 }

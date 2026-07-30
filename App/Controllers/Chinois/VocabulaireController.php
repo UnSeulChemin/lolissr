@@ -32,110 +32,79 @@ final class VocabulaireController extends Controller
     {
         $this->title = 'Chinois | Vocabulaire';
 
-        $this->render(
-            'pages/chinois/vocabulaire/index'
-        );
+        $this->render('pages/chinois/vocabulaire/index');
     }
 
-    public function langue(
-        string $langue,
-        int $page = 1
-    ): never {
+    public function langue(string $langue, int $page = 1): never
+    {
         $langue = mb_strtolower($langue);
-
-        $data = $this->chinoisReadService->langue(
-            $langue,
-            $page
-        );
+        $data = $this->chinoisReadService->langue($langue, $page);
 
         if ($data === null)
         {
-            throw new NotFoundException(
-                'Page introuvable'
-            );
+            throw new NotFoundException('Page introuvable');
         }
 
-        $this->title =
-            'Chinois | '
-            . ($langue === 'jinyu' ? '晋语' : 'Mandarin')
-            . ($data->currentPage > 1
-                ? ' - Page ' . $data->currentPage
-                : '');
+        $languageTitle = $langue === 'jinyu' ? '晋语' : 'Mandarin';
+        $pageTitle = $data->currentPage > 1 ? ' - Page ' . $data->currentPage : '';
 
-        $this->render(
-            'pages/chinois/vocabulaire/langue',
-            [
-                'langue' => $langue,
-                'vocabulaires' => $data->vocabulaires,
-                'currentPage' => $data->currentPage,
-                'totalVocabulaires' => $data->totalVocabulaires,
-                'perPage' => $data->perPage,
-                'totalPages' => $data->totalPages,
-            ]
-        );
+        $this->title = 'Chinois | ' . $languageTitle . $pageTitle;
+
+        $this->render('pages/chinois/vocabulaire/langue', [
+            'langue' => $langue,
+            'vocabulaires' => $data->vocabulaires,
+            'currentPage' => $data->currentPage,
+            'totalVocabulaires' => $data->totalVocabulaires,
+            'perPage' => $data->perPage,
+            'totalPages' => $data->totalPages,
+        ]);
     }
 
-    public function show(
-        string $langue,
-        int $id
-    ): never {
+    public function show(string $langue, int $id): never
+    {
         $vocabulaire = $this->vocabulaireOrFail($id);
 
         $this->title = 'Chinois | ' . $vocabulaire->mot;
 
-        $this->render(
-            'pages/chinois/vocabulaire/recherche',
-            [
-                'vocabulaire' => $vocabulaire,
-            ]
-        );
+        $this->render('pages/chinois/vocabulaire/recherche', [
+            'vocabulaire' => $vocabulaire,
+        ]);
     }
 
     // =========================================
-    // CREATE
+    // CRÉATION
     // =========================================
 
     public function create(): never
     {
         $this->title = 'Chinois | Ajouter du vocabulaire';
 
-        $this->render(
-            'pages/chinois/ajouter/vocabulaire',
-            [
-                'form' => $this->formViewData(
-                    'chinois/ajouter/vocabulaire',
-                    'chinois/ajouter'
-                ),
-            ]
-        );
+        $this->render('pages/chinois/ajouter/vocabulaire', [
+            'form' => $this->formViewData(
+                'chinois/ajouter/vocabulaire',
+                'chinois/ajouter'
+            ),
+        ]);
     }
 
-    public function store(
-        ChinoisVocabulaireCreateRequest $request
-    ): never {
+    public function store(ChinoisVocabulaireCreateRequest $request): never
+    {
         $this->validateRequest($request);
 
         $this->jsonResult(
-            $this->chinoisWriteService->createVocabulaire(
-                $request->dto()
-            )
+            $this->chinoisWriteService->createVocabulaire($request->dto())
         );
     }
 
     // =========================================
-    // UPDATE
+    // MODIFICATION
     // =========================================
 
-    public function edit(
-        string $langue,
-        int $id
-    ): never {
+    public function edit(string $langue, int $id): never
+    {
         $this->renderEdit(
             $id,
-            (string) $this->request->input(
-                'return_to',
-                ''
-            )
+            (string) $this->request->input('return_to', '')
         );
     }
 
@@ -145,15 +114,10 @@ final class VocabulaireController extends Controller
         int $id
     ): never {
         $this->vocabulaireOrFail($id);
-
         $this->validateRequest($request);
 
         $dto = $request->dto();
-
-        $result = $this->chinoisWriteService->updateVocabulaire(
-            $id,
-            $dto
-        );
+        $result = $this->chinoisWriteService->updateVocabulaire($id, $dto);
 
         if (! $result->success)
         {
@@ -164,56 +128,47 @@ final class VocabulaireController extends Controller
             );
         }
 
-        $returnTo = (string) $this->request->input(
-            'return_to',
-            ''
-        );
+        $returnTo = (string) $this->request->input('return_to', '');
 
         $this->redirectWithSuccess(
-            $returnTo !== ''
-                ? $returnTo
-                : 'chinois/vocabulaire/' . $dto->langue,
+            $returnTo !== '' ? $returnTo : 'chinois/vocabulaire/' . $dto->langue,
             $result->message
         );
     }
 
     // =========================================
-    // HELPERS
+    // RÉSOLUTION
     // =========================================
 
-    private function vocabulaireOrFail(
-        int $id
-    ): ChinoisVocabulaireData {
+    private function vocabulaireOrFail(int $id): ChinoisVocabulaireData
+    {
         return $this->chinoisReadService->vocabulaire($id)
-            ?? throw new NotFoundException(
-                'Vocabulaire introuvable'
-            );
+            ?? throw new NotFoundException('Vocabulaire introuvable');
     }
 
-    private function renderEdit(
-        int $id,
-        string $returnTo
-    ): never {
+    // =========================================
+    // RENDU
+    // =========================================
+
+    private function renderEdit(int $id, string $returnTo): never
+    {
         $vocabulaire = $this->vocabulaireOrFail($id);
 
         $this->title = 'Chinois | Modifier du vocabulaire';
 
-        $this->render(
-            'pages/chinois/vocabulaire/modifier',
-            [
-                'vocabulaire' => $vocabulaire,
-                'returnTo' => $returnTo,
-                'form' => $this->formViewData(
-                    sprintf(
-                        'chinois/vocabulaire/%s/modifier/%d',
-                        $vocabulaire->langue,
-                        $vocabulaire->id
-                    ),
-                    $returnTo !== ''
-                        ? $returnTo
-                        : 'chinois/vocabulaire/' . $vocabulaire->langue
+        $this->render('pages/chinois/vocabulaire/modifier', [
+            'vocabulaire' => $vocabulaire,
+            'returnTo' => $returnTo,
+            'form' => $this->formViewData(
+                sprintf(
+                    'chinois/vocabulaire/%s/modifier/%d',
+                    $vocabulaire->langue,
+                    $vocabulaire->id
                 ),
-            ]
-        );
+                $returnTo !== ''
+                    ? $returnTo
+                    : 'chinois/vocabulaire/' . $vocabulaire->langue
+            ),
+        ]);
     }
 }

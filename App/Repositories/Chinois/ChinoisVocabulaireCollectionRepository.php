@@ -6,24 +6,19 @@ namespace App\Repositories\Chinois;
 
 use App\DTO\Chinois\Responses\ChinoisVocabulaireData;
 use App\Models\Model;
+use App\Repositories\Chinois\Concerns\MapsChinoisVocabulaire;
 
 use stdClass;
 
 final class ChinoisVocabulaireCollectionRepository extends Model
 {
+    use MapsChinoisVocabulaire;
+
     protected string $table = 'chinois_vocabulaire';
 
-    private const SELECT_FIELDS = '
-        id,
-        langue,
-        mot,
-        pinyin,
-        type,
-        traduction,
-        exemple,
-        maitrise,
-        xp_rewarded
-    ';
+    // =========================================
+    // COLLECTION
+    // =========================================
 
     public function countByLangue(string $langue): int
     {
@@ -41,21 +36,16 @@ final class ChinoisVocabulaireCollectionRepository extends Model
             ]
         );
 
-        return (int) ($result->total ?? 0);
+        return (int) ($result?->total ?? 0);
     }
 
     /**
      * @return list<ChinoisVocabulaireData>
      */
-    public function findByLanguePaginated(
-        string $langue,
-        int $perPage,
-        int $page
-    ): array
+    public function findByLanguePaginated(string $langue, int $perPage, int $page): array
     {
         $page = max(1, $page);
         $perPage = max(1, $perPage);
-
         $offset = ($page - 1) * $perPage;
 
         /** @var list<stdClass> $results */
@@ -78,47 +68,6 @@ final class ChinoisVocabulaireCollectionRepository extends Model
             ]
         );
 
-        /** @var list<ChinoisVocabulaireData> */
-        return array_map(
-            $this->mapRowToDto(...),
-            $results,
-        );
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | HELPERS
-    |--------------------------------------------------------------------------
-    */
-
-    private function mapRowToDto(stdClass $row): ChinoisVocabulaireData
-    {
-        $exemple = (string) $row->exemple;
-
-        $maitrise = (bool) $row->maitrise;
-
-        return new ChinoisVocabulaireData(
-            id: (int) $row->id,
-
-            langue: (string) $row->langue,
-            mot: (string) $row->mot,
-            pinyin: (string) $row->pinyin,
-            type: (string) $row->type,
-            traduction: (string) $row->traduction,
-            exemple: $exemple,
-
-            maitrise: $maitrise,
-            xpRewarded: (bool) $row->xp_rewarded,
-
-            hasExemple: $exemple !== '',
-
-            masteredClass: $maitrise ? 'active' : '',
-            masteredValue: $maitrise ? '1' : '0',
-            masteredPressed: $maitrise ? 'true' : 'false',
-            masteredLabel:
-                $maitrise
-                    ? 'Retirer la maîtrise'
-                    : 'Marquer comme maîtrisé',
-        );
+        return array_map($this->mapRowToDto(...), $results);
     }
 }

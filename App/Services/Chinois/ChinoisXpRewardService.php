@@ -18,50 +18,34 @@ final readonly class ChinoisXpRewardService
     ) {
     }
 
+    // =========================================
+    // RÉCOMPENSES
+    // =========================================
 
-    public function rewardGrammar(
-        int $id
-    ): bool {
+    public function rewardGrammar(int $id): bool
+    {
         $user = user();
 
-        if ($user === null)
+        if ($user === null || ! $this->grammaireRepository->claimXpReward($id))
         {
             return false;
         }
 
-        if (! $this->grammaireRepository->claimXpReward($id))
-        {
-            return false;
-        }
-
-        $this->userLevelService->addXp(
-            $user,
-            UserXp::LEARN_GRAMMAR
-        );
+        $this->userLevelService->addXp($user, UserXp::LEARN_GRAMMAR);
 
         return true;
     }
 
-
-    public function rewardVocabulary(
-        int $id
-    ): bool {
+    public function rewardVocabulary(int $id): bool
+    {
         $user = user();
 
-        if ($user === null)
+        if ($user === null || ! $this->vocabulaireRepository->claimXpReward($id))
         {
             return false;
         }
 
-        if (! $this->vocabulaireRepository->claimXpReward($id))
-        {
-            return false;
-        }
-
-        $this->userLevelService->addXp(
-            $user,
-            UserXp::LEARN_VOCABULARY
-        );
+        $this->userLevelService->addXp($user, UserXp::LEARN_VOCABULARY);
 
         return true;
     }

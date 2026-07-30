@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use App\Controllers\Chinois\ChinoisAjaxController;
 use App\Controllers\Chinois\ChinoisController;
-use App\Controllers\Chinois\FlashcardController;
+use App\Controllers\Chinois\FlashcardsController;
 use App\Controllers\Chinois\GrammaireController;
 use App\Controllers\Chinois\VocabulaireController;
 
@@ -99,17 +99,17 @@ $router->prefix('chinois')->group(function (Router $router): void
 
     $router->get(
         'flashcards',
-        [FlashcardController::class, 'index']
+        [FlashcardsController::class, 'index']
     );
 
     $router->get(
         'flashcards/vocabulaire',
-        [FlashcardController::class, 'vocabulaire']
+        [FlashcardsController::class, 'vocabulaire']
     );
 
     $router->get(
         'flashcards/grammaire',
-        [FlashcardController::class, 'grammaire']
+        [FlashcardsController::class, 'grammaire']
     );
 
 

@@ -6,6 +6,10 @@ namespace App\Repositories\Chinois\Concerns;
 
 trait HasLearningStats
 {
+    // =========================================
+    // STATISTIQUES
+    // =========================================
+
     public function countAll(): int
     {
         return $this->countRows();

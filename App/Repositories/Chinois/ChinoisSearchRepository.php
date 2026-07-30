@@ -11,6 +11,10 @@ use stdClass;
 
 final class ChinoisSearchRepository extends Model
 {
+    // =========================================
+    // RECHERCHE
+    // =========================================
+
     /**
      * @return list<ChinoisSearchItemData>
      */
@@ -25,15 +29,23 @@ final class ChinoisSearchRepository extends Model
 
         $like = "%{$search}%";
 
-        $results = [];
+        return [
+            ...$this->searchGrammaire($like),
+            ...$this->searchVocabulaire($like),
+        ];
+    }
 
-        /*
-        |------------------------------------------------------------------
-        | GRAMMAIRE
-        |------------------------------------------------------------------
-        */
+    // =========================================
+    // GRAMMAIRE
+    // =========================================
 
-        $grammaireQuery = $this->query(
+    /**
+     * @return list<ChinoisSearchItemData>
+     */
+    private function searchGrammaire(string $like): array
+    {
+        /** @var list<stdClass> $results */
+        $results = $this->fetchAll(
             "
             SELECT
                 id,
@@ -43,32 +55,32 @@ final class ChinoisSearchRepository extends Model
 
             FROM chinois_grammaire
 
-            WHERE
-                titre LIKE ?
-                OR structure LIKE ?
+            WHERE titre LIKE :search
+            OR structure LIKE :search
 
             ORDER BY id DESC
 
             LIMIT 20
             ",
-            [$like, $like]
+            [
+                'search' => $like,
+            ]
         );
 
-        if ($grammaireQuery !== false)
-        {
-            /** @var list<stdClass> $grammaires */
-            $grammaires = $grammaireQuery->fetchAll();
+        return array_map($this->mapGrammarResult(...), $results);
+    }
 
-            $results = [...$results, ...array_map($this->mapGrammarResult(...), $grammaires)];
-        }
+    // =========================================
+    // VOCABULAIRE
+    // =========================================
 
-        /*
-        |------------------------------------------------------------------
-        | VOCABULAIRE
-        |------------------------------------------------------------------
-        */
-
-        $vocabulaireQuery = $this->query(
+    /**
+     * @return list<ChinoisSearchItemData>
+     */
+    private function searchVocabulaire(string $like): array
+    {
+        /** @var list<stdClass> $results */
+        $results = $this->fetchAll(
             "
             SELECT
                 id,
@@ -78,33 +90,24 @@ final class ChinoisSearchRepository extends Model
 
             FROM chinois_vocabulaire
 
-            WHERE
-                mot LIKE ?
-                OR pinyin LIKE ?
+            WHERE mot LIKE :search
+            OR pinyin LIKE :search
 
             ORDER BY id DESC
 
             LIMIT 20
             ",
-            [$like, $like]
+            [
+                'search' => $like,
+            ]
         );
 
-        if ($vocabulaireQuery !== false)
-        {
-            /** @var list<stdClass> $vocabulaires */
-            $vocabulaires = $vocabulaireQuery->fetchAll();
-
-            $results = [...$results, ...array_map($this->mapVocabularyResult(...), $vocabulaires)];
-        }
-
-        return $results;
+        return array_map($this->mapVocabularyResult(...), $results);
     }
 
-    /*
-    |------------------------------------------------------------------
-    | HELPERS
-    |------------------------------------------------------------------
-    */
+    // =========================================
+    // HYDRATATION
+    // =========================================
 
     private function mapGrammarResult(stdClass $grammaire): ChinoisSearchItemData
     {
@@ -117,7 +120,7 @@ final class ChinoisSearchRepository extends Model
                 0,
                 100
             ),
-            niveau: (string) ($grammaire->niveau ?? '')
+            niveau: (string) $grammaire->niveau
         );
     }
 
@@ -128,7 +131,7 @@ final class ChinoisSearchRepository extends Model
             type: 'vocabulaire',
             titre: (string) $vocabulaire->mot,
             description: (string) $vocabulaire->traduction,
-            langue: (string) ($vocabulaire->langue ?? '')
+            langue: (string) $vocabulaire->langue
         );
     }
 }

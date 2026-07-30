@@ -7,11 +7,13 @@ namespace App\Services\Chinois;
 use App\Cache\DashboardCache;
 use App\DTO\Chinois\Inputs\ChinoisGrammaireCreateDTO;
 use App\DTO\Chinois\Inputs\ChinoisVocabulaireCreateDTO;
+use App\DTO\Chinois\Responses\ChinoisMaitriseData;
 use App\DTO\Common\ServiceResult;
 use App\Repositories\Chinois\ChinoisGrammaireRepository;
 use App\Repositories\Chinois\ChinoisVocabulaireRepository;
 
 use Framework\Database\Database;
+use Framework\Exceptions\NotFoundException;
 
 final readonly class ChinoisWriteService
 {
@@ -24,16 +26,12 @@ final readonly class ChinoisWriteService
     ) {
     }
 
+    // =========================================
+    // GRAMMAIRE
+    // =========================================
 
-    /*
-    |--------------------------------------------------------------------------
-    | GRAMMAIRE
-    |--------------------------------------------------------------------------
-    */
-
-    public function createGrammaire(
-        ChinoisGrammaireCreateDTO $dto
-    ): ServiceResult {
+    public function createGrammaire(ChinoisGrammaireCreateDTO $dto): ServiceResult
+    {
         $result = $this->database->transaction(
             function () use ($dto): ServiceResult
             {
@@ -62,36 +60,23 @@ final readonly class ChinoisWriteService
                         $dto->section,
                         $dto->categorie
                     ),
-                    'maitrise' => false,
+                    'maitrise' => false
                 ]);
 
-                if (! $inserted)
-                {
-                    return $this->error(
-                        'Erreur lors de l’ajout'
-                    );
-                }
-
-                return $this->success(
-                    'Grammaire ajoutée avec succès'
-                );
+                return $inserted
+                    ? $this->success('Grammaire ajoutée avec succès')
+                    : $this->error('Erreur lors de l’ajout');
             }
         );
 
-        if ($result->success)
-        {
-            $this->forgetDashboardCache();
-        }
+        $this->forgetDashboardCacheOnSuccess($result);
 
         return $result;
     }
 
-
-    public function updateGrammaire(
-        int $id,
-        ChinoisGrammaireCreateDTO $dto
-    ): ServiceResult {
-        $result = $this->database->transaction(
+    public function updateGrammaire(int $id, ChinoisGrammaireCreateDTO $dto): ServiceResult
+    {
+        return $this->database->transaction(
             function () use ($id, $dto): ServiceResult
             {
                 $updated = $this->grammaireRepository->updateGrammaire(
@@ -108,64 +93,35 @@ final readonly class ChinoisWriteService
                     $dto->categorie
                 );
 
-                if (! $updated)
-                {
-                    return $this->error(
-                        'Erreur lors de la mise à jour'
-                    );
-                }
-
-                return $this->success(
-                    'Grammaire mise à jour avec succès'
-                );
+                return $updated
+                    ? $this->success('Grammaire mise à jour avec succès')
+                    : $this->error('Erreur lors de la mise à jour');
             }
         );
-
-        if ($result->success)
-        {
-            $this->forgetDashboardCache();
-        }
-
-        return $result;
     }
 
-
-    public function deleteGrammaire(
-        int $id
-    ): ServiceResult {
+    public function deleteGrammaire(int $id): ServiceResult
+    {
         $result = $this->database->transaction(
             function () use ($id): ServiceResult
             {
-                if (! $this->grammaireRepository->deleteGrammaire($id))
-                {
-                    return $this->error(
-                        'Erreur lors de la suppression'
-                    );
-                }
-
-                return $this->success(
-                    'Grammaire supprimée avec succès'
-                );
+                return $this->grammaireRepository->deleteGrammaire($id)
+                    ? $this->success('Grammaire supprimée avec succès')
+                    : $this->error('Erreur lors de la suppression');
             }
         );
 
-        if ($result->success)
-        {
-            $this->forgetDashboardCache();
-        }
+        $this->forgetDashboardCacheOnSuccess($result);
 
         return $result;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | VOCABULAIRE
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // VOCABULAIRE
+    // =========================================
 
-    public function createVocabulaire(
-        ChinoisVocabulaireCreateDTO $dto
-    ): ServiceResult {
+    public function createVocabulaire(ChinoisVocabulaireCreateDTO $dto): ServiceResult
+    {
         $result = $this->database->transaction(
             function () use ($dto): ServiceResult
             {
@@ -175,36 +131,23 @@ final readonly class ChinoisWriteService
                     'pinyin' => $dto->pinyin,
                     'type' => $dto->type,
                     'traduction' => $dto->traduction,
-                    'exemple' => $dto->exemple,
+                    'exemple' => $dto->exemple
                 ]);
 
-                if (! $inserted)
-                {
-                    return $this->error(
-                        'Erreur lors de l’ajout'
-                    );
-                }
-
-                return $this->success(
-                    'Vocabulaire ajouté avec succès'
-                );
+                return $inserted
+                    ? $this->success('Vocabulaire ajouté avec succès')
+                    : $this->error('Erreur lors de l’ajout');
             }
         );
 
-        if ($result->success)
-        {
-            $this->forgetDashboardCache();
-        }
+        $this->forgetDashboardCacheOnSuccess($result);
 
         return $result;
     }
 
-
-    public function updateVocabulaire(
-        int $id,
-        ChinoisVocabulaireCreateDTO $dto
-    ): ServiceResult {
-        $result = $this->database->transaction(
+    public function updateVocabulaire(int $id, ChinoisVocabulaireCreateDTO $dto): ServiceResult
+    {
+        return $this->database->transaction(
             function () use ($id, $dto): ServiceResult
             {
                 $updated = $this->vocabulaireRepository->updateVocabulaire(
@@ -217,173 +160,108 @@ final readonly class ChinoisWriteService
                     $dto->exemple
                 );
 
-                if (! $updated)
-                {
-                    return $this->error(
-                        'Erreur lors de la mise à jour'
-                    );
-                }
-
-                return $this->success(
-                    'Vocabulaire mis à jour avec succès'
-                );
+                return $updated
+                    ? $this->success('Vocabulaire mis à jour avec succès')
+                    : $this->error('Erreur lors de la mise à jour');
             }
         );
-
-        if ($result->success)
-        {
-            $this->forgetDashboardCache();
-        }
-
-        return $result;
     }
 
-
-    public function deleteVocabulaire(
-        int $id
-    ): ServiceResult {
+    public function deleteVocabulaire(int $id): ServiceResult
+    {
         $result = $this->database->transaction(
             function () use ($id): ServiceResult
             {
-                if (! $this->vocabulaireRepository->deleteVocabulaire($id))
-                {
-                    return $this->error(
-                        'Erreur lors de la suppression'
-                    );
-                }
-
-                return $this->success(
-                    'Vocabulaire supprimé avec succès'
-                );
+                return $this->vocabulaireRepository->deleteVocabulaire($id)
+                    ? $this->success('Vocabulaire supprimé avec succès')
+                    : $this->error('Erreur lors de la suppression');
             }
         );
 
-        if ($result->success)
-        {
-            $this->forgetDashboardCache();
-        }
+        $this->forgetDashboardCacheOnSuccess($result);
 
         return $result;
     }
 
+    // =========================================
+    // MAÎTRISE
+    // =========================================
 
-    /*
-    |--------------------------------------------------------------------------
-    | MAÎTRISE
-    |--------------------------------------------------------------------------
-    */
-
-    /**
-     * @return array{
-     *     maitrise: bool,
-     *     xpEarned: bool
-     * }
-     */
-    public function toggleGrammaireMaitrise(
-        int $id
-    ): array {
+    public function toggleGrammaireMaitrise(int $id): ChinoisMaitriseData
+    {
         $result = $this->database->transaction(
-            function () use ($id): array
+            function () use ($id): ChinoisMaitriseData
             {
                 $maitrise = $this->grammaireRepository->toggleMaitrise($id);
 
                 if ($maitrise === null)
                 {
-                    return [
-                        'maitrise' => false,
-                        'xpEarned' => false,
-                    ];
+                    throw new NotFoundException('Grammaire introuvable');
                 }
 
-                return [
-                    'maitrise' => $maitrise,
-                    'xpEarned' => $maitrise
+                return new ChinoisMaitriseData(
+                    maitrise: $maitrise,
+                    xpEarned: $maitrise
                         ? $this->chinoisXpRewardService->rewardGrammar($id)
-                        : false,
-                ];
+                        : false
+                );
             }
         );
 
-        if ($result['maitrise'])
-        {
-            $this->forgetDashboardCache();
-        }
+        $this->dashboardCache->forget();
 
         return $result;
     }
 
-
-    /**
-     * @return array{
-     *     maitrise: bool,
-     *     xpEarned: bool
-     * }
-     */
-    public function toggleVocabulaireMaitrise(
-        int $id
-    ): array {
+    public function toggleVocabulaireMaitrise(int $id): ChinoisMaitriseData
+    {
         $result = $this->database->transaction(
-            function () use ($id): array
+            function () use ($id): ChinoisMaitriseData
             {
                 $maitrise = $this->vocabulaireRepository->toggleMaitrise($id);
 
                 if ($maitrise === null)
                 {
-                    return [
-                        'maitrise' => false,
-                        'xpEarned' => false,
-                    ];
+                    throw new NotFoundException('Vocabulaire introuvable');
                 }
 
-                return [
-                    'maitrise' => $maitrise,
-                    'xpEarned' => $maitrise
+                return new ChinoisMaitriseData(
+                    maitrise: $maitrise,
+                    xpEarned: $maitrise
                         ? $this->chinoisXpRewardService->rewardVocabulary($id)
-                        : false,
-                ];
+                        : false
+                );
             }
         );
 
-        if ($result['maitrise'])
-        {
-            $this->forgetDashboardCache();
-        }
+        $this->dashboardCache->forget();
 
         return $result;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | CACHE
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // CACHE
+    // =========================================
 
-    private function forgetDashboardCache(): void
+    private function forgetDashboardCacheOnSuccess(ServiceResult $result): void
     {
-        $this->dashboardCache->forget();
+        if ($result->success)
+        {
+            $this->dashboardCache->forget();
+        }
     }
 
+    // =========================================
+    // RÉSULTATS
+    // =========================================
 
-    /*
-    |--------------------------------------------------------------------------
-    | RESULT
-    |--------------------------------------------------------------------------
-    */
-
-    private function success(
-        string $message
-    ): ServiceResult {
-        return ServiceResult::success(
-            message: $message
-        );
+    private function success(string $message): ServiceResult
+    {
+        return ServiceResult::success(message: $message);
     }
 
-
-    private function error(
-        string $message
-    ): ServiceResult {
-        return ServiceResult::error(
-            message: $message
-        );
+    private function error(string $message): ServiceResult
+    {
+        return ServiceResult::error(message: $message);
     }
 }

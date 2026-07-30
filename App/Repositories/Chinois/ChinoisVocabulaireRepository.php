@@ -6,30 +6,19 @@ namespace App\Repositories\Chinois;
 
 use App\DTO\Chinois\Responses\ChinoisVocabulaireData;
 use App\Models\Model;
+use App\Repositories\Chinois\Concerns\MapsChinoisVocabulaire;
 
 use stdClass;
 
 final class ChinoisVocabulaireRepository extends Model
 {
+    use MapsChinoisVocabulaire;
+
     protected string $table = 'chinois_vocabulaire';
 
-    private const SELECT_FIELDS = '
-        id,
-        langue,
-        mot,
-        pinyin,
-        type,
-        traduction,
-        exemple,
-        maitrise,
-        xp_rewarded
-    ';
-
-    /*
-    |--------------------------------------------------------------------------
-    | LECTURE
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // LECTURE
+    // =========================================
 
     /**
      * @return list<ChinoisVocabulaireData>
@@ -55,45 +44,56 @@ final class ChinoisVocabulaireRepository extends Model
 
     public function findById(int $id): ?ChinoisVocabulaireData
     {
-        /** @var stdClass|null $result */
-        $result = $this->fetchOne(
-            "
-            SELECT
-                " . self::SELECT_FIELDS . "
-
-            FROM {$this->table()}
-
-            WHERE id = :id
-
-            LIMIT 1
-            ",
-            [
-                'id' => $id,
-            ]
-        );
-
-        if ($result === null)
-        {
-            return null;
-        }
-
-        return $this->mapRowToDto($result);
+        return $this->findOneBy([
+            'id' => $id,
+        ]);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | ÉCRITURE
-    |--------------------------------------------------------------------------
-    */
+    public function findByLangueAndId(string $langue, int $id): ?ChinoisVocabulaireData
+    {
+        return $this->findOneBy([
+            'id' => $id,
+            'langue' => trim($langue),
+        ]);
+    }
+
+    // =========================================
+    // ÉCRITURE
+    // =========================================
+
+    public function updateVocabulaire(
+        int $id,
+        string $langue,
+        string $mot,
+        string $pinyin,
+        string $type,
+        string $traduction,
+        string $exemple
+    ): bool {
+        return $this->updateById($id, [
+            'langue' => trim($langue),
+            'mot' => trim($mot),
+            'pinyin' => trim($pinyin),
+            'type' => trim($type),
+            'traduction' => trim($traduction),
+            'exemple' => trim($exemple),
+        ]);
+    }
+
+    public function deleteVocabulaire(int $id): bool
+    {
+        return $this->delete([
+            'id' => $id,
+        ]);
+    }
+
+    // =========================================
+    // MAÎTRISE
+    // =========================================
 
     public function toggleMaitrise(int $id): ?bool
     {
-        if (! $this->existsById($id))
-        {
-            return null;
-        }
-
-        $this->execute(
+        $statement = $this->query(
             "
             UPDATE {$this->table()}
 
@@ -105,6 +105,11 @@ final class ChinoisVocabulaireRepository extends Model
                 'id' => $id,
             ]
         );
+
+        if ($statement === false || $statement->rowCount() !== 1)
+        {
+            return null;
+        }
 
         /** @var stdClass|null $result */
         $result = $this->fetchOne(
@@ -122,48 +127,12 @@ final class ChinoisVocabulaireRepository extends Model
             ]
         );
 
-        if ($result === null)
-        {
-            return null;
-        }
-
-        return (bool) $result->maitrise;
+        return $result !== null ? (bool) $result->maitrise : null;
     }
 
-    public function deleteVocabulaire(int $id): bool
-    {
-        return $this->delete([
-            'id' => $id,
-        ]);
-    }
-
-    public function updateVocabulaire(
-        int $id,
-        string $langue,
-        string $mot,
-        string $pinyin,
-        string $type,
-        string $traduction,
-        string $exemple
-    ): bool {
-        return $this->updateById(
-            $id,
-            [
-                'langue' => trim($langue),
-                'mot' => trim($mot),
-                'pinyin' => trim($pinyin),
-                'type' => trim($type),
-                'traduction' => trim($traduction),
-                'exemple' => trim($exemple),
-            ]
-        );
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | XP
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // XP
+    // =========================================
 
     public function claimXpReward(int $id): bool
     {
@@ -184,31 +153,40 @@ final class ChinoisVocabulaireRepository extends Model
         return $statement !== false && $statement->rowCount() === 1;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | HELPERS
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // HYDRATATION
+    // =========================================
 
-    private function existsById(int $id): bool
+    /**
+     * @param array<string, int|string> $criteria
+     */
+    private function findOneBy(array $criteria): ?ChinoisVocabulaireData
     {
+        $conditions = [];
+        $params = [];
+
+        foreach ($criteria as $column => $value)
+        {
+            $conditions[] = "{$column} = :{$column}";
+            $params[$column] = $value;
+        }
+
         /** @var stdClass|null $result */
         $result = $this->fetchOne(
             "
-            SELECT 1
+            SELECT
+                " . self::SELECT_FIELDS . "
 
             FROM {$this->table()}
 
-            WHERE id = :id
+            WHERE " . implode("\nAND ", $conditions) . "
 
             LIMIT 1
             ",
-            [
-                'id' => $id,
-            ]
+            $params
         );
 
-        return $result !== null;
+        return $result !== null ? $this->mapRowToDto($result) : null;
     }
 
     /**
@@ -221,33 +199,6 @@ final class ChinoisVocabulaireRepository extends Model
             [
                 'id' => $id,
             ]
-        );
-    }
-
-    private function mapRowToDto(stdClass $row): ChinoisVocabulaireData
-    {
-        $exemple = $row->exemple !== null ? trim((string) $row->exemple) : '';
-        $maitrise = (bool) $row->maitrise;
-
-        return new ChinoisVocabulaireData(
-            id: (int) $row->id,
-
-            langue: (string) $row->langue,
-            mot: (string) $row->mot,
-            pinyin: (string) $row->pinyin,
-            type: (string) $row->type,
-            traduction: (string) $row->traduction,
-            exemple: $exemple,
-
-            maitrise: $maitrise,
-            xpRewarded: (bool) $row->xp_rewarded,
-
-            hasExemple: $exemple !== '',
-
-            masteredClass: $maitrise ? 'active' : '',
-            masteredValue: $maitrise ? '1' : '0',
-            masteredPressed: $maitrise ? 'true' : 'false',
-            masteredLabel: $maitrise ? 'Retirer la maîtrise' : 'Marquer comme maîtrisé'
         );
     }
 }

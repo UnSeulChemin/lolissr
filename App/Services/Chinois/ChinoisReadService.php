@@ -17,6 +17,7 @@ use App\Repositories\Chinois\ChinoisVocabulaireCollectionRepository;
 use App\Repositories\Chinois\ChinoisVocabulaireRepository;
 
 use Framework\Application\App;
+use Framework\Exceptions\NotFoundException;
 
 final readonly class ChinoisReadService
 {
@@ -50,65 +51,58 @@ final readonly class ChinoisReadService
         ],
     ];
 
+    private const LANGUES = ['mandarin', 'jinyu'];
+
     public function __construct(
         private ChinoisVocabulaireRepository $vocabulaireRepository,
         private ChinoisVocabulaireCollectionRepository $collectionRepository,
         private ChinoisGrammaireRepository $grammaireRepository,
-        private ChinoisSearchRepository $searchRepository,
+        private ChinoisSearchRepository $searchRepository
     ) {
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | GRAMMAIRE
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // GRAMMAIRE
+    // =========================================
 
     public function hsk(string $niveau): ChinoisHskData
     {
-        $grammaires = $this->grammaireRepository->findByLevel($niveau);
-
-        $config = self::HSK[$niveau];
+        $niveau = mb_strtoupper(trim($niveau));
+        $config = self::HSK[$niveau] ?? throw new NotFoundException('Niveau HSK introuvable');
 
         return new ChinoisHskData(
             level: str_replace('HSK', '', $niveau),
             description: $config['description'],
             sourceUrl: $config['sourceUrl'],
             sourceDescription: $config['sourceDescription'],
-            sections: $this->buildSections($grammaires),
+            sections: $this->buildSections($this->grammaireRepository->findByLevel($niveau))
         );
     }
 
-    public function grammaire(int $id): ?ChinoisGrammaireData
+    public function grammaire(string $niveau, int $id): ?ChinoisGrammaireData
     {
-        return $this->grammaireRepository->findById($id);
+        return $this->grammaireRepository->findByNiveauAndId(
+            mb_strtoupper(trim($niveau)),
+            $id
+        );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | VOCABULAIRE
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // VOCABULAIRE
+    // =========================================
 
-    public function langue(
-        string $langue,
-        int|string $page = 1
-    ): ?ChinoisVocabulairePageData
+    public function langue(string $langue, int|string $page = 1): ?ChinoisVocabulairePageData
     {
-        $langue = mb_strtolower($langue);
+        $langue = mb_strtolower(trim($langue));
 
-        if (! in_array($langue, ['mandarin', 'jinyu'], true))
+        if (! in_array($langue, self::LANGUES, true))
         {
             return null;
         }
 
         $page = max(1, (int) $page);
-
         $perPage = App::pagination();
-
-        $totalVocabulaires = $this->collectionRepository->countByLangue(
-            $langue,
-        );
+        $totalVocabulaires = $this->collectionRepository->countByLangue($langue);
 
         if ($totalVocabulaires === 0)
         {
@@ -117,49 +111,46 @@ final readonly class ChinoisReadService
                 currentPage: 1,
                 totalVocabulaires: 0,
                 perPage: $perPage,
-                totalPages: 1,
+                totalPages: 1
             );
         }
 
-        $totalPages = (int) ceil(
-            $totalVocabulaires / $perPage,
-        );
+        $totalPages = (int) ceil($totalVocabulaires / $perPage);
 
         if ($page > $totalPages)
         {
             return null;
         }
 
-        $vocabulaires = $this->collectionRepository->findByLanguePaginated(
-            $langue,
-            $perPage,
-            $page,
-        );
-
         return new ChinoisVocabulairePageData(
-            vocabulaires: $vocabulaires,
+            vocabulaires: $this->collectionRepository->findByLanguePaginated(
+                $langue,
+                $perPage,
+                $page
+            ),
             currentPage: $page,
             totalVocabulaires: $totalVocabulaires,
             perPage: $perPage,
-            totalPages: $totalPages,
+            totalPages: $totalPages
         );
     }
 
-    public function vocabulaire(int $id): ?ChinoisVocabulaireData
+    public function vocabulaire(string $langue, int $id): ?ChinoisVocabulaireData
     {
-        return $this->vocabulaireRepository->findById($id);
+        return $this->vocabulaireRepository->findByLangueAndId(
+            mb_strtolower(trim($langue)),
+            $id
+        );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | FLASHCARDS
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // FLASHCARDS
+    // =========================================
 
     /**
      * @return list<ChinoisGrammaireData>
      */
-    public function flashcardsGrammaire(): array
+    public function grammaireFlashcards(): array
     {
         return $this->grammaireRepository->findNotMasteredDto();
     }
@@ -167,16 +158,14 @@ final readonly class ChinoisReadService
     /**
      * @return list<ChinoisVocabulaireData>
      */
-    public function flashcardsVocabulaire(): array
+    public function vocabulaireFlashcards(): array
     {
         return $this->vocabulaireRepository->findNotMasteredDto();
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | SEARCH
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // RECHERCHE
+    // =========================================
 
     public function search(string $query = ''): ChinoisSearchData
     {
@@ -184,15 +173,13 @@ final readonly class ChinoisReadService
 
         return new ChinoisSearchData(
             results: $this->searchRepository->search($query),
-            search: $query,
+            search: $query
         );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | HELPERS
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // CONSTRUCTION
+    // =========================================
 
     /**
      * @param list<ChinoisGrammaireData> $grammaires
@@ -204,8 +191,7 @@ final readonly class ChinoisReadService
 
         foreach ($grammaires as $grammaire)
         {
-            $sections[$grammaire->section][$grammaire->categorie][] =
-                $grammaire;
+            $sections[$grammaire->section][$grammaire->categorie][] = $grammaire;
         }
 
         $results = [];
@@ -215,7 +201,7 @@ final readonly class ChinoisReadService
             $results[] = new ChinoisSectionData(
                 title: $section,
                 id: $this->slugify($section),
-                categories: $this->buildCategories($categories),
+                categories: $this->buildCategories($categories)
             );
         }
 
@@ -234,7 +220,7 @@ final readonly class ChinoisReadService
         {
             $results[] = new ChinoisCategorieData(
                 title: $categorie,
-                grammaires: $grammaires,
+                grammaires: $grammaires
             );
         }
 
@@ -243,10 +229,7 @@ final readonly class ChinoisReadService
 
     private function slugify(string $value): string
     {
-        $slug = transliterator_transliterate(
-            'Any-Latin; Latin-ASCII',
-            $value,
-        );
+        $slug = transliterator_transliterate('Any-Latin; Latin-ASCII', $value);
 
         if ($slug === false)
         {
@@ -254,12 +237,7 @@ final readonly class ChinoisReadService
         }
 
         $slug = mb_strtolower($slug);
-
-        $slug = preg_replace(
-            '/[^a-z0-9]+/',
-            '-',
-            $slug,
-        ) ?? '';
+        $slug = preg_replace('/[^a-z0-9]+/', '-', $slug) ?? '';
 
         return trim($slug, '-');
     }

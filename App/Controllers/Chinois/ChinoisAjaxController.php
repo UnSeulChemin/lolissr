@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers\Chinois;
 
 use App\Controllers\Controller;
+use App\DTO\Chinois\Responses\ChinoisMaitriseData;
 use App\DTO\Common\ServiceResult;
 use App\Services\Chinois\ChinoisReadService;
 use App\Services\Chinois\ChinoisWriteService;
@@ -22,86 +23,48 @@ final class ChinoisAjaxController extends Controller
         parent::__construct($request);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | AJAX SEARCH
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // RECHERCHE
+    // =========================================
 
     public function search(string|int $query = ''): never
     {
         $searchData = $this->chinoisReadService->search((string) $query);
 
-        $this->jsonResult(
-            ServiceResult::success(
-                data: [
-                    'results' => $searchData->results,
-                ],
-            ),
-        );
+        $this->jsonResult(ServiceResult::success(data: [
+            'results' => $searchData->results,
+        ]));
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | MAÎTRISE
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // MAÎTRISE
+    // =========================================
 
     public function toggleGrammaireMaitrise(): never
     {
-        $result = $this->chinoisWriteService
-            ->toggleGrammaireMaitrise(
-                $this->getIdOrFail(),
-            );
+        $result = $this->chinoisWriteService->toggleGrammaireMaitrise($this->getIdOrFail());
 
-        $user = user();
-
-        $this->jsonResult(
-            ServiceResult::success(
-                message:
-                    $result['maitrise']
-                        ? 'Grammaire maîtrisée'
-                        : 'Grammaire non maîtrisée',
-                data: [
-                    'maitrise' => $result['maitrise'],
-                    'xpEarned' => $result['xpEarned'],
-                    'level' => $user?->level,
-                    'xp' => $user?->xp,
-                ],
-            ),
+        $this->jsonMaitriseResult(
+            $result,
+            'Grammaire maîtrisée',
+            'Grammaire non maîtrisée'
         );
     }
 
     public function toggleVocabulaireMaitrise(): never
     {
-        $result = $this->chinoisWriteService
-            ->toggleVocabulaireMaitrise(
-                $this->getIdOrFail(),
-            );
+        $result = $this->chinoisWriteService->toggleVocabulaireMaitrise($this->getIdOrFail());
 
-        $user = user();
-
-        $this->jsonResult(
-            ServiceResult::success(
-                message:
-                    $result['maitrise']
-                        ? 'Vocabulaire maîtrisé'
-                        : 'Vocabulaire non maîtrisé',
-                data: [
-                    'maitrise' => $result['maitrise'],
-                    'xpEarned' => $result['xpEarned'],
-                    'level' => $user?->level,
-                    'xp' => $user?->xp,
-                ],
-            ),
+        $this->jsonMaitriseResult(
+            $result,
+            'Vocabulaire maîtrisé',
+            'Vocabulaire non maîtrisé'
         );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | SUPPRESSION
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // SUPPRESSION
+    // =========================================
 
     public function deleteGrammaire(): never
     {
@@ -113,11 +76,31 @@ final class ChinoisAjaxController extends Controller
         $this->jsonResult($this->chinoisWriteService->deleteVocabulaire($this->getIdOrFail()));
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | HELPERS
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // RÉPONSES
+    // =========================================
+
+    private function jsonMaitriseResult(
+        ChinoisMaitriseData $result,
+        string $enabledMessage,
+        string $disabledMessage
+    ): never {
+        $user = user();
+
+        $this->jsonResult(ServiceResult::success(
+            message: $result->maitrise ? $enabledMessage : $disabledMessage,
+            data: [
+                'maitrise' => $result->maitrise,
+                'xpEarned' => $result->xpEarned,
+                'level' => $user?->level,
+                'xp' => $user?->xp,
+            ]
+        ));
+    }
+
+    // =========================================
+    // VALIDATION
+    // =========================================
 
     private function getIdOrFail(): int
     {
