@@ -37,7 +37,7 @@ final readonly class ChinoisGrammaireCreateDTO
             traduction: trim((string) ($data['traduction'] ?? '')),
             explication: trim((string) ($data['explication'] ?? '')),
             section: trim((string) ($data['section'] ?? '')),
-            categorie: trim((string) ($data['categorie'] ?? '')),
+            categorie: trim((string) ($data['categorie'] ?? ''))
         );
     }
 }

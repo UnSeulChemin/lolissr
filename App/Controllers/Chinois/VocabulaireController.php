@@ -62,7 +62,7 @@ final class VocabulaireController extends Controller
 
     public function show(string $langue, int $id): never
     {
-        $vocabulaire = $this->vocabulaireOrFail($id);
+        $vocabulaire = $this->vocabulaireOrFail($langue, $id);
 
         $this->title = 'Chinois | ' . $vocabulaire->mot;
 
@@ -103,6 +103,7 @@ final class VocabulaireController extends Controller
     public function edit(string $langue, int $id): never
     {
         $this->renderEdit(
+            $langue,
             $id,
             (string) $this->request->input('return_to', '')
         );
@@ -113,7 +114,7 @@ final class VocabulaireController extends Controller
         string $langue,
         int $id
     ): never {
-        $this->vocabulaireOrFail($id);
+        $this->vocabulaireOrFail($langue, $id);
         $this->validateRequest($request);
 
         $dto = $request->dto();
@@ -140,9 +141,9 @@ final class VocabulaireController extends Controller
     // RÉSOLUTION
     // =========================================
 
-    private function vocabulaireOrFail(int $id): ChinoisVocabulaireData
+    private function vocabulaireOrFail(string $langue, int $id): ChinoisVocabulaireData
     {
-        return $this->chinoisReadService->vocabulaire($id)
+        return $this->chinoisReadService->vocabulaire($langue, $id)
             ?? throw new NotFoundException('Vocabulaire introuvable');
     }
 
@@ -150,9 +151,9 @@ final class VocabulaireController extends Controller
     // RENDU
     // =========================================
 
-    private function renderEdit(int $id, string $returnTo): never
+    private function renderEdit(string $langue, int $id, string $returnTo): never
     {
-        $vocabulaire = $this->vocabulaireOrFail($id);
+        $vocabulaire = $this->vocabulaireOrFail($langue, $id);
 
         $this->title = 'Chinois | Modifier du vocabulaire';
 

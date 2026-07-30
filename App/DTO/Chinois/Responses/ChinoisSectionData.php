@@ -12,7 +12,7 @@ final readonly class ChinoisSectionData
     public function __construct(
         public string $title,
         public string $id,
-        public array $categories,
+        public array $categories
     ) {
     }
 }

@@ -2,25 +2,18 @@
 
 declare(strict_types=1);
 
+use App\DTO\Chinois\Responses\ChinoisGrammaireData;
 use App\DTO\Common\Responses\FormViewData;
-use App\Models\ChinoisGrammaire;
 
-/** @var ChinoisGrammaire $grammaire */
+/** @var ChinoisGrammaireData $grammaire */
 /** @var FormViewData $form */
 /** @var string|null $returnTo */
 
 $old = $form->old;
-
 $returnTo ??= '';
 
 $niveauValue = $old['niveau'] ?? $grammaire->niveau;
-
-$niveauOptions = [
-    'HSK1',
-    'HSK2',
-    'HSK3',
-    'HSK4',
-];
+$niveauOptions = ['HSK1', 'HSK2', 'HSK3', 'HSK4'];
 
 ?>
 
@@ -71,9 +64,7 @@ $niveauOptions = [
 
                             <option
                                 value="<?= e($niveau) ?>"
-                                <?= $niveauValue === $niveau
-                                    ? 'selected'
-                                    : '' ?>
+                                <?= $niveauValue === $niveau ? 'selected' : '' ?>
                             >
                                 <?= e($niveau) ?>
                             </option>
@@ -98,10 +89,7 @@ $niveauOptions = [
                         type="text"
                         name="titre"
                         id="titre"
-                        value="<?= e(
-                            $old['titre']
-                            ?? $grammaire->titre
-                        ) ?>"
+                        value="<?= e($old['titre'] ?? $grammaire->titre) ?>"
                         required
                     >
 
@@ -121,10 +109,7 @@ $niveauOptions = [
                         type="text"
                         name="structure"
                         id="structure"
-                        value="<?= e(
-                            $old['structure']
-                            ?? $grammaire->structure
-                        ) ?>"
+                        value="<?= e($old['structure'] ?? $grammaire->structure) ?>"
                         required
                     >
 
@@ -144,10 +129,7 @@ $niveauOptions = [
                         type="text"
                         name="abreviation"
                         id="abreviation"
-                        value="<?= e(
-                            $old['abreviation']
-                            ?? $grammaire->abreviation
-                        ) ?>"
+                        value="<?= e($old['abreviation'] ?? $grammaire->abreviation) ?>"
                     >
 
                 </div>
@@ -166,10 +148,7 @@ $niveauOptions = [
                         type="text"
                         name="phrase"
                         id="phrase"
-                        value="<?= e(
-                            $old['phrase']
-                            ?? $grammaire->phrase
-                        ) ?>"
+                        value="<?= e($old['phrase'] ?? $grammaire->phrase) ?>"
                         required
                     >
 
@@ -189,10 +168,7 @@ $niveauOptions = [
                         type="text"
                         name="pinyin"
                         id="pinyin"
-                        value="<?= e(
-                            $old['pinyin']
-                            ?? $grammaire->pinyin
-                        ) ?>"
+                        value="<?= e($old['pinyin'] ?? $grammaire->pinyin) ?>"
                         required
                     >
 
@@ -212,10 +188,7 @@ $niveauOptions = [
                         type="text"
                         name="traduction"
                         id="traduction"
-                        value="<?= e(
-                            $old['traduction']
-                            ?? $grammaire->traduction
-                        ) ?>"
+                        value="<?= e($old['traduction'] ?? $grammaire->traduction) ?>"
                         required
                     >
 
@@ -235,10 +208,7 @@ $niveauOptions = [
                         name="explication"
                         id="explication"
                         rows="6"
-                    ><?= e(
-                        $old['explication']
-                        ?? $grammaire->explication
-                    ) ?></textarea>
+                    ><?= e($old['explication'] ?? $grammaire->explication) ?></textarea>
 
                 </div>
 
@@ -256,10 +226,7 @@ $niveauOptions = [
                         type="text"
                         name="section"
                         id="section"
-                        value="<?= e(
-                            $old['section']
-                            ?? $grammaire->section
-                        ) ?>"
+                        value="<?= e($old['section'] ?? $grammaire->section) ?>"
                         required
                     >
 
@@ -279,10 +246,7 @@ $niveauOptions = [
                         type="text"
                         name="categorie"
                         id="categorie"
-                        value="<?= e(
-                            $old['categorie']
-                            ?? $grammaire->categorie
-                        ) ?>"
+                        value="<?= e($old['categorie'] ?? $grammaire->categorie) ?>"
                         required
                     >
 

@@ -11,7 +11,7 @@ final readonly class ChinoisCategorieData
      */
     public function __construct(
         public string $title,
-        public array $grammaires,
+        public array $grammaires
     ) {
     }
 }

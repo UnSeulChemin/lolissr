@@ -27,7 +27,7 @@ final readonly class ChinoisVocabulaireCreateDTO
             pinyin: trim((string) ($data['pinyin'] ?? '')),
             type: trim((string) ($data['type'] ?? '')),
             traduction: trim((string) ($data['traduction'] ?? '')),
-            exemple: trim((string) ($data['exemple'] ?? '')),
+            exemple: trim((string) ($data['exemple'] ?? ''))
         );
     }
 }

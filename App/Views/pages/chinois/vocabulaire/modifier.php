@@ -2,17 +2,15 @@
 
 declare(strict_types=1);
 
+use App\DTO\Chinois\Responses\ChinoisVocabulaireData;
 use App\DTO\Common\Responses\FormViewData;
-use App\Models\ChinoisVocabulaire;
 
-/** @var ChinoisVocabulaire $vocabulaire */
+/** @var ChinoisVocabulaireData $vocabulaire */
 /** @var FormViewData $form */
 /** @var string|null $returnTo */
 
 $errors = $form->errors;
-
 $old = $form->old;
-
 $returnTo ??= '';
 
 $langueValue = $old['langue'] ?? $vocabulaire->langue;
@@ -55,9 +53,7 @@ $langueOptions = [
                         class="form-label"
                         for="langue"
                     >
-
                         Langue
-
                     </label>
 
                     <select
@@ -74,28 +70,19 @@ $langueOptions = [
 
                             <option
                                 value="<?= e($value) ?>"
-                                <?= $langueValue === $value
-                                    ? 'selected'
-                                    : '' ?>
+                                <?= $langueValue === $value ? 'selected' : '' ?>
                             >
-
                                 <?= e($label) ?>
-
                             </option>
 
                         <?php endforeach; ?>
 
                     </select>
 
-                    <?php if (
-                        isset($errors['langue'])
-                        && $errors['langue'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['langue']) && $errors['langue'] !== ''): ?>
 
                         <p class="form-error">
-
                             <?= e($errors['langue']) ?>
-
                         </p>
 
                     <?php endif; ?>
@@ -108,9 +95,7 @@ $langueOptions = [
                         class="form-label"
                         for="mot"
                     >
-
                         Mot
-
                     </label>
 
                     <input
@@ -123,15 +108,10 @@ $langueOptions = [
                         required
                     >
 
-                    <?php if (
-                        isset($errors['mot'])
-                        && $errors['mot'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['mot']) && $errors['mot'] !== ''): ?>
 
                         <p class="form-error">
-
                             <?= e($errors['mot']) ?>
-
                         </p>
 
                     <?php endif; ?>
@@ -144,9 +124,7 @@ $langueOptions = [
                         class="form-label"
                         for="pinyin"
                     >
-
                         Pinyin
-
                     </label>
 
                     <input
@@ -158,15 +136,10 @@ $langueOptions = [
                         required
                     >
 
-                    <?php if (
-                        isset($errors['pinyin'])
-                        && $errors['pinyin'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['pinyin']) && $errors['pinyin'] !== ''): ?>
 
                         <p class="form-error">
-
                             <?= e($errors['pinyin']) ?>
-
                         </p>
 
                     <?php endif; ?>
@@ -179,9 +152,7 @@ $langueOptions = [
                         class="form-label"
                         for="type"
                     >
-
                         Type
-
                     </label>
 
                     <input
@@ -193,15 +164,10 @@ $langueOptions = [
                         required
                     >
 
-                    <?php if (
-                        isset($errors['type'])
-                        && $errors['type'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['type']) && $errors['type'] !== ''): ?>
 
                         <p class="form-error">
-
                             <?= e($errors['type']) ?>
-
                         </p>
 
                     <?php endif; ?>
@@ -214,9 +180,7 @@ $langueOptions = [
                         class="form-label"
                         for="traduction"
                     >
-
                         Traduction
-
                     </label>
 
                     <textarea
@@ -230,15 +194,10 @@ $langueOptions = [
                         required
                     ><?= e($old['traduction'] ?? $vocabulaire->traduction) ?></textarea>
 
-                    <?php if (
-                        isset($errors['traduction'])
-                        && $errors['traduction'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['traduction']) && $errors['traduction'] !== ''): ?>
 
                         <p class="form-error">
-
                             <?= e($errors['traduction']) ?>
-
                         </p>
 
                     <?php endif; ?>
@@ -251,9 +210,7 @@ $langueOptions = [
                         class="form-label"
                         for="exemple"
                     >
-
                         Exemple
-
                     </label>
 
                     <input
@@ -266,15 +223,10 @@ $langueOptions = [
                         required
                     >
 
-                    <?php if (
-                        isset($errors['exemple'])
-                        && $errors['exemple'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['exemple']) && $errors['exemple'] !== ''): ?>
 
                         <p class="form-error">
-
                             <?= e($errors['exemple']) ?>
-
                         </p>
 
                     <?php endif; ?>
@@ -287,9 +239,7 @@ $langueOptions = [
                         type="submit"
                         class="form-submit"
                     >
-
                         Modifier
-
                     </button>
 
                     <a
@@ -299,9 +249,7 @@ $langueOptions = [
                         "
                         href="<?= e($form->cancelUrl) ?>"
                     >
-
                         Retour
-
                     </a>
 
                 </div>

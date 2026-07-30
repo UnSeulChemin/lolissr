@@ -14,16 +14,13 @@ final readonly class ChinoisVocabulaireData
         public string $type,
         public string $traduction,
         public string $exemple,
-
         public bool $maitrise,
         public bool $xpRewarded,
-
         public bool $hasExemple,
-
         public string $masteredClass,
         public string $masteredValue,
         public string $masteredPressed,
-        public string $masteredLabel,
+        public string $masteredLabel
     ) {
     }
 }

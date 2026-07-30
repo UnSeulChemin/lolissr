@@ -12,10 +12,13 @@ final class ChinoisGrammaireCreateRequest extends FormRequest
 {
     private const NIVEAUX = ['HSK1', 'HSK2', 'HSK3', 'HSK4'];
 
+    // =========================================
+    // VALIDATION
+    // =========================================
+
     protected function validate(): void
     {
         $this->validator
-
             ->required('niveau')
             ->string('niveau')
             ->in('niveau', self::NIVEAUX)
@@ -40,7 +43,7 @@ final class ChinoisGrammaireCreateRequest extends FormRequest
             ->required('traduction')
             ->string('traduction')
 
-            ->nullable('explication')
+            ->required('explication')
             ->string('explication')
 
             ->required('section')
@@ -51,6 +54,10 @@ final class ChinoisGrammaireCreateRequest extends FormRequest
             ->string('categorie')
             ->maxLength('categorie', 255);
     }
+
+    // =========================================
+    // DTO
+    // =========================================
 
     public function dto(): ChinoisGrammaireCreateDTO
     {

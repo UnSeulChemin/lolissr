@@ -12,10 +12,13 @@ final class ChinoisVocabulaireCreateRequest extends FormRequest
 {
     private const LANGUES = ['mandarin', 'jinyu'];
 
+    // =========================================
+    // VALIDATION
+    // =========================================
+
     protected function validate(): void
     {
         $this->validator
-
             ->required('langue')
             ->string('langue')
             ->in('langue', self::LANGUES)
@@ -35,9 +38,14 @@ final class ChinoisVocabulaireCreateRequest extends FormRequest
             ->required('traduction')
             ->string('traduction')
 
-            ->nullable('exemple')
-            ->string('exemple');
+            ->required('exemple')
+            ->string('exemple')
+            ->maxLength('exemple', 255);
     }
+
+    // =========================================
+    // DTO
+    // =========================================
 
     public function dto(): ChinoisVocabulaireCreateDTO
     {
