@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controllers\Auth;
 
-use App\Enums\Auth\LoginResult;
 use App\Controllers\Controller;
+use App\Enums\Auth\LoginResult;
 use App\Services\Auth\AuthService;
 use App\Services\Auth\LoginThrottleService;
 
@@ -21,21 +21,16 @@ final class AuthController extends Controller
         parent::__construct($request);
     }
 
-    /*
-    |-------------------------------------------------------------------------- 
-    | AUTHENTIFICATION
-    |-------------------------------------------------------------------------- 
-    */
+    // =========================================
+    // AUTHENTIFICATION
+    // =========================================
 
     public function login(): never
     {
         $this->title = 'Connexion';
 
         $this->render('pages/auth/connexion', [
-            'form' => $this->formViewData(
-                'connexion',
-                '',
-            ),
+            'form' => $this->formViewData('connexion', ''),
         ]);
     }
 
@@ -78,33 +73,24 @@ final class AuthController extends Controller
         $this->redirect('connexion');
     }
 
-    /*
-    |-------------------------------------------------------------------------- 
-    | INSCRIPTION
-    |-------------------------------------------------------------------------- 
-    */
+    // =========================================
+    // INSCRIPTION
+    // =========================================
 
     public function register(): never
     {
-        $this->guardRegistration();
-
         $this->title = 'Inscription';
 
         $this->render('pages/auth/inscription', [
-            'form' => $this->formViewData(
-                'inscription',
-                '',
-            ),
+            'form' => $this->formViewData('inscription', ''),
         ]);
     }
 
     public function store(): never
     {
-        $this->guardRegistration();
-
         $success = $this->authService->register(
             (string) $this->request->input('username'),
-            (string) $this->request->input('password'),
+            (string) $this->request->input('password')
         );
 
         if (! $success)
@@ -113,19 +99,5 @@ final class AuthController extends Controller
         }
 
         $this->redirectWithSuccess('connexion', 'Compte créé avec succès.');
-    }
-
-    /*
-    |-------------------------------------------------------------------------- 
-    | HELPERS
-    |-------------------------------------------------------------------------- 
-    */
-
-    private function guardRegistration(): void
-    {
-        if (env('APP_ENV') === 'production')
-        {
-            $this->notFound();
-        }
     }
 }

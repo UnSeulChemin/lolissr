@@ -6,6 +6,10 @@ namespace App\Constants;
 
 final class UserTitle
 {
+    // =========================================
+    // TITRES
+    // =========================================
+
     public const EXPLORATEUR = 'Explorateur';
     public const AVENTURIER = 'Aventurier';
     public const VOYAGEUR = 'Voyageur';
@@ -31,27 +35,35 @@ final class UserTitle
      * @var array<int, string>
      */
     public const LEVEL_TITLES = [
-        1   => self::EXPLORATEUR,
-        5   => self::AVENTURIER,
-        10  => self::VOYAGEUR,
-        15  => self::ECLAIREUR,
-        20  => self::ERUDIT,
-        25  => self::SAVANT,
-        30  => self::MAITRE,
-        35  => self::GRAND_MAITRE,
-        40  => self::SAGE,
-        45  => self::ARCHISAGE,
-        50  => self::CHAMPION,
-        55  => self::HEROS,
-        60  => self::GARDIEN,
-        65  => self::SEIGNEUR,
-        70  => self::ARCHONTE,
-        75  => self::LEGENDE,
-        80  => self::MYTHE,
-        85  => self::IMMORTEL,
-        90  => self::ETERNEL,
+        1 => self::EXPLORATEUR,
+        5 => self::AVENTURIER,
+        10 => self::VOYAGEUR,
+        15 => self::ECLAIREUR,
+        20 => self::ERUDIT,
+        25 => self::SAVANT,
+        30 => self::MAITRE,
+        35 => self::GRAND_MAITRE,
+        40 => self::SAGE,
+        45 => self::ARCHISAGE,
+        50 => self::CHAMPION,
+        55 => self::HEROS,
+        60 => self::GARDIEN,
+        65 => self::SEIGNEUR,
+        70 => self::ARCHONTE,
+        75 => self::LEGENDE,
+        80 => self::MYTHE,
+        85 => self::IMMORTEL,
+        90 => self::ETERNEL,
         100 => self::DIVIN,
     ];
+
+    private function __construct()
+    {
+    }
+
+    // =========================================
+    // HELPERS
+    // =========================================
 
     /**
      * @return list<string>

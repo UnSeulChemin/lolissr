@@ -43,4 +43,8 @@ final class UserXp
 
     public const LEARN_VOCABULARY = 5;
     public const LEARN_GRAMMAR = 5;
+
+    private function __construct()
+    {
+    }
 }

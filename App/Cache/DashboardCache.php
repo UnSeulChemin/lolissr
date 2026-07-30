@@ -13,7 +13,8 @@ final readonly class DashboardCache
 {
     public function __construct(
         private StatsService $statsService
-    ) {}
+    ) {
+    }
 
     // =========================================
     // CACHE
@@ -25,9 +26,7 @@ final readonly class DashboardCache
         $data = Cache::remember(
             CacheKey::HOME_DASHBOARD,
             null,
-            fn (): array => $this->statsService
-                ->dashboard()
-                ->toArray()
+            fn (): array => $this->statsService->dashboard()->toArray()
         );
 
         return DashboardStatsData::fromArray($data);
