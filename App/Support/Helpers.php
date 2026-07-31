@@ -5,6 +5,8 @@ declare(strict_types=1);
 use App\Models\User;
 use App\Services\Auth\AuthService;
 
+use RuntimeException;
+
 // =========================================
 // CHEMINS
 // =========================================
@@ -41,14 +43,16 @@ if (! function_exists('auth'))
 {
     function auth(): AuthService
     {
-        $auth = app(AuthService::class);
+        $service = app(AuthService::class);
 
-        if (! $auth instanceof AuthService)
+        if (! $service instanceof AuthService)
         {
-            throw new RuntimeException('AuthService non disponible.');
+            throw new RuntimeException(
+                'AuthService non disponible.'
+            );
         }
 
-        return $auth;
+        return $service;
     }
 }
 

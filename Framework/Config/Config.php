@@ -77,7 +77,7 @@ final class Config
 
         $file = array_shift($segments);
 
-        if ($file === null || $file === '')
+        if ($file === '')
         {
             return null;
         }
@@ -109,8 +109,11 @@ final class Config
      * @param array<string, mixed> $items
      * @param list<string> $segments
      */
-    private static function arrayGet(array $items, array $segments, mixed $default = null): mixed
-    {
+    private static function arrayGet(
+        array $items,
+        array $segments,
+        mixed $default = null
+    ): mixed {
         $value = $items;
 
         foreach ($segments as $segment)

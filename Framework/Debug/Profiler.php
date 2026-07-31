@@ -11,7 +11,7 @@ final class Profiler
     private static bool $active = false;
 
     /**
-     * @var array<string, int>
+     * @var array<string, int|float>
      */
     private static array $starts = [];
 
@@ -25,14 +25,14 @@ final class Profiler
      */
     private static array $counters = [];
 
-    private static ?int $requestStart = null;
+    private static int|float|null $requestStart = null;
 
     private function __construct()
     {
     }
 
     // =========================================
-    // REQUEST
+    // REQUÊTE
     // =========================================
 
     public static function startRequest(): void
@@ -66,8 +66,8 @@ final class Profiler
                 'counters' => self::$counters,
                 'memory' => [
                     'current_mb' => round(memory_get_usage(true) / 1024 / 1024, 2),
-                    'peak_mb' => round(memory_get_peak_usage(true) / 1024 / 1024, 2),
-                ],
+                    'peak_mb' => round(memory_get_peak_usage(true) / 1024 / 1024, 2)
+                ]
             ]
         );
 
@@ -214,6 +214,11 @@ final class Profiler
         return $durations;
     }
 
+    private static function elapsedMilliseconds(int|float $start): float
+    {
+        return (hrtime(true) - $start) / 1_000_000;
+    }
+
     private static function reset(): void
     {
         self::$active = false;
@@ -221,10 +226,5 @@ final class Profiler
         self::$starts = [];
         self::$durations = [];
         self::$counters = [];
-    }
-
-    private static function elapsedMilliseconds(int $start): float
-    {
-        return (hrtime(true) - $start) / 1_000_000;
     }
 }

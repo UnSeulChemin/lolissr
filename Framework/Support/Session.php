@@ -145,7 +145,7 @@ final class Session
             $params = session_get_cookie_params();
             $sessionName = session_name();
 
-            if ($sessionName === '')
+            if (! is_string($sessionName))
             {
                 $sessionName = self::DEFAULT_SESSION_NAME;
             }
@@ -154,18 +154,20 @@ final class Session
                 $sessionName,
                 '',
                 [
-                    'expires' => time() - 42000,
+                    'expires' => time() - 42_000,
                     'path' => $params['path'],
                     'domain' => $params['domain'],
                     'secure' => $params['secure'],
                     'httponly' => $params['httponly'],
-                    'samesite' => $params['samesite'] ?? 'Lax',
+                    'samesite' => $params['samesite']
                 ]
             );
         }
 
-        if (session_status() === PHP_SESSION_ACTIVE && ! session_destroy())
-        {
+        if (
+            session_status() === PHP_SESSION_ACTIVE
+            && ! session_destroy()
+        ) {
             throw new RuntimeException(
                 'Impossible de détruire la session.'
             );
@@ -247,7 +249,7 @@ final class Session
             'domain' => '',
             'secure' => $secure,
             'httponly' => true,
-            'samesite' => 'Lax',
+            'samesite' => 'Lax'
         ]);
 
         if (! @session_start([
@@ -256,7 +258,7 @@ final class Session
             'use_trans_sid' => false,
             'cookie_httponly' => true,
             'cookie_secure' => $secure,
-            'cookie_samesite' => 'Lax',
+            'cookie_samesite' => 'Lax'
         ])) {
             throw new RuntimeException(
                 'Impossible de démarrer la session.'

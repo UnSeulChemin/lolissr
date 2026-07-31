@@ -22,7 +22,7 @@ final class ChinoisVocabulaireCollectionRepository extends Model
 
     public function countByLangue(string $langue): int
     {
-        /** @var stdClass|null $result */
+        /** @var stdClass $result */
         $result = $this->fetchOne(
             "
             SELECT COUNT(*) AS total
@@ -32,11 +32,11 @@ final class ChinoisVocabulaireCollectionRepository extends Model
             WHERE langue = :langue
             ",
             [
-                'langue' => trim($langue),
+                'langue' => trim($langue)
             ]
         );
 
-        return (int) ($result?->total ?? 0);
+        return (int) ($result->total ?? 0);
     }
 
     /**
@@ -64,7 +64,7 @@ final class ChinoisVocabulaireCollectionRepository extends Model
             OFFSET {$offset}
             ",
             [
-                'langue' => trim($langue),
+                'langue' => trim($langue)
             ]
         );
 

@@ -3,13 +3,10 @@
 declare(strict_types=1);
 
 use App\DTO\Common\Responses\ViewData;
-use App\Models\User;
 
 use Framework\Application\App;
 
 /** @var ViewData $view */
-/** @var string|null $currentSearch */
-/** @var User|null $user */
 
 $currentSearch = (string) ($currentSearch ?? '');
 $user = user();

@@ -12,9 +12,9 @@ if (! defined('ROOT'))
     define('ROOT', dirname(__DIR__));
 }
 
-require_once ROOT . '/vendor/autoload.php';
-require_once ROOT . '/Framework/Support/Helpers.php';
-require_once ROOT . '/App/Support/Helpers.php';
+require ROOT . '/vendor/autoload.php';
+require ROOT . '/Framework/Support/Helpers.php';
+require ROOT . '/App/Support/Helpers.php';
 
 Bootstrap::run(
     [ErrorController::class, 'handle'],

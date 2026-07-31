@@ -2,16 +2,29 @@
 
 declare(strict_types=1);
 
-const HTTP_COOKIE_NAME = 'LOLISSR_SESSION';
+use RuntimeException;
 
 $GLOBALS['http_cookie'] = '';
+
+// =========================================
+// CONFIGURATION
+// =========================================
 
 /**
  * @return array<string, mixed>
  */
 function http_config(): array
 {
-    return require dirname(__DIR__) . '/http-config.php';
+    static $config;
+
+    if (is_array($config))
+    {
+        return $config;
+    }
+
+    $loadedConfig = require dirname(__DIR__) . '/http-config.php';
+
+    return $config = is_array($loadedConfig) ? $loadedConfig : [];
 }
 
 function http_base(): string
@@ -24,6 +37,10 @@ function http_timeout(): int
     return max(1, (int) (http_config()['timeout'] ?? 10));
 }
 
+// =========================================
+// COOKIE
+// =========================================
+
 function http_cookie(): string
 {
     return (string) ($GLOBALS['http_cookie'] ?? '');
@@ -31,7 +48,7 @@ function http_cookie(): string
 
 function http_set_cookie(string $cookie): void
 {
-    $GLOBALS['http_cookie'] = $cookie;
+    $GLOBALS['http_cookie'] = trim($cookie);
 }
 
 /**
@@ -41,21 +58,26 @@ function http_extract_cookie(array $headers): void
 {
     foreach ($headers as $header)
     {
-        if (
-            preg_match(
-                '/^Set-Cookie:\s*' . preg_quote(HTTP_COOKIE_NAME, '/') . '=([^;]+)/i',
-                $header,
-                $matches
-            ) !== 1
-        ) {
+        if (stripos($header, 'Set-Cookie:') !== 0)
+        {
             continue;
         }
 
-        http_set_cookie($matches[1]);
+        $cookie = trim(substr($header, strlen('Set-Cookie:')));
+        $cookiePair = trim(explode(';', $cookie, 2)[0]);
 
-        return;
+        if ($cookiePair === '' || ! str_contains($cookiePair, '='))
+        {
+            continue;
+        }
+
+        http_set_cookie($cookiePair);
     }
 }
+
+// =========================================
+// HEADERS
+// =========================================
 
 /**
  * @param list<string> $headers
@@ -77,6 +99,10 @@ function http_header_value(array $headers, string $name): ?string
     return null;
 }
 
+// =========================================
+// URL
+// =========================================
+
 function http_location_path(string $location): string
 {
     $path = parse_url($location, PHP_URL_PATH);
@@ -88,6 +114,10 @@ function http_location_path(string $location): string
 
     return '/' . trim($path, '/') . '/';
 }
+
+// =========================================
+// REQUÊTES
+// =========================================
 
 /**
  * @param list<string> $headers
@@ -109,12 +139,12 @@ function http_request(
 
     if ($cookie !== '')
     {
-        $headers[] = 'Cookie: ' . HTTP_COOKIE_NAME . '=' . $cookie;
+        $headers[] = 'Cookie: ' . $cookie;
     }
 
     $requestHeaders = array_merge(
         [
-            'User-Agent: ' . ($config['user_agent'] ?? 'LoliSSR-TestRunner'),
+            'User-Agent: ' . (string) ($config['user_agent'] ?? 'LoliSSR-TestRunner')
         ],
         $headers
     );
@@ -127,8 +157,8 @@ function http_request(
             'max_redirects' => 0,
             'timeout' => http_timeout(),
             'content' => $body ?? '',
-            'header' => implode("\r\n", $requestHeaders),
-        ],
+            'header' => implode("\r\n", $requestHeaders)
+        ]
     ]);
 
     $responseBody = @file_get_contents($url, false, $context);
@@ -152,7 +182,7 @@ function http_request(
     return [
         'status' => $status,
         'body' => is_string($responseBody) ? $responseBody : '',
-        'headers' => $responseHeaders,
+        'headers' => $responseHeaders
     ];
 }
 
@@ -184,6 +214,10 @@ function http_post(string $url, array $headers = [], ?string $body = null): arra
     return http_request('POST', $url, $headers, $body);
 }
 
+// =========================================
+// CSRF
+// =========================================
+
 function http_extract_csrf(string $html): ?string
 {
     if (
@@ -199,6 +233,10 @@ function http_extract_csrf(string $html): ?string
     return html_entity_decode($matches[1], ENT_QUOTES | ENT_HTML5, 'UTF-8');
 }
 
+// =========================================
+// AUTHENTIFICATION
+// =========================================
+
 function http_login(): void
 {
     $config = http_config();
@@ -213,6 +251,8 @@ function http_login(): void
         );
     }
 
+    http_set_cookie('');
+
     $loginResponse = http_get(http_base() . '/connexion');
 
     if ($loginResponse['status'] !== 200)
@@ -220,6 +260,13 @@ function http_login(): void
         throw new RuntimeException(
             'Page de connexion inaccessible. Statut HTTP reçu : '
             . $loginResponse['status']
+        );
+    }
+
+    if (http_cookie() === '')
+    {
+        throw new RuntimeException(
+            'Cookie de session introuvable sur la page de connexion.'
         );
     }
 
@@ -235,14 +282,14 @@ function http_login(): void
     $payload = http_build_query([
         'username' => $username,
         'password' => $password,
-        'csrf_token' => $csrf,
+        'csrf_token' => $csrf
     ]);
 
     $authenticationResponse = http_post(
         http_base() . '/connexion',
         [
             'Content-Type: application/x-www-form-urlencoded',
-            'Content-Length: ' . strlen($payload),
+            'Content-Length: ' . strlen($payload)
         ],
         $payload
     );
@@ -282,13 +329,6 @@ function http_login(): void
                 $location,
                 $expectedPath
             )
-        );
-    }
-
-    if (http_cookie() === '')
-    {
-        throw new RuntimeException(
-            'Cookie de session introuvable après connexion.'
         );
     }
 

@@ -2,47 +2,47 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Requests\Manga;
+namespace App\DTO\Manga\Inputs;
 
-use App\DTO\Manga\Inputs\ArtbookUpdateDTO;
+use Framework\Support\DateNormalizer;
+use Framework\Support\Str;
 
-use Framework\Http\FormRequest;
-
-final class ArtbookUpdateRequest extends FormRequest
+final readonly class ArtbookUpdateDTO
 {
-    // =========================================
-    // VALIDATION
-    // =========================================
-
-    protected function validate(): void
-    {
-        $this->validator
-            ->required('artbook')
-            ->string('artbook')
-            ->maxLength('artbook', 150)
-
-            ->required('source')
-            ->string('source')
-            ->maxLength('source', 100)
-
-            ->required('company')
-            ->string('company')
-            ->maxLength('company', 100)
-
-            ->nullable('release_date')
-            ->date('release_date')
-
-            ->nullable('commentaire')
-            ->string('commentaire')
-            ->maxLength('commentaire', 255);
+    public function __construct(
+        public string $artbook,
+        public string $source,
+        public string $company,
+        public ?string $release_date,
+        public ?string $commentaire
+    ) {
     }
 
     // =========================================
-    // DTO
+    // FABRICATION
     // =========================================
 
-    public function dto(): ArtbookUpdateDTO
+    /**
+     * @param array<string, mixed> $data
+     */
+    public static function fromArray(array $data): self
     {
-        return ArtbookUpdateDTO::fromArray($this->validated());
+        return new self(
+            artbook: trim((string) ($data['artbook'] ?? '')),
+            source: trim((string) ($data['source'] ?? '')),
+            company: trim((string) ($data['company'] ?? '')),
+            release_date: DateNormalizer::normalize(
+                Str::nullableTrim(
+                    is_string($data['release_date'] ?? null)
+                        ? $data['release_date']
+                        : null
+                )
+            ),
+            commentaire: Str::nullableTrim(
+                is_string($data['commentaire'] ?? null)
+                    ? $data['commentaire']
+                    : null
+            )
+        );
     }
 }
