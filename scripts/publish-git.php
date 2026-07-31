@@ -7,7 +7,7 @@ use Framework\Application\Bootstrap;
 define('ROOT', dirname(__DIR__));
 
 require ROOT . '/vendor/autoload.php';
-require ROOT . '/Framework/Support/helpers.php';
+require ROOT . '/Framework/Support/Helpers.php';
 
 Bootstrap::loadEnvOnly();
 

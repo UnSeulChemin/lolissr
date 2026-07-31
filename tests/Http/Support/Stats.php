@@ -12,25 +12,27 @@ final class Stats
 
     private float $duration = 0.0;
 
-    private function addDuration(float $duration): void
-    {
-        $this->total++;
-        $this->duration += $duration;
-    }
+    // =========================================
+    // ENREGISTREMENT
+    // =========================================
 
     public function success(float $duration): void
     {
-        $this->addDuration($duration);
+        $this->record($duration);
 
         $this->success++;
     }
 
     public function fail(float $duration): void
     {
-        $this->addDuration($duration);
+        $this->record($duration);
 
         $this->fail++;
     }
+
+    // =========================================
+    // STATISTIQUES
+    // =========================================
 
     public function total(): int
     {
@@ -75,5 +77,15 @@ final class Stats
     public function hasFailures(): bool
     {
         return $this->fail > 0;
+    }
+
+    // =========================================
+    // HELPERS
+    // =========================================
+
+    private function record(float $duration): void
+    {
+        $this->total++;
+        $this->duration += max(0.0, $duration);
     }
 }

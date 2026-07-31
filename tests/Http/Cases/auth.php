@@ -2,54 +2,40 @@
 
 declare(strict_types=1);
 
+// =========================================
+// PROFIL
+// =========================================
+
 $tests[] = [
-
     'category' => 'Auth',
-
     'label' => 'Profil accessible',
-
-    'path' => '/profil',
+    'path' => '/profil'
 ];
 
 $tests[] = [
-
     'category' => 'Auth',
-
     'label' => 'Personnalisation du profil accessible',
-
-    'path' => '/profil/personnalisation',
+    'path' => '/profil/personnalisation'
 ];
 
+// =========================================
+// MÉTHODES HTTP
+// =========================================
+
 $tests[] = [
-
     'category' => 'Auth',
-
     'label' => 'Déconnexion refuse GET',
-
     'method' => 'GET',
-
     'path' => '/deconnexion',
-
     'expected_status' => 405,
-
-    'header_contains' => [
-        'Allow: POST',
-    ],
+    'header_contains' => ['Allow: POST']
 ];
 
 $tests[] = [
-
     'category' => 'Auth',
-
     'label' => 'Connexion refuse PUT',
-
     'method' => 'PUT',
-
     'path' => '/connexion',
-
     'expected_status' => 405,
-
-    'header_contains' => [
-        'Allow: GET, POST',
-    ],
+    'header_contains' => ['Allow: GET, POST']
 ];

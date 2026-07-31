@@ -2,527 +2,611 @@
 
 declare(strict_types=1);
 
+use RuntimeException;
+
 final class HtmlReport
 {
-    private static function escape(
-        mixed $value,
-    ): string {
+    private const FILE_TITLE = 'LoliSSR HTTP Report';
 
-        return htmlspecialchars(
-            (string) $value,
-            ENT_QUOTES,
-            'UTF-8',
-        );
+    private function __construct()
+    {
     }
 
-    /**
-     * @param array<int,array<string,mixed>> $results
-     */
-    public static function generate(
-        array $results,
-        Stats $stats,
-        string $file,
-    ): void {
+    // =========================================
+    // GÉNÉRATION
+    // =========================================
 
+    /**
+     * @param array<int, array<string, mixed>> $results
+     */
+    public static function generate(array $results, Stats $stats, string $file): void
+    {
+        $html = self::render(
+            rows: self::renderRows($results),
+            total: $stats->total(),
+            success: $stats->successCount(),
+            fail: $stats->failCount(),
+            successRate: $stats->successRate(),
+            generatedAt: date('d/m/Y H:i:s')
+        );
+
+        if (file_put_contents($file, $html, LOCK_EX) === false)
+        {
+            throw new RuntimeException(
+                "Impossible de générer le rapport HTTP : {$file}"
+            );
+        }
+    }
+
+    // =========================================
+    // RÉSULTATS
+    // =========================================
+
+    /**
+     * @param array<int, array<string, mixed>> $results
+     */
+    private static function renderRows(array $results): string
+    {
         $rows = '';
 
-        /**
-         * @var array<string,mixed> $result
-         */
         foreach ($results as $result)
         {
-            $status =
-                (string) ($result['status'] ?? 'FAIL');
+            $status = (string) ($result['status'] ?? 'FAIL');
+            $label = self::escape($result['label'] ?? '');
+            $method = self::escape($result['method'] ?? '');
+            $path = self::escape($result['path'] ?? '');
+            $reason = self::escape($result['reason'] ?? '');
+            $expectedStatus = self::escape($result['expected_status'] ?? '');
+            $actualStatus = self::escape($result['http_status'] ?? '');
+            $headers = self::escape($result['headers'] ?? '');
+            $body = self::escape($result['body'] ?? '');
+            $duration = number_format(((float) ($result['duration'] ?? 0.0)) * 1000, 2);
 
-            $label =
-                self::escape(
-                    $result['label'] ?? '',
-                );
+            $badgeClass = $status === 'OK'
+                ? 'badge-ok'
+                : 'badge-fail';
 
-            $path =
-                self::escape(
-                    $result['path'] ?? '',
-                );
-
-            $reason =
-                self::escape(
-                    $result['reason'] ?? '',
-                );
-
-            $expectedStatus =
-                self::escape(
-                    $result['expected_status'] ?? '',
-                );
-
-            $actualStatus =
-                self::escape(
-                    $result['http_status'] ?? '',
-                );
-
-            $headers =
-                self::escape(
-                    $result['headers'] ?? '',
-                );
-
-            $body =
-                self::escape(
-                    $result['body'] ?? '',
-                );
-
-            $duration =
-                number_format(
-                    ((float) ($result['duration'] ?? 0)) * 1000,
-                    2,
-                );
-
-            $badgeClass =
-                $status === 'OK'
-                    ? 'badge-ok'
-                    : 'badge-fail';
-
-            $rows .=
-
-                '<tr class="main-row" data-status="' . $status . '">'
-
-                    . '<td><span class="' . $badgeClass . '">' . $status . '</span></td>'
-
-                    . '<td>' . $label . '</td>'
-
-                    . '<td>' . $path . '</td>'
-
-                    . '<td>' . $duration . ' ms</td>'
-
-                    . '<td>' . $reason . '</td>'
-
-                . '</tr>';
+            $rows .= self::renderMainRow(
+                status: $status,
+                badgeClass: $badgeClass,
+                label: $label,
+                method: $method,
+                path: $path,
+                duration: $duration,
+                reason: $reason
+            );
 
             if ($status === 'FAIL')
             {
-                $rows .=
-
-                    '<tr class="debug-row" data-status="FAIL">'
-
-                        . '<td colspan="5">'
-
-                            . '<div class="debug-content">'
-
-                                . '<h3>Debug</h3>'
-
-                                . '<p><strong>Expected :</strong> '
-                                . $expectedStatus
-                                . '</p>'
-
-                                . '<p><strong>Actual :</strong> '
-                                . $actualStatus
-                                . '</p>'
-
-                                . '<p><strong>Reason :</strong> '
-                                . $reason
-                                . '</p>'
-
-                                . '<h4>Headers</h4>'
-
-                                . '<pre>'
-                                . $headers
-                                . '</pre>'
-
-                                . '<h4>Response</h4>'
-
-                                . '<pre>'
-                                . $body
-                                . '</pre>'
-
-                            . '</div>'
-
-                        . '</td>'
-
-                    . '</tr>';
+                $rows .= self::renderDebugRow(
+                    expectedStatus: $expectedStatus,
+                    actualStatus: $actualStatus,
+                    reason: $reason,
+                    headers: $headers,
+                    body: $body
+                );
             }
-
-
         }
 
-        $successRate =
-            $stats->successRate();
+        return $rows;
+    }
 
-        $total =
-            $stats->total();
+    private static function renderMainRow(
+        string $status,
+        string $badgeClass,
+        string $label,
+        string $method,
+        string $path,
+        string $duration,
+        string $reason
+    ): string {
+        return <<<HTML
+<tr class="main-row" data-status="{$status}">
+    <td><span class="{$badgeClass}">{$status}</span></td>
+    <td>{$method} — {$label}</td>
+    <td>{$path}</td>
+    <td>{$duration} ms</td>
+    <td>{$reason}</td>
+</tr>
+HTML;
+    }
 
-        $success =
-            $stats->successCount();
+    private static function renderDebugRow(
+        string $expectedStatus,
+        string $actualStatus,
+        string $reason,
+        string $headers,
+        string $body
+    ): string {
+        return <<<HTML
+<tr class="debug-row" data-status="FAIL">
+    <td colspan="5">
+        <div class="debug-content">
+            <h3>Debug</h3>
 
-        $fail =
-            $stats->failCount();
+            <p>
+                <strong>Expected :</strong>
+                {$expectedStatus}
+            </p>
 
-        $generatedAt =
-            date(
-                'd/m/Y H:i:s',
-            );
+            <p>
+                <strong>Actual :</strong>
+                {$actualStatus}
+            </p>
 
-        $html = <<<HTML
+            <p>
+                <strong>Reason :</strong>
+                {$reason}
+            </p>
+
+            <h4>Headers</h4>
+            <pre>{$headers}</pre>
+
+            <h4>Response</h4>
+            <pre>{$body}</pre>
+        </div>
+    </td>
+</tr>
+HTML;
+    }
+
+    // =========================================
+    // DOCUMENT
+    // =========================================
+
+    private static function render(
+        string $rows,
+        int $total,
+        int $success,
+        int $fail,
+        float $successRate,
+        string $generatedAt
+    ): string {
+        $title = self::FILE_TITLE;
+
+        return <<<HTML
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
-<meta charset="utf-8">
-<title>LoliSSR HTTP Report</title>
 
-<style>
+    <meta charset="UTF-8">
 
-:root{
-    --background:#ebebeb;
-    --surface:#ffffff;
-    --surface-soft:#f8f8fb;
-    --violet:#7b2cff;
-    --text:#1a1a1a;
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    --shadow:
-        0 10px 30px rgba(0,0,0,.06),
-        0 2px 10px rgba(0,0,0,.03);
-}
+    <title>{$title}</title>
 
-*{
-    box-sizing:border-box;
-}
+    <style>
 
-body{
-    margin:0;
-    padding:50px;
-    background:var(--background);
-    color:var(--text);
-    font-family:Montserrat,Segoe UI,sans-serif;
-}
+        :root
+        {
+            --background: #ebebeb;
+            --surface: #ffffff;
+            --surface-soft: #f8f8fb;
+            --violet: #7b2cff;
+            --text: #1a1a1a;
+            --success: #27d99a;
+            --danger: #ff4d4d;
+            --shadow:
+                0 10px 30px rgba(0, 0, 0, .06),
+                0 2px 10px rgba(0, 0, 0, .03);
+        }
 
-.container{
-    width:min(1400px,100%);
-    margin:auto;
-}
+        *
+        {
+            box-sizing: border-box;
+        }
 
-.hero{
-    margin-bottom:40px;
-    padding:34px 30px;
-    text-align:center;
-    border-radius:28px;
+        body
+        {
+            margin: 0;
+            padding: 50px;
+            background: var(--background);
+            color: var(--text);
+            font-family: Montserrat, "Segoe UI", sans-serif;
+        }
 
-    background:
-        linear-gradient(
-            180deg,
-            rgba(255,255,255,.98),
-            rgba(123,44,255,.06)
-        );
+        .container
+        {
+            width: min(1400px, 100%);
+            margin: auto;
+        }
 
-    border:1px solid rgba(123,44,255,.10);
+        .hero
+        {
+            margin-bottom: 40px;
+            padding: 34px 30px;
+            text-align: center;
+            border: 1px solid rgba(123, 44, 255, .10);
+            border-radius: 28px;
+            background: linear-gradient(
+                180deg,
+                rgba(255, 255, 255, .98),
+                rgba(123, 44, 255, .06)
+            );
+            box-shadow: 0 12px 28px rgba(0, 0, 0, .07);
+        }
 
-    box-shadow:
-        0 12px 28px rgba(0,0,0,.07);
-}
+        .hero h1
+        {
+            margin: 0;
+            color: var(--violet);
+            font-size: 3rem;
+        }
 
-.hero h1{
-    margin:0;
-    color:#7b2cff;
-    font-size:3rem;
-}
+        .hero p
+        {
+            opacity: .75;
+        }
 
-.hero p{
-    opacity:.75;
-}
+        .grid
+        {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
 
-.grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-    gap:24px;
-    margin-bottom:24px;
-}
+        .card
+        {
+            padding: 24px;
+            border: 1px solid rgba(123, 44, 255, .10);
+            border-radius: 24px;
+            text-align: center;
+            background: linear-gradient(180deg, var(--surface), var(--surface-soft));
+            box-shadow: var(--shadow);
+        }
 
-.card{
-    padding:24px;
-    border-radius:24px;
-    text-align:center;
-    background:linear-gradient(180deg,#fff,#f8f8fb);
-    border:1px solid rgba(123,44,255,.10);
-    box-shadow:var(--shadow);
-}
+        .clickable
+        {
+            cursor: pointer;
+            transition: transform .15s ease;
+        }
 
-.clickable{
-    cursor:pointer;
-    transition:.15s ease;
-}
+        .clickable:hover
+        {
+            transform: translateY(-3px);
+        }
 
-.clickable:hover{
-    transform:translateY(-3px);
-}
+        .card-title
+        {
+            margin-bottom: 12px;
+            opacity: .65;
+        }
 
-.card-title{
-    opacity:.65;
-    margin-bottom:12px;
-}
+        .card-value
+        {
+            font-size: 3rem;
+            font-weight: 800;
+        }
 
-.card-value{
-    font-size:3rem;
-    font-weight:800;
-}
+        .violet
+        {
+            color: var(--violet);
+        }
 
-.violet{
-    color:#7b2cff;
-}
+        .fail-count
+        {
+            color: var(--danger);
+        }
 
-.fail-count{
-    color:#ff4d4d;
-}
+        .table-card
+        {
+            overflow: hidden;
+            border: 1px solid rgba(123, 44, 255, .10);
+            border-radius: 24px;
+            background: var(--surface);
+            box-shadow: var(--shadow);
+        }
 
-.filters{
-    display:flex;
-    gap:12px;
-    margin-bottom:20px;
-}
+        table
+        {
+            width: 100%;
+            border-collapse: collapse;
+        }
 
-.filters button{
-    border:none;
-    border-radius:14px;
-    padding:12px 18px;
-    cursor:pointer;
-    font-weight:700;
-    color:#fff;
-    background:#7b2cff;
-}
+        th
+        {
+            padding: 18px;
+            text-align: left;
+            color: #5e4b75;
+            background: linear-gradient(
+                135deg,
+                rgba(123, 44, 255, .14),
+                rgba(178, 76, 255, .08)
+            );
+        }
 
-.table-card{
-    overflow:hidden;
-    border-radius:24px;
-    background:#fff;
-    border:1px solid rgba(123,44,255,.10);
-    box-shadow:var(--shadow);
-}
+        td
+        {
+            padding: 18px;
+            border-top: 1px solid rgba(123, 44, 255, .06);
+        }
 
-table{
-    width:100%;
-    border-collapse:collapse;
-}
+        tr:hover
+        {
+            background: rgba(123, 44, 255, .04);
+        }
 
-th{
-    padding:18px;
-    text-align:left;
+        .main-row
+        {
+            cursor: pointer;
+        }
 
-    color:#5e4b75;
+        .debug-row
+        {
+            display: none;
+        }
 
-    background:
-        linear-gradient(
-            135deg,
-            rgba(123,44,255,.14),
-            rgba(178,76,255,.08)
-        );
-}
+        .debug-row.open
+        {
+            display: table-row;
+        }
 
-td{
-    padding:18px;
-    border-top:1px solid rgba(123,44,255,.06);
-}
+        .debug-content
+        {
+            padding: 20px;
+            background: rgba(123, 44, 255, .03);
+        }
 
-tr:hover{
-    background:rgba(123,44,255,.04);
-}
+        .debug-content pre
+        {
+            overflow: auto;
+            padding: 12px;
+            border-radius: 12px;
+            background: #f4f4f4;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
 
-.main-row{
-    cursor:pointer;
-}
+        .badge-ok,
+        .badge-fail
+        {
+            display: inline-flex;
+            justify-content: center;
+            min-width: 90px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            color: #ffffff;
+            font-weight: 700;
+        }
 
-.debug-row{
-    display:none;
-}
+        .badge-ok
+        {
+            background: var(--success);
+        }
 
-.debug-row.open{
-    display:table-row;
-}
+        .badge-fail
+        {
+            background: linear-gradient(180deg, #ff6d6d, var(--danger));
+        }
 
-.debug-content{
+        .footer
+        {
+            margin-top: 30px;
+            text-align: center;
+            opacity: .5;
+        }
 
-    padding:20px;
+        @media (max-width: 800px)
+        {
+            body
+            {
+                padding: 20px;
+            }
 
-    background:
-        rgba(
-            123,
-            44,
-            255,
-            .03
-        );
-}
+            .hero h1
+            {
+                font-size: 2rem;
+            }
 
-.debug-content pre{
+            .table-card
+            {
+                overflow-x: auto;
+            }
 
-    overflow:auto;
+            table
+            {
+                min-width: 900px;
+            }
+        }
 
-    padding:12px;
+    </style>
 
-    border-radius:12px;
-
-    background:#f4f4f4;
-
-    white-space:pre-wrap;
-}
-
-.badge-ok{
-    display:inline-flex;
-    justify-content:center;
-    min-width:90px;
-    padding:8px 14px;
-    border-radius:999px;
-    color:#fff;
-    font-weight:700;
-    background:#27d99a;
-}
-
-.badge-fail{
-    display:inline-flex;
-    justify-content:center;
-    min-width:90px;
-    padding:8px 14px;
-    border-radius:999px;
-    color:#fff;
-    font-weight:700;
-    background:linear-gradient(180deg,#ff6d6d,#ff4d4d);
-}
-
-.footer{
-    margin-top:30px;
-    text-align:center;
-    opacity:.5;
-}
-
-</style>
 </head>
 
 <body>
 
-<div class="container">
+    <div class="container">
 
-    <div class="hero">
-        <h1>📜 LoliSSR Report</h1>
-        <p>Rapport HTTP généré automatiquement</p>
-    </div>
+        <div class="hero">
 
-    <div class="grid">
+            <h1>📜 LoliSSR Report</h1>
 
-        <div class="card clickable" onclick="showAll()">
-            <div class="card-title">Tests</div>
-            <div class="card-value">{$total}</div>
+            <p>
+                Rapport HTTP généré automatiquement
+            </p>
+
         </div>
 
-        <div class="card clickable" onclick="showSuccess()">
-            <div class="card-title">Succès</div>
-            <div class="card-value">{$success}</div>
+        <div class="grid">
+
+            <button
+                class="card clickable"
+                type="button"
+                data-filter="ALL"
+            >
+
+                <span class="card-title">
+                    Tests
+                </span>
+
+                <span class="card-value">
+                    {$total}
+                </span>
+
+            </button>
+
+            <button
+                class="card clickable"
+                type="button"
+                data-filter="OK"
+            >
+
+                <span class="card-title">
+                    Succès
+                </span>
+
+                <span class="card-value">
+                    {$success}
+                </span>
+
+            </button>
+
+            <button
+                class="card clickable"
+                type="button"
+                data-filter="FAIL"
+            >
+
+                <span class="card-title">
+                    Échecs
+                </span>
+
+                <span class="card-value fail-count">
+                    {$fail}
+                </span>
+
+            </button>
+
+            <div class="card">
+
+                <div class="card-title">
+                    Taux de réussite
+                </div>
+
+                <div class="card-value violet">
+                    {$successRate}%
+                </div>
+
+            </div>
+
         </div>
 
-        <div class="card clickable" onclick="showFailures()">
-            <div class="card-title">Échecs</div>
-            <div class="card-value fail-count">{$fail}</div>
+        <div class="table-card">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Statut</th>
+                        <th>Test</th>
+                        <th>Route</th>
+                        <th>Temps</th>
+                        <th>Raison</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+                    {$rows}
+                </tbody>
+
+            </table>
+
         </div>
 
-        <div class="card">
-            <div class="card-title">Success Rate</div>
-            <div class="card-value violet">{$successRate}%</div>
+        <div class="footer">
+            Généré le {$generatedAt}
         </div>
 
     </div>
 
-    <div class="table-card">
+    <script>
 
-        <table>
+        function closeDebugRows()
+        {
+            document
+                .querySelectorAll('.debug-row.open')
+                .forEach((row) => row.classList.remove('open'));
+        }
 
-            <thead>
-                <tr>
-                    <th>Statut</th>
-                    <th>Test</th>
-                    <th>Route</th>
-                    <th>Temps</th>
-                    <th>Raison</th>
-                </tr>
-            </thead>
+        function filterRows(status)
+        {
+            closeDebugRows();
 
-            <tbody>
-                {$rows}
-            </tbody>
+            document
+                .querySelectorAll('.main-row')
+                .forEach((row) =>
+                {
+                    const visible =
+                        status === 'ALL'
+                        || row.dataset.status === status;
 
-        </table>
+                    row.hidden = ! visible;
 
-    </div>
+                    const debugRow = row.nextElementSibling;
 
-    <div class="footer">
-        Généré le {$generatedAt}
-    </div>
+                    if (
+                        debugRow
+                        && debugRow.classList.contains('debug-row')
+                    ) {
+                        debugRow.hidden = ! visible;
+                    }
+                });
+        }
 
-</div>
-
-<script>
-
-function filterRows(status)
-{
-    document
-        .querySelectorAll('tbody tr')
-        .forEach(row => {
-
-            if (status === null)
+        document
+            .querySelectorAll('[data-filter]')
+            .forEach((button) =>
             {
-                row.style.display = '';
-                return;
-            }
-
-            row.style.display =
-                row.dataset.status === status
-                    ? ''
-                    : 'none';
-        });
-}
-
-function showAll()
-{
-    filterRows(null);
-}
-
-function showSuccess()
-{
-    filterRows('OK');
-}
-
-function showFailures()
-{
-    filterRows('FAIL');
-}
-
-document
-    .querySelectorAll('.main-row')
-    .forEach((row) => {
-
-        row.addEventListener(
-            'click',
-            () => {
-
-                const debugRow =
-                    row.nextElementSibling;
-
-                if (
-                    !debugRow
-                    || !debugRow.classList.contains(
-                        'debug-row',
-                    )
-                ) {
-                    return;
-                }
-
-                debugRow.classList.toggle(
-                    'open',
+                button.addEventListener(
+                    'click',
+                    () => filterRows(button.dataset.filter ?? 'ALL')
                 );
-            },
-        );
-    });
+            });
 
-</script>
+        document
+            .querySelectorAll('.main-row')
+            .forEach((row) =>
+            {
+                row.addEventListener(
+                    'click',
+                    () =>
+                    {
+                        const debugRow = row.nextElementSibling;
+
+                        if (
+                            ! debugRow
+                            || ! debugRow.classList.contains('debug-row')
+                        ) {
+                            return;
+                        }
+
+                        debugRow.classList.toggle('open');
+                    }
+                );
+            });
+
+    </script>
 
 </body>
+
 </html>
 HTML;
+    }
 
-        file_put_contents(
-            $file,
-            $html,
+    // =========================================
+    // ÉCHAPPEMENT
+    // =========================================
+
+    private static function escape(mixed $value): string
+    {
+        return htmlspecialchars(
+            (string) $value,
+            ENT_QUOTES | ENT_SUBSTITUTE,
+            'UTF-8'
         );
     }
 }
