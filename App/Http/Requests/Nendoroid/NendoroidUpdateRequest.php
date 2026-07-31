@@ -10,10 +10,13 @@ use Framework\Http\FormRequest;
 
 final class NendoroidUpdateRequest extends FormRequest
 {
+    // =========================================
+    // VALIDATION
+    // =========================================
+
     protected function validate(): void
     {
         $this->validator
-
             ->required('waifu')
             ->string('waifu')
             ->maxLength('waifu', 100)
@@ -27,17 +30,19 @@ final class NendoroidUpdateRequest extends FormRequest
             ->maxLength('company', 100)
 
             ->nullable('release_date')
-            ->string('release_date')
+            ->date('release_date')
 
             ->nullable('commentaire')
             ->string('commentaire')
             ->maxLength('commentaire', 1000);
     }
 
+    // =========================================
+    // DTO
+    // =========================================
+
     public function dto(): NendoroidUpdateDTO
     {
-        return NendoroidUpdateDTO::fromArray(
-            $this->validated()
-        );
+        return NendoroidUpdateDTO::fromArray($this->validated());
     }
 }

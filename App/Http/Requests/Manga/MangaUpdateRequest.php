@@ -12,10 +12,13 @@ final class MangaUpdateRequest extends FormRequest
 {
     private const STATUTS = ['en_cours', 'termine'];
 
+    // =========================================
+    // VALIDATION
+    // =========================================
+
     protected function validate(): void
     {
         $this->validator
-
             ->nullable('editeur')
             ->string('editeur')
             ->maxLength('editeur', 100)
@@ -38,6 +41,10 @@ final class MangaUpdateRequest extends FormRequest
             ->min('jacquette', 1)
             ->max('jacquette', 5);
     }
+
+    // =========================================
+    // DTO
+    // =========================================
 
     public function dto(): MangaUpdateDTO
     {

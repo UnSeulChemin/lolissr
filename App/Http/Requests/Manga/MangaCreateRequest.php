@@ -6,17 +6,20 @@ namespace App\Http\Requests\Manga;
 
 use App\DTO\Manga\Inputs\MangaCreateDTO;
 
-use Framework\Http\FormRequest;
 use Framework\Config\UploadConfig;
+use Framework\Http\FormRequest;
 
 final class MangaCreateRequest extends FormRequest
 {
     private const STATUTS = ['en_cours', 'termine'];
 
+    // =========================================
+    // VALIDATION
+    // =========================================
+
     protected function validate(): void
     {
         $this->validator
-
             ->required('livre')
             ->string('livre')
             ->maxLength('livre', 150)
@@ -48,6 +51,10 @@ final class MangaCreateRequest extends FormRequest
             ->imageMime('image', UploadConfig::allowedMimeTypes())
             ->maxFileSize('image', UploadConfig::maxSize());
     }
+
+    // =========================================
+    // DTO
+    // =========================================
 
     public function dto(): MangaCreateDTO
     {

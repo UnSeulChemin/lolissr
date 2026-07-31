@@ -2,35 +2,47 @@
 
 declare(strict_types=1);
 
-namespace App\DTO\Manga\Inputs;
+namespace App\Http\Requests\Manga;
 
-use Framework\Support\DateNormalizer;
-use Framework\Support\Str;
+use App\DTO\Manga\Inputs\ArtbookUpdateDTO;
 
-final readonly class ArtbookUpdateDTO
+use Framework\Http\FormRequest;
+
+final class ArtbookUpdateRequest extends FormRequest
 {
-    public function __construct(
-        public string $artbook,
-        public string $source,
-        public string $company,
-        public ?string $release_date,
-        public ?string $commentaire,
-    ) {
+    // =========================================
+    // VALIDATION
+    // =========================================
+
+    protected function validate(): void
+    {
+        $this->validator
+            ->required('artbook')
+            ->string('artbook')
+            ->maxLength('artbook', 150)
+
+            ->required('source')
+            ->string('source')
+            ->maxLength('source', 100)
+
+            ->required('company')
+            ->string('company')
+            ->maxLength('company', 100)
+
+            ->nullable('release_date')
+            ->date('release_date')
+
+            ->nullable('commentaire')
+            ->string('commentaire')
+            ->maxLength('commentaire', 255);
     }
 
-    /**
-     * @param array<string, mixed> $data
-     */
-    public static function fromArray(array $data): self
+    // =========================================
+    // DTO
+    // =========================================
+
+    public function dto(): ArtbookUpdateDTO
     {
-        return new self(
-            artbook: trim((string) ($data['artbook'] ?? '')),
-            source: trim((string) ($data['source'] ?? '')),
-            company: trim((string) ($data['company'] ?? '')),
-            release_date: DateNormalizer::normalize(
-                Str::nullableTrim($data['release_date'] ?? null),
-            ),
-            commentaire: Str::nullableTrim($data['commentaire'] ?? null),
-        );
+        return ArtbookUpdateDTO::fromArray($this->validated());
     }
 }

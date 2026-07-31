@@ -11,10 +11,13 @@ use Framework\Http\FormRequest;
 
 final class PelucheCreateRequest extends FormRequest
 {
+    // =========================================
+    // VALIDATION
+    // =========================================
+
     protected function validate(): void
     {
         $this->validator
-
             ->required('waifu')
             ->string('waifu')
             ->maxLength('waifu', 100)
@@ -36,7 +39,7 @@ final class PelucheCreateRequest extends FormRequest
             ->min('numero', 1)
 
             ->nullable('release_date')
-            ->string('release_date')
+            ->date('release_date')
 
             ->nullable('commentaire')
             ->string('commentaire')
@@ -49,10 +52,12 @@ final class PelucheCreateRequest extends FormRequest
             ->maxFileSize('image', UploadConfig::maxSize());
     }
 
+    // =========================================
+    // DTO
+    // =========================================
+
     public function dto(): PelucheCreateDTO
     {
-        return PelucheCreateDTO::fromArray(
-            $this->validated()
-        );
+        return PelucheCreateDTO::fromArray($this->validated());
     }
 }

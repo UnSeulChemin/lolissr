@@ -10,13 +10,22 @@ use Framework\Http\FormRequest;
 
 final class ArtbookUpdateRequest extends FormRequest
 {
+    private const SOURCE_TYPES = ['auteur', 'serie'];
+
+    // =========================================
+    // VALIDATION
+    // =========================================
+
     protected function validate(): void
     {
         $this->validator
-
             ->required('artbook')
             ->string('artbook')
             ->maxLength('artbook', 150)
+
+            ->required('type_source')
+            ->string('type_source')
+            ->in('type_source', self::SOURCE_TYPES)
 
             ->required('source')
             ->string('source')
@@ -34,10 +43,12 @@ final class ArtbookUpdateRequest extends FormRequest
             ->maxLength('commentaire', 255);
     }
 
+    // =========================================
+    // DTO
+    // =========================================
+
     public function dto(): ArtbookUpdateDTO
     {
-        return ArtbookUpdateDTO::fromArray(
-            $this->validated(),
-        );
+        return ArtbookUpdateDTO::fromArray($this->validated());
     }
 }

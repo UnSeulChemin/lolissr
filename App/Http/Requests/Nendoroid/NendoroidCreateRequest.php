@@ -6,15 +6,18 @@ namespace App\Http\Requests\Nendoroid;
 
 use App\DTO\Nendoroid\Inputs\NendoroidCreateDTO;
 
-use App\Support\ThumbnailDirectory;
+use Framework\Config\UploadConfig;
 use Framework\Http\FormRequest;
 
 final class NendoroidCreateRequest extends FormRequest
 {
+    // =========================================
+    // VALIDATION
+    // =========================================
+
     protected function validate(): void
     {
         $this->validator
-
             ->required('waifu')
             ->string('waifu')
             ->maxLength('waifu', 100)
@@ -36,7 +39,7 @@ final class NendoroidCreateRequest extends FormRequest
             ->min('numero', 1)
 
             ->nullable('release_date')
-            ->string('release_date')
+            ->date('release_date')
 
             ->nullable('commentaire')
             ->string('commentaire')
@@ -49,10 +52,12 @@ final class NendoroidCreateRequest extends FormRequest
             ->maxFileSize('image', UploadConfig::maxSize());
     }
 
+    // =========================================
+    // DTO
+    // =========================================
+
     public function dto(): NendoroidCreateDTO
     {
-        return NendoroidCreateDTO::fromArray(
-            $this->validated()
-        );
+        return NendoroidCreateDTO::fromArray($this->validated());
     }
 }

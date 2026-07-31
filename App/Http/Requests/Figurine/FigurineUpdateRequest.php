@@ -10,10 +10,13 @@ use Framework\Http\FormRequest;
 
 final class FigurineUpdateRequest extends FormRequest
 {
+    // =========================================
+    // VALIDATION
+    // =========================================
+
     protected function validate(): void
     {
         $this->validator
-
             ->required('waifu')
             ->string('waifu')
             ->maxLength('waifu', 150)
@@ -41,6 +44,10 @@ final class FigurineUpdateRequest extends FormRequest
             ->string('commentaire')
             ->maxLength('commentaire', 1000);
     }
+
+    // =========================================
+    // DTO
+    // =========================================
 
     public function dto(): FigurineUpdateDTO
     {

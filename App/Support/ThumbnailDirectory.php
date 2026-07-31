@@ -18,15 +18,15 @@ final class ThumbnailDirectory
     }
 
     // =========================================
-    // DOSSIER
+    // RÉSOLUTION
     // =========================================
 
-    public static function resolve(string $folder): string
+    public static function resolve(string $collection): string
     {
-        $folder = self::normalizeFolder($folder);
+        $collection = self::normalizeCollection($collection);
 
-        return self::$directories[$folder] ??= rtrim(
-            base_path("public/images/{$folder}/thumbnail"),
+        return self::$directories[$collection] ??= rtrim(
+            base_path("public/images/{$collection}/thumbnail"),
             '/\\'
         ) . DIRECTORY_SEPARATOR;
     }
@@ -35,17 +35,17 @@ final class ThumbnailDirectory
     // NORMALISATION
     // =========================================
 
-    private static function normalizeFolder(string $folder): string
+    private static function normalizeCollection(string $collection): string
     {
-        $folder = strtolower(trim($folder));
+        $collection = strtolower(trim($collection));
 
-        if ($folder === '' || preg_match('/^[a-z0-9_-]+$/', $folder) !== 1)
+        if ($collection === '' || preg_match('/^[a-z0-9_-]+$/', $collection) !== 1)
         {
             throw new InvalidArgumentException(
-                "Invalid thumbnail folder: {$folder}"
+                "Invalid thumbnail collection: {$collection}"
             );
         }
 
-        return $folder;
+        return $collection;
     }
 }
