@@ -6,7 +6,7 @@ namespace App\Http\Requests\Nendoroid;
 
 use App\DTO\Nendoroid\Inputs\NendoroidCreateDTO;
 
-use Framework\Config\UploadConfig;
+use App\Support\ThumbnailDirectory;
 use Framework\Http\FormRequest;
 
 final class NendoroidCreateRequest extends FormRequest

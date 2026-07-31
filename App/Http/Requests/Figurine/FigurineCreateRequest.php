@@ -11,10 +11,13 @@ use Framework\Http\FormRequest;
 
 final class FigurineCreateRequest extends FormRequest
 {
+    // =========================================
+    // VALIDATION
+    // =========================================
+
     protected function validate(): void
     {
         $this->validator
-
             ->required('waifu')
             ->string('waifu')
             ->maxLength('waifu', 150)
@@ -56,6 +59,10 @@ final class FigurineCreateRequest extends FormRequest
             ->imageMime('image', UploadConfig::allowedMimeTypes())
             ->maxFileSize('image', UploadConfig::maxSize());
     }
+
+    // =========================================
+    // DTO
+    // =========================================
 
     public function dto(): FigurineCreateDTO
     {

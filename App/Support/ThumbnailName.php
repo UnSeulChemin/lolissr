@@ -6,19 +6,19 @@ namespace App\Support;
 
 use Framework\Support\Str;
 
-final class MangaThumbnailName
+final class ThumbnailName
 {
     private function __construct()
     {
     }
 
     // =========================================
-    // THUMBNAIL
+    // GÉNÉRATION
     // =========================================
 
-    public static function generate(string $livre, int $numero): string
+    public static function generate(string $name, int $numero): string
     {
-        $slug = Str::slug($livre);
+        $slug = Str::slug($name);
 
         if ($slug === '' || $numero <= 0)
         {

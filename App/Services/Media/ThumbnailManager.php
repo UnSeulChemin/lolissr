@@ -7,21 +7,17 @@ namespace App\Services\Media;
 use App\DTO\Common\ServiceResult;
 use App\DTO\Upload\UploadThumbnailData;
 use App\Services\UploadService;
-
-use Framework\Config\UploadConfig;
+use App\Support\ThumbnailDirectory;
 
 final readonly class ThumbnailManager
 {
-    public function __construct(
-        private UploadService $uploadService
-    ) {
+    public function __construct(private UploadService $uploadService)
+    {
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | UPLOAD
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // UPLOAD
+    // =========================================
 
     /**
      * @param array<string, mixed> $files
@@ -35,7 +31,7 @@ final readonly class ThumbnailManager
         $result = $this->uploadService->uploadThumbnail(
             $name,
             $numero,
-            UploadConfig::thumbnailDirectory($collection),
+            ThumbnailDirectory::resolve($collection),
             $files
         );
 
@@ -43,7 +39,8 @@ final readonly class ThumbnailManager
         {
             return ServiceResult::error(
                 message: $result->message,
-                status: $result->status
+                status: $result->status,
+                data: $result->data
             );
         }
 
@@ -52,50 +49,41 @@ final readonly class ThumbnailManager
         if (! $upload instanceof UploadThumbnailData)
         {
             return ServiceResult::error(
-                message: 'Upload invalide'
+                message: 'Données d’upload invalides',
+                status: 500
             );
         }
 
         return $upload;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | ROLLBACK
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // ROLLBACK
+    // =========================================
 
-    public function rollback(
-        UploadThumbnailData $upload
-    ): bool {
-        return $this->uploadService->removeFile(
-            $upload->destinationPath
-        );
+    public function rollback(UploadThumbnailData $upload): bool
+    {
+        return $this->uploadService->removeFile($upload->destinationPath);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | SUPPRESSION
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // SUPPRESSION
+    // =========================================
 
     public function remove(
         ?string $thumbnail,
         ?string $extension,
         string $collection
     ): bool {
-        if (
-            $thumbnail === null
-            || $thumbnail === ''
-            || $extension === null
-            || $extension === ''
-        )
+        $thumbnail = $thumbnail !== null ? trim($thumbnail) : '';
+        $extension = $extension !== null ? trim($extension) : '';
+
+        if ($thumbnail === '' || $extension === '')
         {
             return true;
         }
 
-        $path =
-            UploadConfig::thumbnailDirectory($collection)
+        $path = ThumbnailDirectory::resolve($collection)
             . $thumbnail
             . '.'
             . $extension;
