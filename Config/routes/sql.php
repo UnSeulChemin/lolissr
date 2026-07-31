@@ -19,11 +19,28 @@ if (App::isProduction() || ! env_bool('SQL_TOOL_ENABLED', false))
 
 $router->prefix('sql')->group(function (Router $router): void
 {
+    // =========================================
+    // PAGE
+    // =========================================
+
     $router->get('', [SqlController::class, 'index']);
 
-    $router->post('', [SqlController::class, 'execute'], [CsrfMiddleware::class]);
+    // =========================================
+    // EXÉCUTION HTML
+    // =========================================
 
-    $router->prefix('ajax')
+    $router->post(
+        '',
+        [SqlController::class, 'execute'],
+        [CsrfMiddleware::class]
+    );
+
+    // =========================================
+    // EXÉCUTION JSON
+    // =========================================
+
+    $router
+        ->prefix('ajax')
         ->middleware([ExpectJsonMiddleware::class, CsrfMiddleware::class])
         ->group(function (Router $router): void
         {

@@ -13,91 +13,105 @@ use Framework\Routing\Router;
 
 $router->prefix('peluche')->group(function (Router $router): void
 {
+    // =========================================
+    // INDEX
+    // =========================================
+
     $router->get('', [PelucheController::class, 'index']);
 
-    /*
-    |--------------------------------------------------------------------------
-    | WAIFUS
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // WAIFUS
+    // =========================================
 
     $router->prefix('waifus')->group(function (Router $router): void
     {
         $router->get('', [PelucheController::class, 'waifus']);
-
         $router->get('page/{page:int}', [PelucheController::class, 'waifus']);
 
-        /*
-        |--------------------------------------------------------------------------
-        | ACTIONS SUR UNE PELUCHE
-        |--------------------------------------------------------------------------
-        */
+        // =========================================
+        // MODIFICATION
+        // =========================================
 
-        $router->get('{slug}/modifier/{numero:int}', [PelucheController::class, 'edit']);
+        $router->get(
+            '{slug}/modifier/{numero:int}',
+            [PelucheController::class, 'edit']
+        );
 
-        $router->post('{slug}/modifier/{numero:int}',
+        $router->post(
+            '{slug}/modifier/{numero:int}',
             [PelucheController::class, 'update'],
             [CsrfMiddleware::class]
         );
 
-        $router->post('{slug}/supprimer/{numero:int}',
+        // =========================================
+        // SUPPRESSION
+        // =========================================
+
+        $router->post(
+            '{slug}/supprimer/{numero:int}',
             [PelucheAjaxController::class, 'delete'],
             [ExpectJsonMiddleware::class, CsrfMiddleware::class]
         );
 
-        /*
-        |--------------------------------------------------------------------------
-        | CONSULTATION
-        |--------------------------------------------------------------------------
-        */
+        // =========================================
+        // CONSULTATION
+        // =========================================
 
-        $router->get('{slug}/{numero:int}', [PelucheController::class, 'showWaifu']);
+        $router->get(
+            '{slug}/{numero:int}',
+            [PelucheController::class, 'showWaifu']
+        );
     });
 
-    /*
-    |--------------------------------------------------------------------------
-    | AJOUT
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // AJOUT
+    // =========================================
 
     $router->get('ajouter', [PelucheController::class, 'create']);
 
-    $router->post('ajouter', [PelucheController::class, 'store'], [CsrfMiddleware::class]);
+    $router->post(
+        'ajouter',
+        [PelucheController::class, 'store'],
+        [CsrfMiddleware::class]
+    );
 
-    /*
-    |--------------------------------------------------------------------------
-    | AJAX HTML
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // AJAX
+    // =========================================
 
     $router->prefix('ajax')->group(function (Router $router): void
     {
-        $router->get('waifus/page/{page:int}', [PelucheAjaxController::class, 'waifusPage']);
+        // =========================================
+        // HTML
+        // =========================================
+
+        $router->get(
+            'waifus/page/{page:int}',
+            [PelucheAjaxController::class, 'waifusPage']
+        );
+
+        // =========================================
+        // JSON
+        // =========================================
+
+        $router
+            ->middleware(ExpectJsonMiddleware::class)
+            ->group(function (Router $router): void
+            {
+                $router->get(
+                    'recherche/{query}',
+                    [PelucheAjaxController::class, 'search']
+                );
+
+                $router
+                    ->middleware(CsrfMiddleware::class)
+                    ->group(function (Router $router): void
+                    {
+                        $router->post(
+                            'update-collect-status/{slug}/{numero:int}',
+                            [PelucheAjaxController::class, 'updateCollectStatus']
+                        );
+                    });
+            });
     });
-
-    /*
-    |--------------------------------------------------------------------------
-    | AJAX JSON
-    |--------------------------------------------------------------------------
-    */
-
-    $router->prefix('ajax')
-        ->middleware(ExpectJsonMiddleware::class)
-        ->group(function (Router $router): void
-        {
-            $router->get('recherche/{query}', [PelucheAjaxController::class, 'search']);
-        });
-
-    /*
-    |--------------------------------------------------------------------------
-    | AJAX JSON + CSRF
-    |--------------------------------------------------------------------------
-    */
-
-    $router->prefix('ajax')
-        ->middleware([ExpectJsonMiddleware::class, CsrfMiddleware::class])
-        ->group(function (Router $router): void
-        {
-            $router->post('update-collect-status/{slug}/{numero:int}', [PelucheAjaxController::class, 'updateCollectStatus']);
-        });
 });

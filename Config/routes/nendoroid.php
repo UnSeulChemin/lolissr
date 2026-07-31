@@ -13,91 +13,105 @@ use Framework\Routing\Router;
 
 $router->prefix('nendoroid')->group(function (Router $router): void
 {
+    // =========================================
+    // INDEX
+    // =========================================
+
     $router->get('', [NendoroidController::class, 'index']);
 
-    /*
-    |--------------------------------------------------------------------------
-    | WAIFUS
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // WAIFUS
+    // =========================================
 
     $router->prefix('waifus')->group(function (Router $router): void
     {
         $router->get('', [NendoroidController::class, 'waifus']);
-
         $router->get('page/{page:int}', [NendoroidController::class, 'waifus']);
 
-        /*
-        |--------------------------------------------------------------------------
-        | ACTIONS SUR UNE NENDOROID
-        |--------------------------------------------------------------------------
-        */
+        // =========================================
+        // MODIFICATION
+        // =========================================
 
-        $router->get('{slug}/modifier/{numero:int}', [NendoroidController::class, 'edit']);
+        $router->get(
+            '{slug}/modifier/{numero:int}',
+            [NendoroidController::class, 'edit']
+        );
 
-        $router->post('{slug}/modifier/{numero:int}',
+        $router->post(
+            '{slug}/modifier/{numero:int}',
             [NendoroidController::class, 'update'],
             [CsrfMiddleware::class]
         );
 
-        $router->post('{slug}/supprimer/{numero:int}',
+        // =========================================
+        // SUPPRESSION
+        // =========================================
+
+        $router->post(
+            '{slug}/supprimer/{numero:int}',
             [NendoroidAjaxController::class, 'delete'],
             [ExpectJsonMiddleware::class, CsrfMiddleware::class]
         );
 
-        /*
-        |--------------------------------------------------------------------------
-        | CONSULTATION
-        |--------------------------------------------------------------------------
-        */
+        // =========================================
+        // CONSULTATION
+        // =========================================
 
-        $router->get('{slug}/{numero:int}', [NendoroidController::class, 'showWaifu']);
+        $router->get(
+            '{slug}/{numero:int}',
+            [NendoroidController::class, 'showWaifu']
+        );
     });
 
-    /*
-    |--------------------------------------------------------------------------
-    | AJOUT
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // AJOUT
+    // =========================================
 
     $router->get('ajouter', [NendoroidController::class, 'create']);
 
-    $router->post('ajouter', [NendoroidController::class, 'store'], [CsrfMiddleware::class]);
+    $router->post(
+        'ajouter',
+        [NendoroidController::class, 'store'],
+        [CsrfMiddleware::class]
+    );
 
-    /*
-    |--------------------------------------------------------------------------
-    | AJAX HTML
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // AJAX
+    // =========================================
 
     $router->prefix('ajax')->group(function (Router $router): void
     {
-        $router->get('waifus/page/{page:int}', [NendoroidAjaxController::class, 'waifusPage']);
+        // =========================================
+        // HTML
+        // =========================================
+
+        $router->get(
+            'waifus/page/{page:int}',
+            [NendoroidAjaxController::class, 'waifusPage']
+        );
+
+        // =========================================
+        // JSON
+        // =========================================
+
+        $router
+            ->middleware(ExpectJsonMiddleware::class)
+            ->group(function (Router $router): void
+            {
+                $router->get(
+                    'recherche/{query}',
+                    [NendoroidAjaxController::class, 'search']
+                );
+
+                $router
+                    ->middleware(CsrfMiddleware::class)
+                    ->group(function (Router $router): void
+                    {
+                        $router->post(
+                            'update-collect-status/{slug}/{numero:int}',
+                            [NendoroidAjaxController::class, 'updateCollectStatus']
+                        );
+                    });
+            });
     });
-
-    /*
-    |--------------------------------------------------------------------------
-    | AJAX JSON
-    |--------------------------------------------------------------------------
-    */
-
-    $router->prefix('ajax')
-        ->middleware(ExpectJsonMiddleware::class)
-        ->group(function (Router $router): void
-        {
-            $router->get('recherche/{query}', [NendoroidAjaxController::class, 'search']);
-        });
-
-    /*
-    |--------------------------------------------------------------------------
-    | AJAX JSON + CSRF
-    |--------------------------------------------------------------------------
-    */
-
-    $router->prefix('ajax')
-        ->middleware([ExpectJsonMiddleware::class, CsrfMiddleware::class])
-        ->group(function (Router $router): void
-        {
-            $router->post('update-collect-status/{slug}/{numero:int}', [NendoroidAjaxController::class, 'updateCollectStatus']);
-        });
 });

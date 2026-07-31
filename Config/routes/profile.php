@@ -11,44 +11,37 @@ use Framework\Routing\Router;
 
 /** @var Router $router */
 
-$router->get('profil', [ProfileController::class, 'index']);
-
-$router->get('profil/personnalisation', [ProfileController::class, 'customization']);
-
-/*
-|--------------------------------------------------------------------------
-| AJAX JSON
-|--------------------------------------------------------------------------
-*/
-
-$router->prefix('profil/ajax')
-    ->middleware(ExpectJsonMiddleware::class)
-    ->group(function (Router $router): void
+$router->prefix('profil')->group(function (Router $router): void
 {
-    $router->get('titles', [ProfileAjaxController::class, 'titles']);
+    // =========================================
+    // PAGES
+    // =========================================
 
-    $router->get('avatars', [ProfileAjaxController::class, 'avatars']);
+    $router->get('', [ProfileController::class, 'index']);
+    $router->get('personnalisation', [ProfileController::class, 'customization']);
 
-    $router->get('banners', [ProfileAjaxController::class, 'banners']);
+    // =========================================
+    // AJAX
+    // =========================================
 
-    $router->get('frames', [ProfileAjaxController::class, 'frames']);
-});
+    $router
+        ->prefix('ajax')
+        ->middleware(ExpectJsonMiddleware::class)
+        ->group(function (Router $router): void
+        {
+            $router->get('titles', [ProfileAjaxController::class, 'titles']);
+            $router->get('avatars', [ProfileAjaxController::class, 'avatars']);
+            $router->get('banners', [ProfileAjaxController::class, 'banners']);
+            $router->get('frames', [ProfileAjaxController::class, 'frames']);
 
-/*
-|--------------------------------------------------------------------------
-| AJAX JSON + CSRF
-|--------------------------------------------------------------------------
-*/
-
-$router->prefix('profil/ajax')
-    ->middleware([ExpectJsonMiddleware::class, CsrfMiddleware::class])
-    ->group(function (Router $router): void
-{
-    $router->post('update-title', [ProfileAjaxController::class, 'updateTitle']);
-
-    $router->post('update-avatar', [ProfileAjaxController::class, 'updateAvatar']);
-
-    $router->post('update-banner', [ProfileAjaxController::class, 'updateBanner']);
-
-    $router->post('update-frame', [ProfileAjaxController::class, 'updateFrame']);
+            $router
+                ->middleware(CsrfMiddleware::class)
+                ->group(function (Router $router): void
+                {
+                    $router->post('update-title', [ProfileAjaxController::class, 'updateTitle']);
+                    $router->post('update-avatar', [ProfileAjaxController::class, 'updateAvatar']);
+                    $router->post('update-banner', [ProfileAjaxController::class, 'updateBanner']);
+                    $router->post('update-frame', [ProfileAjaxController::class, 'updateFrame']);
+                });
+        });
 });

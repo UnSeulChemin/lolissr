@@ -10,8 +10,6 @@ use Framework\Http\FormRequest;
 
 final class ArtbookUpdateRequest extends FormRequest
 {
-    private const SOURCE_TYPES = ['auteur', 'serie'];
-
     // =========================================
     // VALIDATION
     // =========================================
@@ -22,10 +20,6 @@ final class ArtbookUpdateRequest extends FormRequest
             ->required('artbook')
             ->string('artbook')
             ->maxLength('artbook', 150)
-
-            ->required('type_source')
-            ->string('type_source')
-            ->in('type_source', self::SOURCE_TYPES)
 
             ->required('source')
             ->string('source')

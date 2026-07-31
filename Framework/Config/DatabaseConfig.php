@@ -11,47 +11,53 @@ final class DatabaseConfig
     }
 
     // =========================================
-    // CONFIGURATION
+    // CONNEXION
     // =========================================
 
     public static function host(): string
     {
-        return self::getString('database.host', 'localhost');
+        return self::string('database.host', 'localhost');
     }
 
     public static function port(): int
     {
-        return min(
-            65535,
-            max(1, (int) config('database.port', 3306))
-        );
+        return (int) config('database.port', 3306);
     }
 
     public static function name(): string
     {
-        return self::getString('database.name');
+        return self::string('database.name');
     }
 
     public static function user(): string
     {
-        return self::getString('database.user');
+        return self::string('database.user');
     }
 
     public static function pass(): string
     {
-        return self::getString('database.pass');
+        return self::string('database.pass');
     }
 
     public static function charset(): string
     {
-        return self::getString('database.charset', 'utf8mb4');
+        return self::string('database.charset', 'utf8mb4');
+    }
+
+    // =========================================
+    // PROFILING
+    // =========================================
+
+    public static function slowQueryThreshold(): float
+    {
+        return max(1.0, (float) config('database.slow_query_threshold', 50));
     }
 
     // =========================================
     // RÉSOLUTION
     // =========================================
 
-    private static function getString(string $key, string $default = ''): string
+    private static function string(string $key, string $default = ''): string
     {
         return trim((string) config($key, $default));
     }

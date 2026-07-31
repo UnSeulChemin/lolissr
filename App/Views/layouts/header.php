@@ -3,12 +3,16 @@
 declare(strict_types=1);
 
 use App\DTO\Common\Responses\ViewData;
+use App\Models\User;
+
+use Framework\Application\App;
 
 /** @var ViewData $view */
+/** @var string|null $currentSearch */
+/** @var User|null $user */
 
-$currentSearch = isset($currentSearch)
-    ? (string) $currentSearch
-    : '';
+$currentSearch = (string) ($currentSearch ?? '');
+$user = user();
 
 ?>
 
@@ -16,26 +20,20 @@ $currentSearch = isset($currentSearch)
 
     <nav>
 
-        <?php if (is_logged()): ?>
+        <?php if ($user !== null): ?>
 
             <?php
 
-            /** @var App\Models\User|null $user */
-            $user = user();
-
-            assert($user !== null);
-
             $username = $user->username;
+            $usernameLength = mb_strlen($username);
 
-            $usernameMain = strlen($username) > 3
-                ? substr($username, 0, -3)
+            $usernameMain = $usernameLength > 3
+                ? mb_substr($username, 0, -3)
                 : $username;
 
-            $usernameSuffix = strlen($username) > 3
-                ? substr($username, -3)
+            $usernameSuffix = $usernameLength > 3
+                ? mb_substr($username, -3)
                 : '';
-
-            $level = $user->level;
 
             ?>
 
@@ -64,7 +62,7 @@ $currentSearch = isset($currentSearch)
                     </span>
 
                     <span class="site-logo-level js-user-level">
-                        <?= e((string) $level) ?>
+                        <?= e((string) $user->level) ?>
                     </span>
 
                 </a>
@@ -177,7 +175,7 @@ $currentSearch = isset($currentSearch)
                         id="header-search-input"
                         type="search"
                         name="q"
-                        placeholder="Rechercher... • v<?= e(config('app.version')) ?>"
+                        placeholder="Rechercher... • v<?= e(App::version()) ?>"
                         value="<?= e($currentSearch) ?>"
                         autocomplete="off"
                     >
@@ -220,8 +218,8 @@ $currentSearch = isset($currentSearch)
                         </div>
 
                         <div
-                            class="header-search-results"
                             id="header-search-results"
+                            class="header-search-results"
                         ></div>
 
                     </div>

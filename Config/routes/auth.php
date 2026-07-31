@@ -11,7 +11,15 @@ use Framework\Routing\Router;
 
 /** @var Router $router */
 
-$router->get('connexion', [AuthController::class, 'login'], [GuestMiddleware::class]);
+// =========================================
+// CONNEXION
+// =========================================
+
+$router->get(
+    'connexion',
+    [AuthController::class, 'login'],
+    [GuestMiddleware::class]
+);
 
 $router->post(
     'connexion',
@@ -19,9 +27,17 @@ $router->post(
     [GuestMiddleware::class, CsrfMiddleware::class]
 );
 
+// =========================================
+// INSCRIPTION
+// =========================================
+
 if (! App::isProduction() && env_bool('REGISTRATION_ENABLED', false))
 {
-    $router->get('inscription', [AuthController::class, 'register'], [GuestMiddleware::class]);
+    $router->get(
+        'inscription',
+        [AuthController::class, 'register'],
+        [GuestMiddleware::class]
+    );
 
     $router->post(
         'inscription',

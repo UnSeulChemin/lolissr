@@ -13,93 +13,106 @@ use Framework\Routing\Router;
 
 $router->prefix('figurine')->group(function (Router $router): void
 {
-    $router->get('', [FigurineController::class, 'index']);
+    // =========================================
+    // INDEX
+    // =========================================
 
+    $router->get('', [FigurineController::class, 'index']);
     $router->get('lien', [FigurineController::class, 'links']);
 
-    /*
-    |--------------------------------------------------------------------------
-    | WAIFUS
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // WAIFUS
+    // =========================================
 
     $router->prefix('waifus')->group(function (Router $router): void
     {
         $router->get('', [FigurineController::class, 'waifus']);
-
         $router->get('page/{page:int}', [FigurineController::class, 'waifus']);
 
-        /*
-        |--------------------------------------------------------------------------
-        | ACTIONS SUR UNE FIGURINE
-        |--------------------------------------------------------------------------
-        */
+        // =========================================
+        // MODIFICATION
+        // =========================================
 
-        $router->get('{slug}/modifier/{numero:int}', [FigurineController::class, 'edit']);
+        $router->get(
+            '{slug}/modifier/{numero:int}',
+            [FigurineController::class, 'edit']
+        );
 
-        $router->post('{slug}/modifier/{numero:int}',
+        $router->post(
+            '{slug}/modifier/{numero:int}',
             [FigurineController::class, 'update'],
             [CsrfMiddleware::class]
         );
 
-        $router->post('{slug}/supprimer/{numero:int}',
+        // =========================================
+        // SUPPRESSION
+        // =========================================
+
+        $router->post(
+            '{slug}/supprimer/{numero:int}',
             [FigurineAjaxController::class, 'delete'],
             [ExpectJsonMiddleware::class, CsrfMiddleware::class]
         );
 
-        /*
-        |--------------------------------------------------------------------------
-        | CONSULTATION
-        |--------------------------------------------------------------------------
-        */
+        // =========================================
+        // CONSULTATION
+        // =========================================
 
-        $router->get('{slug}/{numero:int}', [FigurineController::class, 'showWaifu']);
+        $router->get(
+            '{slug}/{numero:int}',
+            [FigurineController::class, 'showWaifu']
+        );
     });
 
-    /*
-    |--------------------------------------------------------------------------
-    | AJOUT
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // AJOUT
+    // =========================================
 
     $router->get('ajouter', [FigurineController::class, 'create']);
 
-    $router->post('ajouter', [FigurineController::class, 'store'], [CsrfMiddleware::class]);
+    $router->post(
+        'ajouter',
+        [FigurineController::class, 'store'],
+        [CsrfMiddleware::class]
+    );
 
-    /*
-    |--------------------------------------------------------------------------
-    | AJAX HTML
-    |--------------------------------------------------------------------------
-    */
+    // =========================================
+    // AJAX
+    // =========================================
 
     $router->prefix('ajax')->group(function (Router $router): void
     {
-        $router->get('waifus/page/{page:int}', [FigurineAjaxController::class, 'waifusPage']);
+        // =========================================
+        // HTML
+        // =========================================
+
+        $router->get(
+            'waifus/page/{page:int}',
+            [FigurineAjaxController::class, 'waifusPage']
+        );
+
+        // =========================================
+        // JSON
+        // =========================================
+
+        $router
+            ->middleware(ExpectJsonMiddleware::class)
+            ->group(function (Router $router): void
+            {
+                $router->get(
+                    'recherche/{query}',
+                    [FigurineAjaxController::class, 'search']
+                );
+
+                $router
+                    ->middleware(CsrfMiddleware::class)
+                    ->group(function (Router $router): void
+                    {
+                        $router->post(
+                            'update-collect-status/{slug}/{numero:int}',
+                            [FigurineAjaxController::class, 'updateCollectStatus']
+                        );
+                    });
+            });
     });
-
-    /*
-    |--------------------------------------------------------------------------
-    | AJAX JSON
-    |--------------------------------------------------------------------------
-    */
-
-    $router->prefix('ajax')
-        ->middleware(ExpectJsonMiddleware::class)
-        ->group(function (Router $router): void
-        {
-            $router->get('recherche/{query}', [FigurineAjaxController::class, 'search']);
-        });
-
-    /*
-    |--------------------------------------------------------------------------
-    | AJAX JSON + CSRF
-    |--------------------------------------------------------------------------
-    */
-
-    $router->prefix('ajax')
-        ->middleware([ExpectJsonMiddleware::class, CsrfMiddleware::class])
-        ->group(function (Router $router): void
-        {
-            $router->post('update-collect-status/{slug}/{numero:int}', [FigurineAjaxController::class, 'updateCollectStatus']);
-        });
 });
