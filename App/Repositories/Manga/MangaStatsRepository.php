@@ -29,6 +29,22 @@ final class MangaStatsRepository extends Model
         return (int) $this->fetchSingleValue("SELECT COUNT(*) AS total FROM {$this->table()} WHERE lu = 1", 'total');
     }
 
+    public function countRewardedTomes(): int
+    {
+        return (int) $this->fetchSingleValue(
+            "SELECT COUNT(*) AS total FROM {$this->table()} WHERE xp_read_rewarded = 1",
+            'total'
+        );
+    }
+
+    public function countRewardedSeries(): int
+    {
+        return (int) $this->fetchSingleValue(
+            "SELECT COUNT(DISTINCT slug) AS total FROM {$this->table()} WHERE xp_series_rewarded = 1",
+            'total'
+        );
+    }
+
     public function averageNote(): ?float
     {
         $average = $this->fetchSingleValue(

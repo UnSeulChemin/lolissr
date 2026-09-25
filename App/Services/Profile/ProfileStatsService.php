@@ -116,21 +116,21 @@ final readonly class ProfileStatsService
         $completedSeries = $this->completedSeries();
 
         // MANGA XP
-        $tomeXp = $readTomes * UserXp::READ_TOME;
-        $seriesXp = $completedSeries * UserXp::COMPLETE_SERIES;
+        $tomeXp = $this->mangaStatsRepository->countRewardedTomes() * UserXp::READ_TOME;
+        $seriesXp = $this->mangaStatsRepository->countRewardedSeries() * UserXp::COMPLETE_SERIES;
 
         // ARTBOOKS
         $readArtbooks = $this->readArtbooks();
 
         // ARTBOOKS XP
-        $artbookXp = $readArtbooks * UserXp::READ_ARTBOOK;
+        $artbookXp = $this->artbookStatsRepository->countRewardedArtbooks() * UserXp::READ_ARTBOOK;
 
         // FIGURINES
         $figurinesCollected = $this->collectedFigurines();
 
         // FIGURINES XP
         $figurinesXp =
-            $figurinesCollected
+            $this->figurineStatsRepository->countRewarded()
             * UserXp::COLLECT_FIGURINE;
 
         // NENDOROIDS
@@ -138,7 +138,7 @@ final readonly class ProfileStatsService
 
         // NENDOROIDS XP
         $nendoroidsXp =
-            $nendoroidsCollected
+            $this->nendoroidStatsRepository->countRewarded()
             * UserXp::COLLECT_NENDOROID;
 
         // PELUCHES
@@ -146,7 +146,7 @@ final readonly class ProfileStatsService
 
         // PELUCHES XP
         $peluchesXp =
-            $peluchesCollected
+            $this->pelucheStatsRepository->countRewarded()
             * UserXp::COLLECT_PELUCHE;
 
         // CHINESE

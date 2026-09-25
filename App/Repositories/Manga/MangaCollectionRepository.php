@@ -22,7 +22,7 @@ final class MangaCollectionRepository extends Model
     public function countFirstTomes(): int
     {
         $result = $this->fetchOne(
-            "SELECT COUNT(*) AS total FROM {$this->table()} WHERE numero = 1"
+            "SELECT COUNT(DISTINCT slug) AS total FROM {$this->table()}"
         );
 
         return (int) ($result->total ?? 0);
@@ -58,7 +58,13 @@ final class MangaCollectionRepository extends Model
             ) stats
                 ON stats.slug = m.slug
 
-            WHERE m.numero = 1
+            WHERE m.id = (
+                SELECT first_tome.id
+                FROM {$this->table()} first_tome
+                WHERE first_tome.slug = m.slug
+                ORDER BY first_tome.numero ASC, first_tome.id ASC
+                LIMIT 1
+            )
 
             ORDER BY
                 CASE WHEN stats.total_lu < stats.total THEN 0 ELSE 1 END ASC,
@@ -97,7 +103,13 @@ final class MangaCollectionRepository extends Model
             ) stats
                 ON stats.slug = m.slug
 
-            WHERE m.numero = 1
+            WHERE m.id = (
+                SELECT first_tome.id
+                FROM {$this->table()} first_tome
+                WHERE first_tome.slug = m.slug
+                ORDER BY first_tome.numero ASC, first_tome.id ASC
+                LIMIT 1
+            )
             AND stats.average_note < 10
 
             ORDER BY
@@ -132,7 +144,13 @@ final class MangaCollectionRepository extends Model
             ) stats
                 ON stats.slug = m.slug
 
-            WHERE m.numero = 1
+            WHERE m.id = (
+                SELECT first_tome.id
+                FROM {$this->table()} first_tome
+                WHERE first_tome.slug = m.slug
+                ORDER BY first_tome.numero ASC, first_tome.id ASC
+                LIMIT 1
+            )
             AND stats.total_lu < stats.total
 
             ORDER BY

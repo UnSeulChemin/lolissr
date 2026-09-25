@@ -46,6 +46,14 @@ final class ArtbookStatsRepository extends Model
         );
     }
 
+    public function countRewardedArtbooks(): int
+    {
+        return (int) $this->fetchSingleValue(
+            "SELECT COUNT(*) AS total FROM {$this->table()} WHERE xp_read_rewarded = 1",
+            'total'
+        );
+    }
+
     public function countSeries(): int
     {
         return (int) $this->fetchSingleValue(
