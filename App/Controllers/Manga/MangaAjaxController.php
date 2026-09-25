@@ -158,10 +158,7 @@ final class MangaAjaxController extends Controller
             $numero
         );
 
-        $readStatus = (int) $this->request->input(
-            'readStatus',
-            0
-        );
+        $readStatus = $this->binaryStatusInput('readStatus');
 
         $result = $this->mangaWriteService->updateReadStatus(
             $data->manga->slug,

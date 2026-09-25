@@ -87,10 +87,7 @@ final class ArtbookAjaxController extends Controller
             $numero
         );
 
-        $readStatus = (int) $this->request->input(
-            'readStatus',
-            0
-        );
+        $readStatus = $this->binaryStatusInput('readStatus');
 
         $result = $this->artbookWriteService->updateReadStatus(
             $artbook->slug,

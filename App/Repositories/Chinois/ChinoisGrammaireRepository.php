@@ -130,9 +130,22 @@ final class ChinoisGrammaireRepository extends Model
         $section = trim($section);
         $categorie = trim($categorie);
 
-        $sameLocation = $current->niveau === $niveau
-            && $current->section === $section
-            && $current->categorie === $categorie;
+        $sameSection = $current->niveau === $niveau
+            && $current->section === $section;
+
+        $sameLocation = $sameSection && $current->categorie === $categorie;
+
+        $ordering = [];
+
+        if (! $sameSection)
+        {
+            $ordering['section_position'] = $this->getSectionPosition($niveau, $section, $id);
+        }
+
+        if (! $sameLocation)
+        {
+            $ordering['categorie_position'] = $this->getCategoriePosition($niveau, $section, $categorie, $id);
+        }
 
         $position = $sameLocation
             ? $current->position
@@ -143,14 +156,8 @@ final class ChinoisGrammaireRepository extends Model
             [
                 'niveau' => $niveau,
                 'section' => $section,
-                'section_position' => $this->getSectionPosition($niveau, $section, $id),
                 'categorie' => $categorie,
-                'categorie_position' => $this->getCategoriePosition(
-                    $niveau,
-                    $section,
-                    $categorie,
-                    $id
-                ),
+                ...$ordering,
                 'position' => $position,
                 'titre' => trim($titre),
                 'structure' => trim($structure),

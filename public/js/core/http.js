@@ -263,6 +263,8 @@ function createJsonRequest(
                     body,
                 ),
 
+            ...options,
+
             headers:
             {
                 'Content-Type':
@@ -271,7 +273,6 @@ function createJsonRequest(
                 ...(options.headers || {}),
             },
 
-            ...options,
         },
     );
 }

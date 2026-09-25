@@ -81,7 +81,7 @@ final class FigurineAjaxController extends Controller
             $numero
         );
 
-        $collectStatus = (int) $this->request->input('collectStatus', 0);
+        $collectStatus = $this->binaryStatusInput('collectStatus');
 
         $result = $this->figurineWriteService->updateCollectStatus(
             $figurine->slug,

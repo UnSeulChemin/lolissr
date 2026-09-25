@@ -82,6 +82,14 @@ abstract class Controller
         return $this->request->expectsJson();
     }
 
+    // Invalid or missing values remain invalid for the services' 0/1 validation.
+    protected function binaryStatusInput(string $key): int
+    {
+        $value = $this->request->input($key);
+
+        return in_array($value, [0, 1, '0', '1'], true) ? (int) $value : -1;
+    }
+
     /*
     |--------------------------------------------------------------------------
     | VIEWS
