@@ -304,7 +304,7 @@ abstract class Controller
 
         if ($withOld)
         {
-            $session['old'] = $this->request->all();
+            $session['old'] = $this->oldInput();
         }
 
         $this->redirectWith(
@@ -325,7 +325,7 @@ abstract class Controller
             $url,
             [
                 'errors' => $errors,
-                'old' => $this->request->all(),
+                'old' => $this->oldInput(),
                 'error' => $message,
             ]
         );
@@ -341,6 +341,18 @@ abstract class Controller
                 'success' => $message,
             ]
         );
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function oldInput(): array
+    {
+        $input = $this->request->all();
+
+        unset($input['password'], $input['password_confirmation'], $input['current_password']);
+
+        return $input;
     }
 
     /*

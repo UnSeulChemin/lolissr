@@ -61,6 +61,8 @@ if ($temporaryConfigFile === false)
     fail('Unable to create temporary MySQL configuration.');
 }
 
+$failure = null;
+
 try
 {
     $configuration = implode(PHP_EOL, [
@@ -75,7 +77,7 @@ try
 
     if (file_put_contents($temporaryConfigFile, $configuration, LOCK_EX) === false)
     {
-        fail('Unable to write temporary MySQL configuration.');
+        throw new RuntimeException('Unable to write temporary MySQL configuration.');
     }
 
     $command = sprintf(
@@ -92,7 +94,7 @@ try
     {
         removeFile($backupFile);
 
-        fail('Database backup failed.');
+        throw new RuntimeException('Database backup failed.');
     }
 
     validateBackupFile($backupFile);
@@ -101,6 +103,10 @@ try
     echo PHP_EOL;
     echo '[OK] Backup created: ' . basename($backupFile);
     echo PHP_EOL;
+}
+catch (Throwable $exception)
+{
+    $failure = $exception->getMessage();
 }
 finally
 {
@@ -112,13 +118,18 @@ finally
     }
 }
 
+if ($failure !== null)
+{
+    fail($failure);
+}
+
 function validateBackupFile(string $backupFile): void
 {
     clearstatcache(true, $backupFile);
 
     if (! is_file($backupFile))
     {
-        fail('Backup file was not created.');
+        throw new RuntimeException('Backup file was not created.');
     }
 
     $backupSize = filesize($backupFile);
@@ -127,7 +138,7 @@ function validateBackupFile(string $backupFile): void
     {
         removeFile($backupFile);
 
-        fail(
+        throw new RuntimeException(
             'Backup file is missing or too small. Minimum expected size: '
             . MIN_BACKUP_SIZE
             . ' bytes.'

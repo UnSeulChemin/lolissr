@@ -138,23 +138,34 @@ export function invalidatePrefetch(href)
         href,
     );
 
-    invalidated.add(
-        url,
-    );
+    const target = new URL(url);
+    const targetPath = target.pathname.replace(/\/+$/, '') || '/';
+    const keys = new Set([url, ...cache.keys(), ...inFlight.keys()]);
 
-    cache.delete(
-        url,
-    );
+    for (const key of keys)
+    {
+        const candidate = new URL(key);
+        const candidatePath = candidate.pathname.replace(/\/+$/, '') || '/';
 
-    const entry = inFlight.get(
-        url,
-    );
+        if (
+            candidate.origin !== target.origin
+            || (
+                candidatePath !== targetPath
+                && ! candidatePath.startsWith(`${targetPath}/`)
+            )
+        )
+        {
+            continue;
+        }
 
-    entry?.controller.abort();
+        invalidated.add(key);
+        cache.delete(key);
 
-    inFlight.delete(
-        url,
-    );
+        const entry = inFlight.get(key);
+
+        entry?.controller.abort();
+        inFlight.delete(key);
+    }
 
     debug(
         'PREFETCH',
