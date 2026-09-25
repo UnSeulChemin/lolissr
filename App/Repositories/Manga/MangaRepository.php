@@ -103,17 +103,34 @@ final class MangaRepository extends Model
     ): bool {
         [$jacquette, $livreNote] = $this->normalizeNotes($jacquette, $livreNote);
 
-        return $this->updateBySlugAndNumero(
+        $target = $this->fetchOne(
+            "SELECT id FROM {$this->table()} WHERE slug = :slug AND numero = :numero LIMIT 1",
+            [
+                'slug' => $this->normalizeSlug($slug),
+                'numero' => $numero,
+            ]
+        );
+
+        if ($target === null)
+        {
+            return false;
+        }
+
+        $updated = $this->updateBySlugAndNumero(
             $slug,
             $numero,
             [
                 'editeur' => Str::nullableTrim($editeur),
-                'statut' => trim($statut),
                 'jacquette' => $jacquette,
                 'livre_note' => $livreNote,
                 'note' => $this->calculateNote($jacquette, $livreNote),
                 'commentaire' => Str::nullableTrim($commentaire),
             ]
+        );
+
+        return $updated && $this->update(
+            ['statut' => trim($statut)],
+            ['slug' => $this->normalizeSlug($slug)]
         );
     }
 
@@ -214,6 +231,42 @@ final class MangaRepository extends Model
 
     public function claimSeriesReward(string $slug): bool
     {
+        if (! $this->db->inTransaction())
+        {
+            throw new \LogicException('Series rewards must be claimed inside a transaction.');
+        }
+
+        $mangas = $this->fetchAll(
+            "
+            SELECT id, xp_series_rewarded
+
+            FROM {$this->table()}
+
+            WHERE slug = :slug
+
+            ORDER BY id
+
+            FOR UPDATE
+            ",
+            [
+                'slug' => $this->normalizeSlug($slug),
+            ],
+            Manga::class
+        );
+
+        if ($mangas === [])
+        {
+            return false;
+        }
+
+        $alreadyRewarded = false;
+
+        foreach ($mangas as $manga)
+        {
+            $alreadyRewarded = $alreadyRewarded || $manga->xp_series_rewarded;
+        }
+
+        // Propagate the existing reward to newly added volumes without granting XP again.
         $statement = $this->query(
             "
             UPDATE {$this->table()}
@@ -228,7 +281,7 @@ final class MangaRepository extends Model
             ]
         );
 
-        return $statement !== false && $statement->rowCount() >= 1;
+        return ! $alreadyRewarded && $statement !== false && $statement->rowCount() >= 1;
     }
 
     /*

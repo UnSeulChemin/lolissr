@@ -184,7 +184,8 @@ final class MangaStatsRepository extends Model
             "
             SELECT
                 COUNT(*) AS total,
-                SUM(lu) AS total_lu
+                SUM(lu) AS total_lu,
+                MAX(CASE WHEN numero = 1 AND statut = 'termine' THEN 1 ELSE 0 END) AS termine
 
             FROM {$this->table()}
 
@@ -200,13 +201,15 @@ final class MangaStatsRepository extends Model
             return false;
         }
 
-        /** @var array{total?: mixed, total_lu?: mixed} $data */
+        /** @var array{total?: mixed, total_lu?: mixed, termine?: mixed} $data */
         $data = (array) $result;
 
         $total = (int) ($data['total'] ?? 0);
         $totalLu = (int) ($data['total_lu'] ?? 0);
+        // The collection uses volume 1 as the reference for the series status.
+        $isFinished = (int) ($data['termine'] ?? 0) === 1;
 
-        return $total > 0 && $total === $totalLu;
+        return $isFinished && $total > 0 && $total === $totalLu;
     }
 
     public function countCompletedSeries(): int

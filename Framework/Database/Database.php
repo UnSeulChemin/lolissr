@@ -45,6 +45,11 @@ final class Database extends PDO
                     PDO::ATTR_EMULATE_PREPARES => false
                 ]
             );
+
+            if (App::isTesting())
+            {
+                $this->exec('SET SESSION TRANSACTION READ ONLY');
+            }
         }
         catch (PDOException $exception)
         {
