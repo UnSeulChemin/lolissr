@@ -20,7 +20,7 @@ use App\DTO\Peluche\Responses\PelucheListItemData;
 
         <?php if ($totalPages > 1): ?>
 
-            <nav class="collection-pagination-wrapper">
+            <nav class="collection-pagination-wrapper u-row-center">
 
                 <?php for ($i = 1; $i <= $totalPages; $i++): ?>
 

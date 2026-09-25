@@ -39,11 +39,11 @@ $collectStatusLabel = $isCollected
 
 <section class="layout-container dashboard-page">
 
-    <section class="detail-card">
+    <section class="detail-card u-flex u-w-full u-border-box">
 
-        <figure class="detail-image">
+        <figure class="detail-image u-flex u-justify-center">
 
-            <div class="detail-image-inner">
+            <div class="detail-image-inner u-w-full">
 
                 <?php if ($peluche->thumbnailUrl !== null): ?>
 
@@ -58,9 +58,9 @@ $collectStatusLabel = $isCollected
 
         </figure>
 
-        <article class="detail-content">
+        <article class="detail-content u-stack">
 
-            <div class="detail-row">
+            <div class="detail-row u-grid">
 
                 <div class="detail-label">
                     Waifu
@@ -72,7 +72,7 @@ $collectStatusLabel = $isCollected
 
             </div>
 
-            <div class="detail-row">
+            <div class="detail-row u-grid">
 
                 <div class="detail-label">
                     Source
@@ -88,7 +88,7 @@ $collectStatusLabel = $isCollected
 
             </div>
 
-            <div class="detail-row">
+            <div class="detail-row u-grid">
 
                 <div class="detail-label">
                     Entreprise
@@ -104,7 +104,7 @@ $collectStatusLabel = $isCollected
 
             </div>
 
-            <div class="detail-row">
+            <div class="detail-row u-grid">
 
                 <div class="detail-label">
                     Date de sortie
@@ -120,7 +120,7 @@ $collectStatusLabel = $isCollected
 
             </div>
 
-            <div class="detail-row detail-row-comment">
+            <div class="detail-row detail-row-comment u-grid">
 
                 <div class="detail-label">
                     Commentaire
@@ -144,7 +144,7 @@ $collectStatusLabel = $isCollected
                             status-toggle js-collect-status-button
                             js-peluche-collect-status-button
                             <?= $isCollected ? 'active' : '' ?>
-                        "
+                         u-inline-center u-pointer"
                         data-url="<?= e($updateCollectStatusUrl) ?>"
                         data-slug="<?= e($slug) ?>"
                         data-numero="<?= $peluche->numero ?>"
@@ -165,10 +165,10 @@ $collectStatusLabel = $isCollected
 
                 </div>
 
-                <div class="detail-actions-right">
+                <div class="detail-actions-right u-row-center">
 
                     <a
-                        class="form-submit"
+                        class="form-submit u-inline-center u-pointer u-semibold"
                         href="<?= e($modifierUrl) ?>"
                     >
                         Modifier
@@ -180,7 +180,7 @@ $collectStatusLabel = $isCollected
                             form-submit
                             form-submit-danger
                             js-delete-peluche
-                        "
+                         u-inline-center u-pointer u-semibold"
                         data-url="<?= e($deleteUrl) ?>"
                         data-redirect="<?= e($redirectUrl) ?>"
                         data-slug="<?= e($slug) ?>"
@@ -196,13 +196,13 @@ $collectStatusLabel = $isCollected
 
     </section>
 
-    <div class="collection-back-wrapper">
+    <div class="collection-back-wrapper u-row-center">
 
         <a
             class="
                 form-submit
                 collection-back-button
-            "
+             u-inline-center u-pointer u-semibold"
             href="<?= e($redirectUrl) ?>"
         >
             Retour

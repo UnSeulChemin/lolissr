@@ -40,10 +40,10 @@ if ($resultCount > 0)
 
                 <?= csrf_field() ?>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="sql"
                     >
 
@@ -67,11 +67,11 @@ if ($resultCount > 0)
 
                 </div>
 
-                <div class="form-actions">
+                <div class="form-actions u-stack u-items-center">
 
                     <button
                         type="submit"
-                        class="form-submit"
+                        class="form-submit u-inline-center u-pointer u-semibold"
                     >
 
                         Exécuter

@@ -11,14 +11,11 @@
 
 .chinois-vocab-list
 {
-    display: grid;
-
     grid-template-columns:
         repeat(
             2,
             minmax(0, 620px)
         );
-
     gap: 28px;
 }
 
@@ -102,11 +99,8 @@
 .chinois-vocab-pinyin
 {
     margin-bottom: 4px;
-
     color: var(--color-violet);
-
     font-size: .95rem;
-    font-weight: 700;
 }
 
 /* =========================================
@@ -115,37 +109,22 @@
 
 .chinois-vocab-type
 {
-    position: absolute;
-
     top: 18px;
     right: 64px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
     min-height: 34px;
-
     padding:
         0
         14px;
-
     color: #7b57ff;
-
     font-size: .72rem;
     font-weight: 800;
-
     text-transform: uppercase;
     letter-spacing: .06em;
-
     border-radius: 10px;
-
     border:
         1px solid rgba(123,44,255,.12);
-
     background:
         rgba(123,44,255,.05);
-
     box-shadow:
         0 2px 6px rgba(123,44,255,.04);
 }
@@ -157,16 +136,10 @@
 .chinois-vocab-translation
 {
     min-height: 58px;
-
     margin-bottom: 10px;
-
     color: var(--color-title);
-
     font-size: 1.05rem;
-    font-weight: 700;
-
     line-height: 1.4;
-
     white-space: pre-line;
 }
 
@@ -183,20 +156,13 @@
 .chinois-vocab-example
 {
     margin-top: auto;
-
     padding-top: 10px;
     padding-right: 100px;
-
     color: var(--color-text);
-
     font-size: 1rem;
-
     line-height: 1.8;
-
     border-top:
         1px solid rgba(123,44,255,.12);
-
-    box-sizing: border-box;
 }
 
 /* =========================================
@@ -205,15 +171,8 @@
 
 .chinois-vocab-actions
 {
-    position: absolute;
-
     right: 18px;
     bottom: 18px;
-
-    display: flex;
-
-    align-items: center;
-
     gap: 10px;
 }
 
@@ -230,15 +189,10 @@
 .chinois-vocab-empty
 {
     padding: 40px;
-
-    text-align: center;
-
     border-radius:
         var(--radius-card-lg);
-
     background:
         var(--gradient-dashboard-card);
-
     box-shadow:
         var(--shadow-card);
 }
@@ -246,42 +200,23 @@
 .chinois-vocab-list--flashcard
 {
     grid-template-columns: minmax(0, 620px);
-    justify-content: center;
 }
 
 .flashcard-navigation
 {
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
     gap: 12px;
-
     margin-bottom: 20px;
 }
 
 .flashcard-nav-button
 {
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
     width: 34px;
     height: 34px;
-
     padding: 0;
-
     color: var(--color-violet);
-
     border: 2px solid rgba(123, 44, 255, .20);
     border-radius: 11px;
-
     background: rgba(123, 44, 255, .05);
-
-    cursor: pointer;
-
     transition:
         transform var(--transition-fast),
         background var(--transition-fast);

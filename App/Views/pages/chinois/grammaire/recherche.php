@@ -22,7 +22,7 @@ use App\DTO\Common\Responses\ViewData;
         >
 
             <button
-                class="grammar-delete grammaire-delete"
+                class="grammar-delete grammaire-delete u-row-center u-absolute u-pointer u-bold"
                 type="button"
                 data-id="<?= $grammaire->id ?>"
                 data-url="<?= e($view->baseUri) ?>chinois/ajax/delete-grammaire"
@@ -31,12 +31,12 @@ use App\DTO\Common\Responses\ViewData;
             </button>
 
             <a
-                class="grammar-edit"
+                class="grammar-edit u-row-center u-absolute u-pointer"
                 href="<?= e($view->baseUri) ?>chinois/grammaire/<?= strtolower($grammaire->niveau) ?>/modifier/<?= $grammaire->id ?>"
             >
 
                 <svg
-                    class="grammar-edit-icon"
+                    class="grammar-edit-icon u-no-events"
                     viewBox="0 0 24 24"
                     aria-hidden="true"
                 >
@@ -56,7 +56,7 @@ use App\DTO\Common\Responses\ViewData;
                 <?= e($grammaire->titre) ?>
             </h3>
 
-            <div class="grammar-structure">
+            <div class="grammar-structure u-bold">
                 <?= e($grammaire->structure) ?>
             </div>
 
@@ -101,7 +101,7 @@ use App\DTO\Common\Responses\ViewData;
                     grammar-mastered
                     grammar-ajax
                     <?= $grammaire->masteredClass ?>
-                "
+                 u-row-center u-absolute u-pointer"
                 type="button"
                 data-id="<?= $grammaire->id ?>"
                 data-url="<?= e($view->baseUri) ?>chinois/ajax/toggle-grammaire-maitrise"
@@ -109,7 +109,7 @@ use App\DTO\Common\Responses\ViewData;
             >
 
                 <svg
-                    class="grammar-mastered-icon"
+                    class="grammar-mastered-icon u-no-events"
                     viewBox="0 0 24 24"
                     aria-hidden="true"
                 >

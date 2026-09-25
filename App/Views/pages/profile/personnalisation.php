@@ -31,10 +31,10 @@ $username =
                 card
                 transition-card
                 profile-customization-hero
-            "
+             u-stack u-relative u-clip"
         >
 
-            <div class="profile-customization-banner">
+            <div class="profile-customization-banner u-w-full u-clip">
 
                 <img
                     src="<?= e($bannerPath) ?>"
@@ -62,7 +62,7 @@ $username =
 
             </div>
 
-            <h1 class="profile-customization-name">
+            <h1 class="profile-customization-name u-text-center u-bold">
                 <?= e($username) ?>
             </h1>
 
@@ -72,7 +72,7 @@ $username =
 
         </article>
 
-        <section class="profile-customization-grid">
+        <section class="profile-customization-grid u-grid">
 
             <article
                 class="
@@ -80,7 +80,7 @@ $username =
                     transition-card
                     profile-customization-card
                     js-profile-avatar
-                "
+                 u-pointer"
             >
 
                 <h2 class="home-card-title">
@@ -99,7 +99,7 @@ $username =
                     transition-card
                     profile-customization-card
                     js-profile-title
-                "
+                 u-pointer"
             >
 
                 <h2 class="home-card-title">
@@ -118,7 +118,7 @@ $username =
                     transition-card
                     profile-customization-card
                     js-profile-banner
-                "
+                 u-pointer"
             >
 
                 <h2 class="home-card-title">
@@ -137,7 +137,7 @@ $username =
                     transition-card
                     profile-customization-card
                     js-profile-frame
-                "
+                 u-pointer"
             >
 
                 <h2 class="home-card-title">

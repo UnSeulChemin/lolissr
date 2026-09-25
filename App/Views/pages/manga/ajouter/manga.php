@@ -37,10 +37,10 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
 
                 <?= csrf_field() ?>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="livre"
                     >
 
@@ -49,7 +49,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="text"
                         name="livre"
                         id="livre"
@@ -65,7 +65,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                         && $errors['livre'] !== ''
                     ): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
 
                             <?= e($errors['livre']) ?>
 
@@ -76,10 +76,10 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                 </div>
 
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="slug"
                     >
 
@@ -88,7 +88,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="text"
                         name="slug"
                         id="slug"
@@ -103,7 +103,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                         && $errors['slug'] !== ''
                     ): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
 
                             <?= e($errors['slug']) ?>
 
@@ -114,10 +114,10 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                 </div>
 
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="editeur"
                     >
 
@@ -126,7 +126,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="text"
                         name="editeur"
                         id="editeur"
@@ -141,7 +141,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                         && $errors['editeur'] !== ''
                     ): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
 
                             <?= e($errors['editeur']) ?>
 
@@ -152,10 +152,10 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                 </div>
 
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="statut"
                     >
 
@@ -167,7 +167,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                         class="
                             form-input
                             form-select
-                        "
+                         u-text-center u-w-full"
                         name="statut"
                         id="statut"
                         required
@@ -197,7 +197,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                         && $errors['statut'] !== ''
                     ): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
 
                             <?= e($errors['statut']) ?>
 
@@ -208,10 +208,10 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                 </div>
 
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="numero"
                     >
 
@@ -220,7 +220,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="number"
                         name="numero"
                         id="numero"
@@ -235,7 +235,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                         && $errors['numero'] !== ''
                     ): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
 
                             <?= e($errors['numero']) ?>
 
@@ -246,10 +246,10 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                 </div>
 
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="image"
                     >
 
@@ -258,12 +258,12 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                     </label>
 
                     <label
-                        class="form-upload"
+                        class="form-upload u-row-center u-relative u-pointer"
                         for="image"
                     >
 
                         <input
-                            class="form-file"
+                            class="form-file u-absolute u-pointer"
                             type="file"
                             name="image"
                             id="image"
@@ -282,7 +282,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                         && $errors['image'] !== ''
                     ): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
 
                             <?= e($errors['image']) ?>
 
@@ -293,10 +293,10 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                 </div>
 
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="commentaire"
                     >
 
@@ -318,7 +318,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                         && $errors['commentaire'] !== ''
                     ): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
 
                             <?= e($errors['commentaire']) ?>
 
@@ -329,11 +329,11 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                 </div>
 
 
-                <div class="form-actions">
+                <div class="form-actions u-stack u-items-center">
 
                     <button
                         type="submit"
-                        class="form-submit"
+                        class="form-submit u-inline-center u-pointer u-semibold"
                     >
 
                         Ajouter
@@ -344,7 +344,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                         class="
                             form-submit
                             form-submit-secondary
-                        "
+                         u-inline-center u-pointer u-semibold"
                         href="<?= e($form->cancelUrl) ?>"
                     >
 

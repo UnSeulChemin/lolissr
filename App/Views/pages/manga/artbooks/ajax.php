@@ -22,7 +22,7 @@ use App\DTO\Manga\Responses\ArtbookSeriesItemData;
 
     <?php return; endif; ?>
 
-    <section class="collection-grid">
+    <section class="collection-grid u-grid u-justify-center">
 
         <?php foreach ($artbooks as $artbook): ?>
 
@@ -33,15 +33,15 @@ use App\DTO\Manga\Responses\ArtbookSeriesItemData;
                     card-link
                     collection-card
                     collection-card-link
-                "
+                 u-flex u-w-full"
                 data-prefetch
                 href="<?= e("{$view->baseUri}manga/artbooks/{$artbook->slug}/{$artbook->numero}") ?>"
             >
 
-                <div class="card-image-box-portrait">
+                <div class="card-image-box-portrait u-row-center u-clip">
 
                     <img
-                        class="card-image-portrait"
+                        class="card-image-portrait u-block u-w-full"
                         src="<?= e($artbook->thumbnailUrl) ?>"
                         alt="<?= e($artbook->artbook) ?>"
                         loading="lazy"
@@ -51,11 +51,11 @@ use App\DTO\Manga\Responses\ArtbookSeriesItemData;
 
                 </div>
 
-                <p class="collection-card-title">
+                <p class="collection-card-title u-block u-relative u-text-center u-clip u-bold">
                     <?= e($artbook->artbook) ?>
                 </p>
 
-                <p class="collection-card-subtitle">
+                <p class="collection-card-subtitle u-relative u-text-center">
                     <?= e($artbook->subtitle) ?>
                 </p>
 

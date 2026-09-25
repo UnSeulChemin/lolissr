@@ -10,30 +10,30 @@ use App\DTO\Common\Responses\ViewData;
 
 <section class="layout-container dashboard-page">
 
-    <section class="dashboard-grid">
+    <section class="dashboard-grid u-grid u-justify-center">
 
         <a
             class="
                 card
                 transition-card
                 dashboard-card
-            "
+             u-stack u-relative u-clip u-border-box"
             data-prefetch
             href="<?= e($view->baseUri) ?>chinois/grammaire/hsk1"
         >
 
             <span
-                class="dashboard-card-icon"
+                class="dashboard-card-icon u-row-center"
                 aria-hidden="true"
             >
                 一
             </span>
 
-            <span class="dashboard-card-title">
+            <span class="dashboard-card-title u-relative u-w-full u-bold">
                 HSK1
             </span>
 
-            <span class="dashboard-card-description">
+            <span class="dashboard-card-description u-relative u-w-full">
                 Débutant total.
             </span>
 
@@ -44,23 +44,23 @@ use App\DTO\Common\Responses\ViewData;
                 card
                 transition-card
                 dashboard-card
-            "
+             u-stack u-relative u-clip u-border-box"
             data-prefetch
             href="<?= e($view->baseUri) ?>chinois/grammaire/hsk2"
         >
 
             <span
-                class="dashboard-card-icon"
+                class="dashboard-card-icon u-row-center"
                 aria-hidden="true"
             >
                 二
             </span>
 
-            <span class="dashboard-card-title">
+            <span class="dashboard-card-title u-relative u-w-full u-bold">
                 HSK2
             </span>
 
-            <span class="dashboard-card-description">
+            <span class="dashboard-card-description u-relative u-w-full">
                 Bases simples.
             </span>
 
@@ -71,23 +71,23 @@ use App\DTO\Common\Responses\ViewData;
                 card
                 transition-card
                 dashboard-card
-            "
+             u-stack u-relative u-clip u-border-box"
             data-prefetch
             href="<?= e($view->baseUri) ?>chinois/grammaire/hsk3"
         >
 
             <span
-                class="dashboard-card-icon"
+                class="dashboard-card-icon u-row-center"
                 aria-hidden="true"
             >
                 三
             </span>
 
-            <span class="dashboard-card-title">
+            <span class="dashboard-card-title u-relative u-w-full u-bold">
                 HSK3
             </span>
 
-            <span class="dashboard-card-description">
+            <span class="dashboard-card-description u-relative u-w-full">
                 Intermédiaire débutant.
             </span>
 
@@ -98,23 +98,23 @@ use App\DTO\Common\Responses\ViewData;
                 card
                 transition-card
                 dashboard-card
-            "
+             u-stack u-relative u-clip u-border-box"
             data-prefetch
             href="<?= e($view->baseUri) ?>chinois/grammaire/hsk4"
         >
 
             <span
-                class="dashboard-card-icon"
+                class="dashboard-card-icon u-row-center"
                 aria-hidden="true"
             >
                 四
             </span>
 
-            <span class="dashboard-card-title">
+            <span class="dashboard-card-title u-relative u-w-full u-bold">
                 HSK4
             </span>
 
-            <span class="dashboard-card-description">
+            <span class="dashboard-card-description u-relative u-w-full">
                 Intermédiaire solide.
             </span>
 

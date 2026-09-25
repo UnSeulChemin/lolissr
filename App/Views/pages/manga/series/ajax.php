@@ -24,7 +24,7 @@ $isSerieView ??= false;
 
     <?php return; endif; ?>
 
-    <section class="collection-grid">
+    <section class="collection-grid u-grid u-justify-center">
 
         <?php foreach ($mangas as $manga): ?>
 
@@ -125,7 +125,7 @@ $isSerieView ??= false;
                     card-link
                     collection-card
                     collection-card-link
-                "
+                 u-flex u-w-full"
                 data-prefetch
                 href="<?= e($href) ?>"
             >
@@ -160,10 +160,10 @@ $isSerieView ??= false;
 
                 </span>
 
-                <div class="card-image-box-portrait">
+                <div class="card-image-box-portrait u-row-center u-clip">
 
                     <img
-                        class="card-image-portrait"
+                        class="card-image-portrait u-block u-w-full"
                         src="<?= e($thumbnailPath) ?>"
                         alt="<?= e($livre) ?>"
                         loading="lazy"
@@ -173,11 +173,11 @@ $isSerieView ??= false;
 
                 </div>
 
-                <p class="collection-card-title">
+                <p class="collection-card-title u-block u-relative u-text-center u-clip u-bold">
                     <?= e($livre) ?>
                 </p>
 
-                <p class="collection-card-subtitle">
+                <p class="collection-card-subtitle u-relative u-text-center">
                     <?= e($subtitle) ?>
                 </p>
 

@@ -14,7 +14,7 @@ use App\DTO\Common\Responses\ViewData;
 
     <section class="chinois-vocab-panel">
 
-        <section class="chinois-vocab-list">
+        <section class="chinois-vocab-list u-grid">
 
             <?php foreach ($vocabulaires as $vocabulaire): ?>
 
@@ -26,7 +26,7 @@ use App\DTO\Common\Responses\ViewData;
                 >
 
                     <button
-                        class="grammar-delete vocabulaire-delete"
+                        class="grammar-delete vocabulaire-delete u-row-center u-absolute u-pointer u-bold"
                         type="button"
                         data-id="<?= $vocabulaire->id ?>"
                         data-url="<?= e($view->baseUri) ?>chinois/ajax/delete-vocabulaire"
@@ -42,22 +42,22 @@ use App\DTO\Common\Responses\ViewData;
                         <?= e($vocabulaire->mot) ?>
                     </h3>
 
-                    <div class="chinois-vocab-pinyin">
+                    <div class="chinois-vocab-pinyin u-bold">
                         <?= e($vocabulaire->pinyin) ?>
                     </div>
 
-                    <div class="chinois-vocab-type">
+                    <div class="chinois-vocab-type u-row-center u-absolute">
                         <?= e($vocabulaire->type) ?>
                     </div>
 
-                    <div class="chinois-vocab-translation">
+                    <div class="chinois-vocab-translation u-bold">
                         <?= e($vocabulaire->traduction) ?>
                     </div>
 
                     <?php if ($vocabulaire->hasExemple): ?>
 
                         <div
-                            class="chinois-vocab-example"
+                            class="chinois-vocab-example u-border-box"
                             data-copy="<?= e($vocabulaire->exemple) ?>"
                             title="Cliquer pour copier"
                         >
@@ -66,15 +66,15 @@ use App\DTO\Common\Responses\ViewData;
 
                     <?php endif; ?>
 
-                    <div class="chinois-vocab-actions">
+                    <div class="chinois-vocab-actions u-row u-absolute">
 
                         <a
-                            class="grammar-edit"
+                            class="grammar-edit u-row-center u-absolute u-pointer"
                             href="<?= e($view->baseUri) ?>chinois/vocabulaire/<?= e($vocabulaire->langue) ?>/modifier/<?= $vocabulaire->id ?>"
                         >
 
                             <svg
-                                class="grammar-edit-icon"
+                                class="grammar-edit-icon u-no-events"
                                 viewBox="0 0 24 24"
                                 aria-hidden="true"
                             >
@@ -97,7 +97,7 @@ use App\DTO\Common\Responses\ViewData;
                                 grammar-mastered
                                 vocabulary-ajax
                                 <?= $vocabulaire->masteredClass ?>
-                            "
+                             u-row-center u-absolute u-pointer"
                             type="button"
                             data-id="<?= $vocabulaire->id ?>"
                             data-url="<?= e($view->baseUri) ?>chinois/ajax/toggle-vocabulaire-maitrise"
@@ -106,7 +106,7 @@ use App\DTO\Common\Responses\ViewData;
                         >
 
                             <svg
-                                class="grammar-mastered-icon"
+                                class="grammar-mastered-icon u-no-events"
                                 viewBox="0 0 24 24"
                                 aria-hidden="true"
                             >

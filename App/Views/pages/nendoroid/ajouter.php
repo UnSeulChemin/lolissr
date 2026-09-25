@@ -35,17 +35,17 @@ $commentaireValue = $old['commentaire'] ?? '';
 
                 <?= csrf_field() ?>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="waifu"
                     >
                         Waifu
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="text"
                         name="waifu"
                         id="waifu"
@@ -57,7 +57,7 @@ $commentaireValue = $old['commentaire'] ?? '';
 
                     <?php if (isset($errors['waifu']) && $errors['waifu'] !== ''): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
                             <?= e($errors['waifu']) ?>
                         </p>
 
@@ -65,17 +65,17 @@ $commentaireValue = $old['commentaire'] ?? '';
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="origin"
                     >
                         Origin
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="text"
                         name="origin"
                         id="origin"
@@ -87,7 +87,7 @@ $commentaireValue = $old['commentaire'] ?? '';
 
                     <?php if (isset($errors['origin']) && $errors['origin'] !== ''): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
                             <?= e($errors['origin']) ?>
                         </p>
 
@@ -95,17 +95,17 @@ $commentaireValue = $old['commentaire'] ?? '';
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="slug"
                     >
                         Slug
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="text"
                         name="slug"
                         id="slug"
@@ -116,7 +116,7 @@ $commentaireValue = $old['commentaire'] ?? '';
 
                     <?php if (isset($errors['slug']) && $errors['slug'] !== ''): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
                             <?= e($errors['slug']) ?>
                         </p>
 
@@ -124,17 +124,17 @@ $commentaireValue = $old['commentaire'] ?? '';
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="company"
                     >
                         Company
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="text"
                         name="company"
                         id="company"
@@ -146,7 +146,7 @@ $commentaireValue = $old['commentaire'] ?? '';
 
                     <?php if (isset($errors['company']) && $errors['company'] !== ''): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
                             <?= e($errors['company']) ?>
                         </p>
 
@@ -154,17 +154,17 @@ $commentaireValue = $old['commentaire'] ?? '';
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="numero"
                     >
                         Numéro
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="number"
                         name="numero"
                         id="numero"
@@ -176,7 +176,7 @@ $commentaireValue = $old['commentaire'] ?? '';
 
                     <?php if (isset($errors['numero']) && $errors['numero'] !== ''): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
                             <?= e($errors['numero']) ?>
                         </p>
 
@@ -184,17 +184,17 @@ $commentaireValue = $old['commentaire'] ?? '';
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="release_date"
                     >
                         Date de sortie
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="text"
                         name="release_date"
                         id="release_date"
@@ -205,7 +205,7 @@ $commentaireValue = $old['commentaire'] ?? '';
 
                     <?php if (isset($errors['release_date']) && $errors['release_date'] !== ''): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
                             <?= e($errors['release_date']) ?>
                         </p>
 
@@ -213,22 +213,22 @@ $commentaireValue = $old['commentaire'] ?? '';
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="image"
                     >
                         Image
                     </label>
 
                     <label
-                        class="form-upload"
+                        class="form-upload u-row-center u-relative u-pointer"
                         for="image"
                     >
 
                         <input
-                            class="form-file"
+                            class="form-file u-absolute u-pointer"
                             type="file"
                             name="image"
                             id="image"
@@ -244,7 +244,7 @@ $commentaireValue = $old['commentaire'] ?? '';
 
                     <?php if (isset($errors['image']) && $errors['image'] !== ''): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
                             <?= e($errors['image']) ?>
                         </p>
 
@@ -252,10 +252,10 @@ $commentaireValue = $old['commentaire'] ?? '';
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="commentaire"
                     >
                         Commentaire
@@ -272,7 +272,7 @@ $commentaireValue = $old['commentaire'] ?? '';
 
                     <?php if (isset($errors['commentaire']) && $errors['commentaire'] !== ''): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
                             <?= e($errors['commentaire']) ?>
                         </p>
 
@@ -280,11 +280,11 @@ $commentaireValue = $old['commentaire'] ?? '';
 
                 </div>
 
-                <div class="form-actions">
+                <div class="form-actions u-stack u-items-center">
 
                     <button
                         type="submit"
-                        class="form-submit"
+                        class="form-submit u-inline-center u-pointer u-semibold"
                     >
                         Ajouter
                     </button>
@@ -293,7 +293,7 @@ $commentaireValue = $old['commentaire'] ?? '';
                         class="
                             form-submit
                             form-submit-secondary
-                        "
+                         u-inline-center u-pointer u-semibold"
                         href="<?= e($form->cancelUrl) ?>"
                     >
                         Retour

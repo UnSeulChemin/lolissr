@@ -4,6 +4,8 @@
 /* BASE */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
+/* Shared primitives precede component and page overrides. */
+@import url('./utilities/layout.css');
 @import url('./base/global.css');
 @import url('./base/scrollbars.css');
 @import url('./base/confirm-modal.css');

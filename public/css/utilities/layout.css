@@ -1,0 +1,129 @@
+/* Shared layout primitives. Loaded before components so responsive and
+   component-specific rules retain their precedence. Keep JS hooks unchanged. */
+
+.u-stack-center
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.u-row-center
+{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.u-inline-center
+{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.u-row-between
+{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.u-stack
+{
+    display: flex;
+    flex-direction: column;
+}
+
+.u-row
+{
+    display: flex;
+    align-items: center;
+}
+
+.u-flex
+{
+    display: flex;
+}
+
+.u-inline-flex
+{
+    display: inline-flex;
+}
+
+.u-grid
+{
+    display: grid;
+}
+
+.u-block
+{
+    display: block;
+}
+
+.u-relative
+{
+    position: relative;
+}
+
+.u-absolute
+{
+    position: absolute;
+}
+
+.u-items-center
+{
+    align-items: center;
+}
+
+.u-justify-center
+{
+    justify-content: center;
+}
+
+.u-text-center
+{
+    text-align: center;
+}
+
+.u-w-full
+{
+    width: 100%;
+}
+
+.u-clip
+{
+    overflow: hidden;
+}
+
+.u-pointer
+{
+    cursor: pointer;
+}
+
+.u-no-events
+{
+    pointer-events: none;
+}
+
+.u-no-select
+{
+    user-select: none;
+}
+
+.u-bold
+{
+    font-weight: 700;
+}
+
+.u-semibold
+{
+    font-weight: 600;
+}
+
+.u-border-box
+{
+    box-sizing: border-box;
+}
+

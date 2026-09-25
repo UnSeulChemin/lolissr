@@ -4,32 +4,21 @@
 
 .home-section-title
 {
-    position: relative;
-
-    width: 100%;
-
     margin: 50px 0;
     padding: 11px 18px;
-
     color: var(--color-violet);
     font-size: var(--font-size-base);
     font-weight: 650;
-    text-align: center;
-
     border-radius: var(--radius-input);
-
     border: 1px solid var(--color-violet-border-soft);
-
     background: linear-gradient(
         180deg,
         rgba(123, 44, 255, 0.12),
         rgba(123, 44, 255, 0.04)
     );
-
     box-shadow:
         var(--shadow-soft),
         0 0 0 1px rgba(255,255,255,0.55) inset;
-
     letter-spacing: 0.25px;
 }
 
@@ -192,23 +181,17 @@
 
 .home-card-value
 {
-    position: relative;
     z-index: 1;
-
     margin: 0;
     font-size: 2.1rem;
-    font-weight: 700;
     line-height: 1.1;
 }
 
 .home-empty
 {
-    position: relative;
     z-index: 1;
-
     margin: 0;
     font-size: var(--font-size-base);
-    text-align: center;
 }
 
 
@@ -280,15 +263,10 @@
 .home-longest-name,
 .home-feature-title
 {
-    width: 100%;
     margin: 0;
-
-    overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-
     font-size: 1.15rem;
-    font-weight: 700;
     line-height: 1.2;
 }
 
@@ -359,34 +337,21 @@
 
 .home-list-card-title
 {
-    position: relative;
     z-index: 1;
-
-    display: block;
-    width: 100%;
     margin: 0 0 6px;
-
-    overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-
     color: var(--color-title);
     font-size: var(--font-size-base);
-    font-weight: 700;
     line-height: 1.3;
-    text-align: center;
 }
 
 .home-list-card-meta
 {
-    position: relative;
     z-index: 1;
-
     margin: 0;
-
     color: var(--color-text);
     font-size: var(--font-size-md);
-    text-align: center;
     opacity: 0.9;
 }
 
@@ -404,11 +369,9 @@
 
 .home-series-rank
 {
-    position: absolute;
     top: var(--offset-card-corner);
     left: var(--offset-card-corner);
     z-index: 2;
-
     margin: 0;
     color: var(--color-violet);
     font-size: var(--font-size-base);
@@ -466,10 +429,7 @@
    HOME — READING PROGRESS
 ========================================= */
 
-.home-reading-progress-card
-{
-    overflow: hidden;
-}
+
 
 .home-reading-progress-card .home-card-value
 {
@@ -486,24 +446,16 @@
 
 .home-reading-progress
 {
-    position: relative;
     z-index: 2;
-
     width: 78%;
     height: 14px;
-
-    overflow: hidden;
-
     border-radius: 999px;
-
     border: 1px solid rgba(58, 153, 255, 0.25);
-
     background: linear-gradient(
         180deg,
         rgba(58, 153, 255, 0.10),
         rgba(58, 153, 255, 0.04)
     );
-
     box-shadow:
         inset 0 1px 2px rgba(255,255,255,0.70),
         0 8px 18px rgba(58,153,255,0.12);
@@ -511,22 +463,15 @@
 
 .home-reading-progress-bar
 {
-    position: relative;
-
     width: var(--progress, 0%);
     height: 100%;
-
-    overflow: hidden;
-
     border-radius: inherit;
-
     background: linear-gradient(
         90deg,
         #7cc8ff 0%,
         #3a99ff 55%,
         #236dff 100%
     );
-
     box-shadow:
         0 0 12px rgba(58,153,255,0.55);
 }

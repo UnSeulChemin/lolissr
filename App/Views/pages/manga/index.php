@@ -16,14 +16,14 @@ use App\DTO\Common\Responses\ViewData;
             class="
                 dashboard-title-box
                 transition-title
-            "
+             u-relative u-text-center u-clip u-border-box"
         >
 
-            <h1 class="dashboard-title">
+            <h1 class="dashboard-title u-relative u-bold">
                 📚 Manga
             </h1>
 
-            <p class="dashboard-description">
+            <p class="dashboard-description u-relative">
                 Gère ta collection de mangas et d'artbooks.
             </p>
 
@@ -31,30 +31,30 @@ use App\DTO\Common\Responses\ViewData;
 
     </section>
 
-    <section class="dashboard-grid">
+    <section class="dashboard-grid u-grid u-justify-center">
 
         <a
             class="
                 card
                 transition-card
                 dashboard-card
-            "
+             u-stack u-relative u-clip u-border-box"
             data-prefetch
             href="<?= e($view->baseUri) ?>manga/series"
         >
 
             <span
-                class="dashboard-card-icon"
+                class="dashboard-card-icon u-row-center"
                 aria-hidden="true"
             >
                 📚
             </span>
 
-            <span class="dashboard-card-title">
+            <span class="dashboard-card-title u-relative u-w-full u-bold">
                 Séries
             </span>
 
-            <span class="dashboard-card-description">
+            <span class="dashboard-card-description u-relative u-w-full">
                 Parcourir toutes les séries de mangas.
             </span>
 
@@ -65,23 +65,23 @@ use App\DTO\Common\Responses\ViewData;
                 card
                 transition-card
                 dashboard-card
-            "
+             u-stack u-relative u-clip u-border-box"
             data-prefetch
             href="<?= e($view->baseUri) ?>manga/artbooks"
         >
 
             <span
-                class="dashboard-card-icon"
+                class="dashboard-card-icon u-row-center"
                 aria-hidden="true"
             >
                 📕
             </span>
 
-            <span class="dashboard-card-title">
+            <span class="dashboard-card-title u-relative u-w-full u-bold">
                 Artbooks
             </span>
 
-            <span class="dashboard-card-description">
+            <span class="dashboard-card-description u-relative u-w-full">
                 Parcourir tous les artbooks de la collection.
             </span>
 
@@ -92,23 +92,23 @@ use App\DTO\Common\Responses\ViewData;
                 card
                 transition-card
                 dashboard-card
-            "
+             u-stack u-relative u-clip u-border-box"
             data-prefetch
             href="<?= e($view->baseUri) ?>manga/ajouter"
         >
 
             <span
-                class="dashboard-card-icon"
+                class="dashboard-card-icon u-row-center"
                 aria-hidden="true"
             >
                 ➕
             </span>
 
-            <span class="dashboard-card-title">
+            <span class="dashboard-card-title u-relative u-w-full u-bold">
                 Ajouter
             </span>
 
-            <span class="dashboard-card-description">
+            <span class="dashboard-card-description u-relative u-w-full">
                 Ajouter un manga ou un artbook à la collection.
             </span>
 
@@ -119,23 +119,23 @@ use App\DTO\Common\Responses\ViewData;
                 card
                 transition-card
                 dashboard-card
-            "
+             u-stack u-relative u-clip u-border-box"
             data-prefetch
             href="<?= e($view->baseUri) ?>manga/lien"
         >
 
             <span
-                class="dashboard-card-icon"
+                class="dashboard-card-icon u-row-center"
                 aria-hidden="true"
             >
                 🔗
             </span>
 
-            <span class="dashboard-card-title">
+            <span class="dashboard-card-title u-relative u-w-full u-bold">
                 Liens utiles
             </span>
 
-            <span class="dashboard-card-description">
+            <span class="dashboard-card-description u-relative u-w-full">
                 Sites, références et ressources utiles autour des mangas.
             </span>
 

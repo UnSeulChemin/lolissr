@@ -34,7 +34,7 @@ $commentaire = $manga->hasCommentaire ? nl2br(e($manga->commentaire)) : 'Aucun c
         class="
             detail-card
             js-detail-card
-        "
+         u-flex u-w-full u-border-box"
         data-slug="<?= e($slug) ?>"
         data-numero="<?= $numero ?>"
         data-base-path="<?= e($view->baseUri) ?>"
@@ -42,18 +42,18 @@ $commentaire = $manga->hasCommentaire ? nl2br(e($manga->commentaire)) : 'Aucun c
         data-livre-note="<?= $manga->livreNote ?? 1 ?>"
     >
 
-        <figure class="detail-image">
+        <figure class="detail-image u-flex u-justify-center">
 
-            <div class="detail-image-inner">
+            <div class="detail-image-inner u-w-full">
                 <img src="<?= e($manga->thumbnailUrl) ?>" alt="<?= e($manga->livre) ?>">
             </div>
 
         </figure>
 
 
-        <article class="detail-content">
+        <article class="detail-content u-stack">
 
-            <div class="detail-row">
+            <div class="detail-row u-grid">
 
                 <div class="detail-label">
                     Livre
@@ -66,7 +66,7 @@ $commentaire = $manga->hasCommentaire ? nl2br(e($manga->commentaire)) : 'Aucun c
             </div>
 
 
-            <div class="detail-row">
+            <div class="detail-row u-grid">
 
                 <div class="detail-label">
                     Éditeur
@@ -84,7 +84,7 @@ $commentaire = $manga->hasCommentaire ? nl2br(e($manga->commentaire)) : 'Aucun c
             </div>
 
 
-            <div class="detail-row">
+            <div class="detail-row u-grid">
 
                 <div class="detail-label">
                     Tome
@@ -104,7 +104,7 @@ $commentaire = $manga->hasCommentaire ? nl2br(e($manga->commentaire)) : 'Aucun c
             </div>
 
 
-            <div class="detail-row">
+            <div class="detail-row u-grid">
 
                 <div class="detail-label">
                     Statut
@@ -119,13 +119,13 @@ $commentaire = $manga->hasCommentaire ? nl2br(e($manga->commentaire)) : 'Aucun c
 
             <!-- Jacquette -->
 
-            <div class="detail-row">
+            <div class="detail-row u-grid">
 
                 <div class="detail-label">
                     Jacquette
                 </div>
 
-                <div class="detail-value detail-value-notes">
+                <div class="detail-value detail-value-notes u-row-center">
 
                     <div
                         class="
@@ -170,13 +170,13 @@ $commentaire = $manga->hasCommentaire ? nl2br(e($manga->commentaire)) : 'Aucun c
 
             <!-- Livre Note -->
 
-            <div class="detail-row">
+            <div class="detail-row u-grid">
 
                 <div class="detail-label">
                     Livre
                 </div>
 
-                <div class="detail-value detail-value-notes">
+                <div class="detail-value detail-value-notes u-row-center">
 
                     <div class="js-note-group <?= $manga->isPerfectLivre ? 'perfect-score-group' : '' ?>"
                         data-field="livreNote"
@@ -201,7 +201,7 @@ $commentaire = $manga->hasCommentaire ? nl2br(e($manga->commentaire)) : 'Aucun c
 
             <!-- Note totale -->
 
-            <div class="detail-row">
+            <div class="detail-row u-grid">
 
                 <div class="detail-label">
                     Note totale
@@ -217,7 +217,7 @@ $commentaire = $manga->hasCommentaire ? nl2br(e($manga->commentaire)) : 'Aucun c
 
             <!-- COMMENTAIRE -->
 
-            <div class="detail-row detail-row-comment">
+            <div class="detail-row detail-row-comment u-grid">
 
                 <div class="detail-label">
                     Commentaire
@@ -235,7 +235,7 @@ $commentaire = $manga->hasCommentaire ? nl2br(e($manga->commentaire)) : 'Aucun c
 
                 <div class="detail-actions-left">
 
-                    <button type="button" class="status-toggle js-read-status-button <?= $isLu ? 'active' : '' ?>"
+                    <button type="button" class="status-toggle js-read-status-button <?= $isLu ? 'active' : '' ?> u-inline-center u-pointer"
                         data-url="<?= e($updateReadStatusUrl) ?>"
                         data-read-status="<?= $isLu ? '1' : '0' ?>"
                         title="<?= e($readStatusLabel) ?>"
@@ -250,15 +250,15 @@ $commentaire = $manga->hasCommentaire ? nl2br(e($manga->commentaire)) : 'Aucun c
                 </div>
 
 
-                <div class="detail-actions-right">
+                <div class="detail-actions-right u-row-center">
 
-                    <a class="form-submit" href="<?= e($modifierUrl) ?>">
+                    <a class="form-submit u-inline-center u-pointer u-semibold" href="<?= e($modifierUrl) ?>">
                         Modifier
                     </a>
 
                     <button
                         type="button"
-                        class="form-submit form-submit-danger js-delete-manga"
+                        class="form-submit form-submit-danger js-delete-manga u-inline-center u-pointer u-semibold"
                         data-url="<?= e($deleteUrl) ?>"
                         data-redirect="<?= e($redirectUrl) ?>"
                     >
@@ -274,9 +274,9 @@ $commentaire = $manga->hasCommentaire ? nl2br(e($manga->commentaire)) : 'Aucun c
     </section>
 
 
-    <div class="collection-back-wrapper">
+    <div class="collection-back-wrapper u-row-center">
 
-        <a class="form-submit collection-back-button" href="<?= e($redirectUrl) ?>">
+        <a class="form-submit collection-back-button u-inline-center u-pointer u-semibold" href="<?= e($redirectUrl) ?>">
             Retour
         </a>
 

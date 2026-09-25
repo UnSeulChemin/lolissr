@@ -53,10 +53,10 @@ $commentaireValue = $old['commentaire']
 
                 <?= csrf_field() ?>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="artbook"
                     >
 
@@ -65,7 +65,7 @@ $commentaireValue = $old['commentaire']
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="text"
                         name="artbook"
                         id="artbook"
@@ -80,7 +80,7 @@ $commentaireValue = $old['commentaire']
                         && $errors['artbook'] !== ''
                     ): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
 
                             <?= e($errors['artbook']) ?>
 
@@ -90,10 +90,10 @@ $commentaireValue = $old['commentaire']
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="source"
                     >
 
@@ -102,7 +102,7 @@ $commentaireValue = $old['commentaire']
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="text"
                         name="source"
                         id="source"
@@ -117,7 +117,7 @@ $commentaireValue = $old['commentaire']
                         && $errors['source'] !== ''
                     ): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
 
                             <?= e($errors['source']) ?>
 
@@ -127,10 +127,10 @@ $commentaireValue = $old['commentaire']
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="company"
                     >
 
@@ -139,7 +139,7 @@ $commentaireValue = $old['commentaire']
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="text"
                         name="company"
                         id="company"
@@ -153,7 +153,7 @@ $commentaireValue = $old['commentaire']
                         && $errors['company'] !== ''
                     ): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
 
                             <?= e($errors['company']) ?>
 
@@ -163,10 +163,10 @@ $commentaireValue = $old['commentaire']
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="release_date"
                     >
 
@@ -175,7 +175,7 @@ $commentaireValue = $old['commentaire']
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="text"
                         name="release_date"
                         id="release_date"
@@ -189,7 +189,7 @@ $commentaireValue = $old['commentaire']
                         && $errors['release_date'] !== ''
                     ): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
 
                             <?= e($errors['release_date']) ?>
 
@@ -199,10 +199,10 @@ $commentaireValue = $old['commentaire']
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="commentaire"
                     >
 
@@ -223,7 +223,7 @@ $commentaireValue = $old['commentaire']
                         && $errors['commentaire'] !== ''
                     ): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
 
                             <?= e($errors['commentaire']) ?>
 
@@ -233,11 +233,11 @@ $commentaireValue = $old['commentaire']
 
                 </div>
 
-                <div class="form-actions">
+                <div class="form-actions u-stack u-items-center">
 
                     <button
                         type="submit"
-                        class="form-submit"
+                        class="form-submit u-inline-center u-pointer u-semibold"
                     >
 
                         Enregistrer
@@ -248,7 +248,7 @@ $commentaireValue = $old['commentaire']
                         class="
                             form-submit
                             form-submit-secondary
-                        "
+                         u-inline-center u-pointer u-semibold"
                         href="<?= e($form->cancelUrl) ?>"
                     >
 

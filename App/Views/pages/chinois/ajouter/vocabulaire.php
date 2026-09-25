@@ -34,10 +34,10 @@ $langueOptions = [
 
                 <?= csrf_field() ?>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="langue"
                     >
 
@@ -49,7 +49,7 @@ $langueOptions = [
                         class="
                             form-input
                             form-select
-                        "
+                         u-text-center u-w-full"
                         name="langue"
                         id="langue"
                         required
@@ -77,7 +77,7 @@ $langueOptions = [
                         && $errors['langue'] !== ''
                     ): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
 
                             <?= e($errors['langue']) ?>
 
@@ -87,10 +87,10 @@ $langueOptions = [
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="mot"
                     >
 
@@ -99,7 +99,7 @@ $langueOptions = [
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="text"
                         name="mot"
                         id="mot"
@@ -114,7 +114,7 @@ $langueOptions = [
                         && $errors['mot'] !== ''
                     ): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
 
                             <?= e($errors['mot']) ?>
 
@@ -124,10 +124,10 @@ $langueOptions = [
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="pinyin"
                     >
 
@@ -136,7 +136,7 @@ $langueOptions = [
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="text"
                         name="pinyin"
                         id="pinyin"
@@ -150,7 +150,7 @@ $langueOptions = [
                         && $errors['pinyin'] !== ''
                     ): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
 
                             <?= e($errors['pinyin']) ?>
 
@@ -160,10 +160,10 @@ $langueOptions = [
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="type"
                     >
 
@@ -172,7 +172,7 @@ $langueOptions = [
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="text"
                         name="type"
                         id="type"
@@ -186,7 +186,7 @@ $langueOptions = [
                         && $errors['type'] !== ''
                     ): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
 
                             <?= e($errors['type']) ?>
 
@@ -196,10 +196,10 @@ $langueOptions = [
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="traduction"
                     >
 
@@ -224,7 +224,7 @@ $langueOptions = [
                         && $errors['traduction'] !== ''
                     ): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
 
                             <?= e($errors['traduction']) ?>
 
@@ -234,10 +234,10 @@ $langueOptions = [
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="exemple"
                     >
 
@@ -246,7 +246,7 @@ $langueOptions = [
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="text"
                         name="exemple"
                         id="exemple"
@@ -261,7 +261,7 @@ $langueOptions = [
                         && $errors['exemple'] !== ''
                     ): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
 
                             <?= e($errors['exemple']) ?>
 
@@ -271,11 +271,11 @@ $langueOptions = [
 
                 </div>
 
-                <div class="form-actions">
+                <div class="form-actions u-stack u-items-center">
 
                     <button
                         type="submit"
-                        class="form-submit"
+                        class="form-submit u-inline-center u-pointer u-semibold"
                     >
 
                         Ajouter
@@ -286,7 +286,7 @@ $langueOptions = [
                         class="
                             form-submit
                             form-submit-secondary
-                        "
+                         u-inline-center u-pointer u-semibold"
                         href="<?= e($form->cancelUrl) ?>"
                     >
 

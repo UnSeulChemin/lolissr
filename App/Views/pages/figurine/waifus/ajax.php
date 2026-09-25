@@ -22,7 +22,7 @@ use App\DTO\Figurine\Responses\FigurineSeriesItemData;
 
     <?php return; endif; ?>
 
-    <section class="collection-grid">
+    <section class="collection-grid u-grid u-justify-center">
 
         <?php foreach ($figurines as $figurine): ?>
 
@@ -40,15 +40,15 @@ use App\DTO\Figurine\Responses\FigurineSeriesItemData;
                     card-link
                     collection-card
                     collection-card-link
-                "
+                 u-flex u-w-full"
                 data-prefetch
                 href="<?= e($href) ?>"
             >
 
-                <div class="card-image-box-portrait">
+                <div class="card-image-box-portrait u-row-center u-clip">
 
                     <img
-                        class="card-image-portrait"
+                        class="card-image-portrait u-block u-w-full"
                         src="<?= e($figurine->thumbnailUrl) ?>"
                         alt="<?= e($figurine->waifu) ?>"
                         loading="lazy"
@@ -58,11 +58,11 @@ use App\DTO\Figurine\Responses\FigurineSeriesItemData;
 
                 </div>
 
-                <p class="collection-card-title">
+                <p class="collection-card-title u-block u-relative u-text-center u-clip u-bold">
                     <?= e($figurine->waifu) ?>
                 </p>
 
-                <p class="collection-card-subtitle">
+                <p class="collection-card-subtitle u-relative u-text-center">
                     <?= e($figurine->origin) ?>
                 </p>
 

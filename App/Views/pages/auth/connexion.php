@@ -28,10 +28,10 @@ $passwordError = $form->errors['password'] ?? '';
 
                 <?= csrf_field() ?>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="username"
                     >
 
@@ -40,7 +40,7 @@ $passwordError = $form->errors['password'] ?? '';
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="text"
                         name="username"
                         id="username"
@@ -51,7 +51,7 @@ $passwordError = $form->errors['password'] ?? '';
 
                     <?php if ($usernameError !== ''): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
 
                             <?= e($usernameError) ?>
 
@@ -61,10 +61,10 @@ $passwordError = $form->errors['password'] ?? '';
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="password"
                     >
 
@@ -73,7 +73,7 @@ $passwordError = $form->errors['password'] ?? '';
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="password"
                         name="password"
                         id="password"
@@ -82,7 +82,7 @@ $passwordError = $form->errors['password'] ?? '';
 
                     <?php if ($passwordError !== ''): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
 
                             <?= e($passwordError) ?>
 
@@ -92,11 +92,11 @@ $passwordError = $form->errors['password'] ?? '';
 
                 </div>
 
-                <div class="form-actions">
+                <div class="form-actions u-stack u-items-center">
 
                     <button
                         type="submit"
-                        class="form-submit"
+                        class="form-submit u-inline-center u-pointer u-semibold"
                     >
 
                         Connexion

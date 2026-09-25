@@ -22,7 +22,7 @@ use App\DTO\Peluche\Responses\PelucheListItemData;
 
     <?php return; endif; ?>
 
-    <section class="collection-grid">
+    <section class="collection-grid u-grid u-justify-center">
 
         <?php foreach ($peluches as $peluche): ?>
 
@@ -40,17 +40,17 @@ use App\DTO\Peluche\Responses\PelucheListItemData;
                     card-link
                     collection-card
                     collection-card-link
-                "
+                 u-flex u-w-full"
                 data-prefetch
                 href="<?= e($href) ?>"
             >
 
-                <div class="card-image-box-portrait">
+                <div class="card-image-box-portrait u-row-center u-clip">
 
                     <?php if ($peluche->thumbnailUrl !== null): ?>
 
                         <img
-                            class="card-image-portrait"
+                            class="card-image-portrait u-block u-w-full"
                             src="<?= e($peluche->thumbnailUrl) ?>"
                             alt="<?= e($peluche->waifu) ?>"
                             loading="lazy"
@@ -62,11 +62,11 @@ use App\DTO\Peluche\Responses\PelucheListItemData;
 
                 </div>
 
-                <p class="collection-card-title">
+                <p class="collection-card-title u-block u-relative u-text-center u-clip u-bold">
                     <?= e($peluche->waifu) ?>
                 </p>
 
-                <p class="collection-card-subtitle">
+                <p class="collection-card-subtitle u-relative u-text-center">
                     <?= e($peluche->origin) ?>
                 </p>
 

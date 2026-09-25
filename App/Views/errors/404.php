@@ -17,10 +17,10 @@ $message ??= 'Le contenu demandé est introuvable.';
         class="
             detail-card
             transition-card
-        "
+         u-flex u-w-full u-border-box"
     >
 
-        <div class="detail-content">
+        <div class="detail-content u-stack">
 
             <h1 class="card-banner">
                 🚫 404 — Page introuvable
@@ -28,7 +28,7 @@ $message ??= 'Le contenu demandé est introuvable.';
 
             <div class="error-route">
 
-                <span class="error-route-label">
+                <span class="error-route-label u-block">
                     Route non trouvée
                 </span>
 
@@ -44,7 +44,7 @@ $message ??= 'Le contenu demandé est introuvable.';
                     class="
                         form-submit
                         form-submit-secondary
-                    "
+                     u-inline-center u-pointer u-semibold"
                     href="<?= e($view->baseUri) ?>"
                 >
 

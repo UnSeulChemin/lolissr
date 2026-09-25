@@ -22,7 +22,7 @@ use App\DTO\Nendoroid\Responses\NendoroidData;
 
     <?php return; endif; ?>
 
-    <section class="collection-grid">
+    <section class="collection-grid u-grid u-justify-center">
 
         <?php foreach ($nendoroids as $nendoroid): ?>
 
@@ -43,15 +43,15 @@ use App\DTO\Nendoroid\Responses\NendoroidData;
                     card-link
                     collection-card
                     collection-card-link
-                "
+                 u-flex u-w-full"
                 data-prefetch
                 href="<?= e($href) ?>"
             >
 
-                <div class="card-image-box-portrait">
+                <div class="card-image-box-portrait u-row-center u-clip">
 
                     <img
-                        class="card-image-portrait"
+                        class="card-image-portrait u-block u-w-full"
                         src="<?= e($thumbnail) ?>"
                         alt="<?= e($nendoroid->waifu) ?>"
                         loading="lazy"
@@ -61,11 +61,11 @@ use App\DTO\Nendoroid\Responses\NendoroidData;
 
                 </div>
 
-                <p class="collection-card-title">
+                <p class="collection-card-title u-block u-relative u-text-center u-clip u-bold">
                     <?= e($nendoroid->waifu) ?>
                 </p>
 
-                <p class="collection-card-subtitle">
+                <p class="collection-card-subtitle u-relative u-text-center">
                     <?= e($nendoroid->origin) ?>
                 </p>
 

@@ -18,26 +18,13 @@
 
 .profile-customization-hero
 {
-    position: relative;
-
-    overflow: hidden;
-
-    display: flex;
-    flex-direction: column;
-
     margin-bottom: var(--gap-grid-home);
-
     padding: 0;
 }
 
 .profile-customization-banner
 {
-    width: 100%;
-
     aspect-ratio: 4 / 1;
-
-    overflow: hidden;
-
     border-radius:
         var(--card-border-radius)
         var(--card-border-radius)
@@ -93,11 +80,7 @@
 .profile-customization-name
 {
     margin: 0;
-
-    text-align: center;
-
     font-size: 2rem;
-    font-weight: 700;
 }
 
 .profile-customization-title
@@ -116,14 +99,11 @@
 
 .profile-customization-grid
 {
-    display: grid;
-
     grid-template-columns:
         repeat(
             2,
             1fr
         );
-
     gap: var(--gap-grid-home);
 }
 
@@ -134,7 +114,4 @@
     padding: 2rem;
 }
 
-.profile-customization-card
-{
-    cursor: pointer;
-}
+

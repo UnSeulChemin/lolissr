@@ -40,10 +40,10 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
 
                 <?= csrf_field() ?>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="jacquette"
                     >
 
@@ -55,7 +55,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                         class="
                             form-input
                             form-select
-                        "
+                         u-text-center u-w-full"
                         name="jacquette"
                         id="jacquette"
                     >
@@ -81,7 +81,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
 
                     <?php if (isset($errors['jacquette']) && $errors['jacquette'] !== ''): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
 
                             <?= e($errors['jacquette']) ?>
 
@@ -91,10 +91,10 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="livre_note"
                     >
 
@@ -106,7 +106,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                         class="
                             form-input
                             form-select
-                        "
+                         u-text-center u-w-full"
                         name="livre_note"
                         id="livre_note"
                     >
@@ -132,7 +132,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
 
                     <?php if (isset($errors['livre_note']) && $errors['livre_note'] !== ''): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
 
                             <?= e($errors['livre_note']) ?>
 
@@ -142,10 +142,10 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="editeur"
                     >
 
@@ -154,7 +154,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="text"
                         name="editeur"
                         id="editeur"
@@ -166,7 +166,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
 
                     <?php if (isset($errors['editeur']) && $errors['editeur'] !== ''): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
 
                             <?= e($errors['editeur']) ?>
 
@@ -176,10 +176,10 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="statut"
                     >
 
@@ -191,7 +191,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                         class="
                             form-input
                             form-select
-                        "
+                         u-text-center u-w-full"
                         name="statut"
                         id="statut"
                         required
@@ -214,7 +214,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
 
                     <?php if (isset($errors['statut']) && $errors['statut'] !== ''): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
 
                             <?= e($errors['statut']) ?>
 
@@ -224,10 +224,10 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="commentaire"
                     >
 
@@ -246,7 +246,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
 
                     <?php if (isset($errors['commentaire']) && $errors['commentaire'] !== ''): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
 
                             <?= e($errors['commentaire']) ?>
 
@@ -256,10 +256,10 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="note-total"
                     >
 
@@ -268,7 +268,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="text"
                         id="note-total"
                         value="<?= e($manga->noteLabel) ?>"
@@ -277,11 +277,11 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
 
                 </div>
 
-                <div class="form-actions">
+                <div class="form-actions u-stack u-items-center">
 
                     <button
                         type="submit"
-                        class="form-submit"
+                        class="form-submit u-inline-center u-pointer u-semibold"
                     >
 
                         Enregistrer
@@ -292,7 +292,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                         class="
                             form-submit
                             form-submit-secondary
-                        "
+                         u-inline-center u-pointer u-semibold"
                         href="<?= e($form->cancelUrl) ?>"
                     >
 

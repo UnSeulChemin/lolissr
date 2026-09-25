@@ -18,10 +18,10 @@ $message ??=
         class="
             detail-card
             transition-card
-        "
+         u-flex u-w-full u-border-box"
     >
 
-        <div class="detail-content">
+        <div class="detail-content u-stack">
 
             <h1 class="card-banner">
                 ⌛ 419 — Session expirée
@@ -29,7 +29,7 @@ $message ??=
 
             <div class="error-route">
 
-                <span class="error-route-label">
+                <span class="error-route-label u-block">
                     Erreur
                 </span>
 
@@ -45,7 +45,7 @@ $message ??=
                     class="
                         form-submit
                         form-submit-secondary
-                    "
+                     u-inline-center u-pointer u-semibold"
                     href="<?= e($view->baseUri) ?>"
                 >
 

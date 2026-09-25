@@ -29,10 +29,10 @@ $niveauOptions = ['HSK1', 'HSK2', 'HSK3', 'HSK4'];
 
                 <?= csrf_field() ?>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="niveau"
                     >
                         Niveau
@@ -42,7 +42,7 @@ $niveauOptions = ['HSK1', 'HSK2', 'HSK3', 'HSK4'];
                         class="
                             form-input
                             form-select
-                        "
+                         u-text-center u-w-full"
                         name="niveau"
                         id="niveau"
                         required
@@ -63,7 +63,7 @@ $niveauOptions = ['HSK1', 'HSK2', 'HSK3', 'HSK4'];
 
                     <?php if (isset($errors['niveau'])): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
                             <?= e($errors['niveau']) ?>
                         </p>
 
@@ -71,17 +71,17 @@ $niveauOptions = ['HSK1', 'HSK2', 'HSK3', 'HSK4'];
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="titre"
                     >
                         Titre
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="text"
                         name="titre"
                         id="titre"
@@ -92,7 +92,7 @@ $niveauOptions = ['HSK1', 'HSK2', 'HSK3', 'HSK4'];
 
                     <?php if (isset($errors['titre'])): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
                             <?= e($errors['titre']) ?>
                         </p>
 
@@ -100,17 +100,17 @@ $niveauOptions = ['HSK1', 'HSK2', 'HSK3', 'HSK4'];
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="structure"
                     >
                         Structure
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="text"
                         name="structure"
                         id="structure"
@@ -121,17 +121,17 @@ $niveauOptions = ['HSK1', 'HSK2', 'HSK3', 'HSK4'];
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="abreviation"
                     >
                         Abréviation
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="text"
                         name="abreviation"
                         id="abreviation"
@@ -141,17 +141,17 @@ $niveauOptions = ['HSK1', 'HSK2', 'HSK3', 'HSK4'];
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="phrase"
                     >
                         Phrase
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="text"
                         name="phrase"
                         id="phrase"
@@ -162,17 +162,17 @@ $niveauOptions = ['HSK1', 'HSK2', 'HSK3', 'HSK4'];
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="pinyin"
                     >
                         Pinyin
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="text"
                         name="pinyin"
                         id="pinyin"
@@ -183,17 +183,17 @@ $niveauOptions = ['HSK1', 'HSK2', 'HSK3', 'HSK4'];
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="traduction"
                     >
                         Traduction
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="text"
                         name="traduction"
                         id="traduction"
@@ -204,10 +204,10 @@ $niveauOptions = ['HSK1', 'HSK2', 'HSK3', 'HSK4'];
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="explication"
                     >
                         Explication
@@ -224,17 +224,17 @@ $niveauOptions = ['HSK1', 'HSK2', 'HSK3', 'HSK4'];
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="section"
                     >
                         Section
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="text"
                         name="section"
                         id="section"
@@ -245,17 +245,17 @@ $niveauOptions = ['HSK1', 'HSK2', 'HSK3', 'HSK4'];
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="categorie"
                     >
                         Catégorie
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="text"
                         name="categorie"
                         id="categorie"
@@ -266,11 +266,11 @@ $niveauOptions = ['HSK1', 'HSK2', 'HSK3', 'HSK4'];
 
                 </div>
 
-                <div class="form-actions">
+                <div class="form-actions u-stack u-items-center">
 
                     <button
                         type="submit"
-                        class="form-submit"
+                        class="form-submit u-inline-center u-pointer u-semibold"
                     >
                         Ajouter
                     </button>
@@ -279,7 +279,7 @@ $niveauOptions = ['HSK1', 'HSK2', 'HSK3', 'HSK4'];
                         class="
                             form-submit
                             form-submit-secondary
-                        "
+                         u-inline-center u-pointer u-semibold"
                         href="<?= e($form->cancelUrl) ?>"
                     >
                         Retour

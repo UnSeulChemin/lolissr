@@ -51,10 +51,10 @@ $sourcePlaceholder =
 
                 <?= csrf_field() ?>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="artbook"
                     >
 
@@ -63,7 +63,7 @@ $sourcePlaceholder =
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="text"
                         name="artbook"
                         id="artbook"
@@ -79,7 +79,7 @@ $sourcePlaceholder =
                         && $errors['artbook'] !== ''
                     ): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
 
                             <?= e($errors['artbook']) ?>
 
@@ -89,10 +89,10 @@ $sourcePlaceholder =
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="type_source"
                     >
 
@@ -104,7 +104,7 @@ $sourcePlaceholder =
                         class="
                             form-input
                             form-select
-                        "
+                         u-text-center u-w-full"
                         name="type_source"
                         id="type_source"
                         required
@@ -132,7 +132,7 @@ $sourcePlaceholder =
                         && $errors['type_source'] !== ''
                     ): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
 
                             <?= e($errors['type_source']) ?>
 
@@ -142,10 +142,10 @@ $sourcePlaceholder =
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="source"
                     >
 
@@ -154,7 +154,7 @@ $sourcePlaceholder =
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="text"
                         name="source"
                         id="source"
@@ -170,7 +170,7 @@ $sourcePlaceholder =
                         && $errors['source'] !== ''
                     ): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
 
                             <?= e($errors['source']) ?>
 
@@ -180,10 +180,10 @@ $sourcePlaceholder =
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="slug"
                     >
 
@@ -192,7 +192,7 @@ $sourcePlaceholder =
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="text"
                         name="slug"
                         id="slug"
@@ -208,7 +208,7 @@ $sourcePlaceholder =
                         && $errors['slug'] !== ''
                     ): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
 
                             <?= e($errors['slug']) ?>
 
@@ -218,10 +218,10 @@ $sourcePlaceholder =
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="company"
                     >
 
@@ -230,7 +230,7 @@ $sourcePlaceholder =
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="text"
                         name="company"
                         id="company"
@@ -245,7 +245,7 @@ $sourcePlaceholder =
                         && $errors['company'] !== ''
                     ): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
 
                             <?= e($errors['company']) ?>
 
@@ -255,10 +255,10 @@ $sourcePlaceholder =
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="numero"
                     >
 
@@ -267,7 +267,7 @@ $sourcePlaceholder =
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="number"
                         name="numero"
                         id="numero"
@@ -283,7 +283,7 @@ $sourcePlaceholder =
                         && $errors['numero'] !== ''
                     ): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
 
                             <?= e($errors['numero']) ?>
 
@@ -293,10 +293,10 @@ $sourcePlaceholder =
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="release_date"
                     >
 
@@ -305,7 +305,7 @@ $sourcePlaceholder =
                     </label>
 
                     <input
-                        class="form-input"
+                        class="form-input u-text-center u-w-full"
                         type="text"
                         name="release_date"
                         id="release_date"
@@ -319,7 +319,7 @@ $sourcePlaceholder =
                         && $errors['release_date'] !== ''
                     ): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
 
                             <?= e($errors['release_date']) ?>
 
@@ -329,10 +329,10 @@ $sourcePlaceholder =
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="image"
                     >
 
@@ -341,12 +341,12 @@ $sourcePlaceholder =
                     </label>
 
                     <label
-                        class="form-upload"
+                        class="form-upload u-row-center u-relative u-pointer"
                         for="image"
                     >
 
                         <input
-                            class="form-file"
+                            class="form-file u-absolute u-pointer"
                             type="file"
                             name="image"
                             id="image"
@@ -367,7 +367,7 @@ $sourcePlaceholder =
                         && $errors['image'] !== ''
                     ): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
 
                             <?= e($errors['image']) ?>
 
@@ -377,10 +377,10 @@ $sourcePlaceholder =
 
                 </div>
 
-                <div class="form-group">
+                <div class="form-group u-stack">
 
                     <label
-                        class="form-label"
+                        class="form-label u-text-center u-bold"
                         for="commentaire"
                     >
 
@@ -402,7 +402,7 @@ $sourcePlaceholder =
                         && $errors['commentaire'] !== ''
                     ): ?>
 
-                        <p class="form-error">
+                        <p class="form-error u-semibold">
 
                             <?= e($errors['commentaire']) ?>
 
@@ -412,11 +412,11 @@ $sourcePlaceholder =
 
                 </div>
 
-                <div class="form-actions">
+                <div class="form-actions u-stack u-items-center">
 
                     <button
                         type="submit"
-                        class="form-submit"
+                        class="form-submit u-inline-center u-pointer u-semibold"
                     >
 
                         Ajouter
@@ -427,7 +427,7 @@ $sourcePlaceholder =
                         class="
                             form-submit
                             form-submit-secondary
-                        "
+                         u-inline-center u-pointer u-semibold"
                         href="<?= e($form->cancelUrl) ?>"
                     >
 

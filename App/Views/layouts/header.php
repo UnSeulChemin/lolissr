@@ -34,7 +34,7 @@ $user = user();
 
             ?>
 
-            <div class="site-profile">
+            <div class="site-profile u-inline-flex">
 
                 <a
                     class="site-profile-link"
@@ -42,7 +42,7 @@ $user = user();
                     title="<?= e($username) ?>"
                 >
 
-                    <span class="site-logo">
+                    <span class="site-logo u-row u-relative u-clip">
 
                         <span class="site-logo-loli">
                             <?= e($usernameMain) ?>
@@ -58,7 +58,7 @@ $user = user();
 
                     </span>
 
-                    <span class="site-logo-level js-user-level">
+                    <span class="site-logo-level js-user-level u-row-center u-relative u-no-select">
                         <?= e((string) $user->level) ?>
                     </span>
 
@@ -164,7 +164,7 @@ $user = user();
             <div class="header-search-area">
 
                 <form
-                    class="header-search js-header-search"
+                    class="header-search js-header-search u-row u-relative"
                     data-base-path="<?= e($view->baseUri) ?>"
                 >
 
@@ -177,7 +177,7 @@ $user = user();
                         autocomplete="off"
                     >
 
-                    <div class="header-search-dropdown js-header-search-dropdown">
+                    <div class="header-search-dropdown js-header-search-dropdown u-absolute u-clip">
 
                         <div
                             class="header-search-skeleton"
@@ -186,11 +186,11 @@ $user = user();
 
                             <?php for ($i = 1; $i <= 5; $i++): ?>
 
-                                <div class="header-search-skeleton-item">
+                                <div class="header-search-skeleton-item u-row">
 
                                     <div class="header-search-skeleton-thumb"></div>
 
-                                    <div class="header-search-skeleton-texts">
+                                    <div class="header-search-skeleton-texts u-stack">
 
                                         <div
                                             class="

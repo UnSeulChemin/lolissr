@@ -11,17 +11,8 @@
 {
     width: var(--width-image-portrait);
     height: var(--height-image-portrait);
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
     margin: 8px 0 14px;
-
-    overflow: hidden;
-
     border-radius: var(--radius-image);
-
     transition:
         transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
         box-shadow 260ms ease;
@@ -29,18 +20,11 @@
 
 .card-image-portrait
 {
-    display: block;
-
-    width: 100%;
     height: 100%;
-
     object-fit: contain;
     object-position: center;
-
     border-radius: var(--radius-image);
-
     box-shadow: var(--shadow-image);
-
     transition:
         transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
         box-shadow 260ms ease;
@@ -200,11 +184,8 @@
 
 .card-list
 {
-    display: flex;
     align-items: stretch;
-    justify-content: center;
     flex-wrap: wrap;
-
     gap: var(--gap-grid-home);
 }
 

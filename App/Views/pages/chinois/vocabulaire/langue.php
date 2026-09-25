@@ -23,7 +23,7 @@ use App\DTO\Chinois\Responses\ChinoisVocabulaireData;
 
         <?php if ($totalPages > 1): ?>
 
-            <nav class="collection-pagination-wrapper">
+            <nav class="collection-pagination-wrapper u-row-center">
 
                 <?php for (
                     $i = 1;

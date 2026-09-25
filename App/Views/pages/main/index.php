@@ -57,7 +57,7 @@ $hasMostRepresented =
                     card-link
                     card-link-wide
                     card-wide
-                "
+                 u-flex"
                 data-prefetch
                 href="<?= e($view->baseUri . $serie->url) ?>"
             >
@@ -72,11 +72,11 @@ $hasMostRepresented =
                         class="
                             card-image-box-portrait
                             home-feature-image-box
-                        "
+                         u-row-center u-clip"
                     >
 
                         <img
-                            class="card-image-portrait"
+                            class="card-image-portrait u-block u-w-full"
                             src="<?= e($view->baseUri . $serie->thumbnailUrl) ?>"
                             alt="<?= e($serie->livre) ?>"
                             decoding="async"
@@ -86,7 +86,7 @@ $hasMostRepresented =
 
                     <div class="home-longest-info">
 
-                        <p class="home-longest-name">
+                        <p class="home-longest-name u-w-full u-clip u-bold">
                             <?= e($serie->livre) ?>
                         </p>
 
@@ -114,7 +114,7 @@ $hasMostRepresented =
                     📚 Série la plus longue
                 </h2>
 
-                <p class="home-empty">
+                <p class="home-empty u-relative u-text-center">
                     Aucune donnée
                 </p>
 
@@ -140,7 +140,7 @@ $hasMostRepresented =
                     transition-card
                     card-link
                     card-medium
-                "
+                 u-flex"
                 data-prefetch
                 href="<?= e($view->baseUri . $tome->url) ?>"
             >
@@ -155,11 +155,11 @@ $hasMostRepresented =
                         class="
                             card-image-box-portrait
                             home-feature-image-box
-                        "
+                         u-row-center u-clip"
                     >
 
                         <img
-                            class="card-image-portrait"
+                            class="card-image-portrait u-block u-w-full"
                             src="<?= e($view->baseUri . $tome->thumbnailUrl) ?>"
                             alt="<?= e($tome->livre) ?>"
                             decoding="async"
@@ -169,7 +169,7 @@ $hasMostRepresented =
 
                     <div class="home-feature-info">
 
-                        <p class="home-feature-title">
+                        <p class="home-feature-title u-w-full u-clip u-bold">
                             <?= e($tome->livre) ?>
                         </p>
 
@@ -197,7 +197,7 @@ $hasMostRepresented =
                     🆕 Dernier tome ajouté
                 </h2>
 
-                <p class="home-empty">
+                <p class="home-empty u-relative u-text-center">
                     Aucune donnée
                 </p>
 
@@ -220,7 +220,7 @@ $hasMostRepresented =
                 transition-card
                 card-small
                 card-link
-            "
+             u-flex"
             data-prefetch
             href="<?= e($view->baseUri . 'manga/series') ?>"
         >
@@ -229,7 +229,7 @@ $hasMostRepresented =
                 📚 Total tomes
             </h2>
 
-            <p class="home-card-value">
+            <p class="home-card-value u-relative u-bold">
                 <?= (int) $stats->totalTomes ?> tomes
             </p>
 
@@ -241,7 +241,7 @@ $hasMostRepresented =
                 transition-card
                 card-small
                 card-link
-            "
+             u-flex"
             data-prefetch
             href="<?= e($view->baseUri . 'manga/series') ?>"
         >
@@ -250,7 +250,7 @@ $hasMostRepresented =
                 📖 Total séries
             </h2>
 
-            <p class="home-card-value">
+            <p class="home-card-value u-relative u-bold">
                 <?= (int) $stats->totalSeries ?> séries
             </p>
 
@@ -262,7 +262,7 @@ $hasMostRepresented =
                 transition-card
                 card-small
                 card-link
-            "
+             u-flex"
             data-prefetch
             href="<?= e($view->baseUri . 'manga/series/notes') ?>"
         >
@@ -271,7 +271,7 @@ $hasMostRepresented =
                 ⭐ Note moyenne globale
             </h2>
 
-            <p class="home-card-value">
+            <p class="home-card-value u-relative u-bold">
                 <?= e($stats->averageNoteLabel) ?>
             </p>
 
@@ -285,11 +285,11 @@ $hasMostRepresented =
 
     <?php if ($hasTopLongestSeries): ?>
 
-        <h2 class="home-section-title">
+        <h2 class="home-section-title u-relative u-text-center u-w-full">
             📊 Top 5 séries les plus longues
         </h2>
 
-        <section class="home-ranking-list card-list">
+        <section class="home-ranking-list card-list u-flex u-justify-center">
 
             <?php foreach (
                 $stats->topLongestSeries as $index => $serie
@@ -301,19 +301,19 @@ $hasMostRepresented =
                         transition-card
                         card-link
                         card-bottom
-                    "
+                     u-flex"
                     data-prefetch
                     href="<?= e($view->baseUri . $serie->url) ?>"
                 >
 
-                    <p class="home-series-rank">
+                    <p class="home-series-rank u-absolute">
                         #<?= $index + 1 ?>
                     </p>
 
-                    <div class="card-image-box-portrait">
+                    <div class="card-image-box-portrait u-row-center u-clip">
 
                         <img
-                            class="card-image-portrait"
+                            class="card-image-portrait u-block u-w-full"
                             src="<?= e($view->baseUri . $serie->thumbnailUrl) ?>"
                             alt="<?= e($serie->livre) ?>"
                             loading="lazy"
@@ -322,11 +322,11 @@ $hasMostRepresented =
 
                     </div>
 
-                    <p class="home-list-card-title">
+                    <p class="home-list-card-title u-block u-relative u-text-center u-w-full u-clip u-bold">
                         <?= e($serie->livre) ?>
                     </p>
 
-                    <p class="home-list-card-meta">
+                    <p class="home-list-card-meta u-relative u-text-center">
                         <?= e($serie->totalLabel) ?>
                     </p>
 
@@ -343,7 +343,7 @@ $hasMostRepresented =
          READING STATS
     ========================================== -->
 
-    <h2 class="home-section-title">
+    <h2 class="home-section-title u-relative u-text-center u-w-full">
         📖 Lecture
     </h2>
 
@@ -355,7 +355,7 @@ $hasMostRepresented =
                 transition-card
                 card-small
                 card-link
-            "
+             u-flex"
             data-prefetch
             href="<?= e($view->baseUri . 'manga/series/a-lire') ?>"
         >
@@ -364,7 +364,7 @@ $hasMostRepresented =
                 ✅ Total lus
             </h2>
 
-            <p class="home-card-value">
+            <p class="home-card-value u-relative u-bold">
                 <?= (int) $stats->totalRead ?> lus
             </p>
 
@@ -376,7 +376,7 @@ $hasMostRepresented =
                 transition-card
                 card-small
                 card-link
-            "
+             u-flex"
             data-prefetch
             href="<?= e($view->baseUri . 'manga/series/a-lire') ?>"
         >
@@ -385,7 +385,7 @@ $hasMostRepresented =
                 📚 Restants à lire
             </h2>
 
-            <p class="home-card-value">
+            <p class="home-card-value u-relative u-bold">
                 <?= (int) $stats->totalUnread ?> à lire
             </p>
 
@@ -398,7 +398,7 @@ $hasMostRepresented =
                 card-small
                 card-link
                 home-reading-progress-card
-            "
+             u-flex u-clip"
             data-prefetch
             href="<?= e($view->baseUri . 'manga/series/a-lire') ?>"
         >
@@ -411,17 +411,17 @@ $hasMostRepresented =
                 class="
                     home-card-value
                     home-reading-progress-value
-                "
+                 u-relative u-bold"
             >
                 <?= (int) $stats->readingProgress ?>%
             </p>
 
             <div
-                class="home-reading-progress"
+                class="home-reading-progress u-relative u-clip"
                 style="--progress: <?= (int) $stats->readingProgress ?>%;"
             >
 
-                <div class="home-reading-progress-bar"></div>
+                <div class="home-reading-progress-bar u-relative u-clip"></div>
 
             </div>
 
@@ -434,7 +434,7 @@ $hasMostRepresented =
          ARTBOOKS
     ========================================== -->
 
-    <h2 class="home-section-title">
+    <h2 class="home-section-title u-relative u-text-center u-w-full">
         📕 Artbooks
     </h2>
 
@@ -458,7 +458,7 @@ $hasMostRepresented =
                     card-link
                     card-link-wide
                     card-wide
-                "
+                 u-flex"
             >
 
                 <h2 class="home-card-title">
@@ -471,11 +471,11 @@ $hasMostRepresented =
                         class="
                             card-image-box-portrait
                             home-feature-image-box
-                        "
+                         u-row-center u-clip"
                     >
 
                         <img
-                            class="card-image-portrait"
+                            class="card-image-portrait u-block u-w-full"
                             src="<?= e($view->baseUri . $mostRepresented->thumbnailUrl) ?>"
                             alt="<?= e($mostRepresented->name) ?>"
                             loading="lazy"
@@ -486,7 +486,7 @@ $hasMostRepresented =
 
                     <div class="home-longest-info">
 
-                        <p class="home-longest-name">
+                        <p class="home-longest-name u-w-full u-clip u-bold">
                             <?= e($mostRepresented->name) ?>
                         </p>
 
@@ -514,7 +514,7 @@ $hasMostRepresented =
                     📕 Artbooks
                 </h2>
 
-                <p class="home-empty">
+                <p class="home-empty u-relative u-text-center">
                     Aucune donnée
                 </p>
 
@@ -539,7 +539,7 @@ $hasMostRepresented =
                     transition-card
                     card-link
                     card-medium
-                "
+                 u-flex"
             >
 
                 <h2 class="home-card-title">
@@ -552,11 +552,11 @@ $hasMostRepresented =
                         class="
                             card-image-box-portrait
                             home-feature-image-box
-                        "
+                         u-row-center u-clip"
                     >
 
                         <img
-                            class="card-image-portrait"
+                            class="card-image-portrait u-block u-w-full"
                             src="<?= e($view->baseUri . $artbook->thumbnailUrl) ?>"
                             alt="<?= e($artbook->artbook) ?>"
                             loading="lazy"
@@ -567,7 +567,7 @@ $hasMostRepresented =
 
                     <div class="home-feature-info">
 
-                        <p class="home-feature-title">
+                        <p class="home-feature-title u-w-full u-clip u-bold">
                             <?= e($artbook->artbook) ?>
                         </p>
 
@@ -595,7 +595,7 @@ $hasMostRepresented =
                     📕 Dernier artbook ajouté
                 </h2>
 
-                <p class="home-empty">
+                <p class="home-empty u-relative u-text-center">
                     Aucune donnée
                 </p>
 
@@ -613,7 +613,7 @@ $hasMostRepresented =
                 transition-card
                 card-small
                 card-link
-            "
+             u-flex"
             data-prefetch
             href="<?= e($view->baseUri . 'manga/artbooks') ?>"
         >
@@ -622,7 +622,7 @@ $hasMostRepresented =
                 📚 Total artbooks
             </h2>
 
-            <p class="home-card-value">
+            <p class="home-card-value u-relative u-bold">
                 <?= (int) $stats->totalArtbooks ?>
             </p>
 
@@ -634,7 +634,7 @@ $hasMostRepresented =
                 📖 Séries représentées
             </h2>
 
-            <p class="home-card-value">
+            <p class="home-card-value u-relative u-bold">
                 <?= (int) $stats->totalArtbookSeries ?>
             </p>
 
@@ -646,7 +646,7 @@ $hasMostRepresented =
                 📕 Auteurs représentés
             </h2>
 
-            <p class="home-card-value">
+            <p class="home-card-value u-relative u-bold">
                 <?= (int) $stats->totalArtbookAuthors ?>
             </p>
 
@@ -659,7 +659,7 @@ $hasMostRepresented =
          MAÎTRISE DU MANDARIN
     ========================================== -->
 
-    <h2 class="home-section-title">
+    <h2 class="home-section-title u-relative u-text-center u-w-full">
         👑 Maîtrise du mandarin
     </h2>
 
@@ -677,7 +677,7 @@ $hasMostRepresented =
                 📚 Total vocabulaires
             </h2>
 
-            <p class="home-card-value">
+            <p class="home-card-value u-relative u-bold">
                 <?= (int) $stats->totalVocabulary ?>
             </p>
 
@@ -695,7 +695,7 @@ $hasMostRepresented =
                 📖 Total grammaires
             </h2>
 
-            <p class="home-card-value">
+            <p class="home-card-value u-relative u-bold">
                 <?= (int) $stats->totalGrammar ?>
             </p>
 
@@ -713,7 +713,7 @@ $hasMostRepresented =
                 🏆 Niveau moyen global
             </h2>
 
-            <p class="home-card-value">
+            <p class="home-card-value u-relative u-bold">
                 <?= e($stats->globalChineseProgressLabel) ?>
             </p>
 
@@ -726,7 +726,7 @@ $hasMostRepresented =
          MAÎTRISE DU CHINOIS
     ========================================== -->
 
-    <h2 class="home-section-title">
+    <h2 class="home-section-title u-relative u-text-center u-w-full">
         🎓 Maîtrise du chinois
     </h2>
 
@@ -740,7 +740,7 @@ $hasMostRepresented =
                 📚 Vocabulaire appris
             </h2>
 
-            <p class="home-card-value">
+            <p class="home-card-value u-relative u-bold">
                 <?= $stats->learnedVocabulary ?>
             </p>
 
@@ -752,7 +752,7 @@ $hasMostRepresented =
                 🎯 Vocabulaire restant
             </h2>
 
-            <p class="home-card-value">
+            <p class="home-card-value u-relative u-bold">
                 <?= (int) $stats->remainingVocabulary ?>
             </p>
 
@@ -764,7 +764,7 @@ $hasMostRepresented =
                 transition-card
                 card-small
                 home-reading-progress-card
-            "
+             u-clip"
         >
 
             <h2 class="home-card-title">
@@ -775,17 +775,17 @@ $hasMostRepresented =
                 class="
                     home-card-value
                     home-reading-progress-value
-                "
+                 u-relative u-bold"
             >
                 <?= (int) $stats->vocabularyProgress ?>%
             </p>
 
             <div
-                class="home-reading-progress"
+                class="home-reading-progress u-relative u-clip"
                 style="--progress: <?= (int) $stats->vocabularyProgress ?>%;"
             >
 
-                <div class="home-reading-progress-bar"></div>
+                <div class="home-reading-progress-bar u-relative u-clip"></div>
 
             </div>
 
@@ -800,7 +800,7 @@ $hasMostRepresented =
                 📖 Grammaire apprise
             </h2>
 
-            <p class="home-card-value">
+            <p class="home-card-value u-relative u-bold">
                 <?= $stats->learnedGrammar ?>
             </p>
 
@@ -812,7 +812,7 @@ $hasMostRepresented =
                 🎯 Grammaire restante
             </h2>
 
-            <p class="home-card-value">
+            <p class="home-card-value u-relative u-bold">
                 <?= (int) $stats->remainingGrammar ?>
             </p>
 
@@ -824,7 +824,7 @@ $hasMostRepresented =
                 transition-card
                 card-small
                 home-reading-progress-card
-            "
+             u-clip"
         >
 
             <h2 class="home-card-title">
@@ -835,17 +835,17 @@ $hasMostRepresented =
                 class="
                     home-card-value
                     home-reading-progress-value
-                "
+                 u-relative u-bold"
             >
                 <?= (int) $stats->grammarProgress ?>%
             </p>
 
             <div
-                class="home-reading-progress"
+                class="home-reading-progress u-relative u-clip"
                 style="--progress: <?= (int) $stats->grammarProgress ?>%;"
             >
 
-                <div class="home-reading-progress-bar"></div>
+                <div class="home-reading-progress-bar u-relative u-clip"></div>
 
             </div>
 

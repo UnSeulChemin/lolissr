@@ -4,21 +4,14 @@
 
 .detail-card
 {
-    width: 100%;
     max-width: 1320px;
-
     margin: var(--space-xxl) auto;
     padding: 42px;
-
-    display: flex;
     align-items: flex-start;
     gap: 42px;
-
     background-color: var(--color-surface-detail);
     border-radius: var(--radius-card-lg);
     box-shadow: var(--shadow-detail-card);
-
-    box-sizing: border-box;
 }
 
 
@@ -29,15 +22,11 @@
 .detail-image
 {
     width: 36%;
-
-    display: flex;
-    justify-content: center;
     align-items: flex-start;
 }
 
 .detail-image-inner
 {
-    width: 100%;
     max-width: 340px;
     aspect-ratio: 2 / 3;
 }
@@ -62,9 +51,6 @@
 .detail-content
 {
     width: 64%;
-
-    display: flex;
-    flex-direction: column;
     gap: 16px;
 }
 
@@ -75,7 +61,6 @@
 
 .detail-row
 {
-    display: grid;
     grid-template-columns: 220px 1fr;
     gap: 14px;
 }
@@ -127,10 +112,6 @@
 {
     min-height: 52px;
     padding: 6px 20px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 /* =========================================
@@ -182,11 +163,7 @@
 
 .detail-actions-right
 {
-    display: flex;
-    align-items: center;
-    justify-content: center;
     gap: 18px;
-
     grid-column: 2;
 }
 

@@ -16,7 +16,7 @@ use App\DTO\Manga\Responses\MangaSeriesItemData;
 
             <article class="card transition-card">
 
-                <p class="home-empty">
+                <p class="home-empty u-relative u-text-center">
                     🎉 Toutes les séries sont terminées.
                 </p>
 

@@ -12,29 +12,29 @@ use App\DTO\Common\Responses\ViewData;
 
 <section class="layout-container dashboard-page">
 
-    <section class="grammar-hero transition-title">
+    <section class="grammar-hero transition-title u-relative u-text-center u-clip u-border-box">
 
-        <div class="grammar-hero-main">
+        <div class="grammar-hero-main u-relative">
 
-            <h1 class="grammar-hero-title">
+            <h1 class="grammar-hero-title u-relative u-bold">
                 📘 HSK<?= e($hsk->level) ?>
             </h1>
 
-            <p class="grammar-hero-description">
+            <p class="grammar-hero-description u-relative">
                 <?= e($hsk->description) ?>
             </p>
 
         </div>
 
-        <div class="grammar-hero-source">
+        <div class="grammar-hero-source u-flex u-relative">
 
             <div class="grammar-source-content">
 
-                <span class="grammar-source-label">
+                <span class="grammar-source-label u-inline-center">
                     Source
                 </span>
 
-                <h2 class="grammar-source-title">
+                <h2 class="grammar-source-title u-bold">
                     Chine Informations — HSK<?= e($hsk->level) ?>
                 </h2>
 
@@ -45,7 +45,7 @@ use App\DTO\Common\Responses\ViewData;
             </div>
 
             <a
-                class="grammar-source-link"
+                class="grammar-source-link u-inline-center u-bold"
                 href="<?= e($hsk->sourceUrl) ?>"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -57,19 +57,19 @@ use App\DTO\Common\Responses\ViewData;
 
     </section>
 
-    <section class="grammar-summary">
+    <section class="grammar-summary u-relative u-clip u-border-box">
 
-        <h2 class="grammar-summary-title">
+        <h2 class="grammar-summary-title u-bold">
             Sommaire
         </h2>
 
-        <nav class="grammar-summary-links">
+        <nav class="grammar-summary-links u-flex">
 
             <?php foreach ($hsk->sections as $section): ?>
 
                 <a
                     href="#<?= e($section->id) ?>"
-                    class="grammar-summary-link"
+                    class="grammar-summary-link u-inline-center u-bold"
                 >
                     <?= e($section->title) ?>
                 </a>
@@ -86,7 +86,7 @@ use App\DTO\Common\Responses\ViewData;
 
         <h2
             id="<?= e($section->id) ?>"
-            class="grammar-section-title"
+            class="grammar-section-title u-row"
         >
 
             <span class="grammar-section-bar"></span>
@@ -97,9 +97,9 @@ use App\DTO\Common\Responses\ViewData;
 
         <?php foreach ($section->categories as $categorie): ?>
 
-            <section class="grammar-category">
+            <section class="grammar-category u-w-full">
 
-                <h3 class="grammar-category-title">
+                <h3 class="grammar-category-title u-row">
 
                     <span class="grammar-category-bar"></span>
 
@@ -119,7 +119,7 @@ use App\DTO\Common\Responses\ViewData;
                         >
 
                             <button
-                                class="grammar-delete grammaire-delete"
+                                class="grammar-delete grammaire-delete u-row-center u-absolute u-pointer u-bold"
                                 type="button"
                                 data-id="<?= $grammaire->id ?>"
                                 data-url="<?= e($view->baseUri) ?>chinois/ajax/delete-grammaire"
@@ -130,14 +130,14 @@ use App\DTO\Common\Responses\ViewData;
                             </button>
 
                             <a
-                                class="grammar-edit"
+                                class="grammar-edit u-row-center u-absolute u-pointer"
                                 href="<?= e($view->baseUri) ?>chinois/grammaire/<?= strtolower($grammaire->niveau) ?>/modifier/<?= $grammaire->id ?>"
                                 aria-label="Modifier la règle"
                                 title="Modifier la règle"
                             >
 
                                 <svg
-                                    class="grammar-edit-icon"
+                                    class="grammar-edit-icon u-no-events"
                                     viewBox="0 0 24 24"
                                     aria-hidden="true"
                                 >
@@ -159,7 +159,7 @@ use App\DTO\Common\Responses\ViewData;
                                 <?= e($grammaire->titre) ?>
                             </h4>
 
-                            <div class="grammar-structure">
+                            <div class="grammar-structure u-bold">
                                 <?= e($grammaire->structure) ?>
                             </div>
 
@@ -204,7 +204,7 @@ use App\DTO\Common\Responses\ViewData;
                                     grammar-mastered
                                     grammar-ajax
                                     <?= $grammaire->masteredClass ?>
-                                "
+                                 u-row-center u-absolute u-pointer"
                                 type="button"
                                 data-id="<?= $grammaire->id ?>"
                                 data-url="<?= e($view->baseUri) ?>chinois/ajax/toggle-grammaire-maitrise"
@@ -215,7 +215,7 @@ use App\DTO\Common\Responses\ViewData;
                             >
 
                                 <svg
-                                    class="grammar-mastered-icon"
+                                    class="grammar-mastered-icon u-no-events"
                                     viewBox="0 0 24 24"
                                     aria-hidden="true"
                                 >

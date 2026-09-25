@@ -42,11 +42,11 @@ use App\DTO\Common\Responses\ViewData;
                 "
             >
 
-                <div class="flashcard-navigation">
+                <div class="flashcard-navigation u-row-center">
 
                     <button
                         id="flashcard-previous"
-                        class="flashcard-nav-button"
+                        class="flashcard-nav-button u-row-center u-pointer"
                         type="button"
                     >
                         ←
@@ -58,7 +58,7 @@ use App\DTO\Common\Responses\ViewData;
 
                     <button
                         id="flashcard-next"
-                        class="flashcard-nav-button"
+                        class="flashcard-nav-button u-row-center u-pointer"
                         type="button"
                     >
                         →
@@ -68,7 +68,7 @@ use App\DTO\Common\Responses\ViewData;
 
                 <button
                     id="flashcard-delete"
-                    class="grammar-delete grammaire-delete"
+                    class="grammar-delete grammaire-delete u-row-center u-absolute u-pointer u-bold"
                     type="button"
                     data-id="<?= $card->id ?>"
                     data-url="<?= e($view->baseUri) ?>chinois/ajax/delete-grammaire"
@@ -85,7 +85,7 @@ use App\DTO\Common\Responses\ViewData;
 
                 <div
                     id="flashcard-structure"
-                    class="grammar-structure"
+                    class="grammar-structure u-bold"
                 >
                     <?= e($card->structure) ?>
                 </div>
@@ -121,12 +121,12 @@ use App\DTO\Common\Responses\ViewData;
 
                 <a
                     id="flashcard-edit"
-                    class="grammar-edit"
+                    class="grammar-edit u-row-center u-absolute u-pointer"
                     href="<?= e($view->baseUri) ?>chinois/grammaire/<?= e(mb_strtolower($card->niveau)) ?>/modifier/<?= $card->id ?>"
                 >
 
                     <svg
-                        class="grammar-edit-icon"
+                        class="grammar-edit-icon u-no-events"
                         viewBox="0 0 24 24"
                         aria-hidden="true"
                     >
@@ -149,7 +149,7 @@ use App\DTO\Common\Responses\ViewData;
                     class="
                         grammar-mastered
                         <?= $card->masteredClass ?>
-                    "
+                     u-row-center u-absolute u-pointer"
                     type="button"
                     data-id="<?= $card->id ?>"
                     data-url="<?= e($view->baseUri) ?>chinois/ajax/toggle-grammaire-maitrise"
@@ -158,7 +158,7 @@ use App\DTO\Common\Responses\ViewData;
                 >
 
                     <svg
-                        class="grammar-mastered-icon"
+                        class="grammar-mastered-icon u-no-events"
                         viewBox="0 0 24 24"
                         aria-hidden="true"
                     >

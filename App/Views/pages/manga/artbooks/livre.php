@@ -35,11 +35,11 @@ $commentaire = $hasCommentaire
 
 <section class="layout-container dashboard-page">
 
-    <section class="detail-card js-detail-card">
+    <section class="detail-card js-detail-card u-flex u-w-full u-border-box">
 
-        <figure class="detail-image">
+        <figure class="detail-image u-flex u-justify-center">
 
-            <div class="detail-image-inner">
+            <div class="detail-image-inner u-w-full">
 
                 <img
                     src="<?= e($artbook->thumbnailUrl) ?>"
@@ -50,9 +50,9 @@ $commentaire = $hasCommentaire
 
         </figure>
 
-        <article class="detail-content">
+        <article class="detail-content u-stack">
 
-            <div class="detail-row">
+            <div class="detail-row u-grid">
 
                 <div class="detail-label">
                     Artbook
@@ -66,7 +66,7 @@ $commentaire = $hasCommentaire
 
             <?php if ($artbook->hasAuteur): ?>
 
-                <div class="detail-row">
+                <div class="detail-row u-grid">
 
                     <div class="detail-label">
                         Auteur
@@ -82,7 +82,7 @@ $commentaire = $hasCommentaire
 
             <?php if ($artbook->hasSerie): ?>
 
-                <div class="detail-row">
+                <div class="detail-row u-grid">
 
                     <div class="detail-label">
                         Série
@@ -96,7 +96,7 @@ $commentaire = $hasCommentaire
 
             <?php endif; ?>
 
-            <div class="detail-row">
+            <div class="detail-row u-grid">
 
                 <div class="detail-label">
                     Entreprise
@@ -113,7 +113,7 @@ $commentaire = $hasCommentaire
 
             </div>
 
-            <div class="detail-row">
+            <div class="detail-row u-grid">
 
                 <div class="detail-label">
                     Date de sortie
@@ -132,7 +132,7 @@ $commentaire = $hasCommentaire
 
             <!-- COMMENTAIRE -->
 
-            <div class="detail-row detail-row-comment">
+            <div class="detail-row detail-row-comment u-grid">
 
                 <div class="detail-label">
                     Commentaire
@@ -154,7 +154,7 @@ $commentaire = $hasCommentaire
 
                     <button
                         type="button"
-                        class="status-toggle js-read-status-button <?= $isLu ? 'active' : '' ?>"
+                        class="status-toggle js-read-status-button <?= $isLu ? 'active' : '' ?> u-inline-center u-pointer"
                         data-url="<?= e($updateReadStatusUrl) ?>"
                         data-read-status="<?= $isLu ? '1' : '0' ?>"
                         title="<?= e($readStatusLabel) ?>"
@@ -167,10 +167,10 @@ $commentaire = $hasCommentaire
 
                 </div>
 
-                <div class="detail-actions-right">
+                <div class="detail-actions-right u-row-center">
 
                     <a
-                        class="form-submit"
+                        class="form-submit u-inline-center u-pointer u-semibold"
                         href="<?= e($modifierUrl) ?>"
                     >
                         Modifier
@@ -182,7 +182,7 @@ $commentaire = $hasCommentaire
                             form-submit
                             form-submit-danger
                             js-delete-artbook
-                        "
+                         u-inline-center u-pointer u-semibold"
                         data-url="<?= e($deleteUrl) ?>"
                         data-redirect="<?= e($returnUrl) ?>"
                     >
@@ -197,13 +197,13 @@ $commentaire = $hasCommentaire
 
     </section>
 
-    <div class="collection-back-wrapper">
+    <div class="collection-back-wrapper u-row-center">
 
         <a
             class="
                 form-submit
                 collection-back-button
-            "
+             u-inline-center u-pointer u-semibold"
             href="<?= e($returnUrl) ?>"
         >
             Retour
