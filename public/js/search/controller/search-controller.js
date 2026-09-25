@@ -122,22 +122,14 @@ export function initSearchController()
         {
             event.preventDefault();
 
-            const query =
-                normalizeSearchQuery(
-                    searchInput.value,
-                );
+            clearTimeout(debounceTimer);
 
-            const basePath =
-                search.dataset.basePath
-                ?? '/';
-
-            const url =
-                query !== ''
-                    ? `${basePath}manga/recherche/${encodeURIComponent(query)}`
-                    : `${basePath}manga/recherche`;
-
-            window.location.href =
-                url;
+            void handleSearch(
+                search,
+                searchInput,
+                searchResults,
+                searchDropdown,
+            );
         },
     );
 

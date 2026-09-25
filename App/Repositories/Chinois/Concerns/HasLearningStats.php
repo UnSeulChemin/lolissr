@@ -24,4 +24,9 @@ trait HasLearningStats
     {
         return $this->countWhere('maitrise = 1');
     }
+
+    public function countRewarded(): int
+    {
+        return $this->countWhere('xp_rewarded = 1');
+    }
 }

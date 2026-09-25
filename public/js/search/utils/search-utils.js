@@ -75,10 +75,7 @@ export function highlightSearchTerm(
     rawQuery,
 )
 {
-    const safeText =
-        escapeHtml(
-            text,
-        );
+    const plainText = String(text ?? '');
 
     const normalizedQuery =
         normalizeSearchQuery(
@@ -88,7 +85,7 @@ export function highlightSearchTerm(
     if (
         normalizedQuery === ''
     ) {
-        return safeText;
+        return escapeHtml(plainText);
     }
 
     const queryParts =
@@ -106,7 +103,7 @@ export function highlightSearchTerm(
     if (
         queryParts.length === 0
     ) {
-        return safeText;
+        return escapeHtml(plainText);
     }
 
     const regex =
@@ -115,10 +112,17 @@ export function highlightSearchTerm(
             'ig',
         );
 
-    return safeText.replace(
-        regex,
-        '<mark class="search-highlight">$1</mark>',
-    );
+    return plainText
+        .split(regex)
+        .map((part, index) =>
+        {
+            const safePart = escapeHtml(part);
+
+            return index % 2 === 1
+                ? `<mark class="search-highlight">${safePart}</mark>`
+                : safePart;
+        })
+        .join('');
 }
 
 // =========================================

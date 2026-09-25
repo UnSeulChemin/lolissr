@@ -155,11 +155,11 @@ final readonly class ProfileStatsService
 
         // CHINESE XP
         $vocabularyXp =
-            $vocabularyLearned
+            $this->vocabularyStatsRepository->countRewarded()
             * UserXp::LEARN_VOCABULARY;
 
         $grammarXp =
-            $grammarLearned
+            $this->grammarStatsRepository->countRewarded()
             * UserXp::LEARN_GRAMMAR;
 
         return new ProfileStatsData(
