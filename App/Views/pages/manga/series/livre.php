@@ -235,13 +235,13 @@ $commentaire = $manga->hasCommentaire ? nl2br(e($manga->commentaire)) : 'Aucun c
 
                 <div class="detail-actions-left">
 
-                    <button type="button" class="js-read-status-button <?= $isLu ? 'active' : '' ?>"
+                    <button type="button" class="status-toggle js-read-status-button <?= $isLu ? 'active' : '' ?>"
                         data-url="<?= e($updateReadStatusUrl) ?>"
                         data-read-status="<?= $isLu ? '1' : '0' ?>"
                         title="<?= e($readStatusLabel) ?>"
                         aria-label="<?= e($readStatusLabel) ?>"
                     >
-                        <svg class="lu-icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <svg class="status-toggle-icon status-toggle-icon--read lu-icon" viewBox="0 0 24 24" aria-hidden="true">
                             <path d="M7 3C6.45 3 6 3.45 6 4V21L12 17L18 21V4C18 3.45 17.55 3 17 3H7Z"/>
                         </svg>
 

@@ -28,12 +28,12 @@ export function frameModal(frames, avatar)
                         Choisir un cadre
                     </h3>
 
-                    <div class="avatar-modal-grid frame-modal-grid">
+                    <div class="media-picker-grid media-picker-grid--avatars avatar-modal-grid frame-modal-grid">
 
                         ${frames.map(
                             (frame) => `
                                 <button
-                                    class="avatar-modal-item frame-modal-item"
+                                    class="media-picker-item media-picker-item--avatar avatar-modal-item frame-modal-item"
                                     data-frame="${frame.frame}"
                                     type="button"
                                 >

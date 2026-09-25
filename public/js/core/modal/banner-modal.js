@@ -28,12 +28,12 @@ export function bannerModal(banners)
                         Choisir une bannière
                     </h3>
 
-                    <div class="banner-modal-grid">
+                    <div class="media-picker-grid banner-modal-grid">
 
                         ${banners.map(
                             (banner) => `
                                 <button
-                                    class="banner-modal-item"
+                                    class="media-picker-item media-picker-item--banner banner-modal-item"
                                     data-banner="${banner.banner}"
                                     type="button"
                                 >

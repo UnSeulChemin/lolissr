@@ -8,6 +8,7 @@ use App\DTO\Common\Responses\FlashToastData;
 use App\DTO\Common\Responses\FormViewData;
 use App\DTO\Common\Responses\ViewData;
 use App\DTO\Common\ServiceResult;
+use App\Support\PageStyles;
 
 use Framework\Application\App;
 use Framework\Debug\Profiler;
@@ -423,6 +424,7 @@ abstract class Controller
                         'html' => $html,
                         'title' => $this->title,
                         'url' => $this->request->uri(),
+                        'stylesheets' => PageStyles::forView($viewPath),
                     ],
                 ],
                 $statusCode
@@ -478,6 +480,7 @@ abstract class Controller
                         [
                             ...$variables,
                             'content' => $content,
+                            'pageStylesheets' => PageStyles::forView($viewPath),
                         ]
                     )
                 );

@@ -7,9 +7,6 @@
 @import url('./base/global.css');
 @import url('./base/scrollbars.css');
 @import url('./base/confirm-modal.css');
-@import url('./base/profile-title-modal.css');
-@import url('./base/avatar-modal.css');
-@import url('./base/banner-modal.css');
 @import url('./base/keyframes.css');
 
 /* UTILITIES */
@@ -31,14 +28,4 @@
 @import url('./partials/header.css');
 @import url('./partials/search.css');
 
-/* PAGES */
-@import url('./page/main/home.css');
-@import url('./page/sql.css');
-@import url('./page/chinois/vocabulaire.css');
-@import url('./page/chinois/grammaire.css');
-@import url('./page/profil/profil.css');
-@import url('./page/profil/personnalisation.css');
-@import url('./page/manga/detail.css');
-@import url('./page/manga/note-rating.css');
-@import url('./page/manga/read-status.css');
-@import url('./page/figurine/collect-status.css');
+/* Page dependencies are declared in Config/styles.php. */

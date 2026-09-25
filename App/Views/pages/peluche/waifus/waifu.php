@@ -141,7 +141,7 @@ $collectStatusLabel = $isCollected
                     <button
                         type="button"
                         class="
-                            js-collect-status-button
+                            status-toggle js-collect-status-button
                             js-peluche-collect-status-button
                             <?= $isCollected ? 'active' : '' ?>
                         "
@@ -154,7 +154,7 @@ $collectStatusLabel = $isCollected
                     >
 
                         <svg
-                            class="collect-icon"
+                            class="status-toggle-icon collect-icon"
                             viewBox="0 0 24 24"
                             aria-hidden="true"
                         >

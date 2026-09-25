@@ -1,0 +1,99 @@
+/* Shared media picker: avatars, frames and banners. */
+.media-picker-grid,
+.avatar-modal-grid,
+.banner-modal-grid
+{
+    display: grid;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.media-picker-grid--avatars,
+.avatar-modal-grid
+{
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+}
+
+.media-picker-item,
+.avatar-modal-item,
+.banner-modal-item
+{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: .5rem;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.media-picker-item:hover,
+.avatar-modal-item:hover,
+.banner-modal-item:hover
+{
+    border-color: var(--primary);
+}
+
+.media-picker-item--avatar,
+.avatar-modal-item
+{
+    background: rgba(255, 255, 255, .04);
+    border-radius: 16px;
+}
+
+.media-picker-item--avatar:hover,
+.avatar-modal-item:hover
+{
+    background: rgba(255, 255, 255, .08);
+    transform: translateY(-2px) scale(1.04);
+}
+
+.media-picker-item--avatar > img,
+.avatar-modal-item > img
+{
+    display: block;
+    width: 84px;
+    height: 84px;
+    object-fit: contain;
+    user-select: none;
+    pointer-events: none;
+}
+
+.avatar-modal-item .profile-customization-avatar
+{
+    --profile-avatar-size: 110px;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.frame-modal-item
+{
+    width: 150px;
+    height: 150px;
+    padding: 0;
+}
+
+.media-picker-item--banner,
+.banner-modal-item
+{
+    background: transparent;
+    border-radius: 12px;
+}
+
+.media-picker-item--banner:hover,
+.banner-modal-item:hover
+{
+    transform: scale(1.02);
+}
+
+.media-picker-item--banner img,
+.banner-modal-item img
+{
+    width: 100%;
+    max-width: 700px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 12px;
+    user-select: none;
+    pointer-events: none;
+}

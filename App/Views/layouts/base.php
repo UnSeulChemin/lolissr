@@ -7,6 +7,7 @@ use App\DTO\Common\Responses\ViewData;
 use Framework\Security\ContentSecurityPolicy;
 
 /** @var ViewData $view */
+/** @var list<string> $pageStylesheets */
 
 $title = is_string($title ?? null) ? $title : '';
 $content = is_string($content ?? null) ? $content : '';
@@ -33,6 +34,10 @@ $content = is_string($content ?? null) ? $content : '';
     <link rel="shortcut icon" href="<?= e($view->baseUri) ?>images/favicon/favicon.png">
 
     <link rel="stylesheet" href="<?= e($view->baseUri) ?>css/app.css">
+
+    <?php foreach ($pageStylesheets as $stylesheet): ?>
+        <link rel="stylesheet" href="<?= e($stylesheet) ?>" data-page-style>
+    <?php endforeach; ?>
 
 </head>
 

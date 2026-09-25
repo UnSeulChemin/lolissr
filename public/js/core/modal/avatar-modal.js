@@ -28,12 +28,12 @@ export function avatarModal(avatars)
                         Choisir un avatar
                     </h3>
 
-                    <div class="avatar-modal-grid">
+                    <div class="media-picker-grid media-picker-grid--avatars avatar-modal-grid">
 
                         ${avatars.map(
                             (avatar) => `
                                 <button
-                                    class="avatar-modal-item"
+                                    class="media-picker-item media-picker-item--avatar avatar-modal-item"
                                     data-avatar="${avatar.avatar}"
                                     type="button"
                                 >

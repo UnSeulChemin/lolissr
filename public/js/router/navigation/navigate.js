@@ -41,6 +41,10 @@ import {
 } from './validate-page-response.js';
 
 import {
+    preparePageStyles,
+} from '../page-styles.js';
+
+import {
     clearInvalidatedRoute,
     shouldRefreshRoute,
 } from '../route-invalidation.js';
@@ -252,6 +256,11 @@ export async function navigateTo(
             response,
         );
 
+        const commitPageStyles = await preparePageStyles(
+            response.page.stylesheets,
+            controller.signal,
+        );
+
         /*
         |--------------------------------------------------------------------------
         | STALE NAVIGATION
@@ -298,6 +307,8 @@ export async function navigateTo(
         */
 
         start('render');
+
+        commitPageStyles();
 
         await renderPage(
             current,

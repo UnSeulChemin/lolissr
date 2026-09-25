@@ -1,0 +1,33 @@
+.profile-avatar-image
+{
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+
+    border-radius: 50%;
+
+    position: relative;
+
+    z-index: 1;
+}
+
+.profile-frame
+{
+    position: absolute;
+
+    inset: 0;
+
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+
+    z-index: 2;
+
+    pointer-events: none;
+}
