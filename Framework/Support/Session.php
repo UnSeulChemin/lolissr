@@ -28,6 +28,15 @@ final class Session
         self::ensureStarted();
     }
 
+    public static function close(): void
+    {
+        if (session_status() === PHP_SESSION_ACTIVE && ! session_write_close())
+        {
+            throw new RuntimeException('Impossible de sauvegarder la session.');
+        }
+        self::$started = false;
+    }
+
     public static function set(string $key, mixed $value): void
     {
         self::ensureStarted();

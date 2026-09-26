@@ -7,6 +7,7 @@ namespace Framework\Http;
 use Framework\Application\App;
 
 use JsonException;
+use Framework\Exceptions\BaseHttpException;
 
 final class Request
 {
@@ -293,6 +294,12 @@ final class Request
             return $this->json;
         }
 
+        $contentType = trim(explode(';', $this->headerLower('Content-Type'))[0]);
+        if ($contentType !== 'application/json' && ! str_ends_with($contentType, '+json'))
+        {
+            return $this->json = [];
+        }
+
         $raw = @file_get_contents('php://input');
 
         if ($raw === false || trim($raw) === '')
@@ -306,7 +313,7 @@ final class Request
         }
         catch (JsonException)
         {
-            return $this->json = [];
+            throw new BaseHttpException('Corps JSON invalide.', 400);
         }
 
         return $this->json = is_array($decoded) ? $decoded : [];

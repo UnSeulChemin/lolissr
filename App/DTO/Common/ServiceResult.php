@@ -4,8 +4,13 @@ declare(strict_types=1);
 
 namespace App\DTO\Common;
 
-final readonly class ServiceResult
+final readonly class ServiceResult implements \Framework\Database\TransactionResult
 {
+    public function shouldCommit(): bool
+    {
+        return $this->success;
+    }
+
     /**
      * @param array<string, mixed> $data
      */

@@ -249,6 +249,12 @@ final class Router
 
             $middleware->handle($request);
         }
+
+        // Release the session lock before read-only page work. Session access can reopen it.
+        if (in_array($request->method(), ['GET', 'HEAD'], true))
+        {
+            \Framework\Support\Session::close();
+        }
     }
 
     // =========================================

@@ -14,6 +14,9 @@ final class Cache
 {
     private static ?string $directory = null;
 
+    /** @var array<string, true> */
+    private static array $computing = [];
+
     private function __construct()
     {
     }
@@ -260,11 +263,51 @@ final class Cache
 
         Profiler::increment('cache.miss');
 
-        $value = $callback();
+        if (isset(self::$computing[$key]))
+        {
+            throw new \LogicException('Recursive cache computation for key: ' . $key);
+        }
 
-        self::put($key, $value, $ttl);
+        if (! self::ensureDirectory())
+        {
+            return $callback();
+        }
 
-        return $value;
+        // Keep lock files stable: unlinking them allows concurrent locks on different inodes.
+        $lock = @fopen(self::path($key) . '.lock', 'c');
+        if ($lock === false)
+        {
+            return $callback();
+        }
+
+        $locked = false;
+        $deadline = microtime(true) + 2.0;
+        try
+        {
+            do
+            {
+                $locked = flock($lock, LOCK_EX | LOCK_NB);
+                if ($locked) break;
+                usleep(20_000);
+            } while (microtime(true) < $deadline);
+
+            // A slow cache producer must not block navigation indefinitely.
+            if (! $locked) return $callback();
+
+            $cached = self::get($key);
+            if ($cached !== null) return $cached;
+
+            self::$computing[$key] = true;
+            $value = $callback();
+            self::put($key, $value, $ttl);
+            return $value;
+        }
+        finally
+        {
+            unset(self::$computing[$key]);
+            if ($locked) flock($lock, LOCK_UN);
+            fclose($lock);
+        }
     }
 
     public static function has(string $key): bool

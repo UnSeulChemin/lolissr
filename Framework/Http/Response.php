@@ -23,6 +23,7 @@ final class Response
 
     public static function html(string $content, int $statusCode = 200): never
     {
+        \Framework\Support\Session::close();
         self::setStatusCode($statusCode);
         self::sendContentType('text/html');
 
@@ -36,6 +37,7 @@ final class Response
      */
     public static function json(array $data, int $statusCode = 200): never
     {
+        \Framework\Support\Session::close();
         self::setStatusCode($statusCode);
         self::sendContentType('application/json');
 
@@ -82,6 +84,7 @@ final class Response
             );
         }
 
+        \Framework\Support\Session::close();
         header('Location: ' . $url, true, $statusCode);
 
         exit;

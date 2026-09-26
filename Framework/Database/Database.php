@@ -104,6 +104,16 @@ final class Database extends PDO
             {
                 $result = $callback();
 
+                // Explicit failure results roll back while preserving their public error payload.
+                if ($result instanceof TransactionResult && ! $result->shouldCommit())
+                {
+                    if (! $this->rollBack())
+                    {
+                        throw new RuntimeException('Impossible d’annuler la transaction.');
+                    }
+                    return $result;
+                }
+
                 if (! $this->commit())
                 {
                     throw new RuntimeException(
