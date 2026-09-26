@@ -67,9 +67,7 @@ final class AuthService implements AuthenticationInterface
 
         if ($user === null || ! password_verify($password, $user->password))
         {
-            $this->loginThrottleService->recordFailure($username, $ipAddress);
-
-            if ($this->loginThrottleService->isLocked($username, $ipAddress))
+            if ($this->loginThrottleService->recordFailure($username, $ipAddress))
             {
                 return LoginResult::LOCKED;
             }

@@ -118,11 +118,10 @@ final readonly class StatsService
         $lastMangaTome =
             $this->lastMangaTome();
 
-        $longestMangaSeries =
-            $this->longestMangaSeries();
-
         $topLongestMangaSeries =
             $this->topLongestMangaSeries();
+
+        $longestMangaSeries = $topLongestMangaSeries[0] ?? null;
 
         /*
         |--------------------------------------------------------------------------

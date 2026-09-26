@@ -53,58 +53,16 @@ final readonly class LoginThrottleService
         return (int) ceil($remainingSeconds / 60);
     }
 
-    public function recordFailure(string $username, string $ipAddress): void
+    public function recordFailure(string $username, string $ipAddress): bool
     {
-        if ($this->isLocked($username, $ipAddress))
-        {
-            return;
-        }
-
         $now = $this->now();
-        $identifierHash = $this->identifierHash($username, $ipAddress);
-        $attempt = $this->loginAttemptRepository->findByIdentifierHash($identifierHash);
 
-        if ($attempt === null)
-        {
-            $this->loginAttemptRepository->createAttempt(
-                $identifierHash,
-                $this->formatDate($now)
-            );
-
-            return;
-        }
-
-        $firstAttemptAt = $this->date($attempt['firstAttemptAt']);
-        $windowStart = $now->modify('-' . self::ATTEMPT_WINDOW_MINUTES . ' minutes');
-
-        if ($firstAttemptAt < $windowStart)
-        {
-            $this->loginAttemptRepository->resetWindow(
-                $identifierHash,
-                $this->formatDate($now)
-            );
-
-            return;
-        }
-
-        $attempts = $attempt['attempts'] + 1;
-
-        if ($attempts < self::MAX_ATTEMPTS)
-        {
-            $this->loginAttemptRepository->incrementAttempts(
-                $identifierHash,
-                $attempts
-            );
-
-            return;
-        }
-
-        $lockedUntil = $now->modify('+' . self::LOCK_DURATION_MINUTES . ' minutes');
-
-        $this->loginAttemptRepository->lock(
-            $identifierHash,
-            $attempts,
-            $this->formatDate($lockedUntil)
+        return $this->loginAttemptRepository->recordFailure(
+            $this->identifierHash($username, $ipAddress),
+            $this->formatDate($now),
+            $this->formatDate($now->modify('-' . self::ATTEMPT_WINDOW_MINUTES . ' minutes')),
+            $this->formatDate($now->modify('+' . self::LOCK_DURATION_MINUTES . ' minutes')),
+            self::MAX_ATTEMPTS
         );
     }
 

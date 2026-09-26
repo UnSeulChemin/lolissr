@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Services\Peluche;
 
-use App\Cache\DashboardCache;
 use App\Constants\UserXp;
 use App\DTO\Common\ServiceResult;
 use App\DTO\Peluche\Inputs\PelucheCreateDTO;
@@ -27,8 +26,7 @@ final readonly class PelucheWriteService
         private ThumbnailManager $thumbnailManager,
         private Database $database,
         private PelucheXpRewardService $pelucheXpRewardService,
-        private CollectionCreationService $creationService,
-        private DashboardCache $dashboardCache
+        private CollectionCreationService $creationService
     ) {
     }
 
@@ -84,11 +82,6 @@ final readonly class PelucheWriteService
             'Cette peluche existe déjà'
         );
 
-        if ($result->success)
-        {
-            $this->forgetDashboardCache();
-        }
-
         return $result;
     }
 
@@ -119,11 +112,6 @@ final readonly class PelucheWriteService
                 return $this->success('Peluche mise à jour avec succès');
             }
         );
-
-        if ($result->success)
-        {
-            $this->forgetDashboardCache();
-        }
 
         return $result;
     }
@@ -192,11 +180,6 @@ final readonly class PelucheWriteService
             }
         );
 
-        if ($result->success)
-        {
-            $this->forgetDashboardCache();
-        }
-
         return $result;
     }
 
@@ -247,18 +230,6 @@ final readonly class PelucheWriteService
             );
         }
 
-        $this->forgetDashboardCache();
-
         return $result;
     }
-
-    // =========================================
-    // CACHE
-    // =========================================
-
-    private function forgetDashboardCache(): void
-    {
-        $this->dashboardCache->forget();
-    }
-
 }

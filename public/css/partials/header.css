@@ -28,6 +28,12 @@ header nav
     box-sizing: border-box;
 }
 
+/* Without profile or search, center the menu across the entire navigation. */
+header nav > ul:only-child
+{
+    grid-column: 1 / -1;
+}
+
 header ul
 {
     display: flex;

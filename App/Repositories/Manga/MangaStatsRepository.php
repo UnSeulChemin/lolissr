@@ -123,39 +123,7 @@ final class MangaStatsRepository extends Model
 
     public function findLongestSeries(): ?Manga
     {
-        /** @var Manga|null $manga */
-        $manga = $this->fetchOne(
-            "
-            SELECT
-                m.*,
-                stats.total
-
-            FROM {$this->table()} m
-
-            INNER JOIN (
-                SELECT
-                    slug,
-                    COUNT(*) AS total
-
-                FROM {$this->table()}
-
-                GROUP BY slug
-
-                ORDER BY total DESC
-
-                LIMIT 1
-            ) stats
-                ON stats.slug = m.slug
-
-            WHERE m.numero = 1
-
-            LIMIT 1
-            ",
-            [],
-            Manga::class
-        );
-
-        return $manga;
+        return $this->topLongestSeries(1)[0] ?? null;
     }
 
     public function findLongestSeriesDto(): ?MangaStatsData
@@ -185,35 +153,24 @@ final class MangaStatsRepository extends Model
     {
         $limit = max(1, $limit);
 
-        /** @var list<Manga> $mangas */
         $mangas = $this->fetchAll(
             "
-            SELECT
-                m.*,
-                stats.total
-
+            SELECT m.*, stats.total
             FROM {$this->table()} m
-
             INNER JOIN (
-                SELECT
-                    slug,
-                    COUNT(*) AS total
-
+                SELECT slug, COUNT(*) AS total
                 FROM {$this->table()}
-
                 GROUP BY slug
-
-                ORDER BY total DESC
-
-                LIMIT {$limit}
-            ) stats
-                ON stats.slug = m.slug
-
-            WHERE m.numero = 1
-
-            ORDER BY
-                stats.total DESC,
-                m.livre ASC
+            ) stats ON stats.slug = m.slug
+            WHERE m.id = (
+                SELECT first_tome.id
+                FROM {$this->table()} first_tome
+                WHERE first_tome.slug = m.slug
+                ORDER BY first_tome.numero ASC, first_tome.id ASC
+                LIMIT 1
+            )
+            ORDER BY stats.total DESC, m.livre ASC, m.slug ASC, m.id ASC
+            LIMIT {$limit}
             ",
             [],
             Manga::class

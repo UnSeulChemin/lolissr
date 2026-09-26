@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Services\Nendoroid;
 
-use App\Cache\DashboardCache;
 use App\Constants\UserXp;
 use App\DTO\Common\ServiceResult;
 use App\DTO\Nendoroid\Inputs\NendoroidCreateDTO;
@@ -27,8 +26,7 @@ final readonly class NendoroidWriteService
         private ThumbnailManager $thumbnailManager,
         private Database $database,
         private NendoroidXpRewardService $nendoroidXpRewardService,
-        private CollectionCreationService $creationService,
-        private DashboardCache $dashboardCache
+        private CollectionCreationService $creationService
     ) {
     }
 
@@ -84,11 +82,6 @@ final readonly class NendoroidWriteService
             'Ce Nendoroid existe déjà'
         );
 
-        if ($result->success)
-        {
-            $this->forgetDashboardCache();
-        }
-
         return $result;
     }
 
@@ -119,11 +112,6 @@ final readonly class NendoroidWriteService
                 return $this->success('Nendoroid mis à jour avec succès');
             }
         );
-
-        if ($result->success)
-        {
-            $this->forgetDashboardCache();
-        }
 
         return $result;
     }
@@ -192,11 +180,6 @@ final readonly class NendoroidWriteService
             }
         );
 
-        if ($result->success)
-        {
-            $this->forgetDashboardCache();
-        }
-
         return $result;
     }
 
@@ -247,18 +230,6 @@ final readonly class NendoroidWriteService
             );
         }
 
-        $this->forgetDashboardCache();
-
         return $result;
     }
-
-    // =========================================
-    // CACHE
-    // =========================================
-
-    private function forgetDashboardCache(): void
-    {
-        $this->dashboardCache->forget();
-    }
-
 }

@@ -54,48 +54,64 @@ final class LoginAttemptRepository extends Model
     // TENTATIVES
     // =========================================
 
-    public function createAttempt(string $identifierHash, string $attemptedAt): bool
-    {
-        return $this->insert([
-            'identifier_hash' => $identifierHash,
-            'attempts' => 1,
-            'first_attempt_at' => $attemptedAt,
-            'locked_until' => null,
-        ]);
-    }
-
-    public function incrementAttempts(string $identifierHash, int $attempts): bool
-    {
-        return $this->update(
-            ['attempts' => $attempts],
-            ['identifier_hash' => $identifierHash]
-        );
-    }
-
-    public function resetWindow(string $identifierHash, string $attemptedAt): bool
-    {
-        return $this->update(
-            [
-                'attempts' => 1,
-                'first_attempt_at' => $attemptedAt,
-                'locked_until' => null,
-            ],
-            ['identifier_hash' => $identifierHash]
-        );
-    }
-
-    public function lock(
+    /** Record one failure under a row lock and return whether login is locked. */
+    public function recordFailure(
         string $identifierHash,
-        int $attempts,
-        string $lockedUntil
+        string $attemptedAt,
+        string $windowStart,
+        string $lockedUntil,
+        int $maxAttempts
     ): bool {
-        return $this->update(
-            [
-                'attempts' => $attempts,
-                'locked_until' => $lockedUntil,
-            ],
-            ['identifier_hash' => $identifierHash]
-        );
+        return $this->db->transaction(function () use (
+            $identifierHash, $attemptedAt, $windowStart, $lockedUntil, $maxAttempts
+        ): bool {
+            // The primary key also serializes simultaneous first attempts.
+            $reserved = $this->execute(
+                "INSERT INTO {$this->table()} (identifier_hash, attempts, first_attempt_at, locked_until)
+                VALUES (:identifier_hash, 0, :attempted_at, NULL)
+                ON DUPLICATE KEY UPDATE identifier_hash = identifier_hash",
+                ['identifier_hash' => $identifierHash, 'attempted_at' => $attemptedAt]
+            );
+
+            if (! $reserved)
+            {
+                throw new \RuntimeException('Impossible de préparer le compteur de connexion.');
+            }
+
+            $attempt = $this->fetchOne(
+                "SELECT attempts, first_attempt_at, locked_until FROM {$this->table()}
+                WHERE identifier_hash = :identifier_hash FOR UPDATE",
+                ['identifier_hash' => $identifierHash]
+            );
+
+            if ($attempt === null)
+            {
+                throw new \RuntimeException('Compteur de connexion introuvable.');
+            }
+
+            if ($attempt->locked_until !== null && (string) $attempt->locked_until > $attemptedAt)
+            {
+                return true;
+            }
+
+            $resetWindow = (string) $attempt->first_attempt_at < $windowStart;
+            $attempts = $resetWindow ? 1 : (int) $attempt->attempts + 1;
+            $locked = $attempts >= $maxAttempts;
+
+            if (! $this->update(
+                [
+                    'attempts' => $attempts,
+                    'first_attempt_at' => $resetWindow ? $attemptedAt : (string) $attempt->first_attempt_at,
+                    'locked_until' => $locked ? $lockedUntil : null,
+                ],
+                ['identifier_hash' => $identifierHash]
+            ))
+            {
+                throw new \RuntimeException('Impossible de mettre à jour le compteur de connexion.');
+            }
+
+            return $locked;
+        });
     }
 
     public function clear(string $identifierHash): bool

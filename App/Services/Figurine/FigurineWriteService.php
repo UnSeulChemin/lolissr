@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Services\Figurine;
 
-use App\Cache\DashboardCache;
 use App\Constants\UserXp;
 use App\DTO\Common\ServiceResult;
 use App\DTO\Figurine\Inputs\FigurineCreateDTO;
@@ -27,8 +26,7 @@ final readonly class FigurineWriteService
         private ThumbnailManager $thumbnailManager,
         private Database $database,
         private FigurineXpRewardService $figurineXpRewardService,
-        private CollectionCreationService $creationService,
-        private DashboardCache $dashboardCache
+        private CollectionCreationService $creationService
     ) {
     }
 
@@ -86,11 +84,6 @@ final readonly class FigurineWriteService
             'Cette figurine existe déjà'
         );
 
-        if ($result->success)
-        {
-            $this->forgetDashboardCache();
-        }
-
         return $result;
     }
 
@@ -121,11 +114,6 @@ final readonly class FigurineWriteService
                 return $this->success('Figurine mise à jour avec succès');
             }
         );
-
-        if ($result->success)
-        {
-            $this->forgetDashboardCache();
-        }
 
         return $result;
     }
@@ -194,11 +182,6 @@ final readonly class FigurineWriteService
             }
         );
 
-        if ($result->success)
-        {
-            $this->forgetDashboardCache();
-        }
-
         return $result;
     }
 
@@ -249,17 +232,6 @@ final readonly class FigurineWriteService
             );
         }
 
-        $this->forgetDashboardCache();
-
         return $result;
-    }
-
-    // =========================================
-    // CACHE
-    // =========================================
-
-    private function forgetDashboardCache(): void
-    {
-        $this->dashboardCache->forget();
     }
 }
