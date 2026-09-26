@@ -20,6 +20,8 @@ use Framework\Support\Logger;
 
 final readonly class ArtbookWriteService
 {
+    use \App\Services\Collections\CollectionWriteResults;
+
     public function __construct(
         private ArtbookRepository $artbookRepository,
         private ThumbnailManager $thumbnailManager,
@@ -268,70 +270,5 @@ final readonly class ArtbookWriteService
     private function forgetDashboardCache(): void
     {
         $this->dashboardCache->forget();
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | HELPERS
-    |--------------------------------------------------------------------------
-    */
-
-
-    private function logFailure(string $action, string $slug, int $numero): void
-    {
-        Logger::error("{$action} échoué slug={$slug} numero={$numero}");
-    }
-
-    private function writeFailed(
-        bool $result,
-        string $action,
-        string $slug,
-        int $numero,
-        string $message
-    ): ?ServiceResult {
-        if ($result)
-        {
-            return null;
-        }
-
-        $this->logFailure($action, $slug, $numero);
-
-        return $this->error($message);
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | RESULT
-    |--------------------------------------------------------------------------
-    */
-
-    /**
-     * @param array<string, mixed> $data
-     */
-    private function success(
-        string $message,
-        array $data = [],
-        int $status = 200
-    ): ServiceResult {
-        return ServiceResult::success(
-            message: $message,
-            data: $data,
-            status: $status
-        );
-    }
-
-    /**
-     * @param array<string, mixed> $data
-     */
-    private function error(
-        string $message,
-        int $status = 500,
-        array $data = []
-    ): ServiceResult {
-        return ServiceResult::error(
-            message: $message,
-            data: $data,
-            status: $status
-        );
     }
 }

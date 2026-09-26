@@ -23,6 +23,8 @@ use RuntimeException;
 
 final readonly class MangaWriteService
 {
+    use \App\Services\Collections\CollectionWriteResults;
+
     public function __construct(
         private MangaRepository $mangaRepository,
         private ThumbnailManager $thumbnailManager,
@@ -44,7 +46,7 @@ final readonly class MangaWriteService
      */
     public function create(MangaCreateDTO $dto, array $files): ServiceResult
     {
-        if ($this->mangaRepository->findOneBySlugAndNumero($dto->slug, $dto->numero) !== null)
+        if ($this->mangaRepository->findRecordBySlugAndNumero($dto->slug, $dto->numero) !== null)
         {
             return $this->error('Ce manga existe déjà', 409);
         }
@@ -124,7 +126,7 @@ final readonly class MangaWriteService
 
     public function updateNote(string $slug, int $numero, MangaUpdateNoteDTO $dto): ServiceResult
     {
-        if ($this->mangaRepository->findOneBySlugAndNumero($slug, $numero) === null)
+        if ($this->mangaRepository->findRecordBySlugAndNumero($slug, $numero) === null)
         {
             return $this->error('Manga introuvable', 404);
         }
@@ -152,7 +154,7 @@ final readonly class MangaWriteService
                     return $failure;
                 }
 
-                $manga = $this->mangaRepository->findOneBySlugAndNumero($slug, $numero);
+                $manga = $this->mangaRepository->findRecordBySlugAndNumero($slug, $numero);
 
                 if ($manga === null)
                 {
@@ -196,7 +198,7 @@ final readonly class MangaWriteService
         $result = $this->database->transaction(
             function () use ($slug, $numero, $readStatus): ServiceResult
             {
-                $manga = $this->mangaRepository->findOneBySlugAndNumero($slug, $numero);
+                $manga = $this->mangaRepository->findRecordBySlugAndNumero($slug, $numero);
 
                 if ($manga === null)
                 {
@@ -267,7 +269,7 @@ final readonly class MangaWriteService
 
     public function delete(string $slug, int $numero): ServiceResult
     {
-        $manga = $this->mangaRepository->findOneBySlugAndNumero($slug, $numero);
+        $manga = $this->mangaRepository->findRecordBySlugAndNumero($slug, $numero);
 
         if ($manga === null)
         {
@@ -320,28 +322,6 @@ final readonly class MangaWriteService
     */
 
 
-    private function logFailure(string $action, string $slug, int $numero): void
-    {
-        Logger::error("{$action} échoué slug={$slug} numero={$numero}");
-    }
-
-    private function writeFailed(
-        bool $result,
-        string $action,
-        string $slug,
-        int $numero,
-        string $message
-    ): ?ServiceResult {
-        if ($result)
-        {
-            return null;
-        }
-
-        $this->logFailure($action, $slug, $numero);
-
-        return $this->error($message);
-    }
-
     private function createManga(
         MangaCreateDTO $dto,
         UploadThumbnailData $uploadData
@@ -386,41 +366,5 @@ final readonly class MangaWriteService
     private function forgetDashboardCache(): void
     {
         $this->dashboardCache->forget();
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | RESULT
-    |--------------------------------------------------------------------------
-    */
-
-    /**
-     * @param array<string, mixed> $data
-     */
-    private function success(
-        string $message,
-        array $data = [],
-        int $status = 200
-    ): ServiceResult {
-        return ServiceResult::success(
-            message: $message,
-            data: $data,
-            status: $status
-        );
-    }
-
-    /**
-     * @param array<string, mixed> $data
-     */
-    private function error(
-        string $message,
-        int $status = 500,
-        array $data = []
-    ): ServiceResult {
-        return ServiceResult::error(
-            message: $message,
-            data: $data,
-            status: $status
-        );
     }
 }

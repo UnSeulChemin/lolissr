@@ -111,56 +111,30 @@ final readonly class ProfileStatsService
 
     public function getStats(): ProfileStatsData
     {
-        // MANGA
-        $readTomes = $this->readTomes();
+        $manga = $this->mangaStatsRepository->profileSummary();
+        $artbook = $this->artbookStatsRepository->profileSummary();
+        $figurine = $this->figurineStatsRepository->profileSummary();
+        $nendoroid = $this->nendoroidStatsRepository->profileSummary();
+        $peluche = $this->pelucheStatsRepository->profileSummary();
+        $vocabulary = $this->vocabularyStatsRepository->profileSummary();
+        $grammar = $this->grammarStatsRepository->profileSummary();
+
+        $readTomes = $manga['read'];
         $completedSeries = $this->completedSeries();
-
-        // MANGA XP
-        $tomeXp = $this->mangaStatsRepository->countRewardedTomes() * UserXp::READ_TOME;
-        $seriesXp = $this->mangaStatsRepository->countRewardedSeries() * UserXp::COMPLETE_SERIES;
-
-        // ARTBOOKS
-        $readArtbooks = $this->readArtbooks();
-
-        // ARTBOOKS XP
-        $artbookXp = $this->artbookStatsRepository->countRewardedArtbooks() * UserXp::READ_ARTBOOK;
-
-        // FIGURINES
-        $figurinesCollected = $this->collectedFigurines();
-
-        // FIGURINES XP
-        $figurinesXp =
-            $this->figurineStatsRepository->countRewarded()
-            * UserXp::COLLECT_FIGURINE;
-
-        // NENDOROIDS
-        $nendoroidsCollected = $this->collectedNendoroids();
-
-        // NENDOROIDS XP
-        $nendoroidsXp =
-            $this->nendoroidStatsRepository->countRewarded()
-            * UserXp::COLLECT_NENDOROID;
-
-        // PELUCHES
-        $peluchesCollected = $this->collectedPeluches();
-
-        // PELUCHES XP
-        $peluchesXp =
-            $this->pelucheStatsRepository->countRewarded()
-            * UserXp::COLLECT_PELUCHE;
-
-        // CHINESE
-        $vocabularyLearned = $this->learnedVocabulary();
-        $grammarLearned = $this->learnedGrammar();
-
-        // CHINESE XP
-        $vocabularyXp =
-            $this->vocabularyStatsRepository->countRewarded()
-            * UserXp::LEARN_VOCABULARY;
-
-        $grammarXp =
-            $this->grammarStatsRepository->countRewarded()
-            * UserXp::LEARN_GRAMMAR;
+        $tomeXp = $manga['rewarded_tomes'] * UserXp::READ_TOME;
+        $seriesXp = $manga['rewarded_series'] * UserXp::COMPLETE_SERIES;
+        $readArtbooks = $artbook['read'];
+        $artbookXp = $artbook['rewarded'] * UserXp::READ_ARTBOOK;
+        $figurinesCollected = $figurine['collected'];
+        $figurinesXp = $figurine['rewarded'] * UserXp::COLLECT_FIGURINE;
+        $nendoroidsCollected = $nendoroid['collected'];
+        $nendoroidsXp = $nendoroid['rewarded'] * UserXp::COLLECT_NENDOROID;
+        $peluchesCollected = $peluche['collected'];
+        $peluchesXp = $peluche['rewarded'] * UserXp::COLLECT_PELUCHE;
+        $vocabularyLearned = $vocabulary['mastered'];
+        $grammarLearned = $grammar['mastered'];
+        $vocabularyXp = $vocabulary['rewarded'] * UserXp::LEARN_VOCABULARY;
+        $grammarXp = $grammar['rewarded'] * UserXp::LEARN_GRAMMAR;
 
         return new ProfileStatsData(
             readTomes: $readTomes,

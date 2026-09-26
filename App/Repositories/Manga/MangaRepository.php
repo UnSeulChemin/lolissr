@@ -51,6 +51,15 @@ final class MangaRepository extends Model
         return $mangas;
     }
 
+    public function findRecordBySlugAndNumero(string $slug, int $numero): ?Manga
+    {
+        return $this->fetchOne(
+            "SELECT * FROM {$this->table()} WHERE slug = :slug AND numero = :numero LIMIT 1",
+            ['slug' => $this->normalizeSlug($slug), 'numero' => $numero],
+            Manga::class
+        );
+    }
+
     public function findOneBySlugAndNumero(string $slug, int $numero): ?Manga
     {
         /** @var Manga|null $manga */

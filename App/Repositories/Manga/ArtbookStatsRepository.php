@@ -10,6 +10,21 @@ use App\Models\Model;
 
 final class ArtbookStatsRepository extends Model
 {
+    /** @return array{read: int, rewarded: int} */
+    public function profileSummary(): array
+    {
+        $row = $this->fetchOne(
+            "SELECT COUNT(CASE WHEN lu = 1 THEN 1 END) AS read,
+                COUNT(CASE WHEN xp_read_rewarded = 1 THEN 1 END) AS rewarded
+            FROM {$this->table()}"
+        );
+
+        return [
+            'read' => (int) ($row->read ?? 0),
+            'rewarded' => (int) ($row->rewarded ?? 0),
+        ];
+    }
+
     /** @return array{total: int, authors: int, series: int} */
     public function dashboardSummary(): array
     {

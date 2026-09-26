@@ -12,6 +12,23 @@ use Framework\Support\Str;
 
 final class MangaStatsRepository extends Model
 {
+    /** @return array{read: int, rewarded_tomes: int, rewarded_series: int} */
+    public function profileSummary(): array
+    {
+        $row = $this->fetchOne(
+            "SELECT COUNT(CASE WHEN lu = 1 THEN 1 END) AS read,
+                COUNT(CASE WHEN xp_read_rewarded = 1 THEN 1 END) AS rewarded_tomes,
+                COUNT(DISTINCT CASE WHEN xp_series_rewarded = 1 THEN slug END) AS rewarded_series
+            FROM {$this->table()}"
+        );
+
+        return [
+            'read' => (int) ($row->read ?? 0),
+            'rewarded_tomes' => (int) ($row->rewarded_tomes ?? 0),
+            'rewarded_series' => (int) ($row->rewarded_series ?? 0),
+        ];
+    }
+
     /** @return array{total: int, series: int, read: int, average: float|null} */
     public function dashboardSummary(): array
     {

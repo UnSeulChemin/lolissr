@@ -77,8 +77,20 @@ final readonly class UploadService
             );
         }
 
-        if (is_file($destination))
+        // Exclusive creation reserves the name before moving the uploaded file.
+        $reservation = @fopen($destination, 'x+b');
+
+        if ($reservation === false)
         {
+            if (! file_exists($destination))
+            {
+                return $this->failure(
+                    'Upload: impossible de réserver le fichier : ' . $destination,
+                    'Image non enregistrée sur le disque',
+                    500
+                );
+            }
+
             return $this->failure(
                 'Upload: fichier déjà existant : ' . $destination,
                 'Une image avec ce nom existe déjà',
@@ -86,10 +98,23 @@ final readonly class UploadService
             );
         }
 
-        if (
-            ! @move_uploaded_file($validatedUpload->temporaryPath, $destination)
-            || ! is_file($destination)
-        ) {
+        fclose($reservation);
+
+        $saved = false;
+        try
+        {
+            $saved = @move_uploaded_file($validatedUpload->temporaryPath, $destination);
+        }
+        finally
+        {
+            if (! $saved)
+            {
+                $this->removeFile($destination);
+            }
+        }
+
+        if (! $saved)
+        {
             return $this->failure(
                 'Upload: fichier non enregistré. tmp='
                 . $validatedUpload->temporaryPath
