@@ -150,7 +150,7 @@ final class Container
 
     private function assertCompatible(string $abstract, object $object): void
     {
-        // Arbitrary service aliases remain valid; enforce only declared PHP types.
+        // Les alias de services arbitraires restent valides ; appliquer uniquement les types PHP déclarés.
         if ((class_exists($abstract) || interface_exists($abstract)) && ! $object instanceof $abstract)
         {
             throw new RuntimeException(sprintf(

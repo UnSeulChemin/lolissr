@@ -62,5 +62,4 @@ final class UploadConfig
         $values = config('upload.allowed_mime_types', []);
         return $values;
     }
-
 }

@@ -290,7 +290,7 @@ final class Cache
             return $callback();
         }
 
-        // Keep lock files stable: unlinking them allows concurrent locks on different inodes.
+        // Garder les fichiers de verrouillage stables : les supprimer permettrait des verrous concurrents sur des inodes différents.
         $lock = @fopen(self::path($key) . '.lock', 'c');
         if ($lock === false)
         {
@@ -310,7 +310,7 @@ final class Cache
             } while (microtime(true) < $deadline);
             Profiler::end('cache.lock_wait');
 
-            // A slow cache producer must not block navigation indefinitely.
+            // Un producteur de cache lent ne doit pas bloquer la navigation indéfiniment.
             if (! $locked)
             {
                 Profiler::increment('cache.lock_timeout');
@@ -461,7 +461,8 @@ final class Cache
             );
         }
     }
-/**
+
+    /**
      * @template T
      * @param callable(): T $callback
      * @return T|null
