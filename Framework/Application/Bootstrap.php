@@ -42,10 +42,8 @@ final class Bootstrap
      * @param (callable(int, string, Request): never)|null $errorRenderer
      * @param (callable(Container): void)|null $serviceProvider
      */
-    public static function run(
-        ?callable $errorRenderer = null,
-        ?callable $serviceProvider = null
-    ): never {
+    public static function run(?callable $errorRenderer = null, ?callable $serviceProvider = null): never
+    {
         self::loadEnvOnly();
 
         RequestContext::start();
@@ -90,10 +88,7 @@ final class Bootstrap
 
         AppContainer::set($container);
 
-        $container->singleton(
-            Request::class,
-            static fn (): Request => Request::capture()
-        );
+        $container->singleton(Request::class, static fn (): Request => Request::capture());
 
         $container->singleton(Database::class);
 
@@ -103,10 +98,8 @@ final class Bootstrap
     /**
      * @param (callable(Container): void)|null $serviceProvider
      */
-    private static function registerServices(
-        Container $container,
-        ?callable $serviceProvider
-    ): void {
+    private static function registerServices(Container $container, ?callable $serviceProvider): void
+    {
         if ($serviceProvider !== null)
         {
             $serviceProvider($container);
@@ -119,10 +112,7 @@ final class Bootstrap
 
     private static function createRouter(Container $container): Router
     {
-        return new Router(
-            new RouteCollection(),
-            $container
-        );
+        return new Router(new RouteCollection(), $container);
     }
 
     private static function registerRoutes(Router $router): void
@@ -131,9 +121,7 @@ final class Bootstrap
 
         if (! is_callable($routes))
         {
-            throw new RuntimeException(
-                'Config/routes.php must return a callable.'
-            );
+            throw new RuntimeException('Config/routes.php must return a callable.');
         }
 
         $routes($router);
@@ -201,9 +189,7 @@ final class Bootstrap
 
         if (! date_default_timezone_set($timezone))
         {
-            throw new RuntimeException(
-                'Invalid application timezone: ' . $timezone
-            );
+            throw new RuntimeException('Invalid application timezone: ' . $timezone);
         }
     }
 }
