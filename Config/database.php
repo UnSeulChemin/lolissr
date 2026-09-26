@@ -8,8 +8,8 @@ return [
     // CONNEXION
     // =========================================
 
-    'host' => (string) env('DB_HOST', 'localhost'),
-    'port' => max(1, env_int('DB_PORT', 3306)),
+    'host' => (string) env('DB_HOST'),
+    'port' => env_int('DB_PORT'),
     'name' => (string) env('DB_NAME', ''),
     'user' => (string) env('DB_USER', ''),
     'pass' => (string) env('DB_PASS', ''),

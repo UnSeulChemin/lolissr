@@ -34,6 +34,7 @@ final class EnvironmentValidator
         'UPLOAD_MAX_HEIGHT',
         'UPLOAD_MAX_PIXELS',
         'CACHE_TTL',
+        'LOG_RETENTION_DAYS',
     ];
 
     private const PRODUCTION_DISABLED_VARIABLES = [
@@ -58,6 +59,7 @@ final class EnvironmentValidator
         self::validateBaseUri();
         self::validateTimezone();
         self::validatePositiveIntegers();
+        self::validateBooleans();
         self::validateDatabasePort();
         self::validateUploads();
         self::validateProduction();
@@ -181,6 +183,22 @@ final class EnvironmentValidator
         }
     }
 
+    private static function validateBooleans(): void
+    {
+        foreach (['APP_DEBUG', 'PROFILER_ENABLED', 'SQL_TOOL_ENABLED', 'REGISTRATION_ENABLED',
+            'CACHE_ENABLED', 'LOG_ENABLED', 'TRUST_PROXY'] as $key)
+        {
+            if (! Env::has($key)) continue;
+            $value = Env::get($key);
+            if ($value === null || (is_string($value) && trim($value) === '')
+                || ! is_scalar($value)
+                || filter_var($value, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE) === null)
+            {
+                throw new RuntimeException("Environment variable {$key} must be a boolean.");
+            }
+        }
+    }
+
     // =========================================
     // UPLOADS
     // =========================================
@@ -195,9 +213,8 @@ final class EnvironmentValidator
     {
         if (! Env::has($key))
         {
-            throw new RuntimeException(
-                "Missing required environment variable: {$key}"
-            );
+            // Upload formats have explicit defaults in Config/upload.php.
+            return;
         }
 
         $values = array_values(

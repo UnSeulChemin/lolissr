@@ -8,11 +8,13 @@ return [
     // APPLICATION
     // =========================================
 
-    'name' => (string) env('APP_NAME', 'Site'),
+    // Required values are checked by EnvironmentValidator before loading configuration.
+    'name' => (string) env('APP_NAME'),
     'version' => (string) env('APP_VERSION', '1.0.0'),
-    'base_uri' => (string) env('APP_BASE_URI', '/lolissr'),
-    'env' => (string) env('APP_ENV', 'local'),
-    'timezone' => (string) env('APP_TIMEZONE', 'Europe/Paris'),
+    'base_uri' => (string) env('APP_BASE_URI'),
+    'env' => (string) env('APP_ENV'),
+    'timezone' => (string) env('APP_TIMEZONE'),
+    'trust_proxy' => env_bool('TRUST_PROXY', false),
 
     // =========================================
     // OPTIONS

@@ -284,7 +284,7 @@ final class Session
     private static function sessionName(): string
     {
         $sessionName = trim(
-            (string) env('SESSION_NAME', self::DEFAULT_SESSION_NAME)
+            (string) config('session.name', self::DEFAULT_SESSION_NAME)
         );
 
         if (
@@ -317,7 +317,7 @@ final class Session
             return true;
         }
 
-        if (! env_bool('TRUST_PROXY', false))
+        if (config('app.trust_proxy', false) !== true)
         {
             return false;
         }

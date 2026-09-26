@@ -48,7 +48,9 @@ final class UploadConfig
      */
     public static function allowedExtensions(): array
     {
-        return self::normalizeList(config('upload.allowed_extensions', []));
+        /** @var list<string> $values */
+        $values = config('upload.allowed_extensions', []);
+        return $values;
     }
 
     /**
@@ -56,30 +58,9 @@ final class UploadConfig
      */
     public static function allowedMimeTypes(): array
     {
-        return self::normalizeList(config('upload.allowed_mime_types', []));
+        /** @var list<string> $values */
+        $values = config('upload.allowed_mime_types', []);
+        return $values;
     }
 
-    // =========================================
-    // NORMALISATION
-    // =========================================
-
-    /**
-     * @return list<string>
-     */
-    private static function normalizeList(mixed $values): array
-    {
-        if (! is_array($values))
-        {
-            return [];
-        }
-
-        $values = array_map(
-            static fn (mixed $value): string => strtolower(trim((string) $value)),
-            $values
-        );
-
-        $values = array_filter($values, static fn (string $value): bool => $value !== '');
-
-        return array_values(array_unique($values));
-    }
 }

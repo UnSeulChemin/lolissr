@@ -15,7 +15,7 @@ final class PageStyles
         $view = preg_replace('/\.php$/', '', $view) ?? $view;
 
         /** @var array<string, list<string>> $dependencies */
-        $dependencies = require base_path('Config/styles.php');
+        $dependencies = config('styles', []);
         $stylesheets = [];
 
         foreach ($dependencies as $file => $views)

@@ -145,7 +145,7 @@ final class Bootstrap
 
     private static function startProfiler(): void
     {
-        if (! App::debug() || ! env_bool('PROFILER_ENABLED', false))
+        if (! App::debug() || config('app.profiler', false) !== true)
         {
             return;
         }

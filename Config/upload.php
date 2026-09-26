@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+// Config is loaded once per request; consumers receive normalized lists.
+$normalizeList = static function (string $value): array
+{
+    return array_values(array_unique(array_filter(
+        array_map(static fn (string $item): string => strtolower(trim($item)), explode(',', $value)),
+        static fn (string $item): bool => $item !== ''
+    )));
+};
+
 return [
 
     // =========================================
@@ -22,13 +31,11 @@ return [
     // FORMATS
     // =========================================
 
-    'allowed_extensions' => explode(
-        ',',
+    'allowed_extensions' => $normalizeList(
         (string) env('UPLOAD_ALLOWED_EXT', 'jpg,jpeg,png,webp')
     ),
 
-    'allowed_mime_types' => explode(
-        ',',
+    'allowed_mime_types' => $normalizeList(
         (string) env(
             'UPLOAD_ALLOWED_MIME',
             'image/jpeg,image/png,image/webp'

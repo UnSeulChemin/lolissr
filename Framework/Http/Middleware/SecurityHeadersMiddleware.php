@@ -55,7 +55,7 @@ final class SecurityHeadersMiddleware implements MiddlewareInterface
             return true;
         }
 
-        if (! env_bool('TRUST_PROXY', false))
+        if (config('app.trust_proxy', false) !== true)
         {
             return false;
         }
