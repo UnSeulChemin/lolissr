@@ -35,6 +35,9 @@ final class Container
      */
     private array $reflections = [];
 
+    /** @var array<class-string, list<array{name: string, dependency: string|null, nullable: bool, hasDefault: bool, default: \Closure(): mixed}>> */
+    private array $dependencyPlans = [];
+
     private int $resolutionDepth = 0;
 
     public function __construct()
@@ -208,15 +211,13 @@ final class Container
 
         $dependencies = [];
 
-        foreach ($constructor->getParameters() as $parameter)
+        foreach ($this->dependencyPlan($concrete, $reflection) as $parameter)
         {
-            $type = $parameter->getType();
-
-            if (! $type instanceof ReflectionNamedType || $type->isBuiltin())
+            if ($parameter['dependency'] === null)
             {
-                if ($parameter->isDefaultValueAvailable())
+                if ($parameter['hasDefault'])
                 {
-                    $dependencies[] = $parameter->getDefaultValue();
+                    $dependencies[] = ($parameter['default'])();
 
                     continue;
                 }
@@ -225,14 +226,14 @@ final class Container
                     sprintf(
                         'Unable to resolve %s::$%s',
                         $concrete,
-                        $parameter->getName()
+                        $parameter['name']
                     )
                 );
             }
 
-            $dependency = $type->getName();
+            $dependency = $parameter['dependency'];
 
-            if ($type->allowsNull() && ! $this->canResolve($dependency))
+            if ($parameter['nullable'] && ! $this->canResolve($dependency))
             {
                 $dependencies[] = null;
 
@@ -243,6 +244,29 @@ final class Container
         }
 
         return $reflection->newInstanceArgs($dependencies);
+    }
+
+    /**
+     * @param class-string $class
+     * @param ReflectionClass<object> $reflection
+     * @return list<array{name: string, dependency: string|null, nullable: bool, hasDefault: bool, default: \Closure(): mixed}>
+     */
+    private function dependencyPlan(string $class, ReflectionClass $reflection): array
+    {
+        if (isset($this->dependencyPlans[$class])) return $this->dependencyPlans[$class];
+        $plan = [];
+        foreach ($reflection->getConstructor()?->getParameters() ?? [] as $parameter)
+        {
+            $type = $parameter->getType();
+            $plan[] = [
+                'name' => $parameter->getName(),
+                'dependency' => $type instanceof ReflectionNamedType && ! $type->isBuiltin() ? $type->getName() : null,
+                'nullable' => $type?->allowsNull() ?? false,
+                'hasDefault' => $parameter->isDefaultValueAvailable(),
+                'default' => static fn (): mixed => $parameter->isDefaultValueAvailable() ? $parameter->getDefaultValue() : null,
+            ];
+        }
+        return $this->dependencyPlans[$class] = $plan;
     }
 
     // =========================================

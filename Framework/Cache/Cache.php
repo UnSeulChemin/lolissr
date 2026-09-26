@@ -136,6 +136,15 @@ final class Cache
 
     public static function put(string $key, mixed $value, ?int $ttl = null): void
     {
+        if (! self::enabled()) return;
+        self::synchronized(function () use ($key, $value, $ttl): void
+        {
+            self::writeEntry($key, $value, $ttl);
+        });
+    }
+
+    private static function writeEntry(string $key, mixed $value, ?int $ttl): void
+    {
         if (! self::enabled())
         {
             return;
@@ -290,6 +299,7 @@ final class Cache
 
         $locked = false;
         $deadline = microtime(true) + 2.0;
+        Profiler::start('cache.lock_wait');
         try
         {
             do
@@ -298,16 +308,39 @@ final class Cache
                 if ($locked) break;
                 usleep(20_000);
             } while (microtime(true) < $deadline);
+            Profiler::end('cache.lock_wait');
 
             // A slow cache producer must not block navigation indefinitely.
-            if (! $locked) return $callback();
+            if (! $locked)
+            {
+                Profiler::increment('cache.lock_timeout');
+                Profiler::increment('cache.recompute');
+                return $callback();
+            }
 
             $cached = self::readEntry($key);
-            if ($cached !== null) return $cached['value'];
+            if ($cached !== null)
+            {
+                Profiler::increment('cache.hit_after_wait');
+                return $cached['value'];
+            }
+
+            $generation = self::synchronized(fn (): string => self::generation($key));
 
             self::$computing[$key] = true;
+            Profiler::increment('cache.recompute');
             $value = $callback();
-            self::put($key, $value, $ttl);
+            self::synchronized(function () use ($key, $value, $ttl, $generation): void
+            {
+                if ($generation !== null && $generation === self::generation($key))
+                {
+                    self::writeEntry($key, $value, $ttl);
+                }
+                else
+                {
+                    Profiler::increment('cache.discarded_write');
+                }
+            });
             return $value;
         }
         finally
@@ -330,10 +363,23 @@ final class Cache
 
     public static function forget(string $key): void
     {
-        self::deleteFile(self::path($key));
+        self::synchronized(function () use ($key): void
+        {
+            self::advanceGeneration(self::path($key) . '.version');
+            self::deleteFile(self::path($key));
+        });
     }
 
     public static function clear(): void
+    {
+        self::synchronized(function (): void
+        {
+            self::advanceGeneration(self::directory() . DIRECTORY_SEPARATOR . '.epoch');
+            self::clearEntries();
+        });
+    }
+
+    private static function clearEntries(): void
     {
         $directory = self::directory();
 
@@ -413,6 +459,41 @@ final class Cache
                     'path' => $path
                 ]
             );
+        }
+    }
+/**
+     * @template T
+     * @param callable(): T $callback
+     * @return T|null
+     */
+    private static function synchronized(callable $callback): mixed
+    {
+        if (! self::ensureDirectory()) return null;
+        $lock = @fopen(self::directory() . DIRECTORY_SEPARATOR . '.metadata.lock', 'c');
+        if ($lock === false) throw new \RuntimeException('Cannot open cache metadata lock.');
+        try
+        {
+            if (! flock($lock, LOCK_EX)) throw new \RuntimeException('Cannot lock cache metadata.');
+            return $callback();
+        }
+        finally
+        {
+            flock($lock, LOCK_UN);
+            fclose($lock);
+        }
+    }
+
+    private static function generation(string $key): string
+    {
+        return (string) @file_get_contents(self::directory() . DIRECTORY_SEPARATOR . '.epoch')
+            . ':' . (string) @file_get_contents(self::path($key) . '.version');
+    }
+
+    private static function advanceGeneration(string $path): void
+    {
+        if (file_put_contents($path, bin2hex(random_bytes(16))) === false)
+        {
+            throw new \RuntimeException('Cannot invalidate cache generation.');
         }
     }
 }

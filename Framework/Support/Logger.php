@@ -288,41 +288,62 @@ final class Logger
 
         self::$cleaned = true;
 
-        $files = @glob(
-            self::directory()
-            . DIRECTORY_SEPARATOR
-            . self::FILE_PREFIX
-            . '*'
-            . self::FILE_EXTENSION
-        );
-
-        if ($files === false)
+        $lock = @fopen(self::directory() . DIRECTORY_SEPARATOR . '.cleanup.lock', 'c+');
+        if ($lock === false) return;
+        if (! flock($lock, LOCK_EX | LOCK_NB))
         {
+            fclose($lock);
             return;
         }
-
-        $expirationTimestamp = time() - (self::retentionDays() * 86400);
-
-        foreach ($files as $file)
+        try
         {
-            if (! is_file($file))
+            $lastCleanup = (int) stream_get_contents($lock);
+            if (time() - $lastCleanup < 3600) return;
+            $files = @glob(
+                self::directory()
+                . DIRECTORY_SEPARATOR
+                . self::FILE_PREFIX
+                . '*'
+                . self::FILE_EXTENSION
+            );
+
+            if ($files === false)
             {
-                continue;
+                return;
             }
 
-            $modifiedAt = @filemtime($file);
+            $expirationTimestamp = time() - (self::retentionDays() * 86400);
 
-            if ($modifiedAt === false || $modifiedAt >= $expirationTimestamp)
+            foreach ($files as $file)
             {
-                continue;
-            }
+                if (! is_file($file))
+                {
+                    continue;
+                }
 
-            if (! @unlink($file) && is_file($file))
-            {
-                self::reportInternalError(
-                    'Impossible de supprimer le fichier expiré : ' . $file
-                );
+                $modifiedAt = @filemtime($file);
+
+                if ($modifiedAt === false || $modifiedAt >= $expirationTimestamp)
+                {
+                    continue;
+                }
+
+                if (! @unlink($file) && is_file($file))
+                {
+                    self::reportInternalError(
+                        'Impossible de supprimer le fichier expiré : ' . $file
+                    );
+                }
             }
+            rewind($lock);
+            ftruncate($lock, 0);
+            fwrite($lock, (string) time());
+            fflush($lock);
+        }
+        finally
+        {
+            flock($lock, LOCK_UN);
+            fclose($lock);
         }
     }
 

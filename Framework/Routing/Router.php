@@ -193,7 +193,7 @@ final class Router
      */
     private function matchRoute(string $method, string $uri): ?array
     {
-        foreach ($this->collection->forMethod($method) as $route)
+        foreach ($this->collection->candidates($method, $uri) as $route)
         {
             if (preg_match($route->pattern, $uri, $matches) !== 1)
             {
