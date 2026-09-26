@@ -53,9 +53,9 @@
     gap: var(--gap-grid-home);
 }
 
+
 .home-grid-top.card-grid-3,
-.home-grid-stats.card-grid-3,
-.home-grid-watch.card-grid-3
+.home-grid-stats.card-grid-3
 {
     grid-template-columns: repeat(3, var(--width-home-grid-column));
     gap: var(--gap-grid-home);
@@ -67,8 +67,8 @@
     align-items: stretch;
 }
 
-.home-grid-stats,
-.home-grid-watch
+
+.home-grid-stats
 {
     margin-bottom: var(--space-sm);
     align-items: stretch;
@@ -140,31 +140,6 @@
     font-weight: 700;
     line-height: 1;
 }
-
-
-/* =========================================
-   WATCH CARDS
-========================================= */
-
-.home-grid-watch .card-link.card-medium
-{
-    width: auto;
-    min-height: 310px;
-    padding: 20px 28px 18px;
-
-    justify-content: flex-start;
-    align-items: stretch;
-    gap: 16px;
-}
-
-.home-grid-watch .card-link.card-medium .home-card-title
-{
-    margin: 0;
-    font-size: 1.02rem;
-    text-align: center;
-}
-
-
 /* =========================================
    TYPO
 ========================================= */
@@ -285,14 +260,12 @@
     color: var(--color-text-accent);
     letter-spacing: 0.1px;
 }
-
-
 /* =========================================
    BOTTOM LISTS
 ========================================= */
 
-.home-ranking-list,
-.home-low-rated-list
+
+.home-ranking-list
 {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, var(--width-collection-card)));
@@ -301,14 +274,12 @@
 
     margin: 0 auto;
 }
-
-
 /* =========================================
    BOTTOM CARDS
 ========================================= */
 
-.home-ranking-list .card-bottom,
-.home-low-rated-list .card-bottom
+
+.home-ranking-list .card-bottom
 {
     width: 100%;
     max-width: var(--width-collection-card);
@@ -325,15 +296,6 @@
     margin: 8px 0 14px;
 }
 
-.home-low-rated-list .card-bottom
-{
-    padding-top: 44px;
-}
-
-.home-low-rated-list .card-bottom .card-image-box-portrait
-{
-    margin: 16px 0 14px;
-}
 
 .home-list-card-title
 {
@@ -355,13 +317,6 @@
     opacity: 0.9;
 }
 
-.home-list-card-meta-strong
-{
-    margin-top: 4px;
-    color: var(--color-text-accent);
-    font-weight: 600;
-}
-
 
 /* =========================================
    BADGES / RANK
@@ -378,57 +333,9 @@
     font-weight: 800;
 }
 
-.home-note-badge
-{
-    position: absolute;
-    top: var(--offset-card-corner);
-    right: var(--offset-card-corner);
-    z-index: 2;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-
-    min-width: 54px;
-    height: 30px;
-    padding: 0 9px;
-
-    color: var(--color-gold-text);
-    font-size: 0.75rem;
-    font-weight: 800;
-    line-height: 1;
-
-    border: 1px solid var(--color-gold-border);
-    border-radius: var(--radius-pill);
-
-    background: linear-gradient(
-        135deg,
-        var(--color-gold-soft),
-        var(--color-gold-soft-2)
-    );
-
-    box-shadow: 0 3px 8px var(--color-gold-shadow);
-}
-
-/* =========================================
-   HOME — ELLIPSIS "MANGAS À SURVEILLER"
-========================================= */
-
-.home-grid-watch .home-feature-title,
-.home-grid-watch .home-feature-meta
-{
-    max-width: 10ch;
-
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-
 /* =========================================
    HOME — READING PROGRESS
 ========================================= */
-
 
 
 .home-reading-progress-card .home-card-value

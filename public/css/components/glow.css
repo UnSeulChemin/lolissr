@@ -1,19 +1,18 @@
+
 /* =========================================
    RPG GLOW UTILITIES
 ========================================= */
 
+
 .glow-red,
-.glow-blue,
-.glow-purple,
-.glow-gold
+.glow-blue
 {
     isolation: isolate;
 }
 
+
 .glow-red::after,
-.glow-blue::after,
-.glow-purple::after,
-.glow-gold::after
+.glow-blue::after
 {
     content: '';
 
@@ -47,22 +46,4 @@
 
     animation:
         badge-glow-shared 1.8s ease-in-out infinite;
-}
-
-.glow-purple::after
-{
-    background:
-        rgba(123, 44, 255, 0.44);
-
-    animation:
-        badge-glow-purple 3.2s ease-in-out infinite;
-}
-
-.glow-gold::after
-{
-    background:
-        rgba(255, 208, 74, 0.4);
-
-    animation:
-        badge-glow-gold 3.6s ease-in-out infinite;
 }

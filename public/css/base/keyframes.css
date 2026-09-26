@@ -28,36 +28,6 @@
     }
 }
 
-@keyframes badge-glow-purple
-{
-    0%, 100%
-    {
-        transform: scale(0.94);
-        opacity: 0.34;
-    }
-
-    50%
-    {
-        transform: scale(1.06);
-        opacity: 0.58;
-    }
-}
-
-@keyframes badge-glow-gold
-{
-    0%, 100%
-    {
-        transform: scale(0.95);
-        opacity: 0.28;
-    }
-
-    50%
-    {
-        transform: scale(1.04);
-        opacity: 0.52;
-    }
-}
-
 @keyframes header-search-skeleton-shimmer
 {
     0%

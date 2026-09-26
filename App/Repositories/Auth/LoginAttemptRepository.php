@@ -104,23 +104,4 @@ final class LoginAttemptRepository extends Model
             'identifier_hash' => $identifierHash,
         ]);
     }
-
-    // =========================================
-    // NETTOYAGE
-    // =========================================
-
-    public function deleteExpired(string $expiredBefore): bool
-    {
-        return $this->execute(
-            "
-            DELETE FROM {$this->table()}
-            WHERE first_attempt_at < :expired_before
-              AND (
-                  locked_until IS NULL
-                  OR locked_until < :expired_before
-              )
-            ",
-            ['expired_before' => $expiredBefore]
-        );
-    }
 }

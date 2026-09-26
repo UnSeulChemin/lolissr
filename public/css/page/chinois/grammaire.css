@@ -160,19 +160,10 @@
     box-shadow:
         0 12px 24px rgba(123, 44, 255, 0.22);
 }
-
 /* =========================================
    TITRE SECTION
 ========================================= */
 
-.grammar-section-header
-{
-    width: min(var(--width-grammar), 100%);
-
-    margin:
-        0 auto
-        var(--space-lg);
-}
 
 .grammar-section-title
 {
