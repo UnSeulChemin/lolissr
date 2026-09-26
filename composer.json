@@ -32,6 +32,7 @@
 
         "backup": "php scripts/backup-database.php",
         "release:zip": "php scripts/build-release.php",
+        "git:reset": "php scripts/git-reset.php",
         "publish:git": "php scripts/publish-git.php"
     }
 }
