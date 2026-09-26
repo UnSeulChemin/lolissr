@@ -40,23 +40,6 @@ export function $$(
 }
 
 // =========================================
-// EXISTS
-// =========================================
-
-export function exists(
-    selector,
-    parent = document,
-)
-{
-    return Boolean(
-        $(
-            selector,
-            parent,
-        ),
-    );
-}
-
-// =========================================
 // DATASET GET
 // =========================================
 
@@ -68,21 +51,6 @@ export function data(
     return element.dataset[
         key
     ];
-}
-
-// =========================================
-// DATASET SET
-// =========================================
-
-export function setData(
-    element,
-    key,
-    value,
-)
-{
-    element.dataset[
-        key
-    ] = value;
 }
 
 // =========================================

@@ -84,12 +84,3 @@ export function clearInvalidatedRoute(href)
         }
     }
 }
-
-// =========================================
-// CLEAR ALL
-// =========================================
-
-export function clearAllInvalidatedRoutes()
-{
-    invalidatedRoutes.clear();
-}

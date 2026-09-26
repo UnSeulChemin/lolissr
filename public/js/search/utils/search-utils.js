@@ -124,19 +124,3 @@ export function highlightSearchTerm(
         })
         .join('');
 }
-
-// =========================================
-// IS EMPTY QUERY
-// =========================================
-
-export function isEmptyQuery(
-    value,
-)
-{
-    const query =
-        normalizeSearchQuery(
-            value,
-        );
-
-    return query === '';
-}

@@ -4,7 +4,6 @@
 
 import {
     logInfo,
-    logWarn,
     logError,
 } from './logger.js';
 
@@ -18,21 +17,6 @@ export function debug(
 )
 {
     logInfo(
-        scope,
-        ...args,
-    );
-}
-
-// =========================================
-// WARN
-// =========================================
-
-export function debugWarn(
-    scope,
-    ...args
-)
-{
-    logWarn(
         scope,
         ...args,
     );

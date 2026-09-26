@@ -2,11 +2,6 @@
    ROUTER
 ========================================= */
 
-body.router-loading *
-{
-    pointer-events: none !important;
-}
-
 body.is-routing
 {
     cursor: progress;

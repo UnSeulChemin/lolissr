@@ -65,14 +65,3 @@ export function restoreScrollPosition(href)
         },
     );
 }
-
-// =========================================
-// CLEAR
-// =========================================
-
-export function clearScrollPosition(href)
-{
-    scrollPositions.delete(
-        normalizeRouteUrl(href),
-    );
-}

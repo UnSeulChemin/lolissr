@@ -70,16 +70,3 @@ export function generateSlug(
             '',
         );
 }
-
-// =========================================
-// SEARCH QUERY
-// =========================================
-
-export function normalizeSearchQuery(
-    value = '',
-)
-{
-    return generateSlug(
-        value,
-    );
-}

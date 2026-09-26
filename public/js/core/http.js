@@ -514,24 +514,6 @@ export function put(
 }
 
 // =========================================
-// PATCH
-// =========================================
-
-export function patch(
-    url,
-    body = {},
-    options = {},
-)
-{
-    return createJsonRequest(
-        'PATCH',
-        url,
-        body,
-        options,
-    );
-}
-
-// =========================================
 // DELETE
 // =========================================
 

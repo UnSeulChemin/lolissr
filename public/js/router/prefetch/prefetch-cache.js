@@ -175,22 +175,6 @@ export function invalidatePrefetch(href)
 }
 
 // =========================================
-// CLEAR
-// =========================================
-
-export function clearPrefetchCache()
-{
-    for (const entry of inFlight.values())
-    {
-        entry.controller.abort();
-    }
-
-    cache.clear();
-    inFlight.clear();
-    invalidated.clear();
-}
-
-// =========================================
 // IN FLIGHT
 // =========================================
 
