@@ -27,6 +27,14 @@ final class Cache
 
     public static function get(string $key): mixed
     {
+        $entry = self::readEntry($key);
+
+        return $entry === null ? null : $entry['value'];
+    }
+
+    /** @return array{value: mixed}|null Null means absent, not a cached null value. */
+    private static function readEntry(string $key): ?array
+    {
         if (! self::enabled())
         {
             return null;
@@ -118,7 +126,7 @@ final class Cache
                 return null;
             }
 
-            return $payload['value'];
+            return ['value' => $payload['value']];
         }
         finally
         {
@@ -252,13 +260,13 @@ final class Cache
             return $callback();
         }
 
-        $cached = self::get($key);
+        $cached = self::readEntry($key);
 
         if ($cached !== null)
         {
             Profiler::increment('cache.hit');
 
-            return $cached;
+            return $cached['value'];
         }
 
         Profiler::increment('cache.miss');
@@ -294,8 +302,8 @@ final class Cache
             // A slow cache producer must not block navigation indefinitely.
             if (! $locked) return $callback();
 
-            $cached = self::get($key);
-            if ($cached !== null) return $cached;
+            $cached = self::readEntry($key);
+            if ($cached !== null) return $cached['value'];
 
             self::$computing[$key] = true;
             $value = $callback();
@@ -317,7 +325,7 @@ final class Cache
             return false;
         }
 
-        return self::get($key) !== null;
+        return self::readEntry($key) !== null;
     }
 
     public static function forget(string $key): void

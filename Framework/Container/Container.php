@@ -68,6 +68,7 @@ final class Container
 
     public function instance(string $abstract, object $instance): void
     {
+        $this->assertCompatible($abstract, $instance);
         $this->instances[$abstract] = $instance;
 
         unset($this->bindings[$abstract]);
@@ -86,8 +87,8 @@ final class Container
 
         if (isset($this->resolving[$abstract]))
         {
-            throw new RuntimeException(
-                "Circular dependency detected while resolving: {$abstract}"
+            throw new ContainerResolutionException(
+                'Circular dependency: ' . implode(' -> ', [...array_keys($this->resolving), $abstract])
             );
         }
 
@@ -109,6 +110,7 @@ final class Container
             ];
 
             $object = $this->resolve($binding['concrete']);
+            $this->assertCompatible($abstract, $object);
 
             if ($binding['singleton'])
             {
@@ -116,6 +118,19 @@ final class Container
             }
 
             return $object;
+        }
+        catch (RuntimeException $exception)
+        {
+            if ($exception instanceof ContainerResolutionException)
+            {
+                throw $exception;
+            }
+
+            throw new ContainerResolutionException(
+                $exception->getMessage() . ' [resolution: '
+                    . implode(' -> ', array_keys($this->resolving)) . ']',
+                previous: $exception
+            );
         }
         finally
         {
@@ -127,6 +142,20 @@ final class Container
             {
                 Profiler::end('container.resolve');
             }
+        }
+    }
+
+    private function assertCompatible(string $abstract, object $object): void
+    {
+        // Arbitrary service aliases remain valid; enforce only declared PHP types.
+        if ((class_exists($abstract) || interface_exists($abstract)) && ! $object instanceof $abstract)
+        {
+            throw new RuntimeException(sprintf(
+                'Service %s requires an instance of %s; %s returned.',
+                $abstract,
+                $abstract,
+                get_debug_type($object)
+            ));
         }
     }
 
