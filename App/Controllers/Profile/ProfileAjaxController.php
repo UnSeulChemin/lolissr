@@ -9,6 +9,7 @@ use App\Controllers\Controller;
 use App\DTO\Common\ServiceResult;
 use App\Models\User;
 use App\Repositories\Auth\UserRepository;
+use App\Services\Profile\ProfileImageCatalog;
 
 use Framework\Http\Request;
 
@@ -16,6 +17,7 @@ final class ProfileAjaxController extends Controller
 {
     public function __construct(
         private readonly UserRepository $userRepository,
+        private readonly ProfileImageCatalog $imageCatalog,
         Request $request
     )
     {
@@ -50,7 +52,10 @@ final class ProfileAjaxController extends Controller
             $this->jsonResult(ServiceResult::error(message: 'Titre invalide', status: 422));
         }
 
-        $this->userRepository->updateTitle($user->id, $title);
+        if (! $this->userRepository->updateTitle($user->id, $title))
+        {
+            $this->jsonResult(ServiceResult::error(message: 'Titre non enregistré', status: 500));
+        }
 
         $this->jsonResult(ServiceResult::success(
             message: 'Titre mis à jour',
@@ -66,7 +71,7 @@ final class ProfileAjaxController extends Controller
 
     public function avatars(): never
     {
-        $avatars = $this->userRepository->avatars();
+        $avatars = $this->imageCatalog->items('avatar');
 
         $this->jsonResult(ServiceResult::success(data: ['avatars' => $avatars]));
     }
@@ -76,7 +81,7 @@ final class ProfileAjaxController extends Controller
         $user = $this->user();
 
         $avatar = $this->findItem(
-            $this->userRepository->avatars(),
+            $this->imageCatalog->items('avatar'),
             'avatar',
             (string) $this->request->input('avatar')
         );
@@ -86,11 +91,14 @@ final class ProfileAjaxController extends Controller
             $this->jsonResult(ServiceResult::error(message: 'Avatar invalide', status: 422));
         }
 
-        $this->userRepository->updateAvatar(
+        if (! $this->userRepository->updateAvatar(
             $user->id,
             $avatar['avatar'],
             $avatar['avatar_extension']
-        );
+        ))
+        {
+            $this->jsonResult(ServiceResult::error(message: 'Personnalisation non enregistrée', status: 500));
+        }
 
         $this->jsonResult(ServiceResult::success(
             message: 'Avatar mis à jour',
@@ -109,7 +117,7 @@ final class ProfileAjaxController extends Controller
 
     public function banners(): never
     {
-        $banners = $this->userRepository->banners();
+        $banners = $this->imageCatalog->items('banner');
 
         $this->jsonResult(ServiceResult::success(data: ['banners' => $banners]));
     }
@@ -119,7 +127,7 @@ final class ProfileAjaxController extends Controller
         $user = $this->user();
 
         $banner = $this->findItem(
-            $this->userRepository->banners(),
+            $this->imageCatalog->items('banner'),
             'banner',
             (string) $this->request->input('banner')
         );
@@ -129,11 +137,14 @@ final class ProfileAjaxController extends Controller
             $this->jsonResult(ServiceResult::error(message: 'Bannière invalide', status: 422));
         }
 
-        $this->userRepository->updateBanner(
+        if (! $this->userRepository->updateBanner(
             $user->id,
             $banner['banner'],
             $banner['banner_extension']
-        );
+        ))
+        {
+            $this->jsonResult(ServiceResult::error(message: 'Personnalisation non enregistrée', status: 500));
+        }
 
         $this->jsonResult(ServiceResult::success(
             message: 'Bannière mise à jour',
@@ -152,7 +163,7 @@ final class ProfileAjaxController extends Controller
 
     public function frames(): never
     {
-        $frames = $this->userRepository->frames();
+        $frames = $this->imageCatalog->items('frame');
 
         $this->jsonResult(ServiceResult::success(data: ['frames' => $frames]));
     }
@@ -162,7 +173,7 @@ final class ProfileAjaxController extends Controller
         $user = $this->user();
 
         $frame = $this->findItem(
-            $this->userRepository->frames(),
+            $this->imageCatalog->items('frame'),
             'frame',
             (string) $this->request->input('frame')
         );
@@ -172,11 +183,14 @@ final class ProfileAjaxController extends Controller
             $this->jsonResult(ServiceResult::error(message: 'Cadre invalide', status: 422));
         }
 
-        $this->userRepository->updateFrame(
+        if (! $this->userRepository->updateFrame(
             $user->id,
             $frame['frame'],
             $frame['frame_extension']
-        );
+        ))
+        {
+            $this->jsonResult(ServiceResult::error(message: 'Personnalisation non enregistrée', status: 500));
+        }
 
         $this->jsonResult(ServiceResult::success(
             message: 'Cadre mis à jour',

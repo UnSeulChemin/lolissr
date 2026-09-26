@@ -68,8 +68,12 @@
 
 .chinois-vocab-card > *
 {
-    position: relative;
     z-index: 1;
+}
+
+.chinois-vocab-card > :not(.u-absolute)
+{
+    position: relative;
 }
 
 .chinois-vocab-card:hover

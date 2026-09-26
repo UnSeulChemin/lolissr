@@ -20,10 +20,18 @@ final class ChinoisVocabulaireRepository extends Model
     // LECTURE
     // =========================================
 
+    /** @return list<int> */
+    public function notMasteredIds(): array
+    {
+        $rows = $this->fetchAll("SELECT id FROM {$this->table()} WHERE maitrise = 0 ORDER BY id ASC");
+
+        return array_map(static fn (\stdClass $row): int => (int) $row->id, $rows);
+    }
+
     /**
      * @return list<ChinoisVocabulaireData>
      */
-    public function findNotMasteredDto(): array
+    public function findNotMasteredDto(int $startId = 0): array
     {
         /** @var list<stdClass> $results */
         $results = $this->fetchAll(
@@ -33,10 +41,11 @@ final class ChinoisVocabulaireRepository extends Model
 
             FROM {$this->table()}
 
-            WHERE maitrise = 0
+            WHERE maitrise = 0 AND id >= :start_id
 
-            ORDER BY id ASC
-            "
+            ORDER BY id ASC LIMIT 50
+            ",
+            ['start_id' => max(0, $startId)]
         );
 
         return array_map($this->mapRowToDto(...), $results);

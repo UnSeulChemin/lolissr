@@ -1,3 +1,5 @@
+import { createFlashcardDeck } from './flashcard-deck.js';
+
 // =========================================
 // FLASHCARDS GRAMMAIRE
 // =========================================
@@ -22,6 +24,8 @@ import {
 // INIT
 // =========================================
 
+const initializedContainers = new WeakSet();
+
 export function initFlashcardsGrammairePage()
 {
     const container = document.querySelector('.grammar-main-section');
@@ -31,10 +35,12 @@ export function initFlashcardsGrammairePage()
         return;
     }
 
-    const cards = JSON.parse(container.dataset.flashcards ?? '[]');
+    if (initializedContainers.has(container)) return;
+    initializedContainers.add(container);
+    const deck = createFlashcardDeck(container, 'grammaire');
     const baseUri = container.dataset.baseUri ?? '/';
 
-    if (cards.length === 0)
+    if (deck.total === 0)
     {
         return;
     }
@@ -52,7 +58,15 @@ export function initFlashcardsGrammairePage()
     const masteredButton = document.getElementById('flashcard-mastered');
     const deleteButton = document.getElementById('flashcard-delete');
 
-    let currentIndex = 0;
+    let busy = false;
+    function setBusy(value)
+    {
+        busy = value;
+        for (const button of [previousButton, nextButton, masteredButton, deleteButton])
+        {
+            if (button) button.disabled = value;
+        }
+    }
 
     // =========================================
     // RENDER
@@ -60,7 +74,7 @@ export function initFlashcardsGrammairePage()
 
     function renderCard()
     {
-        const card = cards[currentIndex];
+        const card = deck.card;
 
         if (! card)
         {
@@ -69,7 +83,7 @@ export function initFlashcardsGrammairePage()
 
         if (counterElement)
         {
-            counterElement.textContent = `Carte ${currentIndex + 1} / ${cards.length}`;
+            counterElement.textContent = `Carte ${deck.index + 1} / ${deck.total}`;
         }
 
         if (titreElement)
@@ -126,19 +140,29 @@ export function initFlashcardsGrammairePage()
     // NAVIGATION
     // =========================================
 
-    previousButton?.addEventListener('click', () =>
+    async function navigate(direction)
     {
-        currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+        if (busy) return;
+        setBusy(true);
+        try
+        {
+            await deck.move(direction);
+            if (! container.isConnected) return;
+            if (! deck.total) { location.reload(); return; }
+            renderCard();
+        }
+        catch
+        {
+            if (container.isConnected) showToast('Chargement impossible, réessaie.', 'error');
+        }
+        finally
+        {
+            setBusy(false);
+        }
+    }
 
-        renderCard();
-    });
-
-    nextButton?.addEventListener('click', () =>
-    {
-        currentIndex = (currentIndex + 1) % cards.length;
-
-        renderCard();
-    });
+    previousButton?.addEventListener('click', () => { void navigate(-1); });
+    nextButton?.addEventListener('click', () => { void navigate(1); });
 
     // =========================================
     // VALIDATION
@@ -146,13 +170,16 @@ export function initFlashcardsGrammairePage()
 
     masteredButton?.addEventListener('click', async () =>
     {
-        const card = cards[currentIndex];
+        if (busy) return;
+        const card = deck.card;
 
         if (! card)
         {
             return;
         }
 
+        setBusy(true);
+        let saved = false;
         try
         {
             const data = await post(
@@ -172,18 +199,16 @@ export function initFlashcardsGrammairePage()
             updateHeaderUser(data?.data?.level);
             invalidateGrammarPages();
 
-            cards.splice(currentIndex, 1);
+            saved = true;
+            if (! container.isConnected) return;
+            await deck.remove(card.id);
+            if (! container.isConnected) return;
 
-            if (cards.length === 0)
+            if (deck.total === 0)
             {
                 location.reload();
 
                 return;
-            }
-
-            if (currentIndex >= cards.length)
-            {
-                currentIndex = 0;
             }
 
             renderCard();
@@ -192,7 +217,15 @@ export function initFlashcardsGrammairePage()
         }
         catch
         {
-            showToast('Erreur réseau', 'error');
+            if (container.isConnected)
+            {
+                if (saved) { location.reload(); return; }
+                showToast('Erreur réseau', 'error');
+            }
+        }
+        finally
+        {
+            setBusy(false);
         }
     });
 

@@ -34,7 +34,7 @@ final class MangaRepository extends Model
             FROM {$this->table()} m
 
             INNER JOIN (
-                {$this->statsSubQuery()}
+                {$this->statsSubQuery(true)}
             ) stats
                 ON stats.slug = m.slug
 
@@ -44,6 +44,7 @@ final class MangaRepository extends Model
             ",
             [
                 'slug' => $this->normalizeSlug($slug),
+                'stats_slug' => $this->normalizeSlug($slug),
             ],
             Manga::class
         );
@@ -74,7 +75,7 @@ final class MangaRepository extends Model
             FROM {$this->table()} m
 
             INNER JOIN (
-                {$this->statsSubQuery()}
+                {$this->statsSubQuery(true)}
             ) stats
                 ON stats.slug = m.slug
 
@@ -85,6 +86,7 @@ final class MangaRepository extends Model
             ",
             [
                 'slug' => $this->normalizeSlug($slug),
+                'stats_slug' => $this->normalizeSlug($slug),
                 'numero' => $numero,
             ],
             Manga::class

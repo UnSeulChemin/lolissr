@@ -6,6 +6,7 @@ use App\DTO\Chinois\Responses\ChinoisVocabulaireData;
 use App\DTO\Common\Responses\ViewData;
 
 /** @var ViewData $view */
+/** @var list<int> $flashcardIds */
 /** @var list<ChinoisVocabulaireData> $vocabulaires */
 
 ?>
@@ -14,6 +15,7 @@ use App\DTO\Common\Responses\ViewData;
 
     <section
         class="chinois-vocab-panel"
+        data-flashcard-ids='<?= e(json_encode($flashcardIds, JSON_THROW_ON_ERROR)) ?>'
         data-flashcards='<?= e(json_encode(
             $vocabulaires,
             JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR
@@ -51,7 +53,7 @@ use App\DTO\Common\Responses\ViewData;
                         </button>
 
                         <span id="flashcard-counter">
-                            Carte 1 / <?= count($vocabulaires) ?>
+                            Carte 1 / <?= count($flashcardIds) ?>
                         </span>
 
                         <button

@@ -6,6 +6,7 @@ use App\DTO\Chinois\Responses\ChinoisGrammaireData;
 use App\DTO\Common\Responses\ViewData;
 
 /** @var ViewData $view */
+/** @var list<int> $flashcardIds */
 /** @var list<ChinoisGrammaireData> $grammaires */
 
 ?>
@@ -14,6 +15,7 @@ use App\DTO\Common\Responses\ViewData;
 
     <section
         class="grammar-main-section"
+        data-flashcard-ids='<?= e(json_encode($flashcardIds, JSON_THROW_ON_ERROR)) ?>'
         data-flashcards='<?= e(json_encode(
             $grammaires,
             JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR
@@ -53,7 +55,7 @@ use App\DTO\Common\Responses\ViewData;
                     </button>
 
                     <span id="flashcard-counter">
-                        Carte 1 / <?= count($grammaires) ?>
+                        Carte 1 / <?= count($flashcardIds) ?>
                     </span>
 
                     <button

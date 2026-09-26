@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers\Chinois;
 
 use App\Controllers\Controller;
+use App\DTO\Common\ServiceResult;
 use App\Services\Chinois\ChinoisReadService;
 
 use Framework\Http\Request;
@@ -35,6 +36,7 @@ final class FlashcardsController extends Controller
 
         $this->render('pages/chinois/flashcards/vocabulaire', [
             'vocabulaires' => $this->chinoisReadService->vocabulaireFlashcards(),
+            'flashcardIds' => $this->chinoisReadService->flashcardIds(false),
         ]);
     }
 
@@ -44,6 +46,21 @@ final class FlashcardsController extends Controller
 
         $this->render('pages/chinois/flashcards/grammaire', [
             'grammaires' => $this->chinoisReadService->grammaireFlashcards(),
+            'flashcardIds' => $this->chinoisReadService->flashcardIds(true),
         ]);
+    }
+
+    public function vocabulaireBatch(int $id): never
+    {
+        $this->jsonResult(ServiceResult::success(data: [
+            'cards' => $this->chinoisReadService->vocabulaireFlashcards($id),
+        ]));
+    }
+
+    public function grammaireBatch(int $id): never
+    {
+        $this->jsonResult(ServiceResult::success(data: [
+            'cards' => $this->chinoisReadService->grammaireFlashcards($id),
+        ]));
     }
 }

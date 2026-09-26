@@ -150,17 +150,25 @@ final readonly class ChinoisReadService
     /**
      * @return list<ChinoisGrammaireData>
      */
-    public function grammaireFlashcards(): array
+    public function grammaireFlashcards(int $startId = 0): array
     {
-        return $this->grammaireRepository->findNotMasteredDto();
+        return $this->grammaireRepository->findNotMasteredDto($startId);
     }
 
     /**
      * @return list<ChinoisVocabulaireData>
      */
-    public function vocabulaireFlashcards(): array
+    public function vocabulaireFlashcards(int $startId = 0): array
     {
-        return $this->vocabulaireRepository->findNotMasteredDto();
+        return $this->vocabulaireRepository->findNotMasteredDto($startId);
+    }
+
+    /** @return list<int> */
+    public function flashcardIds(bool $grammar): array
+    {
+        return $grammar
+            ? $this->grammaireRepository->notMasteredIds()
+            : $this->vocabulaireRepository->notMasteredIds();
     }
 
     // =========================================

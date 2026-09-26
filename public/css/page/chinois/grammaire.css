@@ -238,9 +238,12 @@
 
 .grammar-item > *
 {
-    position: relative;
-
     z-index: 1;
+}
+
+.grammar-item > :not(.u-absolute)
+{
+    position: relative;
 }
 
 .grammar-item:hover

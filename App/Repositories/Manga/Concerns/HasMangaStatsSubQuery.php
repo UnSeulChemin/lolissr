@@ -8,8 +8,10 @@ trait HasMangaStatsSubQuery
 {
     abstract protected function table(): string;
 
-    private function statsSubQuery(): string
+    private function statsSubQuery(bool $filterBySlug = false): string
     {
+        $where = $filterBySlug ? 'WHERE slug = :stats_slug' : '';
+
         return "
             SELECT
                 slug,
@@ -28,6 +30,8 @@ trait HasMangaStatsSubQuery
                 ) AS average_note
 
             FROM {$this->table()}
+
+            {$where}
 
             GROUP BY slug
         ";

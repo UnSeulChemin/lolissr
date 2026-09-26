@@ -16,14 +16,14 @@ final class MangaStatsRepository extends Model
     public function profileSummary(): array
     {
         $row = $this->fetchOne(
-            "SELECT COUNT(CASE WHEN lu = 1 THEN 1 END) AS read,
+            "SELECT COUNT(CASE WHEN lu = 1 THEN 1 END) AS total_read,
                 COUNT(CASE WHEN xp_read_rewarded = 1 THEN 1 END) AS rewarded_tomes,
                 COUNT(DISTINCT CASE WHEN xp_series_rewarded = 1 THEN slug END) AS rewarded_series
             FROM {$this->table()}"
         );
 
         return [
-            'read' => (int) ($row->read ?? 0),
+            'read' => (int) ($row->total_read ?? 0),
             'rewarded_tomes' => (int) ($row->rewarded_tomes ?? 0),
             'rewarded_series' => (int) ($row->rewarded_series ?? 0),
         ];
