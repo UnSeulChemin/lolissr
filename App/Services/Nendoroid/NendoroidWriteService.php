@@ -12,20 +12,22 @@ use App\DTO\Nendoroid\Inputs\NendoroidUpdateDTO;
 use App\DTO\Upload\UploadThumbnailData;
 use App\Repositories\Nendoroid\NendoroidRepository;
 use App\Services\Media\ThumbnailManager;
+use App\Services\Media\CollectionCreationService;
 
 use Framework\Database\Database;
 use Framework\Support\Logger;
 
-use PDOException;
-use Throwable;
 
 final readonly class NendoroidWriteService
 {
+    use \App\Services\Collections\CollectionWriteResults;
+
     public function __construct(
         private NendoroidRepository $nendoroidRepository,
         private ThumbnailManager $thumbnailManager,
         private Database $database,
         private NendoroidXpRewardService $nendoroidXpRewardService,
+        private CollectionCreationService $creationService,
         private DashboardCache $dashboardCache
     ) {
     }
@@ -44,70 +46,42 @@ final readonly class NendoroidWriteService
             return $this->error('Ce Nendoroid existe déjà', 409);
         }
 
-        $result = $this->database->transaction(
-            function () use ($dto, $files): ServiceResult
+        $result = $this->creationService->create(
+            'nendoroid',
+            $dto->origin,
+            $dto->numero,
+            $files,
+            function (UploadThumbnailData $upload) use ($dto): ServiceResult
             {
-                $upload = $this->thumbnailManager->upload(
-                    'nendoroid',
-                    $dto->origin,
+                $inserted = $this->nendoroidRepository->insert([
+                    'thumbnail' => $upload->thumbnailPath,
+                    'extension' => $upload->extension,
+                    'slug' => $dto->slug,
+                    'numero' => $dto->numero,
+                    'origin' => $dto->origin,
+                    'waifu' => $dto->waifu,
+                    'company' => $dto->company,
+                    'release_date' => $dto->release_date,
+                    'commentaire' => $dto->commentaire,
+                ]);
+
+                $failure = $this->writeFailed(
+                    $inserted,
+                    'Insertion nendoroid',
+                    $dto->slug,
                     $dto->numero,
-                    $files
+                    'Erreur lors de l’enregistrement'
                 );
 
-                if ($upload instanceof ServiceResult)
+                if ($failure !== null)
                 {
-                    return $upload;
+
+                    return $failure;
                 }
 
-                try
-                {
-                    $inserted = $this->nendoroidRepository->insert([
-                        'thumbnail' => $upload->thumbnailPath,
-                        'extension' => $upload->extension,
-                        'slug' => $dto->slug,
-                        'numero' => $dto->numero,
-                        'origin' => $dto->origin,
-                        'waifu' => $dto->waifu,
-                        'company' => $dto->company,
-                        'release_date' => $dto->release_date,
-                        'commentaire' => $dto->commentaire,
-                    ]);
-
-                    $failure = $this->writeFailed(
-                        $inserted,
-                        'Insertion nendoroid',
-                        $dto->slug,
-                        $dto->numero,
-                        'Erreur lors de l’enregistrement'
-                    );
-
-                    if ($failure !== null)
-                    {
-                        $this->rollbackThumbnail($upload, $dto->slug, $dto->numero);
-
-                        return $failure;
-                    }
-
-                    return $this->success('Nendoroid ajouté avec succès');
-                }
-                catch (PDOException $exception)
-                {
-                    $this->rollbackThumbnail($upload, $dto->slug, $dto->numero);
-
-                    if ($this->isDuplicateKeyException($exception))
-                    {
-                        return $this->error('Ce Nendoroid existe déjà', 409);
-                    }
-
-                    throw $exception;
-                }
-                catch (Throwable $exception)
-                {
-                    $this->rollbackThumbnail($upload, $dto->slug, $dto->numero);
-
-                    throw $exception;
-                }
-            }
+                return $this->success('Nendoroid ajouté avec succès');
+            },
+            'Ce Nendoroid existe déjà'
         );
 
         if ($result->success)
@@ -279,23 +253,6 @@ final readonly class NendoroidWriteService
     }
 
     // =========================================
-    // THUMBNAIL
-    // =========================================
-
-    private function rollbackThumbnail(
-        UploadThumbnailData $upload,
-        string $slug,
-        int $numero
-    ): void {
-        if (! $this->thumbnailManager->rollback($upload))
-        {
-            Logger::warning(
-                "Rollback thumbnail nendoroid échoué slug={$slug} numero={$numero}"
-            );
-        }
-    }
-
-    // =========================================
     // CACHE
     // =========================================
 
@@ -304,69 +261,4 @@ final readonly class NendoroidWriteService
         $this->dashboardCache->forget();
     }
 
-    // =========================================
-    // HELPERS
-    // =========================================
-
-    private function isDuplicateKeyException(PDOException $exception): bool
-    {
-        return $exception->getCode() === '23000'
-            && ($exception->errorInfo[1] ?? null) === 1062;
-    }
-
-    private function logFailure(string $action, string $slug, int $numero): void
-    {
-        Logger::error("{$action} échoué slug={$slug} numero={$numero}");
-    }
-
-    private function writeFailed(
-        bool $result,
-        string $action,
-        string $slug,
-        int $numero,
-        string $message
-    ): ?ServiceResult {
-        if ($result)
-        {
-            return null;
-        }
-
-        $this->logFailure($action, $slug, $numero);
-
-        return $this->error($message);
-    }
-
-    // =========================================
-    // RESULT
-    // =========================================
-
-    /**
-     * @param array<string, mixed> $data
-     */
-    private function success(
-        string $message,
-        array $data = [],
-        int $status = 200
-    ): ServiceResult {
-        return ServiceResult::success(
-            message: $message,
-            data: $data,
-            status: $status
-        );
-    }
-
-    /**
-     * @param array<string, mixed> $data
-     */
-    private function error(
-        string $message,
-        int $status = 500,
-        array $data = []
-    ): ServiceResult {
-        return ServiceResult::error(
-            message: $message,
-            data: $data,
-            status: $status
-        );
-    }
 }

@@ -12,6 +12,17 @@ use Framework\Support\Str;
 
 final class MangaStatsRepository extends Model
 {
+    /** @return array{total: int, series: int, read: int, average: float|null} */
+    public function dashboardSummary(): array
+    {
+        $row = $this->fetchOne("SELECT COUNT(*) AS total, COUNT(DISTINCT slug) AS series,
+            COALESCE(SUM(CASE WHEN lu = 1 THEN 1 ELSE 0 END), 0) AS total_read,
+            ROUND(AVG(note), 1) AS average_note FROM {$this->table()}");
+        return ['total' => (int) ($row->total ?? 0), 'series' => (int) ($row->series ?? 0),
+            'read' => (int) ($row->total_read ?? 0),
+            'average' => isset($row->average_note) ? (float) $row->average_note : null];
+    }
+
     protected string $table = 'manga';
 
     public function countAllTomes(): int

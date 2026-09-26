@@ -14,13 +14,12 @@ use App\DTO\Manga\Responses\MangaUpdateNoteData;
 use App\DTO\Upload\UploadThumbnailData;
 use App\Repositories\Manga\MangaRepository;
 use App\Services\Media\ThumbnailManager;
+use App\Services\Media\CollectionCreationService;
 
 use Framework\Database\Database;
 use Framework\Support\Logger;
 
-use PDOException;
 use RuntimeException;
-use Throwable;
 
 final readonly class MangaWriteService
 {
@@ -29,6 +28,7 @@ final readonly class MangaWriteService
         private ThumbnailManager $thumbnailManager,
         private Database $database,
         private MangaXpRewardService $mangaXpRewardService,
+        private CollectionCreationService $creationService,
         private DashboardCache $dashboardCache
     ) {
     }
@@ -49,50 +49,23 @@ final readonly class MangaWriteService
             return $this->error('Ce manga existe déjà', 409);
         }
 
-        $result = $this->database->transaction(
-            function () use ($dto, $files): ServiceResult
+        $result = $this->creationService->create(
+            'manga',
+            $dto->livre,
+            $dto->numero,
+            $files,
+            function (UploadThumbnailData $upload) use ($dto): ServiceResult
             {
-                $upload = $this->thumbnailManager->upload(
-                    'manga',
-                    $dto->livre,
-                    $dto->numero,
-                    $files
-                );
+                $failure = $this->createManga($dto, $upload);
 
-                if ($upload instanceof ServiceResult)
+                if ($failure !== null)
                 {
-                    return $upload;
+                    return $failure;
                 }
 
-                try
-                {
-                    $failure = $this->createManga($dto, $upload);
-
-                    if ($failure !== null)
-                    {
-                        return $failure;
-                    }
-
-                    return $this->success('Manga ajouté avec succès');
-                }
-                catch (PDOException $exception)
-                {
-                    $this->rollbackThumbnail($upload, $dto->slug, $dto->numero);
-
-                    if ($this->isDuplicateKeyException($exception))
-                    {
-                        return $this->error('Ce manga existe déjà', 409);
-                    }
-
-                    throw $exception;
-                }
-                catch (Throwable $exception)
-                {
-                    $this->rollbackThumbnail($upload, $dto->slug, $dto->numero);
-
-                    throw $exception;
-                }
-            }
+                return $this->success('Manga ajouté avec succès');
+            },
+            'Ce manga existe déjà'
         );
 
         if ($result->success)
@@ -342,34 +315,10 @@ final readonly class MangaWriteService
 
     /*
     |--------------------------------------------------------------------------
-    | THUMBNAIL
-    |--------------------------------------------------------------------------
-    */
-
-    private function rollbackThumbnail(
-        UploadThumbnailData $upload,
-        string $slug,
-        int $numero
-    ): void {
-        if (! $this->thumbnailManager->rollback($upload))
-        {
-            Logger::warning(
-                "Rollback thumbnail manga échoué slug={$slug} numero={$numero}"
-            );
-        }
-    }
-
-    /*
-    |--------------------------------------------------------------------------
     | HELPERS
     |--------------------------------------------------------------------------
     */
 
-    private function isDuplicateKeyException(PDOException $exception): bool
-    {
-        return $exception->getCode() === '23000'
-            && ($exception->errorInfo[1] ?? null) === 1062;
-    }
 
     private function logFailure(string $action, string $slug, int $numero): void
     {
@@ -421,7 +370,6 @@ final readonly class MangaWriteService
 
         if ($failure !== null)
         {
-            $this->rollbackThumbnail($uploadData, $dto->slug, $dto->numero);
 
             return $failure;
         }

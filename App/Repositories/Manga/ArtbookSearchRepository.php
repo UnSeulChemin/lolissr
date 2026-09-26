@@ -52,7 +52,7 @@ final class ArtbookSearchRepository extends Model
     private function fetchSearchResults(string $search): array
     {
         $sql = "
-            SELECT *
+            SELECT slug, numero, artbook, auteur, serie, thumbnail, extension, company
             FROM {$this->table()}
             WHERE (
                 artbook LIKE :search_artbook
@@ -60,7 +60,7 @@ final class ArtbookSearchRepository extends Model
                 OR serie LIKE :search_serie
                 OR slug LIKE :search_slug
             )
-            ORDER BY artbook ASC, numero ASC
+            ORDER BY artbook ASC, numero ASC, id ASC LIMIT 20
         ";
 
         /** @var list<Artbook> $artbooks */

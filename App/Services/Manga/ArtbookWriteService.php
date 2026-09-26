@@ -12,12 +12,11 @@ use App\DTO\Manga\Inputs\ArtbookUpdateDTO;
 use App\DTO\Upload\UploadThumbnailData;
 use App\Repositories\Manga\ArtbookRepository;
 use App\Services\Media\ThumbnailManager;
+use App\Services\Media\CollectionCreationService;
 
 use Framework\Database\Database;
 use Framework\Support\Logger;
 
-use PDOException;
-use Throwable;
 
 final readonly class ArtbookWriteService
 {
@@ -26,6 +25,7 @@ final readonly class ArtbookWriteService
         private ThumbnailManager $thumbnailManager,
         private Database $database,
         private ArtbookXpRewardService $artbookXpRewardService,
+        private CollectionCreationService $creationService,
         private DashboardCache $dashboardCache
     ) {
     }
@@ -46,71 +46,43 @@ final readonly class ArtbookWriteService
             return $this->error('Cet artbook existe déjà', 409);
         }
 
-        $result = $this->database->transaction(
-            function () use ($dto, $files): ServiceResult
+        $result = $this->creationService->create(
+            'artbook',
+            $dto->slug,
+            $dto->numero,
+            $files,
+            function (UploadThumbnailData $upload) use ($dto): ServiceResult
             {
-                $upload = $this->thumbnailManager->upload(
-                    'artbook',
+                $inserted = $this->artbookRepository->insert([
+                    'thumbnail' => $upload->thumbnailPath,
+                    'extension' => $upload->extension,
+                    'slug' => $dto->slug,
+                    'numero' => $dto->numero,
+                    'artbook' => $dto->artbook,
+                    'auteur' => $dto->auteur,
+                    'serie' => $dto->serie,
+                    'company' => $dto->company,
+                    'release_date' => $dto->release_date,
+                    'commentaire' => $dto->commentaire,
+                ]);
+
+                $failure = $this->writeFailed(
+                    $inserted,
+                    'Insertion artbook',
                     $dto->slug,
                     $dto->numero,
-                    $files
+                    'Erreur lors de l’enregistrement'
                 );
 
-                if ($upload instanceof ServiceResult)
+                if ($failure !== null)
                 {
-                    return $upload;
+
+                    return $failure;
                 }
 
-                try
-                {
-                    $inserted = $this->artbookRepository->insert([
-                        'thumbnail' => $upload->thumbnailPath,
-                        'extension' => $upload->extension,
-                        'slug' => $dto->slug,
-                        'numero' => $dto->numero,
-                        'artbook' => $dto->artbook,
-                        'auteur' => $dto->auteur,
-                        'serie' => $dto->serie,
-                        'company' => $dto->company,
-                        'release_date' => $dto->release_date,
-                        'commentaire' => $dto->commentaire,
-                    ]);
-
-                    $failure = $this->writeFailed(
-                        $inserted,
-                        'Insertion artbook',
-                        $dto->slug,
-                        $dto->numero,
-                        'Erreur lors de l’enregistrement'
-                    );
-
-                    if ($failure !== null)
-                    {
-                        $this->rollbackThumbnail($upload, $dto->slug, $dto->numero);
-
-                        return $failure;
-                    }
-
-                    return $this->success('Artbook ajouté avec succès');
-                }
-                catch (PDOException $exception)
-                {
-                    $this->rollbackThumbnail($upload, $dto->slug, $dto->numero);
-
-                    if ($this->isDuplicateKeyException($exception))
-                    {
-                        return $this->error('Cet artbook existe déjà', 409);
-                    }
-
-                    throw $exception;
-                }
-                catch (Throwable $exception)
-                {
-                    $this->rollbackThumbnail($upload, $dto->slug, $dto->numero);
-
-                    throw $exception;
-                }
-            }
+                return $this->success('Artbook ajouté avec succès');
+            },
+            'Cet artbook existe déjà'
         );
 
         if ($result->success)
@@ -300,34 +272,10 @@ final readonly class ArtbookWriteService
 
     /*
     |--------------------------------------------------------------------------
-    | THUMBNAIL
-    |--------------------------------------------------------------------------
-    */
-
-    private function rollbackThumbnail(
-        UploadThumbnailData $upload,
-        string $slug,
-        int $numero
-    ): void {
-        if (! $this->thumbnailManager->rollback($upload))
-        {
-            Logger::warning(
-                "Rollback thumbnail artbook échoué slug={$slug} numero={$numero}"
-            );
-        }
-    }
-
-    /*
-    |--------------------------------------------------------------------------
     | HELPERS
     |--------------------------------------------------------------------------
     */
 
-    private function isDuplicateKeyException(PDOException $exception): bool
-    {
-        return $exception->getCode() === '23000'
-            && ($exception->errorInfo[1] ?? null) === 1062;
-    }
 
     private function logFailure(string $action, string $slug, int $numero): void
     {

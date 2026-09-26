@@ -12,6 +12,19 @@ final class UserRepository extends Model
 {
     protected string $table = 'users';
 
+    public function lockLevelAndXp(int $id): ?User
+    {
+        if (! $this->db->inTransaction())
+        {
+            throw new \LogicException('XP updates require an active transaction.');
+        }
+        return $this->fetchOne(
+            "SELECT id, level, xp FROM {$this->table()} WHERE id = :id FOR UPDATE",
+            ['id' => $id],
+            User::class
+        );
+    }
+
     // =========================================
     // RECHERCHE
     // =========================================

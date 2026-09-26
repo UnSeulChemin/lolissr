@@ -73,17 +73,22 @@ final readonly class StatsService
 
     public function dashboard(): DashboardStatsData
     {
+        $mangaSummary = $this->mangaStatsRepository->dashboardSummary();
+        $artbookSummary = $this->artbookStatsRepository->dashboardSummary();
+        $vocabularySummary = $this->vocabulaireStatsRepository->dashboardSummary();
+        $grammarSummary = $this->grammaireStatsRepository->dashboardSummary();
+
         /*
         |--------------------------------------------------------------------------
         | MANGA
         |--------------------------------------------------------------------------
         */
 
-        $totalMangaTomes = $this->totalMangaTomes();
+        $totalMangaTomes = $mangaSummary['total'];
 
-        $totalMangaSeries = $this->totalMangaSeries();
+        $totalMangaSeries = $mangaSummary['series'];
 
-        $totalMangaRead = $this->totalMangaRead();
+        $totalMangaRead = $mangaSummary['read'];
 
         $totalMangaUnread =
             max(
@@ -98,7 +103,7 @@ final readonly class StatsService
             );
 
         $averageMangaNote =
-            $this->averageMangaNote();
+            $mangaSummary['average'];
 
         $averageNoteLabel =
             $averageMangaNote !== null
@@ -126,13 +131,13 @@ final readonly class StatsService
         */
 
         $totalArtbooks =
-            $this->artbookStatsRepository->countAll();
+            $artbookSummary['total'];
 
         $totalArtbookAuthors =
-            $this->artbookStatsRepository->countAuthors();
+            $artbookSummary['authors'];
 
         $totalArtbookSeries =
-            $this->artbookStatsRepository->countSeries();
+            $artbookSummary['series'];
 
         $latestArtbook =
             $this->artbookStatsRepository->findLatest();
@@ -147,10 +152,10 @@ final readonly class StatsService
         */
 
         $totalVocabulary =
-            $this->vocabulaireStatsRepository->countAll();
+            $vocabularySummary['total'];
 
         $remainingVocabulary =
-            $this->vocabulaireStatsRepository->countRemaining();
+            $vocabularySummary['remaining'];
 
         $learnedVocabulary =
             max(
@@ -165,10 +170,10 @@ final readonly class StatsService
             );
 
         $totalGrammar =
-            $this->grammaireStatsRepository->countAll();
+            $grammarSummary['total'];
 
         $remainingGrammar =
-            $this->grammaireStatsRepository->countRemaining();
+            $grammarSummary['remaining'];
 
         $learnedGrammar =
             max(

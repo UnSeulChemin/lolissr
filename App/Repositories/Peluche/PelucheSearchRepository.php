@@ -52,14 +52,14 @@ final class PelucheSearchRepository extends Model
     private function fetchSearchResults(string $search): array
     {
         $sql = "
-            SELECT *
+            SELECT slug, numero, origin, waifu, thumbnail, extension
             FROM {$this->table()}
             WHERE (
                 waifu LIKE :search_waifu
                 OR origin LIKE :search_origin
                 OR slug LIKE :search_slug
             )
-            ORDER BY origin ASC, waifu ASC, numero ASC
+            ORDER BY origin ASC, waifu ASC, numero ASC, id ASC LIMIT 20
         ";
 
         /** @var list<Peluche> $peluches */

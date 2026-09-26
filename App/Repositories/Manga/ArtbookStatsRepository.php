@@ -10,6 +10,16 @@ use App\Models\Model;
 
 final class ArtbookStatsRepository extends Model
 {
+    /** @return array{total: int, authors: int, series: int} */
+    public function dashboardSummary(): array
+    {
+        $row = $this->fetchOne("SELECT COUNT(*) AS total,
+            COUNT(DISTINCT CASE WHEN auteur <> '' THEN auteur END) AS authors,
+            COUNT(DISTINCT CASE WHEN serie <> '' THEN serie END) AS series FROM {$this->table()}");
+        return ['total' => (int) ($row->total ?? 0), 'authors' => (int) ($row->authors ?? 0),
+            'series' => (int) ($row->series ?? 0)];
+    }
+
     protected string $table = 'artbook';
 
     public function countAuthors(): int

@@ -10,7 +10,8 @@ use App\Repositories\Auth\UserRepository;
 final readonly class UserLevelService
 {
     public function __construct(
-        private UserRepository $repository
+        private UserRepository $repository,
+        private \Framework\Database\Database $database
     ) {
     }
 
@@ -39,16 +40,25 @@ final readonly class UserLevelService
             return;
         }
 
-        $user->xp += $xp;
-
-        while ($user->xp >= $this->xpRequiredForLevel($user->level))
+        $update = function () use ($user, $xp): User
         {
-            $required = $this->xpRequiredForLevel($user->level);
+            $current = $this->repository->lockLevelAndXp($user->id);
+            if ($current === null) throw new \RuntimeException('Utilisateur introuvable pour les XP.');
+            $current->xp += $xp;
+            while ($current->xp >= $this->xpRequiredForLevel($current->level))
+            {
+                $current->xp -= $this->xpRequiredForLevel($current->level);
+                $current->level++;
+            }
+            if (! $this->repository->updateLevelAndXp($current->id, $current->level, $current->xp))
+            {
+                throw new \RuntimeException('Impossible de sauvegarder les XP.');
+            }
+            return $current;
+        };
 
-            $user->xp -= $required;
-            $user->level++;
-        }
-
-        $this->repository->updateLevelAndXp($user->id, $user->level, $user->xp);
+        $updated = $this->database->inTransaction() ? $update() : $this->database->transaction($update);
+        $user->level = $updated->level;
+        $user->xp = $updated->xp;
     }
 }

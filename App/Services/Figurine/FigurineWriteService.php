@@ -12,12 +12,11 @@ use App\DTO\Figurine\Inputs\FigurineUpdateDTO;
 use App\DTO\Upload\UploadThumbnailData;
 use App\Repositories\Figurine\FigurineRepository;
 use App\Services\Media\ThumbnailManager;
+use App\Services\Media\CollectionCreationService;
 
 use Framework\Database\Database;
 use Framework\Support\Logger;
 
-use PDOException;
-use Throwable;
 
 final readonly class FigurineWriteService
 {
@@ -26,6 +25,7 @@ final readonly class FigurineWriteService
         private ThumbnailManager $thumbnailManager,
         private Database $database,
         private FigurineXpRewardService $figurineXpRewardService,
+        private CollectionCreationService $creationService,
         private DashboardCache $dashboardCache
     ) {
     }
@@ -44,72 +44,44 @@ final readonly class FigurineWriteService
             return $this->error('Cette figurine existe déjà', 409);
         }
 
-        $result = $this->database->transaction(
-            function () use ($dto, $files): ServiceResult
+        $result = $this->creationService->create(
+            'figurine',
+            $dto->origin,
+            $dto->numero,
+            $files,
+            function (UploadThumbnailData $upload) use ($dto): ServiceResult
             {
-                $upload = $this->thumbnailManager->upload(
-                    'figurine',
-                    $dto->origin,
+                $inserted = $this->figurineRepository->insert([
+                    'thumbnail' => $upload->thumbnailPath,
+                    'extension' => $upload->extension,
+                    'slug' => $dto->slug,
+                    'numero' => $dto->numero,
+                    'origin' => $dto->origin,
+                    'waifu' => $dto->waifu,
+                    'scale' => $dto->scale,
+                    'height_cm' => $dto->height_cm,
+                    'company' => $dto->company,
+                    'release_date' => $dto->release_date,
+                    'commentaire' => $dto->commentaire,
+                ]);
+
+                $failure = $this->writeFailed(
+                    $inserted,
+                    'Insertion figurine',
+                    $dto->slug,
                     $dto->numero,
-                    $files
+                    'Erreur lors de l’enregistrement'
                 );
 
-                if ($upload instanceof ServiceResult)
+                if ($failure !== null)
                 {
-                    return $upload;
+
+                    return $failure;
                 }
 
-                try
-                {
-                    $inserted = $this->figurineRepository->insert([
-                        'thumbnail' => $upload->thumbnailPath,
-                        'extension' => $upload->extension,
-                        'slug' => $dto->slug,
-                        'numero' => $dto->numero,
-                        'origin' => $dto->origin,
-                        'waifu' => $dto->waifu,
-                        'scale' => $dto->scale,
-                        'height_cm' => $dto->height_cm,
-                        'company' => $dto->company,
-                        'release_date' => $dto->release_date,
-                        'commentaire' => $dto->commentaire,
-                    ]);
-
-                    $failure = $this->writeFailed(
-                        $inserted,
-                        'Insertion figurine',
-                        $dto->slug,
-                        $dto->numero,
-                        'Erreur lors de l’enregistrement'
-                    );
-
-                    if ($failure !== null)
-                    {
-                        $this->rollbackThumbnail($upload, $dto->slug, $dto->numero);
-
-                        return $failure;
-                    }
-
-                    return $this->success('Figurine ajoutée avec succès');
-                }
-                catch (PDOException $exception)
-                {
-                    $this->rollbackThumbnail($upload, $dto->slug, $dto->numero);
-
-                    if ($this->isDuplicateKeyException($exception))
-                    {
-                        return $this->error('Cette figurine existe déjà', 409);
-                    }
-
-                    throw $exception;
-                }
-                catch (Throwable $exception)
-                {
-                    $this->rollbackThumbnail($upload, $dto->slug, $dto->numero);
-
-                    throw $exception;
-                }
-            }
+                return $this->success('Figurine ajoutée avec succès');
+            },
+            'Cette figurine existe déjà'
         );
 
         if ($result->success)
@@ -281,23 +253,6 @@ final readonly class FigurineWriteService
     }
 
     // =========================================
-    // THUMBNAIL
-    // =========================================
-
-    private function rollbackThumbnail(
-        UploadThumbnailData $upload,
-        string $slug,
-        int $numero
-    ): void {
-        if (! $this->thumbnailManager->rollback($upload))
-        {
-            Logger::warning(
-                "Rollback thumbnail figurine échoué slug={$slug} numero={$numero}"
-            );
-        }
-    }
-
-    // =========================================
     // CACHE
     // =========================================
 
@@ -310,11 +265,6 @@ final readonly class FigurineWriteService
     // HELPERS
     // =========================================
 
-    private function isDuplicateKeyException(PDOException $exception): bool
-    {
-        return $exception->getCode() === '23000'
-            && ($exception->errorInfo[1] ?? null) === 1062;
-    }
 
     private function writeFailed(
         bool $result,

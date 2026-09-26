@@ -87,7 +87,7 @@ final class MangaSearchRepository extends Model
      */
     private function fetchSearchResults(string $title, ?int $numero = null): array
     {
-        $sql = "SELECT * FROM {$this->table()} WHERE (livre LIKE :search_livre OR slug LIKE :search_slug)";
+        $sql = "SELECT slug, numero, livre, thumbnail, extension, note, lu, editeur, statut FROM {$this->table()} WHERE (livre LIKE :search_livre OR slug LIKE :search_slug)";
 
         $params = ['search_livre' => "%{$title}%", 'search_slug' => '%' . $this->slugSearch($title) . '%'];
 
@@ -98,7 +98,7 @@ final class MangaSearchRepository extends Model
             $params['numero'] = $numero;
         }
 
-        $sql .= ' ORDER BY livre ASC, numero ASC';
+        $sql .= ' ORDER BY livre ASC, numero ASC, id ASC LIMIT 20';
 
         /** @var list<Manga> $mangas */
         $mangas = $this->fetchAll($sql, $params, Manga::class);
