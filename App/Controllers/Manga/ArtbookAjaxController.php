@@ -6,7 +6,6 @@ namespace App\Controllers\Manga;
 
 use App\Controllers\Controller;
 use App\DTO\Common\ServiceResult;
-use App\DTO\Manga\Responses\ArtbookData;
 use App\Services\Manga\ArtbookReadService;
 use App\Services\Manga\ArtbookWriteService;
 
@@ -82,16 +81,11 @@ final class ArtbookAjaxController extends Controller
         string $slug,
         int $numero
     ): never {
-        $artbook = $this->resolveArtbookOrFail(
-            $slug,
-            $numero
-        );
-
         $readStatus = $this->binaryStatusInput('readStatus');
 
         $result = $this->artbookWriteService->updateReadStatus(
-            $artbook->slug,
-            $artbook->numero,
+            $slug,
+            $numero,
             $readStatus
         );
 
@@ -107,34 +101,11 @@ final class ArtbookAjaxController extends Controller
         string $slug,
         int $numero
     ): never {
-        $artbook = $this->resolveArtbookOrFail(
+        $result = $this->artbookWriteService->delete(
             $slug,
             $numero
-        );
-
-        $result = $this->artbookWriteService->delete(
-            $artbook->slug,
-            $artbook->numero
         );
 
         $this->jsonResult($result);
-    }
-
-
-    // =========================================
-    // HELPERS
-    // =========================================
-
-    private function resolveArtbookOrFail(
-        string $slug,
-        int $numero
-    ): ArtbookData {
-        return $this->artbookReadService->one(
-            $slug,
-            $numero
-        )
-        ?? throw new NotFoundException(
-            'Artbook introuvable'
-        );
     }
 }

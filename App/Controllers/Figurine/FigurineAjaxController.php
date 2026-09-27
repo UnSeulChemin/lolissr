@@ -6,7 +6,6 @@ namespace App\Controllers\Figurine;
 
 use App\Controllers\Controller;
 use App\DTO\Common\ServiceResult;
-use App\DTO\Figurine\Responses\FigurineData;
 use App\Services\Figurine\FigurineReadService;
 use App\Services\Figurine\FigurineWriteService;
 
@@ -76,15 +75,10 @@ final class FigurineAjaxController extends Controller
         int $numero
     ): never
     {
-        $figurine = $this->resolveFigurineOrFail(
-            $slug,
-            $numero
-        );
-
         $collectStatus = $this->binaryStatusInput('collectStatus');
 
         $result = $this->figurineWriteService->updateCollectStatus(
-            $figurine->slug,
+            $slug,
             $numero,
             $collectStatus
         );
@@ -103,15 +97,15 @@ final class FigurineAjaxController extends Controller
         int $numero
     ): never
     {
-        $figurine = $this->resolveFigurineOrFail(
+        $result = $this->figurineWriteService->delete(
             $slug,
             $numero
         );
 
-        $result = $this->figurineWriteService->delete(
-            $figurine->slug,
-            $numero
-        );
+        if (! $result->success)
+        {
+            $this->jsonResult($result);
+        }
 
         $this->jsonResult(
             ServiceResult::success(
@@ -129,29 +123,4 @@ final class FigurineAjaxController extends Controller
         );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | HELPERS
-    |--------------------------------------------------------------------------
-    */
-
-    private function resolveFigurineOrFail(
-        string $slug,
-        int $numero
-    ): FigurineData
-    {
-        $figurine = $this->figurineReadService->one(
-            $slug,
-            $numero
-        );
-
-        if ($figurine === null)
-        {
-            throw new NotFoundException(
-                'Figurine introuvable'
-            );
-        }
-
-        return $figurine;
-    }
 }

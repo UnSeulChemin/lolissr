@@ -6,7 +6,6 @@ namespace App\Controllers\Peluche;
 
 use App\Controllers\Controller;
 use App\DTO\Common\ServiceResult;
-use App\DTO\Peluche\Responses\PelucheData;
 use App\Services\Peluche\PelucheReadService;
 use App\Services\Peluche\PelucheWriteService;
 
@@ -76,15 +75,10 @@ final class PelucheAjaxController extends Controller
         int $numero
     ): never
     {
-        $peluche = $this->resolvePelucheOrFail(
-            $slug,
-            $numero
-        );
-
         $collectStatus = $this->binaryStatusInput('collectStatus');
 
         $result = $this->pelucheWriteService->updateCollectStatus(
-            $peluche->slug,
+            $slug,
             $numero,
             $collectStatus
         );
@@ -103,15 +97,15 @@ final class PelucheAjaxController extends Controller
         int $numero
     ): never
     {
-        $peluche = $this->resolvePelucheOrFail(
+        $result = $this->pelucheWriteService->delete(
             $slug,
             $numero
         );
 
-        $result = $this->pelucheWriteService->delete(
-            $peluche->slug,
-            $numero
-        );
+        if (! $result->success)
+        {
+            $this->jsonResult($result);
+        }
 
         $this->jsonResult(
             ServiceResult::success(
@@ -129,29 +123,4 @@ final class PelucheAjaxController extends Controller
         );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | HELPERS
-    |--------------------------------------------------------------------------
-    */
-
-    private function resolvePelucheOrFail(
-        string $slug,
-        int $numero
-    ): PelucheData
-    {
-        $peluche = $this->pelucheReadService->one(
-            $slug,
-            $numero
-        );
-
-        if ($peluche === null)
-        {
-            throw new NotFoundException(
-                'Peluche introuvable'
-            );
-        }
-
-        return $peluche;
-    }
 }

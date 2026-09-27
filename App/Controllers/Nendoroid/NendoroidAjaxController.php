@@ -6,7 +6,6 @@ namespace App\Controllers\Nendoroid;
 
 use App\Controllers\Controller;
 use App\DTO\Common\ServiceResult;
-use App\DTO\Nendoroid\Responses\NendoroidData;
 use App\Services\Nendoroid\NendoroidReadService;
 use App\Services\Nendoroid\NendoroidWriteService;
 
@@ -76,15 +75,10 @@ final class NendoroidAjaxController extends Controller
         int $numero
     ): never
     {
-        $nendoroid = $this->resolveNendoroidOrFail(
-            $slug,
-            $numero
-        );
-
         $collectStatus = $this->binaryStatusInput('collectStatus');
 
         $result = $this->nendoroidWriteService->updateCollectStatus(
-            $nendoroid->slug,
+            $slug,
             $numero,
             $collectStatus
         );
@@ -103,15 +97,15 @@ final class NendoroidAjaxController extends Controller
         int $numero
     ): never
     {
-        $nendoroid = $this->resolveNendoroidOrFail(
+        $result = $this->nendoroidWriteService->delete(
             $slug,
             $numero
         );
 
-        $result = $this->nendoroidWriteService->delete(
-            $nendoroid->slug,
-            $numero
-        );
+        if (! $result->success)
+        {
+            $this->jsonResult($result);
+        }
 
         $this->jsonResult(
             ServiceResult::success(
@@ -129,29 +123,4 @@ final class NendoroidAjaxController extends Controller
         );
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | HELPERS
-    |--------------------------------------------------------------------------
-    */
-
-    private function resolveNendoroidOrFail(
-        string $slug,
-        int $numero
-    ): NendoroidData
-    {
-        $nendoroid = $this->nendoroidReadService->one(
-            $slug,
-            $numero
-        );
-
-        if ($nendoroid === null)
-        {
-            throw new NotFoundException(
-                'Nendoroid introuvable'
-            );
-        }
-
-        return $nendoroid;
-    }
 }

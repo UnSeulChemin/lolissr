@@ -6,22 +6,16 @@ namespace App\Controllers\Manga;
 
 use App\Controllers\Controller;
 use App\DTO\Common\ServiceResult;
-use App\DTO\Manga\Inputs\MangaUpdateNoteDTO;
-use App\DTO\Manga\Responses\MangaShowData;
+use App\Http\Requests\Manga\MangaUpdateNoteRequest;
 use App\Services\Manga\MangaReadService;
 use App\Services\Manga\MangaWriteService;
 
 use Framework\Exceptions\NotFoundException;
-use Framework\Exceptions\ValidationException;
 use Framework\Http\Request;
 
 final class MangaAjaxController extends Controller
 {
     private const SERIES_PATH = 'manga/series';
-
-    private const MIN_NOTE = 1;
-
-    private const MAX_NOTE = 5;
 
     public function __construct(
         private readonly MangaReadService $mangaReadService,
@@ -87,63 +81,18 @@ final class MangaAjaxController extends Controller
     // =========================================
 
     public function updateNote(
+        MangaUpdateNoteRequest $request,
         string $slug,
         int $numero
     ): never {
-        $data = $this->resolveMangaOrFail(
+        $this->validateRequest($request);
+
+        $this->jsonResult($this->mangaWriteService->updateNote(
             $slug,
-            $numero
-        );
-
-        $jacquette = (int) $this->request->input(
-            'jacquette',
-            0
-        );
-
-        $livreNote = (int) $this->request->input(
-            'livre_note',
-            0
-        );
-
-        $this->validateNote(
-            $jacquette,
-            'jacquette'
-        );
-
-        $this->validateNote(
-            $livreNote,
-            'livre_note'
-        );
-
-        $dto = MangaUpdateNoteDTO::fromArray(
-            [
-                'jacquette' => $jacquette,
-                'livre_note' => $livreNote,
-            ]
-        );
-
-        $result = $this->mangaWriteService->updateNote(
-            $data->manga->slug,
             $numero,
-            $dto
-        );
-
-        $this->jsonResult(
-            ServiceResult::success(
-                message: $result->message,
-                data: [
-                    ...$result->data,
-                    'notes' => [
-                        'jacquette' => $jacquette,
-                        'livreNote' => $livreNote,
-                        'note' => $jacquette + $livreNote,
-                    ],
-                ],
-                status: $result->status
-            )
-        );
+            $request->dto()
+        ));
     }
-
 
     // =========================================
     // UPDATE READ STATUS
@@ -153,15 +102,10 @@ final class MangaAjaxController extends Controller
         string $slug,
         int $numero
     ): never {
-        $data = $this->resolveMangaOrFail(
-            $slug,
-            $numero
-        );
-
         $readStatus = $this->binaryStatusInput('readStatus');
 
         $result = $this->mangaWriteService->updateReadStatus(
-            $data->manga->slug,
+            $slug,
             $numero,
             $readStatus
         );
@@ -178,22 +122,22 @@ final class MangaAjaxController extends Controller
         string $slug,
         int $numero
     ): never {
-        $data = $this->resolveMangaOrFail(
+        $result = $this->mangaWriteService->delete(
             $slug,
             $numero
         );
 
-        $result = $this->mangaWriteService->delete(
-            $data->manga->slug,
-            $numero
-        );
+        if (! $result->success)
+        {
+            $this->jsonResult($result);
+        }
 
         $seriesStillExists = $this->mangaReadService->seriesExists(
-            $data->manga->slug
+            $slug
         );
 
         $redirect = $this->buildRedirectPath(
-            $data->manga->slug,
+            $slug,
             $seriesStillExists
         );
 
@@ -223,41 +167,12 @@ final class MangaAjaxController extends Controller
                 '%s/%s/%s',
                 $this->baseUri,
                 self::SERIES_PATH,
-                rawurlencode($slug)
+                rawurlencode(\Framework\Support\Str::slug($slug))
             )
             : sprintf(
                 '%s/%s',
                 $this->baseUri,
                 self::SERIES_PATH
             );
-    }
-
-
-    private function validateNote(
-        int $note,
-        string $field
-    ): void {
-        if ($note < self::MIN_NOTE || $note > self::MAX_NOTE)
-        {
-            throw new ValidationException(
-                [
-                    $field => 'Note invalide',
-                ]
-            );
-        }
-    }
-
-
-    private function resolveMangaOrFail(
-        string $slug,
-        int $numero
-    ): MangaShowData {
-        return $this->mangaReadService->one(
-            $slug,
-            $numero
-        )
-        ?? throw new NotFoundException(
-            'Manga introuvable'
-        );
     }
 }
