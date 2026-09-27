@@ -220,15 +220,32 @@ final class MangaRepository extends Model
         return $statement !== false && $statement->rowCount() === 1;
     }
 
-    /** @return list<Manga> */
-    public function lockSeries(string $slug): array
+    public function lockSeries(string $slug): void
+    {
+        if (! $this->db->inTransaction())
+        {
+            throw new \LogicException('Series locks require a transaction.');
+        }
+
+        $statement = $this->query(
+            "SELECT id FROM {$this->table()} WHERE slug = :slug ORDER BY id FOR UPDATE",
+            ['slug' => $this->normalizeSlug($slug)]
+        );
+        if ($statement === false)
+        {
+            throw new \RuntimeException('Impossible de verrouiller la série.');
+        }
+        $statement->closeCursor();
+    }
+
+    public function claimSeriesReward(string $slug): bool
     {
         if (! $this->db->inTransaction())
         {
             throw new \LogicException('Series rewards must be claimed inside a transaction.');
         }
 
-        return $this->fetchAll(
+        $mangas = $this->fetchAll(
             "
             SELECT id, numero, lu, statut, xp_series_rewarded
 
@@ -245,12 +262,6 @@ final class MangaRepository extends Model
             ],
             Manga::class
         );
-    }
-
-    public function claimSeriesReward(string $slug): bool
-    {
-        $mangas = $this->lockSeries($slug);
-
         if ($mangas === [])
         {
             return false;

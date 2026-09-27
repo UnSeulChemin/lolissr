@@ -79,6 +79,20 @@ final class ChinoisVocabulaireRepository extends Model
         string $traduction,
         string $exemple
     ): bool {
+        if (! $this->db->inTransaction())
+        {
+            throw new \LogicException('Vocabulary updates require a transaction.');
+        }
+
+        $current = $this->fetchOne(
+            "SELECT id FROM {$this->table()} WHERE id = :id FOR UPDATE",
+            ['id' => $id]
+        );
+        if ($current === null)
+        {
+            throw new \Framework\Exceptions\NotFoundException('Vocabulaire introuvable');
+        }
+
         return $this->updateById($id, [
             'langue' => trim($langue),
             'mot' => trim($mot),

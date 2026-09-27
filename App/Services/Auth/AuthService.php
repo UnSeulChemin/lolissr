@@ -16,7 +16,7 @@ final class AuthService implements AuthenticationInterface
     private const USERNAME_MAX_LENGTH = 50;
 
     private const PASSWORD_MIN_LENGTH = 6;
-    private const PASSWORD_MAX_LENGTH = 1024;
+    private const PASSWORD_MAX_BYTES = 72;
 
     private bool $userResolved = false;
 
@@ -77,7 +77,7 @@ final class AuthService implements AuthenticationInterface
 
         $user = $this->userRepository->findByUsername($username);
 
-        if ($user === null || ! password_verify($password, $user->password))
+        if (! $this->hasValidPassword($password) || $user === null || ! password_verify($password, $user->password))
         {
             if ($this->loginThrottleService->recordFailure($username, $ipAddress))
             {
@@ -146,12 +146,19 @@ final class AuthService implements AuthenticationInterface
     private function hasValidCredentials(string $username, string $password): bool
     {
         $usernameLength = mb_strlen($username);
-        $passwordLength = mb_strlen($password);
 
         return $usernameLength >= 1
             && $usernameLength <= self::USERNAME_MAX_LENGTH
-            && $passwordLength >= self::PASSWORD_MIN_LENGTH
-            && $passwordLength <= self::PASSWORD_MAX_LENGTH;
+            && mb_strlen($password) >= self::PASSWORD_MIN_LENGTH
+            && $this->hasValidPassword($password);
+    }
+
+    private function hasValidPassword(string $password): bool
+    {
+        // Bcrypt only uses the first 72 bytes, including for multibyte text.
+        return $password !== ''
+            && strlen($password) <= self::PASSWORD_MAX_BYTES
+            && ! str_contains($password, "\0");
     }
 
     // =========================================

@@ -36,12 +36,17 @@ final class AuthController extends Controller
 
     public function authenticate(): never
     {
-        $username = (string) $this->request->input('username');
+        $username = $this->request->input('username');
+        $password = $this->request->input('password');
+        if (! is_string($username) || ! is_string($password))
+        {
+            $this->redirectWithError('connexion', 'Identifiants invalides.');
+        }
         $ipAddress = (string) ($_SERVER['REMOTE_ADDR'] ?? 'unknown');
 
         $result = $this->authService->login(
             $username,
-            (string) $this->request->input('password'),
+            $password,
             $ipAddress
         );
 
@@ -88,9 +93,16 @@ final class AuthController extends Controller
 
     public function store(): never
     {
+        $username = $this->request->input('username');
+        $password = $this->request->input('password');
+        if (! is_string($username) || ! is_string($password))
+        {
+            $this->redirectWithError('inscription', 'Identifiants invalides.');
+        }
+
         $success = $this->authService->register(
-            (string) $this->request->input('username'),
-            (string) $this->request->input('password')
+            $username,
+            $password
         );
 
         if (! $success)
