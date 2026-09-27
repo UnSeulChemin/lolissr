@@ -55,15 +55,16 @@ final class ChinoisSearchRepository extends Model
 
             FROM chinois_grammaire
 
-            WHERE titre LIKE :search
-            OR structure LIKE :search
+            WHERE titre LIKE :search_titre
+            OR structure LIKE :search_structure
 
             ORDER BY id DESC
 
             LIMIT 20
             ",
             [
-                'search' => $like,
+                'search_titre' => $like,
+                'search_structure' => $like,
             ]
         );
 
@@ -90,15 +91,16 @@ final class ChinoisSearchRepository extends Model
 
             FROM chinois_vocabulaire
 
-            WHERE mot LIKE :search
-            OR pinyin LIKE :search
+            WHERE mot LIKE :search_mot
+            OR pinyin LIKE :search_pinyin
 
             ORDER BY id DESC
 
             LIMIT 20
             ",
             [
-                'search' => $like,
+                'search_mot' => $like,
+                'search_pinyin' => $like,
             ]
         );
 

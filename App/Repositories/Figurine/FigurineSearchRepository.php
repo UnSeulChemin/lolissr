@@ -51,6 +51,8 @@ final class FigurineSearchRepository extends Model
      */
     private function fetchSearchResults(string $search): array
     {
+        $slug = $this->slugSearch($search);
+
         $sql = "
             SELECT slug, numero, origin, waifu, thumbnail, extension
             FROM {$this->table()}
@@ -68,7 +70,7 @@ final class FigurineSearchRepository extends Model
             [
                 'search_waifu' => "%{$search}%",
                 'search_origin' => "%{$search}%",
-                'search_slug' => '%' . $this->slugSearch($search) . '%',
+                'search_slug' => $slug !== '' ? '%' . $slug . '%' : null,
             ],
             Figurine::class,
         );

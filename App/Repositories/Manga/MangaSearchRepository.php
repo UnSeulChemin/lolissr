@@ -89,7 +89,11 @@ final class MangaSearchRepository extends Model
     {
         $sql = "SELECT slug, numero, livre, thumbnail, extension, note, lu, editeur, statut FROM {$this->table()} WHERE (livre LIKE :search_livre OR slug LIKE :search_slug)";
 
-        $params = ['search_livre' => "%{$title}%", 'search_slug' => '%' . $this->slugSearch($title) . '%'];
+        $slug = $this->slugSearch($title);
+        $params = [
+            'search_livre' => "%{$title}%",
+            'search_slug' => $slug !== '' ? '%' . $slug . '%' : null,
+        ];
 
         if ($numero !== null)
         {

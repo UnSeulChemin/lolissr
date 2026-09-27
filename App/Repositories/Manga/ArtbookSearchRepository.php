@@ -51,6 +51,8 @@ final class ArtbookSearchRepository extends Model
      */
     private function fetchSearchResults(string $search): array
     {
+        $slug = $this->slugSearch($search);
+
         $sql = "
             SELECT slug, numero, artbook, auteur, serie, thumbnail, extension, company
             FROM {$this->table()}
@@ -70,7 +72,7 @@ final class ArtbookSearchRepository extends Model
                 'search_artbook' => "%{$search}%",
                 'search_auteur' => "%{$search}%",
                 'search_serie' => "%{$search}%",
-                'search_slug' => '%' . $this->slugSearch($search) . '%',
+                'search_slug' => $slug !== '' ? '%' . $slug . '%' : null,
             ],
             Artbook::class,
         );
