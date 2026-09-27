@@ -1,3 +1,5 @@
+import { mountProfileModal } from './profile-modal-lifecycle.js';
+
 // =========================================
 // BANNER MODAL
 // =========================================
@@ -53,21 +55,7 @@ export function bannerModal(banners)
                 </div>
             `;
 
-            document.body.append(overlay);
-
-            document.body.style.overflow =
-                'hidden';
-
-            const close =
-                (result = null) =>
-                {
-                    document.body.style.overflow =
-                        '';
-
-                    overlay.remove();
-
-                    resolve(result);
-                };
+            const close = mountProfileModal(overlay, resolve);
 
             overlay
                 .querySelectorAll('.banner-modal-item')

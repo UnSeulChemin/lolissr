@@ -78,11 +78,9 @@ export async function renderPage(
         queueMicrotask(
             () =>
             {
-                document
-                    .querySelector(
-                        window.location.hash,
-                    )
-                    ?.scrollIntoView();
+                let id = window.location.hash.slice(1);
+                try { id = decodeURIComponent(id); } catch { /* Keep malformed escapes literal. */ }
+                document.getElementById(id)?.scrollIntoView();
             },
         );
 

@@ -1,3 +1,5 @@
+let searchVersion = 0;
+let lastQuery = null;
 // =========================================
 // SEARCH CONTROLLER
 // =========================================
@@ -38,7 +40,7 @@ import {
 // =========================================
 
 const SEARCH_DELAY =
-    75;
+    200;
 
 // =========================================
 // STATE
@@ -94,6 +96,9 @@ export function initSearchController()
         'input',
         () =>
         {
+            searchVersion++;
+            abortController?.abort();
+            lastQuery = null;
             clearTimeout(
                 debounceTimer,
             );
@@ -200,8 +205,10 @@ async function handleSearch(
         return;
     }
 
+    if (query === lastQuery) return;
     abortController?.abort();
-
+    lastQuery = query;
+    const version = ++searchVersion;
     abortController =
         new AbortController();
 
@@ -258,6 +265,8 @@ async function handleSearch(
 
             findSearchShortcuts(query),
         ]);
+
+        if (version !== searchVersion || searchInput.value !== rawValue) return;
 
         renderResults({
             mangas,
@@ -486,6 +495,9 @@ function resetSearch(
     searchDropdown,
 )
 {
+    clearTimeout(debounceTimer);
+    searchVersion++;
+    lastQuery = null;
     abortController?.abort();
 
     activeIndex =

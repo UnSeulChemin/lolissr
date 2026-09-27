@@ -1,3 +1,5 @@
+import { mountProfileModal } from './profile-modal-lifecycle.js';
+
 export function titleModal(
     titles,
 )
@@ -43,27 +45,7 @@ export function titleModal(
                 </div>
             `;
 
-            document.body.append(
-                overlay,
-            );
-
-            document.body.style.overflow =
-                'hidden';
-
-            const close =
-                (
-                    result = null,
-                ) =>
-                {
-                    document.body.style.overflow =
-                        '';
-
-                    overlay.remove();
-
-                    resolve(
-                        result,
-                    );
-                };
+            const close = mountProfileModal(overlay, resolve);
 
             overlay
                 .querySelectorAll(

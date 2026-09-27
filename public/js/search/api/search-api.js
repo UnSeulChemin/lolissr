@@ -50,7 +50,7 @@ export async function fetchSearchResults(
             error?.name === 'AbortError'
             || signal?.aborted
         ) {
-            return [];
+            throw new DOMException('Search aborted', 'AbortError');
         }
 
         debugError(

@@ -1,3 +1,5 @@
+import { registerCleanup } from '../router/router-cleanup.js';
+
 // =========================================
 // PROFILE CUSTOMIZATION
 // =========================================
@@ -39,10 +41,12 @@ import {
 // OPEN TITLE MODAL
 // =========================================
 
-async function openTitleModal()
+async function openTitleModal(signal)
 {
     const data =
-        await get(appUrl('profil/ajax/titles'));
+        await get(appUrl('profil/ajax/titles'), { signal });
+
+    if (signal.aborted) return;
 
     const title =
         await titleModal(data.data.titles);
@@ -89,10 +93,12 @@ async function openTitleModal()
 // OPEN AVATAR MODAL
 // =========================================
 
-async function openAvatarModal()
+async function openAvatarModal(signal)
 {
     const data =
-        await get(appUrl('profil/ajax/avatars'));
+        await get(appUrl('profil/ajax/avatars'), { signal });
+
+    if (signal.aborted) return;
 
     const avatar =
         await avatarModal(data.data.avatars);
@@ -145,10 +151,12 @@ async function openAvatarModal()
 // OPEN BANNER MODAL
 // =========================================
 
-async function openBannerModal()
+async function openBannerModal(signal)
 {
     const data =
-        await get(appUrl('profil/ajax/banners'));
+        await get(appUrl('profil/ajax/banners'), { signal });
+
+    if (signal.aborted) return;
 
     const banner =
         await bannerModal(data.data.banners);
@@ -177,10 +185,12 @@ async function openBannerModal()
 // OPEN FRAME MODAL
 // =========================================
 
-async function openFrameModal()
+async function openFrameModal(signal)
 {
     const data =
-        await get(appUrl('profil/ajax/frames'));
+        await get(appUrl('profil/ajax/frames'), { signal });
+
+    if (signal.aborted) return;
 
     const avatar =
         document.querySelector('.profile-avatar-image');
@@ -217,43 +227,29 @@ async function openFrameModal()
 
 export function initProfileCustomization()
 {
-    document
-        .querySelector('.js-profile-title')
-        ?.addEventListener(
-            'click',
-            () =>
+    const controller = new AbortController();
+    let busy = false;
+    registerCleanup(() => controller.abort());
+    for (const [selector, open] of [
+        ['.js-profile-title', openTitleModal],
+        ['.js-profile-avatar', openAvatarModal],
+        ['.js-profile-banner', openBannerModal],
+        ['.js-profile-frame', openFrameModal],
+    ])
+    {
+        document.querySelector(selector)?.addEventListener('click', async () =>
+        {
+            if (busy) return;
+            busy = true;
+            try { await open(controller.signal); }
+            catch (error)
             {
-                void openTitleModal();
-            },
-        );
-
-    document
-        .querySelector('.js-profile-avatar')
-        ?.addEventListener(
-            'click',
-            () =>
-            {
-                void openAvatarModal();
-            },
-        );
-
-    document
-        .querySelector('.js-profile-banner')
-        ?.addEventListener(
-            'click',
-            () =>
-            {
-                void openBannerModal();
-            },
-        );
-
-    document
-        .querySelector('.js-profile-frame')
-        ?.addEventListener(
-            'click',
-            () =>
-            {
-                void openFrameModal();
-            },
-        );
+                if (!controller.signal.aborted && error?.name !== 'AbortError')
+                {
+                    showToast('Impossible de modifier le profil. Réessaie.', 'error');
+                }
+            }
+            finally { busy = false; }
+        }, { signal: controller.signal });
+    }
 }
