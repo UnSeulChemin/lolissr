@@ -37,61 +37,9 @@ final class ArtbookStatsRepository extends Model
 
     protected string $table = 'artbook';
 
-    public function countAuthors(): int
-    {
-        return (int) $this->fetchSingleValue(
-            "
-            SELECT COUNT(DISTINCT auteur) AS total
-
-            FROM {$this->table()}
-
-            WHERE auteur IS NOT NULL
-            AND auteur <> ''
-            ",
-            'total'
-        );
-    }
-
     public function countAll(): int
     {
         return $this->countRows();
-    }
-
-    public function countRead(): int
-    {
-        return (int) $this->fetchSingleValue(
-            "
-            SELECT COUNT(*) AS total
-
-            FROM {$this->table()}
-
-            WHERE lu = 1
-            ",
-            'total',
-        );
-    }
-
-    public function countRewardedArtbooks(): int
-    {
-        return (int) $this->fetchSingleValue(
-            "SELECT COUNT(*) AS total FROM {$this->table()} WHERE xp_read_rewarded = 1",
-            'total'
-        );
-    }
-
-    public function countSeries(): int
-    {
-        return (int) $this->fetchSingleValue(
-            "
-            SELECT COUNT(DISTINCT serie) AS total
-
-            FROM {$this->table()}
-
-            WHERE serie IS NOT NULL
-            AND serie <> ''
-            ",
-            'total'
-        );
     }
 
     public function findLatest(): ?ArtbookStatsData

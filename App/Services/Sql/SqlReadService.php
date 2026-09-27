@@ -14,7 +14,7 @@ final readonly class SqlReadService
     }
 
     /**
-     * @return list<object>
+     * @return array{result: list<object>, truncated: bool, limit: int}
      */
     public function execute(string $sql): array
     {

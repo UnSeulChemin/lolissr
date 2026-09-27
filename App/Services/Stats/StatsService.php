@@ -27,34 +27,9 @@ final readonly class StatsService
     |--------------------------------------------------------------------------
     */
 
-    public function totalMangaTomes(): int
-    {
-        return $this->mangaStatsRepository->countAllTomes();
-    }
-
-    public function totalMangaSeries(): int
-    {
-        return $this->mangaStatsRepository->countSeries();
-    }
-
-    public function totalMangaRead(): int
-    {
-        return $this->mangaStatsRepository->countRead();
-    }
-
-    public function averageMangaNote(): ?float
-    {
-        return $this->mangaStatsRepository->averageNote();
-    }
-
     public function lastMangaTome(): ?MangaStatsData
     {
         return $this->mangaStatsRepository->findLastAddedDto();
-    }
-
-    public function longestMangaSeries(): ?MangaStatsData
-    {
-        return $this->mangaStatsRepository->findLongestSeriesDto();
     }
 
     /**
@@ -237,9 +212,6 @@ final readonly class StatsService
 
             topLongestSeries: $topLongestMangaSeries,
 
-            lowRatedMangas: [],
-            lowJacquetteMangas: [],
-            lowLivreStateMangas: [],
 
             // Artbooks
             totalArtbooks: $totalArtbooks,

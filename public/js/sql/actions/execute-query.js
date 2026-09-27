@@ -123,6 +123,7 @@ function renderError(
 function renderResult(
     sql,
     result,
+    truncated = false,
 )
 {
     const container =
@@ -266,7 +267,7 @@ function renderResult(
             </h2>
 
             <p class="sql-result-count">
-                ${result.length} ligne(s)
+                ${result.length} ligne(s)${truncated ? ' — Résultat tronqué. Affine la requête ou utilise LIMIT/OFFSET pour consulter la suite.' : ''}
             </p>
 
             <div class="sql-table-wrapper">
@@ -423,6 +424,7 @@ async function executeQuery(
         renderResult(
             sql,
             result,
+            data.data?.truncated === true,
         );
 
         debug(

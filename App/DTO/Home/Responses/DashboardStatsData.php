@@ -12,9 +12,6 @@ final readonly class DashboardStatsData
 {
     /**
      * @param list<MangaStatsData> $topLongestSeries
-     * @param list<MangaStatsData> $lowRatedMangas
-     * @param list<MangaStatsData> $lowJacquetteMangas
-     * @param list<MangaStatsData> $lowLivreStateMangas
      */
     public function __construct(
         // Chinois
@@ -46,9 +43,6 @@ final readonly class DashboardStatsData
         public ?MangaStatsData $longestSeries,
 
         public array $topLongestSeries,
-        public array $lowRatedMangas,
-        public array $lowJacquetteMangas,
-        public array $lowLivreStateMangas,
 
         // Artbooks
         public int $totalArtbooks,
@@ -97,21 +91,6 @@ final readonly class DashboardStatsData
             'topLongestSeries' => array_map(
                 static fn (MangaStatsData $manga): array => $manga->toArray(),
                 $this->topLongestSeries
-            ),
-
-            'lowRatedMangas' => array_map(
-                static fn (MangaStatsData $manga): array => $manga->toArray(),
-                $this->lowRatedMangas
-            ),
-
-            'lowJacquetteMangas' => array_map(
-                static fn (MangaStatsData $manga): array => $manga->toArray(),
-                $this->lowJacquetteMangas
-            ),
-
-            'lowLivreStateMangas' => array_map(
-                static fn (MangaStatsData $manga): array => $manga->toArray(),
-                $this->lowLivreStateMangas
             ),
 
             // Artbooks
@@ -168,18 +147,6 @@ final readonly class DashboardStatsData
 
             topLongestSeries: self::hydrateMangaList(
                 $data['topLongestSeries'] ?? []
-            ),
-
-            lowRatedMangas: self::hydrateMangaList(
-                $data['lowRatedMangas'] ?? []
-            ),
-
-            lowJacquetteMangas: self::hydrateMangaList(
-                $data['lowJacquetteMangas'] ?? []
-            ),
-
-            lowLivreStateMangas: self::hydrateMangaList(
-                $data['lowLivreStateMangas'] ?? []
             ),
 
             // Artbooks

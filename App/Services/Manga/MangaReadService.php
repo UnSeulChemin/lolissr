@@ -145,20 +145,37 @@ final readonly class MangaReadService
     |--------------------------------------------------------------------------
     */
 
-    /**
-     * @return list<MangaSeriesItemData>
-     */
-    public function notes(): array
+    public function notes(int $page = 1): ?MangaSeriesData
     {
-        return array_map($this->mapSeriesItem(...), $this->collectionRepository->findSeriesWithoutPerfectNote());
+        return $this->filteredSeries(true, $page);
     }
 
-    /**
-     * @return list<MangaSeriesItemData>
-     */
-    public function aLire(): array
+    public function aLire(int $page = 1): ?MangaSeriesData
     {
-        return array_map($this->mapSeriesItem(...), $this->collectionRepository->findIncompleteSeries());
+        return $this->filteredSeries(false, $page);
+    }
+
+    private function filteredSeries(bool $notes, int $page): ?MangaSeriesData
+    {
+        $page = max(1, $page);
+        $perPage = max(1, App::pagination());
+        $total = $this->collectionRepository->countFilteredSeries($notes);
+        $totalPages = max(1, (int) ceil($total / $perPage));
+
+        if ($page > $totalPages) return null;
+
+        $mangas = $total === 0 ? [] : ($notes
+            ? $this->collectionRepository->findSeriesWithoutPerfectNote($perPage, $page)
+            : $this->collectionRepository->findIncompleteSeries($perPage, $page));
+
+        return new MangaSeriesData(
+            mangas: array_map($this->mapSeriesItem(...), $mangas),
+            slugFilter: null,
+            currentPage: $page,
+            totalSeries: $total,
+            perPage: $perPage,
+            totalPages: $totalPages
+        );
     }
 
     /*

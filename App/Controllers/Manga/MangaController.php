@@ -89,26 +89,36 @@ final class MangaController extends Controller
         );
     }
 
-    public function notes(): never
+    public function notes(int $page = 1): never
     {
+        $data = $this->mangaReadService->notes($page);
+        if ($data === null) throw new NotFoundException('Page introuvable');
+
         $this->title = 'Manga | Notes';
 
         $this->render(
             'pages/manga/series/notes',
             [
-                'mangas' => $this->mangaReadService->notes(),
+                'mangas' => $data->mangas,
+                'currentPage' => $data->currentPage,
+                'totalPages' => $data->totalPages,
             ]
         );
     }
 
-    public function aLire(): never
+    public function aLire(int $page = 1): never
     {
+        $data = $this->mangaReadService->aLire($page);
+        if ($data === null) throw new NotFoundException('Page introuvable');
+
         $this->title = 'Manga | À lire';
 
         $this->render(
             'pages/manga/series/a-lire',
             [
-                'mangas' => $this->mangaReadService->aLire(),
+                'mangas' => $data->mangas,
+                'currentPage' => $data->currentPage,
+                'totalPages' => $data->totalPages,
             ]
         );
     }

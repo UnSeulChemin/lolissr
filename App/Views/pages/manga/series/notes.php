@@ -6,6 +6,8 @@ use App\DTO\Manga\Responses\MangaSeriesItemData;
 
 /** @var list<MangaSeriesItemData> $mangas */
 
+$paginationPath = 'manga/series/notes';
+
 ?>
 
 <section class="layout-container dashboard-page">
@@ -33,6 +35,8 @@ use App\DTO\Manga\Responses\MangaSeriesItemData;
             ?>
 
         <?php endif; ?>
+
+        <?php require view_path('pages/manga/series/pagination.php'); ?>
 
     </div>
 

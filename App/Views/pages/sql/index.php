@@ -154,9 +154,10 @@ if ($resultCount > 0)
 
                                 <p class="sql-result-count">
 
-                                    <?= $resultCount ?>
-
-                                    ligne(s)
+                                    <?= $resultCount ?> ligne(s)
+                                    <?php if ($truncated ?? false): ?>
+                                        — Résultat tronqué. Affine la requête ou utilise LIMIT/OFFSET pour consulter la suite.
+                                    <?php endif; ?>
 
                                 </p>
 

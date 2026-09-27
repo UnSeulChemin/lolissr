@@ -42,56 +42,6 @@ final class MangaStatsRepository extends Model
 
     protected string $table = 'manga';
 
-    public function countAllTomes(): int
-    {
-        return (int) $this->fetchSingleValue("SELECT COUNT(*) AS total FROM {$this->table()}", 'total');
-    }
-
-    public function countSeries(): int
-    {
-        return (int) $this->fetchSingleValue("SELECT COUNT(DISTINCT slug) AS total FROM {$this->table()}", 'total');
-    }
-
-    public function countRead(): int
-    {
-        return (int) $this->fetchSingleValue("SELECT COUNT(*) AS total FROM {$this->table()} WHERE lu = 1", 'total');
-    }
-
-    public function countRewardedTomes(): int
-    {
-        return (int) $this->fetchSingleValue(
-            "SELECT COUNT(*) AS total FROM {$this->table()} WHERE xp_read_rewarded = 1",
-            'total'
-        );
-    }
-
-    public function countRewardedSeries(): int
-    {
-        return (int) $this->fetchSingleValue(
-            "SELECT COUNT(DISTINCT slug) AS total FROM {$this->table()} WHERE xp_series_rewarded = 1",
-            'total'
-        );
-    }
-
-    public function averageNote(): ?float
-    {
-        $average = $this->fetchSingleValue(
-            "
-            SELECT
-                ROUND(AVG(note), 1) AS moyenne
-
-            FROM {$this->table()}
-
-            WHERE note IS NOT NULL
-            ",
-            'moyenne',
-            [],
-            null
-        );
-
-        return $average !== null ? (float) $average : null;
-    }
-
     public function findLastAdded(): ?Manga
     {
         /** @var Manga|null $manga */
@@ -118,20 +68,6 @@ final class MangaStatsRepository extends Model
 
         return $manga !== null
             ? $this->mapToStatsDto($manga, true)
-            : null;
-    }
-
-    public function findLongestSeries(): ?Manga
-    {
-        return $this->topLongestSeries(1)[0] ?? null;
-    }
-
-    public function findLongestSeriesDto(): ?MangaStatsData
-    {
-        $manga = $this->findLongestSeries();
-
-        return $manga !== null
-            ? $this->mapToStatsDto($manga)
             : null;
     }
 
@@ -227,6 +163,7 @@ final class MangaStatsRepository extends Model
                 GROUP BY slug
 
                 HAVING COUNT(*) = SUM(lu)
+                AND MAX(CASE WHEN numero = 1 AND statut = 'termine' THEN 1 ELSE 0 END) = 1
             ) completed
             ",
             'total'

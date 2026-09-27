@@ -19,6 +19,16 @@ final class MangaCollectionRepository extends Model
         'id ASC',
     ];
 
+    public function countFilteredSeries(bool $notes): int
+    {
+        $condition = $notes ? 'stats.average_note < 10' : 'stats.total_lu < stats.total';
+
+        return (int) $this->fetchSingleValue(
+            "SELECT COUNT(*) AS total FROM ({$this->statsSubQuery()}) stats WHERE {$condition}",
+            'total'
+        );
+    }
+
     public function countFirstTomes(): int
     {
         $result = $this->fetchOne(
@@ -85,8 +95,10 @@ final class MangaCollectionRepository extends Model
     /**
      * @return list<Manga>
      */
-    public function findSeriesWithoutPerfectNote(): array
+    public function findSeriesWithoutPerfectNote(int $perPage, int $page): array
     {
+        $perPage = max(1, $perPage);
+        $offset = (max(1, $page) - 1) * $perPage;
         /** @var list<Manga> $mangas */
         $mangas = $this->fetchAll(
             "
@@ -114,7 +126,8 @@ final class MangaCollectionRepository extends Model
 
             ORDER BY
                 stats.average_note ASC,
-                m.livre ASC
+                m.livre ASC, m.id ASC
+            LIMIT {$perPage} OFFSET {$offset}
             ",
             [],
             Manga::class
@@ -126,8 +139,10 @@ final class MangaCollectionRepository extends Model
     /**
      * @return list<Manga>
      */
-    public function findIncompleteSeries(): array
+    public function findIncompleteSeries(int $perPage, int $page): array
     {
+        $perPage = max(1, $perPage);
+        $offset = (max(1, $page) - 1) * $perPage;
         /** @var list<Manga> $mangas */
         $mangas = $this->fetchAll(
             "
@@ -154,7 +169,8 @@ final class MangaCollectionRepository extends Model
             AND stats.total_lu < stats.total
 
             ORDER BY
-                m.livre ASC
+                m.livre ASC, m.id ASC
+            LIMIT {$perPage} OFFSET {$offset}
             ",
             [],
             Manga::class

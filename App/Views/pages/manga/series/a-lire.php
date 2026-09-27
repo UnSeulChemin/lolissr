@@ -6,6 +6,8 @@ use App\DTO\Manga\Responses\MangaSeriesItemData;
 
 /** @var list<MangaSeriesItemData> $mangas */
 
+$paginationPath = 'manga/series/a-lire';
+
 ?>
 
 <section class="layout-container dashboard-page">
@@ -17,7 +19,7 @@ use App\DTO\Manga\Responses\MangaSeriesItemData;
             <article class="card transition-card">
 
                 <p class="home-empty u-relative u-text-center">
-                    🎉 Toutes les séries sont terminées.
+                    🎉 Tous les tomes possédés sont lus.
                 </p>
 
             </article>
@@ -33,6 +35,8 @@ use App\DTO\Manga\Responses\MangaSeriesItemData;
             ?>
 
         <?php endif; ?>
+
+        <?php require view_path('pages/manga/series/pagination.php'); ?>
 
     </div>
 

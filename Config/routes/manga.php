@@ -100,7 +100,9 @@ $router->prefix('manga')->group(function (Router $router): void
         $router->get('', [MangaController::class, 'series']);
         $router->get('page/{page:int}', [MangaController::class, 'series']);
         $router->get('notes', [MangaController::class, 'notes']);
+        $router->get('notes/page/{page:int}', [MangaController::class, 'notes']);
         $router->get('a-lire', [MangaController::class, 'aLire']);
+        $router->get('a-lire/page/{page:int}', [MangaController::class, 'aLire']);
 
         // =========================================
         // MODIFICATION

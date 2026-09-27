@@ -48,7 +48,19 @@ final class AuthService implements AuthenticationInterface
 
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-        return $this->userRepository->create($username, $passwordHash);
+        try
+        {
+            return $this->userRepository->create($username, $passwordHash);
+        }
+        catch (\PDOException $exception)
+        {
+            if ($exception->getCode() === '23000' && ($exception->errorInfo[1] ?? null) === 1062)
+            {
+                return false;
+            }
+
+            throw $exception;
+        }
     }
 
     public function login(

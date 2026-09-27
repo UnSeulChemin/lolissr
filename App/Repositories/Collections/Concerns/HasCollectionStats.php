@@ -21,25 +21,4 @@ trait HasCollectionStats
         ];
     }
 
-    public function countRewarded(): int
-    {
-        return (int) $this->fetchSingleValue(
-            "SELECT COUNT(*) AS total FROM {$this->table()} WHERE collect_rewarded = 1",
-            'total'
-        );
-    }
-
-    public function countCollected(): int
-    {
-        return (int) $this->fetchSingleValue(
-            "
-            SELECT COUNT(*) AS total
-
-            FROM {$this->table()}
-
-            WHERE collect = 1
-            ",
-            'total',
-        );
-    }
 }

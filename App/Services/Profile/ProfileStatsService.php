@@ -33,74 +33,9 @@ final readonly class ProfileStatsService
     |--------------------------------------------------------------------------
     */
 
-    public function readTomes(): int
-    {
-        return $this->mangaStatsRepository->countRead();
-    }
-
     public function completedSeries(): int
     {
         return $this->mangaStatsRepository->countCompletedSeries();
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | ARTBOOKS
-    |--------------------------------------------------------------------------
-    */
-
-    public function readArtbooks(): int
-    {
-        return $this->artbookStatsRepository->countRead();
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | FIGURINES
-    |--------------------------------------------------------------------------
-    */
-
-    public function collectedFigurines(): int
-    {
-        return $this->figurineStatsRepository->countCollected();
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | NENDOROIDS
-    |--------------------------------------------------------------------------
-    */
-
-    public function collectedNendoroids(): int
-    {
-        return $this->nendoroidStatsRepository->countCollected();
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | PELUCHES
-    |--------------------------------------------------------------------------
-    */
-
-    public function collectedPeluches(): int
-    {
-        return $this->pelucheStatsRepository->countCollected();
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | CHINESE
-    |--------------------------------------------------------------------------
-    */
-
-    public function learnedVocabulary(): int
-    {
-        return $this->vocabularyStatsRepository->countMastered();
-    }
-
-    public function learnedGrammar(): int
-    {
-        return $this->grammarStatsRepository->countMastered();
     }
 
     /*

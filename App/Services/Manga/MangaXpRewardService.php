@@ -37,18 +37,15 @@ final readonly class MangaXpRewardService
             ];
         }
 
-        if (! $this->mangaRepository->claimReadReward($manga->id))
-        {
-            return [
-                'xpEarned' => false,
-                'seriesXpEarned' => false,
-            ];
-        }
+        $xpEarned = $this->mangaRepository->claimReadReward($manga->id);
 
-        $this->userLevelService->addXp(
-            $user,
-            UserXp::READ_TOME
-        );
+        if ($xpEarned)
+        {
+            $this->userLevelService->addXp(
+                $user,
+                UserXp::READ_TOME
+            );
+        }
 
         $seriesXpEarned = false;
 
@@ -66,7 +63,7 @@ final readonly class MangaXpRewardService
         }
 
         return [
-            'xpEarned' => true,
+            'xpEarned' => $xpEarned,
             'seriesXpEarned' => $seriesXpEarned,
         ];
     }

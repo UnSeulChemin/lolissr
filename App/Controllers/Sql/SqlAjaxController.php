@@ -35,7 +35,7 @@ final class SqlAjaxController extends Controller
         {
             $result = $this->sqlReadService->execute($sql);
 
-            $this->jsonResult(ServiceResult::success(data: ['result' => $result]));
+            $this->jsonResult(ServiceResult::success(data: $result));
         }
         catch (Throwable $exception)
         {

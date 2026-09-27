@@ -42,7 +42,8 @@ final class SqlController extends Controller
 
         try
         {
-            $this->renderPage(sql: $sql, result: $this->sqlReadService->execute($sql));
+            $data = $this->sqlReadService->execute($sql);
+            $this->renderPage(sql: $sql, result: $data['result'], truncated: $data['truncated']);
         }
         catch (Throwable $exception)
         {
@@ -59,10 +60,10 @@ final class SqlController extends Controller
     /**
      * @param list<object>|null $result
      */
-    private function renderPage(string $sql = '', ?array $result = null, ?string $error = null): never
+    private function renderPage(string $sql = '', ?array $result = null, ?string $error = null, bool $truncated = false): never
     {
         $this->title = 'SQL';
 
-        $this->render('pages/sql/index', ['sql' => $sql, 'result' => $result, 'error' => $error]);
+        $this->render('pages/sql/index', ['sql' => $sql, 'result' => $result, 'error' => $error, 'truncated' => $truncated]);
     }
 }
