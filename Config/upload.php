@@ -31,9 +31,10 @@ return [
     // FORMATS
     // =========================================
 
-    'allowed_extensions' => $normalizeList(
-        (string) env('UPLOAD_ALLOWED_EXT', 'jpg,jpeg,png,webp')
-    ),
+    'allowed_extensions' => array_values(array_unique(array_map(
+        static fn (string $extension): string => $extension === 'jpeg' ? 'jpg' : $extension,
+        $normalizeList((string) env('UPLOAD_ALLOWED_EXT', 'jpg,jpeg,png,webp'))
+    ))),
 
     'allowed_mime_types' => $normalizeList(
         (string) env(

@@ -472,14 +472,26 @@ final class Cache
         if (! self::ensureDirectory()) return null;
         $lock = @fopen(self::directory() . DIRECTORY_SEPARATOR . '.metadata.lock', 'c');
         if ($lock === false) throw new \RuntimeException('Cannot open cache metadata lock.');
+        $locked = false;
+        $deadline = hrtime(true) + 2_000_000_000;
         try
         {
-            if (! flock($lock, LOCK_EX)) throw new \RuntimeException('Cannot lock cache metadata.');
+            do
+            {
+                $locked = flock($lock, LOCK_EX | LOCK_NB);
+                if ($locked) break;
+                usleep(20_000);
+            } while (hrtime(true) < $deadline);
+
+            if (! $locked)
+            {
+                throw new \RuntimeException('Cache metadata lock timed out after 2 seconds.');
+            }
             return $callback();
         }
         finally
         {
-            flock($lock, LOCK_UN);
+            if ($locked) flock($lock, LOCK_UN);
             fclose($lock);
         }
     }
