@@ -29,6 +29,7 @@ final class ChinoisGrammaireCreateRequest extends FormRequest
 
             ->required('structure')
             ->string('structure')
+            ->maxLength('structure', 255)
 
             ->nullable('abreviation')
             ->string('abreviation')
@@ -36,23 +37,26 @@ final class ChinoisGrammaireCreateRequest extends FormRequest
 
             ->required('phrase')
             ->string('phrase')
+            ->maxLength('phrase', 255)
 
             ->required('pinyin')
             ->string('pinyin')
+            ->maxLength('pinyin', 255)
 
             ->required('traduction')
             ->string('traduction')
+            ->maxLength('traduction', 255)
 
             ->required('explication')
             ->string('explication')
 
             ->required('section')
             ->string('section')
-            ->maxLength('section', 255)
+            ->maxLength('section', 100)
 
             ->required('categorie')
             ->string('categorie')
-            ->maxLength('categorie', 255);
+            ->maxLength('categorie', 100);
     }
 
     // =========================================

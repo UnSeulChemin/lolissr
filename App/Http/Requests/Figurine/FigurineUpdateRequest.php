@@ -42,7 +42,7 @@ final class FigurineUpdateRequest extends FormRequest
 
             ->nullable('commentaire')
             ->string('commentaire')
-            ->maxLength('commentaire', 1000);
+            ->maxLength('commentaire', 255);
     }
 
     // =========================================

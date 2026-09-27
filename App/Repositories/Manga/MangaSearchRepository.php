@@ -29,6 +29,13 @@ final class MangaSearchRepository extends Model
 
         if ($searchNumero !== null)
         {
+            // A number can belong to the title itself (for example Kaiju No. 8).
+            $titleMatches = $this->fetchSearchResults($search, exactTitle: true);
+            if ($titleMatches !== [])
+            {
+                return $titleMatches;
+            }
+
             return $this->fetchSearchResults($searchNumero['title'], $searchNumero['numero']);
         }
 
@@ -85,14 +92,15 @@ final class MangaSearchRepository extends Model
     /**
      * @return list<Manga>
      */
-    private function fetchSearchResults(string $title, ?int $numero = null): array
+    private function fetchSearchResults(string $title, ?int $numero = null, bool $exactTitle = false): array
     {
-        $sql = "SELECT slug, numero, livre, thumbnail, extension, note, lu, editeur, statut FROM {$this->table()} WHERE (livre LIKE :search_livre OR slug LIKE :search_slug)";
+        $operator = $exactTitle ? '=' : 'LIKE';
+        $sql = "SELECT slug, numero, livre, thumbnail, extension, note, lu, editeur, statut FROM {$this->table()} WHERE (livre {$operator} :search_livre OR slug {$operator} :search_slug)";
 
         $slug = $this->slugSearch($title);
         $params = [
-            'search_livre' => "%{$title}%",
-            'search_slug' => $slug !== '' ? '%' . $slug . '%' : null,
+            'search_livre' => $exactTitle ? $title : "%{$title}%",
+            'search_slug' => $slug !== '' ? ($exactTitle ? $slug : '%' . $slug . '%') : null,
         ];
 
         if ($numero !== null)

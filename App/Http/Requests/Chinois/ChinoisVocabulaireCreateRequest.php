@@ -37,6 +37,7 @@ final class ChinoisVocabulaireCreateRequest extends FormRequest
 
             ->required('traduction')
             ->string('traduction')
+            ->maxLength('traduction', 255)
 
             ->required('exemple')
             ->string('exemple')

@@ -44,7 +44,7 @@ final class PelucheCreateRequest extends FormRequest
 
             ->nullable('commentaire')
             ->string('commentaire')
-            ->maxLength('commentaire', 1000)
+            ->maxLength('commentaire', 255)
 
             ->fileRequired('image')
             ->fileOk('image')

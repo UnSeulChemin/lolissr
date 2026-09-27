@@ -29,7 +29,7 @@ final class MangaUpdateRequest extends FormRequest
 
             ->nullable('commentaire')
             ->string('commentaire')
-            ->maxLength('commentaire', 1000)
+            ->maxLength('commentaire', 255)
 
             ->nullable('livre_note')
             ->integer('livre_note')

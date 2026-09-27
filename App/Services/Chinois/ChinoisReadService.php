@@ -203,12 +203,37 @@ final readonly class ChinoisReadService
         }
 
         $results = [];
-
-        foreach ($sections as $section => $categories)
+        $reservedIds = [];
+        foreach ($sections as $categories)
         {
+            $section = $categories[array_key_first($categories)][0]->section;
+            $slug = $this->slugify($section);
+            if ($slug !== '')
+            {
+                $reservedIds[$slug] = true;
+            }
+        }
+        $usedIds = [];
+
+        foreach ($sections as $categories)
+        {
+            $section = $categories[array_key_first($categories)][0]->section;
+            $id = $this->slugify($section);
+            if ($id === '' || isset($usedIds[$id]))
+            {
+                $base = $id !== '' ? $id : 'section';
+                $suffix = 2;
+                do
+                {
+                    $id = $base . '-' . $suffix++;
+                }
+                while (isset($usedIds[$id]) || isset($reservedIds[$id]));
+            }
+            $usedIds[$id] = true;
+
             $results[] = new ChinoisSectionData(
                 title: $section,
-                id: $this->slugify($section),
+                id: $id,
                 categories: $this->buildCategories($categories)
             );
         }
@@ -217,7 +242,7 @@ final readonly class ChinoisReadService
     }
 
     /**
-     * @param array<string, list<ChinoisGrammaireData>> $categories
+     * @param array<int|string, list<ChinoisGrammaireData>> $categories
      * @return list<ChinoisCategorieData>
      */
     private function buildCategories(array $categories): array
@@ -227,7 +252,7 @@ final readonly class ChinoisReadService
         foreach ($categories as $categorie => $grammaires)
         {
             $results[] = new ChinoisCategorieData(
-                title: $categorie,
+                title: (string) $categorie,
                 grammaires: $grammaires
             );
         }
