@@ -58,6 +58,7 @@ final readonly class MangaWriteService
             $files,
             function (UploadThumbnailData $upload) use ($dto): ServiceResult
             {
+                $this->mangaRepository->lockSeries($dto->slug);
                 $failure = $this->createManga($dto, $upload);
 
                 if ($failure !== null)
@@ -89,6 +90,7 @@ final readonly class MangaWriteService
         $result = $this->database->transaction(
             function () use ($slug, $numero, $dto): ServiceResult
             {
+                $this->mangaRepository->lockSeries($slug);
                 $updated = $this->mangaRepository->updateManga(
                     $slug,
                     $numero,
@@ -134,6 +136,7 @@ final readonly class MangaWriteService
         $result = $this->database->transaction(
             function () use ($slug, $numero, $dto): ServiceResult
             {
+                $this->mangaRepository->lockSeries($slug);
                 $updated = $this->mangaRepository->updateNote(
                     $slug,
                     $numero,
@@ -198,6 +201,7 @@ final readonly class MangaWriteService
         $result = $this->database->transaction(
             function () use ($slug, $numero, $readStatus): ServiceResult
             {
+                $this->mangaRepository->lockSeries($slug);
                 $manga = $this->mangaRepository->findRecordBySlugAndNumero($slug, $numero);
 
                 if ($manga === null)
@@ -279,6 +283,7 @@ final readonly class MangaWriteService
         $result = $this->database->transaction(
             function () use ($slug, $numero): ServiceResult
             {
+                $this->mangaRepository->lockSeries($slug);
                 $deleted = $this->mangaRepository->deleteBySlugAndNumero($slug, $numero);
 
                 $failure = $this->writeFailed(

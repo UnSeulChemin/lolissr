@@ -57,7 +57,20 @@ final readonly class UserLevelService
             return $current;
         };
 
-        $updated = $this->database->inTransaction() ? $update() : $this->database->transaction($update);
+        if ($this->database->inTransaction())
+        {
+            $level = $user->level;
+            $currentXp = $user->xp;
+            $this->database->onRollback(static function () use ($user, $level, $currentXp): void {
+                $user->level = $level;
+                $user->xp = $currentXp;
+            });
+            $updated = $update();
+        }
+        else
+        {
+            $updated = $this->database->transaction($update);
+        }
         $user->level = $updated->level;
         $user->xp = $updated->xp;
     }

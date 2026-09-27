@@ -13,6 +13,36 @@ use stdClass;
 
 final class ChinoisGrammaireRepository extends Model
 {
+    /**
+     * @template T
+     * @param callable(): T $callback
+     * @return T
+     */
+    public function orderedTransaction(callable $callback): mixed
+    {
+        if ($this->db->inTransaction())
+        {
+            throw new \LogicException('Grammar ordering lock must precede the transaction.');
+        }
+
+        // Also protects the first insert into an empty section/category.
+        $lock = 'grammar-order:' . substr(hash('sha256', \Framework\Config\DatabaseConfig::name()), 0, 40);
+        $acquired = $this->fetchSingleValue('SELECT GET_LOCK(:lock_name, 10) AS acquired', 'acquired', ['lock_name' => $lock]);
+        if ((int) $acquired !== 1)
+        {
+            throw new \RuntimeException('La grammaire est en cours de modification. Réessaie.');
+        }
+
+        try
+        {
+            return $this->db->transaction($callback);
+        }
+        finally
+        {
+            $this->fetchSingleValue('SELECT RELEASE_LOCK(:lock_name) AS released', 'released', ['lock_name' => $lock]);
+        }
+    }
+
     private const SELECT_FIELDS = '
         id,
         niveau,

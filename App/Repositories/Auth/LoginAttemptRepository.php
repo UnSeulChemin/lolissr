@@ -120,4 +120,18 @@ final class LoginAttemptRepository extends Model
             'identifier_hash' => $identifierHash,
         ]);
     }
+
+    public function purgeExpired(string $cutoff, string $now): void
+    {
+        if (! $this->execute(
+            "DELETE FROM {$this->table()}
+            WHERE first_attempt_at < :cutoff
+            AND (locked_until IS NULL OR locked_until <= :now)
+            ORDER BY first_attempt_at ASC LIMIT 1000",
+            ['cutoff' => $cutoff, 'now' => $now]
+        ))
+        {
+            throw new \RuntimeException('Impossible de nettoyer les anciennes tentatives.');
+        }
+    }
 }

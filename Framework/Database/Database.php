@@ -17,6 +17,19 @@ use Throwable;
 
 final class Database extends PDO
 {
+    /** @var list<callable(): void> */
+    private array $rollbackCallbacks = [];
+    private bool $managedTransaction = false;
+
+    public function onRollback(callable $callback): void
+    {
+        if (! $this->managedTransaction || ! $this->inTransaction())
+        {
+            throw new LogicException('Rollback callbacks require a managed transaction.');
+        }
+        $this->rollbackCallbacks[] = $callback;
+    }
+
     // =========================================
     // CONNEXION
     // =========================================
@@ -90,6 +103,8 @@ final class Database extends PDO
         }
 
         Profiler::start('database.transaction');
+        $committed = false;
+        $this->managedTransaction = true;
 
         try
         {
@@ -121,6 +136,7 @@ final class Database extends PDO
                     );
                 }
 
+                $committed = true;
                 return $result;
             }
             catch (Throwable $exception)
@@ -132,6 +148,23 @@ final class Database extends PDO
         }
         finally
         {
+            $callbacks = array_reverse($this->rollbackCallbacks);
+            $this->rollbackCallbacks = [];
+            $this->managedTransaction = false;
+            if (! $committed)
+            {
+                foreach ($callbacks as $restore)
+                {
+                    try
+                    {
+                        $restore();
+                    }
+                    catch (Throwable $error)
+                    {
+                        Logger::exception($error, ['type' => 'transaction_restore']);
+                    }
+                }
+            }
             Profiler::end('database.transaction');
         }
     }

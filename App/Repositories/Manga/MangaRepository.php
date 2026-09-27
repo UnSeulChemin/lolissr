@@ -220,14 +220,15 @@ final class MangaRepository extends Model
         return $statement !== false && $statement->rowCount() === 1;
     }
 
-    public function claimSeriesReward(string $slug): bool
+    /** @return list<Manga> */
+    public function lockSeries(string $slug): array
     {
         if (! $this->db->inTransaction())
         {
             throw new \LogicException('Series rewards must be claimed inside a transaction.');
         }
 
-        $mangas = $this->fetchAll(
+        return $this->fetchAll(
             "
             SELECT id, numero, lu, statut, xp_series_rewarded
 
@@ -244,6 +245,11 @@ final class MangaRepository extends Model
             ],
             Manga::class
         );
+    }
+
+    public function claimSeriesReward(string $slug): bool
+    {
+        $mangas = $this->lockSeries($slug);
 
         if ($mangas === [])
         {

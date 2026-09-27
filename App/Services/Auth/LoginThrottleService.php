@@ -57,13 +57,31 @@ final readonly class LoginThrottleService
     {
         $now = $this->now();
 
-        return $this->loginAttemptRepository->recordFailure(
+        $locked = $this->loginAttemptRepository->recordFailure(
             $this->identifierHash($username, $ipAddress),
             $this->formatDate($now),
             $this->formatDate($now->modify('-' . self::ATTEMPT_WINDOW_MINUTES . ' minutes')),
             $this->formatDate($now->modify('+' . self::LOCK_DURATION_MINUTES . ' minutes')),
             self::MAX_ATTEMPTS
         );
+
+        // At most one bounded cleanup per hour when the cache is enabled.
+        try
+        {
+            \Framework\Cache\Cache::remember('auth.login-attempts.cleanup', 3600, function () use ($now): bool {
+                $this->loginAttemptRepository->purgeExpired(
+                    $this->formatDate($now->modify('-1 day')),
+                    $this->formatDate($now)
+                );
+                return true;
+            });
+        }
+        catch (\Throwable $error)
+        {
+            \Framework\Support\Logger::exception($error, ['action' => 'login_attempts_cleanup']);
+        }
+
+        return $locked;
     }
 
     public function clear(string $username, string $ipAddress): void

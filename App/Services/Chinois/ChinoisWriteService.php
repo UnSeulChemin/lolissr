@@ -32,7 +32,7 @@ final readonly class ChinoisWriteService
 
     public function createGrammaire(ChinoisGrammaireCreateDTO $dto): ServiceResult
     {
-        $result = $this->database->transaction(
+        $result = $this->grammaireRepository->orderedTransaction(
             function () use ($dto): ServiceResult
             {
                 $inserted = $this->grammaireRepository->insert([
@@ -76,7 +76,7 @@ final readonly class ChinoisWriteService
 
     public function updateGrammaire(int $id, ChinoisGrammaireCreateDTO $dto): ServiceResult
     {
-        return $this->database->transaction(
+        return $this->grammaireRepository->orderedTransaction(
             function () use ($id, $dto): ServiceResult
             {
                 $updated = $this->grammaireRepository->updateGrammaire(
@@ -102,7 +102,7 @@ final readonly class ChinoisWriteService
 
     public function deleteGrammaire(int $id): ServiceResult
     {
-        $result = $this->database->transaction(
+        $result = $this->grammaireRepository->orderedTransaction(
             function () use ($id): ServiceResult
             {
                 return $this->grammaireRepository->deleteGrammaire($id)
