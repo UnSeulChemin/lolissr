@@ -31,30 +31,63 @@ final class UserTitle
     public const ETERNEL = 'Éternel';
     public const DIVIN = 'Divin';
 
+    public const LECTEUR_CURIEUX = 'Lecteur curieux';
+    public const CHASSEUR_DE_TOMES = 'Chasseur de tomes';
+    public const COLLECTIONNEUR = 'Collectionneur';
+    public const APPRENTI_SINOPHILE = 'Apprenti sinophile';
+    public const GARDIEN_DE_BIBLIOTHEQUE = 'Gardien de bibliothèque';
+    public const PASSIONNE_D_ASIE = 'Passionné d’Asie';
+    public const BIBLIOPHILE = 'Bibliophile';
+    public const CHASSEUR_DE_RARETES = 'Chasseur de raretés';
+    public const CONNAISSEUR = 'Connaisseur';
+    public const ARCHIVISTE = 'Archiviste';
+    public const COLLECTIONNEUR_D_ELITE = 'Collectionneur d’élite';
+    public const PASSEUR_DE_SAVOIR = 'Passeur de savoir';
+    public const GARDIEN_DES_RECITS = 'Gardien des récits';
+    public const CELESTE = 'Céleste';
+    public const TRANSCENDANT = 'Transcendant';
+    public const LEGENDE_SSR = 'Légende SSR';
+
     /**
      * @var array<int, string>
      */
     public const LEVEL_TITLES = [
         1 => self::EXPLORATEUR,
+        3 => self::LECTEUR_CURIEUX,
         5 => self::AVENTURIER,
+        8 => self::CHASSEUR_DE_TOMES,
         10 => self::VOYAGEUR,
+        12 => self::COLLECTIONNEUR,
         15 => self::ECLAIREUR,
+        18 => self::APPRENTI_SINOPHILE,
         20 => self::ERUDIT,
+        22 => self::GARDIEN_DE_BIBLIOTHEQUE,
         25 => self::SAVANT,
+        28 => self::PASSIONNE_D_ASIE,
         30 => self::MAITRE,
+        32 => self::BIBLIOPHILE,
         35 => self::GRAND_MAITRE,
+        38 => self::CHASSEUR_DE_RARETES,
         40 => self::SAGE,
+        42 => self::CONNAISSEUR,
         45 => self::ARCHISAGE,
+        48 => self::ARCHIVISTE,
         50 => self::CHAMPION,
+        53 => self::COLLECTIONNEUR_D_ELITE,
         55 => self::HEROS,
+        58 => self::PASSEUR_DE_SAVOIR,
         60 => self::GARDIEN,
+        63 => self::GARDIEN_DES_RECITS,
         65 => self::SEIGNEUR,
         70 => self::ARCHONTE,
         75 => self::LEGENDE,
         80 => self::MYTHE,
         85 => self::IMMORTEL,
         90 => self::ETERNEL,
+        95 => self::CELESTE,
         100 => self::DIVIN,
+        125 => self::TRANSCENDANT,
+        150 => self::LEGENDE_SSR,
     ];
 
     private function __construct()

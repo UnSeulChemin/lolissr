@@ -13,10 +13,10 @@ export function titleModal(
                 );
 
             overlay.className =
-                'confirm-modal-overlay';
+                'confirm-modal-overlay title-modal-overlay';
 
             overlay.innerHTML = `
-                <div class="confirm-modal">
+                <div class="confirm-modal title-modal" role="dialog" aria-modal="true" aria-label="Choisir un titre">
 
                     <h3>
                         Choisir un titre
