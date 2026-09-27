@@ -63,6 +63,9 @@ async function openTitleModal(signal)
         },
     );
 
+    invalidateProfilePages();
+    if (signal.aborted) return;
+
     const customizationTitle =
         document.querySelector('.profile-customization-title');
 
@@ -80,8 +83,6 @@ async function openTitleModal(signal)
         profileSubtitle.textContent =
             title;
     }
-
-    invalidateProfilePages();
 
     showToast(
         'Titre mis à jour',
@@ -116,6 +117,9 @@ async function openAvatarModal(signal)
             },
         );
 
+    invalidateProfilePages();
+    if (signal.aborted) return;
+
     const avatarPath =
         appUrl(
             `images/avatar/thumbnail/${response.data.avatar}.${response.data.avatar_extension}`,
@@ -138,8 +142,6 @@ async function openAvatarModal(signal)
         profileAvatar.src =
             avatarPath;
     }
-
-    invalidateProfilePages();
 
     showToast(
         'Avatar mis à jour',

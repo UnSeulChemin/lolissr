@@ -138,11 +138,21 @@ export async function resolvePage(
             target,
         );
 
-        end(
-            'resolve',
-        );
+        const prefetched = await inFlight;
+        if (signal?.aborted)
+        {
+            throw new DOMException('Navigation aborted', 'AbortError');
+        }
+        if (prefetched?.type === 'page' && typeof prefetched.page?.html === 'string')
+        {
+            end('resolve');
+            return prefetched;
+        }
+    }
 
-        return inFlight;
+    if (signal?.aborted)
+    {
+        throw new DOMException('Navigation aborted', 'AbortError');
     }
 
     /*

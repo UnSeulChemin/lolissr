@@ -123,19 +123,36 @@ function buildSignal(
     timeoutSignal,
 )
 {
+    const noop = () => {};
+    if (!signal) return { signal: timeoutSignal, clear: noop };
     if (
         signal
         && typeof AbortSignal.any
             === 'function'
     ) {
 
-        return AbortSignal.any([
+        return { signal: AbortSignal.any([
             signal,
             timeoutSignal,
-        ]);
+        ]), clear: noop };
     }
 
-    return timeoutSignal;
+    const controller = new AbortController();
+    const sources = [signal, timeoutSignal];
+    const abort = event => controller.abort(event.target.reason);
+    for (const source of sources)
+    {
+        if (source.aborted)
+        {
+            controller.abort(source.reason);
+            break;
+        }
+        source.addEventListener('abort', abort, { once: true });
+    }
+    return {
+        signal: controller.signal,
+        clear: () => sources.forEach(source => source.removeEventListener('abort', abort)),
+    };
 }
 
 // =========================================
@@ -295,6 +312,8 @@ export async function request(
             timeout,
         );
 
+    const combinedSignal = buildSignal(options.signal, timeoutController.signal);
+
     try {
 
         const response =
@@ -307,10 +326,7 @@ export async function request(
                     ...options,
 
                     signal:
-                        buildSignal(
-                            options.signal,
-                            timeoutController.signal,
-                        ),
+                        combinedSignal.signal,
 
                     headers:
                         buildHeaders(
@@ -453,6 +469,7 @@ export async function request(
 
     } finally {
 
+        combinedSignal.clear();
         timeoutController.clear();
     }
 }
