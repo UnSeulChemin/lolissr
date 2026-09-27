@@ -19,40 +19,6 @@ final class FigurineCollectionRepository extends Model
     /**
      * @return list<Figurine>
      */
-    public function findAll(): array
-    {
-        /** @var list<Figurine> $figurines */
-        $figurines = $this->fetchAll(
-            "
-            SELECT f.*
-
-            FROM {$this->table()} f
-
-            INNER JOIN (
-                SELECT
-                    slug,
-                    MAX(id) AS last_id
-
-                FROM {$this->table()}
-
-                GROUP BY slug
-            ) grouped
-                ON grouped.slug = f.slug
-
-            ORDER BY
-                grouped.last_id DESC,
-                f.numero DESC
-            ",
-            [],
-            Figurine::class
-        );
-
-        return $figurines;
-    }
-
-    /**
-     * @return list<Figurine>
-     */
     public function findPaginated(
         int $limit,
         int $page

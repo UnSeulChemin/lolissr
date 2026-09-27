@@ -19,40 +19,6 @@ final class PelucheCollectionRepository extends Model
     /**
      * @return list<Peluche>
      */
-    public function findAll(): array
-    {
-        /** @var list<Peluche> $peluches */
-        $peluches = $this->fetchAll(
-            "
-            SELECT p.*
-
-            FROM {$this->table()} p
-
-            INNER JOIN (
-                SELECT
-                    slug,
-                    MAX(id) AS last_id
-
-                FROM {$this->table()}
-
-                GROUP BY slug
-            ) grouped
-                ON grouped.slug = p.slug
-
-            ORDER BY
-                grouped.last_id DESC,
-                p.numero DESC
-            ",
-            [],
-            Peluche::class
-        );
-
-        return $peluches;
-    }
-
-    /**
-     * @return list<Peluche>
-     */
     public function findPaginated(
         int $limit,
         int $page

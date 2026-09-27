@@ -33,6 +33,17 @@ abstract class Controller
 
     private ?FlashToastData $flashToast = null;
 
+    protected function stringInput(string $key, string $default = ''): string
+    {
+        $value = $this->request->input($key, $default);
+        if (! is_string($value))
+        {
+            throw new ValidationException([$key => 'Ce champ doit être une chaîne de caractères.']);
+        }
+
+        return $value;
+    }
+
     public function __construct(
         protected Request $request
     ) {

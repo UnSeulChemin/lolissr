@@ -43,7 +43,7 @@ final class ProfileAjaxController extends Controller
     {
         $user = $this->user();
 
-        $title = (string) $this->request->input('title');
+        $title = $this->stringInput('title');
 
         $availableTitles = UserTitle::unlockedTitles($user->level);
 
@@ -83,7 +83,7 @@ final class ProfileAjaxController extends Controller
         $avatar = $this->findItem(
             $this->imageCatalog->items('avatar'),
             'avatar',
-            (string) $this->request->input('avatar')
+            $this->stringInput('avatar')
         );
 
         if ($avatar === null)
@@ -129,7 +129,7 @@ final class ProfileAjaxController extends Controller
         $banner = $this->findItem(
             $this->imageCatalog->items('banner'),
             'banner',
-            (string) $this->request->input('banner')
+            $this->stringInput('banner')
         );
 
         if ($banner === null)
@@ -175,7 +175,7 @@ final class ProfileAjaxController extends Controller
         $frame = $this->findItem(
             $this->imageCatalog->items('frame'),
             'frame',
-            (string) $this->request->input('frame')
+            $this->stringInput('frame')
         );
 
         if ($frame === null)

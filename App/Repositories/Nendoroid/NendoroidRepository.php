@@ -94,27 +94,6 @@ final class NendoroidRepository extends Model
         ]);
     }
 
-    /**
-     * @return list<Nendoroid>
-     */
-    public function findCollectedWithoutReward(): array
-    {
-        /** @var list<Nendoroid> $nendoroids */
-        $nendoroids = $this->fetchAll(
-            "
-            SELECT *
-
-            FROM {$this->table()}
-
-            WHERE collect = 1
-            AND collect_rewarded = 0
-            ",
-            [],
-            Nendoroid::class
-        );
-
-        return $nendoroids;
-    }
 
     public function claimCollectReward(int $id): bool
     {

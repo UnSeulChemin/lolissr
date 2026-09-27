@@ -24,7 +24,7 @@ final class SqlAjaxController extends Controller
 
     public function execute(): never
     {
-        $sql = trim((string) $this->request->input('sql'));
+        $sql = trim($this->stringInput('sql'));
 
         if ($sql === '')
         {

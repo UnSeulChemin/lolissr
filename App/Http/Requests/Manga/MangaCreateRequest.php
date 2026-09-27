@@ -35,6 +35,7 @@ final class MangaCreateRequest extends FormRequest
             ->required('slug')
             ->string('slug')
             ->maxLength('slug', 150)
+            ->slug('slug', 150)
 
             ->required('numero')
             ->integer('numero')

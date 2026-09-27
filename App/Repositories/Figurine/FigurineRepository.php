@@ -82,27 +82,6 @@ final class FigurineRepository extends Model
         ]);
     }
 
-    /**
-     * @return list<Figurine>
-     */
-    public function findCollectedWithoutReward(): array
-    {
-        /** @var list<Figurine> $figurines */
-        $figurines = $this->fetchAll(
-            "
-            SELECT *
-
-            FROM {$this->table()}
-
-            WHERE collect = 1
-            AND collect_rewarded = 0
-            ",
-            [],
-            Figurine::class
-        );
-
-        return $figurines;
-    }
 
     public function claimCollectReward(int $id): bool
     {

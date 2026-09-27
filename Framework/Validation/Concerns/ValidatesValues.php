@@ -6,6 +6,29 @@ namespace Framework\Validation\Concerns;
 
 trait ValidatesValues
 {
+    public function slug(string $field, int $maxLength): self
+    {
+        $this->string($field);
+        if ($this->shouldSkip($field))
+        {
+            return $this;
+        }
+
+        $value = $this->value($field);
+        if (! is_string($value))
+        {
+            return $this;
+        }
+
+        $slug = \Framework\Support\Str::slug($value);
+        if ($slug === '' || strlen($slug) > $maxLength)
+        {
+            $this->addError($field, "Le slug normalisé doit contenir entre 1 et {$maxLength} caractères.");
+        }
+
+        return $this;
+    }
+
     // =========================================
     // PRÉSENCE
     // =========================================

@@ -14,40 +14,6 @@ final class ArtbookCollectionRepository extends Model
     /**
      * @return list<Artbook>
      */
-    public function findAll(): array
-    {
-        /** @var list<Artbook> $artbooks */
-        $artbooks = $this->fetchAll(
-            "
-            SELECT a.*
-
-            FROM {$this->table()} a
-
-            INNER JOIN (
-                SELECT
-                    slug,
-                    MAX(id) AS last_id
-
-                FROM {$this->table()}
-
-                GROUP BY slug
-            ) grouped
-                ON grouped.slug = a.slug
-
-            ORDER BY
-                grouped.last_id DESC,
-                a.numero DESC
-            ",
-            [],
-            Artbook::class
-        );
-
-        return $artbooks;
-    }
-
-    /**
-     * @return list<Artbook>
-     */
     public function findPaginated(
         int $limit,
         int $page,

@@ -80,27 +80,6 @@ final class PelucheRepository extends Model
         ]);
     }
 
-    /**
-     * @return list<Peluche>
-     */
-    public function findCollectedWithoutReward(): array
-    {
-        /** @var list<Peluche> $peluches */
-        $peluches = $this->fetchAll(
-            "
-            SELECT *
-
-            FROM {$this->table()}
-
-            WHERE collect = 1
-            AND collect_rewarded = 0
-            ",
-            [],
-            Peluche::class
-        );
-
-        return $peluches;
-    }
 
     public function claimCollectReward(int $id): bool
     {

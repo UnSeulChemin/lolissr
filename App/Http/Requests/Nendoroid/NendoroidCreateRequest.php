@@ -33,6 +33,7 @@ final class NendoroidCreateRequest extends FormRequest
             ->required('slug')
             ->string('slug')
             ->maxLength('slug', 100)
+            ->slug('slug', 100)
 
             ->required('numero')
             ->integer('numero')

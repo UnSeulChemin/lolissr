@@ -19,40 +19,6 @@ final class NendoroidCollectionRepository extends Model
     /**
      * @return list<Nendoroid>
      */
-    public function findAll(): array
-    {
-        /** @var list<Nendoroid> $nendoroids */
-        $nendoroids = $this->fetchAll(
-            "
-            SELECT n.*
-
-            FROM {$this->table()} n
-
-            INNER JOIN (
-                SELECT
-                    slug,
-                    MAX(id) AS last_id
-
-                FROM {$this->table()}
-
-                GROUP BY slug
-            ) grouped
-                ON grouped.slug = n.slug
-
-            ORDER BY
-                grouped.last_id DESC,
-                n.numero DESC
-            ",
-            [],
-            Nendoroid::class
-        );
-
-        return $nendoroids;
-    }
-
-    /**
-     * @return list<Nendoroid>
-     */
     public function findPaginated(
         int $limit,
         int $page

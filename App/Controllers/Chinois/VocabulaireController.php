@@ -105,7 +105,7 @@ final class VocabulaireController extends Controller
         $this->renderEdit(
             $langue,
             $id,
-            (string) $this->request->input('return_to', '')
+            $this->stringInput('return_to', '')
         );
     }
 
@@ -117,6 +117,7 @@ final class VocabulaireController extends Controller
         $this->vocabulaireOrFail($langue, $id);
         $this->validateRequest($request);
 
+        $returnTo = $this->stringInput('return_to', '');
         $dto = $request->dto();
         $result = $this->chinoisWriteService->updateVocabulaire($id, $dto);
 
@@ -129,7 +130,6 @@ final class VocabulaireController extends Controller
             );
         }
 
-        $returnTo = (string) $this->request->input('return_to', '');
 
         $this->redirectWithSuccess(
             $returnTo !== '' ? $returnTo : 'chinois/vocabulaire/' . $dto->langue,

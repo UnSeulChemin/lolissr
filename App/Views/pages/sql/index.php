@@ -8,11 +8,12 @@ use App\DTO\Common\Responses\ViewData;
 
 $sql = (string) ($sql ?? '');
 
+$hasExecuted = isset($result) || isset($error);
+
 $result = $result ?? [];
 
 $error = $error ?? null;
 
-$hasExecuted = $error !== null || $result !== [];
 
 $resultCount = count($result);
 
