@@ -158,6 +158,7 @@ export function invalidatePrefetch(href)
             continue;
         }
 
+        invalidated.delete(key);
         invalidated.add(key);
         cache.delete(key);
 
@@ -165,6 +166,13 @@ export function invalidatePrefetch(href)
 
         entry?.controller.abort();
         inFlight.delete(key);
+    }
+
+    // Aborted requests check their own signal before writing, even after eviction here.
+    const invalidationLimit = Math.max(1, config.prefetch.cacheLimit * 4);
+    while (invalidated.size > invalidationLimit)
+    {
+        invalidated.delete(invalidated.values().next().value);
     }
 
     debug(

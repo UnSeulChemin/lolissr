@@ -1,8 +1,11 @@
 import { get } from '../../core/http.js';
+import { registerCleanup } from '../../router/router-cleanup.js';
 
 // Keep only two batches of card contents; IDs preserve the full navigation order.
 export function createFlashcardDeck(container, type)
 {
+    const controller = new AbortController();
+    registerCleanup(() => controller.abort());
     const initial = JSON.parse(container.dataset.flashcards ?? '[]');
     const ids = JSON.parse(container.dataset.flashcardIds ?? '[]');
     const cache = new Map(initial.map(card => [card.id, card]));
@@ -14,10 +17,18 @@ export function createFlashcardDeck(container, type)
     {
         while (ids.length > 0)
         {
+            if (controller.signal.aborted)
+            {
+                throw new DOMException('Flashcards closed', 'AbortError');
+            }
             const id = ids[index];
             if (cache.has(id)) return;
 
-            const response = await get(`${baseUri}chinois/flashcards/${type}/cards/${id}`);
+            const response = await get(`${baseUri}chinois/flashcards/${type}/cards/${id}`, { signal: controller.signal });
+            if (controller.signal.aborted)
+            {
+                throw new DOMException('Flashcards closed', 'AbortError');
+            }
             if (! response?.success || ! Array.isArray(response.data?.cards))
             {
                 throw new Error('Chargement des cartes impossible');

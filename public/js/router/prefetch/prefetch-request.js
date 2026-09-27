@@ -34,6 +34,9 @@ import {
 // PREFETCH
 // =========================================
 
+const MAX_CONCURRENT_PREFETCHES = 3;
+let activeRequests = 0;
+
 export async function prefetchPage(href)
 {
     if (! config.prefetch.enabled)
@@ -121,6 +124,9 @@ export async function prefetchPage(href)
         url,
     );
 
+    // Speculative requests can be skipped; actual navigation still fetches on demand.
+    if (activeRequests >= MAX_CONCURRENT_PREFETCHES) return null;
+    activeRequests++;
     const controller = new AbortController();
 
     let promise;
@@ -167,7 +173,7 @@ export async function prefetchPage(href)
             |--------------------------------------------------------------------------
             */
 
-            if (invalidated.has(url))
+            if (controller.signal.aborted || invalidated.has(url))
             {
                 debug(
                     'PREFETCH',
@@ -219,6 +225,7 @@ export async function prefetchPage(href)
         }
         finally
         {
+            activeRequests--;
             const currentEntry = inFlight.get(
                 url,
             );

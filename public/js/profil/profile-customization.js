@@ -166,7 +166,7 @@ async function openBannerModal(signal)
         return;
     }
 
-    await post(
+    const response = await post(
         appUrl('profil/ajax/update-banner'),
         {
             banner,
@@ -174,6 +174,14 @@ async function openBannerModal(signal)
     );
 
     invalidateProfilePages();
+    if (signal.aborted) return;
+    const imagePath = appUrl(
+        `images/banner/thumbnail/${response.data.banner}.${response.data.banner_extension}`,
+    );
+    document.querySelectorAll('.profile-customization-banner img, .profile-banner img').forEach(image =>
+    {
+        image.src = imagePath;
+    });
 
     showToast(
         'Bannière mise à jour',
@@ -206,7 +214,7 @@ async function openFrameModal(signal)
         return;
     }
 
-    await post(
+    const response = await post(
         appUrl('profil/ajax/update-frame'),
         {
             frame,
@@ -214,6 +222,14 @@ async function openFrameModal(signal)
     );
 
     invalidateProfilePages();
+    if (signal.aborted) return;
+    const imagePath = appUrl(
+        `images/frame/thumbnail/${response.data.frame}.${response.data.frame_extension}`,
+    );
+    document.querySelectorAll('.profile-customization-avatar .profile-frame, .profile-avatar .profile-frame').forEach(image =>
+    {
+        image.src = imagePath;
+    });
 
     showToast(
         'Cadre mis à jour',
