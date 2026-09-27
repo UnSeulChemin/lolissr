@@ -229,7 +229,7 @@ final class MangaRepository extends Model
 
         $mangas = $this->fetchAll(
             "
-            SELECT id, xp_series_rewarded
+            SELECT id, numero, lu, statut, xp_series_rewarded
 
             FROM {$this->table()}
 
@@ -251,10 +251,19 @@ final class MangaRepository extends Model
         }
 
         $alreadyRewarded = false;
+        $fullyRead = true;
+        $finished = false;
 
         foreach ($mangas as $manga)
         {
             $alreadyRewarded = $alreadyRewarded || $manga->xp_series_rewarded;
+            $fullyRead = $fullyRead && $manga->lu;
+            $finished = $finished || ($manga->numero === 1 && $manga->statut === 'termine');
+        }
+
+        if (! $fullyRead || ! $finished)
+        {
+            return false;
         }
 
         // Propagate the existing reward to newly added volumes without granting XP again.

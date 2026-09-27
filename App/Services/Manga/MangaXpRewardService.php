@@ -7,14 +7,12 @@ namespace App\Services\Manga;
 use App\Constants\UserXp;
 use App\Models\Manga;
 use App\Repositories\Manga\MangaRepository;
-use App\Repositories\Manga\MangaStatsRepository;
 use App\Services\User\UserLevelService;
 
 final readonly class MangaXpRewardService
 {
     public function __construct(
         private MangaRepository $mangaRepository,
-        private MangaStatsRepository $mangaStatsRepository,
         private UserLevelService $userLevelService
     ) {
     }
@@ -49,10 +47,7 @@ final readonly class MangaXpRewardService
 
         $seriesXpEarned = false;
 
-        if (
-            $this->mangaStatsRepository->isSeriesCompleted($slug)
-            && $this->mangaRepository->claimSeriesReward($slug)
-        )
+        if ($this->mangaRepository->claimSeriesReward($slug))
         {
             $this->userLevelService->addXp(
                 $user,

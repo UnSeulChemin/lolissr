@@ -181,9 +181,7 @@ final class ChinoisGrammaireRepository extends Model
 
     public function deleteGrammaire(int $id): bool
     {
-        return $this->delete([
-            'id' => $id
-        ]);
+        return $this->deleteExistingById($id);
     }
 
     // =========================================

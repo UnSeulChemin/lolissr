@@ -104,9 +104,12 @@ final class ChinoisAjaxController extends Controller
 
     private function getIdOrFail(): int
     {
-        $id = (int) $this->request->input('id', 0);
+        $value = $this->request->input('id');
+        $id = is_int($value) || is_string($value)
+            ? filter_var($value, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]])
+            : false;
 
-        if ($id <= 0)
+        if ($id === false)
         {
             throw new ValidationException(['id' => 'ID invalide']);
         }

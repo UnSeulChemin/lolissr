@@ -91,9 +91,7 @@ final class ChinoisVocabulaireRepository extends Model
 
     public function deleteVocabulaire(int $id): bool
     {
-        return $this->delete([
-            'id' => $id,
-        ]);
+        return $this->deleteExistingById($id);
     }
 
     // =========================================

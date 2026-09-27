@@ -107,7 +107,7 @@ final readonly class ChinoisWriteService
             {
                 return $this->grammaireRepository->deleteGrammaire($id)
                     ? $this->success('Grammaire supprimée avec succès')
-                    : $this->error('Erreur lors de la suppression');
+                    : ServiceResult::error('Grammaire introuvable ou déjà supprimée', status: 404);
             }
         );
 
@@ -174,7 +174,7 @@ final readonly class ChinoisWriteService
             {
                 return $this->vocabulaireRepository->deleteVocabulaire($id)
                     ? $this->success('Vocabulaire supprimé avec succès')
-                    : $this->error('Erreur lors de la suppression');
+                    : ServiceResult::error('Vocabulaire introuvable ou déjà supprimé', status: 404);
             }
         );
 

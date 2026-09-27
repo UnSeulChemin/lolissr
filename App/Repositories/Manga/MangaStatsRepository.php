@@ -8,7 +8,6 @@ use App\DTO\Manga\Responses\MangaStatsData;
 use App\Models\Manga;
 use App\Models\Model;
 
-use Framework\Support\Str;
 
 final class MangaStatsRepository extends Model
 {
@@ -113,40 +112,6 @@ final class MangaStatsRepository extends Model
         );
 
         return $mangas;
-    }
-
-    public function isSeriesCompleted(string $slug): bool
-    {
-        $result = $this->fetchOne(
-            "
-            SELECT
-                COUNT(*) AS total,
-                SUM(lu) AS total_lu,
-                MAX(CASE WHEN numero = 1 AND statut = 'termine' THEN 1 ELSE 0 END) AS termine
-
-            FROM {$this->table()}
-
-            WHERE slug = :slug
-            ",
-            [
-                'slug' => Str::slug($slug),
-            ]
-        );
-
-        if ($result === null)
-        {
-            return false;
-        }
-
-        /** @var array{total?: mixed, total_lu?: mixed, termine?: mixed} $data */
-        $data = (array) $result;
-
-        $total = (int) ($data['total'] ?? 0);
-        $totalLu = (int) ($data['total_lu'] ?? 0);
-        // The collection uses volume 1 as the reference for the series status.
-        $isFinished = (int) ($data['termine'] ?? 0) === 1;
-
-        return $isFinished && $total > 0 && $total === $totalLu;
     }
 
     public function countCompletedSeries(): int

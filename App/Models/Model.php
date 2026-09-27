@@ -201,6 +201,22 @@ abstract class Model
         );
     }
 
+    protected function deleteExistingById(int $id): bool
+    {
+        $this->guardWrite();
+        $statement = $this->query(
+            "DELETE FROM {$this->table()} WHERE id = :id",
+            ['id' => $id]
+        );
+
+        if ($statement === false)
+        {
+            throw new \RuntimeException('Impossible de supprimer cet élément.');
+        }
+
+        return $statement->rowCount() === 1;
+    }
+
     // =========================================
     // STATISTIQUES
     // =========================================
@@ -209,29 +225,6 @@ abstract class Model
     {
         $result = $this->fetchOne(
             "SELECT COUNT(*) AS total FROM {$this->table()}"
-        );
-
-        /** @var array{total?: mixed} $data */
-        $data = (array) $result;
-
-        return (int) ($data['total'] ?? 0);
-    }
-
-    /**
-     * @param array<int|string, mixed> $params
-     */
-    protected function countWhere(string $where, array $params = []): int
-    {
-        $result = $this->fetchOne(
-            "
-            SELECT
-                COUNT(*) AS total
-
-            FROM {$this->table()}
-
-            WHERE {$where}
-            ",
-            $params
         );
 
         /** @var array{total?: mixed} $data */
