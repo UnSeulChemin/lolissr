@@ -7,6 +7,7 @@ namespace App\Controllers\Profile;
 use App\Controllers\Controller;
 use App\Models\User;
 use App\Services\Profile\ProfileStatsService;
+use App\Services\Profile\ProfileAchievements;
 use App\Services\User\UserLevelService;
 
 use Framework\Http\Request;
@@ -39,6 +40,7 @@ final class ProfileController extends Controller
         $stats = $this->profileStatsService->getStats();
 
         $this->render('pages/profile/index', [
+            'achievements' => ProfileAchievements::forStats($stats, $user->level),
             'user' => $user,
             'level' => $user->level,
             'currentXp' => $user->xp,
@@ -78,6 +80,17 @@ final class ProfileController extends Controller
     | PERSONNALISATION
     |--------------------------------------------------------------------------
     */
+
+    public function achievements(): never
+    {
+        $this->title = 'Succès';
+        $user = user();
+        assert($user instanceof User);
+
+        $this->render('pages/profile/succes', [
+            'achievements' => ProfileAchievements::forStats($this->profileStatsService->getStats(), $user->level),
+        ]);
+    }
 
     public function customization(): never
     {

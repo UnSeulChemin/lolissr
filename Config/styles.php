@@ -5,6 +5,7 @@ declare(strict_types=1);
 // Ordered dependencies. A trailing slash matches every view in that directory.
 // Paths are relative to App/Views, without the .php extension.
 return [
+    'page/profil/succes.css' => ['pages/profile/succes'],
     'base/profile-title-modal.css' => ['pages/profile/'],
     'components/media-picker.css' => ['pages/profile/'],
     'components/summary.css' => [

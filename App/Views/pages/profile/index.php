@@ -7,6 +7,7 @@ use App\Models\User;
 
 /** @var ViewData $view */
 /** @var User $user */
+/** @var list<array{category: string, icon: string, title: string, current: int, target: int, unlocked: bool}> $achievements */
 /** @var int $level */
 /** @var int $currentXp */
 /** @var int $xpRequired */
@@ -95,7 +96,7 @@ $framePath =
 
         </a>
 
-        <article
+        <a href="<?= e($view->baseUri . 'profil/succes') ?>" data-prefetch aria-label="Voir tous les succès"
             class="
                 card
                 transition-card
@@ -104,30 +105,20 @@ $framePath =
         >
 
             <h2 class="profile-section-title u-text-center">
-                🏆 Succès récents
+                🏆 Succès obtenus
             </h2>
 
             <div class="achievement-list u-row-center">
-
-                <div class="achievement-item">
-                    📚 Premier tome ajouté
-                </div>
-
-                <div class="achievement-item">
-                    🎓 1000 mots appris
-                </div>
-
-                <div class="achievement-item">
-                    📖 20 séries collectionnées
-                </div>
-
-                <div class="achievement-item">
-                    |...]
-                </div>
-
+                <?php $obtained = array_values(array_filter($achievements, static fn (array $item): bool => $item['unlocked'])); ?>
+                <?php foreach (array_slice($obtained, 0, 3) as $achievement): ?>
+                    <div class="achievement-item"><?= e($achievement['icon'] . ' ' . $achievement['title']) ?></div>
+                <?php endforeach; ?>
+                <?php if ($obtained === []): ?>
+                    <p>Ton premier succès t’attend !</p>
+                <?php endif; ?>
+                <span class="achievement-item">Voir tous les succès →</span>
             </div>
-
-        </article>
+        </a>
 
     </section>
 
