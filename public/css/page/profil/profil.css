@@ -8,7 +8,7 @@
         (var(--width-home-grid-column) * 3)
         + (var(--gap-grid-home) * 2)
     );
-    --profile-avatar-size: 110px;
+    --profile-avatar-size: clamp(140px, 18vw, 180px);
     gap: 0;
 }
 

@@ -9,7 +9,7 @@
         + (var(--gap-grid-home) * 2)
     );
 
-    --profile-avatar-size: 110px;
+    --profile-avatar-size: clamp(140px, 18vw, 180px);
 
     width: var(--profile-width);
 
