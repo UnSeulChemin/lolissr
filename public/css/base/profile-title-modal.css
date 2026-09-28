@@ -98,6 +98,7 @@
     border-color: var(--color-violet);
 }
 
+.title-modal-status,
 .frame-modal-status
 {
     display: block;
@@ -105,6 +106,7 @@
     font-size: .85rem;
 }
 
+.title-modal-item:disabled,
 .frame-modal-grid .frame-modal-item:disabled
 {
     cursor: not-allowed;

@@ -34,7 +34,7 @@ final class ProfileAjaxController extends Controller
     {
         $user = $this->user();
 
-        $titles = UserTitle::unlockedTitles($user->level);
+        $titles = UserTitle::titlesForLevel($user->level);
 
         $this->jsonResult(ServiceResult::success(data: ['titles' => $titles]));
     }

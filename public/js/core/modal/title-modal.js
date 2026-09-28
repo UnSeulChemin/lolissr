@@ -32,10 +32,15 @@ export function titleModal(
                             ) => `
                                 <button
                                     class="title-modal-item"
-                                    data-title="${title}"
+                                    data-title="${title.title}"
                                     type="button"
+                                    ${title.unlocked ? '' : 'disabled'}
+                                    aria-label="${title.title} — ${title.unlocked ? 'Disponible' : 'Verrouillé'}, niveau ${title.required_level}"
                                 >
-                                    ${title}
+                                    <span>${title.title}</span>
+                                    <span class="title-modal-status">
+                                        ${title.unlocked ? (title.required_level > 1 ? `Niveau ${title.required_level}` : 'Disponible') : `<span aria-hidden="true">🔒</span> Niveau ${title.required_level}`}
+                                    </span>
                                 </button>
                             `,
                         ).join('')}
@@ -49,7 +54,7 @@ export function titleModal(
 
             overlay
                 .querySelectorAll(
-                    '.title-modal-item',
+                    '.title-modal-item:not(:disabled)',
                 )
                 .forEach(
                     (

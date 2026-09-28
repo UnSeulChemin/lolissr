@@ -85,6 +85,11 @@ $content = is_string($content ?? null) ? $content : '';
 
     <script type="importmap" nonce="<?= ContentSecurityPolicy::escapedNonce() ?>">
         <?= json_encode(['imports' => [
+            $view->baseUri . 'js/core/modal/title-modal.js' =>
+                $view->baseUri . 'js/core/modal/title-modal.js?v=' . hash_file(
+                    'sha256',
+                    dirname(__DIR__, 3) . '/public/js/core/modal/title-modal.js'
+                ),
             $view->baseUri . 'js/core/modal/frame-modal.js' =>
                 $view->baseUri . 'js/core/modal/frame-modal.js?v=' . hash_file(
                     'sha256',

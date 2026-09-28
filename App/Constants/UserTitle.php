@@ -98,6 +98,23 @@ final class UserTitle
     // HELPERS
     // =========================================
 
+    /** @return list<array{title: string, required_level: int, unlocked: bool}> */
+    public static function titlesForLevel(int $level): array
+    {
+        $titles = [];
+
+        foreach (self::LEVEL_TITLES as $requiredLevel => $title)
+        {
+            $titles[] = [
+                'title' => $title,
+                'required_level' => $requiredLevel,
+                'unlocked' => $level >= $requiredLevel,
+            ];
+        }
+
+        return $titles;
+    }
+
     /**
      * @return list<string>
      */
