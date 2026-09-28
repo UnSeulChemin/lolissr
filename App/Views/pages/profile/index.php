@@ -108,16 +108,14 @@ $framePath =
                 🏆 Succès obtenus
             </h2>
 
-            <div class="achievement-list u-row-center">
-                <?php $obtained = array_values(array_filter($achievements, static fn (array $item): bool => $item['unlocked'])); ?>
-                <?php foreach (array_slice($obtained, 0, 3) as $achievement): ?>
-                    <div class="achievement-item"><?= e($achievement['icon'] . ' ' . $achievement['title']) ?></div>
-                <?php endforeach; ?>
-                <?php if ($obtained === []): ?>
-                    <p>Ton premier succès t’attend !</p>
-                <?php endif; ?>
-                <span class="achievement-item">Voir tous les succès →</span>
+            <?php $obtainedCount = count(array_filter($achievements, static fn (array $item): bool => $item['unlocked'])); ?>
+            <div class="profile-achievements-summary">
+                <p class="profile-achievements-count"><?= $obtainedCount ?> / <?= count($achievements) ?></p>
+                <p>succès débloqués</p>
+                <progress value="<?= $obtainedCount ?>" max="<?= count($achievements) ?>" aria-label="Succès débloqués"></progress>
+                <p class="profile-achievements-description">Atteins des objectifs de lecture, de collection et d’apprentissage pour débloquer des succès.</p>
             </div>
+            <span class="profile-achievements-action">Voir mes succès et les prochains objectifs</span>
         </a>
 
     </section>

@@ -13,15 +13,15 @@ final class ProfileAchievements
     public static function forStats(ProfileStatsData $stats, int $level): array
     {
         $categories = [
-            ['Lecture', '📚', 'tomes lus', $stats->readTomes, [1, 10, 25, 50, 100, 200]],
+            ['Tomes', '📚', 'tomes lus', $stats->readTomes, [1, 10, 25, 50, 100, 200]],
             ['Séries', '📖', 'séries terminées', $stats->completedSeries, [1, 10, 25, 50]],
-            ['Artbooks', '🎨', 'artbooks lus', $stats->readArtbooks, [1, 10, 25]],
+            ['Artbooks', '📕', 'artbooks lus', $stats->readArtbooks, [1, 10, 25]],
             ['Figurines', '🎀', 'figurines collectionnées', $stats->figurinesCollected, [1, 4, 8]],
             ['Nendoroids', '🪆', 'nendoroids collectionnés', $stats->nendoroidsCollected, [1, 10, 25, 50]],
-            ['Peluches', '🧸', 'peluches collectionnées', $stats->peluchesCollected, [1, 10, 50]],
-            ['Vocabulaire', '🎓', 'mots maîtrisés', $stats->vocabularyLearned, [10, 100, 500, 1000]],
-            ['Grammaire', '📝', 'points de grammaire maîtrisés', $stats->grammarLearned, [1, 10, 50]],
-            ['Niveau', '⭐', 'Niveau', $level, [10, 25, 50, 75, 100]],
+            ['Peluches', '🧸', 'peluches collectionnées', $stats->peluchesCollected, [1, 10, 25]],
+            ['Vocabulaire', '🎓', 'mots maîtrisés', $stats->vocabularyLearned, [1, 10, 25, 50, 100, 200]],
+            ['Grammaire', '📝', 'points de grammaire maîtrisés', $stats->grammarLearned, [1, 10, 25, 50, 100, 200]],
+            ['Niveau', '⭐', 'Niveau', $level, [1, 10, 25, 50, 100, 200]],
         ];
         $achievements = [];
 

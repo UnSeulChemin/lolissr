@@ -47,7 +47,7 @@ use App\DTO\Common\Responses\ViewData;
                 class="dashboard-card-icon u-row-center"
                 aria-hidden="true"
             >
-                📚
+                📖
             </span>
 
             <span class="dashboard-card-title u-relative u-w-full u-bold">
