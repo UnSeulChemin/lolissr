@@ -141,6 +141,35 @@ header ul
     mask-image: radial-gradient(circle closest-side, transparent 72%, #000 73%, #000 99%, transparent 100%);
 }
 
+.site-profile-frame[src*="/ailes-roses."]
+{
+    border-radius: 0;
+    -webkit-mask-image: none;
+    mask-image: none;
+}
+
+.site-profile-portrait:has(.site-profile-frame[src*="/ailes-roses."])::before
+{
+    content: "";
+    position: absolute;
+    width: 68%;
+    height: 68%;
+    top: 22%;
+    left: 16%;
+    border-radius: 50%;
+    background: #fff;
+    pointer-events: none;
+}
+
+.site-profile-portrait:has(.site-profile-frame[src*="/ailes-roses."]) .site-profile-avatar
+{
+    position: absolute;
+    width: 64%;
+    height: 64%;
+    top: 24%;
+    left: 18%;
+}
+
 .site-logo-loli,
 .site-logo-ssr
 {

@@ -84,7 +84,7 @@ $framePath =
 
             <div class="profile-content u-text-center">
 
-                <p class="profile-subtitle">
+                <p class="profile-subtitle" data-title-style="<?= \App\Constants\UserTitle::styleForTitle($user->title) ?>">
                     <?= e($user->title) ?>
                 </p>
 

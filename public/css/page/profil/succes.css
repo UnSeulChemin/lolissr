@@ -5,6 +5,51 @@
     padding-bottom: 2rem;
 }
 
+.success-reward
+{
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr);
+    align-items: center;
+    gap: .35rem .75rem;
+    width: 100%;
+    margin-top: .25rem;
+    flex: 1;
+    padding-top: .65rem;
+    border-top: 1px solid var(--color-violet-border-soft);
+    font-size: .85rem;
+    text-align: left;
+}
+.success-reward img { object-fit: contain; width: 56px; height: 56px; grid-column: 1; grid-row: 1; }
+.success-reward:has(> img)
+{
+    padding-top: 1rem;
+    gap: .85rem 1rem;
+}
+.success-reward strong,
+.success-reward a,
+.success-reward > span { grid-column: 2; }
+.success-item.is-locked .success-reward img
+{
+    filter: grayscale(.85);
+    opacity: .45;
+}
+.success-reward a
+{
+    grid-column: 1 / -1;
+    align-self: end;
+    box-sizing: border-box;
+    width: 100%;
+    padding: .85rem 1.2rem;
+    border-radius: 14px;
+    background: #efe8ff;
+    color: #6d2cff;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+}
+.success-reward-title { grid-template-columns: minmax(0, 1fr); text-align: center; }
+.success-reward.success-reward-title > * { grid-column: 1; }
+
 .success-page .success-heading
 {
     padding: clamp(20px, 4vw, 40px);
@@ -17,8 +62,8 @@
 .success-note { color: #706779; font-size: .85rem; }
 .success-category { margin-top: 2rem; }
 .success-category h2 { margin: 0 0 1.25rem; font-size: 1.3rem; }
-.success-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
-.success-item { display: flex; flex-direction: column; align-items: center; padding: 1.5rem; text-align: center; gap: .65rem; }
+.success-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; align-items: stretch; }
+.success-item { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 1.5rem; text-align: center; gap: .65rem; }
 .success-item h3 { margin: 0; font-size: 1rem; }
 .success-icon { font-size: 2rem; }
 .success-status { margin: 0; font-weight: 600; }

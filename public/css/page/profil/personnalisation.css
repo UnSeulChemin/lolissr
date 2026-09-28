@@ -18,13 +18,23 @@
 
 .profile-customization-hero
 {
+    justify-content: flex-start;
+    gap: 0;
     margin-bottom: var(--gap-grid-home);
     padding: 0;
 }
 
+.profile-customization-hero > .profile-customization-avatar
+{
+    margin-top: calc(var(--profile-avatar-size) / -2);
+    margin-bottom: 1rem;
+    flex-shrink: 0;
+}
+
 .profile-customization-banner
 {
-    aspect-ratio: 4 / 1;
+    flex-shrink: 0;
+    position: relative;
     border-radius:
         var(--card-border-radius)
         var(--card-border-radius)
@@ -64,9 +74,9 @@
     );
 
     margin:
-        calc(var(--profile-avatar-size, 110px) / -2)
+        calc(var(--profile-avatar-size, 110px) * -1)
         auto
-        1.5rem;
+        .5rem;
 
     border-radius: 999px;
 

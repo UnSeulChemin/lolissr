@@ -35,11 +35,11 @@ export function titleModal(
                                     data-title="${title.title}"
                                     type="button"
                                     ${title.unlocked ? '' : 'disabled'}
-                                    aria-label="${title.title} — ${title.unlocked ? 'Disponible' : 'Verrouillé'}, niveau ${title.required_level}"
+                                    aria-label="${title.title} — ${title.unlocked ? 'Disponible' : 'Verrouillé'}, ${title.requirement}"
                                 >
-                                    <span>${title.title}</span>
+                                    <span data-title-style="${title.unlocked ? title.style : ''}">${title.title}</span>
                                     <span class="title-modal-status">
-                                        ${title.unlocked ? (title.required_level > 1 ? `Niveau ${title.required_level}` : 'Disponible') : `<span aria-hidden="true">🔒</span> Niveau ${title.required_level}`}
+                                        ${title.unlocked ? '' : '<span aria-hidden="true">🔒</span> '}${title.requirement}
                                     </span>
                                 </button>
                             `,

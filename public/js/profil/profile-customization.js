@@ -56,7 +56,7 @@ async function openTitleModal(signal)
         return;
     }
 
-    await post(
+    const titleResponse = await post(
         appUrl('profil/ajax/update-title'),
         {
             title,
@@ -65,6 +65,11 @@ async function openTitleModal(signal)
 
     invalidateProfilePages();
     if (signal.aborted) return;
+
+    document.querySelectorAll('.profile-customization-title, .profile-subtitle').forEach(element =>
+    {
+        element.dataset.titleStyle = titleResponse.data.style;
+    });
 
     const customizationTitle =
         document.querySelector('.profile-customization-title');

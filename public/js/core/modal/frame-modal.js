@@ -39,7 +39,7 @@ export function frameModal(frames, avatar)
                                     data-frame="${frame.frame}"
                                     type="button"
                                     ${frame.unlocked ? '' : 'disabled'}
-                                    aria-label="${frame.frame} — ${frame.unlocked ? 'Disponible' : `Verrouillé, niveau ${frame.required_level} requis`}"
+                                    aria-label="${frame.frame} — ${frame.unlocked ? 'Disponible' : 'Verrouillé'}, ${frame.requirement}"
                                 >
 
                                     <div class="profile-customization-avatar">
@@ -61,7 +61,7 @@ export function frameModal(frames, avatar)
                                     </div>
 
                                     <span class="frame-modal-status">
-                                        ${frame.unlocked ? (frame.required_level > 1 ? `Niveau ${frame.required_level}` : 'Disponible') : `<span aria-hidden="true">🔒</span> Niveau ${frame.required_level}`}
+                                        ${frame.unlocked ? '' : '<span aria-hidden="true">🔒</span> '}${frame.requirement}
                                     </span>
 
                                 </button>

@@ -2,6 +2,16 @@
    PROFILE PAGE
 ========================================= */
 
+[data-title-style="rose-blue"]
+{
+    color: #b63289;
+    font-weight: 700;
+    background: linear-gradient(100deg, #d93691, #9850ce, #287fc4);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
 .profile-page
 {
     --profile-width: calc(
@@ -41,6 +51,14 @@
 .profile-card
 {
     padding: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+    justify-content: stretch;
+    justify-items: stretch;
+    gap: 0;
+    align-items: stretch;
+    min-height: 420px;
 }
 
 .profile-achievements-summary
@@ -333,15 +351,21 @@
 
 .profile-banner
 {
-    aspect-ratio: 4 / 1;
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0;
+    flex-shrink: 0;
+    position: relative;
 }
 
 .profile-banner img
 {
+    position: absolute;
+    inset: 0;
     display: block;
 
     width: 100%;
-    height: auto;
+    height: 100%;
 
     object-fit: cover;
     object-position: top center;
@@ -349,7 +373,10 @@
 
 .profile-avatar
 {
-    position: relative;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 
     display: flex;
     align-items: center;
@@ -360,10 +387,7 @@
     width: var(--profile-avatar-size);
     height: var(--profile-avatar-size);
 
-    margin:
-        calc(var(--profile-avatar-size) / -2)
-        auto
-        1.5rem;
+    margin: 0;
 
     border-radius: 999px;
 
@@ -376,8 +400,21 @@
 
 .profile-content
 {
+    grid-column: 1;
+    grid-row: 2;
+    box-sizing: border-box;
     padding:
-        0
+        calc(var(--profile-avatar-size) / 2 + 1rem)
         2rem
-        2rem;
+        1.25rem;
 }
+[data-title-style="teal-gold"]
+{
+    color: #167b83;
+    font-weight: 700;
+    background: linear-gradient(100deg, #167b83, #7363b5, #b17d2c);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+

@@ -10,6 +10,7 @@ use App\DTO\Common\ServiceResult;
 use App\Models\User;
 use App\Repositories\Auth\UserRepository;
 use App\Services\Profile\ProfileImageCatalog;
+use App\Services\Profile\ProfileStatsService;
 
 use Framework\Http\Request;
 
@@ -18,6 +19,7 @@ final class ProfileAjaxController extends Controller
     public function __construct(
         private readonly UserRepository $userRepository,
         private readonly ProfileImageCatalog $imageCatalog,
+        private readonly ProfileStatsService $profileStatsService,
         Request $request
     )
     {
@@ -32,22 +34,28 @@ final class ProfileAjaxController extends Controller
 
     public function titles(): never
     {
+        $stats = $this->profileStatsService->getStats();
         $user = $this->user();
 
-        $titles = UserTitle::titlesForLevel($user->level);
+        $titles = UserTitle::titlesForLevel($user->level, $stats->figurinesCollected, $stats->readArtbooks);
 
         $this->jsonResult(ServiceResult::success(data: ['titles' => $titles]));
     }
 
     public function updateTitle(): never
     {
+        $stats = $this->profileStatsService->getStats();
         $user = $this->user();
 
         $title = $this->stringInput('title');
 
-        $availableTitles = UserTitle::unlockedTitles($user->level);
+        $selectedTitle = $this->findItem(
+            UserTitle::titlesForLevel($user->level, $stats->figurinesCollected, $stats->readArtbooks),
+            'title',
+            $title
+        );
 
-        if (! in_array($title, $availableTitles, true))
+        if ($selectedTitle === null || ! $selectedTitle['unlocked'])
         {
             $this->jsonResult(ServiceResult::error(message: 'Titre invalide', status: 422));
         }
@@ -59,7 +67,7 @@ final class ProfileAjaxController extends Controller
 
         $this->jsonResult(ServiceResult::success(
             message: 'Titre mis à jour',
-            data: ['title' => $title]
+            data: ['title' => $title, 'style' => $selectedTitle['style']]
         ));
     }
 
@@ -171,17 +179,19 @@ final class ProfileAjaxController extends Controller
 
     public function frames(): never
     {
-        $frames = $this->imageCatalog->framesForLevel($this->user()->level);
+        $stats = $this->profileStatsService->getStats();
+        $frames = $this->imageCatalog->framesForLevel($this->user()->level, $stats->figurinesCollected, $stats->readArtbooks);
 
         $this->jsonResult(ServiceResult::success(data: ['frames' => $frames]));
     }
 
     public function updateFrame(): never
     {
+        $stats = $this->profileStatsService->getStats();
         $user = $this->user();
 
         $frame = $this->findItem(
-            $this->imageCatalog->framesForLevel($user->level),
+            $this->imageCatalog->framesForLevel($user->level, $stats->figurinesCollected, $stats->readArtbooks),
             'frame',
             $this->stringInput('frame')
         );
@@ -194,7 +204,7 @@ final class ProfileAjaxController extends Controller
         if (! $frame['unlocked'])
         {
             $this->jsonResult(ServiceResult::error(
-                message: 'Ce cadre se débloque au niveau ' . $frame['required_level'],
+                message: 'Condition de déblocage : ' . $frame['requirement'],
                 status: 422
             ));
         }

@@ -6,6 +6,20 @@ namespace App\Constants;
 
 final class UserTitle
 {
+    public const FIGURINE_REWARD = 'Collection arc-en-ciel';
+    public const FIGURINE_REWARD_TARGET = 4;
+    public const ARTBOOK_REWARD = 'Gardien des illustrations';
+    public const ARTBOOK_REWARD_TARGET = 10;
+
+    public static function styleForTitle(string $title): string
+    {
+        return match ($title) {
+            self::FIGURINE_REWARD => 'rose-blue',
+            self::ARTBOOK_REWARD => 'teal-gold',
+            default => '',
+        };
+    }
+
     // =========================================
     // TITRES
     // =========================================
@@ -98,8 +112,8 @@ final class UserTitle
     // HELPERS
     // =========================================
 
-    /** @return list<array{title: string, required_level: int, unlocked: bool}> */
-    public static function titlesForLevel(int $level): array
+    /** @return list<array{title: string, required_level: int, unlocked: bool, requirement: string, style: string}> */
+    public static function titlesForLevel(int $level, int $figurinesCollected = 0, int $readArtbooks = 0): array
     {
         $titles = [];
 
@@ -109,8 +123,35 @@ final class UserTitle
                 'title' => $title,
                 'required_level' => $requiredLevel,
                 'unlocked' => $level >= $requiredLevel,
+                'requirement' => $requiredLevel > 1 ? 'Niveau ' . $requiredLevel : 'Disponible',
+                'style' => '',
             ];
         }
+
+        $titles[] = [
+            'title' => self::FIGURINE_REWARD,
+            'required_level' => 0,
+            'unlocked' => $figurinesCollected >= self::FIGURINE_REWARD_TARGET,
+            'requirement' => self::FIGURINE_REWARD_TARGET . ' figurines collectionnées',
+            'style' => 'rose-blue',
+        ];
+
+        $titles[] = [
+            'title' => self::ARTBOOK_REWARD,
+            'required_level' => 0,
+            'unlocked' => $readArtbooks >= self::ARTBOOK_REWARD_TARGET,
+            'requirement' => self::ARTBOOK_REWARD_TARGET . ' artbooks lus',
+            'style' => self::styleForTitle(self::ARTBOOK_REWARD),
+        ];
+
+        usort($titles, static function (array $a, array $b): int
+        {
+            $groupA = $a['required_level'] === 0 ? ($a['unlocked'] ? 0 : 2) : 1;
+            $groupB = $b['required_level'] === 0 ? ($b['unlocked'] ? 0 : 2) : 1;
+            $comparison = $groupA <=> $groupB;
+
+            return $comparison !== 0 ? $comparison : $a['required_level'] <=> $b['required_level'];
+        });
 
         return $titles;
     }

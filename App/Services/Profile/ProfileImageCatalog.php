@@ -16,24 +16,49 @@ final class ProfileImageCatalog
         'diamant' => 100,
     ];
 
-    /** @return list<array{frame: string, frame_extension: string, required_level: int, unlocked: bool}> */
-    public function framesForLevel(int $level): array
+    public const FIGURINE_REWARD_FRAME = 'ailes-roses';
+    public const FIGURINE_REWARD_TARGET = 8;
+    public const ARTBOOK_REWARD_FRAME = 'enluminure';
+    public const ARTBOOK_REWARD_TARGET = 25;
+
+    /** @return list<array{frame: string, frame_extension: string, required_level: int, unlocked: bool, requirement: string}> */
+    public function framesForLevel(int $level, int $figurinesCollected = 0, int $readArtbooks = 0): array
     {
         $frames = [];
 
         foreach ($this->items('frame') as $item)
         {
             $requiredLevel = self::FRAME_LEVELS[$item['frame']] ?? 1;
+            $isReward = $item['frame'] === self::FIGURINE_REWARD_FRAME;
+            if ($item['frame'] === self::ARTBOOK_REWARD_FRAME)
+            {
+                $frames[] = [
+                    'frame' => $item['frame'],
+                    'frame_extension' => $item['frame_extension'],
+                    'required_level' => 0,
+                    'unlocked' => $readArtbooks >= self::ARTBOOK_REWARD_TARGET,
+                    'requirement' => self::ARTBOOK_REWARD_TARGET . ' artbooks lus',
+                ];
+                continue;
+            }
             $frames[] = [
                 'frame' => $item['frame'],
                 'frame_extension' => $item['frame_extension'],
-                'required_level' => $requiredLevel,
-                'unlocked' => $level >= $requiredLevel,
+                'required_level' => $isReward ? 0 : $requiredLevel,
+                'unlocked' => $isReward ? $figurinesCollected >= self::FIGURINE_REWARD_TARGET : $level >= $requiredLevel,
+                'requirement' => $isReward ? self::FIGURINE_REWARD_TARGET . ' figurines collectionnées' : ($requiredLevel > 1 ? 'Niveau ' . $requiredLevel : 'Disponible'),
             ];
         }
 
         usort($frames, static function (array $a, array $b): int
         {
+            $groupA = $a['required_level'] === 0 ? ($a['unlocked'] ? 0 : 2) : 1;
+            $groupB = $b['required_level'] === 0 ? ($b['unlocked'] ? 0 : 2) : 1;
+            if ($groupA !== $groupB)
+            {
+                return $groupA <=> $groupB;
+            }
+
             $comparison = $a['required_level'] <=> $b['required_level'];
 
             return $comparison !== 0 ? $comparison : strcmp($a['frame'], $b['frame']);

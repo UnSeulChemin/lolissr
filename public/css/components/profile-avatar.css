@@ -5,6 +5,36 @@
     --frame-opening: 72%;
 }
 
+/* This transparent winged reward has a lower opening and protruding feathers. */
+:is(.profile-avatar, .profile-customization-avatar):has(.profile-frame[src*="/ailes-roses."])::before
+{
+    content: "";
+    position: absolute;
+    width: 68%;
+    height: 68%;
+    top: 22%;
+    left: 16%;
+    border-radius: 50%;
+    background: #fff;
+    pointer-events: none;
+}
+
+.profile-frame[src*="/ailes-roses."]
+{
+    border-radius: 0;
+    -webkit-mask-image: none;
+    mask-image: none;
+}
+
+:is(.profile-avatar, .profile-customization-avatar):has(.profile-frame[src*="/ailes-roses."]) .profile-avatar-image
+{
+    position: absolute;
+    width: 64%;
+    height: 64%;
+    top: 24%;
+    left: 18%;
+}
+
 .profile-avatar-image
 {
     display: block;
