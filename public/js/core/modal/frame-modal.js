@@ -21,23 +21,25 @@ export function frameModal(frames, avatar)
                 document.createElement('div');
 
             overlay.className =
-                'confirm-modal-overlay';
+                'confirm-modal-overlay frame-modal-overlay';
 
             overlay.innerHTML = `
-                <div class="confirm-modal">
+                <div class="confirm-modal frame-modal">
 
                     <h3>
                         Choisir un cadre
                     </h3>
 
-                    <div class="media-picker-grid media-picker-grid--avatars avatar-modal-grid frame-modal-grid">
+                    <div class="title-modal-list frame-modal-grid">
 
                         ${frames.map(
                             (frame) => `
                                 <button
-                                    class="media-picker-item media-picker-item--avatar avatar-modal-item frame-modal-item"
+                                    class="title-modal-item frame-modal-item"
                                     data-frame="${frame.frame}"
                                     type="button"
+                                    ${frame.unlocked ? '' : 'disabled'}
+                                    aria-label="${frame.frame} — ${frame.unlocked ? 'Disponible' : `Verrouillé, niveau ${frame.required_level} requis`}"
                                 >
 
                                     <div class="profile-customization-avatar">
@@ -58,6 +60,10 @@ export function frameModal(frames, avatar)
 
                                     </div>
 
+                                    <span class="frame-modal-status">
+                                        ${frame.unlocked ? (frame.required_level > 1 ? `Niveau ${frame.required_level}` : 'Disponible') : `<span aria-hidden="true">🔒</span> Niveau ${frame.required_level}`}
+                                    </span>
+
                                 </button>
                             `,
                         ).join('')}
@@ -70,7 +76,7 @@ export function frameModal(frames, avatar)
             const close = mountProfileModal(overlay, resolve);
 
             overlay
-                .querySelectorAll('.frame-modal-item')
+                .querySelectorAll('.frame-modal-item:not(:disabled)')
                 .forEach(
                     (button) =>
                     {

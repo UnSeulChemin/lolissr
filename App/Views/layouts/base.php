@@ -83,6 +83,16 @@ $content = is_string($content ?? null) ? $content : '';
 
     </script>
 
+    <script type="importmap" nonce="<?= ContentSecurityPolicy::escapedNonce() ?>">
+        <?= json_encode(['imports' => [
+            $view->baseUri . 'js/core/modal/frame-modal.js' =>
+                $view->baseUri . 'js/core/modal/frame-modal.js?v=' . hash_file(
+                    'sha256',
+                    dirname(__DIR__, 3) . '/public/js/core/modal/frame-modal.js'
+                ),
+        ]], JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_THROW_ON_ERROR) ?>
+    </script>
+
     <script type="module" src="<?= e($view->baseUri) ?>js/app.js"></script>
 
 </body>

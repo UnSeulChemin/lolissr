@@ -2,13 +2,17 @@
    TITLE MODAL
 ========================================= */
 
-.title-modal-overlay
+.title-modal-overlay,
+.frame-modal-overlay,
+.confirm-modal-overlay:has(.frame-modal-grid)
 {
     box-sizing: border-box;
     padding: clamp(12px, 3vw, 32px);
 }
 
-.confirm-modal.title-modal
+.confirm-modal.title-modal,
+.confirm-modal.frame-modal,
+.confirm-modal:has(.frame-modal-grid)
 {
     box-sizing: border-box;
     max-width: 960px;
@@ -20,13 +24,16 @@
     border-radius: 28px;
 }
 
-.title-modal h3
+.title-modal h3,
+.frame-modal h3,
+.confirm-modal:has(.frame-modal-grid) h3
 {
     text-align: center;
     flex-shrink: 0;
 }
 
-.title-modal-list
+.title-modal-list,
+.frame-modal-grid.frame-modal-grid
 {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -39,7 +46,8 @@
     margin-top: 1rem;
 }
 
-.title-modal-item
+.title-modal-item,
+.frame-modal-grid .frame-modal-item
 {
     width: 100%;
 
@@ -66,7 +74,8 @@
         background .15s;
 }
 
-.title-modal-item:hover
+.title-modal-item:not(:disabled):hover,
+.frame-modal-grid .frame-modal-item:not(:disabled):hover
 {
     background: rgba(
         139,
@@ -80,7 +89,8 @@
     transform: translateY(-1px);
 }
 
-.title-modal-item:focus-visible
+.title-modal-item:focus-visible,
+.frame-modal-grid .frame-modal-item:focus-visible
 {
     outline: 2px solid var(--color-violet);
     outline-offset: 2px;
@@ -88,9 +98,31 @@
     border-color: var(--color-violet);
 }
 
+.frame-modal-status
+{
+    display: block;
+    margin-top: .65rem;
+    font-size: .85rem;
+}
+
+.frame-modal-grid .frame-modal-item:disabled
+{
+    cursor: not-allowed;
+    background: #f0eef2;
+    border-color: #d8d3df;
+    color: #706779;
+}
+
+.frame-modal-item:disabled .profile-customization-avatar
+{
+    filter: grayscale(.85);
+    opacity: .45;
+}
+
 @media (max-width: 720px)
 {
-    .title-modal-list
+    .title-modal-list,
+    .frame-modal-grid.frame-modal-grid
     {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -98,12 +130,14 @@
 
 @media (max-width: 420px)
 {
-    .title-modal-list
+    .title-modal-list,
+    .frame-modal-grid.frame-modal-grid
     {
         grid-template-columns: minmax(0, 1fr);
     }
 
-    .title-modal-item
+    .title-modal-item,
+    .frame-modal-grid .frame-modal-item
     {
         min-height: 56px;
     }

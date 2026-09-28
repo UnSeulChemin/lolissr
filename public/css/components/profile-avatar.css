@@ -1,11 +1,20 @@
+.profile-avatar,
+.profile-customization-avatar
+{
+    /* Keep the portrait and frame opening aligned at every preview size. */
+    --frame-opening: 72%;
+}
+
 .profile-avatar-image
 {
     display: block;
 
-    width: 100%;
-    height: 100%;
+    width: calc(var(--frame-opening) + 1%);
+    height: calc(var(--frame-opening) + 1%);
+    flex-shrink: 0;
 
-    object-fit: contain;
+    object-fit: cover;
+    object-position: center;
 
     border-radius: 50%;
 
@@ -16,6 +25,7 @@
 
 .profile-frame
 {
+    /* Shared circular opening, including frames with an opaque background. */
     position: absolute;
 
     inset: 0;
@@ -25,7 +35,24 @@
     width: 100%;
     height: 100%;
 
-    object-fit: contain;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 50%;
+
+    -webkit-mask-image: radial-gradient(
+        circle closest-side,
+        transparent var(--frame-opening),
+        #000 calc(var(--frame-opening) + 1%),
+        #000 99%,
+        transparent 100%
+    );
+    mask-image: radial-gradient(
+        circle closest-side,
+        transparent var(--frame-opening),
+        #000 calc(var(--frame-opening) + 1%),
+        #000 99%,
+        transparent 100%
+    );
 
     z-index: 2;
 

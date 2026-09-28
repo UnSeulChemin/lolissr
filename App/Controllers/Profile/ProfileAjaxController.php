@@ -163,7 +163,7 @@ final class ProfileAjaxController extends Controller
 
     public function frames(): never
     {
-        $frames = $this->imageCatalog->items('frame');
+        $frames = $this->imageCatalog->framesForLevel($this->user()->level);
 
         $this->jsonResult(ServiceResult::success(data: ['frames' => $frames]));
     }
@@ -173,7 +173,7 @@ final class ProfileAjaxController extends Controller
         $user = $this->user();
 
         $frame = $this->findItem(
-            $this->imageCatalog->items('frame'),
+            $this->imageCatalog->framesForLevel($user->level),
             'frame',
             $this->stringInput('frame')
         );
@@ -181,6 +181,14 @@ final class ProfileAjaxController extends Controller
         if ($frame === null)
         {
             $this->jsonResult(ServiceResult::error(message: 'Cadre invalide', status: 422));
+        }
+
+        if (! $frame['unlocked'])
+        {
+            $this->jsonResult(ServiceResult::error(
+                message: 'Ce cadre se débloque au niveau ' . $frame['required_level'],
+                status: 422
+            ));
         }
 
         if (! $this->userRepository->updateFrame(
@@ -217,9 +225,10 @@ final class ProfileAjaxController extends Controller
     }
 
     /**
-     * @param array<int, array<string, string>> $items
+     * @template T of array<string, mixed>
+     * @param array<int, T> $items
      *
-     * @return array<string, string>|null
+     * @return T|null
      */
     private function findItem(array $items, string $key, string $value): ?array
     {

@@ -24,7 +24,8 @@ final class PageStyles
             {
                 if ($view === $pattern || (str_ends_with($pattern, '/') && str_starts_with($view, $pattern)))
                 {
-                    $stylesheets[] = view_base_uri() . 'css/' . $file;
+                    $version = hash_file('sha256', dirname(__DIR__, 2) . '/public/css/' . $file);
+                    $stylesheets[] = view_base_uri() . 'css/' . $file . '?v=' . $version;
                     break;
                 }
             }
