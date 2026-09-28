@@ -19,43 +19,32 @@ $user = user();
 
         <?php if ($user !== null): ?>
 
-            <?php
-
-            $username = $user->username;
-            $usernameLength = mb_strlen($username);
-
-            $usernameMain = $usernameLength > 3
-                ? mb_substr($username, 0, -3)
-                : $username;
-
-            $usernameSuffix = $usernameLength > 3
-                ? mb_substr($username, -3)
-                : '';
-
-            ?>
-
             <div class="site-profile u-inline-flex">
 
                 <a
                     class="site-profile-link"
                     href="<?= e($view->baseUri) ?>profil"
-                    title="<?= e($username) ?>"
+                    title="Mon profil" aria-label="Profil de <?= e($user->username) ?>"
                 >
 
                     <span class="site-logo u-row u-relative u-clip">
 
-                        <span class="site-logo-loli">
-                            <?= e($usernameMain) ?>
+                        <span class="site-profile-portrait">
+                        <img
+                            class="site-profile-avatar"
+                            src="<?= e($view->baseUri . 'images/profil/avatar/thumbnail/' . $user->avatar . '.' . $user->avatar_extension) ?>"
+                            width="41"
+                            height="41"
+                            alt=""
+                        >
+                        <img
+                            class="site-profile-frame"
+                            src="<?= e($view->baseUri . 'images/profil/frame/thumbnail/' . $user->frame . '.' . $user->frame_extension) ?>"
+                            width="56"
+                            height="56"
+                            alt=""
+                        >
                         </span>
-
-                        <?php if ($usernameSuffix !== ''): ?>
-
-                            <span class="site-logo-ssr">
-                                <?= e($usernameSuffix) ?>
-                            </span>
-
-                        <?php endif; ?>
-
                     </span>
 
                     <span class="site-logo-level js-user-level u-row-center u-relative u-no-select">

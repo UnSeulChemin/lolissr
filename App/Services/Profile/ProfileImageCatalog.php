@@ -42,6 +42,25 @@ final class ProfileImageCatalog
         return $frames;
     }
 
+    /** @return list<array{banner: string, banner_extension: string, required_level: int, unlocked: bool}> */
+    public function bannersForLevel(int $level): array
+    {
+        $banners = [];
+
+        foreach ($this->items('banner') as $item)
+        {
+            $requiredLevel = $item['banner'] === 'lune' ? 10 : 1;
+            $banners[] = [
+                'banner' => $item['banner'],
+                'banner_extension' => $item['banner_extension'],
+                'required_level' => $requiredLevel,
+                'unlocked' => $level >= $requiredLevel,
+            ];
+        }
+
+        return $banners;
+    }
+
     /** @return list<array<string, string>> */
     public function items(string $type): array
     {
@@ -50,7 +69,7 @@ final class ProfileImageCatalog
             throw new \InvalidArgumentException('Unknown profile image type.');
         }
 
-        $path = dirname(__DIR__, 3) . '/public/images/' . $type . '/thumbnail';
+        $path = dirname(__DIR__, 3) . '/public/images/profil/' . $type . '/thumbnail';
         $files = glob($path . '/*.{webp,jpg,png}', GLOB_BRACE);
         $items = [];
 

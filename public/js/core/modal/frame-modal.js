@@ -53,7 +53,7 @@ export function frameModal(frames, avatar)
 
                                         <img
                                             class="profile-frame"
-                                            src="${appUrl(`images/frame/thumbnail/${frame.frame}.${frame.frame_extension}`)}"
+                                            src="${appUrl(`images/profil/frame/thumbnail/${frame.frame}.${frame.frame_extension}`)}"
                                             alt="${frame.frame}"
                                             draggable="false"
                                         >

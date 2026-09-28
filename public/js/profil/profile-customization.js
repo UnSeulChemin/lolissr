@@ -122,11 +122,16 @@ async function openAvatarModal(signal)
 
     const avatarPath =
         appUrl(
-            `images/avatar/thumbnail/${response.data.avatar}.${response.data.avatar_extension}`,
+            `images/profil/avatar/thumbnail/${response.data.avatar}.${response.data.avatar_extension}`,
         );
 
     const customizationAvatar =
         document.querySelector('.profile-customization-avatar img');
+
+    document.querySelectorAll('.site-profile-avatar').forEach(image =>
+    {
+        image.src = avatarPath;
+    });
 
     if (customizationAvatar)
     {
@@ -178,7 +183,7 @@ async function openBannerModal(signal)
     invalidateProfilePages();
     if (signal.aborted) return;
     const imagePath = appUrl(
-        `images/banner/thumbnail/${response.data.banner}.${response.data.banner_extension}`,
+        `images/profil/banner/thumbnail/${response.data.banner}.${response.data.banner_extension}`,
     );
     document.querySelectorAll('.profile-customization-banner img, .profile-banner img').forEach(image =>
     {
@@ -226,9 +231,9 @@ async function openFrameModal(signal)
     invalidateProfilePages();
     if (signal.aborted) return;
     const imagePath = appUrl(
-        `images/frame/thumbnail/${response.data.frame}.${response.data.frame_extension}`,
+        `images/profil/frame/thumbnail/${response.data.frame}.${response.data.frame_extension}`,
     );
-    document.querySelectorAll('.profile-customization-avatar .profile-frame, .profile-avatar .profile-frame').forEach(image =>
+    document.querySelectorAll('.profile-customization-avatar .profile-frame, .profile-avatar .profile-frame, .site-profile-frame').forEach(image =>
     {
         image.src = imagePath;
     });

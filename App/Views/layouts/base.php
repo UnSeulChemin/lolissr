@@ -34,6 +34,7 @@ $content = is_string($content ?? null) ? $content : '';
     <link rel="shortcut icon" href="<?= e($view->baseUri) ?>images/favicon/favicon.png">
 
     <link rel="stylesheet" href="<?= e($view->baseUri) ?>css/app.css">
+    <link rel="stylesheet" href="<?= e($view->baseUri) ?>css/partials/header.css?v=<?= e((string) hash_file('sha256', dirname(__DIR__, 3) . '/public/css/partials/header.css')) ?>">
 
     <?php foreach ($pageStylesheets as $stylesheet): ?>
         <link rel="stylesheet" href="<?= e($stylesheet) ?>" data-page-style>
@@ -85,6 +86,21 @@ $content = is_string($content ?? null) ? $content : '';
 
     <script type="importmap" nonce="<?= ContentSecurityPolicy::escapedNonce() ?>">
         <?= json_encode(['imports' => [
+            $view->baseUri . 'js/core/modal/avatar-modal.js' =>
+                $view->baseUri . 'js/core/modal/avatar-modal.js?v=' . hash_file(
+                    'sha256',
+                    dirname(__DIR__, 3) . '/public/js/core/modal/avatar-modal.js'
+                ),
+            $view->baseUri . 'js/core/modal/banner-modal.js' =>
+                $view->baseUri . 'js/core/modal/banner-modal.js?v=' . hash_file(
+                    'sha256',
+                    dirname(__DIR__, 3) . '/public/js/core/modal/banner-modal.js'
+                ),
+            $view->baseUri . 'js/profil/profile-customization.js' =>
+                $view->baseUri . 'js/profil/profile-customization.js?v=' . hash_file(
+                    'sha256',
+                    dirname(__DIR__, 3) . '/public/js/profil/profile-customization.js'
+                ),
             $view->baseUri . 'js/core/modal/title-modal.js' =>
                 $view->baseUri . 'js/core/modal/title-modal.js?v=' . hash_file(
                     'sha256',

@@ -4,6 +4,7 @@
 
 .title-modal-overlay,
 .frame-modal-overlay,
+.confirm-modal-overlay:has(.banner-modal-grid),
 .confirm-modal-overlay:has(.avatar-modal-grid),
 .confirm-modal-overlay:has(.frame-modal-grid)
 {
@@ -13,6 +14,7 @@
 
 .confirm-modal.title-modal,
 .confirm-modal.frame-modal,
+.confirm-modal:has(.banner-modal-grid),
 .confirm-modal:has(.avatar-modal-grid),
 .confirm-modal:has(.frame-modal-grid)
 {
@@ -28,6 +30,7 @@
 
 .title-modal h3,
 .frame-modal h3,
+.confirm-modal:has(.banner-modal-grid) h3,
 .confirm-modal:has(.avatar-modal-grid) h3,
 .confirm-modal:has(.frame-modal-grid) h3
 {
@@ -51,6 +54,7 @@
 }
 
 .title-modal-item,
+.banner-modal-grid .banner-modal-item,
 .frame-modal-grid .frame-modal-item
 {
     width: 100%;
@@ -79,6 +83,7 @@
 }
 
 .title-modal-item:not(:disabled):hover,
+.banner-modal-grid .banner-modal-item:not(:disabled):hover,
 .frame-modal-grid .frame-modal-item:not(:disabled):hover
 {
     background: rgba(
@@ -94,6 +99,7 @@
 }
 
 .title-modal-item:focus-visible,
+.banner-modal-grid .banner-modal-item:focus-visible,
 .frame-modal-grid .frame-modal-item:focus-visible
 {
     outline: 2px solid var(--color-violet);
@@ -103,6 +109,7 @@
 }
 
 .title-modal-status,
+.banner-modal-status,
 .frame-modal-status
 {
     display: block;
@@ -111,6 +118,7 @@
 }
 
 .title-modal-item:disabled,
+.banner-modal-grid .banner-modal-item:disabled,
 .frame-modal-grid .frame-modal-item:disabled
 {
     cursor: not-allowed;

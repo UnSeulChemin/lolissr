@@ -41,7 +41,7 @@ export function avatarModal(avatars)
                                 >
 
                                     <img
-                                        src="${appUrl(`images/avatar/thumbnail/${avatar.avatar}.${avatar.avatar_extension}`)}"
+                                        src="${appUrl(`images/profil/avatar/thumbnail/${avatar.avatar}.${avatar.avatar_extension}`)}"
                                         alt="${avatar.avatar}"
                                         draggable="false"
                                     >

@@ -117,7 +117,7 @@ final class ProfileAjaxController extends Controller
 
     public function banners(): never
     {
-        $banners = $this->imageCatalog->items('banner');
+        $banners = $this->imageCatalog->bannersForLevel($this->user()->level);
 
         $this->jsonResult(ServiceResult::success(data: ['banners' => $banners]));
     }
@@ -127,7 +127,7 @@ final class ProfileAjaxController extends Controller
         $user = $this->user();
 
         $banner = $this->findItem(
-            $this->imageCatalog->items('banner'),
+            $this->imageCatalog->bannersForLevel($user->level),
             'banner',
             $this->stringInput('banner')
         );
@@ -135,6 +135,14 @@ final class ProfileAjaxController extends Controller
         if ($banner === null)
         {
             $this->jsonResult(ServiceResult::error(message: 'Bannière invalide', status: 422));
+        }
+
+        if (! $banner['unlocked'])
+        {
+            $this->jsonResult(ServiceResult::error(
+                message: 'Cette bannière se débloque au niveau ' . $banner['required_level'],
+                status: 422
+            ));
         }
 
         if (! $this->userRepository->updateBanner(

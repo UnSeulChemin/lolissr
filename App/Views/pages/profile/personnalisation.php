@@ -9,13 +9,13 @@ use App\Models\User;
 /** @var User $user */
 
 $avatarPath =
-    "{$view->baseUri}images/avatar/thumbnail/{$user->avatar}.{$user->avatar_extension}";
+    "{$view->baseUri}images/profil/avatar/thumbnail/{$user->avatar}.{$user->avatar_extension}";
 
 $bannerPath =
-    "{$view->baseUri}images/banner/thumbnail/{$user->banner}.{$user->banner_extension}";
+    "{$view->baseUri}images/profil/banner/thumbnail/{$user->banner}.{$user->banner_extension}";
 
 $framePath =
-    "{$view->baseUri}images/frame/thumbnail/{$user->frame}.{$user->frame_extension}";
+    "{$view->baseUri}images/profil/frame/thumbnail/{$user->frame}.{$user->frame_extension}";
 
 $username =
     $user->username;
