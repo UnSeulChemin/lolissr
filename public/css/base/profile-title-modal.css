@@ -4,6 +4,7 @@
 
 .title-modal-overlay,
 .frame-modal-overlay,
+.confirm-modal-overlay:has(.avatar-modal-grid),
 .confirm-modal-overlay:has(.frame-modal-grid)
 {
     box-sizing: border-box;
@@ -12,6 +13,7 @@
 
 .confirm-modal.title-modal,
 .confirm-modal.frame-modal,
+.confirm-modal:has(.avatar-modal-grid),
 .confirm-modal:has(.frame-modal-grid)
 {
     box-sizing: border-box;
@@ -26,6 +28,7 @@
 
 .title-modal h3,
 .frame-modal h3,
+.confirm-modal:has(.avatar-modal-grid) h3,
 .confirm-modal:has(.frame-modal-grid) h3
 {
     text-align: center;
@@ -33,6 +36,7 @@
 }
 
 .title-modal-list,
+.avatar-modal-grid.avatar-modal-grid,
 .frame-modal-grid.frame-modal-grid
 {
     display: grid;
@@ -124,6 +128,7 @@
 @media (max-width: 720px)
 {
     .title-modal-list,
+    .avatar-modal-grid.avatar-modal-grid,
     .frame-modal-grid.frame-modal-grid
     {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -133,6 +138,7 @@
 @media (max-width: 420px)
 {
     .title-modal-list,
+    .avatar-modal-grid.avatar-modal-grid,
     .frame-modal-grid.frame-modal-grid
     {
         grid-template-columns: minmax(0, 1fr);
