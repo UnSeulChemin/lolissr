@@ -14,7 +14,10 @@ final readonly class ChinoisXpRewardService
     public function __construct(
         private ChinoisGrammaireRepository $grammaireRepository,
         private ChinoisVocabulaireRepository $vocabulaireRepository,
-        private UserLevelService $userLevelService
+        private UserLevelService $userLevelService,
+        private \App\Services\Profile\AchievementXpService $achievementXpService,
+        private \App\Repositories\Chinois\ChinoisVocabulaireStatsRepository $vocabularyStatsRepository,
+        private \App\Repositories\Chinois\ChinoisGrammaireStatsRepository $grammarStatsRepository,
     ) {
     }
 
@@ -26,7 +29,14 @@ final readonly class ChinoisXpRewardService
     {
         $user = user();
 
-        if ($user === null || ! $this->grammaireRepository->claimXpReward($id))
+        if ($user === null)
+        {
+            return false;
+        }
+
+        $this->achievementXpService->rewardGrammar($user, $this->grammarStatsRepository->profileSummary()['mastered']);
+
+        if (! $this->grammaireRepository->claimXpReward($id))
         {
             return false;
         }
@@ -40,7 +50,14 @@ final readonly class ChinoisXpRewardService
     {
         $user = user();
 
-        if ($user === null || ! $this->vocabulaireRepository->claimXpReward($id))
+        if ($user === null)
+        {
+            return false;
+        }
+
+        $this->achievementXpService->rewardVocabulary($user, $this->vocabularyStatsRepository->profileSummary()['mastered']);
+
+        if (! $this->vocabulaireRepository->claimXpReward($id))
         {
             return false;
         }

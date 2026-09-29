@@ -37,7 +37,7 @@ final class ProfileAjaxController extends Controller
         $stats = $this->profileStatsService->getStats();
         $user = $this->user();
 
-        $titles = UserTitle::titlesForLevel($user->level, $stats->figurinesCollected, $stats->readArtbooks, $stats->readTomes, $stats->completedSeries, $stats->nendoroidsCollected);
+        $titles = UserTitle::titlesForLevel($user->level, $stats->figurinesCollected, $stats->readArtbooks, $stats->readTomes, $stats->completedSeries, $stats->nendoroidsCollected, $stats->vocabularyLearned, $stats->grammarLearned);
 
         $this->jsonResult(ServiceResult::success(data: ['titles' => $titles]));
     }
@@ -50,7 +50,7 @@ final class ProfileAjaxController extends Controller
         $title = $this->stringInput('title');
 
         $selectedTitle = $this->findItem(
-            UserTitle::titlesForLevel($user->level, $stats->figurinesCollected, $stats->readArtbooks, $stats->readTomes, $stats->completedSeries, $stats->nendoroidsCollected),
+            UserTitle::titlesForLevel($user->level, $stats->figurinesCollected, $stats->readArtbooks, $stats->readTomes, $stats->completedSeries, $stats->nendoroidsCollected, $stats->vocabularyLearned, $stats->grammarLearned),
             'title',
             $title
         );
@@ -126,7 +126,7 @@ final class ProfileAjaxController extends Controller
     public function banners(): never
     {
         $stats = $this->profileStatsService->getStats();
-        $banners = $this->imageCatalog->bannersForLevel($this->user()->level, $stats->readTomes, $stats->nendoroidsCollected, $stats->peluchesCollected);
+        $banners = $this->imageCatalog->bannersForLevel($this->user()->level, $stats->readTomes, $stats->nendoroidsCollected, $stats->peluchesCollected, $stats->vocabularyLearned, $stats->grammarLearned);
 
         $this->jsonResult(ServiceResult::success(data: ['banners' => $banners]));
     }
@@ -138,7 +138,7 @@ final class ProfileAjaxController extends Controller
         $stats = $this->profileStatsService->getStats();
 
         $banner = $this->findItem(
-            $this->imageCatalog->bannersForLevel($user->level, $stats->readTomes, $stats->nendoroidsCollected, $stats->peluchesCollected),
+            $this->imageCatalog->bannersForLevel($user->level, $stats->readTomes, $stats->nendoroidsCollected, $stats->peluchesCollected, $stats->vocabularyLearned, $stats->grammarLearned),
             'banner',
             $this->stringInput('banner')
         );
@@ -183,7 +183,7 @@ final class ProfileAjaxController extends Controller
     public function frames(): never
     {
         $stats = $this->profileStatsService->getStats();
-        $frames = $this->imageCatalog->framesForLevel($this->user()->level, $stats->figurinesCollected, $stats->readArtbooks, $stats->readTomes, $stats->nendoroidsCollected, $stats->peluchesCollected);
+        $frames = $this->imageCatalog->framesForLevel($this->user()->level, $stats->figurinesCollected, $stats->readArtbooks, $stats->readTomes, $stats->nendoroidsCollected, $stats->peluchesCollected, $stats->vocabularyLearned, $stats->grammarLearned);
 
         $this->jsonResult(ServiceResult::success(data: ['frames' => $frames]));
     }
@@ -194,7 +194,7 @@ final class ProfileAjaxController extends Controller
         $user = $this->user();
 
         $frame = $this->findItem(
-            $this->imageCatalog->framesForLevel($user->level, $stats->figurinesCollected, $stats->readArtbooks, $stats->readTomes, $stats->nendoroidsCollected, $stats->peluchesCollected),
+            $this->imageCatalog->framesForLevel($user->level, $stats->figurinesCollected, $stats->readArtbooks, $stats->readTomes, $stats->nendoroidsCollected, $stats->peluchesCollected, $stats->vocabularyLearned, $stats->grammarLearned),
             'frame',
             $this->stringInput('frame')
         );

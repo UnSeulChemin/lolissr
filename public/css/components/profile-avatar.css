@@ -89,3 +89,19 @@
 
     pointer-events: none;
 }
+
+/* Preserve the feather silhouette of level reward frames. */
+:is(.profile-frame[src*="/ailes-azur."], .profile-frame[src*="/ailes-souveraines."])
+{
+    border-radius: 0;
+    -webkit-mask-image: none;
+    mask-image: none;
+}
+:is(.profile-avatar, .profile-customization-avatar):has(:is(.profile-frame[src*="/ailes-azur."], .profile-frame[src*="/ailes-souveraines."])) .profile-avatar-image
+{
+    position: absolute;
+    width: 58%;
+    height: 58%;
+    top: 22%;
+    left: 21%;
+}

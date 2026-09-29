@@ -212,6 +212,83 @@ $category = '';
                     <?php endif; ?>
                 </div>
             <?php endif; ?>
+            <?php if ($achievement['category'] === 'Vocabulaire' && isset(\App\Services\Profile\AchievementXpService::VOCABULARY_REWARDS[$achievement['target']])): ?>
+                <div class="success-reward <?= $achievement['target'] === ProfileImageCatalog::LEARNING_FRAME_TARGET ? 'success-reward-frame-xp' : 'success-reward-title' ?> <?= $achievement['target'] === ProfileImageCatalog::LEARNING_BANNER_TARGET ? 'success-reward-banner' : ($achievement['target'] < \App\Constants\UserTitle::VOCABULARY_REWARD_TARGET ? 'success-reward-xp' : '') ?>">
+                    <strong class="success-reward-xp-label">Récompense : ⭐ <?= number_format(\App\Services\Profile\AchievementXpService::VOCABULARY_REWARDS[$achievement['target']], 0, ',', ' ') ?> XP</strong>
+                    <?php if ($achievement['target'] === ProfileImageCatalog::LEARNING_BANNER_TARGET): ?>
+                        <strong>Récompense : bannière<span class="success-reward-name">Bibliothèque des mots</span></strong>
+                        <img src="<?= e($view->baseUri . 'images/profil/banner/thumbnail/' . ProfileImageCatalog::VOCABULARY_REWARD_BANNER . '.png') ?>" alt="Bibliothèque des mots" loading="lazy">
+                        <?php if ($achievement['unlocked']): ?>
+                            <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir cette bannière</a>
+                        <?php endif; ?>
+                    <?php elseif ($achievement['target'] === ProfileImageCatalog::LEARNING_FRAME_TARGET): ?>
+                        <strong>Récompense : cadre<span class="success-reward-name">Lexique de jade</span></strong>
+                        <img src="<?= e($view->baseUri . 'images/profil/frame/thumbnail/' . ProfileImageCatalog::VOCABULARY_REWARD_FRAME . '.png') ?>" alt="Cadre Lexique de jade" width="120" height="120" loading="lazy">
+                        <?php if ($achievement['unlocked']): ?>
+                            <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir ce cadre</a>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                    <?php if ($achievement['target'] === \App\Constants\UserTitle::VOCABULARY_REWARD_TARGET): ?>
+                        <strong>Récompense : titre</strong>
+                        <span data-title-style="<?= $achievement['unlocked'] ? \App\Constants\UserTitle::styleForTitle(\App\Constants\UserTitle::VOCABULARY_REWARD) : '' ?>"><?= e(\App\Constants\UserTitle::VOCABULARY_REWARD) ?></span>
+                        <?php if ($achievement['unlocked']): ?>
+                            <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir ce titre</a>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                    <?php if (! $achievement['unlocked']): ?>
+                        <span>🔒 Débloqué avec <?= $achievement['target'] ?> <?= $achievement['target'] === 1 ? 'mot maîtrisé' : 'mots maîtrisés' ?></span>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
+            <?php if ($achievement['category'] === 'Grammaire' && isset(\App\Services\Profile\AchievementXpService::GRAMMAR_REWARDS[$achievement['target']])): ?>
+                <div class="success-reward <?= $achievement['target'] === ProfileImageCatalog::LEARNING_FRAME_TARGET ? 'success-reward-frame-xp' : 'success-reward-title' ?> <?= $achievement['target'] === ProfileImageCatalog::LEARNING_BANNER_TARGET ? 'success-reward-banner' : ($achievement['target'] < \App\Constants\UserTitle::GRAMMAR_REWARD_TARGET ? 'success-reward-xp' : '') ?>">
+                    <strong class="success-reward-xp-label">Récompense : ⭐ <?= number_format(\App\Services\Profile\AchievementXpService::GRAMMAR_REWARDS[$achievement['target']], 0, ',', ' ') ?> XP</strong>
+                    <?php if ($achievement['target'] === ProfileImageCatalog::LEARNING_BANNER_TARGET): ?>
+                        <strong>Récompense : bannière<span class="success-reward-name">Atelier des phrases</span></strong>
+                        <img src="<?= e($view->baseUri . 'images/profil/banner/thumbnail/' . ProfileImageCatalog::GRAMMAR_REWARD_BANNER . '.png') ?>" alt="Atelier des phrases" loading="lazy">
+                        <?php if ($achievement['unlocked']): ?>
+                            <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir cette bannière</a>
+                        <?php endif; ?>
+                    <?php elseif ($achievement['target'] === ProfileImageCatalog::LEARNING_FRAME_TARGET): ?>
+                        <strong>Récompense : cadre<span class="success-reward-name">Plume astrale</span></strong>
+                        <img src="<?= e($view->baseUri . 'images/profil/frame/thumbnail/' . ProfileImageCatalog::GRAMMAR_REWARD_FRAME . '.png') ?>" alt="Cadre Plume astrale" width="120" height="120" loading="lazy">
+                        <?php if ($achievement['unlocked']): ?>
+                            <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir ce cadre</a>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                    <?php if ($achievement['target'] === \App\Constants\UserTitle::GRAMMAR_REWARD_TARGET): ?>
+                        <strong>Récompense : titre</strong>
+                        <span data-title-style="<?= $achievement['unlocked'] ? \App\Constants\UserTitle::styleForTitle(\App\Constants\UserTitle::GRAMMAR_REWARD) : '' ?>"><?= e(\App\Constants\UserTitle::GRAMMAR_REWARD) ?></span>
+                        <?php if ($achievement['unlocked']): ?>
+                            <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir ce titre</a>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                    <?php if (! $achievement['unlocked']): ?>
+                        <span>🔒 Débloqué avec <?= $achievement['target'] ?> <?= $achievement['target'] === 1 ? 'point de grammaire maîtrisé' : 'points de grammaire maîtrisés' ?></span>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
+            <?php if ($achievement['category'] === 'Niveau'): ?>
+                <?php $levelTitle = \App\Constants\UserTitle::LEVEL_REWARDS[$achievement['target']] ?? null; ?>
+                <?php $levelFrame = ProfileImageCatalog::LEVEL_REWARD_FRAMES[$achievement['target']] ?? null; ?>
+                <div class="success-reward success-reward-level <?= $levelFrame !== null ? '' : 'success-reward-title' ?> <?= $achievement['target'] === ProfileImageCatalog::LEVEL_BANNER_TARGET ? 'success-reward-banner' : '' ?>">
+                    <?php if ($levelTitle !== null): ?>
+                        <strong>Récompense : titre</strong>
+                        <span data-title-style="<?= $achievement['unlocked'] ? \App\Constants\UserTitle::styleForTitle($levelTitle) : '' ?>"><?= e($levelTitle) ?></span>
+                    <?php elseif ($levelFrame !== null): ?>
+                        <strong>Récompense : cadre<span class="success-reward-name"><?= $achievement['target'] === 100 ? 'Ailes d’azur' : 'Ailes souveraines' ?></span></strong>
+                        <img src="<?= e($view->baseUri . 'images/profil/frame/thumbnail/' . $levelFrame . '.png') ?>" alt="Cadre ailé de niveau <?= $achievement['target'] ?>" width="120" height="120" loading="lazy">
+                    <?php else: ?>
+                        <strong>Récompense : bannière<span class="success-reward-name">Palais des étoiles</span></strong>
+                        <img src="<?= e($view->baseUri . 'images/profil/banner/thumbnail/' . ProfileImageCatalog::LEVEL_REWARD_BANNER . '.png') ?>" alt="Palais céleste au-dessus des nuages" loading="lazy">
+                    <?php endif; ?>
+                    <?php if ($achievement['unlocked']): ?>
+                        <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>"><?= $levelTitle !== null ? 'Choisir ce titre' : ($levelFrame !== null ? 'Choisir ce cadre' : 'Choisir cette bannière') ?></a>
+                    <?php else: ?>
+                        <span>🔒 Débloqué au niveau <?= $achievement['target'] ?></span>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
         </article>
     <?php endforeach; ?>
     <?php if ($category !== ''): ?></div></section><?php endif; ?>

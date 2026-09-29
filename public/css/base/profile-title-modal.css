@@ -53,6 +53,19 @@
     margin-top: 1rem;
 }
 
+.title-modal-list
+{
+    grid-auto-rows: max-content;
+    align-content: start;
+}
+
+.title-modal-list .title-modal-item
+{
+    height: auto;
+    min-width: 0;
+    white-space: normal;
+}
+
 .title-modal-item,
 .banner-modal-grid .banner-modal-item,
 .frame-modal-grid .frame-modal-item
