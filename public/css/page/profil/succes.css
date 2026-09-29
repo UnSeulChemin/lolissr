@@ -161,7 +161,18 @@
 }
 .success-note { color: #706779; font-size: .85rem; }
 .success-category { margin-top: 2rem; }
-.success-category h2 { margin: 0 0 1.25rem; font-size: 1.3rem; }
+.success-category h2
+{
+    width: fit-content;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin: 0 0 1.25rem;
+    padding: .65rem 1rem;
+    font-size: 1.3rem;
+    background: #eee7ff;
+    border: 1px solid #e2d5ff;
+    border-radius: 16px;
+}
 .success-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; align-items: stretch; }
 .success-item { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 1.5rem; text-align: center; gap: .65rem; }
 .success-item h3 { margin: 0; font-size: 1rem; }
