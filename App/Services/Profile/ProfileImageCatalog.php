@@ -14,6 +14,10 @@ final class ProfileImageCatalog
         'saphir' => 50,
         'rubis' => 75,
         'diamant' => 100,
+        'emeraude' => 125,
+        'obsidienne' => 150,
+        'aurore' => 175,
+        'imperial' => 200,
     ];
 
     public const FIGURINE_REWARD_FRAME = 'ailes-roses';
