@@ -13,7 +13,9 @@ final readonly class FigurineXpRewardService
 {
     public function __construct(
         private FigurineRepository $figurineRepository,
-        private UserLevelService $userLevelService
+        private UserLevelService $userLevelService,
+        private \App\Services\Profile\AchievementXpService $achievementXpService,
+        private \App\Repositories\Figurine\FigurineStatsRepository $figurineStatsRepository,
     ) {
     }
 
@@ -26,6 +28,8 @@ final readonly class FigurineXpRewardService
         {
             return false;
         }
+
+        $this->achievementXpService->rewardFigurines($user, $this->figurineStatsRepository->profileSummary()['collected']);
 
         if (! $this->figurineRepository->claimCollectReward($figurine->id))
         {

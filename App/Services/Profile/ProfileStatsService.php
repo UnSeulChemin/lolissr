@@ -67,6 +67,7 @@ final readonly class ProfileStatsService
             }
             $this->achievementXpService->rewardSeries($user, $completedSeries);
             $this->achievementXpService->rewardArtbooks($user, $artbook['read']);
+            $this->achievementXpService->rewardFigurines($user, $figurine['collected']);
             $achievementXp = $this->achievementXpService->totalForUser($user);
         }
         $tomeXp = $manga['rewarded_tomes'] * UserXp::READ_TOME;

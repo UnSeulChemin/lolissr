@@ -37,6 +37,7 @@ $category = '';
             <span><?= min($achievement['current'], $achievement['target']) ?> / <?= $achievement['target'] ?></span>
             <?php if ($achievement['category'] === 'Figurines' && $achievement['target'] === \App\Constants\UserTitle::FIGURINE_REWARD_TARGET): ?>
                 <div class="success-reward success-reward-title">
+                    <strong>Récompense : ⭐ <?= number_format(\App\Services\Profile\AchievementXpService::FIGURINE_REWARDS[$achievement['target']], 0, ',', ' ') ?> XP</strong>
                     <strong>Récompense : titre</strong>
                     <span data-title-style="<?= $achievement['unlocked'] ? 'rose-blue' : '' ?>"><?= e(\App\Constants\UserTitle::FIGURINE_REWARD) ?></span>
                     <?php if ($achievement['unlocked']): ?>
@@ -47,7 +48,8 @@ $category = '';
                 </div>
             <?php endif; ?>
             <?php if ($achievement['category'] === 'Figurines' && $achievement['target'] === ProfileImageCatalog::FIGURINE_REWARD_TARGET): ?>
-                <div class="success-reward">
+                <div class="success-reward success-reward-frame-xp">
+                    <strong class="success-reward-xp-label">Récompense : ⭐ <?= number_format(\App\Services\Profile\AchievementXpService::FIGURINE_REWARDS[$achievement['target']], 0, ',', ' ') ?> XP</strong>
                     <strong>Récompense : cadre<span class="success-reward-name">Ailes roses</span></strong>
                     <img src="<?= e($view->baseUri . 'images/profil/frame/thumbnail/' . ProfileImageCatalog::FIGURINE_REWARD_FRAME . '.png') ?>" alt="Cadre rose à ailes" width="120" height="120">
                     <?php if ($achievement['unlocked']): ?>
@@ -145,6 +147,14 @@ $category = '';
                     <strong>Récompense : ⭐ <?= number_format(\App\Services\Profile\AchievementXpService::ARTBOOK_REWARDS[1], 0, ',', ' ') ?> XP</strong>
                     <?php if (! $achievement['unlocked']): ?>
                         <span>🔒 Débloqué avec 1 artbook lu</span>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
+            <?php if ($achievement['category'] === 'Figurines' && $achievement['target'] === 1): ?>
+                <div class="success-reward success-reward-title success-reward-xp success-reward-xp-top">
+                    <strong>Récompense : ⭐ <?= number_format(\App\Services\Profile\AchievementXpService::FIGURINE_REWARDS[1], 0, ',', ' ') ?> XP</strong>
+                    <?php if (! $achievement['unlocked']): ?>
+                        <span>🔒 Débloqué avec 1 figurine collectionnée</span>
                     <?php endif; ?>
                 </div>
             <?php endif; ?>
