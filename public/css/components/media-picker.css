@@ -141,10 +141,10 @@
 {
     width: 100%;
     display: block;
-    aspect-ratio: 4 / 1;
+    aspect-ratio: auto;
     height: auto;
     object-fit: cover;
-    object-position: top center;
+    object-position: center;
     border-radius: 12px;
     user-select: none;
     pointer-events: none;

@@ -12,7 +12,7 @@ $avatarPath =
     "{$view->baseUri}images/profil/avatar/thumbnail/{$user->avatar}.{$user->avatar_extension}";
 
 $bannerPath =
-    "{$view->baseUri}images/profil/banner/thumbnail/{$user->banner}.{$user->banner_extension}";
+    "{$view->baseUri}images/profil/banner/thumbnail/{$user->banner}.{$user->banner_extension}?v=20260929-sakura-v2";
 
 $framePath =
     "{$view->baseUri}images/profil/frame/thumbnail/{$user->frame}.{$user->frame_extension}";
@@ -79,12 +79,33 @@ $username =
                     card
                     transition-card
                     profile-customization-card
+                    js-profile-frame
+                 u-pointer"
+            >
+
+                <h2 class="home-card-title">
+                    <span class="customization-icon" aria-hidden="true">⭐</span>
+                    Cadre
+                </h2>
+
+                <p>
+                    Choisir un cadre.
+                </p>
+
+            </article>
+
+            <article
+                class="
+                    card
+                    transition-card
+                    profile-customization-card
                     js-profile-avatar
                  u-pointer"
             >
 
                 <h2 class="home-card-title">
-                    👤 Avatar
+                    <span class="customization-icon" aria-hidden="true">👤</span>
+                    Avatar
                 </h2>
 
                 <p>
@@ -103,7 +124,8 @@ $username =
             >
 
                 <h2 class="home-card-title">
-                    🏆 Titre
+                    <span class="customization-icon" aria-hidden="true">🏆</span>
+                    Titre
                 </h2>
 
                 <p>
@@ -122,33 +144,17 @@ $username =
             >
 
                 <h2 class="home-card-title">
-                    📕 Bannière
+                    <span class="customization-icon" aria-hidden="true">📕</span>
+                    Bannière
                 </h2>
 
                 <p>
-                    Personnaliser le profil.
+                    Choisir une bannière.
                 </p>
 
             </article>
 
-            <article
-                class="
-                    card
-                    transition-card
-                    profile-customization-card
-                    js-profile-frame
-                 u-pointer"
-            >
 
-                <h2 class="home-card-title">
-                    ⭐ Cadre
-                </h2>
-
-                <p>
-                    Choisir un cadre.
-                </p>
-
-            </article>
 
         </section>
 

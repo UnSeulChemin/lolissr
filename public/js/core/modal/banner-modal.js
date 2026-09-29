@@ -39,16 +39,16 @@ export function bannerModal(banners)
                                     data-banner="${banner.banner}"
                                     type="button"
                                     ${banner.unlocked ? '' : 'disabled'}
-                                    aria-label="${banner.banner} — ${banner.unlocked ? 'Disponible' : 'Verrouillée'}, niveau ${banner.required_level}"
+                                    aria-label="${banner.banner} — ${banner.unlocked ? 'Disponible' : 'Verrouillée'}, ${banner.requirement}"
                                 >
 
                                     <img
-                                        src="${appUrl(`images/profil/banner/thumbnail/${banner.banner}.${banner.banner_extension}`)}"
+                                        src="${appUrl(`images/profil/banner/thumbnail/${banner.banner}.${banner.banner_extension}?v=20260929-sakura-v2`)}"
                                         alt="${banner.banner}"
                                         draggable="false"
                                     >
                                     <span class="banner-modal-status">
-                                        ${banner.unlocked ? (banner.required_level > 1 ? `Niveau ${banner.required_level}` : 'Disponible') : `<span aria-hidden="true">🔒</span> Niveau ${banner.required_level}`}
+                                        ${banner.unlocked ? '' : '<span aria-hidden="true">🔒</span> '}${banner.requirement}
                                     </span>
 
                                 </button>

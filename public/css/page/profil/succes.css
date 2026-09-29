@@ -49,16 +49,28 @@
 }
 .success-reward-title { grid-template-columns: minmax(0, 1fr); text-align: center; }
 .success-reward.success-reward-title > * { grid-column: 1; }
+.success-reward.success-reward-banner { grid-template-columns: minmax(0, 1fr); text-align: center; }
+.success-reward.success-reward-banner > * { grid-column: 1; }
+.success-reward.success-reward-banner img { grid-row: auto; width: 100%; height: auto; border-radius: 10px; }
 
 .success-page .success-heading
 {
-    padding: clamp(20px, 4vw, 40px);
+    padding: 1.75rem 1.5rem;
+    gap: .65rem;
     background: linear-gradient(135deg, #fff, #f3edff);
     text-align: center;
 }
 
-.success-heading h1 { margin: 1rem 0; }
-.success-heading strong { color: #6d2cff; font-size: 1.3rem; }
+.success-heading h1 { margin: 0 0 .25rem; font-size: 1.3rem; }
+.success-heading p { margin: 0; }
+.success-heading strong { color: #6d2cff; font-size: 1.8rem; font-weight: 700; }
+.success-heading progress
+{
+    width: min(100%, 600px);
+    height: 12px;
+    margin: .25rem 0;
+    accent-color: #8b5cf6;
+}
 .success-note { color: #706779; font-size: .85rem; }
 .success-category { margin-top: 2rem; }
 .success-category h2 { margin: 0 0 1.25rem; font-size: 1.3rem; }

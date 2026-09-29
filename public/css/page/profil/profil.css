@@ -12,13 +12,23 @@
     -webkit-text-fill-color: transparent;
 }
 
+[data-title-style="violet-blue"]
+{
+    color: #7540c8;
+    font-weight: 700;
+    background: linear-gradient(100deg, #923bd2, #6355d9, #237ec4);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
 .profile-page
 {
     --profile-width: calc(
         (var(--width-home-grid-column) * 3)
         + (var(--gap-grid-home) * 2)
     );
-    --profile-avatar-size: clamp(140px, 18vw, 180px);
+    --profile-avatar-size: clamp(110px, 12vw, 140px);
     gap: 0;
 }
 
@@ -43,7 +53,7 @@
 {
     width: 100%;
 
-    padding: 2rem;
+    padding: 1.25rem;
 
     box-sizing: border-box;
 }
@@ -53,12 +63,12 @@
     padding: 0;
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
     justify-content: stretch;
     justify-items: stretch;
     gap: 0;
     align-items: stretch;
-    min-height: 420px;
+    min-height: 300px;
 }
 
 .profile-achievements-summary
@@ -74,7 +84,7 @@
 
 .profile-achievements-count
 {
-    font-size: 2.4rem;
+    font-size: 1.8rem;
     font-weight: 700;
     color: var(--color-violet);
 }
@@ -83,19 +93,21 @@
 {
     width: 100%;
     height: 12px;
-    margin: .75rem 0;
+    margin: .4rem 0;
     accent-color: var(--color-violet);
 }
 
 .profile-achievements-description
 {
     color: #706779;
-    line-height: 1.6;
+    line-height: 1.4;
+    font-size: .85rem;
 }
 
 .profile-achievements-action
 {
-    padding: .85rem 1.2rem;
+    padding: .65rem 1rem;
+    font-size: .85rem;
     border-radius: 14px;
     background: #efe8ff;
     color: #6d2cff;
@@ -105,13 +117,13 @@
 
 .profile-achievements
 {
-    min-height: 280px;
+    min-height: 0;
 
     display: flex;
     flex-direction: column;
     justify-content: center;
 
-    gap: 1.5rem;
+    gap: .65rem;
 }
 
 
@@ -131,7 +143,7 @@
 .profile-name
 {
     margin: 0;
-    font-size: 2rem;
+    font-size: 1.7rem;
 }
 
 
@@ -142,7 +154,7 @@
 .profile-section-title
 {
     margin: 0;
-    font-size: 1.45rem;
+    font-size: 1.2rem;
 }
 
 .achievement-list
@@ -187,7 +199,7 @@
 
 .profile-level-card
 {
-    padding: 1.5rem;
+    padding: 1rem 1.25rem;
     justify-content: flex-start;
     align-items: stretch;
     border: 1px solid rgba(
@@ -214,13 +226,13 @@
 .profile-level-header
 {
     gap: .15rem;
-    margin-bottom: 1rem;
+    margin-bottom: .6rem;
 }
 
 .profile-level-label
 {
     margin: 0;
-    font-size: 1.45rem;
+    font-size: 1.2rem;
 }
 
 .profile-level-xp
@@ -240,7 +252,7 @@
 
 .profile-level-progress
 {
-    height: 22px;
+    height: 14px;
     border-radius: 999px;
     border: 1px solid rgba(
         139,
@@ -315,25 +327,39 @@
 
 .profile-stats
 {
-    gap: var(--gap-grid-home);
+    display: grid;
+    width: var(--profile-width);
+    max-width: 100%;
+    margin: 0 auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
 }
 
 .profile-stat-row
 {
-    width: var(--profile-width);
+    width: 100%;
+    min-width: 0;
     grid-template-columns:
         repeat(
             2,
-            1fr
+            minmax(0, 1fr)
         );
-    gap: var(--gap-grid-home);
+    gap: 1rem;
     margin: 0 auto;
+}
+
+.profile-stat-row:first-child
+{
+    grid-column: 1 / -1;
 }
 
 .profile-stat-card
 {
-    min-height: 215px;
-    gap: 10px;
+    min-width: 0;
+    min-height: 120px;
+    padding: 1rem;
+    gap: .6rem;
+    text-align: center;
 }
 
 .profile-stat-title
@@ -345,8 +371,32 @@
 .profile-stat-value
 {
     margin: 0;
-    font-size: 2.4rem;
+    font-size: 1.8rem;
     line-height: 1;
+}
+
+.profile-page > .home-section-title
+{
+    width: var(--profile-width);
+    max-width: 100%;
+    box-sizing: border-box;
+    margin: 1.5rem auto 1rem;
+}
+
+@media (max-width: 900px)
+{
+    .profile-stats
+    {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 420px)
+{
+    .profile-stat-row
+    {
+        grid-template-columns: minmax(0, 1fr);
+    }
 }
 
 .profile-banner
@@ -360,23 +410,23 @@
 
 .profile-banner img
 {
-    position: absolute;
-    inset: 0;
     display: block;
 
     width: 100%;
-    height: 100%;
+    height: auto;
 
-    object-fit: cover;
-    object-position: top center;
+    object-fit: contain;
+    object-position: center;
 }
 
 .profile-avatar
 {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    position: relative;
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: center;
+    align-self: start;
+    transform: translateY(-50%);
 
     display: flex;
     align-items: center;
@@ -404,9 +454,9 @@
     grid-row: 2;
     box-sizing: border-box;
     padding:
-        calc(var(--profile-avatar-size) / 2 + 1rem)
-        2rem
-        1.25rem;
+        calc(var(--profile-avatar-size) / 2 + .5rem)
+        1rem
+        .75rem;
 }
 [data-title-style="teal-gold"]
 {

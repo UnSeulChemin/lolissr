@@ -188,7 +188,7 @@ async function openBannerModal(signal)
     invalidateProfilePages();
     if (signal.aborted) return;
     const imagePath = appUrl(
-        `images/profil/banner/thumbnail/${response.data.banner}.${response.data.banner_extension}`,
+        `images/profil/banner/thumbnail/${response.data.banner}.${response.data.banner_extension}?v=20260929-sakura-v2`,
     );
     document.querySelectorAll('.profile-customization-banner img, .profile-banner img').forEach(image =>
     {

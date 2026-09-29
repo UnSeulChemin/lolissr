@@ -34,7 +34,7 @@ $avatarPath =
     "{$view->baseUri}images/profil/avatar/thumbnail/{$user->avatar}.{$user->avatar_extension}";
 
 $bannerPath =
-    "{$view->baseUri}images/profil/banner/thumbnail/{$user->banner}.{$user->banner_extension}";
+    "{$view->baseUri}images/profil/banner/thumbnail/{$user->banner}.{$user->banner_extension}?v=20260929-sakura-v2";
 
 $framePath =
     "{$view->baseUri}images/profil/frame/thumbnail/{$user->frame}.{$user->frame_extension}";
@@ -111,7 +111,7 @@ $framePath =
             <?php $obtainedCount = count(array_filter($achievements, static fn (array $item): bool => $item['unlocked'])); ?>
             <div class="profile-achievements-summary">
                 <p class="profile-achievements-count"><?= $obtainedCount ?> / <?= count($achievements) ?></p>
-                <p>succès débloqués</p>
+                <p>Succès débloqués</p>
                 <progress value="<?= $obtainedCount ?>" max="<?= count($achievements) ?>" aria-label="Succès débloqués"></progress>
                 <p class="profile-achievements-description">Atteins des objectifs de lecture, de collection et d’apprentissage pour débloquer des succès.</p>
             </div>

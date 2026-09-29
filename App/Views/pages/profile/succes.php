@@ -14,9 +14,11 @@ $category = '';
 <section class="success-page">
     <header class="card success-heading">
         <h1>🏆 Mes succès</h1>
-        <p>Retrouve les étapes de ta collection, de tes lectures et de ton apprentissage.</p>
-        <strong><?= $unlockedCount ?> / <?= count($achievements) ?> succès obtenus</strong>
-        <p class="success-note">La progression suit tes statistiques actuelles.</p>
+        <strong><?= $unlockedCount ?> / <?= count($achievements) ?></strong>
+        <p>Succès débloqués</p>
+        <progress value="<?= $unlockedCount ?>" max="<?= max(1, count($achievements)) ?>" aria-label="Succès débloqués"></progress>
+        <p>Atteins tes objectifs et débloque des récompenses.</p>
+        <p class="success-note">Selon tes statistiques actuelles.</p>
     </header>
 
     <?php foreach ($achievements as $achievement): ?>
@@ -74,6 +76,39 @@ $category = '';
                         <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir ce cadre</a>
                     <?php else: ?>
                         <span>🔒 Débloqué avec 25 artbooks lus</span>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
+            <?php if ($achievement['category'] === 'Tomes' && $achievement['target'] === ProfileImageCatalog::TOME_REWARD_TARGET): ?>
+                <div class="success-reward success-reward-banner">
+                    <strong>Récompense : bannière Lecture sous les sakuras</strong>
+                    <img src="<?= e($view->baseUri . 'images/profil/banner/thumbnail/' . ProfileImageCatalog::TOME_REWARD_BANNER . '.png?v=20260929-sakura-v2') ?>" alt="Lectrice anime dans un jardin de cerisiers au crépuscule" width="600" height="200" loading="lazy">
+                    <?php if ($achievement['unlocked']): ?>
+                        <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir cette bannière</a>
+                    <?php else: ?>
+                        <span>🔒 Débloquée avec 100 tomes lus</span>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
+            <?php if ($achievement['category'] === 'Tomes' && $achievement['target'] === ProfileImageCatalog::TOME_FRAME_TARGET): ?>
+                <div class="success-reward">
+                    <strong>Récompense : cadre Grimoire céleste</strong>
+                    <img src="<?= e($view->baseUri . 'images/profil/frame/thumbnail/' . ProfileImageCatalog::TOME_REWARD_FRAME . '.png') ?>" alt="Cadre violet et argent décoré de livres et d’étoiles" width="120" height="120" loading="lazy">
+                    <?php if ($achievement['unlocked']): ?>
+                        <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir ce cadre</a>
+                    <?php else: ?>
+                        <span>🔒 Débloqué avec 200 tomes lus</span>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
+            <?php if ($achievement['category'] === 'Tomes' && $achievement['target'] === \App\Constants\UserTitle::TOME_REWARD_TARGET): ?>
+                <div class="success-reward success-reward-title">
+                    <strong>Récompense : titre</strong>
+                    <span data-title-style="<?= $achievement['unlocked'] ? \App\Constants\UserTitle::styleForTitle(\App\Constants\UserTitle::TOME_REWARD) : '' ?>"><?= e(\App\Constants\UserTitle::TOME_REWARD) ?></span>
+                    <?php if ($achievement['unlocked']): ?>
+                        <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir ce titre</a>
+                    <?php else: ?>
+                        <span>🔒 Débloqué avec 50 tomes lus</span>
                     <?php endif; ?>
                 </div>
             <?php endif; ?>

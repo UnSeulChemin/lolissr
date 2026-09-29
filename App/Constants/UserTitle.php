@@ -10,12 +10,15 @@ final class UserTitle
     public const FIGURINE_REWARD_TARGET = 4;
     public const ARTBOOK_REWARD = 'Gardien des illustrations';
     public const ARTBOOK_REWARD_TARGET = 10;
+    public const TOME_REWARD = 'Voyageur des pages';
+    public const TOME_REWARD_TARGET = 50;
 
     public static function styleForTitle(string $title): string
     {
         return match ($title) {
             self::FIGURINE_REWARD => 'rose-blue',
             self::ARTBOOK_REWARD => 'teal-gold',
+            self::TOME_REWARD => 'violet-blue',
             default => '',
         };
     }
@@ -113,7 +116,7 @@ final class UserTitle
     // =========================================
 
     /** @return list<array{title: string, required_level: int, unlocked: bool, requirement: string, style: string}> */
-    public static function titlesForLevel(int $level, int $figurinesCollected = 0, int $readArtbooks = 0): array
+    public static function titlesForLevel(int $level, int $figurinesCollected = 0, int $readArtbooks = 0, int $readTomes = 0): array
     {
         $titles = [];
 
@@ -142,6 +145,14 @@ final class UserTitle
             'unlocked' => $readArtbooks >= self::ARTBOOK_REWARD_TARGET,
             'requirement' => self::ARTBOOK_REWARD_TARGET . ' artbooks lus',
             'style' => self::styleForTitle(self::ARTBOOK_REWARD),
+        ];
+
+        $titles[] = [
+            'title' => self::TOME_REWARD,
+            'required_level' => 0,
+            'unlocked' => $readTomes >= self::TOME_REWARD_TARGET,
+            'requirement' => self::TOME_REWARD_TARGET . ' tomes lus',
+            'style' => self::styleForTitle(self::TOME_REWARD),
         ];
 
         usort($titles, static function (array $a, array $b): int

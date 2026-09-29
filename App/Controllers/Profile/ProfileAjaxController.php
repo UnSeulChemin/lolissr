@@ -37,7 +37,7 @@ final class ProfileAjaxController extends Controller
         $stats = $this->profileStatsService->getStats();
         $user = $this->user();
 
-        $titles = UserTitle::titlesForLevel($user->level, $stats->figurinesCollected, $stats->readArtbooks);
+        $titles = UserTitle::titlesForLevel($user->level, $stats->figurinesCollected, $stats->readArtbooks, $stats->readTomes);
 
         $this->jsonResult(ServiceResult::success(data: ['titles' => $titles]));
     }
@@ -50,7 +50,7 @@ final class ProfileAjaxController extends Controller
         $title = $this->stringInput('title');
 
         $selectedTitle = $this->findItem(
-            UserTitle::titlesForLevel($user->level, $stats->figurinesCollected, $stats->readArtbooks),
+            UserTitle::titlesForLevel($user->level, $stats->figurinesCollected, $stats->readArtbooks, $stats->readTomes),
             'title',
             $title
         );
@@ -125,7 +125,7 @@ final class ProfileAjaxController extends Controller
 
     public function banners(): never
     {
-        $banners = $this->imageCatalog->bannersForLevel($this->user()->level);
+        $banners = $this->imageCatalog->bannersForLevel($this->user()->level, $this->profileStatsService->getStats()->readTomes);
 
         $this->jsonResult(ServiceResult::success(data: ['banners' => $banners]));
     }
@@ -135,7 +135,7 @@ final class ProfileAjaxController extends Controller
         $user = $this->user();
 
         $banner = $this->findItem(
-            $this->imageCatalog->bannersForLevel($user->level),
+            $this->imageCatalog->bannersForLevel($user->level, $this->profileStatsService->getStats()->readTomes),
             'banner',
             $this->stringInput('banner')
         );
@@ -148,7 +148,7 @@ final class ProfileAjaxController extends Controller
         if (! $banner['unlocked'])
         {
             $this->jsonResult(ServiceResult::error(
-                message: 'Cette bannière se débloque au niveau ' . $banner['required_level'],
+                message: 'Condition de déblocage : ' . $banner['requirement'],
                 status: 422
             ));
         }
@@ -180,7 +180,7 @@ final class ProfileAjaxController extends Controller
     public function frames(): never
     {
         $stats = $this->profileStatsService->getStats();
-        $frames = $this->imageCatalog->framesForLevel($this->user()->level, $stats->figurinesCollected, $stats->readArtbooks);
+        $frames = $this->imageCatalog->framesForLevel($this->user()->level, $stats->figurinesCollected, $stats->readArtbooks, $stats->readTomes);
 
         $this->jsonResult(ServiceResult::success(data: ['frames' => $frames]));
     }
@@ -191,7 +191,7 @@ final class ProfileAjaxController extends Controller
         $user = $this->user();
 
         $frame = $this->findItem(
-            $this->imageCatalog->framesForLevel($user->level, $stats->figurinesCollected, $stats->readArtbooks),
+            $this->imageCatalog->framesForLevel($user->level, $stats->figurinesCollected, $stats->readArtbooks, $stats->readTomes),
             'frame',
             $this->stringInput('frame')
         );
