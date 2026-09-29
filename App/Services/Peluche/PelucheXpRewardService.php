@@ -13,7 +13,9 @@ final readonly class PelucheXpRewardService
 {
     public function __construct(
         private PelucheRepository $pelucheRepository,
-        private UserLevelService $userLevelService
+        private UserLevelService $userLevelService,
+        private \App\Services\Profile\AchievementXpService $achievementXpService,
+        private \App\Repositories\Peluche\PelucheStatsRepository $pelucheStatsRepository,
     ) {
     }
 
@@ -27,6 +29,8 @@ final readonly class PelucheXpRewardService
         {
             return false;
         }
+
+        $this->achievementXpService->rewardPeluches($user, $this->pelucheStatsRepository->profileSummary()['collected']);
 
         if (! $this->pelucheRepository->claimCollectReward($peluche->id))
         {

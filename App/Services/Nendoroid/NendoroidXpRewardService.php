@@ -13,7 +13,9 @@ final readonly class NendoroidXpRewardService
 {
     public function __construct(
         private NendoroidRepository $nendoroidRepository,
-        private UserLevelService $userLevelService
+        private UserLevelService $userLevelService,
+        private \App\Services\Profile\AchievementXpService $achievementXpService,
+        private \App\Repositories\Nendoroid\NendoroidStatsRepository $nendoroidStatsRepository,
     ) {
     }
 
@@ -26,6 +28,8 @@ final readonly class NendoroidXpRewardService
         {
             return false;
         }
+
+        $this->achievementXpService->rewardNendoroids($user, $this->nendoroidStatsRepository->profileSummary()['collected']);
 
         if (! $this->nendoroidRepository->claimCollectReward($nendoroid->id))
         {

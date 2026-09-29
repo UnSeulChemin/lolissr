@@ -68,6 +68,8 @@ final readonly class ProfileStatsService
             $this->achievementXpService->rewardSeries($user, $completedSeries);
             $this->achievementXpService->rewardArtbooks($user, $artbook['read']);
             $this->achievementXpService->rewardFigurines($user, $figurine['collected']);
+            $this->achievementXpService->rewardNendoroids($user, $nendoroid['collected']);
+            $this->achievementXpService->rewardPeluches($user, $peluche['collected']);
             $achievementXp = $this->achievementXpService->totalForUser($user);
         }
         $tomeXp = $manga['rewarded_tomes'] * UserXp::READ_TOME;

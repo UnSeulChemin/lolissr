@@ -158,6 +158,60 @@ $category = '';
                     <?php endif; ?>
                 </div>
             <?php endif; ?>
+            <?php if ($achievement['category'] === 'Nendoroids' && $achievement['target'] === ProfileImageCatalog::NENDOROID_FRAME_TARGET): ?>
+                <div class="success-reward success-reward-frame-xp">
+                    <strong class="success-reward-xp-label">Récompense : ⭐ <?= number_format(\App\Services\Profile\AchievementXpService::NENDOROID_REWARDS[$achievement['target']], 0, ',', ' ') ?> XP</strong>
+                    <strong>Récompense : cadre<span class="success-reward-name">Écrin des merveilles</span></strong>
+                    <img src="<?= e($view->baseUri . 'images/profil/frame/thumbnail/' . ProfileImageCatalog::NENDOROID_REWARD_FRAME . '.png') ?>" alt="Cadre lavande et or rose orné de joyaux étoilés" width="120" height="120" loading="lazy">
+                    <?php if ($achievement['unlocked']): ?>
+                        <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir ce cadre</a>
+                    <?php else: ?>
+                        <span>🔒 Débloqué avec 50 nendoroids collectionnés</span>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
+            <?php if ($achievement['category'] === 'Nendoroids' && $achievement['target'] !== ProfileImageCatalog::NENDOROID_FRAME_TARGET && isset(\App\Services\Profile\AchievementXpService::NENDOROID_REWARDS[$achievement['target']])): ?>
+                <div class="success-reward success-reward-title <?= $achievement['target'] === ProfileImageCatalog::NENDOROID_REWARD_TARGET ? 'success-reward-banner' : ($achievement['target'] === \App\Constants\UserTitle::NENDOROID_REWARD_TARGET ? '' : 'success-reward-xp success-reward-xp-top') ?>">
+                    <strong>Récompense : ⭐ <?= number_format(\App\Services\Profile\AchievementXpService::NENDOROID_REWARDS[$achievement['target']], 0, ',', ' ') ?> XP</strong>
+                    <?php if ($achievement['target'] === ProfileImageCatalog::NENDOROID_REWARD_TARGET): ?>
+                        <strong>Récompense : bannière<span class="success-reward-name">Le petit monde des Nendoroids</span></strong>
+                        <img src="<?= e($view->baseUri . 'images/profil/banner/thumbnail/' . ProfileImageCatalog::NENDOROID_REWARD_BANNER . '.png') ?>" alt="Collection de figurines chibi dans une pièce fleurie au coucher du soleil" loading="lazy">
+                        <?php if ($achievement['unlocked']): ?>
+                            <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir cette bannière</a>
+                        <?php endif; ?>
+                    <?php elseif ($achievement['target'] === \App\Constants\UserTitle::NENDOROID_REWARD_TARGET): ?>
+                        <strong>Récompense : titre</strong>
+                        <span data-title-style="<?= $achievement['unlocked'] ? \App\Constants\UserTitle::styleForTitle(\App\Constants\UserTitle::NENDOROID_REWARD) : '' ?>"><?= e(\App\Constants\UserTitle::NENDOROID_REWARD) ?></span>
+                        <?php if ($achievement['unlocked']): ?>
+                            <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir ce titre</a>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                    <?php if (! $achievement['unlocked']): ?>
+                        <span>🔒 Débloqué avec <?= $achievement['target'] ?> nendoroids collectionnés</span>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
+            <?php if ($achievement['category'] === 'Peluches' && isset(\App\Services\Profile\AchievementXpService::PELUCHE_REWARDS[$achievement['target']])): ?>
+                <div class="success-reward <?= $achievement['target'] === ProfileImageCatalog::PELUCHE_FRAME_TARGET ? 'success-reward-frame-xp' : ($achievement['target'] === ProfileImageCatalog::PELUCHE_BANNER_TARGET ? 'success-reward-title success-reward-banner' : 'success-reward-title success-reward-xp success-reward-xp-top') ?>">
+                    <strong class="success-reward-xp-label">Récompense : ⭐ <?= number_format(\App\Services\Profile\AchievementXpService::PELUCHE_REWARDS[$achievement['target']], 0, ',', ' ') ?> XP</strong>
+                    <?php if ($achievement['target'] === ProfileImageCatalog::PELUCHE_BANNER_TARGET): ?>
+                        <strong>Récompense : bannière<span class="success-reward-name">Refuge des peluches</span></strong>
+                        <img src="<?= e($view->baseUri . 'images/profil/banner/thumbnail/' . ProfileImageCatalog::PELUCHE_REWARD_BANNER . '.png') ?>" alt="Peluches dans un refuge fleuri au coucher du soleil" loading="lazy">
+                        <?php if ($achievement['unlocked']): ?>
+                            <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir cette bannière</a>
+                        <?php endif; ?>
+                    <?php elseif ($achievement['target'] === ProfileImageCatalog::PELUCHE_FRAME_TARGET): ?>
+                        <strong>Récompense : cadre<span class="success-reward-name">Cocon doré</span></strong>
+                        <img src="<?= e($view->baseUri . 'images/profil/frame/thumbnail/' . ProfileImageCatalog::PELUCHE_REWARD_FRAME . '.png') ?>" alt="Cadre doré avec un ours et un lapin en peluche" width="120" height="120" loading="lazy">
+                        <?php if ($achievement['unlocked']): ?>
+                            <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir ce cadre</a>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                    <?php if (! $achievement['unlocked']): ?>
+                        <span>🔒 Débloqué avec <?= $achievement['target'] ?> <?= $achievement['target'] === 1 ? 'peluche collectionnée' : 'peluches collectionnées' ?></span>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
         </article>
     <?php endforeach; ?>
     <?php if ($category !== ''): ?></div></section><?php endif; ?>

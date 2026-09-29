@@ -12,6 +12,8 @@ use Framework\Database\Database;
 final readonly class AchievementXpService
 {
     public const FIRST_TOME_XP = 50;
+    public const NENDOROID_REWARDS = [1 => 250, 10 => 2500, 25 => 6250, 50 => 12500];
+    public const PELUCHE_REWARDS = [1 => 250, 10 => 2500, 25 => 6250];
     public const FIGURINE_REWARDS = [1 => 2000, 4 => 8000, 8 => 16000];
     public const ARTBOOK_REWARDS = [1 => 500, 10 => 5000, 25 => 12500];
     public const SERIES_REWARDS = [1 => 50, 10 => 500, 25 => 1250, 50 => 2500];
@@ -64,6 +66,28 @@ final readonly class AchievementXpService
             if ($collected >= $target)
             {
                 $this->award($user, 'figurines_' . $target, $xp);
+            }
+        }
+    }
+
+    public function rewardNendoroids(User $user, int $collected): void
+    {
+        foreach (self::NENDOROID_REWARDS as $target => $xp)
+        {
+            if ($collected >= $target)
+            {
+                $this->award($user, 'nendoroids_' . $target, $xp);
+            }
+        }
+    }
+
+    public function rewardPeluches(User $user, int $collected): void
+    {
+        foreach (self::PELUCHE_REWARDS as $target => $xp)
+        {
+            if ($collected >= $target)
+            {
+                $this->award($user, 'peluches_' . $target, $xp);
             }
         }
     }

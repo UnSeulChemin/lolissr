@@ -28,14 +28,44 @@ final class ProfileImageCatalog
     public const TOME_REWARD_TARGET = 100;
     public const TOME_REWARD_FRAME = 'grimoire-celeste';
     public const TOME_FRAME_TARGET = 200;
+    public const NENDOROID_REWARD_BANNER = 'petit-monde';
+    public const NENDOROID_REWARD_TARGET = 10;
+    public const NENDOROID_REWARD_FRAME = 'ecrin-des-merveilles';
+    public const NENDOROID_FRAME_TARGET = 50;
+    public const PELUCHE_REWARD_BANNER = 'refuge-des-peluches';
+    public const PELUCHE_BANNER_TARGET = 10;
+    public const PELUCHE_REWARD_FRAME = 'cocon-dore';
+    public const PELUCHE_FRAME_TARGET = 25;
 
     /** @return list<array{frame: string, frame_extension: string, required_level: int, unlocked: bool, requirement: string}> */
-    public function framesForLevel(int $level, int $figurinesCollected = 0, int $readArtbooks = 0, int $readTomes = 0): array
+    public function framesForLevel(int $level, int $figurinesCollected = 0, int $readArtbooks = 0, int $readTomes = 0, int $nendoroidsCollected = 0, int $peluchesCollected = 0): array
     {
         $frames = [];
 
         foreach ($this->items('frame') as $item)
         {
+            if ($item['frame'] === self::PELUCHE_REWARD_FRAME)
+            {
+                $frames[] = [
+                    'frame' => $item['frame'],
+                    'frame_extension' => $item['frame_extension'],
+                    'required_level' => 0,
+                    'unlocked' => $peluchesCollected >= self::PELUCHE_FRAME_TARGET,
+                    'requirement' => self::PELUCHE_FRAME_TARGET . ' peluches collectionnées',
+                ];
+                continue;
+            }
+            if ($item['frame'] === self::NENDOROID_REWARD_FRAME)
+            {
+                $frames[] = [
+                    'frame' => $item['frame'],
+                    'frame_extension' => $item['frame_extension'],
+                    'required_level' => 0,
+                    'unlocked' => $nendoroidsCollected >= self::NENDOROID_FRAME_TARGET,
+                    'requirement' => self::NENDOROID_FRAME_TARGET . ' nendoroids collectionnés',
+                ];
+                continue;
+            }
             $requiredLevel = self::FRAME_LEVELS[$item['frame']] ?? 1;
             $isReward = $item['frame'] === self::FIGURINE_REWARD_FRAME;
             if ($item['frame'] === self::TOME_REWARD_FRAME)
@@ -87,12 +117,34 @@ final class ProfileImageCatalog
     }
 
     /** @return list<array{banner: string, banner_extension: string, required_level: int, unlocked: bool, requirement: string}> */
-    public function bannersForLevel(int $level, int $readTomes = 0): array
+    public function bannersForLevel(int $level, int $readTomes = 0, int $nendoroidsCollected = 0, int $peluchesCollected = 0): array
     {
         $banners = [];
 
         foreach ($this->items('banner') as $item)
         {
+            if ($item['banner'] === self::PELUCHE_REWARD_BANNER)
+            {
+                $banners[] = [
+                    'banner' => $item['banner'],
+                    'banner_extension' => $item['banner_extension'],
+                    'required_level' => 0,
+                    'unlocked' => $peluchesCollected >= self::PELUCHE_BANNER_TARGET,
+                    'requirement' => self::PELUCHE_BANNER_TARGET . ' peluches collectionnées',
+                ];
+                continue;
+            }
+            if ($item['banner'] === self::NENDOROID_REWARD_BANNER)
+            {
+                $banners[] = [
+                    'banner' => $item['banner'],
+                    'banner_extension' => $item['banner_extension'],
+                    'required_level' => 0,
+                    'unlocked' => $nendoroidsCollected >= self::NENDOROID_REWARD_TARGET,
+                    'requirement' => self::NENDOROID_REWARD_TARGET . ' nendoroids collectionnés',
+                ];
+                continue;
+            }
             $requiredLevel = $item['banner'] === 'lune' ? 10 : 1;
             $isReward = $item['banner'] === self::TOME_REWARD_BANNER;
             $banners[] = [
