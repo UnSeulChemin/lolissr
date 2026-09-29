@@ -37,7 +37,7 @@ final class ProfileAjaxController extends Controller
         $stats = $this->profileStatsService->getStats();
         $user = $this->user();
 
-        $titles = UserTitle::titlesForLevel($user->level, $stats->figurinesCollected, $stats->readArtbooks, $stats->readTomes);
+        $titles = UserTitle::titlesForLevel($user->level, $stats->figurinesCollected, $stats->readArtbooks, $stats->readTomes, $stats->completedSeries);
 
         $this->jsonResult(ServiceResult::success(data: ['titles' => $titles]));
     }
@@ -50,7 +50,7 @@ final class ProfileAjaxController extends Controller
         $title = $this->stringInput('title');
 
         $selectedTitle = $this->findItem(
-            UserTitle::titlesForLevel($user->level, $stats->figurinesCollected, $stats->readArtbooks, $stats->readTomes),
+            UserTitle::titlesForLevel($user->level, $stats->figurinesCollected, $stats->readArtbooks, $stats->readTomes, $stats->completedSeries),
             'title',
             $title
         );

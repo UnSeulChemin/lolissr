@@ -12,6 +12,16 @@
     -webkit-text-fill-color: transparent;
 }
 
+[data-title-style="gold-violet"]
+{
+    color: #a77826;
+    font-weight: 700;
+    background: linear-gradient(100deg, #a36b19, #d5a63e, #ad63c7, #713ac1);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
 [data-title-style="violet-blue"]
 {
     color: #7540c8;

@@ -13,7 +13,9 @@ final readonly class MangaXpRewardService
 {
     public function __construct(
         private MangaRepository $mangaRepository,
-        private UserLevelService $userLevelService
+        private UserLevelService $userLevelService,
+        private \App\Services\Profile\AchievementXpService $achievementXpService,
+        private \App\Repositories\Manga\MangaStatsRepository $mangaStatsRepository,
     ) {
     }
 
@@ -46,6 +48,8 @@ final readonly class MangaXpRewardService
         }
 
         $seriesXpEarned = false;
+        $this->achievementXpService->rewardTomes($user, $this->mangaStatsRepository->profileSummary()['read']);
+        $this->achievementXpService->rewardSeries($user, $this->mangaStatsRepository->countCompletedSeries());
 
         if ($this->mangaRepository->claimSeriesReward($slug))
         {

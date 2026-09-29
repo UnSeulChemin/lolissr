@@ -81,7 +81,8 @@ final class ProfileController extends Controller
             'grammarLearned' => $stats->grammarLearned,
             'grammarXp' => $stats->grammarXp,
 
-            'totalProfileXp' => $stats->totalXp
+            'totalProfileXp' => $stats->totalXp,
+            'achievementXp' => $stats->achievementXp,
         ]);
     }
 

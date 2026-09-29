@@ -29,6 +29,7 @@ use App\Models\User;
 /** @var int $grammarLearned */
 /** @var int $grammarXp */
 /** @var int $totalProfileXp */
+/** @var int $achievementXp */
 
 ?>
 <section class="layout-container profile-page u-stack">
@@ -37,7 +38,7 @@ use App\Models\User;
         <strong>Niveau <?= $level ?></strong>
         <p><?= number_format($currentXp, 0, ',', ' ') ?> / <?= number_format($xpRequired, 0, ',', ' ') ?> XP</p>
         <progress value="<?= $currentXp ?>" max="<?= max(1, $xpRequired) ?>" aria-label="Progression vers le prochain niveau"></progress>
-        <p>Retrouve l’XP gagnée grâce à tes lectures, ta collection et ton apprentissage.</p>
+        <p>Retrouve l’XP gagnée grâce à tes lectures, ta collection, ton apprentissage et tes succès.</p>
         <p class="profile-xp-note">Progression vers le niveau <?= $level + 1 ?>.</p>
     </header>
 
@@ -304,6 +305,16 @@ use App\Models\User;
 
         </div>
 
+        <div class="profile-stat-row profile-stat-row-achievements u-grid">
+            <article class="card profile-stat-card u-justify-center u-w-full u-border-box">
+                <h2 class="profile-stat-title u-bold">🏆 Succès</h2>
+                <p class="profile-stat-value u-bold"><?= count(array_filter($achievements, static fn (array $achievement): bool => $achievement['unlocked'])) ?></p>
+            </article>
+            <article class="card profile-stat-card u-justify-center u-w-full u-border-box">
+                <h2 class="profile-stat-title u-bold">🏆 XP Succès</h2>
+                <p class="profile-stat-value u-bold"><?= number_format($achievementXp, 0, ',', ' ') ?> XP</p>
+            </article>
+        </div>
     </section>
 
 </section>

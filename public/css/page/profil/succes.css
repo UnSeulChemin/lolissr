@@ -49,9 +49,92 @@
 }
 .success-reward-title { grid-template-columns: minmax(0, 1fr); text-align: center; }
 .success-reward.success-reward-title > * { grid-column: 1; }
+.success-reward-name
+{
+    display: block;
+    margin-top: .65rem;
+}
+
+.success-reward-banner .success-reward-name
+{
+    margin-top: .85rem;
+}
+
+.success-reward:has(> img):not(.success-reward-banner)
+{
+    grid-template-columns: minmax(0, 1fr) 56px minmax(0, max-content) minmax(0, 1fr);
+    column-gap: .75rem;
+}
+.success-reward:has(> img):not(.success-reward-banner) > img
+{
+    grid-column: 2;
+}
+.success-reward:has(> img):not(.success-reward-banner) > strong:not(.success-reward-xp-label)
+{
+    grid-column: 3;
+    text-align: left;
+}
+.success-reward-frame-xp .success-reward-xp-label
+{
+    grid-column: 1 / -1;
+    grid-row: 1;
+    text-align: center;
+}
+.success-reward-frame-xp img { grid-row: 2; }
+.success-reward-frame-xp > img,
+.success-reward-frame-xp > strong:not(.success-reward-xp-label)
+{
+    align-self: start;
+}
+.success-reward-frame-xp .success-reward-name
+{
+    margin-top: .85rem;
+}
+.success-item.is-locked .success-reward-xp-label { filter: grayscale(1); opacity: .65; }
+.success-reward.success-reward-xp
+{
+    align-content: center;
+    justify-items: center;
+    margin-bottom: -1.5rem;
+    padding-block: 1rem;
+    min-height: 64px;
+    box-sizing: border-box;
+}
 .success-reward.success-reward-banner { grid-template-columns: minmax(0, 1fr); text-align: center; }
 .success-reward.success-reward-banner > * { grid-column: 1; }
 .success-reward.success-reward-banner img { grid-row: auto; width: 100%; height: auto; border-radius: 10px; }
+
+/* Keep reward headers and actions aligned regardless of preview height. */
+.success-reward-title:not(.success-reward-xp),
+.success-reward.success-reward-banner
+{
+    padding-top: 1rem;
+    gap: .85rem 1rem;
+    grid-template-rows: auto auto 1fr auto;
+}
+.success-reward-frame-xp
+{
+    grid-template-rows: auto 1fr auto;
+}
+.success-reward-title:not(.success-reward-xp) > strong,
+.success-reward-banner > strong,
+.success-reward-frame-xp > .success-reward-xp-label
+{
+    align-self: start;
+}
+
+.success-reward-title:not(.success-reward-xp) > span[data-title-style]
+{
+    align-self: start;
+}
+.success-item.is-locked .success-reward:not(.success-reward-xp) > span:last-child
+{
+    grid-column: 1 / -1;
+    align-self: end;
+    padding: .85rem 1.2rem;
+    text-align: center;
+    box-sizing: border-box;
+}
 
 .success-page .success-heading
 {

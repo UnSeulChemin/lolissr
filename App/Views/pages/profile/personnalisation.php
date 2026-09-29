@@ -84,7 +84,7 @@ $username =
             >
 
                 <h2 class="home-card-title">
-                    <span class="customization-icon" aria-hidden="true">⭐</span>
+                    <span class="customization-icon" aria-hidden="true">🖼️</span>
                     Cadre
                 </h2>
 
@@ -124,7 +124,7 @@ $username =
             >
 
                 <h2 class="home-card-title">
-                    <span class="customization-icon" aria-hidden="true">🏆</span>
+                    <span class="customization-icon" aria-hidden="true">🏷️</span>
                     Titre
                 </h2>
 
@@ -144,7 +144,7 @@ $username =
             >
 
                 <h2 class="home-card-title">
-                    <span class="customization-icon" aria-hidden="true">📕</span>
+                    <span class="customization-icon" aria-hidden="true">🌄</span>
                     Bannière
                 </h2>
 

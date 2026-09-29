@@ -14,7 +14,9 @@ final readonly class ArtbookXpRewardService
 {
     public function __construct(
         private ArtbookRepository $artbookRepository,
-        private UserLevelService $userLevelService
+        private UserLevelService $userLevelService,
+        private \App\Services\Profile\AchievementXpService $achievementXpService,
+        private \App\Repositories\Manga\ArtbookStatsRepository $artbookStatsRepository,
     ) {
     }
 
@@ -34,6 +36,8 @@ final readonly class ArtbookXpRewardService
         {
             return false;
         }
+
+        $this->achievementXpService->rewardArtbooks($user, $this->artbookStatsRepository->profileSummary()['read']);
 
         if (! $this->artbookRepository->claimReadReward($artbook->id))
         {

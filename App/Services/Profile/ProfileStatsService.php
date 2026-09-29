@@ -24,6 +24,7 @@ final readonly class ProfileStatsService
         private PelucheStatsRepository $pelucheStatsRepository,
         private ChinoisVocabulaireStatsRepository $vocabularyStatsRepository,
         private ChinoisGrammaireStatsRepository $grammarStatsRepository,
+        private AchievementXpService $achievementXpService,
     ) {
     }
 
@@ -56,6 +57,18 @@ final readonly class ProfileStatsService
 
         $readTomes = $manga['read'];
         $completedSeries = $this->completedSeries();
+        $achievementXp = 0;
+        $user = user();
+        if ($user !== null)
+        {
+            if ($readTomes >= 1)
+            {
+                $this->achievementXpService->rewardTomes($user, $readTomes);
+            }
+            $this->achievementXpService->rewardSeries($user, $completedSeries);
+            $this->achievementXpService->rewardArtbooks($user, $artbook['read']);
+            $achievementXp = $this->achievementXpService->totalForUser($user);
+        }
         $tomeXp = $manga['rewarded_tomes'] * UserXp::READ_TOME;
         $seriesXp = $manga['rewarded_series'] * UserXp::COMPLETE_SERIES;
         $readArtbooks = $artbook['read'];
@@ -104,7 +117,9 @@ final readonly class ProfileStatsService
                 + $nendoroidsXp
                 + $peluchesXp
                 + $vocabularyXp
-                + $grammarXp,
+                + $grammarXp
+                + $achievementXp,
+            achievementXp: $achievementXp,
         );
     }
 }
