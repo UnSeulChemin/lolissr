@@ -141,7 +141,7 @@ $category = '';
                 </div>
             <?php endif; ?>
             <?php if ($achievement['category'] === 'Artbooks' && $achievement['target'] === 1): ?>
-                <div class="success-reward success-reward-title success-reward-xp">
+                <div class="success-reward success-reward-title success-reward-xp success-reward-xp-top">
                     <strong>Récompense : ⭐ <?= number_format(\App\Services\Profile\AchievementXpService::ARTBOOK_REWARDS[1], 0, ',', ' ') ?> XP</strong>
                     <?php if (! $achievement['unlocked']): ?>
                         <span>🔒 Débloqué avec 1 artbook lu</span>
