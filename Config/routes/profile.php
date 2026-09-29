@@ -20,6 +20,7 @@ $router->prefix('profil')->group(function (Router $router): void
     $router->get('', [ProfileController::class, 'index']);
     $router->get('personnalisation', [ProfileController::class, 'customization']);
     $router->get('succes', [ProfileController::class, 'achievements']);
+    $router->get('xp', [ProfileController::class, 'xp']);
 
     // =========================================
     // AJAX

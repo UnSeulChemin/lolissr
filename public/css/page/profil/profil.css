@@ -71,6 +71,12 @@
     min-height: 300px;
 }
 
+.profile-card::before
+{
+    content: none;
+}
+
+
 .profile-achievements-summary
 {
     width: 100%;
@@ -199,7 +205,7 @@
 
 .profile-level-card
 {
-    padding: 1rem 1.25rem;
+    padding: 1rem 1.25rem 1.3rem;
     justify-content: flex-start;
     align-items: stretch;
     border: 1px solid rgba(
@@ -227,6 +233,12 @@
 {
     gap: .15rem;
     margin-bottom: .6rem;
+}
+
+.profile-level-details
+{
+    align-self: center;
+    margin-top: .65rem;
 }
 
 .profile-level-label
@@ -335,6 +347,29 @@
     gap: 1rem;
 }
 
+.profile-xp-heading
+{
+    width: var(--profile-width);
+    max-width: 100%;
+    margin: 0 auto 1.5rem;
+    padding: 1.75rem 1.5rem;
+    gap: .65rem;
+    background: linear-gradient(135deg, #fff, #f3edff);
+    text-align: center;
+}
+
+.profile-xp-heading h1 { margin: 0 0 .25rem; font-size: 1.3rem; }
+.profile-xp-heading p { margin: 0; }
+.profile-xp-heading strong { color: #6d2cff; font-size: 1.8rem; font-weight: 700; }
+.profile-xp-heading progress
+{
+    width: min(100%, 600px);
+    height: 12px;
+    margin: .25rem 0;
+    accent-color: #8b5cf6;
+}
+.profile-xp-note { color: #706779; font-size: .85rem; }
+
 .profile-stat-row
 {
     width: 100%;
@@ -356,22 +391,29 @@
 .profile-stat-card
 {
     min-width: 0;
-    min-height: 120px;
-    padding: 1rem;
-    gap: .6rem;
+    min-height: 140px;
+    padding: 1.25rem;
+    gap: .75rem;
     text-align: center;
+}
+
+.profile-stat-card:hover
+{
+    transform: none;
+    border-color: var(--color-violet-border);
+    box-shadow: var(--shadow-card-hover);
 }
 
 .profile-stat-title
 {
     margin: 0;
-    font-size: .95rem;
+    font-size: 1rem;
 }
 
 .profile-stat-value
 {
     margin: 0;
-    font-size: 1.8rem;
+    font-size: 2rem;
     line-height: 1;
 }
 
@@ -401,6 +443,7 @@
 
 .profile-banner
 {
+    border-radius: var(--radius-card-lg) var(--radius-card-lg) 0 0;
     grid-column: 1;
     grid-row: 1;
     min-width: 0;

@@ -31,7 +31,17 @@ final class ProfileController extends Controller
 
     public function index(): never
     {
-        $this->title = 'Profil';
+        $this->renderOverview(false);
+    }
+
+    public function xp(): never
+    {
+        $this->renderOverview(true);
+    }
+
+    private function renderOverview(bool $xpPage): never
+    {
+        $this->title = $xpPage ? 'Résumé de l’XP' : 'Profil';
 
         $user = user();
 
@@ -39,7 +49,7 @@ final class ProfileController extends Controller
 
         $stats = $this->profileStatsService->getStats();
 
-        $this->render('pages/profile/index', [
+        $this->render($xpPage ? 'pages/profile/xp' : 'pages/profile/index', [
             'achievements' => ProfileAchievements::forStats($stats, $user->level),
             'user' => $user,
             'level' => $user->level,

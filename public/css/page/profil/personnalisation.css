@@ -32,13 +32,25 @@
     flex-shrink: 0;
 }
 
+.profile-customization-hero::before
+{
+    content: none;
+}
+
+.profile-customization-hero.transition-card:hover,
+.profile-customization-hero.transition-card:focus-visible
+{
+    transform: none;
+    box-shadow: var(--shadow-card-hover);
+}
+
 .profile-customization-banner
 {
     flex-shrink: 0;
     position: relative;
     border-radius:
-        var(--card-border-radius)
-        var(--card-border-radius)
+        var(--radius-card-lg)
+        var(--radius-card-lg)
         0
         0;
 }
