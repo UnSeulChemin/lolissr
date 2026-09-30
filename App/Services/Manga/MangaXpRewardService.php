@@ -50,7 +50,7 @@ final readonly class MangaXpRewardService
         $seriesXpEarned = false;
         $this->achievementXpService->rewardManga(
             $user,
-            $this->mangaStatsRepository->profileSummary()['read'],
+            $this->mangaStatsRepository->countRead(),
             $this->mangaStatsRepository->countCompletedSeries(),
         );
 

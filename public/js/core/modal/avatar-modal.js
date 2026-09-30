@@ -40,7 +40,7 @@ export function avatarModal(avatars)
                                     type="button"
                                 >
 
-                                    <img
+                                    <img loading="lazy" decoding="async"
                                         src="${appUrl(`images/profil/avatar/thumbnail/${avatar.avatar}.${avatar.avatar_extension}`)}"
                                         alt="${avatar.avatar}"
                                         draggable="false"

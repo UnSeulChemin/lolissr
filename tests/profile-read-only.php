@@ -69,6 +69,10 @@ if ((int) $database->query('SELECT COUNT(*) FROM achievement_xp_rewards')->fetch
 echo "PASS: repeated profile reads with all thresholds reached, read-only database, isolated user XP and 41 achievements.\n";
 
 $unlocks = $container->get(\App\Repositories\Profile\ProfileUnlockStatsRepository::class);
+if (ProfileAchievements::forStats($unlocks->forAchievements(), $user->level) !== $achievements)
+{
+    throw new RuntimeException('Lightweight achievements differ from full profile stats.');
+}
 $expectedCounters = [
     'forTitles' => ['readTomes', 'completedSeries', 'readArtbooks', 'figurinesCollected', 'nendoroidsCollected', 'vocabularyLearned', 'grammarLearned'],
     'forBanners' => ['readTomes', 'nendoroidsCollected', 'peluchesCollected', 'vocabularyLearned', 'grammarLearned'],
@@ -89,7 +93,7 @@ $database->exec('PRAGMA query_only = OFF');
 $database->exec('DROP TABLE achievement_xp_rewards');
 $database->exec('UPDATE manga SET lu = 0');
 $database->exec('PRAGMA query_only = ON');
-foreach (['forTitles', 'forBanners', 'forFrames'] as $method)
+foreach (['forTitles', 'forBanners', 'forFrames', 'forAchievements'] as $method)
 {
     $counts = $unlocks->$method();
     if ($counts->readTomes !== 0 || $counts->vocabularyLearned !== 200)
@@ -98,3 +102,17 @@ foreach (['forTitles', 'forBanners', 'forFrames'] as $method)
     }
 }
 echo "PASS: lightweight unlock counters stay fresh without the XP rewards table.\n";
+
+foreach ([
+    [\App\Repositories\Manga\MangaStatsRepository::class, 'countRead', 0],
+    [\App\Repositories\Manga\ArtbookStatsRepository::class, 'countRead', 200],
+    [\App\Repositories\Figurine\FigurineStatsRepository::class, 'countCollected', 200],
+    [\App\Repositories\Nendoroid\NendoroidStatsRepository::class, 'countCollected', 200],
+    [\App\Repositories\Peluche\PelucheStatsRepository::class, 'countCollected', 200],
+    [\App\Repositories\Chinois\ChinoisVocabulaireStatsRepository::class, 'countMastered', 200],
+    [\App\Repositories\Chinois\ChinoisGrammaireStatsRepository::class, 'countMastered', 200],
+] as [$class, $method, $expected])
+{
+    if ($container->get($class)->$method() !== $expected) throw new RuntimeException('Incorrect action counter');
+}
+echo "PASS: targeted action counters.\n";

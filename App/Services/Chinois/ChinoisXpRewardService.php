@@ -34,7 +34,7 @@ final readonly class ChinoisXpRewardService
             return false;
         }
 
-        $this->achievementXpService->rewardGrammar($user, $this->grammarStatsRepository->profileSummary()['mastered']);
+        $this->achievementXpService->rewardGrammar($user, $this->grammarStatsRepository->countMastered());
 
         if (! $this->grammaireRepository->claimXpReward($id))
         {
@@ -55,7 +55,7 @@ final readonly class ChinoisXpRewardService
             return false;
         }
 
-        $this->achievementXpService->rewardVocabulary($user, $this->vocabularyStatsRepository->profileSummary()['mastered']);
+        $this->achievementXpService->rewardVocabulary($user, $this->vocabularyStatsRepository->countMastered());
 
         if (! $this->vocabulaireRepository->claimXpReward($id))
         {

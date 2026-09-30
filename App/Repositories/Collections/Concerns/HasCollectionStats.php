@@ -6,6 +6,11 @@ namespace App\Repositories\Collections\Concerns;
 
 trait HasCollectionStats
 {
+    public function countCollected(): int
+    {
+        $row = $this->fetchOne("SELECT COUNT(*) AS total FROM {$this->table()} WHERE collect = 1");
+        return (int) ($row->total ?? 0);
+    }
     /** @return array{collected: int, rewarded: int} */
     public function profileSummary(): array
     {

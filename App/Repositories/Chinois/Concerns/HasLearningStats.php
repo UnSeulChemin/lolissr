@@ -6,6 +6,11 @@ namespace App\Repositories\Chinois\Concerns;
 
 trait HasLearningStats
 {
+    public function countMastered(): int
+    {
+        $row = $this->fetchOne("SELECT COUNT(*) AS total FROM {$this->table()} WHERE maitrise = 1");
+        return (int) ($row->total ?? 0);
+    }
     /** @return array{mastered: int, rewarded: int} */
     public function profileSummary(): array
     {

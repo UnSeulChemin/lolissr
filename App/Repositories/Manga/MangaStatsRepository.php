@@ -11,6 +11,11 @@ use App\Models\Model;
 
 final class MangaStatsRepository extends Model
 {
+    public function countRead(): int
+    {
+        $row = $this->fetchOne("SELECT COUNT(*) AS total FROM {$this->table()} WHERE lu = 1");
+        return (int) ($row->total ?? 0);
+    }
     /** @return array{read: int, rewarded_tomes: int, rewarded_series: int} */
     public function profileSummary(): array
     {

@@ -46,6 +46,11 @@ final class ProfileUnlockStatsRepository extends Model
         return $this->counts(array_keys(self::COUNTERS));
     }
 
+    public function forAchievements(): ProfileUnlockStatsData
+    {
+        return $this->counts(array_keys(self::COUNTERS), true);
+    }
+
     /** @param list<key-of<self::COUNTERS>> $counters */
     private function counts(array $counters, bool $includeSeries = false): ProfileUnlockStatsData
     {

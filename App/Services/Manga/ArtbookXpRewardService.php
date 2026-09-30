@@ -37,7 +37,7 @@ final readonly class ArtbookXpRewardService
             return false;
         }
 
-        $this->achievementXpService->rewardArtbooks($user, $this->artbookStatsRepository->profileSummary()['read']);
+        $this->achievementXpService->rewardArtbooks($user, $this->artbookStatsRepository->countRead());
 
         if (! $this->artbookRepository->claimReadReward($artbook->id))
         {

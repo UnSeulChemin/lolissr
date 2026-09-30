@@ -42,7 +42,7 @@ export function bannerModal(banners)
                                     aria-label="${banner.banner} — ${banner.unlocked ? 'Disponible' : 'Verrouillée'}, ${banner.requirement}"
                                 >
 
-                                    <img
+                                    <img loading="lazy" decoding="async"
                                         src="${appUrl(`images/profil/banner/thumbnail/${banner.banner}.${banner.banner_extension}?v=20260929-sakura-v2`)}"
                                         alt="${banner.banner}"
                                         draggable="false"

@@ -17,6 +17,7 @@ final class ProfileController extends Controller
     public function __construct(
         private readonly UserLevelService $userLevelService,
         private readonly ProfileStatsService $profileStatsService,
+        private readonly \App\Repositories\Profile\ProfileUnlockStatsRepository $unlockStats,
         Request $request
     )
     {
@@ -31,17 +32,22 @@ final class ProfileController extends Controller
 
     public function index(): never
     {
-        $this->renderOverview(false);
+        $this->title = 'Profil';
+        $user = user();
+        assert($user instanceof User);
+        $this->render('pages/profile/index', [
+            'user' => $user,
+            'achievements' => ProfileAchievements::forStats($this->unlockStats->forAchievements(), $user->level),
+            'level' => $user->level,
+            'currentXp' => $user->xp,
+            'xpRequired' => $this->userLevelService->xpRequiredForLevel($user->level),
+            'progress' => $this->userLevelService->progress($user),
+        ]);
     }
 
     public function xp(): never
     {
-        $this->renderOverview(true);
-    }
-
-    private function renderOverview(bool $xpPage): never
-    {
-        $this->title = $xpPage ? 'Résumé de l’XP' : 'Profil';
+        $this->title = 'Résumé de l’XP';
 
         $user = user();
 
@@ -49,7 +55,7 @@ final class ProfileController extends Controller
 
         $stats = $this->profileStatsService->getStats();
 
-        $this->render($xpPage ? 'pages/profile/xp' : 'pages/profile/index', [
+        $this->render('pages/profile/xp', [
             'achievements' => ProfileAchievements::forStats($stats, $user->level),
             'user' => $user,
             'level' => $user->level,
@@ -99,7 +105,7 @@ final class ProfileController extends Controller
         assert($user instanceof User);
 
         $this->render('pages/profile/succes', [
-            'achievements' => ProfileAchievements::forStats($this->profileStatsService->getStats(), $user->level),
+            'achievements' => ProfileAchievements::forStats($this->unlockStats->forAchievements(), $user->level),
         ]);
     }
 

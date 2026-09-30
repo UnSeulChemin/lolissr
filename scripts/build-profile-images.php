@@ -14,68 +14,36 @@ if (!extension_loaded('gd') || !function_exists('imagewebp') || !defined('IMG_WE
 {
     throw new RuntimeException('GD with lossless WebP support is required.');
 }
+require __DIR__ . '/lib/ProfileImageBuilder.php';
 $root = dirname(__DIR__) . '/public/images/profil';
 $before = 0;
 $after = 0;
 $count = 0;
 $replacements = [];
-foreach (['avatar', 'banner', 'frame'] as $type)
+foreach (['avatar' => 512, 'banner' => 2160, 'frame' => 512] as $type => $maxEdge)
 {
-    foreach (glob($root . '/' . $type . '/thumbnail/*.png') ?: [] as $source)
+    $directory = $root . '/' . $type . '/thumbnail';
+    foreach (glob($directory . '/*.png') ?: [] as $source)
     {
         if (filesize($source) < 200000) continue;
-        $bytes = file_get_contents($source);
-        if ($bytes === false) throw new RuntimeException('Cannot read ' . $source);
-        // Parse PNG chunks: an acTL chunk marks APNG, which GD would flatten.
-        $animated = false;
-        for ($offset = 8; $offset + 12 <= strlen($bytes);)
-        {
-            $length = unpack('Nlength', substr($bytes, $offset, 4));
-            if ($length === false) throw new RuntimeException('Invalid PNG');
-            if (substr($bytes, $offset + 4, 4) === 'acTL') $animated = true;
-            $offset += 12 + $length['length'];
-        }
-        $directory = dirname($source);
-        $legacy = $directory . '/optimized/' . basename($source) . '.webp';
         $target = $directory . '/' . pathinfo($source, PATHINFO_FILENAME) . '.webp';
-        if ($animated)
-        {
-            continue;
-        }
-        // Do not overwrite an independently supplied WebP with the same name.
-        if (is_file($target)) throw new RuntimeException('PNG/WebP name collision: ' . $target);
-        if (is_file($legacy) && filemtime($legacy) >= filemtime($source))
-        {
-            if (!copy($legacy, $target)) throw new RuntimeException('Cannot copy ' . $legacy);
-        }
-        else
-        {
-            $image = imagecreatefrompng($source);
-            if ($image === false) throw new RuntimeException('Cannot decode ' . $source);
-            imagepalettetotruecolor($image);
-            imagesavealpha($image, true);
-            if (!imagewebp($image, $target, IMG_WEBP_LOSSLESS)) throw new RuntimeException('Cannot encode ' . $source);
-            imagedestroy($image);
-        }
-        if (filesize($target) >= filesize($source))
-        {
-            unlink($target);
-            continue;
-        }
-        $sourceInfo = getimagesize($source);
-        $targetInfo = getimagesize($target);
-        if ($sourceInfo === false || $targetInfo === false || $targetInfo[2] !== IMAGETYPE_WEBP
-            || $sourceInfo[0] !== $targetInfo[0] || $sourceInfo[1] !== $targetInfo[1])
-        {
-            throw new RuntimeException('Invalid converted image: ' . $target);
-        }
-        $replacements[] = [$source, $legacy];
+        if (!ProfileImageBuilder::prepare($source, $target, $maxEdge)) continue;
+        $replacements[] = [$source, $directory . '/optimized/' . basename($source) . '.webp'];
         $before += filesize($source);
         $after += filesize($target);
         $count++;
     }
+    foreach (glob($directory . '/*.webp') ?: [] as $file)
+    {
+        $size = filesize($file);
+        if (!ProfileImageBuilder::prepare($file, $file, $maxEdge)) continue;
+        clearstatcache(true, $file);
+        if (filesize($file) === $size) continue;
+        $before += $size;
+        $after += filesize($file);
+        $count++;
+    }
 }
-
 require dirname(__DIR__) . '/vendor/autoload.php';
 require dirname(__DIR__) . '/Framework/Support/Helpers.php';
 if (!defined('ROOT')) define('ROOT', dirname(__DIR__));
@@ -103,4 +71,4 @@ foreach (['avatar', 'banner', 'frame'] as $type)
     // Nonrecursive removal: never delete unexpected files in the directory.
     if (is_dir($directory) && count(scandir($directory) ?: []) === 2) rmdir($directory);
 }
-printf("Profile images: %d PNGs replaced, %d -> %d bytes (%.1f%% saved).\n", $count, $before, $after, $before > 0 ? 100 * (1 - $after / $before) : 0);
+printf("Profile images: %d images optimized, %d -> %d bytes (%.1f%% saved).\n", $count, $before, $after, $before > 0 ? 100 * (1 - $after / $before) : 0);

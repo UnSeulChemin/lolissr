@@ -6,12 +6,13 @@ namespace App\Services\Profile;
 
 use App\Constants\AchievementRewards;
 use App\DTO\Profile\ProfileStatsData;
+use App\DTO\Profile\ProfileUnlockStatsData;
 
 /** @phpstan-type Achievement array{category: string, icon: string, title: string, current: int, target: int, unlocked: bool} */
 final class ProfileAchievements
 {
     /** @return list<Achievement> */
-    public static function forStats(ProfileStatsData $stats, int $level): array
+    public static function forStats(ProfileStatsData|ProfileUnlockStatsData $stats, int $level): array
     {
         $categories = [
             ['Tomes', '📚', 'tomes lus', $stats->readTomes, array_keys(AchievementRewards::TOMES)],

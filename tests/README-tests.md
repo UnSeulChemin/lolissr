@@ -117,9 +117,17 @@ php tests/run-page-styles-browser.php http://localhost/lolissr tests/flash-toast
 ```
 
 PHP GD avec WebP et la connexion MySQL sont requis. La commande remplace les PNG
-statiques du profil de plus de 200 Ko par des WebP sans perte, à dimensions
-identiques, directement dans `thumbnail`. Seules les conversions plus petites
-sont conservées. Les animations ne sont pas converties.
+statiques du profil de plus de 200 Ko par des WebP directement dans `thumbnail`.
+Les PNG convertis et les WebP existants sont redimensionnés proportionnellement
+si nécessaire : côté maximal de 512 px pour avatars/cadres et 2160 px pour
+bannières. La transparence est conservée. L'encodage WebP est sans perte après
+redimensionnement ; la réduction de dimensions retire toutefois des détails.
+Seuls les résultats plus petits sont conservés. Les animations PNG/WebP sont ignorées.
+
+La génération utilise un fichier temporaire, validé avant remplacement. Après une
+interruption, un WebP déjà généré à l'identique est accepté ; une collision avec
+une autre image est refusée. `php tests/profile-image-builder.php` vérifie la
+reprise, les collisions, les dimensions et la transparence sur des fichiers isolés.
 
 Les extensions des images concernées sont mises à jour dans `users`, puis les
 PNG remplacés sont supprimés. Les anciens sous-dossiers `optimized` sont vidés

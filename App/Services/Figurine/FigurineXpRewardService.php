@@ -29,7 +29,7 @@ final readonly class FigurineXpRewardService
             return false;
         }
 
-        $this->achievementXpService->rewardFigurines($user, $this->figurineStatsRepository->profileSummary()['collected']);
+        $this->achievementXpService->rewardFigurines($user, $this->figurineStatsRepository->countCollected());
 
         if (! $this->figurineRepository->claimCollectReward($figurine->id))
         {

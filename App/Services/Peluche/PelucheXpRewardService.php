@@ -30,7 +30,7 @@ final readonly class PelucheXpRewardService
             return false;
         }
 
-        $this->achievementXpService->rewardPeluches($user, $this->pelucheStatsRepository->profileSummary()['collected']);
+        $this->achievementXpService->rewardPeluches($user, $this->pelucheStatsRepository->countCollected());
 
         if (! $this->pelucheRepository->claimCollectReward($peluche->id))
         {

@@ -29,7 +29,7 @@ final readonly class NendoroidXpRewardService
             return false;
         }
 
-        $this->achievementXpService->rewardNendoroids($user, $this->nendoroidStatsRepository->profileSummary()['collected']);
+        $this->achievementXpService->rewardNendoroids($user, $this->nendoroidStatsRepository->countCollected());
 
         if (! $this->nendoroidRepository->claimCollectReward($nendoroid->id))
         {

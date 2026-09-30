@@ -14,6 +14,8 @@ foreach (['avatar', 'banner', 'frame'] as $type)
     {
         $image = imagecreatefromwebp($file);
         if ($image === false) throw new RuntimeException('Invalid WebP: ' . $file);
+        if (max(imagesx($image), imagesy($image)) > ($type === 'banner' ? 2160 : 512))
+            throw new RuntimeException('Oversized profile image: ' . $file);
         imagedestroy($image);
         if (is_file(substr($file, 0, -5) . '.png')) throw new RuntimeException('Duplicate PNG remains');
         $count++;

@@ -12,23 +12,6 @@ use App\Models\User;
 /** @var int $currentXp */
 /** @var int $xpRequired */
 /** @var float $progress */
-/** @var int $readTomes */
-/** @var int $tomeXp */
-/** @var int $completedSeries */
-/** @var int $seriesXp */
-/** @var int $readArtbooks */
-/** @var int $artbookXp */
-/** @var int $figurinesCollected */
-/** @var int $figurinesXp */
-/** @var int $nendoroidsCollected */
-/** @var int $nendoroidsXp */
-/** @var int $peluchesCollected */
-/** @var int $peluchesXp */
-/** @var int $vocabularyLearned */
-/** @var int $vocabularyXp */
-/** @var int $grammarLearned */
-/** @var int $grammarXp */
-/** @var int $totalProfileXp */
 
 $avatarPath =
     "{$view->baseUri}images/profil/avatar/thumbnail/{$user->avatar}.{$user->avatar_extension}";

@@ -44,14 +44,14 @@ export function frameModal(frames, avatar)
 
                                     <div class="profile-customization-avatar">
 
-                                        <img
+                                        <img loading="lazy" decoding="async"
                                             class="profile-avatar-image"
                                             src="${avatar}"
                                             alt=""
                                             draggable="false"
                                         >
 
-                                        <img
+                                        <img loading="lazy" decoding="async"
                                             class="profile-frame"
                                             src="${appUrl(`images/profil/frame/thumbnail/${frame.frame}.${frame.frame_extension}`)}"
                                             alt="${frame.frame}"

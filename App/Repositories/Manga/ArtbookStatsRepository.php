@@ -10,6 +10,11 @@ use App\Models\Model;
 
 final class ArtbookStatsRepository extends Model
 {
+    public function countRead(): int
+    {
+        $row = $this->fetchOne("SELECT COUNT(*) AS total FROM {$this->table()} WHERE lu = 1");
+        return (int) ($row->total ?? 0);
+    }
     /** @return array{read: int, rewarded: int} */
     public function profileSummary(): array
     {
