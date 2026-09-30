@@ -40,10 +40,21 @@ final readonly class UserLevelService
             return;
         }
 
-        $update = function () use ($user, $xp): User
+        $this->addComputedXp($user, static fn (): int => $xp);
+    }
+
+    /**
+     * Compute and persist rewards under the same user lock as the XP update.
+     * @param callable(): int $computeXp
+     */
+    public function addComputedXp(User $user, callable $computeXp): void
+    {
+        $update = function () use ($user, $computeXp): User
         {
             $current = $this->repository->lockLevelAndXp($user->id);
             if ($current === null) throw new \RuntimeException('Utilisateur introuvable pour les XP.');
+            $xp = $computeXp();
+            if ($xp <= 0) return $current;
             $current->xp += $xp;
             while ($current->xp >= $this->xpRequiredForLevel($current->level))
             {

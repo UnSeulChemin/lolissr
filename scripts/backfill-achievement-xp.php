@@ -49,16 +49,7 @@ $before = $rewards->totalForUser($user);
 $stats = $statsService->getStats($user);
 if ($apply)
 {
-    $database->transaction(static function () use ($rewards, $user, $stats): void {
-        $rewards->rewardTomes($user, $stats->readTomes);
-        $rewards->rewardSeries($user, $stats->completedSeries);
-        $rewards->rewardArtbooks($user, $stats->readArtbooks);
-        $rewards->rewardFigurines($user, $stats->figurinesCollected);
-        $rewards->rewardNendoroids($user, $stats->nendoroidsCollected);
-        $rewards->rewardPeluches($user, $stats->peluchesCollected);
-        $rewards->rewardVocabulary($user, $stats->vocabularyLearned);
-        $rewards->rewardGrammar($user, $stats->grammarLearned);
-    });
+    $rewards->rewardAll($user, $stats);
     echo 'XP de succès ajoutée : ' . ($rewards->totalForUser($user) - $before) . PHP_EOL;
 }
 else

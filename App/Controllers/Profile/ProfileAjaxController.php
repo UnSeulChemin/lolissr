@@ -10,7 +10,7 @@ use App\DTO\Common\ServiceResult;
 use App\Models\User;
 use App\Repositories\Auth\UserRepository;
 use App\Services\Profile\ProfileImageCatalog;
-use App\Services\Profile\ProfileStatsService;
+use App\Repositories\Profile\ProfileUnlockStatsRepository;
 
 use Framework\Http\Request;
 
@@ -19,7 +19,7 @@ final class ProfileAjaxController extends Controller
     public function __construct(
         private readonly UserRepository $userRepository,
         private readonly ProfileImageCatalog $imageCatalog,
-        private readonly ProfileStatsService $profileStatsService,
+        private readonly ProfileUnlockStatsRepository $unlockStats,
         Request $request
     )
     {
@@ -34,7 +34,7 @@ final class ProfileAjaxController extends Controller
 
     public function titles(): never
     {
-        $stats = $this->profileStatsService->getStats();
+        $stats = $this->unlockStats->forTitles();
         $user = $this->user();
 
         $titles = UserTitle::titlesForLevel($user->level, $stats->figurinesCollected, $stats->readArtbooks, $stats->readTomes, $stats->completedSeries, $stats->nendoroidsCollected, $stats->vocabularyLearned, $stats->grammarLearned);
@@ -44,7 +44,7 @@ final class ProfileAjaxController extends Controller
 
     public function updateTitle(): never
     {
-        $stats = $this->profileStatsService->getStats();
+        $stats = $this->unlockStats->forTitles();
         $user = $this->user();
 
         $title = $this->stringInput('title');
@@ -125,7 +125,7 @@ final class ProfileAjaxController extends Controller
 
     public function banners(): never
     {
-        $stats = $this->profileStatsService->getStats();
+        $stats = $this->unlockStats->forBanners();
         $banners = $this->imageCatalog->bannersForLevel($this->user()->level, $stats->readTomes, $stats->nendoroidsCollected, $stats->peluchesCollected, $stats->vocabularyLearned, $stats->grammarLearned);
 
         $this->jsonResult(ServiceResult::success(data: ['banners' => $banners]));
@@ -135,7 +135,7 @@ final class ProfileAjaxController extends Controller
     {
         $user = $this->user();
 
-        $stats = $this->profileStatsService->getStats();
+        $stats = $this->unlockStats->forBanners();
 
         $banner = $this->findItem(
             $this->imageCatalog->bannersForLevel($user->level, $stats->readTomes, $stats->nendoroidsCollected, $stats->peluchesCollected, $stats->vocabularyLearned, $stats->grammarLearned),
@@ -182,7 +182,7 @@ final class ProfileAjaxController extends Controller
 
     public function frames(): never
     {
-        $stats = $this->profileStatsService->getStats();
+        $stats = $this->unlockStats->forFrames();
         $frames = $this->imageCatalog->framesForLevel($this->user()->level, $stats->figurinesCollected, $stats->readArtbooks, $stats->readTomes, $stats->nendoroidsCollected, $stats->peluchesCollected, $stats->vocabularyLearned, $stats->grammarLearned);
 
         $this->jsonResult(ServiceResult::success(data: ['frames' => $frames]));
@@ -190,7 +190,7 @@ final class ProfileAjaxController extends Controller
 
     public function updateFrame(): never
     {
-        $stats = $this->profileStatsService->getStats();
+        $stats = $this->unlockStats->forFrames();
         $user = $this->user();
 
         $frame = $this->findItem(

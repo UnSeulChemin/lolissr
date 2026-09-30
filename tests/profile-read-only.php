@@ -67,3 +67,34 @@ if ((int) $database->query('SELECT COUNT(*) FROM achievement_xp_rewards')->fetch
     throw new RuntimeException('Reading the profile attributed missing achievements.');
 }
 echo "PASS: repeated profile reads with all thresholds reached, read-only database, isolated user XP and 41 achievements.\n";
+
+$unlocks = $container->get(\App\Repositories\Profile\ProfileUnlockStatsRepository::class);
+$expectedCounters = [
+    'forTitles' => ['readTomes', 'completedSeries', 'readArtbooks', 'figurinesCollected', 'nendoroidsCollected', 'vocabularyLearned', 'grammarLearned'],
+    'forBanners' => ['readTomes', 'nendoroidsCollected', 'peluchesCollected', 'vocabularyLearned', 'grammarLearned'],
+    'forFrames' => ['readTomes', 'readArtbooks', 'figurinesCollected', 'nendoroidsCollected', 'peluchesCollected', 'vocabularyLearned', 'grammarLearned'],
+];
+foreach ($expectedCounters as $method => $properties)
+{
+    $counts = $unlocks->$method();
+    foreach ($properties as $property)
+    {
+        if ($counts->$property !== $stats->$property)
+        {
+            throw new RuntimeException('Unlock counter differs from profile: ' . $property);
+        }
+    }
+}
+$database->exec('PRAGMA query_only = OFF');
+$database->exec('DROP TABLE achievement_xp_rewards');
+$database->exec('UPDATE manga SET lu = 0');
+$database->exec('PRAGMA query_only = ON');
+foreach (['forTitles', 'forBanners', 'forFrames'] as $method)
+{
+    $counts = $unlocks->$method();
+    if ($counts->readTomes !== 0 || $counts->vocabularyLearned !== 200)
+    {
+        throw new RuntimeException('Stale or incorrect unlock counters.');
+    }
+}
+echo "PASS: lightweight unlock counters stay fresh without the XP rewards table.\n";

@@ -9,12 +9,19 @@
 function lazyInitializer(
     modulePath,
     exportName,
+    selector = null,
 )
 {
-    return async () =>
+    let pending;
+    const preload = () => pending ??= import(modulePath).catch(error =>
+    {
+        pending = undefined;
+        throw error;
+    });
+    const init = async () =>
     {
         const module =
-            await import(modulePath);
+            await preload();
 
         const initializer =
             module[exportName];
@@ -28,6 +35,9 @@ function lazyInitializer(
 
         await initializer();
     };
+    init.preload = preload;
+    init.isRelevant = () => selector === null || document.querySelector(selector) !== null;
+    return init;
 }
 
 // ==================================================
@@ -47,21 +57,25 @@ const initModifierMangaPage = lazyInitializer(
 const initUpdateNote = lazyInitializer(
     '../manga/actions/update-note.js',
     'initUpdateNote',
+    '.js-note-button',
 );
 
 const initDeleteManga = lazyInitializer(
     '../manga/actions/delete-manga.js',
     'initDeleteManga',
+    '.js-delete-manga',
 );
 
 const initDeleteArtbook = lazyInitializer(
     '../manga/actions/delete-artbook.js',
     'initDeleteArtbook',
+    '.js-delete-artbook',
 );
 
 const initUpdateReadStatus = lazyInitializer(
     '../manga/actions/update-read-status.js',
     'initUpdateReadStatus',
+    '.js-read-status-button',
 );
 
 // ==================================================
@@ -76,11 +90,13 @@ const initAjouterFigurinePage = lazyInitializer(
 const initDeleteFigurine = lazyInitializer(
     '../figurine/actions/delete-figurine.js',
     'initDeleteFigurine',
+    '.js-delete-figurine',
 );
 
 const initUpdateFigurineCollectStatus = lazyInitializer(
     '../figurine/actions/update-collect-status.js',
     'initUpdateCollectStatus',
+    '.js-figurine-collect-status-button',
 );
 
 // ==================================================
@@ -95,11 +111,13 @@ const initAjouterPeluchePage = lazyInitializer(
 const initDeletePeluche = lazyInitializer(
     '../peluche/actions/delete-peluche.js',
     'initDeletePeluche',
+    '.js-delete-peluche',
 );
 
 const initUpdatePelucheCollectStatus = lazyInitializer(
     '../peluche/actions/update-collect-status.js',
     'initUpdatePelucheCollectStatus',
+    '.js-peluche-collect-status-button',
 );
 
 // ==================================================
@@ -114,11 +132,13 @@ const initAjouterNendoroidPage = lazyInitializer(
 const initDeleteNendoroid = lazyInitializer(
     '../nendoroid/actions/delete-nendoroid.js',
     'initDeleteNendoroid',
+    '.js-delete-nendoroid',
 );
 
 const initUpdateNendoroidCollectStatus = lazyInitializer(
     '../nendoroid/actions/update-collect-status.js',
     'initUpdateNendoroidCollectStatus',
+    '.js-nendoroid-collect-status-button',
 );
 
 // ==================================================
@@ -143,21 +163,25 @@ const initFlashcardsGrammairePage = lazyInitializer(
 const initToggleGrammaireMaitrise = lazyInitializer(
     '../chinois/actions/toggle-grammar-mastery.js',
     'initToggleGrammaireMaitrise',
+    '.grammar-ajax',
 );
 
 const initToggleVocabulaireMaitrise = lazyInitializer(
     '../chinois/actions/toggle-vocabulary-mastery.js',
     'initToggleVocabulaireMaitrise',
+    '.vocabulary-ajax',
 );
 
 const initDeleteGrammaire = lazyInitializer(
     '../chinois/actions/delete-grammar.js',
     'initDeleteGrammaire',
+    '.grammaire-delete',
 );
 
 const initDeleteVocabulaire = lazyInitializer(
     '../chinois/actions/delete-vocabulary.js',
     'initDeleteVocabulaire',
+    '.vocabulaire-delete',
 );
 
 // ==================================================

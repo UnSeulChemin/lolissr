@@ -1,3 +1,4 @@
+import { runInitializers } from '../routes/run-initializers.js';
 // ==================================================
 // APP INIT
 // ==================================================
@@ -130,37 +131,18 @@ async function runGlobalInitializers()
 // ROUTE INITIALIZERS
 // ==================================================
 
+let routeGeneration = 0;
+
 async function runRouteInitializers()
 {
-    const path =
-        appPath();
-
-    for (
-        const {
-            match,
-            initializers,
-        }
-        of ROUTE_INITIALIZERS
-    )
-    {
-        if (! match.test(path))
-        {
-            continue;
-        }
-
-        for (
-            const [label, init]
-            of initializers
-        )
-        {
-            await safeInit(
-                label,
-                init,
-            );
-        }
-    }
+    const generation = ++routeGeneration;
+    const path = appPath();
+    const initializers = ROUTE_INITIALIZERS
+        .filter(({match}) => match.test(path))
+        .flatMap(({initializers}) => initializers);
+    await runInitializers(initializers, safeInit,
+        () => generation === routeGeneration && path === appPath());
 }
-
 // ==================================================
 // INIT
 // ==================================================

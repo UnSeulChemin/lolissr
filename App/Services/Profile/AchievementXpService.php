@@ -6,7 +6,7 @@ namespace App\Services\Profile;
 
 use App\Constants\AchievementRewards;
 use App\Models\User;
-use App\Repositories\Auth\UserRepository;
+use App\DTO\Profile\ProfileStatsData;
 use App\Services\User\UserLevelService;
 use Framework\Database\Database;
 
@@ -14,127 +14,116 @@ final readonly class AchievementXpService
 {
     public function __construct(
         private Database $database,
-        private UserRepository $users,
         private UserLevelService $levels,
     ) {
     }
 
     public function rewardTomes(User $user, int $readTomes): void
     {
-        foreach (AchievementRewards::TOMES as $target => $xp)
-        {
-            if ($readTomes >= $target)
-            {
-                $this->award($user, 'tomes_' . $target, $xp);
-            }
-        }
+        $this->award($user, $this->eligible('tomes', AchievementRewards::TOMES, $readTomes));
     }
 
     public function rewardSeries(User $user, int $completedSeries): void
     {
-        foreach (AchievementRewards::SERIES as $target => $xp)
-        {
-            if ($completedSeries >= $target)
-            {
-                $this->award($user, 'series_' . $target, $xp);
-            }
-        }
+        $this->award($user, $this->eligible('series', AchievementRewards::SERIES, $completedSeries));
     }
 
     public function rewardArtbooks(User $user, int $readArtbooks): void
     {
-        foreach (AchievementRewards::ARTBOOKS as $target => $xp)
-        {
-            if ($readArtbooks >= $target)
-            {
-                $this->award($user, 'artbooks_' . $target, $xp);
-            }
-        }
+        $this->award($user, $this->eligible('artbooks', AchievementRewards::ARTBOOKS, $readArtbooks));
     }
 
     public function rewardFigurines(User $user, int $collected): void
     {
-        foreach (AchievementRewards::FIGURINES as $target => $xp)
-        {
-            if ($collected >= $target)
-            {
-                $this->award($user, 'figurines_' . $target, $xp);
-            }
-        }
+        $this->award($user, $this->eligible('figurines', AchievementRewards::FIGURINES, $collected));
     }
 
     public function rewardNendoroids(User $user, int $collected): void
     {
-        foreach (AchievementRewards::NENDOROIDS as $target => $xp)
-        {
-            if ($collected >= $target)
-            {
-                $this->award($user, 'nendoroids_' . $target, $xp);
-            }
-        }
+        $this->award($user, $this->eligible('nendoroids', AchievementRewards::NENDOROIDS, $collected));
     }
 
     public function rewardPeluches(User $user, int $collected): void
     {
-        foreach (AchievementRewards::PELUCHES as $target => $xp)
-        {
-            if ($collected >= $target)
-            {
-                $this->award($user, 'peluches_' . $target, $xp);
-            }
-        }
+        $this->award($user, $this->eligible('peluches', AchievementRewards::PELUCHES, $collected));
     }
 
     public function rewardVocabulary(User $user, int $mastered): void
     {
-        foreach (AchievementRewards::VOCABULARY as $target => $xp)
-        {
-            if ($mastered >= $target)
-            {
-                $this->award($user, 'vocabulary_' . $target, $xp);
-            }
-        }
+        $this->award($user, $this->eligible('vocabulary', AchievementRewards::VOCABULARY, $mastered));
     }
 
     public function rewardGrammar(User $user, int $mastered): void
     {
-        foreach (AchievementRewards::GRAMMAR as $target => $xp)
-        {
-            if ($mastered >= $target)
-            {
-                $this->award($user, 'grammar_' . $target, $xp);
-            }
-        }
+        $this->award($user, $this->eligible('grammar', AchievementRewards::GRAMMAR, $mastered));
     }
 
-    private function award(User $user, string $key, int $xp): void
+    public function rewardManga(User $user, int $readTomes, int $completedSeries): void
     {
-        $award = function () use ($user, $key, $xp): void {
-            // Serialize claims for this user, including simultaneous requests.
-            if ($this->users->lockLevelAndXp($user->id) === null)
-            {
-                throw new \RuntimeException('Utilisateur introuvable.');
-            }
-            $check = $this->database->prepare('SELECT xp FROM achievement_xp_rewards WHERE user_id = ? AND achievement_key = ?');
-            $check->execute([$user->id, $key]);
-            if ($check->fetchColumn() !== false)
-            {
-                return;
-            }
-            $insert = $this->database->prepare('INSERT INTO achievement_xp_rewards (user_id, achievement_key, xp) VALUES (?, ?, ?)');
-            $insert->execute([$user->id, $key, $xp]);
-            $this->levels->addXp($user, $xp);
-        };
-        if ($this->database->inTransaction())
-        {
-            $award();
-        }
-        else
-        {
-            $this->database->transaction($award);
-        }
+        $this->award($user, [
+            ...$this->eligible('tomes', AchievementRewards::TOMES, $readTomes),
+            ...$this->eligible('series', AchievementRewards::SERIES, $completedSeries),
+        ]);
     }
 
+    public function rewardAll(User $user, ProfileStatsData $stats): void
+    {
+        $this->award($user, [
+            ...$this->eligible('tomes', AchievementRewards::TOMES, $stats->readTomes),
+            ...$this->eligible('series', AchievementRewards::SERIES, $stats->completedSeries),
+            ...$this->eligible('artbooks', AchievementRewards::ARTBOOKS, $stats->readArtbooks),
+            ...$this->eligible('figurines', AchievementRewards::FIGURINES, $stats->figurinesCollected),
+            ...$this->eligible('nendoroids', AchievementRewards::NENDOROIDS, $stats->nendoroidsCollected),
+            ...$this->eligible('peluches', AchievementRewards::PELUCHES, $stats->peluchesCollected),
+            ...$this->eligible('vocabulary', AchievementRewards::VOCABULARY, $stats->vocabularyLearned),
+            ...$this->eligible('grammar', AchievementRewards::GRAMMAR, $stats->grammarLearned),
+        ]);
+    }
+
+    /** @param array<int, int> $rewards
+     *  @return array<string, int>
+     */
+    private function eligible(string $category, array $rewards, int $count): array
+    {
+        $eligible = [];
+        foreach ($rewards as $target => $xp)
+        {
+            if ($count >= $target) $eligible[$category . '_' . $target] = $xp;
+        }
+        return $eligible;
+    }
+
+    /** @param array<string, int> $rewards */
+    private function award(User $user, array $rewards): void
+    {
+        if ($rewards === []) return;
+
+        $this->levels->addComputedXp($user, function () use ($user, $rewards): int {
+            // A current locking read also sees claims committed by a request we waited for.
+            $placeholders = implode(', ', array_fill(0, count($rewards), '?'));
+            $check = $this->database->prepare(
+                'SELECT achievement_key FROM achievement_xp_rewards WHERE user_id = ?'
+                . ' AND achievement_key IN (' . $placeholders . ') FOR UPDATE'
+            );
+            $check->execute([$user->id, ...array_keys($rewards)]);
+            /** @var list<string> $claimed */
+            $claimed = $check->fetchAll(\PDO::FETCH_COLUMN);
+            $missing = array_diff_key($rewards, array_fill_keys($claimed, true));
+            if ($missing === []) return 0;
+
+            $values = [];
+            foreach ($missing as $key => $xp)
+            {
+                array_push($values, $user->id, $key, $xp);
+            }
+            $insert = $this->database->prepare(
+                'INSERT INTO achievement_xp_rewards (user_id, achievement_key, xp) VALUES '
+                . implode(', ', array_fill(0, count($missing), '(?, ?, ?)'))
+            );
+            $insert->execute($values);
+            return array_sum($missing);
+        });
+    }
     public function totalForUser(User $user): int
     {
         $statement = $this->database->prepare('SELECT COALESCE(SUM(xp), 0) FROM achievement_xp_rewards WHERE user_id = ?');

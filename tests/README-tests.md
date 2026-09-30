@@ -92,3 +92,18 @@ les succès manquants selon les statistiques actuelles, dans une transaction.
 Elle conserve la protection contre les doubles récompenses. Les collections étant
 partagées dans le modèle actuel, préciser l'identifiant du compte concerné.
 Ce rattrapage ne s'exécute jamais automatiquement à l'affichage d'une page.
+
+## Récompenses groupées et chargement JavaScript
+
+```powershell
+php tests/achievement-xp.php
+php tests/run-page-styles-browser.php http://localhost/lolissr tests/route-initializers-browser.js
+```
+
+Le test XP utilise la connexion MySQL configurée et uniquement des tables temporaires
+propres à cette connexion, qui masquent les tables réelles. Il vérifie les paliers
+déjà attribués, les nouveaux paliers, les niveaux, l'isolation des comptes et le rollback.
+Il nécessite le droit de créer des tables temporaires ; aucune donnée de compte réel
+n'est modifiée. Le test navigateur vérifie le ciblage des actions, les imports en
+parallèle, l'ordre d'initialisation et l'isolation des erreurs de chargement.
+Les compteurs de personnalisation sont vérifiés par `tests/profile-read-only.php`.
