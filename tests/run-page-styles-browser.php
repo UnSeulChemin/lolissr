@@ -35,7 +35,7 @@ HTML;
     if (isset($argv[3]))
     {
         $payload = json_decode((string) file_get_contents($argv[3]), true, 512, JSON_THROW_ON_ERROR);
-        $fixture .= 'window.cssComparison = ' . json_encode($payload, JSON_HEX_TAG | JSON_THROW_ON_ERROR) . ';';
+        $fixture .= 'window.browserTestData = window.cssComparison = ' . json_encode($payload, JSON_HEX_TAG | JSON_THROW_ON_ERROR) . ';';
     }
     $fixture .= $testCode;
     $fixture .= <<<'HTML'

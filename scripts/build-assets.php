@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 require __DIR__ . '/build-css.php';
+require __DIR__ . '/build-js.php';
 
 $assetRoot = dirname(__DIR__) . '/public/';
 $assetVersions = [];

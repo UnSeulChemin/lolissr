@@ -7,13 +7,13 @@
 // ==================================================
 
 function lazyInitializer(
-    modulePath,
+    loadModule,
     exportName,
     selector = null,
 )
 {
     let pending;
-    const preload = () => pending ??= import(modulePath).catch(error =>
+    const preload = () => pending ??= loadModule().catch(error =>
     {
         pending = undefined;
         throw error;
@@ -29,7 +29,7 @@ function lazyInitializer(
         if (typeof initializer !== 'function')
         {
             throw new TypeError(
-                `Initialiseur "${exportName}" introuvable dans "${modulePath}".`,
+                `Initialiseur "${exportName}" introuvable.`,
             );
         }
 
@@ -45,35 +45,35 @@ function lazyInitializer(
 // ==================================================
 
 const initAjouterMangaPage = lazyInitializer(
-    '../manga/pages/ajouter.js',
+    () => import('../manga/pages/ajouter.js'),
     'initAjouterPage',
 );
 
 const initModifierMangaPage = lazyInitializer(
-    '../manga/pages/modifier.js',
+    () => import('../manga/pages/modifier.js'),
     'initModifierPage',
 );
 
 const initUpdateNote = lazyInitializer(
-    '../manga/actions/update-note.js',
+    () => import('../manga/actions/update-note.js'),
     'initUpdateNote',
     '.js-note-button',
 );
 
 const initDeleteManga = lazyInitializer(
-    '../manga/actions/delete-manga.js',
+    () => import('../manga/actions/delete-manga.js'),
     'initDeleteManga',
     '.js-delete-manga',
 );
 
 const initDeleteArtbook = lazyInitializer(
-    '../manga/actions/delete-artbook.js',
+    () => import('../manga/actions/delete-artbook.js'),
     'initDeleteArtbook',
     '.js-delete-artbook',
 );
 
 const initUpdateReadStatus = lazyInitializer(
-    '../manga/actions/update-read-status.js',
+    () => import('../manga/actions/update-read-status.js'),
     'initUpdateReadStatus',
     '.js-read-status-button',
 );
@@ -83,18 +83,18 @@ const initUpdateReadStatus = lazyInitializer(
 // ==================================================
 
 const initAjouterFigurinePage = lazyInitializer(
-    '../figurine/pages/ajouter.js',
+    () => import('../figurine/pages/ajouter.js'),
     'initAjouterPage',
 );
 
 const initDeleteFigurine = lazyInitializer(
-    '../figurine/actions/delete-figurine.js',
+    () => import('../figurine/actions/delete-figurine.js'),
     'initDeleteFigurine',
     '.js-delete-figurine',
 );
 
 const initUpdateFigurineCollectStatus = lazyInitializer(
-    '../figurine/actions/update-collect-status.js',
+    () => import('../figurine/actions/update-collect-status.js'),
     'initUpdateCollectStatus',
     '.js-figurine-collect-status-button',
 );
@@ -104,18 +104,18 @@ const initUpdateFigurineCollectStatus = lazyInitializer(
 // ==================================================
 
 const initAjouterPeluchePage = lazyInitializer(
-    '../peluche/pages/ajouter.js',
+    () => import('../peluche/pages/ajouter.js'),
     'initAjouterPage',
 );
 
 const initDeletePeluche = lazyInitializer(
-    '../peluche/actions/delete-peluche.js',
+    () => import('../peluche/actions/delete-peluche.js'),
     'initDeletePeluche',
     '.js-delete-peluche',
 );
 
 const initUpdatePelucheCollectStatus = lazyInitializer(
-    '../peluche/actions/update-collect-status.js',
+    () => import('../peluche/actions/update-collect-status.js'),
     'initUpdatePelucheCollectStatus',
     '.js-peluche-collect-status-button',
 );
@@ -125,18 +125,18 @@ const initUpdatePelucheCollectStatus = lazyInitializer(
 // ==================================================
 
 const initAjouterNendoroidPage = lazyInitializer(
-    '../nendoroid/pages/ajouter.js',
+    () => import('../nendoroid/pages/ajouter.js'),
     'initAjouterPage',
 );
 
 const initDeleteNendoroid = lazyInitializer(
-    '../nendoroid/actions/delete-nendoroid.js',
+    () => import('../nendoroid/actions/delete-nendoroid.js'),
     'initDeleteNendoroid',
     '.js-delete-nendoroid',
 );
 
 const initUpdateNendoroidCollectStatus = lazyInitializer(
-    '../nendoroid/actions/update-collect-status.js',
+    () => import('../nendoroid/actions/update-collect-status.js'),
     'initUpdateNendoroidCollectStatus',
     '.js-nendoroid-collect-status-button',
 );
@@ -146,40 +146,40 @@ const initUpdateNendoroidCollectStatus = lazyInitializer(
 // ==================================================
 
 const initAjouterChinoisPage = lazyInitializer(
-    '../chinois/pages/ajouter.js',
+    () => import('../chinois/pages/ajouter.js'),
     'initAjouterPage',
 );
 
 const initFlashcardsVocabulairePage = lazyInitializer(
-    '../chinois/pages/flashcards-vocabulaire.js',
+    () => import('../chinois/pages/flashcards-vocabulaire.js'),
     'initFlashcardsVocabulairePage',
 );
 
 const initFlashcardsGrammairePage = lazyInitializer(
-    '../chinois/pages/flashcards-grammaire.js',
+    () => import('../chinois/pages/flashcards-grammaire.js'),
     'initFlashcardsGrammairePage',
 );
 
 const initToggleGrammaireMaitrise = lazyInitializer(
-    '../chinois/actions/toggle-grammar-mastery.js',
+    () => import('../chinois/actions/toggle-grammar-mastery.js'),
     'initToggleGrammaireMaitrise',
     '.grammar-ajax',
 );
 
 const initToggleVocabulaireMaitrise = lazyInitializer(
-    '../chinois/actions/toggle-vocabulary-mastery.js',
+    () => import('../chinois/actions/toggle-vocabulary-mastery.js'),
     'initToggleVocabulaireMaitrise',
     '.vocabulary-ajax',
 );
 
 const initDeleteGrammaire = lazyInitializer(
-    '../chinois/actions/delete-grammar.js',
+    () => import('../chinois/actions/delete-grammar.js'),
     'initDeleteGrammaire',
     '.grammaire-delete',
 );
 
 const initDeleteVocabulaire = lazyInitializer(
-    '../chinois/actions/delete-vocabulary.js',
+    () => import('../chinois/actions/delete-vocabulary.js'),
     'initDeleteVocabulaire',
     '.vocabulaire-delete',
 );
@@ -189,7 +189,7 @@ const initDeleteVocabulaire = lazyInitializer(
 // ==================================================
 
 const initProfileCustomization = lazyInitializer(
-    '../profil/profile-customization.js',
+    () => import('../profil/profile-customization.js'),
     'initProfileCustomization',
 );
 
@@ -198,7 +198,7 @@ const initProfileCustomization = lazyInitializer(
 // ==================================================
 
 const initSqlPage = lazyInitializer(
-    '../sql/pages/sql.js',
+    () => import('../sql/pages/sql.js'),
     'initSqlPage',
 );
 

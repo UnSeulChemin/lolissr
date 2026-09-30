@@ -1,0 +1,1 @@
+var r=/[\u0300-\u036f]/g,E=/[^a-z0-9\s-]/g,n=/\s+/g,t=/-+/g,o=/^-+|-+$/g;function c(e=""){return String(e??"").toLowerCase().trim().normalize("NFD").replace(r,"")}function a(e=""){return c(e).replace(E,"").replace(n,"-").replace(t,"-").replace(o,"")}export{a};

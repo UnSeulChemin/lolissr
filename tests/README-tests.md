@@ -42,6 +42,8 @@ composer regression-tests
   espaces significatifs du CSS.
 - `page-styles.php` vérifie les dépendances CSS par page et leurs URL versionnées.
 - `asset-versions.php` vérifie le manifeste des versions utilisé en production.
+- `javascript-bundle.php` vérifie que le bundle correspond aux sources, que ses
+  fichiers existent et que les layouts local/production sélectionnent le bon script.
 
 `composer http-tests` lance aussi `tests/spa-http.php` : contenu et métadonnées des
 fragments comparés aux pages complètes, résultats de recherche globale comparés
@@ -140,3 +142,49 @@ exécuter `composer images:build` sur le serveur pour convertir ses PNG et mettr
 extensions enregistrées. Supprimer également les PNG remplacés sur le serveur
 si le transfert des WebP est effectué manuellement. Le test images consulte la
 base en lecture seule et vérifie que les images des comptes existent.
+
+## Bundle JavaScript de production
+
+```powershell
+composer js:install
+composer assets:build
+php tests/run-javascript-browser.php http://localhost/lolissr
+```
+
+L'installation télécharge le binaire officiel esbuild 0.28.2 adapté au système,
+vérifie son intégrité SHA-512 et le place dans `storage/tools` (ignoré par Git).
+Node.js n'est pas nécessaire. Elle nécessite une connexion au registre npm.
+La construction suivante fonctionne hors ligne. `composer js:build` reconstruit
+seulement le JavaScript ; utiliser `composer assets:build` pour actualiser aussi
+le manifeste des versions. Publication Git et création de release appellent ce
+dernier automatiquement, et nécessitent donc l'installation locale d'esbuild.
+
+En production, le layout utilise `Config/javascript.php` et les fichiers hashés
+de `public/js/dist`. En local, il conserve les modules sources. Le code partagé
+et les pages utilisent le même graphe de modules ; les imports des pages restent
+différés grâce au [code splitting d'esbuild](https://esbuild.github.io/api/#splitting).
+Seuls les modules nécessaires au démarrage sont préchargés. Les anciens chunks
+sont conservés lors des reconstructions pour les onglets encore ouverts ; éviter
+de les supprimer pendant un déploiement actif. Le manifeste et les fichiers
+générés sont versionnés, donc esbuild n'est pas nécessaire sur le serveur pour
+servir le site. Le test navigateur vérifie le bundle, les modales, les changements
+de route et le respect de `navigator.connection.saveData`.
+
+## Compression HTTP et index redondants
+
+`public/.htaccess` active gzip pour HTML, CSS, JavaScript, JSON et SVG lorsque
+`mod_deflate` et `mod_filter` sont chargés. Le serveur conserve la négociation
+`Accept-Encoding` et le cache varie sur cet en-tête. Les images WebP sont exclues.
+Avec Wamp, activer ces deux modules puis redémarrer Apache depuis Wamp si le
+terminal ne dispose pas des droits de contrôle du service Windows.
+
+```powershell
+composer db:deduplicate-indexes
+composer db:deduplicate-indexes -- --apply
+```
+
+Sans `--apply`, la commande affiche uniquement le plan. Elle vérifie les colonnes,
+l'ordre, les préfixes et le type des cinq paires d'index connues avant toute
+suppression. Les contraintes uniques `uq_*_slug_numero` sont conservées. Une
+relance ignore les doublons déjà supprimés. Exécuter séparément sur chaque base
+à migrer ; cette opération n'est pas déclenchée par la construction des assets.

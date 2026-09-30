@@ -39,7 +39,7 @@ let activeRequests = 0;
 
 export async function prefetchPage(href)
 {
-    if (! config.prefetch.enabled)
+    if (! config.prefetch.enabled || navigator.connection?.saveData === true)
     {
         return null;
     }
