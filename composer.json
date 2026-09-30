@@ -27,6 +27,7 @@
         "check": ["@phpstan", "@regression-tests", "@http-tests"],
         "css:build": "php scripts/build-css.php",
         "assets:build": "php scripts/build-assets.php",
+        "images:build": "php scripts/build-profile-images.php",
         "xp:backfill": "php scripts/backfill-achievement-xp.php",
 
         "cache:clear": "php scripts/clear-runtime.php cache",

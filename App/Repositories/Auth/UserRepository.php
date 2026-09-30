@@ -71,11 +71,11 @@ final class UserRepository extends Model
     {
         return $this->insert([
             'avatar' => 'default',
-            'avatar_extension' => 'png',
+            'avatar_extension' => 'webp',
             'banner' => 'default',
-            'banner_extension' => 'png',
+            'banner_extension' => 'webp',
             'frame' => 'default',
-            'frame_extension' => 'png',
+            'frame_extension' => 'webp',
             'username' => trim($username),
             'password' => $password,
             'title' => UserTitle::EXPLORATEUR,

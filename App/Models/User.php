@@ -10,15 +10,15 @@ final class User
 
     public string $avatar = 'default';
 
-    public string $avatar_extension = 'png';
+    public string $avatar_extension = 'webp';
 
     public string $banner = 'default';
 
-    public string $banner_extension = 'png';
+    public string $banner_extension = 'webp';
 
     public string $frame = 'default';
 
-    public string $frame_extension = 'png';
+    public string $frame_extension = 'webp';
 
     public string $username = '';
 

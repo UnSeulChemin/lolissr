@@ -22,7 +22,7 @@ import {
 } from '../core/debug/profiler.js';
 
 import {
-    showToast,
+    initFlashToast,
 } from '../core/toast.js';
 
 import {
@@ -92,22 +92,6 @@ async function safeInit(
 // ==================================================
 // FLASH TOAST
 // ==================================================
-
-function initFlashToast()
-{
-    const flashToast =
-        window.flashToast;
-
-    if (! flashToast?.message)
-    {
-        return;
-    }
-
-    showToast(
-        flashToast.message,
-        flashToast.type ?? 'success',
-    );
-}
 
 // ==================================================
 // GLOBAL INITIALIZERS

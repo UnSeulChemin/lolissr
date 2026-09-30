@@ -107,3 +107,28 @@ Il nécessite le droit de créer des tables temporaires ; aucune donnée de comp
 n'est modifiée. Le test navigateur vérifie le ciblage des actions, les imports en
 parallèle, l'ordre d'initialisation et l'isolation des erreurs de chargement.
 Les compteurs de personnalisation sont vérifiés par `tests/profile-read-only.php`.
+
+## Images du profil et notification flash
+
+```powershell
+composer images:build
+php tests/profile-images.php
+php tests/run-page-styles-browser.php http://localhost/lolissr tests/flash-toast-browser.js
+```
+
+PHP GD avec WebP et la connexion MySQL sont requis. La commande remplace les PNG
+statiques du profil de plus de 200 Ko par des WebP sans perte, à dimensions
+identiques, directement dans `thumbnail`. Seules les conversions plus petites
+sont conservées. Les animations ne sont pas converties.
+
+Les extensions des images concernées sont mises à jour dans `users`, puis les
+PNG remplacés sont supprimés. Les anciens sous-dossiers `optimized` sont vidés
+des fichiers migrés et supprimés lorsqu'ils sont vides. Le catalogue découvre
+les WebP directement, sans négociation de format par Apache.
+
+Les images restent exclues de Git et des archives de release. Lors du déploiement,
+exécuter `composer images:build` sur le serveur pour convertir ses PNG et mettre
+à jour sa base, ou transférer les WebP puis lancer la commande pour migrer les
+extensions enregistrées. Supprimer également les PNG remplacés sur le serveur
+si le transfert des WebP est effectué manuellement. Le test images consulte la
+base en lecture seule et vérifie que les images des comptes existent.

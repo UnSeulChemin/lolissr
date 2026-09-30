@@ -276,14 +276,12 @@ export function showToast(
 // FLASH TOAST
 // =========================================
 
-const flashToast =
-    window.flashToast;
-
-if (
-    flashToast?.message
-) {
-    showToast(
-        flashToast.message,
-        flashToast.type,
-    );
+export function initFlashToast()
+{
+    const flashToast = window.flashToast;
+    delete window.flashToast;
+    if (flashToast?.message)
+    {
+        showToast(flashToast.message, flashToast.type ?? 'success');
+    }
 }
