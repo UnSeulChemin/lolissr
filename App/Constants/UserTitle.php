@@ -240,23 +240,4 @@ final class UserTitle
         return $titles;
     }
 
-    /**
-     * @return list<string>
-     */
-    public static function unlockedTitles(int $level): array
-    {
-        $titles = [];
-
-        foreach (self::LEVEL_TITLES as $requiredLevel => $title)
-        {
-            if ($level < $requiredLevel)
-            {
-                break;
-            }
-
-            $titles[] = $title;
-        }
-
-        return $titles;
-    }
 }

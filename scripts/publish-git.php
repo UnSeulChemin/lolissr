@@ -25,6 +25,7 @@ if ($version === '')
 }
 
 $commitMessage = "chore: {$projectName} v{$version}";
+require __DIR__ . '/build-css.php';
 
 echo PHP_EOL;
 echo '============================================================' . PHP_EOL;

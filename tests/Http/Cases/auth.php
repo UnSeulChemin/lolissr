@@ -19,6 +19,27 @@ $tests[] = [
 ];
 
 // =========================================
+// SUCCÈS ET CATALOGUES
+// =========================================
+
+foreach (['/profil/xp', '/profil/succes'] as $path)
+{
+    $tests[] = ['category' => 'Auth', 'label' => 'Lecture du profil : ' . $path, 'path' => $path];
+}
+
+foreach (['titles', 'avatars', 'banners', 'frames'] as $catalog)
+{
+    $tests[] = [
+        'category' => 'Auth',
+        'label' => 'Catalogue du profil : ' . $catalog,
+        'path' => '/profil/ajax/' . $catalog,
+        'json' => true,
+        'header_contains' => ['application/json'],
+        'headers' => ['Accept: application/json'],
+    ];
+}
+
+// =========================================
 // MÉTHODES HTTP
 // =========================================
 

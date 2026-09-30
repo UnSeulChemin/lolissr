@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 use Framework\Application\Bootstrap;
 
-use ZipArchive;
-
 define('ROOT', dirname(__DIR__));
 
 require ROOT . '/vendor/autoload.php';
@@ -32,6 +30,7 @@ if (! class_exists(ZipArchive::class))
 }
 
 $releaseName = $projectName . '_v' . $version;
+require __DIR__ . '/build-css.php';
 $releasesDirectory = ROOT . DIRECTORY_SEPARATOR . 'releases';
 $temporaryRoot = $releasesDirectory . DIRECTORY_SEPARATOR . '.build-temp';
 $buildDirectory = $temporaryRoot . DIRECTORY_SEPARATOR . $releaseName;

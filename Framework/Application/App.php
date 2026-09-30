@@ -66,11 +66,6 @@ final class App
         return (bool) config('app.debug', false);
     }
 
-    public static function isLocal(): bool
-    {
-        return self::env() === self::ENV_LOCAL;
-    }
-
     public static function isTesting(): bool
     {
         return self::env() === self::ENV_TESTING;

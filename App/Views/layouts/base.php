@@ -11,6 +11,13 @@ use Framework\Security\ContentSecurityPolicy;
 
 $title = is_string($title ?? null) ? $title : '';
 $content = is_string($content ?? null) ? $content : '';
+$commonCss = \Framework\Application\App::isProduction() ? 'app.bundle.css' : 'app.css';
+$commonCssPath = dirname(__DIR__, 3) . '/public/css/' . $commonCss;
+if (! is_file($commonCssPath))
+{
+    $commonCss = 'app.css';
+    $commonCssPath = dirname(__DIR__, 3) . '/public/css/app.css';
+}
 
 ?>
 
@@ -33,8 +40,7 @@ $content = is_string($content ?? null) ? $content : '';
 
     <link rel="shortcut icon" href="<?= e($view->baseUri) ?>images/favicon/favicon.png">
 
-    <link rel="stylesheet" href="<?= e($view->baseUri) ?>css/app.css">
-    <link rel="stylesheet" href="<?= e($view->baseUri) ?>css/partials/header.css?v=<?= e((string) hash_file('sha256', dirname(__DIR__, 3) . '/public/css/partials/header.css')) ?>">
+    <link rel="stylesheet" href="<?= e($view->baseUri) ?>css/<?= e($commonCss) ?>?v=<?= e((string) hash_file('sha256', $commonCssPath)) ?>">
 
     <?php foreach ($pageStylesheets as $stylesheet): ?>
         <link rel="stylesheet" href="<?= e($stylesheet) ?>" data-page-style>

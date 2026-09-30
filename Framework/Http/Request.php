@@ -84,16 +84,6 @@ final class Request
         return strtoupper((string) ($this->server['REQUEST_METHOD'] ?? 'GET'));
     }
 
-    public function isGet(): bool
-    {
-        return $this->method() === 'GET';
-    }
-
-    public function isPost(): bool
-    {
-        return $this->method() === 'POST';
-    }
-
     // =========================================
     // EN-TÊTES
     // =========================================
@@ -102,17 +92,6 @@ final class Request
     {
         return $this->headerLower('X-Requested-With') === 'xmlhttprequest'
             || $this->headerLower('X-Ajax') === 'true';
-    }
-
-    public function isPrefetch(): bool
-    {
-        return $this->headerLower('Purpose') === 'prefetch'
-            || $this->headerLower('X-Prefetch') === 'true';
-    }
-
-    public function wantsPartial(): bool
-    {
-        return $this->headerLower('X-Partial') === 'true';
     }
 
     public function expectsJson(): bool
@@ -217,28 +196,6 @@ final class Request
         return $this->input($key) !== null;
     }
 
-    public function filled(string $key): bool
-    {
-        $value = $this->input($key);
-
-        if ($value === null)
-        {
-            return false;
-        }
-
-        if (is_string($value))
-        {
-            return trim($value) !== '';
-        }
-
-        if (is_array($value))
-        {
-            return $value !== [];
-        }
-
-        return true;
-    }
-
     /**
      * @return array<string, mixed>
      */
@@ -253,14 +210,6 @@ final class Request
     public function postAll(): array
     {
         return array_merge($this->post, $this->json());
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    public function queryAll(): array
-    {
-        return $this->get;
     }
 
     // =========================================

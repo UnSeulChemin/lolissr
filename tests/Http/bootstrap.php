@@ -6,8 +6,6 @@ use Framework\Application\Bootstrap;
 use Framework\Config\Config;
 use Framework\Config\Env;
 
-use RuntimeException;
-
 if (! defined('ROOT'))
 {
     define('ROOT', dirname(__DIR__, 2));

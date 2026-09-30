@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Profile;
 
+use App\Constants\AchievementRewards;
 use App\DTO\Profile\ProfileStatsData;
 
 /** @phpstan-type Achievement array{category: string, icon: string, title: string, current: int, target: int, unlocked: bool} */
@@ -13,15 +14,15 @@ final class ProfileAchievements
     public static function forStats(ProfileStatsData $stats, int $level): array
     {
         $categories = [
-            ['Tomes', '📚', 'tomes lus', $stats->readTomes, [1, 10, 25, 50, 100, 200]],
-            ['Séries', '📖', 'séries terminées', $stats->completedSeries, [1, 10, 25, 50]],
-            ['Artbooks', '📕', 'artbooks lus', $stats->readArtbooks, [1, 10, 25]],
-            ['Figurines', '🎀', 'figurines collectionnées', $stats->figurinesCollected, [1, 4, 8]],
-            ['Nendoroids', '🪆', 'nendoroids collectionnés', $stats->nendoroidsCollected, [1, 10, 25, 50]],
-            ['Peluches', '🧸', 'peluches collectionnées', $stats->peluchesCollected, [1, 10, 25]],
-            ['Vocabulaire', '🎓', 'mots maîtrisés', $stats->vocabularyLearned, [1, 10, 25, 50, 100, 200]],
-            ['Grammaire', '📝', 'points de grammaire maîtrisés', $stats->grammarLearned, [1, 10, 25, 50, 100, 200]],
-            ['Niveau', '⭐', 'Niveau', $level, [1, 10, 25, 50, 100, 200]],
+            ['Tomes', '📚', 'tomes lus', $stats->readTomes, array_keys(AchievementRewards::TOMES)],
+            ['Séries', '📖', 'séries terminées', $stats->completedSeries, array_keys(AchievementRewards::SERIES)],
+            ['Artbooks', '📕', 'artbooks lus', $stats->readArtbooks, array_keys(AchievementRewards::ARTBOOKS)],
+            ['Figurines', '🎀', 'figurines collectionnées', $stats->figurinesCollected, array_keys(AchievementRewards::FIGURINES)],
+            ['Nendoroids', '🪆', 'nendoroids collectionnés', $stats->nendoroidsCollected, array_keys(AchievementRewards::NENDOROIDS)],
+            ['Peluches', '🧸', 'peluches collectionnées', $stats->peluchesCollected, array_keys(AchievementRewards::PELUCHES)],
+            ['Vocabulaire', '🎓', 'mots maîtrisés', $stats->vocabularyLearned, array_keys(AchievementRewards::VOCABULARY)],
+            ['Grammaire', '📝', 'points de grammaire maîtrisés', $stats->grammarLearned, array_keys(AchievementRewards::GRAMMAR)],
+            ['Niveau', '⭐', 'Niveau', $level, AchievementRewards::LEVELS],
         ];
         $achievements = [];
 

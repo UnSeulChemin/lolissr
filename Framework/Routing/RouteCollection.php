@@ -64,14 +64,6 @@ final class RouteCollection
         return $this->routes;
     }
 
-    /**
-     * @return list<Route>
-     */
-    public function forMethod(string $method): array
-    {
-        return $this->routesByMethod[$method] ?? [];
-    }
-
     /** @return list<Route> */
     public function candidates(string $method, string $uri): array
     {

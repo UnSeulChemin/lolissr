@@ -54,38 +54,6 @@ abstract class Model
     }
 
     /**
-     * @template T of object
-     *
-     * @param array<string, mixed> $where
-     * @param class-string<T>|null $class
-     *
-     * @return ($class is class-string<T> ? list<T> : list<stdClass>)
-     */
-    public function findBy(array $where, ?string $class = null): array
-    {
-        if ($where === [])
-        {
-            return [];
-        }
-
-        $builtWhere = $this->buildWhere($where);
-
-        if ($builtWhere['conditions'] === [])
-        {
-            return [];
-        }
-
-        return $this->fetchAll(
-            'SELECT * FROM '
-            . $this->table()
-            . ' WHERE '
-            . implode(' AND ', $builtWhere['conditions']),
-            $builtWhere['values'],
-            $class
-        );
-    }
-
-    /**
      * @param array<string, mixed> $data
      */
     public function insert(array $data): bool

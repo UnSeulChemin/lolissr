@@ -50,8 +50,4 @@ final class Str
         return $value !== '' ? $value : null;
     }
 
-    public static function isBlank(?string $value): bool
-    {
-        return self::nullableTrim($value) === null;
-    }
 }

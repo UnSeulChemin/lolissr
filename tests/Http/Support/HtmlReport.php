@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-use RuntimeException;
-
 final class HtmlReport
 {
     private const FILE_TITLE = 'LoliSSR HTTP Report';

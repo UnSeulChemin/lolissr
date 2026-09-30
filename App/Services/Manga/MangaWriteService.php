@@ -114,6 +114,8 @@ final readonly class MangaWriteService
                     return $failure;
                 }
 
+                $this->mangaXpRewardService->rewardSeriesAchievements();
+
                 return $this->success('Manga mis à jour avec succès');
             }
         );
@@ -298,6 +300,8 @@ final readonly class MangaWriteService
                 {
                     return $failure;
                 }
+
+                $this->mangaXpRewardService->rewardSeriesAchievements();
 
                 return $this->success('Manga supprimé avec succès');
             }

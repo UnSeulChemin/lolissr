@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Profile;
 
+use App\Constants\AchievementRewards;
 use App\Models\User;
 use App\Repositories\Auth\UserRepository;
 use App\Services\User\UserLevelService;
@@ -11,16 +12,6 @@ use Framework\Database\Database;
 
 final readonly class AchievementXpService
 {
-    public const FIRST_TOME_XP = 50;
-    public const VOCABULARY_REWARDS = [1 => 50, 10 => 500, 25 => 1250, 50 => 2500, 100 => 5000, 200 => 10000];
-    public const GRAMMAR_REWARDS = [1 => 50, 10 => 500, 25 => 1250, 50 => 2500, 100 => 5000, 200 => 10000];
-    public const NENDOROID_REWARDS = [1 => 250, 10 => 2500, 25 => 6250, 50 => 12500];
-    public const PELUCHE_REWARDS = [1 => 250, 10 => 2500, 25 => 6250];
-    public const FIGURINE_REWARDS = [1 => 2000, 4 => 8000, 8 => 16000];
-    public const ARTBOOK_REWARDS = [1 => 500, 10 => 5000, 25 => 12500];
-    public const SERIES_REWARDS = [1 => 50, 10 => 500, 25 => 1250, 50 => 2500];
-    public const TOME_REWARDS = [1 => self::FIRST_TOME_XP, 10 => 500, 25 => 1250, 50 => 2500, 100 => 5000, 200 => 10000];
-
     public function __construct(
         private Database $database,
         private UserRepository $users,
@@ -30,7 +21,7 @@ final readonly class AchievementXpService
 
     public function rewardTomes(User $user, int $readTomes): void
     {
-        foreach (self::TOME_REWARDS as $target => $xp)
+        foreach (AchievementRewards::TOMES as $target => $xp)
         {
             if ($readTomes >= $target)
             {
@@ -41,7 +32,7 @@ final readonly class AchievementXpService
 
     public function rewardSeries(User $user, int $completedSeries): void
     {
-        foreach (self::SERIES_REWARDS as $target => $xp)
+        foreach (AchievementRewards::SERIES as $target => $xp)
         {
             if ($completedSeries >= $target)
             {
@@ -52,7 +43,7 @@ final readonly class AchievementXpService
 
     public function rewardArtbooks(User $user, int $readArtbooks): void
     {
-        foreach (self::ARTBOOK_REWARDS as $target => $xp)
+        foreach (AchievementRewards::ARTBOOKS as $target => $xp)
         {
             if ($readArtbooks >= $target)
             {
@@ -63,7 +54,7 @@ final readonly class AchievementXpService
 
     public function rewardFigurines(User $user, int $collected): void
     {
-        foreach (self::FIGURINE_REWARDS as $target => $xp)
+        foreach (AchievementRewards::FIGURINES as $target => $xp)
         {
             if ($collected >= $target)
             {
@@ -74,7 +65,7 @@ final readonly class AchievementXpService
 
     public function rewardNendoroids(User $user, int $collected): void
     {
-        foreach (self::NENDOROID_REWARDS as $target => $xp)
+        foreach (AchievementRewards::NENDOROIDS as $target => $xp)
         {
             if ($collected >= $target)
             {
@@ -85,7 +76,7 @@ final readonly class AchievementXpService
 
     public function rewardPeluches(User $user, int $collected): void
     {
-        foreach (self::PELUCHE_REWARDS as $target => $xp)
+        foreach (AchievementRewards::PELUCHES as $target => $xp)
         {
             if ($collected >= $target)
             {
@@ -96,7 +87,7 @@ final readonly class AchievementXpService
 
     public function rewardVocabulary(User $user, int $mastered): void
     {
-        foreach (self::VOCABULARY_REWARDS as $target => $xp)
+        foreach (AchievementRewards::VOCABULARY as $target => $xp)
         {
             if ($mastered >= $target)
             {
@@ -107,7 +98,7 @@ final readonly class AchievementXpService
 
     public function rewardGrammar(User $user, int $mastered): void
     {
-        foreach (self::GRAMMAR_REWARDS as $target => $xp)
+        foreach (AchievementRewards::GRAMMAR as $target => $xp)
         {
             if ($mastered >= $target)
             {

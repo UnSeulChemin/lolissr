@@ -23,7 +23,10 @@
     "scripts": {
         "phpstan": "phpstan analyse --no-progress --memory-limit=512M",
         "http-tests": "php tests/run-tests.php",
-        "check": ["@phpstan", "@http-tests"],
+        "regression-tests": ["php tests/profile-read-only.php", "php tests/css-bundle.php", "php tests/page-styles.php"],
+        "check": ["@phpstan", "@regression-tests", "@http-tests"],
+        "css:build": "php scripts/build-css.php",
+        "xp:backfill": "php scripts/backfill-achievement-xp.php",
 
         "cache:clear": "php scripts/clear-runtime.php cache",
         "logs:clear": "php scripts/clear-runtime.php logs",

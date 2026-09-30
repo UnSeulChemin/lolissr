@@ -37,7 +37,7 @@ $category = '';
             <span><?= min($achievement['current'], $achievement['target']) ?> / <?= $achievement['target'] ?></span>
             <?php if ($achievement['category'] === 'Figurines' && $achievement['target'] === \App\Constants\UserTitle::FIGURINE_REWARD_TARGET): ?>
                 <div class="success-reward success-reward-title">
-                    <strong>Récompense : ⭐ <?= number_format(\App\Services\Profile\AchievementXpService::FIGURINE_REWARDS[$achievement['target']], 0, ',', ' ') ?> XP</strong>
+                    <strong>Récompense : ⭐ <?= number_format(\App\Constants\AchievementRewards::FIGURINES[$achievement['target']], 0, ',', ' ') ?> XP</strong>
                     <strong>Récompense : titre</strong>
                     <span data-title-style="<?= $achievement['unlocked'] ? 'rose-blue' : '' ?>"><?= e(\App\Constants\UserTitle::FIGURINE_REWARD) ?></span>
                     <?php if ($achievement['unlocked']): ?>
@@ -49,7 +49,7 @@ $category = '';
             <?php endif; ?>
             <?php if ($achievement['category'] === 'Figurines' && $achievement['target'] === ProfileImageCatalog::FIGURINE_REWARD_TARGET): ?>
                 <div class="success-reward success-reward-frame-xp">
-                    <strong class="success-reward-xp-label">Récompense : ⭐ <?= number_format(\App\Services\Profile\AchievementXpService::FIGURINE_REWARDS[$achievement['target']], 0, ',', ' ') ?> XP</strong>
+                    <strong class="success-reward-xp-label">Récompense : ⭐ <?= number_format(\App\Constants\AchievementRewards::FIGURINES[$achievement['target']], 0, ',', ' ') ?> XP</strong>
                     <strong>Récompense : cadre<span class="success-reward-name">Ailes roses</span></strong>
                     <img src="<?= e($view->baseUri . 'images/profil/frame/thumbnail/' . ProfileImageCatalog::FIGURINE_REWARD_FRAME . '.png') ?>" alt="Cadre rose à ailes" width="120" height="120">
                     <?php if ($achievement['unlocked']): ?>
@@ -61,7 +61,7 @@ $category = '';
             <?php endif; ?>
             <?php if ($achievement['category'] === 'Artbooks' && $achievement['target'] === \App\Constants\UserTitle::ARTBOOK_REWARD_TARGET): ?>
                 <div class="success-reward success-reward-title">
-                    <strong>Récompense : ⭐ <?= number_format(\App\Services\Profile\AchievementXpService::ARTBOOK_REWARDS[$achievement['target']], 0, ',', ' ') ?> XP</strong>
+                    <strong>Récompense : ⭐ <?= number_format(\App\Constants\AchievementRewards::ARTBOOKS[$achievement['target']], 0, ',', ' ') ?> XP</strong>
                     <strong>Récompense : titre</strong>
                     <span data-title-style="<?= $achievement['unlocked'] ? 'teal-gold' : '' ?>"><?= e(\App\Constants\UserTitle::ARTBOOK_REWARD) ?></span>
                     <?php if ($achievement['unlocked']): ?>
@@ -73,7 +73,7 @@ $category = '';
             <?php endif; ?>
             <?php if ($achievement['category'] === 'Artbooks' && $achievement['target'] === ProfileImageCatalog::ARTBOOK_REWARD_TARGET): ?>
                 <div class="success-reward success-reward-frame-xp">
-                    <strong class="success-reward-xp-label">Récompense : ⭐ <?= number_format(\App\Services\Profile\AchievementXpService::ARTBOOK_REWARDS[$achievement['target']], 0, ',', ' ') ?> XP</strong>
+                    <strong class="success-reward-xp-label">Récompense : ⭐ <?= number_format(\App\Constants\AchievementRewards::ARTBOOKS[$achievement['target']], 0, ',', ' ') ?> XP</strong>
                     <strong>Récompense : cadre<span class="success-reward-name">Enluminure</span></strong>
                     <img src="<?= e($view->baseUri . 'images/profil/frame/thumbnail/' . ProfileImageCatalog::ARTBOOK_REWARD_FRAME . '.png') ?>" alt="Cadre de livres illustrés, turquoise et doré" width="120" height="120">
                     <?php if ($achievement['unlocked']): ?>
@@ -85,7 +85,7 @@ $category = '';
             <?php endif; ?>
             <?php if ($achievement['category'] === 'Tomes' && $achievement['target'] === ProfileImageCatalog::TOME_REWARD_TARGET): ?>
                 <div class="success-reward success-reward-banner">
-                    <strong>Récompense : ⭐ <?= number_format(\App\Services\Profile\AchievementXpService::TOME_REWARDS[$achievement['target']], 0, ',', ' ') ?> XP</strong>
+                    <strong>Récompense : ⭐ <?= number_format(\App\Constants\AchievementRewards::TOMES[$achievement['target']], 0, ',', ' ') ?> XP</strong>
                     <strong>Récompense : bannière<span class="success-reward-name">Lecture sous les sakuras</span></strong>
                     <img src="<?= e($view->baseUri . 'images/profil/banner/thumbnail/' . ProfileImageCatalog::TOME_REWARD_BANNER . '.png?v=20260929-sakura-v2') ?>" alt="Lectrice anime dans un jardin de cerisiers au crépuscule" width="600" height="200" loading="lazy">
                     <?php if ($achievement['unlocked']): ?>
@@ -97,7 +97,7 @@ $category = '';
             <?php endif; ?>
             <?php if ($achievement['category'] === 'Tomes' && $achievement['target'] === ProfileImageCatalog::TOME_FRAME_TARGET): ?>
                 <div class="success-reward success-reward-frame-xp">
-                    <strong class="success-reward-xp-label">Récompense : ⭐ <?= number_format(\App\Services\Profile\AchievementXpService::TOME_REWARDS[$achievement['target']], 0, ',', ' ') ?> XP</strong>
+                    <strong class="success-reward-xp-label">Récompense : ⭐ <?= number_format(\App\Constants\AchievementRewards::TOMES[$achievement['target']], 0, ',', ' ') ?> XP</strong>
                     <strong>Récompense : cadre<span class="success-reward-name">Grimoire céleste</span></strong>
                     <img src="<?= e($view->baseUri . 'images/profil/frame/thumbnail/' . ProfileImageCatalog::TOME_REWARD_FRAME . '.png') ?>" alt="Cadre violet et argent décoré de livres et d’étoiles" width="120" height="120" loading="lazy">
                     <?php if ($achievement['unlocked']): ?>
@@ -109,7 +109,7 @@ $category = '';
             <?php endif; ?>
             <?php if ($achievement['category'] === 'Tomes' && $achievement['target'] === \App\Constants\UserTitle::TOME_REWARD_TARGET): ?>
                 <div class="success-reward success-reward-title">
-                    <strong>Récompense : ⭐ <?= number_format(\App\Services\Profile\AchievementXpService::TOME_REWARDS[$achievement['target']], 0, ',', ' ') ?> XP</strong>
+                    <strong>Récompense : ⭐ <?= number_format(\App\Constants\AchievementRewards::TOMES[$achievement['target']], 0, ',', ' ') ?> XP</strong>
                     <strong>Récompense : titre</strong>
                     <span data-title-style="<?= $achievement['unlocked'] ? \App\Constants\UserTitle::styleForTitle(\App\Constants\UserTitle::TOME_REWARD) : '' ?>"><?= e(\App\Constants\UserTitle::TOME_REWARD) ?></span>
                     <?php if ($achievement['unlocked']): ?>
@@ -119,17 +119,17 @@ $category = '';
                     <?php endif; ?>
                 </div>
             <?php endif; ?>
-            <?php if ($achievement['category'] === 'Tomes' && ! in_array($achievement['target'], [\App\Constants\UserTitle::TOME_REWARD_TARGET, ProfileImageCatalog::TOME_REWARD_TARGET, ProfileImageCatalog::TOME_FRAME_TARGET], true) && isset(\App\Services\Profile\AchievementXpService::TOME_REWARDS[$achievement['target']])): ?>
+            <?php if ($achievement['category'] === 'Tomes' && ! in_array($achievement['target'], [\App\Constants\UserTitle::TOME_REWARD_TARGET, ProfileImageCatalog::TOME_REWARD_TARGET, ProfileImageCatalog::TOME_FRAME_TARGET], true) && isset(\App\Constants\AchievementRewards::TOMES[$achievement['target']])): ?>
                 <div class="success-reward success-reward-title success-reward-xp">
-                    <strong>Récompense : ⭐ <?= \App\Services\Profile\AchievementXpService::TOME_REWARDS[$achievement['target']] ?> XP</strong>
+                    <strong>Récompense : ⭐ <?= \App\Constants\AchievementRewards::TOMES[$achievement['target']] ?> XP</strong>
                     <?php if (! $achievement['unlocked']): ?>
                         <span>🔒 Débloqué avec <?= $achievement['target'] ?> <?= $achievement['target'] === 1 ? 'tome lu' : 'tomes lus' ?></span>
                     <?php endif; ?>
                 </div>
             <?php endif; ?>
-            <?php if ($achievement['category'] === 'Séries' && isset(\App\Services\Profile\AchievementXpService::SERIES_REWARDS[$achievement['target']])): ?>
+            <?php if ($achievement['category'] === 'Séries' && isset(\App\Constants\AchievementRewards::SERIES[$achievement['target']])): ?>
                 <div class="success-reward success-reward-title <?= $achievement['target'] === \App\Constants\UserTitle::SERIES_REWARD_TARGET ? '' : 'success-reward-xp' ?>">
-                    <strong>Récompense : ⭐ <?= number_format(\App\Services\Profile\AchievementXpService::SERIES_REWARDS[$achievement['target']], 0, ',', ' ') ?> XP</strong>
+                    <strong>Récompense : ⭐ <?= number_format(\App\Constants\AchievementRewards::SERIES[$achievement['target']], 0, ',', ' ') ?> XP</strong>
                     <?php if ($achievement['target'] === \App\Constants\UserTitle::SERIES_REWARD_TARGET): ?>
                         <strong>Récompense : titre</strong>
                         <span data-title-style="<?= $achievement['unlocked'] ? \App\Constants\UserTitle::styleForTitle(\App\Constants\UserTitle::SERIES_REWARD) : '' ?>"><?= e(\App\Constants\UserTitle::SERIES_REWARD) ?></span>
@@ -144,7 +144,7 @@ $category = '';
             <?php endif; ?>
             <?php if ($achievement['category'] === 'Artbooks' && $achievement['target'] === 1): ?>
                 <div class="success-reward success-reward-title success-reward-xp success-reward-xp-top">
-                    <strong>Récompense : ⭐ <?= number_format(\App\Services\Profile\AchievementXpService::ARTBOOK_REWARDS[1], 0, ',', ' ') ?> XP</strong>
+                    <strong>Récompense : ⭐ <?= number_format(\App\Constants\AchievementRewards::ARTBOOKS[1], 0, ',', ' ') ?> XP</strong>
                     <?php if (! $achievement['unlocked']): ?>
                         <span>🔒 Débloqué avec 1 artbook lu</span>
                     <?php endif; ?>
@@ -152,7 +152,7 @@ $category = '';
             <?php endif; ?>
             <?php if ($achievement['category'] === 'Figurines' && $achievement['target'] === 1): ?>
                 <div class="success-reward success-reward-title success-reward-xp success-reward-xp-top">
-                    <strong>Récompense : ⭐ <?= number_format(\App\Services\Profile\AchievementXpService::FIGURINE_REWARDS[1], 0, ',', ' ') ?> XP</strong>
+                    <strong>Récompense : ⭐ <?= number_format(\App\Constants\AchievementRewards::FIGURINES[1], 0, ',', ' ') ?> XP</strong>
                     <?php if (! $achievement['unlocked']): ?>
                         <span>🔒 Débloqué avec 1 figurine collectionnée</span>
                     <?php endif; ?>
@@ -160,7 +160,7 @@ $category = '';
             <?php endif; ?>
             <?php if ($achievement['category'] === 'Nendoroids' && $achievement['target'] === ProfileImageCatalog::NENDOROID_FRAME_TARGET): ?>
                 <div class="success-reward success-reward-frame-xp">
-                    <strong class="success-reward-xp-label">Récompense : ⭐ <?= number_format(\App\Services\Profile\AchievementXpService::NENDOROID_REWARDS[$achievement['target']], 0, ',', ' ') ?> XP</strong>
+                    <strong class="success-reward-xp-label">Récompense : ⭐ <?= number_format(\App\Constants\AchievementRewards::NENDOROIDS[$achievement['target']], 0, ',', ' ') ?> XP</strong>
                     <strong>Récompense : cadre<span class="success-reward-name">Écrin des merveilles</span></strong>
                     <img src="<?= e($view->baseUri . 'images/profil/frame/thumbnail/' . ProfileImageCatalog::NENDOROID_REWARD_FRAME . '.png') ?>" alt="Cadre lavande et or rose orné de joyaux étoilés" width="120" height="120" loading="lazy">
                     <?php if ($achievement['unlocked']): ?>
@@ -170,9 +170,9 @@ $category = '';
                     <?php endif; ?>
                 </div>
             <?php endif; ?>
-            <?php if ($achievement['category'] === 'Nendoroids' && $achievement['target'] !== ProfileImageCatalog::NENDOROID_FRAME_TARGET && isset(\App\Services\Profile\AchievementXpService::NENDOROID_REWARDS[$achievement['target']])): ?>
+            <?php if ($achievement['category'] === 'Nendoroids' && $achievement['target'] !== ProfileImageCatalog::NENDOROID_FRAME_TARGET && isset(\App\Constants\AchievementRewards::NENDOROIDS[$achievement['target']])): ?>
                 <div class="success-reward success-reward-title <?= $achievement['target'] === ProfileImageCatalog::NENDOROID_REWARD_TARGET ? 'success-reward-banner' : ($achievement['target'] === \App\Constants\UserTitle::NENDOROID_REWARD_TARGET ? '' : 'success-reward-xp success-reward-xp-top') ?>">
-                    <strong>Récompense : ⭐ <?= number_format(\App\Services\Profile\AchievementXpService::NENDOROID_REWARDS[$achievement['target']], 0, ',', ' ') ?> XP</strong>
+                    <strong>Récompense : ⭐ <?= number_format(\App\Constants\AchievementRewards::NENDOROIDS[$achievement['target']], 0, ',', ' ') ?> XP</strong>
                     <?php if ($achievement['target'] === ProfileImageCatalog::NENDOROID_REWARD_TARGET): ?>
                         <strong>Récompense : bannière<span class="success-reward-name">Le petit monde des Nendoroids</span></strong>
                         <img src="<?= e($view->baseUri . 'images/profil/banner/thumbnail/' . ProfileImageCatalog::NENDOROID_REWARD_BANNER . '.png') ?>" alt="Collection de figurines chibi dans une pièce fleurie au coucher du soleil" loading="lazy">
@@ -191,9 +191,9 @@ $category = '';
                     <?php endif; ?>
                 </div>
             <?php endif; ?>
-            <?php if ($achievement['category'] === 'Peluches' && isset(\App\Services\Profile\AchievementXpService::PELUCHE_REWARDS[$achievement['target']])): ?>
+            <?php if ($achievement['category'] === 'Peluches' && isset(\App\Constants\AchievementRewards::PELUCHES[$achievement['target']])): ?>
                 <div class="success-reward <?= $achievement['target'] === ProfileImageCatalog::PELUCHE_FRAME_TARGET ? 'success-reward-frame-xp' : ($achievement['target'] === ProfileImageCatalog::PELUCHE_BANNER_TARGET ? 'success-reward-title success-reward-banner' : 'success-reward-title success-reward-xp success-reward-xp-top') ?>">
-                    <strong class="success-reward-xp-label">Récompense : ⭐ <?= number_format(\App\Services\Profile\AchievementXpService::PELUCHE_REWARDS[$achievement['target']], 0, ',', ' ') ?> XP</strong>
+                    <strong class="success-reward-xp-label">Récompense : ⭐ <?= number_format(\App\Constants\AchievementRewards::PELUCHES[$achievement['target']], 0, ',', ' ') ?> XP</strong>
                     <?php if ($achievement['target'] === ProfileImageCatalog::PELUCHE_BANNER_TARGET): ?>
                         <strong>Récompense : bannière<span class="success-reward-name">Refuge des peluches</span></strong>
                         <img src="<?= e($view->baseUri . 'images/profil/banner/thumbnail/' . ProfileImageCatalog::PELUCHE_REWARD_BANNER . '.png') ?>" alt="Peluches dans un refuge fleuri au coucher du soleil" loading="lazy">
@@ -212,9 +212,9 @@ $category = '';
                     <?php endif; ?>
                 </div>
             <?php endif; ?>
-            <?php if ($achievement['category'] === 'Vocabulaire' && isset(\App\Services\Profile\AchievementXpService::VOCABULARY_REWARDS[$achievement['target']])): ?>
+            <?php if ($achievement['category'] === 'Vocabulaire' && isset(\App\Constants\AchievementRewards::VOCABULARY[$achievement['target']])): ?>
                 <div class="success-reward <?= $achievement['target'] === ProfileImageCatalog::LEARNING_FRAME_TARGET ? 'success-reward-frame-xp' : 'success-reward-title' ?> <?= $achievement['target'] === ProfileImageCatalog::LEARNING_BANNER_TARGET ? 'success-reward-banner' : ($achievement['target'] < \App\Constants\UserTitle::VOCABULARY_REWARD_TARGET ? 'success-reward-xp' : '') ?>">
-                    <strong class="success-reward-xp-label">Récompense : ⭐ <?= number_format(\App\Services\Profile\AchievementXpService::VOCABULARY_REWARDS[$achievement['target']], 0, ',', ' ') ?> XP</strong>
+                    <strong class="success-reward-xp-label">Récompense : ⭐ <?= number_format(\App\Constants\AchievementRewards::VOCABULARY[$achievement['target']], 0, ',', ' ') ?> XP</strong>
                     <?php if ($achievement['target'] === ProfileImageCatalog::LEARNING_BANNER_TARGET): ?>
                         <strong>Récompense : bannière<span class="success-reward-name">Bibliothèque des mots</span></strong>
                         <img src="<?= e($view->baseUri . 'images/profil/banner/thumbnail/' . ProfileImageCatalog::VOCABULARY_REWARD_BANNER . '.png') ?>" alt="Bibliothèque des mots" loading="lazy">
@@ -240,9 +240,9 @@ $category = '';
                     <?php endif; ?>
                 </div>
             <?php endif; ?>
-            <?php if ($achievement['category'] === 'Grammaire' && isset(\App\Services\Profile\AchievementXpService::GRAMMAR_REWARDS[$achievement['target']])): ?>
+            <?php if ($achievement['category'] === 'Grammaire' && isset(\App\Constants\AchievementRewards::GRAMMAR[$achievement['target']])): ?>
                 <div class="success-reward <?= $achievement['target'] === ProfileImageCatalog::LEARNING_FRAME_TARGET ? 'success-reward-frame-xp' : 'success-reward-title' ?> <?= $achievement['target'] === ProfileImageCatalog::LEARNING_BANNER_TARGET ? 'success-reward-banner' : ($achievement['target'] < \App\Constants\UserTitle::GRAMMAR_REWARD_TARGET ? 'success-reward-xp' : '') ?>">
-                    <strong class="success-reward-xp-label">Récompense : ⭐ <?= number_format(\App\Services\Profile\AchievementXpService::GRAMMAR_REWARDS[$achievement['target']], 0, ',', ' ') ?> XP</strong>
+                    <strong class="success-reward-xp-label">Récompense : ⭐ <?= number_format(\App\Constants\AchievementRewards::GRAMMAR[$achievement['target']], 0, ',', ' ') ?> XP</strong>
                     <?php if ($achievement['target'] === ProfileImageCatalog::LEARNING_BANNER_TARGET): ?>
                         <strong>Récompense : bannière<span class="success-reward-name">Atelier des phrases</span></strong>
                         <img src="<?= e($view->baseUri . 'images/profil/banner/thumbnail/' . ProfileImageCatalog::GRAMMAR_REWARD_BANNER . '.png') ?>" alt="Atelier des phrases" loading="lazy">

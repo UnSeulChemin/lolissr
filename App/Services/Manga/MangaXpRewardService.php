@@ -66,4 +66,14 @@ final readonly class MangaXpRewardService
             'seriesXpEarned' => $seriesXpEarned,
         ];
     }
+
+    // Editing a series status or deleting an unread tome can complete a series too.
+    public function rewardSeriesAchievements(): void
+    {
+        $user = user();
+        if ($user !== null)
+        {
+            $this->achievementXpService->rewardSeries($user, $this->mangaStatsRepository->countCompletedSeries());
+        }
+    }
 }

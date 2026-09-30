@@ -12,8 +12,6 @@ use App\Support\PageStyles;
 
 use Framework\Application\App;
 use Framework\Debug\Profiler;
-use Framework\Exceptions\MethodNotAllowedException;
-use Framework\Exceptions\NotFoundException;
 use Framework\Exceptions\ValidationException;
 use Framework\Http\FormRequest;
 use Framework\Http\Request;
@@ -52,30 +50,6 @@ abstract class Controller
             base_uri(),
             '/'
         );
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | EXCEPTIONS
-    |--------------------------------------------------------------------------
-    */
-
-    public function notFound(
-        string $message = 'Page introuvable'
-    ): never {
-        throw new NotFoundException($message);
-    }
-
-    public function methodNotAllowed(
-        string $message = 'Méthode non autorisée'
-    ): never {
-        throw new MethodNotAllowedException($message);
-    }
-
-    public function serverError(
-        string $message = 'Erreur interne du serveur'
-    ): never {
-        throw new RuntimeException($message);
     }
 
     /*
@@ -330,24 +304,6 @@ abstract class Controller
         $this->redirectWith(
             $url,
             $session
-        );
-    }
-
-    /**
-     * @param array<string, mixed> $errors
-     */
-    protected function redirectWithValidationErrors(
-        string $url,
-        array $errors,
-        string $message = 'Le formulaire contient des erreurs.'
-    ): never {
-        $this->redirectWith(
-            $url,
-            [
-                'errors' => $errors,
-                'old' => $this->oldInput(),
-                'error' => $message,
-            ]
         );
     }
 

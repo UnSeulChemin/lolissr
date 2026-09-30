@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Profile;
 
 use App\Constants\UserXp;
+use App\Models\User;
 use App\DTO\Profile\ProfileStatsData;
 use App\Repositories\Chinois\ChinoisGrammaireStatsRepository;
 use App\Repositories\Chinois\ChinoisVocabulaireStatsRepository;
@@ -45,7 +46,7 @@ final readonly class ProfileStatsService
     |--------------------------------------------------------------------------
     */
 
-    public function getStats(): ProfileStatsData
+    public function getStats(?User $user = null): ProfileStatsData
     {
         $manga = $this->mangaStatsRepository->profileSummary();
         $artbook = $this->artbookStatsRepository->profileSummary();
@@ -58,20 +59,9 @@ final readonly class ProfileStatsService
         $readTomes = $manga['read'];
         $completedSeries = $this->completedSeries();
         $achievementXp = 0;
-        $user = user();
+        $user ??= user();
         if ($user !== null)
         {
-            if ($readTomes >= 1)
-            {
-                $this->achievementXpService->rewardTomes($user, $readTomes);
-            }
-            $this->achievementXpService->rewardSeries($user, $completedSeries);
-            $this->achievementXpService->rewardArtbooks($user, $artbook['read']);
-            $this->achievementXpService->rewardFigurines($user, $figurine['collected']);
-            $this->achievementXpService->rewardNendoroids($user, $nendoroid['collected']);
-            $this->achievementXpService->rewardPeluches($user, $peluche['collected']);
-            $this->achievementXpService->rewardVocabulary($user, $vocabulary['mastered']);
-            $this->achievementXpService->rewardGrammar($user, $grammar['mastered']);
             $achievementXp = $this->achievementXpService->totalForUser($user);
         }
         $tomeXp = $manga['rewarded_tomes'] * UserXp::READ_TOME;

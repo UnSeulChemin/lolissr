@@ -40,7 +40,8 @@ $cases = [
 foreach ($cases as $view => $expected)
 {
     $actual = PageStyles::forView(view_path($view . '.php'));
-    $urls = array_map(static fn ($file) => view_base_uri() . 'css/' . $file, $expected);
+    $urls = array_map(static fn ($file) => view_base_uri() . 'css/' . $file
+        . '?v=' . hash_file('sha256', ROOT . '/public/css/' . $file), $expected);
 
     if ($actual !== $urls)
     {
