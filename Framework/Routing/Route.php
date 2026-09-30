@@ -124,6 +124,11 @@ final class Route
             return '#^/?$#';
         }
 
+        if (! str_contains($path, '{'))
+        {
+            return '#^/' . preg_quote($path, '#') . '/?$#';
+        }
+
         $segments = array_map(
             fn (string $segment): string => $this->compileSegment($segment),
             explode('/', $path)
@@ -134,6 +139,11 @@ final class Route
 
     private function compileSegment(string $segment): string
     {
+        if (! str_contains($segment, '{'))
+        {
+            return preg_quote($segment, '#');
+        }
+
         $matched = preg_match_all(
             '#\{([a-zA-Z_][a-zA-Z0-9_]*)(?::([a-zA-Z]+))?\}#',
             $segment,
