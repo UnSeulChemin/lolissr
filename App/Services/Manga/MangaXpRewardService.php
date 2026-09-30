@@ -7,13 +7,11 @@ namespace App\Services\Manga;
 use App\Constants\UserXp;
 use App\Models\Manga;
 use App\Repositories\Manga\MangaRepository;
-use App\Services\User\UserLevelService;
 
 final readonly class MangaXpRewardService
 {
     public function __construct(
         private MangaRepository $mangaRepository,
-        private UserLevelService $userLevelService,
         private \App\Services\Profile\AchievementXpService $achievementXpService,
         private \App\Repositories\Manga\MangaStatsRepository $mangaStatsRepository,
     ) {
@@ -39,30 +37,13 @@ final readonly class MangaXpRewardService
 
         $xpEarned = $this->mangaRepository->claimReadReward($manga->id);
 
-        if ($xpEarned)
-        {
-            $this->userLevelService->addXp(
-                $user,
-                UserXp::READ_TOME
-            );
-        }
-
-        $seriesXpEarned = false;
+        $seriesXpEarned = $this->mangaRepository->claimSeriesReward($slug);
         $this->achievementXpService->rewardManga(
             $user,
             $this->mangaStatsRepository->countRead(),
             $this->mangaStatsRepository->countCompletedSeries(),
+            ($xpEarned ? UserXp::READ_TOME : 0) + ($seriesXpEarned ? UserXp::COMPLETE_SERIES : 0),
         );
-
-        if ($this->mangaRepository->claimSeriesReward($slug))
-        {
-            $this->userLevelService->addXp(
-                $user,
-                UserXp::COMPLETE_SERIES
-            );
-
-            $seriesXpEarned = true;
-        }
 
         return [
             'xpEarned' => $xpEarned,

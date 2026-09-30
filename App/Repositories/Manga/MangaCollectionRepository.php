@@ -19,16 +19,6 @@ final class MangaCollectionRepository extends Model
         'id ASC',
     ];
 
-    public function countFilteredSeries(bool $notes): int
-    {
-        $condition = $notes ? 'stats.average_note < 10' : 'stats.total_lu < stats.total';
-
-        return (int) $this->fetchSingleValue(
-            "SELECT COUNT(*) AS total FROM ({$this->statsSubQuery()}) stats WHERE {$condition}",
-            'total'
-        );
-    }
-
     public function countFirstTomes(): int
     {
         $result = $this->fetchOne(
@@ -92,90 +82,50 @@ final class MangaCollectionRepository extends Model
         return $mangas;
     }
 
-    /**
-     * @return list<Manga>
-     */
-    public function findSeriesWithoutPerfectNote(int $perPage, int $page): array
+    /** @return array{mangas: list<Manga>, total: int} */
+    public function filteredPage(bool $notes, int $perPage, int $page): array
     {
         $perPage = max(1, $perPage);
         $offset = (max(1, $page) - 1) * $perPage;
-        /** @var list<Manga> $mangas */
-        $mangas = $this->fetchAll(
-            "
-            SELECT
-                m.id, m.slug, m.numero, m.livre, m.thumbnail, m.extension, m.statut, m.note, m.lu,
-                stats.total,
-                stats.total_lu,
-                stats.average_note
-
-            FROM {$this->table()} m
-
-            INNER JOIN (
-                {$this->statsSubQuery()}
-            ) stats
-                ON stats.slug = m.slug
-
-            WHERE m.id = (
-                SELECT first_tome.id
-                FROM {$this->table()} first_tome
-                WHERE first_tome.slug = m.slug
-                ORDER BY first_tome.numero ASC, first_tome.id ASC
-                LIMIT 1
+        $condition = $notes ? 'average_note < 10' : 'total_lu < total';
+        $order = $notes ? 'average_note ASC, livre ASC, id ASC' : 'livre ASC, id ASC';
+        // The grouped CTE is reused for both the count and the page. The left
+        // join preserves the count when the requested page (or list) is empty.
+        $rows = $this->fetchAll("WITH stats AS ({$this->statsSubQuery()}),
+            filtered AS (SELECT * FROM stats WHERE $condition),
+            paged AS (
+                SELECT m.id, m.slug, m.numero, m.livre, m.thumbnail, m.extension,
+                    m.statut, m.note, m.lu, filtered.total, filtered.total_lu, filtered.average_note
+                FROM filtered INNER JOIN {$this->table()} m ON m.id = (
+                    SELECT first_tome.id FROM {$this->table()} first_tome
+                    WHERE first_tome.slug = filtered.slug
+                    ORDER BY first_tome.numero ASC, first_tome.id ASC LIMIT 1
+                )
+                ORDER BY $order LIMIT $perPage OFFSET $offset
             )
-            AND stats.average_note < 10
+            SELECT paged.*, totals.matching_series
+            FROM (SELECT COUNT(*) AS matching_series FROM filtered) totals
+            LEFT JOIN paged ON 1 = 1 ORDER BY $order");
+        $mangas = [];
+        foreach ($rows as $row)
+        {
+            if ($row->id === null) continue;
+            $manga = new Manga();
+            $manga->id = (int) $row->id;
+            $manga->slug = (string) $row->slug;
+            $manga->numero = (int) $row->numero;
+            $manga->livre = (string) $row->livre;
+            $manga->thumbnail = (string) $row->thumbnail;
+            $manga->extension = (string) $row->extension;
+            $manga->statut = (string) $row->statut;
+            $manga->note = $row->note === null ? null : (int) $row->note;
+            $manga->lu = (bool) $row->lu;
+            $manga->total = (int) $row->total;
+            $manga->total_lu = (int) $row->total_lu;
+            $manga->average_note = (float) $row->average_note;
+            $mangas[] = $manga;
+        }
 
-            ORDER BY
-                stats.average_note ASC,
-                m.livre ASC, m.id ASC
-            LIMIT {$perPage} OFFSET {$offset}
-            ",
-            [],
-            Manga::class
-        );
-
-        return $mangas;
-    }
-
-    /**
-     * @return list<Manga>
-     */
-    public function findIncompleteSeries(int $perPage, int $page): array
-    {
-        $perPage = max(1, $perPage);
-        $offset = (max(1, $page) - 1) * $perPage;
-        /** @var list<Manga> $mangas */
-        $mangas = $this->fetchAll(
-            "
-            SELECT
-                m.id, m.slug, m.numero, m.livre, m.thumbnail, m.extension, m.statut, m.note, m.lu,
-                stats.total,
-                stats.total_lu,
-                stats.average_note
-
-            FROM {$this->table()} m
-
-            INNER JOIN (
-                {$this->statsSubQuery()}
-            ) stats
-                ON stats.slug = m.slug
-
-            WHERE m.id = (
-                SELECT first_tome.id
-                FROM {$this->table()} first_tome
-                WHERE first_tome.slug = m.slug
-                ORDER BY first_tome.numero ASC, first_tome.id ASC
-                LIMIT 1
-            )
-            AND stats.total_lu < stats.total
-
-            ORDER BY
-                m.livre ASC, m.id ASC
-            LIMIT {$perPage} OFFSET {$offset}
-            ",
-            [],
-            Manga::class
-        );
-
-        return $mangas;
+        return ['mangas' => $mangas, 'total' => (int) ($rows[0]->matching_series ?? 0)];
     }
 }

@@ -1,5 +1,22 @@
 # LoliSSR HTTP Tests
 
+Les statistiques XP du profil et les listes manga « Notes » / « À lire » utilisent
+chacune une seule requête. `profile-read-only.php` et `manga-filtered-pages.php`
+vérifient ce budget, les valeurs et les cas vides/hors limites ; ils font partie
+de `composer regression-tests`. Les listes filtrées utilisent une CTE SQL,
+dont la réutilisation a été vérifiée avec `EXPLAIN` sur le serveur local.
+
+Pour vérifier les XP manga groupées avec MySQL :
+
+```powershell
+php tests/achievement-xp.php
+php tests/manga-xp-batch.php
+```
+
+Ces tests utilisent uniquement des tables temporaires propres à leur connexion.
+Le second contrôle une seule prise de verrou utilisateur et une seule mise à jour
+pour les gains tome/série/succès, les doublons et le rollback complet.
+
 L'[audit des performances du 1er octobre 2026](performance-audit.md) détaille
 les mesures et les points serveur à traiter. `php tests/collection-projections.php`,
 inclus dans `composer regression-tests`, vérifie les données affichées après

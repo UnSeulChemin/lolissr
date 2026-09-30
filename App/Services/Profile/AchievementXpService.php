@@ -53,12 +53,12 @@ final readonly class AchievementXpService
         $this->award($user, $this->eligible('grammar', AchievementRewards::GRAMMAR, $mastered));
     }
 
-    public function rewardManga(User $user, int $readTomes, int $completedSeries): void
+    public function rewardManga(User $user, int $readTomes, int $completedSeries, int $baseXp = 0): void
     {
         $this->award($user, [
             ...$this->eligible('tomes', AchievementRewards::TOMES, $readTomes),
             ...$this->eligible('series', AchievementRewards::SERIES, $completedSeries),
-        ]);
+        ], $baseXp);
     }
 
     public function rewardAll(User $user, ProfileStatsData $stats): void
@@ -89,11 +89,13 @@ final readonly class AchievementXpService
     }
 
     /** @param array<string, int> $rewards */
-    private function award(User $user, array $rewards): void
+    private function award(User $user, array $rewards, int $baseXp = 0): void
     {
-        if ($rewards === []) return;
+        if ($baseXp < 0) throw new \InvalidArgumentException('Base XP must not be negative.');
+        if ($rewards === [] && $baseXp === 0) return;
 
-        $this->levels->addComputedXp($user, function () use ($user, $rewards): int {
+        $this->levels->addComputedXp($user, function () use ($user, $rewards, $baseXp): int {
+            if ($rewards === []) return $baseXp;
             // A current locking read also sees claims committed by a request we waited for.
             $placeholders = implode(', ', array_fill(0, count($rewards), '?'));
             $check = $this->database->prepare(
@@ -104,7 +106,7 @@ final readonly class AchievementXpService
             /** @var list<string> $claimed */
             $claimed = $check->fetchAll(\PDO::FETCH_COLUMN);
             $missing = array_diff_key($rewards, array_fill_keys($claimed, true));
-            if ($missing === []) return 0;
+            if ($missing === []) return $baseXp;
 
             $values = [];
             foreach ($missing as $key => $xp)
@@ -116,7 +118,7 @@ final readonly class AchievementXpService
                 . implode(', ', array_fill(0, count($missing), '(?, ?, ?)'))
             );
             $insert->execute($values);
-            return array_sum($missing);
+            return $baseXp + array_sum($missing);
         });
     }
     public function totalForUser(User $user): int

@@ -11,21 +11,6 @@ trait HasLearningStats
         $row = $this->fetchOne("SELECT COUNT(*) AS total FROM {$this->table()} WHERE maitrise = 1");
         return (int) ($row->total ?? 0);
     }
-    /** @return array{mastered: int, rewarded: int} */
-    public function profileSummary(): array
-    {
-        $row = $this->fetchOne(
-            "SELECT COUNT(CASE WHEN maitrise = 1 THEN 1 END) AS mastered,
-                COUNT(CASE WHEN xp_rewarded = 1 THEN 1 END) AS rewarded
-            FROM {$this->table()}"
-        );
-
-        return [
-            'mastered' => (int) ($row->mastered ?? 0),
-            'rewarded' => (int) ($row->rewarded ?? 0),
-        ];
-    }
-
     /** @return array{total: int, remaining: int} */
     public function dashboardSummary(): array
     {

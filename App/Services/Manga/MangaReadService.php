@@ -159,14 +159,13 @@ final readonly class MangaReadService
     {
         $page = max(1, $page);
         $perPage = max(1, App::pagination());
-        $total = $this->collectionRepository->countFilteredSeries($notes);
+        $result = $this->collectionRepository->filteredPage($notes, $perPage, $page);
+        $total = $result['total'];
         $totalPages = max(1, (int) ceil($total / $perPage));
 
         if ($page > $totalPages) return null;
 
-        $mangas = $total === 0 ? [] : ($notes
-            ? $this->collectionRepository->findSeriesWithoutPerfectNote($perPage, $page)
-            : $this->collectionRepository->findIncompleteSeries($perPage, $page));
+        $mangas = $result['mangas'];
 
         return new MangaSeriesData(
             mangas: array_map($this->mapSeriesItem(...), $mangas),
