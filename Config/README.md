@@ -119,4 +119,4 @@ L'ordre de déclaration fait partie du comportement du routeur : une route dynam
 3. Ajouter les contraintes nécessaires dans `EnvironmentValidator` et préciser si elle est obligatoire.
 4. Lire l'option avec `config()` dans le code consommateur et mettre à jour cette documentation.
 
-Les scripts de sauvegarde et de publication ont leurs propres options, notamment `MYSQLDUMP_PATH`. Les identifiants `HTTP_TEST_USERNAME` et `HTTP_TEST_PASSWORD` concernent l'outillage HTTP ; voir [`tests/README-tests.md`](../tests/README-tests.md).
+Les scripts de sauvegarde et de publication ont leurs propres options, notamment `MYSQLDUMP_PATH`. Les identifiants `HTTP_TEST_USERNAME` et `HTTP_TEST_PASSWORD` concernent l'outillage HTTP ; voir [`tests/Docs/guide.md`](../tests/Docs/guide.md).
