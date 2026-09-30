@@ -25,9 +25,39 @@ foreach (["01/01/20\0 26", "01/01/2026\0", '31/02/2026', 'not a date'] as $date)
 }
 foreach (['29/02/2024', '2024-02-29'] as $date)
 {
-    $check((new Validator(['date' => $date]))->date('date')->passes(), 'Valid date rejected.');
+    $check(! (new Validator(['date' => $date]))->date('date')->fails(), 'Valid date rejected.');
 }
 $check(DateNormalizer::normalize(' 29/02/2024 ') === '2024-02-29', 'Date normalization changed.');
+
+$base = ['waifu' => 'Test', 'origin' => 'Test', 'scale' => '1/7', 'company' => 'Test'];
+$form = static fn (array $extra) => new \App\Http\Requests\Figurine\FigurineUpdateRequest(new Request(post: $base + $extra));
+foreach (['commentaire', 'release_date', 'height_cm'] as $field)
+{
+    foreach ([[], ['bad']] as $invalid)
+    {
+        $check($form([$field => $invalid])->fails(), 'Array accepted for nullable field: ' . $field);
+    }
+    foreach ([null, '', '   ', "\t\r\n"] as $empty)
+    {
+        $request = $form([$field => $empty]);
+        $check(! $request->fails(), 'Empty nullable field rejected: ' . $field);
+        $check($request->dto()->$field === null, 'Empty nullable field was not normalized: ' . $field);
+    }
+}
+foreach (['2026-10-01', '01/10/2026', ' 2026-10-01 '] as $date)
+{
+    $request = $form(['release_date' => $date]);
+    $check(! $request->fails() && $request->dto()->release_date === '2026-10-01', 'Valid date lost in DTO.');
+}
+foreach (['2026-02-29', '31/04/2026', "\0"] as $date)
+{
+    $check($form(['release_date' => $date])->fails(), 'Invalid nullable date accepted.');
+}
+foreach ([0, '0', '0.0', ' 12.5 '] as $number)
+{
+    $request = $form(['height_cm' => $number]);
+    $check(! $request->fails() && $request->dto()->height_cm === (float) $number, 'Numeric value lost during normalization.');
+}
 
 foreach ([false, true] as $trustProxy)
 {
@@ -107,7 +137,7 @@ try
     $check(Cache::remember('invalidated-during-compute', 60, static fn (): string => 'fresh') === 'fresh', 'Stale computation published after invalidation.');
 
     $file = ['tmp_name' => $fixture, 'name' => 'image.png', 'error' => UPLOAD_ERR_OK];
-    $check((new Validator([], ['image' => $file]))->imageMime('image', ['image/png'])->passes(), 'PNG MIME rejected.');
+    $check(! (new Validator([], ['image' => $file]))->imageMime('image', ['image/png'])->fails(), 'PNG MIME rejected.');
     $check((new Validator([], ['image' => $file]))->imageMime('image', ['image/jpeg'])->fails(), 'Wrong MIME accepted.');
 
     Session::start();
@@ -127,10 +157,6 @@ try
     $check(Session::pull('old') === ['title' => 'Draft'], 'Form state not persisted.');
     Session::remove('nullable');
     $check(! Session::has('nullable'), 'Removal not persisted.');
-    Session::set('one', 1);
-    Session::set('two', 2);
-    Session::forget(['one', 'two']);
-    $check(! Session::has('one') && ! Session::has('two'), 'Forget not persisted.');
 
     $token = csrf_token();
     $check(strlen($token) === 64 && csrf_token() === $token, 'CSRF token changed between reads.');

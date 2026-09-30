@@ -67,11 +67,6 @@ final class Validator
     // RÉSULTATS
     // =========================================
 
-    public function passes(): bool
-    {
-        return ! $this->fails();
-    }
-
     public function fails(): bool
     {
         return $this->errors !== [];
@@ -96,7 +91,9 @@ final class Validator
         {
             if (array_key_exists($field, $this->data))
             {
-                $validated[$field] = $this->data[$field];
+                $validated[$field] = $this->isNullableAndEmpty($field)
+                    ? null
+                    : $this->data[$field];
             }
         }
 
@@ -147,8 +144,11 @@ final class Validator
 
     private function isNullableAndEmpty(string $field): bool
     {
+        $value = $this->value($field);
+
         return isset($this->nullable[$field])
-            && $this->isEmptyValue($this->value($field));
+            && ($value === null
+                || (is_string($value) && trim($value, " \t\n\r\x0B") === ''));
     }
 
     private function shouldSkip(string $field): bool

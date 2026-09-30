@@ -6,7 +6,6 @@ use Framework\Application\App;
 use Framework\Config\Config;
 use Framework\Config\Env;
 use Framework\Container\AppContainer;
-use Framework\Http\Response;
 use Framework\Support\Session;
 
 // =========================================
@@ -26,51 +25,6 @@ if (! function_exists('app'))
 }
 
 // =========================================
-// DEBUG
-// =========================================
-
-if (! function_exists('dump'))
-{
-    function dump(mixed ...$variables): void
-    {
-        if (! App::debug())
-        {
-            return;
-        }
-
-        echo <<<'HTML'
-        <pre style="
-            background:#222;
-            color:#fff;
-            padding:15px;
-            font-size:14px;
-            line-height:1.4;
-            overflow:auto;
-            white-space:pre-wrap;
-            border-radius:8px;
-        ">
-        HTML;
-
-        foreach ($variables as $variable)
-        {
-            var_dump($variable);
-        }
-
-        echo '</pre>';
-    }
-}
-
-if (! function_exists('dd'))
-{
-    function dd(mixed ...$variables): never
-    {
-        dump(...$variables);
-
-        exit;
-    }
-}
-
-// =========================================
 // CHEMINS
 // =========================================
 
@@ -85,26 +39,6 @@ if (! function_exists('base_path'))
         return $path === ''
             ? $basePath
             : $basePath . DIRECTORY_SEPARATOR . ltrim($path, '/\\');
-    }
-}
-
-// =========================================
-// REDIRECTION
-// =========================================
-
-if (! function_exists('redirect'))
-{
-    function redirect(string $path = '', int $status = 302): never
-    {
-        if (preg_match('#^https?://#i', $path) === 1)
-        {
-            Response::redirect($path, $status);
-        }
-
-        Response::redirect(
-            view_base_uri() . ltrim($path, '/'),
-            $status
-        );
     }
 }
 
@@ -206,18 +140,6 @@ if (! function_exists('csrf_meta_tag'))
             '<meta name="csrf-token" content="%s">',
             e(csrf_token())
         );
-    }
-}
-
-// =========================================
-// SESSION
-// =========================================
-
-if (! function_exists('session'))
-{
-    function session(string $key, mixed $default = null): mixed
-    {
-        return Session::get($key, $default);
     }
 }
 

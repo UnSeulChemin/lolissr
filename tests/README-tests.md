@@ -68,6 +68,10 @@ l'invalidation du cache et la persistance des sessions après libération du ver
 Il vérifie aussi la consommation unique des messages flash et la stabilité du
 jeton CSRF. Il est inclus dans `composer regression-tests`.
 
+La validation des champs optionnels est vérifiée jusqu'au DTO : rejet des tableaux,
+conversion des chaînes vides ou blanches en `null`, conservation des zéros et des
+dates valides aux formats `Y-m-d` et `d/m/Y`.
+
 `framework-lifecycle.php` vérifie la consommation atomique des données de formulaire,
 les verrous de session imbriqués et leur libération en cas d'exception. Un processus
 PHP séparé vérifie que les durées du profiler sont enregistrées malgré le `exit`

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Framework\Validation\Concerns;
 
-use DateTimeImmutable;
+use Framework\Support\DateNormalizer;
 
 trait ValidatesDates
 {
@@ -23,34 +23,9 @@ trait ValidatesDates
 
         $value = $this->value($field);
 
-        if (! is_string($value) || str_contains($value, "\0"))
+        if (is_string($value) && DateNormalizer::normalize($value) !== null)
         {
-            $this->addError(
-                $field,
-                $message ?? "Le champ {$field} doit être une date valide."
-            );
-
             return $this;
-        }
-
-        $value = trim($value);
-
-        foreach (['Y-m-d', 'd/m/Y'] as $format)
-        {
-            $date = DateTimeImmutable::createFromFormat('!' . $format, $value);
-            $errors = DateTimeImmutable::getLastErrors();
-
-            $warningCount = is_array($errors) ? $errors['warning_count'] : 0;
-            $errorCount = is_array($errors) ? $errors['error_count'] : 0;
-
-            if (
-                $date !== false
-                && $warningCount === 0
-                && $errorCount === 0
-                && $date->format($format) === $value
-            ) {
-                return $this;
-            }
         }
 
         $this->addError(

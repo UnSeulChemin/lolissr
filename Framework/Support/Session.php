@@ -108,20 +108,6 @@ final class Session
         self::releaseIfNeeded();
     }
 
-    /**
-     * @param list<string> $keys
-     */
-    public static function forget(array $keys): void
-    {
-        self::ensureStarted();
-
-        foreach ($keys as $key)
-        {
-            unset($_SESSION[$key]);
-        }
-        self::releaseIfNeeded();
-    }
-
     public static function pull(string $key, mixed $default = null): mixed
     {
         self::ensureStarted();
