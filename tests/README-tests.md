@@ -1,5 +1,18 @@
 # LoliSSR HTTP Tests
 
+`tests/framework.php` couvre aussi le rechargement de configuration (y compris
+`base_uri()`), la distinction entre clé absente et valeur `null`, les valeurs par
+défaut successives, la reprise du conteneur après une dépendance circulaire et les
+accès session après `session_write_close()` ou `session_abort()` natifs.
+La validation entière refuse booléens et flottants ; les règles numériques
+refusent `NAN` et les infinis, tout en conservant les zéros et nombres finis.
+
+La configuration mémorise désormais les clés résolues jusqu'à `Config::clear()`.
+Mesure CLI locale du 1er octobre 2026, PHP 8.3.14 avec Xdebug désactivé :
+600 000 lectures réparties sur six clés déjà chargées, médiane de cinq passages,
+805 ms avant contre 168 ms après. Ce microbenchmark mesure les lectures de
+configuration, pas le temps total des pages.
+
 Les statistiques XP du profil et les listes manga « Notes » / « À lire » utilisent
 chacune une seule requête. `profile-read-only.php` et `manga-filtered-pages.php`
 vérifient ce budget, les valeurs et les cas vides/hors limites ; ils font partie

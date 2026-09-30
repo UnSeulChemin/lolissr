@@ -38,8 +38,6 @@ final class Container
     /** @var array<class-string, list<array{name: string, dependency: string|null, nullable: bool, hasDefault: bool, default: \Closure(): mixed}>> */
     private array $dependencyPlans = [];
 
-    private int $resolutionDepth = 0;
-
     public function __construct()
     {
         $this->instances[self::class] = $this;
@@ -85,7 +83,7 @@ final class Container
             );
         }
 
-        $isRootResolution = $this->resolutionDepth === 0;
+        $isRootResolution = $this->resolving === [];
 
         if ($isRootResolution)
         {
@@ -93,7 +91,6 @@ final class Container
         }
 
         $this->resolving[$abstract] = true;
-        $this->resolutionDepth++;
 
         try
         {
@@ -128,8 +125,6 @@ final class Container
         finally
         {
             unset($this->resolving[$abstract]);
-
-            $this->resolutionDepth--;
 
             if ($isRootResolution)
             {

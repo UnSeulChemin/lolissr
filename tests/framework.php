@@ -18,6 +18,65 @@ $check = static function (bool $condition, string $message): void {
     if (! $condition) throw new RuntimeException($message);
 };
 
+foreach ([true, false, 1.0, 1.5, [], new stdClass(), INF, NAN] as $value)
+{
+    $check((new Validator(['number' => $value]))->integer('number')->fails(), 'Non-integer accepted.');
+}
+foreach ([0, '0', -1, '-1', PHP_INT_MAX, (string) PHP_INT_MAX, ' 12 '] as $value)
+{
+    $check(! (new Validator(['number' => $value]))->integer('number')->fails(), 'Valid integer rejected.');
+}
+foreach ([NAN, INF, -INF, true, false, '1e999', [], new stdClass()] as $value)
+{
+    foreach (['numeric', 'min', 'max'] as $rule)
+    {
+        $validator = new Validator(['number' => $value]);
+        $rule === 'numeric' ? $validator->numeric('number') : $validator->$rule('number', 0);
+        $check($validator->fails(), 'Invalid number accepted by ' . $rule);
+    }
+}
+foreach ([0, 0.0, -1.5, '0', ' 12.5 ', '1e2'] as $value)
+{
+    $check(! (new Validator(['number' => $value]))->numeric('number')->fails(), 'Valid number rejected.');
+}
+
+// Missing values must not cache the first caller's fallback; stored null stays null.
+$items = new ReflectionProperty(Config::class, 'items');
+$items->setValue(null, ['fixture' => ['null' => null, 'false' => false, 'zero' => 0, 'nested' => ['value' => 'ok']]]);
+foreach (['first', 'second'] as $fallback)
+{
+    $check(Config::get('fixture.missing', $fallback) === $fallback, 'Configuration fallback cached.');
+    $check(Config::get('fixture.null', $fallback) === null, 'Configured null replaced by fallback.');
+    $check(Config::get('fixture.false', $fallback) === false, 'Configured false lost.');
+    $check(Config::get('fixture.zero', $fallback) === 0, 'Configured zero lost.');
+    $check(Config::get('fixture.zero.child', $fallback) === $fallback, 'Scalar traversed as array.');
+    $check(Config::get(' .fixture..nested.value. ') === 'ok', 'Configuration key normalization changed.');
+    $check(Config::get(' .. ', $fallback) === $fallback, 'Empty configuration key changed.');
+}
+$check(Config::get('fixture') === $items->getValue()['fixture'], 'Whole configuration file changed.');
+foreach (['/first', '/second', '/'] as $baseUri)
+{
+    Env::set('APP_BASE_URI', $baseUri);
+    Config::clear();
+    $check(base_uri() === rtrim($baseUri, '/'), 'Base URI ignored configuration reload.');
+    $check(view_base_uri() === rtrim($baseUri, '/') . '/', 'View base URI ignored reload.');
+}
+
+$container = new \Framework\Container\Container();
+$container->singleton('cycle', static fn ($container) => $container->get('cycle'));
+try
+{
+    $container->get('cycle');
+    throw new RuntimeException('Circular dependency accepted.');
+}
+catch (\Framework\Container\ContainerResolutionException $exception)
+{
+    $check(str_contains($exception->getMessage(), 'cycle -> cycle'), 'Resolution chain lost.');
+}
+$container->singleton('cycle', static fn () => new stdClass());
+$check($container->get('cycle') === $container->get('cycle'), 'Singleton or resolution recovery broken.');
+$check($container->get(\Framework\Container\Container::class) === $container, 'Container self-resolution changed.');
+
 foreach (["01/01/20\0 26", "01/01/2026\0", '31/02/2026', 'not a date'] as $date)
 {
     $check((new Validator(['date' => $date]))->date('date')->fails(), 'Invalid date accepted.');
@@ -141,6 +200,17 @@ try
     $check((new Validator([], ['image' => $file]))->imageMime('image', ['image/jpeg'])->fails(), 'Wrong MIME accepted.');
 
     Session::start();
+    Session::set('native-close', 'persisted');
+    session_write_close();
+    Session::set('after-native-close', 'also persisted');
+    Session::close();
+    $check(Session::get('after-native-close') === 'also persisted', 'Native session close lost subsequent writes.');
+    Session::start();
+    Session::set('aborted', true);
+    session_abort();
+    $check(Session::get('aborted') === null, 'Native session abort left stale in-memory state.');
+    $check(Session::get('native-close') === 'persisted', 'Native session close lost saved state.');
+    Session::start();
     Session::set('success', 'Saved');
     Session::set('nullable', null);
     $check(session_status() === PHP_SESSION_ACTIVE, 'Explicit session scope lost its lock.');
@@ -177,4 +247,4 @@ finally
     rmdir($directory);
 }
 
-echo "PASS: dates, HTTPS/proxy, route precedence, MIME validation, cache invalidation, session persistence and lock release, CSRF.\n";
+echo "PASS: numeric validation, configuration reload/defaults, container recovery, dates, HTTPS/proxy, routes, MIME, cache, native/framework session lifecycle and CSRF.\n";

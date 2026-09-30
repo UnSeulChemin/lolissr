@@ -12,8 +12,6 @@ final class Session
 {
     private const DEFAULT_SESSION_NAME = 'APP_SESSION';
 
-    private static bool $started = false;
-
     private static bool $releaseAfterAccess = false;
 
     private static ?string $directory = null;
@@ -38,7 +36,6 @@ final class Session
         {
             throw new RuntimeException('Impossible de sauvegarder la session.');
         }
-        self::$started = false;
         self::$releaseAfterAccess = true;
     }
 
@@ -180,8 +177,6 @@ final class Session
         }
 
         $_SESSION = [];
-
-        self::$started = false;
     }
 
     // =========================================
@@ -199,15 +194,8 @@ final class Session
 
     private static function ensureStarted(): void
     {
-        if (self::$started)
-        {
-            return;
-        }
-
         if (session_status() === PHP_SESSION_ACTIVE)
         {
-            self::$started = true;
-
             return;
         }
 
@@ -279,8 +267,6 @@ final class Session
                 'Impossible de démarrer la session.'
             );
         }
-
-        self::$started = true;
     }
 
     // =========================================

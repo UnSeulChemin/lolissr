@@ -293,7 +293,7 @@ final class Cache
         }
 
         $locked = false;
-        $deadline = microtime(true) + 2.0;
+        $deadline = hrtime(true) + 2_000_000_000;
         Profiler::start('cache.lock_wait');
         try
         {
@@ -302,7 +302,7 @@ final class Cache
                 $locked = flock($lock, LOCK_EX | LOCK_NB);
                 if ($locked) break;
                 usleep(20_000);
-            } while (microtime(true) < $deadline);
+            } while (hrtime(true) < $deadline);
             Profiler::end('cache.lock_wait');
 
             // Un producteur de cache lent ne doit pas bloquer la navigation indéfiniment.

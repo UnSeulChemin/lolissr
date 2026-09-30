@@ -151,9 +151,7 @@ if (! function_exists('base_uri'))
 {
     function base_uri(): string
     {
-        static $baseUri;
-
-        $baseUri ??= trim(App::baseUri(), '/');
+        $baseUri = trim(App::baseUri(), '/');
 
         return $baseUri !== ''
             ? '/' . $baseUri

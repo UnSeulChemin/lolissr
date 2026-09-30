@@ -11,6 +11,9 @@ final class Config
      */
     private static array $items = [];
 
+    /** @var array<string, array{value?: mixed}> Missing keys keep their caller's default. */
+    private static array $resolved = [];
+
     private function __construct()
     {
     }
@@ -21,23 +24,20 @@ final class Config
 
     public static function get(string $key, mixed $default = null): mixed
     {
-        $resolved = self::resolve($key);
-
-        if ($resolved === null)
+        $key = trim($key);
+        if (! isset(self::$resolved[$key]))
         {
-            return $default;
+            self::$resolved[$key] = self::resolve($key);
         }
 
-        [$config, $segments] = $resolved;
-
-        return $segments === []
-            ? $config
-            : self::arrayGet($config, $segments, $default);
+        $resolved = self::$resolved[$key];
+        return array_key_exists('value', $resolved) ? $resolved['value'] : $default;
     }
 
     public static function clear(): void
     {
         self::$items = [];
+        self::$resolved = [];
     }
 
     // =========================================
@@ -45,85 +45,40 @@ final class Config
     // =========================================
 
     /**
-     * @return array{
-     *     0: array<string, mixed>,
-     *     1: list<string>
-     * }|null
+     * @return array{value?: mixed}
      */
-    private static function resolve(string $key): ?array
+    private static function resolve(string $key): array
     {
-        $segments = self::segments($key);
+        $segments = array_values(array_filter(
+            explode('.', $key),
+            static fn (string $segment): bool => $segment !== ''
+        ));
 
         if ($segments === [])
-        {
-            return null;
-        }
-
-        $file = array_shift($segments);
-
-        if ($file === '')
-        {
-            return null;
-        }
-
-        return [self::load($file), $segments];
-    }
-
-    /**
-     * @return list<string>
-     */
-    private static function segments(string $key): array
-    {
-        $key = trim($key);
-
-        if ($key === '')
         {
             return [];
         }
 
-        return array_values(
-            array_filter(
-                explode('.', $key),
-                static fn (string $segment): bool => $segment !== ''
-            )
-        );
-    }
+        $file = array_shift($segments);
 
-    /**
-     * @param array<string, mixed> $items
-     * @param list<string> $segments
-     */
-    private static function arrayGet(
-        array $items,
-        array $segments,
-        mixed $default = null
-    ): mixed {
-        $value = $items;
+        $value = self::$items[$file] ??= self::loadFile($file);
 
         foreach ($segments as $segment)
         {
             if (! is_array($value) || ! array_key_exists($segment, $value))
             {
-                return $default;
+                return [];
             }
 
             $value = $value[$segment];
         }
 
-        return $value;
+        return ['value' => $value];
     }
 
     // =========================================
     // CHARGEMENT
     // =========================================
-
-    /**
-     * @return array<string, mixed>
-     */
-    private static function load(string $file): array
-    {
-        return self::$items[$file] ??= self::loadFile($file);
-    }
 
     /**
      * @return array<string, mixed>

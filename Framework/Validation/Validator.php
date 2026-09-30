@@ -168,7 +168,9 @@ final class Validator
         }
 
         $value = $this->value($field);
-        $integer = filter_var($value, FILTER_VALIDATE_INT);
+        $integer = is_int($value) || is_string($value)
+            ? filter_var($value, FILTER_VALIDATE_INT)
+            : false;
 
         return $this->integerCache[$field] = $integer !== false
             ? $integer
@@ -184,26 +186,33 @@ final class Validator
 
         $value = $this->value($field);
 
-        if (is_int($value) || is_float($value))
+        if (is_int($value))
         {
             return $this->numericCache[$field] = $value;
         }
 
-        if (! is_string($value) || trim($value) === '')
+        if (is_float($value))
+        {
+            return $this->numericCache[$field] = is_finite($value) ? $value : null;
+        }
+
+        if (! is_string($value))
         {
             return $this->numericCache[$field] = null;
         }
 
         $value = trim($value);
 
-        if (filter_var($value, FILTER_VALIDATE_INT) !== false)
+        $integer = filter_var($value, FILTER_VALIDATE_INT);
+        if ($integer !== false)
         {
-            return $this->numericCache[$field] = (int) $value;
+            return $this->numericCache[$field] = $integer;
         }
 
-        if (filter_var($value, FILTER_VALIDATE_FLOAT) !== false)
+        $float = filter_var($value, FILTER_VALIDATE_FLOAT);
+        if ($float !== false && is_finite($float))
         {
-            return $this->numericCache[$field] = (float) $value;
+            return $this->numericCache[$field] = $float;
         }
 
         return $this->numericCache[$field] = null;
