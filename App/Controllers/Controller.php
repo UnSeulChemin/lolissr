@@ -190,6 +190,10 @@ abstract class Controller
 
     protected function flashToastData(): FlashToastData
     {
+        if ($this->request->header('X-Prefetch') === 'true')
+        {
+            return new FlashToastData(null, null);
+        }
         if ($this->flashToast !== null)
         {
             return $this->flashToast;
@@ -396,6 +400,9 @@ abstract class Controller
                         'title' => $this->title,
                         'url' => $this->request->uri(),
                         'stylesheets' => PageStyles::forView($viewPath),
+                        'flashToast' => $this->flashToastData(),
+                        'requiresFreshNavigation' => $this->request->header('X-Prefetch') === 'true'
+                            && (Session::has('success') || Session::has('error')),
                     ],
                 ],
                 $statusCode

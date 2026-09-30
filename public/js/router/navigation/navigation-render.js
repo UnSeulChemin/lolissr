@@ -5,6 +5,7 @@
 import {
     cachePage,
 } from '../page-cache.js';
+import {showToast} from '../../core/toast.js';
 
 import {
     updateActiveNavigation,
@@ -68,6 +69,13 @@ export async function renderPage(
     updateActiveNavigation();
 
     clearActiveFocus();
+
+    const flash = response.page.flashToast;
+    delete response.page.flashToast;
+    if (typeof flash?.message === 'string' && flash.message !== '')
+    {
+        showToast(flash.message, flash.type ?? 'success');
+    }
 
     if (options.updateHistory === false)
     {

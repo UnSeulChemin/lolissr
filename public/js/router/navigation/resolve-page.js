@@ -93,7 +93,7 @@ export async function resolvePage(
     );
 
     if (
-        cached
+        cached && !cached.page.requiresFreshNavigation
     ) {
 
         debug(
@@ -143,7 +143,7 @@ export async function resolvePage(
         {
             throw new DOMException('Navigation aborted', 'AbortError');
         }
-        if (prefetched?.type === 'page' && typeof prefetched.page?.html === 'string')
+        if (prefetched?.type === 'page' && typeof prefetched.page?.html === 'string' && !prefetched.page.requiresFreshNavigation)
         {
             end('resolve');
             return prefetched;

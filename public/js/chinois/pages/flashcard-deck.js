@@ -36,6 +36,7 @@ export function createFlashcardDeck(container, type)
 
             for (const card of response.data.cards)
             {
+                cache.delete(card.id);
                 cache.set(card.id, card);
             }
             while (cache.size > 100)
@@ -44,9 +45,20 @@ export function createFlashcardDeck(container, type)
             }
             if (cache.has(id)) return;
 
-            // A card may have been mastered or deleted in another tab.
-            ids.splice(index, 1);
-            index %= ids.length || 1;
+            // The endpoint returns up to 50 cards ordered by id, starting at id.
+            // Missing IDs through its last result are obsolete; an empty result
+            // means the entire remaining suffix has disappeared.
+            const returned = new Set(response.data.cards.map(card => card.id));
+            const last = response.data.cards.at(-1)?.id ?? Infinity;
+            for (let position = ids.length - 1; position >= 0; position--)
+            {
+                if (ids[position] >= id && ids[position] <= last && !returned.has(ids[position]))
+                {
+                    cache.delete(ids[position]);
+                    ids.splice(position, 1);
+                }
+            }
+            index = Math.max(0, ids.findIndex(candidate => candidate >= id));
         }
     }
 

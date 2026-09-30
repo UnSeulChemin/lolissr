@@ -253,3 +253,11 @@ dans `composer check`. Elles vérifient la conservation du ZIP précédent en ca
 d'échec et la suppression conditionnelle du cache après remplacement concurrent.
 La release prépare et vérifie un ZIP temporaire avant de remplacer l'archive
 existante ; elle ne supprime jamais cette dernière pour forcer un remplacement.
+
+### Messages SPA et flashcards obsolètes
+
+`tests/flash-toast.php` vérifie que le préchargement ne consomme ni succès ni
+ erreur en session. `flash-feedback-browser.js`, inclus dans `composer browser-tests`,
+vérifie le rafraîchissement d'une page préchargée portant un message en attente,
+l'affichage unique du message et le traitement par lot des identifiants de
+flashcards disparus. Ces vérifications font donc partie de `composer check:all`.
