@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/lib/CssBundleBuilder.php';
+require_once __DIR__ . '/lib/BuildLock.php';
+BuildLock::acquire(dirname(__DIR__));
 
 $cssDirectory = dirname(__DIR__) . '/public/css';
 $cssBundle = CssBundleBuilder::compile($cssDirectory);

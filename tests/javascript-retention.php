@@ -6,12 +6,15 @@ require dirname(__DIR__) . '/scripts/lib/JavaScriptRetention.php';
 $root = sys_get_temp_dir() . '/bundle-retention-' . bin2hex(random_bytes(8));
 mkdir($root . '/public/js/dist/chunks', 0755, true);
 mkdir($root . '/Config');
+mkdir($root . '/storage');
 $active = 'js/dist/app-AAAAAAAA.js';
 $old = 'js/dist/chunks/chunk-BBBBBBBB.js';
 $shared = 'js/dist/chunks/chunk-CCCCCCCC.js';
 $files = [$active, $old, $shared, 'js/dist/.htaccess'];
 try
 {
+    // A ledger shipped from a much older local build must not shorten server retention.
+    file_put_contents($root . '/Config/javascript-retention.json', json_encode([$old => -700000]));
     foreach ($files as $file) file_put_contents($root . '/public/' . $file, 'fixture');
     $check = static function (bool $ok): void { if (!$ok) throw new RuntimeException('Bundle retention regression.'); };
     $check(JavaScriptRetention::prune($root, [$active, $shared], 1000) === 0);
@@ -27,7 +30,8 @@ try
 }
 finally
 {
+    unlink($root . '/Config/javascript-retention.json');
     foreach ($files as $file) if (is_file($root . '/public/' . $file)) unlink($root . '/public/' . $file);
-    if (is_file($root . '/Config/javascript-retention.json')) unlink($root . '/Config/javascript-retention.json');
-    foreach (['public/js/dist/chunks', 'public/js/dist', 'public/js', 'public', 'Config', ''] as $dir) rmdir($root . '/' . $dir);
+    if (is_file($root . '/storage/javascript-retention.json')) unlink($root . '/storage/javascript-retention.json');
+    foreach (['public/js/dist/chunks', 'public/js/dist', 'public/js', 'public', 'Config', 'storage', ''] as $dir) rmdir($root . '/' . $dir);
 }

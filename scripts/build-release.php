@@ -32,7 +32,7 @@ if (! class_exists(ZipArchive::class))
 $releaseName = $projectName . '_v' . $version;
 require __DIR__ . '/build-assets.php';
 $releasesDirectory = ROOT . DIRECTORY_SEPARATOR . 'releases';
-$temporaryRoot = $releasesDirectory . DIRECTORY_SEPARATOR . '.build-temp';
+$temporaryRoot = $releasesDirectory . DIRECTORY_SEPARATOR . '.build-temp-' . bin2hex(random_bytes(8));
 $buildDirectory = $temporaryRoot . DIRECTORY_SEPARATOR . $releaseName;
 $zipFile = $releasesDirectory . DIRECTORY_SEPARATOR . $releaseName . '.zip';
 

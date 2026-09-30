@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/lib/BuildLock.php';
+BuildLock::acquire(dirname(__DIR__));
 require __DIR__ . '/build-css.php';
 require __DIR__ . '/build-js.php';
 

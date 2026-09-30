@@ -164,10 +164,14 @@ de `public/js/dist`. En local, il conserve les modules sources. Le code partagé
 et les pages utilisent le même graphe de modules ; les imports des pages restent
 différés grâce au [code splitting d'esbuild](https://esbuild.github.io/api/#splitting).
 Seuls les modules nécessaires au démarrage sont préchargés. Les anciens chunks
-sont conservés sept jours après leur retrait du build actif, puis supprimés lors
-du prochain build. `Config/javascript-retention.json` suit ce délai et doit être
-conservé entre les builds. Un onglet utilisant une version retirée depuis plus de
-sept jours peut nécessiter un rechargement. Le manifeste et les fichiers
+sont conservés par les builds locaux. Après chaque déploiement sur le serveur,
+exécuter `composer js:prune` : cette commande observe les fichiers inactifs, puis
+les supprime lors d'une exécution ultérieure après sept jours. Le suivi réside dans
+`storage/javascript-retention.json`, propre au serveur et non versionné.
+Conserver ce fichier et les anciens fichiers de `public/js/dist` entre déploiements :
+ne pas purger le dossier avant d'y ajouter les nouveaux bundles. Le nettoyage peut
+aussi être exécuté périodiquement. Un onglet utilisant une version retirée depuis
+plus de sept jours peut nécessiter un rechargement. Le manifeste et les fichiers
 générés sont versionnés, donc esbuild n'est pas nécessaire sur le serveur pour
 servir le site. Le test navigateur vérifie le bundle, les modales, les changements
 de route et le respect de `navigator.connection.saveData`.
@@ -268,3 +272,9 @@ l'ouverture réelle ; `tests/flash-toast.php` vérifie leur consommation unique.
 `navigation-cancel-browser.js` couvre le retour sur la page courante pendant un
 chargement et une réponse tardive pendant une nouvelle navigation. Il est inclus
 dans `composer browser-tests` et `composer check:all`.
+
+Les builds CSS, JS, assets, releases et le nettoyage prennent le même verrou
+`storage/.build.lock`. Un second processus échoue avec un message explicite avant
+de modifier les sorties. Le verrou est libéré à la fin du processus ; ne pas
+supprimer son fichier pendant un build. Les releases utilisent également un dossier
+ temporaire unique. `tests/build-lock.php` vérifie l'exclusion entre processus.

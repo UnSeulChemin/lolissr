@@ -61,6 +61,8 @@
 
 /vendor/
 /storage/tools/
+/storage/.build.lock
+/storage/javascript-retention.json
 
 #################################
 # NOTES / TEMP

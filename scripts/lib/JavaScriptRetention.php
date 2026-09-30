@@ -14,7 +14,7 @@ final class JavaScriptRetention
         $now ??= time();
         $directory = realpath($root . '/public/js/dist');
         if ($directory === false) throw new RuntimeException('Missing bundle directory.');
-        $ledger = $root . '/Config/javascript-retention.json';
+        $ledger = $root . '/storage/javascript-retention.json';
         $previous = is_file($ledger)
             ? json_decode((string) file_get_contents($ledger), true, 512, JSON_THROW_ON_ERROR)
             : [];
@@ -29,7 +29,7 @@ final class JavaScriptRetention
             if (!preg_match('~^(?:chunks/)?[a-zA-Z0-9_-]+-[A-Z0-9]{8}\.js$~D', $relative)) continue;
             $path = 'js/dist/' . $relative;
             if (in_array($path, $active, true)) continue;
-            // Start the grace period when a file leaves the active build, not at creation.
+            // Called on the deployed server only; local build timestamps are ignored.
             $since = $previous[$path] ?? $now;
             if (!is_int($since)) throw new RuntimeException('Invalid bundle retirement timestamp.');
             if ($now - $since >= self::DAYS * 86400)
