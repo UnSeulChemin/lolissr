@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Framework\Routing;
 
 use Closure;
+use Framework\Exceptions\NotFoundException;
 use RuntimeException;
 
 final class Route
@@ -87,6 +88,18 @@ final class Route
             }
 
             $value = rawurldecode($matches[$name]);
+
+            if ($type === 'int')
+            {
+                // Preserve leading-zero URLs without allowing integer saturation.
+                $digits = ltrim($value, '0');
+                $maximum = (string) PHP_INT_MAX;
+                if (strlen($digits) > strlen($maximum)
+                    || (strlen($digits) === strlen($maximum) && strcmp($digits, $maximum) > 0))
+                {
+                    throw new NotFoundException('Paramètre de route hors limites.');
+                }
+            }
 
             $parameters[$name] = match ($type)
             {

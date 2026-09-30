@@ -68,6 +68,13 @@ l'invalidation du cache et la persistance des sessions après libération du ver
 Il vérifie aussi la consommation unique des messages flash et la stabilité du
 jeton CSRF. Il est inclus dans `composer regression-tests`.
 
+`framework-lifecycle.php` vérifie la consommation atomique des données de formulaire,
+les verrous de session imbriqués et leur libération en cas d'exception. Un processus
+PHP séparé vérifie que les durées du profiler sont enregistrées malgré le `exit`
+de la réponse JSON. Ce test est également inclus dans `composer regression-tests`.
+Les paramètres de route dépassant `PHP_INT_MAX` sont couverts par les tests du
+framework et les tests HTTP.
+
 ```powershell
 composer regression-tests
 ```

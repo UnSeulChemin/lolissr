@@ -172,11 +172,7 @@ if (! function_exists('csrf_token'))
 {
     function csrf_token(): string
     {
-        $wasActive = session_status() === PHP_SESSION_ACTIVE;
-        Session::start();
-
-        try
-        {
+        return Session::withLock(static function (): string {
             $token = Session::get('csrf_token');
 
             if (! is_string($token) || $token === '')
@@ -187,14 +183,7 @@ if (! function_exists('csrf_token'))
             }
 
             return $token;
-        }
-        finally
-        {
-            if (! $wasActive)
-            {
-                Session::close();
-            }
-        }
+        });
     }
 }
 

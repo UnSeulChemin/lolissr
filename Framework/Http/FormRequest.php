@@ -28,11 +28,6 @@ abstract class FormRequest
 
     abstract public function dto(): object;
 
-    final public function passes(): bool
-    {
-        return ! $this->fails();
-    }
-
     final public function fails(): bool
     {
         return $this->validator->fails();
@@ -66,25 +61,9 @@ abstract class FormRequest
     /**
      * @return array<string, mixed>
      */
-    final public function data(): array
-    {
-        return $this->request->postAll();
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
     final public function files(): array
     {
         return $this->request->files();
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    final public function all(): array
-    {
-        return $this->request->all();
     }
 
     // =========================================

@@ -10,7 +10,7 @@ final class ValidationException extends BaseHttpException
      * @param array<string, string> $errors
      */
     public function __construct(
-        private readonly array $errors,
+        array $errors,
         string $message = 'Erreur de validation',
     ) {
         parent::__construct(
@@ -20,13 +20,5 @@ final class ValidationException extends BaseHttpException
                 'errors' => $errors,
             ]
         );
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    public function errors(): array
-    {
-        return $this->errors;
     }
 }

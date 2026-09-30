@@ -172,7 +172,7 @@ abstract class Controller
         string $formAction,
         string $cancelUrl
     ): FormViewData {
-        return new FormViewData(
+        $build = fn (): FormViewData => new FormViewData(
             baseUri: view_base_uri(),
             toast: $this->flashToastData(),
             errors: $this->request->header('X-Prefetch') === 'true' ? [] : Session::pull(
@@ -186,6 +186,10 @@ abstract class Controller
             formAction: $this->url($formAction),
             cancelUrl: $this->url($cancelUrl)
         );
+
+        return $this->request->header('X-Prefetch') === 'true'
+            ? $build()
+            : Session::withLock($build);
     }
 
     protected function flashToastData(): FlashToastData
@@ -199,8 +203,10 @@ abstract class Controller
             return $this->flashToast;
         }
 
-        $success = Session::pull('success');
-        $error = Session::pull('error');
+        [$success, $error] = Session::withLock(static fn (): array => [
+            Session::pull('success'),
+            Session::pull('error'),
+        ]);
 
         if (is_string($success))
         {

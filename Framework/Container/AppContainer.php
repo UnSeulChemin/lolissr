@@ -33,9 +33,4 @@ final class AppContainer
     {
         return self::$container !== null;
     }
-
-    public static function clear(): void
-    {
-        self::$container = null;
-    }
 }

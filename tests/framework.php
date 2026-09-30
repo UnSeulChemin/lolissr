@@ -65,6 +65,21 @@ try
 }
 catch (RuntimeException) {}
 
+$integerRoute = new Route('GET', '/items/{id:int}', static function (): void {});
+foreach (['0' => 0, '00042' => 42, (string) PHP_INT_MAX => PHP_INT_MAX] as $input => $expected)
+{
+    $check($integerRoute->castParameters(['id' => (string) $input])['id'] === $expected, 'Valid integer route changed.');
+}
+foreach ([(string) PHP_INT_MAX . '0', str_repeat('9', strlen((string) PHP_INT_MAX)), '000' . PHP_INT_MAX . '0'] as $input)
+{
+    try
+    {
+        $integerRoute->castParameters(['id' => $input]);
+        throw new LogicException('Overflowing route parameter accepted.');
+    }
+    catch (\Framework\Exceptions\NotFoundException) {}
+}
+
 $directory = sys_get_temp_dir() . '/framework-test-' . bin2hex(random_bytes(8));
 mkdir($directory);
 $sessionDirectory = new ReflectionProperty(Session::class, 'directory');

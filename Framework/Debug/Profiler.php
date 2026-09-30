@@ -57,6 +57,12 @@ final class Profiler
 
         $total = self::elapsedMilliseconds(self::$requestStart);
 
+        // Responses exit before measure() can run its finally block.
+        foreach (array_keys(self::$starts) as $name)
+        {
+            self::end($name);
+        }
+
         Logger::debug(
             '[PROFILER] ' . strtoupper($method) . ' ' . $uri,
             [

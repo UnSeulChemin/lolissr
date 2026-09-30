@@ -77,11 +77,6 @@ final class Validator
         return $this->errors !== [];
     }
 
-    public function error(string $field): ?string
-    {
-        return $this->errors[$field] ?? null;
-    }
-
     /**
      * @return array<string, string>
      */

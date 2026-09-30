@@ -42,6 +42,34 @@ final class Session
         self::$releaseAfterAccess = true;
     }
 
+    /**
+     * @template T
+     * @param callable(): T $callback
+     * @return T
+     */
+    public static function withLock(callable $callback): mixed
+    {
+        $wasActive = session_status() === PHP_SESSION_ACTIVE;
+        $releaseAfterAccess = self::$releaseAfterAccess;
+        self::start();
+
+        try
+        {
+            return $callback();
+        }
+        finally
+        {
+            if (! $wasActive)
+            {
+                self::close();
+            }
+            else
+            {
+                self::$releaseAfterAccess = $releaseAfterAccess;
+            }
+        }
+    }
+
     public static function set(string $key, mixed $value): void
     {
         self::ensureStarted();

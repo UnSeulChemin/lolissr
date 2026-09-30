@@ -216,11 +216,6 @@ final class Request
         return $default;
     }
 
-    public function has(string $key): bool
-    {
-        return $this->input($key) !== null;
-    }
-
     /**
      * @return array<string, mixed>
      */
@@ -247,11 +242,6 @@ final class Request
     public function files(): array
     {
         return $this->files;
-    }
-
-    public function file(string $key): mixed
-    {
-        return $this->files[$key] ?? null;
     }
 
     // =========================================
