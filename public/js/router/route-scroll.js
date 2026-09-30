@@ -1,67 +1,30 @@
-// =========================================
-// ROUTE SCROLL
-// =========================================
+﻿const scrollPositions = new Map();
+const stateKey = '__appScrollEntry';
+let activeEntry = null;
 
-import {
-    normalizeRouteUrl,
-} from '../core/navigation.js';
-
-// =========================================
-// STATE
-// =========================================
-
-const scrollPositions = new Map();
-
-// =========================================
-// SAVE
-// =========================================
-
-export function saveScrollPosition(href)
+// During popstate location already names the destination; track the rendered entry.
+export function activateScrollEntry()
 {
-    const url = normalizeRouteUrl(
-        href,
-    );
-
-    scrollPositions.set(
-        url,
-        {
-            x: window.scrollX,
-            y: window.scrollY,
-        },
-    );
+    let entry = history.state?.[stateKey];
+    if (typeof entry !== 'string')
+    {
+        entry = globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`;
+        history.replaceState({...history.state, [stateKey]: entry}, '');
+    }
+    activeEntry = entry;
 }
 
-// =========================================
-// RESTORE
-// =========================================
-
-export function restoreScrollPosition(href)
+export function saveScrollPosition()
 {
-    const url = normalizeRouteUrl(
-        href,
-    );
+    if (activeEntry === null) activateScrollEntry();
+    scrollPositions.set(activeEntry, {x: window.scrollX, y: window.scrollY});
+}
 
-    const position = scrollPositions.get(
-        url,
-    );
-
-    if (! position)
-    {
-        window.scrollTo(
-            0,
-            0,
-        );
-
-        return;
-    }
-
-    requestAnimationFrame(
-        () =>
-        {
-            window.scrollTo(
-                position.x,
-                position.y,
-            );
-        },
-    );
+export function restoreScrollPosition()
+{
+    const entry = activeEntry;
+    const position = scrollPositions.get(entry) ?? {x: 0, y: 0};
+    requestAnimationFrame(() => {
+        if (activeEntry === entry) window.scrollTo(position.x, position.y);
+    });
 }

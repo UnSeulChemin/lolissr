@@ -1,0 +1,7 @@
+# Only content-hashed build artifacts are immutable. Sources and dynamic pages
+# keep their own cache policy. Never cache an error for a missing chunk.
+<IfModule mod_headers.c>
+    <FilesMatch "-[A-Z0-9]{8}\.js$">
+        Header set Cache-Control "public, max-age=31536000, immutable" "expr=%{REQUEST_STATUS} == 200 || %{REQUEST_STATUS} == 304"
+    </FilesMatch>
+</IfModule>

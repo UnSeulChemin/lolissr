@@ -63,7 +63,6 @@ $directories = [
     'Config',
     'Framework',
     'scripts',
-    'vendor',
 ];
 
 foreach ($directories as $directory)
@@ -89,6 +88,9 @@ foreach ($rootFiles as $file)
 {
     copyRequiredFile($file, $buildDirectory);
 }
+
+require_once __DIR__ . '/lib/ProductionDependencies.php';
+ProductionDependencies::install($buildDirectory);
 
 $optionalFiles = [
     '.htaccess',

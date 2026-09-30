@@ -8,7 +8,6 @@ use RuntimeException;
 
 final class Session
 {
-    private const FLASH_KEY = '_flash';
     private const DEFAULT_SESSION_NAME = 'APP_SESSION';
 
     private static bool $started = false;
@@ -91,40 +90,6 @@ final class Session
         unset($_SESSION[$key]);
 
         return $value;
-    }
-
-    // =========================================
-    // FLASH
-    // =========================================
-
-    public static function flash(string $key, mixed $value): void
-    {
-        self::ensureStarted();
-
-        $flashes = $_SESSION[self::FLASH_KEY] ?? [];
-
-        if (! is_array($flashes))
-        {
-            $flashes = [];
-        }
-
-        $flashes[$key] = $value;
-
-        $_SESSION[self::FLASH_KEY] = $flashes;
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    public static function flashes(): array
-    {
-        self::ensureStarted();
-
-        $flashes = $_SESSION[self::FLASH_KEY] ?? [];
-
-        unset($_SESSION[self::FLASH_KEY]);
-
-        return is_array($flashes) ? $flashes : [];
     }
 
     // =========================================

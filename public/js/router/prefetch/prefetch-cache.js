@@ -24,9 +24,13 @@ import {
 // HELPERS
 // =========================================
 
+// Preserve snapshot age when the same response is rendered or cached again.
+// Weak keys avoid retaining evicted pages; a fresh response gets a fresh age.
+const snapshotTimes = new WeakMap();
+
 function isExpired(entry)
 {
-    return Date.now() - entry.timestamp > config.prefetch.cacheDuration;
+    return Date.now() - entry.timestamp >= config.prefetch.cacheDuration;
 }
 
 function trimCache()
@@ -109,6 +113,10 @@ export function setPrefetchedPage(
         href,
     );
 
+    const timestamp = snapshotTimes.get(response.page) ?? Date.now();
+    snapshotTimes.set(response.page, timestamp);
+    if (isExpired({timestamp})) return;
+
     cache.delete(
         url,
     );
@@ -117,7 +125,7 @@ export function setPrefetchedPage(
         url,
         {
             page: response.page,
-            timestamp: Date.now(),
+            timestamp,
         },
     );
 

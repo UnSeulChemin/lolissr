@@ -23,7 +23,7 @@
     "scripts": {
         "phpstan": "phpstan analyse --no-progress --memory-limit=512M",
         "http-tests": ["php tests/run-tests.php", "php tests/spa-http.php"],
-        "regression-tests": ["php tests/profile-read-only.php", "php tests/css-bundle.php", "php tests/page-styles.php", "php tests/asset-versions.php", "php tests/javascript-bundle.php"],
+        "regression-tests": ["php tests/profile-read-only.php", "php tests/css-bundle.php", "php tests/page-styles.php", "php tests/asset-versions.php", "php tests/javascript-bundle.php", "php tests/atomic-file.php", "php tests/javascript-retention.php"],
         "check": ["@phpstan", "@regression-tests", "@http-tests"],
         "css:build": "php scripts/build-css.php",
         "assets:build": "php scripts/build-assets.php",

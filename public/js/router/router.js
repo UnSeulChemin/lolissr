@@ -14,9 +14,7 @@ import {
     clearActiveFocus,
 } from './router-focus.js';
 
-import {
-    getPrefetchedPage,
-} from './prefetch/prefetch-cache.js';
+import {activateScrollEntry} from './route-scroll.js';
 
 import {
     debug,
@@ -196,6 +194,7 @@ async function handlePopState()
 
 export function initRouter()
 {
+    activateScrollEntry();
     history.scrollRestoration =
         'manual';
 

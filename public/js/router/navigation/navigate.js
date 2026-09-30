@@ -148,12 +148,7 @@ export async function navigateTo(
     |--------------------------------------------------------------------------
     */
 
-    if (options.updateHistory !== false)
-    {
-        saveScrollPosition(
-            current,
-        );
-    }
+    saveScrollPosition();
 
     /*
     |--------------------------------------------------------------------------

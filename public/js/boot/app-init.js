@@ -140,12 +140,15 @@ export async function initApp()
 
     initAppDebug();
 
-    await runGlobalInitializers();
-    await runRouteInitializers();
-
+    // Subscribe before the router can navigate, including during async boot.
+    const initialGeneration = routeGeneration;
     onRouteChange(
         runRouteInitializers,
     );
+
+    await runGlobalInitializers();
+    // A navigation during global initialization already initializes its route.
+    if (routeGeneration === initialGeneration) await runRouteInitializers();
 
     await safeInit(
         'FlashToast',

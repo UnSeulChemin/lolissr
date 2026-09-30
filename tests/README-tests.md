@@ -164,11 +164,34 @@ de `public/js/dist`. En local, il conserve les modules sources. Le code partagé
 et les pages utilisent le même graphe de modules ; les imports des pages restent
 différés grâce au [code splitting d'esbuild](https://esbuild.github.io/api/#splitting).
 Seuls les modules nécessaires au démarrage sont préchargés. Les anciens chunks
-sont conservés lors des reconstructions pour les onglets encore ouverts ; éviter
-de les supprimer pendant un déploiement actif. Le manifeste et les fichiers
+sont conservés sept jours après leur retrait du build actif, puis supprimés lors
+du prochain build. `Config/javascript-retention.json` suit ce délai et doit être
+conservé entre les builds. Un onglet utilisant une version retirée depuis plus de
+sept jours peut nécessiter un rechargement. Le manifeste et les fichiers
 générés sont versionnés, donc esbuild n'est pas nécessaire sur le serveur pour
 servir le site. Le test navigateur vérifie le bundle, les modales, les changements
 de route et le respect de `navigator.connection.saveData`.
+
+Les manifestes `Config/javascript.php` et `Config/assets.php` sont publiés par
+remplacement atomique dans leur dossier : une écriture interrompue ne tronque pas
+le manifeste précédent. Une sortie identique n'est pas réécrite. La vérification
+`tests/atomic-file.php` est incluse dans `composer regression-tests`.
+
+```powershell
+php tests/run-page-styles-browser.php http://localhost/lolissr tests/spa-lifecycle-browser.js
+php tests/asset-cache-http.php http://localhost/lolissr
+```
+
+Le premier test couvre la navigation pendant le démarrage (modules globaux et
+modules de route), l'absence de double initialisation et l'expiration fixe du
+cache SPA. Réafficher une réponse en cache conserve son âge initial ; seule une
+nouvelle réponse reçue bénéficie d'une nouvelle durée de cache.
+
+Le second nécessite `mod_headers` activé et Apache redémarré. Le fichier
+`public/js/dist/.htaccess` réserve `public, max-age=31536000, immutable` aux bundles
+dont le nom contient un hash. Il couvre les entrées, les chunks et les réponses
+304, sans donner cette politique aux sources ni aux erreurs 404. Déployer aussi
+ce fichier `.htaccess` avec les bundles.
 
 ## Compression HTTP et index redondants
 
@@ -188,3 +211,21 @@ l'ordre, les préfixes et le type des cinq paires d'index connues avant toute
 suppression. Les contraintes uniques `uq_*_slug_numero` sont conservées. Une
 relance ignore les doublons déjà supprimés. Exécuter séparément sur chaque base
 à migrer ; cette opération n'est pas déclenchée par la construction des assets.
+
+### Release et historique SPA
+
+La release installe ses dépendances depuis `composer.lock` avec `--no-dev` dans
+son dossier temporaire. Composer doit être disponible dans le PATH. Le dossier
+`vendor` de développement reste intact ; son autoloader n'est pas copié.
+
+Vérifications ciblées :
+
+```sh
+php tests/production-dependencies.php
+php tests/javascript-retention.php
+php tests/run-page-styles-browser.php http://localhost/lolissr tests/scroll-history-browser.js
+```
+
+Le test de rétention fait partie de `composer regression-tests`. Le test de
+production lance Composer dans un dossier isolé. Le test navigateur couvre
+précédent/suivant et plusieurs visites de la même URL avec des positions distinctes.

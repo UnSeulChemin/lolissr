@@ -19,6 +19,7 @@ import {
 } from '../router-focus.js';
 
 import {
+    activateScrollEntry,
     restoreScrollPosition,
 } from '../route-scroll.js';
 
@@ -44,6 +45,8 @@ export async function renderPage(
         );
     }
 
+    activateScrollEntry();
+
     if (
         typeof response.page.title === 'string'
     )
@@ -66,6 +69,12 @@ export async function renderPage(
 
     clearActiveFocus();
 
+    if (options.updateHistory === false)
+    {
+        restoreScrollPosition();
+        return;
+    }
+
     /*
     |--------------------------------------------------------------------------
     | HASH SCROLL
@@ -83,23 +92,6 @@ export async function renderPage(
                 try { id = decodeURIComponent(id); } catch { /* Keep malformed escapes literal. */ }
                 document.getElementById(id)?.scrollIntoView();
             },
-        );
-
-        return;
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | RESTORE SCROLL
-    |--------------------------------------------------------------------------
-    */
-
-    if (
-        options.updateHistory === false
-    )
-    {
-        restoreScrollPosition(
-            target,
         );
 
         return;
