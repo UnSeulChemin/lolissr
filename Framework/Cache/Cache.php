@@ -25,13 +25,6 @@ final class Cache
     // CACHE
     // =========================================
 
-    public static function get(string $key): mixed
-    {
-        $entry = self::readEntry($key);
-
-        return $entry === null ? null : $entry['value'];
-    }
-
     /** @return array{value: mixed}|null Null means absent, not a cached null value. */
     private static function readEntry(string $key): ?array
     {
@@ -142,15 +135,6 @@ final class Cache
             {
                 self::deleteFile($path);
             }
-        });
-    }
-
-    public static function put(string $key, mixed $value, ?int $ttl = null): void
-    {
-        if (! self::enabled()) return;
-        self::synchronized(function () use ($key, $value, $ttl): void
-        {
-            self::writeEntry($key, $value, $ttl);
         });
     }
 
@@ -362,16 +346,6 @@ final class Cache
         }
     }
 
-    public static function has(string $key): bool
-    {
-        if (! self::enabled())
-        {
-            return false;
-        }
-
-        return self::readEntry($key) !== null;
-    }
-
     public static function forget(string $key): void
     {
         self::synchronized(function () use ($key): void
@@ -379,39 +353,6 @@ final class Cache
             self::advanceGeneration(self::path($key) . '.version');
             self::deleteFile(self::path($key));
         });
-    }
-
-    public static function clear(): void
-    {
-        self::synchronized(function (): void
-        {
-            self::advanceGeneration(self::directory() . DIRECTORY_SEPARATOR . '.epoch');
-            self::clearEntries();
-        });
-    }
-
-    private static function clearEntries(): void
-    {
-        $directory = self::directory();
-
-        if (! is_dir($directory))
-        {
-            return;
-        }
-
-        $files = glob($directory . DIRECTORY_SEPARATOR . '*.cache');
-
-        if ($files === false)
-        {
-            return;
-        }
-
-        foreach ($files as $file)
-        {
-            self::deleteFile($file);
-        }
-
-        Logger::info('Cache cleared');
     }
 
     // =========================================
@@ -509,8 +450,7 @@ final class Cache
 
     private static function generation(string $key): string
     {
-        return (string) @file_get_contents(self::directory() . DIRECTORY_SEPARATOR . '.epoch')
-            . ':' . (string) @file_get_contents(self::path($key) . '.version');
+        return (string) @file_get_contents(self::path($key) . '.version');
     }
 
     private static function advanceGeneration(string $path): void

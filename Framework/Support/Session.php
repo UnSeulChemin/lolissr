@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Framework\Support;
 
+use Framework\Http\Request;
+
 use RuntimeException;
 
 final class Session
@@ -11,6 +13,8 @@ final class Session
     private const DEFAULT_SESSION_NAME = 'APP_SESSION';
 
     private static bool $started = false;
+
+    private static bool $releaseAfterAccess = false;
 
     private static ?string $directory = null;
 
@@ -25,6 +29,7 @@ final class Session
     public static function start(): void
     {
         self::ensureStarted();
+        self::$releaseAfterAccess = false;
     }
 
     public static function close(): void
@@ -34,6 +39,7 @@ final class Session
             throw new RuntimeException('Impossible de sauvegarder la session.');
         }
         self::$started = false;
+        self::$releaseAfterAccess = true;
     }
 
     public static function set(string $key, mixed $value): void
@@ -41,22 +47,29 @@ final class Session
         self::ensureStarted();
 
         $_SESSION[$key] = $value;
+        self::releaseIfNeeded();
     }
 
     public static function get(string $key, mixed $default = null): mixed
     {
         self::ensureStarted();
 
-        return array_key_exists($key, $_SESSION)
+        $value = array_key_exists($key, $_SESSION)
             ? $_SESSION[$key]
             : $default;
+        self::releaseIfNeeded();
+
+        return $value;
     }
 
     public static function has(string $key): bool
     {
         self::ensureStarted();
 
-        return array_key_exists($key, $_SESSION);
+        $exists = array_key_exists($key, $_SESSION);
+        self::releaseIfNeeded();
+
+        return $exists;
     }
 
     public static function remove(string $key): void
@@ -64,6 +77,7 @@ final class Session
         self::ensureStarted();
 
         unset($_SESSION[$key]);
+        self::releaseIfNeeded();
     }
 
     /**
@@ -77,6 +91,7 @@ final class Session
         {
             unset($_SESSION[$key]);
         }
+        self::releaseIfNeeded();
     }
 
     public static function pull(string $key, mixed $default = null): mixed
@@ -88,6 +103,8 @@ final class Session
             : $default;
 
         unset($_SESSION[$key]);
+
+        self::releaseIfNeeded();
 
         return $value;
     }
@@ -106,6 +123,7 @@ final class Session
                 'Impossible de régénérer l’identifiant de session.'
             );
         }
+        self::releaseIfNeeded();
     }
 
     public static function destroy(): void
@@ -155,6 +173,15 @@ final class Session
     // =========================================
     // INITIALISATION
     // =========================================
+
+    private static function releaseIfNeeded(): void
+    {
+        // Once the router releases the lock, later access must not retain it.
+        if (self::$releaseAfterAccess)
+        {
+            self::close();
+        }
+    }
 
     private static function ensureStarted(): void
     {
@@ -209,7 +236,7 @@ final class Session
             );
         }
 
-        $secure = self::isHttps();
+        $secure = Request::capture()->isHttps();
 
         ini_set('session.use_strict_mode', '1');
         ini_set('session.use_only_cookies', '1');
@@ -262,35 +289,6 @@ final class Session
         }
 
         return $sessionName;
-    }
-
-    // =========================================
-    // HTTPS
-    // =========================================
-
-    private static function isHttps(): bool
-    {
-        $https = $_SERVER['HTTPS'] ?? null;
-
-        if (is_string($https) && $https !== '' && strtolower($https) !== 'off')
-        {
-            return true;
-        }
-
-        if ((int) ($_SERVER['SERVER_PORT'] ?? 0) === 443)
-        {
-            return true;
-        }
-
-        if (config('app.trust_proxy', false) !== true)
-        {
-            return false;
-        }
-
-        $forwardedProto = (string) ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '');
-        $forwardedProto = trim(explode(',', $forwardedProto)[0]);
-
-        return strtolower($forwardedProto) === 'https';
     }
 
     // =========================================

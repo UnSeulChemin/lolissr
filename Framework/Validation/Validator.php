@@ -51,7 +51,7 @@ final class Validator
      */
     private array $numericCache = [];
 
-    private finfo $finfo;
+    private ?finfo $finfo = null;
 
     /**
      * @param array<string, mixed> $data
@@ -61,7 +61,6 @@ final class Validator
     {
         $this->data = $data;
         $this->files = $files;
-        $this->finfo = new finfo(FILEINFO_MIME_TYPE);
     }
 
     // =========================================
@@ -81,13 +80,6 @@ final class Validator
     public function error(string $field): ?string
     {
         return $this->errors[$field] ?? null;
-    }
-
-    public function firstError(): ?string
-    {
-        $firstError = reset($this->errors);
-
-        return $firstError !== false ? $firstError : null;
     }
 
     /**

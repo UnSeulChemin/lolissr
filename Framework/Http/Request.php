@@ -84,6 +84,31 @@ final class Request
         return strtoupper((string) ($this->server['REQUEST_METHOD'] ?? 'GET'));
     }
 
+    public function isHttps(): bool
+    {
+        $https = $this->server('HTTPS');
+
+        if (is_string($https) && $https !== '' && strtolower($https) !== 'off')
+        {
+            return true;
+        }
+
+        if ((int) $this->server('SERVER_PORT', 0) === 443)
+        {
+            return true;
+        }
+
+        if (config('app.trust_proxy', false) !== true)
+        {
+            return false;
+        }
+
+        $forwardedProto = $this->header('X-Forwarded-Proto');
+
+        return is_string($forwardedProto)
+            && strtolower(trim(explode(',', $forwardedProto)[0])) === 'https';
+    }
+
     // =========================================
     // EN-TÊTES
     // =========================================

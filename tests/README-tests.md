@@ -62,6 +62,12 @@ Il ne garantit donc pas à lui seul une base en lecture seule pour les requêtes
 
 ## Régressions
 
+`framework.php` couvre les dates invalides (dont les octets nuls), la détection
+HTTPS avec ou sans proxy de confiance, la priorité des routes, les types MIME,
+l'invalidation du cache et la persistance des sessions après libération du verrou.
+Il vérifie aussi la consommation unique des messages flash et la stabilité du
+jeton CSRF. Il est inclus dans `composer regression-tests`.
+
 ```powershell
 composer regression-tests
 ```

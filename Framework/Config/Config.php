@@ -35,22 +35,6 @@ final class Config
             : self::arrayGet($config, $segments, $default);
     }
 
-    public static function has(string $key): bool
-    {
-        $resolved = self::resolve($key);
-
-        if ($resolved === null)
-        {
-            return false;
-        }
-
-        [$config, $segments] = $resolved;
-
-        return $segments === []
-            ? $config !== []
-            : self::arrayHas($config, $segments);
-    }
-
     public static function clear(): void
     {
         self::$items = [];
@@ -127,27 +111,6 @@ final class Config
         }
 
         return $value;
-    }
-
-    /**
-     * @param array<string, mixed> $items
-     * @param list<string> $segments
-     */
-    private static function arrayHas(array $items, array $segments): bool
-    {
-        $value = $items;
-
-        foreach ($segments as $segment)
-        {
-            if (! is_array($value) || ! array_key_exists($segment, $value))
-            {
-                return false;
-            }
-
-            $value = $value[$segment];
-        }
-
-        return true;
     }
 
     // =========================================

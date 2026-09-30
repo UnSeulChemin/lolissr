@@ -14,9 +14,9 @@ final class RouteCollection
     private array $routes = [];
 
     /**
-     * @var array<string, list<Route>>
+     * @var array<string, int>
      */
-    private array $routesByMethod = [];
+    private array $routeCounts = [];
 
     /** @var array<string, array<string, array{route: Route, position: int}>> */
     private array $staticRoutes = [];
@@ -39,7 +39,7 @@ final class RouteCollection
 
         $this->routes[$key] = $route;
         $method = $route->getMethod();
-        $position = count($this->routesByMethod[$method] ?? []);
+        $position = $this->routeCounts[$method] ?? 0;
         if (str_contains($route->getPath(), '{'))
         {
             $this->dynamicRoutes[$method][$position] = $route;
@@ -49,20 +49,12 @@ final class RouteCollection
             $path = '/' . trim($route->getPath(), '/');
             $this->staticRoutes[$method][$path] ??= ['route' => $route, 'position' => $position];
         }
-        $this->routesByMethod[$route->getMethod()][] = $route;
+        $this->routeCounts[$method] = $position + 1;
     }
 
     // =========================================
     // LECTURE
     // =========================================
-
-    /**
-     * @return array<string, Route>
-     */
-    public function all(): array
-    {
-        return $this->routes;
-    }
 
     /** @return list<Route> */
     public function candidates(string $method, string $uri): array
@@ -94,27 +86,5 @@ final class RouteCollection
         }
 
         return array_values(array_unique($methods));
-    }
-
-    /**
-     * @return list<string>
-     */
-    public function list(): array
-    {
-        $routes = [];
-
-        foreach ($this->routes as $route)
-        {
-            $action = $route->getAction();
-
-            $routes[] = sprintf(
-                '%s %s -> %s',
-                $route->getMethod(),
-                $route->getPath(),
-                is_string($action) ? $action : '[callable]'
-            );
-        }
-
-        return $routes;
     }
 }

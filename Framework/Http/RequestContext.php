@@ -28,11 +28,6 @@ final class RequestContext
         return self::$requestId ??= self::generateRequestId();
     }
 
-    public static function reset(): void
-    {
-        self::$requestId = null;
-    }
-
     // =========================================
     // GÉNÉRATION
     // =========================================

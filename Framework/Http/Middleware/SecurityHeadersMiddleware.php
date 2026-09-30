@@ -28,41 +28,12 @@ final class SecurityHeadersMiddleware implements MiddlewareInterface
         header('Permissions-Policy: camera=(), microphone=(), geolocation=()', true);
         header('Content-Security-Policy: ' . ContentSecurityPolicy::policy(), true);
 
-        if ($this->isHttps($request))
+        if ($request->isHttps())
         {
             header(
                 'Strict-Transport-Security: max-age=31536000; includeSubDomains',
                 true
             );
         }
-    }
-
-    // =========================================
-    // HTTPS
-    // =========================================
-
-    private function isHttps(Request $request): bool
-    {
-        $https = $request->server('HTTPS');
-
-        if (is_string($https) && $https !== '' && strtolower($https) !== 'off')
-        {
-            return true;
-        }
-
-        if ((int) $request->server('SERVER_PORT', 0) === 443)
-        {
-            return true;
-        }
-
-        if (config('app.trust_proxy', false) !== true)
-        {
-            return false;
-        }
-
-        $forwardedProto = $request->header('X-Forwarded-Proto');
-
-        return is_string($forwardedProto)
-            && strtolower(trim(explode(',', $forwardedProto)[0])) === 'https';
     }
 }

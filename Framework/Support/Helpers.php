@@ -172,16 +172,29 @@ if (! function_exists('csrf_token'))
 {
     function csrf_token(): string
     {
-        $token = Session::get('csrf_token');
+        $wasActive = session_status() === PHP_SESSION_ACTIVE;
+        Session::start();
 
-        if (! is_string($token) || $token === '')
+        try
         {
-            $token = bin2hex(random_bytes(32));
+            $token = Session::get('csrf_token');
 
-            Session::set('csrf_token', $token);
+            if (! is_string($token) || $token === '')
+            {
+                $token = bin2hex(random_bytes(32));
+
+                Session::set('csrf_token', $token);
+            }
+
+            return $token;
         }
-
-        return $token;
+        finally
+        {
+            if (! $wasActive)
+            {
+                Session::close();
+            }
+        }
     }
 }
 

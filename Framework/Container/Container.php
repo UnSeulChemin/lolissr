@@ -49,16 +49,6 @@ final class Container
     // ENREGISTREMENT
     // =========================================
 
-    public function bind(string $abstract, callable|string|null $concrete = null): void
-    {
-        $this->bindings[$abstract] = [
-            'concrete' => $concrete ?? $abstract,
-            'singleton' => false
-        ];
-
-        unset($this->instances[$abstract]);
-    }
-
     public function singleton(string $abstract, callable|string|null $concrete = null): void
     {
         $this->bindings[$abstract] = [

@@ -37,11 +37,6 @@ final class ContentSecurityPolicy
         );
     }
 
-    public static function reset(): void
-    {
-        self::$nonce = null;
-    }
-
     // =========================================
     // POLICY
     // =========================================

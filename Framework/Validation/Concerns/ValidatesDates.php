@@ -23,7 +23,7 @@ trait ValidatesDates
 
         $value = $this->value($field);
 
-        if (! is_string($value))
+        if (! is_string($value) || str_contains($value, "\0"))
         {
             $this->addError(
                 $field,

@@ -164,6 +164,7 @@ trait ValidatesFiles
             )
         );
 
+        $this->finfo ??= new \finfo(FILEINFO_MIME_TYPE);
         $mimeType = @$this->finfo->file($temporaryPath);
 
         if (! is_string($mimeType))

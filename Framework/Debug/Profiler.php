@@ -152,41 +152,6 @@ final class Profiler
     }
 
     // =========================================
-    // DONNÉES
-    // =========================================
-
-    public static function active(): bool
-    {
-        return self::$active;
-    }
-
-    /**
-     * @return array<string, float>
-     */
-    public static function durations(): array
-    {
-        return self::$durations;
-    }
-
-    public static function duration(string $name): float
-    {
-        return self::$durations[$name] ?? 0.0;
-    }
-
-    /**
-     * @return array<string, int>
-     */
-    public static function counters(): array
-    {
-        return self::$counters;
-    }
-
-    public static function counter(string $name): int
-    {
-        return self::$counters[$name] ?? 0;
-    }
-
-    // =========================================
     // CONFIGURATION
     // =========================================
 

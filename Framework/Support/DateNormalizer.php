@@ -21,6 +21,11 @@ final class DateNormalizer
 
     public static function normalize(?string $date): ?string
     {
+        if ($date !== null && str_contains($date, "\0"))
+        {
+            return null;
+        }
+
         $date = $date !== null ? trim($date) : '';
 
         if ($date === '')
