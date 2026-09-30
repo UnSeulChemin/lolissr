@@ -56,10 +56,10 @@
         "images:build": "php scripts/build-profile-images.php",
         "xp:backfill": "php scripts/backfill-achievement-xp.php",
 
-        "cache:clear": "php scripts/clear-runtime.php cache",
-        "logs:clear": "php scripts/clear-runtime.php logs",
-        "sessions:clear": "php scripts/clear-runtime.php sessions",
-        "dev:reset": "php scripts/dev-reset.php",
+        "logs:clear": "@php scripts/clear-runtime.php logs",
+        "cache:clear": "@php scripts/clear-runtime.php cache",
+        "sessions:clear": "@php scripts/clear-runtime.php sessions",
+        "dev:reset": ["@logs:clear", "@cache:clear", "@sessions:clear", "@composer dump-autoload"],
 
         "backup": "php scripts/backup-database.php",
         "release:zip": "php scripts/build-release.php",
