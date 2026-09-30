@@ -7,13 +7,11 @@ namespace App\Services\Figurine;
 use App\Constants\UserXp;
 use App\Models\Figurine;
 use App\Repositories\Figurine\FigurineRepository;
-use App\Services\User\UserLevelService;
 
 final readonly class FigurineXpRewardService
 {
     public function __construct(
         private FigurineRepository $figurineRepository,
-        private UserLevelService $userLevelService,
         private \App\Services\Profile\AchievementXpService $achievementXpService,
         private \App\Repositories\Figurine\FigurineStatsRepository $figurineStatsRepository,
     ) {
@@ -29,18 +27,10 @@ final readonly class FigurineXpRewardService
             return false;
         }
 
-        $this->achievementXpService->rewardFigurines($user, $this->figurineStatsRepository->countCollected());
+        $xpEarned = $this->figurineRepository->claimCollectReward($figurine->id);
 
-        if (! $this->figurineRepository->claimCollectReward($figurine->id))
-        {
-            return false;
-        }
+        $this->achievementXpService->rewardFigurines($user, $this->figurineStatsRepository->countCollected(), $xpEarned ? UserXp::COLLECT_FIGURINE : 0);
 
-        $this->userLevelService->addXp(
-            $user,
-            UserXp::COLLECT_FIGURINE
-        );
-
-        return true;
+        return $xpEarned;
     }
 }

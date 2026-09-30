@@ -7,13 +7,11 @@ namespace App\Services\Peluche;
 use App\Constants\UserXp;
 use App\Models\Peluche;
 use App\Repositories\Peluche\PelucheRepository;
-use App\Services\User\UserLevelService;
 
 final readonly class PelucheXpRewardService
 {
     public function __construct(
         private PelucheRepository $pelucheRepository,
-        private UserLevelService $userLevelService,
         private \App\Services\Profile\AchievementXpService $achievementXpService,
         private \App\Repositories\Peluche\PelucheStatsRepository $pelucheStatsRepository,
     ) {
@@ -30,18 +28,10 @@ final readonly class PelucheXpRewardService
             return false;
         }
 
-        $this->achievementXpService->rewardPeluches($user, $this->pelucheStatsRepository->countCollected());
+        $xpEarned = $this->pelucheRepository->claimCollectReward($peluche->id);
 
-        if (! $this->pelucheRepository->claimCollectReward($peluche->id))
-        {
-            return false;
-        }
+        $this->achievementXpService->rewardPeluches($user, $this->pelucheStatsRepository->countCollected(), $xpEarned ? UserXp::COLLECT_PELUCHE : 0);
 
-        $this->userLevelService->addXp(
-            $user,
-            UserXp::COLLECT_PELUCHE
-        );
-
-        return true;
+        return $xpEarned;
     }
 }

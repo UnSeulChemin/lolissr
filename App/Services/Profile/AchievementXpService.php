@@ -23,34 +23,34 @@ final readonly class AchievementXpService
         $this->award($user, $this->eligible('series', AchievementRewards::SERIES, $completedSeries));
     }
 
-    public function rewardArtbooks(User $user, int $readArtbooks): void
+    public function rewardArtbooks(User $user, int $readArtbooks, int $baseXp = 0): void
     {
-        $this->award($user, $this->eligible('artbooks', AchievementRewards::ARTBOOKS, $readArtbooks));
+        $this->award($user, $this->eligible('artbooks', AchievementRewards::ARTBOOKS, $readArtbooks), $baseXp);
     }
 
-    public function rewardFigurines(User $user, int $collected): void
+    public function rewardFigurines(User $user, int $collected, int $baseXp = 0): void
     {
-        $this->award($user, $this->eligible('figurines', AchievementRewards::FIGURINES, $collected));
+        $this->award($user, $this->eligible('figurines', AchievementRewards::FIGURINES, $collected), $baseXp);
     }
 
-    public function rewardNendoroids(User $user, int $collected): void
+    public function rewardNendoroids(User $user, int $collected, int $baseXp = 0): void
     {
-        $this->award($user, $this->eligible('nendoroids', AchievementRewards::NENDOROIDS, $collected));
+        $this->award($user, $this->eligible('nendoroids', AchievementRewards::NENDOROIDS, $collected), $baseXp);
     }
 
-    public function rewardPeluches(User $user, int $collected): void
+    public function rewardPeluches(User $user, int $collected, int $baseXp = 0): void
     {
-        $this->award($user, $this->eligible('peluches', AchievementRewards::PELUCHES, $collected));
+        $this->award($user, $this->eligible('peluches', AchievementRewards::PELUCHES, $collected), $baseXp);
     }
 
-    public function rewardVocabulary(User $user, int $mastered): void
+    public function rewardVocabulary(User $user, int $mastered, int $baseXp = 0): void
     {
-        $this->award($user, $this->eligible('vocabulary', AchievementRewards::VOCABULARY, $mastered));
+        $this->award($user, $this->eligible('vocabulary', AchievementRewards::VOCABULARY, $mastered), $baseXp);
     }
 
-    public function rewardGrammar(User $user, int $mastered): void
+    public function rewardGrammar(User $user, int $mastered, int $baseXp = 0): void
     {
-        $this->award($user, $this->eligible('grammar', AchievementRewards::GRAMMAR, $mastered));
+        $this->award($user, $this->eligible('grammar', AchievementRewards::GRAMMAR, $mastered), $baseXp);
     }
 
     public function rewardManga(User $user, int $readTomes, int $completedSeries, int $baseXp = 0): void

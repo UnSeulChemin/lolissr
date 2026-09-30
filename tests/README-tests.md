@@ -11,11 +11,20 @@ Pour vérifier les XP manga groupées avec MySQL :
 ```powershell
 php tests/achievement-xp.php
 php tests/manga-xp-batch.php
+php tests/collection-xp-batch.php
 ```
 
 Ces tests utilisent uniquement des tables temporaires propres à leur connexion.
 Le second contrôle une seule prise de verrou utilisateur et une seule mise à jour
 pour les gains tome/série/succès, les doublons et le rollback complet.
+Le troisième couvre figurines, nendoroids, peluches, artbooks, grammaire et
+vocabulaire, y compris le rattrapage des succès et l'absence d'utilisateur.
+Les trois tests sont inclus dans `composer regression-tests` et `composer check`.
+MySQL doit être disponible avec le droit de créer des tables temporaires ;
+ces tests ne modifient pas les données réelles.
+
+La pagination filtrée couvre aussi les valeurs proches de `PHP_INT_MAX` :
+pas de dépassement arithmétique, total conservé et réponse HTTP 404.
 
 L'[audit des performances du 1er octobre 2026](performance-audit.md) détaille
 les mesures et les points serveur à traiter. `php tests/collection-projections.php`,
@@ -51,7 +60,7 @@ Utiliser une base locale de test pour isoler ces effets.
 Le mode `testing` du lanceur CLI ne change pas l'environnement du serveur Apache.
 Il ne garantit donc pas à lui seul une base en lecture seule pour les requêtes HTTP.
 
-## Régressions sans base applicative
+## Régressions
 
 ```powershell
 composer regression-tests

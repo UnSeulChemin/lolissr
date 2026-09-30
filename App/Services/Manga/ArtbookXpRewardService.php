@@ -8,13 +8,11 @@ use App\Constants\UserXp;
 use App\Models\Artbook;
 use App\Models\User;
 use App\Repositories\Manga\ArtbookRepository;
-use App\Services\User\UserLevelService;
 
 final readonly class ArtbookXpRewardService
 {
     public function __construct(
         private ArtbookRepository $artbookRepository,
-        private UserLevelService $userLevelService,
         private \App\Services\Profile\AchievementXpService $achievementXpService,
         private \App\Repositories\Manga\ArtbookStatsRepository $artbookStatsRepository,
     ) {
@@ -37,18 +35,10 @@ final readonly class ArtbookXpRewardService
             return false;
         }
 
-        $this->achievementXpService->rewardArtbooks($user, $this->artbookStatsRepository->countRead());
+        $xpEarned = $this->artbookRepository->claimReadReward($artbook->id);
 
-        if (! $this->artbookRepository->claimReadReward($artbook->id))
-        {
-            return false;
-        }
+        $this->achievementXpService->rewardArtbooks($user, $this->artbookStatsRepository->countRead(), $xpEarned ? UserXp::READ_ARTBOOK : 0);
 
-        $this->userLevelService->addXp(
-            $user,
-            UserXp::READ_ARTBOOK
-        );
-
-        return true;
+        return $xpEarned;
     }
 }

@@ -7,13 +7,11 @@ namespace App\Services\Nendoroid;
 use App\Constants\UserXp;
 use App\Models\Nendoroid;
 use App\Repositories\Nendoroid\NendoroidRepository;
-use App\Services\User\UserLevelService;
 
 final readonly class NendoroidXpRewardService
 {
     public function __construct(
         private NendoroidRepository $nendoroidRepository,
-        private UserLevelService $userLevelService,
         private \App\Services\Profile\AchievementXpService $achievementXpService,
         private \App\Repositories\Nendoroid\NendoroidStatsRepository $nendoroidStatsRepository,
     ) {
@@ -29,18 +27,10 @@ final readonly class NendoroidXpRewardService
             return false;
         }
 
-        $this->achievementXpService->rewardNendoroids($user, $this->nendoroidStatsRepository->countCollected());
+        $xpEarned = $this->nendoroidRepository->claimCollectReward($nendoroid->id);
 
-        if (! $this->nendoroidRepository->claimCollectReward($nendoroid->id))
-        {
-            return false;
-        }
+        $this->achievementXpService->rewardNendoroids($user, $this->nendoroidStatsRepository->countCollected(), $xpEarned ? UserXp::COLLECT_NENDOROID : 0);
 
-        $this->userLevelService->addXp(
-            $user,
-            UserXp::COLLECT_NENDOROID
-        );
-
-        return true;
+        return $xpEarned;
     }
 }

@@ -34,6 +34,11 @@ $assert = static function (bool $condition, string $message): void {
 foreach ([true, false] as $notes)
 {
     $expectedIds = $notes ? [4, 6, 2] : [2, 4];
+    foreach ([intdiv(PHP_INT_MAX, 8) + 2, PHP_INT_MAX] as $extremePage)
+    {
+        $extreme = $repository->filteredPage($notes, 8, $extremePage);
+        $assert($extreme === ['mangas' => [], 'total' => count($expectedIds)], 'Extreme page overflowed or lost the total');
+    }
     foreach ([1, 2, 3, 99] as $page)
     {
         FilterQueryCounter::$executions = 0;

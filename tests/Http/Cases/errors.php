@@ -58,6 +58,16 @@ foreach ($notFoundResources as $resource)
 // PAGINATION HORS LIMITE
 // =========================================
 
+foreach (['notes', 'a-lire'] as $filteredList)
+{
+    $tests[] = [
+        'category' => 'Errors',
+        'label' => "Pagination extrême $filteredList retourne 404",
+        'path' => '/manga/' . $filteredList . '/page/' . PHP_INT_MAX,
+        'expected_status' => 404,
+    ];
+}
+
 $tests[] = [
     'category' => 'Errors',
     'label' => 'Page série hors limite retourne 404',

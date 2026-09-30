@@ -86,7 +86,12 @@ final class MangaCollectionRepository extends Model
     public function filteredPage(bool $notes, int $perPage, int $page): array
     {
         $perPage = max(1, $perPage);
-        $offset = (max(1, $page) - 1) * $perPage;
+        $pageIndex = max(1, $page) - 1;
+        // Keep OFFSET an integer even for an extreme route parameter. The
+        // returned total still lets the service reject the page as not found.
+        $offset = $pageIndex > intdiv(PHP_INT_MAX, $perPage)
+            ? PHP_INT_MAX
+            : $pageIndex * $perPage;
         $condition = $notes ? 'average_note < 10' : 'total_lu < total';
         $order = $notes ? 'average_note ASC, livre ASC, id ASC' : 'livre ASC, id ASC';
         // The grouped CTE is reused for both the count and the page. The left

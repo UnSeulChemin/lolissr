@@ -23,7 +23,7 @@
     "scripts": {
         "phpstan": "phpstan analyse --no-progress --memory-limit=512M",
         "http-tests": ["php tests/run-tests.php", "php tests/spa-http.php"],
-        "regression-tests": ["php tests/profile-read-only.php", "php tests/collection-projections.php", "php tests/manga-filtered-pages.php", "php tests/css-bundle.php", "php tests/page-styles.php", "php tests/asset-versions.php", "php tests/javascript-bundle.php", "php tests/atomic-file.php", "php tests/javascript-retention.php", "php tests/release-archive.php", "php tests/cache-expiration-race.php", "php tests/flash-toast.php", "php tests/build-lock.php"],
+        "regression-tests": ["php tests/achievement-xp.php", "php tests/manga-xp-batch.php", "php tests/collection-xp-batch.php", "php tests/profile-read-only.php", "php tests/collection-projections.php", "php tests/manga-filtered-pages.php", "php tests/css-bundle.php", "php tests/page-styles.php", "php tests/asset-versions.php", "php tests/javascript-bundle.php", "php tests/atomic-file.php", "php tests/javascript-retention.php", "php tests/release-archive.php", "php tests/cache-expiration-race.php", "php tests/flash-toast.php", "php tests/build-lock.php"],
         "check": ["@phpstan", "@regression-tests", "@http-tests"],
         "browser-tests": "@php tests/run-browser-tests.php",
         "check:all": ["@check", "@browser-tests"],

@@ -7,14 +7,12 @@ namespace App\Services\Chinois;
 use App\Constants\UserXp;
 use App\Repositories\Chinois\ChinoisGrammaireRepository;
 use App\Repositories\Chinois\ChinoisVocabulaireRepository;
-use App\Services\User\UserLevelService;
 
 final readonly class ChinoisXpRewardService
 {
     public function __construct(
         private ChinoisGrammaireRepository $grammaireRepository,
         private ChinoisVocabulaireRepository $vocabulaireRepository,
-        private UserLevelService $userLevelService,
         private \App\Services\Profile\AchievementXpService $achievementXpService,
         private \App\Repositories\Chinois\ChinoisVocabulaireStatsRepository $vocabularyStatsRepository,
         private \App\Repositories\Chinois\ChinoisGrammaireStatsRepository $grammarStatsRepository,
@@ -34,16 +32,11 @@ final readonly class ChinoisXpRewardService
             return false;
         }
 
-        $this->achievementXpService->rewardGrammar($user, $this->grammarStatsRepository->countMastered());
+        $xpEarned = $this->grammaireRepository->claimXpReward($id);
 
-        if (! $this->grammaireRepository->claimXpReward($id))
-        {
-            return false;
-        }
+        $this->achievementXpService->rewardGrammar($user, $this->grammarStatsRepository->countMastered(), $xpEarned ? UserXp::LEARN_GRAMMAR : 0);
 
-        $this->userLevelService->addXp($user, UserXp::LEARN_GRAMMAR);
-
-        return true;
+        return $xpEarned;
     }
 
     public function rewardVocabulary(int $id): bool
@@ -55,15 +48,10 @@ final readonly class ChinoisXpRewardService
             return false;
         }
 
-        $this->achievementXpService->rewardVocabulary($user, $this->vocabularyStatsRepository->countMastered());
+        $xpEarned = $this->vocabulaireRepository->claimXpReward($id);
 
-        if (! $this->vocabulaireRepository->claimXpReward($id))
-        {
-            return false;
-        }
+        $this->achievementXpService->rewardVocabulary($user, $this->vocabularyStatsRepository->countMastered(), $xpEarned ? UserXp::LEARN_VOCABULARY : 0);
 
-        $this->userLevelService->addXp($user, UserXp::LEARN_VOCABULARY);
-
-        return true;
+        return $xpEarned;
     }
 }
