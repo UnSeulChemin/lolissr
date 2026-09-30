@@ -229,3 +229,27 @@ php tests/run-page-styles-browser.php http://localhost/lolissr tests/scroll-hist
 Le test de rétention fait partie de `composer regression-tests`. Le test de
 production lance Composer dans un dossier isolé. Le test navigateur couvre
 précédent/suivant et plusieurs visites de la même URL avec des positions distinctes.
+
+### Vérification complète
+
+```sh
+composer check:all
+```
+
+Cette commande lance `composer check`, puis les six suites navigateur (CSS,
+SPA, initialisation des routes, démarrage, historique et bundle de production).
+Apache doit servir le projet et Microsoft Edge doit être installé à l'emplacement
+Windows utilisé par `tests/run-page-styles-browser.php`. Une suite en échec
+interrompt la commande avec un code non nul.
+
+Pour les navigateurs seuls, avec une URL différente :
+
+```sh
+composer browser-tests -- http://localhost/lolissr
+```
+
+Les régressions `release-archive.php` et `cache-expiration-race.php` sont incluses
+dans `composer check`. Elles vérifient la conservation du ZIP précédent en cas
+d'échec et la suppression conditionnelle du cache après remplacement concurrent.
+La release prépare et vérifie un ZIP temporaire avant de remplacer l'archive
+existante ; elle ne supprime jamais cette dernière pour forcer un remplacement.

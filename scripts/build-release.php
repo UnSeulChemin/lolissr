@@ -54,7 +54,7 @@ echo PHP_EOL;
 ensureDirectory($releasesDirectory);
 
 removeDirectory($temporaryRoot);
-removeFile($zipFile);
+
 
 ensureDirectory($buildDirectory);
 
@@ -311,58 +311,9 @@ function verifyRelease(string $buildDirectory): void
 
 function createArchive(string $buildDirectory, string $zipFile): void
 {
-    $zip = new ZipArchive();
-
-    if ($zip->open($zipFile, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true)
-    {
-        fail('Unable to create release archive.');
-    }
-
-    try
-    {
-        $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator(
-                $buildDirectory,
-                FilesystemIterator::SKIP_DOTS
-            ),
-            RecursiveIteratorIterator::SELF_FIRST
-        );
-
-        foreach ($iterator as $item)
-        {
-            $path = $item->getPathname();
-            $relativePath = str_replace(
-                DIRECTORY_SEPARATOR,
-                '/',
-                substr($path, strlen($buildDirectory) + 1)
-            );
-
-            if ($item->isDir())
-            {
-                $zip->addEmptyDir($relativePath);
-
-                continue;
-            }
-
-            if (! $zip->addFile($path, $relativePath))
-            {
-                fail('Unable to add file to archive: ' . $relativePath);
-            }
-        }
-    }
-    finally
-    {
-        $zip->close();
-    }
-
-    clearstatcache(true, $zipFile);
-
-    if (! is_file($zipFile) || filesize($zipFile) === false || filesize($zipFile) <= 0)
-    {
-        fail('The release archive was not created correctly.');
-    }
+    require_once __DIR__ . '/lib/ReleaseArchive.php';
+    ReleaseArchive::create($buildDirectory, $zipFile);
 }
-
 function removeDirectory(string $directory): void
 {
     if (! is_dir($directory))
@@ -401,14 +352,6 @@ function removeDirectory(string $directory): void
     if (! rmdir($directory))
     {
         fail('Unable to remove directory: ' . $directory);
-    }
-}
-
-function removeFile(string $file): void
-{
-    if (is_file($file) && ! unlink($file))
-    {
-        fail('Unable to remove file: ' . $file);
     }
 }
 

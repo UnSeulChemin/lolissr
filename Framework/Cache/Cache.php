@@ -76,7 +76,7 @@ final class Cache
             }
             catch (JsonException $exception)
             {
-                self::deleteFile($path);
+                self::deleteObservedEntry($path, $content);
 
                 Logger::warning(
                     'Cache corrupted JSON',
@@ -91,7 +91,7 @@ final class Cache
 
             if (! is_array($payload) || ! array_key_exists('value', $payload))
             {
-                self::deleteFile($path);
+                self::deleteObservedEntry($path, $content);
 
                 Logger::warning(
                     'Cache invalid payload',
@@ -107,7 +107,7 @@ final class Cache
 
             if (! is_int($expiresAt) && ! is_numeric($expiresAt))
             {
-                self::deleteFile($path);
+                self::deleteObservedEntry($path, $content);
 
                 Logger::warning(
                     'Cache invalid expiration',
@@ -121,7 +121,7 @@ final class Cache
 
             if ((int) $expiresAt <= time())
             {
-                self::deleteFile($path);
+                self::deleteObservedEntry($path, $content);
 
                 return null;
             }
@@ -132,6 +132,17 @@ final class Cache
         {
             Profiler::end('cache.get');
         }
+    }
+
+    private static function deleteObservedEntry(string $path, string $observed): void
+    {
+        self::synchronized(static function () use ($path, $observed): void {
+            // A writer may have replaced this file since readEntry read it.
+            if (@file_get_contents($path) === $observed)
+            {
+                self::deleteFile($path);
+            }
+        });
     }
 
     public static function put(string $key, mixed $value, ?int $ttl = null): void
