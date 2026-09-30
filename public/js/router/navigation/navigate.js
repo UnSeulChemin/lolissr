@@ -109,6 +109,14 @@ export async function navigateTo(
         && options.force !== true
     )
     {
+        if (navigationState.controller)
+        {
+            ++navigationState.navigationId;
+            navigationState.controller.abort();
+            clearController();
+            unlockRouter();
+            emitNavigationAbort(current, target);
+        }
         debug(
             'ROUTER',
             'same-route',
@@ -171,7 +179,7 @@ export async function navigateTo(
 
         if (navigationId !== navigationState.navigationId)
         {
-            emitNavigationAbort(
+            if (navigationId === navigationState.navigationId) emitNavigationAbort(
                 current,
                 target,
             );
@@ -221,7 +229,7 @@ export async function navigateTo(
 
         if (navigationId !== navigationState.navigationId)
         {
-            emitNavigationAbort(
+            if (navigationId === navigationState.navigationId) emitNavigationAbort(
                 current,
                 target,
             );
@@ -252,7 +260,7 @@ export async function navigateTo(
 
         if (navigationId !== navigationState.navigationId)
         {
-            emitNavigationAbort(
+            if (navigationId === navigationState.navigationId) emitNavigationAbort(
                 current,
                 target,
             );
@@ -310,7 +318,7 @@ export async function navigateTo(
 
         if (navigationId !== navigationState.navigationId)
         {
-            emitNavigationAbort(
+            if (navigationId === navigationState.navigationId) emitNavigationAbort(
                 current,
                 target,
             );
@@ -337,7 +345,7 @@ export async function navigateTo(
 
         if (navigationId !== navigationState.navigationId)
         {
-            emitNavigationAbort(
+            if (navigationId === navigationState.navigationId) emitNavigationAbort(
                 current,
                 target,
             );
@@ -372,7 +380,7 @@ export async function navigateTo(
 
         if (error?.name === 'AbortError')
         {
-            emitNavigationAbort(
+            if (navigationId === navigationState.navigationId) emitNavigationAbort(
                 current,
                 target,
             );
@@ -388,7 +396,7 @@ export async function navigateTo(
 
         if (navigationId !== navigationState.navigationId)
         {
-            emitNavigationAbort(
+            if (navigationId === navigationState.navigationId) emitNavigationAbort(
                 current,
                 target,
             );

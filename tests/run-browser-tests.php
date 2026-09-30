@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 $base = $argv[1] ?? 'http://localhost/lolissr';
 $commands = [[PHP_BINARY, __DIR__ . '/run-javascript-browser.php', $base]];
-foreach (['page-styles-browser.js', 'spa-browser.js', 'route-initializers-browser.js', 'spa-lifecycle-browser.js', 'scroll-history-browser.js', 'flash-feedback-browser.js'] as $test)
+foreach (['page-styles-browser.js', 'spa-browser.js', 'route-initializers-browser.js', 'spa-lifecycle-browser.js', 'scroll-history-browser.js', 'flash-feedback-browser.js', 'navigation-cancel-browser.js'] as $test)
 {
     $commands[] = [PHP_BINARY, __DIR__ . '/run-page-styles-browser.php', $base, __DIR__ . '/' . $test];
 }

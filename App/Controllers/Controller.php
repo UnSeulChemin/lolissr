@@ -175,11 +175,11 @@ abstract class Controller
         return new FormViewData(
             baseUri: view_base_uri(),
             toast: $this->flashToastData(),
-            errors: Session::pull(
+            errors: $this->request->header('X-Prefetch') === 'true' ? [] : Session::pull(
                 'errors',
                 []
             ),
-            old: Session::pull(
+            old: $this->request->header('X-Prefetch') === 'true' ? [] : Session::pull(
                 'old',
                 []
             ),
@@ -402,7 +402,8 @@ abstract class Controller
                         'stylesheets' => PageStyles::forView($viewPath),
                         'flashToast' => $this->flashToastData(),
                         'requiresFreshNavigation' => $this->request->header('X-Prefetch') === 'true'
-                            && (Session::has('success') || Session::has('error')),
+                            && (Session::has('success') || Session::has('error')
+                                || Session::has('errors') || Session::has('old')),
                     ],
                 ],
                 $statusCode

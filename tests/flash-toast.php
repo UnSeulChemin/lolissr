@@ -16,6 +16,7 @@ try
         $make = static fn (bool $prefetch) => new class($prefetch) extends Controller {
             public function __construct(bool $prefetch) { $this->request = new Request(server: ['HTTP_X_PREFETCH' => $prefetch ? 'true' : 'false']); }
             public function toast(): \App\DTO\Common\Responses\FlashToastData { return $this->flashToastData(); }
+            public function form(): \App\DTO\Common\Responses\FormViewData { $this->baseUri = ""; return $this->formViewData('/save', '/cancel'); }
         };
         if ($make(true)->toast()->message !== null || ($_SESSION[$key] ?? null) !== 'Pending message')
             throw new RuntimeException('Prefetch consumed or exposed a flash message.');
@@ -25,6 +26,15 @@ try
         if ($real->toast()->message !== 'Pending message' || $make(false)->toast()->message !== null)
             throw new RuntimeException('Message lifetime is incorrect.');
     }
+    $_SESSION = ['errors' => ['title' => 'Required'], 'old' => ['title' => 'Draft']];
+    $snapshot = $_SESSION;
+    $speculative = $make(true)->form();
+    if ($_SESSION !== $snapshot || $speculative->errors !== [] || $speculative->old !== [])
+        throw new RuntimeException('Prefetch consumed or exposed form state.');
+    $actual = $make(false)->form();
+    if ($actual->errors !== $snapshot['errors'] || $actual->old !== $snapshot['old'] || isset($_SESSION['errors']) || isset($_SESSION['old']))
+        throw new RuntimeException('Real form did not receive and consume validation state.');
+    if ($make(false)->form()->old !== []) throw new RuntimeException('Form state replayed.');
 }
 finally { session_destroy(); }
 echo "PASS: prefetch preserves success/error; navigation consumes once.\n";

@@ -261,3 +261,10 @@ existante ; elle ne supprime jamais cette dernière pour forcer un remplacement.
 vérifie le rafraîchissement d'une page préchargée portant un message en attente,
 l'affichage unique du message et le traitement par lot des identifiants de
 flashcards disparus. Ces vérifications font donc partie de `composer check:all`.
+
+Le préchargement préserve également `errors` et `old` en session, sans les inclure
+dans le formulaire préchargé. Leur présence impose une requête fraîche à
+l'ouverture réelle ; `tests/flash-toast.php` vérifie leur consommation unique.
+`navigation-cancel-browser.js` couvre le retour sur la page courante pendant un
+chargement et une réponse tardive pendant une nouvelle navigation. Il est inclus
+dans `composer browser-tests` et `composer check:all`.
