@@ -18,11 +18,6 @@ final readonly class AchievementXpService
     ) {
     }
 
-    public function rewardTomes(User $user, int $readTomes): void
-    {
-        $this->award($user, $this->eligible('tomes', AchievementRewards::TOMES, $readTomes));
-    }
-
     public function rewardSeries(User $user, int $completedSeries): void
     {
         $this->award($user, $this->eligible('series', AchievementRewards::SERIES, $completedSeries));

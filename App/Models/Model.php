@@ -9,8 +9,6 @@ use App\Models\Concerns\InteractsWithDatabase;
 
 use Framework\Database\Database;
 
-use stdClass;
-
 abstract class Model
 {
     use BuildsQueries;
@@ -36,22 +34,6 @@ abstract class Model
     // =========================================
     // CRUD
     // =========================================
-
-    /**
-     * @template T of object
-     *
-     * @param class-string<T>|null $class
-     *
-     * @return ($class is class-string<T> ? T|null : stdClass|null)
-     */
-    public function find(int $id, ?string $class = null): ?object
-    {
-        return $this->fetchOne(
-            "SELECT * FROM {$this->table()} WHERE id = ? LIMIT 1",
-            [$id],
-            $class
-        );
-    }
 
     /**
      * @param array<string, mixed> $data

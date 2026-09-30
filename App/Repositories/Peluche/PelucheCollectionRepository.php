@@ -32,7 +32,7 @@ final class PelucheCollectionRepository extends Model
         /** @var list<Peluche> $peluches */
         $peluches = $this->fetchAll(
             "
-            SELECT p.*
+            SELECT p.slug, p.numero, p.waifu, p.origin, p.thumbnail, p.extension, p.collect
 
             FROM {$this->table()} p
 

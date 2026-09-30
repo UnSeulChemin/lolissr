@@ -51,7 +51,7 @@ final class MangaStatsRepository extends Model
         /** @var Manga|null $manga */
         $manga = $this->fetchOne(
             "
-            SELECT *
+            SELECT id, slug, numero, livre, thumbnail, extension
 
             FROM {$this->table()}
 
@@ -95,7 +95,7 @@ final class MangaStatsRepository extends Model
 
         $mangas = $this->fetchAll(
             "
-            SELECT m.*, stats.total
+            SELECT m.id, m.slug, m.numero, m.livre, m.thumbnail, m.extension, stats.total
             FROM {$this->table()} m
             INNER JOIN (
                 SELECT slug, COUNT(*) AS total

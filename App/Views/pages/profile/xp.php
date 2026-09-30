@@ -2,16 +2,10 @@
 
 declare(strict_types=1);
 
-use App\DTO\Common\Responses\ViewData;
-use App\Models\User;
-
-/** @var ViewData $view */
-/** @var User $user */
 /** @var list<array{category: string, icon: string, title: string, current: int, target: int, unlocked: bool}> $achievements */
 /** @var int $level */
 /** @var int $currentXp */
 /** @var int $xpRequired */
-/** @var float $progress */
 /** @var int $readTomes */
 /** @var int $tomeXp */
 /** @var int $completedSeries */

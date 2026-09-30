@@ -32,7 +32,7 @@ final class NendoroidCollectionRepository extends Model
         /** @var list<Nendoroid> $nendoroids */
         $nendoroids = $this->fetchAll(
             "
-            SELECT n.*
+            SELECT n.slug, n.numero, n.waifu, n.origin, n.thumbnail, n.extension, n.collect
 
             FROM {$this->table()} n
 

@@ -27,7 +27,7 @@ final class ArtbookCollectionRepository extends Model
         /** @var list<Artbook> $artbooks */
         $artbooks = $this->fetchAll(
             "
-            SELECT a.*
+            SELECT a.slug, a.numero, a.artbook, a.auteur, a.serie, a.thumbnail, a.extension
 
             FROM {$this->table()} a
 

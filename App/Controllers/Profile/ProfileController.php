@@ -53,15 +53,13 @@ final class ProfileController extends Controller
 
         assert($user instanceof User);
 
-        $stats = $this->profileStatsService->getStats();
+        $stats = $this->profileStatsService->getStats($user);
 
         $this->render('pages/profile/xp', [
             'achievements' => ProfileAchievements::forStats($stats, $user->level),
-            'user' => $user,
             'level' => $user->level,
             'currentXp' => $user->xp,
             'xpRequired' => $this->userLevelService->xpRequiredForLevel($user->level),
-            'progress' => $this->userLevelService->progress($user),
 
             'readTomes' => $stats->readTomes,
             'tomeXp' => $stats->tomeXp,

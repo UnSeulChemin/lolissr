@@ -1,5 +1,10 @@
 # LoliSSR HTTP Tests
 
+L'[audit des performances du 1er octobre 2026](performance-audit.md) détaille
+les mesures et les points serveur à traiter. `php tests/collection-projections.php`,
+inclus dans `composer regression-tests`, vérifie les données affichées après
+réduction des colonnes SQL des listes et du dashboard, sur SQLite en mémoire.
+
 Suite de tests HTTP utilisée pour vérifier les principales routes de l'application.
 
 ## Prérequis
