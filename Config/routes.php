@@ -26,6 +26,8 @@ return static function (Router $router): void
         ->group(function (Router $router): void
         {
             $router->get('', [MainController::class, 'index']);
+            $router->get('recherche', [\App\Controllers\SearchController::class, 'search'],
+                [\Framework\Http\Middleware\ExpectJsonMiddleware::class]);
 
             $router->post(
                 'deconnexion',

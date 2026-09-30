@@ -10,7 +10,6 @@ import {
 // STATE
 // =========================================
 
-const beforeRouteChangeCallbacks = new Set();
 const routeChangeCallbacks = new Set();
 
 // =========================================
@@ -30,15 +29,6 @@ function registerCallback(
     };
 }
 
-export function onBeforeRouteChange(
-    callback,
-)
-{
-    return registerCallback(
-        beforeRouteChangeCallbacks,
-        callback,
-    );
-}
 
 export function onRouteChange(
     callback,
@@ -88,15 +78,6 @@ async function runCallbacks(
 // TRIGGERS
 // =========================================
 
-export async function triggerBeforeRouteChange(
-    context,
-)
-{
-    await runCallbacks(
-        beforeRouteChangeCallbacks,
-        context,
-    );
-}
 
 export async function triggerRouteChange(
     context,

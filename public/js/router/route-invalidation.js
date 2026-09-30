@@ -10,7 +10,7 @@ import {
 // STATE
 // =========================================
 
-const invalidatedRoutes = new Set();
+const invalidatedRoutes = new Map();
 
 // =========================================
 // HELPERS
@@ -26,20 +26,22 @@ function routePath(href)
 function matchesInvalidatedRoute(
     current,
     invalidated,
+    descendants,
 )
 {
     return current === invalidated
-        || current.startsWith(`${invalidated}/`);
+        || (descendants && current.startsWith(invalidated === '/' ? '/' : `${invalidated}/`));
 }
 
 // =========================================
 // INVALIDATE
 // =========================================
 
-export function invalidateRoute(href)
+export function invalidateRoute(href, {descendants = true} = {})
 {
-    invalidatedRoutes.add(
+    invalidatedRoutes.set(
         routePath(href),
+        descendants || invalidatedRoutes.get(routePath(href)) === true,
     );
 }
 
@@ -53,9 +55,9 @@ export function shouldRefreshRoute(href)
         href,
     );
 
-    for (const route of invalidatedRoutes)
+    for (const [route, descendants] of invalidatedRoutes)
     {
-        if (matchesInvalidatedRoute(normalized, route))
+        if (matchesInvalidatedRoute(normalized, route, descendants))
         {
             return true;
         }
@@ -74,9 +76,9 @@ export function clearInvalidatedRoute(href)
         href,
     );
 
-    for (const route of invalidatedRoutes)
+    for (const [route, descendants] of invalidatedRoutes)
     {
-        if (matchesInvalidatedRoute(normalized, route))
+        if (matchesInvalidatedRoute(normalized, route, descendants))
         {
             invalidatedRoutes.delete(
                 route,

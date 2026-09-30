@@ -30,7 +30,7 @@ if (! class_exists(ZipArchive::class))
 }
 
 $releaseName = $projectName . '_v' . $version;
-require __DIR__ . '/build-css.php';
+require __DIR__ . '/build-assets.php';
 $releasesDirectory = ROOT . DIRECTORY_SEPARATOR . 'releases';
 $temporaryRoot = $releasesDirectory . DIRECTORY_SEPARATOR . '.build-temp';
 $buildDirectory = $temporaryRoot . DIRECTORY_SEPARATOR . $releaseName;

@@ -375,10 +375,11 @@ abstract class Controller
         array $data = [],
         bool $withTemplate = true
     ): never {
+        $fragment = $this->expectsJson() && $this->request->header('X-Page-Format') === 'fragment';
         $html = $this->renderContent(
             $viewPath,
             $data,
-            $withTemplate
+            $withTemplate && ! $fragment
         );
 
         if ($this->expectsJson())
@@ -389,6 +390,9 @@ abstract class Controller
                     'type' => 'page',
                     'page' => [
                         'html' => $html,
+                        'format' => $fragment ? 'fragment' : 'document',
+                        'lang' => 'fr',
+                        'bodyData' => (object) [],
                         'title' => $this->title,
                         'url' => $this->request->uri(),
                         'stylesheets' => PageStyles::forView($viewPath),

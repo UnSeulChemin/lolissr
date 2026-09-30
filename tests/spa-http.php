@@ -1,0 +1,64 @@
+<?php
+
+declare(strict_types=1);
+
+require __DIR__ . '/Http/bootstrap.php';
+require __DIR__ . '/Http/Support/HttpClient.php';
+
+http_login();
+$jsonHeaders = ['Accept: application/json'];
+$fragmentHeaders = [...$jsonHeaders, 'X-Page-Format: fragment'];
+foreach (['/', '/profil', '/profil/succes', '/manga', '/chinois', '/figurine'] as $path)
+{
+    $fullResponse = http_get(http_base() . $path, $jsonHeaders);
+    $fragmentResponse = http_get(http_base() . $path, $fragmentHeaders);
+    $full = json_decode($fullResponse['body'], true, 512, JSON_THROW_ON_ERROR);
+    $fragment = json_decode($fragmentResponse['body'], true, 512, JSON_THROW_ON_ERROR);
+    if ($fullResponse['status'] !== 200 || $fragmentResponse['status'] !== 200
+        || ($full['page']['format'] ?? '') !== 'document'
+        || ($fragment['page']['format'] ?? '') !== 'fragment'
+        || ($fragment['page']['lang'] ?? '') !== 'fr'
+        || ! array_key_exists('bodyData', $fragment['page']))
+    {
+        throw new RuntimeException('Invalid navigation protocol: ' . $path);
+    }
+    if (preg_match('~<main class="app-content">(.*?)</main>~s', $full['page']['html'], $match) !== 1
+        || trim($match[1]) !== trim($fragment['page']['html'])
+        || $full['page']['title'] !== $fragment['page']['title']
+        || $full['page']['stylesheets'] !== $fragment['page']['stylesheets'])
+    {
+        throw new RuntimeException('SPA fragment differs from full-page content: ' . $path);
+    }
+    echo 'PASS: ' . $path . ' — JSON ' . strlen($fullResponse['body']) . ' -> ' . strlen($fragmentResponse['body']) . " bytes\n";
+}
+
+$endpoints = [
+    'mangas' => '/manga/ajax/recherche/',
+    'artbooks' => '/manga/ajax/recherche/artbooks/',
+    'chinois' => '/chinois/ajax/recherche/',
+    'figurines' => '/figurine/ajax/recherche/',
+    'nendoroids' => '/nendoroid/ajax/recherche/',
+    'peluches' => '/peluche/ajax/recherche/',
+];
+foreach (['a', 'HSK', '测试'] as $query)
+{
+    $response = http_get(http_base() . '/recherche?q=' . rawurlencode($query), $jsonHeaders);
+    $grouped = json_decode($response['body'], true, 512, JSON_THROW_ON_ERROR);
+    if ($response['status'] !== 200 || ($grouped['success'] ?? false) !== true)
+    {
+        throw new RuntimeException('Global search failed.');
+    }
+    foreach ($endpoints as $category => $endpoint)
+    {
+        $legacy = http_get(http_base() . $endpoint . rawurlencode($query), $jsonHeaders);
+        $data = json_decode($legacy['body'], true, 512, JSON_THROW_ON_ERROR);
+        if ($legacy['status'] !== 200 || ($grouped['data'][$category] ?? null) !== ($data['data']['results'] ?? null))
+        {
+            throw new RuntimeException('Global search changed results: ' . $category);
+        }
+    }
+}
+echo "PASS: global search returns identical results for all six categories (three queries).\n";
+$invalid = http_get(http_base() . '/recherche?q%5B%5D=test', $jsonHeaders);
+if ($invalid['status'] !== 422) throw new RuntimeException('Search must reject array input.');
+echo "PASS: invalid search input rejected.\n";

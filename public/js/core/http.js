@@ -529,23 +529,3 @@ export function put(
         options,
     );
 }
-
-// =========================================
-// DELETE
-// =========================================
-
-export function destroy(
-    url,
-    options = {},
-)
-{
-    return request(
-        url,
-        {
-            method:
-                'DELETE',
-
-            ...options,
-        },
-    );
-}

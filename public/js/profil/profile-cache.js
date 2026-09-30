@@ -18,5 +18,4 @@ export function invalidateProfilePages()
 {
     invalidatePage(appUrl('profil'));
 
-    invalidatePage(appUrl('profil/personnalisation'));
 }

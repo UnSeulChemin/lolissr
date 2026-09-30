@@ -24,8 +24,23 @@ const CONTENT_SELECTOR =
 
 function parseHtml(
     html,
+    page,
 )
 {
+    if (page?.format === 'fragment')
+    {
+        const documentHtml = document.implementation.createHTMLDocument(page.title ?? '');
+        documentHtml.documentElement.lang = page.lang ?? 'fr';
+        for (const [name, value] of Object.entries(page.bodyData ?? {}))
+        {
+            documentHtml.body.dataset[name] = String(value);
+        }
+        const nextContent = documentHtml.createElement('main');
+        nextContent.className = 'app-content';
+        nextContent.innerHTML = html;
+        documentHtml.body.append(nextContent);
+        return {documentHtml, nextContent};
+    }
     const documentHtml =
         new DOMParser()
             .parseFromString(
@@ -241,6 +256,7 @@ function replaceDomContent(
 
 export function replaceContent(
     html,
+    page = {},
 )
 {
     try {
@@ -257,6 +273,7 @@ export function replaceContent(
         } =
             parseHtml(
                 html,
+                page,
             );
 
         /*

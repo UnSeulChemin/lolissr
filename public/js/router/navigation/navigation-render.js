@@ -59,6 +59,7 @@ export async function renderPage(
 
     replaceContent(
         response.page.html,
+        response.page,
     );
 
     updateActiveNavigation();

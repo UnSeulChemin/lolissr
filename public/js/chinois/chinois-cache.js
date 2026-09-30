@@ -16,7 +16,7 @@ import {
 
 export function invalidateGrammarPages()
 {
-    invalidatePage(appUrl());
+    invalidatePage(appUrl(), {descendants: false});
 
     invalidatePage(appUrl('profil'));
 
@@ -37,7 +37,7 @@ export function invalidateGrammarPages()
 
 export function invalidateVocabularyPages()
 {
-    invalidatePage(appUrl());
+    invalidatePage(appUrl(), {descendants: false});
 
     invalidatePage(appUrl('profil'));
 

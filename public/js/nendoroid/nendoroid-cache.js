@@ -16,13 +16,11 @@ import {
 
 export function invalidateNendoroidPages()
 {
-    invalidatePage(appUrl());
+    invalidatePage(appUrl(), {descendants: false});
 
     invalidatePage(appUrl('profil'));
 
     invalidatePage(appUrl('nendoroid'));
 
-    invalidatePage(appUrl('nendoroid/waifus'));
-
-    invalidatePage(window.location.pathname);
+    invalidatePage(window.location.pathname, {descendants: false});
 }

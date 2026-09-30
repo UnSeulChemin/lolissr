@@ -16,13 +16,11 @@ import {
 
 export function invalidateFigurinePages()
 {
-    invalidatePage(appUrl());
+    invalidatePage(appUrl(), {descendants: false});
 
     invalidatePage(appUrl('profil'));
 
     invalidatePage(appUrl('figurine'));
 
-    invalidatePage(appUrl('figurine/waifus'));
-
-    invalidatePage(window.location.pathname);
+    invalidatePage(window.location.pathname, {descendants: false});
 }

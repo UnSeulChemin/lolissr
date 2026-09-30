@@ -22,10 +22,11 @@
 
     "scripts": {
         "phpstan": "phpstan analyse --no-progress --memory-limit=512M",
-        "http-tests": "php tests/run-tests.php",
-        "regression-tests": ["php tests/profile-read-only.php", "php tests/css-bundle.php", "php tests/page-styles.php"],
+        "http-tests": ["php tests/run-tests.php", "php tests/spa-http.php"],
+        "regression-tests": ["php tests/profile-read-only.php", "php tests/css-bundle.php", "php tests/page-styles.php", "php tests/asset-versions.php"],
         "check": ["@phpstan", "@regression-tests", "@http-tests"],
         "css:build": "php scripts/build-css.php",
+        "assets:build": "php scripts/build-assets.php",
         "xp:backfill": "php scripts/backfill-achievement-xp.php",
 
         "cache:clear": "php scripts/clear-runtime.php cache",

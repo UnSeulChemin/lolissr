@@ -17,14 +17,21 @@ export async function testPageStyles()
     {
         const sheet = new CSSStyleSheet();
         sheet.replaceSync(css.replace(/@import\s+url\([^)]+\);/g, ''));
-        return [...sheet.cssRules].map(rule => rule.cssText);
+        // CSSOM preserves raw whitespace in custom properties such as gradients.
+        // Ignore that formatting, while retaining whitespace inside quoted values.
+        const normalize = text => text.replace(/("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')|(\s+)/g,
+            (match, quoted) => quoted ?? ' ');
+        return [...sheet.cssRules].map(rule => normalize(rule.cssText));
     };
     const originalRules = rules(expanded);
     const bundledRules = rules(await read('css/app.bundle.css'));
     if (JSON.stringify(originalRules) !== JSON.stringify(bundledRules))
     {
         const index = originalRules.findIndex((rule, i) => rule !== bundledRules[i]);
-        throw new Error(`CSS bundle changes browser-parsed rule ${index}`);
+        const before = originalRules[index] ?? '';
+        const after = bundledRules[index] ?? '';
+        const offset = [...before].findIndex((char, i) => char !== after[i]);
+        throw new Error(`CSS bundle changes browser-parsed rule ${index} at ${offset}: ${JSON.stringify(before.slice(Math.max(0, offset - 40), offset + 160))} != ${JSON.stringify(after.slice(Math.max(0, offset - 40), offset + 160))}`);
     }
-    return [`${matches.length} local imports bundled; ${originalRules.length} browser-parsed CSS rules identical`];
+    return [`${matches.length} local imports bundled; ${originalRules.length} browser-parsed CSS rules equivalent after whitespace normalization`];
 }

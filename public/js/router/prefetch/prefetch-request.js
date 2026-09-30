@@ -141,6 +141,7 @@ export async function prefetchPage(href)
                     timeout: config.prefetch.timeout,
 
                     headers: {
+                        'X-Page-Format': 'fragment',
                         Accept: 'application/json',
                         'X-Prefetch': 'true',
                         'Cache-Control': 'no-cache',

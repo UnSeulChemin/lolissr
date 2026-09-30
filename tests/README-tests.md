@@ -41,18 +41,38 @@ composer regression-tests
 - `css-bundle.php` vérifie que le bundle est à jour et conserve les chaînes et les
   espaces significatifs du CSS.
 - `page-styles.php` vérifie les dépendances CSS par page et leurs URL versionnées.
+- `asset-versions.php` vérifie le manifeste des versions utilisé en production.
+
+`composer http-tests` lance aussi `tests/spa-http.php` : contenu et métadonnées des
+fragments comparés aux pages complètes, résultats de recherche globale comparés
+aux six routes existantes et rejet des paramètres invalides.
+
+Vérification du cache, du rendu et de la recherche au clavier dans Edge :
+
+```powershell
+php tests/run-page-styles-browser.php http://localhost/lolissr tests/spa-browser.js
+```
+
+Le routeur et le préchargement demandent `X-Page-Format: fragment`. Sans cet en-tête,
+les réponses JSON conservent le document complet pour les anciens clients.
+L'invalidation d'une section reste récursive ; `{descendants: false}` cible seulement
+une page et ses variantes de paramètres, notamment l'accueil.
 
 ## CSS commun
 
 ```powershell
-composer css:build
+composer assets:build
 ```
 
-Modifier les sources CSS puis reconstruire `public/css/app.bundle.css`.
+Après modification du CSS ou du JavaScript, reconstruire `public/css/app.bundle.css`
+et `Config/assets.php` avec cette commande. `composer css:build` reste disponible
+pour reconstruire uniquement le CSS pendant le développement.
 Le layout utilise ce fichier en production, avec une URL versionnée par son contenu.
 En local, il garde `app.css` et ses imports. Les scripts `publish-git.php` et
-`build-release.php` reconstruisent automatiquement le bundle avant publication ou archive.
-Le fichier généré doit accompagner les déploiements manuels.
+`build-release.php` reconstruisent automatiquement le bundle et le manifeste avant
+publication ou archive. Les deux fichiers générés doivent accompagner les déploiements
+manuels. En production, les versions sont lues dans le manifeste ; en local, les
+hashes sont calculés une seule fois par fichier et par requête.
 
 Comparaison des règles CSS interprétées par Edge (Apache et Edge requis) :
 

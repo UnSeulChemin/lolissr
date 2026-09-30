@@ -16,13 +16,16 @@ import {
 
 export function invalidatePage(
     href,
+    options = {},
 )
 {
     invalidateRoute(
         href,
+        options,
     );
 
     invalidatePrefetch(
         href,
+        options,
     );
 }

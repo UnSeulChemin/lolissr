@@ -16,13 +16,11 @@ import {
 
 export function invalidatePeluchePages()
 {
-    invalidatePage(appUrl());
+    invalidatePage(appUrl(), {descendants: false});
 
     invalidatePage(appUrl('profil'));
 
     invalidatePage(appUrl('peluche'));
 
-    invalidatePage(appUrl('peluche/waifus'));
-
-    invalidatePage(window.location.pathname);
+    invalidatePage(window.location.pathname, {descendants: false});
 }

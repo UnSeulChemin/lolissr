@@ -16,19 +16,11 @@ import {
 
 export function invalidateMangaPages()
 {
-    invalidatePage(appUrl());
+    invalidatePage(appUrl(), {descendants: false});
 
     invalidatePage(appUrl('profil'));
 
     invalidatePage(appUrl('manga'));
 
-    invalidatePage(appUrl('manga/series'));
-
-    invalidatePage(appUrl('manga/series/notes'));
-
-    invalidatePage(appUrl('manga/series/a-lire'));
-
-    invalidatePage(appUrl('manga/artbooks'));
-
-    invalidatePage(window.location.pathname);
+    invalidatePage(window.location.pathname, {descendants: false});
 }

@@ -58,7 +58,6 @@ import {
 } from '../router-events.js';
 
 import {
-    triggerBeforeRouteChange,
     triggerRouteChange,
 } from '../router-hooks.js';
 
@@ -169,17 +168,6 @@ export async function navigateTo(
 
     try
     {
-        /*
-        |--------------------------------------------------------------------------
-        | BEFORE HOOKS
-        |--------------------------------------------------------------------------
-        */
-
-        await triggerBeforeRouteChange({
-            from: current,
-            to: target,
-        });
-
         /*
         |--------------------------------------------------------------------------
         | STALE NAVIGATION

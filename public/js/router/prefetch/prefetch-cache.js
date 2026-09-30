@@ -132,7 +132,7 @@ export function setPrefetchedPage(
 // INVALIDATE
 // =========================================
 
-export function invalidatePrefetch(href)
+export function invalidatePrefetch(href, {descendants = true} = {})
 {
     const url = normalizeCacheKey(
         href,
@@ -151,7 +151,7 @@ export function invalidatePrefetch(href)
             candidate.origin !== target.origin
             || (
                 candidatePath !== targetPath
-                && ! candidatePath.startsWith(`${targetPath}/`)
+                && (! descendants || ! candidatePath.startsWith(targetPath === '/' ? '/' : `${targetPath}/`))
             )
         )
         {

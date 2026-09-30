@@ -40,8 +40,8 @@ export async function fetchSearchResults(
             );
 
         return (
-            response?.data?.results
-            ?? []
+            response?.data
+            ?? {}
         );
 
     } catch (error) {
@@ -65,6 +65,6 @@ export async function fetchSearchResults(
                 true;
         }
 
-        return [];
+        throw error;
     }
 }

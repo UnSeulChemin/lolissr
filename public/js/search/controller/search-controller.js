@@ -1,3 +1,4 @@
+import {navigateTo} from '../../router/router-navigation.js';
 let searchVersion = 0;
 let lastQuery = null;
 // =========================================
@@ -221,51 +222,12 @@ async function handleSearch(
             search.dataset.basePath
             ?? '/';
 
-        const searchUrl =
-            `${basePath}manga/ajax/recherche`;
-
-        const [
-            mangas,
-            artbooks,
-            chinois,
-            figurines,
-            nendoroids,
-            peluches,
-            shortcuts,
-        ] = await Promise.all([
-            fetchSearchResults(
-                `${searchUrl}/${encodeURIComponent(query)}`,
+        const {mangas = [], artbooks = [], chinois = [], figurines = [], nendoroids = [], peluches = []} =
+            await fetchSearchResults(
+                `${basePath}recherche?q=${encodeURIComponent(query)}`,
                 abortController.signal,
-            ),
-
-            fetchSearchResults(
-                `${basePath}manga/ajax/recherche/artbooks/${encodeURIComponent(query)}`,
-                abortController.signal,
-            ),
-
-            fetchSearchResults(
-                `${basePath}chinois/ajax/recherche/${encodeURIComponent(query)}`,
-                abortController.signal,
-            ),
-
-            fetchSearchResults(
-                `${basePath}figurine/ajax/recherche/${encodeURIComponent(query)}`,
-                abortController.signal,
-            ),
-
-            fetchSearchResults(
-                `${basePath}nendoroid/ajax/recherche/${encodeURIComponent(query)}`,
-                abortController.signal,
-            ),
-
-            fetchSearchResults(
-                `${basePath}peluche/ajax/recherche/${encodeURIComponent(query)}`,
-                abortController.signal,
-            ),
-
-            findSearchShortcuts(query),
-        ]);
-
+            );
+        const shortcuts = findSearchShortcuts(query);
         if (version !== searchVersion || searchInput.value !== rawValue) return;
 
         renderResults({
@@ -287,6 +249,7 @@ async function handleSearch(
         });
 
     } catch (error) {
+        if (version === searchVersion) lastQuery = null;
 
         if (
             error?.name ===
@@ -438,8 +401,7 @@ function handleKeyboardNavigation(
                 searchDropdown,
             );
 
-            window.location.href =
-                activeItem.href;
+            void navigateTo(activeItem.href);
         }
     }
 
@@ -514,10 +476,3 @@ function resetSearch(
         searchDropdown,
     );
 }
-
-// =========================================
-// LEGACY EXPORT
-// =========================================
-
-export const initSearchManga =
-    initSearchController;

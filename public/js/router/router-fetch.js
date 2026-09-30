@@ -50,6 +50,7 @@ export async function fetchPage(
 
                     headers:
                     {
+                        'X-Page-Format': 'fragment',
                         Accept:
                             'application/json',
                     },
