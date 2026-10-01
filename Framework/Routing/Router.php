@@ -28,11 +28,6 @@ final class Router
      */
     private array $groupMiddlewares = [];
 
-    /**
-     * @var array<string, ReflectionMethod>
-     */
-    private array $methods = [];
-
     public function __construct(
         private RouteCollection $collection,
         private Container $container
@@ -282,7 +277,7 @@ final class Router
             fn (): object => $this->container->get($controllerClass)
         );
 
-        $reflection = $this->reflection($controller, $methodName);
+        $reflection = new ReflectionMethod($controller, $methodName);
 
         $arguments = Profiler::measure(
             'controller.arguments',
@@ -329,13 +324,6 @@ final class Router
 
         /** @var class-string $controllerClass */
         return [$controllerClass, $methodName];
-    }
-
-    private function reflection(object $controller, string $method): ReflectionMethod
-    {
-        $key = $controller::class . '::' . $method;
-
-        return $this->methods[$key] ??= new ReflectionMethod($controller, $method);
     }
 
     /**

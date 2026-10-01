@@ -13,10 +13,8 @@ use RuntimeException;
 final class Container
 {
     /**
-     * @var array<string, array{
-     *     concrete: callable|string,
-     *     singleton: bool
-     * }>
+     * Explicit bindings are singletons; unbound classes are resolved per call.
+     * @var array<string, callable|string>
      */
     private array $bindings = [];
 
@@ -49,10 +47,7 @@ final class Container
 
     public function singleton(string $abstract, callable|string|null $concrete = null): void
     {
-        $this->bindings[$abstract] = [
-            'concrete' => $concrete ?? $abstract,
-            'singleton' => true
-        ];
+        $this->bindings[$abstract] = $concrete ?? $abstract;
 
         unset($this->instances[$abstract]);
     }
@@ -94,15 +89,12 @@ final class Container
 
         try
         {
-            $binding = $this->bindings[$abstract] ?? [
-                'concrete' => $abstract,
-                'singleton' => false
-            ];
+            $isSingleton = isset($this->bindings[$abstract]);
 
-            $object = $this->resolve($binding['concrete']);
+            $object = $this->resolve($this->bindings[$abstract] ?? $abstract);
             $this->assertCompatible($abstract, $object);
 
-            if ($binding['singleton'])
+            if ($isSingleton)
             {
                 $this->instances[$abstract] = $object;
             }
