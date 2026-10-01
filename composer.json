@@ -28,6 +28,9 @@
         "http-tests": ["@php tests/Http/run-http.php", "@php tests/Http/spa-http.php"],
         "browser-tests": "@php tests/Browser/run-browser-tests.php",
         "regression-tests": [
+            "@php tests/Framework/cache-contention.php",
+            "@php tests/Framework/bootstrap-cache.php",
+            "@php tests/Framework/production-errors.php",
             "@php tests/Framework/cache-expiration-race.php",
             "@php tests/Framework/flash-toast.php",
             "@php tests/Framework/framework-lifecycle.php",
@@ -59,6 +62,8 @@
         "logs:clear": "@php scripts/Maintenance/clear-runtime.php logs",
         "cache:clear": "@php scripts/Maintenance/clear-runtime.php cache",
         "sessions:clear": "@php scripts/Maintenance/clear-runtime.php sessions",
+        "bootstrap:cache": "@php scripts/Maintenance/bootstrap-cache.php build",
+        "bootstrap:clear": "@php scripts/Maintenance/bootstrap-cache.php clear",
 
         "backup": "@php scripts/Database/backup-database.php",
         "db:deduplicate-indexes": "@php scripts/Database/deduplicate-indexes.php",
@@ -89,6 +94,8 @@
         "logs:clear": "[Nettoyage] Vide les logs.",
         "cache:clear": "[Nettoyage] Vide le cache.",
         "sessions:clear": "[Nettoyage] Supprime les sessions.",
+        "bootstrap:cache": "[Production] Compile configuration et routes sur le serveur cible.",
+        "bootstrap:clear": "[Nettoyage] Desactive le cache de configuration et routes.",
 
         "backup": "[Données] Sauvegarde la base de données.",
         "db:deduplicate-indexes": "[Données] Gère les index redondants de la base.",

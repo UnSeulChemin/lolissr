@@ -112,6 +112,44 @@ Modifier le helper pour un changement commun aux trois collections. Garder les c
 
 L'ordre de déclaration fait partie du comportement du routeur : une route dynamique déclarée avant une route statique peut rester prioritaire. Ne pas réordonner les routes comme un simple changement de présentation.
 
+## Cache du bootstrap au déploiement
+
+Après installation sur le serveur cible, configuration du `.env` et compilation des assets :
+
+```sh
+composer bootstrap:cache
+```
+
+Cette commande compile les tableaux de configuration et la collection de routes
+(expressions régulières, ordre et middlewares compris) dans
+`storage/bootstrap/compiled.php`. Les closures de groupes sont exécutées au build ;
+une closure utilisée comme action de route doit être remplacée par un contrôleur
+avant d'activer ce cache.
+
+Le `.env` reste chargé et validé à chaque requête. Une modification d'une variable
+consultée lors de la compilation, y compris une variable système, invalide le cache
+et rétablit le chargement normal. Les erreurs de configuration de production restent
+donc détectées. Le cache absent ou illisible utilise également le chargement normal.
+
+Reconstruire le cache après tout changement du code, des routes, de la configuration
+ou des assets. Pour le désactiver avant une modification ou en développement :
+
+```sh
+composer bootstrap:clear
+```
+
+L'artefact contient la configuration privée de la machine : il est ignoré par Git
+et absent des archives de livraison. Il doit être construit sur la cible par le compte
+qui exécute PHP (fichier `0600`, répertoire `0700` sur Unix). Si OPcache ne vérifie pas
+les dates des fichiers, recharger les workers PHP après reconstruction ou suppression.
+La commande CLI ne peut pas invalider le cache OPcache d'un autre processus serveur.
+
+Mesure locale reproductible, sans accès à la base :
+
+```sh
+php tests/Framework/bootstrap-cache.php --benchmark
+```
+
 ## Ajouter une option
 
 1. Déclarer la variable et son exemple dans `.env.example`, sans donnée sensible réelle.

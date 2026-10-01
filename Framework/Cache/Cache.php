@@ -129,7 +129,7 @@ final class Cache
 
     private static function deleteObservedEntry(string $path, string $observed): void
     {
-        self::synchronized(static function () use ($path, $observed): void {
+        self::synchronized($path, static function () use ($path, $observed): void {
             // A writer may have replaced this file since readEntry read it.
             if (@file_get_contents($path) === $observed)
             {
@@ -320,14 +320,16 @@ final class Cache
                 return $cached['value'];
             }
 
-            $generation = self::synchronized(fn (): string => self::generation($key));
+            $generation = self::synchronized(self::path($key), fn (): string => self::generation($key));
 
             self::$computing[$key] = true;
             Profiler::increment('cache.recompute');
             $value = $callback();
-            self::synchronized(function () use ($key, $value, $ttl, $generation): void
+            if ($generation === null) return $value;
+
+            self::synchronized(self::path($key), function () use ($key, $value, $ttl, $generation): void
             {
-                if ($generation !== null && $generation === self::generation($key))
+                if ($generation === self::generation($key))
                 {
                     self::writeEntry($key, $value, $ttl);
                 }
@@ -348,11 +350,11 @@ final class Cache
 
     public static function forget(string $key): void
     {
-        self::synchronized(function () use ($key): void
+        self::synchronized(self::path($key), function () use ($key): void
         {
             self::advanceGeneration(self::path($key) . '.version');
             self::deleteFile(self::path($key));
-        });
+        }, required: true);
     }
 
     // =========================================
@@ -419,25 +421,40 @@ final class Cache
      * @param callable(): T $callback
      * @return T|null
      */
-    private static function synchronized(callable $callback): mixed
+    private static function synchronized(string $path, callable $callback, bool $required = false): mixed
     {
-        if (! self::ensureDirectory()) return null;
-        $lock = @fopen(self::directory() . DIRECTORY_SEPARATOR . '.metadata.lock', 'c');
-        if ($lock === false) throw new \RuntimeException('Cannot open cache metadata lock.');
+        if (! self::ensureDirectory())
+        {
+            if ($required) throw new \RuntimeException('Cannot create cache directory for invalidation.');
+            return null;
+        }
+        // Stable per-entry metadata locks let unrelated keys publish independently.
+        $lock = @fopen($path . '.metadata.lock', 'c');
+        if ($lock === false)
+        {
+            if ($required) throw new \RuntimeException('Cannot open cache metadata lock.');
+            Profiler::increment('cache.metadata_unavailable');
+            return null;
+        }
         $locked = false;
-        $deadline = hrtime(true) + 2_000_000_000;
+        // Optional cache work must not delay a response. Invalidation must succeed
+        // or report failure; silently dropping it could serve stale application data.
+        $deadline = hrtime(true) + ($required ? 2_000_000_000 : 0);
         try
         {
             do
             {
                 $locked = flock($lock, LOCK_EX | LOCK_NB);
                 if ($locked) break;
+                if (! $required) break;
                 usleep(20_000);
             } while (hrtime(true) < $deadline);
 
             if (! $locked)
             {
-                throw new \RuntimeException('Cache metadata lock timed out after 2 seconds.');
+                Profiler::increment('cache.metadata_timeout');
+                if ($required) throw new \RuntimeException('Cache invalidation lock timed out after 2 seconds.');
+                return null;
             }
             return $callback();
         }

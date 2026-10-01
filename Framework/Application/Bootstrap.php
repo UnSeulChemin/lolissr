@@ -46,6 +46,9 @@ final class Bootstrap
     {
         self::loadEnvOnly();
 
+        $compiled = BootstrapCache::load(BootstrapCache::path());
+        if ($compiled !== null) Config::prime($compiled['config']);
+
         RequestContext::start();
 
         self::configureTimezone();
@@ -60,9 +63,9 @@ final class Bootstrap
 
         self::registerServices($container, $serviceProvider);
 
-        $router = self::createRouter($container);
+        $router = new Router($compiled['routes'] ?? new RouteCollection(), $container);
 
-        self::registerRoutes($router);
+        if ($compiled === null) self::registerRoutes($router);
 
         /** @var Request $request */
         $request = $container->get(Request::class);
@@ -109,11 +112,6 @@ final class Bootstrap
     // =========================================
     // ROUTER
     // =========================================
-
-    private static function createRouter(Container $container): Router
-    {
-        return new Router(new RouteCollection(), $container);
-    }
 
     private static function registerRoutes(Router $router): void
     {
@@ -177,7 +175,7 @@ final class Bootstrap
     {
         $debug = App::debug();
 
-        error_reporting($debug ? E_ALL : 0);
+        error_reporting(E_ALL);
 
         ini_set('display_errors', $debug ? '1' : '0');
         ini_set('log_errors', '1');

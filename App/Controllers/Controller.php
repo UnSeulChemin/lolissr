@@ -408,7 +408,8 @@ abstract class Controller
                         'stylesheets' => PageStyles::forView($viewPath),
                         'flashToast' => $this->flashToastData(),
                         'requiresFreshNavigation' => $this->request->header('X-Prefetch') === 'true'
-                            && (Session::has('success') || Session::has('error')
+                            && Session::withLock(static fn (): bool =>
+                                Session::has('success') || Session::has('error')
                                 || Session::has('errors') || Session::has('old')),
                     ],
                 ],

@@ -8,6 +8,7 @@
 /storage/tools/
 
 # Donnees d'execution
+/storage/bootstrap/
 /storage/cache/*
 !/storage/cache/.gitkeep
 /storage/sessions/*

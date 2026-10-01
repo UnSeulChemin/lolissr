@@ -18,6 +18,9 @@ final class Env
      */
     private static array $managedKeys = [];
 
+    /** @var array<string, true> */
+    private static array $accessedKeys = [];
+
     private function __construct()
     {
     }
@@ -87,6 +90,8 @@ final class Env
         {
             return $default;
         }
+
+        self::$accessedKeys[$key] = true;
 
         if (array_key_exists($key, self::$items))
         {
@@ -162,6 +167,8 @@ final class Env
             return false;
         }
 
+        self::$accessedKeys[$key] = true;
+
         return array_key_exists($key, self::$items)
             || array_key_exists($key, $_ENV)
             || array_key_exists($key, $_SERVER)
@@ -177,6 +184,13 @@ final class Env
 
         self::$items = [];
         self::$managedKeys = [];
+        self::$accessedKeys = [];
+    }
+
+    /** @return list<string> */
+    public static function accessedKeys(): array
+    {
+        return array_keys(self::$accessedKeys);
     }
 
     // =========================================

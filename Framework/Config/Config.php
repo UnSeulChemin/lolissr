@@ -40,6 +40,13 @@ final class Config
         self::$resolved = [];
     }
 
+    /** @param array<string, array<string, mixed>> $items */
+    public static function prime(array $items): void
+    {
+        self::$items = $items;
+        self::$resolved = [];
+    }
+
     // =========================================
     // RÉSOLUTION
     // =========================================

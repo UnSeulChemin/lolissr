@@ -67,6 +67,13 @@ try
     $check(! array_key_exists('errors', $handler->writes[0]) && ! array_key_exists('old', $handler->writes[0]), 'Form state not consumed.');
     $check(session_status() === PHP_SESSION_NONE, 'Form retained the session lock.');
 
+    $handler->writes = [];
+    $hasFeedback = Session::withLock(static fn (): bool =>
+        Session::has('success') || Session::has('error') || Session::has('errors') || Session::has('old'));
+    $check(! $hasFeedback, 'Consumed feedback still present.');
+    $check(count($handler->writes) === 1, 'Feedback lookup reopened the session multiple times.');
+    $check(session_status() === PHP_SESSION_NONE, 'Feedback lookup retained the session lock.');
+
     Session::start();
     Session::withLock(static function () use ($check): void {
         Session::withLock(static fn () => Session::set('nested', true));
