@@ -39,6 +39,7 @@
             "@php tests/Framework/bootstrap-cache.php",
             "@php tests/Framework/production-errors.php",
             "@php tests/Framework/cache-expiration-race.php",
+            "@php tests/Framework/cache-ttl.php",
             "@php tests/Framework/flash-toast.php",
             "@php tests/Framework/framework-lifecycle.php",
             "@php tests/Framework/framework.php",

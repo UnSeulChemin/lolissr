@@ -1,5 +1,16 @@
 # Corrections et optimisations du framework
 
+## Clôture — TTL extrêmes du cache
+
+Le calcul d'expiration est plafonné à `PHP_INT_MAX` avant addition, pour éviter
+qu'un TTL extrême produise un flottant et une expiration immédiate à la lecture.
+La protection couvre le TTL configuré et celui fourni directement à `remember()`.
+`cache-ttl.php` vérifie leur réutilisation, l'expiration entière persistée, le TTL
+ordinaire et l'invalidation explicite. Il est intégré à `composer check`.
+
+Validation : `composer check` réussi (PHPStan, 67 tests HTTP, SPA et toutes les
+régressions). La documentation de configuration décrit ce plafonnement.
+
 ## Deuxième relecture de Config — 1er octobre 2026
 
 - La validation des entiers positifs refuse les booléens et les flottants avant

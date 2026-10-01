@@ -77,6 +77,10 @@ Les valeurs ci-dessous sont celles du code lorsque la variable est absente. Le f
 
 Les limites applicatives d'upload ne remplacent pas les limites de réception définies dans la configuration PHP du serveur.
 
+Si un TTL de cache dépasse la durée représentable, son expiration est plafonnée à
+`PHP_INT_MAX`, sans débordement. Cela vaut pour `CACHE_TTL` et les TTL fournis à
+`Cache::remember()` ; l'invalidation explicite reste possible.
+
 ## Manifeste JavaScript
 
 Le manifeste généré `javascript.php` contient l'entrée, les préchargements et les

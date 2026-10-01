@@ -157,12 +157,15 @@ final class Cache
             }
 
             $ttl = max(1, $ttl ?? self::ttl());
+            $now = time();
+            // Saturate before addition so expiration remains an integer in JSON.
+            $expiresAt = $now > PHP_INT_MAX - $ttl ? PHP_INT_MAX : $now + $ttl;
 
             try
             {
                 $json = json_encode(
                     [
-                        'expires_at' => time() + $ttl,
+                        'expires_at' => $expiresAt,
                         'value' => $value
                     ],
                     JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR
