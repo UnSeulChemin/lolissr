@@ -7,6 +7,16 @@ des mesures de charge ni une validation du serveur de production.
 
 ## Modifications appliquées
 
+- Les compteurs des titres et succès du profil intègrent les séries terminées
+  dans leur requête principale : un seul aller-retour SQL, contrôlé par la
+  régression `profile-read-only.php`.
+- L'artbook le plus représenté est choisi en une requête réunissant auteurs
+  et séries. Les auteurs restent prioritaires à égalité ; les égalités au sein
+  d'un type sont départagées par nom. Les cas vide, auteur seul, égalité et
+  série majoritaire sont couverts par `collection-projections.php`.
+- La recherche manga ne sélectionne plus `editeur` et `statut`, absents des
+  DTO de résultats. Les recherches HTTP/SPA conservent leur couverture existante.
+
 - Le changement de statut de lecture d'un artbook réutilise l'état retourné
   par son unique lecture verrouillée : une requête SQL évitée, sans retirer
   le verrou ni changer le calcul des récompenses.

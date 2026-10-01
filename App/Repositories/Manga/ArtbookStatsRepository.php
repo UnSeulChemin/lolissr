@@ -57,60 +57,23 @@ final class ArtbookStatsRepository extends Model
 
     public function findMostRepresented(): ?ArtbookRepresentationData
     {
-        $author = $this->fetchOne(
-            "
-            SELECT
-                'author' AS type,
-                auteur AS name,
-                COUNT(*) AS total,
-                MIN(thumbnail) AS thumbnail,
-                MIN(extension) AS extension
-
-            FROM {$this->table()}
-
-            WHERE auteur IS NOT NULL
-            AND auteur <> ''
-
-            GROUP BY auteur
-
-            ORDER BY total DESC
-
-            LIMIT 1
-            "
+        $winner = $this->fetchOne(
+            "SELECT * FROM (
+                SELECT 'author' AS type, auteur AS name, COUNT(*) AS total,
+                    MIN(thumbnail) AS thumbnail, MIN(extension) AS extension
+                FROM {$this->table()}
+                WHERE auteur IS NOT NULL AND auteur <> ''
+                GROUP BY auteur
+                UNION ALL
+                SELECT 'series' AS type, serie AS name, COUNT(*) AS total,
+                    MIN(thumbnail) AS thumbnail, MIN(extension) AS extension
+                FROM {$this->table()}
+                WHERE serie IS NOT NULL AND serie <> ''
+                GROUP BY serie
+            ) represented
+            ORDER BY total DESC, CASE WHEN type = 'author' THEN 0 ELSE 1 END, name ASC
+            LIMIT 1"
         );
-
-        $series = $this->fetchOne(
-            "
-            SELECT
-                'series' AS type,
-                serie AS name,
-                COUNT(*) AS total,
-                MIN(thumbnail) AS thumbnail,
-                MIN(extension) AS extension
-
-            FROM {$this->table()}
-
-            WHERE serie IS NOT NULL
-            AND serie <> ''
-
-            GROUP BY serie
-
-            ORDER BY total DESC
-
-            LIMIT 1
-            "
-        );
-
-        $authorTotal = $author !== null ? (int) $author->total : 0;
-        $seriesTotal = $series !== null ? (int) $series->total : 0;
-
-        if ($authorTotal === 0 && $seriesTotal === 0)
-        {
-            return null;
-        }
-
-        $winner = $authorTotal >= $seriesTotal ? $author : $series;
-
         return $winner !== null
             ? $this->mapToRepresentationDto($winner)
             : null;

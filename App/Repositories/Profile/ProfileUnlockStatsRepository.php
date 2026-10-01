@@ -6,8 +6,6 @@ namespace App\Repositories\Profile;
 
 use App\DTO\Profile\ProfileUnlockStatsData;
 use App\Models\Model;
-use App\Repositories\Manga\MangaStatsRepository;
-use Framework\Database\Database;
 
 final class ProfileUnlockStatsRepository extends Model
 {
@@ -20,11 +18,6 @@ final class ProfileUnlockStatsRepository extends Model
         'vocabularyLearned' => 'SELECT COUNT(*) FROM chinois_vocabulaire WHERE maitrise = 1',
         'grammarLearned' => 'SELECT COUNT(*) FROM chinois_grammaire WHERE maitrise = 1',
     ];
-
-    public function __construct(Database $db, private readonly MangaStatsRepository $mangaStats)
-    {
-        parent::__construct($db);
-    }
 
     public function forTitles(): ProfileUnlockStatsData
     {
@@ -59,11 +52,19 @@ final class ProfileUnlockStatsRepository extends Model
         {
             $select[] = '(' . self::COUNTERS[$counter] . ') AS ' . $counter;
         }
+        if ($includeSeries)
+        {
+            $select[] = "(SELECT COUNT(*) FROM (
+                SELECT slug FROM manga GROUP BY slug
+                HAVING COUNT(*) = SUM(lu)
+                AND MAX(CASE WHEN numero = 1 AND statut = 'termine' THEN 1 ELSE 0 END) = 1
+            ) completed) AS completedSeries";
+        }
         $row = $this->fetchOne('SELECT ' . implode(', ', $select));
 
         return new ProfileUnlockStatsData(
             readTomes: (int) ($row->readTomes ?? 0),
-            completedSeries: $includeSeries ? $this->mangaStats->countCompletedSeries() : 0,
+            completedSeries: (int) ($row->completedSeries ?? 0),
             readArtbooks: (int) ($row->readArtbooks ?? 0),
             figurinesCollected: (int) ($row->figurinesCollected ?? 0),
             nendoroidsCollected: (int) ($row->nendoroidsCollected ?? 0),

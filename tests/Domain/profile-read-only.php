@@ -93,7 +93,9 @@ $expectedCounters = [
 ];
 foreach ($expectedCounters as $method => $properties)
 {
+    ProfileQueryCounter::$executions = 0;
     $counts = $unlocks->$method();
+    if (ProfileQueryCounter::$executions !== 1) throw new RuntimeException('Unlock counters must use one query: ' . $method);
     foreach ($properties as $property)
     {
         if ($counts->$property !== $stats->$property)
