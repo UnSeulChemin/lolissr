@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-define('ROOT', dirname(__DIR__));
+define('ROOT', dirname(__DIR__, 2));
 
 echo PHP_EOL;
 echo '============================================================' . PHP_EOL;
@@ -55,7 +55,7 @@ function runPhpScript(string $script, array $arguments, string $message): void
 
     runCommand(
         array_merge(
-            [PHP_BINARY, ROOT . DIRECTORY_SEPARATOR . 'scripts' . DIRECTORY_SEPARATOR . $script],
+            [PHP_BINARY, __DIR__ . DIRECTORY_SEPARATOR . $script],
             $arguments
         ),
         $message . ' Failed.'

@@ -21,49 +21,81 @@
     },
 
     "scripts": {
-        "phpstan": "phpstan analyse --no-progress --memory-limit=512M",
-        "http-tests": ["php tests/Http/run.php", "php tests/Http/spa-http.php"],
-        "regression-tests": [
-            "php tests/Framework/framework.php",
-            "php tests/Framework/framework-lifecycle.php",
-            "php tests/Domain/achievement-xp.php",
-            "php tests/Domain/manga-xp-batch.php",
-            "php tests/Domain/collection-xp-batch.php",
-            "php tests/Domain/profile-read-only.php",
-            "php tests/Domain/collection-projections.php",
-            "php tests/Domain/manga-filtered-pages.php",
-            "php tests/Assets/css-bundle.php",
-            "php tests/Assets/page-styles.php",
-            "php tests/Assets/asset-versions.php",
-            "php tests/Assets/javascript-bundle.php",
-            "php tests/Build/atomic-file.php",
-            "php tests/Assets/javascript-retention.php",
-            "php tests/Build/release-archive.php",
-            "php tests/Framework/cache-expiration-race.php",
-            "php tests/Framework/flash-toast.php",
-            "php tests/Build/build-lock.php"
-        ],
-        "check": ["@phpstan", "@regression-tests", "@http-tests"],
-        "browser-tests": "@php tests/Browser/run-browser-tests.php",
+        "check": ["@phpstan", "@http-tests", "@regression-tests"],
         "check:all": ["@check", "@browser-tests"],
 
-        "css:build": "php scripts/build-css.php",
-        "assets:build": "php scripts/build-assets.php",
-        "js:install": "php scripts/install-esbuild.php",
-        "js:build": "php scripts/build-js.php",
-        "js:prune": "php scripts/prune-javascript.php",
-        "db:deduplicate-indexes": "php scripts/deduplicate-indexes.php",
-        "images:build": "php scripts/build-profile-images.php",
-        "xp:backfill": "php scripts/backfill-achievement-xp.php",
+        "phpstan": "phpstan analyse --no-progress --memory-limit=512M",
+        "http-tests": ["@php tests/Http/run-http.php", "@php tests/Http/spa-http.php"],
+        "browser-tests": "@php tests/Browser/run-browser-tests.php",
+        "regression-tests": [
+            "@php tests/Framework/cache-expiration-race.php",
+            "@php tests/Framework/flash-toast.php",
+            "@php tests/Framework/framework-lifecycle.php",
+            "@php tests/Framework/framework.php",
+            "@php tests/Domain/achievement-xp.php",
+            "@php tests/Domain/manga-xp-batch.php",
+            "@php tests/Domain/collection-xp-batch.php",
+            "@php tests/Domain/profile-read-only.php",
+            "@php tests/Domain/collection-projections.php",
+            "@php tests/Domain/manga-filtered-pages.php",
+            "@php tests/Assets/css-bundle.php",
+            "@php tests/Assets/page-styles.php",
+            "@php tests/Assets/asset-versions.php",
+            "@php tests/Assets/javascript-bundle.php",
+            "@php tests/Assets/javascript-retention.php",
+            "@php tests/Build/atomic-file.php",
+            "@php tests/Build/release-archive.php",
+            "@php tests/Build/build-lock.php"
+        ],
 
-        "logs:clear": "@php scripts/clear-runtime.php logs",
-        "cache:clear": "@php scripts/clear-runtime.php cache",
-        "sessions:clear": "@php scripts/clear-runtime.php sessions",
+        "assets:build": "@php scripts/Assets/build-assets.php",
+        "css:build": "@php scripts/Assets/build-css.php",
+        "js:install": "@php scripts/Assets/install-esbuild.php",
+        "js:build": "@php scripts/Assets/build-js.php",
+        "js:prune": "@php scripts/Assets/prune-javascript.php",
+        "images:build": "@php scripts/Assets/build-profile-images.php",
+
         "dev:reset": ["@logs:clear", "@cache:clear", "@sessions:clear", "@composer dump-autoload"],
+        "logs:clear": "@php scripts/Maintenance/clear-runtime.php logs",
+        "cache:clear": "@php scripts/Maintenance/clear-runtime.php cache",
+        "sessions:clear": "@php scripts/Maintenance/clear-runtime.php sessions",
 
-        "backup": "php scripts/backup-database.php",
-        "release:zip": "php scripts/build-release.php",
-        "git:reset": "php scripts/git-reset.php",
-        "publish:git": "php scripts/publish-git.php"
+        "backup": "@php scripts/Database/backup-database.php",
+        "db:deduplicate-indexes": "@php scripts/Database/deduplicate-indexes.php",
+        "xp:backfill": "@php scripts/Profile/backfill-achievement-xp.php",
+
+        "release:zip": "@php scripts/Release/build-release.php",
+        "git:reset": "@php scripts/Maintenance/git-reset.php",
+        "publish:git": "@php scripts/Release/publish-git.php"
+    },
+
+    "scripts-descriptions": {
+        "check": "[Tests] Analyse PHP + tests HTTP et régression.",
+        "check:all": "[Tests] Tous les contrôles, navigateur compris.",
+
+        "phpstan": "[Tests] Analyse statique du code PHP.",
+        "http-tests": "[Tests] Vérifie les réponses HTTP et la navigation SPA.",
+        "browser-tests": "[Tests] Lance les tests dans le navigateur.",
+        "regression-tests": "[Tests] Vérifie le framework, les fonctionnalités et les builds.",
+
+        "assets:build": "[Build] Compile CSS et JavaScript, puis actualise leurs versions.",
+        "css:build": "[Build] Compile les styles CSS.",
+        "js:install": "[Build] Installe esbuild pour compiler le JavaScript.",
+        "js:build": "[Build] Compile les fichiers JavaScript.",
+        "js:prune": "[Build] Supprime les anciens bundles JavaScript après leur délai de rétention.",
+        "images:build": "[Build] Génère les images de profil.",
+
+        "dev:reset": "[Nettoyage] Vide logs, cache et sessions, puis régénère l’autoload.",
+        "logs:clear": "[Nettoyage] Vide les logs.",
+        "cache:clear": "[Nettoyage] Vide le cache.",
+        "sessions:clear": "[Nettoyage] Supprime les sessions.",
+
+        "backup": "[Données] Sauvegarde la base de données.",
+        "db:deduplicate-indexes": "[Données] Gère les index redondants de la base.",
+        "xp:backfill": "[Données] USER_ID [--apply] : audite les XP ; --apply ajoute les récompenses manquantes.",
+
+        "release:zip": "[Publication] Crée une archive ZIP de livraison.",
+        "git:reset": "[Git] Annule les modifications locales et supprime les fichiers non suivis (hors fichiers ignorés).",
+        "publish:git": "[Publication] Compile les assets et publie les changements avec Git."
     }
 }

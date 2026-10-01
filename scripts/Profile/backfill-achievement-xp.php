@@ -15,14 +15,14 @@ if (PHP_SAPI !== 'cli')
     exit;
 }
 
-define('ROOT', dirname(__DIR__));
+define('ROOT', dirname(__DIR__, 2));
 require ROOT . '/vendor/autoload.php';
 require ROOT . '/Framework/Support/Helpers.php';
 
 $userId = filter_var($argv[1] ?? '', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 if ($userId === false || count($argv) > 3 || (isset($argv[2]) && $argv[2] !== '--apply'))
 {
-    fwrite(STDERR, "Usage: php scripts/backfill-achievement-xp.php USER_ID [--apply]\n");
+    fwrite(STDERR, "Usage: php scripts/Profile/backfill-achievement-xp.php USER_ID [--apply]\n");
     exit(1);
 }
 
@@ -47,6 +47,23 @@ if (! $apply)
 }
 $before = $rewards->totalForUser($user);
 $stats = $statsService->getStats($user);
+$audit = $rewards->audit($user, $stats);
+echo "Diagnostic avant modification (statistiques actuelles) :" . PHP_EOL;
+echo 'XP de succès enregistrée : ' . $before . PHP_EOL;
+echo 'Total XP calculé : ' . $audit['expectedTotal'] . PHP_EOL;
+foreach ($audit['issues'] as $issue)
+{
+    echo 'Écart : ' . $issue . PHP_EOL;
+}
+foreach ($audit['missing'] as $key => $xp)
+{
+    echo "Récompense manquante : $key (+$xp XP)." . PHP_EOL;
+}
+if ($audit['issues'] === [] && $audit['missing'] === [])
+{
+    echo 'Aucun écart détecté.' . PHP_EOL;
+}
+echo '--apply ajoute uniquement les récompenses manquantes ; aucun retrait d’XP ni correction des récompenses existantes.' . PHP_EOL;
 if ($apply)
 {
     $rewards->rewardAll($user, $stats);

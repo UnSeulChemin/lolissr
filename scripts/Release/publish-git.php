@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Framework\Application\Bootstrap;
 
-define('ROOT', dirname(__DIR__));
+define('ROOT', dirname(__DIR__, 2));
 
 require ROOT . '/vendor/autoload.php';
 require ROOT . '/Framework/Support/Helpers.php';
@@ -25,7 +25,7 @@ if ($version === '')
 }
 
 $commitMessage = "chore: {$projectName} v{$version}";
-require __DIR__ . '/build-assets.php';
+require __DIR__ . '/../Assets/build-assets.php';
 
 echo PHP_EOL;
 echo '============================================================' . PHP_EOL;

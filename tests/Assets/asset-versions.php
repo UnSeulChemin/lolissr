@@ -11,7 +11,7 @@ foreach ($manifest as $path => $version)
 {
     if (! is_file(ROOT . '/public/' . $path) || hash_file('sha256', ROOT . '/public/' . $path) !== $version)
     {
-        throw new RuntimeException('Stale asset manifest; run php scripts/build-assets.php: ' . $path);
+        throw new RuntimeException('Stale asset manifest; run php scripts/Assets/build-assets.php: ' . $path);
     }
     if (\App\Support\AssetVersions::version($path) !== $version)
     {

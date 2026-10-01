@@ -63,7 +63,13 @@ final readonly class AchievementXpService
 
     public function rewardAll(User $user, ProfileStatsData $stats): void
     {
-        $this->award($user, [
+        $this->award($user, $this->expectedRewards($stats));
+    }
+
+    /** @return array<string, int> */
+    private function expectedRewards(ProfileStatsData $stats): array
+    {
+        return [
             ...$this->eligible('tomes', AchievementRewards::TOMES, $stats->readTomes),
             ...$this->eligible('series', AchievementRewards::SERIES, $stats->completedSeries),
             ...$this->eligible('artbooks', AchievementRewards::ARTBOOKS, $stats->readArtbooks),
@@ -72,7 +78,64 @@ final readonly class AchievementXpService
             ...$this->eligible('peluches', AchievementRewards::PELUCHES, $stats->peluchesCollected),
             ...$this->eligible('vocabulary', AchievementRewards::VOCABULARY, $stats->vocabularyLearned),
             ...$this->eligible('grammar', AchievementRewards::GRAMMAR, $stats->grammarLearned),
-        ]);
+        ];
+    }
+
+    /** @return array{missing: array<string, int>, issues: list<string>, expectedTotal: int, expectedLevel: int, expectedXp: int} */
+    public function audit(User $user, ProfileStatsData $stats): array
+    {
+        $expected = $this->expectedRewards($stats);
+        $catalog = [];
+        foreach ([
+            'tomes' => AchievementRewards::TOMES,
+            'series' => AchievementRewards::SERIES,
+            'artbooks' => AchievementRewards::ARTBOOKS,
+            'figurines' => AchievementRewards::FIGURINES,
+            'nendoroids' => AchievementRewards::NENDOROIDS,
+            'peluches' => AchievementRewards::PELUCHES,
+            'vocabulary' => AchievementRewards::VOCABULARY,
+            'grammar' => AchievementRewards::GRAMMAR,
+        ] as $category => $amounts)
+        {
+            $catalog += $this->eligible($category, $amounts, PHP_INT_MAX);
+        }
+        $statement = $this->database->prepare('SELECT achievement_key, xp FROM achievement_xp_rewards WHERE user_id = ?');
+        $statement->execute([$user->id]);
+        /** @var list<array{achievement_key: string, xp: int|string}> $rows */
+        $rows = $statement->fetchAll(\PDO::FETCH_ASSOC);
+        $missing = $expected;
+        $issues = [];
+        foreach ($rows as $row)
+        {
+            $key = $row['achievement_key'];
+            unset($missing[$key]);
+            if (!isset($catalog[$key]))
+            {
+                $issues[] = "$key : récompense inconnue (" . $row['xp'] . ' XP).';
+                continue;
+            }
+            if ((int) $row['xp'] !== $catalog[$key])
+            {
+                $issues[] = "$key : montant enregistré " . $row['xp'] . ', attendu ' . $catalog[$key] . ' XP.';
+            }
+            if (!isset($expected[$key]))
+            {
+                $issues[] = "$key : récompense non justifiée par les statistiques actuelles.";
+            }
+        }
+        $total = $stats->totalXp - $stats->achievementXp + array_sum($expected);
+        $level = 1;
+        $xp = $total;
+        while ($xp >= $this->levels->xpRequiredForLevel($level))
+        {
+            $xp -= $this->levels->xpRequiredForLevel($level);
+            $level++;
+        }
+        if ($user->level !== $level || $user->xp !== $xp)
+        {
+            $issues[] = "Compte : niveau {$user->level}, {$user->xp} XP ; attendu niveau $level, $xp XP (total calculé : $total).";
+        }
+        return ['missing' => $missing, 'issues' => $issues, 'expectedTotal' => $total, 'expectedLevel' => $level, 'expectedXp' => $xp];
     }
 
     /** @param array<int, int> $rewards

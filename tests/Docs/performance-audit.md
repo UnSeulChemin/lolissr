@@ -77,7 +77,7 @@ cet audit ; le compromis de qualité reste à évaluer.
   chemins relatifs littéraux, imports différés inclus : aucun fichier orphelin
   identifié par cette analyse. Cela ne prouve pas l'utilisation de chaque export.
 - Les cinq paires connues d'index redondants sont déjà nettoyées, vérification
-  en lecture seule avec `scripts/deduplicate-indexes.php`.
+  en lecture seule avec `scripts/Database/deduplicate-indexes.php`.
 - Cache applicatif activé ; l'environnement local utilise volontairement les
   sources. Le bundle et le manifeste de production ont leurs tests dédiés.
 - Recherche globale groupée, délai de saisie et annulation des requêtes ;

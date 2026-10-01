@@ -8,7 +8,7 @@ const ALLOWED_RUNTIME_DIRECTORIES = [
     'sessions' => 'storage/sessions',
 ];
 
-define('ROOT', dirname(__DIR__));
+define('ROOT', dirname(__DIR__, 2));
 
 $target = strtolower(trim((string) ($argv[1] ?? '')));
 

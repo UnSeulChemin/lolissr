@@ -8,7 +8,7 @@ if (PHP_SAPI !== 'cli')
     exit;
 }
 
-$root = dirname(__DIR__);
+$root = dirname(__DIR__, 2);
 
 // Discard tracked changes, then remove untracked files and directories.
 // Ignored files are preserved. Stop immediately if either command fails.

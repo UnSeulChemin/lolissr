@@ -63,7 +63,7 @@ Les tests sont exécutés avec un utilisateur connecté.
 
 ## Exécution
 
-`php tests/Http/run.php` nécessite Apache local et un compte existant, configuré
+`php tests/Http/run-http.php` nécessite Apache local et un compte existant, configuré
 avec `HTTP_TEST_USERNAME` et `HTTP_TEST_PASSWORD` dans `.env`.
 
 Les cas ne réalisent pas de modification volontaire des collections ni d'upload réel.
@@ -148,8 +148,8 @@ php tests/Browser/run-page-styles-browser.php http://localhost/lolissr tests/Bro
 ## Rattrapage des anciennes récompenses
 
 ```powershell
-php scripts/backfill-achievement-xp.php USER_ID
-php scripts/backfill-achievement-xp.php USER_ID --apply
+php scripts/Profile/backfill-achievement-xp.php USER_ID
+php scripts/Profile/backfill-achievement-xp.php USER_ID --apply
 ```
 
 La première commande consulte les XP existantes en lecture seule. La seconde attribue

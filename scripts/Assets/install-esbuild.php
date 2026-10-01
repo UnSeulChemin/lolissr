@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 if (PHP_SAPI !== 'cli') { http_response_code(404); exit; }
-require __DIR__ . '/lib/JavaScriptBuilder.php';
+require __DIR__ . '/../lib/JavaScriptBuilder.php';
 $platform = match (PHP_OS_FAMILY) { 'Windows' => 'win32', 'Darwin' => 'darwin', 'Linux' => 'linux', default => throw new RuntimeException('Unsupported platform') };
 $architecture = match (strtolower(php_uname('m'))) { 'amd64', 'x86_64' => 'x64', 'aarch64', 'arm64' => 'arm64', default => throw new RuntimeException('Unsupported architecture') };
 $download = static function (string $url): string {
@@ -33,7 +33,7 @@ if (!str_starts_with($url, 'https://registry.npmjs.org/')) throw new RuntimeExce
 $archiveBytes = $download($url);
 $integrity = 'sha512-' . base64_encode(hash('sha512', $archiveBytes, true));
 if (!hash_equals($metadata['dist']['integrity'], $integrity)) throw new RuntimeException('Package integrity mismatch');
-$target = JavaScriptBuilder::binary(dirname(__DIR__));
+$target = JavaScriptBuilder::binary(dirname(__DIR__, 2));
 if (!is_dir(dirname($target))) mkdir(dirname($target), 0755, true);
 $archive = dirname($target) . '/esbuild-download.tgz';
 try

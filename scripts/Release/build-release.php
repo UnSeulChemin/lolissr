@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Framework\Application\Bootstrap;
 
-define('ROOT', dirname(__DIR__));
+define('ROOT', dirname(__DIR__, 2));
 
 require ROOT . '/vendor/autoload.php';
 require ROOT . '/Framework/Support/Helpers.php';
@@ -30,7 +30,7 @@ if (! class_exists(ZipArchive::class))
 }
 
 $releaseName = $projectName . '_v' . $version;
-require __DIR__ . '/build-assets.php';
+require __DIR__ . '/../Assets/build-assets.php';
 $releasesDirectory = ROOT . DIRECTORY_SEPARATOR . 'releases';
 $temporaryRoot = $releasesDirectory . DIRECTORY_SEPARATOR . '.build-temp-' . bin2hex(random_bytes(8));
 $buildDirectory = $temporaryRoot . DIRECTORY_SEPARATOR . $releaseName;
@@ -89,7 +89,7 @@ foreach ($rootFiles as $file)
     copyRequiredFile($file, $buildDirectory);
 }
 
-require_once __DIR__ . '/lib/ProductionDependencies.php';
+require_once __DIR__ . '/../lib/ProductionDependencies.php';
 ProductionDependencies::install($buildDirectory);
 
 $optionalFiles = [
@@ -311,7 +311,7 @@ function verifyRelease(string $buildDirectory): void
 
 function createArchive(string $buildDirectory, string $zipFile): void
 {
-    require_once __DIR__ . '/lib/ReleaseArchive.php';
+    require_once __DIR__ . '/../lib/ReleaseArchive.php';
     ReleaseArchive::create($buildDirectory, $zipFile);
 }
 function removeDirectory(string $directory): void

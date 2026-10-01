@@ -57,4 +57,25 @@ $other->level = 1;
 $other->xp = 0;
 $service->rewardManga($other, 1, 0);
 $assert($service->totalForUser($other) === 50 && $service->totalForUser($user) === 19300, 'User reward isolation failed');
-echo "PASS: achievement batches, partial claims, duplicate prevention, level progression, rollback and user isolation (temporary tables only).\n";
+$database->exec("UPDATE achievement_xp_rewards SET xp = 999 WHERE user_id = 2 AND achievement_key = 'tomes_1'");
+$database->exec("INSERT INTO achievement_xp_rewards VALUES (2, 'tomes_25', 1250), (2, 'obsolete', 7)");
+$stats = new \App\DTO\Profile\ProfileStatsData(
+    readTomes: 10, tomeXp: 50, completedSeries: 0, seriesXp: 0,
+    readArtbooks: 0, artbookXp: 0, figurinesCollected: 0, figurinesXp: 0,
+    nendoroidsCollected: 0, nendoroidsXp: 0, peluchesCollected: 0, peluchesXp: 0,
+    vocabularyLearned: 0, vocabularyXp: 0, grammarLearned: 0, grammarXp: 0,
+    totalXp: 2306, achievementXp: 2256,
+);
+$beforeAudit = [$other->level, $other->xp, $service->totalForUser($other)];
+$audit = $service->audit($other, $stats);
+$assert($audit['missing'] === ['tomes_10' => 500], 'Audit missing rewards incorrect');
+$assert(count($audit['issues']) === 4, 'Audit must detect amount, eligibility, unknown key and account mismatch');
+$assert($audit['expectedTotal'] === 600 && $audit['expectedLevel'] === 16 && $audit['expectedXp'] === 0, 'Audit calculated progression incorrect');
+$assert([$other->level, $other->xp, $service->totalForUser($other)] === $beforeAudit, 'Audit changed account data');
+$service->rewardAll($other, $stats);
+$assert($service->totalForUser($other) === 2756, 'Apply must only add the missing reward');
+$assert((int) $database->query("SELECT xp FROM achievement_xp_rewards WHERE user_id = 2 AND achievement_key = 'tomes_1'")->fetchColumn() === 999, 'Apply corrected an existing reward');
+$afterApply = [$other->level, $other->xp, $service->totalForUser($other)];
+$service->rewardAll($other, $stats);
+$assert([$other->level, $other->xp, $service->totalForUser($other)] === $afterApply, 'Repeated apply changed account data');
+echo "PASS: achievement rewards, audit, additive backfill, duplicate prevention, rollback and user isolation (temporary tables only).\n";

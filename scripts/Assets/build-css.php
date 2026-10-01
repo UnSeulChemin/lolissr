@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/lib/CssBundleBuilder.php';
-require_once __DIR__ . '/lib/BuildLock.php';
-BuildLock::acquire(dirname(__DIR__));
+require_once __DIR__ . '/../lib/CssBundleBuilder.php';
+require_once __DIR__ . '/../lib/BuildLock.php';
+BuildLock::acquire(dirname(__DIR__, 2));
 
-$cssDirectory = dirname(__DIR__) . '/public/css';
+$cssDirectory = dirname(__DIR__, 2) . '/public/css';
 $cssBundle = CssBundleBuilder::compile($cssDirectory);
 $cssOutput = $cssDirectory . '/app.bundle.css';
 if (! is_file($cssOutput) || file_get_contents($cssOutput) !== $cssBundle)

@@ -7,7 +7,7 @@ use Framework\Application\Bootstrap;
 const MAX_BACKUPS = 20;
 const MIN_BACKUP_SIZE = 100;
 
-define('ROOT', dirname(__DIR__));
+define('ROOT', dirname(__DIR__, 2));
 
 require ROOT . '/vendor/autoload.php';
 require ROOT . '/Framework/Support/Helpers.php';

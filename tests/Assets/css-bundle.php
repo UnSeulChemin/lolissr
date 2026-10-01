@@ -8,7 +8,7 @@ $directory = dirname(__DIR__, 2) . '/public/css';
 $bundle = CssBundleBuilder::compile($directory);
 if (! is_file($directory . '/app.bundle.css') || file_get_contents($directory . '/app.bundle.css') !== $bundle)
 {
-    throw new RuntimeException('CSS bundle is stale: run php scripts/build-css.php.');
+    throw new RuntimeException('CSS bundle is stale: run php scripts/Assets/build-css.php.');
 }
 if (substr_count($bundle, '@import') !== 1 || ! str_contains($bundle, 'https://fonts.googleapis.com/'))
 {
