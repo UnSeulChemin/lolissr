@@ -2,6 +2,16 @@
 
 ## Corrections
 
+- Les cinq collections suppriment l'identifiant observé, avec contrôle du nombre
+  de lignes supprimées. Un objet disparu renvoie 404 et ne déclenche aucun nettoyage
+  d'image ; une recréation sous le même slug/numéro est préservée.
+- Les nouveaux uploads portent un suffixe aléatoire propre au fichier. Le préfixe
+  lisible est limité en octets pour accepter les noms multioctets. Le nettoyage
+  différé d'un ancien objet ne réutilise pas le chemin d'une nouvelle image.
+- Les extensions sont comparées au MIME détecté (avec l'alias jpeg/jpg) ; une
+  discordance renvoie 422. Les formats sans correspondance connue sont refusés.
+  Les images déjà stockées ne sont pas renommées.
+
 - Les formulaires de vocabulaire et de grammaire acceptent uniquement un chemin
   de retour relatif à l'application. Les URL externes, chemins absolus, traversées
   de répertoire, antislashs et caractères de contrôle utilisent la destination
@@ -25,6 +35,12 @@ empreintes JavaScript réservées au build restent dans `scripts/Assets/`.
 
 `tests/Domain/app-boundaries.php` vérifie les chemins de retour GET/POST et les
 six paginations vides avec SQLite en mémoire. Il fait partie de `composer check`.
+
+`collection-delete-identity.php` reproduit un remplacement entre lecture et
+suppression sur cinq tables SQLite en mémoire. `media-integrity.php` vérifie
+les paires MIME/extensions et la préservation d'une nouvelle image lors du
+nettoyage de l'ancienne ; seules la provenance HTTP et l'opération de déplacement
+d'upload sont simulées, le contenu et les opérations disque sont réels.
 
 Validation réussie : `composer validate --no-check-publish`,
 `composer check-platform-reqs` et `composer check` (PHPStan, 67 tests HTTP, SPA

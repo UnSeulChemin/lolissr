@@ -171,12 +171,9 @@ final class MangaRepository extends Model
         );
     }
 
-    public function deleteBySlugAndNumero(string $slug, int $numero): bool
+    public function deleteById(int $id): bool
     {
-        return $this->delete([
-            'slug' => $this->normalizeSlug($slug),
-            'numero' => $numero,
-        ]);
+        return $this->deleteExistingById($id);
     }
 
     public function seriesExists(string $slug): bool

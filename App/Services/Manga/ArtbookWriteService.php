@@ -223,21 +223,13 @@ final readonly class ArtbookWriteService
         }
 
         $result = $this->database->transaction(
-            function () use ($slug, $numero): ServiceResult
+            function () use ($artbook): ServiceResult
             {
-                $deleted = $this->artbookRepository->deleteBySlugAndNumero($slug, $numero);
+                $deleted = $this->artbookRepository->deleteById($artbook->id);
 
-                $failure = $this->writeFailed(
-                    $deleted,
-                    'Delete artbook',
-                    $slug,
-                    $numero,
-                    'Erreur lors de la suppression'
-                );
-
-                if ($failure !== null)
+                if (!$deleted)
                 {
-                    return $failure;
+                    return $this->error('Élément introuvable ou déjà supprimé', 404);
                 }
 
                 return $this->success('Artbook supprimé avec succès');

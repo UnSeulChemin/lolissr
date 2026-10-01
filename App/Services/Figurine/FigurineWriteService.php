@@ -199,21 +199,13 @@ final readonly class FigurineWriteService
         }
 
         $result = $this->database->transaction(
-            function () use ($slug, $numero): ServiceResult
+            function () use ($figurine): ServiceResult
             {
-                $deleted = $this->figurineRepository->deleteBySlugAndNumero($slug, $numero);
+                $deleted = $this->figurineRepository->deleteById($figurine->id);
 
-                $failure = $this->writeFailed(
-                    $deleted,
-                    'Delete figurine',
-                    $slug,
-                    $numero,
-                    'Erreur lors de la suppression'
-                );
-
-                if ($failure !== null)
+                if (!$deleted)
                 {
-                    return $failure;
+                    return $this->error('Élément introuvable ou déjà supprimé', 404);
                 }
 
                 return $this->success('Figurine supprimée avec succès');

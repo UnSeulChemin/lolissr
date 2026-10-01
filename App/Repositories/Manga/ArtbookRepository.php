@@ -102,12 +102,9 @@ final class ArtbookRepository extends Model
         return $statement !== false && $statement->rowCount() === 1;
     }
 
-    public function deleteBySlugAndNumero(string $slug, int $numero): bool
+    public function deleteById(int $id): bool
     {
-        return $this->delete([
-            'slug' => $this->normalizeSlug($slug),
-            'numero' => $numero,
-        ]);
+        return $this->deleteExistingById($id);
     }
 
     /*

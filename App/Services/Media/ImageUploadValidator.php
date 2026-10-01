@@ -158,6 +158,25 @@ final readonly class ImageUploadValidator
             );
         }
 
+        $expectedExtension = match ($mimeType)
+        {
+            'image/jpeg' => 'jpg',
+            'image/png' => 'png',
+            'image/webp' => 'webp',
+            'image/gif' => 'gif',
+            'image/bmp' => 'bmp',
+            'image/avif' => 'avif',
+            default => null,
+        };
+        if ($extension !== $expectedExtension)
+        {
+            return $this->failure(
+                'Upload: extension incompatible avec le contenu détecté.',
+                'L’extension du fichier ne correspond pas au format de l’image',
+                422
+            );
+        }
+
         return new ValidatedImageUploadData(
             temporaryPath: $temporaryPath,
             extension: $extension

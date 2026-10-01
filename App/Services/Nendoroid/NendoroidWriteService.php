@@ -197,21 +197,13 @@ final readonly class NendoroidWriteService
         }
 
         $result = $this->database->transaction(
-            function () use ($slug, $numero): ServiceResult
+            function () use ($nendoroid): ServiceResult
             {
-                $deleted = $this->nendoroidRepository->deleteBySlugAndNumero($slug, $numero);
+                $deleted = $this->nendoroidRepository->deleteById($nendoroid->id);
 
-                $failure = $this->writeFailed(
-                    $deleted,
-                    'Delete nendoroid',
-                    $slug,
-                    $numero,
-                    'Erreur lors de la suppression'
-                );
-
-                if ($failure !== null)
+                if (!$deleted)
                 {
-                    return $failure;
+                    return $this->error('Élément introuvable ou déjà supprimé', 404);
                 }
 
                 return $this->success('Nendoroid supprimé avec succès');

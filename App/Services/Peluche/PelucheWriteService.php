@@ -197,21 +197,13 @@ final readonly class PelucheWriteService
         }
 
         $result = $this->database->transaction(
-            function () use ($slug, $numero): ServiceResult
+            function () use ($peluche): ServiceResult
             {
-                $deleted = $this->pelucheRepository->deleteBySlugAndNumero($slug, $numero);
+                $deleted = $this->pelucheRepository->deleteById($peluche->id);
 
-                $failure = $this->writeFailed(
-                    $deleted,
-                    'Delete peluche',
-                    $slug,
-                    $numero,
-                    'Erreur lors de la suppression'
-                );
-
-                if ($failure !== null)
+                if (!$deleted)
                 {
-                    return $failure;
+                    return $this->error('Élément introuvable ou déjà supprimé', 404);
                 }
 
                 return $this->success('Peluche supprimée avec succès');

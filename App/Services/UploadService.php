@@ -62,6 +62,9 @@ final readonly class UploadService
             );
         }
 
+        // A recreated record must never reuse a file awaiting an older deletion's cleanup.
+        $thumbnail = mb_strcut($thumbnail, 0, 180, 'UTF-8') . '-' . bin2hex(random_bytes(16));
+
         $destination = $this->buildDestinationPath(
             $directory,
             $thumbnail,

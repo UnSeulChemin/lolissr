@@ -47,6 +47,8 @@
             "@php tests/Framework/framework.php",
             "@php tests/Domain/achievement-xp.php",
             "@php tests/Domain/app-boundaries.php",
+            "@php tests/Domain/collection-delete-identity.php",
+            "@php tests/Domain/media-integrity.php",
             "@php tests/Domain/manga-xp-batch.php",
             "@php tests/Domain/collection-xp-batch.php",
             "@php tests/Domain/profile-read-only.php",

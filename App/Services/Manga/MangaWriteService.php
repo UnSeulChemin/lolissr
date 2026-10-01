@@ -283,22 +283,14 @@ final readonly class MangaWriteService
         }
 
         $result = $this->database->transaction(
-            function () use ($slug, $numero): ServiceResult
+            function () use ($slug, $manga): ServiceResult
             {
                 $this->mangaRepository->lockSeries($slug);
-                $deleted = $this->mangaRepository->deleteBySlugAndNumero($slug, $numero);
+                $deleted = $this->mangaRepository->deleteById($manga->id);
 
-                $failure = $this->writeFailed(
-                    $deleted,
-                    'Delete manga',
-                    $slug,
-                    $numero,
-                    'Erreur lors de la suppression'
-                );
-
-                if ($failure !== null)
+                if (!$deleted)
                 {
-                    return $failure;
+                    return $this->error('Élément introuvable ou déjà supprimé', 404);
                 }
 
                 $this->mangaXpRewardService->rewardSeriesAchievements();
