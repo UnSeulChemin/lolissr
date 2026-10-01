@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Framework\Http\Middleware;
 
-use Framework\Exceptions\JsonResponseException;
+use Framework\Http\Exceptions\JsonResponseException;
 use Framework\Http\JsonResponse;
 use Framework\Http\Request;
 

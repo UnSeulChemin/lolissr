@@ -13,7 +13,7 @@ use App\Repositories\Chinois\ChinoisGrammaireRepository;
 use App\Repositories\Chinois\ChinoisVocabulaireRepository;
 
 use Framework\Database\Database;
-use Framework\Exceptions\NotFoundException;
+use Framework\Http\Exceptions\NotFoundException;
 
 final readonly class ChinoisWriteService
 {

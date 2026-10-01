@@ -8,7 +8,7 @@ use App\Controllers\Controller;
 use App\DTO\Common\ServiceResult;
 use App\Services\Sql\SqlReadService;
 
-use Framework\Exceptions\ValidationException;
+use Framework\Http\Exceptions\ValidationException;
 use Framework\Http\Request;
 
 use Throwable;

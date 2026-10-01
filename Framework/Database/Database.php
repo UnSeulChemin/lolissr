@@ -7,7 +7,7 @@ namespace Framework\Database;
 use Framework\Application\App;
 use Framework\Config\DatabaseConfig;
 use Framework\Debug\Profiler;
-use Framework\Support\Logger;
+use Framework\Logging\Logger;
 
 use LogicException;
 use PDO;

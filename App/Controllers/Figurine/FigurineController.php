@@ -11,8 +11,8 @@ use App\Http\Requests\Figurine\FigurineUpdateRequest;
 use App\Services\Figurine\FigurineReadService;
 use App\Services\Figurine\FigurineWriteService;
 
-use Framework\Exceptions\BaseHttpException;
-use Framework\Exceptions\NotFoundException;
+use Framework\Http\Exceptions\BaseHttpException;
+use Framework\Http\Exceptions\NotFoundException;
 use Framework\Http\Request;
 
 final class FigurineController extends Controller

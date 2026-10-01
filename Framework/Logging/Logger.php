@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Framework\Support;
+namespace Framework\Logging;
 
 use Framework\Application\App;
 use Framework\Container\AppContainer;

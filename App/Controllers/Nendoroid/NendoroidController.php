@@ -11,8 +11,8 @@ use App\Http\Requests\Nendoroid\NendoroidUpdateRequest;
 use App\Services\Nendoroid\NendoroidReadService;
 use App\Services\Nendoroid\NendoroidWriteService;
 
-use Framework\Exceptions\BaseHttpException;
-use Framework\Exceptions\NotFoundException;
+use Framework\Http\Exceptions\BaseHttpException;
+use Framework\Http\Exceptions\NotFoundException;
 use Framework\Http\Request;
 
 final class NendoroidController extends Controller

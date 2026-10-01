@@ -9,7 +9,7 @@ use App\Models\User;
 use App\Repositories\Auth\UserRepository;
 
 use Framework\Auth\AuthenticationInterface;
-use Framework\Support\Session;
+use Framework\Http\Session;
 
 final class AuthService implements AuthenticationInterface
 {

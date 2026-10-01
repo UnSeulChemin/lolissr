@@ -8,7 +8,7 @@ use Framework\Debug\Profiler;
 use Framework\Http\Middleware\SecurityHeadersMiddleware;
 use Framework\Http\Request;
 use Framework\Routing\Router;
-use Framework\Support\Session;
+use Framework\Http\Session;
 
 final readonly class AppKernel
 {

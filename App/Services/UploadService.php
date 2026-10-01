@@ -10,7 +10,7 @@ use App\Services\Media\ImageUploadValidator;
 use App\Support\ThumbnailName;
 
 use Framework\Application\App;
-use Framework\Support\Logger;
+use Framework\Logging\Logger;
 
 final readonly class UploadService
 {

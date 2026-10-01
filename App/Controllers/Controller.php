@@ -12,11 +12,11 @@ use App\Support\PageStyles;
 
 use Framework\Application\App;
 use Framework\Debug\Profiler;
-use Framework\Exceptions\ValidationException;
+use Framework\Http\Exceptions\ValidationException;
 use Framework\Http\FormRequest;
 use Framework\Http\Request;
 use Framework\Http\Response;
-use Framework\Support\Session;
+use Framework\Http\Session;
 
 use RuntimeException;
 use Throwable;

@@ -11,8 +11,8 @@ use App\Http\Requests\Manga\MangaUpdateRequest;
 use App\Services\Manga\MangaReadService;
 use App\Services\Manga\MangaWriteService;
 
-use Framework\Exceptions\BaseHttpException;
-use Framework\Exceptions\NotFoundException;
+use Framework\Http\Exceptions\BaseHttpException;
+use Framework\Http\Exceptions\NotFoundException;
 use Framework\Http\Request;
 
 final class MangaController extends Controller

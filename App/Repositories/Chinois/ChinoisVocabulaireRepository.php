@@ -90,7 +90,7 @@ final class ChinoisVocabulaireRepository extends Model
         );
         if ($current === null)
         {
-            throw new \Framework\Exceptions\NotFoundException('Vocabulaire introuvable');
+            throw new \Framework\Http\Exceptions\NotFoundException('Vocabulaire introuvable');
         }
 
         return $this->updateById($id, [

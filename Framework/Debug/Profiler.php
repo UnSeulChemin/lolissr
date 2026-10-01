@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Framework\Debug;
 
-use Framework\Support\Logger;
+use Framework\Logging\Logger;
 
 final class Profiler
 {

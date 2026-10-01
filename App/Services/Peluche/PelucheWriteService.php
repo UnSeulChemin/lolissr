@@ -14,7 +14,7 @@ use App\Services\Media\ThumbnailManager;
 use App\Services\Media\CollectionCreationService;
 
 use Framework\Database\Database;
-use Framework\Support\Logger;
+use Framework\Logging\Logger;
 
 
 final readonly class PelucheWriteService

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Framework\Http;
 
 use Framework\Application\App;
-use Framework\Exceptions\BaseHttpException;
-use Framework\Exceptions\JsonResponseException;
-use Framework\Support\Logger;
+use Framework\Http\Exceptions\BaseHttpException;
+use Framework\Http\Exceptions\JsonResponseException;
+use Framework\Logging\Logger;
 
 use Closure;
 use ErrorException;

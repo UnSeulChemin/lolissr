@@ -10,7 +10,7 @@ use App\DTO\Common\ServiceResult;
 use App\Services\Chinois\ChinoisReadService;
 use App\Services\Chinois\ChinoisWriteService;
 
-use Framework\Exceptions\ValidationException;
+use Framework\Http\Exceptions\ValidationException;
 use Framework\Http\Request;
 
 final class ChinoisAjaxController extends Controller

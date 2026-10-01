@@ -9,8 +9,8 @@ use Framework\Config\Env;
 use Framework\Debug\Profiler;
 use Framework\Http\Request;
 use Framework\Http\Response;
-use Framework\Support\Logger;
-use Framework\Support\Session;
+use Framework\Logging\Logger;
+use Framework\Http\Session;
 
 if (($argv[1] ?? '') === 'profiler-child')
 {

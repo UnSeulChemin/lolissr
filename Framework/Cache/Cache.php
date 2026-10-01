@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Framework\Cache;
 
 use Framework\Debug\Profiler;
-use Framework\Support\Logger;
+use Framework\Logging\Logger;
 
 use JsonException;
 use Random\RandomException;

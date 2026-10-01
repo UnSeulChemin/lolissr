@@ -10,8 +10,8 @@ use App\Http\Requests\Chinois\ChinoisGrammaireCreateRequest;
 use App\Services\Chinois\ChinoisReadService;
 use App\Services\Chinois\ChinoisWriteService;
 
-use Framework\Exceptions\BaseHttpException;
-use Framework\Exceptions\NotFoundException;
+use Framework\Http\Exceptions\BaseHttpException;
+use Framework\Http\Exceptions\NotFoundException;
 use Framework\Http\Request;
 
 final class GrammaireController extends Controller

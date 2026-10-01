@@ -11,8 +11,8 @@ use App\Http\Requests\Peluche\PelucheUpdateRequest;
 use App\Services\Peluche\PelucheReadService;
 use App\Services\Peluche\PelucheWriteService;
 
-use Framework\Exceptions\BaseHttpException;
-use Framework\Exceptions\NotFoundException;
+use Framework\Http\Exceptions\BaseHttpException;
+use Framework\Http\Exceptions\NotFoundException;
 use Framework\Http\Request;
 
 final class PelucheController extends Controller

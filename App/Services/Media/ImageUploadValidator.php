@@ -8,7 +8,7 @@ use App\DTO\Common\ServiceResult;
 use App\DTO\Upload\ValidatedImageUploadData;
 
 use Framework\Config\UploadConfig;
-use Framework\Support\Logger;
+use Framework\Logging\Logger;
 
 use finfo;
 

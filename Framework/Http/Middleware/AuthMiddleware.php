@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Framework\Http\Middleware;
 
 use Framework\Auth\AuthenticationInterface;
-use Framework\Exceptions\UnauthorizedException;
+use Framework\Http\Exceptions\UnauthorizedException;
 use Framework\Http\Request;
 
 final readonly class AuthMiddleware implements MiddlewareInterface

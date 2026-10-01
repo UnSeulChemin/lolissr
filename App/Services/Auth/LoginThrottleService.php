@@ -78,7 +78,7 @@ final readonly class LoginThrottleService
         }
         catch (\Throwable $error)
         {
-            \Framework\Support\Logger::exception($error, ['action' => 'login_attempts_cleanup']);
+            \Framework\Logging\Logger::exception($error, ['action' => 'login_attempts_cleanup']);
         }
 
         return $locked;

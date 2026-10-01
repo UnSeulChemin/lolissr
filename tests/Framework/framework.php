@@ -11,7 +11,7 @@ use Framework\Http\Request;
 use Framework\Routing\Route;
 use Framework\Routing\RouteCollection;
 use Framework\Support\DateNormalizer;
-use Framework\Support\Session;
+use Framework\Http\Session;
 use Framework\Validation\Validator;
 
 $check = static function (bool $condition, string $message): void {
@@ -166,7 +166,7 @@ foreach ([(string) PHP_INT_MAX . '0', str_repeat('9', strlen((string) PHP_INT_MA
         $integerRoute->castParameters(['id' => $input]);
         throw new LogicException('Overflowing route parameter accepted.');
     }
-    catch (\Framework\Exceptions\NotFoundException) {}
+    catch (\Framework\Http\Exceptions\NotFoundException) {}
 }
 
 $directory = sys_get_temp_dir() . '/framework-test-' . bin2hex(random_bytes(8));

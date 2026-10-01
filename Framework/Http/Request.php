@@ -7,7 +7,7 @@ namespace Framework\Http;
 use Framework\Application\App;
 
 use JsonException;
-use Framework\Exceptions\BaseHttpException;
+use Framework\Http\Exceptions\BaseHttpException;
 
 final class Request
 {

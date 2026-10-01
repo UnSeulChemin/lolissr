@@ -28,6 +28,10 @@ $add('GET', '/items/new');
 $add('GET', '/prefix-{slug}/edit');
 $add('POST', '/{section}/{id}');
 $add('GET', '/');
+// A method with no wildcard bucket must retain dynamic/static precedence too.
+$add('PUT', '/items/{id:int}');
+$add('PUT', '/items/new');
+$add('PUT', '/items/{slug}');
 for ($i = 0; $i < 200; $i++) $add('GET', '/section-' . $i . '/{id:int}');
 
 $uris = ['/', '/items/new', '/items/42', '/section-199/12', '/prefix-demo/edit', '/missing', '/items/new/', '//items/new', '/items/new//'];
@@ -39,7 +43,7 @@ foreach ($uris as $uri)
         if (preg_match($route->pattern, $uri) === 1) $expectedMethods[] = $route->getMethod();
     }
     $check($collection->allowedMethodsFor($uri) === array_values(array_unique($expectedMethods)), 'Allow order changed: ' . $uri);
-    foreach (['GET', 'POST', 'DELETE'] as $method)
+    foreach (['GET', 'POST', 'PUT', 'DELETE'] as $method)
     {
         $first = static function (array $candidates) use ($method, $uri): ?Route {
             foreach ($candidates as $route)

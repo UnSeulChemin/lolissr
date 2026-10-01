@@ -9,7 +9,7 @@ use App\DTO\Common\ServiceResult;
 use App\Services\Figurine\FigurineReadService;
 use App\Services\Figurine\FigurineWriteService;
 
-use Framework\Exceptions\NotFoundException;
+use Framework\Http\Exceptions\NotFoundException;
 use Framework\Http\Request;
 
 final class FigurineAjaxController extends Controller

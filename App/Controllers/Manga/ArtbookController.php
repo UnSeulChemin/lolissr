@@ -11,8 +11,8 @@ use App\Http\Requests\Manga\ArtbookUpdateRequest;
 use App\Services\Manga\ArtbookReadService;
 use App\Services\Manga\ArtbookWriteService;
 
-use Framework\Exceptions\BaseHttpException;
-use Framework\Exceptions\NotFoundException;
+use Framework\Http\Exceptions\BaseHttpException;
+use Framework\Http\Exceptions\NotFoundException;
 use Framework\Http\Request;
 
 final class ArtbookController extends Controller

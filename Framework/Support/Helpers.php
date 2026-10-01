@@ -6,7 +6,7 @@ use Framework\Application\App;
 use Framework\Config\Config;
 use Framework\Config\Env;
 use Framework\Container\AppContainer;
-use Framework\Support\Session;
+use Framework\Http\Session;
 
 // =========================================
 // CONTAINER

@@ -6,7 +6,7 @@ require dirname(__DIR__, 2) . '/phpstan-bootstrap.php';
 use Framework\Application\Bootstrap;
 use Framework\Config\Env;
 use Framework\Http\ErrorHandler;
-use Framework\Support\Logger;
+use Framework\Logging\Logger;
 
 if (($argv[1] ?? '') === 'child')
 {

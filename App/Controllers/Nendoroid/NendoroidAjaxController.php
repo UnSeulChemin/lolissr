@@ -9,7 +9,7 @@ use App\DTO\Common\ServiceResult;
 use App\Services\Nendoroid\NendoroidReadService;
 use App\Services\Nendoroid\NendoroidWriteService;
 
-use Framework\Exceptions\NotFoundException;
+use Framework\Http\Exceptions\NotFoundException;
 use Framework\Http\Request;
 
 final class NendoroidAjaxController extends Controller

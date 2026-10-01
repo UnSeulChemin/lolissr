@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Framework\Support;
-
-use Framework\Http\Request;
+namespace Framework\Http;
 
 use RuntimeException;
 

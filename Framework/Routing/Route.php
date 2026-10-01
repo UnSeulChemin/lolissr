@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Framework\Routing;
 
 use Closure;
-use Framework\Exceptions\NotFoundException;
+use Framework\Http\Exceptions\NotFoundException;
 use RuntimeException;
 
 final class Route

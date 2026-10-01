@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Framework\Http;
 
-use Framework\Support\Logger;
+use Framework\Logging\Logger;
 
 use JsonException;
 use RuntimeException;
@@ -23,7 +23,7 @@ final class Response
 
     public static function html(string $content, int $statusCode = 200): never
     {
-        \Framework\Support\Session::close();
+        \Framework\Http\Session::close();
         self::setStatusCode($statusCode);
         self::sendContentType('text/html');
 
@@ -37,7 +37,7 @@ final class Response
      */
     public static function json(array $data, int $statusCode = 200): never
     {
-        \Framework\Support\Session::close();
+        \Framework\Http\Session::close();
         self::setStatusCode($statusCode);
         self::sendContentType('application/json');
 
@@ -84,7 +84,7 @@ final class Response
             );
         }
 
-        \Framework\Support\Session::close();
+        \Framework\Http\Session::close();
         header('Location: ' . $url, true, $statusCode);
 
         exit;

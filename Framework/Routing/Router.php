@@ -7,8 +7,8 @@ namespace Framework\Routing;
 use Framework\Container\Container;
 use Framework\Container\ParameterPlan;
 use Framework\Debug\Profiler;
-use Framework\Exceptions\MethodNotAllowedException;
-use Framework\Exceptions\NotFoundException;
+use Framework\Http\Exceptions\MethodNotAllowedException;
+use Framework\Http\Exceptions\NotFoundException;
 use Framework\Http\Middleware\MiddlewareInterface;
 use Framework\Http\Request;
 
@@ -248,7 +248,7 @@ final class Router
         // Release the session lock before read-only page work. Session access can reopen it.
         if (in_array($request->method(), ['GET', 'HEAD'], true))
         {
-            \Framework\Support\Session::close();
+            \Framework\Http\Session::close();
         }
     }
 

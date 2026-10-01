@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Collections;
 
 use App\DTO\Common\ServiceResult;
-use Framework\Support\Logger;
+use Framework\Logging\Logger;
 
 trait CollectionWriteResults
 {

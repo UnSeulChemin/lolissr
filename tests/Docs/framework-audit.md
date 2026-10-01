@@ -1,5 +1,33 @@
 # Corrections et optimisations du framework
 
+## Relecture complémentaire — 1er octobre 2026
+
+Relecture du bootstrap, du cache compilé, du conteneur, du routage, du cache
+applicatif, des transactions et de la requête HTTP.
+
+- `RouteCollection::candidates()` conserve directement l'ordre du groupe
+  dynamique quand il est seul. Le tri reste nécessaire lorsque les routes à
+  premier segment fixe et celles à premier segment dynamique se mélangent.
+  La normalisation du chemin n'est plus calculée deux fois dans cet appel.
+- La régression de routage compare toujours les résultats à un parcours
+  linéaire et couvre désormais aussi une méthode sans groupe générique,
+  avec routes dynamiques avant et après une route statique.
+- La recherche textuelle des noms de méthodes publiques dans `App`,
+  `Framework`, `Config`, `scripts` et `tests` ne révèle aucune méthode dont
+  le nom apparaît uniquement à sa déclaration, hors constructeurs. Ce filtre
+  ne prouve pas que tous les appels sont accessibles ; aucune suppression de
+  code mort n'est justifiée par cette vérification seule.
+- Le cache compilé exige toujours une reconstruction après modification des
+  sources de configuration ou des routes : c'est son contrat actuel, pas une
+  invalidation automatique à chaque requête.
+
+Validation : `composer check` réussi (PHPStan, 67 tests HTTP, SPA et
+régressions), puis test de routage relancé après extension des cas.
+Le gain de cette micro-optimisation n'a pas été isolé par une mesure avant/après
+et aucun gain sur le temps total des pages n'est revendiqué.
+
+## Corrections précédentes
+
 - Les valeurs `.env` non citées `true`, `false`, `null`, `empty` et leurs
   variantes entre parenthèses sont converties comme les variables système.
   Les guillemets préservent une chaîne littérale : `VALUE="false"` reste une

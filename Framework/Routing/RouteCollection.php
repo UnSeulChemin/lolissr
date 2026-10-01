@@ -61,11 +61,21 @@ final class RouteCollection
     /** @return list<Route> */
     public function candidates(string $method, string $uri): array
     {
-        $static = $this->staticRoutes[$method]['/' . trim($uri, '/')] ?? null;
-        $segment = explode('/', trim($uri, '/'), 2)[0];
-        $dynamic = ($this->dynamicRoutes[$method][$segment] ?? [])
-            + ($this->dynamicRoutes[$method][''] ?? []);
-        ksort($dynamic);
+        $path = trim($uri, '/');
+        $static = $this->staticRoutes[$method]['/' . $path] ?? null;
+        $segment = explode('/', $path, 2)[0];
+        $dynamic = $this->dynamicRoutes[$method][$segment] ?? [];
+        $fallback = $this->dynamicRoutes[$method][''] ?? [];
+        // Each bucket already follows declaration order. Only mixed buckets need sorting.
+        if ($dynamic === [])
+        {
+            $dynamic = $fallback;
+        }
+        elseif ($segment !== '' && $fallback !== [])
+        {
+            $dynamic += $fallback;
+            ksort($dynamic);
+        }
         $routes = [];
         foreach ($dynamic as $position => $route)
         {

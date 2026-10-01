@@ -7,7 +7,7 @@ namespace App\Services\Media;
 use App\DTO\Common\ServiceResult;
 use App\DTO\Upload\UploadThumbnailData;
 use Framework\Database\Database;
-use Framework\Support\Logger;
+use Framework\Logging\Logger;
 use PDOException;
 
 final readonly class CollectionCreationService

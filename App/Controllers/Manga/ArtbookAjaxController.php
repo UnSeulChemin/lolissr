@@ -9,7 +9,7 @@ use App\DTO\Common\ServiceResult;
 use App\Services\Manga\ArtbookReadService;
 use App\Services\Manga\ArtbookWriteService;
 
-use Framework\Exceptions\NotFoundException;
+use Framework\Http\Exceptions\NotFoundException;
 use Framework\Http\Request;
 
 final class ArtbookAjaxController extends Controller

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Framework\Http\Middleware;
 
 use Framework\Auth\AuthenticationInterface;
-use Framework\Exceptions\AlreadyAuthenticatedException;
+use Framework\Http\Exceptions\AlreadyAuthenticatedException;
 use Framework\Http\Request;
 
 final readonly class GuestMiddleware implements MiddlewareInterface

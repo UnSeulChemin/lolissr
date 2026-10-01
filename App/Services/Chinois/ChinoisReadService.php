@@ -17,7 +17,7 @@ use App\Repositories\Chinois\ChinoisVocabulaireCollectionRepository;
 use App\Repositories\Chinois\ChinoisVocabulaireRepository;
 
 use Framework\Application\App;
-use Framework\Exceptions\NotFoundException;
+use Framework\Http\Exceptions\NotFoundException;
 
 final readonly class ChinoisReadService
 {
