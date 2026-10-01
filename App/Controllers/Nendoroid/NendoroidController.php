@@ -181,7 +181,7 @@ final class NendoroidController extends Controller
         {
             throw new BaseHttpException(
                 message: $result->message,
-                statusCode: 422,
+                statusCode: $result->status,
                 data: $result->data,
             );
         }

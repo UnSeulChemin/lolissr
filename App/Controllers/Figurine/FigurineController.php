@@ -161,7 +161,7 @@ final class FigurineController extends Controller
         {
             throw new BaseHttpException(
                 message: $result->message,
-                statusCode: 422,
+                statusCode: $result->status,
                 data: $result->data
             );
         }

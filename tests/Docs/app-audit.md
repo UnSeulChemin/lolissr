@@ -2,6 +2,15 @@
 
 ## Corrections
 
+- Les modifications d'artbooks verrouillent l'objet avant de lire sa source
+  auteur/série, puis écrivent par identifiant. Le changement de statut de lecture
+  verrouille également l'objet avant de décider des récompenses XP. Un objet
+  absent renvoie 404 ; une modification inchangée reste un succès.
+  `collection-update-existence.php` couvre aussi les artbooks, leurs deux types
+  de source et leur statut de lecture sur une table temporaire MySQL.
+- Les sept contrôleurs de modification conservent le code d'erreur du
+  `ServiceResult` au lieu de remplacer systématiquement les échecs par 422.
+
 - Les modifications de figurines, nendoroids et peluches vérifient l'existence
   sous verrou `SELECT ... FOR UPDATE` dans leur transaction, puis mettent à jour
   l'identifiant trouvé. Une disparition renvoie 404 ; une ligne inchangée reste

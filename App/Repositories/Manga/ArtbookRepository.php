@@ -9,13 +9,19 @@ use App\Models\Artbook;
 use App\Models\Model;
 
 use Framework\Support\Str;
+use Framework\Http\Exceptions\NotFoundException;
 
 final class ArtbookRepository extends Model
 {
     protected string $table = 'artbook';
 
-    public function findOneBySlugAndNumero(string $slug, int $numero): ?Artbook
+    public function findOneBySlugAndNumero(string $slug, int $numero, bool $forUpdate = false): ?Artbook
     {
+        if ($forUpdate && ! $this->db->inTransaction())
+        {
+            throw new \LogicException('Artbook locks require a transaction.');
+        }
+
         /** @var Artbook|null $artbook */
         $artbook = $this->fetchOne(
             "
@@ -27,7 +33,7 @@ final class ArtbookRepository extends Model
             AND numero = :numero
 
             LIMIT 1
-            ",
+            " . ($forUpdate ? ' FOR UPDATE' : ''),
             [
                 'slug' => $this->normalizeSlug($slug),
                 'numero' => $numero,
@@ -48,18 +54,12 @@ final class ArtbookRepository extends Model
 
     public function updateArtbook(string $slug, int $numero, ArtbookUpdateDTO $dto): bool
     {
-        $artbook = $this->findOneBySlugAndNumero($slug, $numero);
-
-        if ($artbook === null)
-        {
-            return false;
-        }
+        $artbook = $this->findOneBySlugAndNumero($slug, $numero, true)
+            ?? throw new NotFoundException('Artbook introuvable');
 
         $sourceData = $this->sourceUpdateData($artbook, $dto->source);
 
-        return $this->updateBySlugAndNumero(
-            $slug,
-            $numero,
+        return $this->update(
             [
                 'artbook' => $dto->artbook,
 
@@ -68,18 +68,19 @@ final class ArtbookRepository extends Model
                 'company' => $dto->company,
                 'release_date' => $dto->release_date,
                 'commentaire' => $dto->commentaire,
-            ]
+            ],
+            ['id' => $artbook->id]
         );
     }
 
     public function updateReadStatus(string $slug, int $numero, bool $readStatus): bool
     {
-        return $this->updateBySlugAndNumero(
-            $slug,
-            $numero,
-            [
-                'lu' => (int) $readStatus,
-            ]
+        $artbook = $this->findOneBySlugAndNumero($slug, $numero, true)
+            ?? throw new NotFoundException('Artbook introuvable');
+
+        return $this->update(
+            ['lu' => (int) $readStatus],
+            ['id' => $artbook->id]
         );
     }
 
@@ -141,20 +142,6 @@ final class ArtbookRepository extends Model
     private function normalizeSlug(string $slug): string
     {
         return Str::slug($slug);
-    }
-
-    /**
-     * @param array<string, mixed> $data
-     */
-    private function updateBySlugAndNumero(string $slug, int $numero, array $data): bool
-    {
-        return $this->update(
-            $data,
-            [
-                'slug' => $this->normalizeSlug($slug),
-                'numero' => $numero,
-            ]
-        );
     }
 
     /**

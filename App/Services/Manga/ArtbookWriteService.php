@@ -149,7 +149,7 @@ final readonly class ArtbookWriteService
         $result = $this->database->transaction(
             function () use ($slug, $numero, $readStatus): ServiceResult
             {
-                $artbook = $this->artbookRepository->findOneBySlugAndNumero($slug, $numero);
+                $artbook = $this->artbookRepository->findOneBySlugAndNumero($slug, $numero, true);
 
                 if ($artbook === null)
                 {

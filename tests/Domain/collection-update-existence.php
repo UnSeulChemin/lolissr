@@ -18,22 +18,27 @@ $check = static function (bool $condition, string $message): void {
 };
 
 // MySQL temporary tables shadow application tables on this connection only.
-foreach (['Figurine', 'Nendoroid', 'Peluche'] as $kind)
+foreach (['Figurine', 'Nendoroid', 'Peluche', 'Artbook'] as $kind)
 {
     $table = strtolower($kind);
     $figurineFields = $kind === 'Figurine' ? 'scale VARCHAR(30), height_cm DOUBLE,' : '';
+    $domain = $kind === 'Artbook' ? 'Manga' : $kind;
+    $nameField = $kind === 'Artbook' ? 'artbook' : 'waifu';
+    $detailFields = $kind === 'Artbook'
+        ? 'auteur VARCHAR(150), serie VARCHAR(150), lu TINYINT NOT NULL DEFAULT 0,'
+        : "origin VARCHAR(150), $figurineFields";
     $db->exec("CREATE TEMPORARY TABLE $table (
         id INT PRIMARY KEY, slug VARCHAR(150), numero INT,
-        waifu VARCHAR(150), origin VARCHAR(150), $figurineFields
-        company VARCHAR(150), release_date DATE NULL, commentaire TEXT NULL,
+        $nameField VARCHAR(150), $detailFields
+        company VARCHAR(150) NOT NULL DEFAULT '', release_date DATE NULL, commentaire TEXT NULL,
         UNIQUE KEY (slug, numero)
     ) ENGINE=InnoDB");
     try
     {
-        $repository = $container->get("App\\Repositories\\$kind\\{$kind}Repository");
-        $service = $container->get("App\\Services\\$kind\\{$kind}WriteService");
-        $dtoClass = "App\\DTO\\$kind\\Inputs\\{$kind}UpdateDTO";
-        $dto = $dtoClass::fromArray(['waifu' => 'Updated', 'origin' => 'Fixture', 'scale' => '1/7', 'company' => 'Fixture']);
+        $repository = $container->get("App\\Repositories\\$domain\\{$kind}Repository");
+        $service = $container->get("App\\Services\\$domain\\{$kind}WriteService");
+        $dtoClass = "App\\DTO\\$domain\\Inputs\\{$kind}UpdateDTO";
+        $dto = $dtoClass::fromArray([$nameField => 'Updated', 'source' => 'Updated source', 'origin' => 'Fixture', 'scale' => '1/7', 'company' => 'Fixture']);
         $method = 'update' . $kind;
         try
         {
@@ -42,10 +47,29 @@ foreach (['Figurine', 'Nendoroid', 'Peluche'] as $kind)
         }
         catch (LogicException) {}
 
-        $db->exec("INSERT INTO $table (id, slug, numero, waifu) VALUES (1, 'fixture', 1, 'Original')");
+        $db->exec("INSERT INTO $table (id, slug, numero, $nameField) VALUES (1, 'fixture', 1, 'Original')");
         $check($service->update('fixture', 1, $dto)->success, "$kind: valid update failed");
-        $check($db->query("SELECT waifu FROM $table WHERE id = 1")->fetchColumn() === 'Updated', "$kind: update not saved");
+        $check($db->query("SELECT $nameField FROM $table WHERE id = 1")->fetchColumn() === 'Updated', "$kind: update not saved");
         $check($service->update('fixture', 1, $dto)->success, "$kind: unchanged update failed");
+
+        if ($kind === 'Artbook')
+        {
+            $book = $repository->findOneBySlugAndNumero('fixture', 1);
+            $check($book->auteur === 'Updated source' && $book->serie === null, 'Author source not preserved');
+            $db->exec("UPDATE artbook SET auteur = NULL, serie = 'Original series' WHERE id = 1");
+            $check($service->update('fixture', 1, $dto)->success, 'Series source update failed');
+            $book = $repository->findOneBySlugAndNumero('fixture', 1);
+            $check($book->auteur === null && $book->serie === 'Updated source', 'Series source not preserved');
+            try
+            {
+                $repository->updateReadStatus('fixture', 1, true);
+                throw new RuntimeException('Read status accepted outside a transaction');
+            }
+            catch (LogicException) {}
+            $check($db->transaction(fn () => $repository->updateReadStatus('fixture', 1, true)), 'Read status update failed');
+            $check($db->transaction(fn () => $repository->updateReadStatus('fixture', 1, true)), 'Unchanged read status failed');
+            $check($repository->findOneBySlugAndNumero('fixture', 1)->lu, 'Read status not saved');
+        }
 
         // The controller can have observed an object before a competing deletion.
         $check($repository->findOneBySlugAndNumero('fixture', 1) !== null, 'Initial read failed');
@@ -61,6 +85,16 @@ foreach (['Figurine', 'Nendoroid', 'Peluche'] as $kind)
         }
         $check(!$db->inTransaction(), 'Failed update left a transaction open');
         $check((int)$db->query("SELECT COUNT(*) FROM $table")->fetchColumn() === 0, 'Missing row recreated');
+        if ($kind === 'Artbook')
+        {
+            $check($service->updateReadStatus('fixture', 1, 1)->status === 404, 'Missing read target must return 404');
+            try
+            {
+                $db->transaction(fn () => $repository->updateReadStatus('fixture', 1, true));
+                throw new RuntimeException('Missing read target reported as updated');
+            }
+            catch (NotFoundException) {}
+        }
     }
     finally
     {
@@ -68,4 +102,4 @@ foreach (['Figurine', 'Nendoroid', 'Peluche'] as $kind)
         $db->exec("DROP TEMPORARY TABLE $table");
     }
 }
-echo "PASS: three collection updates require transactions, preserve no-op success and return 404 after deletion.\n";
+echo "PASS: four collection updates require transactions, preserve no-op success and return 404 after deletion; artbook sources and read status preserved.\n";
