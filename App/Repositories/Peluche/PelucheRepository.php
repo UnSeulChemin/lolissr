@@ -12,6 +12,7 @@ use Framework\Support\Str;
 
 final class PelucheRepository extends Model
 {
+    use \App\Repositories\Collections\Concerns\UpdatesExistingCollection;
     protected string $table = 'peluche';
 
     public function findOneBySlugAndNumero(string $slug, int $numero): ?Peluche
@@ -48,7 +49,7 @@ final class PelucheRepository extends Model
 
     public function updatePeluche(string $slug, int $numero, PelucheUpdateDTO $dto): bool
     {
-        return $this->updateBySlugAndNumero(
+        return $this->updateExistingBySlugAndNumero(
             $slug,
             $numero,
             [

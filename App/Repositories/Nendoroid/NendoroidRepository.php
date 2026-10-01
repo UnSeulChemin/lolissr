@@ -12,6 +12,7 @@ use Framework\Support\Str;
 
 final class NendoroidRepository extends Model
 {
+    use \App\Repositories\Collections\Concerns\UpdatesExistingCollection;
     protected string $table = 'nendoroid';
 
     public function findOneBySlugAndNumero(
@@ -55,7 +56,7 @@ final class NendoroidRepository extends Model
         NendoroidUpdateDTO $dto
     ): bool
     {
-        return $this->updateBySlugAndNumero(
+        return $this->updateExistingBySlugAndNumero(
             $slug,
             $numero,
             [

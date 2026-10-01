@@ -12,6 +12,7 @@ use Framework\Support\Str;
 
 final class FigurineRepository extends Model
 {
+    use \App\Repositories\Collections\Concerns\UpdatesExistingCollection;
     protected string $table = 'figurine';
 
     public function findOneBySlugAndNumero(string $slug, int $numero): ?Figurine
@@ -48,7 +49,7 @@ final class FigurineRepository extends Model
 
     public function updateFigurine(string $slug, int $numero, FigurineUpdateDTO $dto): bool
     {
-        return $this->updateBySlugAndNumero(
+        return $this->updateExistingBySlugAndNumero(
             $slug,
             $numero,
             [

@@ -2,6 +2,13 @@
 
 ## Corrections
 
+- Les modifications de figurines, nendoroids et peluches vérifient l'existence
+  sous verrou `SELECT ... FOR UPDATE` dans leur transaction, puis mettent à jour
+  l'identifiant trouvé. Une disparition renvoie 404 ; une ligne inchangée reste
+  un succès. Le contrôle partagé réside dans `UpdatesExistingCollection`.
+  `collection-update-existence.php` couvre ces comportements sur des tables
+  temporaires MySQL ainsi que le refus d'un appel hors transaction.
+
 - Les cinq collections suppriment l'identifiant observé, avec contrôle du nombre
   de lignes supprimées. Un objet disparu renvoie 404 et ne déclenche aucun nettoyage
   d'image ; une recréation sous le même slug/numéro est préservée.
