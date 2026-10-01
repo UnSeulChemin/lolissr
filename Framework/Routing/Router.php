@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Framework\Routing;
 
 use Framework\Container\Container;
+use Framework\Container\ParameterPlan;
 use Framework\Debug\Profiler;
 use Framework\Exceptions\MethodNotAllowedException;
 use Framework\Exceptions\NotFoundException;
@@ -13,7 +14,6 @@ use Framework\Http\Request;
 
 use Closure;
 use ReflectionMethod;
-use ReflectionNamedType;
 use RuntimeException;
 
 final class Router
@@ -339,13 +339,11 @@ final class Router
     ): array {
         $arguments = [];
 
-        foreach ($reflection->getParameters() as $parameter)
+        foreach (ParameterPlan::forMethod($reflection) as $parameter)
         {
-            $type = $parameter->getType();
-
-            if ($type instanceof ReflectionNamedType && ! $type->isBuiltin())
+            if ($parameter->dependency !== null)
             {
-                $className = $type->getName();
+                $className = $parameter->dependency;
 
                 $arguments[] = $className === Request::class
                     ? $request
@@ -354,7 +352,7 @@ final class Router
                 continue;
             }
 
-            $parameterName = $parameter->getName();
+            $parameterName = $parameter->name;
 
             if (array_key_exists($parameterName, $params))
             {
@@ -363,9 +361,9 @@ final class Router
                 continue;
             }
 
-            if ($parameter->isDefaultValueAvailable())
+            if ($parameter->hasDefault)
             {
-                $arguments[] = $parameter->getDefaultValue();
+                $arguments[] = $parameter->defaultValue();
 
                 continue;
             }

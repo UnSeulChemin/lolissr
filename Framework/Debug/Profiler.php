@@ -35,7 +35,7 @@ final class Profiler
     // REQUÊTE
     // =========================================
 
-    public static function startRequest(): void
+    public static function startRequest(int|float|null $startedAt = null): void
     {
         self::reset();
 
@@ -45,7 +45,11 @@ final class Profiler
         }
 
         self::$active = true;
-        self::$requestStart = hrtime(true);
+        self::$requestStart = $startedAt ?? hrtime(true);
+        if ($startedAt !== null)
+        {
+            self::$durations['bootstrap.configure'] = self::elapsedMilliseconds($startedAt);
+        }
     }
 
     public static function finishRequest(string $method, string $uri, int $status = 200): void

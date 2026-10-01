@@ -205,6 +205,14 @@ try
     Session::set('after-native-close', 'also persisted');
     Session::close();
     $check(Session::get('after-native-close') === 'also persisted', 'Native session close lost subsequent writes.');
+    ini_set('session.use_strict_mode', '0');
+    ini_set('session.cookie_httponly', '0');
+    $check(Session::get('after-native-close') === 'also persisted', 'Session reopen lost state.');
+    $check(ini_get('session.use_strict_mode') === '1' && ini_get('session.cookie_httponly') === '1', 'Reopen did not restore secure options.');
+    $_SERVER['HTTPS'] = 'on';
+    Session::get('after-native-close');
+    $check(session_get_cookie_params()['secure'], 'HTTPS change did not reconfigure session.');
+    unset($_SERVER['HTTPS']);
     Session::start();
     Session::set('aborted', true);
     session_abort();

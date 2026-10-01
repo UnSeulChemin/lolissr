@@ -36,7 +36,7 @@ final class DatabaseConfig
 
     public static function pass(): string
     {
-        return self::string('database.pass');
+        return (string) config('database.pass', '');
     }
 
     public static function charset(): string

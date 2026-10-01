@@ -40,7 +40,7 @@ final class Env
 
         $lines = @file(
             $path,
-            FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES
+            FILE_IGNORE_NEW_LINES
         );
 
         if ($lines === false)
@@ -113,7 +113,7 @@ final class Env
 
         if (is_string($value))
         {
-            $value = self::cast(trim($value));
+            $value = self::cast($value);
         }
 
         self::$items[$key] = $value;
@@ -237,7 +237,7 @@ final class Env
         }
     }
 
-    private static function normalizeValue(string $value): string
+    private static function normalizeValue(string $value): mixed
     {
         $value = trim($value);
         $length = strlen($value);
@@ -257,7 +257,7 @@ final class Env
             return substr($value, 1, -1);
         }
 
-        return $value;
+        return self::cast($value);
     }
 
     // =========================================

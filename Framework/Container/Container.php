@@ -7,7 +7,6 @@ namespace Framework\Container;
 use Framework\Debug\Profiler;
 
 use ReflectionClass;
-use ReflectionNamedType;
 use RuntimeException;
 
 final class Container
@@ -33,7 +32,7 @@ final class Container
      */
     private array $reflections = [];
 
-    /** @var array<class-string, list<array{name: string, dependency: string|null, nullable: bool, hasDefault: bool, default: \Closure(): mixed}>> */
+    /** @var array<class-string, list<ParameterPlan>> */
     private array $dependencyPlans = [];
 
     public function __construct()
@@ -190,11 +189,11 @@ final class Container
 
         foreach ($this->dependencyPlan($concrete, $reflection) as $parameter)
         {
-            if ($parameter['dependency'] === null)
+            if ($parameter->dependency === null)
             {
-                if ($parameter['hasDefault'])
+                if ($parameter->hasDefault)
                 {
-                    $dependencies[] = ($parameter['default'])();
+                    $dependencies[] = $parameter->defaultValue();
 
                     continue;
                 }
@@ -203,14 +202,14 @@ final class Container
                     sprintf(
                         'Unable to resolve %s::$%s',
                         $concrete,
-                        $parameter['name']
+                        $parameter->name
                     )
                 );
             }
 
-            $dependency = $parameter['dependency'];
+            $dependency = $parameter->dependency;
 
-            if ($parameter['nullable'] && ! $this->canResolve($dependency))
+            if ($parameter->nullable && ! $this->canResolve($dependency))
             {
                 $dependencies[] = null;
 
@@ -226,24 +225,13 @@ final class Container
     /**
      * @param class-string $class
      * @param ReflectionClass<object> $reflection
-     * @return list<array{name: string, dependency: string|null, nullable: bool, hasDefault: bool, default: \Closure(): mixed}>
+     * @return list<ParameterPlan>
      */
     private function dependencyPlan(string $class, ReflectionClass $reflection): array
     {
         if (isset($this->dependencyPlans[$class])) return $this->dependencyPlans[$class];
-        $plan = [];
-        foreach ($reflection->getConstructor()?->getParameters() ?? [] as $parameter)
-        {
-            $type = $parameter->getType();
-            $plan[] = [
-                'name' => $parameter->getName(),
-                'dependency' => $type instanceof ReflectionNamedType && ! $type->isBuiltin() ? $type->getName() : null,
-                'nullable' => $type?->allowsNull() ?? false,
-                'hasDefault' => $parameter->isDefaultValueAvailable(),
-                'default' => static fn (): mixed => $parameter->isDefaultValueAvailable() ? $parameter->getDefaultValue() : null,
-            ];
-        }
-        return $this->dependencyPlans[$class] = $plan;
+        $constructor = $reflection->getConstructor();
+        return $this->dependencyPlans[$class] = $constructor !== null ? ParameterPlan::forMethod($constructor) : [];
     }
 
     // =========================================

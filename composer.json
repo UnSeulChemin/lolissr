@@ -5,7 +5,11 @@
     "type": "project",
 
     "require": {
-        "php": "^8.3"
+        "php": "^8.3",
+        "ext-fileinfo": "*",
+        "ext-mbstring": "*",
+        "ext-pdo": "*",
+        "ext-pdo_mysql": "*"
     },
 
     "require-dev": {
@@ -28,6 +32,8 @@
         "http-tests": ["@php tests/Http/run-http.php", "@php tests/Http/spa-http.php"],
         "browser-tests": "@php tests/Browser/run-browser-tests.php",
         "regression-tests": [
+            "@php tests/Framework/configuration.php",
+            "@php tests/Framework/routing.php",
             "@php tests/Framework/cache-contention.php",
             "@php tests/Framework/bootstrap-cache.php",
             "@php tests/Framework/production-errors.php",

@@ -9,7 +9,7 @@ use RuntimeException;
 final class RouteCollection
 {
     /**
-     * @var array<string, Route>
+     * @var array<string, int>
      */
     private array $routes = [];
 
@@ -21,7 +21,7 @@ final class RouteCollection
     /** @var array<string, array<string, array{route: Route, position: int}>> */
     private array $staticRoutes = [];
 
-    /** @var array<string, array<int, Route>> */
+    /** @var array<string, array<string, array<int, Route>>> */
     private array $dynamicRoutes = [];
 
     // =========================================
@@ -37,19 +37,21 @@ final class RouteCollection
             throw new RuntimeException("Duplicate route detected: {$key}");
         }
 
-        $this->routes[$key] = $route;
+        $position = count($this->routes);
+        $this->routes[$key] = $position;
         $method = $route->getMethod();
-        $position = $this->routeCounts[$method] ?? 0;
         if (str_contains($route->getPath(), '{'))
         {
-            $this->dynamicRoutes[$method][$position] = $route;
+            $segment = explode('/', trim($route->getPath(), '/'), 2)[0];
+            $bucket = str_contains($segment, '{') ? '' : $segment;
+            $this->dynamicRoutes[$method][$bucket][$position] = $route;
         }
         else
         {
             $path = '/' . trim($route->getPath(), '/');
             $this->staticRoutes[$method][$path] ??= ['route' => $route, 'position' => $position];
         }
-        $this->routeCounts[$method] = $position + 1;
+        $this->routeCounts[$method] = ($this->routeCounts[$method] ?? 0) + 1;
     }
 
     // =========================================
@@ -60,8 +62,12 @@ final class RouteCollection
     public function candidates(string $method, string $uri): array
     {
         $static = $this->staticRoutes[$method]['/' . trim($uri, '/')] ?? null;
+        $segment = explode('/', trim($uri, '/'), 2)[0];
+        $dynamic = ($this->dynamicRoutes[$method][$segment] ?? [])
+            + ($this->dynamicRoutes[$method][''] ?? []);
+        ksort($dynamic);
         $routes = [];
-        foreach ($this->dynamicRoutes[$method] ?? [] as $position => $route)
+        foreach ($dynamic as $position => $route)
         {
             if ($static !== null && $position > $static['position']) break;
             $routes[] = $route;
@@ -77,14 +83,18 @@ final class RouteCollection
     {
         $methods = [];
 
-        foreach ($this->routes as $route)
+        foreach (array_keys($this->routeCounts) as $method)
         {
-            if (preg_match($route->pattern, $uri) === 1)
+            foreach ($this->candidates($method, $uri) as $route)
             {
-                $methods[] = $route->getMethod();
+                if (preg_match($route->pattern, $uri) === 1)
+                {
+                    $methods[$method] = $this->routes[$method . ':' . $route->getPath()];
+                    break;
+                }
             }
         }
-
-        return array_values(array_unique($methods));
+        asort($methods);
+        return array_keys($methods);
     }
 }

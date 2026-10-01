@@ -1,0 +1,88 @@
+<?php
+
+declare(strict_types=1);
+
+if (($argv[1] ?? '') === 'bootstrap-child')
+{
+    define('ROOT', $argv[2]);
+    require dirname(__DIR__, 2) . '/vendor/autoload.php';
+    require dirname(__DIR__, 2) . '/Framework/Support/Helpers.php';
+    ini_set('display_errors', '1');
+    ini_set('error_log', ROOT . '/error.log');
+    register_shutdown_function(static function (): void {
+        file_put_contents(ROOT . '/status', (string) http_response_code());
+    });
+    Framework\Application\Bootstrap::run();
+}
+
+require dirname(__DIR__, 2) . '/phpstan-bootstrap.php';
+
+use Framework\Config\Config;
+use Framework\Config\DatabaseConfig;
+use Framework\Config\Env;
+
+$check = static function (bool $condition, string $message): void {
+    if (! $condition) throw new RuntimeException($message);
+};
+$directory = sys_get_temp_dir() . '/framework-config-' . bin2hex(random_bytes(8));
+mkdir($directory, 0700);
+$path = $directory . '/.env';
+try
+{
+    foreach (['true' => true, 'false' => false, '(false)' => false, 'null' => null, 'empty' => '', '42' => '42'] as $raw => $expected)
+    {
+        file_put_contents($path, 'AUDIT_VALUE=' . $raw . "\n");
+        Env::load($path);
+        $check(Env::get('AUDIT_VALUE', 'fallback') === $expected, 'File conversion differs: ' . $raw);
+        Env::clear();
+        putenv('AUDIT_VALUE=' . $raw);
+        $check(Env::get('AUDIT_VALUE', 'fallback') === $expected, 'System conversion differs: ' . $raw);
+        Env::clear();
+        putenv('AUDIT_VALUE');
+    }
+    file_put_contents($path, "AUDIT_VALUE=\"false\"\nDB_PASS=\"  example  \"\n");
+    Env::load($path);
+    Config::clear();
+    $check(Env::get('AUDIT_VALUE') === 'false', 'Quoted literal converted.');
+    $check(DatabaseConfig::pass() === '  example  ', 'Quoted password trimmed.');
+    Env::clear();
+    putenv('DB_PASS=  system password  ');
+    Config::clear();
+    $check(DatabaseConfig::pass() === '  system password  ', 'System password trimmed.');
+    putenv('DB_PASS');
+
+    file_put_contents($path, "\n# comment\n\nINVALID_DECLARATION\n");
+    try
+    {
+        Env::load($path);
+        throw new LogicException('Malformed declaration accepted.');
+    }
+    catch (RuntimeException $error)
+    {
+        $check(str_contains($error->getMessage(), 'line 4'), 'Physical line number lost.');
+    }
+
+    $process = proc_open([PHP_BINARY, __FILE__, 'bootstrap-child', $directory], [
+        0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w'],
+    ], $pipes);
+    $check(is_resource($process), 'Cannot run bootstrap fixture.');
+    fclose($pipes[0]);
+    $output = stream_get_contents($pipes[1]);
+    $error = stream_get_contents($pipes[2]);
+    fclose($pipes[1]);
+    fclose($pipes[2]);
+    $check(proc_close($process) === 0 && $error === '', 'Bootstrap fixture failed: ' . $error);
+    $check($output === 'Une erreur interne est survenue.', 'Bootstrap exposed configuration details.');
+    $check(file_get_contents($directory . '/status') === '500', 'Bootstrap did not return 500.');
+    $check(str_contains(file_get_contents($directory . '/error.log'), 'line 4'), 'Bootstrap failure not logged.');
+}
+finally
+{
+    Env::clear();
+    putenv('AUDIT_VALUE');
+    putenv('DB_PASS');
+    foreach (glob($directory . '/*') ?: [] as $file) unlink($file);
+    if (is_file($path)) unlink($path);
+    rmdir($directory);
+}
+echo "PASS: environment types, literal passwords, physical line numbers and early bootstrap failures.\n";

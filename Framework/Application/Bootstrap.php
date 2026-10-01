@@ -19,6 +19,7 @@ use Framework\Routing\RouteCollection;
 use Framework\Routing\Router;
 
 use RuntimeException;
+use Throwable;
 
 final class Bootstrap
 {
@@ -44,20 +45,39 @@ final class Bootstrap
      */
     public static function run(?callable $errorRenderer = null, ?callable $serviceProvider = null): never
     {
-        self::loadEnvOnly();
-
-        $compiled = BootstrapCache::load(BootstrapCache::path());
-        if ($compiled !== null) Config::prime($compiled['config']);
-
-        RequestContext::start();
-
-        self::configureTimezone();
-        self::configureDebug();
-        self::configureErrorHandler($errorRenderer);
-
+        $startedAt = hrtime(true);
+        // Configuration failures cannot rely on the container, logger or renderer.
+        ini_set('display_errors', '0');
+        ini_set('log_errors', '1');
+        error_reporting(E_ALL);
         header_remove('X-Powered-By');
-
-        self::startProfiler();
+        try
+        {
+            Env::load(base_path('.env'));
+            Config::clear();
+            $compiled = BootstrapCache::load(BootstrapCache::path());
+            if ($compiled !== null)
+            {
+                Config::prime($compiled['config']);
+            }
+            else
+            {
+                EnvironmentValidator::validate();
+            }
+            RequestContext::start();
+            self::configureTimezone();
+        }
+        catch (Throwable $exception)
+        {
+            error_log('Application bootstrap failed: ' . $exception);
+            http_response_code(500);
+            header('Content-Type: text/plain; charset=UTF-8', true);
+            echo 'Une erreur interne est survenue.';
+            exit;
+        }
+        self::configureErrorHandler($errorRenderer);
+        self::configureDebug();
+        self::startProfiler($startedAt);
 
         $container = self::createContainer();
 
@@ -129,14 +149,14 @@ final class Bootstrap
     // PROFILER
     // =========================================
 
-    private static function startProfiler(): void
+    private static function startProfiler(int|float $startedAt): void
     {
         if (! App::debug() || config('app.profiler', false) !== true)
         {
             return;
         }
 
-        Profiler::startRequest();
+        Profiler::startRequest($startedAt);
 
         register_shutdown_function(
             static function (): void

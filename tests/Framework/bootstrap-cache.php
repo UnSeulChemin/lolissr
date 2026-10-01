@@ -31,6 +31,21 @@ try
     AtomicFile::writeIfChanged($path, BootstrapCache::compile(), 0600);
     $cached = BootstrapCache::load($path);
     $check($cached !== null, 'Compiled cache did not load.');
+    Env::set('UPLOAD_MAX_PIXELS', 0);
+    $check(BootstrapCache::load($path) === null, 'Validation-only input did not invalidate cache.');
+    try
+    {
+        BootstrapCache::compile();
+        throw new LogicException('Invalid environment compiled.');
+    }
+    catch (RuntimeException) {}
+    Env::load(ROOT . '/.env.example');
+    Env::set('DB_NAME', 'fixture');
+    Env::set('DB_USER', 'fixture');
+    Env::set('APP_ENV', 'production');
+    Env::set('APP_DEBUG', false);
+    Env::set('PROFILER_ENABLED', false);
+    $check(BootstrapCache::load($path) !== null, 'Unchanged environment did not restore cache.');
     $expected = new RouteCollection();
     $register = require ROOT . '/Config/routes.php';
     $register(new Router($expected, new Container()));
@@ -78,6 +93,11 @@ try
     $check($cached['routes']->allowedMethodsFor('/sql') === ['GET', 'POST'], 'Local SQL routes lost.');
     $check($cached['routes']->allowedMethodsFor('/inscription') === ['GET', 'POST'], 'Local registration routes lost.');
     $payload = require $path;
+    $originalPayload = $payload;
+    $payload['validator'] = 'outdated';
+    AtomicFile::writeIfChanged($path, '<?php return ' . var_export($payload, true) . ';', 0600);
+    $check(BootstrapCache::load($path) === null, 'Outdated validation rules reused.');
+    $payload = $originalPayload;
     $payload['routes'] = 'invalid';
     AtomicFile::writeIfChanged($path, '<?php return ' . var_export($payload, true) . ';', 0600);
     $check(BootstrapCache::load($path) === null, 'Corrupted route cache did not fall back.');

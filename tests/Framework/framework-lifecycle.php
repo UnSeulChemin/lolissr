@@ -18,7 +18,9 @@ if (($argv[1] ?? '') === 'profiler-child')
     Env::set('PROFILER_ENABLED', true);
     Env::set('LOG_ENABLED', true);
     (new ReflectionProperty(Logger::class, 'directory'))->setValue(null, $argv[2]);
-    Profiler::startRequest();
+    $startedAt = hrtime(true);
+    usleep(20_000);
+    Profiler::startRequest($startedAt);
     register_shutdown_function(static fn () => Profiler::finishRequest('GET', '/fixture'));
     Profiler::measure('completed', static fn () => usleep(2000));
     Profiler::measure('router.dispatch', static function (): void {
@@ -108,6 +110,8 @@ try
     $check(count($logs) === 1, 'Profiler log missing.');
     $record = json_decode(trim(file_get_contents($logs[0])), true, 512, JSON_THROW_ON_ERROR);
     $durations = $record['context']['durations_ms'];
+    $check(($durations['bootstrap.configure'] ?? 0) >= 15, 'Bootstrap duration excluded.');
+    $check($record['context']['total_ms'] >= $durations['bootstrap.configure'], 'Bootstrap excluded from total.');
     foreach (['completed', 'router.dispatch', 'controller.action'] as $name)
     {
         $check(($durations[$name] ?? 0) > 0, 'Missing profiler duration: ' . $name);

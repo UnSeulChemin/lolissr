@@ -16,6 +16,12 @@ final class Session
 
     private static ?string $directory = null;
 
+    /** @var array<string, mixed>|null */
+    private static ?array $configuration = null;
+
+    /** @var array<string, bool|string> */
+    private static array $startOptions = [];
+
     private function __construct()
     {
     }
@@ -213,6 +219,30 @@ final class Session
             );
         }
 
+        $configuration = [
+            'directory' => self::directory(),
+            'name' => self::sessionName(),
+            'https' => $_SERVER['HTTPS'] ?? null,
+            'port' => $_SERVER['SERVER_PORT'] ?? null,
+            'forwarded' => $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? null,
+            'trust_proxy' => config('app.trust_proxy', false),
+        ];
+        if (self::$configuration !== $configuration
+            || session_save_path() !== $configuration['directory']
+            || session_name() !== $configuration['name'])
+        {
+            self::configure();
+            self::$configuration = $configuration;
+        }
+
+        if (! @session_start(self::$startOptions))
+        {
+            throw new RuntimeException('Impossible de démarrer la session.');
+        }
+    }
+
+    private static function configure(): void
+    {
         $directory = self::directory();
 
         if (! self::ensureDirectory($directory))
@@ -254,19 +284,14 @@ final class Session
             'httponly' => true,
             'samesite' => 'Lax'
         ]);
-
-        if (! @session_start([
+        self::$startOptions = [
             'use_strict_mode' => true,
             'use_only_cookies' => true,
             'use_trans_sid' => false,
             'cookie_httponly' => true,
             'cookie_secure' => $secure,
-            'cookie_samesite' => 'Lax'
-        ])) {
-            throw new RuntimeException(
-                'Impossible de démarrer la session.'
-            );
-        }
+            'cookie_samesite' => 'Lax',
+        ];
     }
 
     // =========================================

@@ -6,6 +6,7 @@ namespace Framework\Application;
 
 use Framework\Config\Config;
 use Framework\Config\Env;
+use Framework\Config\EnvironmentValidator;
 use Framework\Container\Container;
 use Framework\Routing\Route;
 use Framework\Routing\RouteCollection;
@@ -16,7 +17,7 @@ use Throwable;
 /** Deployment-local artifact. Rebuild after changing configuration or route sources. */
 final class BootstrapCache
 {
-    private const VERSION = 1;
+    private const VERSION = 2;
 
     public static function path(): string
     {
@@ -26,6 +27,7 @@ final class BootstrapCache
     /** Build only after loading and validating the target environment. */
     public static function compile(): string
     {
+        EnvironmentValidator::validate();
         Config::clear();
         $config = [];
         $files = glob(base_path('Config/*.php'));
@@ -54,6 +56,7 @@ final class BootstrapCache
             'root' => base_path(),
             'keys' => $keys,
             'environment' => self::fingerprint($keys),
+            'validator' => self::validatorFingerprint(),
             'config' => $config,
             'routes' => $serialized,
         ];
@@ -75,6 +78,7 @@ final class BootstrapCache
             if (! is_array($payload)
                 || ($payload['version'] ?? null) !== self::VERSION
                 || ($payload['root'] ?? null) !== base_path()
+                || ($payload['validator'] ?? null) !== self::validatorFingerprint()
                 || ! is_array($payload['keys'] ?? null)
                 || ! is_string($payload['environment'] ?? null)
                 || ! is_array($payload['config'] ?? null)
@@ -120,5 +124,12 @@ final class BootstrapCache
             $values[$key] = [Env::has($key), Env::get($key)];
         }
         return hash('sha256', serialize($values));
+    }
+
+    private static function validatorFingerprint(): string
+    {
+        $hash = hash_file('sha256', base_path('Framework/Config/EnvironmentValidator.php'));
+        if ($hash === false) throw new RuntimeException('Cannot fingerprint environment validation.');
+        return $hash;
     }
 }
