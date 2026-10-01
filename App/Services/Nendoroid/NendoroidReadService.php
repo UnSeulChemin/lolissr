@@ -42,6 +42,7 @@ final readonly class NendoroidReadService
 
         if ($totalWaifus === 0)
         {
+            if ($page > 1) return null;
             return new NendoroidListData(
                 nendoroids: [],
                 currentPage: 1,

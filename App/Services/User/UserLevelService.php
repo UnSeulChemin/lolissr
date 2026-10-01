@@ -33,16 +33,6 @@ final readonly class UserLevelService
         return min(100, ($user->xp / $required) * 100);
     }
 
-    public function addXp(User $user, int $xp): void
-    {
-        if ($xp <= 0)
-        {
-            return;
-        }
-
-        $this->addComputedXp($user, static fn (): int => $xp);
-    }
-
     /**
      * Compute and persist rewards under the same user lock as the XP update.
      * @param callable(): int $computeXp

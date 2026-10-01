@@ -42,6 +42,7 @@ final readonly class FigurineReadService
 
         if ($totalWaifus === 0)
         {
+            if ($page > 1) return null;
             return new FigurineSeriesData(
                 figurines: [],
                 currentPage: 1,

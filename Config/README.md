@@ -1,8 +1,16 @@
 # Configuration de LoliSSR
 
+Voir aussi l'[architecture de l'application](../App/README.md) et le
+[fonctionnement du framework](../Framework/README.md).
+
 Ce dossier décrit les options de l'application, ses routes et les feuilles de style propres aux pages. Les valeurs locales restent dans `.env` ; le modèle est [`.env.example`](../.env.example).
 
 ## Chargement
+
+Les extensions PHP requises sont déclarées dans `composer.json`, et non dans
+les tableaux de ce dossier. `intl` sert à la translittération des sections HSK ;
+`gd` sert à la génération des images de profil. Cette génération exige aussi
+le support WebP sans perte, vérifié par son script.
 
 Au démarrage HTTP, `Bootstrap::run()` charge l'environnement et vide la configuration en mémoire. Il utilise le cache compilé si son empreinte est valide ; sinon, il appelle `EnvironmentValidator` et charge la configuration normalement. Pour les scripts, `Bootstrap::loadEnvOnly()` charge l'environnement et exécute toujours la validation complète. Une configuration invalide arrête le démarrage ; la réponse HTTP reste générique et les détails sont journalisés.
 

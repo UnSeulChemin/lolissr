@@ -106,6 +106,7 @@ final readonly class ChinoisReadService
 
         if ($totalVocabulaires === 0)
         {
+            if ($page > 1) return null;
             return new ChinoisVocabulairePageData(
                 vocabulaires: [],
                 currentPage: 1,

@@ -42,6 +42,7 @@ final readonly class PelucheReadService
 
         if ($totalWaifus === 0)
         {
+            if ($page > 1) return null;
             return new PelucheListData(
                 peluches: [],
                 currentPage: 1,

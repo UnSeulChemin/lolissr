@@ -42,6 +42,15 @@ abstract class Controller
         return $value;
     }
 
+    /** Accept only application-relative return paths; invalid destinations use the caller's fallback. */
+    protected function returnPathInput(): string
+    {
+        $value = $this->stringInput('return_to', '');
+        if (str_contains($value, '\\') || preg_match('/[\x00-\x20\x7f]/', $value) === 1) return '';
+        $path = explode('?', explode('#', $value, 2)[0], 2)[0];
+        return preg_match('#^[a-zA-Z0-9][a-zA-Z0-9/_-]*$#D', $path) === 1 ? $value : '';
+    }
+
     public function __construct(
         protected Request $request
     ) {

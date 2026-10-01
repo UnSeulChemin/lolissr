@@ -44,6 +44,7 @@ final readonly class ArtbookReadService
 
         if ($totalArtbooks === 0)
         {
+            if ($page > 1) return null;
             return new ArtbookSeriesData(
                 artbooks: [],
                 currentPage: 1,

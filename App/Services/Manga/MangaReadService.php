@@ -42,6 +42,7 @@ final readonly class MangaReadService
 
         if ($totalSeries === 0)
         {
+            if ($page > 1) return null;
             return new MangaSeriesData(
                 mangas: [],
                 currentPage: 1,

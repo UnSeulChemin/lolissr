@@ -7,6 +7,8 @@
     "require": {
         "php": "^8.3",
         "ext-fileinfo": "*",
+        "ext-gd": "*",
+        "ext-intl": "*",
         "ext-mbstring": "*",
         "ext-pdo": "*",
         "ext-pdo_mysql": "*"
@@ -44,6 +46,7 @@
             "@php tests/Framework/framework-lifecycle.php",
             "@php tests/Framework/framework.php",
             "@php tests/Domain/achievement-xp.php",
+            "@php tests/Domain/app-boundaries.php",
             "@php tests/Domain/manga-xp-batch.php",
             "@php tests/Domain/collection-xp-batch.php",
             "@php tests/Domain/profile-read-only.php",
