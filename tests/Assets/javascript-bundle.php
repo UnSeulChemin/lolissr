@@ -10,7 +10,12 @@ require ROOT . '/App/Support/Helpers.php';
 
 $root = dirname(__DIR__, 2);
 $manifest = require $root . '/Config/javascript.php';
-foreach ($manifest['sources'] as $path => $hash)
+$metadata = require $root . '/scripts/Assets/javascript-sources.php';
+if (isset($manifest['sources']) || $metadata['sources'] === [])
+    throw new RuntimeException('JavaScript source metadata must be separate and nonempty.');
+if (hash('sha256', serialize($manifest)) !== $metadata['manifest_hash'])
+    throw new RuntimeException('JavaScript manifest and source metadata differ: run composer assets:build');
+foreach ($metadata['sources'] as $path => $hash)
 {
     if (!is_file($root . '/' . $path) || hash_file('sha256', $root . '/' . $path) !== $hash)
         throw new RuntimeException('Stale JavaScript bundle: run composer assets:build');

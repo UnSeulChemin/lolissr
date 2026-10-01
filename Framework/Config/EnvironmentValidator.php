@@ -156,10 +156,10 @@ final class EnvironmentValidator
                 continue;
             }
 
-            $integer = filter_var(
-                Env::get($key),
-                FILTER_VALIDATE_INT
-            );
+            $value = Env::get($key);
+            $integer = is_int($value) || is_string($value)
+                ? filter_var($value, FILTER_VALIDATE_INT)
+                : false;
 
             if ($integer === false || $integer <= 0)
             {

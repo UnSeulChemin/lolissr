@@ -77,6 +77,15 @@ Les valeurs ci-dessous sont celles du code lorsque la variable est absente. Le f
 
 Les limites applicatives d'upload ne remplacent pas les limites de réception définies dans la configuration PHP du serveur.
 
+## Manifeste JavaScript
+
+Le manifeste généré `javascript.php` contient l'entrée, les préchargements et les
+fichiers publiés. Les empreintes des sources sont générées séparément dans
+`scripts/Assets/javascript-sources.php`, pour les vérifications du build ; elles
+ne sont pas chargées par les pages ni intégrées au cache du bootstrap. Les deux
+fichiers sont régénérés par `composer js:build` (ou `composer assets:build`).
+Le test du bundle vérifie leur correspondance et les empreintes des sources.
+
 ## Styles par page
 
 [`styles.php`](styles.php) associe des fichiers relatifs à `public/css/` aux vues relatives à `App/Views/`, sans extension `.php` :

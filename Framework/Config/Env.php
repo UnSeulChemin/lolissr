@@ -153,7 +153,7 @@ final class Env
     {
         $value = self::get($key, $default);
 
-        if (! is_scalar($value))
+        if (! is_int($value) && ! is_string($value))
         {
             return $default;
         }

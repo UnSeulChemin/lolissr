@@ -20,6 +20,7 @@ require dirname(__DIR__, 2) . '/phpstan-bootstrap.php';
 use Framework\Config\Config;
 use Framework\Config\DatabaseConfig;
 use Framework\Config\Env;
+use Framework\Config\EnvironmentValidator;
 
 $check = static function (bool $condition, string $message): void {
     if (! $condition) throw new RuntimeException($message);
@@ -29,6 +30,38 @@ mkdir($directory, 0700);
 $path = $directory . '/.env';
 try
 {
+    Env::load(ROOT . '/.env.example');
+    Env::set('DB_NAME', 'fixture');
+    Env::set('DB_USER', 'fixture');
+    foreach (['APP_PAGINATION', 'DB_PORT', 'DB_SLOW_QUERY_THRESHOLD', 'UPLOAD_MAX_SIZE',
+        'UPLOAD_MAX_WIDTH', 'UPLOAD_MAX_HEIGHT', 'UPLOAD_MAX_PIXELS', 'CACHE_TTL', 'LOG_RETENTION_DAYS'] as $key)
+    {
+        $original = Env::get($key);
+        foreach ([true, false, 1.0, null, 'true', '1.5', '0', '-1'] as $invalid)
+        {
+            Env::set($key, $invalid);
+            try
+            {
+                EnvironmentValidator::validate();
+                throw new LogicException('Invalid integer accepted: ' . $key);
+            }
+            catch (RuntimeException) {}
+        }
+        foreach ([1, '42'] as $valid)
+        {
+            Env::set($key, $valid);
+            EnvironmentValidator::validate();
+            $check(Env::int($key) === (int) $valid, 'Valid integer rejected: ' . $key);
+        }
+        Env::set($key, $original);
+    }
+    foreach ([true, false, 1.0, null, 'true', '1.5'] as $invalid)
+    {
+        Env::set('AUDIT_VALUE', $invalid);
+        $check(Env::int('AUDIT_VALUE', 7) === 7, 'Integer helper accepted an invalid type.');
+    }
+    Env::clear();
+
     foreach (['true' => true, 'false' => false, '(false)' => false, 'null' => null, 'empty' => '', '42' => '42'] as $raw => $expected)
     {
         file_put_contents($path, 'AUDIT_VALUE=' . $raw . "\n");

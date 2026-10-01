@@ -1,5 +1,22 @@
 # Corrections et optimisations du framework
 
+## Deuxième relecture de Config — 1er octobre 2026
+
+- La validation des entiers positifs refuse les booléens et les flottants avant
+  conversion. `Env::int()` applique la même restriction de type ; les chaînes
+  représentant des entiers restent acceptées. Les neuf options numériques sont
+  couvertes par des cas invalides et valides dans `configuration.php`.
+- Le build JavaScript sépare les empreintes des sources dans
+  `scripts/Assets/javascript-sources.php`. Ce fichier sert aux contrôles du build,
+  reste suivi avec les artefacts et n'est pas intégré au cache de configuration.
+  Le test vérifie également sa correspondance avec le manifeste publié.
+- `Config/javascript.php` passe de 15 610 à 2 701 octets dans ce build ; les
+  fichiers JavaScript publiés et les préchargements restent identiques.
+  Cette réduction de données ne constitue pas une mesure du temps des pages.
+
+Validation : build JavaScript régénéré, puis `composer check` réussi (PHPStan,
+67 tests HTTP, SPA et toutes les régressions).
+
 ## Configuration — corrections du 1er octobre 2026
 
 - Les fichiers de configuration existants retournant autre chose qu'un tableau

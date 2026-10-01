@@ -39,6 +39,7 @@
 
 # Fichiers temporaires laisses par un build interrompu
 /Config/.build-*
+/scripts/Assets/.build-*
 /public/css/.build-*
 /public/js/.build-*
 /public/js/dist/**/.build-*
