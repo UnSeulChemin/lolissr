@@ -1,95 +1,64 @@
-#################################
-# ENVIRONNEMENT
-#################################
-
+# Environnement local (conserver le modele de configuration)
 .env
 .env.*
 !.env.example
 
-#################################
-# IMAGES
-#################################
+# Dependances et outils installes localement
+/vendor/
+/storage/tools/
 
-/public/images/*
-!/public/images/.gitkeep
-
-#################################
-# CACHE
-#################################
-
+# Donnees d'execution
 /storage/cache/*
 !/storage/cache/.gitkeep
-
-#################################
-# SESSIONS
-#################################
-
 /storage/sessions/*
 !/storage/sessions/.gitkeep
-
-#################################
-# LOGS
-#################################
-
 /storage/logs/*
 !/storage/logs/.gitkeep
-
-#################################
-# BACKUPS
-#################################
-
 /storage/backups/*
 !/storage/backups/.gitkeep
 
-#################################
-# RELEASES
-#################################
-
-/releases/*
-!/releases/.gitkeep
-
-#################################
-# TESTS
-#################################
-
-/tests/Http/reports/*
-!/tests/Http/reports/.gitkeep
-
-#################################
-# DÉPENDANCES
-#################################
-
-/vendor/
-/storage/tools/
+# Etat local des builds et de la retention JavaScript
 /storage/.build.lock
 /storage/javascript-retention.json
 
-#################################
-# NOTES / TEMP
-#################################
+# Images locales et fichiers envoyes par les utilisateurs
+/public/images/*
+!/public/images/.gitkeep
 
-/notes.txt
-/note.txt
-
-#################################
-# ARCHIVES
-#################################
-
+# Archives de livraison
+/releases/*
+!/releases/.gitkeep
 *.zip
 *.rar
 *.7z
 
-#################################
-# IDE
-#################################
+# Rapports des tests HTTP
+/tests/Http/reports/*
+!/tests/Http/reports/.gitkeep
 
+# Fichiers temporaires laisses par un build interrompu
+/Config/.build-*
+/public/css/.build-*
+/public/js/.build-*
+/public/js/dist/**/.build-*
+/storage/.build-*
+
+# Les sources scripts/ et tests/ restent suivies.
+# Les assets publies restent suivis : public/css/, public/js/dist/,
+# Config/assets.php et Config/javascript.php. Conserver composer.lock.
+
+# Notes personnelles et fichiers temporaires d'editeur
+/notes.txt
+/note.txt
+*.swp
+*.swo
+*~
+
+# Configuration locale des IDE
 /.idea/
 /.vscode/
 
-#################################
-# SYSTÈME D'EXPLOITATION
-#################################
-
+# Fichiers du systeme d'exploitation
 .DS_Store
 Thumbs.db
 desktop.ini
