@@ -1,5 +1,30 @@
 # Corrections et optimisations du framework
 
+## Configuration — corrections du 1er octobre 2026
+
+- Les fichiers de configuration existants retournant autre chose qu'un tableau
+  provoquent désormais une exception à la lecture et à la compilation. Le contrôle
+  du compilateur reste utile si un fichier disparaît entre son inventaire et sa lecture.
+- Un fichier absent utilise la valeur par défaut de chaque appel, comme une clé
+  absente. Cette absence est mémorisée jusqu'à `Config::clear()` ou `Config::prime()` ;
+  les tableaux vides et valeurs explicitement nulles sont conservés.
+- `Env` mémorise les valeurs antérieures de chaque source avant sa première
+  écriture. Le nettoyage et le rechargement les restaurent, même après plusieurs
+  remplacements ou une affectation nulle. Les variables initialement absentes
+  restent absentes après nettoyage.
+- Les guillemets ouvrants non fermés sont refusés avec le numéro physique de
+  ligne, sans inclure la valeur dans le message d'erreur.
+- `Config/README.md` décrit désormais le cache compilé et la réutilisation de la
+  validation lorsque ses empreintes restent valides.
+
+Les régressions `configuration.php` et `configuration-files.php` couvrent ces cas,
+dont la compilation invalide et les valeurs par défaut après amorçage du cache.
+Le cache des résolutions et la normalisation des uploads sont conservés ; aucune
+suppression de classe ni optimisation supplémentaire sans mesure n'est introduite.
+
+Validation : `composer check` réussi (PHPStan, 67 tests HTTP, tests SPA et toutes
+les régressions, y compris le nouveau test des fichiers de configuration).
+
 ## Relecture complémentaire — 1er octobre 2026
 
 Relecture du bootstrap, du cache compilé, du conteneur, du routage, du cache

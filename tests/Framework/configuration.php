@@ -51,6 +51,54 @@ try
     $check(DatabaseConfig::pass() === '  system password  ', 'System password trimmed.');
     putenv('DB_PASS');
 
+    Env::clear();
+    putenv('AUDIT_VALUE=process-original');
+    $_ENV['AUDIT_VALUE'] = null;
+    $_SERVER['AUDIT_VALUE'] = 'server-original';
+    file_put_contents($path, "AUDIT_VALUE=file\n");
+    Env::load($path);
+    Env::set('AUDIT_VALUE', 'second');
+    Env::set('AUDIT_VALUE', null);
+    $check(Env::get('AUDIT_VALUE', 'fallback') === null, 'Explicit null lost.');
+    file_put_contents($path, '');
+    Env::load($path);
+    $check(getenv('AUDIT_VALUE') === 'process-original', 'Process environment not restored.');
+    $check(array_key_exists('AUDIT_VALUE', $_ENV) && $_ENV['AUDIT_VALUE'] === null, 'Original ENV null lost.');
+    $check($_SERVER['AUDIT_VALUE'] === 'server-original', 'Original SERVER value lost.');
+    $check(Env::get('AUDIT_VALUE') === 'server-original', 'Restored lookup precedence changed.');
+    Env::clear();
+    unset($_ENV['AUDIT_VALUE'], $_SERVER['AUDIT_VALUE']);
+    putenv('AUDIT_VALUE');
+    Env::set('AUDIT_VALUE', 'temporary');
+    Env::clear();
+    $check(! Env::has('AUDIT_VALUE'), 'Originally absent variable retained.');
+    putenv('AUDIT_VALUE=');
+    Env::set('AUDIT_VALUE', 'temporary');
+    Env::clear();
+    $check(getenv('AUDIT_VALUE') === '', 'Original empty process value lost.');
+    putenv('AUDIT_VALUE');
+
+    foreach (['"', "'", '"unfinished', "'unfinished", "\"mismatched'"] as $raw)
+    {
+        file_put_contents($path, "# comment\n\nAUDIT_VALUE=" . $raw . "\n");
+        try
+        {
+            Env::load($path);
+            throw new LogicException('Unclosed quote accepted.');
+        }
+        catch (RuntimeException $error)
+        {
+            $check(str_contains($error->getMessage(), 'line 3'), 'Quoted error line lost.');
+            $check(! str_contains($error->getMessage(), 'unfinished'), 'Quoted value exposed.');
+        }
+    }
+    foreach (['""' => '', "''" => '', '"false"' => 'false', "' spaced '" => ' spaced ', "O'Reilly" => "O'Reilly"] as $raw => $expected)
+    {
+        file_put_contents($path, 'AUDIT_VALUE=' . $raw . "\n");
+        Env::load($path);
+        $check(Env::get('AUDIT_VALUE') === $expected, 'Valid literal changed.');
+    }
+
     file_put_contents($path, "\n# comment\n\nINVALID_DECLARATION\n");
     try
     {
@@ -79,10 +127,11 @@ try
 finally
 {
     Env::clear();
+    unset($_ENV['AUDIT_VALUE'], $_SERVER['AUDIT_VALUE']);
     putenv('AUDIT_VALUE');
     putenv('DB_PASS');
     foreach (glob($directory . '/*') ?: [] as $file) unlink($file);
     if (is_file($path)) unlink($path);
     rmdir($directory);
 }
-echo "PASS: environment types, literal passwords, physical line numbers and early bootstrap failures.\n";
+echo "PASS: environment types, restoration, quoted literals, physical line numbers and early bootstrap failures.\n";

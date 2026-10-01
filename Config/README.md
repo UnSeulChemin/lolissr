@@ -4,7 +4,7 @@ Ce dossier décrit les options de l'application, ses routes et les feuilles de s
 
 ## Chargement
 
-Au démarrage, `Bootstrap::loadEnvOnly()` charge l'environnement, vide la configuration en mémoire et appelle `EnvironmentValidator`. Une configuration invalide arrête le démarrage avec une erreur explicite.
+Au démarrage HTTP, `Bootstrap::run()` charge l'environnement et vide la configuration en mémoire. Il utilise le cache compilé si son empreinte est valide ; sinon, il appelle `EnvironmentValidator` et charge la configuration normalement. Pour les scripts, `Bootstrap::loadEnvOnly()` charge l'environnement et exécute toujours la validation complète. Une configuration invalide arrête le démarrage ; la réponse HTTP reste générique et les détails sont journalisés.
 
 Les tableaux PHP sont ensuite chargés à la demande par `config('fichier.cle', valeurParDefaut)`, puis mémorisés pendant la requête. Par exemple :
 
@@ -13,7 +13,11 @@ $pagination = config('app.pagination', 8);
 $sessionName = config('session.name', 'APP_SESSION');
 ```
 
-`Config::clear()` vide cette mémoire. Ce n'est pas le cache de données de `Framework\Cache\Cache`. Il n'existe pas de configuration compilée à régénérer après une modification du `.env` : les nouvelles requêtes relisent l'environnement.
+`Config::clear()` vide cette mémoire. Ce n'est ni le cache de données de `Framework\Cache\Cache`, ni l'artefact compilé du bootstrap. Les nouvelles requêtes relisent l'environnement ; une modification d'une variable suivie invalide l'artefact et rétablit le chargement normal jusqu'à sa reconstruction avec `composer bootstrap:cache`.
+
+Un fichier absent ou une clé absente renvoie la valeur par défaut propre à chaque appel. Un tableau vide, une valeur `null`, `false` ou `0` explicitement déclarés sont conservés. Un fichier de configuration existant doit retourner un tableau : un autre type provoque une exception au chargement comme à la compilation.
+
+Les valeurs du `.env` remplacent les variables existantes pendant son utilisation. `Env::clear()` et le rechargement restaurent les valeurs antérieures de l'environnement du processus, de `$_ENV` et de `$_SERVER`, chacune séparément. Les variables initialement absentes sont supprimées. Une valeur commençant par un guillemet simple ou double doit se terminer par le même guillemet ; sinon, le chargement échoue en indiquant la ligne, sans exposer la valeur. Les guillemets préservent le contenu littéral, sans interpolation ni décodage des échappements.
 
 `routes.php` est un cas distinct : il retourne une fonction d'enregistrement des routes, pas un tableau à lire avec `config()`.
 
@@ -126,7 +130,9 @@ Cette commande compile les tableaux de configuration et la collection de routes
 une closure utilisée comme action de route doit être remplacée par un contrôleur
 avant d'activer ce cache.
 
-Le `.env` reste chargé et validé à chaque requête. Une modification d'une variable
+Le `.env` reste chargé à chaque requête. La validation complète est exécutée à la
+compilation et lors du chargement normal ; un cache valide réutilise cette validation
+après vérification des empreintes de l'environnement et du validateur. Une modification d'une variable
 consultée lors de la compilation, y compris une variable système, invalide le cache
 et rétablit le chargement normal. Les erreurs de configuration de production restent
 donc détectées. Le cache absent ou illisible utilise également le chargement normal.

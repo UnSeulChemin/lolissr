@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Framework\Config;
 
+use RuntimeException;
+
 final class Config
 {
     /**
-     * @var array<string, array<string, mixed>>
+     * @var array<string, array<string, mixed>|null>
      */
     private static array $items = [];
 
@@ -68,7 +70,12 @@ final class Config
 
         $file = array_shift($segments);
 
-        $value = self::$items[$file] ??= self::loadFile($file);
+        if (! array_key_exists($file, self::$items))
+        {
+            self::$items[$file] = self::loadFile($file);
+        }
+        $value = self::$items[$file];
+        if ($value === null) return [];
 
         foreach ($segments as $segment)
         {
@@ -88,19 +95,24 @@ final class Config
     // =========================================
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed>|null
      */
-    private static function loadFile(string $file): array
+    private static function loadFile(string $file): ?array
     {
         $path = base_path('Config/' . $file . '.php');
 
         if (! is_file($path))
         {
-            return [];
+            return null;
         }
 
         $config = require $path;
 
-        return is_array($config) ? $config : [];
+        if (! is_array($config))
+        {
+            throw new RuntimeException('Configuration must return an array: ' . $file);
+        }
+
+        return $config;
     }
 }

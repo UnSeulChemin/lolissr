@@ -14,7 +14,7 @@ final class Env
     private static array $items = [];
 
     /**
-     * @var array<string, true>
+     * @var array<string, array{process: string|false, env?: mixed, server?: mixed}>
      */
     private static array $managedKeys = [];
 
@@ -57,21 +57,26 @@ final class Env
     public static function set(string $key, mixed $value): void
     {
         $key = self::validateKey($key);
+        $environmentValue = $value === null ? null : self::stringify($value);
 
-        if ($value === null)
+        if (! isset(self::$managedKeys[$key]))
+        {
+            $original = ['process' => getenv($key)];
+            if (array_key_exists($key, $_ENV)) $original['env'] = $_ENV[$key];
+            if (array_key_exists($key, $_SERVER)) $original['server'] = $_SERVER[$key];
+            self::$managedKeys[$key] = $original;
+        }
+
+        if ($environmentValue === null)
         {
             self::$items[$key] = null;
-            self::$managedKeys[$key] = true;
 
             self::removeEnvironmentValue($key);
 
             return;
         }
 
-        $environmentValue = self::stringify($value);
-
         self::$items[$key] = $value;
-        self::$managedKeys[$key] = true;
 
         $_ENV[$key] = $environmentValue;
         $_SERVER[$key] = $environmentValue;
@@ -177,9 +182,12 @@ final class Env
 
     public static function clear(): void
     {
-        foreach (array_keys(self::$managedKeys) as $key)
+        foreach (self::$managedKeys as $key => $original)
         {
-            self::removeEnvironmentValue($key);
+            unset($_ENV[$key], $_SERVER[$key]);
+            if (array_key_exists('env', $original)) $_ENV[$key] = $original['env'];
+            if (array_key_exists('server', $original)) $_SERVER[$key] = $original['server'];
+            putenv($original['process'] === false ? $key : $key . '=' . $original['process']);
         }
 
         self::$items = [];
@@ -242,18 +250,18 @@ final class Env
         $value = trim($value);
         $length = strlen($value);
 
-        if ($length < 2)
+        if ($length === 0)
         {
             return $value;
         }
 
         $firstCharacter = $value[0];
-        $lastCharacter = $value[$length - 1];
-
-        if (
-            ($firstCharacter === '"' && $lastCharacter === '"')
-            || ($firstCharacter === "'" && $lastCharacter === "'")
-        ) {
+        if ($firstCharacter === '"' || $firstCharacter === "'")
+        {
+            if ($length < 2 || $value[$length - 1] !== $firstCharacter)
+            {
+                throw new RuntimeException('Unclosed quoted environment value.');
+            }
             return substr($value, 1, -1);
         }
 

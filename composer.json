@@ -33,6 +33,7 @@
         "browser-tests": "@php tests/Browser/run-browser-tests.php",
         "regression-tests": [
             "@php tests/Framework/configuration.php",
+            "@php tests/Framework/configuration-files.php",
             "@php tests/Framework/routing.php",
             "@php tests/Framework/cache-contention.php",
             "@php tests/Framework/bootstrap-cache.php",
