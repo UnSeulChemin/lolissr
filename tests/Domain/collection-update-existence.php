@@ -66,8 +66,10 @@ foreach (['Figurine', 'Nendoroid', 'Peluche', 'Artbook'] as $kind)
                 throw new RuntimeException('Read status accepted outside a transaction');
             }
             catch (LogicException) {}
-            $check($db->transaction(fn () => $repository->updateReadStatus('fixture', 1, true)), 'Read status update failed');
-            $check($db->transaction(fn () => $repository->updateReadStatus('fixture', 1, true)), 'Unchanged read status failed');
+            $before = $db->transaction(fn () => $repository->updateReadStatus('fixture', 1, true));
+            $check($before instanceof \App\Models\Artbook && !$before->lu, 'Original unread state lost');
+            $before = $db->transaction(fn () => $repository->updateReadStatus('fixture', 1, true));
+            $check($before instanceof \App\Models\Artbook && $before->lu, 'Unchanged read state lost');
             $check($repository->findOneBySlugAndNumero('fixture', 1)->lu, 'Read status not saved');
         }
 
@@ -87,7 +89,15 @@ foreach (['Figurine', 'Nendoroid', 'Peluche', 'Artbook'] as $kind)
         $check((int)$db->query("SELECT COUNT(*) FROM $table")->fetchColumn() === 0, 'Missing row recreated');
         if ($kind === 'Artbook')
         {
-            $check($service->updateReadStatus('fixture', 1, 1)->status === 404, 'Missing read target must return 404');
+            try
+            {
+                $service->updateReadStatus('fixture', 1, 1);
+                throw new RuntimeException('Missing read target must return 404');
+            }
+            catch (NotFoundException $error)
+            {
+                $check($error->getStatusCode() === 404, 'Wrong missing read target status');
+            }
             try
             {
                 $db->transaction(fn () => $repository->updateReadStatus('fixture', 1, true));

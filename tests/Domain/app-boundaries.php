@@ -70,5 +70,24 @@ foreach ([
             'Empty collection pagination differs: ' . $class . ' page ' . $page);
     }
 }
+$service = $container->get(App\Services\Chinois\ChinoisReadService::class);
+$buildSections = new ReflectionMethod($service, 'buildSections');
+$grammar = [];
+foreach (['École', 'Ecole', 'ecole-2', '!!!', 'section-2', '中文'] as $index => $section)
+{
+    $grammar[] = new App\DTO\Chinois\Responses\ChinoisGrammaireData(
+        id: $index + 1, niveau: 'HSK1', section: $section, categorie: 'Fixture',
+        titre: 'Title', structure: '', abreviation: null, phrase: '', pinyin: '',
+        traduction: '', explication: '', position: $index, maitrise: false,
+        xpRewarded: false, hasAbreviation: false, hasExplication: false,
+        masteredClass: '', masteredValue: '0', masteredPressed: 'false', masteredLabel: ''
+    );
+}
+$sections = $buildSections->invoke($service, $grammar);
+$check(array_column($sections, 'id') === ['ecole', 'ecole-3', 'ecole-2', 'section-3', 'section-2', 'zhong-wen'],
+    'Section transliteration, reserved slugs or collision suffixes changed');
+$check($buildSections->invoke($service, []) === [], 'Empty grammar sections changed');
+foreach ($sections as $index => $section)
+    $check($section->categories[0]->grammaires[0] === $grammar[$index], 'Section grouping changed');
 Config::clear();
 echo "PASS: internal return paths on GET/POST and empty pagination across six collections.\n";

@@ -55,7 +55,22 @@ foreach (['Figurine', 'Nendoroid', 'Peluche', 'Artbook'] as $kind)
 $database->exec('CREATE TABLE manga (id INT PRIMARY KEY, slug TEXT, numero INT, livre TEXT, thumbnail TEXT, extension TEXT, commentaire TEXT)');
 $database->exec("INSERT INTO manga VALUES (1, 'alpha', 3, 'Alpha', 'cover', 'webp', 'detail'),
     (2, 'beta', 1, 'Beta', '', '', 'detail'), (3, 'alpha', 2, 'Alpha', 'cover', 'webp', 'detail')");
+$database->exec("ALTER TABLE manga ADD COLUMN statut TEXT DEFAULT 'en_cours'");
+$database->exec('ALTER TABLE manga ADD COLUMN note INT DEFAULT 6');
+$database->exec('ALTER TABLE manga ADD COLUMN lu INT DEFAULT 0');
 $database->exec('PRAGMA query_only = ON');
+$repository = $container->get(\App\Repositories\Manga\MangaRepository::class);
+$service = $container->get(\App\Services\Manga\MangaReadService::class);
+$mapper = new ReflectionMethod($service, 'mapSeriesItem');
+$cards = $repository->findBySlug('alpha');
+$assert(count($cards) === 2 && $cards[0]->numero === 3, 'Series order changed');
+foreach ($cards as $card)
+{
+    $legacy = $repository->findOneBySlugAndNumero($card->slug, $card->numero);
+    $assert($mapper->invoke($service, $card) == $mapper->invoke($service, $legacy), 'Series card data changed');
+    $assert($card->commentaire === null && $legacy->commentaire === 'detail', 'Series still loads detail text');
+}
+$assert($repository->findBySlug('missing') === [], 'Missing series changed');
 $stats = $container->get(\App\Repositories\Manga\MangaStatsRepository::class);
 $last = $stats->findLastAddedDto();
 $assert($last !== null && $last->id === 3 && $last->numero === 2 && $last->url === 'manga/series/alpha/2', 'Latest manga changed');

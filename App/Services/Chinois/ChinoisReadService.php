@@ -205,10 +205,13 @@ final readonly class ChinoisReadService
 
         $results = [];
         $reservedIds = [];
+        $sectionSlugs = [];
+        $transliterator = \Transliterator::create('Any-Latin; Latin-ASCII');
         foreach ($sections as $categories)
         {
             $section = $categories[array_key_first($categories)][0]->section;
-            $slug = $this->slugify($section);
+            $slug = $this->slugify($section, $transliterator);
+            $sectionSlugs[$section] = $slug;
             if ($slug !== '')
             {
                 $reservedIds[$slug] = true;
@@ -219,7 +222,7 @@ final readonly class ChinoisReadService
         foreach ($sections as $categories)
         {
             $section = $categories[array_key_first($categories)][0]->section;
-            $id = $this->slugify($section);
+            $id = $sectionSlugs[$section];
             if ($id === '' || isset($usedIds[$id]))
             {
                 $base = $id !== '' ? $id : 'section';
@@ -261,9 +264,9 @@ final readonly class ChinoisReadService
         return $results;
     }
 
-    private function slugify(string $value): string
+    private function slugify(string $value, ?\Transliterator $transliterator): string
     {
-        $slug = transliterator_transliterate('Any-Latin; Latin-ASCII', $value);
+        $slug = $transliterator?->transliterate($value) ?? false;
 
         if ($slug === false)
         {

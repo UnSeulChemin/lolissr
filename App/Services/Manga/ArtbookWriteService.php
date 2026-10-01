@@ -149,21 +149,14 @@ final readonly class ArtbookWriteService
         $result = $this->database->transaction(
             function () use ($slug, $numero, $readStatus): ServiceResult
             {
-                $artbook = $this->artbookRepository->findOneBySlugAndNumero($slug, $numero, true);
-
-                if ($artbook === null)
-                {
-                    return $this->error('Artbook introuvable', 404);
-                }
-
-                $updated = $this->artbookRepository->updateReadStatus(
+                $artbook = $this->artbookRepository->updateReadStatus(
                     $slug,
                     $numero,
                     $readStatus === 1
                 );
 
                 $failure = $this->writeFailed(
-                    $updated,
+                    $artbook !== false,
                     'Update artbook read status',
                     $slug,
                     $numero,
@@ -176,6 +169,8 @@ final readonly class ArtbookWriteService
                 }
 
                 $xpEarned = false;
+
+                assert($artbook instanceof \App\Models\Artbook);
 
                 if (! $artbook->lu && $readStatus === 1)
                 {

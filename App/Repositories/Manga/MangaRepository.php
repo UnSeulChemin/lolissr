@@ -26,7 +26,7 @@ final class MangaRepository extends Model
         $mangas = $this->fetchAll(
             "
             SELECT
-                m.*,
+                m.slug, m.numero, m.livre, m.thumbnail, m.extension, m.statut, m.note, m.lu,
                 stats.total,
                 stats.total_lu,
                 stats.average_note

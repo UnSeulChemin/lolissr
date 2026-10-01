@@ -73,15 +73,18 @@ final class ArtbookRepository extends Model
         );
     }
 
-    public function updateReadStatus(string $slug, int $numero, bool $readStatus): bool
+    /** Returns the locked state before the update, for reward calculation. */
+    public function updateReadStatus(string $slug, int $numero, bool $readStatus): Artbook|false
     {
         $artbook = $this->findOneBySlugAndNumero($slug, $numero, true)
             ?? throw new NotFoundException('Artbook introuvable');
 
-        return $this->update(
+        $updated = $this->update(
             ['lu' => (int) $readStatus],
             ['id' => $artbook->id]
         );
+
+        return $updated ? $artbook : false;
     }
 
     public function claimReadReward(int $id): bool

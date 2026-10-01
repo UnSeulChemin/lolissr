@@ -7,6 +7,18 @@ des mesures de charge ni une validation du serveur de production.
 
 ## Modifications appliquées
 
+- Le changement de statut de lecture d'un artbook réutilise l'état retourné
+  par son unique lecture verrouillée : une requête SQL évitée, sans retirer
+  le verrou ni changer le calcul des récompenses.
+- La lecture d'une série manga sélectionne les huit champs utilisés par ses
+  cartes, en conservant les agrégats. Sur les 100 derniers mangas locaux,
+  les valeurs de ces champs représentent 7 703 octets contre 11 448 pour les
+  lignes complètes (hors agrégats et protocole SQL). La régression de projection
+  compare les DTO avec ceux des lectures complètes.
+- Les sections HSK calculent leur slug une seule fois avec un translittérateur
+  partagé pendant leur construction. Les collisions, noms réservés, accents,
+  caractères chinois et sections vides sont couverts par `app-boundaries.php`.
+
 - Quatre listes (figurines, nendoroids, peluches, artbooks) sélectionnent les
   sept colonnes utilisées par leurs cartes. Les commentaires, dates et autres
   champs de détail ne sont plus transférés puis hydratés inutilement.
