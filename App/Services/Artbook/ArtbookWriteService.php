@@ -43,7 +43,7 @@ final readonly class ArtbookWriteService
     {
         if ($this->artbookRepository->findOneBySlugAndNumero($dto->slug, $dto->numero) !== null)
         {
-            return $this->error('Ce livre d’illustrations existe déjà', 409);
+            return $this->error('Ce artbook existe déjà', 409);
         }
 
         $result = $this->creationService->create(
@@ -68,7 +68,7 @@ final readonly class ArtbookWriteService
 
                 $failure = $this->writeFailed(
                     $inserted,
-                    'Insertion livre d’illustrations',
+                    'Insertion artbook',
                     $dto->slug,
                     $dto->numero,
                     'Erreur lors de l’enregistrement'
@@ -80,9 +80,9 @@ final readonly class ArtbookWriteService
                     return $failure;
                 }
 
-                return $this->success('Livre d’illustrations ajouté avec succès');
+                return $this->success('Artbook ajouté avec succès');
             },
-            'Ce livre d’illustrations existe déjà'
+            'Ce artbook existe déjà'
         );
 
         if ($result->success)
@@ -106,7 +106,7 @@ final readonly class ArtbookWriteService
 
                 $failure = $this->writeFailed(
                     $updated,
-                    'Update livre d’illustrations',
+                    'Update artbook',
                     $slug,
                     $numero,
                     'Erreur lors de la mise à jour'
@@ -117,7 +117,7 @@ final readonly class ArtbookWriteService
                     return $failure;
                 }
 
-                return $this->success('Livre d’illustrations mis à jour avec succès');
+                return $this->success('Artbook mis à jour avec succès');
             }
         );
 
@@ -151,7 +151,7 @@ final readonly class ArtbookWriteService
 
                 $failure = $this->writeFailed(
                     $artbook !== false,
-                    'Update livre d’illustrations read status',
+                    'Update artbook read status',
                     $slug,
                     $numero,
                     'Erreur lors de la mise à jour'
@@ -175,8 +175,8 @@ final readonly class ArtbookWriteService
 
                 return $this->success(
                     $readStatus === 1
-                        ? 'Livre d’illustrations marqué comme lu'
-                        : 'Livre d’illustrations marqué comme non lu',
+                        ? 'Artbook marqué comme lu'
+                        : 'Artbook marqué comme non lu',
                     [
                         'readStatus' => $readStatus,
                         'xpEarned' => $xpEarned,
@@ -206,7 +206,7 @@ final readonly class ArtbookWriteService
 
         if ($artbook === null)
         {
-            return $this->error('Livre d’illustrations introuvable', 404);
+            return $this->error('Artbook introuvable', 404);
         }
 
         $result = $this->database->transaction(
@@ -219,7 +219,7 @@ final readonly class ArtbookWriteService
                     return $this->error('Élément introuvable ou déjà supprimé', 404);
                 }
 
-                return $this->success('Livre d’illustrations supprimé avec succès');
+                return $this->success('Artbook supprimé avec succès');
             }
         );
 

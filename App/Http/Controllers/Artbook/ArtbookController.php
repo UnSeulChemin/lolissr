@@ -41,7 +41,7 @@ final class ArtbookController extends Controller
         }
 
         $this->title =
-            'Manga | Livres d’illustrations'
+            'Manga | Artbooks'
             . ($data->currentPage > 1
                 ? ' - Page ' . $data->currentPage
                 : '');
@@ -63,7 +63,7 @@ final class ArtbookController extends Controller
     {
         $artbook = $this->resolveOrFail($slug, $numero);
 
-        $this->title = 'Livre d’illustrations | ' . $artbook->artbook;
+        $this->title = 'Artbook | ' . $artbook->artbook;
 
         $this->render(
             'pages/artbook/show',
@@ -80,7 +80,7 @@ final class ArtbookController extends Controller
 
     public function create(): never
     {
-        $this->title = 'Manga | Ajouter un livre d’illustrations';
+        $this->title = 'Manga | Ajouter un artbook';
 
         $this->render(
             'pages/artbook/create',
@@ -118,7 +118,7 @@ final class ArtbookController extends Controller
     ): never {
         $artbook = $this->resolveOrFail($slug, $numero);
 
-        $this->title = 'Livre d’illustrations | ' . $artbook->artbook;
+        $this->title = 'Artbook | ' . $artbook->artbook;
 
         $this->render(
             'pages/artbook/edit',
@@ -201,7 +201,7 @@ final class ArtbookController extends Controller
             $numero
         )
         ?? throw new NotFoundException(
-            'Livre d’illustrations introuvable'
+            'Artbook introuvable'
         );
     }
 }

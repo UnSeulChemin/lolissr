@@ -59,7 +59,7 @@ $category = '';
                     <?php endif; ?>
                 </div>
             <?php endif; ?>
-            <?php if ($achievement['category'] === 'Livres d’illustrations' && $achievement['target'] === \App\Constants\UserTitle::ARTBOOK_REWARD_TARGET): ?>
+            <?php if ($achievement['category'] === 'Artbooks' && $achievement['target'] === \App\Constants\UserTitle::ARTBOOK_REWARD_TARGET): ?>
                 <div class="success-reward success-reward-title">
                     <strong>Récompense : ⭐ <?= number_format(\App\Constants\AchievementRewards::ARTBOOKS[$achievement['target']], 0, ',', ' ') ?> XP</strong>
                     <strong>Récompense : titre</strong>
@@ -67,11 +67,11 @@ $category = '';
                     <?php if ($achievement['unlocked']): ?>
                         <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir ce titre</a>
                     <?php else: ?>
-                        <span>🔒 Débloqué avec 10 livres d’illustrations lus</span>
+                        <span>🔒 Débloqué avec 10 artbooks lus</span>
                     <?php endif; ?>
                 </div>
             <?php endif; ?>
-            <?php if ($achievement['category'] === 'Livres d’illustrations' && $achievement['target'] === ProfileImageCatalog::ARTBOOK_REWARD_TARGET): ?>
+            <?php if ($achievement['category'] === 'Artbooks' && $achievement['target'] === ProfileImageCatalog::ARTBOOK_REWARD_TARGET): ?>
                 <div class="success-reward success-reward-frame-xp">
                     <strong class="success-reward-xp-label">Récompense : ⭐ <?= number_format(\App\Constants\AchievementRewards::ARTBOOKS[$achievement['target']], 0, ',', ' ') ?> XP</strong>
                     <strong>Récompense : cadre<span class="success-reward-name">Enluminure</span></strong>
@@ -79,7 +79,7 @@ $category = '';
                     <?php if ($achievement['unlocked']): ?>
                         <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir ce cadre</a>
                     <?php else: ?>
-                        <span>🔒 Débloqué avec 25 livres d’illustrations lus</span>
+                        <span>🔒 Débloqué avec 25 artbooks lus</span>
                     <?php endif; ?>
                 </div>
             <?php endif; ?>
@@ -142,11 +142,11 @@ $category = '';
                     <?php endif; ?>
                 </div>
             <?php endif; ?>
-            <?php if ($achievement['category'] === 'Livres d’illustrations' && $achievement['target'] === 1): ?>
+            <?php if ($achievement['category'] === 'Artbooks' && $achievement['target'] === 1): ?>
                 <div class="success-reward success-reward-title success-reward-xp success-reward-xp-top">
                     <strong>Récompense : ⭐ <?= number_format(\App\Constants\AchievementRewards::ARTBOOKS[1], 0, ',', ' ') ?> XP</strong>
                     <?php if (! $achievement['unlocked']): ?>
-                        <span>🔒 Débloqué avec 1 livre d’illustrations lu</span>
+                        <span>🔒 Débloqué avec 1 artbook lu</span>
                     <?php endif; ?>
                 </div>
             <?php endif; ?>

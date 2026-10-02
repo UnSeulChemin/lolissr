@@ -1,5 +1,5 @@
 // =================================================
-// CONSTRUCTION DES RÉSULTATS DE LIVRES D’ILLUSTRATIONS
+// CONSTRUCTION DES RÉSULTATS DE ARTBOOKS
 // =================================================
 
 import {
@@ -51,7 +51,7 @@ export function buildArtbookResult(
     const subtitle =
         serie
         || auteur
-        || 'Livre d’illustrations';
+        || 'Artbook';
 
     return createResultItem(
         artbookUrl,

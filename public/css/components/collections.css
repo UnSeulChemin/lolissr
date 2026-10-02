@@ -139,6 +139,8 @@
     top: var(--offset-card-corner);
     left: var(--offset-card-corner);
 
+    isolation: isolate;
+
     z-index: 3;
 
     height: 30px;
@@ -147,6 +149,29 @@
 
     font-size: 0.78rem;
     font-weight: 700;
+}
+
+.collection-status-badge.collection-status-progress::after,
+.collection-status-badge.collection-status-finished::after
+{
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: -1;
+    filter: blur(8px);
+    animation: badge-glow-shared 1.8s ease-in-out infinite;
+}
+
+.collection-status-badge.collection-status-progress::after
+{
+    background: rgba(123, 44, 255, 0.52);
+}
+
+.collection-status-badge.collection-status-finished::after
+{
+    background: rgba(0, 214, 143, 0.52);
 }
 
 
@@ -324,6 +349,7 @@
 
     transition:
         transform var(--transition-fast),
+        box-shadow var(--transition-normal),
         background-color var(--transition-fast),
         color var(--transition-fast),
         border-color var(--transition-fast);
@@ -332,7 +358,11 @@
 .collection-pagination-link:not(.active):hover,
 .collection-pagination-link:not(.active):focus-visible
 {
-    transform: translateY(-2px);
+    transform: translateY(-4px) scale(1.06);
+
+    color: var(--color-violet);
+    background-color: var(--color-violet-soft);
+    box-shadow: 0 8px 22px rgba(123, 44, 255, 0.22);
 
     border-color:
         rgba(123, 44, 255, 0.25);
@@ -349,6 +379,8 @@
     cursor: default;
 
     pointer-events: none;
+    box-shadow: 0 5px 18px rgba(123, 44, 255, 0.30);
+    animation: collection-page-glow 3s ease-in-out infinite;
 }
 
 
@@ -371,4 +403,140 @@
 
     box-shadow:
         0 3px 8px rgba(79, 99, 255, 0.16);
+}
+
+/* Effets des collections : reflet, halo et relief au survol. */
+.collection-card-link
+{
+    transition:
+        transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 260ms ease;
+}
+
+.collection-card-link::before
+{
+    background: linear-gradient(
+        115deg,
+        transparent 35%,
+        rgba(255, 255, 255, 0.65) 45%,
+        rgba(199, 162, 255, 0.18) 50%,
+        transparent 60%
+    );
+    background-size: 300% 100%;
+    background-position: 100% 0;
+    opacity: 0;
+    transition: opacity 220ms ease;
+}
+
+.collection-card-link:focus-visible::before
+{
+    opacity: 1;
+    animation: collection-card-shine 850ms ease-out;
+}
+
+.collection-card-title
+{
+    transition: color 220ms ease, text-shadow 220ms ease;
+}
+
+.collection-card-link:focus-visible .collection-card-title
+{
+    color: var(--color-violet);
+    text-shadow: 0 0 16px rgba(123, 44, 255, 0.25);
+}
+
+.collection-card-badge,
+.collection-status-badge
+{
+    transition: transform 260ms ease;
+}
+
+.collection-card-link:focus-visible .collection-card-badge
+{
+    transform: scale(1.08) rotate(3deg);
+}
+
+.collection-card-link:focus-visible .collection-status-badge
+{
+    transform: scale(1.08) rotate(-3deg);
+}
+
+@media (hover: hover) and (pointer: fine)
+{
+    .collection-card-link:hover
+    {
+        transform: translateY(-8px);
+        box-shadow:
+            0 18px 36px rgba(123, 44, 255, 0.18),
+            0 0 0 2px var(--color-violet),
+            0 0 26px rgba(123, 44, 255, 0.22);
+    }
+
+    .collection-card-link:hover::before
+    {
+        opacity: 1;
+        animation: collection-card-shine 850ms ease-out;
+    }
+
+    .collection-card-link:hover .collection-card-title
+    {
+        color: var(--color-violet);
+        text-shadow: 0 0 16px rgba(123, 44, 255, 0.25);
+    }
+
+    .collection-card-link:hover .collection-card-badge
+    {
+        transform: scale(1.08) rotate(3deg);
+    }
+
+    .collection-card-link:hover .collection-status-badge
+    {
+        transform: scale(1.08) rotate(-3deg);
+    }
+
+    .collection-card-link:hover .collection-read-badge
+    {
+        transform: scale(1.10);
+        box-shadow: 0 0 16px rgba(79, 99, 255, 0.30);
+    }
+}
+
+@keyframes collection-card-shine
+{
+    from { background-position: 100% 0; }
+    to { background-position: 0 0; }
+}
+
+@keyframes collection-page-glow
+{
+    0%, 100% { box-shadow: 0 5px 18px rgba(123, 44, 255, 0.30); }
+    50% { box-shadow: 0 5px 24px rgba(123, 44, 255, 0.50), 0 0 0 4px var(--color-violet-soft); }
+}
+
+@media (prefers-reduced-motion: reduce)
+{
+    .collection-card-link,
+    .collection-card-link *,
+    .collection-card-link::before,
+    .collection-card-link .glow-red::after,
+    .collection-card-link .glow-blue::after,
+    .collection-status-badge.collection-status-progress::after,
+    .collection-status-badge.collection-status-finished::after,
+    .collection-pagination-link
+    {
+        animation: none;
+        transition: none;
+    }
+
+    .collection-card-link { opacity: 1; }
+
+    .collection-card-link:hover,
+    .collection-card-link:focus-visible,
+    .collection-card-link:hover *,
+    .collection-card-link:focus-visible *,
+    .collection-pagination-link:not(.active):hover,
+    .collection-pagination-link:not(.active):focus-visible
+    {
+        transform: none;
+    }
 }

@@ -130,7 +130,7 @@ declare(strict_types=1);
             <article class="card profile-stat-card u-justify-center u-w-full u-border-box">
 
                 <h2 class="profile-stat-title u-bold">
-                    📕 Livres d’illustrations lus
+                    📕 Artbooks lus
                 </h2>
 
                 <p class="profile-stat-value u-bold">
@@ -142,7 +142,7 @@ declare(strict_types=1);
             <article class="card profile-stat-card u-justify-center u-w-full u-border-box">
 
                 <h2 class="profile-stat-title u-bold">
-                    ⭐ XP Livres d’illustrations
+                    ⭐ XP Artbooks
                 </h2>
 
                 <p class="profile-stat-value u-bold">

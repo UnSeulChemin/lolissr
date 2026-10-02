@@ -111,7 +111,7 @@ final class ProfileImageCatalog
                     'frame_extension' => $item['frame_extension'],
                     'required_level' => 0,
                     'unlocked' => $readArtbooks >= self::ARTBOOK_REWARD_TARGET,
-                    'requirement' => self::ARTBOOK_REWARD_TARGET . ' livres d’illustrations lus',
+                    'requirement' => self::ARTBOOK_REWARD_TARGET . ' artbooks lus',
                 ];
                 continue;
             }

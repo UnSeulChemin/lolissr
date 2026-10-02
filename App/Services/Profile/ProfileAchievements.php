@@ -17,7 +17,7 @@ final class ProfileAchievements
         $categories = [
             ['Tomes', '📚', 'tomes lus', $stats->readTomes, array_keys(AchievementRewards::TOMES)],
             ['Séries', '📖', 'séries terminées', $stats->completedSeries, array_keys(AchievementRewards::SERIES)],
-            ['Livres d’illustrations', '📕', 'livres d’illustrations lus', $stats->readArtbooks, array_keys(AchievementRewards::ARTBOOKS)],
+            ['Artbooks', '📕', 'artbooks lus', $stats->readArtbooks, array_keys(AchievementRewards::ARTBOOKS)],
             ['Figurines', '🎀', 'figurines collectionnées', $stats->figurinesCollected, array_keys(AchievementRewards::FIGURINES)],
             ['Nendoroids', '🪆', 'nendoroids collectionnés', $stats->nendoroidsCollected, array_keys(AchievementRewards::NENDOROIDS)],
             ['Peluches', '🧸', 'peluches collectionnées', $stats->peluchesCollected, array_keys(AchievementRewards::PELUCHES)],

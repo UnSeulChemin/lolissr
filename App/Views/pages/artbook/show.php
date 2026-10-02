@@ -55,7 +55,7 @@ $commentaire = $hasCommentaire
             <div class="detail-row u-grid">
 
                 <div class="detail-label">
-                    Livre d’illustrations
+                    Artbook
                 </div>
 
                 <div class="detail-value">

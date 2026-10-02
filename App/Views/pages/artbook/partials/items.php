@@ -15,7 +15,7 @@ use App\DTO\Artbook\Responses\ArtbookListItemData;
     <?php if ($artbooks === []): ?>
 
         <p class="collection-empty">
-            Aucun livre d’illustrations trouvé.
+            Aucun artbook trouvé.
         </p>
 
     </div>

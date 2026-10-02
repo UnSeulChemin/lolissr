@@ -104,7 +104,7 @@ async function deleteArtbook(
 
     const confirmed =
         await deleteModal(
-            'Supprimer ce livre d’illustrations ?',
+            'Supprimer ce artbook ?',
         );
 
     if (! confirmed)
@@ -168,7 +168,7 @@ async function deleteArtbook(
 
         showToast(
             data.message
-            || 'Livre d’illustrations supprimé',
+            || 'Artbook supprimé',
             'success',
         );
 

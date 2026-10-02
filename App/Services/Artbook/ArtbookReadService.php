@@ -219,7 +219,7 @@ final readonly class ArtbookReadService
             subtitle:
                 $serie
                 ?? $auteur
-                ?? 'Livre d’illustrations',
+                ?? 'Artbook',
         );
     }
 
