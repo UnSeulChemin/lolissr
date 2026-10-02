@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace App\Cache;
 
 use App\DTO\Home\Responses\DashboardStatsData;
-use App\Services\Stats\StatsService;
+use App\Services\Home\DashboardStatsService;
 
 use Framework\Cache\Cache;
 
 final readonly class DashboardCache
 {
     public function __construct(
-        private StatsService $statsService
+        private DashboardStatsService $dashboardStatsService
     ) {
     }
 
@@ -26,7 +26,7 @@ final readonly class DashboardCache
         $data = Cache::remember(
             CacheKey::HOME_DASHBOARD,
             null,
-            fn (): array => $this->statsService->dashboard()->toArray()
+            fn (): array => $this->dashboardStatsService->dashboard()->toArray()
         );
 
         return DashboardStatsData::fromArray($data);

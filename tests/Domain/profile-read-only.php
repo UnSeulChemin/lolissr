@@ -8,7 +8,7 @@ use App\Services\Profile\ProfileStatsService;
 use Framework\Container\Container;
 use Framework\Database\Database;
 
-require dirname(__DIR__, 2) . '/phpstan-bootstrap.php';
+require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
 
 final class ProfileQueryCounter extends PDOStatement
 {
@@ -120,7 +120,7 @@ echo "PASS: lightweight unlock counters stay fresh without the XP rewards table.
 
 foreach ([
     [\App\Repositories\Manga\MangaStatsRepository::class, 'countRead', 0],
-    [\App\Repositories\Manga\ArtbookStatsRepository::class, 'countRead', 200],
+    [\App\Repositories\Artbook\ArtbookStatsRepository::class, 'countRead', 200],
     [\App\Repositories\Figurine\FigurineStatsRepository::class, 'countCollected', 200],
     [\App\Repositories\Nendoroid\NendoroidStatsRepository::class, 'countCollected', 200],
     [\App\Repositories\Peluche\PelucheStatsRepository::class, 'countCollected', 200],

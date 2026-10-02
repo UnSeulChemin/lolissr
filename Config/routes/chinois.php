@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use App\Controllers\Chinois\ChinoisAjaxController;
-use App\Controllers\Chinois\ChinoisController;
-use App\Controllers\Chinois\FlashcardsController;
-use App\Controllers\Chinois\GrammaireController;
-use App\Controllers\Chinois\VocabulaireController;
+use App\Http\Controllers\Chinois\ChinoisAjaxController;
+use App\Http\Controllers\Chinois\ChinoisController;
+use App\Http\Controllers\Chinois\FlashcardsController;
+use App\Http\Controllers\Chinois\GrammaireController;
+use App\Http\Controllers\Chinois\VocabulaireController;
 
 use Framework\Http\Middleware\CsrfMiddleware;
 use Framework\Http\Middleware\ExpectJsonMiddleware;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-require dirname(__DIR__, 2) . '/phpstan-bootstrap.php';
+require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
 \Framework\Config\Env::set('APP_ENV', 'production');
 \Framework\Config\Config::clear();
 
@@ -13,7 +13,7 @@ foreach ($manifest as $path => $version)
     {
         throw new RuntimeException('Stale asset manifest; run php scripts/Assets/build-assets.php: ' . $path);
     }
-    if (\App\Support\AssetVersions::version($path) !== $version)
+    if (\App\Support\Assets\AssetVersions::version($path) !== $version)
     {
         throw new RuntimeException('Wrong asset version: ' . $path);
     }

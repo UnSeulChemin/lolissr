@@ -1,4 +1,4 @@
-export async function testPageStyles()
+export async function runBrowserScenario()
 {
     const read = async (path) =>
     {

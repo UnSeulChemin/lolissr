@@ -6,12 +6,12 @@ namespace App\Services\Figurine;
 
 use App\Constants\UserXp;
 use App\DTO\Common\ServiceResult;
-use App\DTO\Figurine\Inputs\FigurineCreateDTO;
-use App\DTO\Figurine\Inputs\FigurineUpdateDTO;
-use App\DTO\Upload\UploadThumbnailData;
+use App\DTO\Figurine\Inputs\FigurineCreateData;
+use App\DTO\Figurine\Inputs\FigurineUpdateData;
+use App\DTO\Media\UploadThumbnailData;
 use App\Repositories\Figurine\FigurineRepository;
 use App\Services\Media\ThumbnailManager;
-use App\Services\Media\CollectionCreationService;
+use App\Services\Collections\CollectionCreationService;
 
 use Framework\Database\Database;
 use Framework\Logging\Logger;
@@ -19,7 +19,7 @@ use Framework\Logging\Logger;
 
 final readonly class FigurineWriteService
 {
-    use \App\Services\Collections\CollectionWriteResults;
+    use \App\Services\Collections\Concerns\BuildsCollectionWriteResults;
 
     public function __construct(
         private FigurineRepository $figurineRepository,
@@ -37,7 +37,7 @@ final readonly class FigurineWriteService
     /**
      * @param array<string, mixed> $files
      */
-    public function create(FigurineCreateDTO $dto, array $files): ServiceResult
+    public function create(FigurineCreateData $dto, array $files): ServiceResult
     {
         if ($this->figurineRepository->findOneBySlugAndNumero($dto->slug, $dto->numero) !== null)
         {
@@ -91,7 +91,7 @@ final readonly class FigurineWriteService
     // UPDATE
     // =========================================
 
-    public function update(string $slug, int $numero, FigurineUpdateDTO $dto): ServiceResult
+    public function update(string $slug, int $numero, FigurineUpdateData $dto): ServiceResult
     {
         $result = $this->database->transaction(
             function () use ($slug, $numero, $dto): ServiceResult

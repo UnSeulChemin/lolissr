@@ -14,7 +14,7 @@ use App\Repositories\Peluche\PelucheCollectionRepository;
 use App\Repositories\Peluche\PelucheRepository;
 use App\Repositories\Peluche\PelucheSearchRepository;
 
-use Framework\Application\App;
+use Framework\Config\ApplicationConfig;
 use Framework\Support\DateFormatter;
 
 final readonly class PelucheReadService
@@ -36,7 +36,7 @@ final readonly class PelucheReadService
     {
         $page = max(1, (int) $page);
 
-        $perPage = App::pagination();
+        $perPage = ApplicationConfig::pagination();
 
         $totalWaifus = $this->collectionRepository->countAll();
 
@@ -120,7 +120,7 @@ final readonly class PelucheReadService
 
     private function mapListItem(Peluche $peluche): PelucheListItemData
     {
-        $baseUri = App::baseUri();
+        $baseUri = ApplicationConfig::baseUri();
 
         $thumbnail = $peluche->thumbnail !== ''
             ? $peluche->thumbnail
@@ -151,7 +151,7 @@ final readonly class PelucheReadService
 
     private function mapPeluche(Peluche $peluche): PelucheData
     {
-        $baseUri = App::baseUri();
+        $baseUri = ApplicationConfig::baseUri();
 
         $thumbnail = $peluche->thumbnail !== ''
             ? $peluche->thumbnail

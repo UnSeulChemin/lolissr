@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Nendoroid;
 
-use App\DTO\Nendoroid\Inputs\NendoroidCreateDTO;
+use App\DTO\Nendoroid\Inputs\NendoroidCreateData;
 
 use Framework\Config\UploadConfig;
 use Framework\Http\FormRequest;
@@ -57,8 +57,8 @@ final class NendoroidCreateRequest extends FormRequest
     // DTO
     // =========================================
 
-    public function dto(): NendoroidCreateDTO
+    public function dto(): NendoroidCreateData
     {
-        return NendoroidCreateDTO::fromArray($this->validated());
+        return NendoroidCreateData::fromArray($this->validated());
     }
 }

@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
-require dirname(__DIR__, 2) . '/phpstan-bootstrap.php';
+require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
 
-use App\Controllers\Controller;
+use App\Http\Controllers\Controller;
 use Framework\Http\Request;
 
 session_save_path(sys_get_temp_dir());

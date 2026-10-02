@@ -1,5 +1,5 @@
 // Compare every computed property against a CSS snapshot supplied to the runner.
-export async function testPageStyles()
+export async function runBrowserScenario()
 {
     const {before, after, cases} = window.cssComparison;
     const expand = (files, path) => files[path].replace(/@import\s+url\(["']([^"']+)["']\);/g, (_, href) =>

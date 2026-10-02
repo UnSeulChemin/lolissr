@@ -109,7 +109,7 @@ Le test du bundle vérifie leur correspondance et les empreintes des sources.
 
 Un chemin de vue sans slash final correspond exactement à cette vue. Un chemin terminé par `/` couvre toutes les vues de ce répertoire. L'ordre des entrées détermine l'ordre de chargement des feuilles : il compte pour la cascade CSS.
 
-`App\Support\PageStyles` lit ce tableau via `config('styles', [])`. Le rendu initial et le routeur SPA utilisent cette sélection. Les styles communs restent dans `public/css/app.css`.
+`App\Support\Assets\PageStyles` lit ce tableau via `config('styles', [])`. Le rendu initial et le routeur SPA utilisent cette sélection. Les styles communs restent dans `public/css/app.css`.
 
 Pour ajouter une feuille spécifique, créer le fichier CSS puis ajouter son association ici. Préserver l'ordre des dépendances et les règles partagées ; les pages de chinois utilisent actuellement ensemble les feuilles vocabulaire et grammaire.
 
@@ -117,10 +117,10 @@ Pour ajouter une feuille spécifique, créer le fichier CSS puis ajouter son ass
 
 [`routes.php`](routes.php) charge les routes d'authentification puis enregistre les autres familles dans un groupe protégé par `AuthMiddleware`. Les protections CSRF et les contraintes JSON restent déclarées sur les routes ou leurs groupes.
 
-Les routes figurine, nendoroid et peluche utilisent [`CollectionRoutes`](../App/Support/CollectionRoutes.php) :
+Les routes figurine, nendoroid et peluche utilisent [`CollectionRouteRegistrar`](../App/Http/Routing/CollectionRouteRegistrar.php) :
 
 ```php
-CollectionRoutes::register(
+CollectionRouteRegistrar::register(
     $router,
     'figurine',
     FigurineController::class,
@@ -184,4 +184,4 @@ php tests/Framework/bootstrap-cache.php --benchmark
 3. Ajouter les contraintes nécessaires dans `EnvironmentValidator` et préciser si elle est obligatoire.
 4. Lire l'option avec `config()` dans le code consommateur et mettre à jour cette documentation.
 
-Les scripts de sauvegarde et de publication ont leurs propres options, notamment `MYSQLDUMP_PATH`. Les identifiants `HTTP_TEST_USERNAME` et `HTTP_TEST_PASSWORD` concernent l'outillage HTTP ; voir [`tests/Docs/guide.md`](../tests/Docs/guide.md).
+Les scripts de sauvegarde et de publication ont leurs propres options, notamment `MYSQLDUMP_PATH`. Les identifiants `HTTP_TEST_USERNAME` et `HTTP_TEST_PASSWORD` concernent l'outillage HTTP ; voir [`docs/guide.md`](../docs/guide.md).

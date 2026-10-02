@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use App\DTO\Common\Responses\ViewData;
 
-use Framework\Application\App;
+use Framework\Config\ApplicationConfig;
 
 /** @var ViewData $view */
 
@@ -161,7 +161,7 @@ $user = user();
                         id="header-search-input"
                         type="search"
                         name="q"
-                        placeholder="Rechercher... • v<?= e(App::version()) ?>"
+                        placeholder="Rechercher... • v<?= e(ApplicationConfig::version()) ?>"
                         value="<?= e($currentSearch) ?>"
                         autocomplete="off"
                     >

@@ -1,0 +1,38 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\DTO\Profile\Responses;
+
+final readonly class ProfileStatsData
+{
+    public function __construct(
+        public int $readTomes,
+        public int $tomeXp,
+
+        public int $completedSeries,
+        public int $seriesXp,
+
+        public int $readArtbooks,
+        public int $artbookXp,
+
+        public int $figurinesCollected,
+        public int $figurinesXp,
+
+        public int $nendoroidsCollected,
+        public int $nendoroidsXp,
+
+        public int $peluchesCollected,
+        public int $peluchesXp,
+
+        public int $vocabularyLearned,
+        public int $vocabularyXp,
+
+        public int $grammarLearned,
+        public int $grammarXp,
+
+        public int $totalXp,
+        public int $achievementXp = 0,
+    ) {
+    }
+}

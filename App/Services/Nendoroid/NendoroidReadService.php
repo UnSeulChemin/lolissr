@@ -14,7 +14,7 @@ use App\Repositories\Nendoroid\NendoroidCollectionRepository;
 use App\Repositories\Nendoroid\NendoroidRepository;
 use App\Repositories\Nendoroid\NendoroidSearchRepository;
 
-use Framework\Application\App;
+use Framework\Config\ApplicationConfig;
 use Framework\Support\DateFormatter;
 
 final readonly class NendoroidReadService
@@ -36,7 +36,7 @@ final readonly class NendoroidReadService
     {
         $page = max(1, (int) $page);
 
-        $perPage = App::pagination();
+        $perPage = ApplicationConfig::pagination();
 
         $totalWaifus = $this->collectionRepository->countAll();
 
@@ -120,7 +120,7 @@ final readonly class NendoroidReadService
 
     private function mapListItem(Nendoroid $nendoroid): NendoroidListItemData
     {
-        $baseUri = App::baseUri();
+        $baseUri = ApplicationConfig::baseUri();
 
         $thumbnail = $nendoroid->thumbnail !== ''
             ? $nendoroid->thumbnail
@@ -151,7 +151,7 @@ final readonly class NendoroidReadService
 
     private function mapNendoroid(Nendoroid $nendoroid): NendoroidData
     {
-        $baseUri = App::baseUri();
+        $baseUri = ApplicationConfig::baseUri();
 
         $thumbnail = $nendoroid->thumbnail !== ''
             ? $nendoroid->thumbnail

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Manga;
 
-use App\DTO\Manga\Inputs\MangaUpdateNoteDTO;
+use App\DTO\Manga\Inputs\MangaUpdateNoteData;
 
 use Framework\Http\FormRequest;
 
@@ -32,8 +32,8 @@ final class MangaUpdateNoteRequest extends FormRequest
     // DTO
     // =========================================
 
-    public function dto(): MangaUpdateNoteDTO
+    public function dto(): MangaUpdateNoteData
     {
-        return MangaUpdateNoteDTO::fromArray($this->validated());
+        return MangaUpdateNoteData::fromArray($this->validated());
     }
 }

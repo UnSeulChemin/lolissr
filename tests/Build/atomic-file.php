@@ -1,7 +1,7 @@
 <?php
 
 declare(strict_types=1);
-require dirname(__DIR__, 2) . '/scripts/lib/AtomicFile.php';
+require dirname(__DIR__, 2) . '/scripts/Support/AtomicFile.php';
 $directory = sys_get_temp_dir() . '/lolissr-atomic-' . bin2hex(random_bytes(8));
 mkdir($directory, 0700);
 $path = $directory . '/manifest.php';

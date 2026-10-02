@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Repositories\Manga;
 
 use App\Models\Manga;
-use App\Models\Model;
+use App\Repositories\AbstractRepository;
 
 use Framework\Support\Str;
 
-final class MangaSearchRepository extends Model
+final class MangaSearchRepository extends AbstractRepository
 {
     protected string $table = 'manga';
 

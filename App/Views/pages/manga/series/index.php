@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 use App\DTO\Common\Responses\ViewData;
-use App\DTO\Manga\Responses\MangaSeriesItemData;
+use App\DTO\Manga\Responses\MangaListItemData;
 
 /** @var ViewData $view */
-/** @var list<MangaSeriesItemData> $mangas */
+/** @var list<MangaListItemData> $mangas */
 /** @var int $currentPage */
 /** @var int $totalPages */
 /** @var ?string $slugFilter */
@@ -20,7 +20,7 @@ $isSerieView =
 
     <div class="collection-ajax-container">
 
-        <?php require view_path('pages/manga/series/ajax.php'); ?>
+        <?php require view_path('pages/manga/series/partials/items.php'); ?>
 
         <?php if ($totalPages > 1): ?>
 

@@ -6,10 +6,10 @@ namespace App\Repositories\Manga;
 
 use App\DTO\Manga\Responses\MangaStatsData;
 use App\Models\Manga;
-use App\Models\Model;
+use App\Repositories\AbstractRepository;
 
 
-final class MangaStatsRepository extends Model
+final class MangaStatsRepository extends AbstractRepository
 {
     public function countRead(): int
     {

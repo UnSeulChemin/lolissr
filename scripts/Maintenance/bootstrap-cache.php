@@ -8,7 +8,7 @@ use Framework\Application\BootstrapCache;
 require dirname(__DIR__, 2) . '/vendor/autoload.php';
 define('ROOT', dirname(__DIR__, 2));
 require ROOT . '/Framework/Support/Helpers.php';
-require ROOT . '/scripts/lib/AtomicFile.php';
+require ROOT . '/scripts/Support/AtomicFile.php';
 
 $action = $argv[1] ?? 'build';
 if (! in_array($action, ['build', 'clear'], true))

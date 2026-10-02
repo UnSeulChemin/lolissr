@@ -11,7 +11,7 @@ use Framework\Application\Bootstrap;
 use Framework\Container\Container;
 use Framework\Database\Database;
 
-require dirname(__DIR__, 2) . '/phpstan-bootstrap.php';
+require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
 Bootstrap::loadEnvOnly();
 
 function user(): ?User { return $GLOBALS['batchTestUser']; }

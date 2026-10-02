@@ -6,12 +6,12 @@ namespace App\Services\Peluche;
 
 use App\Constants\UserXp;
 use App\DTO\Common\ServiceResult;
-use App\DTO\Peluche\Inputs\PelucheCreateDTO;
-use App\DTO\Peluche\Inputs\PelucheUpdateDTO;
-use App\DTO\Upload\UploadThumbnailData;
+use App\DTO\Peluche\Inputs\PelucheCreateData;
+use App\DTO\Peluche\Inputs\PelucheUpdateData;
+use App\DTO\Media\UploadThumbnailData;
 use App\Repositories\Peluche\PelucheRepository;
 use App\Services\Media\ThumbnailManager;
-use App\Services\Media\CollectionCreationService;
+use App\Services\Collections\CollectionCreationService;
 
 use Framework\Database\Database;
 use Framework\Logging\Logger;
@@ -19,7 +19,7 @@ use Framework\Logging\Logger;
 
 final readonly class PelucheWriteService
 {
-    use \App\Services\Collections\CollectionWriteResults;
+    use \App\Services\Collections\Concerns\BuildsCollectionWriteResults;
 
     public function __construct(
         private PelucheRepository $pelucheRepository,
@@ -37,7 +37,7 @@ final readonly class PelucheWriteService
     /**
      * @param array<string, mixed> $files
      */
-    public function create(PelucheCreateDTO $dto, array $files): ServiceResult
+    public function create(PelucheCreateData $dto, array $files): ServiceResult
     {
         if ($this->pelucheRepository->findOneBySlugAndNumero($dto->slug, $dto->numero) !== null)
         {
@@ -89,7 +89,7 @@ final readonly class PelucheWriteService
     // UPDATE
     // =========================================
 
-    public function update(string $slug, int $numero, PelucheUpdateDTO $dto): ServiceResult
+    public function update(string $slug, int $numero, PelucheUpdateData $dto): ServiceResult
     {
         $result = $this->database->transaction(
             function () use ($slug, $numero, $dto): ServiceResult

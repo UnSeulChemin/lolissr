@@ -6,7 +6,7 @@ $lock = fopen($root . '/storage/.build.lock', 'c');
 $run = static function () use ($root): int {
     $process = proc_open([PHP_BINARY, '-r',
         'require $argv[1]; try { BuildLock::acquire($argv[2]); BuildLock::acquire($argv[2]); } catch (RuntimeException $e) { exit(23); }',
-        dirname(__DIR__, 2) . '/scripts/lib/BuildLock.php', $root],
+        dirname(__DIR__, 2) . '/scripts/Support/BuildLock.php', $root],
         [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes);
     if (!is_resource($process)) throw new RuntimeException('Cannot start lock test worker.');
     foreach ($pipes as $pipe) fclose($pipe);

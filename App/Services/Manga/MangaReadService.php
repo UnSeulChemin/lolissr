@@ -7,15 +7,15 @@ namespace App\Services\Manga;
 use App\DTO\Manga\Responses\MangaData;
 use App\DTO\Manga\Responses\MangaSearchData;
 use App\DTO\Manga\Responses\MangaSearchItemData;
-use App\DTO\Manga\Responses\MangaSeriesData;
-use App\DTO\Manga\Responses\MangaSeriesItemData;
-use App\DTO\Manga\Responses\MangaShowData;
+use App\DTO\Manga\Responses\MangaListData;
+use App\DTO\Manga\Responses\MangaListItemData;
+use App\DTO\Manga\Responses\MangaDetailData;
 use App\Models\Manga;
 use App\Repositories\Manga\MangaRepository;
 use App\Repositories\Manga\MangaCollectionRepository;
 use App\Repositories\Manga\MangaSearchRepository;
 
-use Framework\Application\App;
+use Framework\Config\ApplicationConfig;
 
 final readonly class MangaReadService
 {
@@ -32,18 +32,18 @@ final readonly class MangaReadService
     |--------------------------------------------------------------------------
     */
 
-    public function series(int|string $page = 1): ?MangaSeriesData
+    public function series(int|string $page = 1): ?MangaListData
     {
         $page = max(1, (int) $page);
 
-        $perPage = App::pagination();
+        $perPage = ApplicationConfig::pagination();
 
         $totalSeries = $this->collectionRepository->countFirstTomes();
 
         if ($totalSeries === 0)
         {
             if ($page > 1) return null;
-            return new MangaSeriesData(
+            return new MangaListData(
                 mangas: [],
                 currentPage: 1,
                 slugFilter: null,
@@ -66,7 +66,7 @@ final readonly class MangaReadService
             $page,
         );
 
-        return new MangaSeriesData(
+        return new MangaListData(
             mangas: array_map(
                 $this->mapSeriesItem(...),
                 $mangas
@@ -84,10 +84,10 @@ final readonly class MangaReadService
         return $this->mangaRepository->seriesExists($slug);
     }
 
-    public function showSeries(string $slug, int $page = 1): ?MangaSeriesData
+    public function showSeries(string $slug, int $page = 1): ?MangaListData
     {
         $page = max(1, $page);
-        $perPage = max(1, App::pagination());
+        $perPage = max(1, ApplicationConfig::pagination());
         $totalItems = $this->mangaRepository->countBySlug($slug);
         $totalPages = (int) ceil($totalItems / $perPage);
         if ($page > $totalPages) return null;
@@ -98,7 +98,7 @@ final readonly class MangaReadService
             return null;
         }
 
-        return new MangaSeriesData(
+        return new MangaListData(
             mangas: array_map($this->mapSeriesItem(...), $mangas),
             currentPage: $page,
             slugFilter: $slug,
@@ -108,7 +108,7 @@ final readonly class MangaReadService
         );
     }
 
-    public function one(string $slug, int $numero): ?MangaShowData
+    public function one(string $slug, int $numero): ?MangaDetailData
     {
         $manga = $this->mangaRepository->findOneBySlugAndNumero(
             $slug,
@@ -120,7 +120,7 @@ final readonly class MangaReadService
             return null;
         }
 
-        return new MangaShowData(
+        return new MangaDetailData(
             manga: $this->mapManga($manga),
         );
     }
@@ -149,20 +149,20 @@ final readonly class MangaReadService
     |--------------------------------------------------------------------------
     */
 
-    public function notes(int $page = 1): ?MangaSeriesData
+    public function notes(int $page = 1): ?MangaListData
     {
         return $this->filteredSeries(true, $page);
     }
 
-    public function aLire(int $page = 1): ?MangaSeriesData
+    public function aLire(int $page = 1): ?MangaListData
     {
         return $this->filteredSeries(false, $page);
     }
 
-    private function filteredSeries(bool $notes, int $page): ?MangaSeriesData
+    private function filteredSeries(bool $notes, int $page): ?MangaListData
     {
         $page = max(1, $page);
-        $perPage = max(1, App::pagination());
+        $perPage = max(1, ApplicationConfig::pagination());
         $result = $this->collectionRepository->filteredPage($notes, $perPage, $page);
         $total = $result['total'];
         $totalPages = max(1, (int) ceil($total / $perPage));
@@ -171,7 +171,7 @@ final readonly class MangaReadService
 
         $mangas = $result['mangas'];
 
-        return new MangaSeriesData(
+        return new MangaListData(
             mangas: array_map($this->mapSeriesItem(...), $mangas),
             slugFilter: null,
             currentPage: $page,
@@ -189,7 +189,7 @@ final readonly class MangaReadService
 
     private function mapManga(Manga $manga): MangaData
     {
-        $baseUri = App::baseUri();
+        $baseUri = ApplicationConfig::baseUri();
 
         $thumbnail =
             $manga->thumbnail !== ''
@@ -261,9 +261,9 @@ final readonly class MangaReadService
         );
     }
 
-    private function mapSeriesItem(Manga $manga): MangaSeriesItemData
+    private function mapSeriesItem(Manga $manga): MangaListItemData
     {
-        $baseUri = App::baseUri();
+        $baseUri = ApplicationConfig::baseUri();
 
         $thumbnail = $manga->thumbnail !== '' ? $manga->thumbnail : null;
 
@@ -271,7 +271,7 @@ final readonly class MangaReadService
 
         $status = $manga->statut !== '' ? $manga->statut : 'en_cours';
 
-        return new MangaSeriesItemData(
+        return new MangaListItemData(
             slug: $manga->slug,
             numero: $manga->numero,
             livre: $manga->livre,

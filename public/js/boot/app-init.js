@@ -1,4 +1,4 @@
-import { runInitializers } from '../routes/run-initializers.js';
+import { runInitializers } from '../router/initializers/run-initializers.js';
 // ==================================================
 // APP INIT
 // ==================================================
@@ -31,11 +31,11 @@ import {
 
 import {
     GLOBAL_INITIALIZERS,
-} from '../initializers/global-initializers.js';
+} from './global-initializers.js';
 
 import {
     ROUTE_INITIALIZERS,
-} from '../routes/route-initializers.js';
+} from '../router/initializers/route-initializers.js';
 
 import {
     onRouteChange,

@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-require dirname(__DIR__, 2) . '/phpstan-bootstrap.php';
+require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
 
 use Framework\Config\Config;
 use Framework\Database\Database;
@@ -12,7 +12,7 @@ $database->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $database->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
 foreach (['Manga', 'Artbook', 'Figurine', 'Nendoroid', 'Peluche'] as $kind) {
     $table = strtolower($kind);
-    $domain = $kind === 'Artbook' ? 'Manga' : $kind;
+    $domain = $kind;
     $class = "App\\Repositories\\$domain\\{$kind}Repository";
     $repository = new $class($database);
     $database->exec("CREATE TABLE $table (id INTEGER PRIMARY KEY, slug TEXT, numero INT, thumbnail TEXT, extension TEXT)");

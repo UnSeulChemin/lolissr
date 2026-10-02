@@ -5,7 +5,7 @@ declare(strict_types=1);
 use App\Repositories\Manga\MangaCollectionRepository;
 use Framework\Database\Database;
 
-require dirname(__DIR__, 2) . '/phpstan-bootstrap.php';
+require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
 
 final class FilterQueryCounter extends PDOStatement
 {

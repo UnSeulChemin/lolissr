@@ -1,4 +1,4 @@
-export async function testPageStyles()
+export async function runBrowserScenario()
 {
     const base = new URL('.', location.href).pathname;
     window.appConfig = {baseUri: base};

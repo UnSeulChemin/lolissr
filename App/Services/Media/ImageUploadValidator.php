@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Media;
 
 use App\DTO\Common\ServiceResult;
-use App\DTO\Upload\ValidatedImageUploadData;
+use App\DTO\Media\ValidatedImageUploadData;
 
 use Framework\Config\UploadConfig;
 use Framework\Logging\Logger;

@@ -89,7 +89,7 @@ foreach ($rootFiles as $file)
     copyRequiredFile($file, $buildDirectory);
 }
 
-require_once __DIR__ . '/../lib/ProductionDependencies.php';
+require_once __DIR__ . '/../Support/ProductionDependencies.php';
 ProductionDependencies::install($buildDirectory);
 
 $optionalFiles = [
@@ -311,7 +311,7 @@ function verifyRelease(string $buildDirectory): void
 
 function createArchive(string $buildDirectory, string $zipFile): void
 {
-    require_once __DIR__ . '/../lib/ReleaseArchive.php';
+    require_once __DIR__ . '/../Support/ReleaseArchive.php';
     ReleaseArchive::create($buildDirectory, $zipFile);
 }
 function removeDirectory(string $directory): void

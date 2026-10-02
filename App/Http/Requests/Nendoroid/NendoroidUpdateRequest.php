@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Nendoroid;
 
-use App\DTO\Nendoroid\Inputs\NendoroidUpdateDTO;
+use App\DTO\Nendoroid\Inputs\NendoroidUpdateData;
 
 use Framework\Http\FormRequest;
 
@@ -41,8 +41,8 @@ final class NendoroidUpdateRequest extends FormRequest
     // DTO
     // =========================================
 
-    public function dto(): NendoroidUpdateDTO
+    public function dto(): NendoroidUpdateData
     {
-        return NendoroidUpdateDTO::fromArray($this->validated());
+        return NendoroidUpdateData::fromArray($this->validated());
     }
 }

@@ -7,14 +7,14 @@ namespace App\Services\Manga;
 use App\Cache\DashboardCache;
 use App\Constants\UserXp;
 use App\DTO\Common\ServiceResult;
-use App\DTO\Manga\Inputs\MangaCreateDTO;
-use App\DTO\Manga\Inputs\MangaUpdateDTO;
-use App\DTO\Manga\Inputs\MangaUpdateNoteDTO;
+use App\DTO\Manga\Inputs\MangaCreateData;
+use App\DTO\Manga\Inputs\MangaUpdateData;
+use App\DTO\Manga\Inputs\MangaUpdateNoteData;
 
-use App\DTO\Upload\UploadThumbnailData;
+use App\DTO\Media\UploadThumbnailData;
 use App\Repositories\Manga\MangaRepository;
 use App\Services\Media\ThumbnailManager;
-use App\Services\Media\CollectionCreationService;
+use App\Services\Collections\CollectionCreationService;
 
 use Framework\Database\Database;
 use Framework\Logging\Logger;
@@ -23,7 +23,7 @@ use Framework\Logging\Logger;
 
 final readonly class MangaWriteService
 {
-    use \App\Services\Collections\CollectionWriteResults;
+    use \App\Services\Collections\Concerns\BuildsCollectionWriteResults;
 
     public function __construct(
         private MangaRepository $mangaRepository,
@@ -44,7 +44,7 @@ final readonly class MangaWriteService
     /**
      * @param array<string, mixed> $files
      */
-    public function create(MangaCreateDTO $dto, array $files): ServiceResult
+    public function create(MangaCreateData $dto, array $files): ServiceResult
     {
         if ($this->mangaRepository->findRecordBySlugAndNumero($dto->slug, $dto->numero) !== null)
         {
@@ -85,7 +85,7 @@ final readonly class MangaWriteService
     |--------------------------------------------------------------------------
     */
 
-    public function update(string $slug, int $numero, MangaUpdateDTO $dto): ServiceResult
+    public function update(string $slug, int $numero, MangaUpdateData $dto): ServiceResult
     {
         $result = $this->database->transaction(
             function () use ($slug, $numero, $dto): ServiceResult
@@ -128,7 +128,7 @@ final readonly class MangaWriteService
         return $result;
     }
 
-    public function updateNote(string $slug, int $numero, MangaUpdateNoteDTO $dto): ServiceResult
+    public function updateNote(string $slug, int $numero, MangaUpdateNoteData $dto): ServiceResult
     {
         $result = $this->database->transaction(
             function () use ($slug, $numero, $dto): ServiceResult
@@ -308,7 +308,7 @@ final readonly class MangaWriteService
 
 
     private function createManga(
-        MangaCreateDTO $dto,
+        MangaCreateData $dto,
         UploadThumbnailData $uploadData
     ): ?ServiceResult {
         $inserted = $this->mangaRepository->insert([

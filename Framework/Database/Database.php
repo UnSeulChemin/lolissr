@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Framework\Database;
 
-use Framework\Application\App;
+use Framework\Config\ApplicationConfig;
 use Framework\Config\DatabaseConfig;
 use Framework\Debug\Profiler;
 use Framework\Logging\Logger;
@@ -59,7 +59,7 @@ final class Database extends PDO
                 ]
             );
 
-            if (App::isTesting())
+            if (ApplicationConfig::isTesting())
             {
                 $this->exec('SET SESSION TRANSACTION READ ONLY');
             }
@@ -74,7 +74,7 @@ final class Database extends PDO
             );
 
             throw new RuntimeException(
-                App::debug()
+                ApplicationConfig::debug()
                     ? $exception->getMessage()
                     : 'Erreur de connexion à la base de données.',
                 previous: $exception

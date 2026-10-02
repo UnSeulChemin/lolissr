@@ -6,12 +6,12 @@ namespace App\Services\Nendoroid;
 
 use App\Constants\UserXp;
 use App\DTO\Common\ServiceResult;
-use App\DTO\Nendoroid\Inputs\NendoroidCreateDTO;
-use App\DTO\Nendoroid\Inputs\NendoroidUpdateDTO;
-use App\DTO\Upload\UploadThumbnailData;
+use App\DTO\Nendoroid\Inputs\NendoroidCreateData;
+use App\DTO\Nendoroid\Inputs\NendoroidUpdateData;
+use App\DTO\Media\UploadThumbnailData;
 use App\Repositories\Nendoroid\NendoroidRepository;
 use App\Services\Media\ThumbnailManager;
-use App\Services\Media\CollectionCreationService;
+use App\Services\Collections\CollectionCreationService;
 
 use Framework\Database\Database;
 use Framework\Logging\Logger;
@@ -19,7 +19,7 @@ use Framework\Logging\Logger;
 
 final readonly class NendoroidWriteService
 {
-    use \App\Services\Collections\CollectionWriteResults;
+    use \App\Services\Collections\Concerns\BuildsCollectionWriteResults;
 
     public function __construct(
         private NendoroidRepository $nendoroidRepository,
@@ -37,7 +37,7 @@ final readonly class NendoroidWriteService
     /**
      * @param array<string, mixed> $files
      */
-    public function create(NendoroidCreateDTO $dto, array $files): ServiceResult
+    public function create(NendoroidCreateData $dto, array $files): ServiceResult
     {
         if ($this->nendoroidRepository->findOneBySlugAndNumero($dto->slug, $dto->numero) !== null)
         {
@@ -89,7 +89,7 @@ final readonly class NendoroidWriteService
     // UPDATE
     // =========================================
 
-    public function update(string $slug, int $numero, NendoroidUpdateDTO $dto): ServiceResult
+    public function update(string $slug, int $numero, NendoroidUpdateData $dto): ServiceResult
     {
         $result = $this->database->transaction(
             function () use ($slug, $numero, $dto): ServiceResult

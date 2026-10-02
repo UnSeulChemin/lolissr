@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Framework\Logging;
 
-use Framework\Application\App;
-use Framework\Container\AppContainer;
+use Framework\Config\ApplicationConfig;
+use Framework\Container\ContainerRegistry;
 use Framework\Http\Request;
 use Framework\Http\RequestContext;
 
@@ -117,7 +117,7 @@ final class Logger
 
         $level = strtoupper(trim($level));
 
-        if ($level === 'DEBUG' && ! App::debug())
+        if ($level === 'DEBUG' && ! ApplicationConfig::debug())
         {
             return;
         }
@@ -191,14 +191,14 @@ final class Logger
      */
     private static function requestContext(): ?array
     {
-        if (! AppContainer::has())
+        if (! ContainerRegistry::has())
         {
             return null;
         }
 
         try
         {
-            $request = AppContainer::get()->get(Request::class);
+            $request = ContainerRegistry::get()->get(Request::class);
 
             if (! $request instanceof Request)
             {
@@ -367,7 +367,7 @@ final class Logger
 
     private static function reportInternalError(string $message): void
     {
-        if (! App::debug())
+        if (! ApplicationConfig::debug())
         {
             return;
         }

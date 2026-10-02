@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Figurine;
 
-use App\DTO\Figurine\Inputs\FigurineCreateDTO;
+use App\DTO\Figurine\Inputs\FigurineCreateData;
 
 use Framework\Config\UploadConfig;
 use Framework\Http\FormRequest;
@@ -65,8 +65,8 @@ final class FigurineCreateRequest extends FormRequest
     // DTO
     // =========================================
 
-    public function dto(): FigurineCreateDTO
+    public function dto(): FigurineCreateData
     {
-        return FigurineCreateDTO::fromArray($this->validated());
+        return FigurineCreateData::fromArray($this->validated());
     }
 }

@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Repositories\Peluche;
 
 use App\Models\Peluche;
-use App\Models\Model;
+use App\Repositories\AbstractRepository;
 use App\Repositories\Collections\Concerns\SearchesCollectibles;
 
-final class PelucheSearchRepository extends Model
+final class PelucheSearchRepository extends AbstractRepository
 {
     use SearchesCollectibles;
 

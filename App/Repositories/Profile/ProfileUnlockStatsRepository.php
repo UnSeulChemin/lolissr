@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Repositories\Profile;
 
-use App\DTO\Profile\ProfileUnlockStatsData;
-use App\Models\Model;
+use App\DTO\Profile\Responses\ProfileUnlockStatsData;
+use App\Repositories\AbstractRepository;
 
-final class ProfileUnlockStatsRepository extends Model
+final class ProfileUnlockStatsRepository extends AbstractRepository
 {
     private const COUNTERS = [
         'readTomes' => 'SELECT COUNT(*) FROM manga WHERE lu = 1',

@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Services\Media;
 
 use App\DTO\Common\ServiceResult;
-use App\DTO\Upload\UploadThumbnailData;
-use App\Support\ThumbnailName;
+use App\DTO\Media\UploadThumbnailData;
+use App\Support\Media\ThumbnailName;
 
-use Framework\Application\App;
+use Framework\Config\ApplicationConfig;
 use Framework\Logging\Logger;
 
 final readonly class UploadService
@@ -32,7 +32,7 @@ final readonly class UploadService
         array $files,
         string $fileKey = 'image'
     ): ServiceResult {
-        if (App::isTesting())
+        if (ApplicationConfig::isTesting())
         {
             return ServiceResult::error(
                 message: 'Upload interdit pendant les tests HTTP',

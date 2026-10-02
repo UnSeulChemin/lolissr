@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Manga;
 
-use App\DTO\Manga\Inputs\MangaCreateDTO;
+use App\DTO\Manga\Inputs\MangaCreateData;
 
 use Framework\Config\UploadConfig;
 use Framework\Http\FormRequest;
@@ -57,8 +57,8 @@ final class MangaCreateRequest extends FormRequest
     // DTO
     // =========================================
 
-    public function dto(): MangaCreateDTO
+    public function dto(): MangaCreateData
     {
-        return MangaCreateDTO::fromArray($this->validated());
+        return MangaCreateData::fromArray($this->validated());
     }
 }

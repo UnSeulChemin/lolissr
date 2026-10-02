@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Framework\Http;
 
-use Framework\Application\App;
+use Framework\Config\ApplicationConfig;
 use Framework\Http\Exceptions\BaseHttpException;
 use Framework\Http\Exceptions\JsonResponseException;
 use Framework\Logging\Logger;
@@ -99,7 +99,7 @@ final class ErrorHandler
 
             self::renderError(
                 500,
-                App::debug()
+                ApplicationConfig::debug()
                     ? $exception->getMessage()
                     : self::INTERNAL_ERROR_MESSAGE
             );
@@ -134,7 +134,7 @@ final class ErrorHandler
 
             self::renderError(
                 500,
-                App::debug()
+                ApplicationConfig::debug()
                     ? $error['message']
                     : self::INTERNAL_ERROR_MESSAGE
             );
@@ -197,7 +197,7 @@ final class ErrorHandler
 
     private static function message(BaseHttpException $exception): string
     {
-        if (App::debug())
+        if (ApplicationConfig::debug())
         {
             return $exception->getMessage();
         }

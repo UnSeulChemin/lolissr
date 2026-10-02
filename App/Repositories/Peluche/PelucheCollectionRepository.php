@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Repositories\Peluche;
 
-use App\Models\Model;
+use App\Repositories\AbstractRepository;
 use App\Models\Peluche;
 
-final class PelucheCollectionRepository extends Model
+final class PelucheCollectionRepository extends AbstractRepository
 {
     protected string $table = 'peluche';
 

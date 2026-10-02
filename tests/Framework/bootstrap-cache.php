@@ -1,8 +1,8 @@
 <?php
 
 declare(strict_types=1);
-require dirname(__DIR__, 2) . '/phpstan-bootstrap.php';
-require ROOT . '/scripts/lib/AtomicFile.php';
+require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
+require ROOT . '/scripts/Support/AtomicFile.php';
 
 use Framework\Application\BootstrapCache;
 use Framework\Config\Config;
@@ -94,6 +94,10 @@ try
     $check($cached['routes']->allowedMethodsFor('/inscription') === ['GET', 'POST'], 'Local registration routes lost.');
     $payload = require $path;
     $originalPayload = $payload;
+    $payload['version'] = 2;
+    AtomicFile::writeIfChanged($path, '<?php return ' . var_export($payload, true) . ';', 0600);
+    $check(BootstrapCache::load($path) === null, 'Pre-migration controller namespaces reused from cache.');
+    $payload = $originalPayload;
     $payload['validator'] = 'outdated';
     AtomicFile::writeIfChanged($path, '<?php return ' . var_export($payload, true) . ';', 0600);
     $check(BootstrapCache::load($path) === null, 'Outdated validation rules reused.');

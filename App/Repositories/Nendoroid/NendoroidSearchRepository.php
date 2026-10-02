@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Repositories\Nendoroid;
 
 use App\Models\Nendoroid;
-use App\Models\Model;
+use App\Repositories\AbstractRepository;
 use App\Repositories\Collections\Concerns\SearchesCollectibles;
 
-final class NendoroidSearchRepository extends Model
+final class NendoroidSearchRepository extends AbstractRepository
 {
     use SearchesCollectibles;
 

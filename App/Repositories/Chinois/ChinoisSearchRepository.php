@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Repositories\Chinois;
 
 use App\DTO\Chinois\Responses\ChinoisSearchItemData;
-use App\Models\Model;
+use App\Repositories\AbstractRepository;
 
 use stdClass;
 
-final class ChinoisSearchRepository extends Model
+final class ChinoisSearchRepository extends AbstractRepository
 {
     // =========================================
     // RECHERCHE

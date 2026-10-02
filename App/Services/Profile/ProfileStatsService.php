@@ -6,7 +6,7 @@ namespace App\Services\Profile;
 
 use App\Constants\UserXp;
 use App\Models\User;
-use App\DTO\Profile\ProfileStatsData;
+use App\DTO\Profile\Responses\ProfileStatsData;
 
 use App\Repositories\Profile\ProfileStatsRepository;
 

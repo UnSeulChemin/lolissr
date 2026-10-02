@@ -15,7 +15,7 @@ if (($argv[1] ?? '') === 'bootstrap-child')
     Framework\Application\Bootstrap::run();
 }
 
-require dirname(__DIR__, 2) . '/phpstan-bootstrap.php';
+require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
 
 use Framework\Config\Config;
 use Framework\Config\DatabaseConfig;

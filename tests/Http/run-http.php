@@ -14,7 +14,7 @@ $tests = is_array($bootstrap['tests'] ?? null)
 $runner = new HttpTestRunner(
     base: $base,
     tests: $tests,
-    stats: new Stats()
+    stats: new HttpTestStatistics()
 );
 
 exit($runner->run());

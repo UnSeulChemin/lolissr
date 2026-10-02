@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/../lib/BuildLock.php';
-require_once __DIR__ . '/../lib/JavaScriptRetention.php';
+require_once __DIR__ . '/../Support/BuildLock.php';
+require_once __DIR__ . '/../Support/JavaScriptRetention.php';
 $root = dirname(__DIR__, 2);
 BuildLock::acquire($root);
 $manifest = require $root . '/Config/javascript.php';

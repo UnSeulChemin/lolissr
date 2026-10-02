@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use Framework\Application\App;
+use Framework\Config\ApplicationConfig;
 use Framework\Config\Config;
 use Framework\Config\Env;
-use Framework\Container\AppContainer;
+use Framework\Container\ContainerRegistry;
 use Framework\Http\Session;
 
 // =========================================
@@ -16,7 +16,7 @@ if (! function_exists('app'))
 {
     function app(?string $abstract = null): mixed
     {
-        $container = AppContainer::get();
+        $container = ContainerRegistry::get();
 
         return $abstract === null
             ? $container
@@ -151,7 +151,7 @@ if (! function_exists('base_uri'))
 {
     function base_uri(): string
     {
-        $baseUri = trim(App::baseUri(), '/');
+        $baseUri = trim(ApplicationConfig::baseUri(), '/');
 
         return $baseUri !== ''
             ? '/' . $baseUri

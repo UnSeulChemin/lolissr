@@ -4,7 +4,7 @@
 
 import {
     debug,
-} from '../core/debug/debug.js';
+} from './debug/debug.js';
 
 // =========================================
 // EVENTS

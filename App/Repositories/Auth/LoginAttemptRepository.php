@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Repositories\Auth;
 
-use App\Models\Model;
+use App\Repositories\AbstractRepository;
 
-final class LoginAttemptRepository extends Model
+final class LoginAttemptRepository extends AbstractRepository
 {
     protected string $table = 'login_attempts';
 

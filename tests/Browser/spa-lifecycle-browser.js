@@ -1,4 +1,4 @@
-export async function testPageStyles()
+export async function runBrowserScenario()
 {
     const base = new URL('.', location.href).pathname;
     window.appConfig = {baseUri: base};
@@ -10,8 +10,8 @@ export async function testPageStyles()
     const main = document.createElement('main');
     main.className = 'app-content';
     document.body.append(main);
-    const {ROUTE_INITIALIZERS} = await import('./js/routes/route-initializers.js');
-    const {GLOBAL_INITIALIZERS} = await import('./js/initializers/global-initializers.js');
+    const {ROUTE_INITIALIZERS} = await import('./js/router/initializers/route-initializers.js');
+    const {GLOBAL_INITIALIZERS} = await import('./js/boot/global-initializers.js');
     const {initApp} = await import('./js/boot/app-init.js');
     const {navigateTo} = await import('./js/router/router-navigation.js');
     const originalFetch = window.fetch;

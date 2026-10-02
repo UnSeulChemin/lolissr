@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Repositories\Nendoroid;
 
-use App\Models\Model;
+use App\Repositories\AbstractRepository;
 use App\Models\Nendoroid;
 
-final class NendoroidCollectionRepository extends Model
+final class NendoroidCollectionRepository extends AbstractRepository
 {
     protected string $table = 'nendoroid';
 

@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Framework\Container\Container;
 use Framework\Database\Database;
 
-require dirname(__DIR__, 2) . '/phpstan-bootstrap.php';
+require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
 
 // Isolated data: no connection to the application's database.
 $database = (new ReflectionClass(Database::class))->newInstanceWithoutConstructor();
@@ -21,7 +21,7 @@ $assert = static function (bool $condition, string $message): void {
 foreach (['Figurine', 'Nendoroid', 'Peluche', 'Artbook'] as $kind)
 {
     $table = strtolower($kind);
-    $category = $kind === 'Artbook' ? 'Manga' : $kind;
+    $category = $kind;
     $fields = $kind === 'Artbook' ? 'artbook TEXT, auteur TEXT, serie TEXT' : 'waifu TEXT, origin TEXT, collect INT';
     $database->exec("CREATE TABLE $table (id INT PRIMARY KEY, slug TEXT, numero INT, thumbnail TEXT, extension TEXT, commentaire TEXT, $fields)");
     $insert = $database->prepare("INSERT INTO $table VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
@@ -62,7 +62,7 @@ final class RepresentationQueryCounter extends PDOStatement
     }
 }
 $database->setAttribute(PDO::ATTR_STATEMENT_CLASS, [RepresentationQueryCounter::class]);
-$artbookStats = $container->get(\App\Repositories\Manga\ArtbookStatsRepository::class);
+$artbookStats = $container->get(\App\Repositories\Artbook\ArtbookStatsRepository::class);
 $database->exec('DELETE FROM artbook');
 RepresentationQueryCounter::$executions = 0;
 $assert($artbookStats->findMostRepresented() === null, 'Empty representation changed');

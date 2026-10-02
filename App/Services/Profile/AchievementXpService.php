@@ -6,7 +6,7 @@ namespace App\Services\Profile;
 
 use App\Constants\AchievementRewards;
 use App\Models\User;
-use App\DTO\Profile\ProfileStatsData;
+use App\DTO\Profile\Responses\ProfileStatsData;
 use App\Services\User\UserLevelService;
 use Framework\Database\Database;
 

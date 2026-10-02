@@ -1,7 +1,7 @@
-export async function testPageStyles()
+export async function runBrowserScenario()
 {
-    const {runInitializers} = await import('./js/routes/run-initializers.js');
-    const {ROUTE_INITIALIZERS} = await import('./js/routes/route-initializers.js');
+    const {runInitializers} = await import('./js/router/initializers/run-initializers.js');
+    const {ROUTE_INITIALIZERS} = await import('./js/router/initializers/route-initializers.js');
     const assert = (condition, message) => { if (!condition) throw new Error(message); };
     const note = ROUTE_INITIALIZERS.flatMap(route => route.initializers)
         .find(([label]) => label === 'UpdateNote')[1];

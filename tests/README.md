@@ -11,7 +11,11 @@ du site en production.
 | `Build/` | Écriture atomique, verrous, archives et dépendances de production |
 | `Http/` | Routes HTTP, navigation SPA, cache HTTP et rapports |
 | `Browser/` | Scénarios JavaScript et lanceurs Microsoft Edge |
-| `Docs/` | Guide détaillé et audit de performances |
+| `Support/` | Bootstrap commun aux régressions et à PHPStan |
+
+Les guides et audits sont centralisés dans [docs/](../docs/project-structure.md).
+`Build/project-structure.php` vérifie les namespaces PSR-4, les imports JavaScript
+et les liens locaux de la documentation.
 
 ## Commandes
 
@@ -32,14 +36,14 @@ les scénarios navigateur nécessitent Microsoft Edge.
 Pour lancer un test précis :
 
 ```sh
-php tests/Framework/framework.php
+php tests/Framework/core-behavior.php
 php tests/Domain/achievement-xp.php
-php tests/Browser/run-page-styles-browser.php http://localhost/lolissr tests/Browser/spa-browser.js
+php tests/Browser/run-browser-scenario.php http://localhost/lolissr tests/Browser/spa-browser.js
 ```
 
 Les commandes Composer conservent leur sélection de tests. Les vérifications
-complémentaires et leurs prérequis sont décrits dans le [guide](Docs/guide.md).
-Voir aussi les [tests des styles](Docs/page-styles.md) et
-l'[audit de performances](Docs/performance-audit.md).
+complémentaires et leurs prérequis sont décrits dans le [guide](../docs/guide.md).
+Voir aussi les [tests des styles](../docs/page-styles.md) et
+l'[audit de performances](../docs/performance-audit.md).
 
 Les rapports HTTP générés restent dans `Http/reports/` et sont ignorés par Git.

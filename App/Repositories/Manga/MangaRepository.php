@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Repositories\Manga;
 
 use App\Models\Manga;
-use App\Models\Model;
+use App\Repositories\AbstractRepository;
 use App\Repositories\Manga\Concerns\HasMangaStatsSubQuery;
 
-use App\Support\MangaNoteNormalizer;
+use App\Support\Manga\MangaNoteNormalizer;
 use Framework\Support\Str;
 
-final class MangaRepository extends Model
+final class MangaRepository extends AbstractRepository
 {
     use HasMangaStatsSubQuery;
 

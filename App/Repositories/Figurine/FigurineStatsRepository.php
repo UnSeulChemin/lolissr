@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Repositories\Figurine;
 
-use App\Models\Model;
+use App\Repositories\AbstractRepository;
 use App\Repositories\Collections\Concerns\HasCollectionStats;
 
-final class FigurineStatsRepository extends Model
+final class FigurineStatsRepository extends AbstractRepository
 {
     use HasCollectionStats;
 

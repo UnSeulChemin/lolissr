@@ -8,8 +8,8 @@ et les déclarations de routes dans [Config/](../Config/README.md).
 
 | Dossier | Rôle |
 | --- | --- |
-| `Application/` | Bootstrap, noyau HTTP, accès aux options et cache compilé. |
-| `Config/` | Chargement de l'environnement, validation et résolution des options. |
+| `Application/` | Bootstrap, `HttpKernel` et cache compilé. |
+| `Config/` | Environnement, validation, résolution et accès typé aux options (`ApplicationConfig`, `DatabaseConfig`, `UploadConfig`). |
 | `Container/` | Construction des objets et partage des instances enregistrées. |
 | `Routing/` | Déclaration, sélection des routes et invocation des actions. |
 | `Http/` | Requête, réponse, session, formulaires, erreurs et middlewares. |
@@ -33,7 +33,7 @@ d'erreurs et le fournisseur de services de l'application.
 3. Il configure le fuseau horaire, les erreurs et le profiler, puis crée le
    conteneur et enregistre les services de l'application.
 4. Il prépare le routeur depuis le cache ou les fichiers de routes.
-5. [AppKernel](Application/AppKernel.php) ouvre la session, applique les en-têtes
+5. [HttpKernel](Application/HttpKernel.php) ouvre la session, applique les en-têtes
    de sécurité et lance le dispatch de la requête.
 
 Un échec précoce de configuration produit une réponse HTTP 500 générique et un
@@ -107,6 +107,6 @@ Une modification de routage, de verrouillage, de session ou de transaction doit
 préserver les contrats ci-dessus et être accompagnée d'une régression ciblée.
 
 `composer check` regroupe PHPStan, les tests HTTP/SPA et les régressions.
-Voir le [guide des tests](../tests/Docs/guide.md) pour leur exécution et le
-[rapport d'audit du framework](../tests/Docs/framework-audit.md) pour l'historique
+Voir le [guide des tests](../docs/guide.md) pour leur exécution et le
+[rapport d'audit du framework](../docs/framework-audit.md) pour l'historique
 des corrections et les mesures existantes.

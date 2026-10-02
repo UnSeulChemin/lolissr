@@ -19,7 +19,7 @@ final class HttpTestRunner
     public function __construct(
         private readonly string $base,
         private readonly array $tests,
-        private readonly Stats $stats
+        private readonly HttpTestStatistics $stats
     ) {
     }
 
@@ -430,7 +430,7 @@ final class HttpTestRunner
 
         $reportFile = $reportDirectory . '/lolissr-http-report.html';
 
-        HtmlReport::generate(
+        HttpHtmlReport::generate(
             $this->results,
             $this->stats,
             $reportFile

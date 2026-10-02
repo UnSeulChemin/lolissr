@@ -17,7 +17,8 @@ use Throwable;
 /** Deployment-local artifact. Rebuild after changing configuration or route sources. */
 final class BootstrapCache
 {
-    private const VERSION = 2;
+    // Controller namespaces changed with the project structure migration.
+    private const VERSION = 3;
 
     public static function path(): string
     {

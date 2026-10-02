@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace App\Services\Figurine;
 
 use App\DTO\Figurine\Responses\FigurineData;
-use App\DTO\Figurine\Responses\FigurineSeriesData;
+use App\DTO\Figurine\Responses\FigurineListData;
 use App\DTO\Figurine\Responses\FigurineSearchData;
 use App\DTO\Figurine\Responses\FigurineSearchItemData;
-use App\DTO\Figurine\Responses\FigurineSeriesItemData;
+use App\DTO\Figurine\Responses\FigurineListItemData;
 use App\Models\Figurine;
 use App\Repositories\Figurine\FigurineRepository;
 use App\Repositories\Figurine\FigurineSearchRepository;
 use App\Repositories\Figurine\FigurineCollectionRepository;
 
-use Framework\Application\App;
+use Framework\Config\ApplicationConfig;
 use Framework\Support\DateFormatter;
 
 final readonly class FigurineReadService
@@ -32,18 +32,18 @@ final readonly class FigurineReadService
     |--------------------------------------------------------------------------
     */
 
-    public function waifus(int|string $page = 1): ?FigurineSeriesData
+    public function waifus(int|string $page = 1): ?FigurineListData
     {
         $page = max(1, (int) $page);
 
-        $perPage = App::pagination();
+        $perPage = ApplicationConfig::pagination();
 
         $totalWaifus = $this->collectionRepository->countAll();
 
         if ($totalWaifus === 0)
         {
             if ($page > 1) return null;
-            return new FigurineSeriesData(
+            return new FigurineListData(
                 figurines: [],
                 currentPage: 1,
                 totalWaifus: 0,
@@ -64,7 +64,7 @@ final readonly class FigurineReadService
             $page,
         );
 
-        return new FigurineSeriesData(
+        return new FigurineListData(
             figurines: array_map(
                 $this->mapSeriesItem(...),
                 $figurines
@@ -109,9 +109,9 @@ final readonly class FigurineReadService
     |--------------------------------------------------------------------------
     */
 
-    private function mapSeriesItem(Figurine $figurine): FigurineSeriesItemData
+    private function mapSeriesItem(Figurine $figurine): FigurineListItemData
     {
-        $baseUri = App::baseUri();
+        $baseUri = ApplicationConfig::baseUri();
 
         $thumbnail = $figurine->thumbnail !== ''
             ? $figurine->thumbnail
@@ -121,7 +121,7 @@ final readonly class FigurineReadService
             ? $figurine->extension
             : null;
 
-        return new FigurineSeriesItemData(
+        return new FigurineListItemData(
             slug: $figurine->slug,
             numero: $figurine->numero,
 
@@ -142,7 +142,7 @@ final readonly class FigurineReadService
 
     private function mapFigurine(Figurine $figurine): FigurineData
     {
-        $baseUri = App::baseUri();
+        $baseUri = ApplicationConfig::baseUri();
 
         $thumbnail = $figurine->thumbnail !== ''
             ? $figurine->thumbnail

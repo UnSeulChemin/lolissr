@@ -14,7 +14,7 @@ if (!extension_loaded('gd') || !function_exists('imagewebp') || !defined('IMG_WE
 {
     throw new RuntimeException('GD with lossless WebP support is required.');
 }
-require __DIR__ . '/../lib/ProfileImageBuilder.php';
+require __DIR__ . '/../Support/ProfileImageBuilder.php';
 $root = dirname(__DIR__, 2) . '/public/images/profil';
 $before = 0;
 $after = 0;

@@ -16,4 +16,4 @@ export {
 
 export {
     titleModal,
-} from './title-modal.js';
+} from '../../profile/modals/title-modal.js';

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-require dirname(__DIR__, 2) . '/scripts/lib/ProductionDependencies.php';
+require dirname(__DIR__, 2) . '/scripts/Support/ProductionDependencies.php';
 $root = dirname(__DIR__, 2);
 $stage = $root . '/storage/tools/release-deps-test-' . bin2hex(random_bytes(8));
 mkdir($stage . '/Framework/Support', 0755, true);

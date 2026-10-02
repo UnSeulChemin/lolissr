@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace App\Repositories\Chinois;
 
 use App\DTO\Chinois\Responses\ChinoisVocabulaireData;
-use App\Models\Model;
+use App\Repositories\AbstractRepository;
 use App\Repositories\Chinois\Concerns\MapsChinoisVocabulaire;
 
 use stdClass;
 
-final class ChinoisVocabulaireRepository extends Model
+final class ChinoisVocabulaireRepository extends AbstractRepository
 {
-    use \App\Repositories\Chinois\Concerns\ReadsFlashcardPage;
+    use \App\Repositories\Chinois\Concerns\ReadsFlashcardBatches;
     use MapsChinoisVocabulaire;
 
     protected string $table = 'chinois_vocabulaire';

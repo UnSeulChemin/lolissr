@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Framework\Http;
 
-use Framework\Application\App;
+use Framework\Config\ApplicationConfig;
 
 use JsonException;
 use Framework\Http\Exceptions\BaseHttpException;
@@ -155,7 +155,7 @@ final class Request
         $path = parse_url($this->uri(), PHP_URL_PATH);
         $path = is_string($path) ? $path : '/';
 
-        $baseUri = rtrim(App::baseUri(), '/');
+        $baseUri = rtrim(ApplicationConfig::baseUri(), '/');
 
         if (
             $baseUri !== ''

@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-use App\Controllers\Sql\SqlAjaxController;
-use App\Controllers\Sql\SqlController;
+use App\Http\Controllers\Sql\SqlQueryController;
+use App\Http\Controllers\Sql\SqlConsoleController;
 
-use Framework\Application\App;
+use Framework\Config\ApplicationConfig;
 use Framework\Http\Middleware\CsrfMiddleware;
 use Framework\Http\Middleware\ExpectJsonMiddleware;
 use Framework\Routing\Router;
 
 /** @var Router $router */
 
-if (App::isProduction() || ! env_bool('SQL_TOOL_ENABLED', false))
+if (ApplicationConfig::isProduction() || ! env_bool('SQL_TOOL_ENABLED', false))
 {
     return;
 }
@@ -23,7 +23,7 @@ $router->prefix('sql')->group(function (Router $router): void
     // PAGE
     // =========================================
 
-    $router->get('', [SqlController::class, 'index']);
+    $router->get('', [SqlConsoleController::class, 'index']);
 
     // =========================================
     // EXÉCUTION HTML
@@ -31,7 +31,7 @@ $router->prefix('sql')->group(function (Router $router): void
 
     $router->post(
         '',
-        [SqlController::class, 'execute'],
+        [SqlConsoleController::class, 'execute'],
         [CsrfMiddleware::class]
     );
 
@@ -44,6 +44,6 @@ $router->prefix('sql')->group(function (Router $router): void
         ->middleware([ExpectJsonMiddleware::class, CsrfMiddleware::class])
         ->group(function (Router $router): void
         {
-            $router->post('execute', [SqlAjaxController::class, 'execute']);
+            $router->post('execute', [SqlQueryController::class, 'execute']);
         });
 });

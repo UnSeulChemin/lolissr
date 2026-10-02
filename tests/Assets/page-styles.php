@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-require dirname(__DIR__, 2) . '/phpstan-bootstrap.php';
+require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
 require ROOT . '/App/Support/Helpers.php';
 
 Framework\Application\Bootstrap::loadEnvOnly();
 
-use App\Support\PageStyles;
+use App\Support\Assets\PageStyles;
 
 $manifest = require ROOT . '/Config/styles.php';
 
@@ -20,19 +20,19 @@ foreach ($manifest as $css => $patterns)
 }
 
 $cases = [
-    'pages/auth/connexion' => [],
-    'pages/main/index' => ['components/summary.css'],
-    'pages/sql/index' => ['components/summary.css', 'page/sql.css'],
+    'pages/auth/login' => [],
+    'pages/home/index' => ['components/summary.css'],
+    'pages/sql/index' => ['components/summary.css', 'pages/sql.css'],
     'pages/manga/series/index' => [],
-    'pages/manga/series/livre' => ['components/detail.css', 'page/manga/note-rating.css', 'components/status-toggle.css'],
-    'pages/manga/artbooks/livre' => ['components/detail.css', 'components/status-toggle.css'],
-    'pages/figurine/waifus/waifu' => ['components/detail.css', 'components/status-toggle.css'],
-    'pages/nendoroid/waifus/waifu' => ['components/detail.css', 'components/status-toggle.css'],
-    'pages/peluche/waifus/waifu' => ['components/detail.css', 'components/status-toggle.css'],
-    'pages/chinois/flashcards/grammaire' => ['page/chinois/vocabulaire.css', 'page/chinois/grammaire.css'],
-    'pages/profile/personnalisation' => [
-        'base/profile-title-modal.css', 'components/media-picker.css',
-        'components/summary.css', 'components/profile-avatar.css', 'page/profil/profil.css', 'page/profil/personnalisation.css',
+    'pages/manga/series/show' => ['components/detail.css', 'pages/manga/note-rating.css', 'components/status-toggle.css'],
+    'pages/artbook/show' => ['components/detail.css', 'components/status-toggle.css'],
+    'pages/figurine/collection/show' => ['components/detail.css', 'components/status-toggle.css'],
+    'pages/nendoroid/collection/show' => ['components/detail.css', 'components/status-toggle.css'],
+    'pages/peluche/collection/show' => ['components/detail.css', 'components/status-toggle.css'],
+    'pages/chinois/flashcards/grammaire' => ['pages/chinois/vocabulaire.css', 'pages/chinois/grammaire.css'],
+    'pages/profile/customization' => [
+        'components/modals/profile-title-modal.css', 'components/media-picker.css',
+        'components/summary.css', 'components/profile-avatar.css', 'pages/profile/profile.css', 'pages/profile/customization.css',
     ],
     'errors/404' => [],
 ];

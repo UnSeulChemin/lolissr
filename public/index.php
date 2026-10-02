@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use App\Controllers\ErrorController;
+use App\Http\Controllers\ErrorController;
 use App\Providers\ServiceProvider;
 
 use Framework\Application\Bootstrap;

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Services\Chinois;
 
 use App\Cache\DashboardCache;
-use App\DTO\Chinois\Inputs\ChinoisGrammaireCreateDTO;
-use App\DTO\Chinois\Inputs\ChinoisVocabulaireCreateDTO;
+use App\DTO\Chinois\Inputs\ChinoisGrammaireCreateData;
+use App\DTO\Chinois\Inputs\ChinoisVocabulaireCreateData;
 use App\DTO\Chinois\Responses\ChinoisMaitriseData;
 use App\DTO\Common\ServiceResult;
 use App\Repositories\Chinois\ChinoisGrammaireRepository;
@@ -30,7 +30,7 @@ final readonly class ChinoisWriteService
     // GRAMMAIRE
     // =========================================
 
-    public function createGrammaire(ChinoisGrammaireCreateDTO $dto): ServiceResult
+    public function createGrammaire(ChinoisGrammaireCreateData $dto): ServiceResult
     {
         $result = $this->grammaireRepository->orderedTransaction(
             function () use ($dto): ServiceResult
@@ -74,7 +74,7 @@ final readonly class ChinoisWriteService
         return $result;
     }
 
-    public function updateGrammaire(int $id, ChinoisGrammaireCreateDTO $dto): ServiceResult
+    public function updateGrammaire(int $id, ChinoisGrammaireCreateData $dto): ServiceResult
     {
         return $this->grammaireRepository->orderedTransaction(
             function () use ($id, $dto): ServiceResult
@@ -120,7 +120,7 @@ final readonly class ChinoisWriteService
     // VOCABULAIRE
     // =========================================
 
-    public function createVocabulaire(ChinoisVocabulaireCreateDTO $dto): ServiceResult
+    public function createVocabulaire(ChinoisVocabulaireCreateData $dto): ServiceResult
     {
         $result = $this->database->transaction(
             function () use ($dto): ServiceResult
@@ -145,7 +145,7 @@ final readonly class ChinoisWriteService
         return $result;
     }
 
-    public function updateVocabulaire(int $id, ChinoisVocabulaireCreateDTO $dto): ServiceResult
+    public function updateVocabulaire(int $id, ChinoisVocabulaireCreateData $dto): ServiceResult
     {
         return $this->database->transaction(
             function () use ($id, $dto): ServiceResult

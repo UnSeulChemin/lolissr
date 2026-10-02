@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-use App\Controllers\Nendoroid\NendoroidController;
-use App\Controllers\Nendoroid\NendoroidAjaxController;
-use App\Support\CollectionRoutes;
+use App\Http\Controllers\Nendoroid\NendoroidController;
+use App\Http\Controllers\Nendoroid\NendoroidAjaxController;
+use App\Http\Routing\CollectionRouteRegistrar;
 use Framework\Routing\Router;
 
 /** @var Router $router */
-CollectionRoutes::register(
+CollectionRouteRegistrar::register(
     $router,
     'nendoroid',
     NendoroidController::class,

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Peluche;
 
-use App\DTO\Peluche\Inputs\PelucheUpdateDTO;
+use App\DTO\Peluche\Inputs\PelucheUpdateData;
 
 use Framework\Http\FormRequest;
 
@@ -41,8 +41,8 @@ final class PelucheUpdateRequest extends FormRequest
     // DTO
     // =========================================
 
-    public function dto(): PelucheUpdateDTO
+    public function dto(): PelucheUpdateData
     {
-        return PelucheUpdateDTO::fromArray($this->validated());
+        return PelucheUpdateData::fromArray($this->validated());
     }
 }

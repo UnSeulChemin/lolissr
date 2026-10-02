@@ -31,7 +31,7 @@ $container = new Container();
 $container->singleton(Database::class);
 $database = $container->get(Database::class);
 $users = $container->get(UserRepository::class);
-$statsService = $container->get(ProfileStatsService::class);
+$dashboardStatsService = $container->get(ProfileStatsService::class);
 $rewards = $container->get(AchievementXpService::class);
 $user = $users->findById($userId);
 if ($user === null)
@@ -46,7 +46,7 @@ if (! $apply)
     $database->exec('SET SESSION TRANSACTION READ ONLY');
 }
 $before = $rewards->totalForUser($user);
-$stats = $statsService->getStats($user);
+$stats = $dashboardStatsService->getStats($user);
 $audit = $rewards->audit($user, $stats);
 echo "Diagnostic avant modification (statistiques actuelles) :" . PHP_EOL;
 echo 'XP de succès enregistrée : ' . $before . PHP_EOL;

@@ -1,0 +1,36 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Framework\Container;
+
+use RuntimeException;
+
+final class ContainerRegistry
+{
+    private static ?Container $container = null;
+
+    private function __construct()
+    {
+    }
+
+    // =========================================
+    // CONTAINER
+    // =========================================
+
+    public static function set(Container $container): void
+    {
+        self::$container = $container;
+    }
+
+    public static function get(): Container
+    {
+        return self::$container
+            ?? throw new RuntimeException('Container non initialisé.');
+    }
+
+    public static function has(): bool
+    {
+        return self::$container !== null;
+    }
+}

@@ -16,7 +16,7 @@ use App\Repositories\Chinois\ChinoisSearchRepository;
 use App\Repositories\Chinois\ChinoisVocabulaireCollectionRepository;
 use App\Repositories\Chinois\ChinoisVocabulaireRepository;
 
-use Framework\Application\App;
+use Framework\Config\ApplicationConfig;
 use Framework\Http\Exceptions\NotFoundException;
 
 final readonly class ChinoisReadService
@@ -121,7 +121,7 @@ final readonly class ChinoisReadService
         }
 
         $page = max(1, (int) $page);
-        $perPage = App::pagination();
+        $perPage = ApplicationConfig::pagination();
         $totalVocabulaires = $this->collectionRepository->countByLangue($langue);
 
         if ($totalVocabulaires === 0)

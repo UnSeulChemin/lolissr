@@ -5,11 +5,11 @@ declare(strict_types=1);
 require __DIR__ . '/bootstrap.php';
 
 require __DIR__ . '/Support/Assertions.php';
-require __DIR__ . '/Support/HtmlReport.php';
+require __DIR__ . '/Support/HttpHtmlReport.php';
 require __DIR__ . '/Support/HttpClient.php';
 require __DIR__ . '/Support/HttpTestRunner.php';
 require __DIR__ . '/Support/ReportSanitizer.php';
-require __DIR__ . '/Support/Stats.php';
+require __DIR__ . '/Support/HttpTestStatistics.php';
 
 // =========================================
 // AUTHENTIFICATION

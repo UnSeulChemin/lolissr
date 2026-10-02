@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Repositories\Figurine;
 
-use App\DTO\Figurine\Inputs\FigurineUpdateDTO;
+use App\DTO\Figurine\Inputs\FigurineUpdateData;
 use App\Models\Figurine;
-use App\Models\Model;
+use App\Repositories\AbstractRepository;
 
 use Framework\Support\Str;
 
-final class FigurineRepository extends Model
+final class FigurineRepository extends AbstractRepository
 {
     use \App\Repositories\Collections\Concerns\UpdatesExistingCollection;
     protected string $table = 'figurine';
@@ -47,7 +47,7 @@ final class FigurineRepository extends Model
         return parent::insert($this->normalizeInsertData($data));
     }
 
-    public function updateFigurine(string $slug, int $numero, FigurineUpdateDTO $dto): bool
+    public function updateFigurine(string $slug, int $numero, FigurineUpdateData $dto): bool
     {
         return $this->updateExistingBySlugAndNumero(
             $slug,

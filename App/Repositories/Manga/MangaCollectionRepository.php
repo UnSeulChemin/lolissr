@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Repositories\Manga;
 
 use App\Models\Manga;
-use App\Models\Model;
+use App\Repositories\AbstractRepository;
 use App\Repositories\Manga\Concerns\HasMangaStatsSubQuery;
 
-final class MangaCollectionRepository extends Model
+final class MangaCollectionRepository extends AbstractRepository
 {
     use HasMangaStatsSubQuery;
 

@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Controllers\Auth\AuthController;
-use App\Controllers\MainController;
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\HomeController;
 
 use Framework\Http\Middleware\AuthMiddleware;
 use Framework\Http\Middleware\CsrfMiddleware;
@@ -25,8 +25,8 @@ return static function (Router $router): void
         ->middleware(AuthMiddleware::class)
         ->group(function (Router $router): void
         {
-            $router->get('', [MainController::class, 'index']);
-            $router->get('recherche', [\App\Controllers\SearchController::class, 'search'],
+            $router->get('', [HomeController::class, 'index']);
+            $router->get('recherche', [\App\Http\Controllers\GlobalSearchController::class, 'search'],
                 [\Framework\Http\Middleware\ExpectJsonMiddleware::class]);
 
             $router->post(

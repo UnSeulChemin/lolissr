@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use App\DTO\Common\Responses\ViewData;
-use App\Support\AssetVersions;
+use App\Support\Assets\AssetVersions;
 
 use Framework\Security\ContentSecurityPolicy;
 
@@ -12,12 +12,12 @@ use Framework\Security\ContentSecurityPolicy;
 
 $title = is_string($title ?? null) ? $title : '';
 $content = is_string($content ?? null) ? $content : '';
-$useJavaScriptBundle = \Framework\Application\App::isProduction();
+$useJavaScriptBundle = \Framework\Config\ApplicationConfig::isProduction();
 /** @var array{entry: string, preloads: list<string>} $javascript */
 $javascript = $useJavaScriptBundle
     ? config('javascript')
     : ['entry' => 'js/app.js', 'preloads' => []];
-$commonCss = \Framework\Application\App::isProduction() ? 'app.bundle.css' : 'app.css';
+$commonCss = \Framework\Config\ApplicationConfig::isProduction() ? 'app.bundle.css' : 'app.css';
 $commonCssPath = dirname(__DIR__, 3) . '/public/css/' . $commonCss;
 if (! is_file($commonCssPath))
 {
@@ -103,16 +103,16 @@ if (! is_file($commonCssPath))
     <?php if (!$useJavaScriptBundle): ?>
     <script type="importmap" nonce="<?= ContentSecurityPolicy::escapedNonce() ?>">
         <?= json_encode(['imports' => [
-            $view->baseUri . 'js/core/modal/avatar-modal.js' =>
-                $view->baseUri . 'js/core/modal/avatar-modal.js?v=' . AssetVersions::version('js/core/modal/avatar-modal.js'),
-            $view->baseUri . 'js/core/modal/banner-modal.js' =>
-                $view->baseUri . 'js/core/modal/banner-modal.js?v=' . AssetVersions::version('js/core/modal/banner-modal.js'),
-            $view->baseUri . 'js/profil/profile-customization.js' =>
-                $view->baseUri . 'js/profil/profile-customization.js?v=' . AssetVersions::version('js/profil/profile-customization.js'),
-            $view->baseUri . 'js/core/modal/title-modal.js' =>
-                $view->baseUri . 'js/core/modal/title-modal.js?v=' . AssetVersions::version('js/core/modal/title-modal.js'),
-            $view->baseUri . 'js/core/modal/frame-modal.js' =>
-                $view->baseUri . 'js/core/modal/frame-modal.js?v=' . AssetVersions::version('js/core/modal/frame-modal.js'),
+            $view->baseUri . 'js/profile/modals/avatar-modal.js' =>
+                $view->baseUri . 'js/profile/modals/avatar-modal.js?v=' . AssetVersions::version('js/profile/modals/avatar-modal.js'),
+            $view->baseUri . 'js/profile/modals/banner-modal.js' =>
+                $view->baseUri . 'js/profile/modals/banner-modal.js?v=' . AssetVersions::version('js/profile/modals/banner-modal.js'),
+            $view->baseUri . 'js/profile/profile-customization.js' =>
+                $view->baseUri . 'js/profile/profile-customization.js?v=' . AssetVersions::version('js/profile/profile-customization.js'),
+            $view->baseUri . 'js/profile/modals/title-modal.js' =>
+                $view->baseUri . 'js/profile/modals/title-modal.js?v=' . AssetVersions::version('js/profile/modals/title-modal.js'),
+            $view->baseUri . 'js/profile/modals/frame-modal.js' =>
+                $view->baseUri . 'js/profile/modals/frame-modal.js?v=' . AssetVersions::version('js/profile/modals/frame-modal.js'),
         ]], JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_THROW_ON_ERROR) ?>
     </script>
     <?php endif; ?>

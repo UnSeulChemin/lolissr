@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Controllers\Profile\ProfileAjaxController;
-use App\Controllers\Profile\ProfileController;
+use App\Http\Controllers\Profile\ProfileAjaxController;
+use App\Http\Controllers\Profile\ProfileController;
 
 use Framework\Http\Middleware\CsrfMiddleware;
 use Framework\Http\Middleware\ExpectJsonMiddleware;

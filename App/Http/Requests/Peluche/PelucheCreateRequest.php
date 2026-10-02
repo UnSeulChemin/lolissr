@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Peluche;
 
-use App\DTO\Peluche\Inputs\PelucheCreateDTO;
+use App\DTO\Peluche\Inputs\PelucheCreateData;
 
 use Framework\Config\UploadConfig;
 use Framework\Http\FormRequest;
@@ -57,8 +57,8 @@ final class PelucheCreateRequest extends FormRequest
     // DTO
     // =========================================
 
-    public function dto(): PelucheCreateDTO
+    public function dto(): PelucheCreateData
     {
-        return PelucheCreateDTO::fromArray($this->validated());
+        return PelucheCreateData::fromArray($this->validated());
     }
 }

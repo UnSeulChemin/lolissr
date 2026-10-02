@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use App\Controllers\Manga\ArtbookAjaxController;
-use App\Controllers\Manga\ArtbookController;
-use App\Controllers\Manga\MangaAjaxController;
-use App\Controllers\Manga\MangaController;
+use App\Http\Controllers\Artbook\ArtbookAjaxController;
+use App\Http\Controllers\Artbook\ArtbookController;
+use App\Http\Controllers\Manga\MangaAjaxController;
+use App\Http\Controllers\Manga\MangaController;
 
 use Framework\Http\Middleware\CsrfMiddleware;
 use Framework\Http\Middleware\ExpectJsonMiddleware;

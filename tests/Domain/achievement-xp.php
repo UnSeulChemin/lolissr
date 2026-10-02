@@ -8,7 +8,7 @@ use Framework\Application\Bootstrap;
 use Framework\Container\Container;
 use Framework\Database\Database;
 
-require dirname(__DIR__, 2) . '/phpstan-bootstrap.php';
+require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
 Bootstrap::loadEnvOnly();
 $container = new Container();
 $container->singleton(Database::class);
@@ -59,7 +59,7 @@ $service->rewardManga($other, 1, 0);
 $assert($service->totalForUser($other) === 50 && $service->totalForUser($user) === 19300, 'User reward isolation failed');
 $database->exec("UPDATE achievement_xp_rewards SET xp = 999 WHERE user_id = 2 AND achievement_key = 'tomes_1'");
 $database->exec("INSERT INTO achievement_xp_rewards VALUES (2, 'tomes_25', 1250), (2, 'obsolete', 7)");
-$stats = new \App\DTO\Profile\ProfileStatsData(
+$stats = new \App\DTO\Profile\Responses\ProfileStatsData(
     readTomes: 10, tomeXp: 50, completedSeries: 0, seriesXp: 0,
     readArtbooks: 0, artbookXp: 0, figurinesCollected: 0, figurinesXp: 0,
     nendoroidsCollected: 0, nendoroidsXp: 0, peluchesCollected: 0, peluchesXp: 0,

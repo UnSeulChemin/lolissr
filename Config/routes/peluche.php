@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-use App\Controllers\Peluche\PelucheController;
-use App\Controllers\Peluche\PelucheAjaxController;
-use App\Support\CollectionRoutes;
+use App\Http\Controllers\Peluche\PelucheController;
+use App\Http\Controllers\Peluche\PelucheAjaxController;
+use App\Http\Routing\CollectionRouteRegistrar;
 use Framework\Routing\Router;
 
 /** @var Router $router */
-CollectionRoutes::register(
+CollectionRouteRegistrar::register(
     $router,
     'peluche',
     PelucheController::class,

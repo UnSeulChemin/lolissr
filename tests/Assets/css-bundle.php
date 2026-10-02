@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-require dirname(__DIR__, 2) . '/scripts/lib/CssBundleBuilder.php';
+require dirname(__DIR__, 2) . '/scripts/Support/CssBundleBuilder.php';
 
 $directory = dirname(__DIR__, 2) . '/public/css';
 $bundle = CssBundleBuilder::compile($directory);

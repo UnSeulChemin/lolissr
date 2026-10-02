@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-require dirname(__DIR__, 2) . '/phpstan-bootstrap.php';
+require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
 
-use App\Controllers\Controller;
+use App\Http\Controllers\Controller;
 use Framework\Config\Config;
 use Framework\Container\Container;
 use Framework\Database\Database;
@@ -55,7 +55,7 @@ $container = new Container();
 $container->instance(Database::class, $database);
 foreach ([
     [App\Services\Manga\MangaReadService::class, 'series'],
-    [App\Services\Manga\ArtbookReadService::class, 'artbooks'],
+    [App\Services\Artbook\ArtbookReadService::class, 'artbooks'],
     [App\Services\Figurine\FigurineReadService::class, 'waifus'],
     [App\Services\Nendoroid\NendoroidReadService::class, 'waifus'],
     [App\Services\Peluche\PelucheReadService::class, 'waifus'],

@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace App\Repositories\Chinois;
 
 use App\DTO\Chinois\Responses\ChinoisGrammaireData;
-use App\Models\Model;
+use App\Repositories\AbstractRepository;
 
 use Framework\Support\Str;
 
 use stdClass;
 
-final class ChinoisGrammaireRepository extends Model
+final class ChinoisGrammaireRepository extends AbstractRepository
 {
-    use \App\Repositories\Chinois\Concerns\ReadsFlashcardPage;
+    use \App\Repositories\Chinois\Concerns\ReadsFlashcardBatches;
     /**
      * @template T
      * @param callable(): T $callback

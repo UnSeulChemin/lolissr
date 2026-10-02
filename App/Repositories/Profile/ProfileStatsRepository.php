@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Repositories\Profile;
 
-use App\Models\Model;
+use App\Repositories\AbstractRepository;
 
-final class ProfileStatsRepository extends Model
+final class ProfileStatsRepository extends AbstractRepository
 {
     /** @return array<string, int> */
     public function summary(?int $userId): array

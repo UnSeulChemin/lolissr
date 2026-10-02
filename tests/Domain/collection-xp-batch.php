@@ -9,7 +9,7 @@ use Framework\Application\Bootstrap;
 use Framework\Container\Container;
 use Framework\Database\Database;
 
-require dirname(__DIR__, 2) . '/phpstan-bootstrap.php';
+require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
 Bootstrap::loadEnvOnly();
 
 function user(): ?User { return $GLOBALS['collectionTestUser']; }
@@ -33,7 +33,7 @@ $cases = [
     ['figurine', 'collect', 'collect_rewarded', 'Figurine/Figurine', 'rewardCollect', 'Figurine', UserXp::COLLECT_FIGURINE, AchievementRewards::FIGURINES[1]],
     ['nendoroid', 'collect', 'collect_rewarded', 'Nendoroid/Nendoroid', 'rewardCollect', 'Nendoroid', UserXp::COLLECT_NENDOROID, AchievementRewards::NENDOROIDS[1]],
     ['peluche', 'collect', 'collect_rewarded', 'Peluche/Peluche', 'rewardCollect', 'Peluche', UserXp::COLLECT_PELUCHE, AchievementRewards::PELUCHES[1]],
-    ['artbook', 'lu', 'xp_read_rewarded', 'Manga/Artbook', 'rewardArtbookRead', 'Artbook', UserXp::READ_ARTBOOK, AchievementRewards::ARTBOOKS[1]],
+    ['artbook', 'lu', 'xp_read_rewarded', 'Artbook/Artbook', 'rewardArtbookRead', 'Artbook', UserXp::READ_ARTBOOK, AchievementRewards::ARTBOOKS[1]],
     ['chinois_grammaire', 'maitrise', 'xp_rewarded', 'Chinois/Chinois', 'rewardGrammar', null, UserXp::LEARN_GRAMMAR, AchievementRewards::GRAMMAR[1]],
     ['chinois_vocabulaire', 'maitrise', 'xp_rewarded', 'Chinois/Chinois', 'rewardVocabulary', null, UserXp::LEARN_VOCABULARY, AchievementRewards::VOCABULARY[1]],
 ];

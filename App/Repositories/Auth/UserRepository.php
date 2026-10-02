@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Repositories\Auth;
 
 use App\Constants\UserTitle;
-use App\Models\Model;
+use App\Repositories\AbstractRepository;
 use App\Models\User;
 
-final class UserRepository extends Model
+final class UserRepository extends AbstractRepository
 {
     protected string $table = 'users';
 

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Services\Profile;
 
 use App\Constants\AchievementRewards;
-use App\DTO\Profile\ProfileStatsData;
-use App\DTO\Profile\ProfileUnlockStatsData;
+use App\DTO\Profile\Responses\ProfileStatsData;
+use App\DTO\Profile\Responses\ProfileUnlockStatsData;
 
 /** @phpstan-type Achievement array{category: string, icon: string, title: string, current: int, target: int, unlocked: bool} */
 final class ProfileAchievements

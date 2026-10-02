@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Repositories\Figurine;
 
 use App\Models\Figurine;
-use App\Models\Model;
+use App\Repositories\AbstractRepository;
 
-final class FigurineCollectionRepository extends Model
+final class FigurineCollectionRepository extends AbstractRepository
 {
     protected string $table = 'figurine';
 

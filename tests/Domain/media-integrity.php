@@ -7,7 +7,7 @@ namespace App\Services\Media {
     function move_uploaded_file(string $from, string $to): bool { return rename($from, $to); }
 }
 namespace {
-    require dirname(__DIR__, 2) . '/phpstan-bootstrap.php';
+    require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
     use App\Services\Media\ImageUploadValidator;
     use App\Services\Media\UploadService;
     use Framework\Config\Config;
@@ -35,7 +35,7 @@ namespace {
                 $result = $validator->validate(['image' => ['name' => 'image.' . $extension,
                     'tmp_name' => $path, 'size' => filesize($path), 'error' => UPLOAD_ERR_OK]]);
                 $matches = $actual === ($extension === 'jpeg' ? 'jpg' : $extension);
-                $check($matches ? $result instanceof \App\DTO\Upload\ValidatedImageUploadData
+                $check($matches ? $result instanceof \App\DTO\Media\ValidatedImageUploadData
                     : $result instanceof \App\DTO\Common\ServiceResult && !$result->success && $result->status === 422,
                     "Wrong MIME/extension result: $actual/$extension");
             }

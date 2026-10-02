@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Figurine;
 
-use App\DTO\Figurine\Inputs\FigurineUpdateDTO;
+use App\DTO\Figurine\Inputs\FigurineUpdateData;
 
 use Framework\Http\FormRequest;
 
@@ -49,8 +49,8 @@ final class FigurineUpdateRequest extends FormRequest
     // DTO
     // =========================================
 
-    public function dto(): FigurineUpdateDTO
+    public function dto(): FigurineUpdateData
     {
-        return FigurineUpdateDTO::fromArray($this->validated());
+        return FigurineUpdateData::fromArray($this->validated());
     }
 }

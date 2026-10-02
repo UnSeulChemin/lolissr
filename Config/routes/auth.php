@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use App\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\AuthController;
 
-use Framework\Application\App;
+use Framework\Config\ApplicationConfig;
 use Framework\Http\Middleware\CsrfMiddleware;
 use Framework\Http\Middleware\GuestMiddleware;
 use Framework\Routing\Router;
@@ -31,7 +31,7 @@ $router->post(
 // INSCRIPTION
 // =========================================
 
-if (! App::isProduction() && env_bool('REGISTRATION_ENABLED', false))
+if (! ApplicationConfig::isProduction() && env_bool('REGISTRATION_ENABLED', false))
 {
     $router->get(
         'inscription',

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use App\DTO\Manga\Responses\MangaSeriesItemData;
+use App\DTO\Manga\Responses\MangaListItemData;
 
-/** @var list<MangaSeriesItemData> $mangas */
+/** @var list<MangaListItemData> $mangas */
 
 $paginationPath = 'manga/series/notes';
 
@@ -30,13 +30,13 @@ $paginationPath = 'manga/series/notes';
 
             $isSerieView = false;
 
-            require view_path('pages/manga/series/ajax.php');
+            require view_path('pages/manga/series/partials/items.php');
 
             ?>
 
         <?php endif; ?>
 
-        <?php require view_path('pages/manga/series/pagination.php'); ?>
+        <?php require view_path('pages/manga/series/partials/pagination.php'); ?>
 
     </div>
 

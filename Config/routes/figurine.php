@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-use App\Controllers\Figurine\FigurineController;
-use App\Controllers\Figurine\FigurineAjaxController;
-use App\Support\CollectionRoutes;
+use App\Http\Controllers\Figurine\FigurineController;
+use App\Http\Controllers\Figurine\FigurineAjaxController;
+use App\Http\Routing\CollectionRouteRegistrar;
 use Framework\Routing\Router;
 
 /** @var Router $router */
-CollectionRoutes::register(
+CollectionRouteRegistrar::register(
     $router,
     'figurine',
     FigurineController::class,

@@ -12,6 +12,6 @@ parameters:
         - vendor
 
     bootstrapFiles:
-        - phpstan-bootstrap.php
+        - tests/Support/bootstrap.php
 
     checkUninitializedProperties: true

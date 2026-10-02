@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Repositories\Sql;
 
-use App\Models\Model;
+use App\Repositories\AbstractRepository;
 
-final class SqlRepository extends Model
+final class SqlRepository extends AbstractRepository
 {
     private const MAX_RESULT_ROWS = 500;
 

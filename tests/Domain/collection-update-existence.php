@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-require dirname(__DIR__, 2) . '/phpstan-bootstrap.php';
+require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
 
 use Framework\Application\Bootstrap;
 use Framework\Container\Container;
@@ -22,7 +22,7 @@ foreach (['Figurine', 'Nendoroid', 'Peluche', 'Artbook'] as $kind)
 {
     $table = strtolower($kind);
     $figurineFields = $kind === 'Figurine' ? 'scale VARCHAR(30), height_cm DOUBLE,' : '';
-    $domain = $kind === 'Artbook' ? 'Manga' : $kind;
+    $domain = $kind;
     $nameField = $kind === 'Artbook' ? 'artbook' : 'waifu';
     $detailFields = $kind === 'Artbook'
         ? 'auteur VARCHAR(150), serie VARCHAR(150), lu TINYINT NOT NULL DEFAULT 0,'
@@ -37,7 +37,7 @@ foreach (['Figurine', 'Nendoroid', 'Peluche', 'Artbook'] as $kind)
     {
         $repository = $container->get("App\\Repositories\\$domain\\{$kind}Repository");
         $service = $container->get("App\\Services\\$domain\\{$kind}WriteService");
-        $dtoClass = "App\\DTO\\$domain\\Inputs\\{$kind}UpdateDTO";
+        $dtoClass = "App\\DTO\\$domain\\Inputs\\{$kind}UpdateData";
         $dto = $dtoClass::fromArray([$nameField => 'Updated', 'source' => 'Updated source', 'origin' => 'Fixture', 'scale' => '1/7', 'company' => 'Fixture']);
         $method = 'update' . $kind;
         try
@@ -138,7 +138,7 @@ try
     foreach ([[4, 5, 9], [4, 5, 9], [null, 3, null], [null, null, null]] as [$cover, $book, $stored])
     {
         NoteQueryCounter::$executions = 0;
-        $result = $service->updateNote('fixture', 1, new \App\DTO\Manga\Inputs\MangaUpdateNoteDTO($cover, $book));
+        $result = $service->updateNote('fixture', 1, new \App\DTO\Manga\Inputs\MangaUpdateNoteData($cover, $book));
         $check($result->success && NoteQueryCounter::$executions === 2, 'Note update must use two queries');
         $notes = $result->data['notes'];
         $check($notes->jacquette === ($cover ?? 0) && $notes->livreNote === ($book ?? 0)
@@ -150,7 +150,7 @@ try
     $db->exec('DELETE FROM manga WHERE id = 1');
     try
     {
-        $service->update('fixture', 1, \App\DTO\Manga\Inputs\MangaUpdateDTO::fromArray(['statut' => 'en_cours']));
+        $service->update('fixture', 1, \App\DTO\Manga\Inputs\MangaUpdateData::fromArray(['statut' => 'en_cours']));
         throw new RuntimeException('Missing full-update target accepted');
     }
     catch (NotFoundException $error)
@@ -160,7 +160,7 @@ try
     }
     try
     {
-        $service->updateNote('fixture', 1, new \App\DTO\Manga\Inputs\MangaUpdateNoteDTO(4, 5));
+        $service->updateNote('fixture', 1, new \App\DTO\Manga\Inputs\MangaUpdateNoteData(4, 5));
         throw new RuntimeException('Missing note target accepted');
     }
     catch (NotFoundException $error)
@@ -184,7 +184,7 @@ $db->exec('CREATE TEMPORARY TABLE chinois_grammaire (
 try
 {
     $grammarService = $container->get(\App\Services\Chinois\ChinoisWriteService::class);
-    $dto = \App\DTO\Chinois\Inputs\ChinoisGrammaireCreateDTO::fromArray(['niveau' => 'HSK1']);
+    $dto = \App\DTO\Chinois\Inputs\ChinoisGrammaireCreateData::fromArray(['niveau' => 'HSK1']);
     try
     {
         $grammarService->updateGrammaire(1, $dto);

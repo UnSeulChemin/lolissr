@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-require dirname(__DIR__, 2) . '/phpstan-bootstrap.php';
+require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
 \Framework\Application\Bootstrap::loadEnvOnly();
 $root = dirname(__DIR__, 2) . '/public/images/profil';
 $count = 0;

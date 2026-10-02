@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Framework\Application;
 
+use Framework\Config\ApplicationConfig;
+
 use Framework\Config\Config;
 use Framework\Config\Env;
 use Framework\Config\EnvironmentValidator;
-use Framework\Container\AppContainer;
+use Framework\Container\ContainerRegistry;
 use Framework\Container\Container;
 use Framework\Database\Database;
 use Framework\Debug\Profiler;
@@ -93,7 +95,7 @@ final class Bootstrap
         /** @var SecurityHeadersMiddleware $securityHeaders */
         $securityHeaders = $container->get(SecurityHeadersMiddleware::class);
 
-        $kernel = new AppKernel($router, $request, $securityHeaders);
+        $kernel = new HttpKernel($router, $request, $securityHeaders);
 
         $kernel->boot();
         $kernel->handle();
@@ -109,7 +111,7 @@ final class Bootstrap
     {
         $container = new Container();
 
-        AppContainer::set($container);
+        ContainerRegistry::set($container);
 
         $container->singleton(Request::class, static fn (): Request => Request::capture());
 
@@ -151,7 +153,7 @@ final class Bootstrap
 
     private static function startProfiler(int|float $startedAt): void
     {
-        if (! App::debug() || config('app.profiler', false) !== true)
+        if (! ApplicationConfig::debug() || config('app.profiler', false) !== true)
         {
             return;
         }
@@ -193,7 +195,7 @@ final class Bootstrap
 
     private static function configureDebug(): void
     {
-        $debug = App::debug();
+        $debug = ApplicationConfig::debug();
 
         error_reporting(E_ALL);
 
@@ -203,7 +205,7 @@ final class Bootstrap
 
     private static function configureTimezone(): void
     {
-        $timezone = App::timezone();
+        $timezone = ApplicationConfig::timezone();
 
         if (! date_default_timezone_set($timezone))
         {

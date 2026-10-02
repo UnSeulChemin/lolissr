@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Repositories\Peluche;
 
-use App\DTO\Peluche\Inputs\PelucheUpdateDTO;
-use App\Models\Model;
+use App\DTO\Peluche\Inputs\PelucheUpdateData;
+use App\Repositories\AbstractRepository;
 use App\Models\Peluche;
 
 use Framework\Support\Str;
 
-final class PelucheRepository extends Model
+final class PelucheRepository extends AbstractRepository
 {
     use \App\Repositories\Collections\Concerns\UpdatesExistingCollection;
     protected string $table = 'peluche';
@@ -47,7 +47,7 @@ final class PelucheRepository extends Model
         return parent::insert($this->normalizeInsertData($data));
     }
 
-    public function updatePeluche(string $slug, int $numero, PelucheUpdateDTO $dto): bool
+    public function updatePeluche(string $slug, int $numero, PelucheUpdateData $dto): bool
     {
         return $this->updateExistingBySlugAndNumero(
             $slug,

@@ -33,7 +33,7 @@ import {
 
 import {
     updateHeaderUser,
-} from '../../profil/header-user.js';
+} from '../../profile/header-user.js';
 
 // =========================================
 // CONFIG

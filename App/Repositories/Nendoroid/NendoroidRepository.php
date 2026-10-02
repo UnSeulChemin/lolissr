@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Repositories\Nendoroid;
 
-use App\DTO\Nendoroid\Inputs\NendoroidUpdateDTO;
-use App\Models\Model;
+use App\DTO\Nendoroid\Inputs\NendoroidUpdateData;
+use App\Repositories\AbstractRepository;
 use App\Models\Nendoroid;
 
 use Framework\Support\Str;
 
-final class NendoroidRepository extends Model
+final class NendoroidRepository extends AbstractRepository
 {
     use \App\Repositories\Collections\Concerns\UpdatesExistingCollection;
     protected string $table = 'nendoroid';
@@ -53,7 +53,7 @@ final class NendoroidRepository extends Model
     public function updateNendoroid(
         string $slug,
         int $numero,
-        NendoroidUpdateDTO $dto
+        NendoroidUpdateData $dto
     ): bool
     {
         return $this->updateExistingBySlugAndNumero(

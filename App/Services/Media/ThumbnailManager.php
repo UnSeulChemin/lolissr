@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Services\Media;
 
 use App\DTO\Common\ServiceResult;
-use App\DTO\Upload\UploadThumbnailData;
-use App\Support\ThumbnailDirectory;
+use App\DTO\Media\UploadThumbnailData;
+use App\Support\Media\ThumbnailDirectory;
 
 final readonly class ThumbnailManager
 {

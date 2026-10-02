@@ -10,21 +10,25 @@ documentées dans [Config/README.md](../Config/README.md).
 
 | Dossier | Rôle |
 | --- | --- |
-| `Controllers/` | Actions HTTP, validation des entrées, choix du rendu ou de la réponse JSON. |
+| `Http/Controllers/` | Actions HTTP, validation des entrées, choix du rendu ou de la réponse JSON. |
 | `Http/Requests/` | Règles des formulaires et création des DTO d'entrée. |
+| `Http/Routing/` | Enregistrement des routes partagées des collections. |
 | `DTO/` | Données d'entrée, résultats de lecture et résultats de service. |
 | `Services/` | Cas d'usage, règles métier, transactions, uploads et récompenses XP. |
-| `Repositories/` | Requêtes SQL et accès aux données, par domaine. |
-| `Models/` | Objets hydratés depuis la base et socle d'accès SQL partagé. |
+| `Repositories/` | Requêtes SQL par domaine, socle `AbstractRepository` et traits partagés. |
+| `Models/` | Objets hydratés depuis la base, sans accès SQL. |
 | `Views/` | Templates PHP, layouts, pages et erreurs. |
 | `Cache/` | Clés et orchestration du cache applicatif, notamment le tableau de bord. |
 | `Constants/`, `Enums/` | Barèmes, titres, récompenses et valeurs métier nommées. |
 | `Providers/` | Enregistrement explicite des dépendances dans le conteneur. |
 | `Support/` | Helpers et fonctions partagées propres au site. |
 
-Les sous-dossiers par domaine sont conservés entre les couches. `Exceptions/`
-et `Migrations/` sont actuellement des emplacements réservés ; ils ne constituent
-pas un système de migration opérationnel.
+Les sous-dossiers par domaine sont conservés entre les couches, notamment
+`Artbook`, distinct de `Manga`. Les DTO utilisent le suffixe `Data` ; les entrées
+sont dans `Inputs/` et les données de présentation dans `Responses/`.
+Les traits de services et de repositories sont placés dans `Concerns/`.
+Les utilitaires sont regroupés dans `Support/Assets`, `Support/Media` et
+`Support/Manga`. Voir l'[arborescence du projet](../docs/project-structure.md).
 
 ## Parcours d'une requête
 
@@ -42,7 +46,7 @@ Pour une lecture, le service retourne les données nécessaires à la vue ou à 
 réponse JSON. Le contrôleur commun gère le rendu HTML, les fragments SPA,
 les messages de session et les réponses de service.
 
-Exemple à suivre : [MangaController](Controllers/Manga/MangaController.php),
+Exemple à suivre : [MangaController](Http/Controllers/Manga/MangaController.php),
 [MangaCreateRequest](Http/Requests/Manga/MangaCreateRequest.php),
 [MangaWriteService](Services/Manga/MangaWriteService.php) et
 [MangaRepository](Repositories/Manga/MangaRepository.php).
@@ -66,7 +70,7 @@ Exemple à suivre : [MangaController](Controllers/Manga/MangaController.php),
   relatifs à l'application ; une destination refusée utilise le repli du contrôleur.
 - Déclarer explicitement les protections des routes : authentification, CSRF
   pour les écritures et contrainte JSON lorsque nécessaire. Les groupes héritent
-  de leurs middlewares ; `CollectionRoutes` partage les routes des trois collections.
+  de leurs middlewares ; `CollectionRouteRegistrar` partage les routes des trois collections.
 
 ## Ajouter une fonctionnalité
 
@@ -86,6 +90,6 @@ est résoluble n'a pas besoin d'un enregistrement supplémentaire.
 
 `composer check` exécute PHPStan, les tests HTTP/SPA et les régressions.
 `composer browser-tests` couvre les interactions dans le navigateur.
-Consulter le [guide des tests](../tests/Docs/guide.md) pour les prérequis et
-l'isolation des données. Le [rapport d'audit App](../tests/Docs/app-audit.md)
+Consulter le [guide des tests](../docs/guide.md) pour les prérequis et
+l'isolation des données. Le [rapport d'audit App](../docs/app-audit.md)
 décrit les corrections vérifiées ; il complète cette documentation d'architecture.
