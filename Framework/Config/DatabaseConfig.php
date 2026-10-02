@@ -10,9 +10,9 @@ final class DatabaseConfig
     {
     }
 
-    // =========================================
+    // =================================================
     // CONNEXION
-    // =========================================
+    // =================================================
 
     public static function host(): string
     {
@@ -44,18 +44,18 @@ final class DatabaseConfig
         return self::string('database.charset', 'utf8mb4');
     }
 
-    // =========================================
-    // PROFILING
-    // =========================================
+    // =================================================
+    // MESURE DES PERFORMANCES
+    // =================================================
 
     public static function slowQueryThreshold(): float
     {
         return max(1.0, (float) config('database.slow_query_threshold', 50));
     }
 
-    // =========================================
+    // =================================================
     // RÉSOLUTION
-    // =========================================
+    // =================================================
 
     private static function string(string $key, string $default = ''): string
     {

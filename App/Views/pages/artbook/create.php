@@ -58,7 +58,7 @@ $sourcePlaceholder =
                         for="artbook"
                     >
 
-                        Artbook
+                        Livre d’illustrations
 
                     </label>
 
@@ -394,7 +394,7 @@ $sourcePlaceholder =
                         id="commentaire"
                         rows="4"
                         maxlength="255"
-                        placeholder="Ex : Très bel artbook, édition limitée..."
+                        placeholder="Ex : Très bel livre d’illustrations, édition limitée..."
                     ><?= e($commentaireValue) ?></textarea>
 
                     <?php if (

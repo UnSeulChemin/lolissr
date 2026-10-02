@@ -1,6 +1,6 @@
-/* =========================================
-   PROFILE CUSTOMIZATION
-========================================= */
+/* =================================================
+   PROFIL PERSONNALISATION
+================================================= */
 
 .profile-customization
 {
@@ -98,7 +98,7 @@
     z-index: 2;
 }
 
-/* Avatar and frame: components/profile-avatar.css */
+/* Avatar et cadre : components/profile-avatar.css */
 
 .profile-customization-name
 {

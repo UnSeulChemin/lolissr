@@ -2,7 +2,7 @@
 const stateKey = '__appScrollEntry';
 let activeEntry = null;
 
-// During popstate location already names the destination; track the rendered entry.
+// Pendant popstate, l’adresse indique déjà la destination ; suivre l’entrée affichée.
 export function activateScrollEntry()
 {
     let entry = history.state?.[stateKey];

@@ -1,8 +1,8 @@
 import { registerCleanup } from '../router/router-cleanup.js';
 
-// =========================================
-// PROFILE CUSTOMIZATION
-// =========================================
+// =================================================
+// PROFIL PERSONNALISATION
+// =================================================
 
 import {
     get,
@@ -37,9 +37,9 @@ import {
     invalidateProfilePages,
 } from './profile-cache.js';
 
-// =========================================
-// OPEN TITLE MODAL
-// =========================================
+// =================================================
+// OUVERTURE TITRE FENÊTRE MODALE
+// =================================================
 
 async function openTitleModal(signal)
 {
@@ -95,9 +95,9 @@ async function openTitleModal(signal)
     );
 }
 
-// =========================================
-// OPEN AVATAR MODAL
-// =========================================
+// =================================================
+// OUVERTURE AVATAR FENÊTRE MODALE
+// =================================================
 
 async function openAvatarModal(signal)
 {
@@ -159,9 +159,9 @@ async function openAvatarModal(signal)
     );
 }
 
-// =========================================
-// OPEN BANNER MODAL
-// =========================================
+// =================================================
+// OUVERTURE BANNIÈRE FENÊTRE MODALE
+// =================================================
 
 async function openBannerModal(signal)
 {
@@ -201,9 +201,9 @@ async function openBannerModal(signal)
     );
 }
 
-// =========================================
-// OPEN FRAME MODAL
-// =========================================
+// =================================================
+// OUVERTURE CADRE FENÊTRE MODALE
+// =================================================
 
 async function openFrameModal(signal)
 {
@@ -249,9 +249,9 @@ async function openFrameModal(signal)
     );
 }
 
-// =========================================
-// INIT
-// =========================================
+// =================================================
+// INITIALISATION
+// =================================================
 
 export function initProfileCustomization()
 {

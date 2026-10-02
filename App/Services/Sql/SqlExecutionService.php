@@ -22,8 +22,8 @@ final readonly class SqlExecutionService
     {
         $result = $this->sqlRepository->executeQuery($sql);
 
-        // The console accepts arbitrary SQL: invalidate after every successful
-        // execution instead of trying to classify writes with a SQL regex.
+        // La console accepte tout SQL : invalider après chaque exécution réussie
+        // sans tenter de classer les écritures avec une expression régulière SQL.
         Cache::forget(CacheKey::HOME_DASHBOARD);
 
         return $result;

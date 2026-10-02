@@ -18,8 +18,8 @@ trait ReadsFlashcardBatches
             static fn (string $field): string => 'card.' . trim($field),
             explode(',', self::SELECT_FIELDS)
         ));
-        // Seek and wrap using IDs. Only 50 IDs are materialized, with no window
-        // ranking. Counts and contents still share one statement snapshot.
+        // Parcourir les identifiants avec retour au début. Matérialiser seulement 50 identifiants,
+        // sans classement par fenêtre. Le total et le contenu partagent le même instantané SQL.
         $rows = $this->fetchAll("WITH candidates AS (
                 SELECT id FROM {$this->table()} WHERE maitrise = 0 AND id {$operator} {$id}
                 ORDER BY id {$order} LIMIT 50
@@ -52,8 +52,8 @@ trait ReadsFlashcardBatches
             static fn (string $field): string => 'card.' . trim($field),
             explode(',', self::SELECT_FIELDS)
         ));
-        // Rank IDs only; load the card contents for at most 50 rows. Count,
-        // clamped offset and contents all come from the same statement snapshot.
+        // Classer uniquement les identifiants et charger au plus 50 cartes. Le total,
+        // le décalage borné et le contenu proviennent du même instantané SQL.
         $rows = $this->fetchAll("WITH ranked AS (
                 SELECT id, ROW_NUMBER() OVER (ORDER BY id) AS position
                 FROM {$this->table()} WHERE maitrise = 0

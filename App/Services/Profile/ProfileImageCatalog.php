@@ -6,8 +6,8 @@ namespace App\Services\Profile;
 
 final class ProfileImageCatalog
 {
-    // Explicit levels keep existing unlocks stable when new images are added.
-    // Reward frames unlock every 25 levels.
+    // Les niveaux explicites préservent les déblocages existants lors de l’ajout d’images.
+    // Les cadres de récompense se débloquent tous les 25 niveaux.
     private const FRAME_LEVELS = [
         'default' => 1,
         'amethyste' => 25,
@@ -46,7 +46,7 @@ final class ProfileImageCatalog
     public const LEARNING_FRAME_TARGET = 200;
     public const LEVEL_REWARD_BANNER = 'palais-des-etoiles';
     public const LEVEL_BANNER_TARGET = 25;
-    // Add future level reward banners here; unlocks and picker ordering use this map.
+    // Ajouter ici les futures bannières de niveau ; cette liste définit les déblocages et l’ordre de sélection.
     public const LEVEL_REWARD_BANNERS = [self::LEVEL_BANNER_TARGET => self::LEVEL_REWARD_BANNER];
     public const LEVEL_REWARD_FRAMES = [100 => 'ailes-azur', 200 => 'ailes-souveraines'];
 
@@ -111,7 +111,7 @@ final class ProfileImageCatalog
                     'frame_extension' => $item['frame_extension'],
                     'required_level' => 0,
                     'unlocked' => $readArtbooks >= self::ARTBOOK_REWARD_TARGET,
-                    'requirement' => self::ARTBOOK_REWARD_TARGET . ' artbooks lus',
+                    'requirement' => self::ARTBOOK_REWARD_TARGET . ' livres d’illustrations lus',
                 ];
                 continue;
             }
@@ -130,7 +130,7 @@ final class ProfileImageCatalog
             $rewardB = $b['required_level'] === 0 || in_array($b['frame'], self::LEVEL_REWARD_FRAMES, true);
             $groupA = $rewardA ? ($a['unlocked'] ? 0 : 2) : 1;
             $groupB = $rewardB ? ($b['unlocked'] ? 0 : 2) : 1;
-            // Keep collection rewards first, then level rewards in descending order.
+            // Placer les récompenses de collection en premier, puis celles de niveau par ordre décroissant.
             if ($groupA === $groupB && $rewardA && $rewardB)
             {
                 $levelOrder = ($a['required_level'] > 0) <=> ($b['required_level'] > 0);
@@ -215,7 +215,7 @@ final class ProfileImageCatalog
             $rewardB = $b['required_level'] === 0 || in_array($b['banner'], self::LEVEL_REWARD_BANNERS, true);
             $groupA = $rewardA ? ($a['unlocked'] ? 0 : 2) : 1;
             $groupB = $rewardB ? ($b['unlocked'] ? 0 : 2) : 1;
-            // Keep collection rewards first, then level rewards in descending order.
+            // Placer les récompenses de collection en premier, puis celles de niveau par ordre décroissant.
             if ($groupA === $groupB && $rewardA && $rewardB)
             {
                 $levelOrder = ($a['required_level'] > 0) <=> ($b['required_level'] > 0);

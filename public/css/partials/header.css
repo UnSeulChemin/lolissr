@@ -1,6 +1,6 @@
-/* =========================================
+/* =================================================
    HEADER
-========================================= */
+================================================= */
 
 header
 {
@@ -28,7 +28,7 @@ header nav
     box-sizing: border-box;
 }
 
-/* Without profile or search, center the menu across the entire navigation. */
+/* Sans profil ni recherche, centrer le menu sur toute la navigation. */
 header nav > ul:only-child
 {
     grid-column: 1 / -1;
@@ -49,9 +49,9 @@ header ul
 }
 
 
-/* =========================================
-   PROFILE
-========================================= */
+/* =================================================
+   PROFIL
+================================================= */
 
 .site-profile
 {
@@ -59,9 +59,9 @@ header ul
     align-items: stretch;
 }
 
-/* =========================================
-   PROFILE STATES
-========================================= */
+/* =================================================
+   PROFIL STATES
+================================================= */
 
 .site-profile-link:hover,
 .site-profile-link.active
@@ -80,9 +80,9 @@ header ul
     border-color: rgba(255,255,255,.35);
 }
 
-/* =========================================
+/* =================================================
    LOGO
-========================================= */
+================================================= */
 
 .site-logo
 {
@@ -222,9 +222,9 @@ header ul
 }
 
 
-/* =========================================
+/* =================================================
    LEVEL BADGE
-========================================= */
+================================================= */
 
 .site-logo-level
 {
@@ -253,9 +253,9 @@ header ul
 }
 
 
-/* =========================================
-   NAV ICON LINK
-========================================= */
+/* =================================================
+   NAV ICON LIEN
+================================================= */
 
 .nav-link-icon
 {
@@ -346,7 +346,7 @@ header ul
     text-decoration: none;
 }
 
-/* Preserve the feather silhouette of level reward frames. */
+/* Préserver la silhouette des plumes des cadres de récompense de niveau. */
 :is(.site-profile-frame[src*="/ailes-azur."], .site-profile-frame[src*="/ailes-souveraines."])
 {
     border-radius: 0;

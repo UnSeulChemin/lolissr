@@ -11,8 +11,8 @@ use Framework\Routing\Router;
 final class CollectionRouteRegistrar
 {
     /**
-     * Register the shared figurine, nendoroid and plush collection routes.
-     * The caller's authentication middleware is inherited by every route.
+     * Enregistrer les routes communes des collections de figurines, nendoroids et peluches.
+     * Chaque route hérite du filtre d’authentification de l’appelant.
      *
      * @param class-string $controller
      * @param class-string $ajaxController
@@ -26,9 +26,9 @@ final class CollectionRouteRegistrar
     ): void {
         $router->prefix($prefix)->group(function (Router $router) use ($controller, $ajaxController, $withLinks): void
         {
-            // =========================================
+            // =================================================
             // INDEX
-            // =========================================
+            // =================================================
 
             $router->get('', [$controller, 'index']);
             if ($withLinks)
@@ -36,18 +36,18 @@ final class CollectionRouteRegistrar
                 $router->get('lien', [$controller, 'links']);
             }
 
-            // =========================================
+            // =================================================
             // WAIFUS
-            // =========================================
+            // =================================================
 
             $router->prefix('waifus')->group(function (Router $router) use ($controller, $ajaxController): void
             {
                 $router->get('', [$controller, 'waifus']);
                 $router->get('page/{page:int}', [$controller, 'waifus']);
 
-                // =========================================
+                // =================================================
                 // MODIFICATION
-                // =========================================
+                // =================================================
 
                 $router->get(
                     '{slug}/modifier/{numero:int}',
@@ -60,9 +60,9 @@ final class CollectionRouteRegistrar
                     [CsrfMiddleware::class]
                 );
 
-                // =========================================
+                // =================================================
                 // SUPPRESSION
-                // =========================================
+                // =================================================
 
                 $router->post(
                     '{slug}/supprimer/{numero:int}',
@@ -70,9 +70,9 @@ final class CollectionRouteRegistrar
                     [ExpectJsonMiddleware::class, CsrfMiddleware::class]
                 );
 
-                // =========================================
+                // =================================================
                 // CONSULTATION
-                // =========================================
+                // =================================================
 
                 $router->get(
                     '{slug}/{numero:int}',
@@ -80,9 +80,9 @@ final class CollectionRouteRegistrar
                 );
             });
 
-            // =========================================
+            // =================================================
             // AJOUT
-            // =========================================
+            // =================================================
 
             $router->get('ajouter', [$controller, 'create']);
 
@@ -92,24 +92,24 @@ final class CollectionRouteRegistrar
                 [CsrfMiddleware::class]
             );
 
-            // =========================================
+            // =================================================
             // AJAX
-            // =========================================
+            // =================================================
 
             $router->prefix('ajax')->group(function (Router $router) use ($ajaxController): void
             {
-                // =========================================
+                // =================================================
                 // HTML
-                // =========================================
+                // =================================================
 
                 $router->get(
                     'waifus/page/{page:int}',
                     [$ajaxController, 'waifusPage']
                 );
 
-                // =========================================
+                // =================================================
                 // JSON
-                // =========================================
+                // =================================================
 
                 $router
                     ->middleware(ExpectJsonMiddleware::class)

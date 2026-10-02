@@ -10,9 +10,9 @@ use Framework\Http\FormRequest;
 
 final class FigurineUpdateRequest extends FormRequest
 {
-    // =========================================
+    // =================================================
     // VALIDATION
-    // =========================================
+    // =================================================
 
     protected function validate(): void
     {
@@ -45,9 +45,9 @@ final class FigurineUpdateRequest extends FormRequest
             ->maxLength('commentaire', 255);
     }
 
-    // =========================================
+    // =================================================
     // DTO
-    // =========================================
+    // =================================================
 
     public function dto(): FigurineUpdateData
     {

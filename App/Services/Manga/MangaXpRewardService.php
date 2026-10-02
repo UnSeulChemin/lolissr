@@ -51,7 +51,7 @@ final readonly class MangaXpRewardService
         ];
     }
 
-    // Editing a series status or deleting an unread tome can complete a series too.
+    // Modifier le statut ou supprimer un tome non lu peut aussi terminer une série.
     public function rewardSeriesAchievements(): void
     {
         $user = user();

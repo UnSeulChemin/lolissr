@@ -1,7 +1,7 @@
 .profile-avatar,
 .profile-customization-avatar
 {
-    /* Keep the portrait and frame opening aligned at every preview size. */
+    /* Aligner le portrait et le cadre à toutes les tailles. */
     --frame-opening: 72%;
 }
 
@@ -56,7 +56,7 @@
 
 .profile-frame
 {
-    /* Shared circular opening, including frames with an opaque background. */
+    /* Ouverture circulaire commune, y compris pour les cadres à fond opaque. */
     position: absolute;
 
     inset: 0;
@@ -90,7 +90,7 @@
     pointer-events: none;
 }
 
-/* Preserve the feather silhouette of level reward frames. */
+/* Préserver la silhouette des plumes des cadres de récompense de niveau. */
 :is(.profile-frame[src*="/ailes-azur."], .profile-frame[src*="/ailes-souveraines."])
 {
     border-radius: 0;

@@ -1,7 +1,7 @@
 import { runInitializers } from '../router/initializers/run-initializers.js';
-// ==================================================
-// APP INIT
-// ==================================================
+// =================================================
+// INITIALISATION DE L’APPLICATION
+// =================================================
 
 import {
     debug,
@@ -45,9 +45,9 @@ import {
     initAppDebug,
 } from './app-debug.js';
 
-// ==================================================
-// SAFE INIT
-// ==================================================
+// =================================================
+// SÉCURISÉE INITIALISATION
+// =================================================
 
 async function safeInit(
     label,
@@ -89,13 +89,13 @@ async function safeInit(
     }
 }
 
-// ==================================================
-// FLASH TOAST
-// ==================================================
+// =================================================
+// NOTIFICATION DE SESSION
+// =================================================
 
-// ==================================================
-// GLOBAL INITIALIZERS
-// ==================================================
+// =================================================
+// GLOBAL INITIALISATIONS
+// =================================================
 
 async function runGlobalInitializers()
 {
@@ -111,9 +111,9 @@ async function runGlobalInitializers()
     }
 }
 
-// ==================================================
-// ROUTE INITIALIZERS
-// ==================================================
+// =================================================
+// ROUTE INITIALISATIONS
+// =================================================
 
 let routeGeneration = 0;
 
@@ -127,9 +127,9 @@ async function runRouteInitializers()
     await runInitializers(initializers, safeInit,
         () => generation === routeGeneration && path === appPath());
 }
-// ==================================================
-// INIT
-// ==================================================
+// =================================================
+// INITIALISATION
+// =================================================
 
 export async function initApp()
 {
@@ -140,14 +140,14 @@ export async function initApp()
 
     initAppDebug();
 
-    // Subscribe before the router can navigate, including during async boot.
+    // S’abonner avant la navigation du routeur, y compris pendant le démarrage asynchrone.
     const initialGeneration = routeGeneration;
     onRouteChange(
         runRouteInitializers,
     );
 
     await runGlobalInitializers();
-    // A navigation during global initialization already initializes its route.
+    // Une navigation pendant l’initialisation globale initialise déjà sa route.
     if (routeGeneration === initialGeneration) await runRouteInitializers();
 
     await safeInit(

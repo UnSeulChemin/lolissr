@@ -12,9 +12,9 @@ final class CsrfMiddleware implements MiddlewareInterface
 {
     private const SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS'];
 
-    // =========================================
-    // MIDDLEWARE
-    // =========================================
+    // =================================================
+    // FILTRE HTTP
+    // =================================================
 
     public function handle(Request $request): void
     {
@@ -37,9 +37,9 @@ final class CsrfMiddleware implements MiddlewareInterface
         }
     }
 
-    // =========================================
+    // =================================================
     // RÉSOLUTION
-    // =========================================
+    // =================================================
 
     private function resolveRequestToken(Request $request): ?string
     {

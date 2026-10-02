@@ -1,4 +1,4 @@
-// Fetch independent modules together, then preserve their initialization order.
+// Charger les modules indépendants ensemble, puis préserver leur ordre d’initialisation.
 export async function runInitializers(initializers, safeInit, isCurrent = () => true)
 {
     const relevant = initializers.filter(([, init]) => init.isRelevant?.() ?? true);

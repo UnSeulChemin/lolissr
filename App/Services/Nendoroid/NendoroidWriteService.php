@@ -30,9 +30,9 @@ final readonly class NendoroidWriteService
     ) {
     }
 
-    // =========================================
-    // CREATE
-    // =========================================
+    // =================================================
+    // CRÉATION
+    // =================================================
 
     /**
      * @param array<string, mixed> $files
@@ -85,9 +85,9 @@ final readonly class NendoroidWriteService
         return $result;
     }
 
-    // =========================================
-    // UPDATE
-    // =========================================
+    // =================================================
+    // MISE À JOUR
+    // =================================================
 
     public function update(string $slug, int $numero, NendoroidUpdateData $dto): ServiceResult
     {
@@ -116,9 +116,9 @@ final readonly class NendoroidWriteService
         return $result;
     }
 
-    // =========================================
-    // UPDATE COLLECT STATUS
-    // =========================================
+    // =================================================
+    // MISE À JOUR DU STATUT DE COLLECTION
+    // =================================================
 
     public function updateCollectStatus(string $slug, int $numero, int $collectStatus): ServiceResult
     {
@@ -183,9 +183,9 @@ final readonly class NendoroidWriteService
         return $result;
     }
 
-    // =========================================
-    // DELETE
-    // =========================================
+    // =================================================
+    // SUPPRESSION
+    // =================================================
 
     public function delete(string $slug, int $numero): ServiceResult
     {

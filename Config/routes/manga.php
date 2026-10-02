@@ -15,16 +15,16 @@ use Framework\Routing\Router;
 
 $router->prefix('manga')->group(function (Router $router): void
 {
-    // =========================================
+    // =================================================
     // INDEX
-    // =========================================
+    // =================================================
 
     $router->get('', [MangaController::class, 'index']);
     $router->get('lien', [MangaController::class, 'links']);
 
-    // =========================================
+    // =================================================
     // AJOUT
-    // =========================================
+    // =================================================
 
     $router->prefix('ajouter')->group(function (Router $router): void
     {
@@ -47,18 +47,18 @@ $router->prefix('manga')->group(function (Router $router): void
         );
     });
 
-    // =========================================
+    // =================================================
     // ARTBOOKS
-    // =========================================
+    // =================================================
 
     $router->prefix('artbooks')->group(function (Router $router): void
     {
         $router->get('', [ArtbookController::class, 'index']);
         $router->get('page/{page:int}', [ArtbookController::class, 'index']);
 
-        // =========================================
+        // =================================================
         // MODIFICATION
-        // =========================================
+        // =================================================
 
         $router->get(
             '{slug}/modifier/{numero:int}',
@@ -71,9 +71,9 @@ $router->prefix('manga')->group(function (Router $router): void
             [CsrfMiddleware::class]
         );
 
-        // =========================================
+        // =================================================
         // SUPPRESSION
-        // =========================================
+        // =================================================
 
         $router->post(
             '{slug}/supprimer/{numero:int}',
@@ -81,9 +81,9 @@ $router->prefix('manga')->group(function (Router $router): void
             [ExpectJsonMiddleware::class, CsrfMiddleware::class]
         );
 
-        // =========================================
+        // =================================================
         // CONSULTATION
-        // =========================================
+        // =================================================
 
         $router->get(
             '{slug}/{numero:int}',
@@ -91,9 +91,9 @@ $router->prefix('manga')->group(function (Router $router): void
         );
     });
 
-    // =========================================
+    // =================================================
     // SÉRIES
-    // =========================================
+    // =================================================
 
     $router->prefix('series')->group(function (Router $router): void
     {
@@ -104,9 +104,9 @@ $router->prefix('manga')->group(function (Router $router): void
         $router->get('a-lire', [MangaController::class, 'aLire']);
         $router->get('a-lire/page/{page:int}', [MangaController::class, 'aLire']);
 
-        // =========================================
+        // =================================================
         // MODIFICATION
-        // =========================================
+        // =================================================
 
         $router->get(
             '{slug}/modifier/{numero:int}',
@@ -119,9 +119,9 @@ $router->prefix('manga')->group(function (Router $router): void
             [CsrfMiddleware::class]
         );
 
-        // =========================================
+        // =================================================
         // SUPPRESSION
-        // =========================================
+        // =================================================
 
         $router->post(
             '{slug}/supprimer/{numero:int}',
@@ -129,9 +129,9 @@ $router->prefix('manga')->group(function (Router $router): void
             [ExpectJsonMiddleware::class, CsrfMiddleware::class]
         );
 
-        // =========================================
+        // =================================================
         // CONSULTATION
-        // =========================================
+        // =================================================
 
         $router->get(
             '{slug}/{numero:int}',
@@ -142,15 +142,15 @@ $router->prefix('manga')->group(function (Router $router): void
         $router->get('{slug}', [MangaController::class, 'showSeries']);
     });
 
-    // =========================================
+    // =================================================
     // AJAX
-    // =========================================
+    // =================================================
 
     $router->prefix('ajax')->group(function (Router $router): void
     {
-        // =========================================
+        // =================================================
         // HTML
-        // =========================================
+        // =================================================
 
         $router->get(
             'series/page/{page:int}',
@@ -162,9 +162,9 @@ $router->prefix('manga')->group(function (Router $router): void
             [ArtbookAjaxController::class, 'page']
         );
 
-        // =========================================
+        // =================================================
         // JSON
-        // =========================================
+        // =================================================
 
         $router
             ->middleware(ExpectJsonMiddleware::class)

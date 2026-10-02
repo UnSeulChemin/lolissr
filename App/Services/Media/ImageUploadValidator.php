@@ -21,9 +21,9 @@ final readonly class ImageUploadValidator
         $this->finfo = new finfo(FILEINFO_MIME_TYPE);
     }
 
-    // =========================================
+    // =================================================
     // VALIDATION
-    // =========================================
+    // =================================================
 
     /**
      * @param array<string, mixed> $files
@@ -183,9 +183,9 @@ final readonly class ImageUploadValidator
         );
     }
 
-    // =========================================
+    // =================================================
     // FICHIER
-    // =========================================
+    // =================================================
 
     /**
      * @param array<string, mixed> $files
@@ -326,9 +326,9 @@ final readonly class ImageUploadValidator
         return $width <= intdiv(UploadConfig::maxPixels(), $height);
     }
 
-    // =========================================
+    // =================================================
     // RÉSULTAT
-    // =========================================
+    // =================================================
 
     private function failure(
         string $logMessage,

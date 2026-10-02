@@ -24,9 +24,9 @@ final class Session
     {
     }
 
-    // =========================================
+    // =================================================
     // SESSION
-    // =========================================
+    // =================================================
 
     public static function start(): void
     {
@@ -124,9 +124,9 @@ final class Session
         return $value;
     }
 
-    // =========================================
+    // =================================================
     // CYCLE DE VIE
-    // =========================================
+    // =================================================
 
     public static function regenerate(): void
     {
@@ -183,13 +183,13 @@ final class Session
         $_SESSION = [];
     }
 
-    // =========================================
+    // =================================================
     // INITIALISATION
-    // =========================================
+    // =================================================
 
     private static function releaseIfNeeded(): void
     {
-        // Once the router releases the lock, later access must not retain it.
+        // Après sa libération par le routeur, les accès suivants ne doivent pas conserver le verrou.
         if (self::$releaseAfterAccess)
         {
             self::close();
@@ -292,9 +292,9 @@ final class Session
         ];
     }
 
-    // =========================================
+    // =================================================
     // CONFIGURATION
-    // =========================================
+    // =================================================
 
     private static function sessionName(): string
     {
@@ -314,9 +314,9 @@ final class Session
         return $sessionName;
     }
 
-    // =========================================
+    // =================================================
     // DOSSIER
-    // =========================================
+    // =================================================
 
     private static function directory(): string
     {

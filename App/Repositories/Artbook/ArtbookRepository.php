@@ -73,7 +73,7 @@ final class ArtbookRepository extends AbstractRepository
         );
     }
 
-    /** Returns the locked state before the update, for reward calculation. */
+    // Retourner l’état verrouillé avant modification pour calculer les récompenses.
     public function updateReadStatus(string $slug, int $numero, bool $readStatus): Artbook|false
     {
         $artbook = $this->findOneBySlugAndNumero($slug, $numero, true)
@@ -111,11 +111,9 @@ final class ArtbookRepository extends AbstractRepository
         return $this->deleteExistingById($id);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | SOURCE
-    |--------------------------------------------------------------------------
-    */
+    // --------------------------------------------------------------------------
+    // SOURCE
+    // --------------------------------------------------------------------------
 
     /**
      * @return array<string, ?string>
@@ -136,11 +134,9 @@ final class ArtbookRepository extends AbstractRepository
         ];
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | HELPERS
-    |--------------------------------------------------------------------------
-    */
+    // --------------------------------------------------------------------------
+    // UTILITAIRES
+    // --------------------------------------------------------------------------
 
     private function normalizeSlug(string $slug): string
     {

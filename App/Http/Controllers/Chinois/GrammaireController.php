@@ -26,9 +26,9 @@ final class GrammaireController extends Controller
         parent::__construct($request);
     }
 
-    // =========================================
+    // =================================================
     // PAGES
-    // =========================================
+    // =================================================
 
     public function index(): never
     {
@@ -59,9 +59,9 @@ final class GrammaireController extends Controller
         ]);
     }
 
-    // =========================================
+    // =================================================
     // CRÉATION
-    // =========================================
+    // =================================================
 
     public function create(): never
     {
@@ -84,9 +84,9 @@ final class GrammaireController extends Controller
         );
     }
 
-    // =========================================
+    // =================================================
     // MODIFICATION
-    // =========================================
+    // =================================================
 
     public function edit(int $level, int $id): never
     {
@@ -130,9 +130,9 @@ final class GrammaireController extends Controller
         );
     }
 
-    // =========================================
+    // =================================================
     // RÉSOLUTION
-    // =========================================
+    // =================================================
 
     private function resolveHskLevel(int $level): string
     {
@@ -150,9 +150,9 @@ final class GrammaireController extends Controller
             ?? throw new NotFoundException('Grammaire introuvable');
     }
 
-    // =========================================
+    // =================================================
     // RENDU
-    // =========================================
+    // =================================================
 
     private function renderEdit(string $niveau, int $id, string $returnTo): never
     {

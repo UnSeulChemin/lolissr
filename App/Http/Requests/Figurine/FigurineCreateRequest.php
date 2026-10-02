@@ -11,9 +11,9 @@ use Framework\Http\FormRequest;
 
 final class FigurineCreateRequest extends FormRequest
 {
-    // =========================================
+    // =================================================
     // VALIDATION
-    // =========================================
+    // =================================================
 
     protected function validate(): void
     {
@@ -61,9 +61,9 @@ final class FigurineCreateRequest extends FormRequest
             ->maxFileSize('image', UploadConfig::maxSize());
     }
 
-    // =========================================
+    // =================================================
     // DTO
-    // =========================================
+    // =================================================
 
     public function dto(): FigurineCreateData
     {

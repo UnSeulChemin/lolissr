@@ -26,7 +26,7 @@ final class ChinoisGrammaireRepository extends AbstractRepository
             throw new \LogicException('Grammar ordering lock must precede the transaction.');
         }
 
-        // Also protects the first insert into an empty section/category.
+        // Protège aussi la première insertion dans une section ou catégorie vide.
         $lock = 'grammar-order:' . substr(hash('sha256', \Framework\Config\DatabaseConfig::name()), 0, 40);
         $acquired = $this->fetchSingleValue('SELECT GET_LOCK(:lock_name, 10) AS acquired', 'acquired', ['lock_name' => $lock]);
         if ((int) $acquired !== 1)
@@ -63,9 +63,9 @@ final class ChinoisGrammaireRepository extends AbstractRepository
 
     protected string $table = 'chinois_grammaire';
 
-    // =========================================
+    // =================================================
     // LECTURE
-    // =========================================
+    // =================================================
 
     /** @return array{cards: list<ChinoisGrammaireData>, total: int, offset: int} */
     public function findNotMasteredPage(int $offset): array
@@ -167,9 +167,9 @@ final class ChinoisGrammaireRepository extends AbstractRepository
         ]);
     }
 
-    // =========================================
+    // =================================================
     // ÉCRITURE
-    // =========================================
+    // =================================================
 
     public function updateGrammaire(
         int $id,
@@ -240,9 +240,9 @@ final class ChinoisGrammaireRepository extends AbstractRepository
         return $this->deleteExistingById($id);
     }
 
-    // =========================================
+    // =================================================
     // MAÎTRISE
-    // =========================================
+    // =================================================
 
     public function toggleMaitrise(int $id): ?bool
     {
@@ -283,9 +283,9 @@ final class ChinoisGrammaireRepository extends AbstractRepository
         return $result !== null ? (bool) $result->maitrise : null;
     }
 
-    // =========================================
+    // =================================================
     // POSITIONS
-    // =========================================
+    // =================================================
 
     public function getSectionPosition(
         string $niveau,
@@ -428,9 +428,9 @@ final class ChinoisGrammaireRepository extends AbstractRepository
         return $this->resolveNextPosition($sql, $params);
     }
 
-    // =========================================
+    // =================================================
     // XP
-    // =========================================
+    // =================================================
 
     public function claimXpReward(int $id): bool
     {
@@ -451,9 +451,9 @@ final class ChinoisGrammaireRepository extends AbstractRepository
         return $statement !== false && $statement->rowCount() === 1;
     }
 
-    // =========================================
+    // =================================================
     // HYDRATATION
-    // =========================================
+    // =================================================
 
     /**
      * @param array<string, int|string> $criteria
@@ -524,9 +524,9 @@ final class ChinoisGrammaireRepository extends AbstractRepository
         );
     }
 
-    // =========================================
-    // HELPERS
-    // =========================================
+    // =================================================
+    // UTILITAIRES
+    // =================================================
 
     /**
      * @param array<string, mixed> $data

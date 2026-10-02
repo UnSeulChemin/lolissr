@@ -1,8 +1,8 @@
 import { createFlashcardDeck } from './flashcard-deck.js';
 
-// =========================================
-// FLASHCARDS VOCABULAIRE
-// =========================================
+// =================================================
+// CARTES DE RÉVISION VOCABULAIRE
+// =================================================
 
 import {
     post,
@@ -20,9 +20,9 @@ import {
     invalidateVocabularyPages,
 } from '../chinois-cache.js';
 
-// =========================================
-// INIT
-// =========================================
+// =================================================
+// INITIALISATION
+// =================================================
 
 const initializedContainers = new WeakSet();
 
@@ -66,9 +66,9 @@ export function initFlashcardsVocabulairePage()
         }
     }
 
-    // =========================================
-    // RENDER
-    // =========================================
+    // =================================================
+    // RENDU
+    // =================================================
 
     function renderCard()
     {
@@ -124,9 +124,9 @@ export function initFlashcardsVocabulairePage()
         }
     }
 
-    // =========================================
+    // =================================================
     // NAVIGATION
-    // =========================================
+    // =================================================
 
     async function navigate(direction)
     {
@@ -152,9 +152,9 @@ export function initFlashcardsVocabulairePage()
     previousButton?.addEventListener('click', () => { void navigate(-1); });
     nextButton?.addEventListener('click', () => { void navigate(1); });
 
-    // =========================================
+    // =================================================
     // VALIDATION
-    // =========================================
+    // =================================================
 
     masteredButton?.addEventListener('click', async () =>
     {
@@ -217,9 +217,9 @@ export function initFlashcardsVocabulairePage()
         }
     });
 
-    // =========================================
-    // START
-    // =========================================
+    // =================================================
+    // DÉMARRAGE
+    // =================================================
 
     renderCard();
 }

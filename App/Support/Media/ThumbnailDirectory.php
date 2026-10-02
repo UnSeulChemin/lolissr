@@ -17,9 +17,9 @@ final class ThumbnailDirectory
     {
     }
 
-    // =========================================
+    // =================================================
     // RÉSOLUTION
-    // =========================================
+    // =================================================
 
     public static function resolve(string $collection): string
     {
@@ -31,9 +31,9 @@ final class ThumbnailDirectory
         ) . DIRECTORY_SEPARATOR;
     }
 
-    // =========================================
+    // =================================================
     // NORMALISATION
-    // =========================================
+    // =================================================
 
     private static function normalizeCollection(string $collection): string
     {

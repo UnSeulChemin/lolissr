@@ -31,9 +31,9 @@ final class Profiler
     {
     }
 
-    // =========================================
+    // =================================================
     // REQUÊTE
-    // =========================================
+    // =================================================
 
     public static function startRequest(int|float|null $startedAt = null): void
     {
@@ -61,7 +61,7 @@ final class Profiler
 
         $total = self::elapsedMilliseconds(self::$requestStart);
 
-        // Responses exit before measure() can run its finally block.
+        // Les réponses terminent la requête avant que measure() puisse exécuter son bloc finally.
         foreach (array_keys(self::$starts) as $name)
         {
             self::end($name);
@@ -84,9 +84,9 @@ final class Profiler
         self::reset();
     }
 
-    // =========================================
+    // =================================================
     // MESURES
-    // =========================================
+    // =================================================
 
     public static function start(string $name): void
     {
@@ -147,9 +147,9 @@ final class Profiler
         }
     }
 
-    // =========================================
+    // =================================================
     // COMPTEURS
-    // =========================================
+    // =================================================
 
     public static function increment(string $name, int $amount = 1): void
     {
@@ -161,18 +161,18 @@ final class Profiler
         self::$counters[$name] = (self::$counters[$name] ?? 0) + $amount;
     }
 
-    // =========================================
+    // =================================================
     // CONFIGURATION
-    // =========================================
+    // =================================================
 
     private static function enabled(): bool
     {
         return (bool) config('app.profiler', false);
     }
 
-    // =========================================
-    // HELPERS
-    // =========================================
+    // =================================================
+    // UTILITAIRES
+    // =================================================
 
     /**
      * @return array<string, float>

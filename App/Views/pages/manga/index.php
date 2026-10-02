@@ -24,7 +24,7 @@ use App\DTO\Common\Responses\ViewData;
             </h1>
 
             <p class="dashboard-description u-relative">
-                Gère ta collection de mangas et d'artbooks.
+                Gère ta collection de mangas et d'livres d’illustrations.
             </p>
 
         </div>
@@ -78,11 +78,11 @@ use App\DTO\Common\Responses\ViewData;
             </span>
 
             <span class="dashboard-card-title u-relative u-w-full u-bold">
-                Artbooks
+                Livres d’illustrations
             </span>
 
             <span class="dashboard-card-description u-relative u-w-full">
-                Parcourir tous les artbooks de la collection.
+                Parcourir tous les livres d’illustrations de la collection.
             </span>
 
         </a>
@@ -109,7 +109,7 @@ use App\DTO\Common\Responses\ViewData;
             </span>
 
             <span class="dashboard-card-description u-relative u-w-full">
-                Ajouter un manga ou un artbook à la collection.
+                Ajouter un manga ou un livre d’illustrations à la collection.
             </span>
 
         </a>

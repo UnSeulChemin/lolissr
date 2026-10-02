@@ -14,9 +14,9 @@ final readonly class ThumbnailManager
     {
     }
 
-    // =========================================
-    // UPLOAD
-    // =========================================
+    // =================================================
+    // TÉLÉVERSEMENT
+    // =================================================
 
     /**
      * @param array<string, mixed> $files
@@ -56,18 +56,18 @@ final readonly class ThumbnailManager
         return $upload;
     }
 
-    // =========================================
-    // ROLLBACK
-    // =========================================
+    // =================================================
+    // ANNULATION
+    // =================================================
 
     public function rollback(UploadThumbnailData $upload): bool
     {
         return $this->uploadService->removeFile($upload->destinationPath);
     }
 
-    // =========================================
+    // =================================================
     // SUPPRESSION
-    // =========================================
+    // =================================================
 
     public function remove(
         ?string $thumbnail,

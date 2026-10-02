@@ -16,15 +16,15 @@ use Framework\Routing\Router;
 
 $router->prefix('chinois')->group(function (Router $router): void
 {
-    // =========================================
+    // =================================================
     // INDEX
-    // =========================================
+    // =================================================
 
     $router->get('', [ChinoisController::class, 'index']);
 
-    // =========================================
+    // =================================================
     // VOCABULAIRE
-    // =========================================
+    // =================================================
 
     $router->prefix('vocabulaire')->group(function (Router $router): void
     {
@@ -54,9 +54,9 @@ $router->prefix('chinois')->group(function (Router $router): void
         $router->get('{langue}', [VocabulaireController::class, 'langue']);
     });
 
-    // =========================================
+    // =================================================
     // GRAMMAIRE
-    // =========================================
+    // =================================================
 
     $router->prefix('grammaire')->group(function (Router $router): void
     {
@@ -84,9 +84,9 @@ $router->prefix('chinois')->group(function (Router $router): void
         );
     });
 
-    // =========================================
-    // FLASHCARDS
-    // =========================================
+    // =================================================
+    // CARTES DE RÉVISION
+    // =================================================
 
     $router->prefix('flashcards')->group(function (Router $router): void
     {
@@ -110,9 +110,9 @@ $router->prefix('chinois')->group(function (Router $router): void
         );
     });
 
-    // =========================================
+    // =================================================
     // AJOUT
-    // =========================================
+    // =================================================
 
     $router->prefix('ajouter')->group(function (Router $router): void
     {
@@ -141,9 +141,9 @@ $router->prefix('chinois')->group(function (Router $router): void
         );
     });
 
-    // =========================================
+    // =================================================
     // AJAX
-    // =========================================
+    // =================================================
 
     $router
         ->prefix('ajax')

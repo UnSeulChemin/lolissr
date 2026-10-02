@@ -29,7 +29,7 @@ final class MangaSearchRepository extends AbstractRepository
 
         if ($searchNumero !== null)
         {
-            // A number can belong to the title itself (for example Kaiju No. 8).
+            // Un nombre peut faire partie du titre, par exemple Kaiju No. 8.
             $titleMatches = $this->fetchSearchResults($search, exactTitle: true);
             if ($titleMatches !== [])
             {
@@ -42,11 +42,9 @@ final class MangaSearchRepository extends AbstractRepository
         return $this->fetchSearchResults($search);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | HELPERS
-    |--------------------------------------------------------------------------
-    */
+    // --------------------------------------------------------------------------
+    // UTILITAIRES
+    // --------------------------------------------------------------------------
 
     private function normalizeSearch(string $search): string
     {

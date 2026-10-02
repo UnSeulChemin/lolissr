@@ -28,11 +28,9 @@ final class ArtbookSearchRepository extends AbstractRepository
         return $this->fetchSearchResults($search);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | HELPERS
-    |--------------------------------------------------------------------------
-    */
+    // --------------------------------------------------------------------------
+    // UTILITAIRES
+    // --------------------------------------------------------------------------
 
     private function normalizeSearch(string $search): string
     {

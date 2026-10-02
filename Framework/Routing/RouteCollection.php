@@ -24,9 +24,9 @@ final class RouteCollection
     /** @var array<string, array<string, array<int, Route>>> */
     private array $dynamicRoutes = [];
 
-    // =========================================
+    // =================================================
     // ROUTES
-    // =========================================
+    // =================================================
 
     public function add(Route $route): void
     {
@@ -54,9 +54,9 @@ final class RouteCollection
         $this->routeCounts[$method] = ($this->routeCounts[$method] ?? 0) + 1;
     }
 
-    // =========================================
+    // =================================================
     // LECTURE
-    // =========================================
+    // =================================================
 
     /** @return list<Route> */
     public function candidates(string $method, string $uri): array
@@ -66,7 +66,7 @@ final class RouteCollection
         $segment = explode('/', $path, 2)[0];
         $dynamic = $this->dynamicRoutes[$method][$segment] ?? [];
         $fallback = $this->dynamicRoutes[$method][''] ?? [];
-        // Each bucket already follows declaration order. Only mixed buckets need sorting.
+        // Chaque groupe suit l’ordre de déclaration. Seuls les groupes mixtes nécessitent un tri.
         if ($dynamic === [])
         {
             $dynamic = $fallback;

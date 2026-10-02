@@ -21,9 +21,9 @@ final class Cache
     {
     }
 
-    // =========================================
+    // =================================================
     // CACHE
-    // =========================================
+    // =================================================
 
     /** @return array{value: mixed}|null Null means absent, not a cached null value. */
     private static function readEntry(string $key): ?array
@@ -130,7 +130,7 @@ final class Cache
     private static function deleteObservedEntry(string $path, string $observed): void
     {
         self::synchronized($path, static function () use ($path, $observed): void {
-            // A writer may have replaced this file since readEntry read it.
+            // Une écriture peut avoir remplacé ce fichier depuis sa lecture par readEntry.
             if (@file_get_contents($path) === $observed)
             {
                 self::deleteFile($path);
@@ -158,7 +158,7 @@ final class Cache
 
             $ttl = max(1, $ttl ?? self::ttl());
             $now = time();
-            // Saturate before addition so expiration remains an integer in JSON.
+            // Limiter la valeur avant addition pour conserver une expiration entière dans le JSON.
             $expiresAt = $now > PHP_INT_MAX - $ttl ? PHP_INT_MAX : $now + $ttl;
 
             try
@@ -224,10 +224,8 @@ final class Cache
                 return;
             }
 
-            /*
-             * Sous Windows, rename() peut refuser de remplacer
-             * un fichier déjà existant.
-             */
+            // Sous Windows, rename() peut refuser de remplacer
+            // un fichier déjà existant.
             if (is_file($path) && ! @unlink($path))
             {
                 self::deleteFile($temporaryPath);
@@ -360,9 +358,9 @@ final class Cache
         }, required: true);
     }
 
-    // =========================================
+    // =================================================
     // CONFIGURATION
-    // =========================================
+    // =================================================
 
     private static function enabled(): bool
     {
@@ -431,7 +429,7 @@ final class Cache
             if ($required) throw new \RuntimeException('Cannot create cache directory for invalidation.');
             return null;
         }
-        // Stable per-entry metadata locks let unrelated keys publish independently.
+        // Les verrous stables par entrée permettent de publier indépendamment les clés distinctes.
         $lock = @fopen($path . '.metadata.lock', 'c');
         if ($lock === false)
         {
@@ -440,8 +438,8 @@ final class Cache
             return null;
         }
         $locked = false;
-        // Optional cache work must not delay a response. Invalidation must succeed
-        // or report failure; silently dropping it could serve stale application data.
+        // Le cache facultatif ne doit pas retarder la réponse. L’invalidation doit réussir
+        // ou signaler son échec pour éviter de servir des données périmées.
         $deadline = hrtime(true) + ($required ? 2_000_000_000 : 0);
         try
         {

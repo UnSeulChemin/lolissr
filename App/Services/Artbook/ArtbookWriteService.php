@@ -32,11 +32,9 @@ final readonly class ArtbookWriteService
     ) {
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | CREATE
-    |--------------------------------------------------------------------------
-    */
+    // --------------------------------------------------------------------------
+    // CRÉATION
+    // --------------------------------------------------------------------------
 
     /**
      * @param array<string, mixed> $files
@@ -45,7 +43,7 @@ final readonly class ArtbookWriteService
     {
         if ($this->artbookRepository->findOneBySlugAndNumero($dto->slug, $dto->numero) !== null)
         {
-            return $this->error('Cet artbook existe déjà', 409);
+            return $this->error('Ce livre d’illustrations existe déjà', 409);
         }
 
         $result = $this->creationService->create(
@@ -70,7 +68,7 @@ final readonly class ArtbookWriteService
 
                 $failure = $this->writeFailed(
                     $inserted,
-                    'Insertion artbook',
+                    'Insertion livre d’illustrations',
                     $dto->slug,
                     $dto->numero,
                     'Erreur lors de l’enregistrement'
@@ -82,9 +80,9 @@ final readonly class ArtbookWriteService
                     return $failure;
                 }
 
-                return $this->success('Artbook ajouté avec succès');
+                return $this->success('Livre d’illustrations ajouté avec succès');
             },
-            'Cet artbook existe déjà'
+            'Ce livre d’illustrations existe déjà'
         );
 
         if ($result->success)
@@ -95,11 +93,9 @@ final readonly class ArtbookWriteService
         return $result;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | UPDATE
-    |--------------------------------------------------------------------------
-    */
+    // --------------------------------------------------------------------------
+    // MISE À JOUR
+    // --------------------------------------------------------------------------
 
     public function update(string $slug, int $numero, ArtbookUpdateData $dto): ServiceResult
     {
@@ -110,7 +106,7 @@ final readonly class ArtbookWriteService
 
                 $failure = $this->writeFailed(
                     $updated,
-                    'Update artbook',
+                    'Update livre d’illustrations',
                     $slug,
                     $numero,
                     'Erreur lors de la mise à jour'
@@ -121,7 +117,7 @@ final readonly class ArtbookWriteService
                     return $failure;
                 }
 
-                return $this->success('Artbook mis à jour avec succès');
+                return $this->success('Livre d’illustrations mis à jour avec succès');
             }
         );
 
@@ -133,11 +129,9 @@ final readonly class ArtbookWriteService
         return $result;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | UPDATE READ STATUS
-    |--------------------------------------------------------------------------
-    */
+    // --------------------------------------------------------------------------
+    // MISE À JOUR DU STATUT DE LECTURE
+    // --------------------------------------------------------------------------
 
     public function updateReadStatus(string $slug, int $numero, int $readStatus): ServiceResult
     {
@@ -157,7 +151,7 @@ final readonly class ArtbookWriteService
 
                 $failure = $this->writeFailed(
                     $artbook !== false,
-                    'Update artbook read status',
+                    'Update livre d’illustrations read status',
                     $slug,
                     $numero,
                     'Erreur lors de la mise à jour'
@@ -181,8 +175,8 @@ final readonly class ArtbookWriteService
 
                 return $this->success(
                     $readStatus === 1
-                        ? 'Artbook marqué comme lu'
-                        : 'Artbook marqué comme non lu',
+                        ? 'Livre d’illustrations marqué comme lu'
+                        : 'Livre d’illustrations marqué comme non lu',
                     [
                         'readStatus' => $readStatus,
                         'xpEarned' => $xpEarned,
@@ -202,11 +196,9 @@ final readonly class ArtbookWriteService
         return $result;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | DELETE
-    |--------------------------------------------------------------------------
-    */
+    // --------------------------------------------------------------------------
+    // SUPPRESSION
+    // --------------------------------------------------------------------------
 
     public function delete(string $slug, int $numero): ServiceResult
     {
@@ -214,7 +206,7 @@ final readonly class ArtbookWriteService
 
         if ($artbook === null)
         {
-            return $this->error('Artbook introuvable', 404);
+            return $this->error('Livre d’illustrations introuvable', 404);
         }
 
         $result = $this->database->transaction(
@@ -227,7 +219,7 @@ final readonly class ArtbookWriteService
                     return $this->error('Élément introuvable ou déjà supprimé', 404);
                 }
 
-                return $this->success('Artbook supprimé avec succès');
+                return $this->success('Livre d’illustrations supprimé avec succès');
             }
         );
 
@@ -248,11 +240,9 @@ final readonly class ArtbookWriteService
         return $result;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | CACHE
-    |--------------------------------------------------------------------------
-    */
+    // --------------------------------------------------------------------------
+    // CACHE
+    // --------------------------------------------------------------------------
 
     private function forgetDashboardCache(): void
     {

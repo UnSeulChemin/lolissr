@@ -29,7 +29,7 @@ final readonly class CollectionCreationService
         callable $persist,
         string $duplicateMessage
     ): ServiceResult {
-        // File validation and disk I/O do not require an open database transaction.
+        // La validation des fichiers et les accès disque ne nécessitent pas de transaction ouverte.
         $upload = $this->thumbnails->upload($collection, $name, $numero, $files);
         if ($upload instanceof ServiceResult) return $upload;
 
@@ -61,7 +61,7 @@ final readonly class CollectionCreationService
                 }
                 catch (\Throwable $cleanupError)
                 {
-                    // Do not mask the original insertion/commit failure.
+                    // Préserver l’erreur initiale d’insertion ou de validation de la transaction.
                     Logger::exception($cleanupError, ['collection' => $collection, 'action' => 'image cleanup']);
                 }
             }

@@ -17,9 +17,9 @@ final class ChinoisVocabulaireRepository extends AbstractRepository
 
     protected string $table = 'chinois_vocabulaire';
 
-    // =========================================
+    // =================================================
     // LECTURE
-    // =========================================
+    // =================================================
 
     /** @return array{cards: list<ChinoisVocabulaireData>, total: int, offset: int} */
     public function findNotMasteredPage(int $offset): array
@@ -79,9 +79,9 @@ final class ChinoisVocabulaireRepository extends AbstractRepository
         ]);
     }
 
-    // =========================================
+    // =================================================
     // ÉCRITURE
-    // =========================================
+    // =================================================
 
     public function updateVocabulaire(
         int $id,
@@ -121,9 +121,9 @@ final class ChinoisVocabulaireRepository extends AbstractRepository
         return $this->deleteExistingById($id);
     }
 
-    // =========================================
+    // =================================================
     // MAÎTRISE
-    // =========================================
+    // =================================================
 
     public function toggleMaitrise(int $id): ?bool
     {
@@ -164,9 +164,9 @@ final class ChinoisVocabulaireRepository extends AbstractRepository
         return $result !== null ? (bool) $result->maitrise : null;
     }
 
-    // =========================================
+    // =================================================
     // XP
-    // =========================================
+    // =================================================
 
     public function claimXpReward(int $id): bool
     {
@@ -187,9 +187,9 @@ final class ChinoisVocabulaireRepository extends AbstractRepository
         return $statement !== false && $statement->rowCount() === 1;
     }
 
-    // =========================================
+    // =================================================
     // HYDRATATION
-    // =========================================
+    // =================================================
 
     /**
      * @param array<string, int|string> $criteria

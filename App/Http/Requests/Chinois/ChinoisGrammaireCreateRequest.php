@@ -12,9 +12,9 @@ final class ChinoisGrammaireCreateRequest extends FormRequest
 {
     private const NIVEAUX = ['HSK1', 'HSK2', 'HSK3', 'HSK4'];
 
-    // =========================================
+    // =================================================
     // VALIDATION
-    // =========================================
+    // =================================================
 
     protected function validate(): void
     {
@@ -59,9 +59,9 @@ final class ChinoisGrammaireCreateRequest extends FormRequest
             ->maxLength('categorie', 100);
     }
 
-    // =========================================
+    // =================================================
     // DTO
-    // =========================================
+    // =================================================
 
     public function dto(): ChinoisGrammaireCreateData
     {

@@ -1,6 +1,6 @@
-// =========================================
-// DELETE ARTBOOK
-// =========================================
+// =================================================
+// SUPPRESSION ARTBOOK
+// =================================================
 
 import {
     post,
@@ -38,16 +38,16 @@ import {
     deleteModal,
 } from '../../core/modal/modal.js';
 
-// =========================================
-// STATE
-// =========================================
+// =================================================
+// ÉTAT
+// =================================================
 
 let initialized =
     false;
 
-// =========================================
-// UI
-// =========================================
+// =================================================
+// INTERFACE
+// =================================================
 
 function setLoadingState(
     button,
@@ -66,9 +66,9 @@ function setLoadingState(
             );
 }
 
-// =========================================
-// DELETE ARTBOOK
-// =========================================
+// =================================================
+// SUPPRESSION ARTBOOK
+// =================================================
 
 async function deleteArtbook(
     button,
@@ -104,7 +104,7 @@ async function deleteArtbook(
 
     const confirmed =
         await deleteModal(
-            'Supprimer cet artbook ?',
+            'Supprimer ce livre d’illustrations ?',
         );
 
     if (! confirmed)
@@ -168,7 +168,7 @@ async function deleteArtbook(
 
         showToast(
             data.message
-            || 'Artbook supprimé',
+            || 'Livre d’illustrations supprimé',
             'success',
         );
 
@@ -189,9 +189,9 @@ async function deleteArtbook(
     }
 }
 
-// =========================================
-// INIT
-// =========================================
+// =================================================
+// INITIALISATION
+// =================================================
 
 export function initDeleteArtbook()
 {

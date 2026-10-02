@@ -10,9 +10,9 @@ final class LoginAttemptRepository extends AbstractRepository
 {
     protected string $table = 'login_attempts';
 
-    // =========================================
+    // =================================================
     // RECHERCHE
-    // =========================================
+    // =================================================
 
     /**
      * @return array{
@@ -50,11 +50,11 @@ final class LoginAttemptRepository extends AbstractRepository
         ];
     }
 
-    // =========================================
+    // =================================================
     // TENTATIVES
-    // =========================================
+    // =================================================
 
-    /** Record one failure under a row lock and return whether login is locked. */
+    // Enregistrer un échec sous verrou et indiquer si la connexion est bloquée.
     public function recordFailure(
         string $identifierHash,
         string $attemptedAt,
@@ -65,7 +65,7 @@ final class LoginAttemptRepository extends AbstractRepository
         return $this->db->transaction(function () use (
             $identifierHash, $attemptedAt, $windowStart, $lockedUntil, $maxAttempts
         ): bool {
-            // The primary key also serializes simultaneous first attempts.
+            // La clé primaire sérialise aussi les premières tentatives simultanées.
             $reserved = $this->execute(
                 "INSERT INTO {$this->table()} (identifier_hash, attempts, first_attempt_at, locked_until)
                 VALUES (:identifier_hash, 0, :attempted_at, NULL)

@@ -1,6 +1,6 @@
-// =========================================
-// SEARCH CHINESE BUILDER
-// =========================================
+// =================================================
+// CONSTRUCTION DES RÉSULTATS DE CHINOIS
+// =================================================
 
 import {
     escapeHtml,
@@ -10,9 +10,9 @@ import {
     createResultItem,
 } from './search-result-item.js';
 
-// =========================================
-// BUILD CHINESE RESULT
-// =========================================
+// =================================================
+// CONSTRUCTION CHINOIS RÉSULTAT
+// =================================================
 
 export function buildChineseResult(
     item,

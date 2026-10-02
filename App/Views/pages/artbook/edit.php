@@ -60,7 +60,7 @@ $commentaireValue = $old['commentaire']
                         for="artbook"
                     >
 
-                        Artbook
+                        Livre d’illustrations
 
                     </label>
 

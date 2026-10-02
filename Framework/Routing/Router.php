@@ -34,9 +34,9 @@ final class Router
     ) {
     }
 
-    // =========================================
+    // =================================================
     // GROUPES
-    // =========================================
+    // =================================================
 
     public function prefix(string $prefix): self
     {
@@ -71,9 +71,9 @@ final class Router
         $callback($this);
     }
 
-    // =========================================
+    // =================================================
     // ROUTES
-    // =========================================
+    // =================================================
 
     /**
      * @param array{class-string, string}|string|Closure $action
@@ -99,9 +99,9 @@ final class Router
         $this->addRoute('POST', $path, $action, $middlewares);
     }
 
-    // =========================================
-    // DISPATCH
-    // =========================================
+    // =================================================
+    // DISTRIBUTION
+    // =================================================
 
     public function dispatch(): void
     {
@@ -141,9 +141,9 @@ final class Router
         );
     }
 
-    // =========================================
+    // =================================================
     // ENREGISTREMENT
-    // =========================================
+    // =================================================
 
     /**
      * @param array{class-string, string}|string|Closure $action
@@ -176,9 +176,9 @@ final class Router
         );
     }
 
-    // =========================================
-    // MATCHING
-    // =========================================
+    // =================================================
+    // CORRESPONDANCE
+    // =================================================
 
     /**
      * @return array{
@@ -227,9 +227,9 @@ final class Router
         throw new NotFoundException("Route non trouvée : {$uri}");
     }
 
-    // =========================================
-    // MIDDLEWARES
-    // =========================================
+    // =================================================
+    // FILTRES HTTP
+    // =================================================
 
     private function runMiddlewares(Route $route, Request $request): void
     {
@@ -245,16 +245,16 @@ final class Router
             $middleware->handle($request);
         }
 
-        // Release the session lock before read-only page work. Session access can reopen it.
+        // Libérer le verrou de session avant la lecture des pages. Un accès à la session peut le rouvrir.
         if (in_array($request->method(), ['GET', 'HEAD'], true))
         {
             \Framework\Http\Session::close();
         }
     }
 
-    // =========================================
+    // =================================================
     // ACTIONS
-    // =========================================
+    // =================================================
 
     /**
      * @param array<string, string|int> $params

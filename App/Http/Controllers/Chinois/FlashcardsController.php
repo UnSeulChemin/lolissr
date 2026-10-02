@@ -19,20 +19,20 @@ final class FlashcardsController extends Controller
         parent::__construct($request);
     }
 
-    // =========================================
-    // FLASHCARDS
-    // =========================================
+    // =================================================
+    // CARTES DE RÉVISION
+    // =================================================
 
     public function index(): never
     {
-        $this->title = 'Chinois | Flashcards';
+        $this->title = 'Chinois | Cartes de révision';
 
         $this->render('pages/chinois/flashcards/index');
     }
 
     public function vocabulaire(): never
     {
-        $this->title = 'Chinois | Flashcards Vocabulaire';
+        $this->title = 'Chinois | Cartes de révision Vocabulaire';
         $page = $this->chinoisReadService->flashcardCursor(false);
 
         $this->render('pages/chinois/flashcards/vocabulaire', [
@@ -43,7 +43,7 @@ final class FlashcardsController extends Controller
 
     public function grammaire(): never
     {
-        $this->title = 'Chinois | Flashcards Grammaire';
+        $this->title = 'Chinois | Cartes de révision Grammaire';
         $page = $this->chinoisReadService->flashcardCursor(true);
 
         $this->render('pages/chinois/flashcards/grammaire', [
@@ -81,7 +81,7 @@ final class FlashcardsController extends Controller
         $this->jsonResult(ServiceResult::success(data: $this->chinoisReadService->flashcardPage(true, $offset)));
     }
 
-    // Retained for open tabs running a previous JavaScript bundle.
+    // Conservé pour les onglets ouverts utilisant une version précédente du JavaScript.
     public function vocabulaireBatch(int $id): never
     {
         $this->jsonResult(ServiceResult::success(data: [

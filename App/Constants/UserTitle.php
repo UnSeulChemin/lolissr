@@ -39,9 +39,9 @@ final class UserTitle
         };
     }
 
-    // =========================================
+    // =================================================
     // TITRES
-    // =========================================
+    // =================================================
 
     public const EXPLORATEUR = 'Explorateur';
     public const AVENTURIER = 'Aventurier';
@@ -127,9 +127,9 @@ final class UserTitle
     {
     }
 
-    // =========================================
-    // HELPERS
-    // =========================================
+    // =================================================
+    // UTILITAIRES
+    // =================================================
 
     /** @return list<array{title: string, required_level: int, unlocked: bool, requirement: string, style: string}> */
     public static function titlesForLevel(int $level, int $figurinesCollected = 0, int $readArtbooks = 0, int $readTomes = 0, int $completedSeries = 0, int $nendoroidsCollected = 0, int $vocabularyLearned = 0, int $grammarLearned = 0): array
@@ -159,7 +159,7 @@ final class UserTitle
             'title' => self::ARTBOOK_REWARD,
             'required_level' => 0,
             'unlocked' => $readArtbooks >= self::ARTBOOK_REWARD_TARGET,
-            'requirement' => self::ARTBOOK_REWARD_TARGET . ' artbooks lus',
+            'requirement' => self::ARTBOOK_REWARD_TARGET . ' livres d’illustrations lus',
             'style' => self::styleForTitle(self::ARTBOOK_REWARD),
         ];
 
@@ -219,7 +219,7 @@ final class UserTitle
             $rewardB = $b['required_level'] === 0 || in_array($b['title'], self::LEVEL_REWARDS, true);
             $groupA = $rewardA ? ($a['unlocked'] ? 0 : 2) : 1;
             $groupB = $rewardB ? ($b['unlocked'] ? 0 : 2) : 1;
-            // Keep collection rewards first, then level rewards in descending order.
+            // Placer les récompenses de collection en premier, puis celles de niveau par ordre décroissant.
             if ($groupA === $groupB && $rewardA && $rewardB)
             {
                 $levelOrder = ($a['required_level'] > 0) <=> ($b['required_level'] > 0);

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Constants;
 
-/** Shared thresholds and XP amounts for achievement display and attribution. */
+// Seuils et montants d’XP communs à l’affichage et à l’attribution des succès.
 final class AchievementRewards
 {
     public const TOMES = [1 => 50, 10 => 500, 25 => 1250, 50 => 2500, 100 => 5000, 200 => 10000];

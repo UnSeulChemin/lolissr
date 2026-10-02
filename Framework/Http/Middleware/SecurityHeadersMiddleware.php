@@ -10,9 +10,9 @@ use Framework\Security\ContentSecurityPolicy;
 
 final class SecurityHeadersMiddleware implements MiddlewareInterface
 {
-    // =========================================
-    // MIDDLEWARE
-    // =========================================
+    // =================================================
+    // FILTRE HTTP
+    // =================================================
 
     public function handle(Request $request): void
     {

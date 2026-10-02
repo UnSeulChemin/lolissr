@@ -23,9 +23,9 @@ final class ChinoisAjaxController extends Controller
         parent::__construct($request);
     }
 
-    // =========================================
+    // =================================================
     // RECHERCHE
-    // =========================================
+    // =================================================
 
     public function search(string|int $query = ''): never
     {
@@ -36,9 +36,9 @@ final class ChinoisAjaxController extends Controller
         ]));
     }
 
-    // =========================================
+    // =================================================
     // MAÎTRISE
-    // =========================================
+    // =================================================
 
     public function toggleGrammaireMaitrise(): never
     {
@@ -62,9 +62,9 @@ final class ChinoisAjaxController extends Controller
         );
     }
 
-    // =========================================
+    // =================================================
     // SUPPRESSION
-    // =========================================
+    // =================================================
 
     public function deleteGrammaire(): never
     {
@@ -76,9 +76,9 @@ final class ChinoisAjaxController extends Controller
         $this->jsonResult($this->chinoisWriteService->deleteVocabulaire($this->getIdOrFail()));
     }
 
-    // =========================================
+    // =================================================
     // RÉPONSES
-    // =========================================
+    // =================================================
 
     private function jsonMaitriseResult(
         ChinoisMaitriseData $result,
@@ -98,9 +98,9 @@ final class ChinoisAjaxController extends Controller
         ));
     }
 
-    // =========================================
+    // =================================================
     // VALIDATION
-    // =========================================
+    // =================================================
 
     private function getIdOrFail(): int
     {

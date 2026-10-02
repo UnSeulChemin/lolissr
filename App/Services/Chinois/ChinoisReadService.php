@@ -61,9 +61,9 @@ final readonly class ChinoisReadService
     ) {
     }
 
-    // =========================================
+    // =================================================
     // GRAMMAIRE
-    // =========================================
+    // =================================================
 
     public function hsk(string $niveau, string $sectionId = ''): ChinoisHskData
     {
@@ -107,9 +107,9 @@ final readonly class ChinoisReadService
         );
     }
 
-    // =========================================
+    // =================================================
     // VOCABULAIRE
-    // =========================================
+    // =================================================
 
     public function langue(string $langue, int|string $page = 1): ?ChinoisVocabulairePageData
     {
@@ -164,9 +164,9 @@ final readonly class ChinoisReadService
         );
     }
 
-    // =========================================
-    // FLASHCARDS
-    // =========================================
+    // =================================================
+    // CARTES DE RÉVISION
+    // =================================================
 
     /**
      * @return list<ChinoisGrammaireData>
@@ -198,9 +198,9 @@ final readonly class ChinoisReadService
         return $repository->findNotMasteredCursor($id, $previous);
     }
 
-    // =========================================
+    // =================================================
     // RECHERCHE
-    // =========================================
+    // =================================================
 
     public function search(string $query = ''): ChinoisSearchData
     {
@@ -212,9 +212,9 @@ final readonly class ChinoisReadService
         );
     }
 
-    // =========================================
+    // =================================================
     // CONSTRUCTION
-    // =========================================
+    // =================================================
 
     /**
      * @param list<ChinoisGrammaireData> $grammaires

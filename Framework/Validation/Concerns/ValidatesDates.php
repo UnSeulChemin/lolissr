@@ -8,9 +8,9 @@ use Framework\Support\DateNormalizer;
 
 trait ValidatesDates
 {
-    // =========================================
+    // =================================================
     // DATES
-    // =========================================
+    // =================================================
 
     public function date(string $field, ?string $message = null): self
     {

@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-// Ordered dependencies. A trailing slash matches every view in that directory.
-// Paths are relative to App/Views, without the .php extension.
+// Dépendances ordonnées. Une barre finale sélectionne toutes les vues du dossier.
+// Les chemins sont relatifs à App/Views, sans extension .php.
 return [
     'pages/profile/achievements.css' => ['pages/profile/achievements'],
     'components/modals/profile-title-modal.css' => ['pages/profile/'],
@@ -16,7 +16,7 @@ return [
         'pages/manga/series/unread',
     ],
     'pages/sql.css' => ['pages/sql/'],
-    // Vocabulary and grammar share buttons and flashcard navigation styles.
+    // Le vocabulaire et la grammaire partagent les styles des boutons et de navigation des cartes.
     'pages/chinois/vocabulaire.css' => ['pages/chinois/'],
     'pages/chinois/grammaire.css' => ['pages/chinois/'],
     'components/profile-avatar.css' => ['pages/profile/'],

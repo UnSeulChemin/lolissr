@@ -14,10 +14,10 @@ use Framework\Routing\Router;
 use RuntimeException;
 use Throwable;
 
-/** Deployment-local artifact. Rebuild after changing configuration or route sources. */
+// Deployment-local artifact. Rebuild after changing configuration or route sources.
 final class BootstrapCache
 {
-    // Controller namespaces changed with the project structure migration.
+    // Les espaces de noms des contrôleurs ont changé lors de la réorganisation du projet.
     private const VERSION = 3;
 
     public static function path(): string
@@ -25,7 +25,7 @@ final class BootstrapCache
         return base_path('storage/bootstrap/compiled.php');
     }
 
-    /** Build only after loading and validating the target environment. */
+    // Compiler après avoir chargé et validé l’environnement cible.
     public static function compile(): string
     {
         EnvironmentValidator::validate();
@@ -47,8 +47,8 @@ final class BootstrapCache
         if (! is_callable($register)) throw new RuntimeException('Config/routes.php must return a callable.');
         $register(new Router($routes, new Container()));
 
-        // Closure actions intentionally fail serialization: keep using normal bootstrap
-        // until those actions are moved to controllers. Group closures are already resolved.
+        // Les actions anonymes ne sont pas sérialisables : conserver l’amorçage habituel
+        // jusqu’à leur déplacement dans des contrôleurs. Les groupes anonymes sont déjà résolus.
         $serialized = serialize($routes);
         $keys = Env::accessedKeys();
         sort($keys);
@@ -67,7 +67,7 @@ final class BootstrapCache
     }
 
     /**
-     * Returns null without priming configuration when the artifact is absent or stale.
+     * Retourne null sans charger la configuration si le fichier compilé est absent ou périmé.
      * @return array{config: array<string, array<string, mixed>>, routes: RouteCollection}|null
      */
     public static function load(string $path): ?array
@@ -111,7 +111,7 @@ final class BootstrapCache
         }
         catch (Throwable)
         {
-            // A cache artifact must never make an otherwise valid bootstrap unavailable.
+            // Un fichier de cache ne doit jamais empêcher un amorçage valide.
             return null;
         }
     }

@@ -26,9 +26,9 @@ final readonly class ChinoisWriteService
     ) {
     }
 
-    // =========================================
+    // =================================================
     // GRAMMAIRE
-    // =========================================
+    // =================================================
 
     public function createGrammaire(ChinoisGrammaireCreateData $dto): ServiceResult
     {
@@ -116,9 +116,9 @@ final readonly class ChinoisWriteService
         return $result;
     }
 
-    // =========================================
+    // =================================================
     // VOCABULAIRE
-    // =========================================
+    // =================================================
 
     public function createVocabulaire(ChinoisVocabulaireCreateData $dto): ServiceResult
     {
@@ -183,9 +183,9 @@ final readonly class ChinoisWriteService
         return $result;
     }
 
-    // =========================================
+    // =================================================
     // MAÎTRISE
-    // =========================================
+    // =================================================
 
     public function toggleGrammaireMaitrise(int $id): ChinoisMaitriseData
     {
@@ -239,9 +239,9 @@ final readonly class ChinoisWriteService
         return $result;
     }
 
-    // =========================================
+    // =================================================
     // CACHE
-    // =========================================
+    // =================================================
 
     private function forgetDashboardCacheOnSuccess(ServiceResult $result): void
     {
@@ -251,9 +251,9 @@ final readonly class ChinoisWriteService
         }
     }
 
-    // =========================================
+    // =================================================
     // RÉSULTATS
-    // =========================================
+    // =================================================
 
     private function success(string $message): ServiceResult
     {

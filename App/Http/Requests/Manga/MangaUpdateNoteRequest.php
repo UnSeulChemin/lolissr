@@ -10,9 +10,9 @@ use Framework\Http\FormRequest;
 
 final class MangaUpdateNoteRequest extends FormRequest
 {
-    // =========================================
+    // =================================================
     // VALIDATION
-    // =========================================
+    // =================================================
 
     protected function validate(): void
     {
@@ -28,9 +28,9 @@ final class MangaUpdateNoteRequest extends FormRequest
             ->max('livre_note', 5, 'La note du livre doit être inférieure ou égale à 5.');
     }
 
-    // =========================================
+    // =================================================
     // DTO
-    // =========================================
+    // =================================================
 
     public function dto(): MangaUpdateNoteData
     {

@@ -26,9 +26,9 @@ final class MangaAjaxController extends Controller
     }
 
 
-    // =========================================
-    // SEARCH
-    // =========================================
+    // =================================================
+    // RECHERCHE
+    // =================================================
 
     public function search(string|int $query = ''): never
     {
@@ -46,9 +46,9 @@ final class MangaAjaxController extends Controller
     }
 
 
-    // =========================================
-    // SERIES PAGE
-    // =========================================
+    // =================================================
+    // SÉRIES PAGE
+    // =================================================
 
     public function seriesPage(int $page = 1): never
     {
@@ -76,9 +76,9 @@ final class MangaAjaxController extends Controller
     }
 
 
-    // =========================================
-    // UPDATE NOTE
-    // =========================================
+    // =================================================
+    // MISE À JOUR NOTE
+    // =================================================
 
     public function updateNote(
         MangaUpdateNoteRequest $request,
@@ -94,9 +94,9 @@ final class MangaAjaxController extends Controller
         ));
     }
 
-    // =========================================
-    // UPDATE READ STATUS
-    // =========================================
+    // =================================================
+    // MISE À JOUR DU STATUT DE LECTURE
+    // =================================================
 
     public function updateReadStatus(
         string $slug,
@@ -114,9 +114,9 @@ final class MangaAjaxController extends Controller
     }
 
 
-    // =========================================
-    // DELETE
-    // =========================================
+    // =================================================
+    // SUPPRESSION
+    // =================================================
 
     public function delete(
         string $slug,
@@ -154,9 +154,9 @@ final class MangaAjaxController extends Controller
     }
 
 
-    // =========================================
-    // HELPERS
-    // =========================================
+    // =================================================
+    // UTILITAIRES
+    // =================================================
 
     private function buildRedirectPath(
         string $slug,

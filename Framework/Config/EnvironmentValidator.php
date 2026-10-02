@@ -48,9 +48,9 @@ final class EnvironmentValidator
     {
     }
 
-    // =========================================
+    // =================================================
     // VALIDATION
-    // =========================================
+    // =================================================
 
     public static function validate(): void
     {
@@ -65,9 +65,9 @@ final class EnvironmentValidator
         self::validateProduction();
     }
 
-    // =========================================
+    // =================================================
     // VARIABLES OBLIGATOIRES
-    // =========================================
+    // =================================================
 
     private static function validateRequiredVariables(): void
     {
@@ -82,9 +82,9 @@ final class EnvironmentValidator
         }
     }
 
-    // =========================================
+    // =================================================
     // ENVIRONNEMENT
-    // =========================================
+    // =================================================
 
     private static function validateEnvironment(): void
     {
@@ -99,9 +99,9 @@ final class EnvironmentValidator
         }
     }
 
-    // =========================================
+    // =================================================
     // APPLICATION
-    // =========================================
+    // =================================================
 
     private static function validateBaseUri(): void
     {
@@ -143,9 +143,9 @@ final class EnvironmentValidator
         }
     }
 
-    // =========================================
+    // =================================================
     // VALEURS NUMÉRIQUES
-    // =========================================
+    // =================================================
 
     private static function validatePositiveIntegers(): void
     {
@@ -199,9 +199,9 @@ final class EnvironmentValidator
         }
     }
 
-    // =========================================
-    // UPLOADS
-    // =========================================
+    // =================================================
+    // TÉLÉVERSEMENTS
+    // =================================================
 
     private static function validateUploads(): void
     {
@@ -213,7 +213,7 @@ final class EnvironmentValidator
     {
         if (! Env::has($key))
         {
-            // Upload formats have explicit defaults in Config/upload.php.
+            // Les formats de téléversement ont des valeurs par défaut explicites dans Config/upload.php.
             return;
         }
 
@@ -235,9 +235,9 @@ final class EnvironmentValidator
         }
     }
 
-    // =========================================
+    // =================================================
     // PRODUCTION
-    // =========================================
+    // =================================================
 
     private static function validateProduction(): void
     {
@@ -262,9 +262,9 @@ final class EnvironmentValidator
         }
     }
 
-    // =========================================
+    // =================================================
     // RÉSOLUTION
-    // =========================================
+    // =================================================
 
     private static function environment(): string
     {

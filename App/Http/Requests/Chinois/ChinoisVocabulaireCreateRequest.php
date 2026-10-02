@@ -12,9 +12,9 @@ final class ChinoisVocabulaireCreateRequest extends FormRequest
 {
     private const LANGUES = ['mandarin', 'jinyu'];
 
-    // =========================================
+    // =================================================
     // VALIDATION
-    // =========================================
+    // =================================================
 
     protected function validate(): void
     {
@@ -44,9 +44,9 @@ final class ChinoisVocabulaireCreateRequest extends FormRequest
             ->maxLength('exemple', 255);
     }
 
-    // =========================================
+    // =================================================
     // DTO
-    // =========================================
+    // =================================================
 
     public function dto(): ChinoisVocabulaireCreateData
     {

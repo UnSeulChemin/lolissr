@@ -11,8 +11,8 @@ final class ProfileStatsRepository extends AbstractRepository
     /** @return array<string, int> */
     public function summary(?int $userId): array
     {
-        // Each aggregate returns one row, even for empty tables. Cross joins
-        // combine these summaries, never the individual collection rows.
+        // Chaque agrégat retourne une ligne, même pour une table vide. Les jointures croisées
+        // combinent ces résumés, jamais les lignes individuelles des collections.
         $parts = ["(SELECT COUNT(CASE WHEN lu = 1 THEN 1 END) AS manga_read,
             COUNT(CASE WHEN xp_read_rewarded = 1 THEN 1 END) AS manga_rewarded_tomes,
             COUNT(DISTINCT CASE WHEN xp_series_rewarded = 1 THEN slug END) AS manga_rewarded_series

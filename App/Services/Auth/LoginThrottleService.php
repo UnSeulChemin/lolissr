@@ -24,9 +24,9 @@ final readonly class LoginThrottleService
         private UserRepository $userRepository
     ) {}
 
-    // =========================================
+    // =================================================
     // LIMITATION
-    // =========================================
+    // =================================================
 
     public function isLocked(string $username, string $ipAddress): bool
     {
@@ -67,7 +67,7 @@ final readonly class LoginThrottleService
             self::MAX_ATTEMPTS
         );
 
-        // At most one bounded cleanup per hour when the cache is enabled.
+        // Effectuer au plus un nettoyage limité par heure lorsque le cache est activé.
         try
         {
             \Framework\Cache\Cache::remember('auth.login-attempts.cleanup', 3600, function () use ($now): bool {
@@ -93,14 +93,14 @@ final readonly class LoginThrottleService
         );
     }
 
-    // =========================================
+    // =================================================
     // IDENTIFIANT
-    // =========================================
+    // =================================================
 
     private function identifierHash(string $username, string $ipAddress): string
     {
-        // Resolve using the same database collation as authentication. Keep the
-        // stored spelling so existing counters for that account remain valid.
+        // Résoudre avec la même collation que l’authentification. Conserver
+        // l’orthographe enregistrée pour préserver les compteurs existants du compte.
         $username = $this->userRepository->findByUsername($username)->username ?? $username;
         $normalizedUsername = mb_strtolower(trim($username));
         $normalizedIpAddress = $this->normalizeIpAddress($ipAddress);
@@ -127,9 +127,9 @@ final readonly class LoginThrottleService
             : 'unknown';
     }
 
-    // =========================================
+    // =================================================
     // DATE
-    // =========================================
+    // =================================================
 
     private function now(): DateTimeImmutable
     {

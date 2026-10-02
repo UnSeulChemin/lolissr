@@ -23,8 +23,8 @@ final readonly class AchievementXpService
         $this->award($user, $this->eligible('series', AchievementRewards::SERIES, $completedSeries));
     }
 
-    // Once all series tiers are claimed, edits cannot grant another series
-    // achievement. Missing older tiers must still be eligible for catch-up.
+    // Une fois tous les paliers de série attribués, les modifications ne donnent plus
+    // de succès de série. Les anciens paliers manquants restent rattrapables.
     public function pendingSeriesTarget(User $user): int
     {
         $rewards = $this->eligible('series', AchievementRewards::SERIES, PHP_INT_MAX);
@@ -179,7 +179,7 @@ final readonly class AchievementXpService
 
         $this->levels->addComputedXp($user, function () use ($user, $rewards, $baseXp): int {
             if ($rewards === []) return $baseXp;
-            // A current locking read also sees claims committed by a request we waited for.
+            // La lecture verrouillée voit aussi les récompenses validées par une requête attendue.
             $placeholders = implode(', ', array_fill(0, count($rewards), '?'));
             $check = $this->database->prepare(
                 'SELECT achievement_key FROM achievement_xp_rewards WHERE user_id = ?'

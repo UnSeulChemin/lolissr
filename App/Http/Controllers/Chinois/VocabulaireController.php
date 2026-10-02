@@ -24,9 +24,9 @@ final class VocabulaireController extends Controller
         parent::__construct($request);
     }
 
-    // =========================================
+    // =================================================
     // PAGES
-    // =========================================
+    // =================================================
 
     public function index(): never
     {
@@ -71,9 +71,9 @@ final class VocabulaireController extends Controller
         ]);
     }
 
-    // =========================================
+    // =================================================
     // CRÉATION
-    // =========================================
+    // =================================================
 
     public function create(): never
     {
@@ -96,9 +96,9 @@ final class VocabulaireController extends Controller
         );
     }
 
-    // =========================================
+    // =================================================
     // MODIFICATION
-    // =========================================
+    // =================================================
 
     public function edit(string $langue, int $id): never
     {
@@ -137,9 +137,9 @@ final class VocabulaireController extends Controller
         );
     }
 
-    // =========================================
+    // =================================================
     // RÉSOLUTION
-    // =========================================
+    // =================================================
 
     private function vocabulaireOrFail(string $langue, int $id): ChinoisVocabulaireData
     {
@@ -147,9 +147,9 @@ final class VocabulaireController extends Controller
             ?? throw new NotFoundException('Vocabulaire introuvable');
     }
 
-    // =========================================
+    // =================================================
     // RENDU
-    // =========================================
+    // =================================================
 
     private function renderEdit(string $langue, int $id, string $returnTo): never
     {

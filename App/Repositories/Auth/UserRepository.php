@@ -25,9 +25,9 @@ final class UserRepository extends AbstractRepository
         );
     }
 
-    // =========================================
+    // =================================================
     // RECHERCHE
-    // =========================================
+    // =================================================
 
     public function findByUsername(string $username): ?User
     {
@@ -63,9 +63,9 @@ final class UserRepository extends AbstractRepository
         return $user;
     }
 
-    // =========================================
+    // =================================================
     // CRÉATION
-    // =========================================
+    // =================================================
 
     public function create(string $username, string $password): bool
     {
@@ -84,9 +84,9 @@ final class UserRepository extends AbstractRepository
         ]);
     }
 
-    // =========================================
+    // =================================================
     // AUTHENTIFICATION
-    // =========================================
+    // =================================================
 
     public function updatePasswordHash(int $userId, string $passwordHash): bool
     {
@@ -96,9 +96,9 @@ final class UserRepository extends AbstractRepository
         );
     }
 
-    // =========================================
+    // =================================================
     // PROFIL
-    // =========================================
+    // =================================================
 
     public function updateLevelAndXp(int $userId, int $level, int $xp): bool
     {

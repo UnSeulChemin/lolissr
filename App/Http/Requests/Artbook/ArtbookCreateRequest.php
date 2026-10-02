@@ -13,9 +13,9 @@ final class ArtbookCreateRequest extends FormRequest
 {
     private const SOURCE_TYPES = ['auteur', 'serie'];
 
-    // =========================================
+    // =================================================
     // VALIDATION
-    // =========================================
+    // =================================================
 
     protected function validate(): void
     {
@@ -60,9 +60,9 @@ final class ArtbookCreateRequest extends FormRequest
             ->maxFileSize('image', UploadConfig::maxSize());
     }
 
-    // =========================================
+    // =================================================
     // DTO
-    // =========================================
+    // =================================================
 
     public function dto(): ArtbookCreateData
     {

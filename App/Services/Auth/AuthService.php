@@ -28,9 +28,9 @@ final class AuthService implements AuthenticationInterface
     ) {
     }
 
-    // =========================================
+    // =================================================
     // AUTHENTIFICATION
-    // =========================================
+    // =================================================
 
     public function register(string $username, string $password): bool
     {
@@ -139,9 +139,9 @@ final class AuthService implements AuthenticationInterface
         return $this->user() !== null;
     }
 
-    // =========================================
+    // =================================================
     // VALIDATION
-    // =========================================
+    // =================================================
 
     private function hasValidCredentials(string $username, string $password): bool
     {
@@ -155,15 +155,15 @@ final class AuthService implements AuthenticationInterface
 
     private function hasValidPassword(string $password): bool
     {
-        // Bcrypt only uses the first 72 bytes, including for multibyte text.
+        // Bcrypt utilise uniquement les 72 premiers octets, même pour du texte multioctet.
         return $password !== ''
             && strlen($password) <= self::PASSWORD_MAX_BYTES
             && ! str_contains($password, "\0");
     }
 
-    // =========================================
+    // =================================================
     // MOT DE PASSE
-    // =========================================
+    // =================================================
 
     private function rehashPasswordIfNeeded(User $user, string $password): void
     {

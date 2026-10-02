@@ -109,7 +109,7 @@
 .success-reward.success-reward-banner > * { grid-column: 1; }
 .success-reward.success-reward-banner img { grid-row: auto; width: 100%; height: auto; border-radius: 10px; }
 
-/* Keep reward headers and actions aligned regardless of preview height. */
+/* Aligner les titres et les actions des récompenses quelle que soit la hauteur de l’aperçu. */
 .success-reward-title:not(.success-reward-xp),
 .success-reward.success-reward-banner
 {

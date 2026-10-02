@@ -15,9 +15,9 @@ final class ChinoisController extends Controller
         parent::__construct($request);
     }
 
-    // =========================================
+    // =================================================
     // PAGES
-    // =========================================
+    // =================================================
 
     public function index(): never
     {
@@ -26,9 +26,9 @@ final class ChinoisController extends Controller
         $this->render('pages/chinois/index');
     }
 
-    // =========================================
+    // =================================================
     // AJOUT
-    // =========================================
+    // =================================================
 
     public function ajouter(): never
     {

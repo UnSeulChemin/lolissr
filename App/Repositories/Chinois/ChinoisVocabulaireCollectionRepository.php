@@ -16,9 +16,9 @@ final class ChinoisVocabulaireCollectionRepository extends AbstractRepository
 
     protected string $table = 'chinois_vocabulaire';
 
-    // =========================================
+    // =================================================
     // COLLECTION
-    // =========================================
+    // =================================================
 
     public function countByLangue(string $langue): int
     {

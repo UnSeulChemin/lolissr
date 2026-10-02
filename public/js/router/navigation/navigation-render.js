@@ -1,6 +1,6 @@
-// =========================================
-// NAVIGATION RENDER
-// =========================================
+// =================================================
+// RENDU DE LA NAVIGATION
+// =================================================
 
 import {
     cachePage,
@@ -24,9 +24,9 @@ import {
     restoreScrollPosition,
 } from '../route-scroll.js';
 
-// =========================================
-// RENDER
-// =========================================
+// =================================================
+// RENDU
+// =================================================
 
 export async function renderPage(
     current,
@@ -83,11 +83,10 @@ export async function renderPage(
         return;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | HASH SCROLL
-    |--------------------------------------------------------------------------
-    */
+    // --------------------------------------------------------------------------
+    // DÉFILEMENT VERS L’ANCRE
+    // --------------------------------------------------------------------------
+
 
     if (
         window.location.hash
@@ -97,7 +96,8 @@ export async function renderPage(
             () =>
             {
                 let id = window.location.hash.slice(1);
-                try { id = decodeURIComponent(id); } catch { /* Keep malformed escapes literal. */ }
+                try { id = decodeURIComponent(id); } catch { // Conserver les séquences d’échappement invalides telles quelles.
+ }
                 document.getElementById(id)?.scrollIntoView();
             },
         );
@@ -105,11 +105,10 @@ export async function renderPage(
         return;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | DEFAULT SCROLL
-    |--------------------------------------------------------------------------
-    */
+    // --------------------------------------------------------------------------
+    // DÉFILEMENT PAR DÉFAUT
+    // --------------------------------------------------------------------------
+
 
     window.scrollTo(
         0,

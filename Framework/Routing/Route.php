@@ -41,9 +41,9 @@ final class Route
         $this->pattern = $this->compilePattern();
     }
 
-    // =========================================
+    // =================================================
     // ROUTE
-    // =========================================
+    // =================================================
 
     public function getMethod(): string
     {
@@ -91,7 +91,7 @@ final class Route
 
             if ($type === 'int')
             {
-                // Preserve leading-zero URLs without allowing integer saturation.
+                // Conserver les URL avec des zéros initiaux sans autoriser la saturation des entiers.
                 $digits = ltrim($value, '0');
                 $maximum = (string) PHP_INT_MAX;
                 if (strlen($digits) > strlen($maximum)
@@ -111,9 +111,9 @@ final class Route
         return $parameters;
     }
 
-    // =========================================
+    // =================================================
     // COMPILATION
-    // =========================================
+    // =================================================
 
     private function compilePattern(): string
     {

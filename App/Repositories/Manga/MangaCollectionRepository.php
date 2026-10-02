@@ -87,15 +87,15 @@ final class MangaCollectionRepository extends AbstractRepository
     {
         $perPage = max(1, $perPage);
         $pageIndex = max(1, $page) - 1;
-        // Keep OFFSET an integer even for an extreme route parameter. The
-        // returned total still lets the service reject the page as not found.
+        // Conserver un OFFSET entier même pour un paramètre de route extrême.
+        // Le total retourné permet au service de refuser une page inexistante.
         $offset = $pageIndex > intdiv(PHP_INT_MAX, $perPage)
             ? PHP_INT_MAX
             : $pageIndex * $perPage;
         $condition = $notes ? 'average_note < 10' : 'total_lu < total';
         $order = $notes ? 'average_note ASC, livre ASC, id ASC' : 'livre ASC, id ASC';
-        // The grouped CTE is reused for both the count and the page. The left
-        // join preserves the count when the requested page (or list) is empty.
+        // La CTE groupée sert au comptage et à la pagination. La jointure gauche
+        // préserve le total lorsque la page ou la liste demandée est vide.
         $rows = $this->fetchAll("WITH stats AS ({$this->statsSubQuery()}),
             filtered AS (SELECT * FROM stats WHERE $condition),
             paged AS (

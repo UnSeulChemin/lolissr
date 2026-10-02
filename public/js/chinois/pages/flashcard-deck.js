@@ -1,7 +1,7 @@
 import { get } from '../../core/http.js';
 import { registerCleanup } from '../../router/router-cleanup.js';
 
-// Only one batch is retained; the server supplies the current total on each fetch.
+// Conserver un seul lot ; le serveur fournit le total actuel à chaque chargement.
 export function createFlashcardDeck(container, type)
 {
     const controller = new AbortController();
@@ -16,12 +16,12 @@ export function createFlashcardDeck(container, type)
     {
         if (controller.signal.aborted)
         {
-            throw new DOMException('Flashcards closed', 'AbortError');
+            throw new DOMException('Cartes de révision fermées', 'AbortError');
         }
         const response = await get(`${baseUri}chinois/flashcards/${type}/cursor/${previous ? 'previous' : 'next'}/${id}`, { signal: controller.signal });
         if (controller.signal.aborted)
         {
-            throw new DOMException('Flashcards closed', 'AbortError');
+            throw new DOMException('Cartes de révision fermées', 'AbortError');
         }
         const page = response?.data;
         if (! response?.success || ! Array.isArray(page?.cards)
@@ -32,7 +32,7 @@ export function createFlashcardDeck(container, type)
             throw new Error('Chargement des cartes impossible');
         }
 
-        // Commit navigation only once the request succeeds, preserving the card on errors.
+        // Valider la navigation après le succès de la requête et conserver la carte en cas d’erreur.
         cards = page.cards;
         total = page.total;
         offset = page.offset;
@@ -59,7 +59,7 @@ export function createFlashcardDeck(container, type)
         {
             const position = cards.findIndex(card => card.id === id);
             if (position === -1) return;
-            // Seek past the removed ID even if other cards disappeared concurrently.
+            // Reprendre après l’identifiant supprimé, même si d’autres cartes ont disparu simultanément.
             await load(id);
         },
     };

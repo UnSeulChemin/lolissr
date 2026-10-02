@@ -13,9 +13,9 @@ final class MangaCreateRequest extends FormRequest
 {
     private const STATUTS = ['en_cours', 'termine'];
 
-    // =========================================
+    // =================================================
     // VALIDATION
-    // =========================================
+    // =================================================
 
     protected function validate(): void
     {
@@ -53,9 +53,9 @@ final class MangaCreateRequest extends FormRequest
             ->maxFileSize('image', UploadConfig::maxSize());
     }
 
-    // =========================================
+    // =================================================
     // DTO
-    // =========================================
+    // =================================================
 
     public function dto(): MangaCreateData
     {

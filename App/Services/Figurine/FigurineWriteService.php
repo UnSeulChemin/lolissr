@@ -30,9 +30,9 @@ final readonly class FigurineWriteService
     ) {
     }
 
-    // =========================================
-    // CREATE
-    // =========================================
+    // =================================================
+    // CRÉATION
+    // =================================================
 
     /**
      * @param array<string, mixed> $files
@@ -87,9 +87,9 @@ final readonly class FigurineWriteService
         return $result;
     }
 
-    // =========================================
-    // UPDATE
-    // =========================================
+    // =================================================
+    // MISE À JOUR
+    // =================================================
 
     public function update(string $slug, int $numero, FigurineUpdateData $dto): ServiceResult
     {
@@ -118,9 +118,9 @@ final readonly class FigurineWriteService
         return $result;
     }
 
-    // =========================================
-    // UPDATE COLLECT STATUS
-    // =========================================
+    // =================================================
+    // MISE À JOUR DU STATUT DE COLLECTION
+    // =================================================
 
     public function updateCollectStatus(string $slug, int $numero, int $collectStatus): ServiceResult
     {
@@ -185,9 +185,9 @@ final readonly class FigurineWriteService
         return $result;
     }
 
-    // =========================================
-    // DELETE
-    // =========================================
+    // =================================================
+    // SUPPRESSION
+    // =================================================
 
     public function delete(string $slug, int $numero): ServiceResult
     {

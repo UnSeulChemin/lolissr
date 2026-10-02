@@ -33,9 +33,9 @@ $hasMostRepresented =
 
 <section class="layout-container">
 
-    <!-- =========================================
+    <!-- =================================================
          TOP GRID
-    ========================================== -->
+    ================================================= -->
 
     <section class="home-grid home-grid-top card-grid-3">
 
@@ -208,9 +208,9 @@ $hasMostRepresented =
     </section>
 
 
-    <!-- =========================================
+    <!-- =================================================
          GLOBAL STATS
-    ========================================== -->
+    ================================================= -->
 
     <section class="home-grid home-grid-stats card-grid-3">
 
@@ -279,9 +279,9 @@ $hasMostRepresented =
 
     </section>
 
-    <!-- =========================================
-         TOP LONGEST SERIES
-    ========================================== -->
+    <!-- =================================================
+         TOP LONGEST SÉRIES
+    ================================================= -->
 
     <?php if ($hasTopLongestSeries): ?>
 
@@ -339,9 +339,9 @@ $hasMostRepresented =
     <?php endif; ?>
 
 
-    <!-- =========================================
+    <!-- =================================================
          READING STATS
-    ========================================== -->
+    ================================================= -->
 
     <h2 class="home-section-title u-relative u-text-center u-w-full">
         📖 Lecture
@@ -430,12 +430,12 @@ $hasMostRepresented =
     </section>
 
 
-    <!-- =========================================
+    <!-- =================================================
          ARTBOOKS
-    ========================================== -->
+    ================================================= -->
 
     <h2 class="home-section-title u-relative u-text-center u-w-full">
-        📕 Artbooks
+        📕 Livres d’illustrations
     </h2>
 
     <section class="home-grid home-grid-top card-grid-3">
@@ -511,7 +511,7 @@ $hasMostRepresented =
             >
 
                 <h2 class="home-card-title">
-                    📕 Artbooks
+                    📕 Livres d’illustrations
                 </h2>
 
                 <p class="home-empty u-relative u-text-center">
@@ -543,7 +543,7 @@ $hasMostRepresented =
             >
 
                 <h2 class="home-card-title">
-                    📕 Dernier artbook ajouté
+                    📕 Dernier livre d’illustrations ajouté
                 </h2>
 
                 <div class="home-feature-content">
@@ -592,7 +592,7 @@ $hasMostRepresented =
             >
 
                 <h2 class="home-card-title">
-                    📕 Dernier artbook ajouté
+                    📕 Dernier livre d’illustrations ajouté
                 </h2>
 
                 <p class="home-empty u-relative u-text-center">
@@ -619,7 +619,7 @@ $hasMostRepresented =
         >
 
             <h2 class="home-card-title">
-                📚 Total artbooks
+                📚 Total livres d’illustrations
             </h2>
 
             <p class="home-card-value u-relative u-bold">
@@ -655,9 +655,9 @@ $hasMostRepresented =
     </section>
 
 
-    <!-- =========================================
+    <!-- =================================================
          MAÎTRISE DU MANDARIN
-    ========================================== -->
+    ================================================= -->
 
     <h2 class="home-section-title u-relative u-text-center u-w-full">
         👑 Maîtrise du mandarin
@@ -722,9 +722,9 @@ $hasMostRepresented =
     </section>
 
 
-    <!-- =========================================
+    <!-- =================================================
          MAÎTRISE DU CHINOIS
-    ========================================== -->
+    ================================================= -->
 
     <h2 class="home-section-title u-relative u-text-center u-w-full">
         🎓 Maîtrise du chinois

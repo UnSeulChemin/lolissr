@@ -29,9 +29,9 @@ final class Bootstrap
     {
     }
 
-    // =========================================
-    // BOOTSTRAP
-    // =========================================
+    // =================================================
+    // AMORÇAGE
+    // =================================================
 
     public static function loadEnvOnly(): void
     {
@@ -48,7 +48,7 @@ final class Bootstrap
     public static function run(?callable $errorRenderer = null, ?callable $serviceProvider = null): never
     {
         $startedAt = hrtime(true);
-        // Configuration failures cannot rely on the container, logger or renderer.
+        // Les erreurs de configuration ne peuvent pas dépendre du conteneur, du journal ou du moteur de rendu.
         ini_set('display_errors', '0');
         ini_set('log_errors', '1');
         error_reporting(E_ALL);
@@ -103,9 +103,9 @@ final class Bootstrap
         exit;
     }
 
-    // =========================================
-    // CONTAINER
-    // =========================================
+    // =================================================
+    // CONTENEUR
+    // =================================================
 
     private static function createContainer(): Container
     {
@@ -131,9 +131,9 @@ final class Bootstrap
         }
     }
 
-    // =========================================
-    // ROUTER
-    // =========================================
+    // =================================================
+    // ROUTEUR
+    // =================================================
 
     private static function registerRoutes(Router $router): void
     {
@@ -147,9 +147,9 @@ final class Bootstrap
         $routes($router);
     }
 
-    // =========================================
-    // PROFILER
-    // =========================================
+    // =================================================
+    // MESURE DES PERFORMANCES
+    // =================================================
 
     private static function startProfiler(int|float $startedAt): void
     {
@@ -176,9 +176,9 @@ final class Bootstrap
         );
     }
 
-    // =========================================
+    // =================================================
     // CONFIGURATION
-    // =========================================
+    // =================================================
 
     /**
      * @param (callable(int, string, Request): never)|null $renderer

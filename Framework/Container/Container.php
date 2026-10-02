@@ -12,7 +12,7 @@ use RuntimeException;
 final class Container
 {
     /**
-     * Explicit bindings are singletons; unbound classes are resolved per call.
+     * Les liaisons explicites sont des instances uniques ; les autres classes sont résolues à chaque appel.
      * @var array<string, callable|string>
      */
     private array $bindings = [];
@@ -40,9 +40,9 @@ final class Container
         $this->instances[self::class] = $this;
     }
 
-    // =========================================
+    // =================================================
     // ENREGISTREMENT
-    // =========================================
+    // =================================================
 
     public function singleton(string $abstract, callable|string|null $concrete = null): void
     {
@@ -59,9 +59,9 @@ final class Container
         unset($this->bindings[$abstract]);
     }
 
-    // =========================================
+    // =================================================
     // RÉSOLUTION
-    // =========================================
+    // =================================================
 
     public function get(string $abstract): object
     {
@@ -234,9 +234,9 @@ final class Container
         return $this->dependencyPlans[$class] = $constructor !== null ? ParameterPlan::forMethod($constructor) : [];
     }
 
-    // =========================================
+    // =================================================
     // RÉFLEXION
-    // =========================================
+    // =================================================
 
     /**
      * @param class-string $class

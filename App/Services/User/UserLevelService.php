@@ -15,11 +15,9 @@ final readonly class UserLevelService
     ) {
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | LEVELS
-    |--------------------------------------------------------------------------
-    */
+    // --------------------------------------------------------------------------
+    // NIVEAUX
+    // --------------------------------------------------------------------------
 
     public function xpRequiredForLevel(int $level): int
     {
@@ -34,7 +32,7 @@ final readonly class UserLevelService
     }
 
     /**
-     * Compute and persist rewards under the same user lock as the XP update.
+     * Calculer et enregistrer les récompenses sous le même verrou utilisateur que la mise à jour des XP.
      * @param callable(): int $computeXp
      */
     public function addComputedXp(User $user, callable $computeXp): void

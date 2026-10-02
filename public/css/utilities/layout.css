@@ -1,6 +1,6 @@
 
-/* Shared layout primitives. Loaded before components so responsive and
-   component-specific rules retain their precedence. Keep JS hooks unchanged. */
+/* Styles de mise en page communs, chargés avant les composants pour préserver
+   la priorité des règles adaptatives et spécifiques. Conserver les points d’entrée JavaScript. */
 
 
 .u-row-center

@@ -310,7 +310,7 @@ final class MangaRepository extends AbstractRepository
             return false;
         }
 
-        // Propagate the existing reward to newly added volumes without granting XP again.
+        // Transmettre la récompense existante aux nouveaux tomes sans attribuer à nouveau des XP.
         $statement = $this->query(
             "
             UPDATE {$this->table()}
@@ -328,11 +328,9 @@ final class MangaRepository extends AbstractRepository
         return ! $alreadyRewarded && $statement !== false && $statement->rowCount() >= 1;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | HELPERS
-    |--------------------------------------------------------------------------
-    */
+    // --------------------------------------------------------------------------
+    // UTILITAIRES
+    // --------------------------------------------------------------------------
 
     private function normalizeSlug(string $slug): string
     {

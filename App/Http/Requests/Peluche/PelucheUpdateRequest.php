@@ -10,9 +10,9 @@ use Framework\Http\FormRequest;
 
 final class PelucheUpdateRequest extends FormRequest
 {
-    // =========================================
+    // =================================================
     // VALIDATION
-    // =========================================
+    // =================================================
 
     protected function validate(): void
     {
@@ -37,9 +37,9 @@ final class PelucheUpdateRequest extends FormRequest
             ->maxLength('commentaire', 255);
     }
 
-    // =========================================
+    // =================================================
     // DTO
-    // =========================================
+    // =================================================
 
     public function dto(): PelucheUpdateData
     {

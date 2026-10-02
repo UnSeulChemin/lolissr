@@ -26,7 +26,7 @@ trait UpdatesExistingCollection
             throw new NotFoundException('Élément introuvable ou déjà supprimé');
         }
 
-        // execute() stays successful for an unchanged row; existence is checked under lock.
+        // execute() réussit même pour une ligne inchangée ; vérifier son existence sous verrou.
         return $this->update($data, ['id' => (int) $current->id]);
     }
 }

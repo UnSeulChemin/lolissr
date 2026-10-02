@@ -131,6 +131,18 @@ CONVENTIONS À PRÉSERVER
 - Valider le formulaire avant d'utiliser son DTO. Pour les actions JSON simples,
   utiliser les contrôles d'entrée adaptés et conserver la validation métier.
 
+- Écrire les commentaires explicatifs en français avec `//` en PHP et JavaScript.
+  Séparer les grandes sections lorsque cela facilite la lecture :
+
+  ```php
+  // =================================================
+  // ORGANISATION
+  // =================================================
+  ```
+
+  Conserver les annotations PHPDoc utiles à l'analyse statique et les commentaires
+  `/* ... */` en CSS. Tous les textes de l'interface doivent être en français.
+
 - Garder le SQL dans les repositories et utiliser les paramètres des requêtes.
   Les vues affichent les données ; elles ne lancent pas de requêtes.
 

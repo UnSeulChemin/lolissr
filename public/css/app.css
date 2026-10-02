@@ -1,23 +1,23 @@
-/* FONT (toujours en premier) */
+/* POLICE (toujours en premier) */
 @import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
 
 /* BASE */
 @import url('./base/reset.css');
 @import url('./base/variables.css');
-/* Shared primitives precede component and page overrides. */
+/* Les styles communs précèdent les adaptations des composants et des pages. */
 @import url('./utilities/layout.css');
 @import url('./base/global.css');
 @import url('./base/scrollbars.css');
 @import url('./components/modals/confirm-modal.css');
 @import url('./base/keyframes.css');
 
-/* UTILITIES */
+/* UTILITAIRES */
 @import url('./utilities/transitions.css');
 @import url('./utilities/router.css');
 @import url('./utilities/copy.css');
 @import url('./utilities/loading.css');
 
-/* COMPONENTS */
+/* COMPOSANTS */
 @import url('./components/cards.css');
 @import url('./components/forms.css');
 @import url('./components/dashboard.css');
@@ -26,9 +26,9 @@
 @import url('./components/error-route.css');
 @import url('./components/glow.css');
 
-/* PARTIALS */
+/* FRAGMENTS */
 @import url('./partials/search.css');
-/* Keep header overrides last, replacing the former duplicate layout link. */
+/* Placer les adaptations de l’en-tête en dernier pour remplacer l’ancien lien de style dupliqué. */
 @import url('./partials/header.css');
 
-/* Page dependencies are declared in Config/styles.php. */
+/* Les dépendances des pages sont déclarées dans Config/styles.php. */

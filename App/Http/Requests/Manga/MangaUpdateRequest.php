@@ -12,9 +12,9 @@ final class MangaUpdateRequest extends FormRequest
 {
     private const STATUTS = ['en_cours', 'termine'];
 
-    // =========================================
+    // =================================================
     // VALIDATION
-    // =========================================
+    // =================================================
 
     protected function validate(): void
     {
@@ -42,9 +42,9 @@ final class MangaUpdateRequest extends FormRequest
             ->max('jacquette', 5);
     }
 
-    // =========================================
+    // =================================================
     // DTO
-    // =========================================
+    // =================================================
 
     public function dto(): MangaUpdateData
     {

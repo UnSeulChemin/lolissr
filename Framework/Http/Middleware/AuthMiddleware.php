@@ -15,9 +15,9 @@ final readonly class AuthMiddleware implements MiddlewareInterface
     ) {
     }
 
-    // =========================================
-    // MIDDLEWARE
-    // =========================================
+    // =================================================
+    // FILTRE HTTP
+    // =================================================
 
     public function handle(Request $request): void
     {

@@ -1,5 +1,5 @@
-// Load inactive styles before replacing the page, then commit them synchronously.
-// Each navigation owns its pending links so cancellation cannot affect another one.
+// Charger les styles inactifs avant de remplacer la page, puis les activer de façon synchrone.
+// Chaque navigation possède ses liens en attente pour isoler les annulations.
 export async function preparePageStyles(stylesheets, signal)
 {
     if (!Array.isArray(stylesheets))
@@ -125,7 +125,7 @@ export async function preparePageStyles(stylesheets, signal)
             }
         }
 
-        // Appending in manifest order also preserves the CSS cascade on back/forward.
+        // L’ordre du manifeste préserve aussi la cascade CSS lors des retours et avances.
         for (const link of links)
         {
             link.setAttribute('data-page-style', '');

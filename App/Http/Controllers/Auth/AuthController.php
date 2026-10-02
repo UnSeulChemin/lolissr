@@ -21,9 +21,9 @@ final class AuthController extends Controller
         parent::__construct($request);
     }
 
-    // =========================================
+    // =================================================
     // AUTHENTIFICATION
-    // =========================================
+    // =================================================
 
     public function login(): never
     {
@@ -78,9 +78,9 @@ final class AuthController extends Controller
         $this->redirect('connexion');
     }
 
-    // =========================================
+    // =================================================
     // INSCRIPTION
-    // =========================================
+    // =================================================
 
     public function register(): never
     {

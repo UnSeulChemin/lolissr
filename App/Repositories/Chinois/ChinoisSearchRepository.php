@@ -11,9 +11,9 @@ use stdClass;
 
 final class ChinoisSearchRepository extends AbstractRepository
 {
-    // =========================================
+    // =================================================
     // RECHERCHE
-    // =========================================
+    // =================================================
 
     /**
      * @return list<ChinoisSearchItemData>
@@ -35,9 +35,9 @@ final class ChinoisSearchRepository extends AbstractRepository
         ];
     }
 
-    // =========================================
+    // =================================================
     // GRAMMAIRE
-    // =========================================
+    // =================================================
 
     /**
      * @return list<ChinoisSearchItemData>
@@ -71,9 +71,9 @@ final class ChinoisSearchRepository extends AbstractRepository
         return array_map($this->mapGrammarResult(...), $results);
     }
 
-    // =========================================
+    // =================================================
     // VOCABULAIRE
-    // =========================================
+    // =================================================
 
     /**
      * @return list<ChinoisSearchItemData>
@@ -107,9 +107,9 @@ final class ChinoisSearchRepository extends AbstractRepository
         return array_map($this->mapVocabularyResult(...), $results);
     }
 
-    // =========================================
+    // =================================================
     // HYDRATATION
-    // =========================================
+    // =================================================
 
     private function mapGrammarResult(stdClass $grammaire): ChinoisSearchItemData
     {

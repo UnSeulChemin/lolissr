@@ -23,9 +23,9 @@ final class ArtbookAjaxController extends Controller
     }
 
 
-    // =========================================
-    // SEARCH
-    // =========================================
+    // =================================================
+    // RECHERCHE
+    // =================================================
 
     public function search(string|int $query = ''): never
     {
@@ -43,9 +43,9 @@ final class ArtbookAjaxController extends Controller
     }
 
 
-    // =========================================
+    // =================================================
     // PAGINATION
-    // =========================================
+    // =================================================
 
     public function page(int $page = 1): never
     {
@@ -73,9 +73,9 @@ final class ArtbookAjaxController extends Controller
     }
 
 
-    // =========================================
-    // UPDATE READ STATUS
-    // =========================================
+    // =================================================
+    // MISE À JOUR DU STATUT DE LECTURE
+    // =================================================
 
     public function updateReadStatus(
         string $slug,
@@ -93,9 +93,9 @@ final class ArtbookAjaxController extends Controller
     }
 
 
-    // =========================================
-    // DELETE
-    // =========================================
+    // =================================================
+    // SUPPRESSION
+    // =================================================
 
     public function delete(
         string $slug,

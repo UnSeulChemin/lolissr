@@ -10,9 +10,9 @@ use Framework\Http\Request;
 
 final class ExpectJsonMiddleware implements MiddlewareInterface
 {
-    // =========================================
-    // MIDDLEWARE
-    // =========================================
+    // =================================================
+    // FILTRE HTTP
+    // =================================================
 
     public function handle(Request $request): void
     {

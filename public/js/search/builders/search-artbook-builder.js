@@ -1,6 +1,6 @@
-// =========================================
-// SEARCH ARTBOOK BUILDER
-// =========================================
+// =================================================
+// CONSTRUCTION DES RÉSULTATS DE LIVRES D’ILLUSTRATIONS
+// =================================================
 
 import {
     highlightSearchTerm,
@@ -51,7 +51,7 @@ export function buildArtbookResult(
     const subtitle =
         serie
         || auteur
-        || 'Artbook';
+        || 'Livre d’illustrations';
 
     return createResultItem(
         artbookUrl,

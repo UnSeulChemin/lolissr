@@ -1,6 +1,6 @@
-// =========================================
-// PREFETCH CACHE
-// =========================================
+// =================================================
+// PRÉCHARGEMENT CACHE
+// =================================================
 
 import {
     config,
@@ -20,12 +20,12 @@ import {
     invalidated,
 } from './prefetch-state.js';
 
-// =========================================
-// HELPERS
-// =========================================
+// =================================================
+// UTILITAIRES
+// =================================================
 
-// Preserve snapshot age when the same response is rendered or cached again.
-// Weak keys avoid retaining evicted pages; a fresh response gets a fresh age.
+// Conserver l’âge de l’instantané si la même réponse est affichée ou remise en cache.
+// Les clés faibles libèrent les pages évincées ; une nouvelle réponse reçoit un nouvel âge.
 const snapshotTimes = new WeakMap();
 
 function isExpired(entry)
@@ -50,9 +50,9 @@ function trimCache()
     }
 }
 
-// =========================================
+// =================================================
 // CACHE
-// =========================================
+// =================================================
 
 export function getPrefetchedPage(href)
 {
@@ -83,11 +83,10 @@ export function getPrefetchedPage(href)
         return null;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | LRU REFRESH
-    |--------------------------------------------------------------------------
-    */
+    // --------------------------------------------------------------------------
+    // ACTUALISATION DU CACHE LRU
+    // --------------------------------------------------------------------------
+
 
     cache.delete(
         url,
@@ -136,9 +135,9 @@ export function setPrefetchedPage(
     trimCache();
 }
 
-// =========================================
-// INVALIDATE
-// =========================================
+// =================================================
+// INVALIDATION
+// =================================================
 
 export function invalidatePrefetch(href, {descendants = true} = {})
 {
@@ -176,7 +175,7 @@ export function invalidatePrefetch(href, {descendants = true} = {})
         inFlight.delete(key);
     }
 
-    // Aborted requests check their own signal before writing, even after eviction here.
+    // Les requêtes annulées vérifient leur signal avant toute écriture, même après éviction.
     const invalidationLimit = Math.max(1, config.prefetch.cacheLimit * 4);
     while (invalidated.size > invalidationLimit)
     {
@@ -190,9 +189,9 @@ export function invalidatePrefetch(href, {descendants = true} = {})
     );
 }
 
-// =========================================
-// IN FLIGHT
-// =========================================
+// =================================================
+// EN COURS
+// =================================================
 
 export function getInFlightPrefetch(href)
 {

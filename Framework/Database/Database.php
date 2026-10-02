@@ -30,9 +30,9 @@ final class Database extends PDO
         $this->rollbackCallbacks[] = $callback;
     }
 
-    // =========================================
+    // =================================================
     // CONNEXION
-    // =========================================
+    // =================================================
 
     public function __construct()
     {
@@ -82,9 +82,9 @@ final class Database extends PDO
         }
     }
 
-    // =========================================
+    // =================================================
     // TRANSACTIONS
-    // =========================================
+    // =================================================
 
     /**
      * @template T
@@ -119,7 +119,7 @@ final class Database extends PDO
             {
                 $result = $callback();
 
-                // Explicit failure results roll back while preserving their public error payload.
+                // Un résultat en échec annule la transaction tout en conservant son message d’erreur public.
                 if ($result instanceof TransactionResult && ! $result->shouldCommit())
                 {
                     if (! $this->rollBack())
@@ -169,9 +169,9 @@ final class Database extends PDO
         }
     }
 
-    // =========================================
-    // ROLLBACK
-    // =========================================
+    // =================================================
+    // ANNULATION
+    // =================================================
 
     private function rollbackSafely(Throwable $originalException): void
     {

@@ -46,9 +46,9 @@ final class ErrorController extends Controller
         parent::__construct($request);
     }
 
-    // =========================================
+    // =================================================
     // RENDU
-    // =========================================
+    // =================================================
 
     public static function handle(int $status, string $message, Request $request): never
     {

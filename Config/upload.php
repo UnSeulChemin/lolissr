@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-// Config is loaded once per request; consumers receive normalized lists.
+// La configuration est chargée une fois par requête ; les consommateurs reçoivent des listes normalisées.
 $normalizeList = static function (string $value): array
 {
     return array_values(array_unique(array_filter(
@@ -13,23 +13,23 @@ $normalizeList = static function (string $value): array
 
 return [
 
-    // =========================================
+    // =================================================
     // LIMITES
-    // =========================================
+    // =================================================
 
     'max_size' => max(1, env_int('UPLOAD_MAX_SIZE', 5_242_880)),
 
-    // =========================================
+    // =================================================
     // DIMENSIONS
-    // =========================================
+    // =================================================
 
     'max_width' => max(1, env_int('UPLOAD_MAX_WIDTH', 10_000)),
     'max_height' => max(1, env_int('UPLOAD_MAX_HEIGHT', 10_000)),
     'max_pixels' => max(1, env_int('UPLOAD_MAX_PIXELS', 50_000_000)),
 
-    // =========================================
+    // =================================================
     // FORMATS
-    // =========================================
+    // =================================================
 
     'allowed_extensions' => array_values(array_unique(array_map(
         static fn (string $extension): string => $extension === 'jpeg' ? 'jpg' : $extension,

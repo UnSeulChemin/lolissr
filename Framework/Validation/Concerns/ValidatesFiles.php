@@ -6,9 +6,9 @@ namespace Framework\Validation\Concerns;
 
 trait ValidatesFiles
 {
-    // =========================================
+    // =================================================
     // PRÉSENCE
-    // =========================================
+    // =================================================
 
     public function fileRequired(string $field, ?string $message = null): self
     {
@@ -64,9 +64,9 @@ trait ValidatesFiles
         return $this;
     }
 
-    // =========================================
+    // =================================================
     // FORMAT
-    // =========================================
+    // =================================================
 
     /**
      * @param list<string> $allowedExtensions
@@ -190,9 +190,9 @@ trait ValidatesFiles
         return $this;
     }
 
-    // =========================================
+    // =================================================
     // TAILLE
-    // =========================================
+    // =================================================
 
     public function maxFileSize(string $field, int $maxBytes, ?string $message = null): self
     {

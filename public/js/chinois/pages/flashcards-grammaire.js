@@ -1,8 +1,8 @@
 import { createFlashcardDeck } from './flashcard-deck.js';
 
-// =========================================
-// FLASHCARDS GRAMMAIRE
-// =========================================
+// =================================================
+// CARTES DE RÉVISION GRAMMAIRE
+// =================================================
 
 import {
     post,
@@ -20,9 +20,9 @@ import {
     invalidateGrammarPages,
 } from '../chinois-cache.js';
 
-// =========================================
-// INIT
-// =========================================
+// =================================================
+// INITIALISATION
+// =================================================
 
 const initializedContainers = new WeakSet();
 
@@ -68,9 +68,9 @@ export function initFlashcardsGrammairePage()
         }
     }
 
-    // =========================================
-    // RENDER
-    // =========================================
+    // =================================================
+    // RENDU
+    // =================================================
 
     function renderCard()
     {
@@ -136,9 +136,9 @@ export function initFlashcardsGrammairePage()
         }
     }
 
-    // =========================================
+    // =================================================
     // NAVIGATION
-    // =========================================
+    // =================================================
 
     async function navigate(direction)
     {
@@ -164,9 +164,9 @@ export function initFlashcardsGrammairePage()
     previousButton?.addEventListener('click', () => { void navigate(-1); });
     nextButton?.addEventListener('click', () => { void navigate(1); });
 
-    // =========================================
+    // =================================================
     // VALIDATION
-    // =========================================
+    // =================================================
 
     masteredButton?.addEventListener('click', async () =>
     {
@@ -229,9 +229,9 @@ export function initFlashcardsGrammairePage()
         }
     });
 
-    // =========================================
-    // START
-    // =========================================
+    // =================================================
+    // DÉMARRAGE
+    // =================================================
 
     renderCard();
 }

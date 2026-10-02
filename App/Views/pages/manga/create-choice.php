@@ -57,11 +57,11 @@ use App\DTO\Common\Responses\ViewData;
             </span>
 
             <span class="dashboard-card-title u-relative u-w-full u-bold">
-                Artbook
+                Livre d’illustrations
             </span>
 
             <span class="dashboard-card-description u-relative u-w-full">
-                Ajouter un artbook à la collection avec sa couverture, sa note et ses informations.
+                Ajouter un livre d’illustrations à la collection avec sa couverture, sa note et ses informations.
             </span>
 
         </a>

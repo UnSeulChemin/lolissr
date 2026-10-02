@@ -18,9 +18,9 @@ final readonly class UploadService
     ) {
     }
 
-    // =========================================
-    // UPLOAD
-    // =========================================
+    // =================================================
+    // TÉLÉVERSEMENT
+    // =================================================
 
     /**
      * @param array<string, mixed> $files
@@ -61,7 +61,7 @@ final readonly class UploadService
             );
         }
 
-        // A recreated record must never reuse a file awaiting an older deletion's cleanup.
+        // Un enregistrement recréé ne doit jamais réutiliser un fichier dont la suppression est en attente.
         $thumbnail = mb_strcut($thumbnail, 0, 180, 'UTF-8') . '-' . bin2hex(random_bytes(16));
 
         $destination = $this->buildDestinationPath(
@@ -79,7 +79,7 @@ final readonly class UploadService
             );
         }
 
-        // Exclusive creation reserves the name before moving the uploaded file.
+        // La création exclusive réserve le nom avant de déplacer le fichier téléversé.
         $reservation = @fopen($destination, 'x+b');
 
         if ($reservation === false)
@@ -139,9 +139,9 @@ final readonly class UploadService
         );
     }
 
-    // =========================================
+    // =================================================
     // SUPPRESSION
-    // =========================================
+    // =================================================
 
     public function removeFile(string $path): bool
     {
@@ -165,9 +165,9 @@ final readonly class UploadService
         return false;
     }
 
-    // =========================================
+    // =================================================
     // DESTINATION
-    // =========================================
+    // =================================================
 
     private function buildDestinationPath(
         string $directory,
@@ -198,9 +198,9 @@ final readonly class UploadService
         return @mkdir($directory, 0755, true) || is_dir($directory);
     }
 
-    // =========================================
+    // =================================================
     // RÉSULTAT
-    // =========================================
+    // =================================================
 
     private function failure(
         string $logMessage,

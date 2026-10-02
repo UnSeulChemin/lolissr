@@ -8,7 +8,7 @@ use ReflectionMethod;
 use ReflectionNamedType;
 use ReflectionParameter;
 
-/** Shared parameter metadata; defaults are evaluated for each invocation. */
+// Métadonnées communes des paramètres ; les valeurs par défaut sont évaluées à chaque appel.
 final readonly class ParameterPlan
 {
     public string $name;
