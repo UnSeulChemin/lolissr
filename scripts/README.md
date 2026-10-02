@@ -1,6 +1,19 @@
-# Commandes CLI
+# COMMANDES CLI
 
 Les commandes publiques sont déclarées dans le [composer.json](../composer.json).
+
+
+
+<a id="organisation"></a>
+
+```text
+=================================================
+ORGANISATION
+=================================================
+```
+
+
+= Où trouver les commandes
 
 | Dossier | Rôle |
 | --- | --- |
@@ -19,3 +32,66 @@ générées par le build.
 Les scripts de maintenance, de base et de publication ont des effets propres :
 la validation habituelle utilise `composer check` et `composer browser-tests`.
 Le build des assets s'exécute avec `composer assets:build`.
+
+
+
+<a id="commandes-courantes"></a>
+
+```text
+=================================================
+COMMANDES COURANTES
+=================================================
+```
+
+
+= Construire les assets
+
+```sh
+composer assets:build
+```
+
+
+= Vérifier le code et les parcours
+
+```sh
+composer check
+composer browser-tests
+```
+
+
+= Générer une archive de livraison
+
+```sh
+composer release:zip
+```
+
+```text
+Sources du projet
+    │
+    ▼
+Build des assets
+    │
+    ▼
+Préparation de la livraison
+    │
+    ▼
+Archive ZIP dans releases/
+```
+
+
+= Nettoyer l'environnement local
+
+```sh
+composer dev:reset
+```
+
+Cette commande vide les logs, le cache et les sessions, puis régénère l'autoload.
+
+
+= Sauvegarder la base
+
+```sh
+composer backup
+```
+
+La sauvegarde utilise les paramètres de connexion du `.env`.

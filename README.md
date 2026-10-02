@@ -1,9 +1,18 @@
-# LoliSSR
+# LOLISSR
 
 Application PHP pour les collections, l'apprentissage du chinois et le profil.
 Le site utilise un framework local, des templates PHP et une navigation JavaScript.
 
-## Arborescence
+
+
+<a id="arborescence"></a>
+
+```text
+=================================================
+ARBORESCENCE
+=================================================
+```
+
 
 ```text
 App/                    Fonctionnalités et règles métier
@@ -32,35 +41,92 @@ vendor/                 Dépendances Composer
 Les domaines `Artbook`, `Manga`, `Figurine`, `Nendoroid`, `Peluche`, `Chinois`,
 `Profile` et `Auth` utilisent les mêmes noms dans les couches PHP concernées.
 
-## Conventions
+
+
+<a id="conventions"></a>
+
+```text
+=================================================
+CONVENTIONS
+=================================================
+```
+
 
 - PHP : fichier et classe en `PascalCase`, namespace conforme au chemin PSR-4.
+
 - DTO : suffixe `Data`, entrées dans `Inputs/`, résultats de présentation dans
   `Responses/`. `ServiceResult` représente le résultat d'une opération métier.
+
 - Traits : dossier `Concerns/`, nom décrivant leur capacité.
+
 - Vues : `index`, `create`, `edit`, `show` ; fragments dans `partials/`.
+
 - JavaScript et CSS : noms en `kebab-case`, dossiers techniques en anglais.
   Les noms des domaines existants restent communs aux fonctionnalités.
+
 - Tests et scripts : noms décrivant l'objet testé ou l'action exécutée.
+
 - Les fichiers de `public/js/dist/` et les manifestes générés sont produits par
   le build. Le suffixe des bundles est une empreinte de contenu.
 
-## Commandes
+
+
+<a id="commandes"></a>
+
+```text
+=================================================
+COMMANDES
+=================================================
+```
+
+
+= Installer les dépendances
 
 ```sh
 composer install
+```
+
+
+= Construire les fichiers CSS et JavaScript
+
+```sh
 composer assets:build
+```
+
+
+= Vérifier le code et les tests
+
+```sh
 composer check
+```
+
+
+= Vérifier les interactions dans le navigateur
+
+```sh
 composer browser-tests
 ```
 
 Les tests HTTP et navigateur nécessitent Apache local ; certains tests métier
 nécessitent MySQL. Voir les [prérequis de test](docs/guide.md).
 
-## Documentation
+
+
+<a id="documentation"></a>
+
+```text
+=================================================
+DOCUMENTATION
+=================================================
+```
+
 
 - [Architecture et conventions détaillées](docs/project-structure.md)
+
 - [Application](App/README.md), [framework](Framework/README.md), [configuration](Config/README.md)
+
 - [Tests](tests/README.md) et [commandes CLI](scripts/README.md)
+
 - [Sources frontend et fichiers générés](public/README.md)
+
 - [Correspondance des fichiers renommés](docs/structure-renames.json)

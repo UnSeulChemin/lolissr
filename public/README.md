@@ -1,7 +1,20 @@
-# Fichiers web
+# FICHIERS WEB
 
 `index.php` démarre l'application. Les URL publiques sont déclarées dans
 [Config/routes.php](../Config/routes.php).
+
+
+
+<a id="organisation"></a>
+
+```text
+=================================================
+ORGANISATION
+=================================================
+```
+
+
+= Sources et fichiers publiés
 
 | Chemin | Contenu |
 | --- | --- |
@@ -17,10 +30,63 @@
 | `css/utilities/`, `css/partials/` | Utilitaires et éléments de layout |
 | `images/` | Images du site et fichiers locaux téléversés |
 
-Modifier les sources puis lancer `composer assets:build`. Cette commande
+
+
+<a id="construction-des-assets"></a>
+
+```text
+=================================================
+CONSTRUCTION DES ASSETS
+=================================================
+```
+
+
+= Des sources aux fichiers chargés par le navigateur
+
+```text
+Sources JavaScript                 Sources CSS
+js/app.js + modules                css/app.css + imports
+         │                                  │
+         └──────────────┬───────────────────┘
+                        ▼
+              composer assets:build
+                        │
+          ┌─────────────┴──────────────┐
+          ▼                            ▼
+     js/dist/                  css/app.bundle.css
+          │                            │
+          └─────────────┬──────────────┘
+                        ▼
+             Manifestes et versions
+```
+
+En local, les pages utilisent les sources. En production, elles utilisent les
+bundles construits.
+
+
+= Reconstruire après une modification
+
+```sh
+composer assets:build
+```
+
+Cette commande
 actualise le CSS compilé, les bundles JavaScript et les manifestes.
 Les noms `app-<empreinte>.js` permettent de distinguer les versions du build ;
 ils ne sont pas renommés manuellement.
+
+
+
+<a id="conventions"></a>
+
+```text
+=================================================
+CONVENTIONS
+=================================================
+```
+
+
+= Noms des fichiers
 
 Les fichiers JS/CSS sont nommés en `kebab-case`. Les pages JS utilisent `create`
 et `edit` pour leurs formulaires. `profile` est le nom du domaine technique ;

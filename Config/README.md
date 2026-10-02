@@ -1,12 +1,45 @@
-# Configuration de LoliSSR
+# CONFIGURATION DE LOLISSR
 
 Voir aussi l'[architecture de l'application](../App/README.md) et le
 [fonctionnement du framework](../Framework/README.md).
 
 Ce dossier décrit les options de l'application, ses routes et les feuilles de style propres aux pages. Les valeurs locales restent dans `.env` ; le modèle est [`.env.example`](../.env.example).
 
-## Chargement
 
+
+<a id="chargement"></a>
+
+```text
+=================================================
+CHARGEMENT
+=================================================
+```
+
+
+= D'où viennent les valeurs
+
+```text
+.env + environnement du processus
+    │
+    ▼
+Bootstrap
+    │
+    ├── Cache compilé valide ──► Configuration + routes compilées
+    │
+    └── Cache absent/invalide
+            │
+            ▼
+        Validation complète
+            │
+            ▼
+        Config/*.php ──► config('fichier.cle', défaut)
+
+Config/routes.php ──► Enregistrement des routes
+                     (fonction, pas tableau de configuration)
+```
+
+
+= Chargement et validation
 Les extensions PHP requises sont déclarées dans `composer.json`, et non dans
 les tableaux de ce dossier. `intl` sert à la translittération des sections HSK ;
 `gd` sert à la génération des images de profil. Cette génération exige aussi
@@ -29,7 +62,16 @@ Les valeurs du `.env` remplacent les variables existantes pendant son utilisatio
 
 `routes.php` est un cas distinct : il retourne une fonction d'enregistrement des routes, pas un tableau à lire avec `config()`.
 
-## Variables obligatoires
+
+
+<a id="variables-obligatoires"></a>
+
+```text
+=================================================
+VARIABLES OBLIGATOIRES
+=================================================
+```
+
 
 Ces variables doivent être présentes et non vides. Les exemples ne sont pas des valeurs de secours.
 
@@ -46,7 +88,16 @@ Ces variables doivent être présentes et non vides. Les exemples ne sont pas de
 
 Le mode `testing` impose des transactions en lecture seule sur les connexions créées par `Framework\Database\Database`. Il ne sélectionne pas automatiquement une autre base de données.
 
-## Options et valeurs par défaut
+
+
+<a id="options-et-valeurs-par-défaut"></a>
+
+```text
+=================================================
+OPTIONS ET VALEURS PAR DÉFAUT
+=================================================
+```
+
 
 Les valeurs ci-dessous sont celles du code lorsque la variable est absente. Le fichier `.env.example` peut proposer des valeurs différentes adaptées au développement.
 
@@ -57,30 +108,74 @@ Les valeurs ci-dessous sont celles du code lorsque la variable est absente. Le f
 | `app.php` | `PROFILER_ENABLED` | `false` | Mesures ; démarrage du profiler également conditionné au debug |
 | `app.php` | `APP_PAGINATION` | `8` | Éléments par page |
 | `app.php` | `TRUST_PROXY` | `false` | Prise en compte du protocole transmis par un proxy |
+
+
+= Session
+
+| Fichier | Variable | Défaut | Unité / rôle |
+|---|---|---|---|
 | `session.php` | `SESSION_NAME` | `APP_SESSION` | Nom de session ; lettres, chiffres, tirets et underscores |
+
+
+= Base de données
+
+| Fichier | Variable | Défaut | Unité / rôle |
+|---|---|---|---|
 | `database.php` | `DB_PASS` | chaîne vide | Mot de passe, vide autorisé |
 | `database.php` | `DB_CHARSET` | `utf8mb4` | Jeu de caractères de connexion |
 | `database.php` | `DB_SLOW_QUERY_THRESHOLD` | `50` | Millisecondes |
+
+
+= Cache
+
+| Fichier | Variable | Défaut | Unité / rôle |
+|---|---|---|---|
 | `cache.php` | `CACHE_ENABLED` | `false` | Cache de données |
 | `cache.php` | `CACHE_TTL` | `300` | Secondes ; un appel peut fournir son propre TTL |
+
+
+= Journaux
+
+| Fichier | Variable | Défaut | Unité / rôle |
+|---|---|---|---|
 | `log.php` | `LOG_ENABLED` | `true` | Journalisation |
 | `log.php` | `LOG_RETENTION_DAYS` | `14` | Jours ; nettoyage déclenché par les écritures, au maximum une fois par heure |
+
+
+= Uploads
+
+| Fichier | Variable | Défaut | Unité / rôle |
+|---|---|---|---|
 | `upload.php` | `UPLOAD_MAX_SIZE` | `5242880` | Octets, soit 5 Mio |
 | `upload.php` | `UPLOAD_MAX_WIDTH` | `10000` | Pixels |
 | `upload.php` | `UPLOAD_MAX_HEIGHT` | `10000` | Pixels |
 | `upload.php` | `UPLOAD_MAX_PIXELS` | `50000000` | Nombre total de pixels |
 | `upload.php` | `UPLOAD_ALLOWED_EXT` | `jpg,jpeg,png,webp` | Extensions séparées par des virgules |
 | `upload.php` | `UPLOAD_ALLOWED_MIME` | `image/jpeg,image/png,image/webp` | Types MIME séparés par des virgules |
+
+
+= Fonctionnalités locales
+
+| Fichier | Variable | Défaut | Unité / rôle |
+|---|---|---|---|
 | `routes/auth.php` | `REGISTRATION_ENABLED` | `false` | Routes d'inscription hors production |
 | `routes/sql.php` | `SQL_TOOL_ENABLED` | `false` | Routes de l'outil SQL hors production |
 
-### Validation
+
+
+### VALIDATION
+
 
 - Écrire de préférence les booléens sous la forme `true` ou `false`. Les valeurs reconnues par le filtre PHP (`1/0`, `yes/no`, `on/off`) sont aussi acceptées. Une valeur explicitement vide ou non reconnue est refusée pour les options booléennes validées.
+
 - Pagination, port, seuil SQL, limites d'upload, TTL et rétention des logs doivent être des entiers strictement positifs lorsqu'ils sont fournis.
+
 - Les listes d'upload absentes utilisent leurs valeurs par défaut. Une liste explicitement vide est refusée. Espaces, casse et doublons sont normalisés une seule fois au chargement de `upload.php`.
+
 - La validation des listes garantit qu'elles ne sont pas vides ; elle ne vérifie pas à elle seule la correspondance entre chaque extension et chaque type MIME.
+
 - Le nom de session est vérifié lors de l'ouverture de la session.
+
 - En production, `APP_DEBUG`, `PROFILER_ENABLED`, `SQL_TOOL_ENABLED` et `REGISTRATION_ENABLED` doivent être désactivés.
 
 Les limites applicatives d'upload ne remplacent pas les limites de réception définies dans la configuration PHP du serveur.
@@ -89,7 +184,16 @@ Si un TTL de cache dépasse la durée représentable, son expiration est plafonn
 `PHP_INT_MAX`, sans débordement. Cela vaut pour `CACHE_TTL` et les TTL fournis à
 `Cache::remember()` ; l'invalidation explicite reste possible.
 
-## Manifeste JavaScript
+
+
+<a id="manifeste-javascript"></a>
+
+```text
+=================================================
+MANIFESTE JAVASCRIPT
+=================================================
+```
+
 
 Le manifeste généré `javascript.php` contient l'entrée, les préchargements et les
 fichiers publiés. Les empreintes des sources sont générées séparément dans
@@ -98,12 +202,21 @@ ne sont pas chargées par les pages ni intégrées au cache du bootstrap. Les de
 fichiers sont régénérés par `composer js:build` (ou `composer assets:build`).
 Le test du bundle vérifie leur correspondance et les empreintes des sources.
 
-## Styles par page
+
+
+<a id="styles-par-page"></a>
+
+```text
+=================================================
+STYLES PAR PAGE
+=================================================
+```
+
 
 [`styles.php`](styles.php) associe des fichiers relatifs à `public/css/` aux vues relatives à `App/Views/`, sans extension `.php` :
 
 ```php
-'page/exemple.css' => ['pages/exemple/index'],
+'pages/exemple.css' => ['pages/exemple/index'],
 'components/exemple.css' => ['pages/exemple/'],
 ```
 
@@ -113,7 +226,16 @@ Un chemin de vue sans slash final correspond exactement à cette vue. Un chemin 
 
 Pour ajouter une feuille spécifique, créer le fichier CSS puis ajouter son association ici. Préserver l'ordre des dépendances et les règles partagées ; les pages de chinois utilisent actuellement ensemble les feuilles vocabulaire et grammaire.
 
-## Routes
+
+
+<a id="routes"></a>
+
+```text
+=================================================
+ROUTES
+=================================================
+```
+
 
 [`routes.php`](routes.php) charge les routes d'authentification puis enregistre les autres familles dans un groupe protégé par `AuthMiddleware`. Les protections CSRF et les contraintes JSON restent déclarées sur les routes ou leurs groupes.
 
@@ -137,7 +259,16 @@ Modifier le helper pour un changement commun aux trois collections. Garder les c
 
 L'ordre de déclaration fait partie du comportement du routeur : une route dynamique déclarée avant une route statique peut rester prioritaire. Ne pas réordonner les routes comme un simple changement de présentation.
 
-## Cache du bootstrap au déploiement
+
+
+<a id="cache-du-bootstrap-au-déploiement"></a>
+
+```text
+=================================================
+CACHE DU BOOTSTRAP AU DÉPLOIEMENT
+=================================================
+```
+
 
 Après installation sur le serveur cible, configuration du `.env` et compilation des assets :
 
@@ -177,11 +308,23 @@ Mesure locale reproductible, sans accès à la base :
 php tests/Framework/bootstrap-cache.php --benchmark
 ```
 
-## Ajouter une option
+
+
+<a id="ajouter-une-option"></a>
+
+```text
+=================================================
+AJOUTER UNE OPTION
+=================================================
+```
+
 
 1. Déclarer la variable et son exemple dans `.env.example`, sans donnée sensible réelle.
+
 2. Ajouter sa lecture dans le fichier `Config` concerné, avec un défaut si elle est facultative.
+
 3. Ajouter les contraintes nécessaires dans `EnvironmentValidator` et préciser si elle est obligatoire.
+
 4. Lire l'option avec `config()` dans le code consommateur et mettre à jour cette documentation.
 
 Les scripts de sauvegarde et de publication ont leurs propres options, notamment `MYSQLDUMP_PATH`. Les identifiants `HTTP_TEST_USERNAME` et `HTTP_TEST_PASSWORD` concernent l'outillage HTTP ; voir [`docs/guide.md`](../docs/guide.md).
