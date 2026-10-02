@@ -2,11 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Services;
+namespace App\Services\Media;
 
 use App\DTO\Common\ServiceResult;
 use App\DTO\Upload\UploadThumbnailData;
-use App\Services\Media\ImageUploadValidator;
 use App\Support\ThumbnailName;
 
 use Framework\Application\App;

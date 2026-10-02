@@ -4,14 +4,12 @@ declare(strict_types=1);
 // Only HTTP upload provenance/move are simulated. Content validation and disk cleanup are real.
 namespace App\Services\Media {
     function is_uploaded_file(string $path): bool { return is_file($path); }
-}
-namespace App\Services {
     function move_uploaded_file(string $from, string $to): bool { return rename($from, $to); }
 }
 namespace {
     require dirname(__DIR__, 2) . '/phpstan-bootstrap.php';
     use App\Services\Media\ImageUploadValidator;
-    use App\Services\UploadService;
+    use App\Services\Media\UploadService;
     use Framework\Config\Config;
 
     $dir = sys_get_temp_dir() . '/media-integrity-' . bin2hex(random_bytes(8));

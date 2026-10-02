@@ -6,7 +6,6 @@ namespace App\Services\Media;
 
 use App\DTO\Common\ServiceResult;
 use App\DTO\Upload\UploadThumbnailData;
-use App\Services\UploadService;
 use App\Support\ThumbnailDirectory;
 
 final readonly class ThumbnailManager
