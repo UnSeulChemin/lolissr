@@ -5,7 +5,6 @@ du site en production.
 
 
 
-<a id="organisation"></a>
 
 ```text
 =================================================
@@ -32,7 +31,6 @@ et les liens locaux de la documentation.
 
 
 
-<a id="commandes"></a>
 
 ```text
 =================================================
@@ -69,7 +67,6 @@ composer check:all         # Toutes les suites précédentes
 
 
 
-<a id="prérequis"></a>
 
 ```text
 =================================================
@@ -86,7 +83,6 @@ les scénarios navigateur nécessitent Microsoft Edge.
 
 
 
-<a id="test-ciblé"></a>
 
 ```text
 =================================================
@@ -105,7 +101,6 @@ php tests/Browser/run-browser-scenario.php http://localhost/lolissr tests/Browse
 
 
 
-<a id="documentation-et-rapports"></a>
 
 ```text
 =================================================

@@ -5,7 +5,6 @@
 
 
 
-<a id="organisation"></a>
 
 ```text
 =================================================
@@ -32,7 +31,6 @@ ORGANISATION
 
 
 
-<a id="construction-des-assets"></a>
 
 ```text
 =================================================
@@ -77,7 +75,6 @@ ils ne sont pas renommés manuellement.
 
 
 
-<a id="conventions"></a>
 
 ```text
 =================================================

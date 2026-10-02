@@ -5,7 +5,6 @@ Le site utilise un framework local, des templates PHP et une navigation JavaScri
 
 
 
-<a id="arborescence"></a>
 
 ```text
 =================================================
@@ -43,7 +42,6 @@ Les domaines `Artbook`, `Manga`, `Figurine`, `Nendoroid`, `Peluche`, `Chinois`,
 
 
 
-<a id="conventions"></a>
 
 ```text
 =================================================
@@ -71,7 +69,6 @@ CONVENTIONS
 
 
 
-<a id="commandes"></a>
 
 ```text
 =================================================
@@ -112,7 +109,6 @@ nécessitent MySQL. Voir les [prérequis de test](docs/guide.md).
 
 
 
-<a id="documentation"></a>
 
 ```text
 =================================================

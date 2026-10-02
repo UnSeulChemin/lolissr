@@ -4,7 +4,6 @@ Les commandes publiques sont déclarées dans le [composer.json](../composer.jso
 
 
 
-<a id="organisation"></a>
 
 ```text
 =================================================
@@ -35,7 +34,6 @@ Le build des assets s'exécute avec `composer assets:build`.
 
 
 
-<a id="commandes-courantes"></a>
 
 ```text
 =================================================

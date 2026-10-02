@@ -8,7 +8,6 @@ documentées dans [Config/README.md](../Config/README.md).
 
 
 
-<a id="organisation"></a>
 
 ```text
 =================================================
@@ -71,7 +70,6 @@ Les utilitaires sont regroupés dans `Support/Assets`, `Support/Media` et
 
 
 
-<a id="parcours-dune-requête"></a>
 
 ```text
 =================================================
@@ -119,7 +117,6 @@ Exemple à suivre : [MangaController](Http/Controllers/Manga/MangaController.php
 
 
 
-<a id="conventions-à-préserver"></a>
 
 ```text
 =================================================
@@ -167,7 +164,6 @@ CONVENTIONS À PRÉSERVER
 
 
 
-<a id="ajouter-une-fonctionnalité"></a>
 
 ```text
 =================================================
@@ -194,7 +190,6 @@ est résoluble n'a pas besoin d'un enregistrement supplémentaire.
 
 
 
-<a id="vérification"></a>
 
 ```text
 =================================================

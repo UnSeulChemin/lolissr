@@ -7,7 +7,6 @@ Ce dossier décrit les options de l'application, ses routes et les feuilles de s
 
 
 
-<a id="chargement"></a>
 
 ```text
 =================================================
@@ -64,7 +63,6 @@ Les valeurs du `.env` remplacent les variables existantes pendant son utilisatio
 
 
 
-<a id="variables-obligatoires"></a>
 
 ```text
 =================================================
@@ -90,7 +88,6 @@ Le mode `testing` impose des transactions en lecture seule sur les connexions cr
 
 
 
-<a id="options-et-valeurs-par-défaut"></a>
 
 ```text
 =================================================
@@ -186,7 +183,6 @@ Si un TTL de cache dépasse la durée représentable, son expiration est plafonn
 
 
 
-<a id="manifeste-javascript"></a>
 
 ```text
 =================================================
@@ -204,7 +200,6 @@ Le test du bundle vérifie leur correspondance et les empreintes des sources.
 
 
 
-<a id="styles-par-page"></a>
 
 ```text
 =================================================
@@ -228,7 +223,6 @@ Pour ajouter une feuille spécifique, créer le fichier CSS puis ajouter son ass
 
 
 
-<a id="routes"></a>
 
 ```text
 =================================================
@@ -261,7 +255,6 @@ L'ordre de déclaration fait partie du comportement du routeur : une route dynam
 
 
 
-<a id="cache-du-bootstrap-au-déploiement"></a>
 
 ```text
 =================================================
@@ -310,7 +303,6 @@ php tests/Framework/bootstrap-cache.php --benchmark
 
 
 
-<a id="ajouter-une-option"></a>
 
 ```text
 =================================================
