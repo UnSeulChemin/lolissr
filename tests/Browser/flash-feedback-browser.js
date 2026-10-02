@@ -29,7 +29,7 @@ export async function testPageStyles()
             return new Response(JSON.stringify({success: true, data: {cards: [{id: 400}, {id: 401}], total: 2, offset: 0}}), {headers: {'Content-Type': 'application/json'}});
         };
         await partial.move(1);
-        check(requests === 1 && partial.card.id === 401 && partial.total === 2, 'Gaps not reconciled from ordered batch');
+        check(requests === 1 && partial.card.id === 400 && partial.total === 2, 'Cursor must select the first surviving successor');
 
         const main = document.createElement('main');
         main.className = 'app-content';

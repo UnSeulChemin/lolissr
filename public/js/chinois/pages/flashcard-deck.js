@@ -12,20 +12,13 @@ export function createFlashcardDeck(container, type)
     let index = 0;
     const baseUri = container.dataset.baseUri ?? '/';
 
-    async function load(target, refresh = false)
+    async function load(id, previous = false)
     {
         if (controller.signal.aborted)
         {
             throw new DOMException('Flashcards closed', 'AbortError');
         }
-        if (! refresh && target >= offset && target < offset + cards.length)
-        {
-            index = target;
-            return;
-        }
-
-        const pageOffset = Math.floor(target / 50) * 50;
-        const response = await get(`${baseUri}chinois/flashcards/${type}/batch/${pageOffset}`, { signal: controller.signal });
+        const response = await get(`${baseUri}chinois/flashcards/${type}/cursor/${previous ? 'previous' : 'next'}/${id}`, { signal: controller.signal });
         if (controller.signal.aborted)
         {
             throw new DOMException('Flashcards closed', 'AbortError');
@@ -33,7 +26,8 @@ export function createFlashcardDeck(container, type)
         const page = response?.data;
         if (! response?.success || ! Array.isArray(page?.cards)
             || ! Number.isInteger(page.total) || page.total < 0
-            || ! Number.isInteger(page.offset) || page.offset < 0)
+            || ! Number.isInteger(page.offset) || page.offset < 0
+            || page.cards.length > 50 || page.offset + page.cards.length > page.total)
         {
             throw new Error('Chargement des cartes impossible');
         }
@@ -42,7 +36,7 @@ export function createFlashcardDeck(container, type)
         cards = page.cards;
         total = page.total;
         offset = page.offset;
-        index = cards.length ? Math.max(offset, Math.min(target, offset + cards.length - 1)) : 0;
+        index = cards.length ? offset + (previous ? cards.length - 1 : 0) : 0;
         if (! cards.length) total = 0;
     }
 
@@ -53,14 +47,20 @@ export function createFlashcardDeck(container, type)
         async move(direction)
         {
             if (! total) return;
-            await load((index + direction + total) % total);
+            const target = index + direction;
+            if (target >= offset && target < offset + cards.length)
+            {
+                index = target;
+                return;
+            }
+            await load(cards[index - offset].id, direction < 0);
         },
         async remove(id)
         {
             const position = cards.findIndex(card => card.id === id);
             if (position === -1) return;
-            // Reload after a successful mutation: offsets and the total may have changed.
-            await load(index % Math.max(1, total - 1), true);
+            // Seek past the removed ID even if other cards disappeared concurrently.
+            await load(id);
         },
     };
 }

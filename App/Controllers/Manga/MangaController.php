@@ -128,9 +128,10 @@ final class MangaController extends Controller
     // =========================================
 
     public function showSeries(
-        string $slug
+        string $slug,
+        int $page = 1
     ): never {
-        $data = $this->mangaReadService->showSeries($slug);
+        $data = $this->mangaReadService->showSeries($slug, $page);
 
         if ($data === null)
         {
@@ -145,7 +146,7 @@ final class MangaController extends Controller
             'pages/manga/series/index',
             [
                 'mangas' => $data->mangas,
-                'currentPage' => 1,
+                'currentPage' => $data->currentPage,
                 'totalSeries' => $data->totalSeries,
                 'perPage' => $data->perPage,
                 'slugFilter' => $data->slugFilter,

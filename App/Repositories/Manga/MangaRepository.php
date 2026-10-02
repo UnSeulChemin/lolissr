@@ -20,8 +20,11 @@ final class MangaRepository extends Model
     /**
      * @return list<Manga>
      */
-    public function findBySlug(string $slug): array
+    public function findBySlug(string $slug, int $perPage = 50, int $page = 1): array
     {
+        $perPage = max(1, $perPage);
+        $pageIndex = max(1, $page) - 1;
+        $offset = $pageIndex > intdiv(PHP_INT_MAX, $perPage) ? PHP_INT_MAX : $pageIndex * $perPage;
         /** @var list<Manga> $mangas */
         $mangas = $this->fetchAll(
             "
@@ -40,7 +43,8 @@ final class MangaRepository extends Model
 
             WHERE m.slug = :slug
 
-            ORDER BY m.numero DESC
+            ORDER BY m.numero DESC, m.id DESC
+            LIMIT {$perPage} OFFSET {$offset}
             ",
             [
                 'slug' => $this->normalizeSlug($slug),
@@ -50,6 +54,14 @@ final class MangaRepository extends Model
         );
 
         return $mangas;
+    }
+
+    public function countBySlug(string $slug): int
+    {
+        return (int) $this->fetchSingleValue(
+            "SELECT COUNT(*) AS total FROM {$this->table()} WHERE slug = :slug",
+            'total', ['slug' => $this->normalizeSlug($slug)]
+        );
     }
 
     public function findRecordBySlugAndNumero(string $slug, int $numero): ?Manga

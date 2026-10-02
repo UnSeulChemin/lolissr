@@ -89,3 +89,21 @@ $assert((int) $db->query('SELECT xp_read_rewarded + xp_series_rewarded FROM mang
 $db->transaction(fn () => $service->rewardRead($manga, 'beta'));
 $assert($earned() === UserXp::READ_TOME * 2 + UserXp::COMPLETE_SERIES * 2 + AchievementRewards::TOMES[1] + AchievementRewards::SERIES[1], 'Base rewards lost when achievements were already claimed');
 echo "PASS: combined manga XP, one user lock/update, duplicate prevention and rollback (temporary tables only).\n";
+
+$achievementService = $container->get(\App\Services\Profile\AchievementXpService::class);
+$assert($achievementService->pendingSeriesTarget($user) === 50, 'Missing series tiers not detected');
+$achievementService->rewardSeries($user, 50);
+$before = [$user->level, $user->xp];
+XpBatchQueryCounter::$queries = [];
+$db->transaction(fn () => $service->rewardSeriesAchievements());
+$assert(count(XpBatchQueryCounter::$queries) === 1
+    && !str_contains(XpBatchQueryCounter::$queries[0], 'FROM manga')
+    && [$user->level, $user->xp] === $before, 'Fully claimed series must skip collection count and user lock');
+$db->exec("DELETE FROM achievement_xp_rewards WHERE user_id = 1 AND achievement_key = 'series_1'");
+$assert($achievementService->pendingSeriesTarget($user) === 1, 'Missing old tier must allow catch-up');
+XpBatchQueryCounter::$queries = [];
+$db->transaction(fn () => $service->rewardSeriesAchievements());
+$assert($achievementService->pendingSeriesTarget($user) === 0, 'Old tier was not restored');
+$assert(count(array_filter(XpBatchQueryCounter::$queries, static fn ($sql) => str_contains($sql, 'LIMIT 1'))) >= 1,
+    'Catch-up count should stop at the highest missing tier');
+echo "PASS: completed series tiers skip aggregation; missing older tiers retain bounded catch-up.\n";

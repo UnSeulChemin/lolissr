@@ -22,7 +22,7 @@ $isSerieView =
 
         <?php require view_path('pages/manga/series/ajax.php'); ?>
 
-        <?php if (! $isSerieView && $totalPages > 1): ?>
+        <?php if ($totalPages > 1): ?>
 
             <nav class="collection-pagination-wrapper u-row-center">
 
@@ -39,7 +39,8 @@ $isSerieView =
                     <a
                         class="<?= $class ?>"
                         data-prefetch
-                        href="<?= e($view->baseUri) ?>manga/series/page/<?= $i ?>"
+                        <?= $currentPage === $i ? 'aria-current="page"' : '' ?>
+                        href="<?= e($view->baseUri . 'manga/series/' . ($slugFilter !== null ? rawurlencode($slugFilter) . '/' : '')) ?>page/<?= $i ?>"
                     >
                         <?= $i ?>
                     </a>

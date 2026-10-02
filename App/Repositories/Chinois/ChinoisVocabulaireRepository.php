@@ -33,6 +33,14 @@ final class ChinoisVocabulaireRepository extends Model
         ];
     }
 
+    /** @return array{cards: list<ChinoisVocabulaireData>, total: int, offset: int} */
+    public function findNotMasteredCursor(int $id, bool $previous): array
+    {
+        $page = $this->readFlashcardCursor($id, $previous);
+        return ['cards' => array_map($this->mapRowToDto(...), $page['rows']),
+            'total' => $page['total'], 'offset' => $page['offset']];
+    }
+
     /**
      * @return list<ChinoisVocabulaireData>
      */

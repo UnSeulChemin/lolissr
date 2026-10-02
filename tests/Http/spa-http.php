@@ -79,3 +79,29 @@ foreach (['vocabulaire', 'grammaire'] as $type)
     }
 }
 echo "PASS: both flashcard batch endpoints accept zero and extreme offsets with bounded payloads.\n";
+
+foreach (['vocabulaire', 'grammaire'] as $type)
+{
+    foreach (['next', 'previous'] as $direction)
+    {
+        foreach ([0, PHP_INT_MAX] as $cursor)
+        {
+            $response = http_get(http_base() . "/chinois/flashcards/$type/cursor/$direction/$cursor", $jsonHeaders);
+            $payload = json_decode($response['body'], true, 512, JSON_THROW_ON_ERROR);
+            $page = $payload['data'] ?? [];
+            if ($response['status'] !== 200 || ($payload['success'] ?? false) !== true
+                || !is_array($page['cards'] ?? null) || count($page['cards']) > 50
+                || !is_int($page['total'] ?? null) || !is_int($page['offset'] ?? null)
+                || $page['offset'] + count($page['cards']) > $page['total'])
+                throw new RuntimeException("Invalid flashcard cursor: $type/$direction/$cursor");
+        }
+    }
+    if (http_get(http_base() . "/chinois/flashcards/$type/cursor/invalid/0", $jsonHeaders)['status'] !== 404)
+        throw new RuntimeException('Invalid cursor direction accepted');
+}
+foreach (['/chinois/grammaire/hsk1?section=missing-fixture', '/manga/series/missing-fixture/page/2'] as $path)
+{
+    if (http_get(http_base() . $path, $jsonHeaders)['status'] !== 404)
+        throw new RuntimeException('Missing section/series page accepted');
+}
+echo "PASS: cursor endpoints, wrap directions and missing section/series pages.\n";

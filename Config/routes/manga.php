@@ -138,6 +138,7 @@ $router->prefix('manga')->group(function (Router $router): void
             [MangaController::class, 'showManga']
         );
 
+        $router->get('{slug}/page/{page:int}', [MangaController::class, 'showSeries']);
         $router->get('{slug}', [MangaController::class, 'showSeries']);
     });
 

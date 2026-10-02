@@ -65,10 +65,11 @@ use App\DTO\Common\Responses\ViewData;
 
         <nav class="grammar-summary-links u-flex">
 
-            <?php foreach ($hsk->sections as $section): ?>
+            <?php foreach ($hsk->menu as $section): ?>
 
                 <a
-                    href="#<?= e($section->id) ?>"
+                    href="<?= e($view->baseUri . 'chinois/grammaire/hsk' . $hsk->level . '?section=' . rawurlencode($section->id)) ?>"
+                    <?= ($hsk->sections[0]->id ?? null) === $section->id ? 'aria-current="page"' : '' ?>
                     class="grammar-summary-link u-inline-center u-bold"
                 >
                     <?= e($section->title) ?>
@@ -131,7 +132,7 @@ use App\DTO\Common\Responses\ViewData;
 
                             <a
                                 class="grammar-edit u-row-center u-absolute u-pointer"
-                                href="<?= e($view->baseUri) ?>chinois/grammaire/<?= strtolower($grammaire->niveau) ?>/modifier/<?= $grammaire->id ?>"
+                                href="<?= e($view->baseUri) ?>chinois/grammaire/<?= strtolower($grammaire->niveau) ?>/modifier/<?= $grammaire->id ?>?return_to=<?= e(rawurlencode('chinois/grammaire/hsk' . $hsk->level . '?section=' . $section->id)) ?>"
                                 aria-label="Modifier la règle"
                                 title="Modifier la règle"
                             >

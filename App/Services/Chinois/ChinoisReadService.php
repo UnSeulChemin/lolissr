@@ -65,17 +65,37 @@ final readonly class ChinoisReadService
     // GRAMMAIRE
     // =========================================
 
-    public function hsk(string $niveau): ChinoisHskData
+    public function hsk(string $niveau, string $sectionId = ''): ChinoisHskData
     {
         $niveau = mb_strtoupper(trim($niveau));
         $config = self::HSK[$niveau] ?? throw new NotFoundException('Niveau HSK introuvable');
+
+        $menu = $this->sectionMenu($this->grammaireRepository->sectionTitles($niveau));
+        $selected = $menu[0] ?? null;
+        if ($sectionId !== '')
+        {
+            $selected = null;
+            foreach ($menu as $section)
+            {
+                if ($section->id === $sectionId) $selected = $section;
+            }
+            if ($selected === null) throw new NotFoundException('Section introuvable');
+        }
+        $sections = $selected === null ? [] : $this->buildSections(
+            $this->grammaireRepository->findByLevel($niveau, $selected->title)
+        );
+        if ($selected !== null && $sections !== [])
+        {
+            $sections = [new ChinoisSectionData($selected->title, $selected->id, $sections[0]->categories)];
+        }
 
         return new ChinoisHskData(
             level: str_replace('HSK', '', $niveau),
             description: $config['description'],
             sourceUrl: $config['sourceUrl'],
             sourceDescription: $config['sourceDescription'],
-            sections: $this->buildSections($this->grammaireRepository->findByLevel($niveau))
+            sections: $sections,
+            menu: $menu,
         );
     }
 
@@ -171,6 +191,13 @@ final readonly class ChinoisReadService
         return $repository->findNotMasteredPage($offset);
     }
 
+    /** @return array{cards: list<ChinoisGrammaireData>|list<ChinoisVocabulaireData>, total: int, offset: int} */
+    public function flashcardCursor(bool $grammar, int $id = 0, bool $previous = false): array
+    {
+        $repository = $grammar ? $this->grammaireRepository : $this->vocabulaireRepository;
+        return $repository->findNotMasteredCursor($id, $previous);
+    }
+
     // =========================================
     // RECHERCHE
     // =========================================
@@ -203,12 +230,24 @@ final readonly class ChinoisReadService
         }
 
         $results = [];
+        foreach ($this->sectionMenu(array_map(strval(...), array_keys($sections))) as $section)
+        {
+            $results[] = new ChinoisSectionData($section->title, $section->id, $this->buildCategories($sections[$section->title]));
+        }
+        return $results;
+    }
+
+    /** @param list<string> $titles
+     *  @return list<ChinoisSectionData>
+     */
+    private function sectionMenu(array $titles): array
+    {
+        $results = [];
         $reservedIds = [];
         $sectionSlugs = [];
         $transliterator = \Transliterator::create('Any-Latin; Latin-ASCII');
-        foreach ($sections as $categories)
+        foreach ($titles as $section)
         {
-            $section = $categories[array_key_first($categories)][0]->section;
             $slug = $this->slugify($section, $transliterator);
             $sectionSlugs[$section] = $slug;
             if ($slug !== '')
@@ -218,9 +257,8 @@ final readonly class ChinoisReadService
         }
         $usedIds = [];
 
-        foreach ($sections as $categories)
+        foreach ($titles as $section)
         {
-            $section = $categories[array_key_first($categories)][0]->section;
             $id = $sectionSlugs[$section];
             if ($id === '' || isset($usedIds[$id]))
             {
@@ -237,7 +275,7 @@ final readonly class ChinoisReadService
             $results[] = new ChinoisSectionData(
                 title: $section,
                 id: $id,
-                categories: $this->buildCategories($categories)
+                categories: []
             );
         }
 

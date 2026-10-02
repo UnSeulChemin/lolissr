@@ -11,10 +11,16 @@ export async function testPageStyles()
     container.dataset.flashcardTotal = String(rows.length);
     const serve = async url => {
         requests++;
-        const requested = Number(String(url).split('/').at(-1));
-        const offset = Math.floor(Math.min(requested, Math.max(0, rows.length - 1)) / 50) * 50;
+        const parts = String(url).split('/');
+        check(parts.at(-3) === 'cursor', 'Navigation must use a cursor');
+        const id = Number(parts.at(-1));
+        const previous = parts.at(-2) === 'previous';
+        let candidates = rows.filter(row => previous ? row.id < id : row.id > id);
+        if (!candidates.length) candidates = rows;
+        const cards = previous ? candidates.slice(-50) : candidates.slice(0, 50);
+        const offset = cards.length ? rows.findIndex(row => row.id === cards[0].id) : 0;
         return new Response(JSON.stringify({success: true, data: {
-            cards: rows.slice(offset, offset + 50), total: rows.length, offset,
+            cards, total: rows.length, offset,
         }}), {headers: {'Content-Type': 'application/json'}});
     };
     try
@@ -49,6 +55,15 @@ export async function testPageStyles()
         rows = [];
         await deck.remove(4);
         check(deck.total === 0 && !deck.card, 'Final removal failed');
+
+        rows = Array.from({length: 121}, (_, i) => ({id: (i + 1) * 2}));
+        const changing = createFlashcardDeck(container, 'vocabulaire');
+        for (let i = 0; i < 49; i++) await changing.move(1);
+        rows = rows.filter(row => row.id > 40);
+        rows.push({id: 244});
+        await changing.move(1);
+        check(changing.card.id === 102 && changing.index === 30 && changing.total === 102,
+            'Concurrent deletion before the cursor skipped a surviving successor');
 
         const cancelled = createFlashcardDeck(container, 'grammaire');
         let release;

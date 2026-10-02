@@ -2,6 +2,25 @@
 
 ## Corrections
 
+- Les pages HSK chargent une seule section et un sommaire léger. Le paramètre
+  `section` conserve les identifiants désambiguïsés, et le formulaire revient à
+  la section consultée. Les comparaisons exactes préservent les noms de sections
+  distincts même avec une collation SQL insensible aux accents ou à la casse.
+- Les tomes d'une série sont paginés via `manga/series/{slug}/page/{page}` avec
+  la taille configurée, un tri stable et une réponse 404 hors limites.
+- Le nouveau parcours flashcards cherche les identifiants après/avant la carte
+  courante, avec bouclage et 50 contenus maximum. Le comptage exact et les cartes
+  partagent une requête ; le comptage parcourt encore les éléments non maîtrisés,
+  mais la numérotation complète par fenêtre est supprimée de ce parcours.
+  Les endpoints par offset restent disponibles pour les anciens onglets.
+- Les succès de séries déjà tous attribués évitent le comptage des collections
+  et le verrou utilisateur lors des modifications/suppressions. Sinon, le résultat
+  du comptage est plafonné au plus haut palier manquant, en conservant le rattrapage
+  des anciens paliers. Aucun gain de latence SQL n'est supposé sans mesure.
+
+`bounded-content.php`, les tests de flashcards et `manga-xp-batch.php` couvrent
+ces parcours, les limites, les suppressions concurrentes et le rattrapage XP.
+
 - Le limiteur de connexion résout le nom via `UserRepository`, avec la même
   collation que l'authentification, puis utilise l'orthographe stockée pour ses
   compteurs. Les variantes accentuées et de casse partagent donc le verrou,

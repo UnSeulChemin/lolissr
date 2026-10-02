@@ -8,13 +8,15 @@ final readonly class ChinoisHskData
 {
     /**
      * @param list<ChinoisSectionData> $sections
+     * @param list<ChinoisSectionData> $menu
      */
     public function __construct(
         public string $level,
         public string $description,
         public string $sourceUrl,
         public string $sourceDescription,
-        public array $sections
+        public array $sections,
+        public array $menu = [],
     ) {
     }
 }

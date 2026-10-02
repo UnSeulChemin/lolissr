@@ -79,6 +79,14 @@ final class ChinoisGrammaireRepository extends Model
         ];
     }
 
+    /** @return array{cards: list<ChinoisGrammaireData>, total: int, offset: int} */
+    public function findNotMasteredCursor(int $id, bool $previous): array
+    {
+        $page = $this->readFlashcardCursor($id, $previous);
+        return ['cards' => array_map($this->mapRowToDto(...), $page['rows']),
+            'total' => $page['total'], 'offset' => $page['offset']];
+    }
+
     /**
      * @return list<ChinoisGrammaireData>
      */
@@ -105,8 +113,9 @@ final class ChinoisGrammaireRepository extends Model
     /**
      * @return list<ChinoisGrammaireData>
      */
-    public function findByLevel(string $niveau): array
+    public function findByLevel(string $niveau, ?string $section = null): array
     {
+        $sectionFilter = $section === null ? '' : 'AND section = :section AND HEX(section) = HEX(:exact_section)';
         /** @var list<stdClass> $results */
         $results = $this->fetchAll(
             "
@@ -116,6 +125,7 @@ final class ChinoisGrammaireRepository extends Model
             FROM {$this->table()}
 
             WHERE niveau = :niveau
+            {$sectionFilter}
 
             ORDER BY
                 section_position ASC,
@@ -124,11 +134,22 @@ final class ChinoisGrammaireRepository extends Model
                 id ASC
             ",
             [
-                'niveau' => trim($niveau)
+                'niveau' => trim($niveau),
+                ...($section === null ? [] : ['section' => $section, 'exact_section' => $section]),
             ]
         );
 
         return array_map($this->mapRowToDto(...), $results);
+    }
+
+    /** @return list<string> */
+    public function sectionTitles(string $niveau): array
+    {
+        $rows = $this->fetchAll("SELECT section FROM {$this->table()}
+            WHERE niveau = :niveau GROUP BY section, HEX(section)
+            ORDER BY MIN(section_position), MIN(categorie_position), MIN(position), MIN(id)",
+            ['niveau' => $niveau]);
+        return array_map(static fn (stdClass $row): string => (string) $row->section, $rows);
     }
 
     public function findById(int $id): ?ChinoisGrammaireData

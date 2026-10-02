@@ -23,6 +23,26 @@ final readonly class AchievementXpService
         $this->award($user, $this->eligible('series', AchievementRewards::SERIES, $completedSeries));
     }
 
+    // Once all series tiers are claimed, edits cannot grant another series
+    // achievement. Missing older tiers must still be eligible for catch-up.
+    public function pendingSeriesTarget(User $user): int
+    {
+        $rewards = $this->eligible('series', AchievementRewards::SERIES, PHP_INT_MAX);
+        $statement = $this->database->prepare(
+            'SELECT achievement_key FROM achievement_xp_rewards WHERE user_id = ? AND achievement_key IN ('
+            . implode(', ', array_fill(0, count($rewards), '?')) . ')'
+        );
+        $statement->execute([$user->id, ...array_keys($rewards)]);
+        /** @var list<string> $claimed */
+        $claimed = $statement->fetchAll(\PDO::FETCH_COLUMN);
+        $target = 0;
+        foreach (AchievementRewards::SERIES as $threshold => $xp)
+        {
+            if (! in_array('series_' . $threshold, $claimed, true)) $target = $threshold;
+        }
+        return $target;
+    }
+
     public function rewardArtbooks(User $user, int $readArtbooks, int $baseXp = 0): void
     {
         $this->award($user, $this->eligible('artbooks', AchievementRewards::ARTBOOKS, $readArtbooks), $baseXp);

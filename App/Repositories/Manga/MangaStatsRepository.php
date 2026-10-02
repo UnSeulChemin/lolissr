@@ -102,8 +102,9 @@ final class MangaStatsRepository extends Model
         return $mangas;
     }
 
-    public function countCompletedSeries(): int
+    public function countCompletedSeries(?int $limit = null): int
     {
+        $limitSql = $limit === null ? '' : 'LIMIT ' . max(1, $limit);
         return (int) $this->fetchSingleValue(
             "
             SELECT COUNT(*) AS total
@@ -117,6 +118,7 @@ final class MangaStatsRepository extends Model
 
                 HAVING COUNT(*) = SUM(lu)
                 AND MAX(CASE WHEN numero = 1 AND statut = 'termine' THEN 1 ELSE 0 END) = 1
+                {$limitSql}
             ) completed
             ",
             'total'

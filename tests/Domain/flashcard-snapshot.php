@@ -51,6 +51,15 @@ try
             $page = $service->flashcardPage($grammar, 50);
             if ($page['total'] !== 50 || $page['offset'] !== 0 || count($page['cards']) !== 50)
                 throw new RuntimeException('Next request did not observe the committed deletion');
+            for ($id = 51; $id <= 100; $id++) $writer->exec("INSERT INTO $table (id) VALUES ($id)");
+            ConcurrentFlashcardStatement::$afterRead = static fn () => $writer->exec("DELETE FROM $table WHERE id > 50");
+            $page = $service->flashcardCursor($grammar, 50);
+            if ($page['total'] !== 100 || $page['offset'] !== 50 || count($page['cards']) !== 50
+                || $page['cards'][0]->id !== 51 || $page['cards'][49]->id !== 100)
+                throw new RuntimeException('Cursor count/cards lost the pre-deletion snapshot');
+            $page = $service->flashcardCursor($grammar, 50);
+            if ($page['total'] !== 50 || $page['offset'] !== 0 || $page['cards'][0]->id !== 1)
+                throw new RuntimeException('Cursor did not wrap after concurrent deletion');
         }
     })($path);
 }

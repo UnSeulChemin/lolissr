@@ -57,7 +57,9 @@ final readonly class MangaXpRewardService
         $user = user();
         if ($user !== null)
         {
-            $this->achievementXpService->rewardSeries($user, $this->mangaStatsRepository->countCompletedSeries());
+            $target = $this->achievementXpService->pendingSeriesTarget($user);
+            if ($target === 0) return;
+            $this->achievementXpService->rewardSeries($user, $this->mangaStatsRepository->countCompletedSeries($target));
         }
     }
 }
