@@ -164,12 +164,18 @@ final readonly class ChinoisReadService
         return $this->vocabulaireRepository->findNotMasteredDto($startId);
     }
 
-    /** @return list<int> */
-    public function flashcardIds(bool $grammar): array
+    /** @return array{cards: list<ChinoisGrammaireData>|list<ChinoisVocabulaireData>, total: int, offset: int} */
+    public function flashcardPage(bool $grammar, int $offset = 0): array
     {
-        return $grammar
-            ? $this->grammaireRepository->notMasteredIds()
-            : $this->vocabulaireRepository->notMasteredIds();
+        $repository = $grammar ? $this->grammaireRepository : $this->vocabulaireRepository;
+        $total = $repository->countNotMastered();
+        $offset = intdiv(min(max(0, $offset), max(0, $total - 1)), 50) * 50;
+
+        return [
+            'cards' => $total > 0 ? $repository->findNotMasteredPage($offset) : [],
+            'total' => $total,
+            'offset' => $offset,
+        ];
     }
 
     // =========================================

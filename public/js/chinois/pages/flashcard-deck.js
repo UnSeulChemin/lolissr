@@ -1,93 +1,66 @@
 import { get } from '../../core/http.js';
 import { registerCleanup } from '../../router/router-cleanup.js';
 
-// Keep only two batches of card contents; IDs preserve the full navigation order.
+// Only one batch is retained; the server supplies the current total on each fetch.
 export function createFlashcardDeck(container, type)
 {
     const controller = new AbortController();
     registerCleanup(() => controller.abort());
-    const initial = JSON.parse(container.dataset.flashcards ?? '[]');
-    const ids = JSON.parse(container.dataset.flashcardIds ?? '[]');
-    const cache = new Map(initial.map(card => [card.id, card]));
-    const firstIndex = ids.indexOf(initial[0]?.id);
+    let cards = JSON.parse(container.dataset.flashcards ?? '[]');
+    let total = Number(container.dataset.flashcardTotal ?? cards.length);
+    let offset = 0;
+    let index = 0;
     const baseUri = container.dataset.baseUri ?? '/';
-    let index = Math.max(0, firstIndex);
 
-    async function load()
+    async function load(target, refresh = false)
     {
-        while (ids.length > 0)
+        if (controller.signal.aborted)
         {
-            if (controller.signal.aborted)
-            {
-                throw new DOMException('Flashcards closed', 'AbortError');
-            }
-            const id = ids[index];
-            if (cache.has(id)) return;
-
-            const response = await get(`${baseUri}chinois/flashcards/${type}/cards/${id}`, { signal: controller.signal });
-            if (controller.signal.aborted)
-            {
-                throw new DOMException('Flashcards closed', 'AbortError');
-            }
-            if (! response?.success || ! Array.isArray(response.data?.cards))
-            {
-                throw new Error('Chargement des cartes impossible');
-            }
-
-            for (const card of response.data.cards)
-            {
-                cache.delete(card.id);
-                cache.set(card.id, card);
-            }
-            while (cache.size > 100)
-            {
-                cache.delete(cache.keys().next().value);
-            }
-            if (cache.has(id)) return;
-
-            // The endpoint returns up to 50 cards ordered by id, starting at id.
-            // Missing IDs through its last result are obsolete; an empty result
-            // means the entire remaining suffix has disappeared.
-            const returned = new Set(response.data.cards.map(card => card.id));
-            const last = response.data.cards.at(-1)?.id ?? Infinity;
-            for (let position = ids.length - 1; position >= 0; position--)
-            {
-                if (ids[position] >= id && ids[position] <= last && !returned.has(ids[position]))
-                {
-                    cache.delete(ids[position]);
-                    ids.splice(position, 1);
-                }
-            }
-            index = Math.max(0, ids.findIndex(candidate => candidate >= id));
+            throw new DOMException('Flashcards closed', 'AbortError');
         }
+        if (! refresh && target >= offset && target < offset + cards.length)
+        {
+            index = target;
+            return;
+        }
+
+        const pageOffset = Math.floor(target / 50) * 50;
+        const response = await get(`${baseUri}chinois/flashcards/${type}/batch/${pageOffset}`, { signal: controller.signal });
+        if (controller.signal.aborted)
+        {
+            throw new DOMException('Flashcards closed', 'AbortError');
+        }
+        const page = response?.data;
+        if (! response?.success || ! Array.isArray(page?.cards)
+            || ! Number.isInteger(page.total) || page.total < 0
+            || ! Number.isInteger(page.offset) || page.offset < 0)
+        {
+            throw new Error('Chargement des cartes impossible');
+        }
+
+        // Commit navigation only once the request succeeds, preserving the card on errors.
+        cards = page.cards;
+        total = page.total;
+        offset = page.offset;
+        index = cards.length ? Math.max(offset, Math.min(target, offset + cards.length - 1)) : 0;
+        if (! cards.length) total = 0;
     }
 
     return {
-        get card() { return cache.get(ids[index]); },
+        get card() { return cards[index - offset]; },
         get index() { return index; },
-        get total() { return ids.length; },
+        get total() { return total; },
         async move(direction)
         {
-            if (! ids.length) return;
-            const previousId = ids[index];
-            index = (index + direction + ids.length) % ids.length;
-            try
-            {
-                await load();
-            }
-            catch (error)
-            {
-                index = Math.max(0, ids.indexOf(previousId));
-                throw error;
-            }
+            if (! total) return;
+            await load((index + direction + total) % total);
         },
         async remove(id)
         {
-            const position = ids.indexOf(id);
-            if (position !== -1) ids.splice(position, 1);
-            cache.delete(id);
-            index %= ids.length || 1;
-            await load();
+            const position = cards.findIndex(card => card.id === id);
+            if (position === -1) return;
+            // Reload after a successful mutation: offsets and the total may have changed.
+            await load(index % Math.max(1, total - 1), true);
         },
     };
 }

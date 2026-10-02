@@ -4,77 +4,19 @@ declare(strict_types=1);
 
 namespace App\Repositories\Peluche;
 
-use App\Models\Model;
 use App\Models\Peluche;
-
-use Framework\Support\Str;
+use App\Models\Model;
+use App\Repositories\Collections\Concerns\SearchesCollectibles;
 
 final class PelucheSearchRepository extends Model
 {
+    use SearchesCollectibles;
+
     protected string $table = 'peluche';
 
-    /**
-     * @return list<Peluche>
-     */
+    /** @return list<Peluche> */
     public function search(string $search): array
     {
-        $search = $this->normalizeSearch($search);
-
-        if ($search === '')
-        {
-            return [];
-        }
-
-        return $this->fetchSearchResults($search);
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | HELPERS
-    |--------------------------------------------------------------------------
-    */
-
-    private function normalizeSearch(string $search): string
-    {
-        return trim(
-            preg_replace('/\s+/', ' ', trim($search)) ?? ''
-        );
-    }
-
-    private function slugSearch(string $search): string
-    {
-        return Str::slug($search);
-    }
-
-    /**
-     * @return list<Peluche>
-     */
-    private function fetchSearchResults(string $search): array
-    {
-        $slug = $this->slugSearch($search);
-
-        $sql = "
-            SELECT slug, numero, origin, waifu, thumbnail, extension
-            FROM {$this->table()}
-            WHERE (
-                waifu LIKE :search_waifu
-                OR origin LIKE :search_origin
-                OR slug LIKE :search_slug
-            )
-            ORDER BY origin ASC, waifu ASC, numero ASC, id ASC LIMIT 20
-        ";
-
-        /** @var list<Peluche> $peluches */
-        $peluches = $this->fetchAll(
-            $sql,
-            [
-                'search_waifu' => "%{$search}%",
-                'search_origin' => "%{$search}%",
-                'search_slug' => $slug !== '' ? '%' . $slug . '%' : null,
-            ],
-            Peluche::class,
-        );
-
-        return $peluches;
+        return $this->searchCollectibles($search, Peluche::class);
     }
 }

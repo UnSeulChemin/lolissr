@@ -164,3 +164,34 @@ finally
     $db->exec('DROP TEMPORARY TABLE manga');
 }
 echo "PASS: collection updates, artbook sources/read status and two-query manga notes (nulls, no-op, missing target).\n";
+
+// A deletion after the controller's lookup must still produce a 404 in the service.
+$db->exec('CREATE TEMPORARY TABLE chinois_grammaire (
+    id INT PRIMARY KEY, niveau TEXT, section TEXT, categorie TEXT, titre TEXT,
+    structure TEXT, abreviation TEXT, phrase TEXT, pinyin TEXT, traduction TEXT,
+    explication TEXT, position INT, maitrise INT, xp_rewarded INT
+) ENGINE=InnoDB');
+try
+{
+    $grammarService = $container->get(\App\Services\Chinois\ChinoisWriteService::class);
+    $dto = \App\DTO\Chinois\Inputs\ChinoisGrammaireCreateDTO::fromArray(['niveau' => 'HSK1']);
+    try
+    {
+        $grammarService->updateGrammaire(1, $dto);
+        throw new RuntimeException('Missing grammar did not throw 404');
+    }
+    catch (NotFoundException $error)
+    {
+        $check($error->getStatusCode() === 404 && !$db->inTransaction(), 'Missing grammar must roll back with 404');
+    }
+    $lockName = 'grammar-order:' . substr(hash('sha256', \Framework\Config\DatabaseConfig::name()), 0, 40);
+    $statement = $db->prepare('SELECT IS_FREE_LOCK(?)');
+    $statement->execute([$lockName]);
+    $check((int) $statement->fetchColumn() === 1, 'Missing grammar leaked the ordering lock');
+}
+finally
+{
+    if ($db->inTransaction()) $db->rollBack();
+    $db->exec('DROP TEMPORARY TABLE chinois_grammaire');
+}
+echo "PASS: missing grammar returns 404, rolls back and releases the ordering lock.\n";

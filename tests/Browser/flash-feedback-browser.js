@@ -13,11 +13,11 @@ export async function testPageStyles()
     {
         const container = document.createElement('div');
         container.dataset.baseUri = base;
-        container.dataset.flashcardIds = JSON.stringify(Array.from({length: 500}, (_, i) => i + 1));
+        container.dataset.flashcardTotal = '500';
         container.dataset.flashcards = JSON.stringify([{id: 1}]);
         window.fetch = async () => {
             requests++;
-            return new Response(JSON.stringify({success: true, data: {cards: []}}), {headers: {'Content-Type': 'application/json'}});
+            return new Response(JSON.stringify({success: true, data: {cards: [{id: 1}], total: 1, offset: 0}}), {headers: {'Content-Type': 'application/json'}});
         };
         const deck = createFlashcardDeck(container, 'vocabulaire');
         await deck.move(1);
@@ -26,10 +26,10 @@ export async function testPageStyles()
         const partial = createFlashcardDeck(container, 'grammaire');
         window.fetch = async () => {
             requests++;
-            return new Response(JSON.stringify({success: true, data: {cards: [{id: 400}, {id: 401}]}}), {headers: {'Content-Type': 'application/json'}});
+            return new Response(JSON.stringify({success: true, data: {cards: [{id: 400}, {id: 401}], total: 2, offset: 0}}), {headers: {'Content-Type': 'application/json'}});
         };
         await partial.move(1);
-        check(requests === 1 && partial.card.id === 400 && partial.total === 102, 'Gaps not reconciled from ordered batch');
+        check(requests === 1 && partial.card.id === 401 && partial.total === 2, 'Gaps not reconciled from ordered batch');
 
         const main = document.createElement('main');
         main.className = 'app-content';
@@ -51,7 +51,7 @@ export async function testPageStyles()
         toast.textContent = 'unchanged';
         await renderPage(location.href, base + 'manga', response, {});
         check(toast.textContent === 'unchanged', 'Cached navigation replayed feedback');
-        return ['Empty batches remove obsolete suffix in one request', 'Partial batches reconcile missing IDs', 'Pending feedback bypasses prefetch', 'SPA feedback displays once'];
+        return ['Shrinking decks reconcile in one request', 'Sparse batches refresh the current total', 'Pending feedback bypasses prefetch', 'SPA feedback displays once'];
     }
     finally { window.fetch = original; }
 }

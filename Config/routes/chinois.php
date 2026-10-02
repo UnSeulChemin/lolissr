@@ -90,6 +90,8 @@ $router->prefix('chinois')->group(function (Router $router): void
 
     $router->prefix('flashcards')->group(function (Router $router): void
     {
+        $router->get('vocabulaire/batch/{offset:int}', [FlashcardsController::class, 'vocabulairePage'], [ExpectJsonMiddleware::class]);
+        $router->get('grammaire/batch/{offset:int}', [FlashcardsController::class, 'grammairePage'], [ExpectJsonMiddleware::class]);
         $router->get('vocabulaire/cards/{id:int}', [FlashcardsController::class, 'vocabulaireBatch'], [ExpectJsonMiddleware::class]);
         $router->get('grammaire/cards/{id:int}', [FlashcardsController::class, 'grammaireBatch'], [ExpectJsonMiddleware::class]);
 

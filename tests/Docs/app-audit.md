@@ -2,6 +2,24 @@
 
 ## Corrections
 
+- Une grammaire disparue après le contrôle du contrôleur renvoie désormais 404
+  depuis le service. Le test `collection-update-existence.php` vérifie aussi
+  le rollback et la libération du verrou d'ordre.
+- Les flashcards transmettent au maximum 50 cartes et un compteur, sans charger
+  tous les identifiants. La navigation recharge les lots par position et conserve
+  au maximum 50 cartes côté navigateur. Le total est actualisé à chaque lot et
+  après une validation. Les anciens endpoints par identifiant restent disponibles
+  pour les onglets déjà ouverts. Le gain porte sur la mémoire PHP/JavaScript et
+  le volume HTML ; `COUNT(*)` et les offsets profonds gardent un coût SQL dépendant
+  du volume. Aucun gain de latence SQL n'est revendiqué.
+- Les recherches figurine, nendoroid et peluche partagent `SearchesCollectibles` :
+  normalisation, filtres, projection, tri et limite de 20 résultats sont conservés.
+
+Les régressions `flashcard-pages.php`, `collectible-search.php` et les tests HTTP
+couvrent les lots et recherches. `flashcard-pages-browser.js` vérifie les limites
+de lots, les deux sens de navigation, le bouclage, la suppression, les erreurs
+réseau et l'annulation lors d'un changement de page.
+
 - Les modifications d'artbooks verrouillent l'objet avant de lire sa source
   auteur/série, puis écrivent par identifiant. Le changement de statut de lecture
   verrouille également l'objet avant de décider des récompenses XP. Un objet

@@ -33,23 +33,36 @@ final class FlashcardsController extends Controller
     public function vocabulaire(): never
     {
         $this->title = 'Chinois | Flashcards Vocabulaire';
+        $page = $this->chinoisReadService->flashcardPage(false);
 
         $this->render('pages/chinois/flashcards/vocabulaire', [
-            'vocabulaires' => $this->chinoisReadService->vocabulaireFlashcards(),
-            'flashcardIds' => $this->chinoisReadService->flashcardIds(false),
+            'vocabulaires' => $page['cards'],
+            'flashcardTotal' => $page['total'],
         ]);
     }
 
     public function grammaire(): never
     {
         $this->title = 'Chinois | Flashcards Grammaire';
+        $page = $this->chinoisReadService->flashcardPage(true);
 
         $this->render('pages/chinois/flashcards/grammaire', [
-            'grammaires' => $this->chinoisReadService->grammaireFlashcards(),
-            'flashcardIds' => $this->chinoisReadService->flashcardIds(true),
+            'grammaires' => $page['cards'],
+            'flashcardTotal' => $page['total'],
         ]);
     }
 
+    public function vocabulairePage(int $offset): never
+    {
+        $this->jsonResult(ServiceResult::success(data: $this->chinoisReadService->flashcardPage(false, $offset)));
+    }
+
+    public function grammairePage(int $offset): never
+    {
+        $this->jsonResult(ServiceResult::success(data: $this->chinoisReadService->flashcardPage(true, $offset)));
+    }
+
+    // Retained for open tabs running a previous JavaScript bundle.
     public function vocabulaireBatch(int $id): never
     {
         $this->jsonResult(ServiceResult::success(data: [

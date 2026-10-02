@@ -62,3 +62,20 @@ echo "PASS: global search returns identical results for all six categories (thre
 $invalid = http_get(http_base() . '/recherche?q%5B%5D=test', $jsonHeaders);
 if ($invalid['status'] !== 422) throw new RuntimeException('Search must reject array input.');
 echo "PASS: invalid search input rejected.\n";
+
+foreach (['vocabulaire', 'grammaire'] as $type)
+{
+    foreach ([0, 50, PHP_INT_MAX] as $offset)
+    {
+        $response = http_get(http_base() . "/chinois/flashcards/$type/batch/$offset", $jsonHeaders);
+        $payload = json_decode($response['body'], true, 512, JSON_THROW_ON_ERROR);
+        $page = $payload['data'] ?? [];
+        if ($response['status'] !== 200 || ($payload['success'] ?? false) !== true
+            || !is_array($page['cards'] ?? null) || count($page['cards']) > 50
+            || !is_int($page['total'] ?? null) || !is_int($page['offset'] ?? null))
+        {
+            throw new RuntimeException("Invalid flashcard batch: $type/$offset");
+        }
+    }
+}
+echo "PASS: both flashcard batch endpoints accept zero and extreme offsets with bounded payloads.\n";

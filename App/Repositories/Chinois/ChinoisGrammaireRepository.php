@@ -66,12 +66,23 @@ final class ChinoisGrammaireRepository extends Model
     // LECTURE
     // =========================================
 
-    /** @return list<int> */
-    public function notMasteredIds(): array
+    public function countNotMastered(): int
     {
-        $rows = $this->fetchAll("SELECT id FROM {$this->table()} WHERE maitrise = 0 ORDER BY id ASC");
+        return (int) $this->fetchSingleValue(
+            "SELECT COUNT(*) AS total FROM {$this->table()} WHERE maitrise = 0", 'total'
+        );
+    }
 
-        return array_map(static fn (\stdClass $row): int => (int) $row->id, $rows);
+    /** @return list<ChinoisGrammaireData> */
+    public function findNotMasteredPage(int $offset): array
+    {
+        $offset = max(0, $offset);
+        $rows = $this->fetchAll(
+            "SELECT " . self::SELECT_FIELDS . " FROM {$this->table()}
+             WHERE maitrise = 0 ORDER BY id ASC LIMIT 50 OFFSET {$offset}"
+        );
+
+        return array_map($this->mapRowToDto(...), $rows);
     }
 
     /**
@@ -162,7 +173,7 @@ final class ChinoisGrammaireRepository extends Model
 
         if ($current === null)
         {
-            return false;
+            throw new \Framework\Http\Exceptions\NotFoundException('Grammaire introuvable');
         }
 
         $niveau = trim($niveau);
