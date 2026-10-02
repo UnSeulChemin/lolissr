@@ -32,17 +32,36 @@
 ================================================= */
 .transition-title
 {
-    transition:
-        color 140ms ease,
-        text-shadow 140ms ease;
+    text-shadow: none;
 }
 
-.transition-title:hover
+.transition-title.dashboard-title-box::after,
+.transition-title.grammar-hero::after
 {
-    color: #c08cff;
-
-    text-shadow:
-        0 0 8px rgba(123, 44, 255, 0.55),
-        0 0 16px rgba(123, 44, 255, 0.35),
-        0 0 24px rgba(123, 44, 255, 0.15);
+    background: none;
 }
+
+.transition-title :is(.dashboard-title, .grammar-hero-title)
+{
+    transform-origin: center;
+    transition: transform 180ms ease, color 180ms ease;
+}
+
+@media (hover: hover) and (pointer: fine)
+{
+    .transition-title:hover :is(.dashboard-title, .grammar-hero-title)
+    {
+        transform: translateY(-2px) scale(1.035);
+        color: #6420d9;
+    }
+}
+
+@media (prefers-reduced-motion: reduce)
+{
+    .transition-title :is(.dashboard-title, .grammar-hero-title)
+    {
+        transition: none;
+        transform: none;
+    }
+}
+
