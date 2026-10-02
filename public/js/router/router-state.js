@@ -12,6 +12,9 @@ export const navigationState =
 
     controller:
         null,
+
+    target:
+        null,
 };
 
 // =================================================
@@ -40,14 +43,17 @@ export function unlockRouter()
 
 export function setController(
     controller,
+    target,
 )
 {
     navigationState.controller =
         controller;
+    navigationState.target = target;
 }
 
 export function clearController()
 {
     navigationState.controller =
         null;
+    navigationState.target = null;
 }

@@ -108,7 +108,9 @@ export async function navigateTo(
         && options.force !== true
     )
     {
-        if (navigationState.controller)
+        // La page peut déjà être affichée alors que ses modules s'initialisent.
+        // Un nouveau clic sur cette destination doit laisser terminer la navigation.
+        if (navigationState.controller && navigationState.target !== target)
         {
             ++navigationState.navigationId;
             navigationState.controller.abort();
@@ -145,6 +147,7 @@ export async function navigateTo(
 
     setController(
         controller,
+        target,
     );
 
     // --------------------------------------------------------------------------

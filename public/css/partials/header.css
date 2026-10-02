@@ -278,7 +278,6 @@ header ul
     text-decoration: none;
 
     transition:
-        transform 0.25s ease,
         background-color 0.25s ease,
         box-shadow 0.25s ease,
         filter 0.25s ease;
@@ -307,8 +306,6 @@ header ul
 
 .nav-link-icon:hover
 {
-    transform: translateY(-2px);
-
     background: rgba(255, 255, 255, 0.12);
 
     box-shadow:
@@ -318,8 +315,6 @@ header ul
 
 .nav-link-icon.active
 {
-    transform: scale(1.10);
-
     background: rgba(255, 255, 255, 0.18);
 
     box-shadow:

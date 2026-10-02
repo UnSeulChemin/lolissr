@@ -4,6 +4,7 @@ export async function runBrowserScenario()
     window.appConfig = {baseUri: base};
     const {navigateTo} = await import('./js/router/router-navigation.js');
     const {navigationState} = await import('./js/router/router-state.js');
+    const {onRouteChange} = await import('./js/router/router-hooks.js');
     const {initNavigationLoading} = await import('./js/router/ui/navigation-loading.js');
     const main = document.createElement('main');
     main.className = 'app-content';
@@ -30,7 +31,36 @@ export async function runBrowserScenario()
         check(navigationState.locked && document.body.classList.contains('is-routing'), 'Old response disrupted newer navigation');
         pending[1](); await second;
         check(location.pathname.endsWith('/chinois') && !navigationState.locked && !document.body.classList.contains('is-routing'), 'Next navigation failed');
-        return ['Current-page click cancels pending navigation', 'Late cancelled response cannot render or stop newer loading', 'Following navigation succeeds'];
+        let releaseHook;
+        let enterHook;
+        const entered = new Promise(resolve => { enterHook = resolve; });
+        const unregister = onRouteChange(() => new Promise(resolve =>
+        {
+            releaseHook = resolve;
+            enterHook();
+        }));
+        let ready = 0;
+        const countReady = () => { ready++; };
+        document.addEventListener('navigation:ready', countReady);
+        try
+        {
+            const third = navigateTo(base + 'peluche', {fallback: false});
+            pending[2]();
+            await entered;
+            const activeController = navigationState.controller;
+            await navigateTo(base + 'peluche');
+            check(!activeController.signal.aborted && navigationState.locked, 'Repeated destination click cancelled page initialization');
+            releaseHook();
+            await third;
+            check(ready === 1 && !navigationState.locked, 'Repeated destination click prevented navigation completion');
+        }
+        finally
+        {
+            releaseHook?.();
+            unregister();
+            document.removeEventListener('navigation:ready', countReady);
+        }
+        return ['Current-page click cancels pending navigation', 'Late cancelled response cannot render or stop newer loading', 'Following navigation succeeds', 'Repeated destination click allows page initialization and ready event to finish'];
     }
     finally { window.fetch = original; }
 }

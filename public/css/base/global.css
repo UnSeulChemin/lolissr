@@ -2,6 +2,12 @@
    GLOBAL
 ================================================= */
 
+/* Garder le header à la même position entre pages courtes et longues. */
+html
+{
+    scrollbar-gutter: stable;
+}
+
 body
 {
     font-family: var(--font-family-base);
