@@ -56,6 +56,8 @@
             "@php tests/Domain/collection-projections.php",
             "@php tests/Domain/collectible-search.php",
             "@php tests/Domain/flashcard-pages.php",
+            "@php tests/Domain/flashcard-snapshot.php",
+            "@php tests/Domain/login-throttle-identity.php",
             "@php tests/Domain/manga-filtered-pages.php",
             "@php tests/Assets/css-bundle.php",
             "@php tests/Assets/page-styles.php",

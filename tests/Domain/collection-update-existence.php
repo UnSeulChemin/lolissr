@@ -150,6 +150,16 @@ try
     $db->exec('DELETE FROM manga WHERE id = 1');
     try
     {
+        $service->update('fixture', 1, \App\DTO\Manga\Inputs\MangaUpdateDTO::fromArray(['statut' => 'en_cours']));
+        throw new RuntimeException('Missing full-update target accepted');
+    }
+    catch (NotFoundException $error)
+    {
+        $check($error->getStatusCode() === 404 && !$db->inTransaction(), 'Missing full-update target must roll back with 404');
+        $check((int) $db->query('SELECT COUNT(*) FROM manga WHERE id = 2')->fetchColumn() === 1, 'Other tome was modified');
+    }
+    try
+    {
         $service->updateNote('fixture', 1, new \App\DTO\Manga\Inputs\MangaUpdateNoteDTO(4, 5));
         throw new RuntimeException('Missing note target accepted');
     }

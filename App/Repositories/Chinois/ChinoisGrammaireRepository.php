@@ -13,6 +13,7 @@ use stdClass;
 
 final class ChinoisGrammaireRepository extends Model
 {
+    use \App\Repositories\Chinois\Concerns\ReadsFlashcardPage;
     /**
      * @template T
      * @param callable(): T $callback
@@ -66,23 +67,16 @@ final class ChinoisGrammaireRepository extends Model
     // LECTURE
     // =========================================
 
-    public function countNotMastered(): int
-    {
-        return (int) $this->fetchSingleValue(
-            "SELECT COUNT(*) AS total FROM {$this->table()} WHERE maitrise = 0", 'total'
-        );
-    }
-
-    /** @return list<ChinoisGrammaireData> */
+    /** @return array{cards: list<ChinoisGrammaireData>, total: int, offset: int} */
     public function findNotMasteredPage(int $offset): array
     {
-        $offset = max(0, $offset);
-        $rows = $this->fetchAll(
-            "SELECT " . self::SELECT_FIELDS . " FROM {$this->table()}
-             WHERE maitrise = 0 ORDER BY id ASC LIMIT 50 OFFSET {$offset}"
-        );
+        $page = $this->readFlashcardPage($offset);
 
-        return array_map($this->mapRowToDto(...), $rows);
+        return [
+            'cards' => array_map($this->mapRowToDto(...), $page['rows']),
+            'total' => $page['total'],
+            'offset' => $page['offset'],
+        ];
     }
 
     /**

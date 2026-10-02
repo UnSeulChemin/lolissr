@@ -168,14 +168,7 @@ final readonly class ChinoisReadService
     public function flashcardPage(bool $grammar, int $offset = 0): array
     {
         $repository = $grammar ? $this->grammaireRepository : $this->vocabulaireRepository;
-        $total = $repository->countNotMastered();
-        $offset = intdiv(min(max(0, $offset), max(0, $total - 1)), 50) * 50;
-
-        return [
-            'cards' => $total > 0 ? $repository->findNotMasteredPage($offset) : [],
-            'total' => $total,
-            'offset' => $offset,
-        ];
+        return $repository->findNotMasteredPage($offset);
     }
 
     // =========================================

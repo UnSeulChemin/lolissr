@@ -12,6 +12,7 @@ use stdClass;
 
 final class ChinoisVocabulaireRepository extends Model
 {
+    use \App\Repositories\Chinois\Concerns\ReadsFlashcardPage;
     use MapsChinoisVocabulaire;
 
     protected string $table = 'chinois_vocabulaire';
@@ -20,23 +21,16 @@ final class ChinoisVocabulaireRepository extends Model
     // LECTURE
     // =========================================
 
-    public function countNotMastered(): int
-    {
-        return (int) $this->fetchSingleValue(
-            "SELECT COUNT(*) AS total FROM {$this->table()} WHERE maitrise = 0", 'total'
-        );
-    }
-
-    /** @return list<ChinoisVocabulaireData> */
+    /** @return array{cards: list<ChinoisVocabulaireData>, total: int, offset: int} */
     public function findNotMasteredPage(int $offset): array
     {
-        $offset = max(0, $offset);
-        $rows = $this->fetchAll(
-            "SELECT " . self::SELECT_FIELDS . " FROM {$this->table()}
-             WHERE maitrise = 0 ORDER BY id ASC LIMIT 50 OFFSET {$offset}"
-        );
+        $page = $this->readFlashcardPage($offset);
 
-        return array_map($this->mapRowToDto(...), $rows);
+        return [
+            'cards' => array_map($this->mapRowToDto(...), $page['rows']),
+            'total' => $page['total'],
+            'offset' => $page['offset'],
+        ];
     }
 
     /**

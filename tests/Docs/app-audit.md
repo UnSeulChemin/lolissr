@@ -2,6 +2,21 @@
 
 ## Corrections
 
+- Le limiteur de connexion résout le nom via `UserRepository`, avec la même
+  collation que l'authentification, puis utilise l'orthographe stockée pour ses
+  compteurs. Les variantes accentuées et de casse partagent donc le verrou,
+  sa durée et son effacement ; les compteurs existants du nom canonique restent
+  valides. `login-throttle-identity.php` vérifie ces cas sur des tables temporaires
+  MySQL ainsi que l'isolation des comptes et des adresses IP.
+- Les lots de flashcards calculent leur compteur, leur position bornée et leurs
+  cartes dans une seule requête. Une suppression concurrente ne peut plus mélanger
+  deux états de la base. Seuls les identifiants sont numérotés par SQL ; les contenus
+  restent limités à 50 cartes. `flashcard-snapshot.php` vérifie une suppression
+  validée par une seconde connexion pendant la lecture, pour les deux types.
+- La modification complète d'un manga disparu renvoie 404, comme les notes et
+  les autres collections. `collection-update-existence.php` vérifie le rollback
+  et la préservation de l'autre tome.
+
 - Une grammaire disparue après le contrôle du contrôleur renvoie désormais 404
   depuis le service. Le test `collection-update-existence.php` vérifie aussi
   le rollback et la libération du verrou d'ordre.
@@ -10,7 +25,7 @@
   au maximum 50 cartes côté navigateur. Le total est actualisé à chaque lot et
   après une validation. Les anciens endpoints par identifiant restent disponibles
   pour les onglets déjà ouverts. Le gain porte sur la mémoire PHP/JavaScript et
-  le volume HTML ; `COUNT(*)` et les offsets profonds gardent un coût SQL dépendant
+  le volume HTML ; le comptage et la numérotation gardent un coût SQL dépendant
   du volume. Aucun gain de latence SQL n'est revendiqué.
 - Les recherches figurine, nendoroid et peluche partagent `SearchesCollectibles` :
   normalisation, filtres, projection, tri et limite de 20 résultats sont conservés.

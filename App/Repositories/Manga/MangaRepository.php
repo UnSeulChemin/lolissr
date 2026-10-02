@@ -124,7 +124,7 @@ final class MangaRepository extends Model
 
         if ($target === null)
         {
-            return false;
+            throw new \Framework\Http\Exceptions\NotFoundException('Manga introuvable');
         }
 
         $updated = $this->updateBySlugAndNumero(

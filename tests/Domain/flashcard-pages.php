@@ -12,6 +12,16 @@ $db = (new ReflectionClass(Database::class))->newInstanceWithoutConstructor();
 (new ReflectionMethod(PDO::class, '__construct'))->invoke($db, 'sqlite::memory:');
 $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
+final class FlashcardQueryCounter extends PDOStatement
+{
+    public static int $executions = 0;
+    public function execute(?array $params = null): bool
+    {
+        self::$executions++;
+        return parent::execute($params);
+    }
+}
+$db->setAttribute(PDO::ATTR_STATEMENT_CLASS, [FlashcardQueryCounter::class]);
 $container = new Container();
 $container->instance(Database::class, $db);
 $service = $container->get(ChinoisReadService::class);
@@ -34,7 +44,9 @@ foreach ([false, true] as $grammar)
     $ids = [];
     foreach ([0, 50, 100] as $offset)
     {
+        FlashcardQueryCounter::$executions = 0;
         $page = $service->flashcardPage($grammar, $offset);
+        $check(FlashcardQueryCounter::$executions === 1, 'Count and cards must share one statement snapshot');
         $check($page['total'] === 120 && $page['offset'] === $offset, 'Count or offset changed');
         $check(count($page['cards']) === min(50, 120 - $offset), 'Batch exceeds 50 or loses cards');
         foreach ($page['cards'] as $card) $ids[] = $card->id;

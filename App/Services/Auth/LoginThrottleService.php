@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Auth;
 
 use App\Repositories\Auth\LoginAttemptRepository;
+use App\Repositories\Auth\UserRepository;
 
 use DateTimeImmutable;
 use DateTimeZone;
@@ -19,7 +20,8 @@ final readonly class LoginThrottleService
     private const DATE_FORMAT = 'Y-m-d H:i:s';
 
     public function __construct(
-        private LoginAttemptRepository $loginAttemptRepository
+        private LoginAttemptRepository $loginAttemptRepository,
+        private UserRepository $userRepository
     ) {}
 
     // =========================================
@@ -97,6 +99,9 @@ final readonly class LoginThrottleService
 
     private function identifierHash(string $username, string $ipAddress): string
     {
+        // Resolve using the same database collation as authentication. Keep the
+        // stored spelling so existing counters for that account remain valid.
+        $username = $this->userRepository->findByUsername($username)->username ?? $username;
         $normalizedUsername = mb_strtolower(trim($username));
         $normalizedIpAddress = $this->normalizeIpAddress($ipAddress);
 
