@@ -10,7 +10,7 @@ use App\DTO\Common\ServiceResult;
 use App\DTO\Manga\Inputs\MangaCreateDTO;
 use App\DTO\Manga\Inputs\MangaUpdateDTO;
 use App\DTO\Manga\Inputs\MangaUpdateNoteDTO;
-use App\DTO\Manga\Responses\MangaUpdateNoteData;
+
 use App\DTO\Upload\UploadThumbnailData;
 use App\Repositories\Manga\MangaRepository;
 use App\Services\Media\ThumbnailManager;
@@ -19,7 +19,7 @@ use App\Services\Media\CollectionCreationService;
 use Framework\Database\Database;
 use Framework\Logging\Logger;
 
-use RuntimeException;
+
 
 final readonly class MangaWriteService
 {
@@ -130,16 +130,11 @@ final readonly class MangaWriteService
 
     public function updateNote(string $slug, int $numero, MangaUpdateNoteDTO $dto): ServiceResult
     {
-        if ($this->mangaRepository->findRecordBySlugAndNumero($slug, $numero) === null)
-        {
-            return $this->error('Manga introuvable', 404);
-        }
-
         $result = $this->database->transaction(
             function () use ($slug, $numero, $dto): ServiceResult
             {
-                $this->mangaRepository->lockSeries($slug);
-                $updated = $this->mangaRepository->updateNote(
+
+                $notes = $this->mangaRepository->updateNote(
                     $slug,
                     $numero,
                     $dto->jacquette,
@@ -147,7 +142,7 @@ final readonly class MangaWriteService
                 );
 
                 $failure = $this->writeFailed(
-                    $updated,
+                    $notes !== false,
                     'Update note',
                     $slug,
                     $numero,
@@ -159,21 +154,10 @@ final readonly class MangaWriteService
                     return $failure;
                 }
 
-                $manga = $this->mangaRepository->findRecordBySlugAndNumero($slug, $numero);
-
-                if ($manga === null)
-                {
-                    throw new RuntimeException('Manga introuvable après la mise à jour');
-                }
-
                 return $this->success(
                     'Notes mises à jour',
                     [
-                        'notes' => new MangaUpdateNoteData(
-                            jacquette: $dto->jacquette ?? 0,
-                            livreNote: $dto->livreNote ?? 0,
-                            note: $manga->note ?? (($dto->jacquette ?? 0) + ($dto->livreNote ?? 0))
-                        ),
+                        'notes' => $notes,
                     ]
                 );
             }

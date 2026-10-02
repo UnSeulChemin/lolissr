@@ -156,19 +156,37 @@ final class MangaRepository extends Model
         );
     }
 
-    public function updateNote(string $slug, int $numero, ?int $jacquette, ?int $livreNote): bool
+    public function updateNote(string $slug, int $numero, ?int $jacquette, ?int $livreNote): \App\DTO\Manga\Responses\MangaUpdateNoteData|false
     {
+        if (! $this->db->inTransaction())
+        {
+            throw new \LogicException('Note updates require a transaction.');
+        }
+        $target = $this->fetchOne(
+            "SELECT id FROM {$this->table()} WHERE slug = :slug AND numero = :numero LIMIT 1 FOR UPDATE",
+            ['slug' => $this->normalizeSlug($slug), 'numero' => $numero]
+        );
+        if ($target === null)
+        {
+            throw new \Framework\Http\Exceptions\NotFoundException('Manga introuvable');
+        }
+
         [$jacquette, $livreNote] = $this->normalizeNotes($jacquette, $livreNote);
 
-        return $this->updateBySlugAndNumero(
-            $slug,
-            $numero,
+        $updated = $this->update(
             [
                 'jacquette' => $jacquette,
                 'livre_note' => $livreNote,
                 'note' => $this->calculateNote($jacquette, $livreNote),
-            ]
+            ],
+            ['id' => (int) $target->id]
         );
+
+        return $updated ? new \App\DTO\Manga\Responses\MangaUpdateNoteData(
+            jacquette: $jacquette ?? 0,
+            livreNote: $livreNote ?? 0,
+            note: ($jacquette ?? 0) + ($livreNote ?? 0)
+        ) : false;
     }
 
     public function deleteById(int $id): bool

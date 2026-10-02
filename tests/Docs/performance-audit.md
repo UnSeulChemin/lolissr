@@ -7,6 +7,13 @@ des mesures de charge ni une validation du serveur de production.
 
 ## Modifications appliquées
 
+- La modification des notes manga utilise deux requêtes : lecture de l'identifiant
+  du tome avec `FOR UPDATE`, puis écriture par identifiant. Elle ne verrouille plus
+  toute la série et construit sa réponse depuis les notes normalisées enregistrées.
+  `collection-update-existence.php` contrôle le budget SQL, les notes nulles,
+  les modifications inchangées, le tome absent et la préservation des autres tomes.
+  Le cache du dashboard reste invalidé après succès.
+
 - Les compteurs des titres et succès du profil intègrent les séries terminées
   dans leur requête principale : un seul aller-retour SQL, contrôlé par la
   régression `profile-read-only.php`.
