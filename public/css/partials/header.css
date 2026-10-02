@@ -304,6 +304,13 @@ header ul
     pointer-events: none;
 }
 
+.nav-link-icon,
+.site-profile-link
+{
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
 .nav-link-icon:hover
 {
     background: rgba(255, 255, 255, 0.12);

@@ -28,6 +28,15 @@ export async function runBrowserScenario()
     const {navigationState} = await import('./js/router/router-state.js');
     history.replaceState({}, '', base);
     initRouter();
+    const drag = new DragEvent('dragstart', {bubbles: true, cancelable: true});
+    links[0].dispatchEvent(drag);
+    check(drag.defaultPrevented, 'Header links can start native dragging instead of clicking');
+    const contentLink = document.createElement('a');
+    contentLink.href = base + 'manga';
+    main.append(contentLink);
+    const contentDrag = new DragEvent('dragstart', {bubbles: true, cancelable: true});
+    contentLink.dispatchEvent(contentDrag);
+    check(!contentDrag.defaultPrevented, 'Drag prevention affected links outside the header');
     const original = window.fetch;
     const pending = [];
     window.fetch = url => new Promise(resolve => pending.push(() => resolve(new Response(JSON.stringify({
@@ -47,5 +56,5 @@ export async function runBrowserScenario()
             'Rapid header clicks did not keep the last destination');
     }
     finally { window.fetch = original; }
-    return ['Header clickable area stays fixed when active', 'Header stays fixed between short and long pages', 'Rapid header clicks keep the last destination despite late responses'];
+    return ['Header clickable area stays fixed when active', 'Header stays fixed between short and long pages', 'Header dragging is blocked without affecting content links', 'Rapid header clicks keep the last destination despite late responses'];
 }

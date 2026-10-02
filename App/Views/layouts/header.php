@@ -22,7 +22,7 @@ $user = user();
             <div class="site-profile u-inline-flex">
 
                 <a
-                    class="site-profile-link"
+                    class="site-profile-link" draggable="false"
                     href="<?= e($view->baseUri) ?>profil"
                     title="Mon profil" aria-label="Profil de <?= e($user->username) ?>"
                 >
@@ -31,14 +31,14 @@ $user = user();
 
                         <span class="site-profile-portrait">
                         <img
-                            class="site-profile-avatar"
+                            class="site-profile-avatar" draggable="false"
                             src="<?= e($view->baseUri . 'images/profil/avatar/thumbnail/' . $user->avatar . '.' . $user->avatar_extension) ?>"
                             width="41"
                             height="41"
                             alt=""
                         >
                         <img
-                            class="site-profile-frame"
+                            class="site-profile-frame" draggable="false"
                             src="<?= e($view->baseUri . 'images/profil/frame/thumbnail/' . $user->frame . '.' . $user->frame_extension) ?>"
                             width="56"
                             height="56"
@@ -60,7 +60,7 @@ $user = user();
                 <li>
 
                     <a
-                        class="nav-link-icon"
+                        class="nav-link-icon" draggable="false"
                         data-prefetch
                         href="<?= e($view->baseUri) ?>"
                         title="Accueil"
@@ -73,7 +73,7 @@ $user = user();
                 <li>
 
                     <a
-                        class="nav-link-icon"
+                        class="nav-link-icon" draggable="false"
                         data-prefetch
                         href="<?= e($view->baseUri) ?>manga"
                         title="Manga"
@@ -86,7 +86,7 @@ $user = user();
                 <li>
 
                     <a
-                        class="nav-link-icon"
+                        class="nav-link-icon" draggable="false"
                         data-prefetch
                         href="<?= e($view->baseUri) ?>figurine"
                         title="Figurine"
@@ -99,7 +99,7 @@ $user = user();
                 <li>
 
                     <a
-                        class="nav-link-icon"
+                        class="nav-link-icon" draggable="false"
                         data-prefetch
                         href="<?= e($view->baseUri) ?>nendoroid"
                         title="Nendoroid"
@@ -112,7 +112,7 @@ $user = user();
                 <li>
 
                     <a
-                        class="nav-link-icon"
+                        class="nav-link-icon" draggable="false"
                         data-prefetch
                         href="<?= e($view->baseUri) ?>peluche"
                         title="Peluche"
@@ -125,7 +125,7 @@ $user = user();
                 <li>
 
                     <a
-                        class="nav-link-icon"
+                        class="nav-link-icon" draggable="false"
                         data-prefetch
                         href="<?= e($view->baseUri) ?>chinois"
                         title="Chinois"
@@ -138,7 +138,7 @@ $user = user();
                 <li>
 
                     <a
-                        class="nav-link-icon"
+                        class="nav-link-icon" draggable="false"
                         data-confirm-logout
                         href="<?= e($view->baseUri) ?>deconnexion"
                         title="Déconnexion"
@@ -221,7 +221,7 @@ $user = user();
                 <li>
 
                     <a
-                        class="nav-link-icon"
+                        class="nav-link-icon" draggable="false"
                         data-prefetch
                         href="<?= e($view->baseUri) ?>connexion"
                         title="Connexion"

@@ -188,6 +188,16 @@ async function handlePopState()
     );
 }
 
+// Un léger mouvement pendant un clic rapide ne doit pas emporter le lien.
+function preventHeaderDrag(event)
+{
+    if (event.target instanceof Element
+        && event.target.closest('header .nav-link-icon, header .site-profile-link'))
+    {
+        event.preventDefault();
+    }
+}
+
 // =================================================
 // INITIALISATION
 // =================================================
@@ -202,6 +212,8 @@ export function initRouter()
         'click',
         handleClick,
     );
+
+    document.addEventListener('dragstart', preventHeaderDrag);
 
     window.addEventListener(
         'popstate',
