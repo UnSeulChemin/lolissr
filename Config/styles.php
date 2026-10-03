@@ -23,6 +23,7 @@ return [
     'pages/profile/profile.css' => ['pages/profile/'],
     'pages/profile/customization.css' => ['pages/profile/customization'],
     'components/detail.css' => [
+        'errors/',
         'pages/manga/series/show',
         'pages/artbook/show',
         'pages/figurine/collection/show',

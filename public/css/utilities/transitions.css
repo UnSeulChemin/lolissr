@@ -19,9 +19,9 @@
    CARTE SURVOL
 ================================================= */
 
-.transition-card:hover,
-.transition-card:focus-visible,
-.transition-card.is-active
+.transition-card:is(a[href], button, [role="button"], .u-pointer):hover,
+.transition-card:is(a[href], button, [role="button"], .u-pointer):focus-visible,
+.transition-card:is(a[href], button, [role="button"], .u-pointer).is-active
 {
     transform:
         translateY(-5px);

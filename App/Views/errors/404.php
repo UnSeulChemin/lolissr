@@ -16,7 +16,7 @@ $message ??= 'Le contenu demandé est introuvable.';
     <section
         class="
             detail-card
-            transition-card
+            error-card
          u-flex u-w-full u-border-box"
     >
 

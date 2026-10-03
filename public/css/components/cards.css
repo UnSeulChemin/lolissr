@@ -112,16 +112,16 @@
     box-shadow: var(--shadow-card-hover);
 }
 
-.card:hover .card-image-box-portrait,
-.card:focus-visible .card-image-box-portrait,
-.card.is-active .card-image-box-portrait
+.card:is(a[href], button, [role="button"], .u-pointer):hover .card-image-box-portrait,
+.card:is(a[href], button, [role="button"], .u-pointer):focus-visible .card-image-box-portrait,
+.card:is(a[href], button, [role="button"], .u-pointer).is-active .card-image-box-portrait
 {
     transform: scale(1.05);
 }
 
-.card:hover .card-image-portrait,
-.card:focus-visible .card-image-portrait,
-.card.is-active .card-image-portrait
+.card:is(a[href], button, [role="button"], .u-pointer):hover .card-image-portrait,
+.card:is(a[href], button, [role="button"], .u-pointer):focus-visible .card-image-portrait,
+.card:is(a[href], button, [role="button"], .u-pointer).is-active .card-image-portrait
 {
     transform: scale(1.02);
 

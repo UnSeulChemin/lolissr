@@ -34,7 +34,10 @@ $cases = [
         'components/modals/profile-title-modal.css', 'components/media-picker.css',
         'components/summary.css', 'components/profile-avatar.css', 'pages/profile/profile.css', 'pages/profile/customization.css',
     ],
-    'errors/404' => [],
+    'errors/404' => ['components/detail.css'],
+    'errors/405' => ['components/detail.css'],
+    'errors/419' => ['components/detail.css'],
+    'errors/500' => ['components/detail.css'],
 ];
 
 foreach ($cases as $view => $expected)

@@ -138,7 +138,6 @@
 .dashboard-card:focus-visible,
 .dashboard-card.is-active
 {
-    transform: var(--transform-dashboard-card-hover);
     border-color: var(--color-violet-border);
     box-shadow: var(--shadow-card-hover);
 }
@@ -164,9 +163,9 @@
         background var(--transition-fast);
 }
 
-.dashboard-card:hover .dashboard-card-icon,
-.dashboard-card:focus-visible .dashboard-card-icon,
-.dashboard-card.is-active .dashboard-card-icon
+.dashboard-card:is(a[href], button, [role="button"], .u-pointer):hover .dashboard-card-icon,
+.dashboard-card:is(a[href], button, [role="button"], .u-pointer):focus-visible .dashboard-card-icon,
+.dashboard-card:is(a[href], button, [role="button"], .u-pointer).is-active .dashboard-card-icon
 {
     transform: var(--transform-dashboard-icon-hover);
 

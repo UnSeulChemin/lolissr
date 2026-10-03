@@ -17,7 +17,7 @@ $message ??=
     <section
         class="
             detail-card
-            transition-card
+            error-card
          u-flex u-w-full u-border-box"
     >
 
