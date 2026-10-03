@@ -11,10 +11,6 @@ $tests = is_array($bootstrap['tests'] ?? null)
     ? array_values($bootstrap['tests'])
     : [];
 
-$runner = new HttpTestRunner(
-    base: $base,
-    tests: $tests,
-    stats: new HttpTestStatistics()
-);
+$runner = new HttpTestRunner(base: $base, tests: $tests, stats: new HttpTestStatistics());
 
 exit($runner->run());

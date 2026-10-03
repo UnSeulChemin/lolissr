@@ -30,11 +30,7 @@ final class ContentSecurityPolicy
 
     public static function escapedNonce(): string
     {
-        return htmlspecialchars(
-            self::nonce(),
-            ENT_QUOTES | ENT_SUBSTITUTE,
-            'UTF-8'
-        );
+        return htmlspecialchars(self::nonce(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
 
     // =================================================
@@ -71,10 +67,7 @@ final class ContentSecurityPolicy
         }
         catch (RandomException $exception)
         {
-            throw new RandomException(
-                'Impossible de générer le nonce CSP.',
-                previous: $exception
-            );
+            throw new RandomException('Impossible de générer le nonce CSP.', previous: $exception);
         }
     }
 }

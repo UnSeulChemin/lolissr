@@ -11,11 +11,7 @@
 
 .chinois-vocab-list
 {
-    grid-template-columns:
-        repeat(
-            2,
-            minmax(0, 620px)
-        );
+    grid-template-columns: repeat( 2, minmax(0, 620px) );
     gap: 28px;
 }
 
@@ -46,9 +42,7 @@
 
     box-shadow: var(--shadow-card);
 
-    transition:
-        border-color var(--transition-normal),
-        box-shadow var(--transition-normal);
+    transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
 
     box-sizing: border-box;
 }
@@ -60,8 +54,7 @@
     position: absolute;
     inset: 0;
 
-    background:
-        var(--gradient-dashboard-card-overlay);
+    background: var(--gradient-dashboard-card-overlay);
 
     pointer-events: none;
 }
@@ -80,8 +73,7 @@
 {
     border-color: var(--color-violet-border);
 
-    box-shadow:
-        var(--shadow-card-hover);
+    box-shadow: var(--shadow-card-hover);
 }
 
 /* =================================================
@@ -116,21 +108,16 @@
     top: 18px;
     right: 64px;
     min-height: 34px;
-    padding:
-        0
-        14px;
+    padding: 0 14px;
     color: #7b57ff;
     font-size: .72rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: .06em;
     border-radius: 10px;
-    border:
-        1px solid rgba(123,44,255,.12);
-    background:
-        rgba(123,44,255,.05);
-    box-shadow:
-        0 2px 6px rgba(123,44,255,.04);
+    border: 1px solid rgba(123,44,255,.12);
+    background: rgba(123,44,255,.05);
+    box-shadow: 0 2px 6px rgba(123,44,255,.04);
 }
 
 /* =================================================
@@ -165,8 +152,7 @@
     color: var(--color-text);
     font-size: 1rem;
     line-height: 1.8;
-    border-top:
-        1px solid rgba(123,44,255,.12);
+    border-top: 1px solid rgba(123,44,255,.12);
 }
 
 /* =================================================
@@ -193,12 +179,9 @@
 .chinois-vocab-empty
 {
     padding: 40px;
-    border-radius:
-        var(--radius-card-lg);
-    background:
-        var(--gradient-dashboard-card);
-    box-shadow:
-        var(--shadow-card);
+    border-radius: var(--radius-card-lg);
+    background: var(--gradient-dashboard-card);
+    box-shadow: var(--shadow-card);
 }
 
 .chinois-vocab-list--flashcard
@@ -221,9 +204,7 @@
     border: 2px solid rgba(123, 44, 255, .20);
     border-radius: 11px;
     background: rgba(123, 44, 255, .05);
-    transition:
-        transform var(--transition-fast),
-        background var(--transition-fast);
+    transition: transform var(--transition-fast), background var(--transition-fast);
 }
 
 .flashcard-nav-button:hover

@@ -4,19 +4,21 @@ declare(strict_types=1);
 
 $base = rtrim($argv[1] ?? 'http://localhost/lolissr', '/');
 $manifest = require dirname(__DIR__, 2) . '/Config/javascript.php';
-$request = static function (string $path, array $headers = []) use ($base): array {
+$request = static function (string $path, array $headers = []) use ($base): array
+{
     $received = [];
     $curl = curl_init($base . '/' . $path);
     curl_setopt_array($curl, [
         CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 10, CURLOPT_HTTPHEADER => $headers,
-        CURLOPT_HEADERFUNCTION => static function ($handle, string $line) use (&$received): int {
+        CURLOPT_HEADERFUNCTION => static function ($handle, string $line) use (&$received): int
+        {
             if (str_contains($line, ':'))
             {
                 [$name, $value] = explode(':', $line, 2);
                 $received[strtolower(trim($name))] = trim($value);
             }
             return strlen($line);
-        },
+        }
     ]);
     if (curl_exec($curl) === false) throw new RuntimeException(curl_error($curl));
     $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);

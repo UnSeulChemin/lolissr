@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\Sql\SqlQueryController;
 use App\Http\Controllers\Sql\SqlConsoleController;
+use App\Http\Controllers\Sql\SqlQueryController;
 
 use Framework\Config\ApplicationConfig;
 use Framework\Http\Middleware\CsrfMiddleware;
@@ -29,11 +29,7 @@ $router->prefix('sql')->group(function (Router $router): void
     // EXÉCUTION HTML
     // =================================================
 
-    $router->post(
-        '',
-        [SqlConsoleController::class, 'execute'],
-        [CsrfMiddleware::class]
-    );
+    $router->post('', [SqlConsoleController::class, 'execute'], [CsrfMiddleware::class]);
 
     // =================================================
     // EXÉCUTION JSON

@@ -75,7 +75,7 @@ final class ChinoisGrammaireRepository extends AbstractRepository
         return [
             'cards' => array_map($this->mapRowToDto(...), $page['rows']),
             'total' => $page['total'],
-            'offset' => $page['offset'],
+            'offset' => $page['offset']
         ];
     }
 
@@ -135,7 +135,7 @@ final class ChinoisGrammaireRepository extends AbstractRepository
             ",
             [
                 'niveau' => trim($niveau),
-                ...($section === null ? [] : ['section' => $section, 'exact_section' => $section]),
+                ...($section === null ? [] : ['section' => $section, 'exact_section' => $section])
             ]
         );
 
@@ -154,17 +154,12 @@ final class ChinoisGrammaireRepository extends AbstractRepository
 
     public function findById(int $id): ?ChinoisGrammaireData
     {
-        return $this->findOneBy([
-            'id' => $id
-        ]);
+        return $this->findOneBy(['id' => $id]);
     }
 
     public function findByNiveauAndId(string $niveau, int $id): ?ChinoisGrammaireData
     {
-        return $this->findOneBy([
-            'id' => $id,
-            'niveau' => trim($niveau)
-        ]);
+        return $this->findOneBy(['id' => $id, 'niveau' => trim($niveau)]);
     }
 
     // =================================================
@@ -254,9 +249,7 @@ final class ChinoisGrammaireRepository extends AbstractRepository
 
             WHERE id = :id
             ",
-            [
-                'id' => $id
-            ]
+            ['id' => $id]
         );
 
         if ($statement === false || $statement->rowCount() !== 1)
@@ -275,9 +268,7 @@ final class ChinoisGrammaireRepository extends AbstractRepository
 
             LIMIT 1
             ",
-            [
-                'id' => $id
-            ]
+            ['id' => $id]
         );
 
         return $result !== null ? (bool) $result->maitrise : null;
@@ -287,18 +278,12 @@ final class ChinoisGrammaireRepository extends AbstractRepository
     // POSITIONS
     // =================================================
 
-    public function getSectionPosition(
-        string $niveau,
-        string $section,
-        ?int $ignoreId = null
-    ): int {
+    public function getSectionPosition(string $niveau, string $section, ?int $ignoreId = null): int
+    {
         $niveau = trim($niveau);
         $section = trim($section);
 
-        $params = [
-            'niveau' => $niveau,
-            'section' => $section
-        ];
+        $params = ['niveau' => $niveau, 'section' => $section];
 
         $sql = "
             SELECT section_position
@@ -333,27 +318,17 @@ final class ChinoisGrammaireRepository extends AbstractRepository
 
             WHERE niveau = :niveau
             ",
-            [
-                'niveau' => $niveau
-            ]
+            ['niveau' => $niveau]
         );
     }
 
-    public function getCategoriePosition(
-        string $niveau,
-        string $section,
-        string $categorie,
-        ?int $ignoreId = null
-    ): int {
+    public function getCategoriePosition(string $niveau, string $section, string $categorie, ?int $ignoreId = null): int
+    {
         $niveau = trim($niveau);
         $section = trim($section);
         $categorie = trim($categorie);
 
-        $params = [
-            'niveau' => $niveau,
-            'section' => $section,
-            'categorie' => $categorie
-        ];
+        $params = ['niveau' => $niveau, 'section' => $section, 'categorie' => $categorie];
 
         $sql = "
             SELECT categorie_position
@@ -390,24 +365,13 @@ final class ChinoisGrammaireRepository extends AbstractRepository
             WHERE niveau = :niveau
             AND section = :section
             ",
-            [
-                'niveau' => $niveau,
-                'section' => $section
-            ]
+            ['niveau' => $niveau, 'section' => $section]
         );
     }
 
-    public function getNextPosition(
-        string $niveau,
-        string $section,
-        string $categorie,
-        ?int $ignoreId = null
-    ): int {
-        $params = [
-            'niveau' => trim($niveau),
-            'section' => trim($section),
-            'categorie' => trim($categorie)
-        ];
+    public function getNextPosition(string $niveau, string $section, string $categorie, ?int $ignoreId = null): int
+    {
+        $params = ['niveau' => trim($niveau), 'section' => trim($section), 'categorie' => trim($categorie)];
 
         $sql = "
             SELECT MAX(position) AS position
@@ -443,9 +407,7 @@ final class ChinoisGrammaireRepository extends AbstractRepository
             WHERE id = :id
             AND xp_rewarded = 0
             ",
-            [
-                'id' => $id
-            ]
+            ['id' => $id]
         );
 
         return $statement !== false && $statement->rowCount() === 1;
@@ -533,12 +495,7 @@ final class ChinoisGrammaireRepository extends AbstractRepository
      */
     private function updateById(int $id, array $data): bool
     {
-        return $this->update(
-            $data,
-            [
-                'id' => $id
-            ]
-        );
+        return $this->update($data, ['id' => $id]);
     }
 
     /**
@@ -546,12 +503,7 @@ final class ChinoisGrammaireRepository extends AbstractRepository
      */
     private function resolveNextPosition(string $sql, array $params): int
     {
-        $position = $this->fetchSingleValue(
-            $sql,
-            'position',
-            $params,
-            null
-        );
+        $position = $this->fetchSingleValue($sql, 'position', $params, null);
 
         return $position === null
             ? 0

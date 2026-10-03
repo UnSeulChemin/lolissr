@@ -30,26 +30,13 @@ $router->prefix('chinois')->group(function (Router $router): void
     {
         $router->get('', [VocabulaireController::class, 'index']);
 
-        $router->get(
-            '{langue}/page/{page:int}',
-            [VocabulaireController::class, 'langue']
-        );
+        $router->get('{langue}/page/{page:int}', [VocabulaireController::class, 'langue']);
 
-        $router->get(
-            '{langue}/recherche/{id:int}',
-            [VocabulaireController::class, 'show']
-        );
+        $router->get('{langue}/recherche/{id:int}', [VocabulaireController::class, 'show']);
 
-        $router->get(
-            '{langue}/modifier/{id:int}',
-            [VocabulaireController::class, 'edit']
-        );
+        $router->get('{langue}/modifier/{id:int}', [VocabulaireController::class, 'edit']);
 
-        $router->post(
-            '{langue}/modifier/{id:int}',
-            [VocabulaireController::class, 'update'],
-            [CsrfMiddleware::class]
-        );
+        $router->post('{langue}/modifier/{id:int}', [VocabulaireController::class, 'update'], [CsrfMiddleware::class]);
 
         $router->get('{langue}', [VocabulaireController::class, 'langue']);
     });
@@ -62,17 +49,11 @@ $router->prefix('chinois')->group(function (Router $router): void
     {
         $router->get('', [GrammaireController::class, 'index']);
 
-        $router->get(
-            'hsk{level:int}',
-            [GrammaireController::class, 'hsk']
-        );
+        $router->get('hsk{level:int}', [GrammaireController::class, 'hsk']);
 
         $router->get('hsk{level:int}/{section}', [GrammaireController::class, 'hsk']);
 
-        $router->get(
-            'hsk{level:int}/modifier/{id:int}',
-            [GrammaireController::class, 'edit']
-        );
+        $router->get('hsk{level:int}/modifier/{id:int}', [GrammaireController::class, 'edit']);
 
         $router->post(
             'hsk{level:int}/modifier/{id:int}',
@@ -80,10 +61,7 @@ $router->prefix('chinois')->group(function (Router $router): void
             [CsrfMiddleware::class]
         );
 
-        $router->get(
-            '{niveau}/recherche/{id:int}',
-            [GrammaireController::class, 'show']
-        );
+        $router->get('{niveau}/recherche/{id:int}', [GrammaireController::class, 'show']);
     });
 
     // =================================================
@@ -101,15 +79,9 @@ $router->prefix('chinois')->group(function (Router $router): void
 
         $router->get('', [FlashcardsController::class, 'index']);
 
-        $router->get(
-            'vocabulaire',
-            [FlashcardsController::class, 'vocabulaire']
-        );
+        $router->get('vocabulaire', [FlashcardsController::class, 'vocabulaire']);
 
-        $router->get(
-            'grammaire',
-            [FlashcardsController::class, 'grammaire']
-        );
+        $router->get('grammaire', [FlashcardsController::class, 'grammaire']);
     });
 
     // =================================================
@@ -120,27 +92,13 @@ $router->prefix('chinois')->group(function (Router $router): void
     {
         $router->get('', [ChinoisController::class, 'ajouter']);
 
-        $router->get(
-            'vocabulaire',
-            [VocabulaireController::class, 'create']
-        );
+        $router->get('vocabulaire', [VocabulaireController::class, 'create']);
 
-        $router->post(
-            'vocabulaire',
-            [VocabulaireController::class, 'store'],
-            [CsrfMiddleware::class]
-        );
+        $router->post('vocabulaire', [VocabulaireController::class, 'store'], [CsrfMiddleware::class]);
 
-        $router->get(
-            'grammaire',
-            [GrammaireController::class, 'create']
-        );
+        $router->get('grammaire', [GrammaireController::class, 'create']);
 
-        $router->post(
-            'grammaire',
-            [GrammaireController::class, 'store'],
-            [CsrfMiddleware::class]
-        );
+        $router->post('grammaire', [GrammaireController::class, 'store'], [CsrfMiddleware::class]);
     });
 
     // =================================================
@@ -152,10 +110,7 @@ $router->prefix('chinois')->group(function (Router $router): void
         ->middleware(ExpectJsonMiddleware::class)
         ->group(function (Router $router): void
         {
-            $router->get(
-                'recherche/{query}',
-                [ChinoisAjaxController::class, 'search']
-            );
+            $router->get('recherche/{query}', [ChinoisAjaxController::class, 'search']);
 
             $router
                 ->middleware(CsrfMiddleware::class)
@@ -171,15 +126,9 @@ $router->prefix('chinois')->group(function (Router $router): void
                         [ChinoisAjaxController::class, 'toggleGrammaireMaitrise']
                     );
 
-                    $router->post(
-                        'delete-vocabulaire',
-                        [ChinoisAjaxController::class, 'deleteVocabulaire']
-                    );
+                    $router->post('delete-vocabulaire', [ChinoisAjaxController::class, 'deleteVocabulaire']);
 
-                    $router->post(
-                        'delete-grammaire',
-                        [ChinoisAjaxController::class, 'deleteGrammaire']
-                    );
+                    $router->post('delete-grammaire', [ChinoisAjaxController::class, 'deleteGrammaire']);
                 });
         });
 });

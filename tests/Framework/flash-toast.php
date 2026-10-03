@@ -3,6 +3,7 @@ declare(strict_types=1);
 require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
 
 use App\Http\Controllers\Controller;
+
 use Framework\Http\Request;
 
 session_save_path(sys_get_temp_dir());
@@ -13,10 +14,14 @@ try
     foreach (['success', 'error'] as $key)
     {
         $_SESSION = [$key => 'Pending message'];
-        $make = static fn (bool $prefetch) => new class($prefetch) extends Controller {
-            public function __construct(bool $prefetch) { $this->request = new Request(server: ['HTTP_X_PREFETCH' => $prefetch ? 'true' : 'false']); }
-            public function toast(): \App\DTO\Common\Responses\FlashToastData { return $this->flashToastData(); }
-            public function form(): \App\DTO\Common\Responses\FormViewData { $this->baseUri = ""; return $this->formViewData('/save', '/cancel'); }
+        $make = static fn (bool $prefetch) => new class($prefetch) extends Controller
+        {
+            public function __construct(bool $prefetch)
+            { $this->request = new Request(server: ['HTTP_X_PREFETCH' => $prefetch ? 'true' : 'false']); }
+            public function toast(): \App\DTO\Common\Responses\FlashToastData
+            { return $this->flashToastData(); }
+            public function form(): \App\DTO\Common\Responses\FormViewData
+            { $this->baseUri = ""; return $this->formViewData('/save', '/cancel'); }
         };
         if ($make(true)->toast()->message !== null || ($_SESSION[$key] ?? null) !== 'Pending message')
             throw new RuntimeException('Prefetch consumed or exposed a flash message.');
@@ -36,5 +41,6 @@ try
         throw new RuntimeException('Real form did not receive and consume validation state.');
     if ($make(false)->form()->old !== []) throw new RuntimeException('Form state replayed.');
 }
-finally { session_destroy(); }
+finally
+{ session_destroy(); }
 echo "PASS: prefetch preserves success/error; navigation consumes once.\n";

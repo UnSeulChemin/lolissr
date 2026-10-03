@@ -8,15 +8,9 @@
 
 export function normalizeRouteUrl(href)
 {
-    const url = new URL(
-        href,
-        window.location.origin,
-    );
+    const url = new URL(href, window.location.origin);
 
-    let pathname = url.pathname.replace(
-        /\/+/g,
-        '/',
-    );
+    let pathname = url.pathname.replace(/\/+/g, '/');
 
     if (pathname === '')
     {
@@ -34,9 +28,7 @@ export function normalizeRouteUrl(href)
 
 export function normalizeCacheKey(href)
 {
-    const url = new URL(
-        normalizeRouteUrl(href),
-    );
+    const url = new URL(normalizeRouteUrl(href));
 
     url.hash = '';
 
@@ -59,10 +51,7 @@ export function shouldIgnoreLink(link)
         return true;
     }
 
-    const url = new URL(
-        link.href,
-        window.location.origin,
-    );
+    const url = new URL(link.href, window.location.origin);
 
     // =================================================
     // EXTERNE
@@ -104,10 +93,7 @@ export function shouldIgnoreLink(link)
     // ANCRE DE LA PAGE ACTUELLE
     // =================================================
 
-    if (
-        url.hash
-        && normalizeCacheKey(url.href) === normalizeCacheKey(location.href)
-    )
+    if (url.hash && normalizeCacheKey(url.href) === normalizeCacheKey(location.href))
     {
         return true;
     }

@@ -24,7 +24,8 @@ final class UserTitle
 
     public static function styleForTitle(string $title): string
     {
-        return match ($title) {
+        return match ($title)
+        {
             self::LEVEL_REWARDS[1] => 'rose-blue',
             self::LEVEL_REWARDS[10] => 'teal-gold',
             self::LEVEL_REWARDS[50] => 'gold-violet',
@@ -120,7 +121,7 @@ final class UserTitle
         95 => self::CELESTE,
         100 => self::DIVIN,
         125 => self::TRANSCENDANT,
-        150 => self::LEGENDE_SSR,
+        150 => self::LEGENDE_SSR
     ];
 
     private function __construct()
@@ -143,7 +144,7 @@ final class UserTitle
                 'required_level' => $requiredLevel,
                 'unlocked' => $level >= $requiredLevel,
                 'requirement' => $requiredLevel > 1 ? 'Niveau ' . $requiredLevel : 'Disponible',
-                'style' => '',
+                'style' => ''
             ];
         }
 
@@ -152,7 +153,7 @@ final class UserTitle
             'required_level' => 0,
             'unlocked' => $figurinesCollected >= self::FIGURINE_REWARD_TARGET,
             'requirement' => self::FIGURINE_REWARD_TARGET . ' figurines collectionnées',
-            'style' => 'rose-blue',
+            'style' => 'rose-blue'
         ];
 
         $titles[] = [
@@ -160,7 +161,7 @@ final class UserTitle
             'required_level' => 0,
             'unlocked' => $readArtbooks >= self::ARTBOOK_REWARD_TARGET,
             'requirement' => self::ARTBOOK_REWARD_TARGET . ' artbooks lus',
-            'style' => self::styleForTitle(self::ARTBOOK_REWARD),
+            'style' => self::styleForTitle(self::ARTBOOK_REWARD)
         ];
 
         $titles[] = [
@@ -168,7 +169,7 @@ final class UserTitle
             'required_level' => 0,
             'unlocked' => $readTomes >= self::TOME_REWARD_TARGET,
             'requirement' => self::TOME_REWARD_TARGET . ' tomes lus',
-            'style' => self::styleForTitle(self::TOME_REWARD),
+            'style' => self::styleForTitle(self::TOME_REWARD)
         ];
 
         $titles[] = [
@@ -176,7 +177,7 @@ final class UserTitle
             'required_level' => 0,
             'unlocked' => $completedSeries >= self::SERIES_REWARD_TARGET,
             'requirement' => self::SERIES_REWARD_TARGET . ' séries terminées',
-            'style' => self::styleForTitle(self::SERIES_REWARD),
+            'style' => self::styleForTitle(self::SERIES_REWARD)
         ];
 
         $titles[] = [
@@ -184,7 +185,7 @@ final class UserTitle
             'required_level' => 0,
             'unlocked' => $nendoroidsCollected >= self::NENDOROID_REWARD_TARGET,
             'requirement' => self::NENDOROID_REWARD_TARGET . ' nendoroids collectionnés',
-            'style' => self::styleForTitle(self::NENDOROID_REWARD),
+            'style' => self::styleForTitle(self::NENDOROID_REWARD)
         ];
 
         $titles[] = [
@@ -192,14 +193,14 @@ final class UserTitle
             'required_level' => 0,
             'unlocked' => $vocabularyLearned >= self::VOCABULARY_REWARD_TARGET,
             'requirement' => self::VOCABULARY_REWARD_TARGET . ' mots maîtrisés',
-            'style' => self::styleForTitle(self::VOCABULARY_REWARD),
+            'style' => self::styleForTitle(self::VOCABULARY_REWARD)
         ];
         $titles[] = [
             'title' => self::GRAMMAR_REWARD,
             'required_level' => 0,
             'unlocked' => $grammarLearned >= self::GRAMMAR_REWARD_TARGET,
             'requirement' => self::GRAMMAR_REWARD_TARGET . ' points de grammaire maîtrisés',
-            'style' => self::styleForTitle(self::GRAMMAR_REWARD),
+            'style' => self::styleForTitle(self::GRAMMAR_REWARD)
         ];
 
         foreach (self::LEVEL_REWARDS as $requiredLevel => $title)
@@ -209,7 +210,7 @@ final class UserTitle
                 'required_level' => $requiredLevel,
                 'unlocked' => $level >= $requiredLevel,
                 'requirement' => 'Niveau ' . $requiredLevel,
-                'style' => self::styleForTitle($title),
+                'style' => self::styleForTitle($title)
             ];
         }
 
@@ -239,5 +240,4 @@ final class UserTitle
 
         return $titles;
     }
-
 }

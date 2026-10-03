@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\Nendoroid\NendoroidController;
 use App\Http\Controllers\Nendoroid\NendoroidAjaxController;
+use App\Http\Controllers\Nendoroid\NendoroidController;
 use App\Http\Routing\CollectionRouteRegistrar;
+
 use Framework\Routing\Router;
 
 /** @var Router $router */

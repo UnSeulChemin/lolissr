@@ -5,19 +5,24 @@ declare(strict_types=1);
 require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
 
 use App\Http\Controllers\Controller;
+
 use Framework\Config\Config;
 use Framework\Container\Container;
 use Framework\Database\Database;
 use Framework\Http\Request;
 
-$check = static function (bool $condition, string $message): void {
+$check = static function (bool $condition, string $message): void
+{
     if (!$condition) throw new RuntimeException($message);
 };
 Config::prime(['app' => ['base_uri' => '/lolissr', 'pagination' => 8]]);
-$resolve = static function (array $input, bool $post): string {
+$resolve = static function (array $input, bool $post): string
+{
     $request = $post ? new Request(post: $input) : new Request(get: $input);
-    $controller = new class($request) extends Controller {
-        public function returnPath(): string { return $this->returnPathInput(); }
+    $controller = new class($request) extends Controller
+    {
+        public function returnPath(): string
+        { return $this->returnPathInput(); }
     };
     return $controller->returnPath();
 };
@@ -41,7 +46,8 @@ foreach ([false, true] as $post)
         $resolve(['return_to' => ['invalid']], $post);
         throw new LogicException('Array return path accepted.');
     }
-    catch (Framework\Http\Exceptions\ValidationException) {}
+    catch (Framework\Http\Exceptions\ValidationException)
+    {}
 }
 
 // Temporary in-memory tables only; never connect to the application database.
@@ -59,7 +65,7 @@ foreach ([
     [App\Services\Figurine\FigurineReadService::class, 'waifus'],
     [App\Services\Nendoroid\NendoroidReadService::class, 'waifus'],
     [App\Services\Peluche\PelucheReadService::class, 'waifus'],
-    [App\Services\Chinois\ChinoisReadService::class, 'langue'],
+    [App\Services\Chinois\ChinoisReadService::class, 'langue']
 ] as [$class, $method])
 {
     $service = $container->get($class);

@@ -10,12 +10,11 @@ use App\DTO\Figurine\Inputs\FigurineCreateData;
 use App\DTO\Figurine\Inputs\FigurineUpdateData;
 use App\DTO\Media\UploadThumbnailData;
 use App\Repositories\Figurine\FigurineRepository;
-use App\Services\Media\ThumbnailManager;
 use App\Services\Collections\CollectionCreationService;
+use App\Services\Media\ThumbnailManager;
 
 use Framework\Database\Database;
 use Framework\Logging\Logger;
-
 
 final readonly class FigurineWriteService
 {
@@ -27,7 +26,8 @@ final readonly class FigurineWriteService
         private Database $database,
         private FigurineXpRewardService $figurineXpRewardService,
         private CollectionCreationService $creationService
-    ) {
+    )
+    {
     }
 
     // =================================================
@@ -62,7 +62,7 @@ final readonly class FigurineWriteService
                     'height_cm' => $dto->height_cm,
                     'company' => $dto->company,
                     'release_date' => $dto->release_date,
-                    'commentaire' => $dto->commentaire,
+                    'commentaire' => $dto->commentaire
                 ]);
 
                 $failure = $this->writeFailed(
@@ -75,7 +75,6 @@ final readonly class FigurineWriteService
 
                 if ($failure !== null)
                 {
-
                     return $failure;
                 }
 
@@ -139,11 +138,7 @@ final readonly class FigurineWriteService
                     return $this->error('Figurine introuvable', 404);
                 }
 
-                $updated = $this->figurineRepository->updateCollectStatus(
-                    $slug,
-                    $numero,
-                    $collectStatus === 1
-                );
+                $updated = $this->figurineRepository->updateCollectStatus($slug, $numero, $collectStatus === 1);
 
                 $failure = $this->writeFailed(
                     $updated,
@@ -176,7 +171,7 @@ final readonly class FigurineWriteService
                         'xpEarned' => $xpEarned,
                         'xpAmount' => $xpEarned ? UserXp::COLLECT_FIGURINE : 0,
                         'level' => $user?->level,
-                        'xp' => $user?->xp,
+                        'xp' => $user?->xp
                     ]
                 );
             }

@@ -19,7 +19,8 @@ final readonly class ServiceResult implements \Framework\Database\TransactionRes
         public int $status,
         public string $message,
         public array $data = []
-    ) {
+    )
+    {
     }
 
     /**

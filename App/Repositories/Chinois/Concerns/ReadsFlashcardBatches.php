@@ -40,7 +40,7 @@ trait ReadsFlashcardBatches
         return [
             'total' => (int) ($rows[0]->flashcard_total ?? 0),
             'offset' => (int) ($rows[0]->page_offset ?? 0),
-            'rows' => array_values(array_filter($rows, static fn (stdClass $row): bool => $row->id !== null)),
+            'rows' => array_values(array_filter($rows, static fn (stdClass $row): bool => $row->id !== null))
         ];
     }
 
@@ -79,7 +79,7 @@ trait ReadsFlashcardBatches
         return [
             'total' => (int) ($rows[0]->flashcard_total ?? 0),
             'offset' => (int) ($rows[0]->page_offset ?? 0),
-            'rows' => array_values(array_filter($rows, static fn (stdClass $row): bool => $row->id !== null)),
+            'rows' => array_values(array_filter($rows, static fn (stdClass $row): bool => $row->id !== null))
         ];
     }
 }

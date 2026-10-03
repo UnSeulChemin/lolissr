@@ -29,11 +29,7 @@ return static function (Router $router): void
             $router->get('recherche', [\App\Http\Controllers\GlobalSearchController::class, 'search'],
                 [\Framework\Http\Middleware\ExpectJsonMiddleware::class]);
 
-            $router->post(
-                'deconnexion',
-                [AuthController::class, 'logout'],
-                [CsrfMiddleware::class]
-            );
+            $router->post('deconnexion', [AuthController::class, 'logout'], [CsrfMiddleware::class]);
 
             require __DIR__ . '/routes/profile.php';
             require __DIR__ . '/routes/sql.php';

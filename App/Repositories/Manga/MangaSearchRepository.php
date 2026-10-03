@@ -81,10 +81,7 @@ final class MangaSearchRepository extends AbstractRepository
             return null;
         }
 
-        return [
-            'title' => $title,
-            'numero' => $numero,
-        ];
+        return ['title' => $title, 'numero' => $numero];
     }
 
     /**
@@ -98,7 +95,7 @@ final class MangaSearchRepository extends AbstractRepository
         $slug = $this->slugSearch($title);
         $params = [
             'search_livre' => $exactTitle ? $title : "%{$title}%",
-            'search_slug' => $slug !== '' ? ($exactTitle ? $slug : '%' . $slug . '%') : null,
+            'search_slug' => $slug !== '' ? ($exactTitle ? $slug : '%' . $slug . '%') : null
         ];
 
         if ($numero !== null)

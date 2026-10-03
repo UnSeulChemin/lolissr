@@ -4,16 +4,14 @@ declare(strict_types=1);
 
 namespace Framework\Routing;
 
-use Closure;
 use Framework\Http\Exceptions\NotFoundException;
+
+use Closure;
 use RuntimeException;
 
 final class Route
 {
-    private const PARAM_PATTERNS = [
-        'int' => '[0-9]+',
-        'string' => '[^/]+'
-    ];
+    private const PARAM_PATTERNS = ['int' => '[0-9]+', 'string' => '[^/]+'];
 
     public readonly string $pattern;
 
@@ -36,7 +34,8 @@ final class Route
         private readonly string $path,
         array|string|Closure $action,
         private readonly array $middlewares = []
-    ) {
+    )
+    {
         $this->action = $action;
         $this->pattern = $this->compilePattern();
     }
@@ -129,10 +128,7 @@ final class Route
             return '#^/' . preg_quote($path, '#') . '/?$#';
         }
 
-        $segments = array_map(
-            fn (string $segment): string => $this->compileSegment($segment),
-            explode('/', $path)
-        );
+        $segments = array_map(fn (string $segment): string => $this->compileSegment($segment), explode('/', $path));
 
         return '#^/' . implode('/', $segments) . '/?$#';
     }

@@ -10,13 +10,16 @@ use Framework\Routing\Route;
 use Framework\Routing\RouteCollection;
 use Framework\Routing\Router;
 
-$check = static function (bool $condition, string $message): void {
+$check = static function (bool $condition, string $message): void
+{
     if (! $condition) throw new RuntimeException($message);
 };
 $collection = new RouteCollection();
 $routes = [];
-$add = static function (string $method, string $path) use ($collection, &$routes): void {
-    $route = new Route($method, $path, static function (): void {});
+$add = static function (string $method, string $path) use ($collection, &$routes): void
+{
+    $route = new Route($method, $path, static function (): void
+    {});
     $routes[] = $route;
     $collection->add($route);
 };
@@ -45,7 +48,8 @@ foreach ($uris as $uri)
     $check($collection->allowedMethodsFor($uri) === array_values(array_unique($expectedMethods)), 'Allow order changed: ' . $uri);
     foreach (['GET', 'POST', 'PUT', 'DELETE'] as $method)
     {
-        $first = static function (array $candidates) use ($method, $uri): ?Route {
+        $first = static function (array $candidates) use ($method, $uri): ?Route
+        {
             foreach ($candidates as $route)
             {
                 if ($route->getMethod() === $method && preg_match($route->pattern, $uri) === 1) return $route;
@@ -57,7 +61,8 @@ foreach ($uris as $uri)
 }
 
 // Exercise actual dispatch: request injection, route parameters and scalar defaults.
-$controller = new class {
+$controller = new class
+{
     public array $received = [];
     public function show(Request $request, int $id, string $label = 'default'): void
     {
@@ -76,16 +81,19 @@ $check($controller->received === [$request, 42, 'default'], 'Controller argument
 
 class DefaultObjectFixture
 {
-    public function __construct(public mixed $value = new stdClass()) {}
+    public function __construct(public mixed $value = new stdClass())
+    {}
 }
 $first = $container->get(DefaultObjectFixture::class);
 $second = $container->get(DefaultObjectFixture::class);
 $check($first->value !== $second->value, 'Cached parameter plan reused an object default.');
 
-interface UnboundFixture {}
+interface UnboundFixture
+{}
 class NullableDependencyFixture
 {
-    public function __construct(public ?UnboundFixture $dependency = null) {}
+    public function __construct(public ?UnboundFixture $dependency = null)
+    {}
 }
 $check($container->get(NullableDependencyFixture::class)->dependency === null, 'Nullable unbound dependency changed.');
 

@@ -18,30 +18,12 @@ $tests[] = [
 // =========================================
 
 $notFoundResources = [
-    [
-        'label' => 'Série inexistante retourne 404',
-        'path' => '/manga/series/serie-qui-nexiste-pas'
-    ],
-    [
-        'label' => 'Manga inexistant retourne 404',
-        'path' => '/manga/series/serie-qui-nexiste-pas/999'
-    ],
-    [
-        'label' => 'Artbook inexistant retourne 404',
-        'path' => '/manga/artbooks/artbook-qui-nexiste-pas/999'
-    ],
-    [
-        'label' => 'Figurine inexistante retourne 404',
-        'path' => '/figurine/figurines/waifu-qui-nexiste-pas/999'
-    ],
-    [
-        'label' => 'Nendoroid inexistant retourne 404',
-        'path' => '/nendoroid/nendoroids/waifu-qui-nexiste-pas/999'
-    ],
-    [
-        'label' => 'Peluche inexistante retourne 404',
-        'path' => '/peluche/peluches/waifu-qui-nexiste-pas/999'
-    ]
+    ['label' => 'Série inexistante retourne 404', 'path' => '/manga/series/serie-qui-nexiste-pas'],
+    ['label' => 'Manga inexistant retourne 404', 'path' => '/manga/series/serie-qui-nexiste-pas/999'],
+    ['label' => 'Artbook inexistant retourne 404', 'path' => '/manga/artbooks/artbook-qui-nexiste-pas/999'],
+    ['label' => 'Figurine inexistante retourne 404', 'path' => '/figurine/figurines/waifu-qui-nexiste-pas/999'],
+    ['label' => 'Nendoroid inexistant retourne 404', 'path' => '/nendoroid/nendoroids/waifu-qui-nexiste-pas/999'],
+    ['label' => 'Peluche inexistante retourne 404', 'path' => '/peluche/peluches/waifu-qui-nexiste-pas/999']
 ];
 
 foreach ($notFoundResources as $resource)
@@ -62,7 +44,7 @@ $tests[] = [
     'category' => 'Errors',
     'label' => 'Paramètre entier hors limites retourne 404',
     'path' => '/manga/notes/page/999999999999999999999999999999',
-    'expected_status' => 404,
+    'expected_status' => 404
 ];
 
 foreach (['notes', 'a-lire'] as $filteredList)
@@ -71,7 +53,7 @@ foreach (['notes', 'a-lire'] as $filteredList)
         'category' => 'Errors',
         'label' => "Pagination extrême $filteredList retourne 404",
         'path' => '/manga/' . $filteredList . '/page/' . PHP_INT_MAX,
-        'expected_status' => 404,
+        'expected_status' => 404
     ];
 }
 

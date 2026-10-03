@@ -10,9 +10,8 @@ use Framework\Http\Request;
 
 final readonly class AuthMiddleware implements MiddlewareInterface
 {
-    public function __construct(
-        private AuthenticationInterface $authentication
-    ) {
+    public function __construct(private AuthenticationInterface $authentication)
+    {
     }
 
     // =================================================

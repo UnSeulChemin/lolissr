@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Manga;
 
-use App\Http\Controllers\Controller;
 use App\DTO\Common\ServiceResult;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Manga\MangaUpdateNoteRequest;
 use App\Services\Manga\MangaReadService;
 use App\Services\Manga\MangaWriteService;
@@ -21,10 +21,10 @@ final class MangaAjaxController extends Controller
         private readonly MangaReadService $mangaReadService,
         private readonly MangaWriteService $mangaWriteService,
         Request $request
-    ) {
+    )
+    {
         parent::__construct($request);
     }
-
 
     // =================================================
     // RECHERCHE
@@ -32,19 +32,10 @@ final class MangaAjaxController extends Controller
 
     public function search(string|int $query = ''): never
     {
-        $searchData = $this->mangaReadService->search(
-            (string) $query
-        );
+        $searchData = $this->mangaReadService->search((string) $query);
 
-        $this->jsonResult(
-            ServiceResult::success(
-                data: [
-                    'results' => $searchData->results,
-                ]
-            )
-        );
+        $this->jsonResult(ServiceResult::success(data: ['results' => $searchData->results]));
     }
-
 
     // =================================================
     // SÉRIES PAGE
@@ -58,9 +49,7 @@ final class MangaAjaxController extends Controller
 
         if ($data === null)
         {
-            throw new NotFoundException(
-                'Page introuvable'
-            );
+            throw new NotFoundException('Page introuvable');
         }
 
         $this->renderFragment(
@@ -70,109 +59,69 @@ final class MangaAjaxController extends Controller
                 'currentPage' => $data->currentPage,
                 'totalPages' => $data->totalPages,
                 'slugFilter' => $data->slugFilter,
-                'isSerieView' => $data->slugFilter !== null,
+                'isSerieView' => $data->slugFilter !== null
             ]
         );
     }
-
 
     // =================================================
     // MISE À JOUR NOTE
     // =================================================
 
-    public function updateNote(
-        MangaUpdateNoteRequest $request,
-        string $slug,
-        int $numero
-    ): never {
+    public function updateNote(MangaUpdateNoteRequest $request, string $slug, int $numero): never
+    {
         $this->validateRequest($request);
 
-        $this->jsonResult($this->mangaWriteService->updateNote(
-            $slug,
-            $numero,
-            $request->dto()
-        ));
+        $this->jsonResult($this->mangaWriteService->updateNote($slug, $numero, $request->dto()));
     }
 
     // =================================================
     // MISE À JOUR DU STATUT DE LECTURE
     // =================================================
 
-    public function updateReadStatus(
-        string $slug,
-        int $numero
-    ): never {
+    public function updateReadStatus(string $slug, int $numero): never
+    {
         $readStatus = $this->binaryStatusInput('readStatus');
 
-        $result = $this->mangaWriteService->updateReadStatus(
-            $slug,
-            $numero,
-            $readStatus
-        );
+        $result = $this->mangaWriteService->updateReadStatus($slug, $numero, $readStatus);
 
         $this->jsonResult($result);
     }
-
 
     // =================================================
     // SUPPRESSION
     // =================================================
 
-    public function delete(
-        string $slug,
-        int $numero
-    ): never {
-        $result = $this->mangaWriteService->delete(
-            $slug,
-            $numero
-        );
+    public function delete(string $slug, int $numero): never
+    {
+        $result = $this->mangaWriteService->delete($slug, $numero);
 
         if (! $result->success)
         {
             $this->jsonResult($result);
         }
 
-        $seriesStillExists = $this->mangaReadService->seriesExists(
-            $slug
-        );
+        $seriesStillExists = $this->mangaReadService->seriesExists($slug);
 
-        $redirect = $this->buildRedirectPath(
-            $slug,
-            $seriesStillExists
-        );
+        $redirect = $this->buildRedirectPath($slug, $seriesStillExists);
 
         $this->jsonResult(
             ServiceResult::success(
                 message: $result->message,
-                data: [
-                    ...$result->data,
-                    'redirect' => $redirect,
-                ],
+                data: [...$result->data, 'redirect' => $redirect],
                 status: $result->status
             )
         );
     }
 
-
     // =================================================
     // UTILITAIRES
     // =================================================
 
-    private function buildRedirectPath(
-        string $slug,
-        bool $seriesStillExists
-    ): string {
+    private function buildRedirectPath(string $slug, bool $seriesStillExists): string
+    {
         return $seriesStillExists
-            ? sprintf(
-                '%s/%s/%s',
-                $this->baseUri,
-                self::SERIES_PATH,
-                rawurlencode(\Framework\Support\Str::slug($slug))
-            )
-            : sprintf(
-                '%s/%s',
-                $this->baseUri,
-                self::SERIES_PATH
-            );
+            ? sprintf('%s/%s/%s', $this->baseUri, self::SERIES_PATH, rawurlencode(\Framework\Support\Str::slug($slug)))
+            : sprintf('%s/%s', $this->baseUri, self::SERIES_PATH);
     }
 }

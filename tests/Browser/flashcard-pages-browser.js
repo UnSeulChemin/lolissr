@@ -2,14 +2,16 @@ export async function runBrowserScenario()
 {
     const {createFlashcardDeck} = await import('./js/chinois/pages/flashcard-deck.js');
     const {runCleanup} = await import('./js/router/router-cleanup.js');
-    const check = (ok, message) => { if (!ok) throw new Error(message); };
+    const check = (ok, message) =>
+    { if (!ok) throw new Error(message); };
     const original = window.fetch;
     let rows = Array.from({length: 121}, (_, i) => ({id: (i + 1) * 2}));
     let requests = 0;
     const container = document.createElement('div');
     container.dataset.flashcards = JSON.stringify(rows.slice(0, 50));
     container.dataset.flashcardTotal = String(rows.length);
-    const serve = async url => {
+    const serve = async url =>
+    {
         requests++;
         const parts = String(url).split('/');
         check(parts.at(-3) === 'cursor', 'Navigation must use a cursor');
@@ -20,7 +22,7 @@ export async function runBrowserScenario()
         const cards = previous ? candidates.slice(-50) : candidates.slice(0, 50);
         const offset = cards.length ? rows.findIndex(row => row.id === cards[0].id) : 0;
         return new Response(JSON.stringify({success: true, data: {
-            cards, total: rows.length, offset,
+            cards, total: rows.length, offset
         }}), {headers: {'Content-Type': 'application/json'}});
     };
     try
@@ -42,9 +44,11 @@ export async function runBrowserScenario()
         rows.shift();
         await deck.remove(2);
         check(deck.total === 120 && deck.card.id === 4 && deck.index === 0, 'Removal did not refresh offsets/count');
-        window.fetch = async () => { throw new TypeError('Simulated network failure'); };
+        window.fetch = async () =>
+        { throw new TypeError('Simulated network failure'); };
         let failed = false;
-        try { await deck.move(-1); } catch { failed = true; }
+        try
+        { await deck.move(-1); } catch { failed = true; }
         check(failed && deck.index === 0 && deck.card.id === 4, 'Network error changed the current card');
         window.fetch = serve;
         await deck.move(-1);
@@ -67,16 +71,19 @@ export async function runBrowserScenario()
 
         const cancelled = createFlashcardDeck(container, 'grammaire');
         let release;
-        window.fetch = url => new Promise(resolve => { release = async () => resolve(await serve(url)); });
+        window.fetch = url => new Promise(resolve =>
+        { release = async () => resolve(await serve(url)); });
         const pending = cancelled.move(-1);
         runCleanup();
         await release();
         failed = false;
-        try { await pending; } catch { failed = true; }
+        try
+        { await pending; } catch { failed = true; }
         check(failed && cancelled.card.id === 2 && cancelled.total === 121, 'Late response survived cleanup');
         return ['Bounded batches and sparse IDs', 'Forward/backward boundaries and circular navigation',
             'Removal, concurrent shrink and empty deck', 'Network failure preserves current card and retry works',
             'Cleanup discards late responses'];
     }
-    finally { window.fetch = original; runCleanup(); }
+    finally
+    { window.fetch = original; runCleanup(); }
 }

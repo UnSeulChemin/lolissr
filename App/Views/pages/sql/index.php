@@ -14,7 +14,6 @@ $result = $result ?? [];
 
 $error = $error ?? null;
 
-
 $resultCount = count($result);
 
 if ($resultCount > 0)

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Repositories\Nendoroid;
 
-use App\Repositories\AbstractRepository;
 use App\Models\Nendoroid;
+use App\Repositories\AbstractRepository;
 
 final class NendoroidCollectionRepository extends AbstractRepository
 {
@@ -19,10 +19,7 @@ final class NendoroidCollectionRepository extends AbstractRepository
     /**
      * @return list<Nendoroid>
      */
-    public function findPaginated(
-        int $limit,
-        int $page
-    ): array
+    public function findPaginated(int $limit, int $page): array
     {
         $page = max(1, $page);
         $limit = max(1, $limit);
@@ -54,10 +51,7 @@ final class NendoroidCollectionRepository extends AbstractRepository
             LIMIT :limit
             OFFSET :offset
             ",
-            [
-                'limit' => $limit,
-                'offset' => $offset,
-            ],
+            ['limit' => $limit, 'offset' => $offset],
             Nendoroid::class
         );
 

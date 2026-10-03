@@ -22,10 +22,7 @@ echo PHP_EOL;
 echo '[SYSTEM]' . PHP_EOL;
 echo 'Regenerating Composer autoload...' . PHP_EOL;
 
-runCommand(
-    ['composer', 'dump-autoload'],
-    'Composer autoload could not be regenerated.'
-);
+runCommand(['composer', 'dump-autoload'], 'Composer autoload could not be regenerated.');
 
 echo PHP_EOL;
 echo '============================================================' . PHP_EOL;
@@ -53,13 +50,7 @@ function runPhpScript(string $script, array $arguments, string $message): void
     echo '[SYSTEM]' . PHP_EOL;
     echo $message . PHP_EOL;
 
-    runCommand(
-        array_merge(
-            [PHP_BINARY, __DIR__ . DIRECTORY_SEPARATOR . $script],
-            $arguments
-        ),
-        $message . ' Failed.'
-    );
+    runCommand(array_merge([PHP_BINARY, __DIR__ . DIRECTORY_SEPARATOR . $script], $arguments), $message . ' Failed.');
 }
 
 /**
@@ -67,16 +58,7 @@ function runPhpScript(string $script, array $arguments, string $message): void
  */
 function runCommand(array $command, string $failureMessage): void
 {
-    $process = proc_open(
-        $command,
-        [
-            0 => STDIN,
-            1 => STDOUT,
-            2 => STDERR,
-        ],
-        $pipes,
-        ROOT
-    );
+    $process = proc_open($command, [0 => STDIN, 1 => STDOUT, 2 => STDERR], $pipes, ROOT);
 
     if (! is_resource($process))
     {

@@ -146,9 +146,7 @@ final class Container
 
             if (! is_object($object))
             {
-                throw new RuntimeException(
-                    'Container factory must return an object.'
-                );
+                throw new RuntimeException('Container factory must return an object.');
             }
 
             return $object;
@@ -198,13 +196,7 @@ final class Container
                     continue;
                 }
 
-                throw new RuntimeException(
-                    sprintf(
-                        'Unable to resolve %s::$%s',
-                        $concrete,
-                        $parameter->name
-                    )
-                );
+                throw new RuntimeException(sprintf('Unable to resolve %s::$%s', $concrete, $parameter->name));
             }
 
             $dependency = $parameter->dependency;

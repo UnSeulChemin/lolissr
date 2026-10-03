@@ -55,34 +55,18 @@ ensureDirectory($releasesDirectory);
 
 removeDirectory($temporaryRoot);
 
-
 ensureDirectory($buildDirectory);
 
-$directories = [
-    'App',
-    'Config',
-    'Framework',
-    'scripts',
-];
+$directories = ['App', 'Config', 'Framework', 'scripts'];
 
 foreach ($directories as $directory)
 {
-    copyDirectory(
-        ROOT . DIRECTORY_SEPARATOR . $directory,
-        $buildDirectory . DIRECTORY_SEPARATOR . $directory
-    );
+    copyDirectory(ROOT . DIRECTORY_SEPARATOR . $directory, $buildDirectory . DIRECTORY_SEPARATOR . $directory);
 }
 
-copyPublicDirectory(
-    ROOT . DIRECTORY_SEPARATOR . 'public',
-    $buildDirectory . DIRECTORY_SEPARATOR . 'public'
-);
+copyPublicDirectory(ROOT . DIRECTORY_SEPARATOR . 'public', $buildDirectory . DIRECTORY_SEPARATOR . 'public');
 
-$rootFiles = [
-    'composer.json',
-    'composer.lock',
-    '.env.example',
-];
+$rootFiles = ['composer.json', 'composer.lock', '.env.example'];
 
 foreach ($rootFiles as $file)
 {
@@ -92,10 +76,7 @@ foreach ($rootFiles as $file)
 require_once __DIR__ . '/../Support/ProductionDependencies.php';
 ProductionDependencies::install($buildDirectory);
 
-$optionalFiles = [
-    '.htaccess',
-    'README.md',
-];
+$optionalFiles = ['.htaccess', 'README.md'];
 
 foreach ($optionalFiles as $file)
 {
@@ -109,7 +90,7 @@ $runtimeDirectories = [
     'storage/sessions',
     'storage/backups',
     'storage/backups/database',
-    'public/images',
+    'public/images'
 ];
 
 foreach ($runtimeDirectories as $directory)
@@ -155,13 +136,7 @@ exit(0);
 
 function copyPublicDirectory(string $source, string $destination): void
 {
-    copyDirectory(
-        $source,
-        $destination,
-        [
-            normalizePath($source . DIRECTORY_SEPARATOR . 'images'),
-        ]
-    );
+    copyDirectory($source, $destination, [normalizePath($source . DIRECTORY_SEPARATOR . 'images')]);
 }
 
 /**
@@ -177,10 +152,7 @@ function copyDirectory(string $source, string $destination, array $excludedPaths
     ensureDirectory($destination);
 
     $iterator = new RecursiveIteratorIterator(
-        new RecursiveDirectoryIterator(
-            $source,
-            FilesystemIterator::SKIP_DOTS
-        ),
+        new RecursiveDirectoryIterator($source, FilesystemIterator::SKIP_DOTS),
         RecursiveIteratorIterator::SELF_FIRST
     );
 
@@ -191,10 +163,7 @@ function copyDirectory(string $source, string $destination, array $excludedPaths
 
         foreach ($excludedPaths as $excludedPath)
         {
-            if (
-                $normalizedSourcePath === $excludedPath
-                || str_starts_with($normalizedSourcePath, $excludedPath . '/')
-            )
+            if ($normalizedSourcePath === $excludedPath || str_starts_with($normalizedSourcePath, $excludedPath . '/'))
             {
                 continue 2;
             }
@@ -223,10 +192,7 @@ function copyRequiredFile(string $file, string $destinationDirectory): void
         fail('Missing file: ' . $file);
     }
 
-    copyFile(
-        $source,
-        $destinationDirectory . DIRECTORY_SEPARATOR . basename($file)
-    );
+    copyFile($source, $destinationDirectory . DIRECTORY_SEPARATOR . basename($file));
 }
 
 function copyOptionalFile(string $file, string $destinationDirectory): void
@@ -238,10 +204,7 @@ function copyOptionalFile(string $file, string $destinationDirectory): void
         return;
     }
 
-    copyFile(
-        $source,
-        $destinationDirectory . DIRECTORY_SEPARATOR . basename($file)
-    );
+    copyFile($source, $destinationDirectory . DIRECTORY_SEPARATOR . basename($file));
 }
 
 function copyFile(string $source, string $destination): void
@@ -269,12 +232,7 @@ function ensureDirectory(string $directory): void
 
 function verifyRelease(string $buildDirectory): void
 {
-    $forbiddenPaths = [
-        '.env',
-        '.git',
-        'tests',
-        'releases',
-    ];
+    $forbiddenPaths = ['.env', '.git', 'tests', 'releases'];
 
     foreach ($forbiddenPaths as $path)
     {
@@ -287,10 +245,7 @@ function verifyRelease(string $buildDirectory): void
     }
 
     $iterator = new RecursiveIteratorIterator(
-        new RecursiveDirectoryIterator(
-            $buildDirectory,
-            FilesystemIterator::SKIP_DOTS
-        )
+        new RecursiveDirectoryIterator($buildDirectory, FilesystemIterator::SKIP_DOTS)
     );
 
     foreach ($iterator as $item)
@@ -322,10 +277,7 @@ function removeDirectory(string $directory): void
     }
 
     $iterator = new RecursiveIteratorIterator(
-        new RecursiveDirectoryIterator(
-            $directory,
-            FilesystemIterator::SKIP_DOTS
-        ),
+        new RecursiveDirectoryIterator($directory, FilesystemIterator::SKIP_DOTS),
         RecursiveIteratorIterator::CHILD_FIRST
     );
 

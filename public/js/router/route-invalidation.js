@@ -2,9 +2,7 @@
 // ROUTE INVALIDATION
 // =================================================
 
-import {
-    normalizeCacheKey,
-} from '../core/navigation.js';
+import { normalizeCacheKey } from '../core/navigation.js';
 
 // =================================================
 // ÉTAT
@@ -18,16 +16,10 @@ const invalidatedRoutes = new Map();
 
 function routePath(href)
 {
-    return new URL(
-        normalizeCacheKey(href),
-    ).pathname.replace(/\/+$/, '') || '/';
+    return new URL(normalizeCacheKey(href)).pathname.replace(/\/+$/, '') || '/';
 }
 
-function matchesInvalidatedRoute(
-    current,
-    invalidated,
-    descendants,
-)
+function matchesInvalidatedRoute(current, invalidated, descendants)
 {
     return current === invalidated
         || (descendants && current.startsWith(invalidated === '/' ? '/' : `${invalidated}/`));
@@ -39,10 +31,7 @@ function matchesInvalidatedRoute(
 
 export function invalidateRoute(href, {descendants = true} = {})
 {
-    invalidatedRoutes.set(
-        routePath(href),
-        descendants || invalidatedRoutes.get(routePath(href)) === true,
-    );
+    invalidatedRoutes.set(routePath(href), descendants || invalidatedRoutes.get(routePath(href)) === true);
 }
 
 // =================================================
@@ -51,9 +40,7 @@ export function invalidateRoute(href, {descendants = true} = {})
 
 export function shouldRefreshRoute(href)
 {
-    const normalized = routePath(
-        href,
-    );
+    const normalized = routePath(href);
 
     for (const [route, descendants] of invalidatedRoutes)
     {
@@ -72,17 +59,13 @@ export function shouldRefreshRoute(href)
 
 export function clearInvalidatedRoute(href)
 {
-    const normalized = routePath(
-        href,
-    );
+    const normalized = routePath(href);
 
     for (const [route, descendants] of invalidatedRoutes)
     {
         if (matchesInvalidatedRoute(normalized, route, descendants))
         {
-            invalidatedRoutes.delete(
-                route,
-            );
+            invalidatedRoutes.delete(route);
         }
     }
 }

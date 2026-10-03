@@ -31,9 +31,7 @@ final class ChinoisVocabulaireCollectionRepository extends AbstractRepository
 
             WHERE langue = :langue
             ",
-            [
-                'langue' => trim($langue)
-            ]
+            ['langue' => trim($langue)]
         );
 
         return (int) ($result->total ?? 0);
@@ -63,9 +61,7 @@ final class ChinoisVocabulaireCollectionRepository extends AbstractRepository
             LIMIT {$perPage}
             OFFSET {$offset}
             ",
-            [
-                'langue' => trim($langue)
-            ]
+            ['langue' => trim($langue)]
         );
 
         return array_map($this->mapRowToDto(...), $results);

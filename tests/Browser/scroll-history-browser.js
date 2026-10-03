@@ -16,11 +16,13 @@ export async function runBrowserScenario()
     window.requestAnimationFrame = callback => setTimeout(() => callback(performance.now()), 0);
     window.fetch = async () => new Response(JSON.stringify({success: true, type: 'page', page: {
         html: '<div style="height:5000px">Scroll fixture</div>', format: 'fragment',
-        title: 'Scroll fixture', stylesheets: [], lang: 'fr', bodyData: {},
+        title: 'Scroll fixture', stylesheets: [], lang: 'fr', bodyData: {}
     }}), {headers: {'Content-Type': 'application/json'}});
     const frame = () => new Promise(resolve => requestAnimationFrame(resolve));
-    const check = (ok, message) => { if (!ok) throw new Error(message); };
-    const move = async (direction, expectedEntry) => {
+    const check = (ok, message) =>
+    { if (!ok) throw new Error(message); };
+    const move = async (direction, expectedEntry) =>
+    {
         const event = new Promise(resolve => window.addEventListener('popstate', resolve, {once: true}));
         history[direction]();
         await event;
@@ -55,5 +57,6 @@ export async function runBrowserScenario()
         check(Math.abs(scrollY - 1100) < 2, 'Repeated URL lost its own position');
         return ['Back/Forward preserve scroll', 'Repeated URLs have independent positions', 'Existing history state preserved'];
     }
-    finally { window.fetch = originalFetch; window.requestAnimationFrame = originalFrame; }
+    finally
+    { window.fetch = originalFetch; window.requestAnimationFrame = originalFrame; }
 }

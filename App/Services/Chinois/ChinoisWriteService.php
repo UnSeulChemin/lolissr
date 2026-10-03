@@ -23,7 +23,8 @@ final readonly class ChinoisWriteService
         private ChinoisXpRewardService $chinoisXpRewardService,
         private Database $database,
         private DashboardCache $dashboardCache
-    ) {
+    )
+    {
     }
 
     // =================================================
@@ -38,10 +39,7 @@ final readonly class ChinoisWriteService
                 $inserted = $this->grammaireRepository->insert([
                     'niveau' => $dto->niveau,
                     'section' => $dto->section,
-                    'section_position' => $this->grammaireRepository->getSectionPosition(
-                        $dto->niveau,
-                        $dto->section
-                    ),
+                    'section_position' => $this->grammaireRepository->getSectionPosition($dto->niveau, $dto->section),
                     'categorie' => $dto->categorie,
                     'categorie_position' => $this->grammaireRepository->getCategoriePosition(
                         $dto->niveau,

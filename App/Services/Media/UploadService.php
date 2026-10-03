@@ -13,9 +13,8 @@ use Framework\Logging\Logger;
 
 final readonly class UploadService
 {
-    public function __construct(
-        private ImageUploadValidator $imageUploadValidator
-    ) {
+    public function __construct(private ImageUploadValidator $imageUploadValidator)
+    {
     }
 
     // =================================================
@@ -34,16 +33,10 @@ final readonly class UploadService
     ): ServiceResult {
         if (ApplicationConfig::isTesting())
         {
-            return ServiceResult::error(
-                message: 'Upload interdit pendant les tests HTTP',
-                status: 403
-            );
+            return ServiceResult::error(message: 'Upload interdit pendant les tests HTTP', status: 403);
         }
 
-        $validatedUpload = $this->imageUploadValidator->validate(
-            $files,
-            $fileKey
-        );
+        $validatedUpload = $this->imageUploadValidator->validate($files, $fileKey);
 
         if ($validatedUpload instanceof ServiceResult)
         {
@@ -54,29 +47,17 @@ final readonly class UploadService
 
         if ($thumbnail === '')
         {
-            return $this->failure(
-                'Upload: nom thumbnail invalide.',
-                'Nom de fichier invalide',
-                422
-            );
+            return $this->failure('Upload: nom thumbnail invalide.', 'Nom de fichier invalide', 422);
         }
 
         // Un enregistrement recréé ne doit jamais réutiliser un fichier dont la suppression est en attente.
         $thumbnail = mb_strcut($thumbnail, 0, 180, 'UTF-8') . '-' . bin2hex(random_bytes(16));
 
-        $destination = $this->buildDestinationPath(
-            $directory,
-            $thumbnail,
-            $validatedUpload->extension
-        );
+        $destination = $this->buildDestinationPath($directory, $thumbnail, $validatedUpload->extension);
 
         if ($destination === null)
         {
-            return $this->failure(
-                'Upload: dossier impossible à créer.',
-                'Dossier image introuvable',
-                500
-            );
+            return $this->failure('Upload: dossier impossible à créer.', 'Dossier image introuvable', 500);
         }
 
         // La création exclusive réserve le nom avant de déplacer le fichier téléversé.
@@ -155,12 +136,7 @@ final readonly class UploadService
             return true;
         }
 
-        Logger::warning(
-            'Upload: impossible de supprimer le fichier.',
-            [
-                'path' => $path
-            ]
-        );
+        Logger::warning('Upload: impossible de supprimer le fichier.', ['path' => $path]);
 
         return false;
     }
@@ -169,11 +145,8 @@ final readonly class UploadService
     // DESTINATION
     // =================================================
 
-    private function buildDestinationPath(
-        string $directory,
-        string $thumbnail,
-        string $extension
-    ): ?string {
+    private function buildDestinationPath(string $directory, string $thumbnail, string $extension): ?string
+    {
         $directory = rtrim(trim($directory), '/\\');
 
         if ($directory === '' || ! $this->ensureDirectoryExists($directory))
@@ -202,16 +175,10 @@ final readonly class UploadService
     // RÉSULTAT
     // =================================================
 
-    private function failure(
-        string $logMessage,
-        string $message,
-        int $status
-    ): ServiceResult {
+    private function failure(string $logMessage, string $message, int $status): ServiceResult
+    {
         Logger::error($logMessage);
 
-        return ServiceResult::error(
-            message: $message,
-            status: $status
-        );
+        return ServiceResult::error(message: $message, status: $status);
     }
 }

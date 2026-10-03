@@ -38,10 +38,7 @@ final class Env
             return;
         }
 
-        $lines = @file(
-            $path,
-            FILE_IGNORE_NEW_LINES
-        );
+        $lines = @file($path, FILE_IGNORE_NEW_LINES);
 
         if ($lines === false)
         {
@@ -140,11 +137,7 @@ final class Env
             return $default;
         }
 
-        $result = filter_var(
-            $value,
-            FILTER_VALIDATE_BOOL,
-            FILTER_NULL_ON_FAILURE
-        );
+        $result = filter_var($value, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
 
         return $result ?? $default;
     }
@@ -312,9 +305,7 @@ final class Env
             $value === true => 'true',
             $value === false => 'false',
             is_scalar($value) => (string) $value,
-            default => throw new RuntimeException(
-                'Environment values must be scalar or null.'
-            )
+            default => throw new RuntimeException('Environment values must be scalar or null.')
         };
     }
 

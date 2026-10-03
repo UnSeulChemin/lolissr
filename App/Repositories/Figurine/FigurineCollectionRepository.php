@@ -19,10 +19,7 @@ final class FigurineCollectionRepository extends AbstractRepository
     /**
      * @return list<Figurine>
      */
-    public function findPaginated(
-        int $limit,
-        int $page
-    ): array
+    public function findPaginated(int $limit, int $page): array
     {
         $page = max(1, $page);
         $limit = max(1, $limit);
@@ -54,10 +51,7 @@ final class FigurineCollectionRepository extends AbstractRepository
             LIMIT :limit
             OFFSET :offset
             ",
-            [
-                'limit' => $limit,
-                'offset' => $offset,
-            ],
+            ['limit' => $limit, 'offset' => $offset],
             Figurine::class
         );
 

@@ -18,10 +18,7 @@ $numeroValue = $old['numero'] ?? '';
 $releaseDateValue = $old['release_date'] ?? '';
 $commentaireValue = $old['commentaire'] ?? '';
 
-$typeSourceOptions = [
-    'auteur' => 'Auteur',
-    'serie' => 'Série',
-];
+$typeSourceOptions = ['auteur' => 'Auteur', 'serie' => 'Série'];
 
 $sourceLabel =
     $typeSourceValue === 'serie'
@@ -74,10 +71,7 @@ $sourcePlaceholder =
                         required
                     >
 
-                    <?php if (
-                        isset($errors['artbook'])
-                        && $errors['artbook'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['artbook']) && $errors['artbook'] !== ''): ?>
 
                         <p class="form-error u-semibold">
 
@@ -127,10 +121,7 @@ $sourcePlaceholder =
 
                     </select>
 
-                    <?php if (
-                        isset($errors['type_source'])
-                        && $errors['type_source'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['type_source']) && $errors['type_source'] !== ''): ?>
 
                         <p class="form-error u-semibold">
 
@@ -165,10 +156,7 @@ $sourcePlaceholder =
                         required
                     >
 
-                    <?php if (
-                        isset($errors['source'])
-                        && $errors['source'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['source']) && $errors['source'] !== ''): ?>
 
                         <p class="form-error u-semibold">
 
@@ -203,10 +191,7 @@ $sourcePlaceholder =
                         required
                     >
 
-                    <?php if (
-                        isset($errors['slug'])
-                        && $errors['slug'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['slug']) && $errors['slug'] !== ''): ?>
 
                         <p class="form-error u-semibold">
 
@@ -240,10 +225,7 @@ $sourcePlaceholder =
                         required
                     >
 
-                    <?php if (
-                        isset($errors['company'])
-                        && $errors['company'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['company']) && $errors['company'] !== ''): ?>
 
                         <p class="form-error u-semibold">
 
@@ -278,10 +260,7 @@ $sourcePlaceholder =
                         required
                     >
 
-                    <?php if (
-                        isset($errors['numero'])
-                        && $errors['numero'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['numero']) && $errors['numero'] !== ''): ?>
 
                         <p class="form-error u-semibold">
 
@@ -314,10 +293,7 @@ $sourcePlaceholder =
                         maxlength="10"
                     >
 
-                    <?php if (
-                        isset($errors['release_date'])
-                        && $errors['release_date'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['release_date']) && $errors['release_date'] !== ''): ?>
 
                         <p class="form-error u-semibold">
 
@@ -362,10 +338,7 @@ $sourcePlaceholder =
 
                     </label>
 
-                    <?php if (
-                        isset($errors['image'])
-                        && $errors['image'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['image']) && $errors['image'] !== ''): ?>
 
                         <p class="form-error u-semibold">
 
@@ -397,10 +370,7 @@ $sourcePlaceholder =
                         placeholder="Ex : Très bel artbook, édition limitée..."
                     ><?= e($commentaireValue) ?></textarea>
 
-                    <?php if (
-                        isset($errors['commentaire'])
-                        && $errors['commentaire'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['commentaire']) && $errors['commentaire'] !== ''): ?>
 
                         <p class="form-error u-semibold">
 

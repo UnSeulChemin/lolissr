@@ -25,7 +25,7 @@ mkdir($directory);
 try
 {
     $process = proc_open([PHP_BINARY, __FILE__, 'child', $directory], [
-        0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w'],
+        0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']
     ], $pipes);
     if (! is_resource($process)) throw new RuntimeException('Cannot run production error fixture.');
     fclose($pipes[0]);

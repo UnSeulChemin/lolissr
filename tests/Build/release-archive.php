@@ -8,8 +8,10 @@ try
     file_put_contents($root . '/source/app.txt', 'version one');
     ReleaseArchive::create($root . '/source', $root . '/release.zip');
     $original = hash_file('sha256', $root . '/release.zip');
-    try { ReleaseArchive::create($root . '/missing', $root . '/release.zip'); }
-    catch (Throwable) { /* Expected: source cannot be read. */ }
+    try
+    { ReleaseArchive::create($root . '/missing', $root . '/release.zip'); }
+    catch (Throwable)
+    { /* Expected: source cannot be read. */ }
     if (hash_file('sha256', $root . '/release.zip') !== $original) throw new RuntimeException('Previous release lost on failure.');
     file_put_contents($root . '/source/app.txt', 'version two');
     ReleaseArchive::create($root . '/source', $root . '/release.zip');
@@ -21,8 +23,10 @@ try
     mkdir($root . '/blocked.zip');
     file_put_contents($root . '/blocked.zip/keep', 'preserved');
     $failed = false;
-    try { ReleaseArchive::create($root . '/source', $root . '/blocked.zip'); }
-    catch (RuntimeException) { $failed = true; }
+    try
+    { ReleaseArchive::create($root . '/source', $root . '/blocked.zip'); }
+    catch (RuntimeException)
+    { $failed = true; }
     if (!$failed || file_get_contents($root . '/blocked.zip/keep') !== 'preserved' || glob($root . '/.release-*') !== [])
         throw new RuntimeException('Failed replacement did not preserve destination or clean staging.');
     echo "PASS: verified ZIP replacement and previous release preserved on build failure.\n";

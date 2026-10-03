@@ -5,6 +5,7 @@ declare(strict_types=1);
 require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
 
 use App\Services\Chinois\ChinoisReadService;
+
 use Framework\Container\Container;
 use Framework\Database\Database;
 
@@ -25,7 +26,8 @@ $db->setAttribute(PDO::ATTR_STATEMENT_CLASS, [FlashcardQueryCounter::class]);
 $container = new Container();
 $container->instance(Database::class, $db);
 $service = $container->get(ChinoisReadService::class);
-$check = static function (bool $condition, string $message): void {
+$check = static function (bool $condition, string $message): void
+{
     if (!$condition) throw new RuntimeException($message);
 };
 

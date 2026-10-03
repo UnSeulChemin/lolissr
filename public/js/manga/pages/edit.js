@@ -2,37 +2,26 @@
 // PAGE DE MODIFICATION
 // =================================================
 
-import {
-    $,
-} from '../../core/dom.js';
+import { $ } from '../../core/dom.js';
 
-import {
-    debug,
-} from '../../core/debug/debug.js';
+import { debug } from '../../core/debug/debug.js';
 
 // =================================================
 // CONFIGURATION
 // =================================================
 
-const FORM_SELECTOR =
-    '.form-layout[data-form-page="modifier"]';
+const FORM_SELECTOR = '.form-layout[data-form-page="modifier"]';
 
 // =================================================
 // UTILITAIRES
 // =================================================
 
-function getNumberValue(
-    input,
-)
+function getNumberValue(input)
 {
-    return Number(
-        input.value || 0,
-    );
+    return Number(input.value || 0);
 }
 
-function formatNote(
-    value,
-)
+function formatNote(value)
 {
     return `${value}/10`;
 }
@@ -43,104 +32,71 @@ function formatNote(
 
 export function initEditPage()
 {
-    const form =
-        $(
-            FORM_SELECTOR,
-        );
+    const form = $(FORM_SELECTOR);
 
-    if (!form) {
+    if (!form)
+    {
         return;
     }
 
-    if (
-        form.dataset.modifierPageInitialized
-        === 'true'
-    ) {
+    if (form.dataset.modifierPageInitialized === 'true')
+    {
         return;
     }
 
-    form.dataset.modifierPageInitialized =
-        'true';
+    form.dataset.modifierPageInitialized = 'true';
 
-    const jacquetteInput =
-        $('#jacquette');
+    const jacquetteInput = $('#jacquette');
 
-    const livreNoteInput =
-        $('#livre_note');
+    const livreNoteInput = $('#livre_note');
 
-    const totalNoteInput =
-        $('#note-total');
+    const totalNoteInput = $('#note-total');
 
     if (
-        !(
-            jacquetteInput
-            instanceof HTMLSelectElement
-        )
-        || !(
-            livreNoteInput
-            instanceof HTMLSelectElement
-        )
-        || !(
-            totalNoteInput
-            instanceof HTMLInputElement
-        )
-    ) {
+        !(jacquetteInput instanceof HTMLSelectElement)
+        || !(livreNoteInput instanceof HTMLSelectElement)
+        || !(totalNoteInput instanceof HTMLInputElement)
+    )
+    {
 
-        debug(
-            'MODIFIER',
-            'missing inputs',
-        );
+        debug('MODIFIER', 'missing inputs');
 
         return;
     }
 
     function updateTotalNote()
     {
-        if (
-            jacquetteInput.value === ''
-            || livreNoteInput.value === ''
-        ) {
+        if (jacquetteInput.value === '' || livreNoteInput.value === '')
+        {
 
-            totalNoteInput.value =
-                'Non calculée';
+            totalNoteInput.value = 'Non calculée';
 
             return;
         }
 
-        const total =
-            getNumberValue(
-                jacquetteInput,
-            )
-            + getNumberValue(
-                livreNoteInput,
-            );
+        const total = getNumberValue(jacquetteInput)
+            + getNumberValue(livreNoteInput);
 
-        totalNoteInput.value =
-            formatNote(
-                total,
-            );
+        totalNoteInput.value = formatNote(total);
     }
 
     jacquetteInput.addEventListener(
         'input',
         updateTotalNote,
         {
-            passive: true,
-        },
+            passive: true
+        }
     );
 
     livreNoteInput.addEventListener(
         'input',
         updateTotalNote,
         {
-            passive: true,
-        },
+            passive: true
+        }
     );
 
     updateTotalNote();
 
-    debug(
-        'MODIFIER',
-        'initialized',
-    );
+    debug('MODIFIER', 'initialized');
 }

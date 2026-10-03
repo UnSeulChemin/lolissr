@@ -2,125 +2,69 @@
 // MISE À JOUR DU STATUT DE COLLECTION
 // =================================================
 
-import {
-    post,
-} from '../../core/http.js';
+import { post } from '../../core/http.js';
 
-import {
-    $$,
-    delegate,
-} from '../../core/dom.js';
+import { $$, delegate } from '../../core/dom.js';
 
-import {
-    showToast,
-} from '../../core/toast.js';
+import { showToast } from '../../core/toast.js';
 
-import {
-    debug,
-} from '../../core/debug/debug.js';
+import { debug } from '../../core/debug/debug.js';
 
-import {
-    handleError,
-} from '../../core/errors/error-handler.js';
+import { handleError } from '../../core/errors/error-handler.js';
 
-import {
-    FrontendError,
-} from '../../core/errors/FrontendError.js';
+import { FrontendError } from '../../core/errors/FrontendError.js';
 
-import {
-    invalidateNendoroidPages,
-} from '../nendoroid-cache.js';
+import { invalidateNendoroidPages } from '../nendoroid-cache.js';
 
-import {
-    updateHeaderUser,
-} from '../../profile/header-user.js';
+import { updateHeaderUser } from '../../profile/header-user.js';
 
 // =================================================
 // CONFIGURATION
 // =================================================
 
-const BUTTON_SELECTOR =
-    '.js-nendoroid-collect-status-button';
+const BUTTON_SELECTOR = '.js-nendoroid-collect-status-button';
 
 // =================================================
 // ÉTAT
 // =================================================
 
-let initialized =
-    false;
+let initialized = false;
 
 // =================================================
 // UTILITAIRES
 // =================================================
 
-function updateCollectButtonState(
-    button,
-    collectStatus,
-)
+function updateCollectButtonState(button, collectStatus)
 {
-    const isCollected =
-        Number(
-            collectStatus,
-        ) === 1;
+    const isCollected = Number(collectStatus) === 1;
 
-    button.dataset.collectStatus =
-        String(
-            collectStatus,
-        );
+    button.dataset.collectStatus = String(collectStatus);
 
-    button.classList.toggle(
-        'active',
-        isCollected,
-    );
+    button.classList.toggle('active', isCollected);
 
-    const label =
-        isCollected
+    const label = isCollected
             ? 'Retirer de la collection'
             : 'Ajouter à la collection';
 
-    button.title =
-        label;
+    button.title = label;
 
-    button.setAttribute(
-        'aria-label',
-        label,
-    );
+    button.setAttribute('aria-label', label);
 
-    button.setAttribute(
-        'aria-pressed',
-        isCollected
-            ? 'true'
-            : 'false',
-    );
+    button.setAttribute('aria-pressed', isCollected ? 'true' : 'false');
 }
 
 function refreshButtons()
 {
-    $$(
-        BUTTON_SELECTOR,
-    ).forEach(
-        (
-            button,
-        ) =>
+    $$(BUTTON_SELECTOR).forEach(
+        (button) =>
         {
-            if (
-                !(
-                    button
-                    instanceof HTMLButtonElement
-                )
-            )
+            if (!( button instanceof HTMLButtonElement ))
             {
                 return;
             }
 
-            updateCollectButtonState(
-                button,
-                Number(
-                    button.dataset.collectStatus
-                    ?? 0,
-                ),
-            );
-        },
+            updateCollectButtonState(button, Number( button.dataset.collectStatus ?? 0 ));
+        }
     );
 }
 
@@ -128,31 +72,23 @@ function refreshButtons()
 // MISE À JOUR
 // =================================================
 
-async function updateCollectStatus(
-    button,
-)
+async function updateCollectStatus(button)
 {
     if (button.disabled)
     {
         return;
     }
 
-    const url =
-        button.dataset.url;
+    const url = button.dataset.url;
 
     if (!url)
     {
         return;
     }
 
-    const currentCollectStatus =
-        Number(
-            button.dataset.collectStatus
-            ?? 0,
-        );
+    const currentCollectStatus = Number(button.dataset.collectStatus ?? 0);
 
-    const nextCollectStatus =
-        currentCollectStatus === 1
+    const nextCollectStatus = currentCollectStatus === 1
             ? 0
             : 1;
 
@@ -160,50 +96,36 @@ async function updateCollectStatus(
     // OPTIMISTE INTERFACE
     // --------------------------------------------------------------------------
 
+    button.disabled = true;
 
-    button.disabled =
-        true;
-
-    updateCollectButtonState(
-        button,
-        nextCollectStatus,
-    );
+    updateCollectButtonState(button, nextCollectStatus);
 
     try
     {
-        const data =
-            await post(
+        const data = await post(
                 url,
                 {
-                    collectStatus:
-                        nextCollectStatus,
+                    collectStatus: nextCollectStatus
                 },
                 {
-                    headers:
-                    {
-                        Accept:
-                            'application/json',
-                    },
-                },
+                    headers: {
+                        Accept: 'application/json'
+                    }
+                }
             );
 
         // --------------------------------------------------------------------------
         // VALIDATION
         // --------------------------------------------------------------------------
 
-
-        if (
-            data?.success
-            !== true
-        )
+        if (data?.success !== true)
         {
             throw new FrontendError(
                 data?.message
                 || 'Erreur mise à jour',
                 {
-                    code:
-                        'NENDOROID_COLLECT_STATUS_UPDATE_FAILED',
-                },
+                    code: 'NENDOROID_COLLECT_STATUS_UPDATE_FAILED'
+                }
             );
         }
 
@@ -211,21 +133,11 @@ async function updateCollectStatus(
         // APPLICATION SERVEUR ÉTAT
         // --------------------------------------------------------------------------
 
+        const collectStatus = Number(data?.data?.collectStatus ?? nextCollectStatus);
 
-        const collectStatus =
-            Number(
-                data?.data?.collectStatus
-                ?? nextCollectStatus,
-            );
+        updateCollectButtonState(button, collectStatus);
 
-        updateCollectButtonState(
-            button,
-            collectStatus,
-        );
-
-        updateHeaderUser(
-            data?.data?.level,
-        );
+        updateHeaderUser(data?.data?.level);
 
         invalidateNendoroidPages();
 
@@ -233,9 +145,7 @@ async function updateCollectStatus(
         // SUCCÈS
         // --------------------------------------------------------------------------
 
-
-        let message =
-            data?.message
+        let message = data?.message
             || 'Mise à jour effectuée';
 
         if (data?.data?.xpEarned)
@@ -243,26 +153,17 @@ async function updateCollectStatus(
             message += ' ⭐ +20 XP';
         }
 
-        showToast(
-            message,
-            'success',
-        );
+        showToast(message, 'success');
     }
     catch (error)
     {
-        updateCollectButtonState(
-            button,
-            currentCollectStatus,
-        );
+        updateCollectButtonState(button, currentCollectStatus);
 
-        handleError(
-            error,
-        );
+        handleError(error);
     }
     finally
     {
-        button.disabled =
-            false;
+        button.disabled = false;
     }
 }
 
@@ -277,47 +178,32 @@ export function initUpdateNendoroidCollectStatus()
         return;
     }
 
-    initialized =
-        true;
+    initialized = true;
 
     delegate(
         document,
         'click',
         BUTTON_SELECTOR,
-        (
-            _,
-            button,
-        ) =>
+        (_, button) =>
         {
-            if (
-                !(
-                    button
-                    instanceof HTMLButtonElement
-                )
-            )
+            if (!( button instanceof HTMLButtonElement ))
             {
                 return;
             }
 
-            void updateCollectStatus(
-                button,
-            );
-        },
+            void updateCollectStatus(button);
+        }
     );
 
     document.addEventListener(
         'router:loaded',
         refreshButtons,
         {
-            passive:
-                true,
-        },
+            passive: true
+        }
     );
 
     refreshButtons();
 
-    debug(
-        'NENDOROID_COLLECT_STATUS',
-        'initialized',
-    );
+    debug('NENDOROID_COLLECT_STATUS', 'initialized');
 }

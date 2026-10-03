@@ -2,9 +2,7 @@
 // DÉBOGAGE DE L’APPLICATION
 // =================================================
 
-import {
-    showToast,
-} from '../core/toast.js';
+import { showToast } from '../core/toast.js';
 
 // =================================================
 // UTILITAIRES
@@ -17,7 +15,7 @@ function reload()
         {
             location.reload();
         },
-        300,
+        300
     );
 }
 
@@ -27,61 +25,37 @@ function reload()
 
 export function initAppDebug()
 {
-    if (
-        !window.location.hostname.includes(
-            'localhost',
-        )
-    ) {
+    if (!window.location.hostname.includes( 'localhost' ))
+    {
 
         return;
     }
 
-    window.enableDebug =
-        () =>
+    window.enableDebug = () =>
         {
-            localStorage.setItem(
-                'lolissr_debug',
-                '1',
-            );
+            localStorage.setItem('lolissr_debug', '1');
 
-            showToast(
-                'Debug activé',
-                'success',
-            );
+            showToast('Debug activé', 'success');
 
             reload();
         };
 
-    window.disableDebug =
-        () =>
+    window.disableDebug = () =>
         {
-            localStorage.removeItem(
-                'lolissr_debug',
-            );
+            localStorage.removeItem('lolissr_debug');
 
-            showToast(
-                'Debug désactivé',
-                'success',
-            );
+            showToast('Debug désactivé', 'success');
 
             reload();
         };
 
-    window.__TEST_ERROR__ =
-        () =>
+    window.__TEST_ERROR__ = () =>
         {
-            throw new Error(
-                'Test error',
-            );
+            throw new Error('Test error');
         };
 
-    window.__TEST_PROMISE_ERROR__ =
-        () =>
+    window.__TEST_PROMISE_ERROR__ = () =>
         {
-            Promise.reject(
-                new Error(
-                    'Promise test error',
-                ),
-            );
+            Promise.reject(new Error( 'Promise test error' ));
         };
 }

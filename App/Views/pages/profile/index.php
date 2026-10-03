@@ -121,21 +121,11 @@ $framePath =
 
                 <div class="profile-level-xp u-semibold">
 
-                    <?= number_format(
-                        $currentXp,
-                        0,
-                        ',',
-                        ' ',
-                    ) ?>
+                    <?= number_format($currentXp, 0, ',', ' ') ?>
 
                     /
 
-                    <?= number_format(
-                        $xpRequired,
-                        0,
-                        ',',
-                        ' ',
-                    ) ?>
+                    <?= number_format($xpRequired, 0, ',', ' ') ?>
 
                     XP
 

@@ -9,16 +9,8 @@ final class ValidationException extends BaseHttpException
     /**
      * @param array<string, string> $errors
      */
-    public function __construct(
-        array $errors,
-        string $message = 'Erreur de validation',
-    ) {
-        parent::__construct(
-            message: $message,
-            statusCode: 422,
-            data: [
-                'errors' => $errors,
-            ]
-        );
+    public function __construct(array $errors, string $message = 'Erreur de validation')
+    {
+        parent::__construct(message: $message, statusCode: 422, data: ['errors' => $errors]);
     }
 }

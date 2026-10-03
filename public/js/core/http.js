@@ -2,20 +2,15 @@
 // SOCLE : HTTP
 // =================================================
 
-import {
-    debugError,
-} from './debug/debug.js';
+import { debugError } from './debug/debug.js';
 
-import {
-    FrontendError,
-} from './errors/FrontendError.js';
+import { FrontendError } from './errors/FrontendError.js';
 
 // =================================================
 // CONFIGURATION
 // =================================================
 
-const DEFAULT_TIMEOUT =
-    15000;
+const DEFAULT_TIMEOUT = 15000;
 
 // =================================================
 // CSRF
@@ -23,54 +18,41 @@ const DEFAULT_TIMEOUT =
 
 function getCsrfToken()
 {
-    return (
-        window.csrfToken
-        || ''
-    );
+    return (window.csrfToken || '');
 }
 
 // =================================================
 // EN-TÊTES
 // =================================================
 
-function buildHeaders(
-    custom = {},
-)
+function buildHeaders(custom = {})
 {
     return {
         // --------------------------------------------------------------------------
         // AJAX
         // --------------------------------------------------------------------------
 
+        'X-Ajax': 'true',
 
-        'X-Ajax':
-            'true',
-
-        'X-Requested-With':
-            'XMLHttpRequest',
+        'X-Requested-With': 'XMLHttpRequest',
 
         // --------------------------------------------------------------------------
         // CSRF
         // --------------------------------------------------------------------------
 
-
-        'X-CSRF-TOKEN':
-            getCsrfToken(),
+        'X-CSRF-TOKEN': getCsrfToken(),
 
         // --------------------------------------------------------------------------
         // ACCEPTATION
         // --------------------------------------------------------------------------
 
-
-        'Accept':
-            'application/json',
+        'Accept': 'application/json',
 
         // --------------------------------------------------------------------------
         // PERSONNALISATION
         // --------------------------------------------------------------------------
 
-
-        ...custom,
+        ...custom
     };
 }
 
@@ -78,35 +60,25 @@ function buildHeaders(
 // DÉLAI
 // =================================================
 
-function createTimeoutController(
-    timeout,
-)
+function createTimeoutController(timeout)
 {
-    const controller =
-        new AbortController();
+    const controller = new AbortController();
 
-    const timer =
-        window.setTimeout(
+    const timer = window.setTimeout(
             () =>
             {
-                controller.abort(
-                    'timeout',
-                );
+                controller.abort('timeout');
             },
-            timeout,
+            timeout
         );
 
     return {
-        signal:
-            controller.signal,
+        signal: controller.signal,
 
-        clear:
-            () =>
+        clear: () =>
             {
-                clearTimeout(
-                    timer,
-                );
-            },
+                clearTimeout(timer);
+            }
     };
 }
 
@@ -114,23 +86,15 @@ function createTimeoutController(
 // SIGNAL
 // =================================================
 
-function buildSignal(
-    signal,
-    timeoutSignal,
-)
+function buildSignal(signal, timeoutSignal)
 {
-    const noop = () => {};
+    const noop = () =>
+    {};
     if (!signal) return { signal: timeoutSignal, clear: noop };
-    if (
-        signal
-        && typeof AbortSignal.any
-            === 'function'
-    ) {
+    if (signal && typeof AbortSignal.any === 'function')
+    {
 
-        return { signal: AbortSignal.any([
-            signal,
-            timeoutSignal,
-        ]), clear: noop };
+        return { signal: AbortSignal.any([ signal, timeoutSignal ]), clear: noop };
     }
 
     const controller = new AbortController();
@@ -147,7 +111,7 @@ function buildSignal(
     }
     return {
         signal: controller.signal,
-        clear: () => sources.forEach(source => source.removeEventListener('abort', abort)),
+        clear: () => sources.forEach(source => source.removeEventListener('abort', abort))
     };
 }
 
@@ -155,36 +119,25 @@ function buildSignal(
 // TYPE DE RÉPONSE
 // =================================================
 
-function isJsonResponse(
-    response,
-)
+function isJsonResponse(response)
 {
-    const contentType =
-        response.headers.get(
-            'content-type',
-        ) || '';
+    const contentType = response.headers.get('content-type') || '';
 
-    return contentType.includes(
-        'application/json',
-    );
+    return contentType.includes('application/json');
 }
 
 // =================================================
 // ANALYSE RÉPONSE
 // =================================================
 
-async function parseResponse(
-    response,
-)
+async function parseResponse(response)
 {
     // --------------------------------------------------------------------------
     // RÉPONSE VIDE
     // --------------------------------------------------------------------------
 
-
-    if (
-        response.status === 204
-    ) {
+    if (response.status === 204)
+    {
 
         return null;
     }
@@ -193,14 +146,11 @@ async function parseResponse(
     // JSON
     // --------------------------------------------------------------------------
 
+    if (isJsonResponse( response ))
+    {
 
-    if (
-        isJsonResponse(
-            response,
-        )
-    ) {
-
-        try {
+        try
+        {
 
             return await response.json();
 
@@ -209,12 +159,10 @@ async function parseResponse(
             throw new FrontendError(
                 'Réponse JSON invalide',
                 {
-                    code:
-                        'INVALID_JSON',
+                    code: 'INVALID_JSON',
 
-                    status:
-                        response.status,
-                },
+                    status: response.status
+                }
             );
         }
     }
@@ -223,7 +171,6 @@ async function parseResponse(
     // TEXTE
     // --------------------------------------------------------------------------
 
-
     return await response.text();
 }
 
@@ -231,24 +178,18 @@ async function parseResponse(
 // ERREUR HTTP
 // =================================================
 
-function createHttpError(
-    response,
-    data,
-)
+function createHttpError(response, data)
 {
     return new FrontendError(
         data?.message
         || `HTTP ${response.status}`,
         {
-            code:
-                `HTTP_${response.status}`,
+            code: `HTTP_${response.status}`,
 
-            status:
-                response.status,
+            status: response.status,
 
-            details:
-                data,
-        },
+            details: data
+        }
     );
 }
 
@@ -256,34 +197,24 @@ function createHttpError(
 // CORPS JSON
 // =================================================
 
-function createJsonRequest(
-    method,
-    url,
-    body = {},
-    options = {},
-)
+function createJsonRequest(method, url, body = {}, options = {})
 {
     return request(
         url,
         {
             method,
 
-            body:
-                JSON.stringify(
-                    body,
-                ),
+            body: JSON.stringify(body),
 
             ...options,
 
-            headers:
-            {
-                'Content-Type':
-                    'application/json',
+            headers: {
+                'Content-Type': 'application/json',
 
-                ...(options.headers || {}),
-            },
+                ...(options.headers || {})
+            }
 
-        },
+        }
     );
 }
 
@@ -291,94 +222,68 @@ function createJsonRequest(
 // REQUÊTE
 // =================================================
 
-export async function request(
-    url,
-    options = {},
-)
+export async function request(url, options = {})
 {
-    const timeout =
-        options.timeout
+    const timeout = options.timeout
         || DEFAULT_TIMEOUT;
 
-    const timeoutController =
-        createTimeoutController(
-            timeout,
-        );
+    const timeoutController = createTimeoutController(timeout);
 
     const combinedSignal = buildSignal(options.signal, timeoutController.signal);
 
-    try {
+    try
+    {
 
-        const response =
-            await fetch(
+        const response = await fetch(
                 url,
                 {
-                    credentials:
-                        'same-origin',
+                    credentials: 'same-origin',
 
                     ...options,
 
-                    signal:
-                        combinedSignal.signal,
+                    signal: combinedSignal.signal,
 
-                    headers:
-                        buildHeaders(
-                            options.headers,
-                        ),
-                },
+                    headers: buildHeaders(options.headers)
+                }
             );
 
-        const data =
-            await parseResponse(
-                response,
-            );
+        const data = await parseResponse(response);
 
         // --------------------------------------------------------------------------
         // ERREUR HTTP
         // --------------------------------------------------------------------------
 
+        if (! response.ok)
+        {
 
-        if (
-            ! response.ok
-        ) {
-
-            throw createHttpError(
-                response,
-                data,
-            );
+            throw createHttpError(response, data);
         }
 
         // --------------------------------------------------------------------------
         // REDIRECTION RÉPONSE
         // --------------------------------------------------------------------------
 
-
-        if (
-            data?.type
-            === 'redirect'
-        ) {
+        if (data?.type === 'redirect')
+        {
 
             return {
                 ...data,
 
-                redirected:
-                    true,
+                redirected: true
             };
         }
 
         return data;
 
-    } catch (error) {
+    } catch (error)
+    {
 
         // ------------------------------------------------------------------
         // ANNULATION DE LA RECHERCHE
         // ------------------------------------------------------------------
 
-
-        if (
-            error?.name === 'AbortError'
-            || options.signal?.aborted
-        ) {
+        if (error?.name === 'AbortError' || options.signal?.aborted)
+        {
 
             throw error;
         }
@@ -387,46 +292,35 @@ export async function request(
         // DÉLAI
         // ------------------------------------------------------------------
 
-
-        if (
-            timeoutController.signal.aborted
-        ) {
+        if (timeoutController.signal.aborted)
+        {
 
             throw new FrontendError(
                 `Request timeout (${timeout}ms)`,
                 {
-                    code:
-                        'REQUEST_TIMEOUT',
+                    code: 'REQUEST_TIMEOUT',
 
-                    status:
-                        408,
-                },
+                    status: 408
+                }
             );
         }
 
-        debugError(
-            'HTTP',
-            error,
-        );
+        debugError('HTTP', error);
 
         // --------------------------------------------------------------------------
         // ERREUR RÉSEAU
         // --------------------------------------------------------------------------
 
-
-        if (
-            error instanceof TypeError
-        ) {
+        if (error instanceof TypeError)
+        {
 
             throw new FrontendError(
                 'Erreur réseau',
                 {
-                    code:
-                        'NETWORK_ERROR',
+                    code: 'NETWORK_ERROR',
 
-                    status:
-                        0,
-                },
+                    status: 0
+                }
             );
         }
 
@@ -434,27 +328,22 @@ export async function request(
         // ERREUR INCONNUE
         // --------------------------------------------------------------------------
 
-
-        if (
-            ! (
-                error
-                instanceof FrontendError
-            )
-        ) {
+        if (! ( error instanceof FrontendError ))
+        {
 
             throw new FrontendError(
                 error?.message
                 || 'Erreur inconnue',
                 {
-                    code:
-                        'UNKNOWN_ERROR',
-                },
+                    code: 'UNKNOWN_ERROR'
+                }
             );
         }
 
         throw error;
 
-    } finally {
+    } finally
+    {
 
         combinedSignal.clear();
         timeoutController.clear();
@@ -465,19 +354,15 @@ export async function request(
 // LECTURE
 // =================================================
 
-export function get(
-    url,
-    options = {},
-)
+export function get(url, options = {})
 {
     return request(
         url,
         {
-            method:
-                'GET',
+            method: 'GET',
 
-            ...options,
-        },
+            ...options
+        }
     );
 }
 
@@ -485,34 +370,16 @@ export function get(
 // ENVOI
 // =================================================
 
-export function post(
-    url,
-    body = {},
-    options = {},
-)
+export function post(url, body = {}, options = {})
 {
-    return createJsonRequest(
-        'POST',
-        url,
-        body,
-        options,
-    );
+    return createJsonRequest('POST', url, body, options);
 }
 
 // =================================================
 // MISE À JOUR
 // =================================================
 
-export function put(
-    url,
-    body = {},
-    options = {},
-)
+export function put(url, body = {}, options = {})
 {
-    return createJsonRequest(
-        'PUT',
-        url,
-        body,
-        options,
-    );
+    return createJsonRequest('PUT', url, body, options);
 }

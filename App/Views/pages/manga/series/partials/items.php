@@ -35,11 +35,7 @@ $isSerieView ??= false;
             $livre = $manga->livre;
             $thumbnailPath = $manga->thumbnailUrl;
 
-            if (
-                $slug === ''
-                || $livre === ''
-                || $thumbnailPath === null
-            )
+            if ($slug === '' || $livre === '' || $thumbnailPath === null)
             {
                 continue;
             }
@@ -57,12 +53,7 @@ $isSerieView ??= false;
 
                 $subtitle =
                     'Tome '
-                    . str_pad(
-                        (string) $numero,
-                        2,
-                        '0',
-                        STR_PAD_LEFT,
-                    );
+                    . str_pad((string) $numero, 2, '0', STR_PAD_LEFT);
             }
             else
             {
@@ -108,12 +99,7 @@ $isSerieView ??= false;
             else
             {
                 $noteLabel =
-                    number_format(
-                        $displayNote,
-                        1,
-                        ',',
-                        '',
-                    );
+                    number_format($displayNote, 1, ',', '');
             }
 
             ?>

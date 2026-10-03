@@ -25,238 +25,9 @@ final class Cache
     // CACHE
     // =================================================
 
-    /** @return array{value: mixed}|null Null means absent, not a cached null value. */
-    private static function readEntry(string $key): ?array
-    {
-        if (! self::enabled())
-        {
-            return null;
-        }
-
-        Profiler::start('cache.get');
-
-        try
-        {
-            $path = self::path($key);
-
-            if (! is_file($path))
-            {
-                return null;
-            }
-
-            $content = @file_get_contents($path);
-
-            if ($content === false)
-            {
-                Logger::warning(
-                    'Cache unreadable',
-                    [
-                        'key' => $key
-                    ]
-                );
-
-                return null;
-            }
-
-            try
-            {
-                $payload = json_decode(
-                    $content,
-                    true,
-                    512,
-                    JSON_THROW_ON_ERROR
-                );
-            }
-            catch (JsonException $exception)
-            {
-                self::deleteObservedEntry($path, $content);
-
-                Logger::warning(
-                    'Cache corrupted JSON',
-                    [
-                        'key' => $key,
-                        'error' => $exception->getMessage()
-                    ]
-                );
-
-                return null;
-            }
-
-            if (! is_array($payload) || ! array_key_exists('value', $payload))
-            {
-                self::deleteObservedEntry($path, $content);
-
-                Logger::warning(
-                    'Cache invalid payload',
-                    [
-                        'key' => $key
-                    ]
-                );
-
-                return null;
-            }
-
-            $expiresAt = $payload['expires_at'] ?? null;
-
-            if (! is_int($expiresAt) && ! is_numeric($expiresAt))
-            {
-                self::deleteObservedEntry($path, $content);
-
-                Logger::warning(
-                    'Cache invalid expiration',
-                    [
-                        'key' => $key
-                    ]
-                );
-
-                return null;
-            }
-
-            if ((int) $expiresAt <= time())
-            {
-                self::deleteObservedEntry($path, $content);
-
-                return null;
-            }
-
-            return ['value' => $payload['value']];
-        }
-        finally
-        {
-            Profiler::end('cache.get');
-        }
-    }
-
-    private static function deleteObservedEntry(string $path, string $observed): void
-    {
-        self::synchronized($path, static function () use ($path, $observed): void {
-            // Une écriture peut avoir remplacé ce fichier depuis sa lecture par readEntry.
-            if (@file_get_contents($path) === $observed)
-            {
-                self::deleteFile($path);
-            }
-        });
-    }
-
-    private static function writeEntry(string $key, mixed $value, ?int $ttl): void
-    {
-        if (! self::enabled())
-        {
-            return;
-        }
-
-        Profiler::start('cache.put');
-
-        try
-        {
-            if (! self::ensureDirectory())
-            {
-                Logger::warning('Cache directory unavailable');
-
-                return;
-            }
-
-            $ttl = max(1, $ttl ?? self::ttl());
-            $now = time();
-            // Limiter la valeur avant addition pour conserver une expiration entière dans le JSON.
-            $expiresAt = $now > PHP_INT_MAX - $ttl ? PHP_INT_MAX : $now + $ttl;
-
-            try
-            {
-                $json = json_encode(
-                    [
-                        'expires_at' => $expiresAt,
-                        'value' => $value
-                    ],
-                    JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR
-                );
-            }
-            catch (JsonException $exception)
-            {
-                Logger::warning(
-                    'Cache encoding failed',
-                    [
-                        'key' => $key,
-                        'error' => $exception->getMessage()
-                    ]
-                );
-
-                return;
-            }
-
-            $path = self::path($key);
-
-            try
-            {
-                $temporaryPath = $path . '.' . bin2hex(random_bytes(6)) . '.tmp';
-            }
-            catch (RandomException $exception)
-            {
-                Logger::warning(
-                    'Cache temporary filename generation failed',
-                    [
-                        'key' => $key,
-                        'error' => $exception->getMessage()
-                    ]
-                );
-
-                return;
-            }
-
-            $written = @file_put_contents($temporaryPath, $json, LOCK_EX);
-
-            if ($written === false)
-            {
-                self::deleteFile($temporaryPath);
-
-                Logger::warning(
-                    'Cache write failed',
-                    [
-                        'key' => $key
-                    ]
-                );
-
-                return;
-            }
-
-            if (@rename($temporaryPath, $path))
-            {
-                return;
-            }
-
-            // Sous Windows, rename() peut refuser de remplacer
-            // un fichier déjà existant.
-            if (is_file($path) && ! @unlink($path))
-            {
-                self::deleteFile($temporaryPath);
-
-                Logger::warning(
-                    'Cache replacement failed',
-                    [
-                        'key' => $key
-                    ]
-                );
-
-                return;
-            }
-
-            if (! @rename($temporaryPath, $path))
-            {
-                self::deleteFile($temporaryPath);
-
-                Logger::warning(
-                    'Cache atomic rename failed',
-                    [
-                        'key' => $key
-                    ]
-                );
-            }
-        }
-        finally
-        {
-            Profiler::end('cache.put');
-        }
-    }
+    // =================================================
+    // LECTURE ET INVALIDATION
+    // =================================================
 
     public static function remember(string $key, ?int $ttl, callable $callback): mixed
     {
@@ -358,6 +129,187 @@ final class Cache
         }, required: true);
     }
 
+    /** @return array{value: mixed}|null Null means absent, not a cached null value. */
+    private static function readEntry(string $key): ?array
+    {
+        if (! self::enabled())
+        {
+            return null;
+        }
+
+        Profiler::start('cache.get');
+
+        try
+        {
+            $path = self::path($key);
+
+            if (! is_file($path))
+            {
+                return null;
+            }
+
+            $content = @file_get_contents($path);
+
+            if ($content === false)
+            {
+                Logger::warning('Cache unreadable', ['key' => $key]);
+
+                return null;
+            }
+
+            try
+            {
+                $payload = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
+            }
+            catch (JsonException $exception)
+            {
+                self::deleteObservedEntry($path, $content);
+
+                Logger::warning('Cache corrupted JSON', ['key' => $key, 'error' => $exception->getMessage()]);
+
+                return null;
+            }
+
+            if (! is_array($payload) || ! array_key_exists('value', $payload))
+            {
+                self::deleteObservedEntry($path, $content);
+
+                Logger::warning('Cache invalid payload', ['key' => $key]);
+
+                return null;
+            }
+
+            $expiresAt = $payload['expires_at'] ?? null;
+
+            if (! is_int($expiresAt) && ! is_numeric($expiresAt))
+            {
+                self::deleteObservedEntry($path, $content);
+
+                Logger::warning('Cache invalid expiration', ['key' => $key]);
+
+                return null;
+            }
+
+            if ((int) $expiresAt <= time())
+            {
+                self::deleteObservedEntry($path, $content);
+
+                return null;
+            }
+
+            return ['value' => $payload['value']];
+        }
+        finally
+        {
+            Profiler::end('cache.get');
+        }
+    }
+
+    private static function deleteObservedEntry(string $path, string $observed): void
+    {
+        self::synchronized($path, static function () use ($path, $observed): void
+        {
+            // Une écriture peut avoir remplacé ce fichier depuis sa lecture par readEntry.
+            if (@file_get_contents($path) === $observed)
+            {
+                self::deleteFile($path);
+            }
+        });
+    }
+
+    private static function writeEntry(string $key, mixed $value, ?int $ttl): void
+    {
+        if (! self::enabled())
+        {
+            return;
+        }
+
+        Profiler::start('cache.put');
+
+        try
+        {
+            if (! self::ensureDirectory())
+            {
+                Logger::warning('Cache directory unavailable');
+
+                return;
+            }
+
+            $ttl = max(1, $ttl ?? self::ttl());
+            $now = time();
+            // Limiter la valeur avant addition pour conserver une expiration entière dans le JSON.
+            $expiresAt = $now > PHP_INT_MAX - $ttl ? PHP_INT_MAX : $now + $ttl;
+
+            try
+            {
+                $json = json_encode(
+                    ['expires_at' => $expiresAt, 'value' => $value],
+                    JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR
+                );
+            }
+            catch (JsonException $exception)
+            {
+                Logger::warning('Cache encoding failed', ['key' => $key, 'error' => $exception->getMessage()]);
+
+                return;
+            }
+
+            $path = self::path($key);
+
+            try
+            {
+                $temporaryPath = $path . '.' . bin2hex(random_bytes(6)) . '.tmp';
+            }
+            catch (RandomException $exception)
+            {
+                Logger::warning(
+                    'Cache temporary filename generation failed',
+                    ['key' => $key, 'error' => $exception->getMessage()]
+                );
+
+                return;
+            }
+
+            $written = @file_put_contents($temporaryPath, $json, LOCK_EX);
+
+            if ($written === false)
+            {
+                self::deleteFile($temporaryPath);
+
+                Logger::warning('Cache write failed', ['key' => $key]);
+
+                return;
+            }
+
+            if (@rename($temporaryPath, $path))
+            {
+                return;
+            }
+
+            // Sous Windows, rename() peut refuser de remplacer
+            // un fichier déjà existant.
+            if (is_file($path) && ! @unlink($path))
+            {
+                self::deleteFile($temporaryPath);
+
+                Logger::warning('Cache replacement failed', ['key' => $key]);
+
+                return;
+            }
+
+            if (! @rename($temporaryPath, $path))
+            {
+                self::deleteFile($temporaryPath);
+
+                Logger::warning('Cache atomic rename failed', ['key' => $key]);
+            }
+        }
+        finally
+        {
+            Profiler::end('cache.put');
+        }
+    }
+
     // =================================================
     // CONFIGURATION
     // =================================================
@@ -408,12 +360,7 @@ final class Cache
 
         if (! @unlink($path) && is_file($path))
         {
-            Logger::warning(
-                'Cache delete failed',
-                [
-                    'path' => $path
-                ]
-            );
+            Logger::warning('Cache delete failed', ['path' => $path]);
         }
     }
 

@@ -23,17 +23,9 @@ final class Str
             return '';
         }
 
-        $value = preg_replace(
-            '/[^\p{L}\p{N}\s-]/u',
-            '',
-            $value
-        ) ?? '';
+        $value = preg_replace('/[^\p{L}\p{N}\s-]/u', '', $value) ?? '';
 
-        $value = preg_replace(
-            '/[\s-]+/u',
-            '-',
-            $value
-        ) ?? '';
+        $value = preg_replace('/[\s-]+/u', '-', $value) ?? '';
 
         return trim($value, '-');
     }
@@ -57,5 +49,4 @@ final class Str
 
         return trim(preg_replace('/[^a-z0-9]+/', '-', $slug) ?? '', '-');
     }
-
 }

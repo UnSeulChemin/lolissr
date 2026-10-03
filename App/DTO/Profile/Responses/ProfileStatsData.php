@@ -32,7 +32,8 @@ final readonly class ProfileStatsData
         public int $grammarXp,
 
         public int $totalXp,
-        public int $achievementXp = 0,
-    ) {
+        public int $achievementXp = 0
+    )
+    {
     }
 }

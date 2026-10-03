@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Figurine;
 
-use App\Http\Controllers\Controller;
 use App\DTO\Figurine\Responses\FigurineData;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Figurine\FigurineCreateRequest;
 use App\Http\Requests\Figurine\FigurineUpdateRequest;
 use App\Services\Figurine\FigurineReadService;
@@ -23,7 +23,8 @@ final class FigurineController extends Controller
         private readonly FigurineReadService $figurineReadService,
         private readonly FigurineWriteService $figurineWriteService,
         Request $request
-    ) {
+    )
+    {
         parent::__construct($request);
     }
 
@@ -62,60 +63,38 @@ final class FigurineController extends Controller
             'currentPage' => $data->currentPage,
             'totalWaifus' => $data->totalWaifus,
             'perPage' => $data->perPage,
-            'totalPages' => $data->totalPages,
+            'totalPages' => $data->totalPages
         ]);
     }
 
-    public function showWaifu(
-        string $slug,
-        int $numero
-    ): never
+    public function showWaifu(string $slug, int $numero): never
     {
-        $figurine = $this->resolveFigurineOrFail(
-            $slug,
-            $numero
-        );
+        $figurine = $this->resolveFigurineOrFail($slug, $numero);
 
         $this->title = 'Figurine | ' . $figurine->waifu;
 
-        $this->render('pages/figurine/collection/show', [
-            'figurine' => $figurine,
-        ]);
+        $this->render('pages/figurine/collection/show', ['figurine' => $figurine]);
     }
 
     public function create(): never
     {
         $this->title = 'Figurine | Ajouter';
 
-        $this->render('pages/figurine/create', [
-            'form' => $this->formViewData(
-                'figurine/ajouter',
-                'figurine',
-            ),
-        ]);
+        $this->render('pages/figurine/create', ['form' => $this->formViewData('figurine/ajouter', 'figurine')]);
     }
 
     public function store(FigurineCreateRequest $request): never
     {
         $this->validateRequest($request);
 
-        $result = $this->figurineWriteService->create(
-            $request->dto(),
-            $request->files()
-        );
+        $result = $this->figurineWriteService->create($request->dto(), $request->files());
 
         $this->jsonResult($result);
     }
 
-    public function edit(
-        string $slug,
-        int $numero
-    ): never
+    public function edit(string $slug, int $numero): never
     {
-        $figurine = $this->resolveFigurineOrFail(
-            $slug,
-            $numero
-        );
+        $figurine = $this->resolveFigurineOrFail($slug, $numero);
 
         $this->title = 'Figurine | Modifier';
 
@@ -124,44 +103,24 @@ final class FigurineController extends Controller
             [
                 'figurine' => $figurine,
                 'form' => $this->formViewData(
-                    sprintf(
-                        '%s/%s/modifier/%d',
-                        self::WAIFUS_PATH,
-                        rawurlencode($figurine->slug),
-                        $numero,
-                    ),
-                    $this->waifuUrl(
-                        $figurine->slug,
-                        $numero,
-                    ),
-                ),
+                    sprintf('%s/%s/modifier/%d', self::WAIFUS_PATH, rawurlencode($figurine->slug), $numero),
+                    $this->waifuUrl($figurine->slug, $numero)
+                )
             ]
         );
     }
 
-    public function update(
-        FigurineUpdateRequest $request,
-        string $slug,
-        int $numero
-    ): never
+    public function update(FigurineUpdateRequest $request, string $slug, int $numero): never
     {
         $figurine = $this->resolveFigurineOrFail($slug, $numero);
 
         $this->validateRequest($request);
 
-        $result = $this->figurineWriteService->update(
-            $figurine->slug,
-            $numero,
-            $request->dto()
-        );
+        $result = $this->figurineWriteService->update($figurine->slug, $numero, $request->dto());
 
         if (! $result->success)
         {
-            throw new BaseHttpException(
-                message: $result->message,
-                statusCode: $result->status,
-                data: $result->data
-            );
+            throw new BaseHttpException(message: $result->message, statusCode: $result->status, data: $result->data);
         }
 
         $this->redirectWithSuccess($this->waifuUrl($figurine->slug, $numero), $result->message);
@@ -173,23 +132,12 @@ final class FigurineController extends Controller
 
     private function waifuUrl(string $slug, int $numero): string
     {
-        return sprintf(
-            '%s/%s/%d',
-            self::WAIFUS_PATH,
-            rawurlencode($slug),
-            $numero
-        );
+        return sprintf('%s/%s/%d', self::WAIFUS_PATH, rawurlencode($slug), $numero);
     }
 
-    private function resolveFigurineOrFail(
-        string $slug,
-        int $numero
-    ): FigurineData
+    private function resolveFigurineOrFail(string $slug, int $numero): FigurineData
     {
-        $figurine = $this->figurineReadService->one(
-            $slug,
-            $numero
-        );
+        $figurine = $this->figurineReadService->one($slug, $numero);
 
         if ($figurine === null)
         {

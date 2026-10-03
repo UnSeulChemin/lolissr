@@ -157,10 +157,7 @@
     border-radius: var(--radius-input);
     background: var(--gradient-dashboard-icon);
     box-shadow: var(--shadow-dashboard-icon);
-    transition:
-        transform var(--transition-fast),
-        box-shadow var(--transition-fast),
-        background var(--transition-fast);
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
 }
 
 .dashboard-card:is(a[href], button, [role="button"], .u-pointer):hover .dashboard-card-icon,

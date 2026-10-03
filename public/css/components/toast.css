@@ -12,9 +12,7 @@
     width: max-content;
     max-width: 520px;
 
-    padding:
-        10px
-        15px;
+    padding: 10px 15px;
 
     display: flex;
     align-items: center;
@@ -23,23 +21,13 @@
 
     border-radius: 16px;
 
-    background:
-        linear-gradient(
-            135deg,
-            rgba(112, 63, 255, 0.96) 0%,
-            rgba(76, 32, 201, 0.98) 100%
-        );
+    background: linear-gradient( 135deg, rgba(112, 63, 255, 0.96) 0%, rgba(76, 32, 201, 0.98) 100% );
 
-    border:
-        1px solid
-        rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.12);
 
-    backdrop-filter:
-        blur(12px);
+    backdrop-filter: blur(12px);
 
-    box-shadow:
-        0 10px 28px rgba(76, 32, 201, 0.34),
-        0 0 18px rgba(140, 92, 255, 0.28);
+    box-shadow: 0 10px 28px rgba(76, 32, 201, 0.34), 0 0 18px rgba(140, 92, 255, 0.28);
 
     opacity: 0;
 
@@ -47,17 +35,11 @@
 
     z-index: 9999;
 
-    transform:
-        translateY(14px)
-        scale(0.96);
+    transform: translateY(14px) scale(0.96);
 
-    transition:
-        opacity 160ms ease,
-        transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition: opacity 160ms ease, transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
 
-    will-change:
-        opacity,
-        transform;
+    will-change: opacity, transform;
 
     backface-visibility: hidden;
 }
@@ -66,9 +48,7 @@
 {
     opacity: 1;
 
-    transform:
-        translateY(0)
-        scale(1);
+    transform: translateY(0) scale(1);
 }
 
 
@@ -94,8 +74,7 @@
 
     font-size: 0.92rem;
 
-    text-shadow:
-        0 0 10px rgba(255,255,255,0.24);
+    text-shadow: 0 0 10px rgba(255,255,255,0.24);
 }
 
 .toast-message
@@ -109,9 +88,7 @@
 
     white-space: nowrap;
 
-    text-shadow:
-        0 1px 2px rgba(0,0,0,0.22),
-        0 0 10px rgba(255,255,255,0.08);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.22), 0 0 10px rgba(255,255,255,0.08);
 }
 
 
@@ -127,12 +104,7 @@
 
     inset: -40%;
 
-    background:
-        radial-gradient(
-            circle,
-            rgba(255,255,255,0.16) 0%,
-            transparent 70%
-        );
+    background: radial-gradient( circle, rgba(255,255,255,0.16) 0%, transparent 70% );
 
     opacity: 0.7;
 
@@ -151,19 +123,11 @@
     position: absolute;
     inset: 0;
 
-    background:
-        linear-gradient(
-            120deg,
-            transparent 0%,
-            rgba(255,255,255,0.10) 42%,
-            transparent 78%
-        );
+    background: linear-gradient( 120deg, transparent 0%, rgba(255,255,255,0.10) 42%, transparent 78% );
 
     transform: translateX(-140%);
 
-    animation:
-        toast-shine
-        2.8s linear infinite;
+    animation: toast-shine 2.8s linear infinite;
 
     pointer-events: none;
 }
@@ -175,32 +139,17 @@
 
 .toast-success
 {
-    background:
-        linear-gradient(
-            135deg,
-            #7b44ff 0%,
-            #5126d9 100%
-        );
+    background: linear-gradient( 135deg, #7b44ff 0%, #5126d9 100% );
 }
 
 .toast-error
 {
-    background:
-        linear-gradient(
-            135deg,
-            #ff5577 0%,
-            #d90429 100%
-        );
+    background: linear-gradient( 135deg, #ff5577 0%, #d90429 100% );
 }
 
 .toast-info
 {
-    background:
-        linear-gradient(
-            135deg,
-            #4f7cff 0%,
-            #365df0 100%
-        );
+    background: linear-gradient( 135deg, #4f7cff 0%, #365df0 100% );
 }
 
 

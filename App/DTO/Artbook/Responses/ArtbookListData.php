@@ -14,7 +14,8 @@ final readonly class ArtbookListData
         public int $currentPage,
         public int $totalArtbooks,
         public int $perPage,
-        public int $totalPages,
-    ) {
+        public int $totalPages
+    )
+    {
     }
 }

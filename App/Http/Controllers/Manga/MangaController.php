@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Manga;
 
-use App\Http\Controllers\Controller;
 use App\DTO\Manga\Responses\MangaDetailData;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Manga\MangaCreateRequest;
 use App\Http\Requests\Manga\MangaUpdateRequest;
 use App\Services\Manga\MangaReadService;
@@ -23,7 +23,8 @@ final class MangaController extends Controller
         private readonly MangaReadService $mangaReadService,
         private readonly MangaWriteService $mangaWriteService,
         Request $request
-    ) {
+    )
+    {
         parent::__construct($request);
     }
 
@@ -35,28 +36,21 @@ final class MangaController extends Controller
     {
         $this->title = 'Manga';
 
-        $this->render(
-            'pages/manga/index'
-        );
+        $this->render('pages/manga/index');
     }
 
-    public function series(
-        int $page = 1
-    ): never {
+    public function series(int $page = 1): never
+    {
         $data = $this->mangaReadService->series($page);
 
         if ($data === null)
         {
-            throw new NotFoundException(
-                'Page introuvable'
-            );
+            throw new NotFoundException('Page introuvable');
         }
 
         $this->title =
             'Manga | Séries'
-            . ($data->currentPage > 1
-                ? ' - Page ' . $data->currentPage
-                : '');
+            . ($data->currentPage > 1 ? ' - Page ' . $data->currentPage : '');
 
         $this->render(
             'pages/manga/series/index',
@@ -66,7 +60,7 @@ final class MangaController extends Controller
                 'totalSeries' => $data->totalSeries,
                 'perPage' => $data->perPage,
                 'slugFilter' => $data->slugFilter,
-                'totalPages' => $data->totalPages,
+                'totalPages' => $data->totalPages
             ]
         );
     }
@@ -75,18 +69,14 @@ final class MangaController extends Controller
     {
         $this->title = 'Manga | Ajouter';
 
-        $this->render(
-            'pages/manga/create-choice'
-        );
+        $this->render('pages/manga/create-choice');
     }
 
     public function links(): never
     {
         $this->title = 'Manga | Liens utiles';
 
-        $this->render(
-            'pages/manga/links'
-        );
+        $this->render('pages/manga/links');
     }
 
     public function notes(int $page = 1): never
@@ -98,11 +88,7 @@ final class MangaController extends Controller
 
         $this->render(
             'pages/manga/series/notes',
-            [
-                'mangas' => $data->mangas,
-                'currentPage' => $data->currentPage,
-                'totalPages' => $data->totalPages,
-            ]
+            ['mangas' => $data->mangas, 'currentPage' => $data->currentPage, 'totalPages' => $data->totalPages]
         );
     }
 
@@ -115,11 +101,7 @@ final class MangaController extends Controller
 
         $this->render(
             'pages/manga/series/unread',
-            [
-                'mangas' => $data->mangas,
-                'currentPage' => $data->currentPage,
-                'totalPages' => $data->totalPages,
-            ]
+            ['mangas' => $data->mangas, 'currentPage' => $data->currentPage, 'totalPages' => $data->totalPages]
         );
     }
 
@@ -127,17 +109,13 @@ final class MangaController extends Controller
     // AFFICHAGE
     // =================================================
 
-    public function showSeries(
-        string $slug,
-        int $page = 1
-    ): never {
+    public function showSeries(string $slug, int $page = 1): never
+    {
         $data = $this->mangaReadService->showSeries($slug, $page);
 
         if ($data === null)
         {
-            throw new NotFoundException(
-                'Manga introuvable'
-            );
+            throw new NotFoundException('Manga introuvable');
         }
 
         $this->title = 'Manga | ' . $data->mangas[0]->livre;
@@ -150,28 +128,18 @@ final class MangaController extends Controller
                 'totalSeries' => $data->totalSeries,
                 'perPage' => $data->perPage,
                 'slugFilter' => $data->slugFilter,
-                'totalPages' => $data->totalPages,
+                'totalPages' => $data->totalPages
             ]
         );
     }
 
-    public function showManga(
-        string $slug,
-        int $numero
-    ): never {
-        $data = $this->resolveMangaOrFail(
-            $slug,
-            $numero
-        );
+    public function showManga(string $slug, int $numero): never
+    {
+        $data = $this->resolveMangaOrFail($slug, $numero);
 
         $this->title = 'Manga | ' . $data->manga->livre;
 
-        $this->render(
-            'pages/manga/series/show',
-            [
-                'manga' => $data->manga,
-            ]
-        );
+        $this->render('pages/manga/series/show', ['manga' => $data->manga]);
     }
 
     // =================================================
@@ -182,29 +150,16 @@ final class MangaController extends Controller
     {
         $this->title = 'Manga | Ajouter un manga';
 
-        $this->render(
-            'pages/manga/create',
-            [
-                'form' => $this->formViewData(
-                    'manga/ajouter/manga',
-                    'manga'
-                ),
-            ]
-        );
+        $this->render('pages/manga/create', ['form' => $this->formViewData('manga/ajouter/manga', 'manga')]);
     }
 
     // =================================================
     // MODIFICATION
     // =================================================
 
-    public function edit(
-        string $slug,
-        int $numero
-    ): never {
-        $data = $this->resolveMangaOrFail(
-            $slug,
-            $numero
-        );
+    public function edit(string $slug, int $numero): never
+    {
+        $data = $this->resolveMangaOrFail($slug, $numero);
 
         $this->title = 'Manga | ' . $data->manga->livre;
 
@@ -213,17 +168,9 @@ final class MangaController extends Controller
             [
                 'manga' => $data->manga,
                 'form' => $this->formViewData(
-                    sprintf(
-                        '%s/%s/modifier/%d',
-                        self::SERIES_PATH,
-                        rawurlencode($data->manga->slug),
-                        $numero
-                    ),
-                    $this->mangaUrl(
-                        $data->manga->slug,
-                        $numero
-                    )
-                ),
+                    sprintf('%s/%s/modifier/%d', self::SERIES_PATH, rawurlencode($data->manga->slug), $numero),
+                    $this->mangaUrl($data->manga->slug, $numero)
+                )
             ]
         );
     }
@@ -232,81 +179,41 @@ final class MangaController extends Controller
     // TRAITEMENTS
     // =================================================
 
-    public function store(
-        MangaCreateRequest $request
-    ): never {
+    public function store(MangaCreateRequest $request): never
+    {
         $this->validateRequest($request);
 
-        $this->jsonResult(
-            $this->mangaWriteService->create(
-                $request->dto(),
-                $request->files()
-            )
-        );
+        $this->jsonResult($this->mangaWriteService->create($request->dto(), $request->files()));
     }
 
-    public function update(
-        MangaUpdateRequest $request,
-        string $slug,
-        int $numero
-    ): never {
-        $data = $this->resolveMangaOrFail(
-            $slug,
-            $numero
-        );
+    public function update(MangaUpdateRequest $request, string $slug, int $numero): never
+    {
+        $data = $this->resolveMangaOrFail($slug, $numero);
 
         $this->validateRequest($request);
 
-        $result = $this->mangaWriteService->update(
-            $data->manga->slug,
-            $numero,
-            $request->dto()
-        );
+        $result = $this->mangaWriteService->update($data->manga->slug, $numero, $request->dto());
 
         if (! $result->success)
         {
-            throw new BaseHttpException(
-                message: $result->message,
-                statusCode: $result->status,
-                data: $result->data
-            );
+            throw new BaseHttpException(message: $result->message, statusCode: $result->status, data: $result->data);
         }
 
-        $this->redirectWithSuccess(
-            $this->mangaUrl(
-                $data->manga->slug,
-                $numero
-            ),
-            $result->message
-        );
+        $this->redirectWithSuccess($this->mangaUrl($data->manga->slug, $numero), $result->message);
     }
 
     // =================================================
     // UTILITAIRES
     // =================================================
 
-    private function mangaUrl(
-        string $slug,
-        int $numero
-    ): string {
-        return sprintf(
-            '%s/%s/%d',
-            self::SERIES_PATH,
-            rawurlencode($slug),
-            $numero
-        );
+    private function mangaUrl(string $slug, int $numero): string
+    {
+        return sprintf('%s/%s/%d', self::SERIES_PATH, rawurlencode($slug), $numero);
     }
 
-    private function resolveMangaOrFail(
-        string $slug,
-        int $numero
-    ): MangaDetailData {
-        return $this->mangaReadService->one(
-            $slug,
-            $numero
-        )
-        ?? throw new NotFoundException(
-            'Manga introuvable'
-        );
+    private function resolveMangaOrFail(string $slug, int $numero): MangaDetailData
+    {
+        return $this->mangaReadService->one($slug, $numero)
+        ?? throw new NotFoundException('Manga introuvable');
     }
 }

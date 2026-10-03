@@ -2,13 +2,9 @@
 // CACHE DES MANGAS
 // =================================================
 
-import {
-    appUrl,
-} from '../core/url.js';
+import { appUrl } from '../core/url.js';
 
-import {
-    invalidatePage,
-} from '../router/page-invalidation.js';
+import { invalidatePage } from '../router/page-invalidation.js';
 
 // =================================================
 // INVALIDATION

@@ -16,7 +16,4 @@ require ROOT . '/vendor/autoload.php';
 require ROOT . '/Framework/Support/Helpers.php';
 require ROOT . '/App/Support/Helpers.php';
 
-Bootstrap::run(
-    [ErrorController::class, 'handle'],
-    [ServiceProvider::class, 'register']
-);
+Bootstrap::run([ErrorController::class, 'handle'], [ServiceProvider::class, 'register']);

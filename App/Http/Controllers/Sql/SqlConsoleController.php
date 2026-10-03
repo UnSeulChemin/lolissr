@@ -13,10 +13,8 @@ use Throwable;
 
 final class SqlConsoleController extends Controller
 {
-    public function __construct(
-        private readonly SqlExecutionService $sqlExecutionService,
-        Request $request
-    ) {
+    public function __construct(private readonly SqlExecutionService $sqlExecutionService, Request $request)
+    {
         parent::__construct($request);
     }
 

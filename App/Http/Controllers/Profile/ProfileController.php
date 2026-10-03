@@ -6,8 +6,8 @@ namespace App\Http\Controllers\Profile;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Services\Profile\ProfileStatsService;
 use App\Services\Profile\ProfileAchievements;
+use App\Services\Profile\ProfileStatsService;
 use App\Services\User\UserLevelService;
 
 use Framework\Http\Request;
@@ -40,7 +40,7 @@ final class ProfileController extends Controller
             'level' => $user->level,
             'currentXp' => $user->xp,
             'xpRequired' => $this->userLevelService->xpRequiredForLevel($user->level),
-            'progress' => $this->userLevelService->progress($user),
+            'progress' => $this->userLevelService->progress($user)
         ]);
     }
 
@@ -89,7 +89,7 @@ final class ProfileController extends Controller
             'grammarXp' => $stats->grammarXp,
 
             'totalProfileXp' => $stats->totalXp,
-            'achievementXp' => $stats->achievementXp,
+            'achievementXp' => $stats->achievementXp
         ]);
     }
 
@@ -107,10 +107,7 @@ final class ProfileController extends Controller
         $section ??= $this->stringInput('section');
         $section = $this->resolveSection($section, array_column($achievements, 'category'));
 
-        $this->render('pages/profile/achievements', [
-            'achievements' => $achievements,
-            'section' => $section,
-        ]);
+        $this->render('pages/profile/achievements', ['achievements' => $achievements, 'section' => $section]);
     }
 
     public function customization(): never

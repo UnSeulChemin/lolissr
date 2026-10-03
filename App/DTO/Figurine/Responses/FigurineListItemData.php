@@ -17,7 +17,8 @@ final readonly class FigurineListItemData
         public ?string $extension,
         public ?string $thumbnailUrl,
 
-        public bool $collect,
-    ) {
+        public bool $collect
+    )
+    {
     }
 }

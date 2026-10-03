@@ -9,9 +9,7 @@ final readonly class NendoroidSearchData
     /**
      * @param list<NendoroidSearchItemData> $results
      */
-    public function __construct(
-        public array $results,
-        public string $search,
-    ) {
+    public function __construct(public array $results, public string $search)
+    {
     }
 }

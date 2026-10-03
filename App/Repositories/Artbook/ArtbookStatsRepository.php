@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Repositories\Artbook;
 
-use App\DTO\Artbook\Responses\ArtbookStatsData;
 use App\DTO\Artbook\Responses\ArtbookRepresentationData;
+use App\DTO\Artbook\Responses\ArtbookStatsData;
 use App\Repositories\AbstractRepository;
 
 final class ArtbookStatsRepository extends AbstractRepository
@@ -83,9 +83,7 @@ final class ArtbookStatsRepository extends AbstractRepository
     // UTILITAIRES
     // --------------------------------------------------------------------------
 
-    private function mapToStatsDto(
-        object $row,
-    ): ArtbookStatsData
+    private function mapToStatsDto(object $row): ArtbookStatsData
     {
         /** @var array{
          *     artbook:string,
@@ -96,10 +94,7 @@ final class ArtbookStatsRepository extends AbstractRepository
          */
         $data = (array) $row;
 
-        $thumbnailUrl = $this->buildThumbnailUrl(
-            $data['thumbnail'],
-            $data['extension'],
-        );
+        $thumbnailUrl = $this->buildThumbnailUrl($data['thumbnail'], $data['extension']);
 
         return new ArtbookStatsData(
             artbook: $data['artbook'],
@@ -108,13 +103,11 @@ final class ArtbookStatsRepository extends AbstractRepository
 
             authorLabel:
                 $data['auteur']
-                ?? 'Auteur inconnu',
+                ?? 'Auteur inconnu'
         );
     }
 
-    private function mapToRepresentationDto(
-        object $row,
-    ): ArtbookRepresentationData
+    private function mapToRepresentationDto(object $row): ArtbookRepresentationData
     {
         /** @var array{
          *     type:string,
@@ -126,10 +119,7 @@ final class ArtbookStatsRepository extends AbstractRepository
          */
         $data = (array) $row;
 
-        $thumbnailUrl = $this->buildThumbnailUrl(
-            $data['thumbnail'],
-            $data['extension'],
-        );
+        $thumbnailUrl = $this->buildThumbnailUrl($data['thumbnail'], $data['extension']);
 
         return new ArtbookRepresentationData(
             title:
@@ -145,19 +135,13 @@ final class ArtbookStatsRepository extends AbstractRepository
 
             countLabel:
                 (int) $data['total']
-                . ' artbooks',
+                . ' artbooks'
         );
     }
 
-    private function buildThumbnailUrl(
-        ?string $thumbnail,
-        ?string $extension,
-    ): string
+    private function buildThumbnailUrl(?string $thumbnail, ?string $extension): string
     {
-        if (
-            $thumbnail === null
-            || $extension === null
-        )
+        if ($thumbnail === null || $extension === null)
         {
             return 'images/artbook/placeholder-artbook.webp';
         }

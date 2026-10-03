@@ -71,11 +71,8 @@ trait ValidatesFiles
     /**
      * @param list<string> $allowedExtensions
      */
-    public function imageExtension(
-        string $field,
-        array $allowedExtensions,
-        ?string $message = null
-    ): self {
+    public function imageExtension(string $field, array $allowedExtensions, ?string $message = null): self
+    {
         $this->rememberField($field);
 
         if ($this->shouldSkipFile($field))
@@ -127,11 +124,8 @@ trait ValidatesFiles
     /**
      * @param list<string> $allowedMimeTypes
      */
-    public function imageMime(
-        string $field,
-        array $allowedMimeTypes,
-        ?string $message = null
-    ): self {
+    public function imageMime(string $field, array $allowedMimeTypes, ?string $message = null): self
+    {
         $this->rememberField($field);
 
         if ($this->shouldSkipFile($field))
@@ -142,11 +136,8 @@ trait ValidatesFiles
         $file = $this->fileData($field);
         $temporaryPath = $file['tmp_name'] ?? null;
 
-        if (
-            ! is_string($temporaryPath)
-            || $temporaryPath === ''
-            || ! is_file($temporaryPath)
-        ) {
+        if (! is_string($temporaryPath) || $temporaryPath === '' || ! is_file($temporaryPath))
+        {
             $this->addError(
                 $field,
                 $message ?? "Fichier temporaire invalide pour {$field}."
@@ -157,10 +148,7 @@ trait ValidatesFiles
 
         $allowedMimeTypes = array_values(
             array_unique(
-                array_map(
-                    static fn (string $mimeType): string => strtolower(trim($mimeType)),
-                    $allowedMimeTypes
-                )
+                array_map(static fn (string $mimeType): string => strtolower(trim($mimeType)), $allowedMimeTypes)
             )
         );
 

@@ -147,8 +147,7 @@ final class Validator
         $value = $this->value($field);
 
         return isset($this->nullable[$field])
-            && ($value === null
-                || (is_string($value) && trim($value, " \t\n\r\x0B") === ''));
+            && ($value === null || (is_string($value) && trim($value, " \t\n\r\x0B") === ''));
     }
 
     private function shouldSkip(string $field): bool

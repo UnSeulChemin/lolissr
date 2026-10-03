@@ -6,17 +6,9 @@ declare(strict_types=1);
 // PAGES
 // =========================================
 
-$tests[] = [
-    'category' => 'Chinois',
-    'label' => 'Accueil chinois accessible',
-    'path' => '/chinois'
-];
+$tests[] = ['category' => 'Chinois', 'label' => 'Accueil chinois accessible', 'path' => '/chinois'];
 
-$tests[] = [
-    'category' => 'Chinois',
-    'label' => 'Page vocabulaire accessible',
-    'path' => '/chinois/vocabulaire'
-];
+$tests[] = ['category' => 'Chinois', 'label' => 'Page vocabulaire accessible', 'path' => '/chinois/vocabulaire'];
 
 $tests[] = [
     'category' => 'Chinois',
@@ -30,11 +22,7 @@ $tests[] = [
     'path' => '/chinois/vocabulaire/jinyu'
 ];
 
-$tests[] = [
-    'category' => 'Chinois',
-    'label' => 'Page grammaire accessible',
-    'path' => '/chinois/grammaire'
-];
+$tests[] = ['category' => 'Chinois', 'label' => 'Page grammaire accessible', 'path' => '/chinois/grammaire'];
 
 // =========================================
 // HSK
@@ -53,11 +41,7 @@ foreach ([1, 2, 3, 4] as $level)
 // FLASHCARDS
 // =========================================
 
-$tests[] = [
-    'category' => 'Chinois',
-    'label' => 'Page flashcards accessible',
-    'path' => '/chinois/flashcards'
-];
+$tests[] = ['category' => 'Chinois', 'label' => 'Page flashcards accessible', 'path' => '/chinois/flashcards'];
 
 $tests[] = [
     'category' => 'Chinois',

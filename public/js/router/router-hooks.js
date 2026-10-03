@@ -2,9 +2,7 @@
 // ROUTEUR POINTS D’EXTENSION
 // =================================================
 
-import {
-    debugError,
-} from '../core/debug/debug.js';
+import { debugError } from '../core/debug/debug.js';
 
 // =================================================
 // ÉTAT
@@ -16,10 +14,7 @@ const routeChangeCallbacks = new Set();
 // ENREGISTREMENT
 // =================================================
 
-function registerCallback(
-    callbacks,
-    callback,
-)
+function registerCallback(callbacks, callback)
 {
     callbacks.add(callback);
 
@@ -29,25 +24,16 @@ function registerCallback(
     };
 }
 
-
-export function onRouteChange(
-    callback,
-)
+export function onRouteChange(callback)
 {
-    return registerCallback(
-        routeChangeCallbacks,
-        callback,
-    );
+    return registerCallback(routeChangeCallbacks, callback);
 }
 
 // =================================================
 // EXÉCUTION
 // =================================================
 
-async function runCallbacks(
-    callbacks,
-    context,
-)
+async function runCallbacks(callbacks, context)
 {
     const tasks = [];
 
@@ -55,19 +41,13 @@ async function runCallbacks(
     {
         tasks.push(
             Promise.resolve()
-                .then(
-                    () =>
-                        callback(context),
-                )
+                .then(() => callback(context))
                 .catch(
                     error =>
                     {
-                        debugError(
-                            'ROUTER-HOOK',
-                            error,
-                        );
-                    },
-                ),
+                        debugError('ROUTER-HOOK', error);
+                    }
+                )
         );
     }
 
@@ -78,13 +58,7 @@ async function runCallbacks(
 // DÉCLENCHEURS
 // =================================================
 
-
-export async function triggerRouteChange(
-    context,
-)
+export async function triggerRouteChange(context)
 {
-    await runCallbacks(
-        routeChangeCallbacks,
-        context,
-    );
+    await runCallbacks(routeChangeCallbacks, context);
 }

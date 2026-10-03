@@ -6,10 +6,10 @@ namespace App\Services\Home;
 
 use App\DTO\Home\Responses\DashboardStatsData;
 use App\DTO\Manga\Responses\MangaStatsData;
-use App\Repositories\Manga\MangaStatsRepository;
 use App\Repositories\Artbook\ArtbookStatsRepository;
 use App\Repositories\Chinois\ChinoisGrammaireStatsRepository;
 use App\Repositories\Chinois\ChinoisVocabulaireStatsRepository;
+use App\Repositories\Manga\MangaStatsRepository;
 
 final readonly class DashboardStatsService
 {
@@ -17,8 +17,9 @@ final readonly class DashboardStatsService
         private MangaStatsRepository $mangaStatsRepository,
         private ArtbookStatsRepository $artbookStatsRepository,
         private ChinoisVocabulaireStatsRepository $vocabulaireStatsRepository,
-        private ChinoisGrammaireStatsRepository $grammaireStatsRepository,
-    ) {
+        private ChinoisGrammaireStatsRepository $grammaireStatsRepository
+    )
+    {
     }
 
     // --------------------------------------------------------------------------
@@ -60,28 +61,17 @@ final readonly class DashboardStatsService
         $totalMangaRead = $mangaSummary['read'];
 
         $totalMangaUnread =
-            max(
-                0,
-                $totalMangaTomes - $totalMangaRead,
-            );
+            max(0, $totalMangaTomes - $totalMangaRead);
 
         $mangaReadingProgress =
-            $this->readingPercentage(
-                $totalMangaTomes,
-                $totalMangaRead,
-            );
+            $this->readingPercentage($totalMangaTomes, $totalMangaRead);
 
         $averageMangaNote =
             $mangaSummary['average'];
 
         $averageNoteLabel =
             $averageMangaNote !== null
-                ? number_format(
-                    $averageMangaNote,
-                    1,
-                    ',',
-                    ' ',
-                ) . '/10'
+                ? number_format($averageMangaNote, 1, ',', ' ') . '/10'
                 : 'Aucune note';
 
         $lastMangaTome =
@@ -122,16 +112,10 @@ final readonly class DashboardStatsService
             $vocabularySummary['remaining'];
 
         $learnedVocabulary =
-            max(
-                0,
-                $totalVocabulary - $remainingVocabulary,
-            );
+            max(0, $totalVocabulary - $remainingVocabulary);
 
         $vocabularyProgress =
-            $this->completionPercentage(
-                $totalVocabulary,
-                $remainingVocabulary,
-            );
+            $this->completionPercentage($totalVocabulary, $remainingVocabulary);
 
         $totalGrammar =
             $grammarSummary['total'];
@@ -140,16 +124,10 @@ final readonly class DashboardStatsService
             $grammarSummary['remaining'];
 
         $learnedGrammar =
-            max(
-                0,
-                $totalGrammar - $remainingGrammar,
-            );
+            max(0, $totalGrammar - $remainingGrammar);
 
         $grammarProgress =
-            $this->completionPercentage(
-                $totalGrammar,
-                $remainingGrammar,
-            );
+            $this->completionPercentage($totalGrammar, $remainingGrammar);
 
         $totalChinese =
             $totalVocabulary + $totalGrammar;
@@ -158,18 +136,10 @@ final readonly class DashboardStatsService
             $remainingVocabulary + $remainingGrammar;
 
         $globalChineseProgress =
-            $this->completionPercentage(
-                $totalChinese,
-                $totalRemainingChinese,
-            );
+            $this->completionPercentage($totalChinese, $totalRemainingChinese);
 
         $globalChineseProgressLabel =
-            number_format(
-                $globalChineseProgress / 10,
-                1,
-                ',',
-                ' ',
-            ) . '/10';
+            number_format($globalChineseProgress / 10, 1, ',', ' ') . '/10';
 
         return new DashboardStatsData(
             // Chinois
@@ -202,14 +172,13 @@ final readonly class DashboardStatsService
 
             topLongestSeries: $topLongestMangaSeries,
 
-
             // Artbooks
             totalArtbooks: $totalArtbooks,
             totalArtbookAuthors: $totalArtbookAuthors,
             totalArtbookSeries: $totalArtbookSeries,
 
             latestArtbook: $latestArtbook,
-            mostRepresented: $mostRepresentedArtbook,
+            mostRepresented: $mostRepresentedArtbook
         );
     }
 

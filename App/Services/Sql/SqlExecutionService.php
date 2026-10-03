@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Services\Sql;
 
-use App\Repositories\Sql\SqlRepository;
 use App\Cache\CacheKey;
+use App\Repositories\Sql\SqlRepository;
+
 use Framework\Cache\Cache;
 
 final readonly class SqlExecutionService
 {
-    public function __construct(
-        private SqlRepository $sqlRepository
-    ) {
+    public function __construct(private SqlRepository $sqlRepository)
+    {
     }
 
     /**

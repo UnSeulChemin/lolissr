@@ -3,8 +3,10 @@ declare(strict_types=1);
 
 // Only HTTP upload provenance/move are simulated. Content validation and disk cleanup are real.
 namespace App\Services\Media {
-    function is_uploaded_file(string $path): bool { return is_file($path); }
-    function move_uploaded_file(string $from, string $to): bool { return rename($from, $to); }
+    function is_uploaded_file(string $path): bool
+    { return is_file($path); }
+    function move_uploaded_file(string $from, string $to): bool
+    { return rename($from, $to); }
 }
 namespace {
     require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
@@ -16,21 +18,25 @@ namespace {
     mkdir($dir, 0700);
     Config::prime(['app' => ['env' => 'local'], 'log' => ['enabled' => false], 'upload' => [
         'allowed_extensions' => ['jpg', 'png', 'webp'],
-        'allowed_mime_types' => ['image/jpeg', 'image/png', 'image/webp'],
+        'allowed_mime_types' => ['image/jpeg', 'image/png', 'image/webp']
     ]]);
-    $check = static function (bool $condition, string $message): void {
+    $check = static function (bool $condition, string $message): void
+    {
         if (!$condition) throw new \RuntimeException($message);
     };
     $validator = new ImageUploadValidator();
     $uploadService = new UploadService($validator);
-    try {
+    try
+    {
         $image = imagecreatetruecolor(2, 2);
         imagepng($image, $dir . '/source.png');
         imagejpeg($image, $dir . '/source.jpg');
         imagewebp($image, $dir . '/source.webp');
         imagedestroy($image);
-        foreach (['png', 'jpg', 'webp'] as $actual) {
-            foreach (['png', 'jpg', 'jpeg', 'webp'] as $extension) {
+        foreach (['png', 'jpg', 'webp'] as $actual)
+        {
+            foreach (['png', 'jpg', 'jpeg', 'webp'] as $extension)
+            {
                 $path = $dir . '/source.' . $actual;
                 $result = $validator->validate(['image' => ['name' => 'image.' . $extension,
                     'tmp_name' => $path, 'size' => filesize($path), 'error' => UPLOAD_ERR_OK]]);
@@ -41,11 +47,12 @@ namespace {
             }
         }
         $uploads = [];
-        for ($i = 0; $i < 2; $i++) {
+        for ($i = 0; $i < 2; $i++)
+        {
             $path = $dir . '/incoming.png';
             copy($dir . '/source.png', $path);
             $result = $uploadService->uploadThumbnail(str_repeat('漢', 150), 1, $dir, ['image' => [
-                'name' => 'image.png', 'tmp_name' => $path, 'size' => filesize($path), 'error' => UPLOAD_ERR_OK,
+                'name' => 'image.png', 'tmp_name' => $path, 'size' => filesize($path), 'error' => UPLOAD_ERR_OK
             ]]);
             $check($result->success, 'Same-name upload failed.');
             $uploads[] = $result->data['upload'];
@@ -54,7 +61,8 @@ namespace {
         $check(strlen(basename($uploads[0]->destinationPath)) <= 255, 'Filename exceeds filesystem limit.');
         $check($uploadService->removeFile($uploads[0]->destinationPath), 'Old image cleanup failed.');
         $check(is_file($uploads[1]->destinationPath), 'Old cleanup removed replacement image.');
-    } finally {
+    } finally
+    {
         foreach (glob($dir . '/*') ?: [] as $file) unlink($file);
         rmdir($dir);
         Config::clear();

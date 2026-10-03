@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\DTO\Common\Responses\ViewData;
+
 use Framework\Support\Str;
 
 /** @var ViewData $view */
@@ -54,7 +55,8 @@ $filters['succes'] = '🏆';
             <h2>Sommaire</h2>
             <div class="profile-summary-links">
             <?php foreach ($filters as $key => $icon): ?>
-                <?php $label = match ($key) { 'tout' => 'Tout', 'succes' => 'Succès', 'Vocabulaire' => 'Vocabulaires', 'Grammaire' => 'Grammaires', default => $key }; ?>
+                <?php $label = match ($key)
+                { 'tout' => 'Tout', 'succes' => 'Succès', 'Vocabulaire' => 'Vocabulaires', 'Grammaire' => 'Grammaires', default => $key }; ?>
                 <a href="<?= e($view->baseUri . 'profil/xp' . ($key === 'tout' ? '' : '/' . Str::asciiSlug($key))) ?>"
                    class="profile-summary-link" aria-label="<?= e($label) ?>" title="<?= e($label) ?>"
                    <?= $section === $key ? 'aria-current="page"' : '' ?>><span aria-hidden="true"><?= e($icon) ?></span><span><?= e($label) ?></span></a>

@@ -3,56 +3,31 @@ import { runInitializers } from '../router/initializers/run-initializers.js';
 // INITIALISATION DE L’APPLICATION
 // =================================================
 
-import {
-    debug,
-    debugError,
-} from '../core/debug/debug.js';
+import { debug, debugError } from '../core/debug/debug.js';
 
-import {
-    FrontendError,
-} from '../core/errors/FrontendError.js';
+import { FrontendError } from '../core/errors/FrontendError.js';
 
-import {
-    handleError,
-} from '../core/errors/error-handler.js';
+import { handleError } from '../core/errors/error-handler.js';
 
-import {
-    end,
-    start,
-} from '../core/debug/profiler.js';
+import { end, start } from '../core/debug/profiler.js';
 
-import {
-    initFlashToast,
-} from '../core/toast.js';
+import { initFlashToast } from '../core/toast.js';
 
-import {
-    appPath,
-} from '../core/url.js';
+import { appPath } from '../core/url.js';
 
-import {
-    GLOBAL_INITIALIZERS,
-} from './global-initializers.js';
+import { GLOBAL_INITIALIZERS } from './global-initializers.js';
 
-import {
-    ROUTE_INITIALIZERS,
-} from '../router/initializers/route-initializers.js';
+import { ROUTE_INITIALIZERS } from '../router/initializers/route-initializers.js';
 
-import {
-    onRouteChange,
-} from '../router/router-hooks.js';
+import { onRouteChange } from '../router/router-hooks.js';
 
-import {
-    initAppDebug,
-} from './app-debug.js';
+import { initAppDebug } from './app-debug.js';
 
 // =================================================
 // SÉCURISÉE INITIALISATION
 // =================================================
 
-async function safeInit(
-    label,
-    callback,
-)
+async function safeInit(label, callback)
 {
     start(label);
 
@@ -60,17 +35,11 @@ async function safeInit(
     {
         await callback();
 
-        debug(
-            'INIT',
-            `✅ ${label}`,
-        );
+        debug('INIT', `✅ ${label}`);
     }
     catch (error)
     {
-        debugError(
-            'INIT',
-            error,
-        );
+        debugError('INIT', error);
 
         handleError(
             error instanceof Error
@@ -78,9 +47,9 @@ async function safeInit(
                 : new FrontendError(
                     `Erreur pendant "${label}"`,
                     {
-                        cause: error,
-                    },
-                ),
+                        cause: error
+                    }
+                )
         );
     }
     finally
@@ -99,15 +68,9 @@ async function safeInit(
 
 async function runGlobalInitializers()
 {
-    for (
-        const [label, init]
-        of GLOBAL_INITIALIZERS
-    )
+    for (const [label, init] of GLOBAL_INITIALIZERS)
     {
-        await safeInit(
-            label,
-            init,
-        );
+        await safeInit(label, init);
     }
 }
 
@@ -124,8 +87,7 @@ async function runRouteInitializers()
     const initializers = ROUTE_INITIALIZERS
         .filter(({match}) => match.test(path))
         .flatMap(({initializers}) => initializers);
-    await runInitializers(initializers, safeInit,
-        () => generation === routeGeneration && path === appPath());
+    await runInitializers(initializers, safeInit, () => generation === routeGeneration && path === appPath());
 }
 // =================================================
 // INITIALISATION
@@ -133,30 +95,19 @@ async function runRouteInitializers()
 
 export async function initApp()
 {
-    debug(
-        'APP',
-        '🚀 Boot',
-    );
+    debug('APP', '🚀 Boot');
 
     initAppDebug();
 
     // S’abonner avant la navigation du routeur, y compris pendant le démarrage asynchrone.
     const initialGeneration = routeGeneration;
-    onRouteChange(
-        runRouteInitializers,
-    );
+    onRouteChange(runRouteInitializers);
 
     await runGlobalInitializers();
     // Une navigation pendant l’initialisation globale initialise déjà sa route.
     if (routeGeneration === initialGeneration) await runRouteInitializers();
 
-    await safeInit(
-        'FlashToast',
-        initFlashToast,
-    );
+    await safeInit('FlashToast', initFlashToast);
 
-    debug(
-        'APP',
-        '✅ Ready',
-    );
+    debug('APP', '✅ Ready');
 }

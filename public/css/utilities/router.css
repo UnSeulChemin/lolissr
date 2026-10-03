@@ -14,11 +14,9 @@ body.is-routing
 
 body.no-route-animation .transition-card
 {
-    animation:
-        none !important;
+    animation: none !important;
 
-    opacity:
-        1 !important;
+    opacity: 1 !important;
 }
 
 
@@ -42,8 +40,7 @@ body.no-route-animation .transition-card
 
     border-radius: 10px;
 
-    background:
-        rgba(0, 0, 0, .9);
+    background: rgba(0, 0, 0, .9);
 
     color: white;
 

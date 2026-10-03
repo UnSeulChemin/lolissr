@@ -9,7 +9,8 @@ if (($argv[1] ?? '') === 'bootstrap-child')
     require dirname(__DIR__, 2) . '/Framework/Support/Helpers.php';
     ini_set('display_errors', '1');
     ini_set('error_log', ROOT . '/error.log');
-    register_shutdown_function(static function (): void {
+    register_shutdown_function(static function (): void
+    {
         file_put_contents(ROOT . '/status', (string) http_response_code());
     });
     Framework\Application\Bootstrap::run();
@@ -22,7 +23,8 @@ use Framework\Config\DatabaseConfig;
 use Framework\Config\Env;
 use Framework\Config\EnvironmentValidator;
 
-$check = static function (bool $condition, string $message): void {
+$check = static function (bool $condition, string $message): void
+{
     if (! $condition) throw new RuntimeException($message);
 };
 $directory = sys_get_temp_dir() . '/framework-config-' . bin2hex(random_bytes(8));
@@ -45,7 +47,8 @@ try
                 EnvironmentValidator::validate();
                 throw new LogicException('Invalid integer accepted: ' . $key);
             }
-            catch (RuntimeException) {}
+            catch (RuntimeException)
+            {}
         }
         foreach ([1, '42'] as $valid)
         {
@@ -144,7 +147,7 @@ try
     }
 
     $process = proc_open([PHP_BINARY, __FILE__, 'bootstrap-child', $directory], [
-        0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w'],
+        0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']
     ], $pipes);
     $check(is_resource($process), 'Cannot run bootstrap fixture.');
     fclose($pipes[0]);

@@ -22,8 +22,9 @@ final readonly class NendoroidReadService
     public function __construct(
         private NendoroidRepository $nendoroidRepository,
         private NendoroidCollectionRepository $collectionRepository,
-        private NendoroidSearchRepository $searchRepository,
-    ) {
+        private NendoroidSearchRepository $searchRepository
+    )
+    {
     }
 
     // --------------------------------------------------------------------------
@@ -46,7 +47,7 @@ final readonly class NendoroidReadService
                 currentPage: 1,
                 totalWaifus: 0,
                 perPage: $perPage,
-                totalPages: 1,
+                totalPages: 1
             );
         }
 
@@ -57,29 +58,20 @@ final readonly class NendoroidReadService
             return null;
         }
 
-        $nendoroids = $this->collectionRepository->findPaginated(
-            $perPage,
-            $page,
-        );
+        $nendoroids = $this->collectionRepository->findPaginated($perPage, $page);
 
         return new NendoroidListData(
-            nendoroids: array_map(
-                $this->mapListItem(...),
-                $nendoroids
-            ),
+            nendoroids: array_map($this->mapListItem(...), $nendoroids),
             currentPage: $page,
             totalWaifus: $totalWaifus,
             perPage: $perPage,
-            totalPages: $totalPages,
+            totalPages: $totalPages
         );
     }
 
     public function one(string $slug, int $numero): ?NendoroidData
     {
-        $nendoroid = $this->nendoroidRepository->findOneBySlugAndNumero(
-            $slug,
-            $numero
-        );
+        $nendoroid = $this->nendoroidRepository->findOneBySlugAndNumero($slug, $numero);
 
         if ($nendoroid === null)
         {
@@ -99,13 +91,7 @@ final readonly class NendoroidReadService
 
         $results = $this->searchRepository->search($query);
 
-        return new NendoroidSearchData(
-            results: array_map(
-                $this->mapSearchItem(...),
-                $results
-            ),
-            search: $query,
-        );
+        return new NendoroidSearchData(results: array_map($this->mapSearchItem(...), $results), search: $query);
     }
 
     // --------------------------------------------------------------------------
@@ -139,7 +125,7 @@ final readonly class NendoroidReadService
                     ? "{$baseUri}images/nendoroid/thumbnail/{$thumbnail}.{$extension}"
                     : null,
 
-            collect: $nendoroid->collect,
+            collect: $nendoroid->collect
         );
     }
 
@@ -167,9 +153,7 @@ final readonly class NendoroidReadService
 
             collect: $nendoroid->collect,
 
-            release_date: DateFormatter::display(
-                $nendoroid->release_date,
-            ),
+            release_date: DateFormatter::display($nendoroid->release_date),
 
             thumbnail: $thumbnail,
             extension: $extension,
@@ -181,13 +165,11 @@ final readonly class NendoroidReadService
 
             commentaire: $nendoroid->commentaire,
 
-            xpCollectRewarded: $nendoroid->collect_rewarded,
+            xpCollectRewarded: $nendoroid->collect_rewarded
         );
     }
 
-    private function mapSearchItem(
-        Nendoroid $nendoroid
-    ): NendoroidSearchItemData
+    private function mapSearchItem(Nendoroid $nendoroid): NendoroidSearchItemData
     {
         $thumbnail = $nendoroid->thumbnail !== ''
             ? $nendoroid->thumbnail
@@ -205,7 +187,7 @@ final readonly class NendoroidReadService
             waifu: $nendoroid->waifu,
 
             thumbnail: $thumbnail,
-            extension: $extension,
+            extension: $extension
         );
     }
 }

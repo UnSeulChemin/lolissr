@@ -23,7 +23,8 @@ $path = tempnam(sys_get_temp_dir(), 'flashcard-snapshot-');
 if ($path === false) throw new RuntimeException('Cannot create isolated database');
 try
 {
-    (static function (string $path): void {
+    (static function (string $path): void
+    {
         $reader = (new ReflectionClass(Database::class))->newInstanceWithoutConstructor();
         (new ReflectionMethod(PDO::class, '__construct'))->invoke($reader, 'sqlite:' . $path);
         $reader->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

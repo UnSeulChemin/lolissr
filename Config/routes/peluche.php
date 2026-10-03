@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\Peluche\PelucheController;
 use App\Http\Controllers\Peluche\PelucheAjaxController;
+use App\Http\Controllers\Peluche\PelucheController;
 use App\Http\Routing\CollectionRouteRegistrar;
+
 use Framework\Routing\Router;
 
 /** @var Router $router */

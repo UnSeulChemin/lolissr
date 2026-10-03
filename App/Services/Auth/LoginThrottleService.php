@@ -22,7 +22,8 @@ final readonly class LoginThrottleService
     public function __construct(
         private LoginAttemptRepository $loginAttemptRepository,
         private UserRepository $userRepository
-    ) {}
+    )
+    {}
 
     // =================================================
     // LIMITATION
@@ -35,9 +36,7 @@ final readonly class LoginThrottleService
 
     public function remainingLockMinutes(string $username, string $ipAddress): int
     {
-        $attempt = $this->loginAttemptRepository->findByIdentifierHash(
-            $this->identifierHash($username, $ipAddress)
-        );
+        $attempt = $this->loginAttemptRepository->findByIdentifierHash($this->identifierHash($username, $ipAddress));
 
         if ($attempt === null || $attempt['lockedUntil'] === null)
         {
@@ -70,7 +69,8 @@ final readonly class LoginThrottleService
         // Effectuer au plus un nettoyage limité par heure lorsque le cache est activé.
         try
         {
-            \Framework\Cache\Cache::remember('auth.login-attempts.cleanup', 3600, function () use ($now): bool {
+            \Framework\Cache\Cache::remember('auth.login-attempts.cleanup', 3600, function () use ($now): bool
+            {
                 $this->loginAttemptRepository->purgeExpired(
                     $this->formatDate($now->modify('-1 day')),
                     $this->formatDate($now)
@@ -88,9 +88,7 @@ final readonly class LoginThrottleService
 
     public function clear(string $username, string $ipAddress): void
     {
-        $this->loginAttemptRepository->clear(
-            $this->identifierHash($username, $ipAddress)
-        );
+        $this->loginAttemptRepository->clear($this->identifierHash($username, $ipAddress));
     }
 
     // =================================================
@@ -105,10 +103,7 @@ final readonly class LoginThrottleService
         $normalizedUsername = mb_strtolower(trim($username));
         $normalizedIpAddress = $this->normalizeIpAddress($ipAddress);
 
-        return hash(
-            'sha256',
-            $normalizedIpAddress . "\0" . $normalizedUsername
-        );
+        return hash('sha256', $normalizedIpAddress . "\0" . $normalizedUsername);
     }
 
     private function normalizeIpAddress(string $ipAddress): string

@@ -27,7 +27,8 @@ final readonly class PelucheData
 
         public ?string $commentaire,
 
-        public bool $xpCollectRewarded,
-    ) {
+        public bool $xpCollectRewarded
+    )
+    {
     }
 }

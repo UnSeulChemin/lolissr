@@ -12,7 +12,8 @@ use Framework\Container\Container;
 use Framework\Routing\RouteCollection;
 use Framework\Routing\Router;
 
-$check = static function (bool $condition, string $message): void {
+$check = static function (bool $condition, string $message): void
+{
     if (! $condition) throw new RuntimeException($message);
 };
 $directory = sys_get_temp_dir() . '/bootstrap-cache-' . bin2hex(random_bytes(8));
@@ -38,7 +39,8 @@ try
         BootstrapCache::compile();
         throw new LogicException('Invalid environment compiled.');
     }
-    catch (RuntimeException) {}
+    catch (RuntimeException)
+    {}
     Env::load(ROOT . '/.env.example');
     Env::set('DB_NAME', 'fixture');
     Env::set('DB_USER', 'fixture');

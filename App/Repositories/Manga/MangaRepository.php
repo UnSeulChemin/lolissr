@@ -7,8 +7,8 @@ namespace App\Repositories\Manga;
 use App\Models\Manga;
 use App\Repositories\AbstractRepository;
 use App\Repositories\Manga\Concerns\HasMangaStatsSubQuery;
-
 use App\Support\Manga\MangaNoteNormalizer;
+
 use Framework\Support\Str;
 
 final class MangaRepository extends AbstractRepository
@@ -46,10 +46,7 @@ final class MangaRepository extends AbstractRepository
             ORDER BY m.numero DESC, m.id DESC
             LIMIT {$perPage} OFFSET {$offset}
             ",
-            [
-                'slug' => $this->normalizeSlug($slug),
-                'stats_slug' => $this->normalizeSlug($slug),
-            ],
+            ['slug' => $this->normalizeSlug($slug), 'stats_slug' => $this->normalizeSlug($slug)],
             Manga::class
         );
 
@@ -96,11 +93,7 @@ final class MangaRepository extends AbstractRepository
 
             LIMIT 1
             ",
-            [
-                'slug' => $this->normalizeSlug($slug),
-                'stats_slug' => $this->normalizeSlug($slug),
-                'numero' => $numero,
-            ],
+            ['slug' => $this->normalizeSlug($slug), 'stats_slug' => $this->normalizeSlug($slug), 'numero' => $numero],
             Manga::class
         );
 
@@ -128,10 +121,7 @@ final class MangaRepository extends AbstractRepository
 
         $target = $this->fetchOne(
             "SELECT id FROM {$this->table()} WHERE slug = :slug AND numero = :numero LIMIT 1",
-            [
-                'slug' => $this->normalizeSlug($slug),
-                'numero' => $numero,
-            ]
+            ['slug' => $this->normalizeSlug($slug), 'numero' => $numero]
         );
 
         if ($target === null)
@@ -147,25 +137,16 @@ final class MangaRepository extends AbstractRepository
                 'jacquette' => $jacquette,
                 'livre_note' => $livreNote,
                 'note' => $this->calculateNote($jacquette, $livreNote),
-                'commentaire' => Str::nullableTrim($commentaire),
+                'commentaire' => Str::nullableTrim($commentaire)
             ]
         );
 
-        return $updated && $this->update(
-            ['statut' => trim($statut)],
-            ['slug' => $this->normalizeSlug($slug)]
-        );
+        return $updated && $this->update(['statut' => trim($statut)], ['slug' => $this->normalizeSlug($slug)]);
     }
 
     public function updateReadStatus(string $slug, int $numero, bool $readStatus): bool
     {
-        return $this->updateBySlugAndNumero(
-            $slug,
-            $numero,
-            [
-                'lu' => (int) $readStatus,
-            ]
-        );
+        return $this->updateBySlugAndNumero($slug, $numero, ['lu' => (int) $readStatus]);
     }
 
     public function updateNote(string $slug, int $numero, ?int $jacquette, ?int $livreNote): \App\DTO\Manga\Responses\MangaUpdateNoteData|false
@@ -189,7 +170,7 @@ final class MangaRepository extends AbstractRepository
             [
                 'jacquette' => $jacquette,
                 'livre_note' => $livreNote,
-                'note' => $this->calculateNote($jacquette, $livreNote),
+                'note' => $this->calculateNote($jacquette, $livreNote)
             ],
             ['id' => (int) $target->id]
         );
@@ -218,15 +199,11 @@ final class MangaRepository extends AbstractRepository
 
             LIMIT 1
             ",
-            [
-                'slug' => $this->normalizeSlug($slug),
-            ]
+            ['slug' => $this->normalizeSlug($slug)]
         );
 
         return $result !== null;
     }
-
-
 
     public function claimReadReward(int $id): bool
     {
@@ -239,9 +216,7 @@ final class MangaRepository extends AbstractRepository
             WHERE id = :id
             AND xp_read_rewarded = 0
             ",
-            [
-                'id' => $id,
-            ]
+            ['id' => $id]
         );
 
         return $statement !== false && $statement->rowCount() === 1;
@@ -284,9 +259,7 @@ final class MangaRepository extends AbstractRepository
 
             FOR UPDATE
             ",
-            [
-                'slug' => $this->normalizeSlug($slug),
-            ],
+            ['slug' => $this->normalizeSlug($slug)],
             Manga::class
         );
         if ($mangas === [])
@@ -320,9 +293,7 @@ final class MangaRepository extends AbstractRepository
             WHERE slug = :slug
             AND xp_series_rewarded = 0
             ",
-            [
-                'slug' => $this->normalizeSlug($slug),
-            ]
+            ['slug' => $this->normalizeSlug($slug)]
         );
 
         return ! $alreadyRewarded && $statement !== false && $statement->rowCount() >= 1;
@@ -363,13 +334,7 @@ final class MangaRepository extends AbstractRepository
      */
     private function updateBySlugAndNumero(string $slug, int $numero, array $data): bool
     {
-        return $this->update(
-            $data,
-            [
-                'slug' => $this->normalizeSlug($slug),
-                'numero' => $numero,
-            ]
-        );
+        return $this->update($data, ['slug' => $this->normalizeSlug($slug), 'numero' => $numero]);
     }
 
     /**
@@ -379,10 +344,7 @@ final class MangaRepository extends AbstractRepository
      */
     private function normalizeInsertData(array $data): array
     {
-        [$jacquette, $livreNote] = $this->normalizeNotes(
-            $data['jacquette'] ?? null,
-            $data['livre_note'] ?? null
-        );
+        [$jacquette, $livreNote] = $this->normalizeNotes($data['jacquette'] ?? null, $data['livre_note'] ?? null);
 
         return [
             'thumbnail' => trim((string) ($data['thumbnail'] ?? '')),
@@ -396,7 +358,7 @@ final class MangaRepository extends AbstractRepository
             'jacquette' => $jacquette,
             'livre_note' => $livreNote,
             'note' => $this->calculateNote($jacquette, $livreNote),
-            'commentaire' => Str::nullableTrim($data['commentaire'] ?? null),
+            'commentaire' => Str::nullableTrim($data['commentaire'] ?? null)
         ];
     }
 }

@@ -32,19 +32,11 @@ $router->prefix('manga')->group(function (Router $router): void
 
         $router->get('manga', [MangaController::class, 'create']);
 
-        $router->post(
-            'manga',
-            [MangaController::class, 'store'],
-            [CsrfMiddleware::class]
-        );
+        $router->post('manga', [MangaController::class, 'store'], [CsrfMiddleware::class]);
 
         $router->get('artbook', [ArtbookController::class, 'create']);
 
-        $router->post(
-            'artbook',
-            [ArtbookController::class, 'store'],
-            [CsrfMiddleware::class]
-        );
+        $router->post('artbook', [ArtbookController::class, 'store'], [CsrfMiddleware::class]);
     });
 
     // =================================================
@@ -60,16 +52,9 @@ $router->prefix('manga')->group(function (Router $router): void
         // MODIFICATION
         // =================================================
 
-        $router->get(
-            '{slug}/modifier/{numero:int}',
-            [ArtbookController::class, 'edit']
-        );
+        $router->get('{slug}/modifier/{numero:int}', [ArtbookController::class, 'edit']);
 
-        $router->post(
-            '{slug}/modifier/{numero:int}',
-            [ArtbookController::class, 'update'],
-            [CsrfMiddleware::class]
-        );
+        $router->post('{slug}/modifier/{numero:int}', [ArtbookController::class, 'update'], [CsrfMiddleware::class]);
 
         // =================================================
         // SUPPRESSION
@@ -85,10 +70,7 @@ $router->prefix('manga')->group(function (Router $router): void
         // CONSULTATION
         // =================================================
 
-        $router->get(
-            '{slug}/{numero:int}',
-            [ArtbookController::class, 'show']
-        );
+        $router->get('{slug}/{numero:int}', [ArtbookController::class, 'show']);
     });
 
     // =================================================
@@ -108,16 +90,9 @@ $router->prefix('manga')->group(function (Router $router): void
         // MODIFICATION
         // =================================================
 
-        $router->get(
-            '{slug}/modifier/{numero:int}',
-            [MangaController::class, 'edit']
-        );
+        $router->get('{slug}/modifier/{numero:int}', [MangaController::class, 'edit']);
 
-        $router->post(
-            '{slug}/modifier/{numero:int}',
-            [MangaController::class, 'update'],
-            [CsrfMiddleware::class]
-        );
+        $router->post('{slug}/modifier/{numero:int}', [MangaController::class, 'update'], [CsrfMiddleware::class]);
 
         // =================================================
         // SUPPRESSION
@@ -133,10 +108,7 @@ $router->prefix('manga')->group(function (Router $router): void
         // CONSULTATION
         // =================================================
 
-        $router->get(
-            '{slug}/{numero:int}',
-            [MangaController::class, 'showManga']
-        );
+        $router->get('{slug}/{numero:int}', [MangaController::class, 'showManga']);
 
         $router->get('{slug}/page/{page:int}', [MangaController::class, 'showSeries']);
         $router->get('{slug}', [MangaController::class, 'showSeries']);
@@ -152,15 +124,9 @@ $router->prefix('manga')->group(function (Router $router): void
         // HTML
         // =================================================
 
-        $router->get(
-            'series/page/{page:int}',
-            [MangaAjaxController::class, 'seriesPage']
-        );
+        $router->get('series/page/{page:int}', [MangaAjaxController::class, 'seriesPage']);
 
-        $router->get(
-            'artbooks/page/{page:int}',
-            [ArtbookAjaxController::class, 'page']
-        );
+        $router->get('artbooks/page/{page:int}', [ArtbookAjaxController::class, 'page']);
 
         // =================================================
         // JSON
@@ -170,24 +136,15 @@ $router->prefix('manga')->group(function (Router $router): void
             ->middleware(ExpectJsonMiddleware::class)
             ->group(function (Router $router): void
             {
-                $router->get(
-                    'recherche/artbooks/{query}',
-                    [ArtbookAjaxController::class, 'search']
-                );
+                $router->get('recherche/artbooks/{query}', [ArtbookAjaxController::class, 'search']);
 
-                $router->get(
-                    'recherche/{query}',
-                    [MangaAjaxController::class, 'search']
-                );
+                $router->get('recherche/{query}', [MangaAjaxController::class, 'search']);
 
                 $router
                     ->middleware(CsrfMiddleware::class)
                     ->group(function (Router $router): void
                     {
-                        $router->post(
-                            'update-note/{slug}/{numero:int}',
-                            [MangaAjaxController::class, 'updateNote']
-                        );
+                        $router->post('update-note/{slug}/{numero:int}', [MangaAjaxController::class, 'updateNote']);
 
                         $router->post(
                             'update-read-status/{slug}/{numero:int}',

@@ -5,12 +5,13 @@ declare(strict_types=1);
 require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
 
 use App\Http\Controllers\Controller;
+
 use Framework\Config\Env;
 use Framework\Debug\Profiler;
 use Framework\Http\Request;
 use Framework\Http\Response;
-use Framework\Logging\Logger;
 use Framework\Http\Session;
+use Framework\Logging\Logger;
 
 if (($argv[1] ?? '') === 'profiler-child')
 {
@@ -23,8 +24,10 @@ if (($argv[1] ?? '') === 'profiler-child')
     Profiler::startRequest($startedAt);
     register_shutdown_function(static fn () => Profiler::finishRequest('GET', '/fixture'));
     Profiler::measure('completed', static fn () => usleep(2000));
-    Profiler::measure('router.dispatch', static function (): void {
-        Profiler::measure('controller.action', static function (): void {
+    Profiler::measure('router.dispatch', static function (): void
+    {
+        Profiler::measure('controller.action', static function (): void
+        {
             usleep(2000);
             Response::json(['success' => true]);
         });
@@ -32,14 +35,16 @@ if (($argv[1] ?? '') === 'profiler-child')
     exit(1);
 }
 
-$check = static function (bool $condition, string $message): void {
+$check = static function (bool $condition, string $message): void
+{
     if (! $condition) throw new RuntimeException($message);
 };
 $directory = sys_get_temp_dir() . '/framework-lifecycle-' . bin2hex(random_bytes(8));
 mkdir($directory);
 (new ReflectionProperty(Session::class, 'directory'))->setValue(null, $directory);
 // Observe every persisted session snapshot, including any intermediate writes.
-$handler = new class extends SessionHandler {
+$handler = new class extends SessionHandler
+{
     public array $writes = [];
     public function write(string $id, string $data): bool
     {
@@ -56,7 +61,8 @@ try
     Session::set('old', ['title' => 'Draft']);
     Session::close();
     $handler->writes = [];
-    $controller = new class(new Request()) extends Controller {
+    $controller = new class(new Request()) extends Controller
+    {
         public function form(): \App\DTO\Common\Responses\FormViewData
         {
             return $this->formViewData('/save', '/cancel');
@@ -77,7 +83,8 @@ try
     $check(session_status() === PHP_SESSION_NONE, 'Feedback lookup retained the session lock.');
 
     Session::start();
-    Session::withLock(static function () use ($check): void {
+    Session::withLock(static function () use ($check): void
+    {
         Session::withLock(static fn () => Session::set('nested', true));
         $check(session_status() === PHP_SESSION_ACTIVE, 'Nested scope released outer lock.');
     });
@@ -85,18 +92,20 @@ try
     Session::close();
     try
     {
-        Session::withLock(static function (): void {
+        Session::withLock(static function (): void
+        {
             Session::set('before-error', true);
             throw new LogicException('fixture');
         });
     }
-    catch (LogicException) {}
+    catch (LogicException)
+    {}
     $check(session_status() === PHP_SESSION_NONE, 'Exception retained the lock.');
     $check(Session::get('before-error') === true, 'Exception lost persisted session state.');
     Session::destroy();
 
     $process = proc_open([PHP_BINARY, __FILE__, 'profiler-child', $directory], [
-        0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w'],
+        0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']
     ], $pipes);
     $check(is_resource($process), 'Could not start profiler fixture.');
     fclose($pipes[0]);

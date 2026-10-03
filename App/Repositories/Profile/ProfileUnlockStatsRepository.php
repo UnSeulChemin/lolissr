@@ -16,21 +16,21 @@ final class ProfileUnlockStatsRepository extends AbstractRepository
         'nendoroidsCollected' => 'SELECT COUNT(*) FROM nendoroid WHERE collect = 1',
         'peluchesCollected' => 'SELECT COUNT(*) FROM peluche WHERE collect = 1',
         'vocabularyLearned' => 'SELECT COUNT(*) FROM chinois_vocabulaire WHERE maitrise = 1',
-        'grammarLearned' => 'SELECT COUNT(*) FROM chinois_grammaire WHERE maitrise = 1',
+        'grammarLearned' => 'SELECT COUNT(*) FROM chinois_grammaire WHERE maitrise = 1'
     ];
 
     public function forTitles(): ProfileUnlockStatsData
     {
         return $this->counts([
             'readTomes', 'readArtbooks', 'figurinesCollected', 'nendoroidsCollected',
-            'vocabularyLearned', 'grammarLearned',
+            'vocabularyLearned', 'grammarLearned'
         ], true);
     }
 
     public function forBanners(): ProfileUnlockStatsData
     {
         return $this->counts([
-            'readTomes', 'nendoroidsCollected', 'peluchesCollected', 'vocabularyLearned', 'grammarLearned',
+            'readTomes', 'nendoroidsCollected', 'peluchesCollected', 'vocabularyLearned', 'grammarLearned'
         ]);
     }
 
@@ -70,7 +70,7 @@ final class ProfileUnlockStatsRepository extends AbstractRepository
             nendoroidsCollected: (int) ($row->nendoroidsCollected ?? 0),
             peluchesCollected: (int) ($row->peluchesCollected ?? 0),
             vocabularyLearned: (int) ($row->vocabularyLearned ?? 0),
-            grammarLearned: (int) ($row->grammarLearned ?? 0),
+            grammarLearned: (int) ($row->grammarLearned ?? 0)
         );
     }
 }

@@ -12,10 +12,7 @@ $old = $form->old;
 
 $langueValue = $old['langue'] ?? 'mandarin';
 
-$langueOptions = [
-    'mandarin' => 'Mandarin',
-    'jinyu' => 'JinYu',
-];
+$langueOptions = ['mandarin' => 'Mandarin', 'jinyu' => 'JinYu'];
 
 ?>
 
@@ -72,10 +69,7 @@ $langueOptions = [
 
                     </select>
 
-                    <?php if (
-                        isset($errors['langue'])
-                        && $errors['langue'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['langue']) && $errors['langue'] !== ''): ?>
 
                         <p class="form-error u-semibold">
 
@@ -109,10 +103,7 @@ $langueOptions = [
                         required
                     >
 
-                    <?php if (
-                        isset($errors['mot'])
-                        && $errors['mot'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['mot']) && $errors['mot'] !== ''): ?>
 
                         <p class="form-error u-semibold">
 
@@ -145,10 +136,7 @@ $langueOptions = [
                         required
                     >
 
-                    <?php if (
-                        isset($errors['pinyin'])
-                        && $errors['pinyin'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['pinyin']) && $errors['pinyin'] !== ''): ?>
 
                         <p class="form-error u-semibold">
 
@@ -181,10 +169,7 @@ $langueOptions = [
                         required
                     >
 
-                    <?php if (
-                        isset($errors['type'])
-                        && $errors['type'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['type']) && $errors['type'] !== ''): ?>
 
                         <p class="form-error u-semibold">
 
@@ -219,10 +204,7 @@ $langueOptions = [
                         required
                     ><?= e($old['traduction'] ?? '') ?></textarea>
 
-                    <?php if (
-                        isset($errors['traduction'])
-                        && $errors['traduction'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['traduction']) && $errors['traduction'] !== ''): ?>
 
                         <p class="form-error u-semibold">
 
@@ -256,10 +238,7 @@ $langueOptions = [
                         required
                     >
 
-                    <?php if (
-                        isset($errors['exemple'])
-                        && $errors['exemple'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['exemple']) && $errors['exemple'] !== ''): ?>
 
                         <p class="form-error u-semibold">
 

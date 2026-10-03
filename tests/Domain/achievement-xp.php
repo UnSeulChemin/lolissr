@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Models\User;
 use App\Services\Profile\AchievementXpService;
+
 use Framework\Application\Bootstrap;
 use Framework\Container\Container;
 use Framework\Database\Database;
@@ -22,7 +23,8 @@ $user = new User();
 $user->id = 1;
 $user->level = 1;
 $user->xp = 0;
-$assert = static function (bool $condition, string $message): void {
+$assert = static function (bool $condition, string $message): void
+{
     if (!$condition) throw new RuntimeException($message);
 };
 $service->rewardManga($user, 0, 0);
@@ -38,7 +40,8 @@ $assert((int)$database->query('SELECT COUNT(*) FROM achievement_xp_rewards')->fe
 $assert((($user->level - 1) * $user->level / 2 * 5 + $user->xp) === 19300, 'Level progression incorrect');
 try
 {
-    $database->transaction(function () use ($service, $user): void {
+    $database->transaction(function () use ($service, $user): void
+    {
         $service->rewardManga($user, 200, 50);
         throw new RuntimeException('rollback fixture');
     });
@@ -64,7 +67,7 @@ $stats = new \App\DTO\Profile\Responses\ProfileStatsData(
     readArtbooks: 0, artbookXp: 0, figurinesCollected: 0, figurinesXp: 0,
     nendoroidsCollected: 0, nendoroidsXp: 0, peluchesCollected: 0, peluchesXp: 0,
     vocabularyLearned: 0, vocabularyXp: 0, grammarLearned: 0, grammarXp: 0,
-    totalXp: 2306, achievementXp: 2256,
+    totalXp: 2306, achievementXp: 2256
 );
 $beforeAudit = [$other->level, $other->xp, $service->totalForUser($other)];
 $audit = $service->audit($other, $stats);

@@ -3,29 +3,29 @@
 // =================================================
 
 export {
-    buildMangaResult,
+    buildMangaResult
 } from './search-manga-builder.js';
 
 export {
-    buildChineseResult,
+    buildChineseResult
 } from './search-chinese-builder.js';
 
 export {
-    buildFigurineResult,
+    buildFigurineResult
 } from './search-figurine-builder.js';
 
 export {
-    buildNendoroidResult,
+    buildNendoroidResult
 } from './search-nendoroid-builder.js';
 
 export {
-    buildPelucheResult,
+    buildPelucheResult
 } from './search-peluche-builder.js';
 
 export {
-    buildArtbookResult,
+    buildArtbookResult
 } from './search-artbook-builder.js';
 
 export {
-    buildShortcutSearchResult,
+    buildShortcutSearchResult
 } from './search-shortcut-builder.js';

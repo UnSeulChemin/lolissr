@@ -5,18 +5,21 @@ declare(strict_types=1);
 namespace App\Services\Profile;
 
 use App\Constants\AchievementRewards;
-use App\Models\User;
 use App\DTO\Profile\Responses\ProfileStatsData;
+use App\Models\User;
 use App\Services\User\UserLevelService;
+
 use Framework\Database\Database;
 
 final readonly class AchievementXpService
 {
-    public function __construct(
-        private Database $database,
-        private UserLevelService $levels,
-    ) {
+    public function __construct(private Database $database, private UserLevelService $levels)
+    {
     }
+
+    // =================================================
+    // RÉCOMPENSES
+    // =================================================
 
     public function rewardSeries(User $user, int $completedSeries): void
     {
@@ -77,7 +80,7 @@ final readonly class AchievementXpService
     {
         $this->award($user, [
             ...$this->eligible('tomes', AchievementRewards::TOMES, $readTomes),
-            ...$this->eligible('series', AchievementRewards::SERIES, $completedSeries),
+            ...$this->eligible('series', AchievementRewards::SERIES, $completedSeries)
         ], $baseXp);
     }
 
@@ -86,20 +89,9 @@ final readonly class AchievementXpService
         $this->award($user, $this->expectedRewards($stats));
     }
 
-    /** @return array<string, int> */
-    private function expectedRewards(ProfileStatsData $stats): array
-    {
-        return [
-            ...$this->eligible('tomes', AchievementRewards::TOMES, $stats->readTomes),
-            ...$this->eligible('series', AchievementRewards::SERIES, $stats->completedSeries),
-            ...$this->eligible('artbooks', AchievementRewards::ARTBOOKS, $stats->readArtbooks),
-            ...$this->eligible('figurines', AchievementRewards::FIGURINES, $stats->figurinesCollected),
-            ...$this->eligible('nendoroids', AchievementRewards::NENDOROIDS, $stats->nendoroidsCollected),
-            ...$this->eligible('peluches', AchievementRewards::PELUCHES, $stats->peluchesCollected),
-            ...$this->eligible('vocabulary', AchievementRewards::VOCABULARY, $stats->vocabularyLearned),
-            ...$this->eligible('grammar', AchievementRewards::GRAMMAR, $stats->grammarLearned),
-        ];
-    }
+    // =================================================
+    // AUDIT ET TOTAL DES XP
+    // =================================================
 
     /** @return array{missing: array<string, int>, issues: list<string>, expectedTotal: int, expectedLevel: int, expectedXp: int} */
     public function audit(User $user, ProfileStatsData $stats): array
@@ -114,7 +106,7 @@ final readonly class AchievementXpService
             'nendoroids' => AchievementRewards::NENDOROIDS,
             'peluches' => AchievementRewards::PELUCHES,
             'vocabulary' => AchievementRewards::VOCABULARY,
-            'grammar' => AchievementRewards::GRAMMAR,
+            'grammar' => AchievementRewards::GRAMMAR
         ] as $category => $amounts)
         {
             $catalog += $this->eligible($category, $amounts, PHP_INT_MAX);
@@ -158,6 +150,32 @@ final readonly class AchievementXpService
         return ['missing' => $missing, 'issues' => $issues, 'expectedTotal' => $total, 'expectedLevel' => $level, 'expectedXp' => $xp];
     }
 
+    public function totalForUser(User $user): int
+    {
+        $statement = $this->database->prepare('SELECT COALESCE(SUM(xp), 0) FROM achievement_xp_rewards WHERE user_id = ?');
+        $statement->execute([$user->id]);
+        return (int) $statement->fetchColumn();
+    }
+
+    // =================================================
+    // CALCUL ET ATTRIBUTION DES XP
+    // =================================================
+
+    /** @return array<string, int> */
+    private function expectedRewards(ProfileStatsData $stats): array
+    {
+        return [
+            ...$this->eligible('tomes', AchievementRewards::TOMES, $stats->readTomes),
+            ...$this->eligible('series', AchievementRewards::SERIES, $stats->completedSeries),
+            ...$this->eligible('artbooks', AchievementRewards::ARTBOOKS, $stats->readArtbooks),
+            ...$this->eligible('figurines', AchievementRewards::FIGURINES, $stats->figurinesCollected),
+            ...$this->eligible('nendoroids', AchievementRewards::NENDOROIDS, $stats->nendoroidsCollected),
+            ...$this->eligible('peluches', AchievementRewards::PELUCHES, $stats->peluchesCollected),
+            ...$this->eligible('vocabulary', AchievementRewards::VOCABULARY, $stats->vocabularyLearned),
+            ...$this->eligible('grammar', AchievementRewards::GRAMMAR, $stats->grammarLearned)
+        ];
+    }
+
     /** @param array<int, int> $rewards
      *  @return array<string, int>
      */
@@ -177,7 +195,8 @@ final readonly class AchievementXpService
         if ($baseXp < 0) throw new \InvalidArgumentException('Base XP must not be negative.');
         if ($rewards === [] && $baseXp === 0) return;
 
-        $this->levels->addComputedXp($user, function () use ($user, $rewards, $baseXp): int {
+        $this->levels->addComputedXp($user, function () use ($user, $rewards, $baseXp): int
+        {
             if ($rewards === []) return $baseXp;
             // La lecture verrouillée voit aussi les récompenses validées par une requête attendue.
             $placeholders = implode(', ', array_fill(0, count($rewards), '?'));
@@ -203,11 +222,5 @@ final readonly class AchievementXpService
             $insert->execute($values);
             return $baseXp + array_sum($missing);
         });
-    }
-    public function totalForUser(User $user): int
-    {
-        $statement = $this->database->prepare('SELECT COALESCE(SUM(xp), 0) FROM achievement_xp_rewards WHERE user_id = ?');
-        $statement->execute([$user->id]);
-        return (int) $statement->fetchColumn();
     }
 }

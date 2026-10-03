@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Artbook;
 
-use App\Http\Controllers\Controller;
 use App\DTO\Common\ServiceResult;
+use App\Http\Controllers\Controller;
 use App\Services\Artbook\ArtbookReadService;
 use App\Services\Artbook\ArtbookWriteService;
 
@@ -18,10 +18,10 @@ final class ArtbookAjaxController extends Controller
         private readonly ArtbookReadService $artbookReadService,
         private readonly ArtbookWriteService $artbookWriteService,
         Request $request
-    ) {
+    )
+    {
         parent::__construct($request);
     }
-
 
     // =================================================
     // RECHERCHE
@@ -29,19 +29,10 @@ final class ArtbookAjaxController extends Controller
 
     public function search(string|int $query = ''): never
     {
-        $searchData = $this->artbookReadService->search(
-            (string) $query
-        );
+        $searchData = $this->artbookReadService->search((string) $query);
 
-        $this->jsonResult(
-            ServiceResult::success(
-                data: [
-                    'results' => $searchData->results,
-                ],
-            ),
-        );
+        $this->jsonResult(ServiceResult::success(data: ['results' => $searchData->results]));
     }
-
 
     // =================================================
     // PAGINATION
@@ -51,60 +42,39 @@ final class ArtbookAjaxController extends Controller
     {
         $page = max(1, $page);
 
-        $data = $this->artbookReadService->artbooks(
-            $page
-        );
+        $data = $this->artbookReadService->artbooks($page);
 
         if ($data === null)
         {
-            throw new NotFoundException(
-                'Page introuvable'
-            );
+            throw new NotFoundException('Page introuvable');
         }
 
         $this->renderFragment(
             'pages/artbook/partials/items',
-            [
-                'artbooks' => $data->artbooks,
-                'currentPage' => $data->currentPage,
-                'totalPages' => $data->totalPages,
-            ]
+            ['artbooks' => $data->artbooks, 'currentPage' => $data->currentPage, 'totalPages' => $data->totalPages]
         );
     }
-
 
     // =================================================
     // MISE À JOUR DU STATUT DE LECTURE
     // =================================================
 
-    public function updateReadStatus(
-        string $slug,
-        int $numero
-    ): never {
+    public function updateReadStatus(string $slug, int $numero): never
+    {
         $readStatus = $this->binaryStatusInput('readStatus');
 
-        $result = $this->artbookWriteService->updateReadStatus(
-            $slug,
-            $numero,
-            $readStatus
-        );
+        $result = $this->artbookWriteService->updateReadStatus($slug, $numero, $readStatus);
 
         $this->jsonResult($result);
     }
-
 
     // =================================================
     // SUPPRESSION
     // =================================================
 
-    public function delete(
-        string $slug,
-        int $numero
-    ): never {
-        $result = $this->artbookWriteService->delete(
-            $slug,
-            $numero
-        );
+    public function delete(string $slug, int $numero): never
+    {
+        $result = $this->artbookWriteService->delete($slug, $numero);
 
         $this->jsonResult($result);
     }

@@ -2,72 +2,43 @@
 // RÉSOLUTION PAGE
 // =================================================
 
-import {
-    debug,
-} from '../../core/debug/debug.js';
+import { debug } from '../../core/debug/debug.js';
 
-import {
-    end,
-    start,
-} from '../../core/debug/profiler.js';
+import { end, start } from '../../core/debug/profiler.js';
 
-import {
-    getInFlightPrefetch,
-    getPrefetchedPage,
-} from '../prefetch/prefetch-cache.js';
+import { getInFlightPrefetch, getPrefetchedPage } from '../prefetch/prefetch-cache.js';
 
-import {
-    fetchPage,
-} from '../router-fetch.js';
+import { fetchPage } from '../router-fetch.js';
 
 // =================================================
 // RÉSOLUTION
 // =================================================
 
-export async function resolvePage(
-    target,
-    forceRefresh,
-    signal,
-)
+export async function resolvePage(target, forceRefresh, signal)
 {
-    start(
-        'resolve',
-    );
+    start('resolve');
 
     // --------------------------------------------------------------------------
     // ACTUALISATION FORCÉE
     // --------------------------------------------------------------------------
 
+    if (forceRefresh)
+    {
 
-    if (
-        forceRefresh
-    ) {
+        debug('ROUTER', 'force-refresh', target);
 
-        debug(
-            'ROUTER',
-            'force-refresh',
-            target,
-        );
+        start('network');
 
-        start(
-            'network',
-        );
-
-        const response =
-            await fetchPage(
+        const response = await fetchPage(
                 target,
                 {
-                    signal,
-                },
+                    signal
+                }
             );
 
-        end(
-            'network',
-        );
+        end('network');
 
-        end(
-            'resolve',
-        );
+        end('resolve');
 
         return response;
     }
@@ -76,33 +47,18 @@ export async function resolvePage(
     // PRÉCHARGEMENT CACHE
     // --------------------------------------------------------------------------
 
+    start('cache');
 
-    start(
-        'cache',
-    );
+    const cached = getPrefetchedPage(target);
 
-    const cached =
-        getPrefetchedPage(
-            target,
-        );
+    end('cache');
 
-    end(
-        'cache',
-    );
+    if (cached && !cached.page.requiresFreshNavigation)
+    {
 
-    if (
-        cached && !cached.page.requiresFreshNavigation
-    ) {
+        debug('ROUTER', 'cache-hit', target);
 
-        debug(
-            'ROUTER',
-            'cache-hit',
-            target,
-        );
-
-        end(
-            'resolve',
-        );
+        end('resolve');
 
         return cached;
     }
@@ -111,29 +67,16 @@ export async function resolvePage(
     // PRÉCHARGEMENT EN COURS
     // --------------------------------------------------------------------------
 
+    start('prefetch');
 
-    start(
-        'prefetch',
-    );
+    const inFlight = getInFlightPrefetch(target);
 
-    const inFlight =
-        getInFlightPrefetch(
-            target,
-        );
+    end('prefetch');
 
-    end(
-        'prefetch',
-    );
+    if (inFlight)
+    {
 
-    if (
-        inFlight
-    ) {
-
-        debug(
-            'ROUTER',
-            'reuse-prefetch',
-            target,
-        );
+        debug('ROUTER', 'reuse-prefetch', target);
 
         const prefetched = await inFlight;
         if (signal?.aborted)
@@ -156,32 +99,20 @@ export async function resolvePage(
     // RÉSEAU CHARGEMENT
     // --------------------------------------------------------------------------
 
+    debug('ROUTER', 'network-fetch', target);
 
-    debug(
-        'ROUTER',
-        'network-fetch',
-        target,
-    );
+    start('network');
 
-    start(
-        'network',
-    );
-
-    const response =
-        await fetchPage(
+    const response = await fetchPage(
             target,
             {
-                signal,
-            },
+                signal
+            }
         );
 
-    end(
-        'network',
-    );
+    end('network');
 
-    end(
-        'resolve',
-    );
+    end('resolve');
 
     return response;
 }

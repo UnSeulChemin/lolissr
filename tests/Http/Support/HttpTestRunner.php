@@ -20,7 +20,8 @@ final class HttpTestRunner
         private readonly string $base,
         private readonly array $tests,
         private readonly HttpTestStatistics $stats
-    ) {
+    )
+    {
     }
 
     // =========================================
@@ -75,12 +76,7 @@ final class HttpTestRunner
         $url = rtrim($this->base, '/') . '/' . ltrim($path, '/');
         $start = microtime(true);
 
-        $response = http_request(
-            $method,
-            $url,
-            $headers,
-            $requestBody
-        );
+        $response = http_request($method, $url, $headers, $requestBody);
 
         $duration = microtime(true) - $start;
 
@@ -88,13 +84,7 @@ final class HttpTestRunner
         $body = $response['body'];
         $responseHeaders = $response['headers'];
 
-        $failureReason = $this->failureReason(
-            $test,
-            $status,
-            $expectedStatus,
-            $body,
-            $responseHeaders
-        );
+        $failureReason = $this->failureReason($test, $status, $expectedStatus, $body, $responseHeaders);
 
         if ($failureReason === null)
         {
@@ -135,13 +125,8 @@ final class HttpTestRunner
      * @param array<string, mixed> $test
      * @param list<string> $headers
      */
-    private function failureReason(
-        array $test,
-        int $status,
-        int $expectedStatus,
-        string $body,
-        array $headers
-    ): ?string {
+    private function failureReason(array $test, int $status, int $expectedStatus, string $body, array $headers): ?string
+    {
         if ($status !== $expectedStatus)
         {
             return "Unexpected status: expected {$expectedStatus}, received {$status}";
@@ -418,23 +403,14 @@ final class HttpTestRunner
     {
         $reportDirectory = dirname(__DIR__) . '/reports';
 
-        if (
-            ! is_dir($reportDirectory)
-            && ! mkdir($reportDirectory, 0755, true)
-            && ! is_dir($reportDirectory)
-        ) {
-            throw new RuntimeException(
-                'Impossible de créer le dossier reports.'
-            );
+        if (! is_dir($reportDirectory) && ! mkdir($reportDirectory, 0755, true) && ! is_dir($reportDirectory))
+        {
+            throw new RuntimeException('Impossible de créer le dossier reports.');
         }
 
         $reportFile = $reportDirectory . '/lolissr-http-report.html';
 
-        HttpHtmlReport::generate(
-            $this->results,
-            $this->stats,
-            $reportFile
-        );
+        HttpHtmlReport::generate($this->results, $this->stats, $reportFile);
 
         echo PHP_EOL;
         echo '📄 Rapport HTML généré' . PHP_EOL;

@@ -2,22 +2,14 @@
 // UTILISATEUR DANS L’EN-TÊTE
 // =================================================
 
-export function updateHeaderUser(
-    level,
-)
+export function updateHeaderUser(level)
 {
-    const element =
-        document.querySelector(
-            '.js-user-level',
-        );
+    const element = document.querySelector('.js-user-level');
 
-    if (
-        !element
-        || level === undefined
-    ) {
+    if (!element || level === undefined)
+    {
         return;
     }
 
-    element.textContent =
-        String(level);
+    element.textContent = String(level);
 }

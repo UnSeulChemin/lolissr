@@ -37,17 +37,9 @@ echo PHP_EOL;
 echo '============================================================' . PHP_EOL;
 echo PHP_EOL;
 
-runCommand(
-    ['git', '--version'],
-    'Git could not be found.',
-    false
-);
+runCommand(['git', '--version'], 'Git could not be found.', false);
 
-runCommand(
-    ['git', 'rev-parse', '--is-inside-work-tree'],
-    'The current directory is not a Git repository.',
-    false
-);
+runCommand(['git', 'rev-parse', '--is-inside-work-tree'], 'The current directory is not a Git repository.', false);
 
 echo '[SYSTEM]' . PHP_EOL;
 echo 'Preparing Git publication...' . PHP_EOL;
@@ -60,19 +52,13 @@ echo '[SYSTEM]' . PHP_EOL;
 echo 'Repository status:' . PHP_EOL;
 echo PHP_EOL;
 
-runCommand(
-    ['git', 'status', '--short'],
-    'Unable to inspect repository status.'
-);
+runCommand(['git', 'status', '--short'], 'Unable to inspect repository status.');
 
 echo PHP_EOL;
 echo '[SYSTEM]' . PHP_EOL;
 echo 'Staging files...' . PHP_EOL;
 
-runCommand(
-    ['git', 'add', '.'],
-    'Git could not stage the files.'
-);
+runCommand(['git', 'add', '.'], 'Git could not stage the files.');
 
 if (! hasStagedChanges())
 {
@@ -83,29 +69,20 @@ echo PHP_EOL;
 echo '[SYSTEM]' . PHP_EOL;
 echo 'Creating commit...' . PHP_EOL;
 
-runCommand(
-    ['git', 'commit', '-m', $commitMessage],
-    'Git could not create the commit.'
-);
+runCommand(['git', 'commit', '-m', $commitMessage], 'Git could not create the commit.');
 
 echo PHP_EOL;
 echo '[SYSTEM]' . PHP_EOL;
 echo 'Latest commit:' . PHP_EOL;
 echo PHP_EOL;
 
-runCommand(
-    ['git', 'log', '-1', '--oneline'],
-    'Unable to retrieve latest commit.'
-);
+runCommand(['git', 'log', '-1', '--oneline'], 'Unable to retrieve latest commit.');
 
 echo PHP_EOL;
 echo '[SYSTEM]' . PHP_EOL;
 echo 'Pushing commit to origin/master...' . PHP_EOL;
 
-runCommand(
-    ['git', 'push', 'origin', 'master'],
-    'The commit could not reach origin/master.'
-);
+runCommand(['git', 'push', 'origin', 'master'], 'The commit could not reach origin/master.');
 
 echo PHP_EOL;
 echo '============================================================' . PHP_EOL;
@@ -124,16 +101,7 @@ exit(0);
 
 function hasStagedChanges(): bool
 {
-    $process = proc_open(
-        ['git', 'diff', '--cached', '--quiet'],
-        [
-            0 => STDIN,
-            1 => STDOUT,
-            2 => STDERR,
-        ],
-        $pipes,
-        ROOT
-    );
+    $process = proc_open(['git', 'diff', '--cached', '--quiet'], [0 => STDIN, 1 => STDOUT, 2 => STDERR], $pipes, ROOT);
 
     if (! is_resource($process))
     {
@@ -160,23 +128,10 @@ function runCommand(array $command, string $failureMessage, bool $displayOutput 
         : '/dev/null';
 
     $descriptors = $displayOutput
-        ? [
-            0 => STDIN,
-            1 => STDOUT,
-            2 => STDERR,
-        ]
-        : [
-            0 => STDIN,
-            1 => ['file', $nullDevice, 'w'],
-            2 => ['file', $nullDevice, 'w'],
-        ];
+        ? [0 => STDIN, 1 => STDOUT, 2 => STDERR]
+        : [0 => STDIN, 1 => ['file', $nullDevice, 'w'], 2 => ['file', $nullDevice, 'w']];
 
-    $process = proc_open(
-        $command,
-        $descriptors,
-        $pipes,
-        ROOT
-    );
+    $process = proc_open($command, $descriptors, $pipes, ROOT);
 
     if (! is_resource($process))
     {
@@ -193,13 +148,7 @@ function runCommand(array $command, string $failureMessage, bool $displayOutput 
 
 function fail(string $message): never
 {
-    fwrite(
-        STDERR,
-        PHP_EOL
-        . '[FAILED] '
-        . $message
-        . PHP_EOL
-    );
+    fwrite(STDERR, PHP_EOL . '[FAILED] ' . $message . PHP_EOL);
 
     exit(1);
 }

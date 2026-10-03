@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Repositories\Manga\MangaCollectionRepository;
+
 use Framework\Database\Database;
 
 require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
@@ -28,7 +29,8 @@ $db->exec("INSERT INTO manga (id, slug, numero, livre, note, lu) VALUES
     (4, 'gamma', 2, 'Gamma', NULL, 0), (5, 'gamma', 2, 'Gamma', 4, 1),
     (6, 'delta', 1, 'Delta', 6, 1)");
 $repository = new MangaCollectionRepository($db);
-$assert = static function (bool $condition, string $message): void {
+$assert = static function (bool $condition, string $message): void
+{
     if (! $condition) throw new RuntimeException($message);
 };
 foreach ([true, false] as $notes)

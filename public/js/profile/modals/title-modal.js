@@ -1,21 +1,13 @@
 import { mountProfileModal } from './profile-modal-lifecycle.js';
 
-export function titleModal(
-    titles,
-)
+export function titleModal(titles)
 {
     return new Promise(
-        (
-            resolve,
-        ) =>
+        (resolve) =>
         {
-            const overlay =
-                document.createElement(
-                    'div',
-                );
+            const overlay = document.createElement('div');
 
-            overlay.className =
-                'confirm-modal-overlay title-modal-overlay';
+            overlay.className = 'confirm-modal-overlay title-modal-overlay';
 
             overlay.innerHTML = `
                 <div class="confirm-modal title-modal" role="dialog" aria-modal="true" aria-label="Choisir un titre">
@@ -53,39 +45,25 @@ export function titleModal(
             const close = mountProfileModal(overlay, resolve);
 
             overlay
-                .querySelectorAll(
-                    '.title-modal-item:not(:disabled)',
-                )
+                .querySelectorAll('.title-modal-item:not(:disabled)')
                 .forEach(
-                    (
-                        button,
-                    ) =>
+                    (button) =>
                     {
-                        button.addEventListener(
-                            'click',
-                            () =>
-                                close(
-                                    button.dataset.title,
-                                ),
-                        );
-                    },
+                        button.addEventListener('click', () => close( button.dataset.title ));
+                    }
                 );
 
             overlay.addEventListener(
                 'click',
-                (
-                    event,
-                ) =>
+                (event) =>
                 {
-                    if (
-                        event.target
-                        === overlay
-                    ) {
+                    if (event.target === overlay)
+                    {
 
                         close();
                     }
-                },
+                }
             );
-        },
+        }
     );
 }

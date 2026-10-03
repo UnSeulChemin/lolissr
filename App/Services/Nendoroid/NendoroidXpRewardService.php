@@ -13,13 +13,13 @@ final readonly class NendoroidXpRewardService
     public function __construct(
         private NendoroidRepository $nendoroidRepository,
         private \App\Services\Profile\AchievementXpService $achievementXpService,
-        private \App\Repositories\Nendoroid\NendoroidStatsRepository $nendoroidStatsRepository,
-    ) {
+        private \App\Repositories\Nendoroid\NendoroidStatsRepository $nendoroidStatsRepository
+    )
+    {
     }
 
-    public function rewardCollect(
-        Nendoroid $nendoroid
-    ): bool {
+    public function rewardCollect(Nendoroid $nendoroid): bool
+    {
         $user = user();
 
         if ($user === null)

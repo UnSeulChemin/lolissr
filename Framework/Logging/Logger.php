@@ -33,7 +33,7 @@ final class Logger
         'db_pass',
         'db_password',
         'api_key',
-        'secret',
+        'secret'
     ];
 
     private static ?string $directory = null;
@@ -96,7 +96,7 @@ final class Logger
                 'exception' => $exception::class,
                 'file' => $exception->getFile(),
                 'line' => $exception->getLine(),
-                'trace' => $exception->getTraceAsString(),
+                'trace' => $exception->getTraceAsString()
             ]
         );
     }
@@ -131,9 +131,7 @@ final class Logger
 
         if (! self::ensureDirectory())
         {
-            self::reportInternalError(
-                'Impossible de créer le dossier de logs : ' . self::directory()
-            );
+            self::reportInternalError('Impossible de créer le dossier de logs : ' . self::directory());
 
             return;
         }
@@ -149,7 +147,7 @@ final class Logger
                     'level' => $level,
                     'message' => $message,
                     'context' => self::sanitize($context),
-                    'request' => self::requestContext(),
+                    'request' => self::requestContext()
                 ],
                 JSON_UNESCAPED_UNICODE
                 | JSON_UNESCAPED_SLASHES
@@ -159,26 +157,18 @@ final class Logger
         }
         catch (JsonException $exception)
         {
-            self::reportInternalError(
-                'Encodage JSON impossible : ' . $exception->getMessage()
-            );
+            self::reportInternalError('Encodage JSON impossible : ' . $exception->getMessage());
 
             return;
         }
 
         $file = self::file();
 
-        $written = @file_put_contents(
-            $file,
-            $content . PHP_EOL,
-            FILE_APPEND | LOCK_EX
-        );
+        $written = @file_put_contents($file, $content . PHP_EOL, FILE_APPEND | LOCK_EX);
 
         if ($written === false)
         {
-            self::reportInternalError(
-                'Impossible d’écrire dans le fichier de log : ' . $file
-            );
+            self::reportInternalError('Impossible d’écrire dans le fichier de log : ' . $file);
         }
     }
 
@@ -205,11 +195,7 @@ final class Logger
                 return null;
             }
 
-            return [
-                'method' => $request->method(),
-                'uri' => $request->uri(),
-                'ip' => $request->server('REMOTE_ADDR'),
-            ];
+            return ['method' => $request->method(), 'uri' => $request->uri(), 'ip' => $request->server('REMOTE_ADDR')];
         }
         catch (Throwable)
         {
@@ -299,13 +285,7 @@ final class Logger
         {
             $lastCleanup = (int) stream_get_contents($lock);
             if (time() - $lastCleanup < 3600) return;
-            $files = @glob(
-                self::directory()
-                . DIRECTORY_SEPARATOR
-                . self::FILE_PREFIX
-                . '*'
-                . self::FILE_EXTENSION
-            );
+            $files = @glob(self::directory() . DIRECTORY_SEPARATOR . self::FILE_PREFIX . '*' . self::FILE_EXTENSION);
 
             if ($files === false)
             {
@@ -330,9 +310,7 @@ final class Logger
 
                 if (! @unlink($file) && is_file($file))
                 {
-                    self::reportInternalError(
-                        'Impossible de supprimer le fichier expiré : ' . $file
-                    );
+                    self::reportInternalError('Impossible de supprimer le fichier expiré : ' . $file);
                 }
             }
             rewind($lock);

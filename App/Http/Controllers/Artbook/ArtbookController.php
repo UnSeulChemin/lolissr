@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Artbook;
 
-use App\Http\Controllers\Controller;
 use App\DTO\Artbook\Responses\ArtbookData;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Artbook\ArtbookCreateRequest;
 use App\Http\Requests\Artbook\ArtbookUpdateRequest;
 use App\Services\Artbook\ArtbookReadService;
@@ -23,7 +23,8 @@ final class ArtbookController extends Controller
         private readonly ArtbookReadService $artbookReadService,
         private readonly ArtbookWriteService $artbookWriteService,
         Request $request
-    ) {
+    )
+    {
         parent::__construct($request);
     }
 
@@ -42,9 +43,7 @@ final class ArtbookController extends Controller
 
         $this->title =
             'Manga | Artbooks'
-            . ($data->currentPage > 1
-                ? ' - Page ' . $data->currentPage
-                : '');
+            . ($data->currentPage > 1 ? ' - Page ' . $data->currentPage : '');
 
         $this->render(
             'pages/artbook/index',
@@ -53,11 +52,10 @@ final class ArtbookController extends Controller
                 'currentPage' => $data->currentPage,
                 'totalArtbooks' => $data->totalArtbooks,
                 'perPage' => $data->perPage,
-                'totalPages' => $data->totalPages,
+                'totalPages' => $data->totalPages
             ]
         );
     }
-
 
     public function show(string $slug, int $numero): never
     {
@@ -65,14 +63,8 @@ final class ArtbookController extends Controller
 
         $this->title = 'Artbook | ' . $artbook->artbook;
 
-        $this->render(
-            'pages/artbook/show',
-            [
-                'artbook' => $artbook,
-            ]
-        );
+        $this->render('pages/artbook/show', ['artbook' => $artbook]);
     }
-
 
     // =================================================
     // CRÉATION
@@ -82,40 +74,22 @@ final class ArtbookController extends Controller
     {
         $this->title = 'Manga | Ajouter un artbook';
 
-        $this->render(
-            'pages/artbook/create',
-            [
-                'form' => $this->formViewData(
-                    'manga/ajouter/artbook',
-                    'manga'
-                ),
-            ]
-        );
+        $this->render('pages/artbook/create', ['form' => $this->formViewData('manga/ajouter/artbook', 'manga')]);
     }
 
-
-    public function store(
-        ArtbookCreateRequest $request
-    ): never {
+    public function store(ArtbookCreateRequest $request): never
+    {
         $this->validateRequest($request);
 
-        $this->jsonResult(
-            $this->artbookWriteService->create(
-                $request->dto(),
-                $request->files()
-            )
-        );
+        $this->jsonResult($this->artbookWriteService->create($request->dto(), $request->files()));
     }
-
 
     // =================================================
     // MISE À JOUR
     // =================================================
 
-    public function edit(
-        string $slug,
-        int $numero
-    ): never {
+    public function edit(string $slug, int $numero): never
+    {
         $artbook = $this->resolveOrFail($slug, $numero);
 
         $this->title = 'Artbook | ' . $artbook->artbook;
@@ -125,83 +99,41 @@ final class ArtbookController extends Controller
             [
                 'artbook' => $artbook,
                 'form' => $this->formViewData(
-                    sprintf(
-                        '%s/%s/modifier/%d',
-                        self::ARTBOOKS_PATH,
-                        rawurlencode($artbook->slug),
-                        $artbook->numero
-                    ),
-                    $this->artbookUrl(
-                        $artbook->slug,
-                        $artbook->numero
-                    )
-                ),
+                    sprintf('%s/%s/modifier/%d', self::ARTBOOKS_PATH, rawurlencode($artbook->slug), $artbook->numero),
+                    $this->artbookUrl($artbook->slug, $artbook->numero)
+                )
             ]
         );
     }
 
-
-    public function update(
-        ArtbookUpdateRequest $request,
-        string $slug,
-        int $numero
-    ): never {
+    public function update(ArtbookUpdateRequest $request, string $slug, int $numero): never
+    {
         $artbook = $this->resolveOrFail($slug, $numero);
 
         $this->validateRequest($request);
 
-        $result = $this->artbookWriteService->update(
-            $artbook->slug,
-            $artbook->numero,
-            $request->dto()
-        );
+        $result = $this->artbookWriteService->update($artbook->slug, $artbook->numero, $request->dto());
 
         if (! $result->success)
         {
-            throw new BaseHttpException(
-                message: $result->message,
-                statusCode: $result->status,
-                data: $result->data
-            );
+            throw new BaseHttpException(message: $result->message, statusCode: $result->status, data: $result->data);
         }
 
-        $this->redirectWithSuccess(
-            $this->artbookUrl(
-                $artbook->slug,
-                $artbook->numero
-            ),
-            $result->message
-        );
+        $this->redirectWithSuccess($this->artbookUrl($artbook->slug, $artbook->numero), $result->message);
     }
-
 
     // =================================================
     // UTILITAIRES
     // =================================================
 
-    private function artbookUrl(
-        string $slug,
-        int $numero
-    ): string {
-        return sprintf(
-            '%s/%s/%d',
-            self::ARTBOOKS_PATH,
-            rawurlencode($slug),
-            $numero
-        );
+    private function artbookUrl(string $slug, int $numero): string
+    {
+        return sprintf('%s/%s/%d', self::ARTBOOKS_PATH, rawurlencode($slug), $numero);
     }
 
-
-    private function resolveOrFail(
-        string $slug,
-        int $numero
-    ): ArtbookData {
-        return $this->artbookReadService->one(
-            $slug,
-            $numero
-        )
-        ?? throw new NotFoundException(
-            'Artbook introuvable'
-        );
+    private function resolveOrFail(string $slug, int $numero): ArtbookData
+    {
+        return $this->artbookReadService->one($slug, $numero)
+        ?? throw new NotFoundException('Artbook introuvable');
     }
 }

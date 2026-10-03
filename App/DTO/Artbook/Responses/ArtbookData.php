@@ -33,7 +33,8 @@ final readonly class ArtbookData
         public ?string $commentaire,
         public bool $hasCommentaire,
 
-        public string $createdAt,
-    ) {
+        public string $createdAt
+    )
+    {
     }
 }

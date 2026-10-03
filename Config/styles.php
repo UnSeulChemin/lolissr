@@ -13,7 +13,7 @@ return [
         'pages/sql/index',
         'pages/profile/',
         'pages/manga/series/notes',
-        'pages/manga/series/unread',
+        'pages/manga/series/unread'
     ],
     'pages/sql.css' => ['pages/sql/'],
     // Le vocabulaire et la grammaire partagent les styles des boutons et de navigation des cartes.
@@ -28,7 +28,7 @@ return [
         'pages/artbook/show',
         'pages/figurine/collection/show',
         'pages/nendoroid/collection/show',
-        'pages/peluche/collection/show',
+        'pages/peluche/collection/show'
     ],
     'pages/manga/note-rating.css' => ['pages/manga/series/show'],
     'components/status-toggle.css' => [
@@ -36,6 +36,6 @@ return [
         'pages/artbook/show',
         'pages/figurine/collection/show',
         'pages/nendoroid/collection/show',
-        'pages/peluche/collection/show',
-    ],
+        'pages/peluche/collection/show'
+    ]
 ];

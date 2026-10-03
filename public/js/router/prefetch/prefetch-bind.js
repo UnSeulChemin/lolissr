@@ -2,37 +2,24 @@
 // PRÉCHARGEMENT ASSOCIATION
 // =================================================
 
-import {
-    config,
-} from '../../core/config.js';
+import { config } from '../../core/config.js';
 
-import {
-    shouldIgnoreLink,
-} from '../../core/navigation.js';
+import { shouldIgnoreLink } from '../../core/navigation.js';
 
-import {
-    prefetchPage,
-} from './prefetch-request.js';
+import { prefetchPage } from './prefetch-request.js';
 
 // =================================================
 // ASSOCIATION LIEN
 // =================================================
 
-function bindLink(
-    link,
-)
+function bindLink(link)
 {
     // --------------------------------------------------------------------------
     // VALIDE LIEN
     // --------------------------------------------------------------------------
 
-
-    if (
-        !(
-            link
-            instanceof HTMLAnchorElement
-        )
-    ) {
+    if (!( link instanceof HTMLAnchorElement ))
+    {
 
         return;
     }
@@ -41,12 +28,8 @@ function bindLink(
     // IGNORER LIEN
     // --------------------------------------------------------------------------
 
-
-    if (
-        shouldIgnoreLink(
-            link,
-        )
-    ) {
+    if (shouldIgnoreLink( link ))
+    {
 
         return;
     }
@@ -55,15 +38,8 @@ function bindLink(
     // SENSIBLES LIENS
     // --------------------------------------------------------------------------
 
-
-    if (
-        link.hasAttribute(
-            'data-confirm-logout',
-        )
-        || link.pathname.endsWith(
-            '/deconnexion',
-        )
-    ) {
+    if (link.hasAttribute( 'data-confirm-logout' ) || link.pathname.endsWith( '/deconnexion' ))
+    {
 
         return;
     }
@@ -72,11 +48,8 @@ function bindLink(
     // DÉJÀ ASSOCIÉ
     // --------------------------------------------------------------------------
 
-
-    if (
-        link.dataset.prefetchBound
-        === 'true'
-    ) {
+    if (link.dataset.prefetchBound === 'true')
+    {
 
         return;
     }
@@ -85,60 +58,46 @@ function bindLink(
     // MARQUAGE COMME ASSOCIÉ
     // --------------------------------------------------------------------------
 
+    link.dataset.prefetchBound = 'true';
 
-    link.dataset.prefetchBound =
-        'true';
-
-    let hoverTimer =
-        null;
+    let hoverTimer = null;
 
     // --------------------------------------------------------------------------
     // SURVOL PRÉCHARGEMENT
     // --------------------------------------------------------------------------
 
-
     link.addEventListener(
         'pointerenter',
         () =>
         {
-            clearTimeout(
-                hoverTimer,
-            );
+            clearTimeout(hoverTimer);
 
-            hoverTimer =
-                window.setTimeout(
+            hoverTimer = window.setTimeout(
                     () =>
                     {
-                        void prefetchPage(
-                            link.href,
-                        );
+                        void prefetchPage(link.href);
                     },
-                    config.prefetch.hoverDelay,
+                    config.prefetch.hoverDelay
                 );
         },
         {
-            passive:
-                true,
-        },
+            passive: true
+        }
     );
 
     // --------------------------------------------------------------------------
     // ANNULATION PRÉCHARGEMENT
     // --------------------------------------------------------------------------
 
-
     link.addEventListener(
         'pointerleave',
         () =>
         {
-            clearTimeout(
-                hoverTimer,
-            );
+            clearTimeout(hoverTimer);
         },
         {
-            passive:
-                true,
-        },
+            passive: true
+        }
     );
 }
 
@@ -148,18 +107,10 @@ function bindLink(
 
 export function bindPrefetch()
 {
-    const links =
-        document.querySelectorAll(
-            'a[data-prefetch]',
-        );
+    const links = document.querySelectorAll('a[data-prefetch]');
 
-    for (
-        const link
-        of links
-    )
+    for (const link of links)
     {
-        bindLink(
-            link,
-        );
+        bindLink(link);
     }
 }

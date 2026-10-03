@@ -2,41 +2,31 @@
 // NETTOYAGE DU ROUTEUR
 // =================================================
 
-import {
-    debugError,
-} from '../core/debug/debug.js';
+import { debugError } from '../core/debug/debug.js';
 
 // =================================================
 // ÉTAT
 // =================================================
 
-const cleanupCallbacks =
-    new Set();
+const cleanupCallbacks = new Set();
 
 // =================================================
 // ENREGISTREMENT
 // =================================================
 
-export function registerCleanup(
-    callback,
-)
+export function registerCleanup(callback)
 {
-    if (
-        typeof callback
-        !== 'function'
-    ) {
-        return () => {};
+    if (typeof callback !== 'function')
+    {
+        return () =>
+        {};
     }
 
-    cleanupCallbacks.add(
-        callback,
-    );
+    cleanupCallbacks.add(callback);
 
     return () =>
     {
-        cleanupCallbacks.delete(
-            callback,
-        );
+        cleanupCallbacks.delete(callback);
     };
 }
 
@@ -46,21 +36,17 @@ export function registerCleanup(
 
 export function runCleanup()
 {
-    for (
-        const callback
-        of cleanupCallbacks
-    )
+    for (const callback of cleanupCallbacks)
     {
-        try {
+        try
+        {
 
             callback();
 
-        } catch (error) {
+        } catch (error)
+        {
 
-            debugError(
-                'ROUTER-CLEANUP',
-                error,
-            );
+            debugError('ROUTER-CLEANUP', error);
         }
     }
 

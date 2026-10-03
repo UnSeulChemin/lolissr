@@ -2,19 +2,14 @@
 // ÉTAT DU ROUTEUR
 // =================================================
 
-export const navigationState =
-{
-    locked:
-        false,
+export const navigationState = {
+    locked: false,
 
-    navigationId:
-        0,
+    navigationId: 0,
 
-    controller:
-        null,
+    controller: null,
 
-    target:
-        null,
+    target: null
 };
 
 // =================================================
@@ -23,8 +18,7 @@ export const navigationState =
 
 export function lockRouter()
 {
-    navigationState.locked =
-        true;
+    navigationState.locked = true;
 }
 
 // =================================================
@@ -33,27 +27,21 @@ export function lockRouter()
 
 export function unlockRouter()
 {
-    navigationState.locked =
-        false;
+    navigationState.locked = false;
 }
 
 // =================================================
 // CONTRÔLEUR
 // =================================================
 
-export function setController(
-    controller,
-    target,
-)
+export function setController(controller, target)
 {
-    navigationState.controller =
-        controller;
+    navigationState.controller = controller;
     navigationState.target = target;
 }
 
 export function clearController()
 {
-    navigationState.controller =
-        null;
+    navigationState.controller = null;
     navigationState.target = null;
 }

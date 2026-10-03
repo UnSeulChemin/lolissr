@@ -53,12 +53,7 @@ final class Response
         }
         catch (JsonException $exception)
         {
-            Logger::exception(
-                $exception,
-                [
-                    'type' => 'json_encode'
-                ]
-            );
+            Logger::exception($exception, ['type' => 'json_encode']);
 
             self::setStatusCode(500);
 

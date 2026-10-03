@@ -6,11 +6,7 @@ declare(strict_types=1);
 // PROFIL
 // =========================================
 
-$tests[] = [
-    'category' => 'Auth',
-    'label' => 'Profil accessible',
-    'path' => '/profil'
-];
+$tests[] = ['category' => 'Auth', 'label' => 'Profil accessible', 'path' => '/profil'];
 
 $tests[] = [
     'category' => 'Auth',
@@ -35,7 +31,7 @@ foreach (['titles', 'avatars', 'banners', 'frames'] as $catalog)
         'path' => '/profil/ajax/' . $catalog,
         'json' => true,
         'header_contains' => ['application/json'],
-        'headers' => ['Accept: application/json'],
+        'headers' => ['Accept: application/json']
     ];
 }
 

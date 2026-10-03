@@ -2,9 +2,7 @@
 // DÉBOGAGE
 // =================================================
 
-import {
-    isDebugEnabled,
-} from './debug-storage.js';
+import { isDebugEnabled } from './debug-storage.js';
 
 // =================================================
 // DÉMARRAGE
@@ -17,9 +15,7 @@ export function start(name)
         return;
     }
 
-    performance.mark(
-        `${name}-start`,
-    );
+    performance.mark(`${name}-start`);
 }
 
 // =================================================
@@ -33,15 +29,9 @@ export function end(name)
         return;
     }
 
-    performance.mark(
-        `${name}-end`,
-    );
+    performance.mark(`${name}-end`);
 
-    performance.measure(
-        name,
-        `${name}-start`,
-        `${name}-end`,
-    );
+    performance.measure(name, `${name}-start`, `${name}-end`);
 }
 
 // =================================================
@@ -55,24 +45,19 @@ export function print()
         return;
     }
 
-    const measures =
-        performance.getEntriesByType(
-            'measure',
-        );
+    const measures = performance.getEntriesByType('measure');
 
     console.table(
         measures.map(
             ({
                 name,
-                duration,
+                duration
             }) => ({
-                Étape:
-                    name,
+                Étape: name,
 
-                Temps:
-                    `${duration.toFixed(2)} ms`,
-            }),
-        ),
+                Temps: `${duration.toFixed(2)} ms`
+            })
+        )
     );
 }
 
@@ -102,9 +87,7 @@ export function finish()
         return;
     }
 
-    end(
-        'total',
-    );
+    end('total');
 
     print();
 

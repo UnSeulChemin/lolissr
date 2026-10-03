@@ -15,7 +15,8 @@ final readonly class MangaListData
         public int $currentPage,
         public int $totalSeries,
         public int $perPage,
-        public int $totalPages,
-    ) {
+        public int $totalPages
+    )
+    {
     }
 }

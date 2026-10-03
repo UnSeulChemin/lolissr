@@ -4,21 +4,13 @@ import { createFlashcardDeck } from './flashcard-deck.js';
 // FLASHCARDS VOCABULAIRE
 // =================================================
 
-import {
-    post,
-} from '../../core/http.js';
+import { post } from '../../core/http.js';
 
-import {
-    showToast,
-} from '../../core/toast.js';
+import { showToast } from '../../core/toast.js';
 
-import {
-    updateHeaderUser,
-} from '../../profile/header-user.js';
+import { updateHeaderUser } from '../../profile/header-user.js';
 
-import {
-    invalidateVocabularyPages,
-} from '../chinois-cache.js';
+import { invalidateVocabularyPages } from '../chinois-cache.js';
 
 // =================================================
 // INITIALISATION
@@ -136,7 +128,8 @@ export function initFlashcardsVocabulairePage()
         {
             await deck.move(direction);
             if (! container.isConnected) return;
-            if (! deck.total) { location.reload(); return; }
+            if (! deck.total)
+            { location.reload(); return; }
             renderCard();
         }
         catch
@@ -149,8 +142,10 @@ export function initFlashcardsVocabulairePage()
         }
     }
 
-    previousButton?.addEventListener('click', () => { void navigate(-1); });
-    nextButton?.addEventListener('click', () => { void navigate(1); });
+    previousButton?.addEventListener('click', () =>
+    { void navigate(-1); });
+    nextButton?.addEventListener('click', () =>
+    { void navigate(1); });
 
     // =================================================
     // VALIDATION
@@ -173,7 +168,7 @@ export function initFlashcardsVocabulairePage()
             const data = await post(
                 `${baseUri}chinois/ajax/toggle-vocabulaire-maitrise`,
                 {
-                    id: card.id,
+                    id: card.id
                 }
             );
 
@@ -207,7 +202,8 @@ export function initFlashcardsVocabulairePage()
         {
             if (container.isConnected)
             {
-                if (saved) { location.reload(); return; }
+                if (saved)
+                { location.reload(); return; }
                 showToast('Erreur réseau', 'error');
             }
         }

@@ -6,14 +6,10 @@
 {
     cursor: pointer;
 
-    transition:
-        color .2s ease,
-        text-shadow .2s ease;
+    transition: color .2s ease, text-shadow .2s ease;
 }
 
 [data-copy]:hover
 {
-    text-shadow:
-        0 0 8px
-        rgba(123, 44, 255, .35);
+    text-shadow: 0 0 8px rgba(123, 44, 255, .35);
 }

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Framework\Http;
 
 use Framework\Config\ApplicationConfig;
+use Framework\Http\Exceptions\BaseHttpException;
 
 use JsonException;
-use Framework\Http\Exceptions\BaseHttpException;
 
 final class Request
 {
@@ -42,12 +42,8 @@ final class Request
      * @param array<string, mixed> $files
      * @param array<string, mixed> $server
      */
-    public function __construct(
-        array $get = [],
-        array $post = [],
-        array $files = [],
-        array $server = []
-    ) {
+    public function __construct(array $get = [], array $post = [], array $files = [], array $server = [])
+    {
         $this->get = $get;
         $this->post = $post;
         $this->files = $files;
@@ -157,14 +153,8 @@ final class Request
 
         $baseUri = rtrim(ApplicationConfig::baseUri(), '/');
 
-        if (
-            $baseUri !== ''
-            && $baseUri !== '/'
-            && (
-                $path === $baseUri
-                || str_starts_with($path, $baseUri . '/')
-            )
-        ) {
+        if ($baseUri !== '' && $baseUri !== '/' && ($path === $baseUri || str_starts_with($path, $baseUri . '/')))
+        {
             $path = substr($path, strlen($baseUri));
         }
 

@@ -49,11 +49,7 @@
     flex-shrink: 0;
     position: relative;
     height: clamp(140px, 18vw, 220px);
-    border-radius:
-        var(--radius-card-lg)
-        var(--radius-card-lg)
-        0
-        0;
+    border-radius: var(--radius-card-lg) var(--radius-card-lg) 0 0;
 }
 
 .profile-customization-banner img
@@ -87,10 +83,7 @@
         110px
     );
 
-    margin:
-        calc(var(--profile-avatar-size, 110px) * -1)
-        auto
-        .5rem;
+    margin: calc(var(--profile-avatar-size, 110px) * -1) auto .5rem;
 
     border-radius: 999px;
 
@@ -109,10 +102,7 @@
 
 .profile-customization-title
 {
-    margin:
-        .5rem
-        0
-        .5rem;
+    margin: .5rem 0 .5rem;
 
     text-align: center;
 

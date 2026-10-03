@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\DTO\Common\Responses\ViewData;
 use App\Services\Profile\ProfileImageCatalog;
+
 use Framework\Support\Str;
 
 /** @var ViewData $view */
@@ -33,7 +34,8 @@ foreach ($achievements as $item)
         <h2>Sommaire</h2>
         <div class="profile-summary-links">
         <?php foreach ($filters as $key => $icon): ?>
-            <?php $label = match ($key) { 'Vocabulaire' => 'Vocabulaires', 'Grammaire' => 'Grammaires', default => $key }; ?>
+            <?php $label = match ($key)
+            { 'Vocabulaire' => 'Vocabulaires', 'Grammaire' => 'Grammaires', default => $key }; ?>
             <a class="profile-summary-link"
                href="<?= e($view->baseUri . 'profil/succes' . ($key === 'tout' ? '' : '/' . Str::asciiSlug($key))) ?>"
                aria-label="<?= e($key === 'tout' ? 'Tous les succès' : $label) ?>"
@@ -48,11 +50,13 @@ foreach ($achievements as $item)
 
     <div class="success-content">
     <?php foreach ($achievements as $achievement): ?>
-        <?php if ($section !== 'tout' && $section !== $achievement['category']) { continue; } ?>
+        <?php if ($section !== 'tout' && $section !== $achievement['category'])
+        { continue; } ?>
         <?php if ($category !== $achievement['category']): ?>
             <?php if ($category !== ''): ?></div></section><?php endif; ?>
             <?php $category = $achievement['category']; ?>
-            <section class="success-category" aria-label="<?= e(match ($category) { 'Vocabulaire' => 'Vocabulaires', 'Grammaire' => 'Grammaires', default => $category }) ?>">
+            <section class="success-category" aria-label="<?= e(match ($category)
+            { 'Vocabulaire' => 'Vocabulaires', 'Grammaire' => 'Grammaires', default => $category }) ?>">
                 <div class="success-grid">
         <?php endif; ?>
         <article class="card success-item <?= $achievement['unlocked'] ? 'is-unlocked' : 'is-locked' ?>">

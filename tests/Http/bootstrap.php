@@ -25,7 +25,5 @@ Config::clear();
 
 if (Env::get('APP_ENV') !== 'testing')
 {
-    throw new RuntimeException(
-        'HTTP tests must run in testing environment.'
-    );
+    throw new RuntimeException('HTTP tests must run in testing environment.');
 }

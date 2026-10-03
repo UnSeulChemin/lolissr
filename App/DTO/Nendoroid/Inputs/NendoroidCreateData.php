@@ -17,7 +17,8 @@ final readonly class NendoroidCreateData
         public ?string $release_date,
         public string $slug,
         public ?string $commentaire
-    ) {
+    )
+    {
     }
 
     /**
@@ -32,11 +33,9 @@ final readonly class NendoroidCreateData
             origin: trim((string) ($data['origin'] ?? '')),
             numero: max(1, (int) ($data['numero'] ?? 1)),
             company: trim((string) ($data['company'] ?? '')),
-            release_date: DateNormalizer::normalize(
-                Str::nullableTrim($data['release_date'] ?? null),
-            ),
+            release_date: DateNormalizer::normalize(Str::nullableTrim($data['release_date'] ?? null)),
             slug: Str::slug((string) ($data['slug'] ?? $waifu)),
-            commentaire: Str::nullableTrim($data['commentaire'] ?? null),
+            commentaire: Str::nullableTrim($data['commentaire'] ?? null)
         );
     }
 }

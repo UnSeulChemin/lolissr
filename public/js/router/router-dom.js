@@ -2,30 +2,21 @@
 // ROUTEUR DOM
 // =================================================
 
-import {
-    debug,
-    debugError,
-} from '../core/debug/debug.js';
+import { debug, debugError } from '../core/debug/debug.js';
 
-import {
-    FrontendError,
-} from '../core/errors/FrontendError.js';
+import { FrontendError } from '../core/errors/FrontendError.js';
 
 // =================================================
 // CONFIGURATION
 // =================================================
 
-const CONTENT_SELECTOR =
-    '.app-content';
+const CONTENT_SELECTOR = '.app-content';
 
 // =================================================
 // ANALYSE HTML
 // =================================================
 
-function parseHtml(
-    html,
-    page,
-)
+function parseHtml(html, page)
 {
     if (page?.format === 'fragment')
     {
@@ -41,32 +32,25 @@ function parseHtml(
         documentHtml.body.append(nextContent);
         return {documentHtml, nextContent};
     }
-    const documentHtml =
-        new DOMParser()
-            .parseFromString(
-                html,
-                'text/html',
-            );
+    const documentHtml = new DOMParser()
+            .parseFromString(html, 'text/html');
 
-    const nextContent =
-        documentHtml.querySelector(
-            CONTENT_SELECTOR,
-        );
+    const nextContent = documentHtml.querySelector(CONTENT_SELECTOR);
 
-    if (!nextContent) {
+    if (!nextContent)
+    {
 
         throw new FrontendError(
             'Contenu application introuvable',
             {
-                code:
-                    'MISSING_APP_CONTENT',
-            },
+                code: 'MISSING_APP_CONTENT'
+            }
         );
     }
 
     return {
         documentHtml,
-        nextContent,
+        nextContent
     };
 }
 
@@ -74,34 +58,23 @@ function parseHtml(
 // MISE À JOUR DOCUMENT
 // =================================================
 
-function updateDocumentMeta(
-    documentHtml,
-)
+function updateDocumentMeta(documentHtml)
 {
     // --------------------------------------------------------------------------
     // TITRE
     // --------------------------------------------------------------------------
 
+    const title = documentHtml.querySelector('title');
 
-    const title =
-        documentHtml.querySelector(
-            'title',
-        );
+    if (title?.textContent)
+    {
 
-    if (
-        title?.textContent
-    ) {
+        const nextTitle = title.textContent.trim();
 
-        const nextTitle =
-            title.textContent.trim();
+        if (nextTitle !== document.title)
+        {
 
-        if (
-            nextTitle
-            !== document.title
-        ) {
-
-            document.title =
-                nextTitle;
+            document.title = nextTitle;
         }
     }
 
@@ -109,18 +82,12 @@ function updateDocumentMeta(
     // LANGUE
     // --------------------------------------------------------------------------
 
+    const nextLang = documentHtml.documentElement.lang;
 
-    const nextLang =
-        documentHtml.documentElement.lang;
+    if (nextLang && nextLang !== document.documentElement.lang)
+    {
 
-    if (
-        nextLang
-        && nextLang
-        !== document.documentElement.lang
-    ) {
-
-        document.documentElement.lang =
-            nextLang;
+        document.documentElement.lang = nextLang;
     }
 }
 
@@ -128,14 +95,12 @@ function updateDocumentMeta(
 // SYNCHRONISATION CORPS ATTRIBUTS
 // =================================================
 
-function syncBodyAttributes(
-    documentHtml,
-)
+function syncBodyAttributes(documentHtml)
 {
-    const nextBody =
-        documentHtml.body;
+    const nextBody = documentHtml.body;
 
-    if (!nextBody) {
+    if (!nextBody)
+    {
 
         return;
     }
@@ -144,87 +109,58 @@ function syncBodyAttributes(
     // CONSERVATION INTERNE INDICATEURS
     // --------------------------------------------------------------------------
 
-
-    const preserved =
-    {
-        appInitialized:
-            document.body.dataset
-                .appInitialized,
+    const preserved = {
+        appInitialized: document.body.dataset
+                .appInitialized
     };
 
     // --------------------------------------------------------------------------
     // SUPPRESSION ANCIENS ATTRIBUTS DE DONNÉES
     // --------------------------------------------------------------------------
 
-
-    for (
-        const attribute
-        of document.body.getAttributeNames()
-    )
+    for (const attribute of document.body.getAttributeNames())
     {
-        if (
-            !attribute.startsWith(
-                'data-',
-            )
-        ) {
+        if (!attribute.startsWith( 'data-' ))
+        {
 
             continue;
         }
 
-        document.body.removeAttribute(
-            attribute,
-        );
+        document.body.removeAttribute(attribute);
     }
 
     // --------------------------------------------------------------------------
     // APPLICATION NOUVEAUX ATTRIBUTS DE DONNÉES
     // --------------------------------------------------------------------------
 
-
-    for (
-        const attribute
-        of nextBody.getAttributeNames()
-    )
+    for (const attribute of nextBody.getAttributeNames())
     {
-        if (
-            !attribute.startsWith(
-                'data-',
-            )
-        ) {
+        if (!attribute.startsWith( 'data-' ))
+        {
 
             continue;
         }
 
-        const value =
-            nextBody.getAttribute(
-                attribute,
-            );
+        const value = nextBody.getAttribute(attribute);
 
-        if (
-            value === null
-        ) {
+        if (value === null)
+        {
 
             continue;
         }
 
-        document.body.setAttribute(
-            attribute,
-            value,
-        );
+        document.body.setAttribute(attribute, value);
     }
 
     // --------------------------------------------------------------------------
     // RESTAURATION INTERNE INDICATEURS
     // --------------------------------------------------------------------------
 
-
-    if (
-        preserved.appInitialized
-    ) {
+    if (preserved.appInitialized)
+    {
 
         document.body.dataset
-            .appInitialized =
-                preserved.appInitialized;
+            .appInitialized = preserved.appInitialized;
     }
 }
 
@@ -232,63 +168,43 @@ function syncBodyAttributes(
 // REMPLACEMENT DOM CONTENU
 // =================================================
 
-function replaceDomContent(
-    currentContent,
-    nextContent,
-)
+function replaceDomContent(currentContent, nextContent)
 {
-    currentContent.replaceChildren(
-        ...nextContent.cloneNode(
-            true,
-        ).childNodes,
-    );
+    currentContent.replaceChildren(...nextContent.cloneNode( true ).childNodes);
 }
 
 // =================================================
 // REMPLACEMENT CONTENU
 // =================================================
 
-export function replaceContent(
-    html,
-    page = {},
-)
+export function replaceContent(html, page = {})
 {
-    try {
+    try
+    {
 
         // ------------------------------------------------------------------
         // ANALYSE
         // ------------------------------------------------------------------
 
-
         const {
             documentHtml,
-            nextContent,
-        } =
-            parseHtml(
-                html,
-                page,
-            );
+            nextContent
+        } = parseHtml(html, page);
 
         // ------------------------------------------------------------------
         // ACTUELLE CONTENU
         // ------------------------------------------------------------------
 
+        const currentContent = document.querySelector(CONTENT_SELECTOR);
 
-        const currentContent =
-            document.querySelector(
-                CONTENT_SELECTOR,
-            );
-
-        if (
-            !currentContent
-        ) {
+        if (!currentContent)
+        {
 
             throw new FrontendError(
                 'Contenu actuel introuvable',
                 {
-                    code:
-                        'MISSING_CURRENT_CONTENT',
-                },
+                    code: 'MISSING_CURRENT_CONTENT'
+                }
             );
         }
 
@@ -296,36 +212,22 @@ export function replaceContent(
         // DOCUMENT
         // ------------------------------------------------------------------
 
+        updateDocumentMeta(documentHtml);
 
-        updateDocumentMeta(
-            documentHtml,
-        );
-
-        syncBodyAttributes(
-            documentHtml,
-        );
+        syncBodyAttributes(documentHtml);
 
         // ------------------------------------------------------------------
         // REMPLACEMENT DU DOM
         // ------------------------------------------------------------------
 
+        replaceDomContent(currentContent, nextContent);
 
-        replaceDomContent(
-            currentContent,
-            nextContent,
-        );
+        debug('ROUTER_DOM', 'content-replaced');
 
-        debug(
-            'ROUTER_DOM',
-            'content-replaced',
-        );
+    } catch (error)
+    {
 
-    } catch (error) {
-
-        debugError(
-            'ROUTER_DOM',
-            error,
-        );
+        debugError('ROUTER_DOM', error);
 
         throw error;
     }

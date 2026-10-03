@@ -9,9 +9,7 @@
 {
     min-height: 350px;
 
-    font-family:
-        Consolas,
-        monospace;
+    font-family: Consolas, monospace;
 }
 
 .sql-result-card,
@@ -43,17 +41,9 @@
 
     border-radius: var(--radius-input);
 
-    background:
-        rgba(
-            0,
-            0,
-            0,
-            0.03
-        );
+    background: rgba( 0, 0, 0, 0.03 );
 
-    font-family:
-        Consolas,
-        monospace;
+    font-family: Consolas, monospace;
 
     white-space: pre-wrap;
     word-break: break-word;
@@ -80,13 +70,7 @@
 
     vertical-align: top;
 
-    border-bottom:
-        1px solid rgba(
-            0,
-            0,
-            0,
-            0.08
-        );
+    border-bottom: 1px solid rgba( 0, 0, 0, 0.08 );
 }
 
 .sql-table th
@@ -96,13 +80,7 @@
 
 .sql-table tbody tr:nth-child(even)
 {
-    background:
-        rgba(
-            0,
-            0,
-            0,
-            0.025
-        );
+    background: rgba( 0, 0, 0, 0.025 );
 }
 
 .sql-error

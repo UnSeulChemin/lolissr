@@ -21,12 +21,8 @@ final readonly class ThumbnailManager
     /**
      * @param array<string, mixed> $files
      */
-    public function upload(
-        string $collection,
-        string $name,
-        int $numero,
-        array $files
-    ): ServiceResult|UploadThumbnailData {
+    public function upload(string $collection, string $name, int $numero, array $files): ServiceResult|UploadThumbnailData
+    {
         $result = $this->uploadService->uploadThumbnail(
             $name,
             $numero,
@@ -36,21 +32,14 @@ final readonly class ThumbnailManager
 
         if (! $result->success)
         {
-            return ServiceResult::error(
-                message: $result->message,
-                status: $result->status,
-                data: $result->data
-            );
+            return ServiceResult::error(message: $result->message, status: $result->status, data: $result->data);
         }
 
         $upload = $result->data['upload'] ?? null;
 
         if (! $upload instanceof UploadThumbnailData)
         {
-            return ServiceResult::error(
-                message: 'Données d’upload invalides',
-                status: 500
-            );
+            return ServiceResult::error(message: 'Données d’upload invalides', status: 500);
         }
 
         return $upload;
@@ -69,11 +58,8 @@ final readonly class ThumbnailManager
     // SUPPRESSION
     // =================================================
 
-    public function remove(
-        ?string $thumbnail,
-        ?string $extension,
-        string $collection
-    ): bool {
+    public function remove(?string $thumbnail, ?string $extension, string $collection): bool
+    {
         $thumbnail = $thumbnail !== null ? trim($thumbnail) : '';
         $extension = $extension !== null ? trim($extension) : '';
 

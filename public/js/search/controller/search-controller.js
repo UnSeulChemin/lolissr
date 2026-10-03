@@ -1,60 +1,39 @@
-import {navigateTo} from '../../router/router-navigation.js';
+import { navigateTo } from '../../router/router-navigation.js';
 let searchVersion = 0;
 let lastQuery = null;
 // =================================================
 // CONTRÔLEUR DE RECHERCHE
 // =================================================
 
-import {
-    $,
-    $$,
-} from '../../core/dom.js';
+import { $, $$ } from '../../core/dom.js';
 
-import {
-    fetchSearchResults,
-} from '../api/search-api.js';
+import { fetchSearchResults } from '../api/search-api.js';
 
-import {
-    findSearchShortcuts,
-} from '../shortcuts/search-shortcuts.js';
+import { findSearchShortcuts } from '../shortcuts/search-shortcuts.js';
 
-import {
-    normalizeSearchQuery,
-} from '../utils/search-utils.js';
+import { normalizeSearchQuery } from '../utils/search-utils.js';
 
-import {
-    openSearchDropdown,
-    closeSearchDropdown,
-    clearSearchResults,
-} from '../ui/search-dropdown.js';
+import { openSearchDropdown, closeSearchDropdown, clearSearchResults } from '../ui/search-dropdown.js';
 
-import {
-    renderResults,
-} from './search-renderer.js';
+import { renderResults } from './search-renderer.js';
 
-import {
-    updateActiveResult,
-} from './search-keyboard.js';
+import { updateActiveResult } from './search-keyboard.js';
 
 // =================================================
 // CONFIGURATION
 // =================================================
 
-const SEARCH_DELAY =
-    200;
+const SEARCH_DELAY = 200;
 
 // =================================================
 // ÉTAT
 // =================================================
 
-let debounceTimer =
-    null;
+let debounceTimer = null;
 
-let abortController =
-    null;
+let abortController = null;
 
-let activeIndex =
-    -1;
+let activeIndex = -1;
 
 // =================================================
 // INITIALISATION
@@ -62,36 +41,25 @@ let activeIndex =
 
 export function initSearchController()
 {
-    const search =
-        $('.js-header-search');
+    const search = $('.js-header-search');
 
-    const searchInput =
-        $('#header-search-input');
+    const searchInput = $('#header-search-input');
 
-    const searchResults =
-        $('#header-search-results');
+    const searchResults = $('#header-search-results');
 
-    const searchDropdown =
-        $('.js-header-search-dropdown');
+    const searchDropdown = $('.js-header-search-dropdown');
 
-    if (
-        !search ||
-        !searchInput ||
-        !searchResults ||
-        !searchDropdown
-    ) {
+    if (!search || !searchInput || !searchResults || !searchDropdown)
+    {
         return;
     }
 
-    if (
-        search.dataset.initialized ===
-        'true'
-    ) {
+    if (search.dataset.initialized === 'true')
+    {
         return;
     }
 
-    search.dataset.initialized =
-        'true';
+    search.dataset.initialized = 'true';
 
     searchInput.addEventListener(
         'input',
@@ -100,78 +68,47 @@ export function initSearchController()
             searchVersion++;
             abortController?.abort();
             lastQuery = null;
-            clearTimeout(
-                debounceTimer,
-            );
+            clearTimeout(debounceTimer);
 
-            debounceTimer =
-                setTimeout(
+            debounceTimer = setTimeout(
                     () =>
                     {
-                        void handleSearch(
-                            search,
-                            searchInput,
-                            searchResults,
-                            searchDropdown,
-                        );
+                        void handleSearch(search, searchInput, searchResults, searchDropdown);
                     },
-                    SEARCH_DELAY,
+                    SEARCH_DELAY
                 );
-        },
+        }
     );
 
     search.addEventListener(
         'submit',
-        (
-            event,
-        ) =>
+        (event) =>
         {
             event.preventDefault();
 
             clearTimeout(debounceTimer);
 
-            void handleSearch(
-                search,
-                searchInput,
-                searchResults,
-                searchDropdown,
-            );
-        },
+            void handleSearch(search, searchInput, searchResults, searchDropdown);
+        }
     );
 
     searchInput.addEventListener(
         'keydown',
-        (
-            event,
-        ) =>
+        (event) =>
         {
-            handleKeyboardNavigation(
-                event,
-                searchInput,
-                searchResults,
-                searchDropdown,
-            );
-        },
+            handleKeyboardNavigation(event, searchInput, searchResults, searchDropdown);
+        }
     );
 
     document.addEventListener(
         'click',
-        (
-            event,
-        ) =>
+        (event) =>
         {
-            if (
-                !event.target.closest(
-                    '.js-header-search',
-                )
-            ) {
-                resetSearch(
-                    searchInput,
-                    searchResults,
-                    searchDropdown,
-                );
+            if (!event.target.closest( '.js-header-search' ))
+            {
+                resetSearch(searchInput, searchResults, searchDropdown);
             }
-        },
+        }
     );
 }
 
@@ -179,29 +116,15 @@ export function initSearchController()
 // TRAITEMENT RECHERCHE
 // =================================================
 
-async function handleSearch(
-    search,
-    searchInput,
-    searchResults,
-    searchDropdown,
-)
+async function handleSearch(search, searchInput, searchResults, searchDropdown)
 {
-    const rawValue =
-        searchInput.value;
+    const rawValue = searchInput.value;
 
-    const query =
-        normalizeSearchQuery(
-            rawValue,
-        );
+    const query = normalizeSearchQuery(rawValue);
 
-    if (
-        query === ''
-    ) {
-        resetSearch(
-            searchInput,
-            searchResults,
-            searchDropdown,
-        );
+    if (query === '')
+    {
+        resetSearch(searchInput, searchResults, searchDropdown);
 
         return;
     }
@@ -210,23 +133,18 @@ async function handleSearch(
     abortController?.abort();
     lastQuery = query;
     const version = ++searchVersion;
-    abortController =
-        new AbortController();
+    abortController = new AbortController();
 
-    activeIndex =
-        -1;
+    activeIndex = -1;
 
-    try {
+    try
+    {
 
-        const basePath =
-            search.dataset.basePath
+        const basePath = search.dataset.basePath
             ?? '/';
 
         const {mangas = [], artbooks = [], chinois = [], figurines = [], nendoroids = [], peluches = []} =
-            await fetchSearchResults(
-                `${basePath}recherche?q=${encodeURIComponent(query)}`,
-                abortController.signal,
-            );
+            await fetchSearchResults(`${basePath}recherche?q=${encodeURIComponent(query)}`, abortController.signal);
         const shortcuts = findSearchShortcuts(query);
         if (version !== searchVersion || searchInput.value !== rawValue) return;
 
@@ -245,16 +163,15 @@ async function handleSearch(
             searchDropdown,
             setupResultItem,
             openDropdown,
-            closeDropdown,
+            closeDropdown
         });
 
-    } catch (error) {
+    } catch (error)
+    {
         if (version === searchVersion) lastQuery = null;
 
-        if (
-            error?.name ===
-            'AbortError'
-        ) {
+        if (error?.name === 'AbortError')
+        {
             return;
         }
     }
@@ -264,41 +181,26 @@ async function handleSearch(
 // PRÉPARATION ÉLÉMENT
 // =================================================
 
-function setupResultItem(
-    item,
-    index,
-    searchInput,
-    searchResults,
-    searchDropdown,
-)
+function setupResultItem(item, index, searchInput, searchResults, searchDropdown)
 {
-    item.dataset.index =
-        index;
+    item.dataset.index = index;
 
     item.addEventListener(
         'mouseenter',
         () =>
         {
-            activeIndex =
-                index;
+            activeIndex = index;
 
-            updateActiveResult(
-                searchResults,
-                activeIndex,
-            );
-        },
+            updateActiveResult(searchResults, activeIndex);
+        }
     );
 
     item.addEventListener(
         'click',
         () =>
         {
-            resetSearch(
-                searchInput,
-                searchResults,
-                searchDropdown,
-            );
-        },
+            resetSearch(searchInput, searchResults, searchDropdown);
+        }
     );
 }
 
@@ -306,27 +208,15 @@ function setupResultItem(
 // NAVIGATION AU CLAVIER
 // =================================================
 
-function handleKeyboardNavigation(
-    event,
-    searchInput,
-    searchResults,
-    searchDropdown,
-)
+function handleKeyboardNavigation(event, searchInput, searchResults, searchDropdown)
 {
-    const resultItems =
-        $$(
-            '.search-result-item',
-            searchResults,
-        );
+    const resultItems = $$('.search-result-item', searchResults);
 
-    if (
-        event.key ===
-        'ArrowDown'
-    ) {
+    if (event.key === 'ArrowDown')
+    {
 
-        if (
-            !resultItems.length
-        ) {
+        if (!resultItems.length)
+        {
             return;
         }
 
@@ -334,29 +224,21 @@ function handleKeyboardNavigation(
 
         activeIndex++;
 
-        if (
-            activeIndex >=
-            resultItems.length
-        ) {
+        if (activeIndex >= resultItems.length)
+        {
             activeIndex = 0;
         }
 
-        updateActiveResult(
-            searchResults,
-            activeIndex,
-        );
+        updateActiveResult(searchResults, activeIndex);
 
         return;
     }
 
-    if (
-        event.key ===
-        'ArrowUp'
-    ) {
+    if (event.key === 'ArrowUp')
+    {
 
-        if (
-            !resultItems.length
-        ) {
+        if (!resultItems.length)
+        {
             return;
         }
 
@@ -364,56 +246,35 @@ function handleKeyboardNavigation(
 
         activeIndex--;
 
-        if (
-            activeIndex < 0
-        ) {
-            activeIndex =
-                resultItems.length - 1;
+        if (activeIndex < 0)
+        {
+            activeIndex = resultItems.length - 1;
         }
 
-        updateActiveResult(
-            searchResults,
-            activeIndex,
-        );
+        updateActiveResult(searchResults, activeIndex);
 
         return;
     }
 
-    if (
-        event.key ===
-        'Enter'
-    ) {
+    if (event.key === 'Enter')
+    {
 
-        const activeItem =
-            resultItems[
-                activeIndex
-            ];
+        const activeItem = resultItems[activeIndex];
 
-        if (
-            activeItem
-        ) {
+        if (activeItem)
+        {
 
             event.preventDefault();
 
-            resetSearch(
-                searchInput,
-                searchResults,
-                searchDropdown,
-            );
+            resetSearch(searchInput, searchResults, searchDropdown);
 
             void navigateTo(activeItem.href);
         }
     }
 
-    if (
-        event.key ===
-        'Escape'
-    ) {
-        resetSearch(
-            searchInput,
-            searchResults,
-            searchDropdown,
-        );
+    if (event.key === 'Escape')
+    {
+        resetSearch(searchInput, searchResults, searchDropdown);
     }
 }
 
@@ -421,58 +282,36 @@ function handleKeyboardNavigation(
 // MENU DÉROULANT
 // =================================================
 
-function openDropdown(
-    searchDropdown,
-)
+function openDropdown(searchDropdown)
 {
-    searchDropdown.classList.remove(
-        'is-loading',
-    );
+    searchDropdown.classList.remove('is-loading');
 
-    openSearchDropdown(
-        searchDropdown,
-    );
+    openSearchDropdown(searchDropdown);
 }
 
-function closeDropdown(
-    searchDropdown,
-)
+function closeDropdown(searchDropdown)
 {
-    closeSearchDropdown(
-        searchDropdown,
-    );
+    closeSearchDropdown(searchDropdown);
 
-    searchDropdown.classList.remove(
-        'is-loading',
-    );
+    searchDropdown.classList.remove('is-loading');
 }
 
 // =================================================
 // RÉINITIALISATION RECHERCHE
 // =================================================
 
-function resetSearch(
-    searchInput,
-    searchResults,
-    searchDropdown,
-)
+function resetSearch(searchInput, searchResults, searchDropdown)
 {
     clearTimeout(debounceTimer);
     searchVersion++;
     lastQuery = null;
     abortController?.abort();
 
-    activeIndex =
-        -1;
+    activeIndex = -1;
 
-    searchInput.value =
-        '';
+    searchInput.value = '';
 
-    clearSearchResults(
-        searchResults,
-    );
+    clearSearchResults(searchResults);
 
-    closeDropdown(
-        searchDropdown,
-    );
+    closeDropdown(searchDropdown);
 }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Nendoroid;
 
-use App\Http\Controllers\Controller;
 use App\DTO\Common\ServiceResult;
+use App\Http\Controllers\Controller;
 use App\Services\Nendoroid\NendoroidReadService;
 use App\Services\Nendoroid\NendoroidWriteService;
 
@@ -20,7 +20,8 @@ final class NendoroidAjaxController extends Controller
         private readonly NendoroidReadService $nendoroidReadService,
         private readonly NendoroidWriteService $nendoroidWriteService,
         Request $request
-    ) {
+    )
+    {
         parent::__construct($request);
     }
 
@@ -32,13 +33,7 @@ final class NendoroidAjaxController extends Controller
     {
         $searchData = $this->nendoroidReadService->search((string) $query);
 
-        $this->jsonResult(
-            ServiceResult::success(
-                data: [
-                    'results' => $searchData->results,
-                ],
-            ),
-        );
+        $this->jsonResult(ServiceResult::success(data: ['results' => $searchData->results]));
     }
 
     // --------------------------------------------------------------------------
@@ -58,26 +53,15 @@ final class NendoroidAjaxController extends Controller
 
         $this->renderFragment(
             'pages/nendoroid/collection/partials/items',
-            [
-                'nendoroids' => $data->nendoroids,
-                'currentPage' => $data->currentPage,
-                'totalPages' => $data->totalPages,
-            ]
+            ['nendoroids' => $data->nendoroids, 'currentPage' => $data->currentPage, 'totalPages' => $data->totalPages]
         );
     }
 
-    public function updateCollectStatus(
-        string $slug,
-        int $numero
-    ): never
+    public function updateCollectStatus(string $slug, int $numero): never
     {
         $collectStatus = $this->binaryStatusInput('collectStatus');
 
-        $result = $this->nendoroidWriteService->updateCollectStatus(
-            $slug,
-            $numero,
-            $collectStatus
-        );
+        $result = $this->nendoroidWriteService->updateCollectStatus($slug, $numero, $collectStatus);
 
         $this->jsonResult($result);
     }
@@ -86,15 +70,9 @@ final class NendoroidAjaxController extends Controller
     // SUPPRESSION
     // --------------------------------------------------------------------------
 
-    public function delete(
-        string $slug,
-        int $numero
-    ): never
+    public function delete(string $slug, int $numero): never
     {
-        $result = $this->nendoroidWriteService->delete(
-            $slug,
-            $numero
-        );
+        $result = $this->nendoroidWriteService->delete($slug, $numero);
 
         if (! $result->success)
         {
@@ -104,17 +82,9 @@ final class NendoroidAjaxController extends Controller
         $this->jsonResult(
             ServiceResult::success(
                 message: $result->message,
-                data: [
-                    ...$result->data,
-                    'redirect' => sprintf(
-                        '%s/%s',
-                        $this->baseUri,
-                        self::WAIFUS_PATH
-                    ),
-                ],
-                status: $result->status,
+                data: [...$result->data, 'redirect' => sprintf('%s/%s', $this->baseUri, self::WAIFUS_PATH)],
+                status: $result->status
             )
         );
     }
-
 }

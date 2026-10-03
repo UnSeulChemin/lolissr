@@ -29,10 +29,7 @@ final class FigurineRepository extends AbstractRepository
 
             LIMIT 1
             ",
-            [
-                'slug' => $this->normalizeSlug($slug),
-                'numero' => $numero,
-            ],
+            ['slug' => $this->normalizeSlug($slug), 'numero' => $numero],
             Figurine::class
         );
 
@@ -59,27 +56,20 @@ final class FigurineRepository extends AbstractRepository
                 'height_cm' => $dto->height_cm,
                 'company' => $dto->company,
                 'release_date' => $dto->release_date,
-                'commentaire' => $dto->commentaire,
+                'commentaire' => $dto->commentaire
             ]
         );
     }
 
     public function updateCollectStatus(string $slug, int $numero, bool $collectStatus): bool
     {
-        return $this->updateBySlugAndNumero(
-            $slug,
-            $numero,
-            [
-                'collect' => (int) $collectStatus,
-            ]
-        );
+        return $this->updateBySlugAndNumero($slug, $numero, ['collect' => (int) $collectStatus]);
     }
 
     public function deleteById(int $id): bool
     {
         return $this->deleteExistingById($id);
     }
-
 
     public function claimCollectReward(int $id): bool
     {
@@ -92,9 +82,7 @@ final class FigurineRepository extends AbstractRepository
             WHERE id = :id
             AND collect_rewarded = 0
             ",
-            [
-                'id' => $id,
-            ]
+            ['id' => $id]
         );
 
         return $statement !== false && $statement->rowCount() === 1;
@@ -114,13 +102,7 @@ final class FigurineRepository extends AbstractRepository
      */
     private function updateBySlugAndNumero(string $slug, int $numero, array $data): bool
     {
-        return $this->update(
-            $data,
-            [
-                'slug' => $this->normalizeSlug($slug),
-                'numero' => $numero,
-            ]
-        );
+        return $this->update($data, ['slug' => $this->normalizeSlug($slug), 'numero' => $numero]);
     }
 
     /**
@@ -145,7 +127,7 @@ final class FigurineRepository extends AbstractRepository
             'company' => trim((string) ($data['company'] ?? '')),
             'release_date' => Str::nullableTrim($data['release_date'] ?? null),
 
-            'commentaire' => Str::nullableTrim($data['commentaire'] ?? null),
+            'commentaire' => Str::nullableTrim($data['commentaire'] ?? null)
         ];
     }
 }

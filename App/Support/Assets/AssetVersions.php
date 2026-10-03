@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Support\Assets;
 
 use Framework\Config\ApplicationConfig;
+
 use RuntimeException;
 
 final class AssetVersions

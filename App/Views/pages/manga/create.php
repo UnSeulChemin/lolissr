@@ -60,10 +60,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                         required
                     >
 
-                    <?php if (
-                        isset($errors['livre'])
-                        && $errors['livre'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['livre']) && $errors['livre'] !== ''): ?>
 
                         <p class="form-error u-semibold">
 
@@ -98,10 +95,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                         required
                     >
 
-                    <?php if (
-                        isset($errors['slug'])
-                        && $errors['slug'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['slug']) && $errors['slug'] !== ''): ?>
 
                         <p class="form-error u-semibold">
 
@@ -136,10 +130,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                         required
                     >
 
-                    <?php if (
-                        isset($errors['editeur'])
-                        && $errors['editeur'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['editeur']) && $errors['editeur'] !== ''): ?>
 
                         <p class="form-error u-semibold">
 
@@ -173,9 +164,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                         required
                     >
 
-                        <?php foreach (
-                            $statutOptions as $value => $label
-                        ): ?>
+                        <?php foreach ($statutOptions as $value => $label): ?>
 
                             <option
                                 value="<?= e($value) ?>"
@@ -192,10 +181,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
 
                     </select>
 
-                    <?php if (
-                        isset($errors['statut'])
-                        && $errors['statut'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['statut']) && $errors['statut'] !== ''): ?>
 
                         <p class="form-error u-semibold">
 
@@ -230,10 +216,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                         required
                     >
 
-                    <?php if (
-                        isset($errors['numero'])
-                        && $errors['numero'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['numero']) && $errors['numero'] !== ''): ?>
 
                         <p class="form-error u-semibold">
 
@@ -277,10 +260,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
 
                     </label>
 
-                    <?php if (
-                        isset($errors['image'])
-                        && $errors['image'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['image']) && $errors['image'] !== ''): ?>
 
                         <p class="form-error u-semibold">
 
@@ -313,10 +293,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                         placeholder="Ex : défaut en haut de la jacquette"
                     ><?= e($commentaireValue) ?></textarea>
 
-                    <?php if (
-                        isset($errors['commentaire'])
-                        && $errors['commentaire'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['commentaire']) && $errors['commentaire'] !== ''): ?>
 
                         <p class="form-error u-semibold">
 

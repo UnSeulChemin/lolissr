@@ -2,141 +2,82 @@
 // NOTIFICATION
 // =================================================
 
-import {
-    $,
-} from './dom.js';
+import { $ } from './dom.js';
 
-import {
-    debug,
-} from './debug/debug.js';
+import { debug } from './debug/debug.js';
 
-import {
-    config,
-} from './config.js';
+import { config } from './config.js';
 
 // =================================================
 // CONFIGURATION
 // =================================================
 
-const TOAST_DURATION =
-    config.toast?.duration
+const TOAST_DURATION = config.toast?.duration
     ?? 2400;
 
 // =================================================
 // ÉTAT
 // =================================================
 
-let toastHideTimeout =
-    null;
+let toastHideTimeout = null;
 
 // =================================================
 // CONSTANTES
 // =================================================
 
-const toastIcons =
-{
-    success:
-        '✓',
+const toastIcons = {
+    success: '✓',
 
-    error:
-        '✕',
+    error: '✕',
 
-    info:
-        '✦',
+    info: '✦'
 };
 
-const toastClasses =
-{
-    success:
-        'toast-success',
+const toastClasses = {
+    success: 'toast-success',
 
-    error:
-        'toast-error',
+    error: 'toast-error',
 
-    info:
-        'toast-info',
+    info: 'toast-info'
 };
 
 // =================================================
 // UTILITAIRES
 // =================================================
 
-function escapeHtml(
-    value,
-)
+function escapeHtml(value)
 {
-    return String(
-        value ?? '',
-    )
-        .replaceAll(
-            '&',
-            '&amp;',
-        )
-        .replaceAll(
-            '<',
-            '&lt;',
-        )
-        .replaceAll(
-            '>',
-            '&gt;',
-        )
-        .replaceAll(
-            '"',
-            '&quot;',
-        )
-        .replaceAll(
-            "'",
-            '&#039;',
-        );
+    return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
 }
 
 function getToastElement()
 {
-    return $(
-        '#toast',
-    );
+    return $('#toast');
 }
 
-function getToastIcon(
-    type,
-)
+function getToastIcon(type)
 {
-    return (
-        toastIcons[type]
-        || toastIcons.success
-    );
+    return (toastIcons[type] || toastIcons.success);
 }
 
-function getToastClass(
-    type,
-)
+function getToastClass(type)
 {
-    return (
-        toastClasses[type]
-        || toastClasses.success
-    );
+    return (toastClasses[type] || toastClasses.success);
 }
 
-function clearToastState(
-    toastElement,
-)
+function clearToastState(toastElement)
 {
-    toastElement.classList.remove(
-        'toast-success',
-        'toast-error',
-        'toast-info',
-        'show',
-    );
+    toastElement.classList.remove('toast-success', 'toast-error', 'toast-info', 'show');
 }
 
-function renderToastContent(
-    toastElement,
-    message,
-    type,
-)
+function renderToastContent(toastElement, message, type)
 {
-    toastElement.innerHTML =
-    `
+    toastElement.innerHTML = `
         <span class="toast-wing toast-wing-left"></span>
 
         <div class="toast-content">
@@ -157,58 +98,40 @@ function renderToastContent(
     `;
 }
 
-function restartAnimation(
-    toastElement,
-)
+function restartAnimation(toastElement)
 {
     void toastElement.offsetWidth;
 }
 
 function clearHideTimeout()
 {
-    if (
-        !toastHideTimeout
-    ) {
+    if (!toastHideTimeout)
+    {
         return;
     }
 
-    clearTimeout(
-        toastHideTimeout,
-    );
+    clearTimeout(toastHideTimeout);
 
-    toastHideTimeout =
-        null;
+    toastHideTimeout = null;
 }
 
 // =================================================
 // API PUBLIQUE
 // =================================================
 
-export function showToast(
-    message =
-        'Sauvegardé',
-    type =
-        'success',
-)
+export function showToast(message = 'Sauvegardé', type = 'success')
 {
-    const toastElement =
-        getToastElement();
+    const toastElement = getToastElement();
 
-    if (!toastElement) {
+    if (!toastElement)
+    {
 
-        debug(
-            'TOAST',
-            '#toast introuvable',
-        );
+        debug('TOAST', '#toast introuvable');
 
         return;
     }
 
-    debug(
-        'TOAST',
-        type,
-        message,
-    );
+    debug('TOAST', type, message);
 
     // =================================================
     // RÉINITIALISATION
@@ -216,59 +139,42 @@ export function showToast(
 
     clearHideTimeout();
 
-    clearToastState(
-        toastElement,
-    );
+    clearToastState(toastElement);
 
     // =================================================
     // TYPE
     // =================================================
 
-    toastElement.classList.add(
-        getToastClass(
-            type,
-        ),
-    );
+    toastElement.classList.add(getToastClass( type ));
 
     // =================================================
     // CONTENU
     // =================================================
 
-    renderToastContent(
-        toastElement,
-        message,
-        type,
-    );
+    renderToastContent(toastElement, message, type);
 
     // =================================================
     // REDÉMARRAGE
     // =================================================
 
-    restartAnimation(
-        toastElement,
-    );
+    restartAnimation(toastElement);
 
     // =================================================
     // AFFICHAGE
     // =================================================
 
-    toastElement.classList.add(
-        'show',
-    );
+    toastElement.classList.add('show');
 
     // =================================================
     // MASQUAGE AUTOMATIQUE
     // =================================================
 
-    toastHideTimeout =
-        window.setTimeout(
+    toastHideTimeout = window.setTimeout(
             () =>
             {
-                toastElement.classList.remove(
-                    'show',
-                );
+                toastElement.classList.remove('show');
             },
-            TOAST_DURATION,
+            TOAST_DURATION
         );
 }
 

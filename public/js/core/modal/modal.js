@@ -3,17 +3,17 @@
 // =================================================
 
 export {
-    confirmModal,
+    confirmModal
 } from './confirm-modal.js';
 
 export {
-    deleteModal,
+    deleteModal
 } from './delete-modal.js';
 
 export {
-    alertModal,
+    alertModal
 } from './alert-modal.js';
 
 export {
-    titleModal,
+    titleModal
 } from '../../profile/modals/title-modal.js';

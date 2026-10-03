@@ -11,6 +11,7 @@ use Framework\Container\Container;
 use Framework\Routing\Route;
 use Framework\Routing\RouteCollection;
 use Framework\Routing\Router;
+
 use RuntimeException;
 use Throwable;
 
@@ -59,7 +60,7 @@ final class BootstrapCache
             'environment' => self::fingerprint($keys),
             'validator' => self::validatorFingerprint(),
             'config' => $config,
-            'routes' => $serialized,
+            'routes' => $serialized
         ];
 
         return "<?php\n\ndeclare(strict_types=1);\n\n// Generated on the target host; contains private configuration.\nreturn "

@@ -6,11 +6,9 @@
 {
     opacity: 0;
 
-    animation:
-        card-in 140ms ease-out forwards;
+    animation: card-in 140ms ease-out forwards;
 
-    transition:
-        transform 120ms ease;
+    transition: transform 120ms ease;
 
     backface-visibility: hidden;
 }
@@ -23,8 +21,7 @@
 .transition-card:is(a[href], button, [role="button"], .u-pointer):focus-visible,
 .transition-card:is(a[href], button, [role="button"], .u-pointer).is-active
 {
-    transform:
-        translateY(-5px);
+    transform: translateY(-5px);
 }
 
 /* =================================================

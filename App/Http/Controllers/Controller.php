@@ -51,14 +51,10 @@ abstract class Controller
         return preg_match('#^[a-zA-Z0-9][a-zA-Z0-9/_-]*$#D', $path) === 1 ? $value : '';
     }
 
-    public function __construct(
-        protected Request $request
-    ) {
+    public function __construct(protected Request $request)
+    {
         $this->title = ApplicationConfig::siteName();
-        $this->baseUri = rtrim(
-            base_uri(),
-            '/'
-        );
+        $this->baseUri = rtrim(base_uri(), '/');
     }
 
     // --------------------------------------------------------------------------
@@ -90,45 +86,25 @@ abstract class Controller
     /**
      * @param array<string, mixed> $data
      */
-    protected function render(
-        string $file,
-        array $data = []
-    ): never {
-        $this->respondView(
-            $this->viewPath($file),
-            data: $data
-        );
+    protected function render(string $file, array $data = []): never
+    {
+        $this->respondView($this->viewPath($file), data: $data);
     }
 
     /**
      * @param array<string, mixed> $data
      */
-    protected function renderFragment(
-        string $file,
-        array $data = []
-    ): never {
-        Response::html(
-            $this->renderContent(
-                $this->viewPath($file),
-                $data,
-                false
-            )
-        );
+    protected function renderFragment(string $file, array $data = []): never
+    {
+        Response::html($this->renderContent($this->viewPath($file), $data, false));
     }
 
     /**
      * @param array<string, mixed> $data
      */
-    protected function renderError(
-        string $file,
-        int $statusCode,
-        array $data = []
-    ): never {
-        $this->respondView(
-            $this->errorViewPath($file),
-            $statusCode,
-            $data
-        );
+    protected function renderError(string $file, int $statusCode, array $data = []): never
+    {
+        $this->respondView($this->errorViewPath($file), $statusCode, $data);
     }
 
     // --------------------------------------------------------------------------
@@ -138,23 +114,14 @@ abstract class Controller
     /**
      * @param array<string, mixed> $data
      */
-    protected function json(
-        array $data,
-        int $statusCode = 200
-    ): never {
-        Response::json(
-            $data,
-            $statusCode
-        );
+    protected function json(array $data, int $statusCode = 200): never
+    {
+        Response::json($data, $statusCode);
     }
 
-    protected function jsonResult(
-        ServiceResult $result
-    ): never {
-        $this->json(
-            $result->toArray(),
-            $result->status
-        );
+    protected function jsonResult(ServiceResult $result): never
+    {
+        $this->json($result->toArray(), $result->status);
     }
 
     // --------------------------------------------------------------------------
@@ -163,27 +130,16 @@ abstract class Controller
 
     protected function viewData(): ViewData
     {
-        return new ViewData(
-            baseUri: view_base_uri(),
-            toast: $this->flashToastData()
-        );
+        return new ViewData(baseUri: view_base_uri(), toast: $this->flashToastData());
     }
 
-    protected function formViewData(
-        string $formAction,
-        string $cancelUrl
-    ): FormViewData {
+    protected function formViewData(string $formAction, string $cancelUrl): FormViewData
+    {
         $build = fn (): FormViewData => new FormViewData(
             baseUri: view_base_uri(),
             toast: $this->flashToastData(),
-            errors: $this->request->header('X-Prefetch') === 'true' ? [] : Session::pull(
-                'errors',
-                []
-            ),
-            old: $this->request->header('X-Prefetch') === 'true' ? [] : Session::pull(
-                'old',
-                []
-            ),
+            errors: $this->request->header('X-Prefetch') === 'true' ? [] : Session::pull('errors', []),
+            old: $this->request->header('X-Prefetch') === 'true' ? [] : Session::pull('old', []),
             formAction: $this->url($formAction),
             cancelUrl: $this->url($cancelUrl)
         );
@@ -204,48 +160,33 @@ abstract class Controller
             return $this->flashToast;
         }
 
-        [$success, $error] = Session::withLock(static fn (): array => [
-            Session::pull('success'),
-            Session::pull('error'),
-        ]);
+        [$success, $error] = Session::withLock(static fn (): array => [Session::pull('success'), Session::pull('error')]);
 
         if (is_string($success))
         {
             return $this->flashToast =
-                new FlashToastData(
-                    message: $success,
-                    type: 'success'
-                );
+                new FlashToastData(message: $success, type: 'success');
         }
 
         if (is_string($error))
         {
             return $this->flashToast =
-                new FlashToastData(
-                    message: $error,
-                    type: 'error'
-                );
+                new FlashToastData(message: $error, type: 'error');
         }
 
         return $this->flashToast =
-            new FlashToastData(
-                message: null,
-                type: null
-            );
+            new FlashToastData(message: null, type: null);
     }
 
     // --------------------------------------------------------------------------
     // VALIDATION
     // --------------------------------------------------------------------------
 
-    protected function validateRequest(
-        FormRequest $request
-    ): void {
+    protected function validateRequest(FormRequest $request): void
+    {
         if ($request->fails())
         {
-            throw new ValidationException(
-                $request->errors()
-            );
+            throw new ValidationException($request->errors());
         }
     }
 
@@ -253,77 +194,48 @@ abstract class Controller
     // REDIRECTIONS
     // --------------------------------------------------------------------------
 
-    protected function redirect(
-        string $url,
-        int $statusCode = 302
-    ): never {
+    protected function redirect(string $url, int $statusCode = 302): never
+    {
         $redirectUrl = $this->isAbsoluteUrl($url)
             ? $url
             : $this->url($url);
 
         if ($this->expectsJson())
         {
-            Response::json([
-                'success' => true,
-                'type' => 'redirect',
-                'redirect' => $redirectUrl,
-            ]);
+            Response::json(['success' => true, 'type' => 'redirect', 'redirect' => $redirectUrl]);
         }
 
-        Response::redirect(
-            $redirectUrl,
-            $statusCode
-        );
+        Response::redirect($redirectUrl, $statusCode);
     }
 
     /**
      * @param array<string, mixed> $session
      */
-    protected function redirectWith(
-        string $url,
-        array $session
-    ): never {
+    protected function redirectWith(string $url, array $session): never
+    {
         foreach ($session as $key => $value)
         {
-            Session::set(
-                $key,
-                $value
-            );
+            Session::set($key, $value);
         }
 
         $this->redirect($url);
     }
 
-    protected function redirectWithError(
-        string $url,
-        string $message,
-        bool $withOld = true
-    ): never {
-        $session = [
-            'error' => $message,
-        ];
+    protected function redirectWithError(string $url, string $message, bool $withOld = true): never
+    {
+        $session = ['error' => $message];
 
         if ($withOld)
         {
             $session['old'] = $this->oldInput();
         }
 
-        $this->redirectWith(
-            $url,
-            $session
-        );
+        $this->redirectWith($url, $session);
     }
 
-    protected function redirectWithSuccess(
-        string $url,
-        string $message
-    ): never {
-        $this->redirectWith(
-            $url,
-            [
-                'success' => $message,
-            ]
-        );
+    protected function redirectWithSuccess(string $url, string $message): never
+    {
+        $this->redirectWith($url, ['success' => $message]);
     }
 
     /**
@@ -342,22 +254,14 @@ abstract class Controller
     // CHEMINS DES VUES
     // --------------------------------------------------------------------------
 
-    private function viewPath(
-        string $file
-    ): string {
-        return view_path(
-            ltrim($file, '/')
-            . '.php'
-        );
+    private function viewPath(string $file): string
+    {
+        return view_path(ltrim($file, '/') . '.php');
     }
 
-    private function errorViewPath(
-        string $file
-    ): string {
-        return $this->viewPath(
-            'errors/'
-            . ltrim($file, '/')
-        );
+    private function errorViewPath(string $file): string
+    {
+        return $this->viewPath('errors/' . ltrim($file, '/'));
     }
 
     private function templatePath(): string
@@ -372,18 +276,10 @@ abstract class Controller
     /**
      * @param array<string, mixed> $data
      */
-    private function respondView(
-        string $viewPath,
-        int $statusCode = 200,
-        array $data = [],
-        bool $withTemplate = true
-    ): never {
+    private function respondView(string $viewPath, int $statusCode = 200, array $data = [], bool $withTemplate = true): never
+    {
         $fragment = $this->expectsJson() && $this->request->header('X-Page-Format') === 'fragment';
-        $html = $this->renderContent(
-            $viewPath,
-            $data,
-            $withTemplate && ! $fragment
-        );
+        $html = $this->renderContent($viewPath, $data, $withTemplate && ! $fragment);
 
         if ($this->expectsJson())
         {
@@ -403,45 +299,30 @@ abstract class Controller
                         'requiresFreshNavigation' => $this->request->header('X-Prefetch') === 'true'
                             && Session::withLock(static fn (): bool =>
                                 Session::has('success') || Session::has('error')
-                                || Session::has('errors') || Session::has('old')),
-                    ],
+                                || Session::has('errors') || Session::has('old'))
+                    ]
                 ],
                 $statusCode
             );
         }
 
-        Response::html(
-            $html,
-            $statusCode
-        );
+        Response::html($html, $statusCode);
     }
 
     /**
      * @param array<string, mixed> $data
      */
-    private function renderContent(
-        string $viewPath,
-        array $data = [],
-        bool $withTemplate = true
-    ): string {
+    private function renderContent(string $viewPath, array $data = [], bool $withTemplate = true): string
+    {
         return Profiler::measure(
             'view.render',
-            function () use (
-                $viewPath,
-                $data,
-                $withTemplate
-            ): string {
+            function () use ($viewPath, $data, $withTemplate): string
+            {
                 $this->ensureViewExists($viewPath);
 
                 $variables = $this->baseViewData($data);
 
-                $content = Profiler::measure(
-                    'view.content',
-                    fn (): string => $this->renderPhp(
-                        $viewPath,
-                        $variables
-                    )
-                );
+                $content = Profiler::measure('view.content', fn (): string => $this->renderPhp($viewPath, $variables));
 
                 if (! $withTemplate)
                 {
@@ -456,11 +337,7 @@ abstract class Controller
                     'view.template',
                     fn (): string => $this->renderPhp(
                         $templatePath,
-                        [
-                            ...$variables,
-                            'content' => $content,
-                            'pageStylesheets' => PageStyles::forView($viewPath),
-                        ]
+                        [...$variables, 'content' => $content, 'pageStylesheets' => PageStyles::forView($viewPath)]
                     )
                 );
             }
@@ -470,14 +347,9 @@ abstract class Controller
     /**
      * @param array<string, mixed> $variables
      */
-    private function renderPhp(
-        string $path,
-        array $variables = []
-    ): string {
-        extract(
-            $variables,
-            EXTR_SKIP
-        );
+    private function renderPhp(string $path, array $variables = []): string
+    {
+        extract($variables, EXTR_SKIP);
 
         ob_start();
 
@@ -502,9 +374,8 @@ abstract class Controller
         }
     }
 
-    private function ensureViewExists(
-        string $path
-    ): void {
+    private function ensureViewExists(string $path): void
+    {
         if (! is_file($path))
         {
             throw new RuntimeException(
@@ -518,35 +389,24 @@ abstract class Controller
      *
      * @return array<string, mixed>
      */
-    private function baseViewData(
-        array $data = []
-    ): array {
-        return [
-            'view' => $this->viewData(),
-            'title' => $this->title,
-            'currentPath' => $this->request->path(),
-            ...$data,
-        ];
+    private function baseViewData(array $data = []): array
+    {
+        return ['view' => $this->viewData(), 'title' => $this->title, 'currentPath' => $this->request->path(), ...$data];
     }
 
     // --------------------------------------------------------------------------
     // URLS
     // --------------------------------------------------------------------------
 
-    private function url(
-        string $path
-    ): string {
+    private function url(string $path): string
+    {
         return $this->baseUri
             . '/'
             . ltrim($path, '/');
     }
 
-    private function isAbsoluteUrl(
-        string $url
-    ): bool {
-        return preg_match(
-            '#^https?://#i',
-            $url
-        ) === 1;
+    private function isAbsoluteUrl(string $url): bool
+    {
+        return preg_match('#^https?://#i', $url) === 1;
     }
 }

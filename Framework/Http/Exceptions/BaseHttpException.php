@@ -16,8 +16,9 @@ class BaseHttpException extends Exception
         string $message = 'HTTP Error',
         private readonly int $statusCode = 500,
         private readonly array $data = [],
-        private readonly array $headers = [],
-    ) {
+        private readonly array $headers = []
+    )
+    {
         parent::__construct($message, $statusCode);
     }
 

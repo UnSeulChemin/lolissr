@@ -13,14 +13,13 @@ final readonly class PelucheXpRewardService
     public function __construct(
         private PelucheRepository $pelucheRepository,
         private \App\Services\Profile\AchievementXpService $achievementXpService,
-        private \App\Repositories\Peluche\PelucheStatsRepository $pelucheStatsRepository,
-    ) {
+        private \App\Repositories\Peluche\PelucheStatsRepository $pelucheStatsRepository
+    )
+    {
     }
 
-
-    public function rewardCollect(
-        Peluche $peluche
-    ): bool {
+    public function rewardCollect(Peluche $peluche): bool
+    {
         $user = user();
 
         if ($user === null)

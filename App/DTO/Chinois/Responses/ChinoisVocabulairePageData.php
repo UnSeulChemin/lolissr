@@ -15,6 +15,7 @@ final readonly class ChinoisVocabulairePageData
         public int $totalVocabulaires,
         public int $perPage,
         public int $totalPages
-    ) {
+    )
+    {
     }
 }

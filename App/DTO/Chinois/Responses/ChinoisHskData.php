@@ -16,7 +16,8 @@ final readonly class ChinoisHskData
         public string $sourceUrl,
         public string $sourceDescription,
         public array $sections,
-        public array $menu = [],
-    ) {
+        public array $menu = []
+    )
+    {
     }
 }

@@ -8,7 +8,8 @@ export async function runBrowserScenario()
     const {invalidateMangaPages} = await import('./js/manga/manga-cache.js');
     const {inFlight} = await import('./js/router/prefetch/prefetch-state.js');
     const {replaceContent} = await import('./js/router/router-dom.js');
-    const check = (ok, message) => { if (!ok) throw new Error(message); };
+    const check = (ok, message) =>
+    { if (!ok) throw new Error(message); };
     const results = [];
     const page = {type: 'page', page: {html: '<p>Cached</p>', format: 'fragment', stylesheets: []}};
 
@@ -53,7 +54,8 @@ export async function runBrowserScenario()
     const originalFetch = window.fetch;
     let searchRequests = 0;
     let navigationRequests = 0;
-    window.fetch = async (url, options) => {
+    window.fetch = async (url, options) =>
+    {
         const isSearch = String(url).includes('recherche?q=');
         if (isSearch) searchRequests++; else navigationRequests++;
         if (!isSearch) check(options.headers['X-Page-Format'] === 'fragment', 'Navigation did not request a fragment');
@@ -69,8 +71,10 @@ export async function runBrowserScenario()
         const input = search.querySelector('input');
         input.value = 'SPA';
         search.dispatchEvent(new Event('submit', {cancelable: true}));
-        const until = async (predicate) => {
-            for (let i = 0; i < 100; i++) { if (predicate()) return; await new Promise(resolve => setTimeout(resolve, 10)); }
+        const until = async (predicate) =>
+        {
+            for (let i = 0; i < 100; i++)
+            { if (predicate()) return; await new Promise(resolve => setTimeout(resolve, 10)); }
             throw new Error('SPA test timed out');
         };
         await until(() => search.querySelector('.search-result-item'));
@@ -80,6 +84,7 @@ export async function runBrowserScenario()
         check(searchRequests === 1 && navigationRequests === 1, 'Unexpected request count');
         results.push('One global search request; Enter navigates through the SPA without reloading');
     }
-    finally { window.fetch = originalFetch; }
+    finally
+    { window.fetch = originalFetch; }
     return results;
 }

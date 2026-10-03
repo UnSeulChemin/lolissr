@@ -6,13 +6,13 @@ namespace App\Services\Figurine;
 
 use App\DTO\Figurine\Responses\FigurineData;
 use App\DTO\Figurine\Responses\FigurineListData;
+use App\DTO\Figurine\Responses\FigurineListItemData;
 use App\DTO\Figurine\Responses\FigurineSearchData;
 use App\DTO\Figurine\Responses\FigurineSearchItemData;
-use App\DTO\Figurine\Responses\FigurineListItemData;
 use App\Models\Figurine;
+use App\Repositories\Figurine\FigurineCollectionRepository;
 use App\Repositories\Figurine\FigurineRepository;
 use App\Repositories\Figurine\FigurineSearchRepository;
-use App\Repositories\Figurine\FigurineCollectionRepository;
 
 use Framework\Config\ApplicationConfig;
 use Framework\Support\DateFormatter;
@@ -22,8 +22,9 @@ final readonly class FigurineReadService
     public function __construct(
         private FigurineRepository $figurineRepository,
         private FigurineCollectionRepository $collectionRepository,
-        private FigurineSearchRepository $searchRepository,
-    ) {
+        private FigurineSearchRepository $searchRepository
+    )
+    {
     }
 
     // --------------------------------------------------------------------------
@@ -41,13 +42,7 @@ final readonly class FigurineReadService
         if ($totalWaifus === 0)
         {
             if ($page > 1) return null;
-            return new FigurineListData(
-                figurines: [],
-                currentPage: 1,
-                totalWaifus: 0,
-                perPage: $perPage,
-                totalPages: 1,
-            );
+            return new FigurineListData(figurines: [], currentPage: 1, totalWaifus: 0, perPage: $perPage, totalPages: 1);
         }
 
         $totalPages = (int) ceil($totalWaifus / $perPage);
@@ -57,20 +52,14 @@ final readonly class FigurineReadService
             return null;
         }
 
-        $figurines = $this->collectionRepository->findPaginated(
-            $perPage,
-            $page,
-        );
+        $figurines = $this->collectionRepository->findPaginated($perPage, $page);
 
         return new FigurineListData(
-            figurines: array_map(
-                $this->mapSeriesItem(...),
-                $figurines
-            ),
+            figurines: array_map($this->mapSeriesItem(...), $figurines),
             currentPage: $page,
             totalWaifus: $totalWaifus,
             perPage: $perPage,
-            totalPages: $totalPages,
+            totalPages: $totalPages
         );
     }
 
@@ -130,7 +119,7 @@ final readonly class FigurineReadService
                     ? "{$baseUri}images/figurine/thumbnail/{$thumbnail}.{$extension}"
                     : null,
 
-            collect: $figurine->collect,
+            collect: $figurine->collect
         );
     }
 
@@ -160,9 +149,7 @@ final readonly class FigurineReadService
 
             collect: $figurine->collect,
 
-            release_date: DateFormatter::display(
-                $figurine->release_date,
-            ),
+            release_date: DateFormatter::display($figurine->release_date),
 
             thumbnail: $thumbnail,
             extension: $extension,
@@ -174,7 +161,7 @@ final readonly class FigurineReadService
 
             commentaire: $figurine->commentaire,
 
-            xpCollectRewarded: $figurine->collect_rewarded,
+            xpCollectRewarded: $figurine->collect_rewarded
         );
     }
 
@@ -196,7 +183,7 @@ final readonly class FigurineReadService
             waifu: $figurine->waifu,
 
             thumbnail: $thumbnail,
-            extension: $extension,
+            extension: $extension
         );
     }
 }

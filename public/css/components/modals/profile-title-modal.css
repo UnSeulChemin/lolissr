@@ -90,10 +90,7 @@
 
     background: white;
 
-    transition:
-        border-color .15s,
-        transform .15s,
-        background .15s;
+    transition: border-color .15s, transform .15s, background .15s;
 }
 
 .title-modal-item:not(:disabled):hover,

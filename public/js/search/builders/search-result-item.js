@@ -2,24 +2,15 @@
 // ÉLÉMENT DE RÉSULTAT DE RECHERCHE
 // =================================================
 
-export function createResultItem(
-    href,
-    content,
-)
+export function createResultItem(href, content)
 {
-    const item =
-        document.createElement(
-            'a',
-        );
+    const item = document.createElement('a');
 
-    item.href =
-        href;
+    item.href = href;
 
-    item.className =
-        'search-result-item';
+    item.className = 'search-result-item';
 
-    item.innerHTML =
-        content;
+    item.innerHTML = content;
 
     return item;
 }

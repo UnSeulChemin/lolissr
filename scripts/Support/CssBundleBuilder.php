@@ -9,7 +9,8 @@ final class CssBundleBuilder
         $entry = self::read($directory . '/app.css');
         $expanded = preg_replace_callback(
             '~@import\s+url\(([\x22\x27])\./([^\x22\x27]+)\1\);~',
-            static function (array $match) use ($directory): string {
+            static function (array $match) use ($directory): string
+            {
                 $relative = $match[2];
                 $root = realpath($directory);
                 $path = realpath($directory . '/' . $relative);
@@ -25,7 +26,8 @@ final class CssBundleBuilder
                 // Relative asset URLs are resolved from the bundle's directory.
                 return preg_replace_callback(
                     '~url\(\s*([\x22\x27]?)([^\x22\x27()]+)\1\s*\)~',
-                    static function (array $url) use ($relative): string {
+                    static function (array $url) use ($relative): string
+                    {
                         $value = trim($url[2]);
                         if (preg_match('~^(?:[a-z][a-z0-9+.-]*:|/|\#)~i', $value) === 1)
                         {
@@ -46,7 +48,8 @@ final class CssBundleBuilder
     public static function compact(string $css): string
     {
         $pattern = '~("(?:\\\\.|[^"\\\\])*"|\x27(?:\\\\.|[^\x27\\\\])*\x27)|/\*.*?\*/|(\s+)~s';
-        $result = preg_replace_callback($pattern, static function (array $match): string {
+        $result = preg_replace_callback($pattern, static function (array $match): string
+        {
             if (($match[1] ?? '') !== '') return $match[1];
             return isset($match[2]) ? ' ' : '';
         }, $css);

@@ -2,193 +2,133 @@
 // SUPPRESSION FIGURINE
 // =================================================
 
-import {
-    post,
-} from '../../core/http.js';
+import { post } from '../../core/http.js';
 
-import {
-    delegate,
-} from '../../core/dom.js';
+import { delegate } from '../../core/dom.js';
 
-import {
-    showToast,
-} from '../../core/toast.js';
+import { showToast } from '../../core/toast.js';
 
-import {
-    debug,
-} from '../../core/debug/debug.js';
+import { debug } from '../../core/debug/debug.js';
 
-import {
-    handleError,
-} from '../../core/errors/error-handler.js';
+import { handleError } from '../../core/errors/error-handler.js';
 
-import {
-    FrontendError,
-} from '../../core/errors/FrontendError.js';
+import { FrontendError } from '../../core/errors/FrontendError.js';
 
-import {
-    navigateTo,
-} from '../../router/router-navigation.js';
+import { navigateTo } from '../../router/router-navigation.js';
 
-import {
-    invalidateFigurinePages,
-} from '../figurine-cache.js';
+import { invalidateFigurinePages } from '../figurine-cache.js';
 
-import {
-    deleteModal,
-} from '../../core/modal/modal.js';
+import { deleteModal } from '../../core/modal/modal.js';
 
 // =================================================
 // ÉTAT
 // =================================================
 
-let initialized =
-    false;
+let initialized = false;
 
 // =================================================
 // INTERFACE
 // =================================================
 
-function setLoadingState(
-    button,
-    loading,
-)
+function setLoadingState(button, loading)
 {
-    button.disabled =
-        loading;
+    button.disabled = loading;
 
-    button.textContent =
-        loading
+    button.textContent = loading
             ? 'Suppression...'
-            : (
-                button.dataset.originalText
-                || 'Supprimer'
-            );
+            : (button.dataset.originalText || 'Supprimer');
 }
 
 // =================================================
 // SUPPRESSION FIGURINE
 // =================================================
 
-async function deleteFigurine(
-    button,
-)
+async function deleteFigurine(button)
 {
-    if (
-        button.disabled
-    ) {
+    if (button.disabled)
+    {
 
         return;
     }
 
-    const url =
-        button.dataset.url;
+    const url = button.dataset.url;
 
-    const redirectUrl =
-        button.dataset.redirect
+    const redirectUrl = button.dataset.redirect
         || '/';
 
-    if (!url) {
+    if (!url)
+    {
 
         handleError(
             new FrontendError(
                 'URL invalide',
                 {
-                    code:
-                        'INVALID_DELETE_URL',
-                },
-            ),
+                    code: 'INVALID_DELETE_URL'
+                }
+            )
         );
 
         return;
     }
 
-    const confirmed =
-        await deleteModal(
-            'Supprimer cette figurine ?',
-        );
+    const confirmed = await deleteModal('Supprimer cette figurine ?');
 
     if (!confirmed)
     {
         return;
     }
 
-    if (
-        !button.dataset.originalText
-    ) {
+    if (!button.dataset.originalText)
+    {
 
-        button.dataset.originalText =
-            button.textContent
+        button.dataset.originalText = button.textContent
             || 'Supprimer';
     }
 
-    setLoadingState(
-        button,
-        true,
-    );
+    setLoadingState(button, true);
 
-    try {
+    try
+    {
 
-        debug(
-            'DELETE_FIGURINE',
-            'request',
-            url,
-        );
+        debug('DELETE_FIGURINE', 'request', url);
 
-        const data =
-            await post(
+        const data = await post(
                 url,
                 {},
                 {
-                    headers:
-                    {
-                        Accept:
-                            'application/json',
-                    },
-                },
+                    headers: {
+                        Accept: 'application/json'
+                    }
+                }
             );
 
-        if (
-            data?.success
-            !== true
-        ) {
+        if (data?.success !== true)
+        {
 
             throw new FrontendError(
                 data?.message
                 || 'Erreur suppression',
                 {
-                    code:
-                        'DELETE_FAILED',
-                },
+                    code: 'DELETE_FAILED'
+                }
             );
         }
 
-        const target =
-            data.data?.redirect
+        const target = data.data?.redirect
             || redirectUrl;
 
         invalidateFigurinePages();
 
-        showToast(
-            data.message
-            || 'Figurine supprimée',
-            'success',
-        );
+        showToast(data.message || 'Figurine supprimée', 'success');
 
-        await navigateTo(
-            target,
-        );
+        await navigateTo(target);
 
-    } catch (error) {
+    } catch (error)
+    {
 
-        handleError(
-            error,
-        );
+        handleError(error);
 
-        setLoadingState(
-            button,
-            false,
-        );
+        setLoadingState(button, false);
     }
 }
 
@@ -198,41 +138,29 @@ async function deleteFigurine(
 
 export function initDeleteFigurine()
 {
-    if (initialized) {
+    if (initialized)
+    {
 
         return;
     }
 
-    initialized =
-        true;
+    initialized = true;
 
     delegate(
         document,
         'click',
         '.js-delete-figurine',
-        (
-            _,
-            button,
-        ) =>
+        (_, button) =>
         {
-            if (
-                !(
-                    button
-                    instanceof HTMLButtonElement
-                )
-            ) {
+            if (!( button instanceof HTMLButtonElement ))
+            {
 
                 return;
             }
 
-            void deleteFigurine(
-                button,
-            );
-        },
+            void deleteFigurine(button);
+        }
     );
 
-    debug(
-        'DELETE_FIGURINE',
-        'initialized',
-    );
+    debug('DELETE_FIGURINE', 'initialized');
 }

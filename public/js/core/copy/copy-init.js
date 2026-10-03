@@ -2,46 +2,35 @@
 // INITIALISATION DE LA COPIE
 // =================================================
 
-import {
-    delegate,
-} from '../dom.js';
+import { delegate } from '../dom.js';
 
-import {
-    copyText,
-} from './copy.js';
+import { copyText } from './copy.js';
 
 // =================================================
 // INITIALISATION
 // =================================================
 
-let initialized =
-    false;
+let initialized = false;
 
 export function initCopy()
 {
-    if (initialized) {
+    if (initialized)
+    {
 
         return;
     }
 
-    initialized =
-        true;
+    initialized = true;
 
     delegate(
         document,
         'click',
         '[data-copy]',
-        async (
-            _,
-            element,
-        ) =>
+        async (_, element) =>
         {
-            const text =
-                element.dataset.copy;
+            const text = element.dataset.copy;
 
-            await copyText(
-                text,
-            );
-        },
+            await copyText(text);
+        }
     );
 }

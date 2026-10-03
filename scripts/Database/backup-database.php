@@ -26,7 +26,7 @@ $requiredConfiguration = [
     'DB_HOST' => $host,
     'DB_PORT' => $port,
     'DB_USER' => $user,
-    'DB_NAME' => $database,
+    'DB_NAME' => $database
 ];
 
 foreach ($requiredConfiguration as $key => $value)
@@ -72,7 +72,7 @@ try
         'user="' . escapeMysqlOptionValue($user) . '"',
         'password="' . escapeMysqlOptionValue($password) . '"',
         'default-character-set="utf8mb4"',
-        '',
+        ''
     ]);
 
     if (file_put_contents($temporaryConfigFile, $configuration, LOCK_EX) === false)
@@ -148,20 +148,12 @@ function validateBackupFile(string $backupFile): void
 
 function escapeMysqlOptionValue(string $value): string
 {
-    return str_replace(
-        ['\\', '"', "\r", "\n"],
-        ['\\\\', '\\"', '\r', '\n'],
-        $value
-    );
+    return str_replace(['\\', '"', "\r", "\n"], ['\\\\', '\\"', '\r', '\n'], $value);
 }
 
 function cleanOldBackups(string $backupDirectory): void
 {
-    $files = glob(
-        $backupDirectory
-        . DIRECTORY_SEPARATOR
-        . 'backup-*.sql'
-    ) ?: [];
+    $files = glob($backupDirectory . DIRECTORY_SEPARATOR . 'backup-*.sql') ?: [];
 
     usort(
         $files,

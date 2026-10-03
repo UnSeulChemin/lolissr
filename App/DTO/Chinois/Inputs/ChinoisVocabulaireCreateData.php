@@ -13,7 +13,8 @@ final readonly class ChinoisVocabulaireCreateData
         public string $type,
         public string $traduction,
         public string $exemple
-    ) {
+    )
+    {
     }
 
     /**

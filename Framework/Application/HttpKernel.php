@@ -7,8 +7,8 @@ namespace Framework\Application;
 use Framework\Debug\Profiler;
 use Framework\Http\Middleware\SecurityHeadersMiddleware;
 use Framework\Http\Request;
-use Framework\Routing\Router;
 use Framework\Http\Session;
+use Framework\Routing\Router;
 
 final readonly class HttpKernel
 {
@@ -16,7 +16,8 @@ final readonly class HttpKernel
         private Router $router,
         private Request $request,
         private SecurityHeadersMiddleware $securityHeaders
-    ) {
+    )
+    {
     }
 
     // =================================================

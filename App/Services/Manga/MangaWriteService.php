@@ -10,16 +10,13 @@ use App\DTO\Common\ServiceResult;
 use App\DTO\Manga\Inputs\MangaCreateData;
 use App\DTO\Manga\Inputs\MangaUpdateData;
 use App\DTO\Manga\Inputs\MangaUpdateNoteData;
-
 use App\DTO\Media\UploadThumbnailData;
 use App\Repositories\Manga\MangaRepository;
-use App\Services\Media\ThumbnailManager;
 use App\Services\Collections\CollectionCreationService;
+use App\Services\Media\ThumbnailManager;
 
 use Framework\Database\Database;
 use Framework\Logging\Logger;
-
-
 
 final readonly class MangaWriteService
 {
@@ -32,7 +29,8 @@ final readonly class MangaWriteService
         private MangaXpRewardService $mangaXpRewardService,
         private CollectionCreationService $creationService,
         private DashboardCache $dashboardCache
-    ) {
+    )
+    {
     }
 
     // --------------------------------------------------------------------------
@@ -129,13 +127,7 @@ final readonly class MangaWriteService
         $result = $this->database->transaction(
             function () use ($slug, $numero, $dto): ServiceResult
             {
-
-                $notes = $this->mangaRepository->updateNote(
-                    $slug,
-                    $numero,
-                    $dto->jacquette,
-                    $dto->livreNote
-                );
+                $notes = $this->mangaRepository->updateNote($slug, $numero, $dto->jacquette, $dto->livreNote);
 
                 $failure = $this->writeFailed(
                     $notes !== false,
@@ -150,12 +142,7 @@ final readonly class MangaWriteService
                     return $failure;
                 }
 
-                return $this->success(
-                    'Notes mises à jour',
-                    [
-                        'notes' => $notes,
-                    ]
-                );
+                return $this->success('Notes mises à jour', ['notes' => $notes]);
             }
         );
 
@@ -189,11 +176,7 @@ final readonly class MangaWriteService
                     return $this->error('Manga introuvable', 404);
                 }
 
-                $updated = $this->mangaRepository->updateReadStatus(
-                    $slug,
-                    $numero,
-                    $readStatus === 1
-                );
+                $updated = $this->mangaRepository->updateReadStatus($slug, $numero, $readStatus === 1);
 
                 $failure = $this->writeFailed(
                     $updated,
@@ -213,10 +196,7 @@ final readonly class MangaWriteService
 
                 if (! $manga->lu && $readStatus === 1)
                 {
-                    [
-                        'xpEarned' => $xpEarned,
-                        'seriesXpEarned' => $seriesXpEarned,
-                    ] = $this->mangaXpRewardService->rewardRead($manga, $slug);
+                    ['xpEarned' => $xpEarned, 'seriesXpEarned' => $seriesXpEarned] = $this->mangaXpRewardService->rewardRead($manga, $slug);
                 }
 
                 $user = user();
@@ -231,7 +211,7 @@ final readonly class MangaWriteService
                         'xpAmount' => $xpEarned ? UserXp::READ_TOME : 0,
                         'seriesXpEarned' => $seriesXpEarned,
                         'level' => $user?->level,
-                        'xp' => $user?->xp,
+                        'xp' => $user?->xp
                     ]
                 );
             }
@@ -296,11 +276,8 @@ final readonly class MangaWriteService
     // UTILITAIRES
     // --------------------------------------------------------------------------
 
-
-    private function createManga(
-        MangaCreateData $dto,
-        UploadThumbnailData $uploadData
-    ): ?ServiceResult {
+    private function createManga(MangaCreateData $dto, UploadThumbnailData $uploadData): ?ServiceResult
+    {
         $inserted = $this->mangaRepository->insert([
             'thumbnail' => $uploadData->thumbnailPath,
             'extension' => $uploadData->extension,
@@ -312,7 +289,7 @@ final readonly class MangaWriteService
             'jacquette' => 1,
             'livre_note' => 1,
             'note' => 2,
-            'commentaire' => $dto->commentaire,
+            'commentaire' => $dto->commentaire
         ]);
 
         $failure = $this->writeFailed(
@@ -325,7 +302,6 @@ final readonly class MangaWriteService
 
         if ($failure !== null)
         {
-
             return $failure;
         }
 

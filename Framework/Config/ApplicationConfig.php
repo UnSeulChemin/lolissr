@@ -56,9 +56,7 @@ final class ApplicationConfig
 
     public static function env(): string
     {
-        return strtolower(
-            trim((string) config('app.env', self::ENV_LOCAL))
-        );
+        return strtolower(trim((string) config('app.env', self::ENV_LOCAL)));
     }
 
     public static function debug(): bool

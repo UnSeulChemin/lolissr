@@ -16,10 +16,7 @@ use App\DTO\Common\Responses\ViewData;
     <section
         class="grammar-main-section"
         data-flashcard-total="<?= $flashcardTotal ?>"
-        data-flashcards='<?= e(json_encode(
-            $grammaires,
-            JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR
-        )) ?>'
+        data-flashcards='<?= e(json_encode($grammaires, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR)) ?>'
         data-base-uri="<?= e($view->baseUri) ?>"
     >
 

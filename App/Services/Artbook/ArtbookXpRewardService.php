@@ -14,18 +14,17 @@ final readonly class ArtbookXpRewardService
     public function __construct(
         private ArtbookRepository $artbookRepository,
         private \App\Services\Profile\AchievementXpService $achievementXpService,
-        private \App\Repositories\Artbook\ArtbookStatsRepository $artbookStatsRepository,
-    ) {
+        private \App\Repositories\Artbook\ArtbookStatsRepository $artbookStatsRepository
+    )
+    {
     }
-
 
     // --------------------------------------------------------------------------
     // RÉCOMPENSE XP
     // --------------------------------------------------------------------------
 
-    public function rewardArtbookRead(
-        Artbook $artbook
-    ): bool {
+    public function rewardArtbookRead(Artbook $artbook): bool
+    {
         $user = user();
 
         if (! $user instanceof User)

@@ -14,7 +14,8 @@ final readonly class PelucheListItemData
         public ?string $thumbnail,
         public ?string $extension,
         public ?string $thumbnailUrl,
-        public bool $collect,
-    ) {
+        public bool $collect
+    )
+    {
     }
 }

@@ -46,7 +46,7 @@ final class LoginAttemptRepository extends AbstractRepository
             'firstAttemptAt' => (string) $result->first_attempt_at,
             'lockedUntil' => $result->locked_until !== null
                 ? (string) $result->locked_until
-                : null,
+                : null
         ];
     }
 
@@ -102,7 +102,7 @@ final class LoginAttemptRepository extends AbstractRepository
                 [
                     'attempts' => $attempts,
                     'first_attempt_at' => $resetWindow ? $attemptedAt : (string) $attempt->first_attempt_at,
-                    'locked_until' => $locked ? $lockedUntil : null,
+                    'locked_until' => $locked ? $lockedUntil : null
                 ],
                 ['identifier_hash' => $identifierHash]
             ))
@@ -116,9 +116,7 @@ final class LoginAttemptRepository extends AbstractRepository
 
     public function clear(string $identifierHash): bool
     {
-        return $this->delete([
-            'identifier_hash' => $identifierHash,
-        ]);
+        return $this->delete(['identifier_hash' => $identifierHash]);
     }
 
     public function purgeExpired(string $cutoff, string $now): void

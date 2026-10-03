@@ -15,10 +15,7 @@ $returnTo ??= '';
 
 $langueValue = $old['langue'] ?? $vocabulaire->langue;
 
-$langueOptions = [
-    'mandarin' => 'Mandarin',
-    'jinyu' => 'JinYu',
-];
+$langueOptions = ['mandarin' => 'Mandarin', 'jinyu' => 'JinYu'];
 
 ?>
 

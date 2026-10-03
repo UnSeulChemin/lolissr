@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Figurine;
 
-use App\Http\Controllers\Controller;
 use App\DTO\Common\ServiceResult;
+use App\Http\Controllers\Controller;
 use App\Services\Figurine\FigurineReadService;
 use App\Services\Figurine\FigurineWriteService;
 
@@ -20,7 +20,8 @@ final class FigurineAjaxController extends Controller
         private readonly FigurineReadService $figurineReadService,
         private readonly FigurineWriteService $figurineWriteService,
         Request $request
-    ) {
+    )
+    {
         parent::__construct($request);
     }
 
@@ -32,13 +33,7 @@ final class FigurineAjaxController extends Controller
     {
         $searchData = $this->figurineReadService->search((string) $query);
 
-        $this->jsonResult(
-            ServiceResult::success(
-                data: [
-                    'results' => $searchData->results,
-                ],
-            ),
-        );
+        $this->jsonResult(ServiceResult::success(data: ['results' => $searchData->results]));
     }
 
     // --------------------------------------------------------------------------
@@ -58,26 +53,15 @@ final class FigurineAjaxController extends Controller
 
         $this->renderFragment(
             'pages/figurine/collection/partials/items',
-            [
-                'figurines' => $data->figurines,
-                'currentPage' => $data->currentPage,
-                'totalPages' => $data->totalPages,
-            ]
+            ['figurines' => $data->figurines, 'currentPage' => $data->currentPage, 'totalPages' => $data->totalPages]
         );
     }
 
-    public function updateCollectStatus(
-        string $slug,
-        int $numero
-    ): never
+    public function updateCollectStatus(string $slug, int $numero): never
     {
         $collectStatus = $this->binaryStatusInput('collectStatus');
 
-        $result = $this->figurineWriteService->updateCollectStatus(
-            $slug,
-            $numero,
-            $collectStatus
-        );
+        $result = $this->figurineWriteService->updateCollectStatus($slug, $numero, $collectStatus);
 
         $this->jsonResult($result);
     }
@@ -86,15 +70,9 @@ final class FigurineAjaxController extends Controller
     // SUPPRESSION
     // --------------------------------------------------------------------------
 
-    public function delete(
-        string $slug,
-        int $numero
-    ): never
+    public function delete(string $slug, int $numero): never
     {
-        $result = $this->figurineWriteService->delete(
-            $slug,
-            $numero
-        );
+        $result = $this->figurineWriteService->delete($slug, $numero);
 
         if (! $result->success)
         {
@@ -104,17 +82,9 @@ final class FigurineAjaxController extends Controller
         $this->jsonResult(
             ServiceResult::success(
                 message: $result->message,
-                data: [
-                    ...$result->data,
-                    'redirect' => sprintf(
-                        '%s/%s',
-                        $this->baseUri,
-                        self::WAIFUS_PATH
-                    ),
-                ],
-                status: $result->status,
+                data: [...$result->data, 'redirect' => sprintf('%s/%s', $this->baseUri, self::WAIFUS_PATH)],
+                status: $result->status
             )
         );
     }
-
 }

@@ -25,7 +25,8 @@ final class AuthService implements AuthenticationInterface
     public function __construct(
         private readonly UserRepository $userRepository,
         private readonly LoginThrottleService $loginThrottleService
-    ) {
+    )
+    {
     }
 
     // =================================================
@@ -63,11 +64,8 @@ final class AuthService implements AuthenticationInterface
         }
     }
 
-    public function login(
-        string $username,
-        string $password,
-        string $ipAddress
-    ): LoginResult {
+    public function login(string $username, string $password, string $ipAddress): LoginResult
+    {
         $username = trim($username);
 
         if ($this->loginThrottleService->isLocked($username, $ipAddress))

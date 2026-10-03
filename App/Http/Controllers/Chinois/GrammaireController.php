@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Chinois;
 
-use App\Http\Controllers\Controller;
 use App\DTO\Chinois\Responses\ChinoisGrammaireData;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Chinois\ChinoisGrammaireCreateRequest;
 use App\Services\Chinois\ChinoisReadService;
 use App\Services\Chinois\ChinoisWriteService;
@@ -22,7 +22,8 @@ final class GrammaireController extends Controller
         private readonly ChinoisReadService $chinoisReadService,
         private readonly ChinoisWriteService $chinoisWriteService,
         Request $request
-    ) {
+    )
+    {
         parent::__construct($request);
     }
 
@@ -44,7 +45,7 @@ final class GrammaireController extends Controller
         $this->title = 'Chinois | Grammaires ' . $hskLevel;
 
         $this->render('pages/chinois/grammaire/hsk', [
-            'hsk' => $this->chinoisReadService->hsk($hskLevel, $section ?? $this->stringInput('section')),
+            'hsk' => $this->chinoisReadService->hsk($hskLevel, $section ?? $this->stringInput('section'))
         ]);
     }
 
@@ -54,9 +55,7 @@ final class GrammaireController extends Controller
 
         $this->title = 'Chinois | ' . $grammaire->titre;
 
-        $this->render('pages/chinois/grammaire/show', [
-            'grammaire' => $grammaire,
-        ]);
+        $this->render('pages/chinois/grammaire/show', ['grammaire' => $grammaire]);
     }
 
     // =================================================
@@ -68,10 +67,7 @@ final class GrammaireController extends Controller
         $this->title = 'Chinois | Ajouter une grammaire';
 
         $this->render('pages/chinois/grammaire/create', [
-            'form' => $this->formViewData(
-                'chinois/ajouter/grammaire',
-                'chinois/ajouter'
-            ),
+            'form' => $this->formViewData('chinois/ajouter/grammaire', 'chinois/ajouter')
         ]);
     }
 
@@ -79,9 +75,7 @@ final class GrammaireController extends Controller
     {
         $this->validateRequest($request);
 
-        $this->jsonResult(
-            $this->chinoisWriteService->createGrammaire($request->dto())
-        );
+        $this->jsonResult($this->chinoisWriteService->createGrammaire($request->dto()));
     }
 
     // =================================================
@@ -92,18 +86,11 @@ final class GrammaireController extends Controller
     {
         $niveau = $this->resolveHskLevel($level);
 
-        $this->renderEdit(
-            $niveau,
-            $id,
-            $this->returnPathInput()
-        );
+        $this->renderEdit($niveau, $id, $this->returnPathInput());
     }
 
-    public function update(
-        ChinoisGrammaireCreateRequest $request,
-        int $level,
-        int $id
-    ): never {
+    public function update(ChinoisGrammaireCreateRequest $request, int $level, int $id): never
+    {
         $niveau = $this->resolveHskLevel($level);
 
         $this->grammaireOrFail($niveau, $id);
@@ -115,19 +102,12 @@ final class GrammaireController extends Controller
 
         if (! $result->success)
         {
-            throw new BaseHttpException(
-                message: $result->message,
-                statusCode: $result->status,
-                data: $result->data
-            );
+            throw new BaseHttpException(message: $result->message, statusCode: $result->status, data: $result->data);
         }
 
         $destination = 'chinois/grammaire/' . mb_strtolower($dto->niveau);
 
-        $this->redirectWithSuccess(
-            $returnTo !== '' ? $returnTo : $destination,
-            $result->message
-        );
+        $this->redirectWithSuccess($returnTo !== '' ? $returnTo : $destination, $result->message);
     }
 
     // =================================================
@@ -165,15 +145,11 @@ final class GrammaireController extends Controller
             'grammaire' => $grammaire,
             'returnTo' => $returnTo,
             'form' => $this->formViewData(
-                sprintf(
-                    'chinois/grammaire/hsk%s/modifier/%d',
-                    $hskLevel,
-                    $grammaire->id
-                ),
+                sprintf('chinois/grammaire/hsk%s/modifier/%d', $hskLevel, $grammaire->id),
                 $returnTo !== ''
                     ? $returnTo
                     : 'chinois/grammaire/hsk' . $hskLevel
-            ),
+            )
         ]);
     }
 }

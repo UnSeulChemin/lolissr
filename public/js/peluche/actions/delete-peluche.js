@@ -2,193 +2,133 @@
 // SUPPRESSION PELUCHE
 // =================================================
 
-import {
-    post,
-} from '../../core/http.js';
+import { post } from '../../core/http.js';
 
-import {
-    delegate,
-} from '../../core/dom.js';
+import { delegate } from '../../core/dom.js';
 
-import {
-    showToast,
-} from '../../core/toast.js';
+import { showToast } from '../../core/toast.js';
 
-import {
-    debug,
-} from '../../core/debug/debug.js';
+import { debug } from '../../core/debug/debug.js';
 
-import {
-    handleError,
-} from '../../core/errors/error-handler.js';
+import { handleError } from '../../core/errors/error-handler.js';
 
-import {
-    FrontendError,
-} from '../../core/errors/FrontendError.js';
+import { FrontendError } from '../../core/errors/FrontendError.js';
 
-import {
-    navigateTo,
-} from '../../router/router-navigation.js';
+import { navigateTo } from '../../router/router-navigation.js';
 
-import {
-    invalidatePeluchePages,
-} from '../peluche-cache.js';
+import { invalidatePeluchePages } from '../peluche-cache.js';
 
-import {
-    deleteModal,
-} from '../../core/modal/modal.js';
+import { deleteModal } from '../../core/modal/modal.js';
 
 // =================================================
 // ÉTAT
 // =================================================
 
-let initialized =
-    false;
+let initialized = false;
 
 // =================================================
 // INTERFACE
 // =================================================
 
-function setLoadingState(
-    button,
-    loading,
-)
+function setLoadingState(button, loading)
 {
-    button.disabled =
-        loading;
+    button.disabled = loading;
 
-    button.textContent =
-        loading
+    button.textContent = loading
             ? 'Suppression...'
-            : (
-                button.dataset.originalText
-                || 'Supprimer'
-            );
+            : (button.dataset.originalText || 'Supprimer');
 }
 
 // =================================================
 // SUPPRESSION PELUCHE
 // =================================================
 
-async function deletePeluche(
-    button,
-)
+async function deletePeluche(button)
 {
-    if (
-        button.disabled
-    ) {
+    if (button.disabled)
+    {
 
         return;
     }
 
-    const url =
-        button.dataset.url;
+    const url = button.dataset.url;
 
-    const redirectUrl =
-        button.dataset.redirect
+    const redirectUrl = button.dataset.redirect
         || '/';
 
-    if (!url) {
+    if (!url)
+    {
 
         handleError(
             new FrontendError(
                 'URL invalide',
                 {
-                    code:
-                        'INVALID_DELETE_URL',
-                },
-            ),
+                    code: 'INVALID_DELETE_URL'
+                }
+            )
         );
 
         return;
     }
 
-    const confirmed =
-        await deleteModal(
-            'Supprimer cette peluche ?',
-        );
+    const confirmed = await deleteModal('Supprimer cette peluche ?');
 
     if (!confirmed)
     {
         return;
     }
 
-    if (
-        !button.dataset.originalText
-    ) {
+    if (!button.dataset.originalText)
+    {
 
-        button.dataset.originalText =
-            button.textContent
+        button.dataset.originalText = button.textContent
             || 'Supprimer';
     }
 
-    setLoadingState(
-        button,
-        true,
-    );
+    setLoadingState(button, true);
 
-    try {
+    try
+    {
 
-        debug(
-            'DELETE_PELUCHE',
-            'request',
-            url,
-        );
+        debug('DELETE_PELUCHE', 'request', url);
 
-        const data =
-            await post(
+        const data = await post(
                 url,
                 {},
                 {
-                    headers:
-                    {
-                        Accept:
-                            'application/json',
-                    },
-                },
+                    headers: {
+                        Accept: 'application/json'
+                    }
+                }
             );
 
-        if (
-            data?.success
-            !== true
-        ) {
+        if (data?.success !== true)
+        {
 
             throw new FrontendError(
                 data?.message
                 || 'Erreur suppression',
                 {
-                    code:
-                        'DELETE_FAILED',
-                },
+                    code: 'DELETE_FAILED'
+                }
             );
         }
 
-        const target =
-            data.data?.redirect
+        const target = data.data?.redirect
             || redirectUrl;
 
         invalidatePeluchePages();
 
-        showToast(
-            data.message
-            || 'Peluche supprimée',
-            'success',
-        );
+        showToast(data.message || 'Peluche supprimée', 'success');
 
-        await navigateTo(
-            target,
-        );
+        await navigateTo(target);
 
-    } catch (error) {
+    } catch (error)
+    {
 
-        handleError(
-            error,
-        );
+        handleError(error);
 
-        setLoadingState(
-            button,
-            false,
-        );
+        setLoadingState(button, false);
     }
 }
 
@@ -198,41 +138,29 @@ async function deletePeluche(
 
 export function initDeletePeluche()
 {
-    if (initialized) {
+    if (initialized)
+    {
 
         return;
     }
 
-    initialized =
-        true;
+    initialized = true;
 
     delegate(
         document,
         'click',
         '.js-delete-peluche',
-        (
-            _,
-            button,
-        ) =>
+        (_, button) =>
         {
-            if (
-                !(
-                    button
-                    instanceof HTMLButtonElement
-                )
-            ) {
+            if (!( button instanceof HTMLButtonElement ))
+            {
 
                 return;
             }
 
-            void deletePeluche(
-                button,
-            );
-        },
+            void deletePeluche(button);
+        }
     );
 
-    debug(
-        'DELETE_PELUCHE',
-        'initialized',
-    );
+    debug('DELETE_PELUCHE', 'initialized');
 }

@@ -27,6 +27,7 @@ final readonly class ChinoisGrammaireData
         public string $masteredValue,
         public string $masteredPressed,
         public string $masteredLabel
-    ) {
+    )
+    {
     }
 }

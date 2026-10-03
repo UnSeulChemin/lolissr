@@ -26,24 +26,19 @@
 
     z-index: -1;
 
-    filter:
-        blur(8px);
+    filter: blur(8px);
 }
 
 .glow-red::after
 {
-    background:
-        rgba(255, 74, 74, 0.52);
+    background: rgba(255, 74, 74, 0.52);
 
-    animation:
-        badge-glow-shared 1.8s ease-in-out infinite;
+    animation: badge-glow-shared 1.8s ease-in-out infinite;
 }
 
 .glow-blue::after
 {
-    background:
-        rgba(79, 99, 255, 0.52);
+    background: rgba(79, 99, 255, 0.52);
 
-    animation:
-        badge-glow-shared 1.8s ease-in-out infinite;
+    animation: badge-glow-shared 1.8s ease-in-out infinite;
 }

@@ -4,9 +4,7 @@ import { mountProfileModal } from './profile-modal-lifecycle.js';
 // AVATAR FENÊTRE MODALE
 // =================================================
 
-import {
-    appUrl,
-} from '../../core/url.js';
+import { appUrl } from '../../core/url.js';
 
 // =================================================
 // FENÊTRE MODALE
@@ -17,11 +15,9 @@ export function avatarModal(avatars)
     return new Promise(
         (resolve) =>
         {
-            const overlay =
-                document.createElement('div');
+            const overlay = document.createElement('div');
 
-            overlay.className =
-                'confirm-modal-overlay';
+            overlay.className = 'confirm-modal-overlay';
 
             overlay.innerHTML = `
                 <div class="confirm-modal">
@@ -68,11 +64,8 @@ export function avatarModal(avatars)
                 .forEach(
                     (button) =>
                     {
-                        button.addEventListener(
-                            'click',
-                            () => close(button.dataset.avatar),
-                        );
-                    },
+                        button.addEventListener('click', () => close(button.dataset.avatar));
+                    }
                 );
 
             overlay.addEventListener(
@@ -83,8 +76,8 @@ export function avatarModal(avatars)
                     {
                         close();
                     }
-                },
+                }
             );
-        },
+        }
     );
 }

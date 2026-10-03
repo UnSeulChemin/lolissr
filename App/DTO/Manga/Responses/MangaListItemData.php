@@ -26,7 +26,8 @@ final readonly class MangaListItemData
         public int $totalLu,
 
         public bool $lu,
-        public bool $isFullyRead,
-    ) {
+        public bool $isFullyRead
+    )
+    {
     }
 }

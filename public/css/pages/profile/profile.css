@@ -50,11 +50,7 @@
 .profile-header-grid
 {
     width: var(--profile-width);
-    grid-template-columns:
-        repeat(
-            2,
-            1fr
-        );
+    grid-template-columns: repeat( 2, 1fr );
     gap: var(--gap-grid-home);
     margin: 0 auto;
 }
@@ -189,13 +185,7 @@
 
     border-radius: 14px;
 
-    background:
-        rgba(
-            139,
-            92,
-            246,
-            .08
-        );
+    background: rgba( 139, 92, 246, .08 );
 }
 
 
@@ -207,10 +197,7 @@
 {
     width: var(--profile-width);
 
-    margin:
-        var(--gap-grid-home)
-        auto
-        0;
+    margin: var(--gap-grid-home) auto 0;
 }
 
 .profile-level-card
@@ -224,19 +211,7 @@
         246,
         .20
     );
-    box-shadow:
-        inset 0 1px 2px rgba(
-            255,
-            255,
-            255,
-            .65
-        ),
-        0 8px 18px rgba(
-            139,
-            92,
-            246,
-            .10
-        );
+    box-shadow: inset 0 1px 2px rgba( 255, 255, 255, .65 ), 0 8px 18px rgba( 139, 92, 246, .10 );
 }
 
 .profile-level-header
@@ -263,13 +238,7 @@
     font-size: 1rem;
     color: var(--color-violet);
     opacity: .95;
-    text-shadow:
-        0 0 12px rgba(
-            139,
-            92,
-            246,
-            .18
-        );
+    text-shadow: 0 0 12px rgba( 139, 92, 246, .18 );
 }
 
 .profile-level-progress
@@ -287,19 +256,7 @@
         rgba(139,92,246,.10),
         rgba(139,92,246,.04)
     );
-    box-shadow:
-        inset 0 1px 2px rgba(
-            255,
-            255,
-            255,
-            .70
-        ),
-        0 8px 18px rgba(
-            139,
-            92,
-            246,
-            .10
-        );
+    box-shadow: inset 0 1px 2px rgba( 255, 255, 255, .70 ), 0 8px 18px rgba( 139, 92, 246, .10 );
 }
 
 .profile-level-progress-bar
@@ -312,13 +269,7 @@
         #7c3aed 55%,
         #a855f7 100%
     );
-    box-shadow:
-        0 0 12px rgba(
-            139,
-            92,
-            246,
-            .45
-        );
+    box-shadow: 0 0 12px rgba( 139, 92, 246, .45 );
 }
 
 .profile-level-progress-bar::after
@@ -340,8 +291,7 @@
         transparent
     );
 
-    animation:
-        home-progress-shine 2.8s linear infinite;
+    animation: home-progress-shine 2.8s linear infinite;
 }
 /* =================================================
    STATS
@@ -453,11 +403,7 @@
 {
     width: 100%;
     min-width: 0;
-    grid-template-columns:
-        repeat(
-            2,
-            minmax(0, 1fr)
-        );
+    grid-template-columns: repeat( 2, minmax(0, 1fr) );
     gap: 1rem;
     margin: 0 auto;
 }
@@ -575,10 +521,7 @@
     grid-column: 1;
     grid-row: 2;
     box-sizing: border-box;
-    padding:
-        calc(var(--profile-avatar-size) / 2 + .5rem)
-        1rem
-        .75rem;
+    padding: calc(var(--profile-avatar-size) / 2 + .5rem) 1rem .75rem;
 }
 [data-title-style="teal-gold"]
 {

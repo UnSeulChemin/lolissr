@@ -2,22 +2,11 @@
 // NAVIGATION
 // =================================================
 
-import {
-    debug,
-    debugError,
-} from '../../core/debug/debug.js';
+import { debug, debugError } from '../../core/debug/debug.js';
 
-import {
-    end,
-    finish,
-    reset,
-    start,
-} from '../../core/debug/profiler.js';
+import { end, finish, reset, start } from '../../core/debug/profiler.js';
 
-import {
-    normalizeCacheKey,
-    normalizeRouteUrl,
-} from '../../core/navigation.js';
+import { normalizeCacheKey, normalizeRouteUrl } from '../../core/navigation.js';
 
 import {
     emitNavigationAbort,
@@ -25,88 +14,50 @@ import {
     emitNavigationFetch,
     emitNavigationReady,
     emitNavigationRender,
-    emitNavigationStart,
+    emitNavigationStart
 } from './navigation-events.js';
 
-import {
-    renderPage,
-} from './navigation-render.js';
+import { renderPage } from './navigation-render.js';
 
-import {
-    resolvePage,
-} from './resolve-page.js';
+import { resolvePage } from './resolve-page.js';
 
-import {
-    validatePageResponse,
-} from './validate-page-response.js';
+import { validatePageResponse } from './validate-page-response.js';
 
-import {
-    preparePageStyles,
-} from '../page-styles.js';
+import { preparePageStyles } from '../page-styles.js';
 
-import {
-    clearInvalidatedRoute,
-    shouldRefreshRoute,
-} from '../route-invalidation.js';
+import { clearInvalidatedRoute, shouldRefreshRoute } from '../route-invalidation.js';
 
-import {
-    runCleanup,
-} from '../router-cleanup.js';
+import { runCleanup } from '../router-cleanup.js';
 
-import {
-    dispatchRouterLoaded,
-} from '../router-events.js';
+import { dispatchRouterLoaded } from '../router-events.js';
 
-import {
-    triggerRouteChange,
-} from '../router-hooks.js';
+import { triggerRouteChange } from '../router-hooks.js';
 
-import {
-    clearController,
-    lockRouter,
-    navigationState,
-    setController,
-    unlockRouter,
-} from '../router-state.js';
+import { clearController, lockRouter, navigationState, setController, unlockRouter } from '../router-state.js';
 
-import {
-    saveScrollPosition,
-} from '../route-scroll.js';
+import { saveScrollPosition } from '../route-scroll.js';
 
 // =================================================
 // NAVIGATION
 // =================================================
 
-export async function navigateTo(
-    to,
-    options = {},
-)
+export async function navigateTo(to, options = {})
 {
     reset();
 
     start('total');
 
-    const current = normalizeRouteUrl(
-        location.href,
-    );
+    const current = normalizeRouteUrl(location.href);
 
-    const target = normalizeRouteUrl(
-        to,
-    );
+    const target = normalizeRouteUrl(to);
 
-    const targetCacheKey = normalizeCacheKey(
-        target,
-    );
+    const targetCacheKey = normalizeCacheKey(target);
 
     // --------------------------------------------------------------------------
     // MÊME ROUTE
     // --------------------------------------------------------------------------
 
-
-    if (
-        current === target
-        && options.force !== true
-    )
+    if (current === target && options.force !== true)
     {
         // La page peut déjà être affichée alors que ses modules s'initialisent.
         // Un nouveau clic sur cette destination doit laisser terminer la navigation.
@@ -118,11 +69,7 @@ export async function navigateTo(
             unlockRouter();
             emitNavigationAbort(current, target);
         }
-        debug(
-            'ROUTER',
-            'same-route',
-            target,
-        );
+        debug('ROUTER', 'same-route', target);
 
         return;
     }
@@ -131,13 +78,11 @@ export async function navigateTo(
     // ANNULATION PRÉCÉDENTE NAVIGATION
     // --------------------------------------------------------------------------
 
-
     navigationState.controller?.abort();
 
     // --------------------------------------------------------------------------
     // ENREGISTREMENT NAVIGATION
     // --------------------------------------------------------------------------
-
 
     const navigationId = ++navigationState.navigationId;
 
@@ -145,15 +90,11 @@ export async function navigateTo(
 
     const controller = new AbortController();
 
-    setController(
-        controller,
-        target,
-    );
+    setController(controller, target);
 
     // --------------------------------------------------------------------------
     // MÉMORISATION DU DÉFILEMENT
     // --------------------------------------------------------------------------
-
 
     saveScrollPosition();
 
@@ -161,11 +102,7 @@ export async function navigateTo(
     // DÉMARRAGE ÉVÉNEMENT
     // --------------------------------------------------------------------------
 
-
-    emitNavigationStart(
-        current,
-        target,
-    );
+    emitNavigationStart(current, target);
 
     try
     {
@@ -173,13 +110,9 @@ export async function navigateTo(
         // PÉRIMÉE NAVIGATION
         // --------------------------------------------------------------------------
 
-
         if (navigationId !== navigationState.navigationId)
         {
-            if (navigationId === navigationState.navigationId) emitNavigationAbort(
-                current,
-                target,
-            );
+            if (navigationId === navigationState.navigationId) emitNavigationAbort(current, target);
 
             return;
         }
@@ -188,45 +121,28 @@ export async function navigateTo(
         // INVALIDATION
         // --------------------------------------------------------------------------
 
-
-        const forceRefresh = shouldRefreshRoute(
-            targetCacheKey,
-        );
+        const forceRefresh = shouldRefreshRoute(targetCacheKey);
 
         if (forceRefresh)
         {
-            clearInvalidatedRoute(
-                targetCacheKey,
-            );
+            clearInvalidatedRoute(targetCacheKey);
         }
 
         // --------------------------------------------------------------------------
         // RÉSOLUTION PAGE
         // --------------------------------------------------------------------------
 
+        emitNavigationFetch(current, target);
 
-        emitNavigationFetch(
-            current,
-            target,
-        );
-
-        const response = await resolvePage(
-            targetCacheKey,
-            forceRefresh,
-            controller.signal,
-        );
+        const response = await resolvePage(targetCacheKey, forceRefresh, controller.signal);
 
         // --------------------------------------------------------------------------
         // PÉRIMÉE NAVIGATION
         // --------------------------------------------------------------------------
 
-
         if (navigationId !== navigationState.navigationId)
         {
-            if (navigationId === navigationState.navigationId) emitNavigationAbort(
-                current,
-                target,
-            );
+            if (navigationId === navigationState.navigationId) emitNavigationAbort(current, target);
 
             return;
         }
@@ -235,27 +151,17 @@ export async function navigateTo(
         // VALIDATION
         // --------------------------------------------------------------------------
 
+        validatePageResponse(response);
 
-        validatePageResponse(
-            response,
-        );
-
-        const commitPageStyles = await preparePageStyles(
-            response.page.stylesheets,
-            controller.signal,
-        );
+        const commitPageStyles = await preparePageStyles(response.page.stylesheets, controller.signal);
 
         // --------------------------------------------------------------------------
         // PÉRIMÉE NAVIGATION
         // --------------------------------------------------------------------------
 
-
         if (navigationId !== navigationState.navigationId)
         {
-            if (navigationId === navigationState.navigationId) emitNavigationAbort(
-                current,
-                target,
-            );
+            if (navigationId === navigationState.navigationId) emitNavigationAbort(current, target);
 
             return;
         }
@@ -263,7 +169,6 @@ export async function navigateTo(
         // --------------------------------------------------------------------------
         // NETTOYAGE
         // --------------------------------------------------------------------------
-
 
         start('cleanup');
 
@@ -275,27 +180,17 @@ export async function navigateTo(
         // RENDU ÉVÉNEMENT
         // --------------------------------------------------------------------------
 
-
-        emitNavigationRender(
-            current,
-            target,
-        );
+        emitNavigationRender(current, target);
 
         // --------------------------------------------------------------------------
         // RENDU PAGE
         // --------------------------------------------------------------------------
 
-
         start('render');
 
         commitPageStyles();
 
-        await renderPage(
-            current,
-            target,
-            response,
-            options,
-        );
+        await renderPage(current, target, response, options);
 
         end('render');
 
@@ -303,13 +198,9 @@ export async function navigateTo(
         // PÉRIMÉE NAVIGATION
         // --------------------------------------------------------------------------
 
-
         if (navigationId !== navigationState.navigationId)
         {
-            if (navigationId === navigationState.navigationId) emitNavigationAbort(
-                current,
-                target,
-            );
+            if (navigationId === navigationState.navigationId) emitNavigationAbort(current, target);
 
             return;
         }
@@ -318,41 +209,27 @@ export async function navigateTo(
         // ÉVÉNEMENTS
         // --------------------------------------------------------------------------
 
-
         await triggerRouteChange({
             from: current,
-            to: target,
+            to: target
         });
 
         // --------------------------------------------------------------------------
         // PÉRIMÉE NAVIGATION
         // --------------------------------------------------------------------------
 
-
         if (navigationId !== navigationState.navigationId)
         {
-            if (navigationId === navigationState.navigationId) emitNavigationAbort(
-                current,
-                target,
-            );
+            if (navigationId === navigationState.navigationId) emitNavigationAbort(current, target);
 
             return;
         }
 
-        dispatchRouterLoaded(
-            target,
-        );
+        dispatchRouterLoaded(target);
 
-        emitNavigationReady(
-            current,
-            target,
-        );
+        emitNavigationReady(current, target);
 
-        debug(
-            'ROUTER',
-            'done',
-            target,
-        );
+        debug('ROUTER', 'done', target);
 
         finish();
     }
@@ -362,13 +239,9 @@ export async function navigateTo(
         // ANNULATION
         // --------------------------------------------------------------------------
 
-
         if (error?.name === 'AbortError')
         {
-            if (navigationId === navigationState.navigationId) emitNavigationAbort(
-                current,
-                target,
-            );
+            if (navigationId === navigationState.navigationId) emitNavigationAbort(current, target);
 
             return;
         }
@@ -377,13 +250,9 @@ export async function navigateTo(
         // PÉRIMÉE NAVIGATION
         // --------------------------------------------------------------------------
 
-
         if (navigationId !== navigationState.navigationId)
         {
-            if (navigationId === navigationState.navigationId) emitNavigationAbort(
-                current,
-                target,
-            );
+            if (navigationId === navigationState.navigationId) emitNavigationAbort(current, target);
 
             return;
         }
@@ -392,22 +261,13 @@ export async function navigateTo(
         // ERREUR
         // --------------------------------------------------------------------------
 
+        emitNavigationError(current, target, error);
 
-        emitNavigationError(
-            current,
-            target,
-            error,
-        );
-
-        debugError(
-            'ROUTER',
-            error,
-        );
+        debugError('ROUTER', error);
 
         // --------------------------------------------------------------------------
         // REPLI
         // --------------------------------------------------------------------------
-
 
         if (options.fallback !== false)
         {
@@ -419,7 +279,6 @@ export async function navigateTo(
         // --------------------------------------------------------------------------
         // LIBÉRATION ACTUELLE NAVIGATION
         // --------------------------------------------------------------------------
-
 
         if (navigationId === navigationState.navigationId)
         {

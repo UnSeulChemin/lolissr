@@ -2,69 +2,46 @@
 // GESTION DES ERREURS
 // =================================================
 
-import {
-    showToast,
-} from '../toast.js';
+import { showToast } from '../toast.js';
 
-import {
-    debugError,
-} from '../debug/debug.js';
+import { debugError } from '../debug/debug.js';
 
-import {
-    FrontendError,
-} from './FrontendError.js';
+import { FrontendError } from './FrontendError.js';
 
 // =================================================
 // ÉTAT
 // =================================================
 
-let lastMessage =
-    null;
+let lastMessage = null;
 
-let lastTimestamp =
-    0;
+let lastTimestamp = 0;
 
 // =================================================
 // UTILITAIRES
 // =================================================
 
-function shouldSkipDuplicateToast(
-    message,
-)
+function shouldSkipDuplicateToast(message)
 {
-    const now =
-        Date.now();
+    const now = Date.now();
 
-    const isDuplicate =
-        lastMessage === message
-        && (
-            now
-            - lastTimestamp
-            < 2000
-        );
+    const isDuplicate = lastMessage === message
+        && (now - lastTimestamp < 2000);
 
-    lastMessage =
-        message;
+    lastMessage = message;
 
-    lastTimestamp =
-        now;
+    lastTimestamp = now;
 
     return isDuplicate;
 }
 
-function normalizeError(
-    error,
-)
+function normalizeError(error)
 {
     // --------------------------------------------------------------------------
     // INTERFACE ERREUR
     // --------------------------------------------------------------------------
 
-
-    if (
-        error
-        instanceof FrontendError
-    ) {
+    if (error instanceof FrontendError)
+    {
 
         return error;
     }
@@ -73,19 +50,15 @@ function normalizeError(
     // NATIVE ERREUR
     // --------------------------------------------------------------------------
 
-
-    if (
-        error
-        instanceof Error
-    ) {
+    if (error instanceof Error)
+    {
 
         return new FrontendError(
             error.message,
             {
-                code:
-                    error.name
-                    || 'ERROR',
-            },
+                code: error.name
+                    || 'ERROR'
+            }
         );
     }
 
@@ -93,18 +66,14 @@ function normalizeError(
     // CHAÎNE
     // --------------------------------------------------------------------------
 
-
-    if (
-        typeof error
-        === 'string'
-    ) {
+    if (typeof error === 'string')
+    {
 
         return new FrontendError(
             error,
             {
-                code:
-                    'STRING_ERROR',
-            },
+                code: 'STRING_ERROR'
+            }
         );
     }
 
@@ -112,41 +81,28 @@ function normalizeError(
     // INCONNUE
     // --------------------------------------------------------------------------
 
-
     return new FrontendError(
         'Une erreur est survenue',
         {
-            code:
-                'UNKNOWN_ERROR',
-        },
+            code: 'UNKNOWN_ERROR'
+        }
     );
 }
 
-function getErrorMessage(
-    error,
-)
+function getErrorMessage(error)
 {
-    switch (
-        error.code
-    ) {
+    switch (error.code)
+    {
 
-        case 'NETWORK_ERROR':
-            return 'Erreur réseau';
+        case 'NETWORK_ERROR': return 'Erreur réseau';
 
-        case 'REQUEST_TIMEOUT':
-            return 'Le serveur met trop de temps à répondre';
+        case 'REQUEST_TIMEOUT': return 'Le serveur met trop de temps à répondre';
 
-        case 'HTTP_404':
-            return 'Page introuvable';
+        case 'HTTP_404': return 'Page introuvable';
 
-        case 'HTTP_500':
-            return 'Erreur serveur';
+        case 'HTTP_500': return 'Erreur serveur';
 
-        default:
-            return (
-                error.message
-                || 'Une erreur est survenue'
-            );
+        default: return (error.message || 'Une erreur est survenue');
     }
 }
 
@@ -154,33 +110,22 @@ function getErrorMessage(
 // TRAITEMENT ERREUR
 // =================================================
 
-export function handleError(
-    rawError,
-)
+export function handleError(rawError)
 {
-    const error =
-        normalizeError(
-            rawError,
-        );
+    const error = normalizeError(rawError);
 
     // --------------------------------------------------------------------------
     // DÉBOGAGE
     // --------------------------------------------------------------------------
 
-
-    debugError(
-        'ERROR_HANDLER',
-        error,
-    );
+    debugError('ERROR_HANDLER', error);
 
     // --------------------------------------------------------------------------
     // SILENCIEUX
     // --------------------------------------------------------------------------
 
-
-    if (
-        error.silent
-    ) {
+    if (error.silent)
+    {
 
         return;
     }
@@ -189,22 +134,14 @@ export function handleError(
     // MESSAGE
     // --------------------------------------------------------------------------
 
-
-    const message =
-        getErrorMessage(
-            error,
-        );
+    const message = getErrorMessage(error);
 
     // --------------------------------------------------------------------------
     // DOUBLON NOTIFICATION
     // --------------------------------------------------------------------------
 
-
-    if (
-        shouldSkipDuplicateToast(
-            message,
-        )
-    ) {
+    if (shouldSkipDuplicateToast( message ))
+    {
 
         return;
     }
@@ -213,9 +150,5 @@ export function handleError(
     // NOTIFICATION
     // --------------------------------------------------------------------------
 
-
-    showToast(
-        message,
-        'error',
-    );
+    showToast(message, 'error');
 }

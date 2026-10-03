@@ -28,19 +28,25 @@ export async function runBrowserScenario(preparePageStyles)
     const canceled = new AbortController();
     const pending = preparePageStyles([css('pages/profile/profile.css')], canceled.signal);
     canceled.abort();
-    try { await pending; throw new Error('Canceled navigation resolved'); }
-    catch (error) { if (error.name !== 'AbortError') throw error; }
+    try
+    { await pending; throw new Error('Canceled navigation resolved'); }
+    catch (error)
+    { if (error.name !== 'AbortError') throw error; }
     check(active()[0] === previous && document.querySelectorAll('link[media="not all"]').length === 0, 'Cancellation keeps current styles and removes pending links');
 
     const late = new AbortController();
     const commit = await preparePageStyles([css('pages/sql.css')], late.signal);
     late.abort();
-    try { commit(); throw new Error('Stale commit accepted'); }
-    catch (error) { if (error.name !== 'AbortError') throw error; }
+    try
+    { commit(); throw new Error('Stale commit accepted'); }
+    catch (error)
+    { if (error.name !== 'AbortError') throw error; }
     check(active()[0] === previous, 'Cancellation after loading prevents stale commit');
 
-    try { await preparePageStyles([css('missing-page-style.css')], new AbortController().signal); throw new Error('Missing CSS accepted'); }
-    catch (error) { if (!error.message.includes('Unable to load stylesheet')) throw error; }
+    try
+    { await preparePageStyles([css('missing-page-style.css')], new AbortController().signal); throw new Error('Missing CSS accepted'); }
+    catch (error)
+    { if (!error.message.includes('Unable to load stylesheet')) throw error; }
     check(active()[0] === previous, 'Load failure preserves current page styles');
 
     const a = new AbortController();
@@ -48,7 +54,8 @@ export async function runBrowserScenario(preparePageStyles)
     const first = preparePageStyles([css('pages/chinois/grammaire.css')], a.signal);
     const second = preparePageStyles([css('pages/chinois/grammaire.css')], b.signal);
     a.abort();
-    await first.catch(error => { if (error.name !== 'AbortError') throw error; });
+    await first.catch(error =>
+    { if (error.name !== 'AbortError') throw error; });
     (await second)();
     check(active().length === 1 && active()[0].href === css('pages/chinois/grammaire.css'), 'Overlapping navigation survives earlier cancellation');
 
@@ -63,10 +70,13 @@ export async function runBrowserScenario(preparePageStyles)
     try
     {
         // Simulate a request that never fires load/error, without waiting 10 seconds.
-        document.head.append = () => {};
+        document.head.append = () =>
+        {};
         window.setTimeout = callback => setTimer(callback, 10);
-        try { await preparePageStyles([css('pages/sql.css')], new AbortController().signal); throw new Error('Hanging CSS accepted'); }
-        catch (error) { if (!error.message.includes('timed out')) throw error; }
+        try
+        { await preparePageStyles([css('pages/sql.css')], new AbortController().signal); throw new Error('Hanging CSS accepted'); }
+        catch (error)
+        { if (!error.message.includes('timed out')) throw error; }
         check(document.querySelectorAll('link[media="not all"]').length === 0, 'Hung request times out and cleans pending styles');
     }
     finally

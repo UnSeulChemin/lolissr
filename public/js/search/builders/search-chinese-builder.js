@@ -2,59 +2,39 @@
 // CONSTRUCTION DES RÉSULTATS DE CHINOIS
 // =================================================
 
-import {
-    escapeHtml,
-} from '../utils/search-utils.js';
+import { escapeHtml } from '../utils/search-utils.js';
 
-import {
-    createResultItem,
-} from './search-result-item.js';
+import { createResultItem } from './search-result-item.js';
 
 // =================================================
 // CONSTRUCTION CHINOIS RÉSULTAT
 // =================================================
 
-export function buildChineseResult(
-    item,
-    basePath,
-)
+export function buildChineseResult(item, basePath)
 {
-    const id =
-        item.id ?? '';
+    const id = item.id ?? '';
 
-    const type =
-        item.type ?? '';
+    const type = item.type ?? '';
 
-    const titre =
-        item.titre ?? '';
+    const titre = item.titre ?? '';
 
-    const description =
-        item.description ?? '';
+    const description = item.description ?? '';
 
-    const langue =
-        String(
-            item.langue ?? '',
-        ).toLowerCase();
+    const langue = String(item.langue ?? '').toLowerCase();
 
-    const niveau =
-        String(
-            item.niveau ?? '',
-        ).toLowerCase();
+    const niveau = String(item.niveau ?? '').toLowerCase();
 
-    const icon =
-        type === 'grammaire'
+    const icon = type === 'grammaire'
             ? '📖'
             : '📚';
 
-    const label =
-        type === 'grammaire'
+    const label = type === 'grammaire'
             ? niveau.toUpperCase()
             : langue === 'jinyu'
                 ? '晋语'
                 : '中文';
 
-    const url =
-        type === 'grammaire'
+    const url = type === 'grammaire'
             ? `${basePath}chinois/grammaire/${niveau}/recherche/${id}`
             : `${basePath}chinois/vocabulaire/${langue}/recherche/${id}`;
 
@@ -89,6 +69,6 @@ export function buildChineseResult(
                 </small>
 
             </span>
-        `,
+        `
     );
 }

@@ -20,7 +20,7 @@ final class ProfileImageCatalog
                 'avatar' => $item['avatar'],
                 'avatar_extension' => $item['avatar_extension'],
                 'unlocked' => $target === false || $unlockedCount >= $target,
-                'requirement' => $target === false ? 'Disponible' : $target . ($target === 1 ? ' succès obtenu' : ' succès obtenus'),
+                'requirement' => $target === false ? 'Disponible' : $target . ($target === 1 ? ' succès obtenu' : ' succès obtenus')
             ];
         }
 
@@ -54,7 +54,7 @@ final class ProfileImageCatalog
         'aurore' => 175,
         'imperial' => 200,
         'ailes-azur' => 100,
-        'ailes-souveraines' => 200,
+        'ailes-souveraines' => 200
     ];
 
     public const FIGURINE_REWARD_FRAME = 'ailes-roses';
@@ -100,7 +100,7 @@ final class ProfileImageCatalog
                     'frame_extension' => $item['frame_extension'],
                     'required_level' => 0,
                     'unlocked' => ($isVocabulary ? $vocabularyLearned : $grammarLearned) >= self::LEARNING_FRAME_TARGET,
-                    'requirement' => self::LEARNING_FRAME_TARGET . ($isVocabulary ? ' mots maîtrisés' : ' points de grammaire maîtrisés'),
+                    'requirement' => self::LEARNING_FRAME_TARGET . ($isVocabulary ? ' mots maîtrisés' : ' points de grammaire maîtrisés')
                 ];
                 continue;
             }
@@ -111,7 +111,7 @@ final class ProfileImageCatalog
                     'frame_extension' => $item['frame_extension'],
                     'required_level' => 0,
                     'unlocked' => $peluchesCollected >= self::PELUCHE_FRAME_TARGET,
-                    'requirement' => self::PELUCHE_FRAME_TARGET . ' peluches collectionnées',
+                    'requirement' => self::PELUCHE_FRAME_TARGET . ' peluches collectionnées'
                 ];
                 continue;
             }
@@ -122,7 +122,7 @@ final class ProfileImageCatalog
                     'frame_extension' => $item['frame_extension'],
                     'required_level' => 0,
                     'unlocked' => $nendoroidsCollected >= self::NENDOROID_FRAME_TARGET,
-                    'requirement' => self::NENDOROID_FRAME_TARGET . ' nendoroids collectionnés',
+                    'requirement' => self::NENDOROID_FRAME_TARGET . ' nendoroids collectionnés'
                 ];
                 continue;
             }
@@ -135,7 +135,7 @@ final class ProfileImageCatalog
                     'frame_extension' => $item['frame_extension'],
                     'required_level' => 0,
                     'unlocked' => $readTomes >= self::TOME_FRAME_TARGET,
-                    'requirement' => self::TOME_FRAME_TARGET . ' tomes lus',
+                    'requirement' => self::TOME_FRAME_TARGET . ' tomes lus'
                 ];
                 continue;
             }
@@ -146,7 +146,7 @@ final class ProfileImageCatalog
                     'frame_extension' => $item['frame_extension'],
                     'required_level' => 0,
                     'unlocked' => $readArtbooks >= self::ARTBOOK_REWARD_TARGET,
-                    'requirement' => self::ARTBOOK_REWARD_TARGET . ' artbooks lus',
+                    'requirement' => self::ARTBOOK_REWARD_TARGET . ' artbooks lus'
                 ];
                 continue;
             }
@@ -155,7 +155,7 @@ final class ProfileImageCatalog
                 'frame_extension' => $item['frame_extension'],
                 'required_level' => $isReward ? 0 : $requiredLevel,
                 'unlocked' => $isReward ? $figurinesCollected >= self::FIGURINE_REWARD_TARGET : $level >= $requiredLevel,
-                'requirement' => $isReward ? self::FIGURINE_REWARD_TARGET . ' figurines collectionnées' : ($requiredLevel > 1 ? 'Niveau ' . $requiredLevel : 'Disponible'),
+                'requirement' => $isReward ? self::FIGURINE_REWARD_TARGET . ' figurines collectionnées' : ($requiredLevel > 1 ? 'Niveau ' . $requiredLevel : 'Disponible')
             ];
         }
 
@@ -206,7 +206,7 @@ final class ProfileImageCatalog
                     'banner_extension' => $item['banner_extension'],
                     'required_level' => 0,
                     'unlocked' => ($isVocabulary ? $vocabularyLearned : $grammarLearned) >= self::LEARNING_BANNER_TARGET,
-                    'requirement' => self::LEARNING_BANNER_TARGET . ($isVocabulary ? ' mots maîtrisés' : ' points de grammaire maîtrisés'),
+                    'requirement' => self::LEARNING_BANNER_TARGET . ($isVocabulary ? ' mots maîtrisés' : ' points de grammaire maîtrisés')
                 ];
                 continue;
             }
@@ -217,7 +217,7 @@ final class ProfileImageCatalog
                     'banner_extension' => $item['banner_extension'],
                     'required_level' => 0,
                     'unlocked' => $peluchesCollected >= self::PELUCHE_BANNER_TARGET,
-                    'requirement' => self::PELUCHE_BANNER_TARGET . ' peluches collectionnées',
+                    'requirement' => self::PELUCHE_BANNER_TARGET . ' peluches collectionnées'
                 ];
                 continue;
             }
@@ -228,7 +228,7 @@ final class ProfileImageCatalog
                     'banner_extension' => $item['banner_extension'],
                     'required_level' => 0,
                     'unlocked' => $nendoroidsCollected >= self::NENDOROID_REWARD_TARGET,
-                    'requirement' => self::NENDOROID_REWARD_TARGET . ' nendoroids collectionnés',
+                    'requirement' => self::NENDOROID_REWARD_TARGET . ' nendoroids collectionnés'
                 ];
                 continue;
             }
@@ -240,7 +240,7 @@ final class ProfileImageCatalog
                 'banner_extension' => $item['banner_extension'],
                 'required_level' => $isReward ? 0 : $requiredLevel,
                 'unlocked' => $isReward ? $readTomes >= self::TOME_REWARD_TARGET : $level >= $requiredLevel,
-                'requirement' => $isReward ? self::TOME_REWARD_TARGET . ' tomes lus' : ($requiredLevel > 1 ? 'Niveau ' . $requiredLevel : 'Disponible'),
+                'requirement' => $isReward ? self::TOME_REWARD_TARGET . ' tomes lus' : ($requiredLevel > 1 ? 'Niveau ' . $requiredLevel : 'Disponible')
             ];
         }
 
@@ -285,7 +285,7 @@ final class ProfileImageCatalog
         {
             $items[] = [
                 $type => pathinfo($file, PATHINFO_FILENAME),
-                $type . '_extension' => pathinfo($file, PATHINFO_EXTENSION),
+                $type . '_extension' => pathinfo($file, PATHINFO_EXTENSION)
             ];
         }
 

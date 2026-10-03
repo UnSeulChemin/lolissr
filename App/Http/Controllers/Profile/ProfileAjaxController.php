@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Profile;
 
 use App\Constants\UserTitle;
-use App\Http\Controllers\Controller;
 use App\DTO\Common\ServiceResult;
+use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Repositories\Auth\UserRepository;
-use App\Services\Profile\ProfileImageCatalog;
 use App\Repositories\Profile\ProfileUnlockStatsRepository;
+use App\Services\Profile\ProfileImageCatalog;
 
 use Framework\Http\Request;
 
@@ -84,11 +84,7 @@ final class ProfileAjaxController extends Controller
     {
         $user = $this->user();
 
-        $avatar = $this->findItem(
-            $this->availableAvatars(),
-            'avatar',
-            $this->stringInput('avatar')
-        );
+        $avatar = $this->findItem($this->availableAvatars(), 'avatar', $this->stringInput('avatar'));
 
         if ($avatar === null)
         {
@@ -100,21 +96,14 @@ final class ProfileAjaxController extends Controller
             $this->jsonResult(ServiceResult::error(message: 'Condition de déblocage : ' . $avatar['requirement'], status: 422));
         }
 
-        if (! $this->userRepository->updateAvatar(
-            $user->id,
-            $avatar['avatar'],
-            $avatar['avatar_extension']
-        ))
+        if (! $this->userRepository->updateAvatar($user->id, $avatar['avatar'], $avatar['avatar_extension']))
         {
             $this->jsonResult(ServiceResult::error(message: 'Personnalisation non enregistrée', status: 500));
         }
 
         $this->jsonResult(ServiceResult::success(
             message: 'Avatar mis à jour',
-            data: [
-                'avatar' => $avatar['avatar'],
-                'avatar_extension' => $avatar['avatar_extension']
-            ]
+            data: ['avatar' => $avatar['avatar'], 'avatar_extension' => $avatar['avatar_extension']]
         ));
     }
 
@@ -155,21 +144,14 @@ final class ProfileAjaxController extends Controller
             ));
         }
 
-        if (! $this->userRepository->updateBanner(
-            $user->id,
-            $banner['banner'],
-            $banner['banner_extension']
-        ))
+        if (! $this->userRepository->updateBanner($user->id, $banner['banner'], $banner['banner_extension']))
         {
             $this->jsonResult(ServiceResult::error(message: 'Personnalisation non enregistrée', status: 500));
         }
 
         $this->jsonResult(ServiceResult::success(
             message: 'Bannière mise à jour',
-            data: [
-                'banner' => $banner['banner'],
-                'banner_extension' => $banner['banner_extension']
-            ]
+            data: ['banner' => $banner['banner'], 'banner_extension' => $banner['banner_extension']]
         ));
     }
 
@@ -209,21 +191,14 @@ final class ProfileAjaxController extends Controller
             ));
         }
 
-        if (! $this->userRepository->updateFrame(
-            $user->id,
-            $frame['frame'],
-            $frame['frame_extension']
-        ))
+        if (! $this->userRepository->updateFrame($user->id, $frame['frame'], $frame['frame_extension']))
         {
             $this->jsonResult(ServiceResult::error(message: 'Personnalisation non enregistrée', status: 500));
         }
 
         $this->jsonResult(ServiceResult::success(
             message: 'Cadre mis à jour',
-            data: [
-                'frame' => $frame['frame'],
-                'frame_extension' => $frame['frame_extension']
-            ]
+            data: ['frame' => $frame['frame'], 'frame_extension' => $frame['frame_extension']]
         ));
     }
 

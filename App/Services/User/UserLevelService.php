@@ -9,10 +9,8 @@ use App\Repositories\Auth\UserRepository;
 
 final readonly class UserLevelService
 {
-    public function __construct(
-        private UserRepository $repository,
-        private \Framework\Database\Database $database
-    ) {
+    public function __construct(private UserRepository $repository, private \Framework\Database\Database $database)
+    {
     }
 
     // --------------------------------------------------------------------------
@@ -60,7 +58,8 @@ final readonly class UserLevelService
         {
             $level = $user->level;
             $currentXp = $user->xp;
-            $this->database->onRollback(static function () use ($user, $level, $currentXp): void {
+            $this->database->onRollback(static function () use ($user, $level, $currentXp): void
+            {
                 $user->level = $level;
                 $user->xp = $currentXp;
             });

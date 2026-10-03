@@ -76,19 +76,9 @@
     /* =================================================
        GRADIENTS
     ================================================= */
-    --gradient-violet:
-        linear-gradient(
-            135deg,
-            #6a1fff,
-            #a84dff
-        );
+    --gradient-violet: linear-gradient( 135deg, #6a1fff, #a84dff );
 
-    --gradient-dashboard-header:
-        linear-gradient(
-            180deg,
-            rgba(255, 255, 255, 0.98) 0%,
-            rgba(123, 44, 255, 0.06) 100%
-        );
+    --gradient-dashboard-header: linear-gradient( 180deg, rgba(255, 255, 255, 0.98) 0%, rgba(123, 44, 255, 0.06) 100% );
 
     --gradient-dashboard-header-overlay:
         linear-gradient(
@@ -98,12 +88,7 @@
             transparent 50%
         );
 
-    --gradient-dashboard-card:
-        linear-gradient(
-            180deg,
-            var(--color-surface) 0%,
-            var(--color-surface-soft) 100%
-        );
+    --gradient-dashboard-card: linear-gradient( 180deg, var(--color-surface) 0%, var(--color-surface-soft) 100% );
 
     --gradient-dashboard-card-overlay:
         linear-gradient(
@@ -128,58 +113,35 @@
             transparent 75%
         );
 
-    --gradient-chinois-table-head:
-        linear-gradient(
-            135deg,
-            rgba(123, 44, 255, 0.14),
-            rgba(178, 76, 255, 0.08)
-        );
+    --gradient-chinois-table-head: linear-gradient( 135deg, rgba(123, 44, 255, 0.14), rgba(178, 76, 255, 0.08) );
 
 
     /* =================================================
        BACKGROUNDS
     ================================================= */
-    --background-panel:
-        linear-gradient(
-            180deg,
-            rgba(255,255,255,0.97),
-            rgba(250,247,255,0.92)
-        );
+    --background-panel: linear-gradient( 180deg, rgba(255,255,255,0.97), rgba(250,247,255,0.92) );
 
-    --background-grammar:
-        linear-gradient(
-            180deg,
-            rgba(255, 255, 255, 0.98) 0%,
-            rgba(123, 44, 255, 0.06) 100%
-        );
+    --background-grammar: linear-gradient( 180deg, rgba(255, 255, 255, 0.98) 0%, rgba(123, 44, 255, 0.06) 100% );
 
-    --background-chinois-table:
-        rgba(255,255,255,0.82);
+    --background-chinois-table: rgba(255,255,255,0.82);
 
-    --background-chinois-table-row-hover:
-        rgba(123, 44, 255, 0.045);
+    --background-chinois-table-row-hover: rgba(123, 44, 255, 0.045);
 
-    --background-chinois-type:
-        rgba(123, 44, 255, 0.08);
+    --background-chinois-type: rgba(123, 44, 255, 0.08);
 
 
     /* =================================================
        BORDERS
     ================================================= */
-    --border-panel:
-        1px solid rgba(123, 44, 255, 0.14);
+    --border-panel: 1px solid rgba(123, 44, 255, 0.14);
 
-    --border-grammar:
-        1px solid rgba(123, 44, 255, 0.10);
+    --border-grammar: 1px solid rgba(123, 44, 255, 0.10);
 
-    --border-chinois-table:
-        1px solid rgba(123, 44, 255, 0.13);
+    --border-chinois-table: 1px solid rgba(123, 44, 255, 0.13);
 
-    --border-chinois-table-row:
-        1px solid rgba(123, 44, 255, 0.09);
+    --border-chinois-table-row: 1px solid rgba(123, 44, 255, 0.09);
 
-    --border-chinois-type:
-        1px solid rgba(123, 44, 255, 0.20);
+    --border-chinois-type: 1px solid rgba(123, 44, 255, 0.20);
 
     --color-border-soft: rgba(0, 0, 0, 0.08);
     --color-border-light: rgba(0, 0, 0, 0.06);
@@ -388,62 +350,40 @@
     /* =================================================
        SHADOWS
     ================================================= */
-    --shadow-card:
-        0 10px 30px rgba(0, 0, 0, 0.06),
-        0 2px 10px rgba(0, 0, 0, 0.03);
+    --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.06), 0 2px 10px rgba(0, 0, 0, 0.03);
 
     --shadow-card-hover:
         0 18px 34px rgba(0, 0, 0, 0.10),
         0 0 0 3px var(--color-violet),
         0 10px 26px rgba(123, 44, 255, 0.18);
 
-    --shadow-image-soft:
-        0 6px 14px rgba(0, 0, 0, 0.08);
+    --shadow-image-soft: 0 6px 14px rgba(0, 0, 0, 0.08);
 
-    --shadow-image:
-        0 8px 18px rgba(0, 0, 0, 0.12);
+    --shadow-image: 0 8px 18px rgba(0, 0, 0, 0.12);
 
-    --shadow-detail-card:
-        0 10px 24px rgba(0, 0, 0, 0.08);
+    --shadow-detail-card: 0 10px 24px rgba(0, 0, 0, 0.08);
 
-    --shadow-detail-image:
-        0 18px 36px rgba(0, 0, 0, 0.10),
-        0 6px 12px rgba(0, 0, 0, 0.06);
+    --shadow-detail-image: 0 18px 36px rgba(0, 0, 0, 0.10), 0 6px 12px rgba(0, 0, 0, 0.06);
 
-    --shadow-soft:
-        0 6px 18px rgba(0, 0, 0, 0.05);
+    --shadow-soft: 0 6px 18px rgba(0, 0, 0, 0.05);
 
-    --shadow-panel:
-        0 12px 28px rgba(0, 0, 0, 0.07);
+    --shadow-panel: 0 12px 28px rgba(0, 0, 0, 0.07);
 
-    --shadow-panel-large:
-        0 20px 50px rgba(45, 35, 75, 0.12),
-        0 0 0 1px rgba(255,255,255,0.72) inset;
+    --shadow-panel-large: 0 20px 50px rgba(45, 35, 75, 0.12), 0 0 0 1px rgba(255,255,255,0.72) inset;
 
-    --shadow-violet-soft:
-        0 10px 24px rgba(123, 44, 255, 0.12);
+    --shadow-violet-soft: 0 10px 24px rgba(123, 44, 255, 0.12);
 
-    --shadow-dashboard-header:
-        var(--shadow-panel),
-        0 0 0 1px rgba(255, 255, 255, 0.60) inset;
+    --shadow-dashboard-header: var(--shadow-panel), 0 0 0 1px rgba(255, 255, 255, 0.60) inset;
 
-    --shadow-dashboard-icon:
-        inset 0 1px 0 rgba(255, 255, 255, 0.55),
-        var(--shadow-violet-soft);
+    --shadow-dashboard-icon: inset 0 1px 0 rgba(255, 255, 255, 0.55), var(--shadow-violet-soft);
 
-    --shadow-dashboard-icon-hover:
-        inset 0 1px 0 rgba(255, 255, 255, 0.55),
-        0 12px 24px rgba(123, 44, 255, 0.14);
+    --shadow-dashboard-icon-hover: inset 0 1px 0 rgba(255, 255, 255, 0.55), 0 12px 24px rgba(123, 44, 255, 0.14);
 
-    --shadow-grammar:
-        var(--shadow-panel),
-        0 0 0 1px rgba(255, 255, 255, 0.60) inset;
+    --shadow-grammar: var(--shadow-panel), 0 0 0 1px rgba(255, 255, 255, 0.60) inset;
 
-    --shadow-text-badge:
-        0 1px 2px rgba(0, 0, 0, 0.30);
+    --shadow-text-badge: 0 1px 2px rgba(0, 0, 0, 0.30);
 
-    --ring-badge:
-        0 0 0 3px var(--color-violet-soft-medium);
+    --ring-badge: 0 0 0 3px var(--color-violet-soft-medium);
 
 
     /* =================================================

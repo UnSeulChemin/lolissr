@@ -36,11 +36,6 @@ return [
         $normalizeList((string) env('UPLOAD_ALLOWED_EXT', 'jpg,jpeg,png,webp'))
     ))),
 
-    'allowed_mime_types' => $normalizeList(
-        (string) env(
-            'UPLOAD_ALLOWED_MIME',
-            'image/jpeg,image/png,image/webp'
-        )
-    )
+    'allowed_mime_types' => $normalizeList((string) env('UPLOAD_ALLOWED_MIME', 'image/jpeg,image/png,image/webp'))
 
 ];

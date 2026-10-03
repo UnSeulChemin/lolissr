@@ -16,11 +16,9 @@ readonly class FormViewData extends ViewData
         public array $errors,
         public array $old,
         public string $formAction,
-        public string $cancelUrl,
-    ) {
-        parent::__construct(
-            $baseUri,
-            $toast,
-        );
+        public string $cancelUrl
+    )
+    {
+        parent::__construct($baseUri, $toast);
     }
 }

@@ -2,33 +2,27 @@
 // CONFIGURATION DE L’APPLICATION
 // =================================================
 
-const hostname =
-    window.location.hostname;
+const hostname = window.location.hostname;
 
 // =================================================
 // ENVIRONNEMENT
 // =================================================
 
-const isLocalhost =
-    hostname === 'localhost'
+const isLocalhost = hostname === 'localhost'
     || hostname === '127.0.0.1';
 
 // =================================================
 // DÉBOGAGE
 // =================================================
 
-const debugEnabled =
-    isLocalhost
-    && localStorage.getItem(
-        'lolissr_debug',
-    ) === '1';
+const debugEnabled = isLocalhost
+    && localStorage.getItem('lolissr_debug') === '1';
 
 // =================================================
 // URI DE BASE
 // =================================================
 
-const baseUri =
-    typeof window.appConfig?.baseUri === 'string'
+const baseUri = typeof window.appConfig?.baseUri === 'string'
         ? window.appConfig.baseUri
         : '/';
 
@@ -36,8 +30,7 @@ const baseUri =
 // ENVIRONNEMENT
 // =================================================
 
-const env =
-    debugEnabled
+const env = debugEnabled
         ? 'development'
         : 'production';
 
@@ -45,8 +38,7 @@ const env =
 // CONFIGURATION
 // =================================================
 
-export const config =
-    Object.freeze({
+export const config = Object.freeze({
 
         // =================================================
         // APPLICATION
@@ -54,8 +46,7 @@ export const config =
 
         env,
 
-        debug:
-            debugEnabled,
+        debug: debugEnabled,
 
         isLocalhost,
 
@@ -65,76 +56,57 @@ export const config =
         // ROUTEUR
         // =================================================
 
-        router:
-        {
-            timeout:
-                10000,
+        router: {
+            timeout: 10000,
 
-            maxConcurrentNavigations:
-                1,
+            maxConcurrentNavigations: 1
         },
 
         // =================================================
         // PRÉCHARGEMENT
         // =================================================
 
-        prefetch:
-        {
-            enabled:
-                true,
+        prefetch: {
+            enabled: true,
 
-            hoverDelay:
-                80,
+            hoverDelay: 80,
 
-            timeout:
-                8000,
+            timeout: 8000,
 
-            cacheLimit:
-                50,
+            cacheLimit: 50,
 
-            cacheDuration:
-                60000,
+            cacheDuration: 60000
         },
 
         // =================================================
         // TRANSITIONS
         // =================================================
 
-        transitions:
-        {
-            enabled:
-                true,
+        transitions: {
+            enabled: true,
 
-            duration:
-                250,
+            duration: 250
         },
 
         // =================================================
         // NAVIGATION
         // =================================================
 
-        navigation:
-        {
-            backLockDuration:
-                350,
+        navigation: {
+            backLockDuration: 350,
 
-            initialPrefetchDelay:
-                800,
+            initialPrefetchDelay: 800,
 
-            restoreScroll:
-                true,
+            restoreScroll: true
         },
 
         // =================================================
         // DÉBOGAGE PANNEAU
         // =================================================
 
-        debugPanel:
-        {
-            enabled:
-                debugEnabled,
+        debugPanel: {
+            enabled: debugEnabled,
 
-            maxLogs:
-                30,
-        },
+            maxLogs: 30
+        }
     });

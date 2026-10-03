@@ -6,10 +6,7 @@ namespace App\DTO\Media;
 
 final readonly class UploadThumbnailData
 {
-    public function __construct(
-        public string $thumbnailPath,
-        public string $extension,
-        public string $destinationPath
-    ) {
+    public function __construct(public string $thumbnailPath, public string $extension, public string $destinationPath)
+    {
     }
 }

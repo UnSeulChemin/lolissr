@@ -2,45 +2,25 @@
 // CONSTRUCTION DES RÉSULTATS DE MANGAS
 // =================================================
 
-import {
-    highlightSearchTerm,
-    escapeHtml,
-} from '../utils/search-utils.js';
+import { highlightSearchTerm, escapeHtml } from '../utils/search-utils.js';
 
-import {
-    createResultItem,
-} from './search-result-item.js';
+import { createResultItem } from './search-result-item.js';
 
-export function buildMangaResult(
-    manga,
-    rawValue,
-    basePath,
-)
+export function buildMangaResult(manga, rawValue, basePath)
 {
-    const slug =
-        encodeURIComponent(
-            manga.slug ?? '',
-        );
+    const slug = encodeURIComponent(manga.slug ?? '');
 
-    const numero =
-        Number(
-            manga.numero ?? 0,
-        );
+    const numero = Number(manga.numero ?? 0);
 
-    const livre =
-        manga.livre ?? '';
+    const livre = manga.livre ?? '';
 
-    const thumbnail =
-        manga.thumbnail ?? 'default';
+    const thumbnail = manga.thumbnail ?? 'default';
 
-    const extension =
-        manga.extension ?? 'jpg';
+    const extension = manga.extension ?? 'jpg';
 
-    const imageUrl =
-        `${basePath}images/manga/thumbnail/${thumbnail}.${extension}`;
+    const imageUrl = `${basePath}images/manga/thumbnail/${thumbnail}.${extension}`;
 
-    const mangaUrl =
-        `${basePath}manga/series/${slug}/${numero}`;
+    const mangaUrl = `${basePath}manga/series/${slug}/${numero}`;
 
     return createResultItem(
         mangaUrl,
@@ -74,6 +54,6 @@ export function buildMangaResult(
                 </small>
 
             </span>
-        `,
+        `
     );
 }

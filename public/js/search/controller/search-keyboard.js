@@ -2,47 +2,33 @@
 // NAVIGATION AU CLAVIER DE LA RECHERCHE
 // =================================================
 
-import {
-    $$,
-} from '../../core/dom.js';
+import { $$ } from '../../core/dom.js';
 
 // =================================================
 // MISE À JOUR ACTIF RÉSULTAT
 // =================================================
 
-export function updateActiveResult(
-    searchResults,
-    activeIndex,
-)
+export function updateActiveResult(searchResults, activeIndex)
 {
-    const items =
-        $$(
-            '.search-result-item',
-            searchResults,
-        );
+    const items = $$('.search-result-item', searchResults);
 
     items.forEach(
         (item) =>
         {
-            item.classList.remove(
-                'is-active',
-            );
-        },
+            item.classList.remove('is-active');
+        }
     );
 
-    const activeItem =
-        items[activeIndex];
+    const activeItem = items[activeIndex];
 
     if (! activeItem)
     {
         return;
     }
 
-    activeItem.classList.add(
-        'is-active',
-    );
+    activeItem.classList.add('is-active');
 
     activeItem.scrollIntoView({
-        block: 'nearest',
+        block: 'nearest'
     });
 }

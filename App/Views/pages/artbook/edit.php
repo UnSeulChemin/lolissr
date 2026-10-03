@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\DTO\Common\Responses\FormViewData;
 use App\DTO\Artbook\Responses\ArtbookData;
+use App\DTO\Common\Responses\FormViewData;
 
 /** @var ArtbookData $artbook */
 /** @var FormViewData $form */
@@ -16,9 +16,7 @@ $artbookValue = $old['artbook'] ?? $artbook->artbook;
 $isSerie = $artbook->hasSerie;
 
 $sourceValue = $old['source']
-    ?? ($isSerie
-        ? ($artbook->serie ?? '')
-        : ($artbook->auteur ?? ''));
+    ?? ($isSerie ? ($artbook->serie ?? '') : ($artbook->auteur ?? ''));
 
 $sourceLabel = $isSerie
     ? 'Série'
@@ -75,10 +73,7 @@ $commentaireValue = $old['commentaire']
                         required
                     >
 
-                    <?php if (
-                        isset($errors['artbook'])
-                        && $errors['artbook'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['artbook']) && $errors['artbook'] !== ''): ?>
 
                         <p class="form-error u-semibold">
 
@@ -112,10 +107,7 @@ $commentaireValue = $old['commentaire']
                         required
                     >
 
-                    <?php if (
-                        isset($errors['source'])
-                        && $errors['source'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['source']) && $errors['source'] !== ''): ?>
 
                         <p class="form-error u-semibold">
 
@@ -148,10 +140,7 @@ $commentaireValue = $old['commentaire']
                         required
                     >
 
-                    <?php if (
-                        isset($errors['company'])
-                        && $errors['company'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['company']) && $errors['company'] !== ''): ?>
 
                         <p class="form-error u-semibold">
 
@@ -184,10 +173,7 @@ $commentaireValue = $old['commentaire']
                         maxlength="10"
                     >
 
-                    <?php if (
-                        isset($errors['release_date'])
-                        && $errors['release_date'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['release_date']) && $errors['release_date'] !== ''): ?>
 
                         <p class="form-error u-semibold">
 
@@ -218,10 +204,7 @@ $commentaireValue = $old['commentaire']
                         maxlength="255"
                     ><?= e($commentaireValue) ?></textarea>
 
-                    <?php if (
-                        isset($errors['commentaire'])
-                        && $errors['commentaire'] !== ''
-                    ): ?>
+                    <?php if (isset($errors['commentaire']) && $errors['commentaire'] !== ''): ?>
 
                         <p class="form-error u-semibold">
 

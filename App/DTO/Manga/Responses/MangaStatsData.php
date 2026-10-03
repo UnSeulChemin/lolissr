@@ -18,8 +18,9 @@ final readonly class MangaStatsData
         public string $numeroLabel,
 
         public ?int $total,
-        public string $totalLabel,
-    ) {
+        public string $totalLabel
+    )
+    {
     }
 
     /**
@@ -49,7 +50,7 @@ final readonly class MangaStatsData
             'numeroLabel' => $this->numeroLabel,
 
             'total' => $this->total,
-            'totalLabel' => $this->totalLabel,
+            'totalLabel' => $this->totalLabel
         ];
     }
 
@@ -73,7 +74,7 @@ final readonly class MangaStatsData
                 ? (int) $data['total']
                 : null,
 
-            totalLabel: (string) $data['totalLabel'],
+            totalLabel: (string) $data['totalLabel']
         );
     }
 }

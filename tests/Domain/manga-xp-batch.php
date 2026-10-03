@@ -7,6 +7,7 @@ use App\Constants\UserXp;
 use App\Models\Manga;
 use App\Models\User;
 use App\Services\Manga\MangaXpRewardService;
+
 use Framework\Application\Bootstrap;
 use Framework\Container\Container;
 use Framework\Database\Database;
@@ -14,7 +15,8 @@ use Framework\Database\Database;
 require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
 Bootstrap::loadEnvOnly();
 
-function user(): ?User { return $GLOBALS['batchTestUser']; }
+function user(): ?User
+{ return $GLOBALS['batchTestUser']; }
 final class XpBatchQueryCounter extends PDOStatement
 {
     public static array $queries = [];
@@ -40,13 +42,15 @@ $GLOBALS['batchTestUser'] = $user;
 $manga = new Manga();
 $manga->id = 1;
 $service = $container->get(MangaXpRewardService::class);
-$assert = static function (bool $condition, string $message): void {
+$assert = static function (bool $condition, string $message): void
+{
     if (! $condition) throw new RuntimeException($message);
 };
 $earned = static fn (): int => (int) (($user->level - 1) * $user->level / 2 * 5 + $user->xp);
 try
 {
-    $db->transaction(function () use ($service, $manga): void {
+    $db->transaction(function () use ($service, $manga): void
+    {
         $service->rewardRead($manga, 'alpha');
         throw new RuntimeException('initial rollback fixture');
     });
@@ -73,7 +77,8 @@ $db->exec("INSERT INTO manga VALUES (2, 'beta', 1, 'termine', 1, 0, 0)");
 $manga->id = 2;
 try
 {
-    $db->transaction(function () use ($service, $manga): void {
+    $db->transaction(function () use ($service, $manga): void
+    {
         $service->rewardRead($manga, 'beta');
         throw new RuntimeException('rollback fixture');
     });

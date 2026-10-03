@@ -14,10 +14,7 @@ final class ArtbookCollectionRepository extends AbstractRepository
     /**
      * @return list<Artbook>
      */
-    public function findPaginated(
-        int $limit,
-        int $page,
-    ): array
+    public function findPaginated(int $limit, int $page): array
     {
         $page = max(1, $page);
         $limit = max(1, $limit);
@@ -49,10 +46,7 @@ final class ArtbookCollectionRepository extends AbstractRepository
             LIMIT :limit
             OFFSET :offset
             ",
-            [
-                'limit' => $limit,
-                'offset' => $offset,
-            ],
+            ['limit' => $limit, 'offset' => $offset],
             Artbook::class
         );
 

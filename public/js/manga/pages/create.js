@@ -2,70 +2,45 @@
 // PAGE D'AJOUT
 // =================================================
 
-import {
-    request,
-} from '../../core/http.js';
+import { request } from '../../core/http.js';
 
-import {
-    $,
-} from '../../core/dom.js';
+import { $ } from '../../core/dom.js';
 
-import {
-    showToast,
-} from '../../core/toast.js';
+import { showToast } from '../../core/toast.js';
 
-import {
-    debug,
-    debugError,
-} from '../../core/debug/debug.js';
+import { debug, debugError } from '../../core/debug/debug.js';
 
-import {
-    generateSlug,
-} from '../../core/slug.js';
+import { generateSlug } from '../../core/slug.js';
 
-import {
-    invalidateMangaPages,
-} from '../manga-cache.js';
+import { invalidateMangaPages } from '../manga-cache.js';
 
 // =================================================
 // CONFIGURATION
 // =================================================
 
-const FORM_SELECTOR =
-    '.form-layout[data-form-page="ajouter"]';
+const FORM_SELECTOR = '.form-layout[data-form-page="ajouter"]';
 
 // =================================================
 // UTILITAIRES
 // =================================================
 
-function updateUploadText(
-    input,
-    textElement,
-)
+function updateUploadText(input, textElement)
 {
-    textElement.textContent =
-        input.files?.length
+    textElement.textContent = input.files?.length
             ? input.files[0].name
             : 'Choisir une image';
 }
 
-function updateSourceField(
-    typeInput,
-    sourceInput,
-    sourceLabel,
-)
+function updateSourceField(typeInput, sourceInput, sourceLabel)
 {
-    const isSerie =
-        typeInput.value
+    const isSerie = typeInput.value
         === 'serie';
 
-    sourceLabel.textContent =
-        isSerie
+    sourceLabel.textContent = isSerie
             ? 'Série'
             : 'Auteur';
 
-    sourceInput.placeholder =
-        isSerie
+    sourceInput.placeholder = isSerie
             ? 'Ex : To Love-Ru'
             : 'Ex : Carnelian';
 }
@@ -76,107 +51,72 @@ function updateSourceField(
 
 export function initCreatePage()
 {
-    const form =
-        $(FORM_SELECTOR);
+    const form = $(FORM_SELECTOR);
 
-    if (
-        !(
-            form
-            instanceof HTMLFormElement
-        )
-    ) {
+    if (!( form instanceof HTMLFormElement ))
+    {
         return;
     }
 
-    if (
-        form.dataset.initialized
-        === 'true'
-    ) {
+    if (form.dataset.initialized === 'true')
+    {
         return;
     }
 
-    form.dataset.initialized =
-        'true';
+    form.dataset.initialized = 'true';
 
-    const slugSourceInput =
-        form.querySelector(
-            '[data-slug-source]',
-        );
+    const slugSourceInput = form.querySelector('[data-slug-source]');
 
-    const slugInput =
-        form.querySelector(
-            '[data-slug-target]',
-        );
+    const slugInput = form.querySelector('[data-slug-target]');
 
-    const typeSourceInput =
-        $('#type_source');
+    const typeSourceInput = $('#type_source');
 
-    const sourceInput =
-        $('#source');
+    const sourceInput = $('#source');
 
-    const sourceLabel =
-        form.querySelector(
-            'label[for="source"]',
-        );
+    const sourceLabel = form.querySelector('label[for="source"]');
 
-    const imageInput =
-        $('#image');
+    const imageInput = $('#image');
 
-    const uploadText =
-        $('.form-upload-text');
+    const uploadText = $('.form-upload-text');
 
-    let slugEditedManually =
-        false;
+    let slugEditedManually = false;
 
     // --------------------------------------------------------------------------
     // SLUG AUTOMATIQUE
     // --------------------------------------------------------------------------
 
-
-    if (
-        slugInput
-        instanceof HTMLInputElement
-    ) {
+    if (slugInput instanceof HTMLInputElement)
+    {
 
         slugInput.addEventListener(
             'input',
             () =>
             {
-                slugEditedManually =
-                    true;
-            },
+                slugEditedManually = true;
+            }
         );
     }
 
-    if (
-        slugSourceInput
-        instanceof HTMLInputElement
-        && slugInput
-        instanceof HTMLInputElement
-    ) {
+    if (slugSourceInput instanceof HTMLInputElement && slugInput instanceof HTMLInputElement)
+    {
 
         slugSourceInput.addEventListener(
             'input',
             () =>
             {
-                if (
-                    slugEditedManually
-                ) {
+                if (slugEditedManually)
+                {
                     return;
                 }
 
-                slugInput.value =
-                    generateSlug(
-                        slugSourceInput.value,
-                    );
-            },
+                slugInput.value = generateSlug(slugSourceInput.value);
+            }
         );
     }
 
     // --------------------------------------------------------------------------
     // CHAMP SOURCE
     // --------------------------------------------------------------------------
-
 
     if (
         typeSourceInput
@@ -185,47 +125,33 @@ export function initCreatePage()
         instanceof HTMLInputElement
         && sourceLabel
         instanceof HTMLLabelElement
-    ) {
+    )
+    {
 
         typeSourceInput.addEventListener(
             'change',
             () =>
             {
-                updateSourceField(
-                    typeSourceInput,
-                    sourceInput,
-                    sourceLabel,
-                );
-            },
+                updateSourceField(typeSourceInput, sourceInput, sourceLabel);
+            }
         );
 
-        updateSourceField(
-            typeSourceInput,
-            sourceInput,
-            sourceLabel,
-        );
+        updateSourceField(typeSourceInput, sourceInput, sourceLabel);
     }
 
     // --------------------------------------------------------------------------
     // LIBELLÉ DE L’IMAGE
     // --------------------------------------------------------------------------
 
-
-    if (
-        imageInput
-        instanceof HTMLInputElement
-        && uploadText
-    ) {
+    if (imageInput instanceof HTMLInputElement && uploadText)
+    {
 
         imageInput.addEventListener(
             'change',
             () =>
             {
-                updateUploadText(
-                    imageInput,
-                    uploadText,
-                );
-            },
+                updateUploadText(imageInput, uploadText);
+            }
         );
     }
 
@@ -233,75 +159,48 @@ export function initCreatePage()
     // ENVOI
     // --------------------------------------------------------------------------
 
-
     form.addEventListener(
         'submit',
-        async (
-            event,
-        ) =>
+        async (event) =>
         {
             event.preventDefault();
 
-            const submitButton =
-                form.querySelector(
-                    '[type="submit"]',
-                );
+            const submitButton = form.querySelector('[type="submit"]');
 
-            if (
-                submitButton
-                instanceof HTMLButtonElement
-            ) {
+            if (submitButton instanceof HTMLButtonElement)
+            {
 
-                submitButton.disabled =
-                    true;
+                submitButton.disabled = true;
             }
 
-            try {
+            try
+            {
 
-                debug(
-                    'AJOUTER',
-                    'submit-start',
-                );
+                debug('AJOUTER', 'submit-start');
 
                 // --------------------------------------------------------------------------
                 // REQUÊTE
                 // --------------------------------------------------------------------------
 
-
-                const data =
-                    await request(
+                const data = await request(
                         form.action,
                         {
-                            method:
-                                'POST',
+                            method: 'POST',
 
-                            body:
-                                new FormData(
-                                    form,
-                                ),
-                        },
+                            body: new FormData(form)
+                        }
                     );
 
-                debug(
-                    'AJOUTER',
-                    'response',
-                    data,
-                );
+                debug('AJOUTER', 'response', data);
 
                 // --------------------------------------------------------------------------
                 // ERREUR
                 // --------------------------------------------------------------------------
 
+                if (!data?.success)
+                {
 
-                if (
-                    !data?.success
-                ) {
-
-                    showToast(
-                        data?.message
-                        || 'Une erreur est survenue',
-                        'error',
-                    );
+                    showToast(data?.message || 'Une erreur est survenue', 'error');
 
                     return;
                 }
@@ -310,29 +209,21 @@ export function initCreatePage()
                 // INVALIDATION
                 // --------------------------------------------------------------------------
 
-
                 invalidateMangaPages();
 
                 // --------------------------------------------------------------------------
                 // SUCCÈS
                 // --------------------------------------------------------------------------
 
-
-                showToast(
-                    data.message
-                    || 'Manga ajouté avec succès',
-                    'success',
-                );
+                showToast(data.message || 'Manga ajouté avec succès', 'success');
 
                 // --------------------------------------------------------------------------
                 // RÉINITIALISATION
                 // --------------------------------------------------------------------------
 
-
                 form.reset();
 
-                slugEditedManually =
-                    false;
+                slugEditedManually = false;
 
                 if (
                     typeSourceInput
@@ -341,67 +232,40 @@ export function initCreatePage()
                     instanceof HTMLInputElement
                     && sourceLabel
                     instanceof HTMLLabelElement
-                ) {
+                )
+                {
 
-                    updateSourceField(
-                        typeSourceInput,
-                        sourceInput,
-                        sourceLabel,
-                    );
+                    updateSourceField(typeSourceInput, sourceInput, sourceLabel);
                 }
 
-                if (
-                    imageInput
-                    instanceof HTMLInputElement
-                    && uploadText
-                ) {
+                if (imageInput instanceof HTMLInputElement && uploadText)
+                {
 
-                    updateUploadText(
-                        imageInput,
-                        uploadText,
-                    );
+                    updateUploadText(imageInput, uploadText);
                 }
 
-                debug(
-                    'AJOUTER',
-                    'success',
-                );
+                debug('AJOUTER', 'success');
 
-            } catch (error) {
+            } catch (error)
+            {
 
-                debugError(
-                    'AJOUTER',
-                    error,
-                );
+                debugError('AJOUTER', error);
 
-                showToast(
-                    error?.data?.message
-                    || error.message
-                    || 'Erreur serveur',
-                    'error',
-                );
+                showToast(error?.data?.message || error.message || 'Erreur serveur', 'error');
 
-            } finally {
+            } finally
+            {
 
-                if (
-                    submitButton
-                    instanceof HTMLButtonElement
-                ) {
+                if (submitButton instanceof HTMLButtonElement)
+                {
 
-                    submitButton.disabled =
-                        false;
+                    submitButton.disabled = false;
                 }
 
-                debug(
-                    'AJOUTER',
-                    'submit-end',
-                );
+                debug('AJOUTER', 'submit-end');
             }
-        },
+        }
     );
 
-    debug(
-        'AJOUTER',
-        'initialized',
-    );
+    debug('AJOUTER', 'initialized');
 }

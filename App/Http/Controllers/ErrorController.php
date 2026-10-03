@@ -15,30 +15,12 @@ final class ErrorController extends Controller
      * }>
      */
     private const ERRORS = [
-        403 => [
-            'view' => '403',
-            'title' => '403 | Accès interdit'
-        ],
-        404 => [
-            'view' => '404',
-            'title' => '404 | Page introuvable'
-        ],
-        405 => [
-            'view' => '405',
-            'title' => '405 | Méthode non autorisée'
-        ],
-        419 => [
-            'view' => '419',
-            'title' => '419 | Session expirée'
-        ],
-        422 => [
-            'view' => '422',
-            'title' => '422 | Erreur de validation'
-        ],
-        500 => [
-            'view' => '500',
-            'title' => '500 | Erreur serveur'
-        ]
+        403 => ['view' => '403', 'title' => '403 | Accès interdit'],
+        404 => ['view' => '404', 'title' => '404 | Page introuvable'],
+        405 => ['view' => '405', 'title' => '405 | Méthode non autorisée'],
+        419 => ['view' => '419', 'title' => '419 | Session expirée'],
+        422 => ['view' => '422', 'title' => '422 | Erreur de validation'],
+        500 => ['view' => '500', 'title' => '500 | Erreur serveur']
     ];
 
     private function __construct(Request $request)
@@ -73,12 +55,6 @@ final class ErrorController extends Controller
 
         $this->title = $error['title'];
 
-        $this->renderError(
-            $error['view'],
-            $status,
-            [
-                'message' => $message
-            ]
-        );
+        $this->renderError($error['view'], $status, ['message' => $message]);
     }
 }

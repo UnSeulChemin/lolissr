@@ -51,11 +51,7 @@ trait InteractsWithDatabase
             {
                 Logger::warning(
                     'Requête SQL lente',
-                    [
-                        'duration_ms' => round($duration, 2),
-                        'sql' => $sql,
-                        'parameter_count' => count($params)
-                    ]
+                    ['duration_ms' => round($duration, 2), 'sql' => $sql, 'parameter_count' => count($params)]
                 );
             }
 
@@ -71,11 +67,8 @@ trait InteractsWithDatabase
      *
      * @return ($class is class-string<T> ? T|null : stdClass|null)
      */
-    protected function fetchOne(
-        string $sql,
-        array $params = [],
-        ?string $class = null
-    ): ?object {
+    protected function fetchOne(string $sql, array $params = [], ?string $class = null): ?object
+    {
         $statement = $this->query($sql, $params);
 
         if ($statement === false)
@@ -101,11 +94,8 @@ trait InteractsWithDatabase
      *
      * @return ($class is class-string<T> ? list<T> : list<stdClass>)
      */
-    protected function fetchAll(
-        string $sql,
-        array $params = [],
-        ?string $class = null
-    ): array {
+    protected function fetchAll(string $sql, array $params = [], ?string $class = null): array
+    {
         $statement = $this->query($sql, $params);
 
         if ($statement === false)
@@ -147,9 +137,7 @@ trait InteractsWithDatabase
     {
         if (ApplicationConfig::isTesting())
         {
-            throw new LogicException(
-                'Écriture en base interdite pendant les tests.'
-            );
+            throw new LogicException('Écriture en base interdite pendant les tests.');
         }
     }
 }

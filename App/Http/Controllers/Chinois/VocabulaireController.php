@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Chinois;
 
-use App\Http\Controllers\Controller;
 use App\DTO\Chinois\Responses\ChinoisVocabulaireData;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Chinois\ChinoisVocabulaireCreateRequest;
 use App\Services\Chinois\ChinoisReadService;
 use App\Services\Chinois\ChinoisWriteService;
@@ -20,7 +20,8 @@ final class VocabulaireController extends Controller
         private readonly ChinoisReadService $chinoisReadService,
         private readonly ChinoisWriteService $chinoisWriteService,
         Request $request
-    ) {
+    )
+    {
         parent::__construct($request);
     }
 
@@ -56,7 +57,7 @@ final class VocabulaireController extends Controller
             'currentPage' => $data->currentPage,
             'totalVocabulaires' => $data->totalVocabulaires,
             'perPage' => $data->perPage,
-            'totalPages' => $data->totalPages,
+            'totalPages' => $data->totalPages
         ]);
     }
 
@@ -66,9 +67,7 @@ final class VocabulaireController extends Controller
 
         $this->title = 'Chinois | ' . $vocabulaire->mot;
 
-        $this->render('pages/chinois/vocabulaire/show', [
-            'vocabulaire' => $vocabulaire,
-        ]);
+        $this->render('pages/chinois/vocabulaire/show', ['vocabulaire' => $vocabulaire]);
     }
 
     // =================================================
@@ -80,10 +79,7 @@ final class VocabulaireController extends Controller
         $this->title = 'Chinois | Ajouter du vocabulaire';
 
         $this->render('pages/chinois/vocabulaire/create', [
-            'form' => $this->formViewData(
-                'chinois/ajouter/vocabulaire',
-                'chinois/ajouter'
-            ),
+            'form' => $this->formViewData('chinois/ajouter/vocabulaire', 'chinois/ajouter')
         ]);
     }
 
@@ -91,9 +87,7 @@ final class VocabulaireController extends Controller
     {
         $this->validateRequest($request);
 
-        $this->jsonResult(
-            $this->chinoisWriteService->createVocabulaire($request->dto())
-        );
+        $this->jsonResult($this->chinoisWriteService->createVocabulaire($request->dto()));
     }
 
     // =================================================
@@ -102,18 +96,11 @@ final class VocabulaireController extends Controller
 
     public function edit(string $langue, int $id): never
     {
-        $this->renderEdit(
-            $langue,
-            $id,
-            $this->returnPathInput()
-        );
+        $this->renderEdit($langue, $id, $this->returnPathInput());
     }
 
-    public function update(
-        ChinoisVocabulaireCreateRequest $request,
-        string $langue,
-        int $id
-    ): never {
+    public function update(ChinoisVocabulaireCreateRequest $request, string $langue, int $id): never
+    {
         $this->vocabulaireOrFail($langue, $id);
         $this->validateRequest($request);
 
@@ -123,13 +110,8 @@ final class VocabulaireController extends Controller
 
         if (! $result->success)
         {
-            throw new BaseHttpException(
-                message: $result->message,
-                statusCode: $result->status,
-                data: $result->data
-            );
+            throw new BaseHttpException(message: $result->message, statusCode: $result->status, data: $result->data);
         }
-
 
         $this->redirectWithSuccess(
             $returnTo !== '' ? $returnTo : 'chinois/vocabulaire/' . $dto->langue,
@@ -161,15 +143,11 @@ final class VocabulaireController extends Controller
             'vocabulaire' => $vocabulaire,
             'returnTo' => $returnTo,
             'form' => $this->formViewData(
-                sprintf(
-                    'chinois/vocabulaire/%s/modifier/%d',
-                    $vocabulaire->langue,
-                    $vocabulaire->id
-                ),
+                sprintf('chinois/vocabulaire/%s/modifier/%d', $vocabulaire->langue, $vocabulaire->id),
                 $returnTo !== ''
                     ? $returnTo
                     : 'chinois/vocabulaire/' . $vocabulaire->langue
-            ),
+            )
         ]);
     }
 }

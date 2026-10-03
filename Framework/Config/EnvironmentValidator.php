@@ -8,11 +8,7 @@ use RuntimeException;
 
 final class EnvironmentValidator
 {
-    private const ENVIRONMENTS = [
-        'local',
-        'testing',
-        'production',
-    ];
+    private const ENVIRONMENTS = ['local', 'testing', 'production'];
 
     private const REQUIRED_VARIABLES = [
         'APP_NAME',
@@ -22,7 +18,7 @@ final class EnvironmentValidator
         'DB_HOST',
         'DB_PORT',
         'DB_NAME',
-        'DB_USER',
+        'DB_USER'
     ];
 
     private const POSITIVE_INTEGER_VARIABLES = [
@@ -34,14 +30,14 @@ final class EnvironmentValidator
         'UPLOAD_MAX_HEIGHT',
         'UPLOAD_MAX_PIXELS',
         'CACHE_TTL',
-        'LOG_RETENTION_DAYS',
+        'LOG_RETENTION_DAYS'
     ];
 
     private const PRODUCTION_DISABLED_VARIABLES = [
         'APP_DEBUG',
         'PROFILER_ENABLED',
         'SQL_TOOL_ENABLED',
-        'REGISTRATION_ENABLED',
+        'REGISTRATION_ENABLED'
     ];
 
     private function __construct()
@@ -121,7 +117,8 @@ final class EnvironmentValidator
             || str_contains($baseUri, '\\')
             || preg_match('#^/[a-zA-Z0-9._~/-]+$#', $baseUri) !== 1
             || self::containsDotSegment($baseUri)
-        ) {
+        )
+        {
             throw new RuntimeException(
                 "Invalid APP_BASE_URI value: {$baseUri}. "
                 . 'Expected "/" or a path such as "/app".'
@@ -133,10 +130,8 @@ final class EnvironmentValidator
     {
         $timezone = trim((string) Env::get('APP_TIMEZONE', ''));
 
-        if (
-            $timezone === ''
-            || ! in_array($timezone, timezone_identifiers_list(), true)
-        ) {
+        if ($timezone === '' || ! in_array($timezone, timezone_identifiers_list(), true))
+        {
             throw new RuntimeException(
                 "Invalid APP_TIMEZONE value: {$timezone}"
             );
@@ -219,10 +214,7 @@ final class EnvironmentValidator
 
         $values = array_values(
             array_filter(
-                array_map(
-                    static fn (string $value): string => trim($value),
-                    explode(',', (string) Env::get($key, ''))
-                ),
+                array_map(static fn (string $value): string => trim($value), explode(',', (string) Env::get($key, ''))),
                 static fn (string $value): bool => $value !== ''
             )
         );
@@ -268,9 +260,7 @@ final class EnvironmentValidator
 
     private static function environment(): string
     {
-        return strtolower(
-            trim((string) Env::get('APP_ENV', ''))
-        );
+        return strtolower(trim((string) Env::get('APP_ENV', '')));
     }
 
     private static function containsDotSegment(string $path): bool

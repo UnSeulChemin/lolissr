@@ -7,6 +7,7 @@ require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
 use App\Enums\Auth\LoginResult;
 use App\Services\Auth\AuthService;
 use App\Services\Auth\LoginThrottleService;
+
 use Framework\Application\Bootstrap;
 use Framework\Container\Container;
 use Framework\Database\Database;
@@ -15,7 +16,8 @@ Bootstrap::loadEnvOnly();
 $container = new Container();
 $container->singleton(Database::class);
 $db = $container->get(Database::class);
-$check = static function (bool $ok, string $message): void {
+$check = static function (bool $ok, string $message): void
+{
     if (!$ok) throw new RuntimeException($message);
 };
 $db->exec('CREATE TEMPORARY TABLE users (id INT PRIMARY KEY, username VARCHAR(50) COLLATE utf8mb4_0900_ai_ci, password VARCHAR(255))');
@@ -29,7 +31,7 @@ try
     $ip = '192.0.2.1';
     // Preserve the pre-existing counter keyed by the stored username spelling.
     $db->prepare('INSERT INTO login_attempts VALUES (?, 1, ?, NULL)')->execute([
-        hash('sha256', $ip . "\0test"), gmdate('Y-m-d H:i:s'),
+        hash('sha256', $ip . "\0test"), gmdate('Y-m-d H:i:s')
     ]);
     foreach (['tést', 'tèst', "te\u{0301}st"] as $name)
     {

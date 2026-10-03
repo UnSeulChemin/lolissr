@@ -9,9 +9,7 @@ final readonly class ChinoisCategorieData
     /**
      * @param list<ChinoisGrammaireData> $grammaires
      */
-    public function __construct(
-        public string $title,
-        public array $grammaires
-    ) {
+    public function __construct(public string $title, public array $grammaires)
+    {
     }
 }

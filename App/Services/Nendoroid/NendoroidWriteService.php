@@ -6,16 +6,15 @@ namespace App\Services\Nendoroid;
 
 use App\Constants\UserXp;
 use App\DTO\Common\ServiceResult;
+use App\DTO\Media\UploadThumbnailData;
 use App\DTO\Nendoroid\Inputs\NendoroidCreateData;
 use App\DTO\Nendoroid\Inputs\NendoroidUpdateData;
-use App\DTO\Media\UploadThumbnailData;
 use App\Repositories\Nendoroid\NendoroidRepository;
-use App\Services\Media\ThumbnailManager;
 use App\Services\Collections\CollectionCreationService;
+use App\Services\Media\ThumbnailManager;
 
 use Framework\Database\Database;
 use Framework\Logging\Logger;
-
 
 final readonly class NendoroidWriteService
 {
@@ -27,7 +26,8 @@ final readonly class NendoroidWriteService
         private Database $database,
         private NendoroidXpRewardService $nendoroidXpRewardService,
         private CollectionCreationService $creationService
-    ) {
+    )
+    {
     }
 
     // =================================================
@@ -60,7 +60,7 @@ final readonly class NendoroidWriteService
                     'waifu' => $dto->waifu,
                     'company' => $dto->company,
                     'release_date' => $dto->release_date,
-                    'commentaire' => $dto->commentaire,
+                    'commentaire' => $dto->commentaire
                 ]);
 
                 $failure = $this->writeFailed(
@@ -73,7 +73,6 @@ final readonly class NendoroidWriteService
 
                 if ($failure !== null)
                 {
-
                     return $failure;
                 }
 
@@ -137,11 +136,7 @@ final readonly class NendoroidWriteService
                     return $this->error('Nendoroid introuvable', 404);
                 }
 
-                $updated = $this->nendoroidRepository->updateCollectStatus(
-                    $slug,
-                    $numero,
-                    $collectStatus === 1
-                );
+                $updated = $this->nendoroidRepository->updateCollectStatus($slug, $numero, $collectStatus === 1);
 
                 $failure = $this->writeFailed(
                     $updated,
@@ -174,7 +169,7 @@ final readonly class NendoroidWriteService
                         'xpEarned' => $xpEarned,
                         'xpAmount' => $xpEarned ? UserXp::COLLECT_NENDOROID : 0,
                         'level' => $user?->level,
-                        'xp' => $user?->xp,
+                        'xp' => $user?->xp
                     ]
                 );
             }

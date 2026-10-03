@@ -2,33 +2,17 @@
 // PRÉCHARGEMENT REQUÊTE
 // =================================================
 
-import {
-    config,
-} from '../../core/config.js';
+import { config } from '../../core/config.js';
 
-import {
-    debug,
-    debugError,
-} from '../../core/debug/debug.js';
+import { debug, debugError } from '../../core/debug/debug.js';
 
-import {
-    request,
-} from '../../core/http.js';
+import { request } from '../../core/http.js';
 
-import {
-    normalizeCacheKey,
-} from '../../core/navigation.js';
+import { normalizeCacheKey } from '../../core/navigation.js';
 
-import {
-    getInFlightPrefetch,
-    getPrefetchedPage,
-    setPrefetchedPage,
-} from './prefetch-cache.js';
+import { getInFlightPrefetch, getPrefetchedPage, setPrefetchedPage } from './prefetch-cache.js';
 
-import {
-    inFlight,
-    invalidated,
-} from './prefetch-state.js';
+import { inFlight, invalidated } from './prefetch-state.js';
 
 // =================================================
 // PRÉCHARGEMENT
@@ -44,14 +28,11 @@ export async function prefetchPage(href)
         return null;
     }
 
-    const url = normalizeCacheKey(
-        href,
-    );
+    const url = normalizeCacheKey(href);
 
     // --------------------------------------------------------------------------
     // ACTUELLE PAGE
     // --------------------------------------------------------------------------
-
 
     if (url === normalizeCacheKey(location.href))
     {
@@ -62,7 +43,6 @@ export async function prefetchPage(href)
     // INVALIDÉ
     // --------------------------------------------------------------------------
 
-
     if (invalidated.has(url))
     {
         return null;
@@ -72,18 +52,11 @@ export async function prefetchPage(href)
     // CACHE
     // --------------------------------------------------------------------------
 
-
-    const cached = getPrefetchedPage(
-        url,
-    );
+    const cached = getPrefetchedPage(url);
 
     if (cached)
     {
-        debug(
-            'PREFETCH',
-            'cache-hit',
-            url,
-        );
+        debug('PREFETCH', 'cache-hit', url);
 
         return cached;
     }
@@ -92,18 +65,11 @@ export async function prefetchPage(href)
     // EN COURS
     // --------------------------------------------------------------------------
 
-
-    const existing = getInFlightPrefetch(
-        url,
-    );
+    const existing = getInFlightPrefetch(url);
 
     if (existing)
     {
-        debug(
-            'PREFETCH',
-            'reuse',
-            url,
-        );
+        debug('PREFETCH', 'reuse', url);
 
         return existing;
     }
@@ -112,12 +78,7 @@ export async function prefetchPage(href)
     // CHARGEMENT
     // --------------------------------------------------------------------------
 
-
-    debug(
-        'PREFETCH',
-        'fetch',
-        url,
-    );
+    debug('PREFETCH', 'fetch', url);
 
     // Les requêtes anticipées sont facultatives ; la navigation charge toujours les données nécessaires.
     if (activeRequests >= MAX_CONCURRENT_PREFETCHES) return null;
@@ -139,25 +100,20 @@ export async function prefetchPage(href)
                         'X-Page-Format': 'fragment',
                         Accept: 'application/json',
                         'X-Prefetch': 'true',
-                        'Cache-Control': 'no-cache',
+                        'Cache-Control': 'no-cache'
                     },
 
-                    signal: controller.signal,
-                },
+                    signal: controller.signal
+                }
             );
 
             // --------------------------------------------------------------------------
             // VALIDATION
             // --------------------------------------------------------------------------
 
-
             if (response?.type !== 'page')
             {
-                debug(
-                    'PREFETCH',
-                    'invalid-response',
-                    url,
-                );
+                debug('PREFETCH', 'invalid-response', url);
 
                 return null;
             }
@@ -166,14 +122,9 @@ export async function prefetchPage(href)
             // INVALIDATION PENDANT LA REQUÊTE
             // --------------------------------------------------------------------------
 
-
             if (controller.signal.aborted || invalidated.has(url))
             {
-                debug(
-                    'PREFETCH',
-                    'skip-invalidated',
-                    url,
-                );
+                debug('PREFETCH', 'skip-invalidated', url);
 
                 return null;
             }
@@ -182,17 +133,9 @@ export async function prefetchPage(href)
             // CACHE
             // --------------------------------------------------------------------------
 
+            setPrefetchedPage(url, response);
 
-            setPrefetchedPage(
-                url,
-                response,
-            );
-
-            debug(
-                'PREFETCH',
-                'success',
-                url,
-            );
+            debug('PREFETCH', 'success', url);
 
             return response;
         }
@@ -200,34 +143,23 @@ export async function prefetchPage(href)
         {
             if (error?.name === 'AbortError')
             {
-                debug(
-                    'PREFETCH',
-                    'aborted',
-                    url,
-                );
+                debug('PREFETCH', 'aborted', url);
 
                 return null;
             }
 
-            debugError(
-                'PREFETCH',
-                error,
-            );
+            debugError('PREFETCH', error);
 
             return null;
         }
         finally
         {
             activeRequests--;
-            const currentEntry = inFlight.get(
-                url,
-            );
+            const currentEntry = inFlight.get(url);
 
             if (currentEntry?.promise === promise)
             {
-                inFlight.delete(
-                    url,
-                );
+                inFlight.delete(url);
             }
         }
     })();
@@ -236,8 +168,8 @@ export async function prefetchPage(href)
         url,
         {
             promise,
-            controller,
-        },
+            controller
+        }
     );
 
     return promise;

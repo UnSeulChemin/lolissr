@@ -22,8 +22,9 @@ final readonly class PelucheReadService
     public function __construct(
         private PelucheRepository $pelucheRepository,
         private PelucheCollectionRepository $collectionRepository,
-        private PelucheSearchRepository $searchRepository,
-    ) {
+        private PelucheSearchRepository $searchRepository
+    )
+    {
     }
 
     // --------------------------------------------------------------------------
@@ -41,13 +42,7 @@ final readonly class PelucheReadService
         if ($totalWaifus === 0)
         {
             if ($page > 1) return null;
-            return new PelucheListData(
-                peluches: [],
-                currentPage: 1,
-                totalWaifus: 0,
-                perPage: $perPage,
-                totalPages: 1,
-            );
+            return new PelucheListData(peluches: [], currentPage: 1, totalWaifus: 0, perPage: $perPage, totalPages: 1);
         }
 
         $totalPages = (int) ceil($totalWaifus / $perPage);
@@ -57,29 +52,20 @@ final readonly class PelucheReadService
             return null;
         }
 
-        $peluches = $this->collectionRepository->findPaginated(
-            $perPage,
-            $page,
-        );
+        $peluches = $this->collectionRepository->findPaginated($perPage, $page);
 
         return new PelucheListData(
-            peluches: array_map(
-                $this->mapListItem(...),
-                $peluches
-            ),
+            peluches: array_map($this->mapListItem(...), $peluches),
             currentPage: $page,
             totalWaifus: $totalWaifus,
             perPage: $perPage,
-            totalPages: $totalPages,
+            totalPages: $totalPages
         );
     }
 
     public function one(string $slug, int $numero): ?PelucheData
     {
-        $peluche = $this->pelucheRepository->findOneBySlugAndNumero(
-            $slug,
-            $numero
-        );
+        $peluche = $this->pelucheRepository->findOneBySlugAndNumero($slug, $numero);
 
         if ($peluche === null)
         {
@@ -99,13 +85,7 @@ final readonly class PelucheReadService
 
         $results = $this->searchRepository->search($query);
 
-        return new PelucheSearchData(
-            results: array_map(
-                $this->mapSearchItem(...),
-                $results
-            ),
-            search: $query,
-        );
+        return new PelucheSearchData(results: array_map($this->mapSearchItem(...), $results), search: $query);
     }
 
     // --------------------------------------------------------------------------
@@ -139,7 +119,7 @@ final readonly class PelucheReadService
                     ? "{$baseUri}images/peluche/thumbnail/{$thumbnail}.{$extension}"
                     : null,
 
-            collect: $peluche->collect,
+            collect: $peluche->collect
         );
     }
 
@@ -167,9 +147,7 @@ final readonly class PelucheReadService
 
             collect: $peluche->collect,
 
-            release_date: DateFormatter::display(
-                $peluche->release_date,
-            ),
+            release_date: DateFormatter::display($peluche->release_date),
 
             thumbnail: $thumbnail,
             extension: $extension,
@@ -181,7 +159,7 @@ final readonly class PelucheReadService
 
             commentaire: $peluche->commentaire,
 
-            xpCollectRewarded: $peluche->collect_rewarded,
+            xpCollectRewarded: $peluche->collect_rewarded
         );
     }
 
@@ -203,7 +181,7 @@ final readonly class PelucheReadService
             waifu: $peluche->waifu,
 
             thumbnail: $thumbnail,
-            extension: $extension,
+            extension: $extension
         );
     }
 }

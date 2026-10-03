@@ -4,9 +4,7 @@ import { mountProfileModal } from './profile-modal-lifecycle.js';
 // BANNIÈRE FENÊTRE MODALE
 // =================================================
 
-import {
-    appUrl,
-} from '../../core/url.js';
+import { appUrl } from '../../core/url.js';
 
 // =================================================
 // FENÊTRE MODALE
@@ -17,11 +15,9 @@ export function bannerModal(banners)
     return new Promise(
         (resolve) =>
         {
-            const overlay =
-                document.createElement('div');
+            const overlay = document.createElement('div');
 
-            overlay.className =
-                'confirm-modal-overlay';
+            overlay.className = 'confirm-modal-overlay';
 
             overlay.innerHTML = `
                 <div class="confirm-modal">
@@ -67,11 +63,8 @@ export function bannerModal(banners)
                 .forEach(
                     (button) =>
                     {
-                        button.addEventListener(
-                            'click',
-                            () => close(button.dataset.banner),
-                        );
-                    },
+                        button.addEventListener('click', () => close(button.dataset.banner));
+                    }
                 );
 
             overlay.addEventListener(
@@ -82,8 +75,8 @@ export function bannerModal(banners)
                     {
                         close();
                     }
-                },
+                }
             );
-        },
+        }
     );
 }

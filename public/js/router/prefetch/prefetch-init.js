@@ -2,21 +2,13 @@
 // PRÉCHARGEMENT INITIALISATION
 // =================================================
 
-import {
-    config,
-} from '../../core/config.js';
+import { config } from '../../core/config.js';
 
-import {
-    debug,
-} from '../../core/debug/debug.js';
+import { debug } from '../../core/debug/debug.js';
 
-import {
-    bindPrefetch,
-} from './prefetch-bind.js';
+import { bindPrefetch } from './prefetch-bind.js';
 
-import {
-    PREFETCH_STATE,
-} from './prefetch-state.js';
+import { PREFETCH_STATE } from './prefetch-state.js';
 
 // =================================================
 // INITIALISATION
@@ -24,26 +16,16 @@ import {
 
 export function initPrefetch()
 {
-    if (
-        ! config.prefetch.enabled
-        || PREFETCH_STATE.initialized
-    )
+    if (! config.prefetch.enabled || PREFETCH_STATE.initialized)
     {
         return;
     }
 
-    PREFETCH_STATE.initialized =
-        true;
+    PREFETCH_STATE.initialized = true;
 
     bindPrefetch();
 
-    document.addEventListener(
-        'router:loaded',
-        bindPrefetch,
-    );
+    document.addEventListener('router:loaded', bindPrefetch);
 
-    debug(
-        'PREFETCH',
-        'ready',
-    );
+    debug('PREFETCH', 'ready');
 }

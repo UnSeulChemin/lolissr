@@ -2,12 +2,14 @@ export async function runBrowserScenario()
 {
     const base = new URL('.', location.href).pathname;
     window.appConfig = {baseUri: base};
-    const check = (ok, message) => { if (!ok) throw new Error(message); };
+    const check = (ok, message) =>
+    { if (!ok) throw new Error(message); };
     const header = document.createElement('header');
     header.innerHTML = `<nav><ul><li><a class="nav-link-icon" href="${base}manga">M</a></li><li><a class="nav-link-icon" href="${base}figurine">F</a></li><li><a class="nav-link-icon" href="${base}peluche">P</a></li></ul></nav>`;
     document.body.prepend(header);
     const links = [...header.querySelectorAll('a')];
-    links.forEach(link => { link.style.transition = 'none'; });
+    links.forEach(link =>
+    { link.style.transition = 'none'; });
     const rect = links[0].getBoundingClientRect();
     links[0].classList.add('active');
     const active = links[0].getBoundingClientRect();
@@ -40,7 +42,7 @@ export async function runBrowserScenario()
     const original = window.fetch;
     const pending = [];
     window.fetch = url => new Promise(resolve => pending.push(() => resolve(new Response(JSON.stringify({
-        type: 'page', page: {html: `<p>${new URL(url).pathname}</p>`, format: 'fragment', stylesheets: []},
+        type: 'page', page: {html: `<p>${new URL(url).pathname}</p>`, format: 'fragment', stylesheets: []}
     }), {headers: {'Content-Type': 'application/json'}}))));
     try
     {
@@ -55,6 +57,7 @@ export async function runBrowserScenario()
             && links[2].classList.contains('active') && !navigationState.locked,
             'Rapid header clicks did not keep the last destination');
     }
-    finally { window.fetch = original; }
+    finally
+    { window.fetch = original; }
     return ['Header clickable area stays fixed when active', 'Header stays fixed between short and long pages', 'Header dragging is blocked without affecting content links', 'Rapid header clicks keep the last destination despite late responses'];
 }

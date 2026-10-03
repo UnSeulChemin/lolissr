@@ -13,7 +13,8 @@ export function mountProfileModal(overlay, resolve)
     dialog.setAttribute('aria-label', dialog.querySelector('h3')?.textContent.trim() ?? 'Personnalisation');
     dialog.tabIndex = -1;
     let closed = false;
-    let unregister = () => {};
+    let unregister = () =>
+    {};
     const close = (result = null) =>
     {
         if (closed) return;

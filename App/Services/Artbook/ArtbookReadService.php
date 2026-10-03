@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Services\Artbook;
 
 use App\DTO\Artbook\Responses\ArtbookData;
-use App\DTO\Artbook\Responses\ArtbookSearchData;
-use App\DTO\Artbook\Responses\ArtbookSearchItemData;
 use App\DTO\Artbook\Responses\ArtbookListData;
 use App\DTO\Artbook\Responses\ArtbookListItemData;
+use App\DTO\Artbook\Responses\ArtbookSearchData;
+use App\DTO\Artbook\Responses\ArtbookSearchItemData;
 use App\Models\Artbook;
 use App\Repositories\Artbook\ArtbookCollectionRepository;
 use App\Repositories\Artbook\ArtbookRepository;
@@ -24,8 +24,9 @@ final readonly class ArtbookReadService
         private ArtbookRepository $artbookRepository,
         private ArtbookCollectionRepository $collectionRepository,
         private ArtbookSearchRepository $searchRepository,
-        private ArtbookStatsRepository $statsRepository,
-    ) {
+        private ArtbookStatsRepository $statsRepository
+    )
+    {
     }
 
     // --------------------------------------------------------------------------
@@ -43,13 +44,7 @@ final readonly class ArtbookReadService
         if ($totalArtbooks === 0)
         {
             if ($page > 1) return null;
-            return new ArtbookListData(
-                artbooks: [],
-                currentPage: 1,
-                totalArtbooks: 0,
-                perPage: $perPage,
-                totalPages: 1,
-            );
+            return new ArtbookListData(artbooks: [], currentPage: 1, totalArtbooks: 0, perPage: $perPage, totalPages: 1);
         }
 
         $totalPages = (int) ceil($totalArtbooks / $perPage);
@@ -59,20 +54,14 @@ final readonly class ArtbookReadService
             return null;
         }
 
-        $artbooks = $this->collectionRepository->findPaginated(
-            $perPage,
-            $page,
-        );
+        $artbooks = $this->collectionRepository->findPaginated($perPage, $page);
 
         return new ArtbookListData(
-            artbooks: array_map(
-                $this->mapSeriesItem(...),
-                $artbooks
-            ),
+            artbooks: array_map($this->mapSeriesItem(...), $artbooks),
             currentPage: $page,
             totalArtbooks: $totalArtbooks,
             perPage: $perPage,
-            totalPages: $totalPages,
+            totalPages: $totalPages
         );
     }
 
@@ -82,10 +71,7 @@ final readonly class ArtbookReadService
 
     public function one(string $slug, int $numero): ?ArtbookData
     {
-        $artbook = $this->artbookRepository->findOneBySlugAndNumero(
-            $slug,
-            $numero
-        );
+        $artbook = $this->artbookRepository->findOneBySlugAndNumero($slug, $numero);
 
         if ($artbook === null)
         {
@@ -105,13 +91,7 @@ final readonly class ArtbookReadService
 
         $results = $this->searchRepository->search($query);
 
-        return new ArtbookSearchData(
-            results: array_map(
-                $this->mapSearchItem(...),
-                $results
-            ),
-            search: $query,
-        );
+        return new ArtbookSearchData(results: array_map($this->mapSearchItem(...), $results), search: $query);
     }
 
     // --------------------------------------------------------------------------
@@ -168,14 +148,12 @@ final readonly class ArtbookReadService
 
             company: $artbook->company,
 
-            releaseDate: DateFormatter::display(
-                $artbook->release_date,
-            ),
+            releaseDate: DateFormatter::display($artbook->release_date),
 
             commentaire: $commentaire,
             hasCommentaire: $commentaire !== null,
 
-            createdAt: $artbook->created_at,
+            createdAt: $artbook->created_at
         );
     }
 
@@ -219,7 +197,7 @@ final readonly class ArtbookReadService
             subtitle:
                 $serie
                 ?? $auteur
-                ?? 'Artbook',
+                ?? 'Artbook'
         );
     }
 
@@ -250,7 +228,7 @@ final readonly class ArtbookReadService
             serie: $serie,
 
             thumbnail: $thumbnail,
-            extension: $extension,
+            extension: $extension
         );
     }
 }

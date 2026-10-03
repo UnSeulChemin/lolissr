@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repositories\Collections\Concerns;
 
 use Framework\Http\Exceptions\NotFoundException;
+
 use LogicException;
 
 trait UpdatesExistingCollection

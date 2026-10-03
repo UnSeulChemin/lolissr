@@ -8,10 +8,8 @@ use App\Support\Manga\MangaNoteNormalizer;
 
 final readonly class MangaUpdateNoteData
 {
-    public function __construct(
-        public ?int $jacquette,
-        public ?int $livreNote
-    ) {
+    public function __construct(public ?int $jacquette, public ?int $livreNote)
+    {
     }
 
     /**

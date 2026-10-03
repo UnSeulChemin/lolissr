@@ -8,8 +8,8 @@ use App\DTO\Artbook\Inputs\ArtbookUpdateData;
 use App\Models\Artbook;
 use App\Repositories\AbstractRepository;
 
-use Framework\Support\Str;
 use Framework\Http\Exceptions\NotFoundException;
+use Framework\Support\Str;
 
 final class ArtbookRepository extends AbstractRepository
 {
@@ -34,10 +34,7 @@ final class ArtbookRepository extends AbstractRepository
 
             LIMIT 1
             " . ($forUpdate ? ' FOR UPDATE' : ''),
-            [
-                'slug' => $this->normalizeSlug($slug),
-                'numero' => $numero,
-            ],
+            ['slug' => $this->normalizeSlug($slug), 'numero' => $numero],
             Artbook::class
         );
 
@@ -67,7 +64,7 @@ final class ArtbookRepository extends AbstractRepository
 
                 'company' => $dto->company,
                 'release_date' => $dto->release_date,
-                'commentaire' => $dto->commentaire,
+                'commentaire' => $dto->commentaire
             ],
             ['id' => $artbook->id]
         );
@@ -79,10 +76,7 @@ final class ArtbookRepository extends AbstractRepository
         $artbook = $this->findOneBySlugAndNumero($slug, $numero, true)
             ?? throw new NotFoundException('Artbook introuvable');
 
-        $updated = $this->update(
-            ['lu' => (int) $readStatus],
-            ['id' => $artbook->id]
-        );
+        $updated = $this->update(['lu' => (int) $readStatus], ['id' => $artbook->id]);
 
         return $updated ? $artbook : false;
     }
@@ -98,9 +92,7 @@ final class ArtbookRepository extends AbstractRepository
             WHERE id = :id
             AND xp_read_rewarded = 0
             ",
-            [
-                'id' => $id,
-            ]
+            ['id' => $id]
         );
 
         return $statement !== false && $statement->rowCount() === 1;
@@ -122,16 +114,10 @@ final class ArtbookRepository extends AbstractRepository
     {
         if (trim((string) $artbook->serie) !== '')
         {
-            return [
-                'auteur' => null,
-                'serie' => $source,
-            ];
+            return ['auteur' => null, 'serie' => $source];
         }
 
-        return [
-            'auteur' => $source,
-            'serie' => null,
-        ];
+        return ['auteur' => $source, 'serie' => null];
     }
 
     // --------------------------------------------------------------------------
@@ -164,7 +150,7 @@ final class ArtbookRepository extends AbstractRepository
             'company' => trim((string) ($data['company'] ?? '')),
             'release_date' => Str::nullableTrim($data['release_date'] ?? null),
 
-            'commentaire' => Str::nullableTrim($data['commentaire'] ?? null),
+            'commentaire' => Str::nullableTrim($data['commentaire'] ?? null)
         ];
     }
 }

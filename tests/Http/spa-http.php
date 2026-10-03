@@ -38,7 +38,7 @@ $endpoints = [
     'chinois' => '/chinois/ajax/recherche/',
     'figurines' => '/figurine/ajax/recherche/',
     'nendoroids' => '/nendoroid/ajax/recherche/',
-    'peluches' => '/peluche/ajax/recherche/',
+    'peluches' => '/peluche/ajax/recherche/'
 ];
 foreach (['a', 'HSK', '测试'] as $query)
 {

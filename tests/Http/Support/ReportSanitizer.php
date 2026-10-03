@@ -34,11 +34,7 @@ final class ReportSanitizer
 
     public static function body(string $body): string
     {
-        $sanitizedBody = preg_replace(
-            self::BODY_PATTERNS,
-            self::BODY_REPLACEMENTS,
-            $body
-        );
+        $sanitizedBody = preg_replace(self::BODY_PATTERNS, self::BODY_REPLACEMENTS, $body);
 
         if (! is_string($sanitizedBody))
         {
@@ -74,11 +70,7 @@ final class ReportSanitizer
             return $header;
         }
 
-        $sanitizedHeader = preg_replace(
-            '/(:\s*[^=]+=)[^;\r\n]+/i',
-            '$1[REDACTED]',
-            $header
-        );
+        $sanitizedHeader = preg_replace('/(:\s*[^=]+=)[^;\r\n]+/i', '$1[REDACTED]', $header);
 
         return is_string($sanitizedHeader)
             ? $sanitizedHeader

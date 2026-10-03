@@ -19,7 +19,8 @@ final readonly class ChinoisGrammaireCreateData
         public string $explication,
         public string $section,
         public string $categorie
-    ) {
+    )
+    {
     }
 
     /**

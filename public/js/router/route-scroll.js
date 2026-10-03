@@ -24,7 +24,8 @@ export function restoreScrollPosition()
 {
     const entry = activeEntry;
     const position = scrollPositions.get(entry) ?? {x: 0, y: 0};
-    requestAnimationFrame(() => {
+    requestAnimationFrame(() =>
+    {
         if (activeEntry === entry) window.scrollTo(position.x, position.y);
     });
 }

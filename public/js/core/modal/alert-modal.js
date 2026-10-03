@@ -6,22 +6,16 @@ export function alertModal(
     {
         title,
         message,
-        buttonText = 'OK',
-    },
+        buttonText = 'OK'
+    }
 )
 {
     return new Promise(
-        (
-            resolve,
-        ) =>
+        (resolve) =>
         {
-            const overlay =
-                document.createElement(
-                    'div',
-                );
+            const overlay = document.createElement('div');
 
-            overlay.className =
-                'confirm-modal-overlay';
+            overlay.className = 'confirm-modal-overlay';
 
             overlay.innerHTML = `
                 <div class="confirm-modal">
@@ -48,77 +42,51 @@ export function alertModal(
                 </div>
             `;
 
-            const close =
-                () =>
+            const close = () =>
                 {
-                    document.body.style.overflow =
-                        '';
+                    document.body.style.overflow = '';
 
-                    document.removeEventListener(
-                        'keydown',
-                        handleEscape,
-                    );
+                    document.removeEventListener('keydown', handleEscape);
 
                     overlay.remove();
 
                     resolve();
                 };
 
-            const handleEscape =
-                (
-                    event,
-                ) =>
+            const handleEscape = (event) =>
                 {
-                    if (
-                        event.key === 'Escape'
-                    ) {
+                    if (event.key === 'Escape')
+                    {
 
                         close();
                     }
                 };
 
-            document.body.append(
-                overlay,
-            );
+            document.body.append(overlay);
 
-            document.body.style.overflow =
-                'hidden';
+            document.body.style.overflow = 'hidden';
 
-            document.addEventListener(
-                'keydown',
-                handleEscape,
-            );
+            document.addEventListener('keydown', handleEscape);
 
             overlay
-                .querySelector(
-                    '.confirm-modal-primary',
-                )
+                .querySelector('.confirm-modal-primary')
                 ?.focus();
 
             overlay
-                .querySelector(
-                    '.confirm-modal-primary',
-                )
-                ?.addEventListener(
-                    'click',
-                    close,
-                );
+                .querySelector('.confirm-modal-primary')
+                ?.addEventListener('click', close);
 
             overlay.addEventListener(
                 'click',
-                (
-                    event,
-                ) =>
+                (event) =>
                 {
-                    if (
-                        event.target
-                        === overlay
-                    ) {
+                    if (event.target === overlay)
+                    {
 
                         close();
                     }
-                },
+                }
             );
-        },
+        }
     );
 }

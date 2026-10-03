@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Sql;
 
-use App\Http\Controllers\Controller;
 use App\DTO\Common\ServiceResult;
+use App\Http\Controllers\Controller;
 use App\Services\Sql\SqlExecutionService;
 
 use Framework\Http\Exceptions\ValidationException;
@@ -15,10 +15,8 @@ use Throwable;
 
 final class SqlQueryController extends Controller
 {
-    public function __construct(
-        private readonly SqlExecutionService $sqlExecutionService,
-        Request $request
-    ) {
+    public function __construct(private readonly SqlExecutionService $sqlExecutionService, Request $request)
+    {
         parent::__construct($request);
     }
 

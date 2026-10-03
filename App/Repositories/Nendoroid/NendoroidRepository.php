@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Repositories\Nendoroid;
 
 use App\DTO\Nendoroid\Inputs\NendoroidUpdateData;
-use App\Repositories\AbstractRepository;
 use App\Models\Nendoroid;
+use App\Repositories\AbstractRepository;
 
 use Framework\Support\Str;
 
@@ -15,10 +15,7 @@ final class NendoroidRepository extends AbstractRepository
     use \App\Repositories\Collections\Concerns\UpdatesExistingCollection;
     protected string $table = 'nendoroid';
 
-    public function findOneBySlugAndNumero(
-        string $slug,
-        int $numero
-    ): ?Nendoroid
+    public function findOneBySlugAndNumero(string $slug, int $numero): ?Nendoroid
     {
         /** @var Nendoroid|null $nendoroid */
         $nendoroid = $this->fetchOne(
@@ -32,10 +29,7 @@ final class NendoroidRepository extends AbstractRepository
 
             LIMIT 1
             ",
-            [
-                'slug' => $this->normalizeSlug($slug),
-                'numero' => $numero,
-            ],
+            ['slug' => $this->normalizeSlug($slug), 'numero' => $numero],
             Nendoroid::class
         );
 
@@ -50,11 +44,7 @@ final class NendoroidRepository extends AbstractRepository
         return parent::insert($this->normalizeInsertData($data));
     }
 
-    public function updateNendoroid(
-        string $slug,
-        int $numero,
-        NendoroidUpdateData $dto
-    ): bool
+    public function updateNendoroid(string $slug, int $numero, NendoroidUpdateData $dto): bool
     {
         return $this->updateExistingBySlugAndNumero(
             $slug,
@@ -64,31 +54,20 @@ final class NendoroidRepository extends AbstractRepository
                 'origin' => $dto->origin,
                 'company' => $dto->company,
                 'release_date' => $dto->release_date,
-                'commentaire' => $dto->commentaire,
+                'commentaire' => $dto->commentaire
             ]
         );
     }
 
-    public function updateCollectStatus(
-        string $slug,
-        int $numero,
-        bool $collectStatus
-    ): bool
+    public function updateCollectStatus(string $slug, int $numero, bool $collectStatus): bool
     {
-        return $this->updateBySlugAndNumero(
-            $slug,
-            $numero,
-            [
-                'collect' => (int) $collectStatus,
-            ]
-        );
+        return $this->updateBySlugAndNumero($slug, $numero, ['collect' => (int) $collectStatus]);
     }
 
     public function deleteById(int $id): bool
     {
         return $this->deleteExistingById($id);
     }
-
 
     public function claimCollectReward(int $id): bool
     {
@@ -101,9 +80,7 @@ final class NendoroidRepository extends AbstractRepository
             WHERE id = :id
             AND collect_rewarded = 0
             ",
-            [
-                'id' => $id,
-            ]
+            ['id' => $id]
         );
 
         return $statement !== false && $statement->rowCount() === 1;
@@ -121,19 +98,9 @@ final class NendoroidRepository extends AbstractRepository
     /**
      * @param array<string, mixed> $data
      */
-    private function updateBySlugAndNumero(
-        string $slug,
-        int $numero,
-        array $data
-    ): bool
+    private function updateBySlugAndNumero(string $slug, int $numero, array $data): bool
     {
-        return $this->update(
-            $data,
-            [
-                'slug' => $this->normalizeSlug($slug),
-                'numero' => $numero,
-            ]
-        );
+        return $this->update($data, ['slug' => $this->normalizeSlug($slug), 'numero' => $numero]);
     }
 
     /**
@@ -153,7 +120,7 @@ final class NendoroidRepository extends AbstractRepository
             'company' => trim((string) ($data['company'] ?? '')),
             'release_date' => Str::nullableTrim($data['release_date'] ?? null),
 
-            'commentaire' => Str::nullableTrim($data['commentaire'] ?? null),
+            'commentaire' => Str::nullableTrim($data['commentaire'] ?? null)
         ];
     }
 }

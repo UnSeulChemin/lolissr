@@ -13,13 +13,13 @@ final readonly class FigurineXpRewardService
     public function __construct(
         private FigurineRepository $figurineRepository,
         private \App\Services\Profile\AchievementXpService $achievementXpService,
-        private \App\Repositories\Figurine\FigurineStatsRepository $figurineStatsRepository,
-    ) {
+        private \App\Repositories\Figurine\FigurineStatsRepository $figurineStatsRepository
+    )
+    {
     }
 
-    public function rewardCollect(
-        Figurine $figurine
-    ): bool {
+    public function rewardCollect(Figurine $figurine): bool
+    {
         $user = user();
 
         if ($user === null)

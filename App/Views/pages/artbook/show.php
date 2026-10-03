@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\DTO\Common\Responses\ViewData;
 use App\DTO\Artbook\Responses\ArtbookData;
+use App\DTO\Common\Responses\ViewData;
 
 /** @var ViewData $view */
 /** @var ArtbookData $artbook */

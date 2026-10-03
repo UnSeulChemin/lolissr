@@ -13,7 +13,8 @@ Bootstrap::loadEnvOnly();
 $container = new Container();
 $container->singleton(Database::class);
 $db = $container->get(Database::class);
-$check = static function (bool $condition, string $message): void {
+$check = static function (bool $condition, string $message): void
+{
     if (!$condition) throw new RuntimeException($message);
 };
 
@@ -45,7 +46,8 @@ foreach (['Figurine', 'Nendoroid', 'Peluche', 'Artbook'] as $kind)
             $repository->$method('fixture', 1, $dto);
             throw new RuntimeException('Update accepted outside a transaction.');
         }
-        catch (LogicException) {}
+        catch (LogicException)
+        {}
 
         $db->exec("INSERT INTO $table (id, slug, numero, $nameField) VALUES (1, 'fixture', 1, 'Original')");
         $check($service->update('fixture', 1, $dto)->success, "$kind: valid update failed");
@@ -65,7 +67,8 @@ foreach (['Figurine', 'Nendoroid', 'Peluche', 'Artbook'] as $kind)
                 $repository->updateReadStatus('fixture', 1, true);
                 throw new RuntimeException('Read status accepted outside a transaction');
             }
-            catch (LogicException) {}
+            catch (LogicException)
+            {}
             $before = $db->transaction(fn () => $repository->updateReadStatus('fixture', 1, true));
             $check($before instanceof \App\Models\Artbook && !$before->lu, 'Original unread state lost');
             $before = $db->transaction(fn () => $repository->updateReadStatus('fixture', 1, true));
@@ -103,7 +106,8 @@ foreach (['Figurine', 'Nendoroid', 'Peluche', 'Artbook'] as $kind)
                 $db->transaction(fn () => $repository->updateReadStatus('fixture', 1, true));
                 throw new RuntimeException('Missing read target reported as updated');
             }
-            catch (NotFoundException) {}
+            catch (NotFoundException)
+            {}
         }
     }
     finally
@@ -134,7 +138,8 @@ try
         $repository->updateNote('fixture', 1, 4, 5);
         throw new RuntimeException('Notes accepted outside a transaction');
     }
-    catch (LogicException) {}
+    catch (LogicException)
+    {}
     foreach ([[4, 5, 9], [4, 5, 9], [null, 3, null], [null, null, null]] as [$cover, $book, $stored])
     {
         NoteQueryCounter::$executions = 0;

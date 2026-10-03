@@ -66,12 +66,7 @@ final class Database extends PDO
         }
         catch (PDOException $exception)
         {
-            Logger::exception(
-                $exception,
-                [
-                    'type' => 'database_connection'
-                ]
-            );
+            Logger::exception($exception, ['type' => 'database_connection']);
 
             throw new RuntimeException(
                 ApplicationConfig::debug()
@@ -97,9 +92,7 @@ final class Database extends PDO
     {
         if ($this->inTransaction())
         {
-            throw new LogicException(
-                'Les transactions imbriquées ne sont pas supportées.'
-            );
+            throw new LogicException('Les transactions imbriquées ne sont pas supportées.');
         }
 
         Profiler::start('database.transaction');
@@ -110,9 +103,7 @@ final class Database extends PDO
         {
             if (! $this->beginTransaction())
             {
-                throw new RuntimeException(
-                    'Impossible de démarrer la transaction.'
-                );
+                throw new RuntimeException('Impossible de démarrer la transaction.');
             }
 
             try
@@ -131,9 +122,7 @@ final class Database extends PDO
 
                 if (! $this->commit())
                 {
-                    throw new RuntimeException(
-                        'Impossible de valider la transaction.'
-                    );
+                    throw new RuntimeException('Impossible de valider la transaction.');
                 }
 
                 $committed = true;
@@ -184,22 +173,14 @@ final class Database extends PDO
         {
             if (! $this->rollBack())
             {
-                Logger::error(
-                    'Database rollback failed',
-                    [
-                        'original_error' => $originalException->getMessage()
-                    ]
-                );
+                Logger::error('Database rollback failed', ['original_error' => $originalException->getMessage()]);
             }
         }
         catch (Throwable $rollbackException)
         {
             Logger::exception(
                 $rollbackException,
-                [
-                    'type' => 'database_rollback',
-                    'original_error' => $originalException->getMessage()
-                ]
+                ['type' => 'database_rollback', 'original_error' => $originalException->getMessage()]
             );
         }
     }

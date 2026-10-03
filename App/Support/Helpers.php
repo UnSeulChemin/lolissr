@@ -45,9 +45,7 @@ if (! function_exists('auth'))
 
         if (! $service instanceof AuthService)
         {
-            throw new RuntimeException(
-                'AuthService non disponible.'
-            );
+            throw new RuntimeException('AuthService non disponible.');
         }
 
         return $service;

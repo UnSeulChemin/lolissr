@@ -2,32 +2,24 @@
 // GLOBAL RETOUR NAVIGATION
 // =================================================
 
-import {
-    config,
-} from '../../core/config.js';
+import { config } from '../../core/config.js';
 
-import {
-    navigateTo,
-} from '../router-navigation.js';
+import { navigateTo } from '../router-navigation.js';
 
-import {
-    debug,
-} from '../../core/debug/debug.js';
+import { debug } from '../../core/debug/debug.js';
 
 // =================================================
 // SÉLECTEURS
 // =================================================
 
-const TYPING_SELECTOR =
-`
+const TYPING_SELECTOR = `
 input,
 textarea,
 select,
 [contenteditable="true"]
 `;
 
-const INTERACTIVE_SELECTOR =
-`
+const INTERACTIVE_SELECTOR = `
 a,
 button,
 [role="button"]
@@ -37,49 +29,27 @@ button,
 // ÉTAT
 // =================================================
 
-let initialized =
-    false;
+let initialized = false;
 
-let locked =
-    false;
+let locked = false;
 
 // =================================================
 // UTILITAIRES
 // =================================================
 
-function hasClosest(
-    target,
-    selector,
-)
+function hasClosest(target, selector)
 {
-    return (
-        target instanceof Element
-        && Boolean(
-            target.closest(
-                selector,
-            ),
-        )
-    );
+    return (target instanceof Element && Boolean( target.closest( selector ) ));
 }
 
-function isTypingContext(
-    target,
-)
+function isTypingContext(target)
 {
-    return hasClosest(
-        target,
-        TYPING_SELECTOR,
-    );
+    return hasClosest(target, TYPING_SELECTOR);
 }
 
-function isInteractiveElement(
-    target,
-)
+function isInteractiveElement(target)
 {
-    return hasClosest(
-        target,
-        INTERACTIVE_SELECTOR,
-    );
+    return hasClosest(target, INTERACTIVE_SELECTOR);
 }
 
 // =================================================
@@ -88,14 +58,12 @@ function isInteractiveElement(
 
 function unlock()
 {
-    locked =
-        false;
+    locked = false;
 }
 
 function lock()
 {
-    locked =
-        true;
+    locked = true;
 }
 
 // =================================================
@@ -108,39 +76,28 @@ function navigateBack()
     // VERROU
     // --------------------------------------------------------------------------
 
+    if (locked)
+    {
 
-    if (locked) {
-
-        debug(
-            'BACKSPACE',
-            'blocked',
-        );
+        debug('BACKSPACE', 'blocked');
 
         return;
     }
 
     lock();
 
-    debug(
-        'BACKSPACE',
-        'navigate',
-        location.pathname,
-    );
+    debug('BACKSPACE', 'navigate', location.pathname);
 
     // --------------------------------------------------------------------------
     // HISTORIQUE RETOUR
     // --------------------------------------------------------------------------
 
-
-    if (
-        window.history.length > 1
-    ) {
+    if (window.history.length > 1)
+    {
 
         window.history.back();
 
-        requestAnimationFrame(
-            unlock,
-        );
+        requestAnimationFrame(unlock);
 
         return;
     }
@@ -149,31 +106,21 @@ function navigateBack()
     // REPLI
     // --------------------------------------------------------------------------
 
-
-    void navigateTo(
-        config.baseUri,
-    ).finally(
-        unlock,
-    );
+    void navigateTo(config.baseUri).finally(unlock);
 }
 
 // =================================================
 // CLAVIER
 // =================================================
 
-function handleKeyboard(
-    event,
-)
+function handleKeyboard(event)
 {
     // --------------------------------------------------------------------------
     // CLÉ
     // --------------------------------------------------------------------------
 
-
-    if (
-        event.key
-        !== 'Backspace'
-    ) {
+    if (event.key !== 'Backspace')
+    {
 
         return;
     }
@@ -182,10 +129,8 @@ function handleKeyboard(
     // RÉPÉTITION
     // --------------------------------------------------------------------------
 
-
-    if (
-        event.repeat
-    ) {
+    if (event.repeat)
+    {
 
         return;
     }
@@ -194,13 +139,8 @@ function handleKeyboard(
     // MODIFICATEURS
     // --------------------------------------------------------------------------
 
-
-    if (
-        event.ctrlKey
-        || event.metaKey
-        || event.altKey
-        || event.shiftKey
-    ) {
+    if (event.ctrlKey || event.metaKey || event.altKey || event.shiftKey)
+    {
 
         return;
     }
@@ -209,12 +149,8 @@ function handleKeyboard(
     // SAISIE
     // --------------------------------------------------------------------------
 
-
-    if (
-        isTypingContext(
-            event.target,
-        )
-    ) {
+    if (isTypingContext( event.target ))
+    {
 
         return;
     }
@@ -223,12 +159,8 @@ function handleKeyboard(
     // INTERACTIF
     // --------------------------------------------------------------------------
 
-
-    if (
-        isInteractiveElement(
-            event.target,
-        )
-    ) {
+    if (isInteractiveElement( event.target ))
+    {
 
         return;
     }
@@ -237,13 +169,11 @@ function handleKeyboard(
     // ANNULATION DU COMPORTEMENT PAR DÉFAUT
     // --------------------------------------------------------------------------
 
-
     event.preventDefault();
 
     // --------------------------------------------------------------------------
     // NAVIGATION
     // --------------------------------------------------------------------------
-
 
     navigateBack();
 }
@@ -254,30 +184,23 @@ function handleKeyboard(
 
 export function initGlobalBackNavigation()
 {
-    if (initialized) {
+    if (initialized)
+    {
 
-        debug(
-            'BACKSPACE',
-            'already-init',
-        );
+        debug('BACKSPACE', 'already-init');
 
         return;
     }
 
-    initialized =
-        true;
+    initialized = true;
 
     document.addEventListener(
         'keydown',
         handleKeyboard,
         {
-            passive:
-                false,
-        },
+            passive: false
+        }
     );
 
-    debug(
-        'BACKSPACE',
-        'ready',
-    );
+    debug('BACKSPACE', 'ready');
 }

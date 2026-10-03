@@ -2,9 +2,7 @@
 // IMPORTS
 // =================================================
 
-import {
-    config,
-} from './config.js';
+import { config } from './config.js';
 
 // =================================================
 // URL DE L’APPLICATION
@@ -12,13 +10,7 @@ import {
 
 export function appUrl(path = '')
 {
-    return (
-        config.baseUri
-        + path
-    ).replace(
-        /\/{2,}/g,
-        '/',
-    );
+    return (config.baseUri + path).replace(/\/{2,}/g, '/');
 }
 
 // =================================================
@@ -27,30 +19,18 @@ export function appUrl(path = '')
 
 export function appPath(pathname = window.location.pathname)
 {
-    const baseUri =
-        config.baseUri === '/'
+    const baseUri = config.baseUri === '/'
             ? ''
-            : config.baseUri.replace(
-                /\/$/,
-                '',
-            );
+            : config.baseUri.replace(/\/$/, '');
 
-    if (
-        baseUri !== ''
-        && pathname === baseUri
-    ) {
+    if (baseUri !== '' && pathname === baseUri)
+    {
         return '/';
     }
 
-    if (
-        baseUri !== ''
-        && pathname.startsWith(
-            `${baseUri}/`,
-        )
-    ) {
-        return pathname.slice(
-            baseUri.length,
-        );
+    if (baseUri !== '' && pathname.startsWith( `${baseUri}/` ))
+    {
+        return pathname.slice(baseUri.length);
     }
 
     return pathname;

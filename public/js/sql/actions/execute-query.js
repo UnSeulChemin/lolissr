@@ -1,41 +1,26 @@
-import {
-    post,
-} from '../../core/http.js';
+import { post } from '../../core/http.js';
 
-import {
-    delegate,
-} from '../../core/dom.js';
+import { delegate } from '../../core/dom.js';
 
-import {
-    debug,
-} from '../../core/debug/debug.js';
+import { debug } from '../../core/debug/debug.js';
 
-import {
-    FrontendError,
-} from '../../core/errors/FrontendError.js';
+import { FrontendError } from '../../core/errors/FrontendError.js';
 
-import {
-    confirmModal,
-} from '../../core/modal/confirm-modal.js';
+import { confirmModal } from '../../core/modal/confirm-modal.js';
 
-import {
-    deleteModal,
-} from '../../core/modal/delete-modal.js';
+import { deleteModal } from '../../core/modal/delete-modal.js';
 
 // =================================================
 // ÉTAT
 // =================================================
 
-let initialized =
-    false;
+let initialized = false;
 
 // =================================================
 // SÉCURITÉ
 // =================================================
 
-function escapeHtml(
-    value,
-)
+function escapeHtml(value)
 {
     return String(value)
         .replaceAll('&', '&amp;')
@@ -49,23 +34,16 @@ function escapeHtml(
 // AFFICHAGE DES ERREURS
 // =================================================
 
-function renderError(
-    sql,
-    message,
-)
+function renderError(sql, message)
 {
-    const container =
-        document.getElementById(
-            'sql-results',
-        );
+    const container = document.getElementById('sql-results');
 
     if (!container)
     {
         return;
     }
 
-    container.innerHTML =
-    `
+    container.innerHTML = `
     <section
         class="
             home-grid
@@ -120,16 +98,9 @@ function renderError(
 // AFFICHAGE DES RÉSULTATS
 // =================================================
 
-function renderResult(
-    sql,
-    result,
-    truncated = false,
-)
+function renderResult(sql, result, truncated = false)
 {
-    const container =
-        document.getElementById(
-            'sql-results',
-        );
+    const container = document.getElementById('sql-results');
 
     if (!container)
     {
@@ -138,8 +109,7 @@ function renderResult(
 
     if (result.length === 0)
     {
-        container.innerHTML =
-        `
+        container.innerHTML = `
         <section
             class="
                 home-grid
@@ -192,21 +162,13 @@ function renderResult(
         return;
     }
 
-    const columns =
-        Object.keys(
-            result[0],
-        );
+    const columns = Object.keys(result[0]);
 
-    const header =
-        columns
-            .map(
-                column =>
-                    `<th>${escapeHtml(column)}</th>`,
-            )
+    const header = columns
+            .map(column => `<th>${escapeHtml(column)}</th>`)
             .join('');
 
-    const rows =
-        result
+    const rows = result
             .map(
                 row =>
                 `
@@ -220,12 +182,11 @@ function renderResult(
                             .join('')
                     }
                 </tr>
-                `,
+                `
             )
             .join('');
 
-    container.innerHTML =
-    `
+    container.innerHTML = `
     <section
         class="
             home-grid
@@ -298,73 +259,48 @@ function renderResult(
 // EXÉCUTION
 // =================================================
 
-async function executeQuery(
-    form,
-)
+async function executeQuery(form)
 {
     let sql = '';
 
-    try {
+    try
+    {
 
-        if (
-            form.dataset.loading
-            === '1'
-        ) {
+        if (form.dataset.loading === '1')
+        {
             return;
         }
 
-        const url =
-            form.dataset.url;
+        const url = form.dataset.url;
 
         if (!url)
         {
-            throw new FrontendError(
-                'URL SQL manquante.',
-            );
+            throw new FrontendError('URL SQL manquante.');
         }
 
-        const textarea =
-            form.querySelector(
-                '#sql',
-            );
+        const textarea = form.querySelector('#sql');
 
-        if (
-            !(
-                textarea
-                instanceof HTMLTextAreaElement
-            )
-        ) {
-            throw new FrontendError(
-                'Champ SQL introuvable.',
-            );
+        if (!( textarea instanceof HTMLTextAreaElement ))
+        {
+            throw new FrontendError('Champ SQL introuvable.');
         }
 
-        sql =
-            textarea.value.trim();
+        sql = textarea.value.trim();
 
         if (sql === '')
         {
-            throw new FrontendError(
-                'Veuillez saisir une requête SQL.',
-            );
+            throw new FrontendError('Veuillez saisir une requête SQL.');
         }
 
-        const isDestructiveQuery =
-            /^\s*(DELETE|DROP|TRUNCATE)\b/i
+        const isDestructiveQuery = /^\s*(DELETE|DROP|TRUNCATE)\b/i
                 .test(sql);
 
-        const isModificationQuery =
-            /^\s*(INSERT|UPDATE|ALTER|CREATE|RENAME|REPLACE)\b/i
+        const isModificationQuery = /^\s*(INSERT|UPDATE|ALTER|CREATE|RENAME|REPLACE)\b/i
                 .test(sql);
 
-        if (
-            isDestructiveQuery
-        )
+        if (isDestructiveQuery)
         {
-            const confirmed =
-                await deleteModal(
-                    'Cette requête va supprimer des données. Continuer ?',
-                );
+            const confirmed = await deleteModal('Cette requête va supprimer des données. Continuer ?');
 
             if (!confirmed)
             {
@@ -372,19 +308,14 @@ async function executeQuery(
             }
         }
         
-        else if (
-            isModificationQuery
-        )
+        else if (isModificationQuery)
         {
-            const confirmed =
-                await confirmModal(
+            const confirmed = await confirmModal(
                     {
-                        title:
-                            'Modification',
+                        title: 'Modification',
 
-                        message:
-                            'Cette requête va modifier la base de données. Continuer ?',
-                    },
+                        message: 'Cette requête va modifier la base de données. Continuer ?'
+                    }
                 );
 
             if (!confirmed)
@@ -393,59 +324,41 @@ async function executeQuery(
             }
         }
 
-        form.dataset.loading =
-            '1';
+        form.dataset.loading = '1';
 
-        const data =
-            await post(
+        const data = await post(
                 url,
                 {
-                    sql,
-                },
+                    sql
+                }
             );
 
-        if (
-            data?.success
-            !== true
-        ) {
-            throw new FrontendError(
-                data?.message
-                || 'Erreur SQL.',
-            );
+        if (data?.success !== true)
+        {
+            throw new FrontendError(data?.message || 'Erreur SQL.');
         }
 
-        const result =
-            Array.isArray(
-                data.data?.result,
-            )
+        const result = Array.isArray(data.data?.result)
                 ? data.data.result
                 : [];
 
-        renderResult(
-            sql,
-            result,
-            data.data?.truncated === true,
-        );
+        renderResult(sql, result, data.data?.truncated === true);
 
         debug(
             'SQL',
             'success',
             {
-                rows:
-                    result.length,
-            },
+                rows: result.length
+            }
         );
 
-    } catch (error) {
+    } catch (error)
+    {
 
-        renderError(
-            sql,
-            error instanceof Error
-                ? error.message
-                : 'Erreur inconnue',
-        );
+        renderError(sql, error instanceof Error ? error.message : 'Erreur inconnue');
 
-    } finally {
+    } finally
+    {
 
         delete form.dataset.loading;
     }
@@ -462,37 +375,24 @@ export function initExecuteQuery()
         return;
     }
 
-    initialized =
-        true;
+    initialized = true;
 
     delegate(
         document,
         'submit',
         '[data-sql-form]',
-        (
-            event,
-            form,
-        ) =>
+        (event, form) =>
         {
-            if (
-                !(
-                    form
-                    instanceof HTMLFormElement
-                )
-            ) {
+            if (!( form instanceof HTMLFormElement ))
+            {
                 return;
             }
 
             event.preventDefault();
 
-            void executeQuery(
-                form,
-            );
-        },
+            void executeQuery(form);
+        }
     );
 
-    debug(
-        'SQL',
-        'initialized',
-    );
+    debug('SQL', 'initialized');
 }

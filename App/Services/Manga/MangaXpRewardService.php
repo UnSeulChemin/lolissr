@@ -13,8 +13,9 @@ final readonly class MangaXpRewardService
     public function __construct(
         private MangaRepository $mangaRepository,
         private \App\Services\Profile\AchievementXpService $achievementXpService,
-        private \App\Repositories\Manga\MangaStatsRepository $mangaStatsRepository,
-    ) {
+        private \App\Repositories\Manga\MangaStatsRepository $mangaStatsRepository
+    )
+    {
     }
 
     /**
@@ -29,10 +30,7 @@ final readonly class MangaXpRewardService
 
         if ($user === null)
         {
-            return [
-                'xpEarned' => false,
-                'seriesXpEarned' => false,
-            ];
+            return ['xpEarned' => false, 'seriesXpEarned' => false];
         }
 
         $xpEarned = $this->mangaRepository->claimReadReward($manga->id);
@@ -42,13 +40,10 @@ final readonly class MangaXpRewardService
             $user,
             $this->mangaStatsRepository->countRead(),
             $this->mangaStatsRepository->countCompletedSeries(),
-            ($xpEarned ? UserXp::READ_TOME : 0) + ($seriesXpEarned ? UserXp::COMPLETE_SERIES : 0),
+            ($xpEarned ? UserXp::READ_TOME : 0) + ($seriesXpEarned ? UserXp::COMPLETE_SERIES : 0)
         );
 
-        return [
-            'xpEarned' => $xpEarned,
-            'seriesXpEarned' => $seriesXpEarned,
-        ];
+        return ['xpEarned' => $xpEarned, 'seriesXpEarned' => $seriesXpEarned];
     }
 
     // Modifier le statut ou supprimer un tome non lu peut aussi terminer une série.

@@ -186,12 +186,8 @@ abstract class AbstractRepository
     /**
      * @param array<int|string, mixed> $params
      */
-    protected function fetchSingleValue(
-        string $sql,
-        string $field,
-        array $params = [],
-        mixed $default = 0
-    ): mixed {
+    protected function fetchSingleValue(string $sql, string $field, array $params = [], mixed $default = 0): mixed
+    {
         $result = $this->fetchOne($sql, $params);
 
         if ($result === null)

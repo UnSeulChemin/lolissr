@@ -8,7 +8,6 @@ use App\DTO\Manga\Responses\MangaStatsData;
 use App\Models\Manga;
 use App\Repositories\AbstractRepository;
 
-
 final class MangaStatsRepository extends AbstractRepository
 {
     public function countRead(): int
@@ -63,10 +62,7 @@ final class MangaStatsRepository extends AbstractRepository
      */
     public function topLongestSeriesDto(int $limit = 5): array
     {
-        return array_map(
-            fn (Manga $manga) => $this->mapToStatsDto($manga),
-            $this->topLongestSeries($limit),
-        );
+        return array_map(fn (Manga $manga) => $this->mapToStatsDto($manga), $this->topLongestSeries($limit));
     }
 
     /**
@@ -129,17 +125,11 @@ final class MangaStatsRepository extends AbstractRepository
     // UTILITAIRES
     // --------------------------------------------------------------------------
 
-    private function mapToStatsDto(
-        Manga $manga,
-        bool $linkToTome = false,
-    ): MangaStatsData
+    private function mapToStatsDto(Manga $manga, bool $linkToTome = false): MangaStatsData
     {
         $thumbnailUrl = 'images/manga/placeholder-manga.webp';
 
-        if (
-            $manga->thumbnail !== ''
-            && $manga->extension !== ''
-        )
+        if ($manga->thumbnail !== '' && $manga->extension !== '')
         {
             $thumbnailUrl =
                 'images/manga/thumbnail/'
@@ -169,18 +159,13 @@ final class MangaStatsRepository extends AbstractRepository
 
             numeroLabel:
                 'Tome '
-                . str_pad(
-                    (string) $manga->numero,
-                    2,
-                    '0',
-                    STR_PAD_LEFT,
-                ),
+                . str_pad((string) $manga->numero, 2, '0', STR_PAD_LEFT),
 
             total: $manga->total,
 
             totalLabel:
                 ($manga->total ?? 0)
-                . ' tomes',
+                . ' tomes'
         );
     }
 }

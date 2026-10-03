@@ -15,9 +15,10 @@ export async function runBrowserScenario()
     const original = window.fetch;
     const pending = [];
     window.fetch = () => new Promise(resolve => pending.push(() => resolve(new Response(JSON.stringify({
-        type: 'page', page: {html: '<p>Destination</p>', format: 'fragment', title: 'Destination', stylesheets: [], bodyData: {}},
+        type: 'page', page: {html: '<p>Destination</p>', format: 'fragment', title: 'Destination', stylesheets: [], bodyData: {}}
     }), {headers: {'Content-Type': 'application/json'}}))));
-    const check = (ok, text) => { if (!ok) throw new Error(text); };
+    const check = (ok, text) =>
+    { if (!ok) throw new Error(text); };
     try
     {
         const first = navigateTo(base + 'figurine', {fallback: false});
@@ -33,14 +34,16 @@ export async function runBrowserScenario()
         check(location.pathname.endsWith('/chinois') && !navigationState.locked && !document.body.classList.contains('is-routing'), 'Next navigation failed');
         let releaseHook;
         let enterHook;
-        const entered = new Promise(resolve => { enterHook = resolve; });
+        const entered = new Promise(resolve =>
+        { enterHook = resolve; });
         const unregister = onRouteChange(() => new Promise(resolve =>
         {
             releaseHook = resolve;
             enterHook();
         }));
         let ready = 0;
-        const countReady = () => { ready++; };
+        const countReady = () =>
+        { ready++; };
         document.addEventListener('navigation:ready', countReady);
         try
         {
@@ -62,5 +65,6 @@ export async function runBrowserScenario()
         }
         return ['Current-page click cancels pending navigation', 'Late cancelled response cannot render or stop newer loading', 'Following navigation succeeds', 'Repeated destination click allows page initialization and ready event to finish'];
     }
-    finally { window.fetch = original; }
+    finally
+    { window.fetch = original; }
 }

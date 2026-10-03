@@ -18,7 +18,8 @@ if (($argv[1] ?? '') === 'lock')
     exit(0);
 }
 
-$check = static function (bool $condition, string $message): void {
+$check = static function (bool $condition, string $message): void
+{
     if (! $condition) throw new RuntimeException($message);
 };
 $directory = sys_get_temp_dir() . '/cache-contention-' . bin2hex(random_bytes(8));
@@ -29,7 +30,7 @@ Env::set('LOG_ENABLED', false);
 $path = $directory . '/' . sha1('busy') . '.cache';
 file_put_contents($path, '{"expires_at":1,"value":"expired"}');
 $process = proc_open([PHP_BINARY, __FILE__, 'lock', $path . '.metadata.lock'], [
-    0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w'],
+    0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']
 ], $pipes);
 $check(is_resource($process), 'Cannot start lock holder.');
 try
@@ -41,7 +42,8 @@ try
     $check(str_contains(file_get_contents($path), 'expired'), 'Contended read published without a metadata lock.');
 
     $calls = 0;
-    $compute = static function () use (&$calls): string { $calls++; return 'independent'; };
+    $compute = static function () use (&$calls): string
+    { $calls++; return 'independent'; };
     Cache::remember('other', 60, $compute);
     Cache::remember('other', 60, $compute);
     $check($calls === 1, 'Unrelated key could not publish under contention.');

@@ -23,7 +23,7 @@ final class ProfileStatsRepository extends AbstractRepository
             'nendoroid' => ['collect', 'collect_rewarded'],
             'peluche' => ['collect', 'collect_rewarded'],
             'chinois_vocabulaire' => ['maitrise', 'xp_rewarded'],
-            'chinois_grammaire' => ['maitrise', 'xp_rewarded'],
+            'chinois_grammaire' => ['maitrise', 'xp_rewarded']
         ] as $table => [$status, $reward])
         {
             $parts[] = "(SELECT COUNT(CASE WHEN $status = 1 THEN 1 END) AS {$table}_count,

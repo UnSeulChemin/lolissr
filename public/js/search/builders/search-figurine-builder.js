@@ -2,48 +2,27 @@
 // CONSTRUCTION DES RÉSULTATS DE FIGURINES
 // =================================================
 
-import {
-    highlightSearchTerm,
-    escapeHtml,
-} from '../utils/search-utils.js';
+import { highlightSearchTerm, escapeHtml } from '../utils/search-utils.js';
 
-import {
-    createResultItem,
-} from './search-result-item.js';
+import { createResultItem } from './search-result-item.js';
 
-export function buildFigurineResult(
-    figurine,
-    rawValue,
-    basePath,
-)
+export function buildFigurineResult(figurine, rawValue, basePath)
 {
-    const slug =
-        encodeURIComponent(
-            figurine.slug ?? '',
-        );
+    const slug = encodeURIComponent(figurine.slug ?? '');
 
-    const numero =
-        Number(
-            figurine.numero ?? 0,
-        );
+    const numero = Number(figurine.numero ?? 0);
 
-    const waifu =
-        figurine.waifu ?? '';
+    const waifu = figurine.waifu ?? '';
 
-    const origin =
-        figurine.origin ?? '';
+    const origin = figurine.origin ?? '';
 
-    const thumbnail =
-        figurine.thumbnail ?? 'default';
+    const thumbnail = figurine.thumbnail ?? 'default';
 
-    const extension =
-        figurine.extension ?? 'jpg';
+    const extension = figurine.extension ?? 'jpg';
 
-    const imageUrl =
-        `${basePath}images/figurine/thumbnail/${thumbnail}.${extension}`;
+    const imageUrl = `${basePath}images/figurine/thumbnail/${thumbnail}.${extension}`;
 
-    const figurineUrl =
-        `${basePath}figurine/figurines/${slug}/${numero}`;
+    const figurineUrl = `${basePath}figurine/figurines/${slug}/${numero}`;
 
     return createResultItem(
         figurineUrl,
@@ -75,6 +54,6 @@ export function buildFigurineResult(
                 </small>
 
             </span>
-        `,
+        `
     );
 }

@@ -1,6 +1,4 @@
-import {
-    initExecuteQuery,
-} from '../actions/execute-query.js';
+import { initExecuteQuery } from '../actions/execute-query.js';
 
 export function initSqlPage()
 {

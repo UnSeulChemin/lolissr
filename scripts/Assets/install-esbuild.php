@@ -2,11 +2,15 @@
 
 declare(strict_types=1);
 
-if (PHP_SAPI !== 'cli') { http_response_code(404); exit; }
+if (PHP_SAPI !== 'cli')
+{ http_response_code(404); exit; }
 require __DIR__ . '/../Support/JavaScriptBuilder.php';
-$platform = match (PHP_OS_FAMILY) { 'Windows' => 'win32', 'Darwin' => 'darwin', 'Linux' => 'linux', default => throw new RuntimeException('Unsupported platform') };
-$architecture = match (strtolower(php_uname('m'))) { 'amd64', 'x86_64' => 'x64', 'aarch64', 'arm64' => 'arm64', default => throw new RuntimeException('Unsupported architecture') };
-$download = static function (string $url): string {
+$platform = match (PHP_OS_FAMILY)
+{ 'Windows' => 'win32', 'Darwin' => 'darwin', 'Linux' => 'linux', default => throw new RuntimeException('Unsupported platform') };
+$architecture = match (strtolower(php_uname('m')))
+{ 'amd64', 'x86_64' => 'x64', 'aarch64', 'arm64' => 'arm64', default => throw new RuntimeException('Unsupported architecture') };
+$download = static function (string $url): string
+{
     // Windows curl uses the system certificate store, unlike Wamp's PHP cURL.
     if (PHP_OS_FAMILY === 'Windows')
     {

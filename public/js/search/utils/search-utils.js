@@ -6,62 +6,32 @@
 // ÉCHAPPEMENT HTML
 // =================================================
 
-export function escapeHtml(
-    value,
-)
+export function escapeHtml(value)
 {
-    return String(
-        value ?? '',
-    )
-        .replaceAll(
-            '&',
-            '&amp;',
-        )
-        .replaceAll(
-            '<',
-            '&lt;',
-        )
-        .replaceAll(
-            '>',
-            '&gt;',
-        )
-        .replaceAll(
-            '"',
-            '&quot;',
-        )
-        .replaceAll(
-            "'",
-            '&#039;',
-        );
+    return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
 }
 
 // =================================================
 // ÉCHAPPEMENT DES EXPRESSIONS RÉGULIÈRES
 // =================================================
 
-export function escapeRegExp(
-    value,
-)
+export function escapeRegExp(value)
 {
-    return String(
-        value ?? '',
-    ).replace(
-        /[.*+?^${}()|[\]\\]/g,
-        '\\$&',
-    );
+    return String(value ?? '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 // =================================================
 // NORMALISATION REQUÊTE
 // =================================================
 
-export function normalizeSearchQuery(
-    value,
-)
+export function normalizeSearchQuery(value)
 {
-    return String(
-        value ?? '',
-    )
+    return String(value ?? '')
         .trim()
         .toLowerCase();
 }
@@ -70,47 +40,28 @@ export function normalizeSearchQuery(
 // MISE EN ÉVIDENCE DU TERME RECHERCHÉ
 // =================================================
 
-export function highlightSearchTerm(
-    text,
-    rawQuery,
-)
+export function highlightSearchTerm(text, rawQuery)
 {
     const plainText = String(text ?? '');
 
-    const normalizedQuery =
-        normalizeSearchQuery(
-            rawQuery,
-        );
+    const normalizedQuery = normalizeSearchQuery(rawQuery);
 
-    if (
-        normalizedQuery === ''
-    ) {
+    if (normalizedQuery === '')
+    {
         return escapeHtml(plainText);
     }
 
-    const queryParts =
-        normalizedQuery
-            .split(
-                /\s+/,
-            )
-            .filter(
-                Boolean,
-            )
-            .map(
-                escapeRegExp,
-            );
+    const queryParts = normalizedQuery
+            .split(/\s+/)
+            .filter(Boolean)
+            .map(escapeRegExp);
 
-    if (
-        queryParts.length === 0
-    ) {
+    if (queryParts.length === 0)
+    {
         return escapeHtml(plainText);
     }
 
-    const regex =
-        new RegExp(
-            `(${queryParts.join('|')})`,
-            'ig',
-        );
+    const regex = new RegExp(`(${queryParts.join('|')})`, 'ig');
 
     return plainText
         .split(regex)

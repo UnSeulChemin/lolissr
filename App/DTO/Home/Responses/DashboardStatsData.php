@@ -50,8 +50,9 @@ final readonly class DashboardStatsData
         public int $totalArtbookSeries,
 
         public ?ArtbookStatsData $latestArtbook,
-        public ?ArtbookRepresentationData $mostRepresented,
-    ) {
+        public ?ArtbookRepresentationData $mostRepresented
+    )
+    {
     }
 
     /**
@@ -99,7 +100,7 @@ final readonly class DashboardStatsData
             'totalArtbookSeries' => $this->totalArtbookSeries,
 
             'latestArtbook' => $this->latestArtbook?->toArray(),
-            'mostRepresented' => $this->mostRepresented?->toArray(),
+            'mostRepresented' => $this->mostRepresented?->toArray()
         ];
     }
 
@@ -145,9 +146,7 @@ final readonly class DashboardStatsData
                 ? MangaStatsData::fromArray($data['longestSeries'])
                 : null,
 
-            topLongestSeries: self::hydrateMangaList(
-                $data['topLongestSeries'] ?? []
-            ),
+            topLongestSeries: self::hydrateMangaList($data['topLongestSeries'] ?? []),
 
             // Artbooks
             totalArtbooks: (int) $data['totalArtbooks'],
@@ -160,7 +159,7 @@ final readonly class DashboardStatsData
 
             mostRepresented: is_array($data['mostRepresented'] ?? null)
                 ? ArtbookRepresentationData::fromArray($data['mostRepresented'])
-                : null,
+                : null
         );
     }
 

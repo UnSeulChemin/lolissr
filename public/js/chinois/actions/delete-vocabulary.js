@@ -2,90 +2,59 @@
 // SUPPRESSION VOCABULAIRE
 // =================================================
 
-import {
-    post,
-} from '../../core/http.js';
+import { post } from '../../core/http.js';
 
-import {
-    delegate,
-} from '../../core/dom.js';
+import { delegate } from '../../core/dom.js';
 
-import {
-    showToast,
-} from '../../core/toast.js';
+import { showToast } from '../../core/toast.js';
 
-import {
-    debug,
-} from '../../core/debug/debug.js';
+import { debug } from '../../core/debug/debug.js';
 
-import {
-    handleError,
-} from '../../core/errors/error-handler.js';
+import { handleError } from '../../core/errors/error-handler.js';
 
-import {
-    FrontendError,
-} from '../../core/errors/FrontendError.js';
+import { FrontendError } from '../../core/errors/FrontendError.js';
 
-import {
-    deleteModal,
-} from '../../core/modal/modal.js';
+import { deleteModal } from '../../core/modal/modal.js';
 
-import {
-    invalidateVocabularyPages,
-} from '../chinois-cache.js';
+import { invalidateVocabularyPages } from '../chinois-cache.js';
 
 // =================================================
 // ÉTAT
 // =================================================
 
-let initialized =
-    false;
+let initialized = false;
 
 // =================================================
 // SUPPRESSION
 // =================================================
 
-async function deleteVocabulaire(
-    button,
-)
+async function deleteVocabulaire(button)
 {
-    if (
-        button.disabled
-    ) {
+    if (button.disabled)
+    {
         return;
     }
 
-    const id =
-        Number(
-            button.dataset.id,
-        );
+    const id = Number(button.dataset.id);
 
-    const url =
-        button.dataset.url;
+    const url = button.dataset.url;
 
-    const item =
-        button.closest(
-            '.chinois-vocab-card',
-        );
+    const item = button.closest('.chinois-vocab-card');
 
     // --------------------------------------------------------------------------
     // VALIDATION
     // --------------------------------------------------------------------------
 
-
-    if (
-        !url
-        || id <= 0
-    ) {
+    if (!url || id <= 0)
+    {
 
         handleError(
             new FrontendError(
                 'Paramètres invalides',
                 {
-                    code:
-                        'INVALID_VOCAB_DELETE',
-                },
-            ),
+                    code: 'INVALID_VOCAB_DELETE'
+                }
+            )
         );
 
         return;
@@ -95,11 +64,7 @@ async function deleteVocabulaire(
     // CONFIRMATION
     // --------------------------------------------------------------------------
 
-
-    const confirmed =
-        await deleteModal(
-            'Supprimer ce vocabulaire ?',
-        );
+    const confirmed = await deleteModal('Supprimer ce vocabulaire ?');
 
     if (!confirmed)
     {
@@ -110,40 +75,35 @@ async function deleteVocabulaire(
     // CHARGEMENT
     // --------------------------------------------------------------------------
 
+    button.disabled = true;
 
-    button.disabled =
-        true;
-
-    try {
+    try
+    {
 
         debug(
             'VOCABULAIRE_DELETE',
             'request',
             {
-                id,
-            },
+                id
+            }
         );
 
-        const data =
-            await post(
+        const data = await post(
                 url,
                 {
-                    id,
-                },
+                    id
+                }
             );
 
-        if (
-            data?.success
-            !== true
-        ) {
+        if (data?.success !== true)
+        {
 
             throw new FrontendError(
                 data?.message
                 || 'Erreur suppression',
                 {
-                    code:
-                        'DELETE_VOCAB_FAILED',
-                },
+                    code: 'DELETE_VOCAB_FAILED'
+                }
             );
         }
 
@@ -151,18 +111,13 @@ async function deleteVocabulaire(
         // INVALIDATION
         // --------------------------------------------------------------------------
 
-
         invalidateVocabularyPages();
 
         // --------------------------------------------------------------------------
         // SUPPRESSION CARTE
         // --------------------------------------------------------------------------
 
-
-        const isFlashcard =
-            document.getElementById(
-                'flashcard-counter',
-            ) !== null;
+        const isFlashcard = document.getElementById('flashcard-counter') !== null;
 
         if (!isFlashcard)
         {
@@ -179,21 +134,14 @@ async function deleteVocabulaire(
         // SUCCÈS
         // --------------------------------------------------------------------------
 
+        showToast(data.message || 'Vocabulaire supprimé', 'success');
 
-        showToast(
-            data.message
-            || 'Vocabulaire supprimé',
-            'success',
-        );
+    } catch (error)
+    {
 
-    } catch (error) {
+        button.disabled = false;
 
-        button.disabled =
-            false;
-
-        handleError(
-            error,
-        );
+        handleError(error);
     }
 }
 
@@ -208,44 +156,27 @@ export function initDeleteVocabulaire()
         return;
     }
 
-    initialized =
-        true;
+    initialized = true;
 
     delegate(
         document,
         'click',
         '.vocabulaire-delete',
-        (
-            _,
-            button,
-        ) =>
+        (_, button) =>
         {
-            if (
-                !(
-                    button
-                    instanceof HTMLButtonElement
-                )
-            ) {
+            if (!( button instanceof HTMLButtonElement ))
+            {
                 return;
             }
 
-            if (
-                !button
-                    .closest(
-                        '.chinois-vocab-card',
-                    )
-            ) {
+            if (!button .closest( '.chinois-vocab-card' ))
+            {
                 return;
             }
 
-            void deleteVocabulaire(
-                button,
-            );
-        },
+            void deleteVocabulaire(button);
+        }
     );
 
-    debug(
-        'VOCABULAIRE_DELETE',
-        'initialized',
-    );
+    debug('VOCABULAIRE_DELETE', 'initialized');
 }

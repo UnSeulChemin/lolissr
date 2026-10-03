@@ -20,14 +20,7 @@ final class ErrorHandler
     /**
      * @var list<int>
      */
-    private const FATAL_ERRORS = [
-        E_ERROR,
-        E_PARSE,
-        E_CORE_ERROR,
-        E_COMPILE_ERROR,
-        E_USER_ERROR,
-        E_RECOVERABLE_ERROR
-    ];
+    private const FATAL_ERRORS = [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR, E_USER_ERROR, E_RECOVERABLE_ERROR];
 
     /**
      * @var (Closure(int, string, Request): never)|null
@@ -61,12 +54,8 @@ final class ErrorHandler
         register_shutdown_function([self::class, 'handleShutdown']);
     }
 
-    public static function handleError(
-        int $severity,
-        string $message,
-        string $file,
-        int $line
-    ): bool {
+    public static function handleError(int $severity, string $message, string $file, int $line): bool
+    {
         if ((error_reporting() & $severity) === 0)
         {
             return false;
@@ -90,19 +79,9 @@ final class ErrorHandler
                 self::renderHttpException($exception);
             }
 
-            Logger::exception(
-                $exception,
-                [
-                    'type' => 'uncaught_exception'
-                ]
-            );
+            Logger::exception($exception, ['type' => 'uncaught_exception']);
 
-            self::renderError(
-                500,
-                ApplicationConfig::debug()
-                    ? $exception->getMessage()
-                    : self::INTERNAL_ERROR_MESSAGE
-            );
+            self::renderError(500, ApplicationConfig::debug() ? $exception->getMessage() : self::INTERNAL_ERROR_MESSAGE);
         }
         catch (Throwable $fallbackException)
         {
@@ -132,12 +111,7 @@ final class ErrorHandler
                 ]
             );
 
-            self::renderError(
-                500,
-                ApplicationConfig::debug()
-                    ? $error['message']
-                    : self::INTERNAL_ERROR_MESSAGE
-            );
+            self::renderError(500, ApplicationConfig::debug() ? $error['message'] : self::INTERNAL_ERROR_MESSAGE);
         }
         catch (Throwable $exception)
         {
@@ -182,14 +156,7 @@ final class ErrorHandler
 
         if ($request->expectsJson())
         {
-            Response::json(
-                [
-                    'success' => false,
-                    'message' => $message,
-                    'data' => $exception->getData()
-                ],
-                $status
-            );
+            Response::json(['success' => false, 'message' => $message, 'data' => $exception->getData()], $status);
         }
 
         self::renderError($status, $message, $request);
@@ -234,11 +201,8 @@ final class ErrorHandler
     // RENDU
     // =================================================
 
-    private static function renderError(
-        int $status,
-        string $message,
-        ?Request $request = null
-    ): never {
+    private static function renderError(int $status, string $message, ?Request $request = null): never
+    {
         $request ??= Request::capture();
 
         if (self::$renderer !== null)
@@ -262,10 +226,8 @@ final class ErrorHandler
         exit;
     }
 
-    private static function handleFailure(
-        Throwable $exception,
-        ?Throwable $originalException = null
-    ): never {
+    private static function handleFailure(Throwable $exception, ?Throwable $originalException = null): never
+    {
         try
         {
             Logger::exception(

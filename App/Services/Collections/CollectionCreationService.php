@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Services\Collections;
 
-use App\Services\Media\ThumbnailManager;
 use App\DTO\Common\ServiceResult;
 use App\DTO\Media\UploadThumbnailData;
+use App\Services\Media\ThumbnailManager;
+
 use Framework\Database\Database;
 use Framework\Logging\Logger;
+
 use PDOException;
 
 final readonly class CollectionCreationService

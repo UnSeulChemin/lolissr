@@ -2,108 +2,69 @@
 // ROUTEUR CHARGEMENT
 // =================================================
 
-import {
-    debug,
-    debugError,
-} from '../core/debug/debug.js';
+import { debug, debugError } from '../core/debug/debug.js';
 
-import {
-    FrontendError,
-} from '../core/errors/FrontendError.js';
+import { FrontendError } from '../core/errors/FrontendError.js';
 
-import {
-    request,
-} from '../core/http.js';
+import { request } from '../core/http.js';
 
-import {
-    normalizeCacheKey,
-} from '../core/navigation.js';
+import { normalizeCacheKey } from '../core/navigation.js';
 
 // =================================================
 // CHARGEMENT PAGE
 // =================================================
 
-export async function fetchPage(
-    href,
-    options = {},
-)
+export async function fetchPage(href, options = {})
 {
-    const url =
-        normalizeCacheKey(
-            href,
-        );
+    const url = normalizeCacheKey(href);
 
     try
     {
-        debug(
-            'FETCH',
-            'network',
-            url,
-        );
+        debug('FETCH', 'network', url);
 
-        const response =
-            await request(
+        const response = await request(
                 url,
                 {
-                    signal:
-                        options.signal,
+                    signal: options.signal,
 
-                    headers:
-                    {
+                    headers: {
                         'X-Page-Format': 'fragment',
-                        Accept:
-                            'application/json',
-                    },
-                },
+                        Accept: 'application/json'
+                    }
+                }
             );
 
         // --------------------------------------------------------------------------
         // VALIDATION
         // --------------------------------------------------------------------------
 
-
-        if (
-            response?.type
-            !== 'page'
-        )
+        if (response?.type !== 'page')
         {
             throw new FrontendError(
                 'Réponse page invalide',
                 {
-                    code:
-                        'INVALID_PAGE_RESPONSE',
-                },
+                    code: 'INVALID_PAGE_RESPONSE'
+                }
             );
         }
 
-        if (
-            typeof response.page?.html
-            !== 'string'
-        )
+        if (typeof response.page?.html !== 'string')
         {
             throw new FrontendError(
                 'HTML page invalide',
                 {
-                    code:
-                        'INVALID_PAGE_HTML',
-                },
+                    code: 'INVALID_PAGE_HTML'
+                }
             );
         }
 
-        debug(
-            'FETCH',
-            'success',
-            url,
-        );
+        debug('FETCH', 'success', url);
 
         return response;
     }
     catch (error)
     {
-        debugError(
-            'FETCH',
-            error,
-        );
+        debugError('FETCH', error);
 
         throw error;
     }

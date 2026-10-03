@@ -29,7 +29,7 @@ final class ChinoisVocabulaireRepository extends AbstractRepository
         return [
             'cards' => array_map($this->mapRowToDto(...), $page['rows']),
             'total' => $page['total'],
-            'offset' => $page['offset'],
+            'offset' => $page['offset']
         ];
     }
 
@@ -66,17 +66,12 @@ final class ChinoisVocabulaireRepository extends AbstractRepository
 
     public function findById(int $id): ?ChinoisVocabulaireData
     {
-        return $this->findOneBy([
-            'id' => $id,
-        ]);
+        return $this->findOneBy(['id' => $id]);
     }
 
     public function findByLangueAndId(string $langue, int $id): ?ChinoisVocabulaireData
     {
-        return $this->findOneBy([
-            'id' => $id,
-            'langue' => trim($langue),
-        ]);
+        return $this->findOneBy(['id' => $id, 'langue' => trim($langue)]);
     }
 
     // =================================================
@@ -112,7 +107,7 @@ final class ChinoisVocabulaireRepository extends AbstractRepository
             'pinyin' => trim($pinyin),
             'type' => trim($type),
             'traduction' => trim($traduction),
-            'exemple' => trim($exemple),
+            'exemple' => trim($exemple)
         ]);
     }
 
@@ -135,9 +130,7 @@ final class ChinoisVocabulaireRepository extends AbstractRepository
 
             WHERE id = :id
             ",
-            [
-                'id' => $id,
-            ]
+            ['id' => $id]
         );
 
         if ($statement === false || $statement->rowCount() !== 1)
@@ -156,9 +149,7 @@ final class ChinoisVocabulaireRepository extends AbstractRepository
 
             LIMIT 1
             ",
-            [
-                'id' => $id,
-            ]
+            ['id' => $id]
         );
 
         return $result !== null ? (bool) $result->maitrise : null;
@@ -179,9 +170,7 @@ final class ChinoisVocabulaireRepository extends AbstractRepository
             WHERE id = :id
             AND xp_rewarded = 0
             ",
-            [
-                'id' => $id,
-            ]
+            ['id' => $id]
         );
 
         return $statement !== false && $statement->rowCount() === 1;
@@ -228,11 +217,6 @@ final class ChinoisVocabulaireRepository extends AbstractRepository
      */
     private function updateById(int $id, array $data): bool
     {
-        return $this->update(
-            $data,
-            [
-                'id' => $id,
-            ]
-        );
+        return $this->update($data, ['id' => $id]);
     }
 }

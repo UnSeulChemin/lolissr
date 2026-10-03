@@ -2,91 +2,60 @@
 // SUPPRESSION GRAMMAIRE
 // =================================================
 
-import {
-    post,
-} from '../../core/http.js';
+import { post } from '../../core/http.js';
 
-import {
-    delegate,
-} from '../../core/dom.js';
+import { delegate } from '../../core/dom.js';
 
-import {
-    showToast,
-} from '../../core/toast.js';
+import { showToast } from '../../core/toast.js';
 
-import {
-    debug,
-} from '../../core/debug/debug.js';
+import { debug } from '../../core/debug/debug.js';
 
-import {
-    handleError,
-} from '../../core/errors/error-handler.js';
+import { handleError } from '../../core/errors/error-handler.js';
 
-import {
-    FrontendError,
-} from '../../core/errors/FrontendError.js';
+import { FrontendError } from '../../core/errors/FrontendError.js';
 
-import {
-    deleteModal,
-} from '../../core/modal/modal.js';
+import { deleteModal } from '../../core/modal/modal.js';
 
-import {
-    invalidateGrammarPages,
-} from '../chinois-cache.js';
+import { invalidateGrammarPages } from '../chinois-cache.js';
 
 // =================================================
 // ÉTAT
 // =================================================
 
-let initialized =
-    false;
+let initialized = false;
 
 // =================================================
 // SUPPRESSION
 // =================================================
 
-async function deleteGrammaire(
-    button,
-)
+async function deleteGrammaire(button)
 {
-    if (
-        button.disabled
-    ) {
+    if (button.disabled)
+    {
 
         return;
     }
 
-    const id =
-        Number(
-            button.dataset.id,
-        );
+    const id = Number(button.dataset.id);
 
-    const url =
-        button.dataset.url;
+    const url = button.dataset.url;
 
-    const item =
-        button.closest(
-            '.grammar-item',
-        );
+    const item = button.closest('.grammar-item');
 
     // --------------------------------------------------------------------------
     // VALIDATION
     // --------------------------------------------------------------------------
 
-
-    if (
-        !url
-        || id <= 0
-    ) {
+    if (!url || id <= 0)
+    {
 
         handleError(
             new FrontendError(
                 'Paramètres invalides',
                 {
-                    code:
-                        'INVALID_GRAMMAR_DELETE',
-                },
-            ),
+                    code: 'INVALID_GRAMMAR_DELETE'
+                }
+            )
         );
 
         return;
@@ -96,11 +65,7 @@ async function deleteGrammaire(
     // CONFIRMATION
     // --------------------------------------------------------------------------
 
-
-    const confirmed =
-        await deleteModal(
-            'Supprimer cette règle de grammaire ?',
-        );
+    const confirmed = await deleteModal('Supprimer cette règle de grammaire ?');
 
     if (!confirmed)
     {
@@ -111,40 +76,35 @@ async function deleteGrammaire(
     // CHARGEMENT
     // --------------------------------------------------------------------------
 
+    button.disabled = true;
 
-    button.disabled =
-        true;
-
-    try {
+    try
+    {
 
         debug(
             'GRAMMAIRE_DELETE',
             'request',
             {
-                id,
-            },
+                id
+            }
         );
 
-        const data =
-            await post(
+        const data = await post(
                 url,
                 {
-                    id,
-                },
+                    id
+                }
             );
 
-        if (
-            data?.success
-            !== true
-        ) {
+        if (data?.success !== true)
+        {
 
             throw new FrontendError(
                 data?.message
                 || 'Erreur suppression',
                 {
-                    code:
-                        'DELETE_GRAMMAR_FAILED',
-                },
+                    code: 'DELETE_GRAMMAR_FAILED'
+                }
             );
         }
 
@@ -152,18 +112,13 @@ async function deleteGrammaire(
         // INVALIDATION
         // --------------------------------------------------------------------------
 
-
         invalidateGrammarPages();
 
         // --------------------------------------------------------------------------
         // SUPPRESSION CARTE
         // --------------------------------------------------------------------------
 
-
-        const isFlashcard =
-            document.getElementById(
-                'flashcard-counter',
-            ) !== null;
+        const isFlashcard = document.getElementById('flashcard-counter') !== null;
 
         if (!isFlashcard)
         {
@@ -180,21 +135,14 @@ async function deleteGrammaire(
         // SUCCÈS
         // --------------------------------------------------------------------------
 
+        showToast(data.message || 'Grammaire supprimée', 'success');
 
-        showToast(
-            data.message
-            || 'Grammaire supprimée',
-            'success',
-        );
+    } catch (error)
+    {
 
-    } catch (error) {
+        button.disabled = false;
 
-        button.disabled =
-            false;
-
-        handleError(
-            error,
-        );
+        handleError(error);
     }
 }
 
@@ -210,36 +158,23 @@ export function initDeleteGrammaire()
         return;
     }
 
-    initialized =
-        true;
+    initialized = true;
 
     delegate(
         document,
         'click',
         '.grammaire-delete',
-        (
-            _,
-            button,
-        ) =>
+        (_, button) =>
         {
-            if (
-                !(
-                    button
-                    instanceof HTMLButtonElement
-                )
-            ) {
+            if (!( button instanceof HTMLButtonElement ))
+            {
 
                 return;
             }
 
-            void deleteGrammaire(
-                button,
-            );
-        },
+            void deleteGrammaire(button);
+        }
     );
 
-    debug(
-        'GRAMMAIRE_DELETE',
-        'initialized',
-    );
+    debug('GRAMMAIRE_DELETE', 'initialized');
 }

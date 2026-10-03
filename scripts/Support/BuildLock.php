@@ -19,7 +19,8 @@ final class BuildLock
             throw new RuntimeException('Another build or asset cleanup is running. Retry when it finishes.');
         }
         self::$handle = $handle;
-        register_shutdown_function(static function (): void {
+        register_shutdown_function(static function (): void
+        {
             flock(self::$handle, LOCK_UN);
             fclose(self::$handle);
             self::$handle = null;

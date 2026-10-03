@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Constants\AchievementRewards;
 use App\Constants\UserXp;
 use App\Models\User;
+
 use Framework\Application\Bootstrap;
 use Framework\Container\Container;
 use Framework\Database\Database;
@@ -12,7 +13,8 @@ use Framework\Database\Database;
 require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
 Bootstrap::loadEnvOnly();
 
-function user(): ?User { return $GLOBALS['collectionTestUser']; }
+function user(): ?User
+{ return $GLOBALS['collectionTestUser']; }
 final class CollectionXpQueryCounter extends PDOStatement
 {
     public static array $queries = [];
@@ -35,9 +37,10 @@ $cases = [
     ['peluche', 'collect', 'collect_rewarded', 'Peluche/Peluche', 'rewardCollect', 'Peluche', UserXp::COLLECT_PELUCHE, AchievementRewards::PELUCHES[1]],
     ['artbook', 'lu', 'xp_read_rewarded', 'Artbook/Artbook', 'rewardArtbookRead', 'Artbook', UserXp::READ_ARTBOOK, AchievementRewards::ARTBOOKS[1]],
     ['chinois_grammaire', 'maitrise', 'xp_rewarded', 'Chinois/Chinois', 'rewardGrammar', null, UserXp::LEARN_GRAMMAR, AchievementRewards::GRAMMAR[1]],
-    ['chinois_vocabulaire', 'maitrise', 'xp_rewarded', 'Chinois/Chinois', 'rewardVocabulary', null, UserXp::LEARN_VOCABULARY, AchievementRewards::VOCABULARY[1]],
+    ['chinois_vocabulaire', 'maitrise', 'xp_rewarded', 'Chinois/Chinois', 'rewardVocabulary', null, UserXp::LEARN_VOCABULARY, AchievementRewards::VOCABULARY[1]]
 ];
-$assert = static function (bool $condition, string $message): void {
+$assert = static function (bool $condition, string $message): void
+{
     if (! $condition) throw new RuntimeException($message);
 };
 foreach ($cases as [$table, $status, $flag, $serviceName, $method, $modelName, $baseXp, $achievementXp])
@@ -51,7 +54,8 @@ foreach ($cases as [$table, $status, $flag, $serviceName, $method, $modelName, $
     $user->id = 1;
     $GLOBALS['collectionTestUser'] = $user;
     $service = $container->get('App\\Services\\' . str_replace('/', '\\', $serviceName) . 'XpRewardService');
-    $call = static function (int $id) use ($service, $method, $modelName): bool {
+    $call = static function (int $id) use ($service, $method, $modelName): bool
+    {
         if ($modelName === null) return $service->$method($id);
         $class = 'App\\Models\\' . $modelName;
         $model = new $class();
@@ -61,7 +65,8 @@ foreach ($cases as [$table, $status, $flag, $serviceName, $method, $modelName, $
     $earned = static fn (): int => (int) (($user->level - 1) * $user->level / 2 * 5 + $user->xp);
     try
     {
-        $db->transaction(function () use ($call): void {
+        $db->transaction(function () use ($call): void
+        {
             $call(1);
             throw new RuntimeException('rollback fixture');
         });

@@ -2,49 +2,31 @@
 // PAGE D'AJOUT
 // =================================================
 
-import {
-    request,
-} from '../../core/http.js';
+import { request } from '../../core/http.js';
 
-import {
-    $,
-} from '../../core/dom.js';
+import { $ } from '../../core/dom.js';
 
-import {
-    showToast,
-} from '../../core/toast.js';
+import { showToast } from '../../core/toast.js';
 
-import {
-    debug,
-    debugError,
-} from '../../core/debug/debug.js';
+import { debug, debugError } from '../../core/debug/debug.js';
 
-import {
-    generateSlug,
-} from '../../core/slug.js';
+import { generateSlug } from '../../core/slug.js';
 
-import {
-    invalidatePeluchePages,
-} from '../peluche-cache.js';
+import { invalidatePeluchePages } from '../peluche-cache.js';
 
 // =================================================
 // CONFIGURATION
 // =================================================
 
-const FORM_SELECTOR =
-    '.form-layout[data-form-page="ajouter"]';
+const FORM_SELECTOR = '.form-layout[data-form-page="ajouter"]';
 
 // =================================================
 // UTILITAIRES
 // =================================================
 
-function updateUploadText(
-    input,
-    textElement,
-)
+function updateUploadText(input, textElement)
 {
-    textElement.textContent =
-        input.files?.length
+    textElement.textContent = input.files?.length
             ? input.files[0].name
             : 'Choisir une image';
 }
@@ -84,10 +66,7 @@ export function initCreatePage()
         });
     }
 
-    if (
-        originInput instanceof HTMLInputElement
-        && slugInput instanceof HTMLInputElement
-    )
+    if (originInput instanceof HTMLInputElement && slugInput instanceof HTMLInputElement)
     {
         originInput.addEventListener('input', () =>
         {
@@ -96,23 +75,15 @@ export function initCreatePage()
                 return;
             }
 
-            slugInput.value = generateSlug(
-                originInput.value,
-            );
+            slugInput.value = generateSlug(originInput.value);
         });
     }
 
-    if (
-        imageInput instanceof HTMLInputElement
-        && uploadText
-    )
+    if (imageInput instanceof HTMLInputElement && uploadText)
     {
         imageInput.addEventListener('change', () =>
         {
-            updateUploadText(
-                imageInput,
-                uploadText,
-            );
+            updateUploadText(imageInput, uploadText);
         });
     }
 
@@ -120,8 +91,7 @@ export function initCreatePage()
     {
         event.preventDefault();
 
-        const submitButton =
-            form.querySelector('[type="submit"]');
+        const submitButton = form.querySelector('[type="submit"]');
 
         if (submitButton instanceof HTMLButtonElement)
         {
@@ -134,55 +104,35 @@ export function initCreatePage()
                 form.action,
                 {
                     method: 'POST',
-                    body: new FormData(form),
-                },
+                    body: new FormData(form)
+                }
             );
 
             if (!data?.success)
             {
-                showToast(
-                    data?.message ?? 'Une erreur est survenue',
-                    'error',
-                );
+                showToast(data?.message ?? 'Une erreur est survenue', 'error');
 
                 return;
             }
 
             invalidatePeluchePages();
 
-            showToast(
-                data.message ?? 'Peluche ajoutée avec succès',
-                'success',
-            );
+            showToast(data.message ?? 'Peluche ajoutée avec succès', 'success');
 
             form.reset();
 
             slugEditedManually = false;
 
-            if (
-                imageInput instanceof HTMLInputElement
-                && uploadText
-            )
+            if (imageInput instanceof HTMLInputElement && uploadText)
             {
-                updateUploadText(
-                    imageInput,
-                    uploadText,
-                );
+                updateUploadText(imageInput, uploadText);
             }
         }
         catch (error)
         {
-            debugError(
-                'PELUCHE_AJOUTER',
-                error,
-            );
+            debugError('PELUCHE_AJOUTER', error);
 
-            showToast(
-                error?.data?.message
-                ?? error.message
-                ?? 'Erreur serveur',
-                'error',
-            );
+            showToast(error?.data?.message ?? error.message ?? 'Erreur serveur', 'error');
         }
         finally
         {
@@ -193,8 +143,5 @@ export function initCreatePage()
         }
     });
 
-    debug(
-        'PELUCHE_AJOUTER',
-        'initialized',
-    );
+    debug('PELUCHE_AJOUTER', 'initialized');
 }

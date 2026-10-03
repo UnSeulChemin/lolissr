@@ -49,7 +49,8 @@ require dirname(__DIR__, 2) . '/Framework/Support/Helpers.php';
 if (!defined('ROOT')) define('ROOT', dirname(__DIR__, 2));
 \Framework\Application\Bootstrap::loadEnvOnly();
 $database = new \Framework\Database\Database();
-$database->transaction(static function () use ($database, $root): void {
+$database->transaction(static function () use ($database, $root): void
+{
     foreach (['avatar', 'banner', 'frame'] as $type)
     {
         $update = $database->prepare("UPDATE users SET {$type}_extension = 'webp' WHERE {$type} = ? AND {$type}_extension = 'png'");

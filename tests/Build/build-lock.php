@@ -3,7 +3,8 @@ declare(strict_types=1);
 $root = sys_get_temp_dir() . '/build-lock-' . bin2hex(random_bytes(8));
 mkdir($root . '/storage', 0755, true);
 $lock = fopen($root . '/storage/.build.lock', 'c');
-$run = static function () use ($root): int {
+$run = static function () use ($root): int
+{
     $process = proc_open([PHP_BINARY, '-r',
         'require $argv[1]; try { BuildLock::acquire($argv[2]); BuildLock::acquire($argv[2]); } catch (RuntimeException $e) { exit(23); }',
         dirname(__DIR__, 2) . '/scripts/Support/BuildLock.php', $root],

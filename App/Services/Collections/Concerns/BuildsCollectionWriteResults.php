@@ -5,43 +5,25 @@ declare(strict_types=1);
 namespace App\Services\Collections\Concerns;
 
 use App\DTO\Common\ServiceResult;
+
 use Framework\Logging\Logger;
 
 trait BuildsCollectionWriteResults
 {
     /** @param array<string, mixed> $data */
-    private function success(
-        string $message,
-        array $data = [],
-        int $status = 200
-    ): ServiceResult {
-        return ServiceResult::success(
-            message: $message,
-            data: $data,
-            status: $status
-        );
+    private function success(string $message, array $data = [], int $status = 200): ServiceResult
+    {
+        return ServiceResult::success(message: $message, data: $data, status: $status);
     }
 
     /** @param array<string, mixed> $data */
-    private function error(
-        string $message,
-        int $status = 500,
-        array $data = []
-    ): ServiceResult {
-        return ServiceResult::error(
-            message: $message,
-            data: $data,
-            status: $status
-        );
+    private function error(string $message, int $status = 500, array $data = []): ServiceResult
+    {
+        return ServiceResult::error(message: $message, data: $data, status: $status);
     }
 
-    private function writeFailed(
-        bool $result,
-        string $action,
-        string $slug,
-        int $numero,
-        string $message
-    ): ?ServiceResult {
+    private function writeFailed(bool $result, string $action, string $slug, int $numero, string $message): ?ServiceResult
+    {
         if ($result)
         {
             return null;
@@ -56,5 +38,4 @@ trait BuildsCollectionWriteResults
     {
         Logger::error("{$action} échoué slug={$slug} numero={$numero}");
     }
-
 }

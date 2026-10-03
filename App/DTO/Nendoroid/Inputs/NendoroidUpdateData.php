@@ -15,7 +15,8 @@ final readonly class NendoroidUpdateData
         public string $company,
         public ?string $release_date,
         public ?string $commentaire
-    ) {
+    )
+    {
     }
 
     /**
@@ -27,10 +28,8 @@ final readonly class NendoroidUpdateData
             waifu: trim((string) $data['waifu']),
             origin: trim((string) $data['origin']),
             company: trim((string) $data['company']),
-            release_date: DateNormalizer::normalize(
-                Str::nullableTrim($data['release_date'] ?? null),
-            ),
-            commentaire: Str::nullableTrim($data['commentaire'] ?? null),
+            release_date: DateNormalizer::normalize(Str::nullableTrim($data['release_date'] ?? null)),
+            commentaire: Str::nullableTrim($data['commentaire'] ?? null)
         );
     }
 }

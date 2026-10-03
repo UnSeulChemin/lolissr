@@ -40,7 +40,4 @@ if ($caseFiles !== false)
 // BOOTSTRAP
 // =========================================
 
-return [
-    'base' => http_base(),
-    'tests' => $tests
-];
+return ['base' => http_base(), 'tests' => $tests];

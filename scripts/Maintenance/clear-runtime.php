@@ -5,7 +5,7 @@ declare(strict_types=1);
 const ALLOWED_RUNTIME_DIRECTORIES = [
     'cache' => 'storage/cache',
     'logs' => 'storage/logs',
-    'sessions' => 'storage/sessions',
+    'sessions' => 'storage/sessions'
 ];
 
 define('ROOT', dirname(__DIR__, 2));
@@ -14,10 +14,7 @@ $target = strtolower(trim((string) ($argv[1] ?? '')));
 
 if (! array_key_exists($target, ALLOWED_RUNTIME_DIRECTORIES))
 {
-    fail(
-        'Unknown runtime directory. Allowed values: '
-        . implode(', ', array_keys(ALLOWED_RUNTIME_DIRECTORIES))
-    );
+    fail('Unknown runtime directory. Allowed values: ' . implode(', ', array_keys(ALLOWED_RUNTIME_DIRECTORIES)));
 }
 
 $relativeDirectory = ALLOWED_RUNTIME_DIRECTORIES[$target];
@@ -80,10 +77,7 @@ function clearDirectory(string $directory): int
 function removeDirectory(string $directory): void
 {
     $iterator = new RecursiveIteratorIterator(
-        new RecursiveDirectoryIterator(
-            $directory,
-            FilesystemIterator::SKIP_DOTS
-        ),
+        new RecursiveDirectoryIterator($directory, FilesystemIterator::SKIP_DOTS),
         RecursiveIteratorIterator::CHILD_FIRST
     );
 

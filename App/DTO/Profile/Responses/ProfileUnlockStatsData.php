@@ -14,7 +14,8 @@ final readonly class ProfileUnlockStatsData
         public int $nendoroidsCollected = 0,
         public int $peluchesCollected = 0,
         public int $vocabularyLearned = 0,
-        public int $grammarLearned = 0,
-    ) {
+        public int $grammarLearned = 0
+    )
+    {
     }
 }

@@ -14,7 +14,8 @@ $database->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $database->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
 $container = new Container();
 $container->instance(Database::class, $database);
-$assert = static function (bool $condition, string $message): void {
+$assert = static function (bool $condition, string $message): void
+{
     if (! $condition) throw new RuntimeException($message);
 };
 
@@ -33,7 +34,8 @@ foreach (['Figurine', 'Nendoroid', 'Peluche', 'Artbook'] as $kind)
 
     $repository = $container->get("App\\Repositories\\$category\\{$kind}CollectionRepository");
     $service = $container->get("App\\Services\\$category\\{$kind}ReadService");
-    $mapper = new ReflectionMethod($service, match ($kind) {
+    $mapper = new ReflectionMethod($service, match ($kind)
+    {
         'Figurine', 'Artbook' => 'mapSeriesItem',
         default => 'mapListItem',
     });

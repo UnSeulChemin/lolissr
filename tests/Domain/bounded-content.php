@@ -24,7 +24,8 @@ $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
 $container = new Container();
 $container->instance(Database::class, $db);
-$check = static function (bool $ok, string $message): void {
+$check = static function (bool $ok, string $message): void
+{
     if (!$ok) throw new RuntimeException($message);
 };
 // MySQL temporary tables cannot be joined to themselves; exercise the manga
@@ -72,7 +73,9 @@ foreach ($first->menu as $i => $section)
     $check($section->categories === [], 'Menu loaded rule content');
 }
 $check($grammar->hsk('HSK2')->sections === [], 'Empty level');
-try { $grammar->hsk('HSK1', 'missing'); throw new RuntimeException('Unknown section accepted'); }
-catch (NotFoundException) {}
+try
+{ $grammar->hsk('HSK1', 'missing'); throw new RuntimeException('Unknown section accepted'); }
+catch (NotFoundException)
+{}
 echo $mysql ? "PASS: MySQL section menu/selection and exact names under database collation (temporary table).\n"
     : "PASS: bounded series, section menu/selection, stable anchors, missing pages and capped achievements.\n";

@@ -2,48 +2,27 @@
 // CONSTRUCTION DES RÉSULTATS DE NENDOROIDS
 // =================================================
 
-import {
-    highlightSearchTerm,
-    escapeHtml,
-} from '../utils/search-utils.js';
+import { highlightSearchTerm, escapeHtml } from '../utils/search-utils.js';
 
-import {
-    createResultItem,
-} from './search-result-item.js';
+import { createResultItem } from './search-result-item.js';
 
-export function buildNendoroidResult(
-    nendoroid,
-    rawValue,
-    basePath,
-)
+export function buildNendoroidResult(nendoroid, rawValue, basePath)
 {
-    const slug =
-        encodeURIComponent(
-            nendoroid.slug ?? '',
-        );
+    const slug = encodeURIComponent(nendoroid.slug ?? '');
 
-    const numero =
-        Number(
-            nendoroid.numero ?? 0,
-        );
+    const numero = Number(nendoroid.numero ?? 0);
 
-    const waifu =
-        nendoroid.waifu ?? '';
+    const waifu = nendoroid.waifu ?? '';
 
-    const origin =
-        nendoroid.origin ?? '';
+    const origin = nendoroid.origin ?? '';
 
-    const thumbnail =
-        nendoroid.thumbnail ?? 'default';
+    const thumbnail = nendoroid.thumbnail ?? 'default';
 
-    const extension =
-        nendoroid.extension ?? 'jpg';
+    const extension = nendoroid.extension ?? 'jpg';
 
-    const imageUrl =
-        `${basePath}images/nendoroid/thumbnail/${thumbnail}.${extension}`;
+    const imageUrl = `${basePath}images/nendoroid/thumbnail/${thumbnail}.${extension}`;
 
-    const nendoroidUrl =
-        `${basePath}nendoroid/nendoroids/${slug}/${numero}`;
+    const nendoroidUrl = `${basePath}nendoroid/nendoroids/${slug}/${numero}`;
 
     return createResultItem(
         nendoroidUrl,
@@ -75,6 +54,6 @@ export function buildNendoroidResult(
                 </small>
 
             </span>
-        `,
+        `
     );
 }

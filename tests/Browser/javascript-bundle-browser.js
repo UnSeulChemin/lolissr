@@ -2,9 +2,12 @@ export async function runBrowserScenario()
 {
     const base = new URL('.', location.href).pathname;
     window.appConfig = {baseUri: base};
-    const check = (ok, message) => { if (!ok) throw new Error(message); };
-    const until = async predicate => {
-        for (let i = 0; i < 200; i++) { if (predicate()) return; await new Promise(resolve => setTimeout(resolve, 10)); }
+    const check = (ok, message) =>
+    { if (!ok) throw new Error(message); };
+    const until = async predicate =>
+    {
+        for (let i = 0; i < 200; i++)
+        { if (predicate()) return; await new Promise(resolve => setTimeout(resolve, 10)); }
         throw new Error('Bundle test timed out');
     };
     const main = document.createElement('main');
@@ -25,7 +28,8 @@ export async function runBrowserScenario()
     let avatars = 0;
     let pages = 0;
     const originalFetch = window.fetch;
-    window.fetch = async (url, options) => {
+    window.fetch = async (url, options) =>
+    {
         const isAvatar = String(url).includes('/ajax/avatars');
         if (isAvatar) avatars++; else pages++;
         const profile = String(url).includes('personnalisation');
@@ -63,5 +67,6 @@ export async function runBrowserScenario()
         await until(() => pages === 3);
         return ['production bundle boots', 'lazy profile module opens its modal', 'shared router cleanup and route reinitialization', 'saveData skips prefetch but permits navigation', 'prefetch resumes when saveData is disabled'];
     }
-    finally { window.fetch = originalFetch; }
+    finally
+    { window.fetch = originalFetch; }
 }

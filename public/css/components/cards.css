@@ -13,9 +13,7 @@
     height: var(--height-image-portrait);
     margin: 8px 0 14px;
     border-radius: var(--radius-image);
-    transition:
-        transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
-        box-shadow 260ms ease;
+    transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 260ms ease;
 }
 
 .card-image-portrait
@@ -25,9 +23,7 @@
     object-position: center;
     border-radius: var(--radius-image);
     box-shadow: var(--shadow-image);
-    transition:
-        transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
-        box-shadow 260ms ease;
+    transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 260ms ease;
 }
 
 
@@ -125,8 +121,7 @@
 {
     transform: scale(1.02);
 
-    box-shadow:
-        0 12px 24px rgba(0, 0, 0, 0.14);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.14);
 }
 
 
@@ -171,11 +166,7 @@
 {
     display: grid;
 
-    grid-template-columns:
-        repeat(
-            3,
-            var(--width-card)
-        );
+    grid-template-columns: repeat( 3, var(--width-card) );
 
     justify-content: center;
 

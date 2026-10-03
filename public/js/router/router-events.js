@@ -6,20 +6,16 @@
 // ROUTEUR CHARGÉ
 // =================================================
 
-export function dispatchRouterLoaded(
-    target,
-)
+export function dispatchRouterLoaded(target)
 {
     document.dispatchEvent(
         new CustomEvent(
             'router:loaded',
             {
-                detail:
-                {
-                    href:
-                        target,
-                },
-            },
-        ),
+                detail: {
+                    href: target
+                }
+            }
+        )
     );
 }

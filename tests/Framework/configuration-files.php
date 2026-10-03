@@ -13,7 +13,8 @@ define('ROOT', $directory);
 require $project . '/vendor/autoload.php';
 require $project . '/Framework/Support/Helpers.php';
 
-$check = static function (bool $condition, string $message): void {
+$check = static function (bool $condition, string $message): void
+{
     if (! $condition) throw new RuntimeException($message);
 };
 mkdir($directory . '/Config');

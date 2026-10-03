@@ -2,8 +2,7 @@
 // DÉBOGAGE STOCKAGE
 // =================================================
 
-const DEBUG_KEY =
-    'lolissr_debug';
+const DEBUG_KEY = 'lolissr_debug';
 
 // =================================================
 // ACTIVATION
@@ -11,10 +10,7 @@ const DEBUG_KEY =
 
 export function enableDebug()
 {
-    localStorage.setItem(
-        DEBUG_KEY,
-        '1',
-    );
+    localStorage.setItem(DEBUG_KEY, '1');
 }
 
 // =================================================
@@ -23,9 +19,7 @@ export function enableDebug()
 
 export function disableDebug()
 {
-    localStorage.removeItem(
-        DEBUG_KEY,
-    );
+    localStorage.removeItem(DEBUG_KEY);
 }
 
 // =================================================
@@ -34,9 +28,5 @@ export function disableDebug()
 
 export function isDebugEnabled()
 {
-    return (
-        localStorage.getItem(
-            DEBUG_KEY,
-        ) === '1'
-    );
+    return (localStorage.getItem( DEBUG_KEY ) === '1');
 }

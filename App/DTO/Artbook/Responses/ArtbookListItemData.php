@@ -19,7 +19,8 @@ final readonly class ArtbookListItemData
         public ?string $auteur,
         public ?string $serie,
 
-        public string $subtitle,
-    ) {
+        public string $subtitle
+    )
+    {
     }
 }

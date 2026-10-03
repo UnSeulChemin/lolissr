@@ -11,9 +11,8 @@ use Framework\Cache\Cache;
 
 final readonly class DashboardCache
 {
-    public function __construct(
-        private DashboardStatsService $dashboardStatsService
-    ) {
+    public function __construct(private DashboardStatsService $dashboardStatsService)
+    {
     }
 
     // =================================================

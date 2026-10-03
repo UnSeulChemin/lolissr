@@ -43,10 +43,7 @@ trait BuildsQueries
             $values[] = $value;
         }
 
-        return [
-            'conditions' => $conditions,
-            'values' => $values
-        ];
+        return ['conditions' => $conditions, 'values' => $values];
     }
 
     // =================================================
@@ -59,9 +56,7 @@ trait BuildsQueries
 
         if ($table === '')
         {
-            throw new RuntimeException(
-                'Nom de table invalide.'
-            );
+            throw new RuntimeException('Nom de table invalide.');
         }
 
         return $table;
@@ -73,10 +68,6 @@ trait BuildsQueries
 
     private function sanitizeIdentifier(string $value): string
     {
-        return self::$identifierCache[$value] ??= preg_replace(
-            '/[^a-zA-Z0-9_]/',
-            '',
-            $value
-        ) ?? '';
+        return self::$identifierCache[$value] ??= preg_replace('/[^a-zA-Z0-9_]/', '', $value) ?? '';
     }
 }

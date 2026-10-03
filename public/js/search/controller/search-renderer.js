@@ -2,9 +2,7 @@
 // RENDU DE LA RECHERCHE
 // =================================================
 
-import {
-    clearSearchResults,
-} from '../ui/search-dropdown.js';
+import { clearSearchResults } from '../ui/search-dropdown.js';
 
 import {
     buildMangaResult,
@@ -13,12 +11,10 @@ import {
     buildFigurineResult,
     buildNendoroidResult,
     buildPelucheResult,
-    buildArtbookResult,
+    buildArtbookResult
 } from '../builders/search-result-builders.js';
 
-import {
-    appendSectionTitle,
-} from '../renderers/search-section-renderer.js';
+import { appendSectionTitle } from '../renderers/search-section-renderer.js';
 
 // =================================================
 // AJOUT SECTION
@@ -33,43 +29,28 @@ function appendSection(
         searchResults,
         searchDropdown,
         setupResultItem,
-        index,
-    },
+        index
+    }
 )
 {
-    if (
-        results.length === 0
-    ) {
+    if (results.length === 0)
+    {
         return index;
     }
 
-    appendSectionTitle(
-        searchResults,
-        title,
-    );
+    appendSectionTitle(searchResults, title);
 
     results.forEach(
         (result) =>
         {
-            const item =
-                buildItem(
-                    result,
-                );
+            const item = buildItem(result);
 
-            setupResultItem(
-                item,
-                index,
-                searchInput,
-                searchResults,
-                searchDropdown,
-            );
+            setupResultItem(item, index, searchInput, searchResults, searchDropdown);
 
-            searchResults.appendChild(
-                item,
-            );
+            searchResults.appendChild(item);
 
             index++;
-        },
+        }
     );
 
     return index;
@@ -95,208 +76,125 @@ export function renderResults(
         searchDropdown,
         setupResultItem,
         openDropdown,
-        closeDropdown,
-    },
+        closeDropdown
+    }
 )
 {
-    clearSearchResults(
-        searchResults,
-    );
+    clearSearchResults(searchResults);
 
-    let index =
-        0;
+    let index = 0;
 
-    index =
-        appendSection({
-            title:
-                '📚 SÉRIES',
+    index = appendSection({
+            title: '📚 SÉRIES',
 
-            results:
-                mangas.slice(
-                    0,
-                    5,
-                ),
+            results: mangas.slice(0, 5),
 
-            buildItem:
-                (manga) =>
-                    buildMangaResult(
-                        manga,
-                        rawValue,
-                        basePath,
-                    ),
+            buildItem: (manga) =>
+                    buildMangaResult(manga, rawValue, basePath),
 
             searchInput,
             searchResults,
             searchDropdown,
             setupResultItem,
-            index,
+            index
         });
 
-    index =
-        appendSection({
-            title:
-                '📕 ARTBOOKS',
+    index = appendSection({
+            title: '📕 ARTBOOKS',
 
-            results:
-                artbooks.slice(
-                    0,
-                    5,
-                ),
+            results: artbooks.slice(0, 5),
 
-            buildItem:
-                (artbook) =>
-                    buildArtbookResult(
-                        artbook,
-                        rawValue,
-                        basePath,
-                    ),
+            buildItem: (artbook) =>
+                    buildArtbookResult(artbook, rawValue, basePath),
 
             searchInput,
             searchResults,
             searchDropdown,
             setupResultItem,
-            index,
+            index
         });
 
-    index =
-        appendSection({
-            title:
-                '⛩️ CHINOIS',
+    index = appendSection({
+            title: '⛩️ CHINOIS',
 
-            results:
-                chinois.slice(
-                    0,
-                    5,
-                ),
+            results: chinois.slice(0, 5),
 
-            buildItem:
-                (item) =>
-                    buildChineseResult(
-                        item,
-                        basePath,
-                    ),
+            buildItem: (item) =>
+                    buildChineseResult(item, basePath),
 
             searchInput,
             searchResults,
             searchDropdown,
             setupResultItem,
-            index,
+            index
         });
 
-    index =
-        appendSection({
-            title:
-                '🎀 FIGURINES',
+    index = appendSection({
+            title: '🎀 FIGURINES',
 
-            results:
-                figurines.slice(
-                    0,
-                    5,
-                ),
+            results: figurines.slice(0, 5),
 
-            buildItem:
-                (figurine) =>
-                    buildFigurineResult(
-                        figurine,
-                        rawValue,
-                        basePath,
-                    ),
+            buildItem: (figurine) =>
+                    buildFigurineResult(figurine, rawValue, basePath),
 
             searchInput,
             searchResults,
             searchDropdown,
             setupResultItem,
-            index,
+            index
         });
 
-    index =
-        appendSection({
-            title:
-                '🪆 NENDOROIDS',
+    index = appendSection({
+            title: '🪆 NENDOROIDS',
 
-            results:
-                nendoroids.slice(
-                    0,
-                    5,
-                ),
+            results: nendoroids.slice(0, 5),
 
-            buildItem:
-                (nendoroid) =>
-                    buildNendoroidResult(
-                        nendoroid,
-                        rawValue,
-                        basePath,
-                    ),
+            buildItem: (nendoroid) =>
+                    buildNendoroidResult(nendoroid, rawValue, basePath),
 
             searchInput,
             searchResults,
             searchDropdown,
             setupResultItem,
-            index,
+            index
         });
 
-    index =
-        appendSection({
-            title:
-                '🧸 PELUCHES',
+    index = appendSection({
+            title: '🧸 PELUCHES',
 
-            results:
-                peluches.slice(
-                    0,
-                    5,
-                ),
+            results: peluches.slice(0, 5),
 
-            buildItem:
-                (peluche) =>
-                    buildPelucheResult(
-                        peluche,
-                        rawValue,
-                        basePath,
-                    ),
+            buildItem: (peluche) =>
+                    buildPelucheResult(peluche, rawValue, basePath),
 
             searchInput,
             searchResults,
             searchDropdown,
             setupResultItem,
-            index,
+            index
         });
 
-    index =
-        appendSection({
-            title:
-                '⚡ RACCOURCIS',
+    index = appendSection({
+            title: '⚡ RACCOURCIS',
 
-            results:
-                shortcuts.slice(
-                    0,
-                    5,
-                ),
+            results: shortcuts.slice(0, 5),
 
-            buildItem:
-                (shortcut) =>
-                    buildShortcutSearchResult(
-                        shortcut,
-                        basePath,
-                    ),
+            buildItem: (shortcut) =>
+                    buildShortcutSearchResult(shortcut, basePath),
 
             searchInput,
             searchResults,
             searchDropdown,
             setupResultItem,
-            index,
+            index
         });
 
-    if (
-        index === 0
-    ) {
-        closeDropdown(
-            searchDropdown,
-        );
+    if (index === 0)
+    {
+        closeDropdown(searchDropdown);
 
         return;
     }
 
-    openDropdown(
-        searchDropdown,
-    );
+    openDropdown(searchDropdown);
 }

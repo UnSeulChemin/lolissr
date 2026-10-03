@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Repositories\Peluche;
 
-use App\Repositories\AbstractRepository;
 use App\Models\Peluche;
+use App\Repositories\AbstractRepository;
 
 final class PelucheCollectionRepository extends AbstractRepository
 {
@@ -19,10 +19,7 @@ final class PelucheCollectionRepository extends AbstractRepository
     /**
      * @return list<Peluche>
      */
-    public function findPaginated(
-        int $limit,
-        int $page
-    ): array
+    public function findPaginated(int $limit, int $page): array
     {
         $page = max(1, $page);
         $limit = max(1, $limit);
@@ -54,10 +51,7 @@ final class PelucheCollectionRepository extends AbstractRepository
             LIMIT :limit
             OFFSET :offset
             ",
-            [
-                'limit' => $limit,
-                'offset' => $offset,
-            ],
+            ['limit' => $limit, 'offset' => $offset],
             Peluche::class
         );
 

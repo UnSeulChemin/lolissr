@@ -13,6 +13,7 @@ final readonly class ChinoisSearchItemData
         public string $description,
         public ?string $langue = null,
         public ?string $niveau = null
-    ) {
+    )
+    {
     }
 }

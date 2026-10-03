@@ -15,7 +15,8 @@ final readonly class ArtbookUpdateData
         public string $company,
         public ?string $release_date,
         public ?string $commentaire
-    ) {
+    )
+    {
     }
 
     // =================================================
@@ -32,17 +33,9 @@ final readonly class ArtbookUpdateData
             source: trim((string) ($data['source'] ?? '')),
             company: trim((string) ($data['company'] ?? '')),
             release_date: DateNormalizer::normalize(
-                Str::nullableTrim(
-                    is_string($data['release_date'] ?? null)
-                        ? $data['release_date']
-                        : null
-                )
+                Str::nullableTrim(is_string($data['release_date'] ?? null) ? $data['release_date'] : null)
             ),
-            commentaire: Str::nullableTrim(
-                is_string($data['commentaire'] ?? null)
-                    ? $data['commentaire']
-                    : null
-            )
+            commentaire: Str::nullableTrim(is_string($data['commentaire'] ?? null) ? $data['commentaire'] : null)
         );
     }
 }

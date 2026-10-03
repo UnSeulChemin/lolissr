@@ -9,9 +9,7 @@ final readonly class ArtbookSearchData
     /**
      * @param list<ArtbookSearchItemData> $results
      */
-    public function __construct(
-        public array $results,
-        public string $search,
-    ) {
+    public function __construct(public array $results, public string $search)
+    {
     }
 }

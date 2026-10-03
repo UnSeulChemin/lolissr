@@ -34,9 +34,7 @@ final class ArtbookSearchRepository extends AbstractRepository
 
     private function normalizeSearch(string $search): string
     {
-        return trim(
-            preg_replace('/\s+/', ' ', trim($search)) ?? ''
-        );
+        return trim(preg_replace('/\s+/', ' ', trim($search)) ?? '');
     }
 
     private function slugSearch(string $search): string
@@ -70,9 +68,9 @@ final class ArtbookSearchRepository extends AbstractRepository
                 'search_artbook' => "%{$search}%",
                 'search_auteur' => "%{$search}%",
                 'search_serie' => "%{$search}%",
-                'search_slug' => $slug !== '' ? '%' . $slug . '%' : null,
+                'search_slug' => $slug !== '' ? '%' . $slug . '%' : null
             ],
-            Artbook::class,
+            Artbook::class
         );
 
         return $artbooks;

@@ -28,7 +28,7 @@ trait SearchesCollectibles
             [
                 'search_waifu' => "%{$search}%",
                 'search_origin' => "%{$search}%",
-                'search_slug' => $slug !== '' ? '%' . $slug . '%' : null,
+                'search_slug' => $slug !== '' ? '%' . $slug . '%' : null
             ],
             $model
         );

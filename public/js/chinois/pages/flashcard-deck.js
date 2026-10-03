@@ -41,9 +41,12 @@ export function createFlashcardDeck(container, type)
     }
 
     return {
-        get card() { return cards[index - offset]; },
-        get index() { return index; },
-        get total() { return total; },
+        get card()
+        { return cards[index - offset]; },
+        get index()
+        { return index; },
+        get total()
+        { return total; },
         async move(direction)
         {
             if (! total) return;
@@ -61,6 +64,6 @@ export function createFlashcardDeck(container, type)
             if (position === -1) return;
             // Reprendre après l’identifiant supprimé, même si d’autres cartes ont disparu simultanément.
             await load(id);
-        },
+        }
     };
 }

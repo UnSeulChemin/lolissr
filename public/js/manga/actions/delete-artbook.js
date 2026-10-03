@@ -2,89 +2,57 @@
 // SUPPRESSION ARTBOOK
 // =================================================
 
-import {
-    post,
-} from '../../core/http.js';
+import { post } from '../../core/http.js';
 
-import {
-    delegate,
-} from '../../core/dom.js';
+import { delegate } from '../../core/dom.js';
 
-import {
-    showToast,
-} from '../../core/toast.js';
+import { showToast } from '../../core/toast.js';
 
-import {
-    debug,
-} from '../../core/debug/debug.js';
+import { debug } from '../../core/debug/debug.js';
 
-import {
-    handleError,
-} from '../../core/errors/error-handler.js';
+import { handleError } from '../../core/errors/error-handler.js';
 
-import {
-    FrontendError,
-} from '../../core/errors/FrontendError.js';
+import { FrontendError } from '../../core/errors/FrontendError.js';
 
-import {
-    navigateTo,
-} from '../../router/router-navigation.js';
+import { navigateTo } from '../../router/router-navigation.js';
 
-import {
-    invalidateMangaPages,
-} from '../manga-cache.js';
+import { invalidateMangaPages } from '../manga-cache.js';
 
-import {
-    deleteModal,
-} from '../../core/modal/modal.js';
+import { deleteModal } from '../../core/modal/modal.js';
 
 // =================================================
 // ÉTAT
 // =================================================
 
-let initialized =
-    false;
+let initialized = false;
 
 // =================================================
 // INTERFACE
 // =================================================
 
-function setLoadingState(
-    button,
-    loading,
-)
+function setLoadingState(button, loading)
 {
-    button.disabled =
-        loading;
+    button.disabled = loading;
 
-    button.textContent =
-        loading
+    button.textContent = loading
             ? 'Suppression...'
-            : (
-                button.dataset.originalText
-                || 'Supprimer'
-            );
+            : (button.dataset.originalText || 'Supprimer');
 }
 
 // =================================================
 // SUPPRESSION ARTBOOK
 // =================================================
 
-async function deleteArtbook(
-    button,
-)
+async function deleteArtbook(button)
 {
-    if (
-        button.disabled
-    ) {
+    if (button.disabled)
+    {
         return;
     }
 
-    const url =
-        button.dataset.url;
+    const url = button.dataset.url;
 
-    const redirectUrl =
-        button.dataset.redirect
+    const redirectUrl = button.dataset.redirect
         || '/';
 
     if (! url)
@@ -93,99 +61,68 @@ async function deleteArtbook(
             new FrontendError(
                 'URL invalide',
                 {
-                    code:
-                        'INVALID_DELETE_URL',
-                },
-            ),
+                    code: 'INVALID_DELETE_URL'
+                }
+            )
         );
 
         return;
     }
 
-    const confirmed =
-        await deleteModal(
-            'Supprimer ce artbook ?',
-        );
+    const confirmed = await deleteModal('Supprimer ce artbook ?');
 
     if (! confirmed)
     {
         return;
     }
 
-    if (
-        ! button.dataset.originalText
-    ) {
-        button.dataset.originalText =
-            button.textContent
+    if (! button.dataset.originalText)
+    {
+        button.dataset.originalText = button.textContent
             || 'Supprimer';
     }
 
-    setLoadingState(
-        button,
-        true,
-    );
+    setLoadingState(button, true);
 
     try
     {
-        debug(
-            'DELETE_ARTBOOK',
-            'request',
-            url,
-        );
+        debug('DELETE_ARTBOOK', 'request', url);
 
-        const data =
-            await post(
+        const data = await post(
                 url,
                 {},
                 {
-                    headers:
-                    {
-                        Accept:
-                            'application/json',
-                    },
-                },
+                    headers: {
+                        Accept: 'application/json'
+                    }
+                }
             );
 
-        if (
-            data?.success
-            !== true
-        ) {
+        if (data?.success !== true)
+        {
             throw new FrontendError(
                 data?.message
                 || 'Erreur suppression',
                 {
-                    code:
-                        'DELETE_ARTBOOK_FAILED',
-                },
+                    code: 'DELETE_ARTBOOK_FAILED'
+                }
             );
         }
 
-        const target =
-            data.data?.redirect
+        const target = data.data?.redirect
             || redirectUrl;
 
         invalidateMangaPages();
 
-        showToast(
-            data.message
-            || 'Artbook supprimé',
-            'success',
-        );
+        showToast(data.message || 'Artbook supprimé', 'success');
 
-        await navigateTo(
-            target,
-        );
+        await navigateTo(target);
     }
     catch (error)
     {
-        handleError(
-            error,
-        );
+        handleError(error);
 
-        setLoadingState(
-            button,
-            false,
-        );
+        setLoadingState(button, false);
     }
 }
 
@@ -200,35 +137,22 @@ export function initDeleteArtbook()
         return;
     }
 
-    initialized =
-        true;
+    initialized = true;
 
     delegate(
         document,
         'click',
         '.js-delete-artbook',
-        (
-            _,
-            button,
-        ) =>
+        (_, button) =>
         {
-            if (
-                !(
-                    button
-                    instanceof HTMLButtonElement
-                )
-            ) {
+            if (!( button instanceof HTMLButtonElement ))
+            {
                 return;
             }
 
-            void deleteArtbook(
-                button,
-            );
-        },
+            void deleteArtbook(button);
+        }
     );
 
-    debug(
-        'DELETE_ARTBOOK',
-        'initialized',
-    );
+    debug('DELETE_ARTBOOK', 'initialized');
 }

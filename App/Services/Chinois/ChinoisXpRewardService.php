@@ -15,8 +15,9 @@ final readonly class ChinoisXpRewardService
         private ChinoisVocabulaireRepository $vocabulaireRepository,
         private \App\Services\Profile\AchievementXpService $achievementXpService,
         private \App\Repositories\Chinois\ChinoisVocabulaireStatsRepository $vocabularyStatsRepository,
-        private \App\Repositories\Chinois\ChinoisGrammaireStatsRepository $grammarStatsRepository,
-    ) {
+        private \App\Repositories\Chinois\ChinoisGrammaireStatsRepository $grammarStatsRepository
+    )
+    {
     }
 
     // =================================================

@@ -2,6 +2,7 @@
 declare(strict_types=1);
 require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
 use Framework\Cache\Cache;
+
 $directory = sys_get_temp_dir() . '/cache-race-' . bin2hex(random_bytes(8));
 mkdir($directory);
 $property = new ReflectionProperty(Cache::class, 'directory');

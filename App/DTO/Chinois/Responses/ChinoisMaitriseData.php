@@ -6,9 +6,7 @@ namespace App\DTO\Chinois\Responses;
 
 final readonly class ChinoisMaitriseData
 {
-    public function __construct(
-        public bool $maitrise,
-        public bool $xpEarned
-    ) {
+    public function __construct(public bool $maitrise, public bool $xpEarned)
+    {
     }
 }

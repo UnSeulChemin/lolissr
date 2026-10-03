@@ -2,17 +2,11 @@
 // DÉMARRAGE DE L’APPLICATION
 // =================================================
 
-import {
-    debugError,
-} from '../core/debug/debug.js';
+import { debugError } from '../core/debug/debug.js';
 
-import {
-    handleError,
-} from '../core/errors/error-handler.js';
+import { handleError } from '../core/errors/error-handler.js';
 
-import {
-    initApp,
-} from './app-init.js';
+import { initApp } from './app-init.js';
 
 // =================================================
 // DÉMARRAGE
@@ -24,15 +18,10 @@ function startApp()
         .catch(
             error =>
             {
-                debugError(
-                    'APP',
-                    error,
-                );
+                debugError('APP', error);
 
-                handleError(
-                    error,
-                );
-            },
+                handleError(error);
+            }
         );
 }
 
@@ -48,8 +37,8 @@ export function bootApp()
             'DOMContentLoaded',
             startApp,
             {
-                once: true,
-            },
+                once: true
+            }
         );
 
         return;

@@ -92,12 +92,7 @@ $commentaire = $manga->hasCommentaire ? nl2br(e($manga->commentaire)) : 'Aucun c
 
                 <div class="detail-value">
 
-                    <?= str_pad(
-                        (string) $numero,
-                        2,
-                        '0',
-                        STR_PAD_LEFT,
-                    ) ?>
+                    <?= str_pad((string) $numero, 2, '0', STR_PAD_LEFT) ?>
 
                 </div>
 
@@ -138,11 +133,7 @@ $commentaire = $manga->hasCommentaire ? nl2br(e($manga->commentaire)) : 'Aucun c
                         data-field="jacquette"
                     >
 
-                        <?php for (
-                            $note = 1;
-                            $note <= 5;
-                            $note++
-                        ): ?>
+                        <?php for ($note = 1; $note <= 5; $note++): ?>
 
                             <button
                                 class="

@@ -2,27 +2,17 @@
 // MENU DE RECHERCHE
 // =================================================
 
-export function openSearchDropdown(
-    dropdown,
-)
+export function openSearchDropdown(dropdown)
 {
-    dropdown?.classList.add(
-        'has-results',
-    );
+    dropdown?.classList.add('has-results');
 }
 
-export function closeSearchDropdown(
-    dropdown,
-)
+export function closeSearchDropdown(dropdown)
 {
-    dropdown?.classList.remove(
-        'has-results',
-    );
+    dropdown?.classList.remove('has-results');
 }
 
-export function clearSearchResults(
-    container,
-)
+export function clearSearchResults(container)
 {
     container?.replaceChildren();
 }

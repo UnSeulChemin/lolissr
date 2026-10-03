@@ -18,7 +18,8 @@ try
     foreach (['configured' => null, 'explicit' => PHP_INT_MAX, 'ordinary' => 60] as $key => $ttl)
     {
         $calls = 0;
-        $compute = static function () use (&$calls): string { $calls++; return 'cached'; };
+        $compute = static function () use (&$calls): string
+        { $calls++; return 'cached'; };
         $before = time();
         Cache::remember($key, $ttl, $compute);
         $after = time();

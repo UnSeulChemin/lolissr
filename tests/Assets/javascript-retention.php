@@ -16,7 +16,8 @@ try
     // A ledger shipped from a much older local build must not shorten server retention.
     file_put_contents($root . '/Config/javascript-retention.json', json_encode([$old => -700000]));
     foreach ($files as $file) file_put_contents($root . '/public/' . $file, 'fixture');
-    $check = static function (bool $ok): void { if (!$ok) throw new RuntimeException('Bundle retention regression.'); };
+    $check = static function (bool $ok): void
+    { if (!$ok) throw new RuntimeException('Bundle retention regression.'); };
     $check(JavaScriptRetention::prune($root, [$active, $shared], 1000) === 0);
     $check(JavaScriptRetention::prune($root, [$active, $shared], 1000 + 6 * 86400) === 0);
     $check(JavaScriptRetention::prune($root, [$active, $shared], 1000 + 7 * 86400) === 1);

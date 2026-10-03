@@ -2,40 +2,32 @@
 // JOURNAL
 // =================================================
 
-import {
-    config,
-} from '../config.js';
+import { config } from '../config.js';
 
 // =================================================
 // CONFIGURATION
 // =================================================
 
-const LOG_HISTORY_LIMIT =
-    500;
+const LOG_HISTORY_LIMIT = 500;
 
 // =================================================
 // STYLES
 // =================================================
 
-const styles =
-    Object.freeze({
+const styles = Object.freeze({
 
-        info:
-            'color:#9b5cff;font-weight:bold;',
+        info: 'color:#9b5cff;font-weight:bold;',
 
-        warn:
-            'color:#ffb84d;font-weight:bold;',
+        warn: 'color:#ffb84d;font-weight:bold;',
 
-        error:
-            'color:#ff4d6d;font-weight:bold;',
+        error: 'color:#ff4d6d;font-weight:bold;'
     });
 
 // =================================================
 // ÉTAT
 // =================================================
 
-const logs =
-    [];
+const logs = [];
 
 // =================================================
 // UTILITAIRES
@@ -46,126 +38,73 @@ function canDebug()
     return config.debug;
 }
 
-function createEntry(
-    level,
-    scope,
-    messages,
-)
+function createEntry(level, scope, messages)
 {
     return {
-        timestamp:
-            Date.now(),
+        timestamp: Date.now(),
 
         level,
 
         scope,
 
-        messages,
+        messages
     };
 }
 
-function pushLog(
-    entry,
-)
+function pushLog(entry)
 {
-    logs.push(
-        entry,
-    );
+    logs.push(entry);
 
-    if (
-        logs.length
-        > LOG_HISTORY_LIMIT
-    ) {
+    if (logs.length > LOG_HISTORY_LIMIT)
+    {
 
         logs.shift();
     }
 }
 
-function print(
-    level,
-    scope,
-    ...messages
-)
+function print(level, scope, ...messages)
 {
     // --------------------------------------------------------------------------
     // ERREURS TOUJOURS JOURNALISÉES
     // --------------------------------------------------------------------------
 
-
-    if (
-        level !== 'error'
-        && !canDebug()
-    ) {
+    if (level !== 'error' && !canDebug())
+    {
 
         return;
     }
 
-    const logger =
-        console[level]
+    const logger = console[level]
         || console.log;
 
-    logger(
-        `%c[${scope}]`,
-        styles[level]
-        || styles.info,
-        ...messages,
-    );
+    logger(`%c[${scope}]`, styles[level] || styles.info, ...messages);
 }
 
-function write(
-    level,
-    scope,
-    ...messages
-)
+function write(level, scope, ...messages)
 {
-    const entry =
-        createEntry(
-            level,
-            scope,
-            messages,
-        );
+    const entry = createEntry(level, scope, messages);
 
-    pushLog(
-        entry,
-    );
+    pushLog(entry);
 
-    print(
-        level,
-        scope,
-        ...messages,
-    );
+    print(level, scope, ...messages);
 }
 
 // =================================================
 // INFO
 // =================================================
 
-export function logInfo(
-    scope,
-    ...messages
-)
+export function logInfo(scope, ...messages)
 {
-    write(
-        'info',
-        scope,
-        ...messages,
-    );
+    write('info', scope, ...messages);
 }
 
 // =================================================
 // ERREUR
 // =================================================
 
-export function logError(
-    scope,
-    ...messages
-)
+export function logError(scope, ...messages)
 {
-    write(
-        'error',
-        scope,
-        ...messages,
-    );
+    write('error', scope, ...messages);
 }
 
 // =================================================
@@ -174,9 +113,7 @@ export function logError(
 
 export function getLogs()
 {
-    return [
-        ...logs,
-    ];
+    return [...logs];
 }
 
 // =================================================
@@ -185,16 +122,13 @@ export function getLogs()
 
 export function clearLogs()
 {
-    logs.length =
-        0;
+    logs.length = 0;
 }
 
 // =================================================
 // VARIABLES GLOBALES
 // =================================================
 
-window.__LOGS__ =
-    getLogs;
+window.__LOGS__ = getLogs;
 
-window.__CLEAR_LOGS__ =
-    clearLogs;
+window.__CLEAR_LOGS__ = clearLogs;

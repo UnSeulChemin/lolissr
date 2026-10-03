@@ -13,8 +13,9 @@ final readonly class ArtbookRepresentationData
         public string $thumbnailUrl,
 
         public int $total,
-        public string $countLabel,
-    ) {
+        public string $countLabel
+    )
+    {
     }
 
     /**
@@ -35,7 +36,7 @@ final readonly class ArtbookRepresentationData
             'thumbnailUrl' => $this->thumbnailUrl,
 
             'total' => $this->total,
-            'countLabel' => $this->countLabel,
+            'countLabel' => $this->countLabel
         ];
     }
 
@@ -51,7 +52,7 @@ final readonly class ArtbookRepresentationData
             thumbnailUrl: (string) $data['thumbnailUrl'],
 
             total: (int) $data['total'],
-            countLabel: (string) $data['countLabel'],
+            countLabel: (string) $data['countLabel']
         );
     }
 }

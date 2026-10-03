@@ -2,48 +2,27 @@
 // CONSTRUCTION DES RÉSULTATS DE PELUCHES
 // =================================================
 
-import {
-    highlightSearchTerm,
-    escapeHtml,
-} from '../utils/search-utils.js';
+import { highlightSearchTerm, escapeHtml } from '../utils/search-utils.js';
 
-import {
-    createResultItem,
-} from './search-result-item.js';
+import { createResultItem } from './search-result-item.js';
 
-export function buildPelucheResult(
-    peluche,
-    rawValue,
-    basePath,
-)
+export function buildPelucheResult(peluche, rawValue, basePath)
 {
-    const slug =
-        encodeURIComponent(
-            peluche.slug ?? '',
-        );
+    const slug = encodeURIComponent(peluche.slug ?? '');
 
-    const numero =
-        Number(
-            peluche.numero ?? 0,
-        );
+    const numero = Number(peluche.numero ?? 0);
 
-    const waifu =
-        peluche.waifu ?? '';
+    const waifu = peluche.waifu ?? '';
 
-    const origin =
-        peluche.origin ?? '';
+    const origin = peluche.origin ?? '';
 
-    const thumbnail =
-        peluche.thumbnail ?? 'default';
+    const thumbnail = peluche.thumbnail ?? 'default';
 
-    const extension =
-        peluche.extension ?? 'jpg';
+    const extension = peluche.extension ?? 'jpg';
 
-    const imageUrl =
-        `${basePath}images/peluche/thumbnail/${thumbnail}.${extension}`;
+    const imageUrl = `${basePath}images/peluche/thumbnail/${thumbnail}.${extension}`;
 
-    const pelucheUrl =
-        `${basePath}peluche/peluches/${slug}/${numero}`;
+    const pelucheUrl = `${basePath}peluche/peluches/${slug}/${numero}`;
 
     return createResultItem(
         pelucheUrl,
@@ -75,6 +54,6 @@ export function buildPelucheResult(
                 </small>
 
             </span>
-        `,
+        `
     );
 }

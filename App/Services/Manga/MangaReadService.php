@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace App\Services\Manga;
 
 use App\DTO\Manga\Responses\MangaData;
-use App\DTO\Manga\Responses\MangaSearchData;
-use App\DTO\Manga\Responses\MangaSearchItemData;
+use App\DTO\Manga\Responses\MangaDetailData;
 use App\DTO\Manga\Responses\MangaListData;
 use App\DTO\Manga\Responses\MangaListItemData;
-use App\DTO\Manga\Responses\MangaDetailData;
+use App\DTO\Manga\Responses\MangaSearchData;
+use App\DTO\Manga\Responses\MangaSearchItemData;
 use App\Models\Manga;
-use App\Repositories\Manga\MangaRepository;
 use App\Repositories\Manga\MangaCollectionRepository;
+use App\Repositories\Manga\MangaRepository;
 use App\Repositories\Manga\MangaSearchRepository;
 
 use Framework\Config\ApplicationConfig;
@@ -22,8 +22,9 @@ final readonly class MangaReadService
     public function __construct(
         private MangaRepository $mangaRepository,
         private MangaSearchRepository $searchRepository,
-        private MangaCollectionRepository $collectionRepository,
-    ) {
+        private MangaCollectionRepository $collectionRepository
+    )
+    {
     }
 
     // --------------------------------------------------------------------------
@@ -47,7 +48,7 @@ final readonly class MangaReadService
                 slugFilter: null,
                 totalSeries: 0,
                 perPage: $perPage,
-                totalPages: 1,
+                totalPages: 1
             );
         }
 
@@ -58,22 +59,15 @@ final readonly class MangaReadService
             return null;
         }
 
-        $mangas = $this->collectionRepository->findAllFirstTomes(
-            'id DESC',
-            $perPage,
-            $page,
-        );
+        $mangas = $this->collectionRepository->findAllFirstTomes('id DESC', $perPage, $page);
 
         return new MangaListData(
-            mangas: array_map(
-                $this->mapSeriesItem(...),
-                $mangas
-            ),
+            mangas: array_map($this->mapSeriesItem(...), $mangas),
             currentPage: $page,
             slugFilter: null,
             totalSeries: $totalSeries,
             perPage: $perPage,
-            totalPages: $totalPages,
+            totalPages: $totalPages
         );
     }
 
@@ -102,25 +96,20 @@ final readonly class MangaReadService
             slugFilter: $slug,
             totalSeries: $totalItems,
             perPage: $perPage,
-            totalPages: $totalPages,
+            totalPages: $totalPages
         );
     }
 
     public function one(string $slug, int $numero): ?MangaDetailData
     {
-        $manga = $this->mangaRepository->findOneBySlugAndNumero(
-            $slug,
-            $numero,
-        );
+        $manga = $this->mangaRepository->findOneBySlugAndNumero($slug, $numero);
 
         if ($manga === null)
         {
             return null;
         }
 
-        return new MangaDetailData(
-            manga: $this->mapManga($manga),
-        );
+        return new MangaDetailData(manga: $this->mapManga($manga));
     }
 
     // --------------------------------------------------------------------------
@@ -133,10 +122,7 @@ final readonly class MangaReadService
 
         $results = $this->searchRepository->search($query);
 
-        return new MangaSearchData(
-            results: array_map($this->mapSearchItem(...), $results),
-            search: $query,
-        );
+        return new MangaSearchData(results: array_map($this->mapSearchItem(...), $results), search: $query);
     }
 
     // --------------------------------------------------------------------------
@@ -249,7 +235,7 @@ final readonly class MangaReadService
                 $manga->livre_note === 5,
 
             xpReadRewarded: $manga->xp_read_rewarded,
-            xpSeriesRewarded: $manga->xp_series_rewarded,
+            xpSeriesRewarded: $manga->xp_series_rewarded
         );
     }
 
@@ -291,7 +277,7 @@ final readonly class MangaReadService
 
             lu: $manga->lu,
 
-            isFullyRead: ($manga->total ?? 0) > 0 && ($manga->total_lu ?? 0) >= ($manga->total ?? 0),
+            isFullyRead: ($manga->total ?? 0) > 0 && ($manga->total_lu ?? 0) >= ($manga->total ?? 0)
         );
     }
 
@@ -304,7 +290,7 @@ final readonly class MangaReadService
             thumbnail: $manga->thumbnail,
             extension: $manga->extension,
             note: $manga->note,
-            lu: $manga->lu,
+            lu: $manga->lu
         );
     }
 }

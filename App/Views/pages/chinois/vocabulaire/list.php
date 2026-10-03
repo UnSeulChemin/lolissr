@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use App\DTO\Common\Responses\ViewData;
 use App\DTO\Chinois\Responses\ChinoisVocabulaireData;
+use App\DTO\Common\Responses\ViewData;
 
 /** @var ViewData $view */
 /** @var string $langue */
@@ -17,19 +17,13 @@ use App\DTO\Chinois\Responses\ChinoisVocabulaireData;
 
     <div class="collection-ajax-container">
 
-        <?php require view_path(
-            'pages/chinois/vocabulaire/partials/items.php',
-        ); ?>
+        <?php require view_path('pages/chinois/vocabulaire/partials/items.php'); ?>
 
         <?php if ($totalPages > 1): ?>
 
             <nav class="collection-pagination-wrapper u-row-center">
 
-                <?php for (
-                    $i = 1;
-                    $i <= $totalPages;
-                    $i++
-                ): ?>
+                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
 
                     <a
                         class="

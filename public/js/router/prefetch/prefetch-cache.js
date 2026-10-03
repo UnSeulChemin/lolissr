@@ -2,23 +2,13 @@
 // PRÉCHARGEMENT CACHE
 // =================================================
 
-import {
-    config,
-} from '../../core/config.js';
+import { config } from '../../core/config.js';
 
-import {
-    debug,
-} from '../../core/debug/debug.js';
+import { debug } from '../../core/debug/debug.js';
 
-import {
-    normalizeCacheKey,
-} from '../../core/navigation.js';
+import { normalizeCacheKey } from '../../core/navigation.js';
 
-import {
-    cache,
-    inFlight,
-    invalidated,
-} from './prefetch-state.js';
+import { cache, inFlight, invalidated } from './prefetch-state.js';
 
 // =================================================
 // UTILITAIRES
@@ -44,9 +34,7 @@ function trimCache()
             return;
         }
 
-        cache.delete(
-            oldestKey,
-        );
+        cache.delete(oldestKey);
     }
 }
 
@@ -56,18 +44,14 @@ function trimCache()
 
 export function getPrefetchedPage(href)
 {
-    const url = normalizeCacheKey(
-        href,
-    );
+    const url = normalizeCacheKey(href);
 
     if (invalidated.has(url))
     {
         return null;
     }
 
-    const cached = cache.get(
-        url,
-    );
+    const cached = cache.get(url);
 
     if (! cached)
     {
@@ -76,9 +60,7 @@ export function getPrefetchedPage(href)
 
     if (isExpired(cached))
     {
-        cache.delete(
-            url,
-        );
+        cache.delete(url);
 
         return null;
     }
@@ -87,50 +69,35 @@ export function getPrefetchedPage(href)
     // ACTUALISATION DU CACHE LRU
     // --------------------------------------------------------------------------
 
+    cache.delete(url);
 
-    cache.delete(
-        url,
-    );
-
-    cache.set(
-        url,
-        cached,
-    );
+    cache.set(url, cached);
 
     return {
         type: 'page',
-        page: cached.page,
+        page: cached.page
     };
 }
 
-export function setPrefetchedPage(
-    href,
-    response,
-)
+export function setPrefetchedPage(href, response)
 {
-    const url = normalizeCacheKey(
-        href,
-    );
+    const url = normalizeCacheKey(href);
 
     const timestamp = snapshotTimes.get(response.page) ?? Date.now();
     snapshotTimes.set(response.page, timestamp);
     if (isExpired({timestamp})) return;
 
-    cache.delete(
-        url,
-    );
+    cache.delete(url);
 
     cache.set(
         url,
         {
             page: response.page,
-            timestamp,
-        },
+            timestamp
+        }
     );
 
-    invalidated.delete(
-        url,
-    );
+    invalidated.delete(url);
 
     trimCache();
 }
@@ -141,9 +108,7 @@ export function setPrefetchedPage(
 
 export function invalidatePrefetch(href, {descendants = true} = {})
 {
-    const url = normalizeCacheKey(
-        href,
-    );
+    const url = normalizeCacheKey(href);
 
     const target = new URL(url);
     const targetPath = target.pathname.replace(/\/+$/, '') || '/';
@@ -182,11 +147,7 @@ export function invalidatePrefetch(href, {descendants = true} = {})
         invalidated.delete(invalidated.values().next().value);
     }
 
-    debug(
-        'PREFETCH',
-        'invalidate',
-        url,
-    );
+    debug('PREFETCH', 'invalidate', url);
 }
 
 // =================================================
@@ -195,9 +156,7 @@ export function invalidatePrefetch(href, {descendants = true} = {})
 
 export function getInFlightPrefetch(href)
 {
-    const url = normalizeCacheKey(
-        href,
-    );
+    const url = normalizeCacheKey(href);
 
     if (invalidated.has(url))
     {

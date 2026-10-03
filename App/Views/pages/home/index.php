@@ -8,9 +8,7 @@ use App\DTO\Common\Responses\ViewData;
 
 if (!isset($stats))
 {
-    throw new \RuntimeException(
-        'Statistiques du tableau de bord manquantes dans la vue.',
-    );
+    throw new \RuntimeException('Statistiques du tableau de bord manquantes dans la vue.');
 }
 
 $hasLongestSeries =
@@ -291,9 +289,7 @@ $hasMostRepresented =
 
         <section class="home-ranking-list card-list u-flex u-justify-center">
 
-            <?php foreach (
-                $stats->topLongestSeries as $index => $serie
-            ): ?>
+            <?php foreach ($stats->topLongestSeries as $index => $serie): ?>
 
                 <a
                     class="

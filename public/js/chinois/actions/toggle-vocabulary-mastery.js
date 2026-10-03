@@ -2,181 +2,116 @@
 // BASCULE DE LA MAÎTRISE DU VOCABULAIRE
 // =================================================
 
-import {
-    post,
-} from '../../core/http.js';
+import { post } from '../../core/http.js';
 
-import {
-    delegate,
-} from '../../core/dom.js';
+import { delegate } from '../../core/dom.js';
 
-import {
-    showToast,
-} from '../../core/toast.js';
+import { showToast } from '../../core/toast.js';
 
-import {
-    debug,
-    debugError,
-} from '../../core/debug/debug.js';
+import { debug, debugError } from '../../core/debug/debug.js';
 
-import {
-    invalidateVocabularyPages,
-} from '../chinois-cache.js';
+import { invalidateVocabularyPages } from '../chinois-cache.js';
 
 // =================================================
 // ÉTAT
 // =================================================
 
-let initialized =
-    false;
+let initialized = false;
 
 // =================================================
 // UTILITAIRES
 // =================================================
 
-function isValidButton(
-    button,
-)
+function isValidButton(button)
 {
-    return (
-        button
-        instanceof HTMLButtonElement
-    );
+    return (button instanceof HTMLButtonElement);
 }
 
-function setLoading(
-    button,
-    state,
-)
+function setLoading(button, state)
 {
     if (state)
     {
-        button.dataset.loading =
-            '1';
+        button.dataset.loading = '1';
 
-        button.disabled =
-            true;
+        button.disabled = true;
 
         return;
     }
 
     delete button.dataset.loading;
 
-    button.disabled =
-        false;
+    button.disabled = false;
 }
 
-function updateButtonState(
-    button,
-    mastered,
-)
+function updateButtonState(button, mastered)
 {
-    button.dataset.maitrise =
-        mastered
+    button.dataset.maitrise = mastered
             ? '1'
             : '0';
 
-    button.classList.toggle(
-        'active',
-        mastered,
-    );
+    button.classList.toggle('active', mastered);
 
-    button.setAttribute(
-        'aria-pressed',
-        mastered
-            ? 'true'
-            : 'false',
-    );
+    button.setAttribute('aria-pressed', mastered ? 'true' : 'false');
 
-    const label =
-        mastered
+    const label = mastered
             ? 'Retirer la maîtrise'
             : 'Marquer comme maîtrisé';
 
-    button.title =
-        label;
+    button.title = label;
 
-    button.setAttribute(
-        'aria-label',
-        label,
-    );
+    button.setAttribute('aria-label', label);
 }
 
 // =================================================
 // TOGGLE
 // =================================================
 
-async function toggleMastery(
-    button,
-)
+async function toggleMastery(button)
 {
-    const url =
-        button.dataset.url;
+    const url = button.dataset.url;
 
     if (!url)
     {
-        showToast(
-            'URL manquante',
-            'error',
-        );
+        showToast('URL manquante', 'error');
 
         return;
     }
 
-    setLoading(
-        button,
-        true,
-    );
+    setLoading(button, true);
 
-    try {
+    try
+    {
 
-        const data =
-            await post(
+        const data = await post(
                 url,
                 {
-                    id:
-                        button.dataset.id
-                        ?? '',
+                    id: button.dataset.id
+                        ?? ''
                 },
                 {
-                    headers:
-                    {
-                        'X-Partial':
-                            'true',
+                    headers: {
+                        'X-Partial': 'true',
 
-                        Accept:
-                            'application/json',
-                    },
-                },
+                        Accept: 'application/json'
+                    }
+                }
             );
 
-        if (
-            !data?.success
-        ) {
+        if (!data?.success)
+        {
 
-            showToast(
-                data?.message
-                    ?? 'Erreur lors de la mise à jour',
-                'error',
-            );
+            showToast(data?.message ?? 'Erreur lors de la mise à jour', 'error');
 
             return;
         }
 
-        const mastered =
-            Boolean(
-                data?.data?.maitrise,
-            );
+        const mastered = Boolean(data?.data?.maitrise);
 
-        updateButtonState(
-            button,
-            mastered,
-        );
+        updateButtonState(button, mastered);
 
         invalidateVocabularyPages();
 
-        let message =
-            data.message
+        let message = data.message
             ?? 'Mise à jour effectuée';
 
         if (data?.data?.xpEarned)
@@ -184,37 +119,24 @@ async function toggleMastery(
             message += ' ⭐ +5 XP';
         }
 
-        showToast(
-            message,
-            'success',
-        );
+        showToast(message, 'success');
 
-    } catch (error) {
+    } catch (error)
+    {
 
-        if (
-            error instanceof Error
-            && error.name
-                === 'AbortError'
-        ) {
+        if (error instanceof Error && error.name === 'AbortError')
+        {
             return;
         }
 
-        debugError(
-            'ToggleVocabulaireMastery',
-            error,
-        );
+        debugError('ToggleVocabulaireMastery', error);
 
-        showToast(
-            'Erreur réseau',
-            'error',
-        );
+        showToast('Erreur réseau', 'error');
 
-    } finally {
+    } finally
+    {
 
-        setLoading(
-            button,
-            false,
-        );
+        setLoading(button, false);
     }
 }
 
@@ -229,41 +151,27 @@ export function initToggleVocabulaireMaitrise()
         return;
     }
 
-    initialized =
-        true;
+    initialized = true;
 
     delegate(
         document,
         'click',
         '.vocabulary-ajax',
-        (
-            _,
-            button,
-        ) =>
+        (_, button) =>
         {
-            if (
-                !isValidButton(
-                    button,
-                )
-            ) {
+            if (!isValidButton( button ))
+            {
                 return;
             }
 
-            if (
-                button.dataset.loading
-                === '1'
-            ) {
+            if (button.dataset.loading === '1')
+            {
                 return;
             }
 
-            void toggleMastery(
-                button,
-            );
-        },
+            void toggleMastery(button);
+        }
     );
 
-    debug(
-        'VOCABULAIRE',
-        'initialized',
-    );
+    debug('VOCABULAIRE', 'initialized');
 }

@@ -23,7 +23,7 @@ final class ProfileAchievements
             ['Peluches', '🧸', 'peluches collectionnées', $stats->peluchesCollected, array_keys(AchievementRewards::PELUCHES)],
             ['Vocabulaire', '🎓', 'mots maîtrisés', $stats->vocabularyLearned, array_keys(AchievementRewards::VOCABULARY)],
             ['Grammaire', '📝', 'points de grammaire maîtrisés', $stats->grammarLearned, array_keys(AchievementRewards::GRAMMAR)],
-            ['Niveau', '⭐', 'Niveau', $level, AchievementRewards::LEVELS],
+            ['Niveau', '⭐', 'Niveau', $level, AchievementRewards::LEVELS]
         ];
         $achievements = [];
 
@@ -37,7 +37,7 @@ final class ProfileAchievements
                     'title' => $category === 'Niveau' ? 'Niveau ' . $target : $target . ' ' . $label,
                     'current' => max(0, $current),
                     'target' => $target,
-                    'unlocked' => $current >= $target,
+                    'unlocked' => $current >= $target
                 ];
             }
         }
@@ -51,7 +51,7 @@ final class ProfileAchievements
                 'title' => $target . ($target === 1 ? ' succès obtenu' : ' succès obtenus'),
                 'current' => $unlockedCount,
                 'target' => $target,
-                'unlocked' => $unlockedCount >= $target,
+                'unlocked' => $unlockedCount >= $target
             ];
         }
 

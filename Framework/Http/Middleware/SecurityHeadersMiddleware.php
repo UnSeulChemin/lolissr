@@ -30,10 +30,7 @@ final class SecurityHeadersMiddleware implements MiddlewareInterface
 
         if ($request->isHttps())
         {
-            header(
-                'Strict-Transport-Security: max-age=31536000; includeSubDomains',
-                true
-            );
+            header('Strict-Transport-Security: max-age=31536000; includeSubDomains', true);
         }
     }
 }

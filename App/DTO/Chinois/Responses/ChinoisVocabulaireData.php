@@ -21,6 +21,7 @@ final readonly class ChinoisVocabulaireData
         public string $masteredValue,
         public string $masteredPressed,
         public string $masteredLabel
-    ) {
+    )
+    {
     }
 }

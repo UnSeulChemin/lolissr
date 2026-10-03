@@ -6,9 +6,7 @@ namespace App\DTO\Common\Responses;
 
 readonly class FlashToastData
 {
-    public function __construct(
-        public ?string $message,
-        public ?string $type,
-    ) {
+    public function __construct(public ?string $message, public ?string $type)
+    {
     }
 }

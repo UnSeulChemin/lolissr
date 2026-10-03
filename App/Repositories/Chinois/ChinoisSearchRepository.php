@@ -29,10 +29,7 @@ final class ChinoisSearchRepository extends AbstractRepository
 
         $like = "%{$search}%";
 
-        return [
-            ...$this->searchGrammaire($like),
-            ...$this->searchVocabulaire($like),
-        ];
+        return [...$this->searchGrammaire($like), ...$this->searchVocabulaire($like)];
     }
 
     // =================================================
@@ -62,10 +59,7 @@ final class ChinoisSearchRepository extends AbstractRepository
 
             LIMIT 20
             ",
-            [
-                'search_titre' => $like,
-                'search_structure' => $like,
-            ]
+            ['search_titre' => $like, 'search_structure' => $like]
         );
 
         return array_map($this->mapGrammarResult(...), $results);
@@ -98,10 +92,7 @@ final class ChinoisSearchRepository extends AbstractRepository
 
             LIMIT 20
             ",
-            [
-                'search_mot' => $like,
-                'search_pinyin' => $like,
-            ]
+            ['search_mot' => $like, 'search_pinyin' => $like]
         );
 
         return array_map($this->mapVocabularyResult(...), $results);
@@ -117,11 +108,7 @@ final class ChinoisSearchRepository extends AbstractRepository
             id: (int) $grammaire->id,
             type: 'grammaire',
             titre: (string) $grammaire->titre,
-            description: mb_substr(
-                strip_tags((string) ($grammaire->explication ?? '')),
-                0,
-                100
-            ),
+            description: mb_substr(strip_tags((string) ($grammaire->explication ?? '')), 0, 100),
             niveau: (string) $grammaire->niveau
         );
     }

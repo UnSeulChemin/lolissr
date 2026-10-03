@@ -2,9 +2,12 @@ export async function runBrowserScenario()
 {
     const base = new URL('.', location.href).pathname;
     window.appConfig = {baseUri: base};
-    const check = (ok, message) => { if (!ok) throw new Error(message); };
-    const until = async predicate => {
-        for (let i = 0; i < 100; i++) { if (predicate()) return; await new Promise(resolve => setTimeout(resolve, 10)); }
+    const check = (ok, message) =>
+    { if (!ok) throw new Error(message); };
+    const until = async predicate =>
+    {
+        for (let i = 0; i < 100; i++)
+        { if (predicate()) return; await new Promise(resolve => setTimeout(resolve, 10)); }
         throw new Error('Lifecycle test timed out');
     };
     const main = document.createElement('main');
@@ -16,7 +19,7 @@ export async function runBrowserScenario()
     const {navigateTo} = await import('./js/router/router-navigation.js');
     const originalFetch = window.fetch;
     window.fetch = async () => new Response(JSON.stringify({success: true, type: 'page', page: {
-        html: '<p id="arrived">Destination</p>', format: 'fragment', title: 'Destination', stylesheets: [], lang: 'fr', bodyData: {},
+        html: '<p id="arrived">Destination</p>', format: 'fragment', title: 'Destination', stylesheets: [], lang: 'fr', bodyData: {}
     }}), {headers: {'Content-Type': 'application/json'}});
     try
     {
@@ -24,12 +27,16 @@ export async function runBrowserScenario()
         let started = false;
         let initialized = 0;
         let staleInitialized = false;
-        const gate = new Promise(resolve => { release = resolve; });
-        const slow = () => { staleInitialized = true; };
-        slow.preload = () => { started = true; return gate; };
+        const gate = new Promise(resolve =>
+        { release = resolve; });
+        const slow = () =>
+        { staleInitialized = true; };
+        slow.preload = () =>
+        { started = true; return gate; };
         ROUTE_INITIALIZERS.splice(0, ROUTE_INITIALIZERS.length,
             {match: /^\/manga$/, initializers: [['Slow first route', slow]]},
-            {match: /^\/figurine$/, initializers: [['Destination', () => { initialized++; }]]});
+            {match: /^\/figurine$/, initializers: [['Destination', () =>
+            { initialized++; }]]});
         history.replaceState({}, '', base + 'manga');
         const boot = initApp();
         await until(() => started);
@@ -42,7 +49,8 @@ export async function runBrowserScenario()
         // The router can also navigate before global initialization finishes.
         let releaseGlobal;
         let globalStarted = false;
-        GLOBAL_INITIALIZERS.push(['Slow global', () => new Promise(resolve => { globalStarted = true; releaseGlobal = resolve; })]);
+        GLOBAL_INITIALIZERS.push(['Slow global', () => new Promise(resolve =>
+        { globalStarted = true; releaseGlobal = resolve; })]);
         history.replaceState({}, '', base + 'manga');
         const secondBoot = initApp();
         await until(() => globalStarted);
@@ -51,7 +59,8 @@ export async function runBrowserScenario()
         await secondBoot;
         check(initialized === 2, 'Navigation during global boot initialized the destination more than once');
     }
-    finally { window.fetch = originalFetch; }
+    finally
+    { window.fetch = originalFetch; }
 
     const {setPrefetchedPage, getPrefetchedPage, invalidatePrefetch} = await import('./js/router/prefetch/prefetch-cache.js');
     const {renderPage} = await import('./js/router/navigation/navigation-render.js');
@@ -77,7 +86,8 @@ export async function runBrowserScenario()
         invalidatePrefetch(target);
         check(getPrefetchedPage(target) === null, 'Explicit invalidation failed');
     }
-    finally { Date.now = originalNow; }
+    finally
+    { Date.now = originalNow; }
     return ['navigation during initial imports', 'navigation during global boot without duplicate initialization',
         'fixed snapshot expiration including eviction', 'fresh responses and explicit invalidation'];
 }

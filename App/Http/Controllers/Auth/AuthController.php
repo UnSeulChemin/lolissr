@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
 use App\Enums\Auth\LoginResult;
+use App\Http\Controllers\Controller;
 use App\Services\Auth\AuthService;
 use App\Services\Auth\LoginThrottleService;
 
@@ -17,7 +17,8 @@ final class AuthController extends Controller
         private readonly AuthService $authService,
         private readonly LoginThrottleService $loginThrottleService,
         Request $request
-    ) {
+    )
+    {
         parent::__construct($request);
     }
 
@@ -29,9 +30,7 @@ final class AuthController extends Controller
     {
         $this->title = 'Connexion';
 
-        $this->render('pages/auth/login', [
-            'form' => $this->formViewData('connexion', '')
-        ]);
+        $this->render('pages/auth/login', ['form' => $this->formViewData('connexion', '')]);
     }
 
     public function authenticate(): never
@@ -44,18 +43,11 @@ final class AuthController extends Controller
         }
         $ipAddress = (string) ($_SERVER['REMOTE_ADDR'] ?? 'unknown');
 
-        $result = $this->authService->login(
-            $username,
-            $password,
-            $ipAddress
-        );
+        $result = $this->authService->login($username, $password, $ipAddress);
 
         if ($result === LoginResult::LOCKED)
         {
-            $remainingMinutes = $this->loginThrottleService->remainingLockMinutes(
-                $username,
-                $ipAddress
-            );
+            $remainingMinutes = $this->loginThrottleService->remainingLockMinutes($username, $ipAddress);
 
             $this->redirectWithError(
                 'connexion',
@@ -86,9 +78,7 @@ final class AuthController extends Controller
     {
         $this->title = 'Inscription';
 
-        $this->render('pages/auth/register', [
-            'form' => $this->formViewData('inscription', '')
-        ]);
+        $this->render('pages/auth/register', ['form' => $this->formViewData('inscription', '')]);
     }
 
     public function store(): never
@@ -100,10 +90,7 @@ final class AuthController extends Controller
             $this->redirectWithError('inscription', 'Identifiants invalides.');
         }
 
-        $success = $this->authService->register(
-            $username,
-            $password
-        );
+        $success = $this->authService->register($username, $password);
 
         if (! $success)
         {

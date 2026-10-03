@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Repositories\Peluche;
 
 use App\DTO\Peluche\Inputs\PelucheUpdateData;
-use App\Repositories\AbstractRepository;
 use App\Models\Peluche;
+use App\Repositories\AbstractRepository;
 
 use Framework\Support\Str;
 
@@ -29,10 +29,7 @@ final class PelucheRepository extends AbstractRepository
 
             LIMIT 1
             ",
-            [
-                'slug' => $this->normalizeSlug($slug),
-                'numero' => $numero,
-            ],
+            ['slug' => $this->normalizeSlug($slug), 'numero' => $numero],
             Peluche::class
         );
 
@@ -57,27 +54,20 @@ final class PelucheRepository extends AbstractRepository
                 'origin' => $dto->origin,
                 'company' => $dto->company,
                 'release_date' => $dto->release_date,
-                'commentaire' => $dto->commentaire,
+                'commentaire' => $dto->commentaire
             ]
         );
     }
 
     public function updateCollectStatus(string $slug, int $numero, bool $collectStatus): bool
     {
-        return $this->updateBySlugAndNumero(
-            $slug,
-            $numero,
-            [
-                'collect' => (int) $collectStatus,
-            ]
-        );
+        return $this->updateBySlugAndNumero($slug, $numero, ['collect' => (int) $collectStatus]);
     }
 
     public function deleteById(int $id): bool
     {
         return $this->deleteExistingById($id);
     }
-
 
     public function claimCollectReward(int $id): bool
     {
@@ -90,9 +80,7 @@ final class PelucheRepository extends AbstractRepository
             WHERE id = :id
             AND collect_rewarded = 0
             ",
-            [
-                'id' => $id,
-            ]
+            ['id' => $id]
         );
 
         return $statement !== false && $statement->rowCount() === 1;
@@ -112,13 +100,7 @@ final class PelucheRepository extends AbstractRepository
      */
     private function updateBySlugAndNumero(string $slug, int $numero, array $data): bool
     {
-        return $this->update(
-            $data,
-            [
-                'slug' => $this->normalizeSlug($slug),
-                'numero' => $numero,
-            ]
-        );
+        return $this->update($data, ['slug' => $this->normalizeSlug($slug), 'numero' => $numero]);
     }
 
     /**
@@ -139,7 +121,7 @@ final class PelucheRepository extends AbstractRepository
             'company' => trim((string) ($data['company'] ?? '')),
             'release_date' => Str::nullableTrim($data['release_date'] ?? null),
 
-            'commentaire' => Str::nullableTrim($data['commentaire'] ?? null),
+            'commentaire' => Str::nullableTrim($data['commentaire'] ?? null)
         ];
     }
 }

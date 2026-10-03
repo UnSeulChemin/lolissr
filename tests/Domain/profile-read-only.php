@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Models\User;
 use App\Services\Profile\ProfileAchievements;
 use App\Services\Profile\ProfileStatsService;
+
 use Framework\Container\Container;
 use Framework\Database\Database;
 
@@ -110,7 +111,7 @@ if (ProfileAchievements::forStats($unlocks->forAchievements(), $user->level) !==
 $expectedCounters = [
     'forTitles' => ['readTomes', 'completedSeries', 'readArtbooks', 'figurinesCollected', 'nendoroidsCollected', 'vocabularyLearned', 'grammarLearned'],
     'forBanners' => ['readTomes', 'nendoroidsCollected', 'peluchesCollected', 'vocabularyLearned', 'grammarLearned'],
-    'forFrames' => ['readTomes', 'readArtbooks', 'figurinesCollected', 'nendoroidsCollected', 'peluchesCollected', 'vocabularyLearned', 'grammarLearned'],
+    'forFrames' => ['readTomes', 'readArtbooks', 'figurinesCollected', 'nendoroidsCollected', 'peluchesCollected', 'vocabularyLearned', 'grammarLearned']
 ];
 foreach ($expectedCounters as $method => $properties)
 {
@@ -146,7 +147,7 @@ foreach ([
     [\App\Repositories\Nendoroid\NendoroidStatsRepository::class, 'countCollected', 200],
     [\App\Repositories\Peluche\PelucheStatsRepository::class, 'countCollected', 200],
     [\App\Repositories\Chinois\ChinoisVocabulaireStatsRepository::class, 'countMastered', 200],
-    [\App\Repositories\Chinois\ChinoisGrammaireStatsRepository::class, 'countMastered', 200],
+    [\App\Repositories\Chinois\ChinoisGrammaireStatsRepository::class, 'countMastered', 200]
 ] as [$class, $method, $expected])
 {
     if ($container->get($class)->$method() !== $expected) throw new RuntimeException('Incorrect action counter');

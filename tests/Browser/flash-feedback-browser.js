@@ -6,7 +6,8 @@ export async function runBrowserScenario()
     const {resolvePage} = await import('./js/router/navigation/resolve-page.js');
     const {renderPage} = await import('./js/router/navigation/navigation-render.js');
     const {setPrefetchedPage} = await import('./js/router/prefetch/prefetch-cache.js');
-    const check = (ok, text) => { if (!ok) throw new Error(text); };
+    const check = (ok, text) =>
+    { if (!ok) throw new Error(text); };
     const original = window.fetch;
     let requests = 0;
     try
@@ -15,7 +16,8 @@ export async function runBrowserScenario()
         container.dataset.baseUri = base;
         container.dataset.flashcardTotal = '500';
         container.dataset.flashcards = JSON.stringify([{id: 1}]);
-        window.fetch = async () => {
+        window.fetch = async () =>
+        {
             requests++;
             return new Response(JSON.stringify({success: true, data: {cards: [{id: 1}], total: 1, offset: 0}}), {headers: {'Content-Type': 'application/json'}});
         };
@@ -24,7 +26,8 @@ export async function runBrowserScenario()
         check(requests === 1 && deck.total === 1 && deck.card.id === 1, 'Empty batch caused repeated requests for removed cards');
         requests = 0;
         const partial = createFlashcardDeck(container, 'grammaire');
-        window.fetch = async () => {
+        window.fetch = async () =>
+        {
             requests++;
             return new Response(JSON.stringify({success: true, data: {cards: [{id: 400}, {id: 401}], total: 2, offset: 0}}), {headers: {'Content-Type': 'application/json'}});
         };
@@ -40,7 +43,8 @@ export async function runBrowserScenario()
         const page = {html: '<p>Feedback</p>', format: 'fragment', title: 'Feedback', stylesheets: [], bodyData: {}};
         setPrefetchedPage(base + 'manga', {type: 'page', page: {...page, requiresFreshNavigation: true}});
         requests = 0;
-        window.fetch = async () => {
+        window.fetch = async () =>
+        {
             requests++;
             return new Response(JSON.stringify({type: 'page', page: {...page, flashToast: {message: 'Saved once', type: 'success'}}}), {headers: {'Content-Type': 'application/json'}});
         };
@@ -53,5 +57,6 @@ export async function runBrowserScenario()
         check(toast.textContent === 'unchanged', 'Cached navigation replayed feedback');
         return ['Shrinking decks reconcile in one request', 'Sparse batches refresh the current total', 'Pending feedback bypasses prefetch', 'SPA feedback displays once'];
     }
-    finally { window.fetch = original; }
+    finally
+    { window.fetch = original; }
 }

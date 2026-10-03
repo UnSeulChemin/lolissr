@@ -2,8 +2,6 @@
 // APPLICATION
 // =================================================
 
-import {
-    bootApp,
-} from './boot/app-boot.js';
+import { bootApp } from './boot/app-boot.js';
 
 bootApp();

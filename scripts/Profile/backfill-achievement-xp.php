@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Repositories\Auth\UserRepository;
 use App\Services\Profile\AchievementXpService;
 use App\Services\Profile\ProfileStatsService;
+
 use Framework\Application\Bootstrap;
 use Framework\Container\Container;
 use Framework\Database\Database;

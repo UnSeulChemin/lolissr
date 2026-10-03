@@ -14,10 +14,7 @@ final class MangaCollectionRepository extends AbstractRepository
 
     protected string $table = 'manga';
 
-    private const ALLOWED_ORDER_BY = [
-        'id DESC',
-        'id ASC',
-    ];
+    private const ALLOWED_ORDER_BY = ['id DESC', 'id ASC'];
 
     public function countFirstTomes(): int
     {

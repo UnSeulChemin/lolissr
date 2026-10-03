@@ -2,23 +2,13 @@
 // RENDU DES SECTIONS DE RECHERCHE
 // =================================================
 
-export function appendSectionTitle(
-    container,
-    title,
-)
+export function appendSectionTitle(container, title)
 {
-    const section =
-        document.createElement(
-            'div',
-        );
+    const section = document.createElement('div');
 
-    section.className =
-        'header-search-section-title';
+    section.className = 'header-search-section-title';
 
-    section.textContent =
-        title;
+    section.textContent = title;
 
-    container.appendChild(
-        section,
-    );
+    container.appendChild(section);
 }

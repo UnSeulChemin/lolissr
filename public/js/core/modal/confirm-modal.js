@@ -8,22 +8,16 @@ export function confirmModal(
         message,
         confirmText = 'Confirmer',
         cancelText = 'Annuler',
-        danger = false,
-    },
+        danger = false
+    }
 )
 {
     return new Promise(
-        (
-            resolve,
-        ) =>
+        (resolve) =>
         {
-            const overlay =
-                document.createElement(
-                    'div',
-                );
+            const overlay = document.createElement('div');
 
-            overlay.className =
-                'confirm-modal-overlay';
+            overlay.className = 'confirm-modal-overlay';
 
             overlay.innerHTML = `
                 <div class="confirm-modal">
@@ -61,115 +55,65 @@ export function confirmModal(
                 </div>
             `;
 
-            const confirmSelector =
-                danger
+            const confirmSelector = danger
                     ? '.confirm-modal-danger'
                     : '.confirm-modal-primary';
 
-            const close =
-                (
-                    result,
-                ) =>
+            const close = (result) =>
                 {
-                    if (
-                        ! document.body.contains(
-                            overlay,
-                        )
-                    ) {
+                    if (! document.body.contains( overlay ))
+                    {
 
                         return;
                     }
 
-                    document.body.style.overflow =
-                        '';
+                    document.body.style.overflow = '';
 
-                    document.removeEventListener(
-                        'keydown',
-                        handleEscape,
-                    );
+                    document.removeEventListener('keydown', handleEscape);
 
                     overlay.remove();
 
-                    resolve(
-                        result,
-                    );
+                    resolve(result);
                 };
 
-            const handleEscape =
-                (
-                    event,
-                ) =>
+            const handleEscape = (event) =>
                 {
-                    if (
-                        event.key
-                        === 'Escape'
-                    ) {
+                    if (event.key === 'Escape')
+                    {
 
-                        close(
-                            false,
-                        );
+                        close(false);
                     }
                 };
 
-            document.body.append(
-                overlay,
-            );
+            document.body.append(overlay);
 
-            document.body.style.overflow =
-                'hidden';
+            document.body.style.overflow = 'hidden';
 
-            document.addEventListener(
-                'keydown',
-                handleEscape,
-            );
+            document.addEventListener('keydown', handleEscape);
 
             overlay
-                .querySelector(
-                    confirmSelector,
-                )
+                .querySelector(confirmSelector)
                 ?.focus();
 
             overlay
-                .querySelector(
-                    '.confirm-modal-secondary',
-                )
-                ?.addEventListener(
-                    'click',
-                    () =>
-                        close(
-                            false,
-                        ),
-                );
+                .querySelector('.confirm-modal-secondary')
+                ?.addEventListener('click', () => close( false ));
 
             overlay
-                .querySelector(
-                    confirmSelector,
-                )
-                ?.addEventListener(
-                    'click',
-                    () =>
-                        close(
-                            true,
-                        ),
-                );
+                .querySelector(confirmSelector)
+                ?.addEventListener('click', () => close( true ));
 
             overlay.addEventListener(
                 'click',
-                (
-                    event,
-                ) =>
+                (event) =>
                 {
-                    if (
-                        event.target
-                        === overlay
-                    ) {
+                    if (event.target === overlay)
+                    {
 
-                        close(
-                            false,
-                        );
+                        close(false);
                     }
-                },
+                }
             );
-        },
+        }
     );
 }

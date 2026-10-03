@@ -2,18 +2,13 @@
 // SUPPRESSION FENÊTRE MODALE
 // =================================================
 
-import {
-    confirmModal,
-} from './confirm-modal.js';
+import { confirmModal } from './confirm-modal.js';
 
 // =================================================
 // SUPPRESSION
 // =================================================
 
-export function deleteModal(
-    message,
-    title = 'Suppression',
-)
+export function deleteModal(message, title = 'Suppression')
 {
     return confirmModal(
         {
@@ -21,11 +16,9 @@ export function deleteModal(
 
             message,
 
-            confirmText:
-                'Supprimer',
+            confirmText: 'Supprimer',
 
-            danger:
-                true,
-        },
+            danger: true
+        }
     );
 }

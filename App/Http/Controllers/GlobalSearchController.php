@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\DTO\Common\ServiceResult;
+use App\Services\Artbook\ArtbookReadService;
 use App\Services\Chinois\ChinoisReadService;
 use App\Services\Figurine\FigurineReadService;
-use App\Services\Artbook\ArtbookReadService;
 use App\Services\Manga\MangaReadService;
 use App\Services\Nendoroid\NendoroidReadService;
 use App\Services\Peluche\PelucheReadService;
+
 use Framework\Http\Request;
 
 final class GlobalSearchController extends Controller
@@ -22,8 +23,9 @@ final class GlobalSearchController extends Controller
         private readonly FigurineReadService $figurines,
         private readonly NendoroidReadService $nendoroids,
         private readonly PelucheReadService $peluches,
-        Request $request,
-    ) {
+        Request $request
+    )
+    {
         parent::__construct($request);
     }
 
@@ -36,7 +38,7 @@ final class GlobalSearchController extends Controller
             'chinois' => $this->chinois->search($query)->results,
             'figurines' => $this->figurines->search($query)->results,
             'nendoroids' => $this->nendoroids->search($query)->results,
-            'peluches' => $this->peluches->search($query)->results,
+            'peluches' => $this->peluches->search($query)->results
         ]));
     }
 }

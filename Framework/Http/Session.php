@@ -134,9 +134,7 @@ final class Session
 
         if (! session_regenerate_id(true))
         {
-            throw new RuntimeException(
-                'Impossible de régénérer l’identifiant de session.'
-            );
+            throw new RuntimeException('Impossible de régénérer l’identifiant de session.');
         }
         self::releaseIfNeeded();
     }
@@ -171,13 +169,9 @@ final class Session
             );
         }
 
-        if (
-            session_status() === PHP_SESSION_ACTIVE
-            && ! session_destroy()
-        ) {
-            throw new RuntimeException(
-                'Impossible de détruire la session.'
-            );
+        if (session_status() === PHP_SESSION_ACTIVE && ! session_destroy())
+        {
+            throw new RuntimeException('Impossible de détruire la session.');
         }
 
         $_SESSION = [];
@@ -205,9 +199,7 @@ final class Session
 
         if (session_status() === PHP_SESSION_DISABLED)
         {
-            throw new RuntimeException(
-                'Les sessions PHP sont désactivées.'
-            );
+            throw new RuntimeException('Les sessions PHP sont désactivées.');
         }
 
         if (headers_sent($file, $line))
@@ -223,7 +215,7 @@ final class Session
             'https' => $_SERVER['HTTPS'] ?? null,
             'port' => $_SERVER['SERVER_PORT'] ?? null,
             'forwarded' => $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? null,
-            'trust_proxy' => config('app.trust_proxy', false),
+            'trust_proxy' => config('app.trust_proxy', false)
         ];
         if (self::$configuration !== $configuration
             || session_save_path() !== $configuration['directory']
@@ -245,25 +237,19 @@ final class Session
 
         if (! self::ensureDirectory($directory))
         {
-            throw new RuntimeException(
-                'Impossible de créer le dossier de session.'
-            );
+            throw new RuntimeException('Impossible de créer le dossier de session.');
         }
 
         if (session_save_path($directory) === false)
         {
-            throw new RuntimeException(
-                'Impossible de configurer le dossier de session.'
-            );
+            throw new RuntimeException('Impossible de configurer le dossier de session.');
         }
 
         $sessionName = self::sessionName();
 
         if (session_name($sessionName) === false)
         {
-            throw new RuntimeException(
-                'Impossible de configurer le nom de session.'
-            );
+            throw new RuntimeException('Impossible de configurer le nom de session.');
         }
 
         $secure = Request::capture()->isHttps();
@@ -288,7 +274,7 @@ final class Session
             'use_trans_sid' => false,
             'cookie_httponly' => true,
             'cookie_secure' => $secure,
-            'cookie_samesite' => 'Lax',
+            'cookie_samesite' => 'Lax'
         ];
     }
 
@@ -298,14 +284,10 @@ final class Session
 
     private static function sessionName(): string
     {
-        $sessionName = trim(
-            (string) config('session.name', self::DEFAULT_SESSION_NAME)
-        );
+        $sessionName = trim((string) config('session.name', self::DEFAULT_SESSION_NAME));
 
-        if (
-            $sessionName === ''
-            || preg_match('/^[a-zA-Z0-9_-]+$/', $sessionName) !== 1
-        ) {
+        if ($sessionName === '' || preg_match('/^[a-zA-Z0-9_-]+$/', $sessionName) !== 1)
+        {
             throw new RuntimeException(
                 "Nom de session invalide : {$sessionName}"
             );

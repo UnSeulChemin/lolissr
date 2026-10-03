@@ -32,23 +32,23 @@ final readonly class ChinoisReadService
         'HSK1' => [
             'description' => 'Structures courantes, phrases du quotidien et grammaire HSK1.',
             'sourceUrl' => 'https://chine.in/mandarin/grammaire/RGLA1',
-            'sourceDescription' => 'Références, structures et exemples de grammaire chinoise pour débutants.',
+            'sourceDescription' => 'Références, structures et exemples de grammaire chinoise pour débutants.'
         ],
         'HSK2' => [
             'description' => 'Structures courantes, phrases du quotidien et grammaire HSK2.',
             'sourceUrl' => 'https://chine.in/mandarin/grammaire/RGLA2',
-            'sourceDescription' => 'Références, structures et exemples de grammaire chinoise pour débutants intermédiaires.',
+            'sourceDescription' => 'Références, structures et exemples de grammaire chinoise pour débutants intermédiaires.'
         ],
         'HSK3' => [
             'description' => 'Structures intermédiaires, phrases naturelles et grammaire HSK3.',
             'sourceUrl' => 'https://chine.in/mandarin/grammaire/RGLB1',
-            'sourceDescription' => 'Références, structures et exemples de grammaire chinoise intermédiaire.',
+            'sourceDescription' => 'Références, structures et exemples de grammaire chinoise intermédiaire.'
         ],
         'HSK4' => [
             'description' => 'Structures avancées, nuances et grammaire HSK4.',
             'sourceUrl' => 'https://chine.in/mandarin/grammaire/RGLB2',
-            'sourceDescription' => 'Références, structures et exemples de grammaire chinoise avancée.',
-        ],
+            'sourceDescription' => 'Références, structures et exemples de grammaire chinoise avancée.'
+        ]
     ];
 
     private const LANGUES = ['mandarin', 'jinyu'];
@@ -58,7 +58,8 @@ final readonly class ChinoisReadService
         private ChinoisVocabulaireCollectionRepository $collectionRepository,
         private ChinoisGrammaireRepository $grammaireRepository,
         private ChinoisSearchRepository $searchRepository
-    ) {
+    )
+    {
     }
 
     // =================================================
@@ -95,16 +96,13 @@ final readonly class ChinoisReadService
             sourceUrl: $config['sourceUrl'],
             sourceDescription: $config['sourceDescription'],
             sections: $sections,
-            menu: $menu,
+            menu: $menu
         );
     }
 
     public function grammaire(string $niveau, int $id): ?ChinoisGrammaireData
     {
-        return $this->grammaireRepository->findByNiveauAndId(
-            mb_strtoupper(trim($niveau)),
-            $id
-        );
+        return $this->grammaireRepository->findByNiveauAndId(mb_strtoupper(trim($niveau)), $id);
     }
 
     // =================================================
@@ -144,11 +142,7 @@ final readonly class ChinoisReadService
         }
 
         return new ChinoisVocabulairePageData(
-            vocabulaires: $this->collectionRepository->findByLanguePaginated(
-                $langue,
-                $perPage,
-                $page
-            ),
+            vocabulaires: $this->collectionRepository->findByLanguePaginated($langue, $perPage, $page),
             currentPage: $page,
             totalVocabulaires: $totalVocabulaires,
             perPage: $perPage,
@@ -158,10 +152,7 @@ final readonly class ChinoisReadService
 
     public function vocabulaire(string $langue, int $id): ?ChinoisVocabulaireData
     {
-        return $this->vocabulaireRepository->findByLangueAndId(
-            mb_strtolower(trim($langue)),
-            $id
-        );
+        return $this->vocabulaireRepository->findByLangueAndId(mb_strtolower(trim($langue)), $id);
     }
 
     // =================================================
@@ -206,10 +197,7 @@ final readonly class ChinoisReadService
     {
         $query = trim($query);
 
-        return new ChinoisSearchData(
-            results: $this->searchRepository->search($query),
-            search: $query
-        );
+        return new ChinoisSearchData(results: $this->searchRepository->search($query), search: $query);
     }
 
     // =================================================
@@ -272,11 +260,7 @@ final readonly class ChinoisReadService
             }
             $usedIds[$id] = true;
 
-            $results[] = new ChinoisSectionData(
-                title: $section,
-                id: $id,
-                categories: []
-            );
+            $results[] = new ChinoisSectionData(title: $section, id: $id, categories: []);
         }
 
         return $results;
@@ -292,10 +276,7 @@ final readonly class ChinoisReadService
 
         foreach ($categories as $categorie => $grammaires)
         {
-            $results[] = new ChinoisCategorieData(
-                title: (string) $categorie,
-                grammaires: $grammaires
-            );
+            $results[] = new ChinoisCategorieData(title: (string) $categorie, grammaires: $grammaires);
         }
 
         return $results;

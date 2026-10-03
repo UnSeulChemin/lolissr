@@ -28,19 +28,13 @@ final readonly class ImageUploadValidator
     /**
      * @param array<string, mixed> $files
      */
-    public function validate(
-        array $files,
-        string $fileKey = 'image'
-    ): ServiceResult|ValidatedImageUploadData {
+    public function validate(array $files, string $fileKey = 'image'): ServiceResult|ValidatedImageUploadData
+    {
         $file = $this->uploadedFile($files, $fileKey);
 
         if ($file === null)
         {
-            return $this->failure(
-                'Upload: fichier introuvable.',
-                'Fichier image introuvable',
-                422
-            );
+            return $this->failure('Upload: fichier introuvable.', 'Fichier image introuvable', 422);
         }
 
         $uploadError = $this->uploadError($file);
@@ -73,31 +67,19 @@ final readonly class ImageUploadValidator
 
         if ($extension === null)
         {
-            return $this->failure(
-                'Upload: extension introuvable.',
-                'Extension image introuvable',
-                422
-            );
+            return $this->failure('Upload: extension introuvable.', 'Extension image introuvable', 422);
         }
 
         if (! in_array($extension, $allowedExtensions, true))
         {
-            return $this->failure(
-                'Upload: extension non autorisée : ' . $extension,
-                'Format image non autorisé',
-                422
-            );
+            return $this->failure('Upload: extension non autorisée : ' . $extension, 'Format image non autorisé', 422);
         }
 
         $temporaryPath = $this->temporaryPath($file);
 
         if ($temporaryPath === null || ! is_uploaded_file($temporaryPath))
         {
-            return $this->failure(
-                'Upload: fichier temporaire invalide.',
-                'Fichier temporaire introuvable',
-                422
-            );
+            return $this->failure('Upload: fichier temporaire invalide.', 'Fichier temporaire introuvable', 422);
         }
 
         $realSize = @filesize($temporaryPath);
@@ -127,11 +109,7 @@ final readonly class ImageUploadValidator
 
         if ($imageInfo === null)
         {
-            return $this->failure(
-                'Upload: image impossible à décoder.',
-                'Fichier image invalide',
-                422
-            );
+            return $this->failure('Upload: image impossible à décoder.', 'Fichier image invalide', 422);
         }
 
         if (! $this->hasValidImageDimensions($imageInfo['width'], $imageInfo['height']))
@@ -147,10 +125,8 @@ final readonly class ImageUploadValidator
             );
         }
 
-        if (
-            $imageInfo['mime'] !== $mimeType
-            || ! in_array($imageInfo['mime'], $allowedMimeTypes, true)
-        ) {
+        if ($imageInfo['mime'] !== $mimeType || ! in_array($imageInfo['mime'], $allowedMimeTypes, true))
+        {
             return $this->failure(
                 "Upload: incohérence MIME. finfo={$mimeType} image={$imageInfo['mime']}",
                 'Type réel de l’image invalide',
@@ -177,10 +153,7 @@ final readonly class ImageUploadValidator
             );
         }
 
-        return new ValidatedImageUploadData(
-            temporaryPath: $temporaryPath,
-            extension: $extension
-        );
+        return new ValidatedImageUploadData(temporaryPath: $temporaryPath, extension: $extension);
     }
 
     // =================================================
@@ -305,21 +278,13 @@ final readonly class ImageUploadValidator
             return null;
         }
 
-        return [
-            'width' => $imageInfo[0],
-            'height' => $imageInfo[1],
-            'mime' => $mimeType
-        ];
+        return ['width' => $imageInfo[0], 'height' => $imageInfo[1], 'mime' => $mimeType];
     }
 
     private function hasValidImageDimensions(int $width, int $height): bool
     {
-        if (
-            $width <= 0
-            || $height <= 0
-            || $width > UploadConfig::maxWidth()
-            || $height > UploadConfig::maxHeight()
-        ) {
+        if ($width <= 0 || $height <= 0 || $width > UploadConfig::maxWidth() || $height > UploadConfig::maxHeight())
+        {
             return false;
         }
 
@@ -330,16 +295,10 @@ final readonly class ImageUploadValidator
     // RÉSULTAT
     // =================================================
 
-    private function failure(
-        string $logMessage,
-        string $message,
-        int $status
-    ): ServiceResult {
+    private function failure(string $logMessage, string $message, int $status): ServiceResult
+    {
         Logger::error($logMessage);
 
-        return ServiceResult::error(
-            message: $message,
-            status: $status
-        );
+        return ServiceResult::error(message: $message, status: $status);
     }
 }

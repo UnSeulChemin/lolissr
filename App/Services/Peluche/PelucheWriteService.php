@@ -6,16 +6,15 @@ namespace App\Services\Peluche;
 
 use App\Constants\UserXp;
 use App\DTO\Common\ServiceResult;
+use App\DTO\Media\UploadThumbnailData;
 use App\DTO\Peluche\Inputs\PelucheCreateData;
 use App\DTO\Peluche\Inputs\PelucheUpdateData;
-use App\DTO\Media\UploadThumbnailData;
 use App\Repositories\Peluche\PelucheRepository;
-use App\Services\Media\ThumbnailManager;
 use App\Services\Collections\CollectionCreationService;
+use App\Services\Media\ThumbnailManager;
 
 use Framework\Database\Database;
 use Framework\Logging\Logger;
-
 
 final readonly class PelucheWriteService
 {
@@ -27,7 +26,8 @@ final readonly class PelucheWriteService
         private Database $database,
         private PelucheXpRewardService $pelucheXpRewardService,
         private CollectionCreationService $creationService
-    ) {
+    )
+    {
     }
 
     // =================================================
@@ -60,7 +60,7 @@ final readonly class PelucheWriteService
                     'waifu' => $dto->waifu,
                     'company' => $dto->company,
                     'release_date' => $dto->release_date,
-                    'commentaire' => $dto->commentaire,
+                    'commentaire' => $dto->commentaire
                 ]);
 
                 $failure = $this->writeFailed(
@@ -73,7 +73,6 @@ final readonly class PelucheWriteService
 
                 if ($failure !== null)
                 {
-
                     return $failure;
                 }
 
@@ -137,11 +136,7 @@ final readonly class PelucheWriteService
                     return $this->error('Peluche introuvable', 404);
                 }
 
-                $updated = $this->pelucheRepository->updateCollectStatus(
-                    $slug,
-                    $numero,
-                    $collectStatus === 1
-                );
+                $updated = $this->pelucheRepository->updateCollectStatus($slug, $numero, $collectStatus === 1);
 
                 $failure = $this->writeFailed(
                     $updated,
@@ -174,7 +169,7 @@ final readonly class PelucheWriteService
                         'xpEarned' => $xpEarned,
                         'xpAmount' => $xpEarned ? UserXp::COLLECT_PELUCHE : 0,
                         'level' => $user?->level,
-                        'xp' => $user?->xp,
+                        'xp' => $user?->xp
                     ]
                 );
             }

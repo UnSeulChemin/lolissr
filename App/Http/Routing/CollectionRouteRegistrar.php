@@ -50,16 +50,9 @@ final class CollectionRouteRegistrar
                 // MODIFICATION
                 // =================================================
 
-                $router->get(
-                    '{slug}/modifier/{numero:int}',
-                    [$controller, 'edit']
-                );
+                $router->get('{slug}/modifier/{numero:int}', [$controller, 'edit']);
 
-                $router->post(
-                    '{slug}/modifier/{numero:int}',
-                    [$controller, 'update'],
-                    [CsrfMiddleware::class]
-                );
+                $router->post('{slug}/modifier/{numero:int}', [$controller, 'update'], [CsrfMiddleware::class]);
 
                 // =================================================
                 // SUPPRESSION
@@ -75,10 +68,7 @@ final class CollectionRouteRegistrar
                 // CONSULTATION
                 // =================================================
 
-                $router->get(
-                    '{slug}/{numero:int}',
-                    [$controller, 'showWaifu']
-                );
+                $router->get('{slug}/{numero:int}', [$controller, 'showWaifu']);
             });
 
             // =================================================
@@ -87,11 +77,7 @@ final class CollectionRouteRegistrar
 
             $router->get('ajouter', [$controller, 'create']);
 
-            $router->post(
-                'ajouter',
-                [$controller, 'store'],
-                [CsrfMiddleware::class]
-            );
+            $router->post('ajouter', [$controller, 'store'], [CsrfMiddleware::class]);
 
             // =================================================
             // AJAX
@@ -103,10 +89,7 @@ final class CollectionRouteRegistrar
                 // HTML
                 // =================================================
 
-                $router->get(
-                    $collectionPath . '/page/{page:int}',
-                    [$ajaxController, 'waifusPage']
-                );
+                $router->get($collectionPath . '/page/{page:int}', [$ajaxController, 'waifusPage']);
 
                 // =================================================
                 // JSON
@@ -116,10 +99,7 @@ final class CollectionRouteRegistrar
                     ->middleware(ExpectJsonMiddleware::class)
                     ->group(function (Router $router) use ($ajaxController): void
                     {
-                        $router->get(
-                            'recherche/{query}',
-                            [$ajaxController, 'search']
-                        );
+                        $router->get('recherche/{query}', [$ajaxController, 'search']);
 
                         $router
                             ->middleware(CsrfMiddleware::class)

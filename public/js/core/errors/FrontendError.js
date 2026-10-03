@@ -4,46 +4,32 @@
 
 export class FrontendError extends Error
 {
-    constructor(
-        message,
-        options = {},
-    )
+    constructor(message, options = {})
     {
         super(message);
 
-        this.name =
-            'FrontendError';
+        this.name = 'FrontendError';
 
-        this.code =
-            options.code
+        this.code = options.code
             || 'FRONTEND_ERROR';
 
-        this.status =
-            options.status
+        this.status = options.status
             || 500;
 
-        this.silent =
-            options.silent
+        this.silent = options.silent
             || false;
 
-        this.details =
-            options.details
+        this.details = options.details
             || null;
 
         // --------------------------------------------------------------------------
         // CORRECTION DE LA TRACE D’APPEL
         // --------------------------------------------------------------------------
 
+        if (typeof Error.captureStackTrace === 'function')
+        {
 
-        if (
-            typeof Error.captureStackTrace
-            === 'function'
-        ) {
-
-            Error.captureStackTrace(
-                this,
-                FrontendError,
-            );
+            Error.captureStackTrace(this, FrontendError);
         }
     }
 }

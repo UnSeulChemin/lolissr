@@ -6,13 +6,8 @@ namespace App\DTO\Artbook\Responses;
 
 final readonly class ArtbookStatsData
 {
-    public function __construct(
-        public string $artbook,
-
-        public string $thumbnailUrl,
-
-        public string $authorLabel,
-    ) {
+    public function __construct(public string $artbook, public string $thumbnailUrl, public string $authorLabel)
+    {
     }
 
     /**
@@ -24,11 +19,7 @@ final readonly class ArtbookStatsData
      */
     public function toArray(): array
     {
-        return [
-            'artbook' => $this->artbook,
-            'thumbnailUrl' => $this->thumbnailUrl,
-            'authorLabel' => $this->authorLabel,
-        ];
+        return ['artbook' => $this->artbook, 'thumbnailUrl' => $this->thumbnailUrl, 'authorLabel' => $this->authorLabel];
     }
 
     /**
@@ -39,7 +30,7 @@ final readonly class ArtbookStatsData
         return new self(
             artbook: (string) $data['artbook'],
             thumbnailUrl: (string) $data['thumbnailUrl'],
-            authorLabel: (string) $data['authorLabel'],
+            authorLabel: (string) $data['authorLabel']
         );
     }
 }

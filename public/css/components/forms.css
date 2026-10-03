@@ -97,8 +97,7 @@
     background-color: var(--color-surface);
     border-color: var(--color-violet-border);
 
-    box-shadow:
-        0 0 0 3px var(--color-violet-ring);
+    box-shadow: 0 0 0 3px var(--color-violet-ring);
 }
 
 .form-select
@@ -127,29 +126,17 @@
 {
     min-height: 52px;
     padding: 12px 16px;
-    background:
-        linear-gradient(
-            180deg,
-            var(--color-violet-soft),
-            var(--color-violet-softest)
-        );
+    background: linear-gradient( 180deg, var(--color-violet-soft), var(--color-violet-softest) );
     border: 1px dashed var(--color-violet-border);
     border-radius: var(--radius-input);
-    transition:
-        border-color var(--transition-fast),
-        background var(--transition-fast);
+    transition: border-color var(--transition-fast), background var(--transition-fast);
 }
 
 .form-upload:hover
 {
     border-color: var(--color-violet-border-strong);
 
-    background:
-        linear-gradient(
-            180deg,
-            var(--color-violet-soft-strong),
-            var(--color-violet-soft-light)
-        );
+    background: linear-gradient( 180deg, var(--color-violet-soft-strong), var(--color-violet-soft-light) );
 }
 
 .form-upload-text
@@ -188,9 +175,7 @@
     background: var(--gradient-violet);
     border: none;
     border-radius: var(--radius-input);
-    transition:
-        transform var(--transition-fast),
-        filter var(--transition-fast);
+    transition: transform var(--transition-fast), filter var(--transition-fast);
     appearance: none;
     -webkit-appearance: none;
 }
@@ -265,13 +250,10 @@
 
 .transition-form
 {
-    transition:
-        box-shadow 160ms ease;
+    transition: box-shadow 160ms ease;
 }
 
 .transition-form:hover
 {
-    box-shadow:
-        0 10px 30px rgba(123, 44, 255, 0.18),
-        0 0 20px rgba(123, 44, 255, 0.12);
+    box-shadow: 0 10px 30px rgba(123, 44, 255, 0.18), 0 0 20px rgba(123, 44, 255, 0.12);
 }

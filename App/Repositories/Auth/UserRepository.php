@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Repositories\Auth;
 
 use App\Constants\UserTitle;
-use App\Repositories\AbstractRepository;
 use App\Models\User;
+use App\Repositories\AbstractRepository;
 
 final class UserRepository extends AbstractRepository
 {
@@ -80,7 +80,7 @@ final class UserRepository extends AbstractRepository
             'password' => $password,
             'title' => UserTitle::EXPLORATEUR,
             'level' => 1,
-            'xp' => 0,
+            'xp' => 0
         ]);
     }
 
@@ -90,10 +90,7 @@ final class UserRepository extends AbstractRepository
 
     public function updatePasswordHash(int $userId, string $passwordHash): bool
     {
-        return $this->update(
-            ['password' => $passwordHash],
-            ['id' => $userId]
-        );
+        return $this->update(['password' => $passwordHash], ['id' => $userId]);
     }
 
     // =================================================
@@ -102,53 +99,26 @@ final class UserRepository extends AbstractRepository
 
     public function updateLevelAndXp(int $userId, int $level, int $xp): bool
     {
-        return $this->update(
-            [
-                'level' => $level,
-                'xp' => $xp,
-            ],
-            ['id' => $userId]
-        );
+        return $this->update(['level' => $level, 'xp' => $xp], ['id' => $userId]);
     }
 
     public function updateTitle(int $userId, string $title): bool
     {
-        return $this->update(
-            ['title' => $title],
-            ['id' => $userId]
-        );
+        return $this->update(['title' => $title], ['id' => $userId]);
     }
 
     public function updateAvatar(int $userId, string $avatar, string $avatarExtension): bool
     {
-        return $this->update(
-            [
-                'avatar' => $avatar,
-                'avatar_extension' => $avatarExtension,
-            ],
-            ['id' => $userId]
-        );
+        return $this->update(['avatar' => $avatar, 'avatar_extension' => $avatarExtension], ['id' => $userId]);
     }
 
     public function updateBanner(int $userId, string $banner, string $bannerExtension): bool
     {
-        return $this->update(
-            [
-                'banner' => $banner,
-                'banner_extension' => $bannerExtension,
-            ],
-            ['id' => $userId]
-        );
+        return $this->update(['banner' => $banner, 'banner_extension' => $bannerExtension], ['id' => $userId]);
     }
 
     public function updateFrame(int $userId, string $frame, string $frameExtension): bool
     {
-        return $this->update(
-            [
-                'frame' => $frame,
-                'frame_extension' => $frameExtension,
-            ],
-            ['id' => $userId]
-        );
+        return $this->update(['frame' => $frame, 'frame_extension' => $frameExtension], ['id' => $userId]);
     }
 }

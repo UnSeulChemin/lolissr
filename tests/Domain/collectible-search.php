@@ -10,7 +10,8 @@ $db = (new ReflectionClass(Database::class))->newInstanceWithoutConstructor();
 (new ReflectionMethod(PDO::class, '__construct'))->invoke($db, 'sqlite::memory:');
 $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
-$check = static function (bool $condition, string $message): void {
+$check = static function (bool $condition, string $message): void
+{
     if (!$condition) throw new RuntimeException($message);
 };
 foreach (['Figurine', 'Nendoroid', 'Peluche'] as $kind)

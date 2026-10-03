@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace App\Services\Profile;
 
 use App\Constants\UserXp;
-use App\Models\User;
 use App\DTO\Profile\Responses\ProfileStatsData;
-
+use App\Models\User;
 use App\Repositories\Profile\ProfileStatsRepository;
 
 final readonly class ProfileStatsService
@@ -73,7 +72,7 @@ final readonly class ProfileStatsService
                 + $vocabularyXp
                 + $grammarXp
                 + $achievementXp,
-            achievementXp: $achievementXp,
+            achievementXp: $achievementXp
         );
     }
 }

@@ -90,11 +90,7 @@ if (! function_exists('e'))
 {
     function e(mixed $value): string
     {
-        return htmlspecialchars(
-            (string) $value,
-            ENT_QUOTES | ENT_SUBSTITUTE,
-            'UTF-8'
-        );
+        return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
 }
 
@@ -106,7 +102,8 @@ if (! function_exists('csrf_token'))
 {
     function csrf_token(): string
     {
-        return Session::withLock(static function (): string {
+        return Session::withLock(static function (): string
+        {
             $token = Session::get('csrf_token');
 
             if (! is_string($token) || $token === '')
@@ -125,10 +122,7 @@ if (! function_exists('csrf_field'))
 {
     function csrf_field(): string
     {
-        return sprintf(
-            '<input type="hidden" name="csrf_token" value="%s">',
-            e(csrf_token())
-        );
+        return sprintf('<input type="hidden" name="csrf_token" value="%s">', e(csrf_token()));
     }
 }
 
@@ -136,10 +130,7 @@ if (! function_exists('csrf_meta_tag'))
 {
     function csrf_meta_tag(): string
     {
-        return sprintf(
-            '<meta name="csrf-token" content="%s">',
-            e(csrf_token())
-        );
+        return sprintf('<meta name="csrf-token" content="%s">', e(csrf_token()));
     }
 }
 

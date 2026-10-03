@@ -28,10 +28,8 @@ final class Router
      */
     private array $groupMiddlewares = [];
 
-    public function __construct(
-        private RouteCollection $collection,
-        private Container $container
-    ) {
+    public function __construct(private RouteCollection $collection, private Container $container)
+    {
     }
 
     // =================================================
@@ -58,10 +56,7 @@ final class Router
     {
         $clone = clone $this;
 
-        $clone->groupMiddlewares = [
-            ...$clone->groupMiddlewares,
-            ...(array) $middleware
-        ];
+        $clone->groupMiddlewares = [...$clone->groupMiddlewares, ...(array) $middleware];
 
         return $clone;
     }
@@ -79,11 +74,8 @@ final class Router
      * @param array{class-string, string}|string|Closure $action
      * @param list<class-string> $middlewares
      */
-    public function get(
-        string $path,
-        array|string|Closure $action,
-        array $middlewares = []
-    ): void {
+    public function get(string $path, array|string|Closure $action, array $middlewares = []): void
+    {
         $this->addRoute('GET', $path, $action, $middlewares);
     }
 
@@ -91,11 +83,8 @@ final class Router
      * @param array{class-string, string}|string|Closure $action
      * @param list<class-string> $middlewares
      */
-    public function post(
-        string $path,
-        array|string|Closure $action,
-        array $middlewares = []
-    ): void {
+    public function post(string $path, array|string|Closure $action, array $middlewares = []): void
+    {
         $this->addRoute('POST', $path, $action, $middlewares);
     }
 
@@ -111,10 +100,7 @@ final class Router
         $uri = $request->path();
         $method = $request->method();
 
-        $match = Profiler::measure(
-            'route.match',
-            fn (): ?array => $this->matchRoute($method, $uri)
-        );
+        $match = Profiler::measure('route.match', fn (): ?array => $this->matchRoute($method, $uri));
 
         if ($match === null)
         {
@@ -149,30 +135,15 @@ final class Router
      * @param array{class-string, string}|string|Closure $action
      * @param list<class-string> $middlewares
      */
-    private function addRoute(
-        string $method,
-        string $path,
-        array|string|Closure $action,
-        array $middlewares
-    ): void {
+    private function addRoute(string $method, string $path, array|string|Closure $action, array $middlewares): void
+    {
         $segments = array_filter(
-            [
-                ...$this->groupPrefixes,
-                trim($path, '/')
-            ],
+            [...$this->groupPrefixes, trim($path, '/')],
             static fn (string $segment): bool => $segment !== ''
         );
 
         $this->collection->add(
-            new Route(
-                $method,
-                '/' . implode('/', $segments),
-                $action,
-                [
-                    ...$this->groupMiddlewares,
-                    ...$middlewares
-                ]
-            )
+            new Route($method, '/' . implode('/', $segments), $action, [...$this->groupMiddlewares, ...$middlewares])
         );
     }
 
@@ -202,10 +173,7 @@ final class Router
                 ARRAY_FILTER_USE_KEY
             );
 
-            return [
-                'route' => $route,
-                'params' => $route->castParameters($namedMatches)
-            ];
+            return ['route' => $route, 'params' => $route->castParameters($namedMatches)];
         }
 
         return null;
@@ -217,11 +185,7 @@ final class Router
 
         if ($allowedMethods !== [])
         {
-            throw new MethodNotAllowedException(
-                headers: [
-                    'Allow' => implode(', ', $allowedMethods)
-                ]
-            );
+            throw new MethodNotAllowedException(headers: ['Allow' => implode(', ', $allowedMethods)]);
         }
 
         throw new NotFoundException("Route non trouvée : {$uri}");
@@ -272,21 +236,13 @@ final class Router
 
         [$controllerClass, $methodName] = $this->resolveAction($action);
 
-        $controller = Profiler::measure(
-            'controller.resolve',
-            fn (): object => $this->container->get($controllerClass)
-        );
+        $controller = Profiler::measure('controller.resolve', fn (): object => $this->container->get($controllerClass));
 
         $reflection = new ReflectionMethod($controller, $methodName);
 
         $arguments = Profiler::measure(
             'controller.arguments',
-            fn (): array => $this->resolveArguments(
-                $controller,
-                $reflection,
-                $params,
-                $request
-            )
+            fn (): array => $this->resolveArguments($controller, $reflection, $params, $request)
         );
 
         Profiler::measure(
@@ -331,12 +287,8 @@ final class Router
      *
      * @return list<mixed>
      */
-    private function resolveArguments(
-        object $controller,
-        ReflectionMethod $reflection,
-        array $params,
-        Request $request
-    ): array {
+    private function resolveArguments(object $controller, ReflectionMethod $reflection, array $params, Request $request): array
+    {
         $arguments = [];
 
         foreach (ParameterPlan::forMethod($reflection) as $parameter)

@@ -3,5 +3,5 @@
 // =================================================
 
 export {
-    navigateTo,
+    navigateTo
 } from './navigation/navigate.js';

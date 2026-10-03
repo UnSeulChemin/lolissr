@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace Framework\Application;
 
 use Framework\Config\ApplicationConfig;
-
 use Framework\Config\Config;
 use Framework\Config\Env;
 use Framework\Config\EnvironmentValidator;
-use Framework\Container\ContainerRegistry;
 use Framework\Container\Container;
+use Framework\Container\ContainerRegistry;
 use Framework\Database\Database;
 use Framework\Debug\Profiler;
 use Framework\Http\ErrorHandler;
@@ -167,11 +166,7 @@ final class Bootstrap
                 $uri = (string) ($_SERVER['REQUEST_URI'] ?? '/');
                 $status = http_response_code();
 
-                Profiler::finishRequest(
-                    method: $method,
-                    uri: $uri,
-                    status: is_int($status) ? $status : 200
-                );
+                Profiler::finishRequest(method: $method, uri: $uri, status: is_int($status) ? $status : 200);
             }
         );
     }

@@ -10,7 +10,8 @@ $database = (new ReflectionClass(Database::class))->newInstanceWithoutConstructo
 (new ReflectionMethod(PDO::class, '__construct'))->invoke($database, 'sqlite::memory:');
 $database->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $database->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
-foreach (['Manga', 'Artbook', 'Figurine', 'Nendoroid', 'Peluche'] as $kind) {
+foreach (['Manga', 'Artbook', 'Figurine', 'Nendoroid', 'Peluche'] as $kind)
+{
     $table = strtolower($kind);
     $domain = $kind;
     $class = "App\\Repositories\\$domain\\{$kind}Repository";

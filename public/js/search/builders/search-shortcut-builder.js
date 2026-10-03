@@ -2,33 +2,21 @@
 // CONSTRUCTION DES RACCOURCIS DE RECHERCHE
 // =================================================
 
-import {
-    escapeHtml,
-} from '../utils/search-utils.js';
+import { escapeHtml } from '../utils/search-utils.js';
 
-import {
-    createResultItem,
-} from './search-result-item.js';
+import { createResultItem } from './search-result-item.js';
 
-export function buildShortcutSearchResult(
-    shortcut,
-    basePath,
-)
+export function buildShortcutSearchResult(shortcut, basePath)
 {
-    const title =
-        shortcut.title ?? '';
+    const title = shortcut.title ?? '';
 
-    const description =
-        shortcut.description ?? '';
+    const description = shortcut.description ?? '';
 
-    const symbol =
-        shortcut.symbol ?? '→';
+    const symbol = shortcut.symbol ?? '→';
 
-    const url =
-        shortcut.url ?? '';
+    const url = shortcut.url ?? '';
 
-    const shortcutUrl =
-        `${basePath}${url}`;
+    const shortcutUrl = `${basePath}${url}`;
 
     return createResultItem(
         shortcutUrl,
@@ -58,6 +46,6 @@ export function buildShortcutSearchResult(
                 </small>
 
             </span>
-        `,
+        `
     );
 }

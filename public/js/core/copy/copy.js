@@ -2,42 +2,32 @@
 // COPIE
 // =================================================
 
-import {
-    showToast,
-} from '../toast.js';
+import { showToast } from '../toast.js';
 
 // =================================================
 // COPIE DU TEXTE
 // =================================================
 
-export async function copyText(
-    text,
-)
+export async function copyText(text)
 {
-    if (!text) {
+    if (!text)
+    {
 
         return false;
     }
 
-    try {
+    try
+    {
 
-        await navigator.clipboard.writeText(
-            text,
-        );
+        await navigator.clipboard.writeText(text);
 
-        showToast(
-            'Copié !',
-            'success',
-        );
+        showToast('Copié !', 'success');
 
         return true;
 
     } catch {
 
-        showToast(
-            'Impossible de copier',
-            'error',
-        );
+        showToast('Impossible de copier', 'error');
 
         return false;
     }

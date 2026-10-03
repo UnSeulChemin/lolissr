@@ -4,17 +4,18 @@ declare(strict_types=1);
 
 require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
 
-use Framework\Config\Config;
 use Framework\Cache\Cache;
+use Framework\Config\Config;
 use Framework\Config\Env;
 use Framework\Http\Request;
+use Framework\Http\Session;
 use Framework\Routing\Route;
 use Framework\Routing\RouteCollection;
 use Framework\Support\DateNormalizer;
-use Framework\Http\Session;
 use Framework\Validation\Validator;
 
-$check = static function (bool $condition, string $message): void {
+$check = static function (bool $condition, string $message): void
+{
     if (! $condition) throw new RuntimeException($message);
 };
 
@@ -128,7 +129,7 @@ foreach ([false, true] as $trustProxy)
         [['SERVER_PORT' => '443'], true],
         [['HTTP_X_FORWARDED_PROTO' => ' HTTPS, http'], $trustProxy],
         [['HTTP_X_FORWARDED_PROTO' => 'http, https'], false],
-        [[], false],
+        [[], false]
     ] as [$server, $expected])
     {
         $check((new Request(server: $server))->isHttps() === $expected, 'HTTPS detection changed.');
@@ -138,10 +139,14 @@ Env::set('TRUST_PROXY', false);
 Config::clear();
 
 $routes = new RouteCollection();
-$dynamic = new Route('GET', '/items/{id}', static function (): void {});
-$static = new Route('GET', '/items/new', static function (): void {});
-$later = new Route('GET', '/{section}/{id}', static function (): void {});
-$post = new Route('POST', '/items/new', static function (): void {});
+$dynamic = new Route('GET', '/items/{id}', static function (): void
+{});
+$static = new Route('GET', '/items/new', static function (): void
+{});
+$later = new Route('GET', '/{section}/{id}', static function (): void
+{});
+$post = new Route('POST', '/items/new', static function (): void
+{});
 foreach ([$dynamic, $post, $static, $later] as $route) $routes->add($route);
 $check($routes->candidates('GET', '/items/new') === [$dynamic, $static], 'Route precedence changed.');
 $check($routes->candidates('GET', '/items/42') === [$dynamic, $later], 'Dynamic routes lost.');
@@ -152,9 +157,11 @@ try
     $routes->add($static);
     throw new LogicException('Duplicate route accepted.');
 }
-catch (RuntimeException) {}
+catch (RuntimeException)
+{}
 
-$integerRoute = new Route('GET', '/items/{id:int}', static function (): void {});
+$integerRoute = new Route('GET', '/items/{id:int}', static function (): void
+{});
 foreach (['0' => 0, '00042' => 42, (string) PHP_INT_MAX => PHP_INT_MAX] as $input => $expected)
 {
     $check($integerRoute->castParameters(['id' => (string) $input])['id'] === $expected, 'Valid integer route changed.');
@@ -166,7 +173,8 @@ foreach ([(string) PHP_INT_MAX . '0', str_repeat('9', strlen((string) PHP_INT_MA
         $integerRoute->castParameters(['id' => $input]);
         throw new LogicException('Overflowing route parameter accepted.');
     }
-    catch (\Framework\Http\Exceptions\NotFoundException) {}
+    catch (\Framework\Http\Exceptions\NotFoundException)
+    {}
 }
 
 $directory = sys_get_temp_dir() . '/framework-test-' . bin2hex(random_bytes(8));
@@ -182,14 +190,16 @@ try
     Env::set('CACHE_ENABLED', true);
     Config::clear();
     $calls = 0;
-    $compute = static function () use (&$calls): mixed { $calls++; return null; };
+    $compute = static function () use (&$calls): mixed
+    { $calls++; return null; };
     Cache::remember('nullable', 60, $compute);
     Cache::remember('nullable', 60, $compute);
     $check($calls === 1, 'Cached null recomputed.');
     Cache::forget('nullable');
     Cache::remember('nullable', 60, $compute);
     $check($calls === 2, 'Invalidation did not refresh cache.');
-    Cache::remember('invalidated-during-compute', 60, static function (): string {
+    Cache::remember('invalidated-during-compute', 60, static function (): string
+    {
         Cache::forget('invalidated-during-compute');
         return 'stale';
     });

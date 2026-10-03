@@ -10,10 +10,8 @@ use Framework\Http\Request;
 
 final class HomeController extends Controller
 {
-    public function __construct(
-        private readonly DashboardCache $dashboardCache,
-        Request $request
-    ) {
+    public function __construct(private readonly DashboardCache $dashboardCache, Request $request)
+    {
         parent::__construct($request);
     }
 
@@ -25,11 +23,6 @@ final class HomeController extends Controller
     {
         $this->title = 'Accueil';
 
-        $this->render(
-            'pages/home/index',
-            [
-                'stats' => $this->dashboardCache->get(),
-            ]
-        );
+        $this->render('pages/home/index', ['stats' => $this->dashboardCache->get()]);
     }
 }

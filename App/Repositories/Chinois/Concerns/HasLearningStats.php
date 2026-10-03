@@ -18,5 +18,4 @@ trait HasLearningStats
             COALESCE(SUM(CASE WHEN maitrise = 0 THEN 1 ELSE 0 END), 0) AS remaining FROM {$this->table()}");
         return ['total' => (int) ($row->total ?? 0), 'remaining' => (int) ($row->remaining ?? 0)];
     }
-
 }

@@ -6,17 +6,16 @@ namespace App\Services\Artbook;
 
 use App\Cache\DashboardCache;
 use App\Constants\UserXp;
-use App\DTO\Common\ServiceResult;
 use App\DTO\Artbook\Inputs\ArtbookCreateData;
 use App\DTO\Artbook\Inputs\ArtbookUpdateData;
+use App\DTO\Common\ServiceResult;
 use App\DTO\Media\UploadThumbnailData;
 use App\Repositories\Artbook\ArtbookRepository;
-use App\Services\Media\ThumbnailManager;
 use App\Services\Collections\CollectionCreationService;
+use App\Services\Media\ThumbnailManager;
 
 use Framework\Database\Database;
 use Framework\Logging\Logger;
-
 
 final readonly class ArtbookWriteService
 {
@@ -29,7 +28,8 @@ final readonly class ArtbookWriteService
         private ArtbookXpRewardService $artbookXpRewardService,
         private CollectionCreationService $creationService,
         private DashboardCache $dashboardCache
-    ) {
+    )
+    {
     }
 
     // --------------------------------------------------------------------------
@@ -63,7 +63,7 @@ final readonly class ArtbookWriteService
                     'serie' => $dto->serie,
                     'company' => $dto->company,
                     'release_date' => $dto->release_date,
-                    'commentaire' => $dto->commentaire,
+                    'commentaire' => $dto->commentaire
                 ]);
 
                 $failure = $this->writeFailed(
@@ -76,7 +76,6 @@ final readonly class ArtbookWriteService
 
                 if ($failure !== null)
                 {
-
                     return $failure;
                 }
 
@@ -143,11 +142,7 @@ final readonly class ArtbookWriteService
         $result = $this->database->transaction(
             function () use ($slug, $numero, $readStatus): ServiceResult
             {
-                $artbook = $this->artbookRepository->updateReadStatus(
-                    $slug,
-                    $numero,
-                    $readStatus === 1
-                );
+                $artbook = $this->artbookRepository->updateReadStatus($slug, $numero, $readStatus === 1);
 
                 $failure = $this->writeFailed(
                     $artbook !== false,
@@ -182,7 +177,7 @@ final readonly class ArtbookWriteService
                         'xpEarned' => $xpEarned,
                         'xpAmount' => $xpEarned ? UserXp::READ_ARTBOOK : 0,
                         'level' => $user?->level,
-                        'xp' => $user?->xp,
+                        'xp' => $user?->xp
                     ]
                 );
             }

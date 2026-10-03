@@ -58,10 +58,7 @@ final class Config
      */
     private static function resolve(string $key): array
     {
-        $segments = array_values(array_filter(
-            explode('.', $key),
-            static fn (string $segment): bool => $segment !== ''
-        ));
+        $segments = array_values(array_filter(explode('.', $key), static fn (string $segment): bool => $segment !== ''));
 
         if ($segments === [])
         {

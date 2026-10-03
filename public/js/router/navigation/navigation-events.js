@@ -9,39 +9,30 @@ import {
     NAVIGATION_FETCH,
     NAVIGATION_READY,
     NAVIGATION_RENDER,
-    NAVIGATION_START,
+    NAVIGATION_START
 } from '../../core/navigation-protocol.js';
 
 // =================================================
 // INTERNE
 // =================================================
 
-function emit(
-    type,
-    payload,
-)
+function emit(type, payload)
 {
-    emitNavigationEvent(
-        type,
-        payload,
-    );
+    emitNavigationEvent(type, payload);
 }
 
 // =================================================
 // DÉMARRAGE
 // =================================================
 
-export function emitNavigationStart(
-    from,
-    to,
-)
+export function emitNavigationStart(from, to)
 {
     emit(
         NAVIGATION_START,
         {
             from,
-            to,
-        },
+            to
+        }
     );
 }
 
@@ -49,17 +40,14 @@ export function emitNavigationStart(
 // CHARGEMENT
 // =================================================
 
-export function emitNavigationFetch(
-    from,
-    to,
-)
+export function emitNavigationFetch(from, to)
 {
     emit(
         NAVIGATION_FETCH,
         {
             from,
-            to,
-        },
+            to
+        }
     );
 }
 
@@ -67,17 +55,14 @@ export function emitNavigationFetch(
 // RENDU
 // =================================================
 
-export function emitNavigationRender(
-    from,
-    to,
-)
+export function emitNavigationRender(from, to)
 {
     emit(
         NAVIGATION_RENDER,
         {
             from,
-            to,
-        },
+            to
+        }
     );
 }
 
@@ -85,17 +70,14 @@ export function emitNavigationRender(
 // PRÊT
 // =================================================
 
-export function emitNavigationReady(
-    from,
-    to,
-)
+export function emitNavigationReady(from, to)
 {
     emit(
         NAVIGATION_READY,
         {
             from,
-            to,
-        },
+            to
+        }
     );
 }
 
@@ -103,19 +85,15 @@ export function emitNavigationReady(
 // ERREUR
 // =================================================
 
-export function emitNavigationError(
-    from,
-    to,
-    error,
-)
+export function emitNavigationError(from, to, error)
 {
     emit(
         NAVIGATION_ERROR,
         {
             from,
             to,
-            error,
-        },
+            error
+        }
     );
 }
 
@@ -123,16 +101,13 @@ export function emitNavigationError(
 // ANNULATION
 // =================================================
 
-export function emitNavigationAbort(
-    from,
-    to,
-)
+export function emitNavigationAbort(from, to)
 {
     emit(
         NAVIGATION_ABORT,
         {
             from,
-            to,
-        },
+            to
+        }
     );
 }

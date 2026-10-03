@@ -2,27 +2,21 @@
 // PANNEAU DE DÉBOGAGE DU ROUTEUR
 // =================================================
 
-import {
-    config,
-} from '../../core/config.js';
+import { config } from '../../core/config.js';
 
-import {
-    debug,
-} from '../../core/debug/debug.js';
+import { debug } from '../../core/debug/debug.js';
 
 // =================================================
 // CONFIGURATION
 // =================================================
 
-const PANEL_ID =
-    'router-debug-panel';
+const PANEL_ID = 'router-debug-panel';
 
 // =================================================
 // ÉTAT
 // =================================================
 
-let initialized =
-    false;
+let initialized = false;
 
 // =================================================
 // UTILITAIRES
@@ -35,16 +29,11 @@ function canDebug()
 
 function createPanel()
 {
-    const panel =
-        document.createElement(
-            'div',
-        );
+    const panel = document.createElement('div');
 
-    panel.id =
-        PANEL_ID;
+    panel.id = PANEL_ID;
 
-    panel.innerHTML =
-    `
+    panel.innerHTML = `
         <div class="router-debug-title">
             DÉBOGAGE SPA
         </div>
@@ -53,64 +42,42 @@ function createPanel()
         </div>
     `;
 
-    document.body.appendChild(
-        panel,
-    );
+    document.body.appendChild(panel);
 
     return panel;
 }
 
 function getPanel()
 {
-    return (
-        document.getElementById(
-            PANEL_ID,
-        )
-        || createPanel()
-    );
+    return (document.getElementById( PANEL_ID ) || createPanel());
 }
 
-function appendLog(
-    message,
-)
+function appendLog(message)
 {
-    if (
-        !canDebug()
-    ) {
+    if (!canDebug())
+    {
 
         return;
     }
 
-    const panel =
-        getPanel();
+    const panel = getPanel();
 
-    const content =
-        panel.querySelector(
-            '.router-debug-content',
-        );
+    const content = panel.querySelector('.router-debug-content');
 
-    if (!content) {
+    if (!content)
+    {
 
         return;
     }
 
-    const line =
-        document.createElement(
-            'div',
-        );
+    const line = document.createElement('div');
 
-    line.textContent =
-        `[${new Date()
+    line.textContent = `[${new Date()
             .toLocaleTimeString()}] ${message}`;
 
-    content.prepend(
-        line,
-    );
+    content.prepend(line);
 
-    while (
-        content.children.length
-        > config.debugPanel.maxLogs
-    )
+    while (content.children.length > config.debugPanel.maxLogs)
     {
         content.lastChild?.remove();
     }
@@ -122,19 +89,16 @@ function appendLog(
 
 export function initRouterDebugPanel()
 {
-    if (
-        initialized
-    ) {
+    if (initialized)
+    {
 
         return;
     }
 
-    initialized =
-        true;
+    initialized = true;
 
-    if (
-        !canDebug()
-    ) {
+    if (!canDebug())
+    {
 
         return;
     }
@@ -145,29 +109,20 @@ export function initRouterDebugPanel()
         'navigation:render',
         'navigation:ready',
         'navigation:error',
-        'navigation:abort',
+        'navigation:abort'
     ]
     .forEach(
-        (
-            eventName,
-        ) =>
+        (eventName) =>
         {
             document.addEventListener(
                 eventName,
-                (
-                    event,
-                ) =>
+                (event) =>
                 {
-                    appendLog(
-                        `${eventName} → ${event.detail?.to || ''}`,
-                    );
-                },
+                    appendLog(`${eventName} → ${event.detail?.to || ''}`);
+                }
             );
-        },
+        }
     );
 
-    debug(
-        'DEBUG_PANEL',
-        'initialized',
-    );
+    debug('DEBUG_PANEL', 'initialized');
 }

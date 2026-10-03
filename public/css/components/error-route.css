@@ -39,14 +39,11 @@
 
     margin-top: 1rem;
 
-    padding:
-        1rem
-        1.25rem;
+    padding: 1rem 1.25rem;
 
     border-radius: 12px;
 
-    background:
-        rgb(139 92 246 / 6%);
+    background: rgb(139 92 246 / 6%);
 }
 
 .error-route-label

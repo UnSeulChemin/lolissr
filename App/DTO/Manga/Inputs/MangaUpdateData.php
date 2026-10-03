@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\DTO\Manga\Inputs;
 
 use App\Support\Manga\MangaNoteNormalizer;
+
 use Framework\Support\Str;
 
 final readonly class MangaUpdateData
@@ -15,7 +16,8 @@ final readonly class MangaUpdateData
         public ?int $jacquette,
         public ?int $livreNote,
         public ?string $commentaire
-    ) {
+    )
+    {
     }
 
     /**

@@ -14,7 +14,8 @@ final readonly class PelucheListData
         public int $currentPage,
         public int $totalWaifus,
         public int $perPage,
-        public int $totalPages,
-    ) {
+        public int $totalPages
+    )
+    {
     }
 }

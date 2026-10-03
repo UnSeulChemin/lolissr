@@ -9,9 +9,7 @@ final readonly class FigurineSearchData
     /**
      * @param list<FigurineSearchItemData> $results
      */
-    public function __construct(
-        public array $results,
-        public string $search,
-    ) {
+    public function __construct(public array $results, public string $search)
+    {
     }
 }
