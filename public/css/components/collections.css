@@ -361,7 +361,7 @@
     transform: translateY(-4px) scale(1.06);
 
     color: var(--color-violet);
-    background-color: var(--color-violet-soft);
+    background-color: var(--color-surface);
     box-shadow: 0 8px 22px rgba(123, 44, 255, 0.22);
 
     border-color:

@@ -23,11 +23,12 @@
 {
     width: 36%;
     align-items: flex-start;
+    padding-bottom: 24px;
 }
 
 .detail-image-inner
 {
-    max-width: 340px;
+    max-width: clamp(180px, calc((100svh - 212px) * 0.6667), 340px);
     aspect-ratio: 2 / 3;
 }
 
@@ -91,7 +92,9 @@
 {
     color: var(--color-surface);
     font-weight: 700;
+    font-size: 16px;
     background: var(--gradient-violet);
+    border: 1px solid transparent;
 }
 
 .detail-value
