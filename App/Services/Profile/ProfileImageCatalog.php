@@ -24,6 +24,20 @@ final class ProfileImageCatalog
             ];
         }
 
+        usort($avatars, static function (array $a, array $b): int
+        {
+            $targetA = array_search($a['avatar'], self::ACHIEVEMENT_REWARD_AVATARS, true);
+            $targetB = array_search($b['avatar'], self::ACHIEVEMENT_REWARD_AVATARS, true);
+            $groupA = $targetA === false ? 1 : ($a['unlocked'] ? 0 : 2);
+            $groupB = $targetB === false ? 1 : ($b['unlocked'] ? 0 : 2);
+
+            if ($groupA !== $groupB) return $groupA <=> $groupB;
+
+            return $targetA !== false && $targetB !== false
+                ? ($a['unlocked'] ? $targetB <=> $targetA : $targetA <=> $targetB)
+                : strcmp($a['avatar'], $b['avatar']);
+        });
+
         return $avatars;
     }
 
