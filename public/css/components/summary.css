@@ -154,6 +154,30 @@
     font-weight: 700;
 }
 
+.home-grid a.card-link[href] .home-card-title
+{
+    transition: transform 220ms ease, color 220ms ease;
+}
+
+.home-grid a.card-link[href]:hover .home-card-title
+{
+    color: var(--color-violet);
+    transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce)
+{
+    .home-grid a.card-link[href] .home-card-title
+    {
+        transition: none;
+    }
+
+    .home-grid a.card-link[href]:hover .home-card-title
+    {
+        transform: none;
+    }
+}
+
 .home-card-value
 {
     z-index: 1;
