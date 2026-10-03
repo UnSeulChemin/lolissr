@@ -2,6 +2,9 @@
 
 Les commandes publiques sont déclarées dans le [composer.json](../composer.json).
 
+Le [formateur DX](../docs/dx-format.md) s'exécute avec `composer dx` ou
+`composer dx:check`. Sa configuration est dans [dx.json](../dx.json).
+
 
 
 

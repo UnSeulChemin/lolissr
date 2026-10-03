@@ -33,6 +33,8 @@
         "phpstan": "phpstan analyse --no-progress --memory-limit=512M",
         "http-tests": ["@php tests/Http/run-http.php", "@php tests/Http/spa-http.php"],
         "browser-tests": "@php tests/Browser/run-browser-tests.php",
+        "dx": "@php dx-format.php",
+        "dx:check": "@php dx-format.php --check",
         "regression-tests": [
             "@php tests/Build/project-structure.php",
             "@php tests/Framework/configuration.php",
@@ -68,6 +70,7 @@
             "@php tests/Assets/javascript-bundle.php",
             "@php tests/Assets/javascript-retention.php",
             "@php tests/Build/atomic-file.php",
+            "@php tests/Build/dx-format.php",
             "@php tests/Build/release-archive.php",
             "@php tests/Build/build-lock.php"
         ],
@@ -96,6 +99,8 @@
     },
 
     "scripts-descriptions": {
+        "dx": "[DX] Applique les conventions de presentation PHP, JavaScript et CSS.",
+        "dx:check": "[DX] Detecte les ecarts de presentation sans modifier les sources.",
         "check": "[Tests] Analyse PHP + tests HTTP et régression.",
         "check:all": "[Tests] Tous les contrôles, navigateur compris.",
 
