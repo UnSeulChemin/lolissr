@@ -22,7 +22,7 @@
     justify-content: flex-start;
     gap: 0;
     margin-bottom: var(--gap-grid-home);
-    padding: 0;
+    padding: 0 0 20px;
 }
 
 .profile-customization-hero > .profile-customization-avatar
