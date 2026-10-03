@@ -10,11 +10,11 @@ use App\DTO\Peluche\Responses\PelucheData;
 
 $slug = rawurlencode($peluche->slug);
 
-$modifierUrl = $view->baseUri . 'peluche/waifus/' . $slug . '/modifier/' . $peluche->numero;
+$modifierUrl = $view->baseUri . 'peluche/peluches/' . $slug . '/modifier/' . $peluche->numero;
 
-$deleteUrl = $view->baseUri . 'peluche/waifus/' . $slug . '/supprimer/' . $peluche->numero;
+$deleteUrl = $view->baseUri . 'peluche/peluches/' . $slug . '/supprimer/' . $peluche->numero;
 
-$redirectUrl = $view->baseUri . 'peluche/waifus';
+$redirectUrl = $view->baseUri . 'peluche/peluches';
 
 $hasCommentaire = $peluche->commentaire !== null
     && trim($peluche->commentaire) !== '';

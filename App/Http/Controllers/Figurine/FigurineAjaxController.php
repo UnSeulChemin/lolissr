@@ -14,7 +14,7 @@ use Framework\Http\Request;
 
 final class FigurineAjaxController extends Controller
 {
-    private const WAIFUS_PATH = 'figurine/waifus';
+    private const WAIFUS_PATH = 'figurine/figurines';
 
     public function __construct(
         private readonly FigurineReadService $figurineReadService,

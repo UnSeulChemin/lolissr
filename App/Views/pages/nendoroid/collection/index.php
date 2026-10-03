@@ -35,7 +35,7 @@ use App\DTO\Nendoroid\Responses\NendoroidData;
                     <a
                         class="<?= e($paginationClass) ?>"
                         data-prefetch
-                        href="<?= e("{$view->baseUri}nendoroid/waifus/page/{$i}") ?>"
+                        href="<?= e("{$view->baseUri}nendoroid/nendoroids/page/{$i}") ?>"
                     >
                         <?= $i ?>
                     </a>

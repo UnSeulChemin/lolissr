@@ -43,7 +43,7 @@ export function buildNendoroidResult(
         `${basePath}images/nendoroid/thumbnail/${thumbnail}.${extension}`;
 
     const nendoroidUrl =
-        `${basePath}nendoroid/waifus/${slug}/${numero}`;
+        `${basePath}nendoroid/nendoroids/${slug}/${numero}`;
 
     return createResultItem(
         nendoroidUrl,

@@ -17,7 +17,7 @@ use Framework\Http\Request;
 
 final class NendoroidController extends Controller
 {
-    private const WAIFUS_PATH = 'nendoroid/waifus';
+    private const WAIFUS_PATH = 'nendoroid/nendoroids';
 
     public function __construct(
         private readonly NendoroidReadService $nendoroidReadService,
@@ -47,7 +47,7 @@ final class NendoroidController extends Controller
             throw new NotFoundException('Page introuvable');
         }
 
-        $this->title = 'Nendoroids | Waifus'
+        $this->title = 'Nendoroids | Nendoroids'
             . ($data->currentPage > 1
                 ? ' - Page ' . $data->currentPage
                 : '');

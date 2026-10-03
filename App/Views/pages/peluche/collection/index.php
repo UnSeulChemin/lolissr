@@ -35,7 +35,7 @@ use App\DTO\Peluche\Responses\PelucheListItemData;
                     <a
                         class="<?= e($paginationClass) ?>"
                         data-prefetch
-                        href="<?= e("{$view->baseUri}peluche/waifus/page/{$i}") ?>"
+                        href="<?= e("{$view->baseUri}peluche/peluches/page/{$i}") ?>"
                     >
                         <?= $i ?>
                     </a>

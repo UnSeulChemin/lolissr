@@ -29,7 +29,7 @@ use App\DTO\Peluche\Responses\PelucheListItemData;
             <?php
 
             $href =
-                "{$view->baseUri}peluche/waifus/{$peluche->slug}/{$peluche->numero}";
+                "{$view->baseUri}peluche/peluches/{$peluche->slug}/{$peluche->numero}";
 
             ?>
 

@@ -14,14 +14,14 @@ $tests[] = [
 
 $tests[] = [
     'category' => 'Nendoroid',
-    'label' => 'Liste des waifus',
-    'path' => '/nendoroid/waifus'
+    'label' => 'Liste des nendoroids',
+    'path' => '/nendoroid/nendoroids'
 ];
 
 $tests[] = [
     'category' => 'Nendoroid',
-    'label' => 'Pagination waifus page 1',
-    'path' => '/nendoroid/waifus/page/1'
+    'label' => 'Pagination nendoroids page 1',
+    'path' => '/nendoroid/nendoroids/page/1'
 ];
 
 $tests[] = [

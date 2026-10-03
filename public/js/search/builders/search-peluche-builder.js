@@ -43,7 +43,7 @@ export function buildPelucheResult(
         `${basePath}images/peluche/thumbnail/${thumbnail}.${extension}`;
 
     const pelucheUrl =
-        `${basePath}peluche/waifus/${slug}/${numero}`;
+        `${basePath}peluche/peluches/${slug}/${numero}`;
 
     return createResultItem(
         pelucheUrl,

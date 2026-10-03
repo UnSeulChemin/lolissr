@@ -29,7 +29,7 @@ use App\DTO\Nendoroid\Responses\NendoroidData;
             <?php
 
             $href =
-                "{$view->baseUri}nendoroid/waifus/{$nendoroid->slug}/{$nendoroid->numero}";
+                "{$view->baseUri}nendoroid/nendoroids/{$nendoroid->slug}/{$nendoroid->numero}";
 
             $thumbnail =
                 "{$view->baseUri}images/nendoroid/thumbnail/{$nendoroid->thumbnail}.{$nendoroid->extension}";

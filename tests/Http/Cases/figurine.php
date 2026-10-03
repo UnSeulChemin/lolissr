@@ -20,14 +20,14 @@ $tests[] = [
 
 $tests[] = [
     'category' => 'Figurine',
-    'label' => 'Liste des waifus',
-    'path' => '/figurine/waifus'
+    'label' => 'Liste des figurines',
+    'path' => '/figurine/figurines'
 ];
 
 $tests[] = [
     'category' => 'Figurine',
-    'label' => 'Pagination waifus page 1',
-    'path' => '/figurine/waifus/page/1'
+    'label' => 'Pagination figurines page 1',
+    'path' => '/figurine/figurines/page/1'
 ];
 
 $tests[] = [
@@ -42,8 +42,8 @@ $tests[] = [
 
 $tests[] = [
     'category' => 'Figurine',
-    'label' => 'Pagination waifus HTML',
-    'path' => '/figurine/ajax/waifus/page/1',
+    'label' => 'Pagination figurines HTML',
+    'path' => '/figurine/ajax/figurines/page/1',
     'fragment' => true
 ];
 

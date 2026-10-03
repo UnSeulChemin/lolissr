@@ -13,5 +13,6 @@ CollectionRouteRegistrar::register(
     'figurine',
     FigurineController::class,
     FigurineAjaxController::class,
-    withLinks: true
+    withLinks: true,
+    collectionPath: 'figurines'
 );

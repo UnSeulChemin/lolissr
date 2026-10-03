@@ -14,7 +14,7 @@ use Framework\Http\Request;
 
 final class PelucheAjaxController extends Controller
 {
-    private const WAIFUS_PATH = 'peluche/waifus';
+    private const WAIFUS_PATH = 'peluche/peluches';
 
     public function __construct(
         private readonly PelucheReadService $pelucheReadService,

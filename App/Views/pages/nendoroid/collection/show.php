@@ -10,11 +10,11 @@ use App\DTO\Nendoroid\Responses\NendoroidData;
 
 $slug = rawurlencode($nendoroid->slug);
 
-$modifierUrl = $view->baseUri . 'nendoroid/waifus/' . $slug . '/modifier/' . $nendoroid->numero;
+$modifierUrl = $view->baseUri . 'nendoroid/nendoroids/' . $slug . '/modifier/' . $nendoroid->numero;
 
-$deleteUrl = $view->baseUri . 'nendoroid/waifus/' . $slug . '/supprimer/' . $nendoroid->numero;
+$deleteUrl = $view->baseUri . 'nendoroid/nendoroids/' . $slug . '/supprimer/' . $nendoroid->numero;
 
-$redirectUrl = $view->baseUri . 'nendoroid/waifus';
+$redirectUrl = $view->baseUri . 'nendoroid/nendoroids';
 
 $hasCommentaire = $nendoroid->commentaire !== null
     && trim($nendoroid->commentaire) !== '';

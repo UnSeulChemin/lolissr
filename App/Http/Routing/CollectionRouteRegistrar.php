@@ -22,9 +22,10 @@ final class CollectionRouteRegistrar
         string $prefix,
         string $controller,
         string $ajaxController,
-        bool $withLinks = false
+        bool $withLinks = false,
+        string $collectionPath = 'waifus'
     ): void {
-        $router->prefix($prefix)->group(function (Router $router) use ($controller, $ajaxController, $withLinks): void
+        $router->prefix($prefix)->group(function (Router $router) use ($controller, $ajaxController, $withLinks, $collectionPath): void
         {
             // =================================================
             // INDEX
@@ -40,7 +41,7 @@ final class CollectionRouteRegistrar
             // WAIFUS
             // =================================================
 
-            $router->prefix('waifus')->group(function (Router $router) use ($controller, $ajaxController): void
+            $router->prefix($collectionPath)->group(function (Router $router) use ($controller, $ajaxController): void
             {
                 $router->get('', [$controller, 'waifus']);
                 $router->get('page/{page:int}', [$controller, 'waifus']);
@@ -96,14 +97,14 @@ final class CollectionRouteRegistrar
             // AJAX
             // =================================================
 
-            $router->prefix('ajax')->group(function (Router $router) use ($ajaxController): void
+            $router->prefix('ajax')->group(function (Router $router) use ($ajaxController, $collectionPath): void
             {
                 // =================================================
                 // HTML
                 // =================================================
 
                 $router->get(
-                    'waifus/page/{page:int}',
+                    $collectionPath . '/page/{page:int}',
                     [$ajaxController, 'waifusPage']
                 );
 

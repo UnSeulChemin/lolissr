@@ -12,5 +12,6 @@ CollectionRouteRegistrar::register(
     $router,
     'nendoroid',
     NendoroidController::class,
-    NendoroidAjaxController::class
+    NendoroidAjaxController::class,
+    collectionPath: 'nendoroids'
 );

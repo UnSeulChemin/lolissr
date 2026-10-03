@@ -32,15 +32,15 @@ $notFoundResources = [
     ],
     [
         'label' => 'Figurine inexistante retourne 404',
-        'path' => '/figurine/waifus/waifu-qui-nexiste-pas/999'
+        'path' => '/figurine/figurines/waifu-qui-nexiste-pas/999'
     ],
     [
         'label' => 'Nendoroid inexistant retourne 404',
-        'path' => '/nendoroid/waifus/waifu-qui-nexiste-pas/999'
+        'path' => '/nendoroid/nendoroids/waifu-qui-nexiste-pas/999'
     ],
     [
         'label' => 'Peluche inexistante retourne 404',
-        'path' => '/peluche/waifus/waifu-qui-nexiste-pas/999'
+        'path' => '/peluche/peluches/waifu-qui-nexiste-pas/999'
     ]
 ];
 

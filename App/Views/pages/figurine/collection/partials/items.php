@@ -29,7 +29,7 @@ use App\DTO\Figurine\Responses\FigurineListItemData;
             <?php
 
             $href =
-                "{$view->baseUri}figurine/waifus/{$figurine->slug}/{$figurine->numero}";
+                "{$view->baseUri}figurine/figurines/{$figurine->slug}/{$figurine->numero}";
 
             ?>
 

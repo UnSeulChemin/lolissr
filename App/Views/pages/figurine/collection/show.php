@@ -10,11 +10,11 @@ use App\DTO\Figurine\Responses\FigurineData;
 
 $slug = rawurlencode($figurine->slug);
 
-$modifierUrl = $view->baseUri . 'figurine/waifus/' . $slug . '/modifier/' . $figurine->numero;
+$modifierUrl = $view->baseUri . 'figurine/figurines/' . $slug . '/modifier/' . $figurine->numero;
 
-$deleteUrl = $view->baseUri . 'figurine/waifus/' . $slug . '/supprimer/' . $figurine->numero;
+$deleteUrl = $view->baseUri . 'figurine/figurines/' . $slug . '/supprimer/' . $figurine->numero;
 
-$redirectUrl = $view->baseUri . 'figurine/waifus';
+$redirectUrl = $view->baseUri . 'figurine/figurines';
 
 $hasCommentaire = $figurine->commentaire !== null
     && trim($figurine->commentaire) !== '';

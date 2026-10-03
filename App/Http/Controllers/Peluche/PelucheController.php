@@ -17,7 +17,7 @@ use Framework\Http\Request;
 
 final class PelucheController extends Controller
 {
-    private const WAIFUS_PATH = 'peluche/waifus';
+    private const WAIFUS_PATH = 'peluche/peluches';
 
     public function __construct(
         private readonly PelucheReadService $pelucheReadService,
@@ -47,7 +47,7 @@ final class PelucheController extends Controller
             throw new NotFoundException('Page introuvable');
         }
 
-        $this->title = 'Peluches | Waifus'
+        $this->title = 'Peluches | Peluches'
             . ($data->currentPage > 1
                 ? ' - Page ' . $data->currentPage
                 : '');

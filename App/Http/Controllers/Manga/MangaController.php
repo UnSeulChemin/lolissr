@@ -53,7 +53,7 @@ final class MangaController extends Controller
         }
 
         $this->title =
-            'Manga | Series'
+            'Manga | Séries'
             . ($data->currentPage > 1
                 ? ' - Page ' . $data->currentPage
                 : '');

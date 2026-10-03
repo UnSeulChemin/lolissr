@@ -14,7 +14,7 @@ use Framework\Http\Request;
 
 final class NendoroidAjaxController extends Controller
 {
-    private const WAIFUS_PATH = 'nendoroid/waifus';
+    private const WAIFUS_PATH = 'nendoroid/nendoroids';
 
     public function __construct(
         private readonly NendoroidReadService $nendoroidReadService,

@@ -12,5 +12,6 @@ CollectionRouteRegistrar::register(
     $router,
     'peluche',
     PelucheController::class,
-    PelucheAjaxController::class
+    PelucheAjaxController::class,
+    collectionPath: 'peluches'
 );

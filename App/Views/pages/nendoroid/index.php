@@ -40,7 +40,7 @@ use App\DTO\Common\Responses\ViewData;
                 dashboard-card
              u-stack u-relative u-clip u-border-box"
             data-prefetch
-            href="<?= e($view->baseUri) ?>nendoroid/waifus"
+            href="<?= e($view->baseUri) ?>nendoroid/nendoroids"
         >
 
             <span
@@ -51,7 +51,7 @@ use App\DTO\Common\Responses\ViewData;
             </span>
 
             <span class="dashboard-card-title u-relative u-w-full u-bold">
-                Waifus
+                Nendoroids
             </span>
 
             <span class="dashboard-card-description u-relative u-w-full">

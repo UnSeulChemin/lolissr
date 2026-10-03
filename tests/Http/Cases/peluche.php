@@ -14,14 +14,14 @@ $tests[] = [
 
 $tests[] = [
     'category' => 'Peluche',
-    'label' => 'Liste des waifus',
-    'path' => '/peluche/waifus'
+    'label' => 'Liste des peluches',
+    'path' => '/peluche/peluches'
 ];
 
 $tests[] = [
     'category' => 'Peluche',
-    'label' => 'Pagination waifus page 1',
-    'path' => '/peluche/waifus/page/1'
+    'label' => 'Pagination peluches page 1',
+    'path' => '/peluche/peluches/page/1'
 ];
 
 $tests[] = [

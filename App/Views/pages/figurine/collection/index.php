@@ -35,7 +35,7 @@ use App\DTO\Figurine\Responses\FigurineListItemData;
                     <a
                         class="<?= e($paginationClass) ?>"
                         data-prefetch
-                        href="<?= e("{$view->baseUri}figurine/waifus/page/{$i}") ?>"
+                        href="<?= e("{$view->baseUri}figurine/figurines/page/{$i}") ?>"
                     >
                         <?= $i ?>
                     </a>

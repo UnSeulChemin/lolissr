@@ -43,7 +43,7 @@ export function buildFigurineResult(
         `${basePath}images/figurine/thumbnail/${thumbnail}.${extension}`;
 
     const figurineUrl =
-        `${basePath}figurine/waifus/${slug}/${numero}`;
+        `${basePath}figurine/figurines/${slug}/${numero}`;
 
     return createResultItem(
         figurineUrl,

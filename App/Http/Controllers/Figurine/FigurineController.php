@@ -17,7 +17,7 @@ use Framework\Http\Request;
 
 final class FigurineController extends Controller
 {
-    private const WAIFUS_PATH = 'figurine/waifus';
+    private const WAIFUS_PATH = 'figurine/figurines';
 
     public function __construct(
         private readonly FigurineReadService $figurineReadService,
@@ -54,7 +54,7 @@ final class FigurineController extends Controller
             throw new NotFoundException('Page introuvable');
         }
 
-        $this->title = 'Figurine | Waifus'
+        $this->title = 'Figurine | Figurines'
             . ($data->currentPage > 1 ? ' - Page ' . $data->currentPage : '');
 
         $this->render('pages/figurine/collection/index', [
