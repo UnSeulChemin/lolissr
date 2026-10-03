@@ -32,7 +32,7 @@ final class FlashcardsController extends Controller
 
     public function vocabulaire(): never
     {
-        $this->title = 'Chinois | Flashcards Vocabulaire';
+        $this->title = 'Chinois | Flashcards Vocabulaires';
         $page = $this->chinoisReadService->flashcardCursor(false);
 
         $this->render('pages/chinois/flashcards/vocabulaire', [
@@ -43,7 +43,7 @@ final class FlashcardsController extends Controller
 
     public function grammaire(): never
     {
-        $this->title = 'Chinois | Flashcards Grammaire';
+        $this->title = 'Chinois | Flashcards Grammaires';
         $page = $this->chinoisReadService->flashcardCursor(true);
 
         $this->render('pages/chinois/flashcards/grammaire', [

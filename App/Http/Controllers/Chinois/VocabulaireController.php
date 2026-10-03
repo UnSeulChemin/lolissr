@@ -30,7 +30,7 @@ final class VocabulaireController extends Controller
 
     public function index(): never
     {
-        $this->title = 'Chinois | Vocabulaire';
+        $this->title = 'Chinois | Vocabulaires';
 
         $this->render('pages/chinois/vocabulaire/index');
     }

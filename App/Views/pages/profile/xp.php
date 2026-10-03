@@ -54,7 +54,7 @@ $filters['succes'] = '🏆';
             <h2>Sommaire</h2>
             <div class="profile-summary-links">
             <?php foreach ($filters as $key => $icon): ?>
-                <?php $label = match ($key) { 'tout' => 'Tout', 'succes' => 'Succès', default => $key }; ?>
+                <?php $label = match ($key) { 'tout' => 'Tout', 'succes' => 'Succès', 'Vocabulaire' => 'Vocabulaires', 'Grammaire' => 'Grammaires', default => $key }; ?>
                 <a href="<?= e($view->baseUri . 'profil/xp' . ($key === 'tout' ? '' : '/' . Str::asciiSlug($key))) ?>"
                    class="profile-summary-link" aria-label="<?= e($label) ?>" title="<?= e($label) ?>"
                    <?= $section === $key ? 'aria-current="page"' : '' ?>><span aria-hidden="true"><?= e($icon) ?></span><span><?= e($label) ?></span></a>
@@ -284,7 +284,7 @@ $filters['succes'] = '🏆';
             <article class="card profile-stat-card u-justify-center u-w-full u-border-box">
 
                 <h2 class="profile-stat-title u-bold">
-                    🎓 Vocabulaire appris
+                    🎓 Vocabulaires appris
                 </h2>
 
                 <p class="profile-stat-value u-bold">
@@ -296,7 +296,7 @@ $filters['succes'] = '🏆';
             <article class="card profile-stat-card u-justify-center u-w-full u-border-box">
 
                 <h2 class="profile-stat-title u-bold">
-                    ⭐ XP Vocabulaire
+                    ⭐ XP Vocabulaires
                 </h2>
 
                 <p class="profile-stat-value u-bold">
@@ -327,7 +327,7 @@ $filters['succes'] = '🏆';
             <article class="card profile-stat-card u-justify-center u-w-full u-border-box">
 
                 <h2 class="profile-stat-title u-bold">
-                    ⭐ XP Grammaire
+                    ⭐ XP Grammaires
                 </h2>
 
                 <p class="profile-stat-value u-bold">

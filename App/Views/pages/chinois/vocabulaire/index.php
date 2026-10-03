@@ -34,7 +34,7 @@ use App\DTO\Common\Responses\ViewData;
             </span>
 
             <span class="dashboard-card-description u-relative u-w-full">
-                Vocabulaire, expressions et chinois standard.
+                Vocabulaires, expressions et chinois standard.
             </span>
 
         </a>

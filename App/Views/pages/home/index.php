@@ -737,7 +737,7 @@ $hasMostRepresented =
         <article class="card transition-card card-small">
 
             <h2 class="home-card-title">
-                📚 Vocabulaire appris
+                📚 Vocabulaires appris
             </h2>
 
             <p class="home-card-value u-relative u-bold">
@@ -749,7 +749,7 @@ $hasMostRepresented =
         <article class="card transition-card card-small">
 
             <h2 class="home-card-title">
-                🎯 Vocabulaire restant
+                🎯 Vocabulaires restants
             </h2>
 
             <p class="home-card-value u-relative u-bold">
@@ -768,7 +768,7 @@ $hasMostRepresented =
         >
 
             <h2 class="home-card-title">
-                📊 Progression vocabulaire
+                📊 Progression vocabulaires
             </h2>
 
             <p
@@ -797,7 +797,7 @@ $hasMostRepresented =
         <article class="card transition-card card-small">
 
             <h2 class="home-card-title">
-                📖 Grammaire apprise
+                📖 Grammaires apprises
             </h2>
 
             <p class="home-card-value u-relative u-bold">
@@ -809,7 +809,7 @@ $hasMostRepresented =
         <article class="card transition-card card-small">
 
             <h2 class="home-card-title">
-                🎯 Grammaire restante
+                🎯 Grammaires restantes
             </h2>
 
             <p class="home-card-value u-relative u-bold">
@@ -828,7 +828,7 @@ $hasMostRepresented =
         >
 
             <h2 class="home-card-title">
-                📊 Progression grammaire
+                📊 Progression grammaires
             </h2>
 
             <p

@@ -30,7 +30,7 @@ use App\DTO\Common\Responses\ViewData;
             </span>
 
             <span class="dashboard-card-title u-relative u-w-full u-bold">
-                Vocabulaire
+                Vocabulaires
             </span>
 
             <span class="dashboard-card-description u-relative u-w-full">
@@ -57,7 +57,7 @@ use App\DTO\Common\Responses\ViewData;
             </span>
 
             <span class="dashboard-card-title u-relative u-w-full u-bold">
-                Grammaire
+                Grammaires
             </span>
 
             <span class="dashboard-card-description u-relative u-w-full">
