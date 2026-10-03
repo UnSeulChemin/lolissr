@@ -1,7 +1,7 @@
 import { createFlashcardDeck } from './flashcard-deck.js';
 
 // =================================================
-// CARTES DE RÉVISION GRAMMAIRE
+// FLASHCARDS GRAMMAIRE
 // =================================================
 
 import {

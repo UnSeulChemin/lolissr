@@ -68,7 +68,7 @@ use App\DTO\Common\Responses\ViewData;
             <?php foreach ($hsk->menu as $section): ?>
 
                 <a
-                    href="<?= e($view->baseUri . 'chinois/grammaire/hsk' . $hsk->level . '?section=' . rawurlencode($section->id)) ?>"
+                    href="<?= e($view->baseUri . 'chinois/grammaire/hsk' . $hsk->level . '/' . rawurlencode($section->id)) ?>"
                     <?= ($hsk->sections[0]->id ?? null) === $section->id ? 'aria-current="page"' : '' ?>
                     class="grammar-summary-link u-inline-center u-bold"
                 >

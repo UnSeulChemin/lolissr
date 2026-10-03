@@ -4,11 +4,18 @@ declare(strict_types=1);
 
 use App\DTO\Common\Responses\ViewData;
 use App\Services\Profile\ProfileImageCatalog;
+use Framework\Support\Str;
 
 /** @var ViewData $view */
+/** @var string $section */
 /** @var list<array{category: string, icon: string, title: string, current: int, target: int, unlocked: bool}> $achievements */
 $unlockedCount = count(array_filter($achievements, static fn (array $item): bool => $item['unlocked']));
 $category = '';
+$filters = ['tout' => '✨'];
+foreach ($achievements as $item)
+{
+    $filters[$item['category']] = $item['icon'];
+}
 ?>
 
 <section class="success-page">
@@ -21,12 +28,30 @@ $category = '';
         <p class="success-note">Selon tes statistiques actuelles.</p>
     </header>
 
+    <div class="success-layout">
+    <nav class="card profile-summary" aria-label="Filtrer les succès par catégorie">
+        <h2>Sommaire</h2>
+        <div class="profile-summary-links">
+        <?php foreach ($filters as $key => $icon): ?>
+            <a class="profile-summary-link"
+               href="<?= e($view->baseUri . 'profil/succes' . ($key === 'tout' ? '' : '/' . Str::asciiSlug($key))) ?>"
+               aria-label="<?= e($key === 'tout' ? 'Tous les succès' : $key) ?>"
+               title="<?= e($key === 'tout' ? 'Tous les succès' : $key) ?>"
+               <?= $section === $key ? 'aria-current="page"' : '' ?>>
+                <span aria-hidden="true"><?= e($icon) ?></span>
+                <span><?= e($key === 'tout' ? 'Tout' : $key) ?></span>
+            </a>
+        <?php endforeach; ?>
+        </div>
+    </nav>
+
+    <div class="success-content">
     <?php foreach ($achievements as $achievement): ?>
+        <?php if ($section !== 'tout' && $section !== $achievement['category']) { continue; } ?>
         <?php if ($category !== $achievement['category']): ?>
             <?php if ($category !== ''): ?></div></section><?php endif; ?>
             <?php $category = $achievement['category']; ?>
-            <section class="success-category">
-                <h2><?= e($achievement['icon'] . ' ' . $category) ?></h2>
+            <section class="success-category" aria-label="<?= e($category) ?>">
                 <div class="success-grid">
         <?php endif; ?>
         <article class="card success-item <?= $achievement['unlocked'] ? 'is-unlocked' : 'is-locked' ?>">
@@ -292,4 +317,6 @@ $category = '';
         </article>
     <?php endforeach; ?>
     <?php if ($category !== ''): ?></div></section><?php endif; ?>
+    </div>
+    </div>
 </section>

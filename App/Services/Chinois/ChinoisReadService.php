@@ -165,7 +165,7 @@ final readonly class ChinoisReadService
     }
 
     // =================================================
-    // CARTES DE RÉVISION
+    // FLASHCARDS
     // =================================================
 
     /**

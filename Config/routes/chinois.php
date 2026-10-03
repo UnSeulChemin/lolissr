@@ -67,6 +67,8 @@ $router->prefix('chinois')->group(function (Router $router): void
             [GrammaireController::class, 'hsk']
         );
 
+        $router->get('hsk{level:int}/{section}', [GrammaireController::class, 'hsk']);
+
         $router->get(
             'hsk{level:int}/modifier/{id:int}',
             [GrammaireController::class, 'edit']
@@ -85,7 +87,7 @@ $router->prefix('chinois')->group(function (Router $router): void
     });
 
     // =================================================
-    // CARTES DE RÉVISION
+    // FLASHCARDS
     // =================================================
 
     $router->prefix('flashcards')->group(function (Router $router): void

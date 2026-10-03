@@ -16,12 +16,12 @@ export function createFlashcardDeck(container, type)
     {
         if (controller.signal.aborted)
         {
-            throw new DOMException('Cartes de révision fermées', 'AbortError');
+            throw new DOMException('Flashcards fermées', 'AbortError');
         }
         const response = await get(`${baseUri}chinois/flashcards/${type}/cursor/${previous ? 'previous' : 'next'}/${id}`, { signal: controller.signal });
         if (controller.signal.aborted)
         {
-            throw new DOMException('Cartes de révision fermées', 'AbortError');
+            throw new DOMException('Flashcards fermées', 'AbortError');
         }
         const page = response?.data;
         if (! response?.success || ! Array.isArray(page?.cards)

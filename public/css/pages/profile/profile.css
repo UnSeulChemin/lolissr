@@ -381,6 +381,74 @@
 }
 .profile-xp-note { color: #706779; font-size: .85rem; }
 
+.profile-summary
+{
+    align-items: stretch;
+    gap: .5rem;
+    padding: 1rem;
+}
+
+.profile-summary h2
+{
+    margin: 0 0 .5rem;
+    color: var(--color-violet);
+    font-size: 1.2rem;
+    text-align: left;
+}
+
+.profile-summary-link
+{
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .75rem;
+    border-radius: 12px;
+    color: var(--color-violet);
+    background: rgba(139, 92, 246, .08);
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 180ms ease, box-shadow 180ms ease;
+}
+
+.profile-summary-link:hover { background: rgba(139, 92, 246, .18); }
+.profile-summary-link[aria-current="page"]
+{
+    color: #fff;
+    background: var(--gradient-violet);
+    box-shadow: 0 4px 12px rgba(123, 44, 255, .18);
+}
+.profile-summary-link:focus-visible
+{
+    outline: 2px solid var(--color-violet);
+    outline-offset: 2px;
+}
+.profile-summary-links
+{
+    display: flex;
+    gap: .5rem;
+    overflow-x: auto;
+    padding: 3px 3px .5rem;
+}
+.profile-summary-link
+{
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+.profile-xp-filters
+{
+    width: var(--profile-width);
+    max-width: 100%;
+    margin: 0 auto 1rem;
+}
+.profile-xp-filters .profile-summary-links
+{
+    flex-wrap: wrap;
+    overflow-x: visible;
+}
+@media (prefers-reduced-motion: reduce)
+{
+    .profile-summary-link { transition: none; }
+}
 .profile-stat-row
 {
     width: 100%;

@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+use App\DTO\Common\Responses\ViewData;
+use Framework\Support\Str;
+
+/** @var ViewData $view */
+/** @var string $section */
+
 /** @var list<array{category: string, icon: string, title: string, current: int, target: int, unlocked: bool}> $achievements */
 /** @var int $level */
 /** @var int $currentXp */
@@ -25,8 +31,14 @@ declare(strict_types=1);
 /** @var int $totalProfileXp */
 /** @var int $achievementXp */
 
+$filters = ['tout' => '✨'];
+foreach ($achievements as $item)
+{
+    $filters[$item['category']] = $item['icon'];
+}
+
 ?>
-<section class="layout-container profile-page u-stack">
+<section class="layout-container profile-page profile-xp-page u-stack">
     <header class="card profile-xp-heading">
         <h1>📊 Mon expérience</h1>
         <strong>Niveau <?= $level ?></strong>
@@ -36,6 +48,17 @@ declare(strict_types=1);
         <p class="profile-xp-note">Progression vers le niveau <?= $level + 1 ?>.</p>
     </header>
 
+        <nav class="card profile-summary profile-xp-filters" aria-label="Filtrer les statistiques d’expérience">
+            <h2>Sommaire</h2>
+            <div class="profile-summary-links">
+            <?php foreach ($filters as $key => $icon): ?>
+                <?php $label = $key === 'tout' ? 'Tout' : $key; ?>
+                <a href="<?= e($view->baseUri . 'profil/xp' . ($key === 'tout' ? '' : '/' . Str::asciiSlug($key))) ?>"
+                   class="profile-summary-link" aria-label="<?= e($label) ?>" title="<?= e($label) ?>"
+                   <?= $section === $key ? 'aria-current="page"' : '' ?>><span aria-hidden="true"><?= e($icon) ?></span><span><?= e($label) ?></span></a>
+            <?php endforeach; ?>
+            </div>
+        </nav>
     <section class="profile-stats u-stack">
 
         <div class="profile-stat-row u-grid">
@@ -67,6 +90,7 @@ declare(strict_types=1);
 
         </div>
 
+        <?php if ($section === 'tout' || $section === 'Tomes'): ?>
         <div class="profile-stat-row u-grid">
 
             <article class="card profile-stat-card u-justify-center u-w-full u-border-box">
@@ -95,7 +119,9 @@ declare(strict_types=1);
             </article>
 
         </div>
+        <?php endif; ?>
 
+        <?php if ($section === 'tout' || $section === 'Séries'): ?>
         <div class="profile-stat-row u-grid">
 
             <article class="card profile-stat-card u-justify-center u-w-full u-border-box">
@@ -124,7 +150,9 @@ declare(strict_types=1);
             </article>
 
         </div>
+        <?php endif; ?>
 
+        <?php if ($section === 'tout' || $section === 'Artbooks'): ?>
         <div class="profile-stat-row u-grid">
 
             <article class="card profile-stat-card u-justify-center u-w-full u-border-box">
@@ -153,7 +181,9 @@ declare(strict_types=1);
             </article>
 
         </div>
+        <?php endif; ?>
 
+        <?php if ($section === 'tout' || $section === 'Figurines'): ?>
         <div class="profile-stat-row u-grid">
 
             <article class="card profile-stat-card u-justify-center u-w-full u-border-box">
@@ -182,7 +212,9 @@ declare(strict_types=1);
             </article>
 
         </div>
+        <?php endif; ?>
 
+        <?php if ($section === 'tout' || $section === 'Nendoroids'): ?>
         <div class="profile-stat-row u-grid">
 
             <article class="card profile-stat-card u-justify-center u-w-full u-border-box">
@@ -211,7 +243,9 @@ declare(strict_types=1);
             </article>
 
         </div>
+        <?php endif; ?>
 
+        <?php if ($section === 'tout' || $section === 'Peluches'): ?>
         <div class="profile-stat-row u-grid">
 
             <article class="card profile-stat-card u-justify-center u-w-full u-border-box">
@@ -240,7 +274,9 @@ declare(strict_types=1);
             </article>
 
         </div>
+        <?php endif; ?>
 
+        <?php if ($section === 'tout' || $section === 'Vocabulaire'): ?>
         <div class="profile-stat-row u-grid">
 
             <article class="card profile-stat-card u-justify-center u-w-full u-border-box">
@@ -269,7 +305,9 @@ declare(strict_types=1);
             </article>
 
         </div>
+        <?php endif; ?>
 
+        <?php if ($section === 'tout' || $section === 'Grammaire'): ?>
         <div class="profile-stat-row u-grid">
 
             <article class="card profile-stat-card u-justify-center u-w-full u-border-box">
@@ -298,7 +336,9 @@ declare(strict_types=1);
             </article>
 
         </div>
+        <?php endif; ?>
 
+        <?php if ($section === 'tout' || $section === 'succes'): ?>
         <div class="profile-stat-row profile-stat-row-achievements u-grid">
             <article class="card profile-stat-card u-justify-center u-w-full u-border-box">
                 <h2 class="profile-stat-title u-bold">🏆 Succès</h2>
@@ -309,6 +349,7 @@ declare(strict_types=1);
                 <p class="profile-stat-value u-bold"><?= number_format($achievementXp, 0, ',', ' ') ?> XP</p>
             </article>
         </div>
+        <?php endif; ?>
     </section>
 
 </section>

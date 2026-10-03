@@ -11,6 +11,7 @@ use App\Services\Profile\ProfileAchievements;
 use App\Services\User\UserLevelService;
 
 use Framework\Http\Request;
+use Framework\Support\Str;
 
 final class ProfileController extends Controller
 {
@@ -43,7 +44,7 @@ final class ProfileController extends Controller
         ]);
     }
 
-    public function xp(): never
+    public function xp(?string $section = null): never
     {
         $this->title = 'Résumé de l’XP';
 
@@ -52,9 +53,13 @@ final class ProfileController extends Controller
         assert($user instanceof User);
 
         $stats = $this->profileStatsService->getStats($user);
+        $achievements = ProfileAchievements::forStats($stats, $user->level);
+        $section ??= $this->stringInput('section');
+        $section = $this->resolveSection($section, array_column($achievements, 'category'));
 
         $this->render('pages/profile/xp', [
-            'achievements' => ProfileAchievements::forStats($stats, $user->level),
+            'section' => $section,
+            'achievements' => $achievements,
             'level' => $user->level,
             'currentXp' => $user->xp,
             'xpRequired' => $this->userLevelService->xpRequiredForLevel($user->level),
@@ -92,14 +97,19 @@ final class ProfileController extends Controller
     // PERSONNALISATION
     // --------------------------------------------------------------------------
 
-    public function achievements(): never
+    public function achievements(?string $section = null): never
     {
         $this->title = 'Succès';
         $user = user();
         assert($user instanceof User);
 
+        $achievements = ProfileAchievements::forStats($this->unlockStats->forAchievements(), $user->level);
+        $section ??= $this->stringInput('section');
+        $section = $this->resolveSection($section, array_column($achievements, 'category'));
+
         $this->render('pages/profile/achievements', [
-            'achievements' => ProfileAchievements::forStats($this->unlockStats->forAchievements(), $user->level),
+            'achievements' => $achievements,
+            'section' => $section,
         ]);
     }
 
@@ -112,5 +122,17 @@ final class ProfileController extends Controller
         assert($user instanceof User);
 
         $this->render('pages/profile/customization', ['user' => $user]);
+    }
+
+    /** @param list<string> $categories */
+    private function resolveSection(string $section, array $categories): string
+    {
+        $slug = Str::asciiSlug($section);
+        foreach ($categories as $category)
+        {
+            if (Str::asciiSlug($category) === $slug) return $category;
+        }
+
+        return 'tout';
     }
 }

@@ -37,14 +37,14 @@ final class GrammaireController extends Controller
         $this->render('pages/chinois/grammaire/index');
     }
 
-    public function hsk(int $level): never
+    public function hsk(int $level, ?string $section = null): never
     {
         $hskLevel = $this->resolveHskLevel($level);
 
         $this->title = 'Chinois | Grammaire ' . $hskLevel;
 
         $this->render('pages/chinois/grammaire/hsk', [
-            'hsk' => $this->chinoisReadService->hsk($hskLevel, $this->stringInput('section')),
+            'hsk' => $this->chinoisReadService->hsk($hskLevel, $section ?? $this->stringInput('section')),
         ]);
     }
 

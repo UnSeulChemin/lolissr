@@ -20,19 +20,19 @@ final class FlashcardsController extends Controller
     }
 
     // =================================================
-    // CARTES DE RÉVISION
+    // FLASHCARDS
     // =================================================
 
     public function index(): never
     {
-        $this->title = 'Chinois | Cartes de révision';
+        $this->title = 'Chinois | Flashcards';
 
         $this->render('pages/chinois/flashcards/index');
     }
 
     public function vocabulaire(): never
     {
-        $this->title = 'Chinois | Cartes de révision Vocabulaire';
+        $this->title = 'Chinois | Flashcards Vocabulaire';
         $page = $this->chinoisReadService->flashcardCursor(false);
 
         $this->render('pages/chinois/flashcards/vocabulaire', [
@@ -43,7 +43,7 @@ final class FlashcardsController extends Controller
 
     public function grammaire(): never
     {
-        $this->title = 'Chinois | Cartes de révision Grammaire';
+        $this->title = 'Chinois | Flashcards Grammaire';
         $page = $this->chinoisReadService->flashcardCursor(true);
 
         $this->render('pages/chinois/flashcards/grammaire', [

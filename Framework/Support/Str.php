@@ -50,4 +50,12 @@ final class Str
         return $value !== '' ? $value : null;
     }
 
+    public static function asciiSlug(string $value): string
+    {
+        $ascii = transliterator_transliterate('Any-Latin; Latin-ASCII', $value);
+        $slug = mb_strtolower($ascii !== false ? $ascii : $value, 'UTF-8');
+
+        return trim(preg_replace('/[^a-z0-9]+/', '-', $slug) ?? '', '-');
+    }
+
 }

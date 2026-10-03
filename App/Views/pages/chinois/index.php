@@ -105,7 +105,7 @@ use App\DTO\Common\Responses\ViewData;
             </span>
 
             <span class="dashboard-card-title u-relative u-w-full u-bold">
-                Cartes de révision
+                Flashcards
             </span>
 
             <span class="dashboard-card-description u-relative u-w-full">
