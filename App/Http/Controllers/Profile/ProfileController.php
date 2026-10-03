@@ -55,7 +55,7 @@ final class ProfileController extends Controller
         $stats = $this->profileStatsService->getStats($user);
         $achievements = ProfileAchievements::forStats($stats, $user->level);
         $section ??= $this->stringInput('section');
-        $section = $this->resolveSection($section, array_column($achievements, 'category'));
+        $section = $this->resolveSection($section, [...array_column($achievements, 'category'), 'succes']);
 
         $this->render('pages/profile/xp', [
             'section' => $section,

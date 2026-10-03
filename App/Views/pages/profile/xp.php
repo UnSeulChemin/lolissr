@@ -34,8 +34,10 @@ use Framework\Support\Str;
 $filters = ['tout' => '✨'];
 foreach ($achievements as $item)
 {
+    if ($item['category'] === 'Niveau') continue;
     $filters[$item['category']] = $item['icon'];
 }
+$filters['succes'] = '🏆';
 
 ?>
 <section class="layout-container profile-page profile-xp-page u-stack">
@@ -52,7 +54,7 @@ foreach ($achievements as $item)
             <h2>Sommaire</h2>
             <div class="profile-summary-links">
             <?php foreach ($filters as $key => $icon): ?>
-                <?php $label = $key === 'tout' ? 'Tout' : $key; ?>
+                <?php $label = match ($key) { 'tout' => 'Tout', 'succes' => 'Succès', default => $key }; ?>
                 <a href="<?= e($view->baseUri . 'profil/xp' . ($key === 'tout' ? '' : '/' . Str::asciiSlug($key))) ?>"
                    class="profile-summary-link" aria-label="<?= e($label) ?>" title="<?= e($label) ?>"
                    <?= $section === $key ? 'aria-current="page"' : '' ?>><span aria-hidden="true"><?= e($icon) ?></span><span><?= e($label) ?></span></a>
