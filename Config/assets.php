@@ -30,7 +30,7 @@ return array (
   'css/pages/manga/note-rating.css' => 'ac54830ea030719c026e2902a05ccf92b03cfa936dab58eb0c8001f991ac61e0',
   'css/pages/profile/achievements.css' => '450d443f08c6a24512f28790162777895a2ec2a0b5926c6485ab0e1a18a1325f',
   'css/pages/profile/customization.css' => '2f332925746d036859047380a34072d1c96f4e08e093bd51b80d6f99d16b4da5',
-  'css/pages/profile/profile.css' => '87e3c209f1285a5b8ee15d2aa6b29b8eb4aedd1cacbf2aaad5f441c06a72d965',
+  'css/pages/profile/profile.css' => '463c692414de5dc1175bf9f34d110c693460a1f5bd8e03eff0169f083c51684f',
   'css/pages/sql.css' => '6843d18a927244da5b7ae02bf60e20c56325cf65ba903577077cd453c09098c7',
   'css/partials/header.css' => '97c31c2ad3e06b44dd07b679a29eeb2853612e07ed893c1fa109ff5f9b85098b',
   'css/partials/search.css' => 'fdfc250330299bee797977b0e1c4e03c6a44cddea01ff898d931834629ce1907',

@@ -355,22 +355,23 @@
     margin: 0 auto;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1rem;
+    row-gap: 1.75rem;
 }
 
 .profile-xp-heading
 {
     width: var(--profile-width);
     max-width: 100%;
-    margin: 0 auto 1.5rem;
-    padding: 1.75rem 1.5rem;
-    gap: .65rem;
+    margin: 0 auto 1rem;
+    padding: 1.25rem 1.5rem;
+    gap: .4rem;
     background: linear-gradient(135deg, #fff, #f3edff);
     text-align: center;
 }
 
 .profile-xp-heading h1 { margin: 0 0 .25rem; font-size: 1.3rem; }
 .profile-xp-heading p { margin: 0; }
-.profile-xp-heading strong { color: #6d2cff; font-size: 1.8rem; font-weight: 700; }
+.profile-xp-heading strong { color: #6d2cff; font-size: 1.6rem; font-weight: 700; }
 .profile-xp-heading progress
 {
     width: min(100%, 600px);
