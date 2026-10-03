@@ -76,7 +76,7 @@ foreach ($rootFiles as $file)
 require_once __DIR__ . '/../Support/ProductionDependencies.php';
 ProductionDependencies::install($buildDirectory);
 
-$optionalFiles = ['.htaccess', 'README.md'];
+$optionalFiles = ['.htaccess'];
 
 foreach ($optionalFiles as $file)
 {

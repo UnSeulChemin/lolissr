@@ -1,0 +1,284 @@
+=========================================
+COMMANDES DU PROJET
+=========================================
+
+= Exécuter depuis la racine du projet
+C:\wamp64\www\lolissr
+
+= Afficher les commandes Composer disponibles
+composer run-script --list
+
+
+=========================================
+COMPOSER
+=========================================
+
+= Installer les dépendances
+composer install
+
+= Installer les dépendances de production
+composer install --no-dev --optimize-autoloader
+
+= Régénérer l'autoload
+composer dump-autoload
+
+= Vérifier composer.json et composer.lock
+composer validate
+
+= Synchroniser composer.lock sans mettre à jour les dépendances
+composer update --lock
+
+
+=========================================
+AI REFACTORING DX
+=========================================
+
+= Vérifier les écarts sans modifier les fichiers
+composer dx:check
+
+= Appliquer le formatage PHP / JavaScript / CSS
+composer dx
+
+= Lancer directement le script
+php dx-format.php
+
+= Vérifier directement sans modifier
+php dx-format.php --check
+
+= Afficher les options
+php dx-format.php --help
+
+= Utiliser une autre configuration JSON
+php dx-format.php --config=autre-dx.json
+
+= Configuration par défaut
+dx.json
+
+= Après le formatage
+composer assets:build
+composer check
+
+= Le regroupement métier des méthodes reste manuel
+
+
+=========================================
+TESTS & QUALITÉ DE CODE
+=========================================
+
+= Analyse PHP + tests HTTP / SPA + régressions
+composer check
+
+= Tous les contrôles, navigateur compris
+composer check:all
+
+-----------------------------------------
+
+PHPStan
+
+= Analyse statique PHP
+composer phpstan
+
+-----------------------------------------
+
+Tests HTTP / SPA
+
+= Vérifier les routes HTTP et la navigation SPA
+composer http-tests
+
+= Prérequis
+Apache local démarré
+HTTP_TEST_USERNAME et HTTP_TEST_PASSWORD dans .env
+
+-----------------------------------------
+
+Tests de régression
+
+= Vérifier le framework, les fonctionnalités et les builds
+composer regression-tests
+
+= Certains tests nécessitent MySQL local
+
+-----------------------------------------
+
+Tests navigateur
+
+= Lancer les scénarios Microsoft Edge
+composer browser-tests
+
+= Utiliser une autre URL locale
+composer browser-tests -- http://localhost/lolissr
+
+= Lancer un scénario précis
+php tests/Browser/run-browser-scenario.php http://localhost/lolissr tests/Browser/spa-browser.js
+
+= Vérifier le bundle JavaScript dans le navigateur
+php tests/Browser/run-bundle-browser.php http://localhost/lolissr
+
+-----------------------------------------
+
+Tests ciblés
+
+= Structure du projet et imports JavaScript
+php tests/Build/project-structure.php
+
+= Formateur DX
+php tests/Build/dx-format.php
+
+= Dépendances de production
+php tests/Build/production-dependencies.php
+
+= Images de profil
+php tests/Assets/profile-images.php
+
+= Cache HTTP des assets
+php tests/Http/asset-cache-http.php http://localhost/lolissr
+
+= Lancer un autre test PHP
+php tests/Dossier/nom-du-test.php
+
+
+=========================================
+ASSETS
+=========================================
+
+= Compiler CSS / JavaScript et actualiser les versions
+composer assets:build
+
+= Compiler uniquement le CSS
+composer css:build
+
+= Installer esbuild pour compiler et vérifier le JavaScript
+composer js:install
+
+= Compiler uniquement le JavaScript
+composer js:build
+
+= Supprimer les anciens bundles JavaScript après leur délai de rétention
+composer js:prune
+
+= Générer les images de profil
+composer images:build
+
+
+=========================================
+MAINTENANCE
+=========================================
+
+= Vider logs / cache / sessions et régénérer l'autoload
+composer dev:reset
+
+= Vider uniquement les logs
+composer logs:clear
+
+= Vider uniquement le cache
+composer cache:clear
+
+= Supprimer les sessions et déconnecter les utilisateurs
+composer sessions:clear
+
+= Emplacements
+storage\logs\
+storage\cache\
+storage\sessions\
+
+
+=========================================
+CACHE DE BOOTSTRAP
+=========================================
+
+= Compiler la configuration et les routes sur le serveur cible
+composer bootstrap:cache
+
+= Désactiver le cache de configuration et de routes
+composer bootstrap:clear
+
+
+=========================================
+BASE DE DONNÉES
+=========================================
+
+= Sauvegarder la base avec les paramètres DB du .env
+composer backup
+
+= Emplacement des sauvegardes
+storage\backups\database\
+
+= Chemin personnalisé de mysqldump si nécessaire
+MYSQLDUMP_PATH dans .env
+
+-----------------------------------------
+
+Index
+
+= Auditer les index redondants sans modifier la base
+composer db:deduplicate-indexes
+
+= Supprimer les index redondants identifiés
+composer db:deduplicate-indexes -- --apply
+
+
+=========================================
+RÉCOMPENSES XP
+=========================================
+
+= Remplacer USER_ID par l'identifiant numérique de l'utilisateur
+
+= Auditer les récompenses XP sans modifier les données
+composer xp:backfill -- USER_ID
+
+= Ajouter uniquement les récompenses manquantes
+composer xp:backfill -- USER_ID --apply
+
+
+=========================================
+RELEASE
+=========================================
+
+= Générer une archive de livraison
+composer release:zip
+
+= Utilise APP_NAME et APP_VERSION dans .env
+= Compile les assets et génère une archive avec les dépendances de production
+= Exclut les données locales, les tests et .env
+
+= Emplacement des archives
+releases\LoliSSR_vX.X.X.zip
+
+
+=========================================
+GIT
+=========================================
+
+= Afficher les modifications locales
+git status --short
+
+= Voir les différences
+git diff
+
+= Compiler les assets, créer un commit et publier sur origin/master
+composer publish:git
+
+= Utilise APP_NAME et APP_VERSION pour le message du commit
+
+-----------------------------------------
+
+Reset Git
+
+= Annuler les modifications locales et supprimer les fichiers non suivis
+composer git:reset
+
+= Effectue git reset --hard HEAD puis git clean -fd
+= Les fichiers ignorés sont conservés
+
+
+=========================================
+DEBUG FRONTEND
+=========================================
+
+= Dans la console du navigateur en local
+
+= Activer le debug SPA
+enableDebug()
+
+= Désactiver le debug SPA
+disableDebug()

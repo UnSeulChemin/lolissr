@@ -38,17 +38,4 @@ foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($root . '/
     }
 }
 
-$documents = [$root . '/README.md', $root . '/App/README.md', $root . '/Framework/README.md',
-    $root . '/Config/README.md', $root . '/scripts/README.md', $root . '/public/README.md', $root . '/tests/README.md',
-    ...glob($root . '/docs/*.md')];
-foreach ($documents as $document)
-{
-    preg_match_all('~\]\(([^)\s]+)\)~', (string) file_get_contents($document), $matches);
-    foreach ($matches[1] as $link)
-    {
-        if (preg_match('~^(?:[a-z]+:|#|/)~i', $link)) continue;
-        $path = explode('#', $link, 2)[0];
-        if (!file_exists(dirname($document) . '/' . $path)) throw new RuntimeException('Broken documentation link: ' . $document . ' -> ' . $link);
-    }
-}
-echo "PASS: $classes PSR-4 declarations, $imports source imports and local documentation links.\n";
+echo "PASS: $classes PSR-4 declarations and $imports source imports.\n";
