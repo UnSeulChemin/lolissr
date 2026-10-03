@@ -294,6 +294,17 @@ foreach ($achievements as $item)
                     <?php endif; ?>
                 </div>
             <?php endif; ?>
+            <?php if ($achievement['category'] === 'Succès'): ?>
+                <div class="success-reward">
+                    <strong>Récompense : avatar<span class="success-reward-name"><?= e(ProfileImageCatalog::ACHIEVEMENT_AVATAR_NAMES[$achievement['target']]) ?></span></strong>
+                    <img src="<?= e($view->baseUri . 'images/profil/avatar/thumbnail/' . ProfileImageCatalog::ACHIEVEMENT_REWARD_AVATARS[$achievement['target']] . '.webp') ?>" alt="<?= e(ProfileImageCatalog::ACHIEVEMENT_AVATAR_NAMES[$achievement['target']]) ?>" width="120" height="120" loading="lazy">
+                    <?php if ($achievement['unlocked']): ?>
+                        <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir cet avatar</a>
+                    <?php else: ?>
+                        <span>🔒 Débloqué avec <?= $achievement['target'] ?> <?= $achievement['target'] === 1 ? 'succès obtenu' : 'succès obtenus' ?></span>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
             <?php if ($achievement['category'] === 'Niveau'): ?>
                 <?php $levelTitle = \App\Constants\UserTitle::LEVEL_REWARDS[$achievement['target']] ?? null; ?>
                 <?php $levelFrame = ProfileImageCatalog::LEVEL_REWARD_FRAMES[$achievement['target']] ?? null; ?>

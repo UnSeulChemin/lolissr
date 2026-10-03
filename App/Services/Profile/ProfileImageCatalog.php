@@ -6,6 +6,27 @@ namespace App\Services\Profile;
 
 final class ProfileImageCatalog
 {
+    public const ACHIEVEMENT_REWARD_AVATARS = [1 => 'etoile-naissante', 10 => 'gardienne-des-succes', 25 => 'souveraine-des-succes'];
+    public const ACHIEVEMENT_AVATAR_NAMES = [1 => 'Étoile naissante', 10 => 'Gardienne des succès', 25 => 'Souveraine des succès'];
+
+    /** @return list<array{avatar: string, avatar_extension: string, unlocked: bool, requirement: string}> */
+    public function avatarsForAchievements(int $unlockedCount): array
+    {
+        $avatars = [];
+        foreach ($this->items('avatar') as $item)
+        {
+            $target = array_search($item['avatar'], self::ACHIEVEMENT_REWARD_AVATARS, true);
+            $avatars[] = [
+                'avatar' => $item['avatar'],
+                'avatar_extension' => $item['avatar_extension'],
+                'unlocked' => $target === false || $unlockedCount >= $target,
+                'requirement' => $target === false ? 'Disponible' : $target . ($target === 1 ? ' succès obtenu' : ' succès obtenus'),
+            ];
+        }
+
+        return $avatars;
+    }
+
     // Les niveaux explicites préservent les déblocages existants lors de l’ajout d’images.
     // Les cadres de récompense se débloquent tous les 25 niveaux.
     private const FRAME_LEVELS = [

@@ -71,7 +71,7 @@ for ($visit = 0; $visit < 2; $visit++)
     }
 }
 $achievements = ProfileAchievements::forStats($stats, $user->level);
-if (count($achievements) !== 41 || count(array_filter($achievements, static fn ($item) => $item['unlocked'])) !== 41)
+if (count($achievements) !== 44 || count(array_filter($achievements, static fn ($item) => $item['unlocked'])) !== 44)
 {
     throw new RuntimeException('Missing or incorrectly locked achievement thresholds.');
 }
@@ -79,7 +79,28 @@ if ((int) $database->query('SELECT COUNT(*) FROM achievement_xp_rewards')->fetch
 {
     throw new RuntimeException('Reading the profile attributed missing achievements.');
 }
-echo "PASS: repeated profile reads with all thresholds reached, read-only database, isolated user XP and 41 achievements.\n";
+echo "PASS: repeated profile reads with all thresholds reached, read-only database, isolated user XP and 44 achievements.\n";
+
+$catalog = new \App\Services\Profile\ProfileImageCatalog();
+foreach ([0, 1, 9, 10, 24, 25] as $level)
+{
+    $items = ProfileAchievements::forStats(new \App\DTO\Profile\Responses\ProfileUnlockStatsData(), $level);
+    $baseCount = count(array_filter($items, static fn ($item) => $item['category'] !== 'Succès' && $item['unlocked']));
+    foreach (array_filter($items, static fn ($item) => $item['category'] === 'Succès') as $item)
+    {
+        if ($item['current'] !== $baseCount || $item['unlocked'] !== ($baseCount >= $item['target']))
+            throw new RuntimeException('Achievement rewards counted themselves.');
+    }
+}
+foreach ([0, 1, 9, 10, 24, 25] as $count)
+{
+    foreach ($catalog->avatarsForAchievements($count) as $avatar)
+    {
+        $target = array_search($avatar['avatar'], \App\Services\Profile\ProfileImageCatalog::ACHIEVEMENT_REWARD_AVATARS, true);
+        if ($avatar['unlocked'] !== ($target === false || $count >= $target))
+            throw new RuntimeException('Incorrect exclusive avatar unlock.');
+    }
+}
 
 $unlocks = $container->get(\App\Repositories\Profile\ProfileUnlockStatsRepository::class);
 if (ProfileAchievements::forStats($unlocks->forAchievements(), $user->level) !== $achievements)

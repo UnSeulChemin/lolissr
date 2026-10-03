@@ -38,6 +38,8 @@ export function avatarModal(avatars)
                                     class="media-picker-item media-picker-item--avatar avatar-modal-item"
                                     data-avatar="${avatar.avatar}"
                                     type="button"
+                                    ${avatar.unlocked ? '' : 'disabled'}
+                                    aria-label="${avatar.avatar} — ${avatar.requirement}"
                                 >
 
                                     <img loading="lazy" decoding="async"
@@ -45,6 +47,10 @@ export function avatarModal(avatars)
                                         alt="${avatar.avatar}"
                                         draggable="false"
                                     >
+
+                                    <span class="banner-modal-status">
+                                        ${avatar.unlocked ? '' : '<span aria-hidden="true">🔒</span> '}${avatar.requirement}
+                                    </span>
 
                                 </button>
                             `,
@@ -58,7 +64,7 @@ export function avatarModal(avatars)
             const close = mountProfileModal(overlay, resolve);
 
             overlay
-                .querySelectorAll('.avatar-modal-item')
+                .querySelectorAll('.avatar-modal-item:not(:disabled)')
                 .forEach(
                     (button) =>
                     {

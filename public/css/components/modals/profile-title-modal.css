@@ -67,6 +67,7 @@
 }
 
 .title-modal-item,
+.avatar-modal-grid .avatar-modal-item,
 .banner-modal-grid .banner-modal-item,
 .frame-modal-grid .frame-modal-item
 {
@@ -96,6 +97,7 @@
 }
 
 .title-modal-item:not(:disabled):hover,
+.avatar-modal-grid .avatar-modal-item:not(:disabled):hover,
 .banner-modal-grid .banner-modal-item:not(:disabled):hover,
 .frame-modal-grid .frame-modal-item:not(:disabled):hover
 {
@@ -112,6 +114,7 @@
 }
 
 .title-modal-item:focus-visible,
+.avatar-modal-grid .avatar-modal-item:focus-visible,
 .banner-modal-grid .banner-modal-item:focus-visible,
 .frame-modal-grid .frame-modal-item:focus-visible
 {
@@ -131,6 +134,7 @@
 }
 
 .title-modal-item:disabled,
+.avatar-modal-grid .avatar-modal-item:disabled,
 .banner-modal-grid .banner-modal-item:disabled,
 .frame-modal-grid .frame-modal-item:disabled
 {

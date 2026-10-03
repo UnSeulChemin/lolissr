@@ -75,7 +75,7 @@ final class ProfileAjaxController extends Controller
 
     public function avatars(): never
     {
-        $avatars = $this->imageCatalog->items('avatar');
+        $avatars = $this->availableAvatars();
 
         $this->jsonResult(ServiceResult::success(data: ['avatars' => $avatars]));
     }
@@ -85,7 +85,7 @@ final class ProfileAjaxController extends Controller
         $user = $this->user();
 
         $avatar = $this->findItem(
-            $this->imageCatalog->items('avatar'),
+            $this->availableAvatars(),
             'avatar',
             $this->stringInput('avatar')
         );
@@ -93,6 +93,11 @@ final class ProfileAjaxController extends Controller
         if ($avatar === null)
         {
             $this->jsonResult(ServiceResult::error(message: 'Avatar invalide', status: 422));
+        }
+
+        if (! $avatar['unlocked'])
+        {
+            $this->jsonResult(ServiceResult::error(message: 'Condition de déblocage : ' . $avatar['requirement'], status: 422));
         }
 
         if (! $this->userRepository->updateAvatar(
@@ -225,6 +230,15 @@ final class ProfileAjaxController extends Controller
     // --------------------------------------------------------------------------
     // UTILITAIRES
     // --------------------------------------------------------------------------
+
+    /** @return list<array{avatar: string, avatar_extension: string, unlocked: bool, requirement: string}> */
+    private function availableAvatars(): array
+    {
+        $achievements = \App\Services\Profile\ProfileAchievements::forStats($this->unlockStats->forAchievements(), $this->user()->level);
+        $count = count(array_filter($achievements, static fn (array $item): bool => $item['category'] !== 'Succès' && $item['unlocked']));
+
+        return $this->imageCatalog->avatarsForAchievements($count);
+    }
 
     private function user(): User
     {

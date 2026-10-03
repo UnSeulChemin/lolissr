@@ -42,6 +42,19 @@ final class ProfileAchievements
             }
         }
 
+        $unlockedCount = count(array_filter($achievements, static fn (array $item): bool => $item['unlocked']));
+        foreach (array_keys(ProfileImageCatalog::ACHIEVEMENT_REWARD_AVATARS) as $target)
+        {
+            $achievements[] = [
+                'category' => 'Succès',
+                'icon' => '🏆',
+                'title' => $target . ($target === 1 ? ' succès obtenu' : ' succès obtenus'),
+                'current' => $unlockedCount,
+                'target' => $target,
+                'unlocked' => $unlockedCount >= $target,
+            ];
+        }
+
         return $achievements;
     }
 }

@@ -34,7 +34,7 @@ use Framework\Support\Str;
 $filters = ['tout' => '✨'];
 foreach ($achievements as $item)
 {
-    if ($item['category'] === 'Niveau') continue;
+    if (in_array($item['category'], ['Niveau', 'Succès'], true)) continue;
     $filters[$item['category']] = $item['icon'];
 }
 $filters['succes'] = '🏆';
