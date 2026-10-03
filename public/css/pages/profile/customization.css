@@ -9,7 +9,7 @@
         + (var(--gap-grid-home) * 2)
     );
 
-    --profile-avatar-size: clamp(110px, 12vw, 140px);
+    --profile-avatar-size: clamp(80px, 9vw, 100px);
 
     width: var(--profile-width);
     max-width: 100%;
@@ -48,6 +48,7 @@
 {
     flex-shrink: 0;
     position: relative;
+    height: clamp(140px, 18vw, 220px);
     border-radius:
         var(--radius-card-lg)
         var(--radius-card-lg)
@@ -60,9 +61,9 @@
     display: block;
 
     width: 100%;
-    height: auto;
+    height: 100%;
 
-    object-fit: contain;
+    object-fit: cover;
     object-position: center;
 }
 
@@ -103,7 +104,7 @@
 .profile-customization-name
 {
     margin: 0;
-    font-size: 1.7rem;
+    font-size: 1.4rem;
 }
 
 .profile-customization-title
@@ -111,7 +112,7 @@
     margin:
         .5rem
         0
-        1.25rem;
+        .5rem;
 
     text-align: center;
 
