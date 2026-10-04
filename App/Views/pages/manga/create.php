@@ -15,6 +15,9 @@ $editeurValue = $old['editeur'] ?? '';
 $numeroValue = $old['numero'] ?? '';
 $commentaireValue = $old['commentaire'] ?? '';
 
+$jacquetteValue = $old['jacquette'] ?? '';
+$livreNoteValue = $old['livre_note'] ?? '';
+
 $statutValue = $old['statut'] ?? 'en_cours';
 
 $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
@@ -193,6 +196,108 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
 
                 </div>
 
+
+                <div class="form-group u-stack">
+
+                    <label
+                        class="form-label u-text-center u-bold"
+                        for="jacquette"
+                    >
+
+                        Note jaquette
+
+                    </label>
+
+                    <select
+                        class="
+                            form-input
+                            form-select
+                         u-text-center u-w-full"
+                        name="jacquette"
+                        id="jacquette"
+                    >
+
+                        <option value="">
+                            Choisir
+                        </option>
+
+                        <?php for ($i = 1; $i <= 5; $i++): ?>
+
+                            <option
+                                value="<?= $i ?>"
+                                <?= (string) $jacquetteValue === (string) $i ? 'selected' : '' ?>
+                            >
+
+                                <?= $i ?>
+
+                            </option>
+
+                        <?php endfor; ?>
+
+                    </select>
+
+                    <?php if (isset($errors['jacquette']) && $errors['jacquette'] !== ''): ?>
+
+                        <p class="form-error u-semibold">
+
+                            <?= e($errors['jacquette']) ?>
+
+                        </p>
+
+                    <?php endif; ?>
+
+                </div>
+
+                <div class="form-group u-stack">
+
+                    <label
+                        class="form-label u-text-center u-bold"
+                        for="livre_note"
+                    >
+
+                        Note livre
+
+                    </label>
+
+                    <select
+                        class="
+                            form-input
+                            form-select
+                         u-text-center u-w-full"
+                        name="livre_note"
+                        id="livre_note"
+                    >
+
+                        <option value="">
+                            Choisir
+                        </option>
+
+                        <?php for ($i = 1; $i <= 5; $i++): ?>
+
+                            <option
+                                value="<?= $i ?>"
+                                <?= (string) $livreNoteValue === (string) $i ? 'selected' : '' ?>
+                            >
+
+                                <?= $i ?>
+
+                            </option>
+
+                        <?php endfor; ?>
+
+                    </select>
+
+                    <?php if (isset($errors['livre_note']) && $errors['livre_note'] !== ''): ?>
+
+                        <p class="form-error u-semibold">
+
+                            <?= e($errors['livre_note']) ?>
+
+                        </p>
+
+                    <?php endif; ?>
+
+                </div>
 
                 <div class="form-group u-stack">
 

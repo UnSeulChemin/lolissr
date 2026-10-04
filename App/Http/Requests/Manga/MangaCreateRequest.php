@@ -46,6 +46,16 @@ final class MangaCreateRequest extends FormRequest
             ->string('commentaire')
             ->maxLength('commentaire', 255)
 
+            ->nullable('jacquette')
+            ->integer('jacquette')
+            ->min('jacquette', 1)
+            ->max('jacquette', 5)
+
+            ->nullable('livre_note')
+            ->integer('livre_note')
+            ->min('livre_note', 1)
+            ->max('livre_note', 5)
+
             ->fileRequired('image')
             ->fileOk('image')
             ->imageExtension('image', UploadConfig::allowedExtensions())

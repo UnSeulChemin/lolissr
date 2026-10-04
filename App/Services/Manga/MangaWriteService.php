@@ -286,9 +286,11 @@ final readonly class MangaWriteService
             'editeur' => $dto->editeur,
             'numero' => $dto->numero,
             'statut' => $dto->statut,
-            'jacquette' => 1,
-            'livre_note' => 1,
-            'note' => 2,
+            'jacquette' => $dto->jacquette,
+            'livre_note' => $dto->livreNote,
+            'note' => $dto->jacquette !== null && $dto->livreNote !== null
+                ? $dto->jacquette + $dto->livreNote
+                : null,
             'commentaire' => $dto->commentaire
         ]);
 

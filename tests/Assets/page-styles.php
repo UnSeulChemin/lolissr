@@ -34,14 +34,20 @@ $cases = [
         'components/modals/profile-title-modal.css', 'components/media-picker.css',
         'components/summary.css', 'components/profile-avatar.css', 'pages/profile/profile.css', 'pages/profile/customization.css'
     ],
+    'errors/403' => ['components/detail.css'],
     'errors/404' => ['components/detail.css'],
     'errors/405' => ['components/detail.css'],
     'errors/419' => ['components/detail.css'],
+    'errors/422' => ['components/detail.css'],
     'errors/500' => ['components/detail.css']
 ];
 
 foreach ($cases as $view => $expected)
 {
+    if (!is_file(view_path($view . '.php')))
+    {
+        throw new RuntimeException('Missing view: ' . $view);
+    }
     $actual = PageStyles::forView(view_path($view . '.php'));
     $urls = array_map(static fn ($file) => view_base_uri() . 'css/' . $file
         . '?v=' . hash_file('sha256', ROOT . '/public/css/' . $file), $expected);

@@ -14,7 +14,9 @@ final readonly class MangaCreateData
         public string $editeur,
         public int $numero,
         public string $statut,
-        public ?string $commentaire
+        public ?string $commentaire,
+        public ?int $jacquette = null,
+        public ?int $livreNote = null
     )
     {
     }
@@ -32,7 +34,9 @@ final readonly class MangaCreateData
             editeur: trim((string) ($data['editeur'] ?? '')),
             numero: max(1, (int) ($data['numero'] ?? 1)),
             statut: trim((string) ($data['statut'] ?? 'en_cours')),
-            commentaire: Str::nullableTrim($data['commentaire'] ?? null)
+            commentaire: Str::nullableTrim($data['commentaire'] ?? null),
+            jacquette: isset($data['jacquette']) && $data['jacquette'] !== '' ? (int) $data['jacquette'] : null,
+            livreNote: isset($data['livre_note']) && $data['livre_note'] !== '' ? (int) $data['livre_note'] : null
         );
     }
 }

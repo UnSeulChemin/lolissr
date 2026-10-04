@@ -53,6 +53,7 @@
             "@php tests/Domain/app-boundaries.php",
             "@php tests/Domain/collection-delete-identity.php",
             "@php tests/Domain/collection-update-existence.php",
+            "@php tests/Domain/manga-create-notes.php",
             "@php tests/Domain/media-integrity.php",
             "@php tests/Domain/manga-xp-batch.php",
             "@php tests/Domain/collection-xp-batch.php",
