@@ -176,6 +176,8 @@ final readonly class FigurineReadService
             : null;
 
         return new FigurineSearchItemData(
+
+            thumbnailUrl: $figurine->thumbnail !== '' && $figurine->extension !== '' ? \App\Support\Media\ImageAssets::url(view_base_uri() . 'images/figurine/thumbnail/' . $figurine->thumbnail . '.' . $figurine->extension, true) : null,
             slug: $figurine->slug,
             numero: $figurine->numero,
 

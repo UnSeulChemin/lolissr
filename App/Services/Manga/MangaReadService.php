@@ -284,6 +284,8 @@ final readonly class MangaReadService
     private function mapSearchItem(Manga $manga): MangaSearchItemData
     {
         return new MangaSearchItemData(
+
+            thumbnailUrl: $manga->thumbnail !== '' && $manga->extension !== '' ? \App\Support\Media\ImageAssets::url(view_base_uri() . 'images/manga/thumbnail/' . $manga->thumbnail . '.' . $manga->extension, true) : null,
             slug: $manga->slug,
             numero: $manga->numero,
             livre: $manga->livre,

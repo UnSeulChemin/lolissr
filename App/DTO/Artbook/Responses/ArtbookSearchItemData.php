@@ -15,7 +15,8 @@ final readonly class ArtbookSearchItemData
         public ?string $serie,
 
         public ?string $thumbnail,
-        public ?string $extension
+        public ?string $extension,
+        public ?string $thumbnailUrl = null
     )
     {
     }

@@ -34,6 +34,14 @@ try
         || !is_file($directory . '/source.grid.jpg')
         || ThumbnailOptimizer::createGrid($directory . '/source.jpg'))
         throw new RuntimeException('Grid creation damaged the source or is not repeatable.');
+    $small = imagecreatetruecolor(2, 2);
+    imagejpeg($small, $directory . '/source.jpg', 85);
+    imagedestroy($small);
+    clearstatcache(true, $directory . '/source.jpg');
+    if (ThumbnailOptimizer::createGrid($directory . '/source.jpg') || is_file($directory . '/source.grid.jpg'))
+        throw new RuntimeException('Replacing a source retained an obsolete grid.');
+    if (ThumbnailOptimizer::createGrid($directory . '/source.jpg'))
+        throw new RuntimeException('A skipped conversion was retried incorrectly.');
     $orders = [1 => [0,1,2,3], 2 => [1,0,3,2], 3 => [3,2,1,0], 4 => [2,3,0,1],
         5 => [0,2,1,3], 6 => [2,0,3,1], 7 => [3,1,2,0], 8 => [1,3,0,2]];
     foreach ($orders as $orientation => $order)
@@ -65,12 +73,14 @@ try
     }
     if (ImageAssets::url('/images/../.env') !== '/images/../.env') throw new RuntimeException('Unsafe image lookup.');
     if (ImageAssets::url('/not-an-image') !== '/not-an-image') throw new RuntimeException('Non-image URL changed.');
-    echo "PASS: eight EXIF orientations, both endian formats, dimensions and safe image URLs.\n";
+    echo "PASS: EXIF orientations, image versions, grid selection, obsolete grid removal and cached skipped conversions.\n";
 }
 finally
 {
     foreach ([$publicFixture, str_replace('.jpg', '.grid.jpg', $publicFixture)] as $fixture)
-        if (is_file($fixture)) unlink($fixture);
+        if (is_file($fixture))
+        { ThumbnailOptimizer::forgetGrid($fixture); unlink($fixture); }
+    ThumbnailOptimizer::forgetGrid($directory . '/source.jpg');
     foreach (glob($directory . '/*') ?: [] as $file) unlink($file);
     rmdir($directory);
 }

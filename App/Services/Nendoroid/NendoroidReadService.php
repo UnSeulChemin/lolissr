@@ -180,6 +180,8 @@ final readonly class NendoroidReadService
             : null;
 
         return new NendoroidSearchItemData(
+
+            thumbnailUrl: $nendoroid->thumbnail !== '' && $nendoroid->extension !== '' ? \App\Support\Media\ImageAssets::url(view_base_uri() . 'images/nendoroid/thumbnail/' . $nendoroid->thumbnail . '.' . $nendoroid->extension, true) : null,
             slug: $nendoroid->slug,
             numero: $nendoroid->numero,
 

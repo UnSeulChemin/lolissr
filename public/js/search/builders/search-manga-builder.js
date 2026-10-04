@@ -18,7 +18,7 @@ export function buildMangaResult(manga, rawValue, basePath)
 
     const extension = manga.extension ?? 'jpg';
 
-    const imageUrl = `${basePath}images/manga/thumbnail/${thumbnail}.${extension}`;
+    const imageUrl = manga.thumbnailUrl ?? `${basePath}images/manga/thumbnail/${thumbnail}.${extension}`;
 
     const mangaUrl = `${basePath}manga/series/${slug}/${numero}`;
 
@@ -27,7 +27,7 @@ export function buildMangaResult(manga, rawValue, basePath)
 
         `
             <img
-                src="${imageUrl}"
+                src="${escapeHtml(imageUrl)}"
                 alt="${escapeHtml(
                     livre,
                 )}"

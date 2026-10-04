@@ -13,7 +13,8 @@ final readonly class MangaSearchItemData
         public string $thumbnail,
         public string $extension,
         public ?int $note,
-        public bool $lu
+        public bool $lu,
+        public ?string $thumbnailUrl = null
     )
     {
     }

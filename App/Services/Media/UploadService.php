@@ -94,7 +94,9 @@ final readonly class UploadService
                 try
                 {
                     ThumbnailOptimizer::optimize($destination);
-                    ThumbnailOptimizer::createGrid($destination);
+                    if (str_contains(str_replace('\\', '/', $destination), '/images/profil/'))
+                        \App\Support\Media\ImageAssets::invalidateProfileVersion();
+                    else ThumbnailOptimizer::createGrid($destination);
                 }
                 catch (\Throwable $exception)
                 {
@@ -141,6 +143,9 @@ final readonly class UploadService
 
     public function removeFile(string $path): bool
     {
+        ThumbnailOptimizer::forgetGrid($path);
+        if (str_contains(str_replace('\\', '/', $path), '/images/profil/'))
+            \App\Support\Media\ImageAssets::invalidateProfileVersion();
         $grid = preg_replace('/\.(jpg|jpeg|png|webp)$/i', '.grid.$1', $path);
         if (is_string($grid) && $grid !== $path && is_file($grid) && !@unlink($grid))
         {

@@ -60,3 +60,4 @@ foreach ($files as $file)
 printf("Thumbnails: %d optimized, %.2f MB saved. Originals: storage/backups/images.\n", $count, $saved / 1048576);
 if (!$apply) echo "Audit only; use --apply to optimize.\n";
 require __DIR__ . '/build-grid-images.php';
+require __DIR__ . '/build-profile-manifest.php';

@@ -10,19 +10,38 @@ final class ThumbnailOptimizer
     {
         $target = preg_replace('/\.(jpg|jpeg|png|webp)$/i', '.grid.$1', $path);
         if (!is_string($target) || $target === $path || str_contains(basename($path), '.grid.')) return false;
-        if (is_file($target) && filemtime($target) >= filemtime($path)) return false;
+        $sourceHash = hash_file('sha256', $path);
+        if ($sourceHash === false) throw new \RuntimeException('Cannot fingerprint grid source.');
+        $resolved = realpath($path);
+        $statePath = dirname(__DIR__, 3) . '/storage/grid-images/' . hash('sha256', $resolved === false ? $path : $resolved) . '.json';
+        $state = is_file($statePath) ? json_decode((string) file_get_contents($statePath), true) : null;
+        if (is_array($state) && ($state['source'] ?? null) === $sourceHash && ($state['settings'] ?? null) === '600:85:v1'
+            && (($state['grid'] ?? null) === true ? is_file($target) : !is_file($target))) return false;
         $temporary = dirname($path) . '/.grid-' . bin2hex(random_bytes(16));
         try
         {
             if (!copy($path, $temporary)) throw new \RuntimeException('Cannot stage grid image.');
-            if (!self::optimize($temporary, 600)) return false;
+            if (!self::optimize($temporary, 600))
+            {
+                if (is_file($target) && !unlink($target)) throw new \RuntimeException('Cannot remove obsolete grid image.');
+                ImageManifest::write($statePath, ['source' => $sourceHash, 'settings' => '600:85:v1', 'grid' => false]);
+                return false;
+            }
             if (!rename($temporary, $target)) throw new \RuntimeException('Cannot publish grid image.');
+            ImageManifest::write($statePath, ['source' => $sourceHash, 'settings' => '600:85:v1', 'grid' => true]);
             return true;
         }
         finally
         {
             if (is_file($temporary)) unlink($temporary);
         }
+    }
+
+    public static function forgetGrid(string $path): void
+    {
+        $resolved = realpath($path);
+        $statePath = dirname(__DIR__, 3) . '/storage/grid-images/' . hash('sha256', $resolved === false ? $path : $resolved) . '.json';
+        if (is_file($statePath) && !unlink($statePath)) throw new \RuntimeException('Cannot remove grid state.');
     }
 
     /** Preserve the format, transparency and animated files. Publish only smaller output. */

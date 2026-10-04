@@ -20,7 +20,7 @@ export function buildPelucheResult(peluche, rawValue, basePath)
 
     const extension = peluche.extension ?? 'jpg';
 
-    const imageUrl = `${basePath}images/peluche/thumbnail/${thumbnail}.${extension}`;
+    const imageUrl = peluche.thumbnailUrl ?? `${basePath}images/peluche/thumbnail/${thumbnail}.${extension}`;
 
     const pelucheUrl = `${basePath}peluche/peluches/${slug}/${numero}`;
 
@@ -29,7 +29,7 @@ export function buildPelucheResult(peluche, rawValue, basePath)
 
         `
             <img
-                src="${imageUrl}"
+                src="${escapeHtml(imageUrl)}"
                 alt="${escapeHtml(
                     waifu,
                 )}"

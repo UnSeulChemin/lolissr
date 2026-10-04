@@ -22,6 +22,8 @@
 /storage/.build.lock
 /storage/javascript-retention.json
 /storage/thumbnail-optimization.json
+/storage/grid-images/
+/storage/profile-images.json
 
 # Images locales et fichiers envoyes par les utilisateurs
 /public/images/*

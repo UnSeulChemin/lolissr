@@ -220,6 +220,8 @@ final readonly class ArtbookReadService
             : null;
 
         return new ArtbookSearchItemData(
+
+            thumbnailUrl: $artbook->thumbnail !== '' && $artbook->extension !== '' ? \App\Support\Media\ImageAssets::url(view_base_uri() . 'images/artbook/thumbnail/' . $artbook->thumbnail . '.' . $artbook->extension, true) : null,
             slug: $artbook->slug,
             numero: $artbook->numero,
 

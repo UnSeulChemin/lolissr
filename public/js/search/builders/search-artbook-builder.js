@@ -22,7 +22,7 @@ export function buildArtbookResult(artbook, rawValue, basePath)
 
     const extension = artbook.extension ?? 'jpg';
 
-    const imageUrl = `${basePath}images/artbook/thumbnail/${thumbnail}.${extension}`;
+    const imageUrl = artbook.thumbnailUrl ?? `${basePath}images/artbook/thumbnail/${thumbnail}.${extension}`;
 
     const artbookUrl = `${basePath}manga/artbooks/${slug}/${numero}`;
 
@@ -35,7 +35,7 @@ export function buildArtbookResult(artbook, rawValue, basePath)
 
         `
             <img
-                src="${imageUrl}"
+                src="${escapeHtml(imageUrl)}"
                 alt="${escapeHtml(
                     title,
                 )}"

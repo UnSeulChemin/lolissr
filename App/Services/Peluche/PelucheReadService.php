@@ -174,6 +174,8 @@ final readonly class PelucheReadService
             : null;
 
         return new PelucheSearchItemData(
+
+            thumbnailUrl: $peluche->thumbnail !== '' && $peluche->extension !== '' ? \App\Support\Media\ImageAssets::url(view_base_uri() . 'images/peluche/thumbnail/' . $peluche->thumbnail . '.' . $peluche->extension, true) : null,
             slug: $peluche->slug,
             numero: $peluche->numero,
 

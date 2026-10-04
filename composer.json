@@ -85,6 +85,7 @@
         "images:build": "@php scripts/Assets/build-profile-images.php",
         "images:optimize": "@php scripts/Assets/optimize-thumbnails.php",
         "images:variants": "@php scripts/Assets/build-grid-images.php",
+        "images:manifest": "@php scripts/Assets/build-profile-manifest.php",
 
         "dev:reset": ["@logs:clear", "@cache:clear", "@sessions:clear", "@composer dump-autoload"],
         "logs:clear": "@php scripts/Maintenance/clear-runtime.php logs",

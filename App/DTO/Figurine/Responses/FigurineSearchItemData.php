@@ -12,7 +12,8 @@ final readonly class FigurineSearchItemData
         public string $origin,
         public string $waifu,
         public ?string $thumbnail,
-        public ?string $extension
+        public ?string $extension,
+        public ?string $thumbnailUrl = null
     )
     {
     }

@@ -20,7 +20,7 @@ export function buildFigurineResult(figurine, rawValue, basePath)
 
     const extension = figurine.extension ?? 'jpg';
 
-    const imageUrl = `${basePath}images/figurine/thumbnail/${thumbnail}.${extension}`;
+    const imageUrl = figurine.thumbnailUrl ?? `${basePath}images/figurine/thumbnail/${thumbnail}.${extension}`;
 
     const figurineUrl = `${basePath}figurine/figurines/${slug}/${numero}`;
 
@@ -29,7 +29,7 @@ export function buildFigurineResult(figurine, rawValue, basePath)
 
         `
             <img
-                src="${imageUrl}"
+                src="${escapeHtml(imageUrl)}"
                 alt="${escapeHtml(
                     waifu,
                 )}"

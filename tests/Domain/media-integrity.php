@@ -74,7 +74,11 @@ namespace {
             'Upload did not generate the expected thumbnail.');
     } finally
     {
-        foreach (glob($dir . '/*') ?: [] as $file) unlink($file);
+        foreach (glob($dir . '/*') ?: [] as $file)
+        {
+            \App\Support\Media\ThumbnailOptimizer::forgetGrid($file);
+            unlink($file);
+        }
         rmdir($dir);
         Config::clear();
     }

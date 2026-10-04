@@ -73,3 +73,4 @@ foreach (['avatar', 'banner', 'frame'] as $type)
     if (is_dir($directory) && count(scandir($directory) ?: []) === 2) rmdir($directory);
 }
 printf("Profile images: %d images optimized, %d -> %d bytes (%.1f%% saved).\n", $count, $before, $after, $before > 0 ? 100 * (1 - $after / $before) : 0);
+require __DIR__ . '/build-profile-manifest.php';

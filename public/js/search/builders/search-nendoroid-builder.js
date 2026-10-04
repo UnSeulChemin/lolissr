@@ -20,7 +20,7 @@ export function buildNendoroidResult(nendoroid, rawValue, basePath)
 
     const extension = nendoroid.extension ?? 'jpg';
 
-    const imageUrl = `${basePath}images/nendoroid/thumbnail/${thumbnail}.${extension}`;
+    const imageUrl = nendoroid.thumbnailUrl ?? `${basePath}images/nendoroid/thumbnail/${thumbnail}.${extension}`;
 
     const nendoroidUrl = `${basePath}nendoroid/nendoroids/${slug}/${numero}`;
 
@@ -29,7 +29,7 @@ export function buildNendoroidResult(nendoroid, rawValue, basePath)
 
         `
             <img
-                src="${imageUrl}"
+                src="${escapeHtml(imageUrl)}"
                 alt="${escapeHtml(
                     waifu,
                 )}"

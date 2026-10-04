@@ -32,6 +32,23 @@ final class ImageAssets
 
     public static function profileVersion(): string
     {
+        $manifest = dirname(__DIR__, 3) . '/storage/profile-images.json';
+        if (is_file($manifest))
+        {
+            $data = json_decode((string) file_get_contents($manifest), true);
+            if (is_array($data) && isset($data['version']) && is_string($data['version'])) return $data['version'];
+        }
+        return self::rebuildProfileVersion();
+    }
+
+    public static function invalidateProfileVersion(): void
+    {
+        $manifest = dirname(__DIR__, 3) . '/storage/profile-images.json';
+        if (is_file($manifest) && !unlink($manifest)) throw new \RuntimeException('Cannot invalidate profile image manifest.');
+    }
+
+    public static function rebuildProfileVersion(): string
+    {
         $versions = [];
         foreach (['avatar', 'banner', 'frame'] as $type)
         {
@@ -41,6 +58,8 @@ final class ImageAssets
                 if (is_file($file)) $versions[] = basename($file) . ':' . filemtime($file) . ':' . filesize($file);
             }
         }
-        return substr(hash('sha256', implode('|', $versions)), 0, 16);
+        $version = substr(hash('sha256', implode('|', $versions)), 0, 16);
+        ImageManifest::write(dirname(__DIR__, 3) . '/storage/profile-images.json', ['version' => $version]);
+        return $version;
     }
 }
