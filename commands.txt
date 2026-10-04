@@ -75,29 +75,6 @@ composer git:reset
 
 
 =========================================
-ASSETS
-=========================================
-
-= Compiler CSS / JavaScript et actualiser les versions
-composer assets:build
-
-= Compiler uniquement le CSS
-composer css:build
-
-= Installer esbuild pour compiler et vérifier le JavaScript
-composer js:install
-
-= Compiler uniquement le JavaScript
-composer js:build
-
-= Supprimer les anciens bundles JavaScript après leur délai de rétention
-composer js:prune
-
-= Générer les images de profil
-composer images:build
-
-
-=========================================
 MAINTENANCE
 =========================================
 
@@ -220,3 +197,26 @@ composer assets:build
 composer check
 
 = Le regroupement métier des méthodes reste manuel
+
+
+=========================================
+ASSETS
+=========================================
+
+= Compiler CSS / JavaScript et actualiser les versions
+composer assets:build
+
+= Compiler uniquement le CSS
+composer css:build
+
+= Installer esbuild pour compiler et vérifier le JavaScript
+composer js:install
+
+= Compiler uniquement le JavaScript
+composer js:build
+
+= Supprimer les anciens bundles JavaScript après leur délai de rétention
+composer js:prune
+
+= Générer les images de profil
+composer images:build
