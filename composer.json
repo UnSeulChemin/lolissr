@@ -30,7 +30,7 @@
         "check": ["@phpstan", "@http-tests", "@regression-tests"],
         "check:all": ["@check", "@browser-tests"],
 
-        "phpstan": "phpstan analyse --no-progress --memory-limit=512M",
+        "phpstan": "phpstan analyse --configuration=scripts/Tools/phpstan.neon --no-progress --memory-limit=512M",
         "http-tests": ["@php tests/Http/run-http.php", "@php tests/Http/spa-http.php"],
         "browser-tests": "@php tests/Browser/run-browser-tests.php",
         "dx": "@php scripts/Tools/dx-format.php",
