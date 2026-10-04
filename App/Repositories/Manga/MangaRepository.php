@@ -283,6 +283,18 @@ final class MangaRepository extends AbstractRepository
             return false;
         }
 
+        // Le journal survit a la suppression/recreation de tous les tomes.
+        $history = $this->query(
+            'INSERT INTO manga_series_rewards (slug) VALUES (:slug)
+            ON DUPLICATE KEY UPDATE slug = manga_series_rewards.slug',
+            ['slug' => $this->normalizeSlug($slug)]
+        );
+        if ($history === false)
+        {
+            throw new \RuntimeException('Impossible de conserver la recompense de serie.');
+        }
+        $newReward = $history->rowCount() === 1;
+
         // Transmettre la récompense existante aux nouveaux tomes sans attribuer à nouveau des XP.
         $statement = $this->query(
             "
@@ -296,7 +308,7 @@ final class MangaRepository extends AbstractRepository
             ['slug' => $this->normalizeSlug($slug)]
         );
 
-        return ! $alreadyRewarded && $statement !== false && $statement->rowCount() >= 1;
+        return ! $alreadyRewarded && $newReward && $statement !== false && $statement->rowCount() >= 1;
     }
 
     // --------------------------------------------------------------------------

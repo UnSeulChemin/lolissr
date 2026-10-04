@@ -96,6 +96,7 @@
 
         "backup": "@php scripts/Database/backup-database.php",
         "db:deduplicate-indexes": "@php scripts/Database/deduplicate-indexes.php",
+        "db:check": "@php tests/Domain/database-schema.php",
         "xp:backfill": "@php scripts/Profile/backfill-achievement-xp.php",
 
         "release:zip": "@php scripts/Release/build-release.php",
@@ -131,6 +132,7 @@
 
         "backup": "[Données] Sauvegarde la base de données.",
         "db:deduplicate-indexes": "[Données] Gère les index redondants de la base.",
+        "db:check": "[Données] Vérifie le schéma MySQL réel avec des fixtures temporaires.",
         "xp:backfill": "[Données] USER_ID [--apply] : audite les XP ; --apply ajoute les récompenses manquantes.",
 
         "release:zip": "[Publication] Crée une archive ZIP de livraison.",

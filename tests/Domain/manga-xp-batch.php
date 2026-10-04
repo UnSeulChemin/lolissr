@@ -34,6 +34,7 @@ $db->setAttribute(PDO::ATTR_STATEMENT_CLASS, [XpBatchQueryCounter::class]);
 $db->exec('CREATE TEMPORARY TABLE users (id INT PRIMARY KEY, level INT NOT NULL, xp INT NOT NULL) ENGINE=InnoDB');
 $db->exec('CREATE TEMPORARY TABLE achievement_xp_rewards (user_id INT, achievement_key VARCHAR(100), xp INT, UNIQUE KEY (user_id, achievement_key)) ENGINE=InnoDB');
 $db->exec('CREATE TEMPORARY TABLE manga (id INT PRIMARY KEY, slug VARCHAR(100), numero INT, statut VARCHAR(20), lu INT, xp_read_rewarded INT, xp_series_rewarded INT) ENGINE=InnoDB');
+$db->exec('CREATE TEMPORARY TABLE manga_series_rewards (slug VARCHAR(255) PRIMARY KEY, rewarded_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP) ENGINE=InnoDB');
 $db->exec('INSERT INTO users VALUES (1, 1, 0)');
 $db->exec("INSERT INTO manga VALUES (1, 'alpha', 1, 'termine', 1, 0, 0)");
 $user = new User();
@@ -63,6 +64,8 @@ $assert($earned() === 0 && (int) $db->query('SELECT COUNT(*) FROM achievement_xp
     'Rollback persisted combined base/achievement rewards');
 $assert((int) $db->query('SELECT xp_read_rewarded + xp_series_rewarded FROM manga WHERE id = 1')->fetchColumn() === 0,
     'Rollback persisted initial reward flags');
+$assert((int) $db->query('SELECT COUNT(*) FROM manga_series_rewards')->fetchColumn() === 0,
+    'Rollback persisted series history');
 XpBatchQueryCounter::$queries = [];
 $result = $db->transaction(fn () => $service->rewardRead($manga, 'alpha'));
 $assert($result === ['xpEarned' => true, 'seriesXpEarned' => true], 'Missing base rewards');
@@ -112,3 +115,21 @@ $assert($achievementService->pendingSeriesTarget($user) === 0, 'Old tier was not
 $assert(count(array_filter(XpBatchQueryCounter::$queries, static fn ($sql) => str_contains($sql, 'LIMIT 1'))) >= 1,
     'Catch-up count should stop at the highest missing tier');
 echo "PASS: completed series tiers skip aggregation; missing older tiers retain bounded catch-up.\n";
+
+$repository = $container->get(\App\Repositories\Manga\MangaRepository::class);
+$db->exec("DELETE FROM manga WHERE slug = 'alpha'");
+$db->exec("INSERT INTO manga VALUES (3, 'alpha', 1, 'termine', 1, 1, 0)");
+$assert($db->transaction(fn () => $repository->claimSeriesReward('alpha')) === false,
+    'Recreated series awarded completion XP again');
+$assert((int) $db->query('SELECT xp_series_rewarded FROM manga WHERE id = 3')->fetchColumn() === 1,
+    'Historical reward was not transferred to recreated volume');
+$db->exec("INSERT INTO manga_series_rewards (slug) VALUES ('legacy')");
+$db->exec("INSERT INTO manga VALUES (4, 'legacy', 1, 'termine', 1, 1, 0)");
+$assert($db->transaction(fn () => $repository->claimSeriesReward('legacy')) === false,
+    'Legacy history awarded completion XP again');
+$db->exec("INSERT INTO manga VALUES (5, 'flags-only', 1, 'termine', 1, 1, 1)");
+$assert($db->transaction(fn () => $repository->claimSeriesReward('flags-only')) === false,
+    'Legacy flag awarded completion XP again');
+$assert((int) $db->query("SELECT COUNT(*) FROM manga_series_rewards WHERE slug = 'flags-only'")->fetchColumn() === 1,
+    'Legacy flag was not recorded in history');
+echo "PASS: persistent series history prevents rewards after recreation and preserves legacy rewards.\n";

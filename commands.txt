@@ -154,6 +154,20 @@ composer db:deduplicate-indexes
 = Supprimer les index redondants identifiés
 composer db:deduplicate-indexes -- --apply
 
+= Vérifier le schéma MySQL et ses contraintes avec des fixtures temporaires
+composer db:check
+
+= Audit et SQL de migration du 04/10/2026 (déjà appliquée localement)
+scripts\Database\SCHEMA-AUDIT.md
+scripts\Database\migrations\2026-10-04-schema-consistency.sql
+
+= Vérifier le schéma MySQL et ses contraintes avec des fixtures temporaires
+composer db:check
+
+= Audit et SQL de migration du 04/10/2026 (déjà appliquée localement)
+scripts\Database\SCHEMA-AUDIT.md
+scripts\Database\migrations\2026-10-04-schema-consistency.sql
+
 
 =========================================
 RÉCOMPENSES XP

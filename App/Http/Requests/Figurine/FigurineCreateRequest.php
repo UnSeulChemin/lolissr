@@ -33,6 +33,7 @@ final class FigurineCreateRequest extends FormRequest
             ->nullable('height_cm')
             ->numeric('height_cm')
             ->min('height_cm', 0)
+            ->max('height_cm', 999.9)
 
             ->required('company')
             ->string('company')
