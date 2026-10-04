@@ -10,58 +10,6 @@ composer run-script --list
 
 
 =========================================
-COMPOSER
-=========================================
-
-= Installer les dépendances
-composer install
-
-= Installer les dépendances de production
-composer install --no-dev --optimize-autoloader
-
-= Régénérer l'autoload
-composer dump-autoload
-
-= Vérifier composer.json et composer.lock
-composer validate
-
-= Synchroniser composer.lock sans mettre à jour les dépendances
-composer update --lock
-
-
-=========================================
-AI REFACTORING DX
-=========================================
-
-= Vérifier les écarts sans modifier les fichiers
-composer dx:check
-
-= Appliquer le formatage PHP / JavaScript / CSS
-composer dx
-
-= Lancer directement le script
-php scripts/Tools/dx-format.php
-
-= Vérifier directement sans modifier
-php scripts/Tools/dx-format.php --check
-
-= Afficher les options
-php scripts/Tools/dx-format.php --help
-
-= Utiliser une autre configuration JSON
-php scripts/Tools/dx-format.php --config=autre-dx.json
-
-= Configuration par défaut
-scripts/Tools/dx.json
-
-= Après le formatage
-composer assets:build
-composer check
-
-= Le regroupement métier des méthodes reste manuel
-
-
-=========================================
 TESTS & QUALITÉ DE CODE
 =========================================
 
@@ -269,6 +217,58 @@ composer git:reset
 
 = Effectue git reset --hard HEAD puis git clean -fd
 = Les fichiers ignorés sont conservés
+
+
+=========================================
+COMPOSER
+=========================================
+
+= Installer les dépendances
+composer install
+
+= Installer les dépendances de production
+composer install --no-dev --optimize-autoloader
+
+= Régénérer l'autoload
+composer dump-autoload
+
+= Vérifier composer.json et composer.lock
+composer validate
+
+= Synchroniser composer.lock sans mettre à jour les dépendances
+composer update --lock
+
+
+=========================================
+AI REFACTORING DX
+=========================================
+
+= Vérifier les écarts sans modifier les fichiers
+composer dx:check
+
+= Appliquer le formatage PHP / JavaScript / CSS
+composer dx
+
+= Lancer directement le script
+php scripts/Tools/dx-format.php
+
+= Vérifier directement sans modifier
+php scripts/Tools/dx-format.php --check
+
+= Afficher les options
+php scripts/Tools/dx-format.php --help
+
+= Utiliser une autre configuration JSON
+php scripts/Tools/dx-format.php --config=autre-dx.json
+
+= Configuration par défaut
+scripts/Tools/dx.json
+
+= Après le formatage
+composer assets:build
+composer check
+
+= Le regroupement métier des méthodes reste manuel
 
 
 =========================================

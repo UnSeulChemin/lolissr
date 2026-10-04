@@ -3,6 +3,8 @@
 // =================================================
 
 import { showToast } from '../core/toast.js';
+import { config } from '../core/config.js';
+import { enableDebug, disableDebug } from '../core/debug/debug-storage.js';
 
 // =================================================
 // UTILITAIRES
@@ -25,7 +27,7 @@ function reload()
 
 export function initAppDebug()
 {
-    if (!window.location.hostname.includes( 'localhost' ))
+    if (!config.isLocalhost)
     {
 
         return;
@@ -33,7 +35,7 @@ export function initAppDebug()
 
     window.enableDebug = () =>
         {
-            localStorage.setItem('lolissr_debug', '1');
+            enableDebug();
 
             showToast('Debug activé', 'success');
 
@@ -42,7 +44,7 @@ export function initAppDebug()
 
     window.disableDebug = () =>
         {
-            localStorage.removeItem('lolissr_debug');
+            disableDebug();
 
             showToast('Debug désactivé', 'success');
 

@@ -2,7 +2,7 @@
 // DÉBOGAGE
 // =================================================
 
-import { isDebugEnabled } from './debug-storage.js';
+import { config } from '../config.js';
 
 // =================================================
 // DÉMARRAGE
@@ -10,7 +10,7 @@ import { isDebugEnabled } from './debug-storage.js';
 
 export function start(name)
 {
-    if (!isDebugEnabled())
+    if (!config.debug)
     {
         return;
     }
@@ -24,7 +24,7 @@ export function start(name)
 
 export function end(name)
 {
-    if (!isDebugEnabled())
+    if (!config.debug)
     {
         return;
     }
@@ -40,7 +40,7 @@ export function end(name)
 
 export function print()
 {
-    if (!isDebugEnabled())
+    if (!config.debug)
     {
         return;
     }
@@ -67,7 +67,7 @@ export function print()
 
 export function reset()
 {
-    if (!isDebugEnabled())
+    if (!config.debug)
     {
         return;
     }
@@ -82,7 +82,7 @@ export function reset()
 
 export function finish()
 {
-    if (!isDebugEnabled())
+    if (!config.debug)
     {
         return;
     }

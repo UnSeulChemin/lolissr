@@ -82,6 +82,11 @@ function print(level, scope, ...messages)
 
 function write(level, scope, ...messages)
 {
+    if (level !== 'error' && !canDebug())
+    {
+        return;
+    }
+
     const entry = createEntry(level, scope, messages);
 
     pushLog(entry);
