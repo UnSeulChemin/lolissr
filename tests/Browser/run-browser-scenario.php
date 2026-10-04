@@ -41,7 +41,8 @@ HTML;
     $fixture .= <<<'HTML'
 try {
     const results = await runBrowserScenario(preparePageStyles);
-    document.getElementById('result').textContent = 'PASS ' + results.length + ' checks\n' + results.join('\n');
+    document.getElementById('result').textContent = results.map(label => 'PASS: ' + label).join('\n')
+        + '\nPASS ' + results.length + ' checks';
 } catch (error) {
     document.getElementById('result').textContent = 'FAIL ' + error.stack;
 }
@@ -79,7 +80,7 @@ HTML;
     rewind($output);
     $html = stream_get_contents($output);
 
-    if (!is_string($html) || preg_match('/<pre id="result">(PASS [\s\S]*?)<\/pre>/', $html, $matches) !== 1)
+    if (!is_string($html) || preg_match('/<pre id="result">((?:PASS: [^\r\n]*\r?\n)*\r?\n?PASS \d+ checks)<\/pre>/', $html, $matches) !== 1)
     {
         throw new RuntimeException('Browser checks failed: ' . (string) $html);
     }

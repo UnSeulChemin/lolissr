@@ -53,37 +53,6 @@ Tests navigateur
 = Lancer les scénarios Microsoft Edge
 composer browser-tests
 
-= Utiliser une autre URL locale
-composer browser-tests -- http://localhost/lolissr
-
-= Lancer un scénario précis
-php tests/Browser/run-browser-scenario.php http://localhost/lolissr tests/Browser/spa-browser.js
-
-= Vérifier le bundle JavaScript dans le navigateur
-php tests/Browser/run-bundle-browser.php http://localhost/lolissr
-
------------------------------------------
-
-Tests ciblés
-
-= Structure du projet et imports JavaScript
-php tests/Build/project-structure.php
-
-= Formateur DX
-php tests/Build/dx-format.php
-
-= Dépendances de production
-php tests/Build/production-dependencies.php
-
-= Images de profil
-php tests/Assets/profile-images.php
-
-= Cache HTTP des assets
-php tests/Http/asset-cache-http.php http://localhost/lolissr
-
-= Lancer un autre test PHP
-php tests/Dossier/nom-du-test.php
-
 
 =========================================
 ASSETS
@@ -197,12 +166,6 @@ releases\LoliSSR_vX.X.X.zip
 GIT
 =========================================
 
-= Afficher les modifications locales
-git status --short
-
-= Voir les différences
-git diff
-
 = Compiler les assets, créer un commit et publier sur origin/master
 composer publish:git
 
@@ -249,18 +212,6 @@ composer dx:check
 = Appliquer le formatage PHP / JavaScript / CSS
 composer dx
 
-= Lancer directement le script
-php scripts/Tools/dx-format.php
-
-= Vérifier directement sans modifier
-php scripts/Tools/dx-format.php --check
-
-= Afficher les options
-php scripts/Tools/dx-format.php --help
-
-= Utiliser une autre configuration JSON
-php scripts/Tools/dx-format.php --config=autre-dx.json
-
 = Configuration par défaut
 scripts/Tools/dx.json
 
@@ -269,16 +220,3 @@ composer assets:build
 composer check
 
 = Le regroupement métier des méthodes reste manuel
-
-
-=========================================
-DEBUG FRONTEND
-=========================================
-
-= Dans la console du navigateur en local
-
-= Activer le debug SPA
-enableDebug()
-
-= Désactiver le debug SPA
-disableDebug()
