@@ -116,7 +116,8 @@ final class MangaRepository extends AbstractRepository
         ?int $jacquette,
         ?int $livreNote,
         ?string $commentaire
-    ): bool {
+    ): bool
+    {
         [$jacquette, $livreNote] = $this->normalizeNotes($jacquette, $livreNote);
 
         $target = $this->fetchOne(

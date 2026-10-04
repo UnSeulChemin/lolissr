@@ -94,5 +94,4 @@ final class FlashcardsController extends Controller
         }
         $this->jsonResult(ServiceResult::success(data: $this->chinoisReadService->flashcardCursor($grammar, $id, $direction === 'previous')));
     }
-
 }

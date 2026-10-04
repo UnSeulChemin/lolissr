@@ -178,7 +178,8 @@ final class ChinoisGrammaireRepository extends AbstractRepository
         string $explication,
         string $section,
         string $categorie
-    ): bool {
+    ): bool
+    {
         $current = $this->findById($id);
 
         if ($current === null)

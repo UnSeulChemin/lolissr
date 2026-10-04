@@ -86,7 +86,8 @@ final class ChinoisVocabulaireRepository extends AbstractRepository
         string $type,
         string $traduction,
         string $exemple
-    ): bool {
+    ): bool
+    {
         if (! $this->db->inTransaction())
         {
             throw new \LogicException('Vocabulary updates require a transaction.');

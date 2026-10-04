@@ -30,7 +30,8 @@ final readonly class CollectionCreationService
         array $files,
         callable $persist,
         string $duplicateMessage
-    ): ServiceResult {
+    ): ServiceResult
+    {
         // La validation des fichiers et les accès disque ne nécessitent pas de transaction ouverte.
         $upload = $this->thumbnails->upload($collection, $name, $numero, $files);
         if ($upload instanceof ServiceResult) return $upload;

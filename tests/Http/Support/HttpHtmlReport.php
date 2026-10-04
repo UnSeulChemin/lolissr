@@ -97,7 +97,8 @@ final class HttpHtmlReport
         string $path,
         string $duration,
         string $reason
-    ): string {
+    ): string
+    {
         return <<<HTML
 <tr class="main-row" data-status="{$status}">
     <td><span class="{$badgeClass}">{$status}</span></td>
@@ -115,7 +116,8 @@ HTML;
         string $reason,
         string $headers,
         string $body
-    ): string {
+    ): string
+    {
         return <<<HTML
 <tr class="debug-row" data-status="FAIL">
     <td colspan="5">
@@ -159,7 +161,8 @@ HTML;
         int $fail,
         float $successRate,
         string $generatedAt
-    ): string {
+    ): string
+    {
         $title = self::FILE_TITLE;
 
         return <<<HTML

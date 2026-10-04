@@ -262,7 +262,8 @@ final class HttpTestRunner
         float $duration,
         array $headers,
         string $body
-    ): void {
+    ): void
+    {
         $this->stats->success($duration);
 
         echo "✅ {$method} {$label} [{$httpStatus}]" . PHP_EOL;
@@ -296,7 +297,8 @@ final class HttpTestRunner
         string $reason,
         array $headers,
         string $body
-    ): void {
+    ): void
+    {
         $this->stats->fail($duration);
 
         echo "❌ {$method} {$label} [{$httpStatus}]";
@@ -338,7 +340,8 @@ final class HttpTestRunner
         string $reason,
         array $headers,
         string $body
-    ): void {
+    ): void
+    {
         $this->results[] = [
             'status' => $status,
             'category' => $category,

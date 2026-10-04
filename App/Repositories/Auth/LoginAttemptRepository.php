@@ -61,10 +61,12 @@ final class LoginAttemptRepository extends AbstractRepository
         string $windowStart,
         string $lockedUntil,
         int $maxAttempts
-    ): bool {
+    ): bool
+    {
         return $this->db->transaction(function () use (
             $identifierHash, $attemptedAt, $windowStart, $lockedUntil, $maxAttempts
-        ): bool {
+        ): bool
+        {
             // La clé primaire sérialise aussi les premières tentatives simultanées.
             $reserved = $this->execute(
                 "INSERT INTO {$this->table()} (identifier_hash, attempts, first_attempt_at, locked_until)

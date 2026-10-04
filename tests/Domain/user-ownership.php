@@ -14,6 +14,7 @@ use App\Repositories\Profile\ProfileUnlockStatsRepository;
 use App\Services\Auth\AuthService;
 use App\Services\Manga\MangaXpRewardService;
 use App\Services\Profile\ProfileAchievements;
+
 use Framework\Application\Bootstrap;
 use Framework\Container\Container;
 use Framework\Database\Database;

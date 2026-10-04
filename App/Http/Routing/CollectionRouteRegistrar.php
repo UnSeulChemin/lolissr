@@ -24,7 +24,8 @@ final class CollectionRouteRegistrar
         string $ajaxController,
         bool $withLinks = false,
         string $collectionPath = 'waifus'
-    ): void {
+    ): void
+    {
         $router->prefix($prefix)->group(function (Router $router) use ($controller, $ajaxController, $withLinks, $collectionPath): void
         {
             // =================================================
