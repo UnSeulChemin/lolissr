@@ -46,7 +46,7 @@ $collectStatusLabel = $isCollected
             <div class="detail-image-inner u-w-full">
 
                 <img
-                    src="<?= e($view->baseUri) ?>images/nendoroid/thumbnail/<?= e($nendoroid->thumbnail) ?>.<?= e($nendoroid->extension) ?>"
+                    src="<?= e(image_url($view->baseUri . 'images/nendoroid/thumbnail/' . $nendoroid->thumbnail . '.' . $nendoroid->extension)) ?>"
                     alt="<?= e($nendoroid->waifu) ?>"
                 >
 

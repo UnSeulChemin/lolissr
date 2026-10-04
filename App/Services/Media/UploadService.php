@@ -94,6 +94,7 @@ final readonly class UploadService
                 try
                 {
                     ThumbnailOptimizer::optimize($destination);
+                    ThumbnailOptimizer::createGrid($destination);
                 }
                 catch (\Throwable $exception)
                 {
@@ -140,6 +141,12 @@ final readonly class UploadService
 
     public function removeFile(string $path): bool
     {
+        $grid = preg_replace('/\.(jpg|jpeg|png|webp)$/i', '.grid.$1', $path);
+        if (is_string($grid) && $grid !== $path && is_file($grid) && !@unlink($grid))
+        {
+            Logger::warning('Upload: impossible de supprimer la miniature.', ['path' => $grid]);
+            return false;
+        }
         if (! is_file($path))
         {
             return true;

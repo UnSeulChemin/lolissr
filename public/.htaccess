@@ -1,6 +1,13 @@
 RewriteEngine On
 RewriteBase /lolissr/public/
 
+<IfModule mod_headers.c>
+    <FilesMatch "\.(css|webp|png|jpe?g|gif|avif|woff2)$">
+        Header set Cache-Control "no-cache" "expr=%{REQUEST_STATUS} == 200 || %{REQUEST_STATUS} == 304"
+        Header set Cache-Control "public, max-age=86400" "expr=(%{REQUEST_STATUS} == 200 || %{REQUEST_STATUS} == 304) && %{QUERY_STRING} =~ /(^|&)v=/"
+    </FilesMatch>
+</IfModule>
+
 <IfModule mod_deflate.c>
     <IfModule mod_filter.c>
         AddOutputFilterByType DEFLATE text/html text/plain text/css text/javascript application/javascript application/json image/svg+xml

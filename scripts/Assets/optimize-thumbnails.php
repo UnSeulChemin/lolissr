@@ -30,6 +30,7 @@ foreach ($files as $file)
     $path = $file->getRealPath();
     if ($path === false || !str_starts_with($path, $directory . DIRECTORY_SEPARATOR)) continue;
     $relative = str_replace('\\', '/', substr($path, strlen($directory) + 1));
+    if (str_contains(basename($path), '.grid.')) continue;
     if (!str_contains('/' . $relative, '/thumbnail/') || str_contains($relative, '/optimized/')) continue;
     if (!in_array(strtolower($file->getExtension()), ['png', 'jpg', 'jpeg', 'webp'], true)) continue;
     $edge = str_starts_with($relative, 'profil/banner/') ? 1440 : (str_starts_with($relative, 'profil/') ? 512 : 1200);
@@ -58,3 +59,4 @@ foreach ($files as $file)
 }
 printf("Thumbnails: %d optimized, %.2f MB saved. Originals: storage/backups/images.\n", $count, $saved / 1048576);
 if (!$apply) echo "Audit only; use --apply to optimize.\n";
+require __DIR__ . '/build-grid-images.php';

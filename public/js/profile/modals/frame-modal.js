@@ -4,7 +4,7 @@ import { mountProfileModal } from './profile-modal-lifecycle.js';
 // CADRE FENÊTRE MODALE
 // =================================================
 
-import { appUrl } from '../../core/url.js';
+import { profileImageUrl } from '../../core/url.js';
 
 // =================================================
 // FENÊTRE MODALE
@@ -49,7 +49,7 @@ export function frameModal(frames, avatar)
 
                                         <img loading="lazy" decoding="async"
                                             class="profile-frame"
-                                            src="${appUrl(`images/profil/frame/thumbnail/${frame.frame}.${frame.frame_extension}`)}"
+                                            src="${profileImageUrl(`images/profil/frame/thumbnail/${frame.frame}.${frame.frame_extension}`)}"
                                             alt="${frame.frame}"
                                             draggable="false"
                                         >

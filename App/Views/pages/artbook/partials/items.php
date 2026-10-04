@@ -42,7 +42,7 @@ use App\DTO\Common\Responses\ViewData;
 
                     <img
                         class="card-image-portrait u-block u-w-full"
-                        src="<?= e($artbook->thumbnailUrl) ?>"
+                        src="<?= e(image_url($artbook->thumbnailUrl, true)) ?>"
                         alt="<?= e($artbook->artbook) ?>"
                         loading="lazy"
                         decoding="async"

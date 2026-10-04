@@ -1,0 +1,1 @@
+import{a}from"./chunk-ND6VE3Y2.js";import{a as e}from"./chunk-Q2AUOC77.js";function i(){a(e(),{descendants:!1}),a(e("profil")),a(e("nendoroid")),a(window.location.pathname,{descendants:!1})}export{i as a};

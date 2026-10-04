@@ -4,7 +4,7 @@ import { mountProfileModal } from './profile-modal-lifecycle.js';
 // AVATAR FENÊTRE MODALE
 // =================================================
 
-import { appUrl } from '../../core/url.js';
+import { profileImageUrl } from '../../core/url.js';
 
 // =================================================
 // FENÊTRE MODALE
@@ -39,7 +39,7 @@ export function avatarModal(avatars)
                                 >
 
                                     <img loading="lazy" decoding="async"
-                                        src="${appUrl(`images/profil/avatar/thumbnail/${avatar.avatar}.${avatar.avatar_extension}`)}"
+                                        src="${profileImageUrl(`images/profil/avatar/thumbnail/${avatar.avatar}.${avatar.avatar_extension}`)}"
                                         alt="${avatar.avatar}"
                                         draggable="false"
                                     >

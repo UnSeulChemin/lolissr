@@ -17,7 +17,7 @@ $avatarPath =
     "{$view->baseUri}images/profil/avatar/thumbnail/{$user->avatar}.{$user->avatar_extension}";
 
 $bannerPath =
-    "{$view->baseUri}images/profil/banner/thumbnail/{$user->banner}.{$user->banner_extension}?v=20260929-sakura-v2";
+    "{$view->baseUri}images/profil/banner/thumbnail/{$user->banner}.{$user->banner_extension}";
 
 $framePath =
     "{$view->baseUri}images/profil/frame/thumbnail/{$user->frame}.{$user->frame_extension}";
@@ -40,7 +40,7 @@ $framePath =
             <div class="profile-banner u-w-full u-clip">
 
                 <img
-                    src="<?= e($bannerPath) ?>"
+                    src="<?= e(image_url($bannerPath)) ?>"
                     alt="Bannière"
                     draggable="false"
                 >
@@ -51,14 +51,14 @@ $framePath =
 
                 <img
                     class="profile-avatar-image"
-                    src="<?= e($avatarPath) ?>"
+                    src="<?= e(image_url($avatarPath)) ?>"
                     alt="<?= e($user->username) ?>"
                     draggable="false"
                 >
 
                 <img
                     class="profile-frame"
-                    src="<?= e($framePath) ?>"
+                    src="<?= e(image_url($framePath)) ?>"
                     alt=""
                     draggable="false"
                 >

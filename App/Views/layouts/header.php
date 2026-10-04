@@ -32,14 +32,14 @@ $user = user();
                         <span class="site-profile-portrait">
                         <img
                             class="site-profile-avatar" draggable="false"
-                            src="<?= e($view->baseUri . 'images/profil/avatar/thumbnail/' . $user->avatar . '.' . $user->avatar_extension) ?>"
+                            src="<?= e(image_url($view->baseUri . 'images/profil/avatar/thumbnail/' . $user->avatar . '.' . $user->avatar_extension)) ?>"
                             width="41"
                             height="41"
                             alt=""
                         >
                         <img
                             class="site-profile-frame" draggable="false"
-                            src="<?= e($view->baseUri . 'images/profil/frame/thumbnail/' . $user->frame . '.' . $user->frame_extension) ?>"
+                            src="<?= e(image_url($view->baseUri . 'images/profil/frame/thumbnail/' . $user->frame . '.' . $user->frame_extension)) ?>"
                             width="56"
                             height="56"
                             alt=""

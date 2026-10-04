@@ -52,7 +52,7 @@ use App\DTO\Nendoroid\Responses\NendoroidData;
 
                     <img
                         class="card-image-portrait u-block u-w-full"
-                        src="<?= e($thumbnail) ?>"
+                        src="<?= e(image_url($thumbnail, true)) ?>"
                         alt="<?= e($nendoroid->waifu) ?>"
                         loading="lazy"
                         decoding="async"

@@ -42,7 +42,7 @@ $commentaire = $hasCommentaire
             <div class="detail-image-inner u-w-full">
 
                 <img
-                    src="<?= e($artbook->thumbnailUrl) ?>"
+                    src="<?= e(image_url($artbook->thumbnailUrl)) ?>"
                     alt="<?= e($artbook->artbook) ?>"
                 >
 

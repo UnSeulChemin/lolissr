@@ -46,7 +46,7 @@ $collectStatusLabel = $isCollected
             <div class="detail-image-inner u-w-full">
 
                 <img
-                    src="<?= e($figurine->thumbnailUrl) ?>"
+                    src="<?= e(image_url($figurine->thumbnailUrl)) ?>"
                     alt="<?= e($figurine->waifu) ?>"
                 >
 

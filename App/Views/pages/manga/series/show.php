@@ -45,7 +45,7 @@ $commentaire = $manga->hasCommentaire ? nl2br(e($manga->commentaire)) : 'Aucun c
         <figure class="detail-image u-flex u-justify-center">
 
             <div class="detail-image-inner u-w-full">
-                <img src="<?= e($manga->thumbnailUrl) ?>" alt="<?= e($manga->livre) ?>">
+                <img src="<?= e(image_url($manga->thumbnailUrl)) ?>" alt="<?= e($manga->livre) ?>">
             </div>
 
         </figure>

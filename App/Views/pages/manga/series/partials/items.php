@@ -150,7 +150,7 @@ $isSerieView ??= false;
 
                     <img
                         class="card-image-portrait u-block u-w-full"
-                        src="<?= e($thumbnailPath) ?>"
+                        src="<?= e(image_url($thumbnailPath, true)) ?>"
                         alt="<?= e($livre) ?>"
                         loading="lazy"
                         decoding="async"

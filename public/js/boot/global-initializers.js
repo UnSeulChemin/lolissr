@@ -14,7 +14,7 @@ import { initRouter } from '../router/router.js';
 
 import { initNavigationLoading } from '../router/ui/navigation-loading.js';
 
-import { initRouterDebugPanel } from '../router/ui/router-debug-panel.js';
+import { config } from '../core/config.js';
 
 import { initSearchController } from '../search/controller/search-controller.js';
 
@@ -28,7 +28,10 @@ export const GLOBAL_INITIALIZERS = [
     ['Copy', initCopy],
     ['GlobalSearchController', initSearchController],
     ['NavigationLoading', initNavigationLoading],
-    ['RouterDebugPanel', initRouterDebugPanel],
+    ['RouterDebugPanel', async () =>
+    {
+        if (config.debug) (await import('../router/ui/router-debug-panel.js')).initRouterDebugPanel();
+    }],
     ['GlobalBackNavigation', initGlobalBackNavigation],
     ['GlobalErrorHandlers', initGlobalErrorHandlers]
 ];

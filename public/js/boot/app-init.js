@@ -21,7 +21,7 @@ import { ROUTE_INITIALIZERS } from '../router/initializers/route-initializers.js
 
 import { onRouteChange } from '../router/router-hooks.js';
 
-import { initAppDebug } from './app-debug.js';
+import { config } from '../core/config.js';
 
 // =================================================
 // SÉCURISÉE INITIALISATION
@@ -97,7 +97,8 @@ export async function initApp()
 {
     debug('APP', '🚀 Boot');
 
-    initAppDebug();
+    if (config.isLocalhost)
+        await safeInit('AppDebug', async () => (await import('./app-debug.js')).initAppDebug());
 
     // S’abonner avant la navigation du routeur, y compris pendant le démarrage asynchrone.
     const initialGeneration = routeGeneration;

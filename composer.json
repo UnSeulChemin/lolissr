@@ -70,6 +70,7 @@
             "@php tests/Assets/javascript-bundle.php",
             "@php tests/Assets/javascript-retention.php",
             "@php tests/Assets/thumbnail-optimizer.php",
+            "@php tests/Assets/image-assets.php",
             "@php tests/Build/atomic-file.php",
             "@php tests/Build/dx-format.php",
             "@php tests/Build/release-archive.php",
@@ -83,6 +84,7 @@
         "js:prune": "@php scripts/Assets/prune-javascript.php",
         "images:build": "@php scripts/Assets/build-profile-images.php",
         "images:optimize": "@php scripts/Assets/optimize-thumbnails.php",
+        "images:variants": "@php scripts/Assets/build-grid-images.php",
 
         "dev:reset": ["@logs:clear", "@cache:clear", "@sessions:clear", "@composer dump-autoload"],
         "logs:clear": "@php scripts/Maintenance/clear-runtime.php logs",

@@ -35,3 +35,7 @@ export function appPath(pathname = window.location.pathname)
 
     return pathname;
 }
+export function profileImageUrl(path)
+{
+    return appUrl(path) + '?v=' + encodeURIComponent(window.appConfig?.profileImageVersion ?? '1');
+}

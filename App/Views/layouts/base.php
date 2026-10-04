@@ -32,6 +32,10 @@ if (! is_file($commonCssPath))
 
 <head>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap">
+
     <meta charset="UTF-8">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -73,6 +77,7 @@ if (! is_file($commonCssPath))
     <script nonce="<?= ContentSecurityPolicy::escapedNonce() ?>">
 
         window.appConfig = Object.freeze({
+            profileImageVersion: <?= json_encode(\App\Support\Media\ImageAssets::profileVersion(), JSON_THROW_ON_ERROR) ?>,
             baseUri: <?= json_encode(
                 $view->baseUri,
                 JSON_UNESCAPED_SLASHES

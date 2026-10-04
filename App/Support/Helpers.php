@@ -4,10 +4,16 @@ declare(strict_types=1);
 
 use App\Models\User;
 use App\Services\Auth\AuthService;
+use App\Support\Media\ImageAssets;
 
 // =================================================
 // CHEMINS
 // =================================================
+
+function image_url(?string $url, bool $grid = false): string
+{
+    return $url === null ? '' : ImageAssets::url($url, $grid);
+}
 
 if (! function_exists('app_path'))
 {

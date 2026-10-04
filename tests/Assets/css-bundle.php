@@ -10,9 +10,9 @@ if (! is_file($directory . '/app.bundle.css') || file_get_contents($directory . 
 {
     throw new RuntimeException('CSS bundle is stale: run php scripts/Assets/build-css.php.');
 }
-if (substr_count($bundle, '@import') !== 1 || ! str_contains($bundle, 'https://fonts.googleapis.com/'))
+if (str_contains($bundle, '@import'))
 {
-    throw new RuntimeException('Expected only the external font import in the bundle.');
+    throw new RuntimeException('CSS bundle must not delay fonts through an import.');
 }
 $sample = '/* comment */ .a .b { content: "a  b /* literal */"; width: calc(100% - 2px); --label: "hello  world"; }';
 $expected = '.a .b { content: "a  b /* literal */"; width: calc(100% - 2px); --label: "hello  world"; }';

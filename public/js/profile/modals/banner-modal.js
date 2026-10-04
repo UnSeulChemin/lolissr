@@ -4,7 +4,7 @@ import { mountProfileModal } from './profile-modal-lifecycle.js';
 // BANNIÈRE FENÊTRE MODALE
 // =================================================
 
-import { appUrl } from '../../core/url.js';
+import { profileImageUrl } from '../../core/url.js';
 
 // =================================================
 // FENÊTRE MODALE
@@ -39,7 +39,7 @@ export function bannerModal(banners)
                                 >
 
                                     <img loading="lazy" decoding="async"
-                                        src="${appUrl(`images/profil/banner/thumbnail/${banner.banner}.${banner.banner_extension}?v=20260929-sakura-v2`)}"
+                                        src="${profileImageUrl(`images/profil/banner/thumbnail/${banner.banner}.${banner.banner_extension}`)}"
                                         alt="${banner.banner}"
                                         draggable="false"
                                     >

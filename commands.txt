@@ -96,6 +96,13 @@ composer images:optimize
 = Redimensionner et compresser les miniatures avec sauvegarde des originaux
 composer images:optimize -- --apply
 
+= Cette commande génère aussi les variantes .grid de 600 px pour les collections
+= Générer uniquement les variantes, en conservant les images principales
+composer images:variants -- --apply
+
+= En production : APP_ENV=production et APP_DEBUG=false, puis compiler le bootstrap sur le serveur cible
+composer bootstrap:cache
+
 = Originaux conservés dans storage\backups\images\ ; état dans storage\thumbnail-optimization.json
 = storage\backups\images\manifest.json relie chaque chemin à ses sauvegardes originales
 

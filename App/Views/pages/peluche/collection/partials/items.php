@@ -51,7 +51,7 @@ use App\DTO\Peluche\Responses\PelucheListItemData;
 
                         <img
                             class="card-image-portrait u-block u-w-full"
-                            src="<?= e($peluche->thumbnailUrl) ?>"
+                            src="<?= e(image_url($peluche->thumbnailUrl, true)) ?>"
                             alt="<?= e($peluche->waifu) ?>"
                             loading="lazy"
                             decoding="async"

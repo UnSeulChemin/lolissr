@@ -49,7 +49,7 @@ use App\DTO\Figurine\Responses\FigurineListItemData;
 
                     <img
                         class="card-image-portrait u-block u-w-full"
-                        src="<?= e($figurine->thumbnailUrl) ?>"
+                        src="<?= e(image_url($figurine->thumbnailUrl, true)) ?>"
                         alt="<?= e($figurine->waifu) ?>"
                         loading="lazy"
                         decoding="async"

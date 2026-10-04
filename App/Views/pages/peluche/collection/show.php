@@ -48,7 +48,7 @@ $collectStatusLabel = $isCollected
                 <?php if ($peluche->thumbnailUrl !== null): ?>
 
                     <img
-                        src="<?= e($peluche->thumbnailUrl) ?>"
+                        src="<?= e(image_url($peluche->thumbnailUrl)) ?>"
                         alt="<?= e($peluche->waifu) ?>"
                     >
 

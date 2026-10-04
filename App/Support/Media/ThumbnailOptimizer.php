@@ -6,6 +6,25 @@ namespace App\Support\Media;
 
 final class ThumbnailOptimizer
 {
+    public static function createGrid(string $path): bool
+    {
+        $target = preg_replace('/\.(jpg|jpeg|png|webp)$/i', '.grid.$1', $path);
+        if (!is_string($target) || $target === $path || str_contains(basename($path), '.grid.')) return false;
+        if (is_file($target) && filemtime($target) >= filemtime($path)) return false;
+        $temporary = dirname($path) . '/.grid-' . bin2hex(random_bytes(16));
+        try
+        {
+            if (!copy($path, $temporary)) throw new \RuntimeException('Cannot stage grid image.');
+            if (!self::optimize($temporary, 600)) return false;
+            if (!rename($temporary, $target)) throw new \RuntimeException('Cannot publish grid image.');
+            return true;
+        }
+        finally
+        {
+            if (is_file($temporary)) unlink($temporary);
+        }
+    }
+
     /** Preserve the format, transparency and animated files. Publish only smaller output. */
     public static function optimize(string $path, int $maxEdge = 1200, int $quality = 85): bool
     {
@@ -30,8 +49,8 @@ final class ThumbnailOptimizer
                 $offset += $length + ($png ? 12 : 8 + $length % 2);
             }
         }
-        // JPEG EXIF orientation must survive until an orientation-aware conversion is available.
-        if ($info[2] === IMAGETYPE_JPEG && str_contains($bytes, "Exif\0\0")) return false;
+        $orientation = $info[2] === IMAGETYPE_JPEG ? JpegOrientation::read($bytes) : 1;
+        if ($orientation === null) return false;
         // Leave large validated originals intact when GD cannot safely fit in the request budget.
         $memoryLimit = ini_get('memory_limit');
         if (preg_match('/^\s*(\d+)\s*([KMG]?)\s*$/i', $memoryLimit, $limit) === 1)
@@ -53,6 +72,19 @@ final class ThumbnailOptimizer
         {
             imagepalettetotruecolor($image);
             imagesavealpha($image, true);
+            if (in_array($orientation, [2, 4, 5, 7], true))
+                imageflip($image, in_array($orientation, [4, 5], true) ? IMG_FLIP_VERTICAL : IMG_FLIP_HORIZONTAL);
+            $angle = match ($orientation)
+            { 3 => 180, 5, 6, 7 => -90, 8 => 90, default => 0 };
+            if ($angle !== 0)
+            {
+                $rotated = imagerotate($image, $angle, 0);
+                if ($rotated === false) throw new \RuntimeException('Cannot orient thumbnail.');
+                imagedestroy($image);
+                $image = $rotated;
+            }
+            $info[0] = imagesx($image);
+            $info[1] = imagesy($image);
             $scale = min(1, $maxEdge / max($info[0], $info[1]));
             if ($scale < 1)
             {

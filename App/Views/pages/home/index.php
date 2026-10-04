@@ -75,7 +75,7 @@ $hasMostRepresented =
 
                         <img
                             class="card-image-portrait u-block u-w-full"
-                            src="<?= e($view->baseUri . $serie->thumbnailUrl) ?>"
+                            src="<?= e(image_url($view->baseUri . $serie->thumbnailUrl, true)) ?>"
                             alt="<?= e($serie->livre) ?>"
                             decoding="async"
                         >
@@ -158,7 +158,7 @@ $hasMostRepresented =
 
                         <img
                             class="card-image-portrait u-block u-w-full"
-                            src="<?= e($view->baseUri . $tome->thumbnailUrl) ?>"
+                            src="<?= e(image_url($view->baseUri . $tome->thumbnailUrl, true)) ?>"
                             alt="<?= e($tome->livre) ?>"
                             decoding="async"
                         >
@@ -310,7 +310,7 @@ $hasMostRepresented =
 
                         <img
                             class="card-image-portrait u-block u-w-full"
-                            src="<?= e($view->baseUri . $serie->thumbnailUrl) ?>"
+                            src="<?= e(image_url($view->baseUri . $serie->thumbnailUrl, true)) ?>"
                             alt="<?= e($serie->livre) ?>"
                             loading="lazy"
                             decoding="async"
@@ -472,7 +472,7 @@ $hasMostRepresented =
 
                         <img
                             class="card-image-portrait u-block u-w-full"
-                            src="<?= e($view->baseUri . $mostRepresented->thumbnailUrl) ?>"
+                            src="<?= e(image_url($view->baseUri . $mostRepresented->thumbnailUrl, true)) ?>"
                             alt="<?= e($mostRepresented->name) ?>"
                             loading="lazy"
                             decoding="async"
@@ -553,7 +553,7 @@ $hasMostRepresented =
 
                         <img
                             class="card-image-portrait u-block u-w-full"
-                            src="<?= e($view->baseUri . $artbook->thumbnailUrl) ?>"
+                            src="<?= e(image_url($view->baseUri . $artbook->thumbnailUrl, true)) ?>"
                             alt="<?= e($artbook->artbook) ?>"
                             loading="lazy"
                             decoding="async"

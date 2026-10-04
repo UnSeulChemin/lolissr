@@ -81,7 +81,7 @@ foreach ($achievements as $item)
                 <div class="success-reward success-reward-frame-xp">
                     <strong class="success-reward-xp-label">Récompense : ⭐ <?= number_format(\App\Constants\AchievementRewards::FIGURINES[$achievement['target']], 0, ',', ' ') ?> XP</strong>
                     <strong>Récompense : cadre<span class="success-reward-name">Ailes roses</span></strong>
-                    <img src="<?= e($view->baseUri . 'images/profil/frame/thumbnail/' . ProfileImageCatalog::FIGURINE_REWARD_FRAME . '.webp') ?>" alt="Cadre rose à ailes" width="120" height="120">
+                    <img src="<?= e(image_url($view->baseUri . 'images/profil/frame/thumbnail/' . ProfileImageCatalog::FIGURINE_REWARD_FRAME . '.webp')) ?>" alt="Cadre rose à ailes" width="120" height="120">
                     <?php if ($achievement['unlocked']): ?>
                         <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir ce cadre</a>
                     <?php else: ?>
@@ -105,7 +105,7 @@ foreach ($achievements as $item)
                 <div class="success-reward success-reward-frame-xp">
                     <strong class="success-reward-xp-label">Récompense : ⭐ <?= number_format(\App\Constants\AchievementRewards::ARTBOOKS[$achievement['target']], 0, ',', ' ') ?> XP</strong>
                     <strong>Récompense : cadre<span class="success-reward-name">Enluminure</span></strong>
-                    <img src="<?= e($view->baseUri . 'images/profil/frame/thumbnail/' . ProfileImageCatalog::ARTBOOK_REWARD_FRAME . '.webp') ?>" alt="Cadre de livres illustrés, turquoise et doré" width="120" height="120">
+                    <img src="<?= e(image_url($view->baseUri . 'images/profil/frame/thumbnail/' . ProfileImageCatalog::ARTBOOK_REWARD_FRAME . '.webp')) ?>" alt="Cadre de livres illustrés, turquoise et doré" width="120" height="120">
                     <?php if ($achievement['unlocked']): ?>
                         <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir ce cadre</a>
                     <?php else: ?>
@@ -117,7 +117,7 @@ foreach ($achievements as $item)
                 <div class="success-reward success-reward-banner">
                     <strong>Récompense : ⭐ <?= number_format(\App\Constants\AchievementRewards::TOMES[$achievement['target']], 0, ',', ' ') ?> XP</strong>
                     <strong>Récompense : bannière<span class="success-reward-name">Lecture sous les sakuras</span></strong>
-                    <img src="<?= e($view->baseUri . 'images/profil/banner/thumbnail/' . ProfileImageCatalog::TOME_REWARD_BANNER . '.webp?v=20260929-sakura-v2') ?>" alt="Lectrice anime dans un jardin de cerisiers au crépuscule" width="600" height="200" loading="lazy">
+                    <img src="<?= e(image_url($view->baseUri . 'images/profil/banner/thumbnail/' . ProfileImageCatalog::TOME_REWARD_BANNER . '.webp')) ?>" alt="Lectrice anime dans un jardin de cerisiers au crépuscule" width="600" height="200" loading="lazy">
                     <?php if ($achievement['unlocked']): ?>
                         <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir cette bannière</a>
                     <?php else: ?>
@@ -129,7 +129,7 @@ foreach ($achievements as $item)
                 <div class="success-reward success-reward-frame-xp">
                     <strong class="success-reward-xp-label">Récompense : ⭐ <?= number_format(\App\Constants\AchievementRewards::TOMES[$achievement['target']], 0, ',', ' ') ?> XP</strong>
                     <strong>Récompense : cadre<span class="success-reward-name">Grimoire céleste</span></strong>
-                    <img src="<?= e($view->baseUri . 'images/profil/frame/thumbnail/' . ProfileImageCatalog::TOME_REWARD_FRAME . '.webp') ?>" alt="Cadre violet et argent décoré de livres et d’étoiles" width="120" height="120" loading="lazy">
+                    <img src="<?= e(image_url($view->baseUri . 'images/profil/frame/thumbnail/' . ProfileImageCatalog::TOME_REWARD_FRAME . '.webp')) ?>" alt="Cadre violet et argent décoré de livres et d’étoiles" width="120" height="120" loading="lazy">
                     <?php if ($achievement['unlocked']): ?>
                         <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir ce cadre</a>
                     <?php else: ?>
@@ -192,7 +192,7 @@ foreach ($achievements as $item)
                 <div class="success-reward success-reward-frame-xp">
                     <strong class="success-reward-xp-label">Récompense : ⭐ <?= number_format(\App\Constants\AchievementRewards::NENDOROIDS[$achievement['target']], 0, ',', ' ') ?> XP</strong>
                     <strong>Récompense : cadre<span class="success-reward-name">Écrin des merveilles</span></strong>
-                    <img src="<?= e($view->baseUri . 'images/profil/frame/thumbnail/' . ProfileImageCatalog::NENDOROID_REWARD_FRAME . '.webp') ?>" alt="Cadre lavande et or rose orné de joyaux étoilés" width="120" height="120" loading="lazy">
+                    <img src="<?= e(image_url($view->baseUri . 'images/profil/frame/thumbnail/' . ProfileImageCatalog::NENDOROID_REWARD_FRAME . '.webp')) ?>" alt="Cadre lavande et or rose orné de joyaux étoilés" width="120" height="120" loading="lazy">
                     <?php if ($achievement['unlocked']): ?>
                         <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir ce cadre</a>
                     <?php else: ?>
@@ -205,7 +205,7 @@ foreach ($achievements as $item)
                     <strong>Récompense : ⭐ <?= number_format(\App\Constants\AchievementRewards::NENDOROIDS[$achievement['target']], 0, ',', ' ') ?> XP</strong>
                     <?php if ($achievement['target'] === ProfileImageCatalog::NENDOROID_REWARD_TARGET): ?>
                         <strong>Récompense : bannière<span class="success-reward-name">Le petit monde des Nendoroids</span></strong>
-                        <img src="<?= e($view->baseUri . 'images/profil/banner/thumbnail/' . ProfileImageCatalog::NENDOROID_REWARD_BANNER . '.webp') ?>" alt="Collection de figurines chibi dans une pièce fleurie au coucher du soleil" loading="lazy">
+                        <img src="<?= e(image_url($view->baseUri . 'images/profil/banner/thumbnail/' . ProfileImageCatalog::NENDOROID_REWARD_BANNER . '.webp')) ?>" alt="Collection de figurines chibi dans une pièce fleurie au coucher du soleil" loading="lazy">
                         <?php if ($achievement['unlocked']): ?>
                             <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir cette bannière</a>
                         <?php endif; ?>
@@ -226,13 +226,13 @@ foreach ($achievements as $item)
                     <strong class="success-reward-xp-label">Récompense : ⭐ <?= number_format(\App\Constants\AchievementRewards::PELUCHES[$achievement['target']], 0, ',', ' ') ?> XP</strong>
                     <?php if ($achievement['target'] === ProfileImageCatalog::PELUCHE_BANNER_TARGET): ?>
                         <strong>Récompense : bannière<span class="success-reward-name">Refuge des peluches</span></strong>
-                        <img src="<?= e($view->baseUri . 'images/profil/banner/thumbnail/' . ProfileImageCatalog::PELUCHE_REWARD_BANNER . '.webp') ?>" alt="Peluches dans un refuge fleuri au coucher du soleil" loading="lazy">
+                        <img src="<?= e(image_url($view->baseUri . 'images/profil/banner/thumbnail/' . ProfileImageCatalog::PELUCHE_REWARD_BANNER . '.webp')) ?>" alt="Peluches dans un refuge fleuri au coucher du soleil" loading="lazy">
                         <?php if ($achievement['unlocked']): ?>
                             <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir cette bannière</a>
                         <?php endif; ?>
                     <?php elseif ($achievement['target'] === ProfileImageCatalog::PELUCHE_FRAME_TARGET): ?>
                         <strong>Récompense : cadre<span class="success-reward-name">Cocon doré</span></strong>
-                        <img src="<?= e($view->baseUri . 'images/profil/frame/thumbnail/' . ProfileImageCatalog::PELUCHE_REWARD_FRAME . '.webp') ?>" alt="Cadre doré avec un ours et un lapin en peluche" width="120" height="120" loading="lazy">
+                        <img src="<?= e(image_url($view->baseUri . 'images/profil/frame/thumbnail/' . ProfileImageCatalog::PELUCHE_REWARD_FRAME . '.webp')) ?>" alt="Cadre doré avec un ours et un lapin en peluche" width="120" height="120" loading="lazy">
                         <?php if ($achievement['unlocked']): ?>
                             <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir ce cadre</a>
                         <?php endif; ?>
@@ -247,13 +247,13 @@ foreach ($achievements as $item)
                     <strong class="success-reward-xp-label">Récompense : ⭐ <?= number_format(\App\Constants\AchievementRewards::VOCABULARY[$achievement['target']], 0, ',', ' ') ?> XP</strong>
                     <?php if ($achievement['target'] === ProfileImageCatalog::LEARNING_BANNER_TARGET): ?>
                         <strong>Récompense : bannière<span class="success-reward-name">Bibliothèque des mots</span></strong>
-                        <img src="<?= e($view->baseUri . 'images/profil/banner/thumbnail/' . ProfileImageCatalog::VOCABULARY_REWARD_BANNER . '.webp') ?>" alt="Bibliothèque des mots" loading="lazy">
+                        <img src="<?= e(image_url($view->baseUri . 'images/profil/banner/thumbnail/' . ProfileImageCatalog::VOCABULARY_REWARD_BANNER . '.webp')) ?>" alt="Bibliothèque des mots" loading="lazy">
                         <?php if ($achievement['unlocked']): ?>
                             <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir cette bannière</a>
                         <?php endif; ?>
                     <?php elseif ($achievement['target'] === ProfileImageCatalog::LEARNING_FRAME_TARGET): ?>
                         <strong>Récompense : cadre<span class="success-reward-name">Lexique de jade</span></strong>
-                        <img src="<?= e($view->baseUri . 'images/profil/frame/thumbnail/' . ProfileImageCatalog::VOCABULARY_REWARD_FRAME . '.webp') ?>" alt="Cadre Lexique de jade" width="120" height="120" loading="lazy">
+                        <img src="<?= e(image_url($view->baseUri . 'images/profil/frame/thumbnail/' . ProfileImageCatalog::VOCABULARY_REWARD_FRAME . '.webp')) ?>" alt="Cadre Lexique de jade" width="120" height="120" loading="lazy">
                         <?php if ($achievement['unlocked']): ?>
                             <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir ce cadre</a>
                         <?php endif; ?>
@@ -275,13 +275,13 @@ foreach ($achievements as $item)
                     <strong class="success-reward-xp-label">Récompense : ⭐ <?= number_format(\App\Constants\AchievementRewards::GRAMMAR[$achievement['target']], 0, ',', ' ') ?> XP</strong>
                     <?php if ($achievement['target'] === ProfileImageCatalog::LEARNING_BANNER_TARGET): ?>
                         <strong>Récompense : bannière<span class="success-reward-name">Atelier des phrases</span></strong>
-                        <img src="<?= e($view->baseUri . 'images/profil/banner/thumbnail/' . ProfileImageCatalog::GRAMMAR_REWARD_BANNER . '.webp') ?>" alt="Atelier des phrases" loading="lazy">
+                        <img src="<?= e(image_url($view->baseUri . 'images/profil/banner/thumbnail/' . ProfileImageCatalog::GRAMMAR_REWARD_BANNER . '.webp')) ?>" alt="Atelier des phrases" loading="lazy">
                         <?php if ($achievement['unlocked']): ?>
                             <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir cette bannière</a>
                         <?php endif; ?>
                     <?php elseif ($achievement['target'] === ProfileImageCatalog::LEARNING_FRAME_TARGET): ?>
                         <strong>Récompense : cadre<span class="success-reward-name">Plume astrale</span></strong>
-                        <img src="<?= e($view->baseUri . 'images/profil/frame/thumbnail/' . ProfileImageCatalog::GRAMMAR_REWARD_FRAME . '.webp') ?>" alt="Cadre Plume astrale" width="120" height="120" loading="lazy">
+                        <img src="<?= e(image_url($view->baseUri . 'images/profil/frame/thumbnail/' . ProfileImageCatalog::GRAMMAR_REWARD_FRAME . '.webp')) ?>" alt="Cadre Plume astrale" width="120" height="120" loading="lazy">
                         <?php if ($achievement['unlocked']): ?>
                             <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir ce cadre</a>
                         <?php endif; ?>
@@ -301,7 +301,7 @@ foreach ($achievements as $item)
             <?php if ($achievement['category'] === 'Succès'): ?>
                 <div class="success-reward">
                     <strong>Récompense : avatar<span class="success-reward-name"><?= e(ProfileImageCatalog::ACHIEVEMENT_AVATAR_NAMES[$achievement['target']]) ?></span></strong>
-                    <img src="<?= e($view->baseUri . 'images/profil/avatar/thumbnail/' . ProfileImageCatalog::ACHIEVEMENT_REWARD_AVATARS[$achievement['target']] . '.webp') ?>" alt="<?= e(ProfileImageCatalog::ACHIEVEMENT_AVATAR_NAMES[$achievement['target']]) ?>" width="120" height="120" loading="lazy">
+                    <img src="<?= e(image_url($view->baseUri . 'images/profil/avatar/thumbnail/' . ProfileImageCatalog::ACHIEVEMENT_REWARD_AVATARS[$achievement['target']] . '.webp')) ?>" alt="<?= e(ProfileImageCatalog::ACHIEVEMENT_AVATAR_NAMES[$achievement['target']]) ?>" width="120" height="120" loading="lazy">
                     <?php if ($achievement['unlocked']): ?>
                         <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>">Choisir cet avatar</a>
                     <?php else: ?>
@@ -318,10 +318,10 @@ foreach ($achievements as $item)
                         <span data-title-style="<?= $achievement['unlocked'] ? \App\Constants\UserTitle::styleForTitle($levelTitle) : '' ?>"><?= e($levelTitle) ?></span>
                     <?php elseif ($levelFrame !== null): ?>
                         <strong>Récompense : cadre<span class="success-reward-name"><?= $achievement['target'] === 100 ? 'Ailes d’azur' : 'Ailes souveraines' ?></span></strong>
-                        <img src="<?= e($view->baseUri . 'images/profil/frame/thumbnail/' . $levelFrame . '.webp') ?>" alt="Cadre ailé de niveau <?= $achievement['target'] ?>" width="120" height="120" loading="lazy">
+                        <img src="<?= e(image_url($view->baseUri . 'images/profil/frame/thumbnail/' . $levelFrame . '.webp')) ?>" alt="Cadre ailé de niveau <?= $achievement['target'] ?>" width="120" height="120" loading="lazy">
                     <?php else: ?>
                         <strong>Récompense : bannière<span class="success-reward-name">Palais des étoiles</span></strong>
-                        <img src="<?= e($view->baseUri . 'images/profil/banner/thumbnail/' . ProfileImageCatalog::LEVEL_REWARD_BANNER . '.webp') ?>" alt="Palais céleste au-dessus des nuages" loading="lazy">
+                        <img src="<?= e(image_url($view->baseUri . 'images/profil/banner/thumbnail/' . ProfileImageCatalog::LEVEL_REWARD_BANNER . '.webp')) ?>" alt="Palais céleste au-dessus des nuages" loading="lazy">
                     <?php endif; ?>
                     <?php if ($achievement['unlocked']): ?>
                         <a href="<?= e($view->baseUri . 'profil/personnalisation') ?>"><?= $levelTitle !== null ? 'Choisir ce titre' : ($levelFrame !== null ? 'Choisir ce cadre' : 'Choisir cette bannière') ?></a>
