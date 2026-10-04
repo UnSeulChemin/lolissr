@@ -9,6 +9,7 @@ use App\DTO\Manga\Responses\MangaListItemData;
 /** @var list<MangaListItemData> $mangas */
 
 $isSerieView ??= false;
+$upcoming ??= [];
 
 ?>
 
@@ -25,6 +26,34 @@ $isSerieView ??= false;
     <?php return; endif; ?>
 
     <section class="collection-grid u-grid u-justify-center">
+
+        <?php if ($isSerieView): ?>
+
+            <?php foreach ($upcoming as $release): ?>
+
+                <a
+                    class="card collection-card collection-card-link collection-card-upcoming u-flex u-w-full"
+                    href="<?= e($release->sourceUrl) ?>"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="<?= e('Tome ' . $release->number . ' à paraître le ' . $release->dateLabel) ?>"
+                >
+                    <span class="collection-status-badge collection-status-upcoming">À paraître</span>
+                    <div class="card-image-box-portrait u-row-center u-clip">
+                        <?php if ($release->imageUrl !== null): ?>
+                            <img class="card-image-portrait u-block u-w-full" src="<?= e(image_url($release->imageUrl)) ?>" alt="<?= e('Tome ' . $release->number) ?>" loading="lazy" decoding="async">
+                        <?php else: ?>
+                            <span class="collection-upcoming-placeholder u-row-center u-w-full">Tome <?= $release->number ?></span>
+                        <?php endif; ?>
+                    </div>
+                    <p class="collection-card-title u-block u-relative u-text-center u-clip u-bold"><?= e($mangas[0]->livre) ?></p>
+                    <p class="collection-card-subtitle u-relative u-text-center">Tome <?= $release->number ?></p>
+                    <time class="collection-release-date" datetime="<?= e($release->date) ?>"><?= e($release->dateLabel) ?></time>
+                </a>
+
+            <?php endforeach; ?>
+
+        <?php endif; ?>
 
         <?php foreach ($mangas as $manga): ?>
 

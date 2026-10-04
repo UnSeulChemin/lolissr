@@ -22,6 +22,7 @@ final class MangaController extends Controller
     public function __construct(
         private readonly MangaReadService $mangaReadService,
         private readonly MangaWriteService $mangaWriteService,
+        private readonly \App\Services\Manga\UpcomingMangaService $upcomingMangaService,
         Request $request
     )
     {
@@ -128,7 +129,8 @@ final class MangaController extends Controller
                 'totalSeries' => $data->totalSeries,
                 'perPage' => $data->perPage,
                 'slugFilter' => $data->slugFilter,
-                'totalPages' => $data->totalPages
+                'totalPages' => $data->totalPages,
+                'upcoming' => $page === 1 ? $this->upcomingMangaService->forSeries($slug) : []
             ]
         );
     }

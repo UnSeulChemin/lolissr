@@ -54,6 +54,7 @@
             "@php tests/Domain/collection-delete-identity.php",
             "@php tests/Domain/collection-update-existence.php",
             "@php tests/Domain/manga-create-notes.php",
+            "@php tests/Domain/manga-upcoming.php",
             "@php tests/Domain/media-integrity.php",
             "@php tests/Domain/manga-xp-batch.php",
             "@php tests/Domain/collection-xp-batch.php",
@@ -96,6 +97,7 @@
         "bootstrap:cache": "@php scripts/Maintenance/bootstrap-cache.php build",
         "bootstrap:clear": "@php scripts/Maintenance/bootstrap-cache.php clear",
 
+        "manga:sync": "@php scripts/Manga/sync-releases.php",
         "backup": "@php scripts/Database/backup-database.php",
         "db:deduplicate-indexes": "@php scripts/Database/deduplicate-indexes.php",
         "db:check": "@php tests/Domain/database-schema.php",
@@ -108,6 +110,7 @@
     },
 
     "scripts-descriptions": {
+        "manga:sync": "[Manga] Actualise les prochaines sorties via une session invite Mangacollec.",
         "dx": "[DX] Applique les conventions de presentation PHP, JavaScript et CSS.",
         "dx:check": "[DX] Detecte les ecarts de presentation sans modifier les sources.",
         "check": "[Tests] Analyse PHP + tests HTTP et régression.",

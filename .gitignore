@@ -24,6 +24,8 @@
 /storage/thumbnail-optimization.json
 /storage/grid-images/
 /storage/profile-images.json
+/storage/manga-releases.json
+/storage/manga-releases.lock
 
 # Images locales et fichiers envoyes par les utilisateurs
 /public/images/*

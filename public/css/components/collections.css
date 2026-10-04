@@ -1,3 +1,37 @@
+.collection-card-upcoming
+{
+    background: var(--color-surface);
+    border: 1px dashed #a0a0a0;
+    color: #666;
+}
+
+.collection-card-upcoming .card-image-portrait
+{
+    filter: grayscale(1);
+    opacity: 0.55;
+}
+
+.collection-upcoming-placeholder
+{
+    min-height: 240px;
+    background: #eee;
+    color: #777;
+    font-size: 24px;
+}
+
+.collection-status-upcoming
+{
+    background: #e5e5e5;
+    color: #555;
+}
+
+.collection-release-date
+{
+    margin-top: 8px;
+    color: #666;
+    font-weight: 600;
+}
+
 /* =================================================
    PAGE : COLLECTION
 ================================================= */

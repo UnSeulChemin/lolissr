@@ -2,6 +2,21 @@
 COMMANDES DU PROJET
 =========================================
 
+= Actualiser les tomes a venir (Mangacollec, invite)
+composer manga:sync
+
+= Installer/reinstaller l'actualisation Windows (09:00 et ouverture de session)
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Manga/install-schedule.ps1
+
+= Journal de l'actualisation automatique
+storage/logs/manga-releases-sync.log
+
+= Sur un autre serveur : planifier quotidiennement depuis la racine
+php scripts/Manga/sync-releases.php
+
+= Correspondances des editions / nouvelles series ambigues
+Config/manga-releases.php
+
 = Exécuter depuis la racine du projet
 C:\wamp64\www\lolissr
 
