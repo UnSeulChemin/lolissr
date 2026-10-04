@@ -8,7 +8,7 @@ if (PHP_SAPI !== 'cli')
     exit;
 }
 
-require_once __DIR__ . '/scripts/Support/DxFormatter.php';
+require_once dirname(__DIR__) . '/Support/DxFormatter.php';
 
 try
 {
@@ -18,7 +18,7 @@ try
     {
         if ($argument === '--help')
         {
-            echo "Usage: php dx-format.php [--check] [--config=dx.json]\n";
+            echo "Usage: php scripts/Tools/dx-format.php [--check] [--config=chemin.json]\n";
             echo "Sans option : applique les conventions DX aux sources.\n";
             echo "--check : liste les fichiers a reformater sans les modifier (code 1 si ecarts).\n";
             exit(0);
@@ -37,7 +37,7 @@ try
         }
     }
 
-    $formatter = new DxFormatter(__DIR__, $config);
+    $formatter = new DxFormatter(dirname(__DIR__, 2), $config);
     exit($formatter->run($check));
 }
 catch (Throwable $error)

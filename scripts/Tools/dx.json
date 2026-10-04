@@ -1,5 +1,5 @@
 {
-    "paths": ["App", "Framework", "Config", "scripts", "tests", "public", "dx-format.php"],
+    "paths": ["App", "Framework", "Config", "scripts", "tests", "public"],
     "extensions": ["php", "js", "css"],
     "exclude": ["public/js/dist/", "public/css/app.bundle.css", "Config/assets.php", "Config/javascript.php", "scripts/Assets/javascript-sources.php"],
     "line_length": 120

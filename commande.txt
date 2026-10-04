@@ -40,19 +40,19 @@ composer dx:check
 composer dx
 
 = Lancer directement le script
-php dx-format.php
+php scripts/Tools/dx-format.php
 
 = Vérifier directement sans modifier
-php dx-format.php --check
+php scripts/Tools/dx-format.php --check
 
 = Afficher les options
-php dx-format.php --help
+php scripts/Tools/dx-format.php --help
 
 = Utiliser une autre configuration JSON
-php dx-format.php --config=autre-dx.json
+php scripts/Tools/dx-format.php --config=autre-dx.json
 
 = Configuration par défaut
-dx.json
+scripts/Tools/dx.json
 
 = Après le formatage
 composer assets:build
