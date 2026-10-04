@@ -49,7 +49,7 @@ echo 'Commit message : ' . $commitMessage . PHP_EOL;
 echo PHP_EOL;
 
 echo '[SYSTEM]' . PHP_EOL;
-echo 'Repository status:' . PHP_EOL;
+echo 'Inspecting repository...' . PHP_EOL;
 echo PHP_EOL;
 
 runCommand(['git', 'status', '--short'], 'Unable to inspect repository status.');
@@ -76,7 +76,7 @@ echo '[SYSTEM]' . PHP_EOL;
 echo 'Latest commit:' . PHP_EOL;
 echo PHP_EOL;
 
-runCommand(['git', 'log', '-1', '--oneline'], 'Unable to retrieve latest commit.');
+runCommand(['git', 'log', '-1', '--oneline'], 'Unable to retrieve latest commit.', true);
 
 echo PHP_EOL;
 echo '[SYSTEM]' . PHP_EOL;
@@ -121,20 +121,24 @@ function hasStagedChanges(): bool
 /**
  * @param list<string> $command
  */
-function runCommand(array $command, string $failureMessage, bool $displayOutput = true): void
+function runCommand(array $command, string $failureMessage, bool $displayOutput = false): void
 {
-    $nullDevice = PHP_OS_FAMILY === 'Windows'
-        ? 'NUL'
-        : '/dev/null';
+    $output = tmpfile();
+
+    if ($output === false)
+    {
+        fail('Unable to capture command output.');
+    }
 
     $descriptors = $displayOutput
         ? [0 => STDIN, 1 => STDOUT, 2 => STDERR]
-        : [0 => STDIN, 1 => ['file', $nullDevice, 'w'], 2 => ['file', $nullDevice, 'w']];
+        : [0 => STDIN, 1 => $output, 2 => $output];
 
     $process = proc_open($command, $descriptors, $pipes, ROOT);
 
     if (! is_resource($process))
     {
+        fclose($output);
         fail($failureMessage);
     }
 
@@ -142,8 +146,16 @@ function runCommand(array $command, string $failureMessage, bool $displayOutput 
 
     if ($exitCode !== 0)
     {
+        if (! $displayOutput)
+        {
+            rewind($output);
+            stream_copy_to_stream($output, STDERR);
+        }
+        fclose($output);
         fail($failureMessage);
     }
+
+    fclose($output);
 }
 
 function fail(string $message): never
