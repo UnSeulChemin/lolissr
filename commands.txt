@@ -55,6 +55,26 @@ composer browser-tests
 
 
 =========================================
+GIT
+=========================================
+
+= Compiler les assets, créer un commit et publier sur origin/master
+composer publish:git
+
+= Utilise APP_NAME et APP_VERSION pour le message du commit
+
+-----------------------------------------
+
+Reset Git
+
+= Annuler les modifications locales et supprimer les fichiers non suivis
+composer git:reset
+
+= Effectue git reset --hard HEAD puis git clean -fd
+= Les fichiers ignorés sont conservés
+
+
+=========================================
 ASSETS
 =========================================
 
@@ -160,26 +180,6 @@ composer release:zip
 
 = Emplacement des archives
 releases\LoliSSR_vX.X.X.zip
-
-
-=========================================
-GIT
-=========================================
-
-= Compiler les assets, créer un commit et publier sur origin/master
-composer publish:git
-
-= Utilise APP_NAME et APP_VERSION pour le message du commit
-
------------------------------------------
-
-Reset Git
-
-= Annuler les modifications locales et supprimer les fichiers non suivis
-composer git:reset
-
-= Effectue git reset --hard HEAD puis git clean -fd
-= Les fichiers ignorés sont conservés
 
 
 =========================================
