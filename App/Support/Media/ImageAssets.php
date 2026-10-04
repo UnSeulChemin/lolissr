@@ -27,7 +27,9 @@ final class ImageAssets
         if (!is_file($file)) return $url;
         $url = preg_replace('/([?&])v=[^&]*&?/', '$1', $url) ?? $url;
         $url = rtrim($url, '?&');
-        return $url . (str_contains($url, '?') ? '&' : '?') . 'v=' . filemtime($file) . '-' . filesize($file);
+        $version = hash_file('sha256', $file);
+        if ($version === false) throw new \RuntimeException('Cannot fingerprint image.');
+        return $url . (str_contains($url, '?') ? '&' : '?') . 'v=' . $version;
     }
 
     public static function profileVersion(): string
@@ -36,7 +38,7 @@ final class ImageAssets
         if (is_file($manifest))
         {
             $data = json_decode((string) file_get_contents($manifest), true);
-            if (is_array($data) && isset($data['version']) && is_string($data['version'])) return $data['version'];
+            if (is_array($data) && ($data['format'] ?? null) === 2 && isset($data['version']) && is_string($data['version'])) return $data['version'];
         }
         return self::rebuildProfileVersion();
     }
@@ -55,11 +57,14 @@ final class ImageAssets
             $files = glob(dirname(__DIR__, 3) . '/public/images/profil/' . $type . '/thumbnail/*');
             foreach ($files === false ? [] : $files as $file)
             {
-                if (is_file($file)) $versions[] = basename($file) . ':' . filemtime($file) . ':' . filesize($file);
+                if (!is_file($file)) continue;
+                $hash = hash_file('sha256', $file);
+                if ($hash === false) throw new \RuntimeException('Cannot fingerprint profile image.');
+                $versions[] = $type . '/' . basename($file) . ':' . $hash;
             }
         }
-        $version = substr(hash('sha256', implode('|', $versions)), 0, 16);
-        ImageManifest::write(dirname(__DIR__, 3) . '/storage/profile-images.json', ['version' => $version]);
+        $version = hash('sha256', implode('|', $versions));
+        ImageManifest::write(dirname(__DIR__, 3) . '/storage/profile-images.json', ['format' => 2, 'version' => $version]);
         return $version;
     }
 }

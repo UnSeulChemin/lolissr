@@ -7,6 +7,7 @@ use App\Support\Media\ThumbnailOptimizer;
 $directory = sys_get_temp_dir() . '/oriented-images-' . bin2hex(random_bytes(8));
 mkdir($directory, 0700);
 $publicFixture = dirname(__DIR__, 2) . '/public/images/.image-assets-test-' . bin2hex(random_bytes(8)) . '.jpg';
+$versionFixture = $publicFixture . '.png';
 try
 {
     $image = imagecreatetruecolor(160, 80);
@@ -27,7 +28,25 @@ try
     $versionBefore = $versioned;
     touch($publicFixture, time() + 10);
     clearstatcache(true, $publicFixture);
-    if (ImageAssets::url($url) === $versionBefore) throw new RuntimeException('Image replacement kept a stale version.');
+    if (ImageAssets::url($url) !== $versionBefore) throw new RuntimeException('Metadata-only change invalidated identical image content.');
+    $image = imagecreatetruecolor(2, 2);
+    imagefill($image, 0, 0, imagecolorallocate($image, 255, 0, 0));
+    imagepng($image, $versionFixture, 0);
+    $timestamp = time() - 60;
+    touch($versionFixture, $timestamp);
+    clearstatcache(true, $versionFixture);
+    $versionUrl = '/lolissr/images/' . basename($versionFixture);
+    $before = ImageAssets::url($versionUrl);
+    $size = filesize($versionFixture);
+    imagefill($image, 0, 0, imagecolorallocate($image, 0, 0, 255));
+    imagepng($image, $versionFixture, 0);
+    imagedestroy($image);
+    touch($versionFixture, $timestamp);
+    clearstatcache(true, $versionFixture);
+    if (filesize($versionFixture) !== $size || filemtime($versionFixture) !== $timestamp)
+        throw new RuntimeException('Replacement fixture did not preserve size and timestamp.');
+    if (ImageAssets::url($versionUrl) === $before)
+        throw new RuntimeException('Different image content kept a stale version with identical size/date.');
     $originalHash = hash_file('sha256', $directory . '/source.jpg');
     if (!ThumbnailOptimizer::createGrid($directory . '/source.jpg')
         || hash_file('sha256', $directory . '/source.jpg') !== $originalHash
@@ -77,7 +96,7 @@ try
 }
 finally
 {
-    foreach ([$publicFixture, str_replace('.jpg', '.grid.jpg', $publicFixture)] as $fixture)
+    foreach ([$publicFixture, $versionFixture, str_replace('.jpg', '.grid.jpg', $publicFixture)] as $fixture)
         if (is_file($fixture))
         { ThumbnailOptimizer::forgetGrid($fixture); unlink($fixture); }
     ThumbnailOptimizer::forgetGrid($directory . '/source.jpg');
