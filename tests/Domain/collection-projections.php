@@ -24,8 +24,8 @@ foreach (['Figurine', 'Nendoroid', 'Peluche', 'Artbook'] as $kind)
     $table = strtolower($kind);
     $category = $kind;
     $fields = $kind === 'Artbook' ? 'artbook TEXT, auteur TEXT, serie TEXT' : 'waifu TEXT, origin TEXT, collect INT';
-    $database->exec("CREATE TABLE $table (id INT PRIMARY KEY, slug TEXT, numero INT, thumbnail TEXT, extension TEXT, commentaire TEXT, $fields)");
-    $insert = $database->prepare("INSERT INTO $table VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $database->exec(owned_fixture_sql($database, "CREATE TABLE $table (id INT PRIMARY KEY, slug TEXT, numero INT, thumbnail TEXT, extension TEXT, commentaire TEXT, $fields)"));
+    $insert = $database->prepare(owned_fixture_sql($database, "INSERT INTO $table VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"));
     foreach ([[1, 'alpha', 3], [2, 'beta', 1], [3, 'alpha', 1], [4, 'beta', 2]] as [$id, $slug, $number])
     {
         $insert->execute([$id, $slug, $number, $id === 2 ? '' : 'cover', $id === 2 ? '' : 'webp',
@@ -69,20 +69,20 @@ $database->exec('DELETE FROM artbook');
 RepresentationQueryCounter::$executions = 0;
 $assert($artbookStats->findMostRepresented() === null, 'Empty representation changed');
 $assert(RepresentationQueryCounter::$executions === 1, 'Representation needs one query');
-$database->exec("INSERT INTO artbook (id, auteur, serie, thumbnail, extension) VALUES
-    (1, 'Author', NULL, 'author', 'webp'), (2, NULL, 'Series', 'series', 'webp')");
+$database->exec(owned_fixture_sql($database, "INSERT INTO artbook (id, auteur, serie, thumbnail, extension) VALUES
+    (1, 'Author', NULL, 'author', 'webp'), (2, NULL, 'Series', 'series', 'webp')"));
 $winner = $artbookStats->findMostRepresented();
 $assert($winner->name === 'Author' && $winner->total === 1, 'Author must win equal counts');
-$database->exec("INSERT INTO artbook (id, auteur, serie, thumbnail, extension) VALUES (3, NULL, 'Series', 'series', 'webp')");
+$database->exec(owned_fixture_sql($database, "INSERT INTO artbook (id, auteur, serie, thumbnail, extension) VALUES (3, NULL, 'Series', 'series', 'webp')"));
 $winner = $artbookStats->findMostRepresented();
 $assert($winner->name === 'Series' && $winner->total === 2, 'Series winner changed');
 $assert($winner->thumbnailUrl === 'images/artbook/thumbnail/series.webp', 'Representation image changed');
 $database->exec("DELETE FROM artbook WHERE serie IS NOT NULL");
 $assert($artbookStats->findMostRepresented()->name === 'Author', 'Author-only representation changed');
 
-$database->exec('CREATE TABLE manga (id INT PRIMARY KEY, slug TEXT, numero INT, livre TEXT, thumbnail TEXT, extension TEXT, commentaire TEXT)');
-$database->exec("INSERT INTO manga VALUES (1, 'alpha', 3, 'Alpha', 'cover', 'webp', 'detail'),
-    (2, 'beta', 1, 'Beta', '', '', 'detail'), (3, 'alpha', 2, 'Alpha', 'cover', 'webp', 'detail')");
+$database->exec(owned_fixture_sql($database, 'CREATE TABLE manga (id INT PRIMARY KEY, slug TEXT, numero INT, livre TEXT, thumbnail TEXT, extension TEXT, commentaire TEXT)'));
+$database->exec(owned_fixture_sql($database, "INSERT INTO manga VALUES (1, 'alpha', 3, 'Alpha', 'cover', 'webp', 'detail'),
+    (2, 'beta', 1, 'Beta', '', '', 'detail'), (3, 'alpha', 2, 'Alpha', 'cover', 'webp', 'detail')"));
 $database->exec("ALTER TABLE manga ADD COLUMN statut TEXT DEFAULT 'en_cours'");
 $database->exec('ALTER TABLE manga ADD COLUMN note INT DEFAULT 6');
 $database->exec('ALTER TABLE manga ADD COLUMN lu INT DEFAULT 0');

@@ -29,7 +29,7 @@ trait HasMangaStatsSubQuery
                     1
                 ) AS average_note
 
-            FROM {$this->table()}
+            FROM {$this->readTable()}
 
             {$where}
 

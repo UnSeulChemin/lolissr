@@ -29,8 +29,8 @@ $container->singleton(Database::class);
 $db = $container->get(Database::class);
 $db->setAttribute(PDO::ATTR_STATEMENT_CLASS, [CollectionXpQueryCounter::class]);
 // Temporary tables shadow real tables on this connection only.
-$db->exec('CREATE TEMPORARY TABLE users (id INT PRIMARY KEY, level INT NOT NULL, xp INT NOT NULL) ENGINE=InnoDB');
-$db->exec('CREATE TEMPORARY TABLE achievement_xp_rewards (user_id INT, achievement_key VARCHAR(100), xp INT, UNIQUE KEY (user_id, achievement_key)) ENGINE=InnoDB');
+$db->exec(owned_fixture_sql($db, 'CREATE TEMPORARY TABLE users (id INT PRIMARY KEY, level INT NOT NULL, xp INT NOT NULL) ENGINE=InnoDB'));
+$db->exec(owned_fixture_sql($db, 'CREATE TEMPORARY TABLE achievement_xp_rewards (user_id INT, achievement_key VARCHAR(100), xp INT, UNIQUE KEY (user_id, achievement_key)) ENGINE=InnoDB'));
 $cases = [
     ['figurine', 'collect', 'collect_rewarded', 'Figurine/Figurine', 'rewardCollect', 'Figurine', UserXp::COLLECT_FIGURINE, AchievementRewards::FIGURINES[1]],
     ['nendoroid', 'collect', 'collect_rewarded', 'Nendoroid/Nendoroid', 'rewardCollect', 'Nendoroid', UserXp::COLLECT_NENDOROID, AchievementRewards::NENDOROIDS[1]],
@@ -47,9 +47,9 @@ foreach ($cases as [$table, $status, $flag, $serviceName, $method, $modelName, $
 {
     $db->exec('DELETE FROM users');
     $db->exec('DELETE FROM achievement_xp_rewards');
-    $db->exec('INSERT INTO users VALUES (1, 1, 0)');
-    $db->exec("CREATE TEMPORARY TABLE $table (id INT PRIMARY KEY, $status INT, $flag INT) ENGINE=InnoDB");
-    $db->exec("INSERT INTO $table VALUES (1, 1, 0)");
+    $db->exec(owned_fixture_sql($db, 'INSERT INTO users VALUES (1, 1, 0)'));
+    $db->exec(owned_fixture_sql($db, "CREATE TEMPORARY TABLE $table (id INT PRIMARY KEY, $status INT, $flag INT) ENGINE=InnoDB"));
+    $db->exec(owned_fixture_sql($db, "INSERT INTO $table VALUES (1, 1, 0)"));
     $user = new User();
     $user->id = 1;
     $GLOBALS['collectionTestUser'] = $user;
@@ -87,7 +87,7 @@ foreach ($cases as [$table, $status, $flag, $serviceName, $method, $modelName, $
     $assert(count($updates) === 1 && count($locks) === 1, "$table: expected one user lock and update");
     $assert($earned() === $baseXp + $achievementXp, "$table: combined total changed");
     $assert(! $db->transaction(fn () => $call(1)) && $earned() === $baseXp + $achievementXp, "$table: duplicate reward");
-    $db->exec("INSERT INTO $table VALUES (2, 1, 0)");
+    $db->exec(owned_fixture_sql($db, "INSERT INTO $table VALUES (2, 1, 0)"));
     $assert($db->transaction(fn () => $call(2)) && $earned() === 2 * $baseXp + $achievementXp, "$table: base XP lost after previously claimed achievement");
 
     // Existing base claims must not prevent catching up a missing achievement.

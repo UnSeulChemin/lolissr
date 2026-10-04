@@ -22,12 +22,12 @@ $db = (new ReflectionClass(Database::class))->newInstanceWithoutConstructor();
 $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
 $db->setAttribute(PDO::ATTR_STATEMENT_CLASS, [FilterQueryCounter::class]);
-$db->exec('CREATE TABLE manga (id INT, slug TEXT, numero INT, livre TEXT, thumbnail TEXT DEFAULT \'\', extension TEXT DEFAULT \'\', statut TEXT DEFAULT \'en_cours\', note INT, lu INT)');
-$db->exec("INSERT INTO manga (id, slug, numero, livre, note, lu) VALUES
+$db->exec(owned_fixture_sql($db, 'CREATE TABLE manga (id INT, slug TEXT, numero INT, livre TEXT, thumbnail TEXT DEFAULT \'\', extension TEXT DEFAULT \'\', statut TEXT DEFAULT \'en_cours\', note INT, lu INT)'));
+$db->exec(owned_fixture_sql($db, "INSERT INTO manga (id, slug, numero, livre, note, lu) VALUES
     (1, 'alpha', 3, 'Alpha', 8, 0), (2, 'alpha', 2, 'Alpha', 10, 1),
     (3, 'beta', 1, 'Beta', 10, 1),
     (4, 'gamma', 2, 'Gamma', NULL, 0), (5, 'gamma', 2, 'Gamma', 4, 1),
-    (6, 'delta', 1, 'Delta', 6, 1)");
+    (6, 'delta', 1, 'Delta', 6, 1)"));
 $repository = new MangaCollectionRepository($db);
 $assert = static function (bool $condition, string $message): void
 {

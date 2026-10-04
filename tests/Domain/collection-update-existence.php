@@ -28,12 +28,12 @@ foreach (['Figurine', 'Nendoroid', 'Peluche', 'Artbook'] as $kind)
     $detailFields = $kind === 'Artbook'
         ? 'auteur VARCHAR(150), serie VARCHAR(150), lu TINYINT NOT NULL DEFAULT 0,'
         : "origin VARCHAR(150), $figurineFields";
-    $db->exec("CREATE TEMPORARY TABLE $table (
+    $db->exec(owned_fixture_sql($db, "CREATE TEMPORARY TABLE $table (
         id INT PRIMARY KEY, slug VARCHAR(150), numero INT,
         $nameField VARCHAR(150), $detailFields
         company VARCHAR(150) NOT NULL DEFAULT '', release_date DATE NULL, commentaire TEXT NULL,
         UNIQUE KEY (slug, numero)
-    ) ENGINE=InnoDB");
+    ) ENGINE=InnoDB"));
     try
     {
         $repository = $container->get("App\\Repositories\\$domain\\{$kind}Repository");
@@ -49,7 +49,7 @@ foreach (['Figurine', 'Nendoroid', 'Peluche', 'Artbook'] as $kind)
         catch (LogicException)
         {}
 
-        $db->exec("INSERT INTO $table (id, slug, numero, $nameField) VALUES (1, 'fixture', 1, 'Original')");
+        $db->exec(owned_fixture_sql($db, "INSERT INTO $table (id, slug, numero, $nameField) VALUES (1, 'fixture', 1, 'Original')"));
         $check($service->update('fixture', 1, $dto)->success, "$kind: valid update failed");
         $check($db->query("SELECT $nameField FROM $table WHERE id = 1")->fetchColumn() === 'Updated', "$kind: update not saved");
         $check($service->update('fixture', 1, $dto)->success, "$kind: unchanged update failed");
@@ -126,11 +126,11 @@ final class NoteQueryCounter extends PDOStatement
     }
 }
 $db->setAttribute(PDO::ATTR_STATEMENT_CLASS, [NoteQueryCounter::class]);
-$db->exec('CREATE TEMPORARY TABLE manga (id INT PRIMARY KEY, slug VARCHAR(150), numero INT,
-    jacquette INT NULL, livre_note INT NULL, note INT NULL, UNIQUE KEY (slug, numero)) ENGINE=InnoDB');
+$db->exec(owned_fixture_sql($db, 'CREATE TEMPORARY TABLE manga (id INT PRIMARY KEY, slug VARCHAR(150), numero INT,
+    jacquette INT NULL, livre_note INT NULL, note INT NULL, UNIQUE KEY (slug, numero)) ENGINE=InnoDB'));
 try
 {
-    $db->exec("INSERT INTO manga VALUES (1, 'fixture', 1, 1, 1, 2), (2, 'fixture', 2, 1, 1, 2)");
+    $db->exec(owned_fixture_sql($db, "INSERT INTO manga VALUES (1, 'fixture', 1, 1, 1, 2), (2, 'fixture', 2, 1, 1, 2)"));
     $repository = $container->get(\App\Repositories\Manga\MangaRepository::class);
     $service = $container->get(\App\Services\Manga\MangaWriteService::class);
     try
@@ -181,11 +181,11 @@ finally
 echo "PASS: collection updates, artbook sources/read status and two-query manga notes (nulls, no-op, missing target).\n";
 
 // A deletion after the controller's lookup must still produce a 404 in the service.
-$db->exec('CREATE TEMPORARY TABLE chinois_grammaire (
+$db->exec(owned_fixture_sql($db, 'CREATE TEMPORARY TABLE chinois_grammaire (
     id INT PRIMARY KEY, niveau TEXT, section TEXT, categorie TEXT, titre TEXT,
     structure TEXT, abreviation TEXT, phrase TEXT, pinyin TEXT, traduction TEXT,
     explication TEXT, position INT, maitrise INT, xp_rewarded INT
-) ENGINE=InnoDB');
+) ENGINE=InnoDB'));
 try
 {
     $grammarService = $container->get(\App\Services\Chinois\ChinoisWriteService::class);

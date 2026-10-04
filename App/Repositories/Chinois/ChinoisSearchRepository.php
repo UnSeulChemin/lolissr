@@ -50,7 +50,7 @@ final class ChinoisSearchRepository extends AbstractRepository
                 explication,
                 niveau
 
-            FROM chinois_grammaire
+            FROM {$this->ownedTable('chinois_grammaire')}
 
             WHERE titre LIKE :search_titre
             OR structure LIKE :search_structure
@@ -83,7 +83,7 @@ final class ChinoisSearchRepository extends AbstractRepository
                 traduction,
                 langue
 
-            FROM chinois_vocabulaire
+            FROM {$this->ownedTable('chinois_vocabulaire')}
 
             WHERE mot LIKE :search_mot
             OR pinyin LIKE :search_pinyin

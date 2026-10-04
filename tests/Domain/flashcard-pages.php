@@ -37,11 +37,11 @@ foreach ([false, true] as $grammar)
     $fields = $grammar
         ? 'niveau TEXT, section TEXT, categorie TEXT, titre TEXT, structure TEXT, abreviation TEXT, phrase TEXT, explication TEXT, position INT'
         : 'langue TEXT, mot TEXT, type TEXT, exemple TEXT';
-    $db->exec("CREATE TABLE $table (id INT PRIMARY KEY, maitrise INT DEFAULT 0, xp_rewarded INT DEFAULT 0, pinyin TEXT, traduction TEXT, $fields)");
+    $db->exec(owned_fixture_sql($db, "CREATE TABLE $table (id INT PRIMARY KEY, maitrise INT DEFAULT 0, xp_rewarded INT DEFAULT 0, pinyin TEXT, traduction TEXT, $fields)"));
     $check($service->flashcardPage($grammar) === ['cards' => [], 'total' => 0, 'offset' => 0], 'Empty deck');
     for ($i = 1; $i <= 123; $i++)
     {
-        $db->exec("INSERT INTO $table (id, maitrise) VALUES (" . ($i * 2) . ', ' . ($i > 120 ? 1 : 0) . ')');
+        $db->exec(owned_fixture_sql($db, "INSERT INTO $table (id, maitrise) VALUES (" . ($i * 2) . ', ' . ($i > 120 ? 1 : 0) . ')'));
     }
     $ids = [];
     foreach ([0, 50, 100] as $offset)

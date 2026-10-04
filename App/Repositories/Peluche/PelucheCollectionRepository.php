@@ -31,14 +31,14 @@ final class PelucheCollectionRepository extends AbstractRepository
             "
             SELECT p.slug, p.numero, p.waifu, p.origin, p.thumbnail, p.extension, p.collect
 
-            FROM {$this->table()} p
+            FROM {$this->readTable('p')}
 
             INNER JOIN (
                 SELECT
                     slug,
                     MAX(id) AS last_id
 
-                FROM {$this->table()}
+                FROM {$this->readTable()}
 
                 GROUP BY slug
             ) grouped

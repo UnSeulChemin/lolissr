@@ -12,7 +12,7 @@ final class ArtbookStatsRepository extends AbstractRepository
 {
     public function countRead(): int
     {
-        $row = $this->fetchOne("SELECT COUNT(*) AS total FROM {$this->table()} WHERE lu = 1");
+        $row = $this->fetchOne("SELECT COUNT(*) AS total FROM {$this->readTable()} WHERE lu = 1");
         return (int) ($row->total ?? 0);
     }
     /** @return array{total: int, authors: int, series: int} */
@@ -20,7 +20,7 @@ final class ArtbookStatsRepository extends AbstractRepository
     {
         $row = $this->fetchOne("SELECT COUNT(*) AS total,
             COUNT(DISTINCT CASE WHEN auteur <> '' THEN auteur END) AS authors,
-            COUNT(DISTINCT CASE WHEN serie <> '' THEN serie END) AS series FROM {$this->table()}");
+            COUNT(DISTINCT CASE WHEN serie <> '' THEN serie END) AS series FROM {$this->readTable()}");
         return ['total' => (int) ($row->total ?? 0), 'authors' => (int) ($row->authors ?? 0),
             'series' => (int) ($row->series ?? 0)];
     }
@@ -42,7 +42,7 @@ final class ArtbookStatsRepository extends AbstractRepository
                 thumbnail,
                 extension
 
-            FROM {$this->table()}
+            FROM {$this->readTable()}
 
             ORDER BY created_at DESC
 
@@ -61,13 +61,13 @@ final class ArtbookStatsRepository extends AbstractRepository
             "SELECT * FROM (
                 SELECT 'author' AS type, auteur AS name, COUNT(*) AS total,
                     MIN(thumbnail) AS thumbnail, MIN(extension) AS extension
-                FROM {$this->table()}
+                FROM {$this->readTable()}
                 WHERE auteur IS NOT NULL AND auteur <> ''
                 GROUP BY auteur
                 UNION ALL
                 SELECT 'series' AS type, serie AS name, COUNT(*) AS total,
                     MIN(thumbnail) AS thumbnail, MIN(extension) AS extension
-                FROM {$this->table()}
+                FROM {$this->readTable()}
                 WHERE serie IS NOT NULL AND serie <> ''
                 GROUP BY serie
             ) represented

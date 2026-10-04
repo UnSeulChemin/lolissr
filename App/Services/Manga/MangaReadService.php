@@ -197,10 +197,10 @@ final readonly class MangaReadService
                     ? "{$baseUri}images/manga/thumbnail/{$thumbnail}.{$extension}"
                     : null,
 
-            editeur: $manga->editeur,
+            editeur: $manga->editeur ?? '',
 
             hasEditeur:
-                trim($manga->editeur) !== '',
+                trim($manga->editeur ?? '') !== '',
 
             numero: $manga->numero,
             lu: $manga->lu,

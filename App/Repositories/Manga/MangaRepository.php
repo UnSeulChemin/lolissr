@@ -34,7 +34,7 @@ final class MangaRepository extends AbstractRepository
                 stats.total_lu,
                 stats.average_note
 
-            FROM {$this->table()} m
+            FROM {$this->readTable('m')}
 
             INNER JOIN (
                 {$this->statsSubQuery(true)}
@@ -56,7 +56,7 @@ final class MangaRepository extends AbstractRepository
     public function countBySlug(string $slug): int
     {
         return (int) $this->fetchSingleValue(
-            "SELECT COUNT(*) AS total FROM {$this->table()} WHERE slug = :slug",
+            "SELECT COUNT(*) AS total FROM {$this->readTable()} WHERE slug = :slug AND {$this->ownerCondition()}",
             'total', ['slug' => $this->normalizeSlug($slug)]
         );
     }
@@ -64,7 +64,7 @@ final class MangaRepository extends AbstractRepository
     public function findRecordBySlugAndNumero(string $slug, int $numero): ?Manga
     {
         return $this->fetchOne(
-            "SELECT * FROM {$this->table()} WHERE slug = :slug AND numero = :numero LIMIT 1",
+            "SELECT * FROM {$this->readTable()} WHERE slug = :slug AND {$this->ownerCondition()} AND numero = :numero LIMIT 1",
             ['slug' => $this->normalizeSlug($slug), 'numero' => $numero],
             Manga::class
         );
@@ -81,7 +81,7 @@ final class MangaRepository extends AbstractRepository
                 stats.total_lu,
                 stats.average_note
 
-            FROM {$this->table()} m
+            FROM {$this->readTable('m')}
 
             INNER JOIN (
                 {$this->statsSubQuery(true)}
@@ -120,7 +120,7 @@ final class MangaRepository extends AbstractRepository
         [$jacquette, $livreNote] = $this->normalizeNotes($jacquette, $livreNote);
 
         $target = $this->fetchOne(
-            "SELECT id FROM {$this->table()} WHERE slug = :slug AND numero = :numero LIMIT 1",
+            "SELECT id FROM {$this->readTable()} WHERE slug = :slug AND {$this->ownerCondition()} AND numero = :numero LIMIT 1",
             ['slug' => $this->normalizeSlug($slug), 'numero' => $numero]
         );
 
@@ -156,7 +156,7 @@ final class MangaRepository extends AbstractRepository
             throw new \LogicException('Note updates require a transaction.');
         }
         $target = $this->fetchOne(
-            "SELECT id FROM {$this->table()} WHERE slug = :slug AND numero = :numero LIMIT 1 FOR UPDATE",
+            "SELECT id FROM {$this->table()} WHERE slug = :slug AND {$this->ownerCondition()} AND numero = :numero LIMIT 1 FOR UPDATE",
             ['slug' => $this->normalizeSlug($slug), 'numero' => $numero]
         );
         if ($target === null)
@@ -193,9 +193,9 @@ final class MangaRepository extends AbstractRepository
             "
             SELECT 1
 
-            FROM {$this->table()}
+            FROM {$this->readTable()}
 
-            WHERE slug = :slug
+            WHERE slug = :slug AND {$this->ownerCondition()}
 
             LIMIT 1
             ",
@@ -213,7 +213,7 @@ final class MangaRepository extends AbstractRepository
 
             SET xp_read_rewarded = 1
 
-            WHERE id = :id
+            WHERE id = :id AND {$this->ownerCondition()}
             AND xp_read_rewarded = 0
             ",
             ['id' => $id]
@@ -230,7 +230,7 @@ final class MangaRepository extends AbstractRepository
         }
 
         $statement = $this->query(
-            "SELECT id FROM {$this->table()} WHERE slug = :slug ORDER BY id FOR UPDATE",
+            "SELECT id FROM {$this->table()} WHERE slug = :slug AND {$this->ownerCondition()} ORDER BY id FOR UPDATE",
             ['slug' => $this->normalizeSlug($slug)]
         );
         if ($statement === false)
@@ -253,7 +253,7 @@ final class MangaRepository extends AbstractRepository
 
             FROM {$this->table()}
 
-            WHERE slug = :slug
+            WHERE slug = :slug AND {$this->ownerCondition()}
 
             ORDER BY id
 
@@ -285,9 +285,9 @@ final class MangaRepository extends AbstractRepository
 
         // Le journal survit a la suppression/recreation de tous les tomes.
         $history = $this->query(
-            'INSERT INTO manga_series_rewards (slug) VALUES (:slug)
+            'INSERT INTO manga_series_rewards (user_id, slug) VALUES (:user_id, :slug)
             ON DUPLICATE KEY UPDATE slug = manga_series_rewards.slug',
-            ['slug' => $this->normalizeSlug($slug)]
+            ['user_id' => $this->userId(), 'slug' => $this->normalizeSlug($slug)]
         );
         if ($history === false)
         {
@@ -302,7 +302,7 @@ final class MangaRepository extends AbstractRepository
 
             SET xp_series_rewarded = 1
 
-            WHERE slug = :slug
+            WHERE slug = :slug AND {$this->ownerCondition()}
             AND xp_series_rewarded = 0
             ",
             ['slug' => $this->normalizeSlug($slug)]

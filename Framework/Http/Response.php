@@ -89,11 +89,20 @@ final class Response
     // EN-TÊTES
     // =================================================
 
-    private static function setStatusCode(int $statusCode): void
+    public static function setStatusCode(int $statusCode): void
     {
         if (! headers_sent())
         {
-            http_response_code($statusCode);
+            // Apache remplace le code non standard 419 par 500 sans libelle explicite.
+            if ($statusCode === 419)
+            {
+                $protocol = ($_SERVER['SERVER_PROTOCOL'] ?? '') === 'HTTP/1.0' ? 'HTTP/1.0' : 'HTTP/1.1';
+                header($protocol . ' 419 Session Expired', true, 419);
+            }
+            else
+            {
+                http_response_code($statusCode);
+            }
         }
     }
 

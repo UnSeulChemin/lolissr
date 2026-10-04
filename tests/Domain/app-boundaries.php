@@ -56,7 +56,7 @@ $database = (new ReflectionClass(Database::class))->newInstanceWithoutConstructo
 $database->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $database->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
 foreach (['manga', 'artbook', 'figurine', 'nendoroid', 'peluche', 'chinois_vocabulaire'] as $table)
-    $database->exec("CREATE TABLE $table (id INT, slug TEXT, langue TEXT)");
+    $database->exec(owned_fixture_sql($database, "CREATE TABLE $table (id INT, slug TEXT, langue TEXT)"));
 $container = new Container();
 $container->instance(Database::class, $database);
 foreach ([

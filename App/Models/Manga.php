@@ -6,6 +6,8 @@ namespace App\Models;
 
 final class Manga
 {
+    public int $user_id = 0;
+
     public int $id = 0;
 
     public string $thumbnail = '';
@@ -16,7 +18,7 @@ final class Manga
 
     public string $livre = '';
 
-    public string $editeur = '';
+    public ?string $editeur = null;
 
     public int $numero = 0;
 

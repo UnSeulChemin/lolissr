@@ -18,6 +18,11 @@ abstract class AbstractRepository
 
     private ?string $resolvedTable = null;
 
+    private const OWNED_TABLES = [
+        'manga', 'artbook', 'figurine', 'nendoroid', 'peluche',
+        'chinois_grammaire', 'chinois_vocabulaire'
+    ];
+
     public function __construct(protected Database $db)
     {
     }
@@ -31,6 +36,40 @@ abstract class AbstractRepository
         return $this->resolvedTable ??= $this->resolveTable();
     }
 
+    protected function userId(): int
+    {
+        $user = function_exists('user') ? user() : null;
+        return $user === null ? 0 : $user->id;
+    }
+
+    protected function ownerCondition(): string
+    {
+        return 'user_id = ' . $this->userId();
+    }
+
+    protected function readTable(string $alias = ''): string
+    {
+        return $this->ownedTable($this->table(), $alias);
+    }
+
+    // Une source explicitement filtree conserve le scope dans les sous-requetes,
+    // les CTE, les agregats et les recherches avec plusieurs branches OR.
+    protected function ownedTable(string $table, string $alias = '', ?int $userId = null): string
+    {
+        if (! in_array($table, self::OWNED_TABLES, true))
+        {
+            throw new \LogicException('Table privee inconnue.');
+        }
+        $alias = $alias === '' ? $table : $this->sanitizeIdentifier($alias);
+        $userId ??= $this->userId();
+        return "(SELECT * FROM {$table} WHERE user_id = {$userId}) {$alias}";
+    }
+
+    private function ownsTable(): bool
+    {
+        return in_array($this->table(), self::OWNED_TABLES, true);
+    }
+
     // =================================================
     // CRUD
     // =================================================
@@ -40,11 +79,13 @@ abstract class AbstractRepository
      */
     public function insert(array $data): bool
     {
-        if ($data === [])
+        if ($data === []) return false;
+        if ($this->ownsTable())
         {
-            return false;
+            $userId = $this->userId();
+            if ($userId <= 0) throw new \LogicException('Une connexion est requise pour ajouter un element.');
+            $data['user_id'] = $userId;
         }
-
         $fields = [];
         $values = [];
 
@@ -86,7 +127,13 @@ abstract class AbstractRepository
      */
     public function update(array $data, array $where): bool
     {
-        if ($data === [] || $where === [])
+        if ($data === [] || $where === []) return false;
+        if ($this->ownsTable())
+        {
+            unset($data['user_id']);
+            $where['user_id'] = $this->userId();
+        }
+        if ($data === [])
         {
             return false;
         }
@@ -130,10 +177,8 @@ abstract class AbstractRepository
      */
     public function delete(array $where): bool
     {
-        if ($where === [])
-        {
-            return false;
-        }
+        if ($where === []) return false;
+        if ($this->ownsTable()) $where['user_id'] = $this->userId();
 
         $builtWhere = $this->buildWhere($where);
 
@@ -155,7 +200,7 @@ abstract class AbstractRepository
     {
         $this->guardWrite();
         $statement = $this->query(
-            "DELETE FROM {$this->table()} WHERE id = :id",
+            "DELETE FROM {$this->table()} WHERE id = :id AND {$this->ownerCondition()}",
             ['id' => $id]
         );
 
@@ -174,7 +219,7 @@ abstract class AbstractRepository
     protected function countRows(): int
     {
         $result = $this->fetchOne(
-            "SELECT COUNT(*) AS total FROM {$this->table()}"
+            "SELECT COUNT(*) AS total FROM {$this->readTable()}"
         );
 
         /** @var array{total?: mixed} $data */

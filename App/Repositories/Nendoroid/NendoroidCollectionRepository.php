@@ -31,14 +31,14 @@ final class NendoroidCollectionRepository extends AbstractRepository
             "
             SELECT n.slug, n.numero, n.waifu, n.origin, n.thumbnail, n.extension, n.collect
 
-            FROM {$this->table()} n
+            FROM {$this->readTable('n')}
 
             INNER JOIN (
                 SELECT
                     slug,
                     MAX(id) AS last_id
 
-                FROM {$this->table()}
+                FROM {$this->readTable()}
 
                 GROUP BY slug
             ) grouped

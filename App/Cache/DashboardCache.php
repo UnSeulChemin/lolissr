@@ -23,7 +23,7 @@ final readonly class DashboardCache
     {
         /** @var array<string, mixed> $data */
         $data = Cache::remember(
-            CacheKey::HOME_DASHBOARD,
+            CacheKey::dashboard(),
             null,
             fn (): array => $this->dashboardStatsService->dashboard()->toArray()
         );
@@ -33,6 +33,6 @@ final readonly class DashboardCache
 
     public function forget(): void
     {
-        Cache::forget(CacheKey::HOME_DASHBOARD);
+        Cache::forget(CacheKey::dashboard());
     }
 }

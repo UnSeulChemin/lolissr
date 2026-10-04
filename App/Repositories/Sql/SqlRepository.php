@@ -10,6 +10,13 @@ final class SqlRepository extends AbstractRepository
 {
     private const MAX_RESULT_ROWS = 500;
 
+    /** @return list<int> */
+    public function dashboardUserIds(): array
+    {
+        $rows = $this->fetchAll('SELECT id FROM users');
+        return array_map(static fn (object $row): int => (int) $row->id, $rows);
+    }
+
     /**
      * @return array{result: list<object>, truncated: bool, limit: int}
      */

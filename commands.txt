@@ -157,6 +157,13 @@ composer db:deduplicate-indexes -- --apply
 = Vérifier le schéma MySQL et ses contraintes avec des fixtures temporaires
 composer db:check
 
+= Vérifier deux comptes et deux sessions HTTP (fixtures dédiées créées puis supprimées)
+composer users:check
+
+= Isolation des collections, apprentissages, XP, succès et cache par utilisateur
+scripts\Database\USER-OWNERSHIP.md
+scripts\Database\migrations\2026-10-04-user-ownership.sql
+
 = Audit et SQL de migration du 04/10/2026 (déjà appliquée localement)
 scripts\Database\SCHEMA-AUDIT.md
 scripts\Database\migrations\2026-10-04-schema-consistency.sql

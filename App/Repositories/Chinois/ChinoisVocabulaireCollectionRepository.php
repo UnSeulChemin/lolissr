@@ -27,7 +27,7 @@ final class ChinoisVocabulaireCollectionRepository extends AbstractRepository
             "
             SELECT COUNT(*) AS total
 
-            FROM {$this->table()}
+            FROM {$this->readTable()}
 
             WHERE langue = :langue
             ",
@@ -52,7 +52,7 @@ final class ChinoisVocabulaireCollectionRepository extends AbstractRepository
             SELECT
                 " . self::SELECT_FIELDS . "
 
-            FROM {$this->table()}
+            FROM {$this->readTable()}
 
             WHERE langue = :langue
 

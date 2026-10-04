@@ -21,10 +21,10 @@ trait ReadsFlashcardBatches
         // Parcourir les identifiants avec retour au début. Matérialiser seulement 50 identifiants,
         // sans classement par fenêtre. Le total et le contenu partagent le même instantané SQL.
         $rows = $this->fetchAll("WITH candidates AS (
-                SELECT id FROM {$this->table()} WHERE maitrise = 0 AND id {$operator} {$id}
+                SELECT id FROM {$this->readTable()} WHERE maitrise = 0 AND id {$operator} {$id}
                 ORDER BY id {$order} LIMIT 50
             ), wrapped AS (
-                SELECT id FROM {$this->table()} WHERE maitrise = 0
+                SELECT id FROM {$this->readTable()} WHERE maitrise = 0
                     AND NOT EXISTS (SELECT 1 FROM candidates)
                 ORDER BY id {$order} LIMIT 50
             ), selected AS (
@@ -32,11 +32,11 @@ trait ReadsFlashcardBatches
             ), totals AS (
                 SELECT COUNT(*) AS total,
                     COUNT(CASE WHEN id < (SELECT MIN(id) FROM selected) THEN 1 END) AS page_offset
-                FROM {$this->table()} WHERE maitrise = 0
+                FROM {$this->readTable()} WHERE maitrise = 0
             )
             SELECT {$fields}, totals.total AS flashcard_total, totals.page_offset
             FROM totals LEFT JOIN selected ON 1 = 1
-            LEFT JOIN {$this->table()} card ON card.id = selected.id ORDER BY card.id");
+            LEFT JOIN {$this->readTable('card')} ON card.id = selected.id ORDER BY card.id");
         return [
             'total' => (int) ($rows[0]->flashcard_total ?? 0),
             'offset' => (int) ($rows[0]->page_offset ?? 0),
@@ -56,7 +56,7 @@ trait ReadsFlashcardBatches
         // le décalage borné et le contenu proviennent du même instantané SQL.
         $rows = $this->fetchAll("WITH ranked AS (
                 SELECT id, ROW_NUMBER() OVER (ORDER BY id) AS position
-                FROM {$this->table()} WHERE maitrise = 0
+                FROM {$this->readTable()} WHERE maitrise = 0
             ), totals AS (
                 SELECT COUNT(*) AS total FROM ranked
             ), clamped AS (
@@ -73,7 +73,7 @@ trait ReadsFlashcardBatches
             FROM bounds
             LEFT JOIN ranked ON ranked.position > bounds.page_offset
                 AND ranked.position <= bounds.page_offset + 50
-            LEFT JOIN {$this->table()} card ON card.id = ranked.id
+            LEFT JOIN {$this->readTable('card')} ON card.id = ranked.id
             ORDER BY ranked.position");
 
         return [

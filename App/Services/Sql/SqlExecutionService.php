@@ -24,7 +24,10 @@ final readonly class SqlExecutionService
 
         // La console accepte tout SQL : invalider après chaque exécution réussie
         // sans tenter de classer les écritures avec une expression régulière SQL.
-        Cache::forget(CacheKey::HOME_DASHBOARD);
+        foreach ($this->sqlRepository->dashboardUserIds() as $userId)
+        {
+            Cache::forget(CacheKey::dashboard($userId));
+        }
 
         return $result;
     }

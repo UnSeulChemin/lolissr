@@ -31,14 +31,14 @@ final class FigurineCollectionRepository extends AbstractRepository
             "
             SELECT f.slug, f.numero, f.waifu, f.origin, f.thumbnail, f.extension, f.collect
 
-            FROM {$this->table()} f
+            FROM {$this->readTable('f')}
 
             INNER JOIN (
                 SELECT
                     slug,
                     MAX(id) AS last_id
 
-                FROM {$this->table()}
+                FROM {$this->readTable()}
 
                 GROUP BY slug
             ) grouped

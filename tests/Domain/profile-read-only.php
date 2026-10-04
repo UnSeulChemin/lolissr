@@ -27,24 +27,24 @@ $database = (new ReflectionClass(Database::class))->newInstanceWithoutConstructo
 $database->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $database->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
 $database->setAttribute(PDO::ATTR_STATEMENT_CLASS, [ProfileQueryCounter::class]);
-$database->exec('CREATE TABLE manga (slug TEXT, numero INT, statut TEXT, lu INT, xp_read_rewarded INT, xp_series_rewarded INT)');
-$database->exec('CREATE TABLE artbook (lu INT, xp_read_rewarded INT)');
+$database->exec(owned_fixture_sql($database, 'CREATE TABLE manga (slug TEXT, numero INT, statut TEXT, lu INT, xp_read_rewarded INT, xp_series_rewarded INT)'));
+$database->exec(owned_fixture_sql($database, 'CREATE TABLE artbook (lu INT, xp_read_rewarded INT)'));
 foreach (['figurine', 'nendoroid', 'peluche'] as $table)
 {
-    $database->exec("CREATE TABLE $table (collect INT, collect_rewarded INT)");
+    $database->exec(owned_fixture_sql($database, "CREATE TABLE $table (collect INT, collect_rewarded INT)"));
 }
 foreach (['chinois_vocabulaire', 'chinois_grammaire'] as $table)
 {
-    $database->exec("CREATE TABLE $table (maitrise INT, xp_rewarded INT)");
+    $database->exec(owned_fixture_sql($database, "CREATE TABLE $table (maitrise INT, xp_rewarded INT)"));
 }
-$database->exec('CREATE TABLE achievement_xp_rewards (user_id INT, achievement_key TEXT, xp INT)');
-$database->exec("INSERT INTO achievement_xp_rewards VALUES (1, 'tomes_1', 50), (2, 'tomes_10', 500)");
+$database->exec(owned_fixture_sql($database, 'CREATE TABLE achievement_xp_rewards (user_id INT, achievement_key TEXT, xp INT)'));
+$database->exec(owned_fixture_sql($database, "INSERT INTO achievement_xp_rewards VALUES (1, 'tomes_1', 50), (2, 'tomes_10', 500)"));
 for ($i = 1; $i <= 200; $i++)
 {
-    $database->exec("INSERT INTO manga VALUES ('series_$i', 1, 'termine', 1, 1, 1)");
+    $database->exec(owned_fixture_sql($database, "INSERT INTO manga VALUES ('series_$i', 1, 'termine', 1, 1, 1)"));
     foreach (['artbook', 'figurine', 'nendoroid', 'peluche', 'chinois_vocabulaire', 'chinois_grammaire'] as $table)
     {
-        $database->exec("INSERT INTO $table VALUES (1, 1)");
+        $database->exec(owned_fixture_sql($database, "INSERT INTO $table VALUES (1, 1)"));
     }
 }
 $database->exec('PRAGMA query_only = ON');
@@ -159,15 +159,15 @@ foreach (['manga', 'artbook', 'figurine', 'nendoroid', 'peluche', 'chinois_vocab
 {
     $database->exec("DELETE FROM $table");
 }
-$database->exec('CREATE TABLE achievement_xp_rewards (user_id INT, achievement_key TEXT, xp INT)');
+$database->exec(owned_fixture_sql($database, 'CREATE TABLE achievement_xp_rewards (user_id INT, achievement_key TEXT, xp INT)'));
 $empty = $service->getStats($user);
 if (array_filter(get_object_vars($empty), static fn ($value) => $value !== 0) !== [])
 {
     throw new RuntimeException('Empty collections produced nonzero profile stats.');
 }
-$database->exec("INSERT INTO manga VALUES ('mixed', 1, 'termine', 1, 1, 1), ('mixed', 2, 'termine', 0, 1, 1)");
-$database->exec('INSERT INTO artbook VALUES (0, 1)');
-$database->exec("INSERT INTO achievement_xp_rewards VALUES (1, 'fixture', 7), (2, 'fixture', 999)");
+$database->exec(owned_fixture_sql($database, "INSERT INTO manga VALUES ('mixed', 1, 'termine', 1, 1, 1), ('mixed', 2, 'termine', 0, 1, 1)"));
+$database->exec(owned_fixture_sql($database, 'INSERT INTO artbook VALUES (0, 1)'));
+$database->exec(owned_fixture_sql($database, "INSERT INTO achievement_xp_rewards VALUES (1, 'fixture', 7), (2, 'fixture', 999)"));
 $database->exec('PRAGMA query_only = ON');
 $mixed = $service->getStats($user);
 if ($mixed->readTomes !== 1 || $mixed->completedSeries !== 0 || $mixed->readArtbooks !== 0

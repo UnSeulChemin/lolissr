@@ -51,7 +51,7 @@ final class ArtbookSearchRepository extends AbstractRepository
 
         $sql = "
             SELECT slug, numero, artbook, auteur, serie, thumbnail, extension, company
-            FROM {$this->table()}
+            FROM {$this->readTable()}
             WHERE (
                 artbook LIKE :search_artbook
                 OR auteur LIKE :search_auteur

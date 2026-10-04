@@ -8,6 +8,8 @@ final class User
 {
     public int $id = 0;
 
+    public bool $is_admin = false;
+
     public string $avatar = 'default';
 
     public string $avatar_extension = 'webp';

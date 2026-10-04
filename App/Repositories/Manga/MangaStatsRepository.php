@@ -12,7 +12,7 @@ final class MangaStatsRepository extends AbstractRepository
 {
     public function countRead(): int
     {
-        $row = $this->fetchOne("SELECT COUNT(*) AS total FROM {$this->table()} WHERE lu = 1");
+        $row = $this->fetchOne("SELECT COUNT(*) AS total FROM {$this->readTable()} WHERE lu = 1");
         return (int) ($row->total ?? 0);
     }
     /** @return array{total: int, series: int, read: int, average: float|null} */
@@ -20,7 +20,7 @@ final class MangaStatsRepository extends AbstractRepository
     {
         $row = $this->fetchOne("SELECT COUNT(*) AS total, COUNT(DISTINCT slug) AS series,
             COALESCE(SUM(CASE WHEN lu = 1 THEN 1 ELSE 0 END), 0) AS total_read,
-            ROUND(AVG(note), 1) AS average_note FROM {$this->table()}");
+            ROUND(AVG(note), 1) AS average_note FROM {$this->readTable()}");
         return ['total' => (int) ($row->total ?? 0), 'series' => (int) ($row->series ?? 0),
             'read' => (int) ($row->total_read ?? 0),
             'average' => isset($row->average_note) ? (float) $row->average_note : null];
@@ -35,7 +35,7 @@ final class MangaStatsRepository extends AbstractRepository
             "
             SELECT id, slug, numero, livre, thumbnail, extension
 
-            FROM {$this->table()}
+            FROM {$this->readTable()}
 
             ORDER BY id DESC
 
@@ -75,15 +75,15 @@ final class MangaStatsRepository extends AbstractRepository
         $mangas = $this->fetchAll(
             "
             SELECT m.id, m.slug, m.numero, m.livre, m.thumbnail, m.extension, stats.total
-            FROM {$this->table()} m
+            FROM {$this->readTable('m')}
             INNER JOIN (
                 SELECT slug, COUNT(*) AS total
-                FROM {$this->table()}
+                FROM {$this->readTable()}
                 GROUP BY slug
             ) stats ON stats.slug = m.slug
             WHERE m.id = (
                 SELECT first_tome.id
-                FROM {$this->table()} first_tome
+                FROM {$this->readTable('first_tome')}
                 WHERE first_tome.slug = m.slug
                 ORDER BY first_tome.numero ASC, first_tome.id ASC
                 LIMIT 1
@@ -108,7 +108,7 @@ final class MangaStatsRepository extends AbstractRepository
             FROM (
                 SELECT slug
 
-                FROM {$this->table()}
+                FROM {$this->readTable()}
 
                 GROUP BY slug
 

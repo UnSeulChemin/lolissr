@@ -22,9 +22,9 @@ final class FigurineRepository extends AbstractRepository
             "
             SELECT *
 
-            FROM {$this->table()}
+            FROM {$this->readTable()}
 
-            WHERE slug = :slug
+            WHERE slug = :slug AND {$this->ownerCondition()}
             AND numero = :numero
 
             LIMIT 1
@@ -79,7 +79,7 @@ final class FigurineRepository extends AbstractRepository
 
             SET collect_rewarded = 1
 
-            WHERE id = :id
+            WHERE id = :id AND {$this->ownerCondition()}
             AND collect_rewarded = 0
             ",
             ['id' => $id]

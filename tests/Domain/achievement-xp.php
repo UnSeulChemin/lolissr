@@ -15,9 +15,9 @@ $container = new Container();
 $container->singleton(Database::class);
 $database = $container->get(Database::class);
 // Connection-local temporary tables shadow the real tables. No account data is changed.
-$database->exec('CREATE TEMPORARY TABLE users (id INT PRIMARY KEY, level INT NOT NULL, xp INT NOT NULL) ENGINE=InnoDB');
-$database->exec('CREATE TEMPORARY TABLE achievement_xp_rewards (user_id INT NOT NULL, achievement_key VARCHAR(100) NOT NULL, xp INT NOT NULL, UNIQUE KEY (user_id, achievement_key)) ENGINE=InnoDB');
-$database->exec('INSERT INTO users VALUES (1, 1, 0), (2, 1, 0)');
+$database->exec(owned_fixture_sql($database, 'CREATE TEMPORARY TABLE users (id INT PRIMARY KEY, level INT NOT NULL, xp INT NOT NULL) ENGINE=InnoDB'));
+$database->exec(owned_fixture_sql($database, 'CREATE TEMPORARY TABLE achievement_xp_rewards (user_id INT NOT NULL, achievement_key VARCHAR(100) NOT NULL, xp INT NOT NULL, UNIQUE KEY (user_id, achievement_key)) ENGINE=InnoDB'));
+$database->exec(owned_fixture_sql($database, 'INSERT INTO users VALUES (1, 1, 0), (2, 1, 0)'));
 $service = $container->get(AchievementXpService::class);
 $user = new User();
 $user->id = 1;
@@ -61,7 +61,7 @@ $other->xp = 0;
 $service->rewardManga($other, 1, 0);
 $assert($service->totalForUser($other) === 50 && $service->totalForUser($user) === 19300, 'User reward isolation failed');
 $database->exec("UPDATE achievement_xp_rewards SET xp = 999 WHERE user_id = 2 AND achievement_key = 'tomes_1'");
-$database->exec("INSERT INTO achievement_xp_rewards VALUES (2, 'tomes_25', 1250), (2, 'obsolete', 7)");
+$database->exec(owned_fixture_sql($database, "INSERT INTO achievement_xp_rewards VALUES (2, 'tomes_25', 1250), (2, 'obsolete', 7)"));
 $stats = new \App\DTO\Profile\Responses\ProfileStatsData(
     readTomes: 10, tomeXp: 50, completedSeries: 0, seriesXp: 0,
     readArtbooks: 0, artbookXp: 0, figurinesCollected: 0, figurinesXp: 0,

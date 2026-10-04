@@ -90,7 +90,7 @@ final class MangaSearchRepository extends AbstractRepository
     private function fetchSearchResults(string $title, ?int $numero = null, bool $exactTitle = false): array
     {
         $operator = $exactTitle ? '=' : 'LIKE';
-        $sql = "SELECT slug, numero, livre, thumbnail, extension, note, lu FROM {$this->table()} WHERE (livre {$operator} :search_livre OR slug {$operator} :search_slug)";
+        $sql = "SELECT slug, numero, livre, thumbnail, extension, note, lu FROM {$this->readTable()} WHERE (livre {$operator} :search_livre OR slug {$operator} :search_slug)";
 
         $slug = $this->slugSearch($title);
         $params = [

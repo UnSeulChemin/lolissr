@@ -17,8 +17,8 @@ $check = static function (bool $condition, string $message): void
 foreach (['Figurine', 'Nendoroid', 'Peluche'] as $kind)
 {
     $table = strtolower($kind);
-    $db->exec("CREATE TABLE $table (id INT PRIMARY KEY, slug TEXT, numero INT, origin TEXT, waifu TEXT, thumbnail TEXT, extension TEXT)");
-    $insert = $db->prepare("INSERT INTO $table VALUES (?, ?, ?, ?, ?, 'cover', 'webp')");
+    $db->exec(owned_fixture_sql($db, "CREATE TABLE $table (id INT PRIMARY KEY, slug TEXT, numero INT, origin TEXT, waifu TEXT, thumbnail TEXT, extension TEXT)"));
+    $insert = $db->prepare(owned_fixture_sql($db, "INSERT INTO $table VALUES (?, ?, ?, ?, ?, 'cover', 'webp')"));
     for ($i = 25; $i >= 1; $i--) $insert->execute([$i, 'etoile-bleue', $i, 'Origin', 'Étoile Bleue']);
     $class = "App\\Repositories\\$kind\\{$kind}SearchRepository";
     $model = "App\\Models\\$kind";

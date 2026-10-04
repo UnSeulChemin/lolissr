@@ -16,13 +16,13 @@ foreach (['Manga', 'Artbook', 'Figurine', 'Nendoroid', 'Peluche'] as $kind)
     $domain = $kind;
     $class = "App\\Repositories\\$domain\\{$kind}Repository";
     $repository = new $class($database);
-    $database->exec("CREATE TABLE $table (id INTEGER PRIMARY KEY, slug TEXT, numero INT, thumbnail TEXT, extension TEXT)");
-    $database->exec("INSERT INTO $table VALUES (1, 'fixture', 1, 'old', 'png')");
+    $database->exec(owned_fixture_sql($database, "CREATE TABLE $table (id INTEGER PRIMARY KEY, slug TEXT, numero INT, thumbnail TEXT, extension TEXT)"));
+    $database->exec(owned_fixture_sql($database, "INSERT INTO $table VALUES (1, 'fixture', 1, 'old', 'png')"));
     $read = $kind === 'Manga' ? 'findRecordBySlugAndNumero' : 'findOneBySlugAndNumero';
     $observed = $repository->$read('fixture', 1);
     // Interleave a competing deletion/recreation after the service's initial read.
     $database->exec("DELETE FROM $table WHERE id = 1");
-    $database->exec("INSERT INTO $table VALUES (2, 'fixture', 1, 'replacement', 'png')");
+    $database->exec(owned_fixture_sql($database, "INSERT INTO $table VALUES (2, 'fixture', 1, 'replacement', 'png')"));
     if ($database->transaction(fn () => $repository->deleteById($observed->id)))
         throw new RuntimeException('Missing identity reported as deleted: ' . $kind);
     if ((int)$database->query("SELECT COUNT(*) FROM $table WHERE id = 2")->fetchColumn() !== 1)

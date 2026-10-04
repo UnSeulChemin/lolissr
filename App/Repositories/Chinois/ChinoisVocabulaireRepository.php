@@ -52,7 +52,7 @@ final class ChinoisVocabulaireRepository extends AbstractRepository
             SELECT
                 " . self::SELECT_FIELDS . "
 
-            FROM {$this->table()}
+            FROM {$this->readTable()}
 
             WHERE maitrise = 0 AND id >= :start_id
 
@@ -93,7 +93,7 @@ final class ChinoisVocabulaireRepository extends AbstractRepository
         }
 
         $current = $this->fetchOne(
-            "SELECT id FROM {$this->table()} WHERE id = :id FOR UPDATE",
+            "SELECT id FROM {$this->table()} WHERE id = :id AND {$this->ownerCondition()} FOR UPDATE",
             ['id' => $id]
         );
         if ($current === null)
@@ -128,7 +128,7 @@ final class ChinoisVocabulaireRepository extends AbstractRepository
 
             SET maitrise = NOT maitrise
 
-            WHERE id = :id
+            WHERE id = :id AND {$this->ownerCondition()}
             ",
             ['id' => $id]
         );
@@ -143,9 +143,9 @@ final class ChinoisVocabulaireRepository extends AbstractRepository
             "
             SELECT maitrise
 
-            FROM {$this->table()}
+            FROM {$this->readTable()}
 
-            WHERE id = :id
+            WHERE id = :id AND {$this->ownerCondition()}
 
             LIMIT 1
             ",
@@ -167,7 +167,7 @@ final class ChinoisVocabulaireRepository extends AbstractRepository
 
             SET xp_rewarded = 1
 
-            WHERE id = :id
+            WHERE id = :id AND {$this->ownerCondition()}
             AND xp_rewarded = 0
             ",
             ['id' => $id]
@@ -200,7 +200,7 @@ final class ChinoisVocabulaireRepository extends AbstractRepository
             SELECT
                 " . self::SELECT_FIELDS . "
 
-            FROM {$this->table()}
+            FROM {$this->readTable()}
 
             WHERE " . implode("\nAND ", $conditions) . "
 

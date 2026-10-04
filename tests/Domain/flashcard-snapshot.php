@@ -40,8 +40,8 @@ try
             $fields = $grammar
                 ? 'niveau TEXT, section TEXT, categorie TEXT, titre TEXT, structure TEXT, abreviation TEXT, phrase TEXT, explication TEXT, position INT'
                 : 'langue TEXT, mot TEXT, type TEXT, exemple TEXT';
-            $reader->exec("CREATE TABLE $table (id INT PRIMARY KEY, maitrise INT DEFAULT 0, xp_rewarded INT DEFAULT 0, pinyin TEXT, traduction TEXT, $fields)");
-            for ($id = 1; $id <= 100; $id++) $reader->exec("INSERT INTO $table (id) VALUES ($id)");
+            $reader->exec(owned_fixture_sql($reader, "CREATE TABLE $table (id INT PRIMARY KEY, maitrise INT DEFAULT 0, xp_rewarded INT DEFAULT 0, pinyin TEXT, traduction TEXT, $fields)"));
+            for ($id = 1; $id <= 100; $id++) $reader->exec(owned_fixture_sql($reader, "INSERT INTO $table (id) VALUES ($id)"));
             $reader->setAttribute(PDO::ATTR_STATEMENT_CLASS, [ConcurrentFlashcardStatement::class]);
             // Commit from a second connection after the read starts, before its rows are consumed.
             ConcurrentFlashcardStatement::$afterRead = static fn () => $writer->exec("DELETE FROM $table WHERE id > 50");
@@ -52,7 +52,7 @@ try
             $page = $service->flashcardPage($grammar, 50);
             if ($page['total'] !== 50 || $page['offset'] !== 0 || count($page['cards']) !== 50)
                 throw new RuntimeException('Next request did not observe the committed deletion');
-            for ($id = 51; $id <= 100; $id++) $writer->exec("INSERT INTO $table (id) VALUES ($id)");
+            for ($id = 51; $id <= 100; $id++) $writer->exec(owned_fixture_sql($writer, "INSERT INTO $table (id) VALUES ($id)"));
             ConcurrentFlashcardStatement::$afterRead = static fn () => $writer->exec("DELETE FROM $table WHERE id > 50");
             $page = $service->flashcardCursor($grammar, 50);
             if ($page['total'] !== 100 || $page['offset'] !== 50 || count($page['cards']) !== 50

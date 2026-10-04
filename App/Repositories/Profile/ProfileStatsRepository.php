@@ -16,7 +16,7 @@ final class ProfileStatsRepository extends AbstractRepository
         $parts = ["(SELECT COUNT(CASE WHEN lu = 1 THEN 1 END) AS manga_read,
             COUNT(CASE WHEN xp_read_rewarded = 1 THEN 1 END) AS manga_rewarded_tomes,
             COUNT(DISTINCT CASE WHEN xp_series_rewarded = 1 THEN slug END) AS manga_rewarded_series
-            FROM manga) manga_stats"];
+            FROM {$this->ownedTable('manga', userId: $userId ?? 0)}) manga_stats"];
         foreach ([
             'artbook' => ['lu', 'xp_read_rewarded'],
             'figurine' => ['collect', 'collect_rewarded'],
@@ -27,10 +27,10 @@ final class ProfileStatsRepository extends AbstractRepository
         ] as $table => [$status, $reward])
         {
             $parts[] = "(SELECT COUNT(CASE WHEN $status = 1 THEN 1 END) AS {$table}_count,
-                COUNT(CASE WHEN $reward = 1 THEN 1 END) AS {$table}_rewarded FROM $table) {$table}_stats";
+                COUNT(CASE WHEN $reward = 1 THEN 1 END) AS {$table}_rewarded FROM {$this->ownedTable($table, userId: $userId ?? 0)}) {$table}_stats";
         }
         $parts[] = "(SELECT COUNT(*) AS completed_series FROM (
-            SELECT slug FROM manga GROUP BY slug HAVING COUNT(*) = SUM(lu)
+            SELECT slug FROM {$this->ownedTable('manga', userId: $userId ?? 0)} GROUP BY slug HAVING COUNT(*) = SUM(lu)
             AND MAX(CASE WHEN numero = 1 AND statut = 'termine' THEN 1 ELSE 0 END) = 1
         ) completed) series_stats";
         $parts[] = $userId === null

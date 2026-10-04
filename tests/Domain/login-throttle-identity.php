@@ -20,17 +20,17 @@ $check = static function (bool $ok, string $message): void
 {
     if (!$ok) throw new RuntimeException($message);
 };
-$db->exec('CREATE TEMPORARY TABLE users (id INT PRIMARY KEY, username VARCHAR(50) COLLATE utf8mb4_0900_ai_ci, password VARCHAR(255))');
-$db->exec('CREATE TEMPORARY TABLE login_attempts (identifier_hash CHAR(64) PRIMARY KEY, attempts INT, first_attempt_at DATETIME, locked_until DATETIME NULL)');
+$db->exec(owned_fixture_sql($db, 'CREATE TEMPORARY TABLE users (id INT PRIMARY KEY, username VARCHAR(50) COLLATE utf8mb4_0900_ai_ci, password VARCHAR(255))'));
+$db->exec(owned_fixture_sql($db, 'CREATE TEMPORARY TABLE login_attempts (identifier_hash CHAR(64) PRIMARY KEY, attempts INT, first_attempt_at DATETIME, locked_until DATETIME NULL)'));
 try
 {
-    $insert = $db->prepare('INSERT INTO users VALUES (?, ?, ?)');
+    $insert = $db->prepare(owned_fixture_sql($db, 'INSERT INTO users VALUES (?, ?, ?)'));
     foreach ([[1, 'test'], [2, 'other']] as [$id, $name]) $insert->execute([$id, $name, password_hash('correct-password', PASSWORD_DEFAULT)]);
     $auth = $container->get(AuthService::class);
     $throttle = $container->get(LoginThrottleService::class);
     $ip = '192.0.2.1';
     // Preserve the pre-existing counter keyed by the stored username spelling.
-    $db->prepare('INSERT INTO login_attempts VALUES (?, 1, ?, NULL)')->execute([
+    $db->prepare(owned_fixture_sql($db, 'INSERT INTO login_attempts VALUES (?, 1, ?, NULL)'))->execute([
         hash('sha256', $ip . "\0test"), gmdate('Y-m-d H:i:s')
     ]);
     foreach (['tést', 'tèst', "te\u{0301}st"] as $name)

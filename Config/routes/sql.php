@@ -17,7 +17,7 @@ if (ApplicationConfig::isProduction() || ! env_bool('SQL_TOOL_ENABLED', false))
     return;
 }
 
-$router->prefix('sql')->group(function (Router $router): void
+$router->prefix('sql')->middleware(\App\Http\Middleware\AdminMiddleware::class)->group(function (Router $router): void
 {
     // =================================================
     // PAGE

@@ -26,14 +26,14 @@ final class ArtbookCollectionRepository extends AbstractRepository
             "
             SELECT a.slug, a.numero, a.artbook, a.auteur, a.serie, a.thumbnail, a.extension
 
-            FROM {$this->table()} a
+            FROM {$this->readTable('a')}
 
             INNER JOIN (
                 SELECT
                     slug,
                     MAX(id) AS last_id
 
-                FROM {$this->table()}
+                FROM {$this->readTable()}
 
                 GROUP BY slug
             ) grouped

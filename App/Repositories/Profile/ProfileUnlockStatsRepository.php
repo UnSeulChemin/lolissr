@@ -10,13 +10,13 @@ use App\Repositories\AbstractRepository;
 final class ProfileUnlockStatsRepository extends AbstractRepository
 {
     private const COUNTERS = [
-        'readTomes' => 'SELECT COUNT(*) FROM manga WHERE lu = 1',
-        'readArtbooks' => 'SELECT COUNT(*) FROM artbook WHERE lu = 1',
-        'figurinesCollected' => 'SELECT COUNT(*) FROM figurine WHERE collect = 1',
-        'nendoroidsCollected' => 'SELECT COUNT(*) FROM nendoroid WHERE collect = 1',
-        'peluchesCollected' => 'SELECT COUNT(*) FROM peluche WHERE collect = 1',
-        'vocabularyLearned' => 'SELECT COUNT(*) FROM chinois_vocabulaire WHERE maitrise = 1',
-        'grammarLearned' => 'SELECT COUNT(*) FROM chinois_grammaire WHERE maitrise = 1'
+        'readTomes' => ['manga', 'lu'],
+        'readArtbooks' => ['artbook', 'lu'],
+        'figurinesCollected' => ['figurine', 'collect'],
+        'nendoroidsCollected' => ['nendoroid', 'collect'],
+        'peluchesCollected' => ['peluche', 'collect'],
+        'vocabularyLearned' => ['chinois_vocabulaire', 'maitrise'],
+        'grammarLearned' => ['chinois_grammaire', 'maitrise']
     ];
 
     public function forTitles(): ProfileUnlockStatsData
@@ -50,12 +50,13 @@ final class ProfileUnlockStatsRepository extends AbstractRepository
         $select = [];
         foreach ($counters as $counter)
         {
-            $select[] = '(' . self::COUNTERS[$counter] . ') AS ' . $counter;
+            [$table, $status] = self::COUNTERS[$counter];
+            $select[] = "(SELECT COUNT(*) FROM {$this->ownedTable($table)} WHERE {$status} = 1) AS {$counter}";
         }
         if ($includeSeries)
         {
             $select[] = "(SELECT COUNT(*) FROM (
-                SELECT slug FROM manga GROUP BY slug
+                SELECT slug FROM {$this->ownedTable('manga')} GROUP BY slug
                 HAVING COUNT(*) = SUM(lu)
                 AND MAX(CASE WHEN numero = 1 AND statut = 'termine' THEN 1 ELSE 0 END) = 1
             ) completed) AS completedSeries";

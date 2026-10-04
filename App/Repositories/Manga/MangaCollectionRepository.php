@@ -19,7 +19,7 @@ final class MangaCollectionRepository extends AbstractRepository
     public function countFirstTomes(): int
     {
         $result = $this->fetchOne(
-            "SELECT COUNT(DISTINCT slug) AS total FROM {$this->table()}"
+            "SELECT COUNT(DISTINCT slug) AS total FROM {$this->readTable()}"
         );
 
         return (int) ($result->total ?? 0);
@@ -48,7 +48,7 @@ final class MangaCollectionRepository extends AbstractRepository
                 stats.total_lu,
                 stats.average_note
 
-            FROM {$this->table()} m
+            FROM {$this->readTable('m')}
 
             INNER JOIN (
                 {$this->statsSubQuery()}
@@ -57,7 +57,7 @@ final class MangaCollectionRepository extends AbstractRepository
 
             WHERE m.id = (
                 SELECT first_tome.id
-                FROM {$this->table()} first_tome
+                FROM {$this->readTable('first_tome')}
                 WHERE first_tome.slug = m.slug
                 ORDER BY first_tome.numero ASC, first_tome.id ASC
                 LIMIT 1
@@ -98,8 +98,8 @@ final class MangaCollectionRepository extends AbstractRepository
             paged AS (
                 SELECT m.id, m.slug, m.numero, m.livre, m.thumbnail, m.extension,
                     m.statut, m.note, m.lu, filtered.total, filtered.total_lu, filtered.average_note
-                FROM filtered INNER JOIN {$this->table()} m ON m.id = (
-                    SELECT first_tome.id FROM {$this->table()} first_tome
+                FROM filtered INNER JOIN {$this->readTable('m')} ON m.id = (
+                    SELECT first_tome.id FROM {$this->readTable('first_tome')}
                     WHERE first_tome.slug = filtered.slug
                     ORDER BY first_tome.numero ASC, first_tome.id ASC LIMIT 1
                 )

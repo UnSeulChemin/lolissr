@@ -1,5 +1,7 @@
 # Audit de la BDD — 4 octobre 2026
 
+**Evolution ulterieure appliquee :** les donnees sont maintenant propres a chaque utilisateur. Ce document decrit l'audit initial ; voir [l'isolation des comptes](USER-OWNERSHIP.md) et la migration `2026-10-04-user-ownership.sql` pour le fonctionnement actuel.
+
 Comparaison du code, de l'export `127_0_0_1.sql` et du schema MySQL 9.1 reel : 11 tables, 657 lignes. La base locale a ete migree apres sauvegarde, sans suppression de donnees ni changement du total des XP utilisateurs.
 
 ## Incoherences corrigees
@@ -27,7 +29,7 @@ Le CHECK existant `chk_artbook_source` (exactement auteur OU serie) est conserve
 
 Les tables metier au singulier et les tables techniques au pluriel suivent deux conventions. Le schema melange francais et anglais (`livre`, `waifu`, `company`, `collect`). Les index sont uniformises maintenant ; renommer tous les champs demanderait une migration coordonnee des modeles, DTO, formulaires, JS et requetes. Les commentaires SQL explicitent les notes sans changer les noms publics. `jacquette` est une faute historique (orthographe : jaquette), actuellement conservee pour compatibilite.
 
-La collection, la maitrise et les recompenses de base sont globales ; les XP et succes sont par utilisateur. Cela correspond au fonctionnement actuel du site personnel. Si chaque utilisateur doit avoir sa propre collection, il faut une evolution fonctionnelle avec tables d'association, pas ajouter un user_id arbitraire aux donnees existantes.
+Lors de cet audit initial, les collections et progressions etaient globales. L'evolution suivante a retenu des contenus entierement personnels : user_id est obligatoire sur les tables metier, les donnees historiques sont attribuees au compte principal et tous les acces sont filtres. Voir USER-OWNERSHIP.md.
 
 `created_at` melange DATETIME pour les contenus et TIMESTAMP pour certains journaux. Pas de conversion automatique : TIMESTAMP depend du fuseau de session. Les longueurs des slugs different selon les domaines et respectent leurs validations ; elles ne sont pas reduites. Les index de recherche existants sont conserves sauf redondance demontree. Les petites tables ne justifient pas des index sur tous les champs.
 

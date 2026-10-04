@@ -217,7 +217,7 @@ final class ErrorHandler
     {
         if (! headers_sent())
         {
-            http_response_code($status);
+            Response::setStatusCode($status);
             header('Content-Type: text/plain; charset=UTF-8', true);
         }
 

@@ -27,7 +27,7 @@ final class ChinoisGrammaireRepository extends AbstractRepository
         }
 
         // Protège aussi la première insertion dans une section ou catégorie vide.
-        $lock = 'grammar-order:' . substr(hash('sha256', \Framework\Config\DatabaseConfig::name()), 0, 40);
+        $lock = 'grammar-order:' . $this->userId() . ':' . substr(hash('sha256', \Framework\Config\DatabaseConfig::name()), 0, 32);
         $acquired = $this->fetchSingleValue('SELECT GET_LOCK(:lock_name, 10) AS acquired', 'acquired', ['lock_name' => $lock]);
         if ((int) $acquired !== 1)
         {
@@ -98,7 +98,7 @@ final class ChinoisGrammaireRepository extends AbstractRepository
             SELECT
                 " . self::SELECT_FIELDS . "
 
-            FROM {$this->table()}
+            FROM {$this->readTable()}
 
             WHERE maitrise = 0 AND id >= :start_id
 
@@ -122,7 +122,7 @@ final class ChinoisGrammaireRepository extends AbstractRepository
             SELECT
                 " . self::SELECT_FIELDS . "
 
-            FROM {$this->table()}
+            FROM {$this->readTable()}
 
             WHERE niveau = :niveau
             {$sectionFilter}
@@ -145,7 +145,7 @@ final class ChinoisGrammaireRepository extends AbstractRepository
     /** @return list<string> */
     public function sectionTitles(string $niveau): array
     {
-        $rows = $this->fetchAll("SELECT section FROM {$this->table()}
+        $rows = $this->fetchAll("SELECT section FROM {$this->readTable()}
             WHERE niveau = :niveau GROUP BY section, HEX(section)
             ORDER BY MIN(section_position), MIN(categorie_position), MIN(position), MIN(id)",
             ['niveau' => $niveau]);
@@ -247,7 +247,7 @@ final class ChinoisGrammaireRepository extends AbstractRepository
 
             SET maitrise = NOT maitrise
 
-            WHERE id = :id
+            WHERE id = :id AND {$this->ownerCondition()}
             ",
             ['id' => $id]
         );
@@ -262,9 +262,9 @@ final class ChinoisGrammaireRepository extends AbstractRepository
             "
             SELECT maitrise
 
-            FROM {$this->table()}
+            FROM {$this->readTable()}
 
-            WHERE id = :id
+            WHERE id = :id AND {$this->ownerCondition()}
 
             LIMIT 1
             ",
@@ -288,7 +288,7 @@ final class ChinoisGrammaireRepository extends AbstractRepository
         $sql = "
             SELECT section_position
 
-            FROM {$this->table()}
+            FROM {$this->readTable()}
 
             WHERE niveau = :niveau
             AND section = :section
@@ -314,7 +314,7 @@ final class ChinoisGrammaireRepository extends AbstractRepository
             "
             SELECT MAX(section_position) AS position
 
-            FROM {$this->table()}
+            FROM {$this->readTable()}
 
             WHERE niveau = :niveau
             ",
@@ -333,7 +333,7 @@ final class ChinoisGrammaireRepository extends AbstractRepository
         $sql = "
             SELECT categorie_position
 
-            FROM {$this->table()}
+            FROM {$this->readTable()}
 
             WHERE niveau = :niveau
             AND section = :section
@@ -360,7 +360,7 @@ final class ChinoisGrammaireRepository extends AbstractRepository
             "
             SELECT MAX(categorie_position) AS position
 
-            FROM {$this->table()}
+            FROM {$this->readTable()}
 
             WHERE niveau = :niveau
             AND section = :section
@@ -376,7 +376,7 @@ final class ChinoisGrammaireRepository extends AbstractRepository
         $sql = "
             SELECT MAX(position) AS position
 
-            FROM {$this->table()}
+            FROM {$this->readTable()}
 
             WHERE niveau = :niveau
             AND section = :section
@@ -404,7 +404,7 @@ final class ChinoisGrammaireRepository extends AbstractRepository
 
             SET xp_rewarded = 1
 
-            WHERE id = :id
+            WHERE id = :id AND {$this->ownerCondition()}
             AND xp_rewarded = 0
             ",
             ['id' => $id]
@@ -437,7 +437,7 @@ final class ChinoisGrammaireRepository extends AbstractRepository
             SELECT
                 " . self::SELECT_FIELDS . "
 
-            FROM {$this->table()}
+            FROM {$this->readTable()}
 
             WHERE " . implode("\nAND ", $conditions) . "
 

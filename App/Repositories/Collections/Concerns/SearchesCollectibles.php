@@ -22,7 +22,7 @@ trait SearchesCollectibles
 
         return $this->fetchAll(
             "SELECT slug, numero, origin, waifu, thumbnail, extension
-             FROM {$this->table()}
+             FROM {$this->readTable()}
              WHERE (waifu LIKE :search_waifu OR origin LIKE :search_origin OR slug LIKE :search_slug)
              ORDER BY origin ASC, waifu ASC, numero ASC, id ASC LIMIT 20",
             [

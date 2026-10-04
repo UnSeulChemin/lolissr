@@ -6,6 +6,8 @@ namespace App\Models;
 
 final class Figurine
 {
+    public int $user_id = 0;
+
     public int $id = 0;
 
     public string $thumbnail = '';

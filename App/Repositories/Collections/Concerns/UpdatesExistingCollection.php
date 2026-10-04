@@ -19,7 +19,7 @@ trait UpdatesExistingCollection
         }
 
         $current = $this->fetchOne(
-            "SELECT id FROM {$this->table()} WHERE slug = :slug AND numero = :numero LIMIT 1 FOR UPDATE",
+            "SELECT id FROM {$this->table()} WHERE slug = :slug AND {$this->ownerCondition()} AND numero = :numero LIMIT 1 FOR UPDATE",
             ['slug' => $this->normalizeSlug($slug), 'numero' => $numero]
         );
         if ($current === null)

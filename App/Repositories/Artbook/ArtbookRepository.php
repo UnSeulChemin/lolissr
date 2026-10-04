@@ -29,7 +29,7 @@ final class ArtbookRepository extends AbstractRepository
 
             FROM {$this->table()}
 
-            WHERE slug = :slug
+            WHERE slug = :slug AND {$this->ownerCondition()}
             AND numero = :numero
 
             LIMIT 1
@@ -89,7 +89,7 @@ final class ArtbookRepository extends AbstractRepository
 
             SET xp_read_rewarded = 1
 
-            WHERE id = :id
+            WHERE id = :id AND {$this->ownerCondition()}
             AND xp_read_rewarded = 0
             ",
             ['id' => $id]

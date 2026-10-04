@@ -31,12 +31,12 @@ $container->singleton(Database::class);
 $db = $container->get(Database::class);
 $db->setAttribute(PDO::ATTR_STATEMENT_CLASS, [XpBatchQueryCounter::class]);
 // Connection-local tables shadow real data and disappear on disconnect.
-$db->exec('CREATE TEMPORARY TABLE users (id INT PRIMARY KEY, level INT NOT NULL, xp INT NOT NULL) ENGINE=InnoDB');
-$db->exec('CREATE TEMPORARY TABLE achievement_xp_rewards (user_id INT, achievement_key VARCHAR(100), xp INT, UNIQUE KEY (user_id, achievement_key)) ENGINE=InnoDB');
-$db->exec('CREATE TEMPORARY TABLE manga (id INT PRIMARY KEY, slug VARCHAR(100), numero INT, statut VARCHAR(20), lu INT, xp_read_rewarded INT, xp_series_rewarded INT) ENGINE=InnoDB');
-$db->exec('CREATE TEMPORARY TABLE manga_series_rewards (slug VARCHAR(255) PRIMARY KEY, rewarded_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP) ENGINE=InnoDB');
-$db->exec('INSERT INTO users VALUES (1, 1, 0)');
-$db->exec("INSERT INTO manga VALUES (1, 'alpha', 1, 'termine', 1, 0, 0)");
+$db->exec(owned_fixture_sql($db, 'CREATE TEMPORARY TABLE users (id INT PRIMARY KEY, level INT NOT NULL, xp INT NOT NULL) ENGINE=InnoDB'));
+$db->exec(owned_fixture_sql($db, 'CREATE TEMPORARY TABLE achievement_xp_rewards (user_id INT, achievement_key VARCHAR(100), xp INT, UNIQUE KEY (user_id, achievement_key)) ENGINE=InnoDB'));
+$db->exec(owned_fixture_sql($db, 'CREATE TEMPORARY TABLE manga (id INT PRIMARY KEY, slug VARCHAR(100), numero INT, statut VARCHAR(20), lu INT, xp_read_rewarded INT, xp_series_rewarded INT) ENGINE=InnoDB'));
+$db->exec(owned_fixture_sql($db, 'CREATE TEMPORARY TABLE manga_series_rewards (slug VARCHAR(255) PRIMARY KEY, rewarded_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP) ENGINE=InnoDB'));
+$db->exec(owned_fixture_sql($db, 'INSERT INTO users VALUES (1, 1, 0)'));
+$db->exec(owned_fixture_sql($db, "INSERT INTO manga VALUES (1, 'alpha', 1, 'termine', 1, 0, 0)"));
 $user = new User();
 $user->id = 1;
 $GLOBALS['batchTestUser'] = $user;
@@ -76,7 +76,7 @@ $assert(count($updates) === 1 && count($locks) === 1, 'XP batch did not use one 
 $before = [$user->level, $user->xp];
 $result = $db->transaction(fn () => $service->rewardRead($manga, 'alpha'));
 $assert($result === ['xpEarned' => false, 'seriesXpEarned' => false] && [$user->level, $user->xp] === $before, 'Duplicate reward');
-$db->exec("INSERT INTO manga VALUES (2, 'beta', 1, 'termine', 1, 0, 0)");
+$db->exec(owned_fixture_sql($db, "INSERT INTO manga VALUES (2, 'beta', 1, 'termine', 1, 0, 0)"));
 $manga->id = 2;
 try
 {
@@ -118,16 +118,16 @@ echo "PASS: completed series tiers skip aggregation; missing older tiers retain 
 
 $repository = $container->get(\App\Repositories\Manga\MangaRepository::class);
 $db->exec("DELETE FROM manga WHERE slug = 'alpha'");
-$db->exec("INSERT INTO manga VALUES (3, 'alpha', 1, 'termine', 1, 1, 0)");
+$db->exec(owned_fixture_sql($db, "INSERT INTO manga VALUES (3, 'alpha', 1, 'termine', 1, 1, 0)"));
 $assert($db->transaction(fn () => $repository->claimSeriesReward('alpha')) === false,
     'Recreated series awarded completion XP again');
 $assert((int) $db->query('SELECT xp_series_rewarded FROM manga WHERE id = 3')->fetchColumn() === 1,
     'Historical reward was not transferred to recreated volume');
-$db->exec("INSERT INTO manga_series_rewards (slug) VALUES ('legacy')");
-$db->exec("INSERT INTO manga VALUES (4, 'legacy', 1, 'termine', 1, 1, 0)");
+$db->exec(owned_fixture_sql($db, "INSERT INTO manga_series_rewards (slug) VALUES ('legacy')"));
+$db->exec(owned_fixture_sql($db, "INSERT INTO manga VALUES (4, 'legacy', 1, 'termine', 1, 1, 0)"));
 $assert($db->transaction(fn () => $repository->claimSeriesReward('legacy')) === false,
     'Legacy history awarded completion XP again');
-$db->exec("INSERT INTO manga VALUES (5, 'flags-only', 1, 'termine', 1, 1, 1)");
+$db->exec(owned_fixture_sql($db, "INSERT INTO manga VALUES (5, 'flags-only', 1, 'termine', 1, 1, 1)"));
 $assert($db->transaction(fn () => $repository->claimSeriesReward('flags-only')) === false,
     'Legacy flag awarded completion XP again');
 $assert((int) $db->query("SELECT COUNT(*) FROM manga_series_rewards WHERE slug = 'flags-only'")->fetchColumn() === 1,
