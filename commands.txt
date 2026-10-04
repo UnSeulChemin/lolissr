@@ -90,6 +90,20 @@ composer cache:clear
 = Supprimer les sessions et déconnecter les utilisateurs
 composer sessions:clear
 
+= Auditer les miniatures sans modifier les fichiers
+composer images:optimize
+
+= Redimensionner et compresser les miniatures avec sauvegarde des originaux
+composer images:optimize -- --apply
+
+= Originaux conservés dans storage\backups\images\ ; état dans storage\thumbnail-optimization.json
+= storage\backups\images\manifest.json relie chaque chemin à ses sauvegardes originales
+
+= Sur le serveur déployé, nettoyer régulièrement les anciens bundles JavaScript
+composer js:prune
+
+= La rétention démarre lors de la première observation ; suppression après sept jours
+
 = Emplacements
 storage\logs\
 storage\cache\

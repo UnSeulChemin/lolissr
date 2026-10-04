@@ -7,6 +7,7 @@ namespace App\Services\Media;
 use App\DTO\Common\ServiceResult;
 use App\DTO\Media\UploadThumbnailData;
 use App\Support\Media\ThumbnailName;
+use App\Support\Media\ThumbnailOptimizer;
 
 use Framework\Config\ApplicationConfig;
 use Framework\Logging\Logger;
@@ -30,7 +31,8 @@ final readonly class UploadService
         string $directory,
         array $files,
         string $fileKey = 'image'
-    ): ServiceResult {
+    ): ServiceResult
+    {
         if (ApplicationConfig::isTesting())
         {
             return ServiceResult::error(message: 'Upload interdit pendant les tests HTTP', status: 403);
@@ -87,6 +89,18 @@ final readonly class UploadService
         try
         {
             $saved = @move_uploaded_file($validatedUpload->temporaryPath, $destination);
+            if ($saved)
+            {
+                try
+                {
+                    ThumbnailOptimizer::optimize($destination);
+                }
+                catch (\Throwable $exception)
+                {
+                    // The validated original remains usable when conversion fails.
+                    Logger::warning('Upload: optimisation impossible.', ['message' => $exception->getMessage()]);
+                }
+            }
         }
         finally
         {

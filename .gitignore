@@ -21,6 +21,7 @@
 # Etat local des builds et de la retention JavaScript
 /storage/.build.lock
 /storage/javascript-retention.json
+/storage/thumbnail-optimization.json
 
 # Images locales et fichiers envoyes par les utilisateurs
 /public/images/*

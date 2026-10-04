@@ -69,6 +69,7 @@
             "@php tests/Assets/asset-versions.php",
             "@php tests/Assets/javascript-bundle.php",
             "@php tests/Assets/javascript-retention.php",
+            "@php tests/Assets/thumbnail-optimizer.php",
             "@php tests/Build/atomic-file.php",
             "@php tests/Build/dx-format.php",
             "@php tests/Build/release-archive.php",
@@ -81,6 +82,7 @@
         "js:build": "@php scripts/Assets/build-js.php",
         "js:prune": "@php scripts/Assets/prune-javascript.php",
         "images:build": "@php scripts/Assets/build-profile-images.php",
+        "images:optimize": "@php scripts/Assets/optimize-thumbnails.php",
 
         "dev:reset": ["@logs:clear", "@cache:clear", "@sessions:clear", "@composer dump-autoload"],
         "logs:clear": "@php scripts/Maintenance/clear-runtime.php logs",
@@ -115,6 +117,7 @@
         "js:build": "[Build] Compile les fichiers JavaScript.",
         "js:prune": "[Build] Supprime les anciens bundles JavaScript après leur délai de rétention.",
         "images:build": "[Build] Génère les images de profil.",
+        "images:optimize": "[Images] Audite les miniatures ; --apply optimise avec sauvegarde des originaux.",
 
         "dev:reset": "[Nettoyage] Vide logs, cache et sessions, puis régénère l’autoload.",
         "logs:clear": "[Nettoyage] Vide les logs.",

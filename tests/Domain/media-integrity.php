@@ -61,6 +61,17 @@ namespace {
         $check(strlen(basename($uploads[0]->destinationPath)) <= 255, 'Filename exceeds filesystem limit.');
         $check($uploadService->removeFile($uploads[0]->destinationPath), 'Old image cleanup failed.');
         $check(is_file($uploads[1]->destinationPath), 'Old cleanup removed replacement image.');
+        $image = imagecreatetruecolor(2400, 1600);
+        $incoming = $dir . '/large.jpg';
+        imagejpeg($image, $incoming, 100);
+        imagedestroy($image);
+        $result = $uploadService->uploadThumbnail('large', 1, $dir, ['image' => [
+            'name' => 'large.jpg', 'tmp_name' => $incoming, 'size' => filesize($incoming), 'error' => UPLOAD_ERR_OK
+        ]]);
+        $check($result->success, 'Large image upload failed.');
+        $info = getimagesize($result->data['upload']->destinationPath);
+        $check($info !== false && $info[0] === 1200 && $info[1] === 800 && $info[2] === IMAGETYPE_JPEG,
+            'Upload did not generate the expected thumbnail.');
     } finally
     {
         foreach (glob($dir . '/*') ?: [] as $file) unlink($file);
