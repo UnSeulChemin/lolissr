@@ -6,6 +6,7 @@
 
     "require": {
         "php": "^8.3",
+        "ext-curl": "*",
         "ext-fileinfo": "*",
         "ext-gd": "*",
         "ext-intl": "*",
@@ -15,6 +16,7 @@
     },
 
     "require-dev": {
+        "ext-pdo_sqlite": "*",
         "phpstan/phpstan": "^2.1",
         "phpstan/phpstan-strict-rules": "^2.0"
     },

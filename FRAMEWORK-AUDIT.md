@@ -1,8 +1,4 @@
 
-### 2. Dépendances PHP explicites
-
-`scripts/Api/MangacollecClient.php` exige cURL et lève une exception si l'extension manque. `composer.json` ne déclare pas `ext-curl`. Un environnement peut donc satisfaire les dépendances Composer et échouer sur `manga:sync`. Déclarer cette exigence ou documenter explicitement le caractère optionnel de cette fonction. Pour les tests, vérifier aussi la disponibilité de SQLite, Edge et des exécutables utilisés.
-
 ### 3. Durcissement des connexions
 
 `LoginThrottleService::identifierHash()` limite actuellement le couple compte/IP. Changer d'IP ouvre un autre compteur pour le même compte ; changer de compte ouvre un autre compteur pour la même IP. Pour un accès public plus large, prévoir des budgets supplémentaires par compte et par IP, avec une politique évitant le blocage abusif des utilisateurs.

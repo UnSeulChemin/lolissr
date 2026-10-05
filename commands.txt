@@ -44,6 +44,7 @@ composer check:all
 
 = Prerequis : Apache et MySQL demarres, Microsoft Edge installe,
 = identifiants HTTP_TEST_USERNAME / HTTP_TEST_PASSWORD dans .env et Composer disponible
+= Extension PHP pdo_sqlite activee pour les fixtures SQLite (dependance Composer de developpement)
 = Les tests d'isolation creent puis suppriment des comptes et donnees de test
 = La suite s'arrete au premier echec avec un code de sortie non nul
 
