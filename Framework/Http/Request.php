@@ -11,6 +11,8 @@ use JsonException;
 
 final class Request
 {
+    public const MAX_JSON_BODY_BYTES = 1_048_576;
+
     /**
      * @var array<string, mixed>
      */
@@ -254,7 +256,18 @@ final class Request
             return $this->json = [];
         }
 
-        $raw = @file_get_contents('php://input');
+        $contentLength = $this->header('Content-Length');
+        if ($contentLength !== null && is_numeric($contentLength) && (float) $contentLength > self::MAX_JSON_BODY_BYTES)
+        {
+            throw new BaseHttpException('Corps JSON trop volumineux.', 413);
+        }
+
+        // Read one extra byte to detect overflow even without a Content-Length header.
+        $raw = @file_get_contents('php://input', false, null, 0, self::MAX_JSON_BODY_BYTES + 1);
+        if ($raw !== false && strlen($raw) > self::MAX_JSON_BODY_BYTES)
+        {
+            throw new BaseHttpException('Corps JSON trop volumineux.', 413);
+        }
 
         if ($raw === false || trim($raw) === '')
         {

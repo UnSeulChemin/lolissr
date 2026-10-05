@@ -175,6 +175,7 @@ final class ErrorHandler
             403 => 'Accès interdit',
             404 => 'Page introuvable',
             405 => 'Méthode non autorisée',
+            413 => 'Corps JSON trop volumineux.',
             419 => 'Session expirée',
             422 => 'Erreur de validation',
             default => self::INTERNAL_ERROR_MESSAGE

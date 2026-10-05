@@ -1,8 +1,5 @@
 
 
-### 4. Limite du corps JSON
-
-`Framework/Http/Request.php` lit entièrement `php://input` avant le décodage JSON. Il n'existe pas de limite applicative explicite à cet endroit. Une limite serveur peut déjà protéger l'application, mais elle n'a pas été vérifiée. Prévoir une limite en octets et une réponse 413 cohérente ; contrôler aussi la configuration du serveur.
 
 ### 5. Garde CLI des sauvegardes
 

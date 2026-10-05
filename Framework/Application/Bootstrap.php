@@ -91,6 +91,9 @@ final class Bootstrap
         /** @var Request $request */
         $request = $container->get(Request::class);
 
+        // Validate JSON before routing, authentication and CSRF checks.
+        $request->postAll();
+
         /** @var SecurityHeadersMiddleware $securityHeaders */
         $securityHeaders = $container->get(SecurityHeadersMiddleware::class);
 

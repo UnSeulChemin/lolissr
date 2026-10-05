@@ -64,7 +64,7 @@
         ],
 
         "phpstan": "phpstan analyse --configuration=scripts/Tools/phpstan.neon --no-progress --memory-limit=512M",
-        "http-tests": ["@php tests/Http/run-http.php", "@php tests/Http/spa-http.php"],
+        "http-tests": ["@php tests/Http/run-http.php", "@php tests/Http/spa-http.php", "@php tests/Http/json-body-limit.php"],
         "browser-tests": "@php tests/Browser/run-browser-tests.php",
         "dx": "@php scripts/Tools/dx-format.php",
         "dx:check": "@php scripts/Tools/dx-format.php --check",
