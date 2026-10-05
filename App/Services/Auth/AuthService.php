@@ -15,7 +15,7 @@ final class AuthService implements AuthenticationInterface
 {
     private const USERNAME_MAX_LENGTH = 50;
 
-    private const PASSWORD_MIN_LENGTH = 6;
+    public const PASSWORD_MIN_LENGTH = 12;
     private const PASSWORD_MAX_BYTES = 72;
 
     private bool $userResolved = false;

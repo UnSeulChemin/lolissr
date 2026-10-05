@@ -1,9 +1,4 @@
 
-### 3. Durcissement des connexions
-
-`LoginThrottleService::identifierHash()` limite actuellement le couple compte/IP. Changer d'IP ouvre un autre compteur pour le même compte ; changer de compte ouvre un autre compteur pour la même IP. Pour un accès public plus large, prévoir des budgets supplémentaires par compte et par IP, avec une politique évitant le blocage abusif des utilisateurs.
-
-`AuthService` accepte six caractères à l'inscription. Renforcer cette politique pour les nouveaux mots de passe si l'application ouvre davantage l'inscription. L'inscription est actuellement désactivée en production par les routes.
 
 ### 4. Limite du corps JSON
 

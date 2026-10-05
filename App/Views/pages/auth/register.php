@@ -78,8 +78,11 @@ $passwordError = $form->errors['password'] ?? '';
                         type="password"
                         name="password"
                         id="password"
+                        minlength="<?= \App\Services\Auth\AuthService::PASSWORD_MIN_LENGTH ?>"
                         required
                     >
+
+                    <p class="u-text-center">Au moins <?= \App\Services\Auth\AuthService::PASSWORD_MIN_LENGTH ?> caractères, au maximum 72 octets.</p>
 
                     <?php if ($passwordError !== ''): ?>
 

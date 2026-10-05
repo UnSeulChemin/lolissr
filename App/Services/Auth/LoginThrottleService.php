@@ -36,35 +36,33 @@ final readonly class LoginThrottleService
 
     public function remainingLockMinutes(string $username, string $ipAddress): int
     {
-        $attempt = $this->loginAttemptRepository->findByIdentifierHash($this->identifierHash($username, $ipAddress));
-
-        if ($attempt === null || $attempt['lockedUntil'] === null)
+        $remaining = 0;
+        $now = $this->now()->getTimestamp();
+        foreach ($this->budgets($username, $ipAddress) as $budget)
         {
-            return 0;
+            $attempt = $this->loginAttemptRepository->findByIdentifierHash($budget['hash']);
+            if ($attempt === null || $attempt['lockedUntil'] === null) continue;
+            $remaining = max($remaining, $this->date($attempt['lockedUntil'])->getTimestamp() - $now);
         }
-
-        $remainingSeconds = $this->date($attempt['lockedUntil'])->getTimestamp()
-            - $this->now()->getTimestamp();
-
-        if ($remainingSeconds <= 0)
-        {
-            return 0;
-        }
-
-        return (int) ceil($remainingSeconds / 60);
+        return (int) ceil($remaining / 60);
     }
 
     public function recordFailure(string $username, string $ipAddress): bool
     {
         $now = $this->now();
 
-        $locked = $this->loginAttemptRepository->recordFailure(
-            $this->identifierHash($username, $ipAddress),
-            $this->formatDate($now),
-            $this->formatDate($now->modify('-' . self::ATTEMPT_WINDOW_MINUTES . ' minutes')),
-            $this->formatDate($now->modify('+' . self::LOCK_DURATION_MINUTES . ' minutes')),
-            self::MAX_ATTEMPTS
-        );
+        $locked = false;
+        foreach ($this->budgets($username, $ipAddress) as $budget)
+        {
+            $budgetLocked = $this->loginAttemptRepository->recordFailure(
+                $budget['hash'],
+                $this->formatDate($now),
+                $this->formatDate($now->modify('-' . self::ATTEMPT_WINDOW_MINUTES . ' minutes')),
+                $this->formatDate($now->modify('+' . $budget['minutes'] . ' minutes')),
+                $budget['attempts']
+            );
+            $locked = $budgetLocked || $locked;
+        }
 
         // Effectuer au plus un nettoyage limité par heure lorsque le cache est activé.
         try
@@ -89,21 +87,39 @@ final readonly class LoginThrottleService
     public function clear(string $username, string $ipAddress): void
     {
         $this->loginAttemptRepository->clear($this->identifierHash($username, $ipAddress));
+        // A successful login clears this account, but cannot reset an IP's shared budget.
+        $budgets = $this->budgets($username, $ipAddress);
+        $this->loginAttemptRepository->clear($budgets[1]['hash']);
     }
 
     // =================================================
     // IDENTIFIANT
     // =================================================
 
-    private function identifierHash(string $username, string $ipAddress): string
+    /** @return list<array{hash: string, attempts: int, minutes: int}> */
+    private function budgets(string $username, string $ipAddress): array
+    {
+        $username = $this->normalizedUsername($username);
+        $ip = $this->normalizeIpAddress($ipAddress);
+        return [
+            ['hash' => hash('sha256', $ip . "\0" . $username), 'attempts' => self::MAX_ATTEMPTS, 'minutes' => self::LOCK_DURATION_MINUTES],
+            // A short account cooldown limits distributed attempts without a long global lockout.
+            ['hash' => hash('sha256', "account\0" . $username), 'attempts' => 20, 'minutes' => 2],
+            ['hash' => hash('sha256', "ip\0" . $ip), 'attempts' => 50, 'minutes' => self::LOCK_DURATION_MINUTES]
+        ];
+    }
+
+    private function normalizedUsername(string $username): string
     {
         // Résoudre avec la même collation que l’authentification. Conserver
         // l’orthographe enregistrée pour préserver les compteurs existants du compte.
         $username = $this->userRepository->findByUsername($username)->username ?? $username;
-        $normalizedUsername = mb_strtolower(trim($username));
-        $normalizedIpAddress = $this->normalizeIpAddress($ipAddress);
+        return mb_strtolower(trim($username));
+    }
 
-        return hash('sha256', $normalizedIpAddress . "\0" . $normalizedUsername);
+    private function identifierHash(string $username, string $ipAddress): string
+    {
+        return hash('sha256', $this->normalizeIpAddress($ipAddress) . "\0" . $this->normalizedUsername($username));
     }
 
     private function normalizeIpAddress(string $ipAddress): string
