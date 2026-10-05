@@ -28,7 +28,37 @@
 
     "scripts": {
         "check": ["@phpstan", "@http-tests", "@regression-tests"],
-        "check:all": ["@check", "@browser-tests"],
+        "check:all": [
+            "@check",
+            "@browser-tests",
+            "@db:check",
+            "@users:check",
+            "@php tests/Assets/profile-images.php",
+            "@php tests/Assets/profile-image-builder.php",
+            "@php tests/Build/production-dependencies.php",
+            "@php tests/Http/asset-cache-http.php"
+        ],
+        "tests:manga": [
+            "@php tests/Domain/manga-create-notes.php",
+            "@php tests/Domain/manga-upcoming.php",
+            "@php tests/Domain/manga-xp-batch.php",
+            "@php tests/Domain/manga-filtered-pages.php"
+        ],
+        "tests:search": [
+            "@php tests/Domain/collectible-search.php",
+            "@php tests/Http/spa-http.php"
+        ],
+        "tests:assets": [
+            "@php tests/Assets/css-bundle.php",
+            "@php tests/Assets/page-styles.php",
+            "@php tests/Assets/asset-versions.php",
+            "@php tests/Assets/javascript-bundle.php",
+            "@php tests/Assets/javascript-retention.php",
+            "@php tests/Assets/thumbnail-optimizer.php",
+            "@php tests/Assets/image-assets.php",
+            "@php tests/Assets/profile-images.php",
+            "@php tests/Assets/profile-image-builder.php"
+        ],
 
         "phpstan": "phpstan analyse --configuration=scripts/Tools/phpstan.neon --no-progress --memory-limit=512M",
         "http-tests": ["@php tests/Http/run-http.php", "@php tests/Http/spa-http.php"],
@@ -98,6 +128,7 @@
         "bootstrap:clear": "@php scripts/Maintenance/bootstrap-cache.php clear",
 
         "manga:sync": "@php scripts/Manga/sync-releases.php",
+        "search:profile": "@php scripts/Tools/profile-search.php",
         "backup": "@php scripts/Database/backup-database.php",
         "db:deduplicate-indexes": "@php scripts/Database/deduplicate-indexes.php",
         "db:check": "@php tests/Domain/database-schema.php",
@@ -110,11 +141,15 @@
     },
 
     "scripts-descriptions": {
+        "tests:manga": "[Tests] Tests de domaine manga : creation, sorties, XP et pagination.",
+        "tests:search": "[Tests] Recherche des collections et comparaison des resultats HTTP/SPA.",
+        "tests:assets": "[Tests] Bundles CSS/JS, versions, miniatures et images de profil.",
+        "search:profile": "[Performance] USER_ID [QUERY ...] : mesure la recherche par categorie et affiche les plans SQL, sans modifier la base.",
         "manga:sync": "[Manga] Actualise les prochaines sorties via une session invite Mangacollec.",
         "dx": "[DX] Applique les conventions de presentation PHP, JavaScript et CSS.",
         "dx:check": "[DX] Detecte les ecarts de presentation sans modifier les sources.",
         "check": "[Tests] Analyse PHP + tests HTTP et régression.",
-        "check:all": "[Tests] Tous les contrôles, navigateur compris.",
+        "check:all": "[Tests] Tous les controles : PHPStan, regressions, HTTP/SPA, navigateur, schema MySQL, isolation des comptes, images et dependances de production.",
 
         "phpstan": "[Tests] Analyse statique du code PHP.",
         "http-tests": "[Tests] Vérifie les réponses HTTP et la navigation SPA.",

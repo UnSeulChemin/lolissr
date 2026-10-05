@@ -27,7 +27,8 @@ final class ImageAssets
         if (!is_file($file)) return $url;
         $url = preg_replace('/([?&])v=[^&]*&?/', '$1', $url) ?? $url;
         $url = rtrim($url, '?&');
-        $version = hash_file('sha256', $file);
+        \Framework\Debug\Profiler::increment('images.fingerprint.count');
+        $version = \Framework\Debug\Profiler::measure('images.fingerprint', static fn (): string|false => hash_file('sha256', $file));
         if ($version === false) throw new \RuntimeException('Cannot fingerprint image.');
         return $url . (str_contains($url, '?') ? '&' : '?') . 'v=' . $version;
     }

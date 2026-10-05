@@ -23,6 +23,14 @@ C:\wamp64\www\lolissr
 = Afficher les commandes Composer disponibles
 composer run-script --list
 
+= Profiler la recherche globale pour un utilisateur (lecture seule, MySQL requis)
+composer search:profile -- 1
+
+= Mesurer des recherches precises
+composer search:profile -- 1 "a" "Berserk" "Berserk 1"
+
+= Remplacer 1 par l'identifiant de l'utilisateur a mesurer
+
 
 =========================================
 TESTS & QUALITÉ DE CODE
@@ -31,8 +39,22 @@ TESTS & QUALITÉ DE CODE
 = Analyse PHP + tests HTTP / SPA + régressions
 composer check
 
-= Tous les contrôles, navigateur compris
+= Suite complete : navigateur, schema MySQL, isolation des comptes, images et dependances de production compris
 composer check:all
+
+= Prerequis : Apache et MySQL demarres, Microsoft Edge installe,
+= identifiants HTTP_TEST_USERNAME / HTTP_TEST_PASSWORD dans .env et Composer disponible
+= Les tests d'isolation creent puis suppriment des comptes et donnees de test
+= La suite s'arrete au premier echec avec un code de sortie non nul
+
+= Tests cibles manga (creation, sorties, XP et pagination)
+composer tests:manga
+
+= Tests cibles recherche et comparaison HTTP/SPA
+composer tests:search
+
+= Tests cibles assets CSS/JS et images (MySQL requis pour les images de profil)
+composer tests:assets
 
 -----------------------------------------
 
