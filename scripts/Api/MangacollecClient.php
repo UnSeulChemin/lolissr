@@ -118,7 +118,7 @@ final class MangacollecClient
     {
         $parts = parse_url($url);
         return is_array($parts) && ($parts['scheme'] ?? '') === 'https'
-            && in_array($parts['host'] ?? '', ['m.media-amazon.com', 'api.mangacollec.com', 'mangacollec.s3.eu-west-3.amazonaws.com'], true)
+            && in_array($parts['host'] ?? '', ['m.media-amazon.com', 'images-eu.ssl-images-amazon.com', 'www.bdfugue.com', 'api.mangacollec.com', 'mangacollec.s3.eu-west-3.amazonaws.com'], true)
             && !isset($parts['user']) && !isset($parts['pass'])
             && (!isset($parts['port']) || $parts['port'] === 443);
     }
