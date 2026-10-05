@@ -107,7 +107,8 @@
             "@php tests/Build/atomic-file.php",
             "@php tests/Build/dx-format.php",
             "@php tests/Build/release-archive.php",
-            "@php tests/Build/build-lock.php"
+            "@php tests/Build/build-lock.php",
+            "@php tests/Build/migrations.php"
         ],
 
         "assets:build": "@php scripts/Assets/build-assets.php",
@@ -132,6 +133,9 @@
         "backup": "@php scripts/Database/backup-database.php",
         "db:deduplicate-indexes": "@php scripts/Database/deduplicate-indexes.php",
         "db:check": "@php tests/Domain/database-schema.php",
+        "db:migrate": "@php scripts/Database/migrate.php apply",
+        "db:migrate:status": "@php scripts/Database/migrate.php status",
+        "db:migrate:baseline": "@php scripts/Database/migrate.php baseline",
         "users:check": ["@php tests/Domain/user-ownership.php", "@php tests/Http/user-ownership.php"],
         "xp:backfill": "@php scripts/Profile/backfill-achievement-xp.php",
 
@@ -141,6 +145,9 @@
     },
 
     "scripts-descriptions": {
+        "db:migrate": "[Donnees] Applique les migrations SQL manquantes dans la base du .env.",
+        "db:migrate:status": "[Donnees] Affiche les migrations sans modifier la base.",
+        "db:migrate:baseline": "[Donnees] FILE.sql : enregistre une migration deja appliquee, sans executer son SQL.",
         "tests:manga": "[Tests] Tests de domaine manga : creation, sorties, XP et pagination.",
         "tests:search": "[Tests] Recherche des collections et comparaison des resultats HTTP/SPA.",
         "tests:assets": "[Tests] Bundles CSS/JS, versions, miniatures et images de profil.",

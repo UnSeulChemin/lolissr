@@ -172,6 +172,20 @@ composer bootstrap:clear
 BASE DE DONNÉES
 =========================================
 
+= Voir les migrations et leur etat (base du .env, lecture seule)
+composer db:migrate:status
+
+= Appliquer les migrations manquantes apres sauvegarde
+composer db:migrate
+
+= Enregistrer une migration deja appliquee, sans rejouer le SQL (verification manuelle obligatoire)
+composer db:migrate:baseline -- YYYY-MM-DD-NN-description.sql
+composer db:migrate:baseline -- 2026-10-04-user-ownership.sql
+
+= La cible est la base du .env. Sauvegarder avant db:migrate.
+= Une migration failed/running bloque le rejeu : verifier et reparer manuellement avant baseline.
+= Ne pas modifier les fichiers SQL deja enregistres ; ajouter une migration corrective.
+
 = Sauvegarder la base avec les paramètres DB du .env
 composer backup
 
