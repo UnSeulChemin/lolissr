@@ -13,7 +13,7 @@ return [
         'pages/sql/index',
         'pages/profile/',
         'pages/manga/series/notes',
-        'pages/manga/series/unread'
+        'pages/manga/series/unread', 'pages/manga/series/releases'
     ],
     'pages/sql.css' => ['pages/sql/'],
     // Le vocabulaire et la grammaire partagent les styles des boutons et de navigation des cartes.

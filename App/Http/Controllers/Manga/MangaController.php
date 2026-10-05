@@ -19,6 +19,23 @@ final class MangaController extends Controller
 {
     private const SERIES_PATH = 'manga/series';
 
+    public function forthcoming(int $page = 1): never
+    { $this->releases('a-paraitre', $page); }
+
+    public function missing(int $page = 1): never
+    { $this->releases('non-possedes', $page); }
+    public function releases(string $type, int $page = 1): never
+    {
+        if (!in_array($type, ['a-paraitre', 'non-possedes'], true)) throw new NotFoundException('Page introuvable');
+        $items = array_values(array_filter($this->upcomingMangaService->all(), static fn ($release): bool => $release->isUpcoming === ($type === 'a-paraitre')));
+        $items = array_reverse($items);
+        $perPage = max(1, \Framework\Config\ApplicationConfig::pagination());
+        $totalPages = max(1, (int) ceil(count($items) / $perPage));
+        if ($page < 1 || $page > $totalPages) throw new NotFoundException('Page introuvable');
+        $this->title = $type === 'a-paraitre' ? 'Manga | À paraître' : 'Manga | Non possédés';
+        $this->render('pages/manga/series/releases', ['releases' => array_slice($items, ($page - 1) * $perPage, $perPage), 'currentPage' => $page, 'totalPages' => $totalPages, 'paginationPath' => 'manga/series/' . $type]);
+    }
+
     public function __construct(
         private readonly MangaReadService $mangaReadService,
         private readonly MangaWriteService $mangaWriteService,

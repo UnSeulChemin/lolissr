@@ -17,6 +17,14 @@ final class MangaRepository extends AbstractRepository
 
     protected string $table = 'manga';
 
+    /** @return list<array{slug: string, livre: string, numero: int}> */
+    public function releaseCollection(): array
+    {
+        $statement = $this->db->prepare("SELECT slug, livre, numero FROM {$this->readTable()}");
+        $statement->execute();
+        return $statement->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
     /** @return list<int> */
     public function ownedNumbers(string $slug): array
     {

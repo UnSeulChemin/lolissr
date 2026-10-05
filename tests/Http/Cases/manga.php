@@ -58,3 +58,8 @@ $tests[] = [
     'header_contains' => ['application/json'],
     'headers' => ['Accept: application/json', 'X-Requested-With: XMLHttpRequest']
 ];
+$tests[] = ['category' => 'Manga', 'label' => 'À paraître', 'path' => '/manga/series/a-paraitre'];
+$tests[] = ['category' => 'Manga', 'label' => 'À paraître page 1', 'path' => '/manga/series/a-paraitre/page/1'];
+$tests[] = ['category' => 'Manga', 'label' => 'Non possédés', 'path' => '/manga/series/non-possedes'];
+$tests[] = ['category' => 'Manga', 'label' => 'Non possédés page 1', 'path' => '/manga/series/non-possedes/page/1'];
+$tests[] = ['category' => 'Manga', 'label' => 'Sorties page hors limite', 'path' => '/manga/series/a-paraitre/page/999999', 'expected_status' => 404];

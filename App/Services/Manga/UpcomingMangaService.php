@@ -10,6 +10,27 @@ use Framework\Config\ApplicationConfig;
 
 final class UpcomingMangaService
 {
+    /** @var array<string, list<int>> */
+    private array $collectionNumbers = [];
+
+    /** @return list<UpcomingMangaData> */
+    public function all(): array
+    {
+        $titles = [];
+        $this->collectionNumbers = [];
+        foreach ($this->repository->releaseCollection() as $row)
+        {
+            $titles[$row['slug']] = $row['livre'];
+            $this->collectionNumbers[$row['slug']][] = $row['numero'];
+        }
+        $result = [];
+        foreach ($titles as $slug => $title)
+            foreach ($this->forSeries($slug) as $release)
+                $result[] = new UpcomingMangaData($release->number, $release->date, $release->dateLabel, $release->sourceUrl, $release->imageUrl, $release->isUpcoming, $slug, $title);
+        usort($result, static fn (UpcomingMangaData $a, UpcomingMangaData $b): int => [$a->date, $a->title, $a->number] <=> [$b->date, $b->title, $b->number]);
+        $this->collectionNumbers = [];
+        return $result;
+    }
     public function __construct(private readonly \App\Repositories\Manga\MangaRepository $repository, private readonly ?string $catalogPath = null)
     {}
 
@@ -29,7 +50,7 @@ final class UpcomingMangaService
         if (!is_array($series)) return [];
         $entries = $series[$slug]['upcoming'] ?? [];
         if (!is_array($entries)) return [];
-        $owned = $entries === [] ? [] : $this->repository->ownedNumbers($slug);
+        $owned = $entries === [] ? [] : ($this->collectionNumbers[$slug] ?? $this->repository->ownedNumbers($slug));
         $upper = PHP_INT_MAX;
         $lower = 0;
         if ($perPage !== null && $perPage > 0)

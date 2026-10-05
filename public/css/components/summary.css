@@ -4,7 +4,8 @@
 
 .home-section-title
 {
-    margin: 50px 0;
+    max-width: 1320px;
+    margin: 50px auto;
     padding: 11px 18px;
     color: var(--color-violet);
     font-size: var(--font-size-base);

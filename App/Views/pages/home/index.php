@@ -5,6 +5,9 @@ declare(strict_types=1);
 use App\DTO\Common\Responses\ViewData;
 
 /** @var ViewData $view */
+/** @var int $releaseUpcomingCount */
+/** @var int $releaseMissingCount */
+/** @var ?\App\DTO\Manga\Responses\UpcomingMangaData $nextRelease */
 
 if (!isset($stats))
 {
@@ -280,6 +283,27 @@ $hasMostRepresented =
     <!-- =================================================
          TOP LONGEST SÉRIES
     ================================================= -->
+
+    <h2 class="home-section-title u-relative u-text-center u-w-full">📚 Suivi de mes séries</h2>
+    <section class="home-grid home-grid-stats card-grid-3">
+        <a class="card transition-card card-small card-link u-flex" data-prefetch href="<?= e($view->baseUri . 'manga/series/a-paraitre') ?>">
+            <h3 class="home-card-title">📅 À paraître</h3>
+            <p class="home-card-value u-relative u-bold"><?= $releaseUpcomingCount ?> tomes</p>
+        </a>
+        <a class="card transition-card card-small card-link u-flex" data-prefetch href="<?= e($view->baseUri . 'manga/series/non-possedes') ?>">
+            <h3 class="home-card-title">🛒 Non possédés</h3>
+            <p class="home-card-value u-relative u-bold"><?= $releaseMissingCount ?> tomes</p>
+        </a>
+        <a class="card transition-card card-small card-link u-flex" data-prefetch href="<?= e($view->baseUri . ($nextRelease !== null ? 'manga/series/' . rawurlencode($nextRelease->slug) : 'manga/series/a-paraitre')) ?>">
+            <h3 class="home-card-title">⏳ Prochaine sortie</h3>
+            <?php if ($nextRelease !== null): ?>
+                <p class="home-card-title"><?= e($nextRelease->title) ?> · Tome <?= $nextRelease->number ?></p>
+                <time class="home-card-title" datetime="<?= e($nextRelease->date) ?>"><?= e($nextRelease->dateLabel) ?></time>
+            <?php else: ?>
+                <p class="home-card-title">Aucune sortie annoncée</p>
+            <?php endif; ?>
+        </a>
+    </section>
 
     <?php if ($hasTopLongestSeries): ?>
 
