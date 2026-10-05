@@ -62,7 +62,7 @@ for ($visit = 0; $visit < 2; $visit++)
     ProfileQueryCounter::$executions = 0;
     $stats = $service->getStats($user);
     if (ProfileQueryCounter::$executions !== 1) throw new RuntimeException('Profile did not use one query.');
-    if ($stats->achievementXp !== 50 || $stats->totalXp !== 29050 || $stats->completedSeries !== 200)
+    if ($stats->achievementXp !== 50 || $stats->totalXp !== 278050 || $stats->completedSeries !== 200)
     {
         throw new RuntimeException('Incorrect profile totals or reward leakage between users.');
     }
@@ -171,8 +171,8 @@ $database->exec(owned_fixture_sql($database, "INSERT INTO achievement_xp_rewards
 $database->exec('PRAGMA query_only = ON');
 $mixed = $service->getStats($user);
 if ($mixed->readTomes !== 1 || $mixed->completedSeries !== 0 || $mixed->readArtbooks !== 0
-    || $mixed->tomeXp !== 10 || $mixed->seriesXp !== 20 || $mixed->artbookXp !== 20
-    || $mixed->achievementXp !== 7 || $mixed->totalXp !== 57)
+    || $mixed->tomeXp !== 40 || $mixed->seriesXp !== 100 || $mixed->artbookXp !== 200
+    || $mixed->achievementXp !== 7 || $mixed->totalXp !== 347)
 {
     throw new RuntimeException('Grouped profile changed mixed read/reward flags or user isolation.');
 }
