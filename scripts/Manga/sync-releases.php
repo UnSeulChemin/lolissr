@@ -8,7 +8,7 @@ define('ROOT', dirname(__DIR__, 2));
 require ROOT . '/vendor/autoload.php';
 require ROOT . '/Framework/Support/Helpers.php';
 require ROOT . '/scripts/Support/AtomicFile.php';
-require ROOT . '/scripts/Support/MangacollecClient.php';
+require ROOT . '/scripts/Api/MangacollecClient.php';
 \Framework\Application\Bootstrap::loadEnvOnly();
 date_default_timezone_set(\Framework\Config\ApplicationConfig::timezone());
 $lock = fopen(ROOT . '/storage/manga-releases.lock', 'c');
