@@ -35,6 +35,7 @@ $upcoming ??= [];
         <?php foreach ($items as $manga): ?>
             <?php if ($manga instanceof \App\DTO\Manga\Responses\UpcomingMangaData): ?>
                 <?php $release = $manga; ?>
+                <div class="collection-release-item u-stack">
 
                 <a
                     class="card collection-card collection-card-link collection-card-upcoming u-flex u-w-full"
@@ -57,6 +58,8 @@ $upcoming ??= [];
                         Tome <?= $release->number ?>
                     </p>
                 </a>
+                <?php $releaseSlug = $slugFilter ?? ''; require view_path('pages/manga/series/partials/acquire-release.php'); ?>
+                </div>
 
                 <?php continue; ?>
             <?php endif; ?>

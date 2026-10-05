@@ -7,6 +7,8 @@ declare(strict_types=1);
 // =========================================
 
 $tests[] = ['category' => 'Manga', 'label' => 'Accueil manga', 'path' => '/manga'];
+$tests[] = ['category' => 'Manga', 'label' => 'Possession refuse GET', 'path' => '/manga/series/fixture/posseder/2', 'expected_status' => 405];
+$tests[] = ['category' => 'Manga', 'label' => 'Possession exige CSRF', 'method' => 'POST', 'path' => '/manga/series/fixture/posseder/2', 'headers' => ['Accept: application/json'], 'expected_status' => 419];
 
 $tests[] = ['category' => 'Manga', 'label' => 'Liens manga', 'path' => '/manga/lien'];
 

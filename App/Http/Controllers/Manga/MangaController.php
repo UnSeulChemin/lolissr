@@ -19,6 +19,14 @@ final class MangaController extends Controller
 {
     private const SERIES_PATH = 'manga/series';
 
+    public function acquireRelease(string $slug, int $numero): never
+    {
+        $result = $this->mangaWriteService->acquireRelease($slug, $numero, $this->upcomingMangaService);
+        if ($this->expectsJson()) $this->jsonResult($result);
+        if (!$result->success) $this->redirectWithError(self::SERIES_PATH . '/' . rawurlencode($slug), $result->message, false);
+        $this->redirectWithSuccess(self::SERIES_PATH . '/' . rawurlencode($slug), $result->message);
+    }
+
     public function forthcoming(int $page = 1): never
     { $this->releases('a-paraitre', $page); }
 

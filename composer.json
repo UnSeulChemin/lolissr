@@ -41,6 +41,7 @@
             "@php tests/Http/asset-cache-http.php"
         ],
         "tests:manga": [
+            "@php tests/Domain/manga-acquire-release.php",
             "@php tests/Domain/manga-create-notes.php",
             "@php tests/Domain/manga-upcoming.php",
             "@php tests/Domain/manga-xp-batch.php",
@@ -88,6 +89,7 @@
             "@php tests/Domain/manga-create-notes.php",
             "@php tests/Domain/manga-upcoming.php",
             "@php tests/Domain/media-integrity.php",
+            "@php tests/Domain/manga-acquire-release.php",
             "@php tests/Domain/manga-xp-batch.php",
             "@php tests/Domain/collection-xp-batch.php",
             "@php tests/Domain/profile-read-only.php",

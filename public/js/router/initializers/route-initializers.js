@@ -37,6 +37,7 @@ function lazyInitializer(loadModule, exportName, selector = null)
 // =================================================
 
 const initCreateMangaPage = lazyInitializer(() => import('../../manga/pages/create.js'), 'initCreatePage');
+const initAcquireRelease = lazyInitializer(() => import('../../manga/actions/acquire-release.js'), 'initAcquireRelease');
 
 const initEditMangaPage = lazyInitializer(() => import('../../manga/pages/edit.js'), 'initEditPage');
 
@@ -186,6 +187,7 @@ export const ROUTE_INITIALIZERS = [
         match: /^\/manga(?:\/|$)/,
 
         initializers: [
+            ['AcquireRelease', initAcquireRelease],
             ['UpdateNote', initUpdateNote],
             ['DeleteManga', initDeleteManga],
             ['DeleteArtbook', initDeleteArtbook],

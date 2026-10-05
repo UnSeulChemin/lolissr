@@ -114,6 +114,7 @@ $router->prefix('manga')->group(function (Router $router): void
         // =================================================
 
         $router->get('{slug}/{numero:int}', [MangaController::class, 'showManga']);
+        $router->post('{slug}/posseder/{numero:int}', [MangaController::class, 'acquireRelease'], [CsrfMiddleware::class]);
 
         $router->get('{slug}/page/{page:int}', [MangaController::class, 'showSeries']);
         $router->get('{slug}', [MangaController::class, 'showSeries']);

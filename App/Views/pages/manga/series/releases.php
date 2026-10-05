@@ -11,6 +11,7 @@ declare(strict_types=1);
             <?php else: ?>
                 <section class="collection-grid u-grid u-justify-center">
                     <?php foreach ($releases as $release): ?>
+                        <div class="collection-release-item u-stack">
                         <a class="card collection-card collection-card-link collection-card-upcoming u-flex u-w-full" data-prefetch href="<?= e($view->baseUri . 'manga/series/' . rawurlencode($release->slug)) ?>">
                             <span class="collection-status-badge collection-status-upcoming"><?= $release->isUpcoming ? 'À paraître' : 'Non possédé' ?></span>
                             <time class="collection-status-badge collection-release-date" datetime="<?= e($release->date) ?>"><?= e($release->dateLabel) ?></time>
@@ -24,6 +25,8 @@ declare(strict_types=1);
                             <p class="collection-card-title u-block u-relative u-text-center u-clip u-bold"><?= e($release->title) ?></p>
                             <p class="collection-card-subtitle u-relative u-text-center">Tome <?= $release->number ?></p>
                         </a>
+                        <?php $releaseSlug = $release->slug; require view_path('pages/manga/series/partials/acquire-release.php'); ?>
+                        </div>
                     <?php endforeach; ?>
                 </section>
             <?php endif; ?>

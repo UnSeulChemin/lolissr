@@ -539,3 +539,7 @@
         transform: none;
     }
 }
+.collection-release-item
+{
+    gap: 16px;
+}

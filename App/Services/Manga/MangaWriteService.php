@@ -79,6 +79,82 @@ final readonly class MangaWriteService
     // MISE À JOUR
     // --------------------------------------------------------------------------
 
+    public function acquireRelease(string $slug, int $numero, UpcomingMangaService $releases): ServiceResult
+    {
+        if (user() === null) return $this->error('Connexion requise', 401);
+        if ($numero < 1 || $numero > 999) return $this->error('Numéro invalide', 422);
+        if ($this->mangaRepository->findRecordBySlugAndNumero($slug, $numero) !== null) return $this->error('Ce manga existe déjà', 409);
+        $release = null;
+        foreach ($releases->forSeries($slug) as $candidate)
+            if ($candidate->number === $numero) { $release = $candidate; break; }
+        if ($release === null) return $this->error('Tome introuvable', 404);
+        $series = null;
+        foreach ($this->mangaRepository->seriesForCreate() as $candidate)
+            if ($candidate['slug'] === $slug) { $series = $candidate; break; }
+        if ($series === null) return $this->error('Série introuvable', 404);
+        // Resolve only a validated catalog ID; never accept an image path from the client.
+        $id = basename($release->sourceUrl);
+        if (preg_match('/^[a-f0-9-]{36}$/D', $id) !== 1) return $this->error('Couverture invalide', 422);
+        $source = base_path('public/images/manga/upcoming/' . $id . '.jpg');
+        $bytes = is_file($source) ? file_get_contents($source) : false;
+        $size = is_string($bytes) ? @getimagesizefromstring($bytes) : false;
+        if (!is_string($bytes) || strlen($bytes) > 5 * 1024 * 1024 || $size === false || $size[2] !== IMAGETYPE_JPEG || $size[0] * $size[1] > 10000000)
+            return $this->error('Couverture indisponible : utilise le formulaire d’ajout', 422);
+        $directory = \App\Support\Media\ThumbnailDirectory::resolve('manga');
+        if (!is_dir($directory) && !mkdir($directory, 0755, true) && !is_dir($directory)) throw new \RuntimeException('Cannot create thumbnail directory.');
+        $baseName = \App\Support\Media\ThumbnailName::generate($series['livre'], $numero);
+        if ($baseName === '') return $this->error('Nom de couverture invalide', 422);
+        $thumbnail = mb_strcut($baseName, 0, 180, 'UTF-8');
+        $destination = $directory . $thumbnail . '.webp';
+        $handle = @fopen($destination, 'xb');
+        if ($handle === false && file_exists($destination))
+        {
+            // Keep a readable series/volume prefix while isolating another owner's file.
+            $thumbnail .= '-' . bin2hex(random_bytes(16));
+            $destination = $directory . $thumbnail . '.webp';
+            $handle = @fopen($destination, 'xb');
+        }
+        if ($handle === false) throw new \RuntimeException('Cannot stage release cover.');
+        $committed = false;
+        $upload = new UploadThumbnailData($thumbnail, 'webp', $destination);
+        try
+        {
+            try
+            {
+                $image = @imagecreatefromstring($bytes);
+                if ($image === false) throw new \RuntimeException('Cannot decode release cover.');
+                try
+                {
+                    if (!imagewebp($image, $handle, 85)) throw new \RuntimeException('Cannot convert release cover to WebP.');
+                }
+                finally { imagedestroy($image); }
+            }
+            finally { fclose($handle); }
+            $converted = @getimagesize($destination);
+            if ($converted === false || $converted[2] !== IMAGETYPE_WEBP) throw new \RuntimeException('Invalid converted release cover.');
+            $dto = new MangaCreateData($slug, $series['livre'], $series['editeur'] ?? '', $numero, $series['statut'], null);
+            $result = $this->database->transaction(function () use ($dto, $upload): ServiceResult
+            {
+                $this->mangaRepository->lockSeries($dto->slug);
+                if (!$this->mangaRepository->seriesExists($dto->slug)) return $this->error('Série introuvable', 404);
+                if ($this->mangaRepository->findRecordBySlugAndNumero($dto->slug, $dto->numero) !== null) return $this->error('Ce manga existe déjà', 409);
+                return $this->createManga($dto, $upload) ?? $this->success('Tome ajouté à ta collection');
+            });
+            $committed = $result->success;
+            if ($committed) $this->forgetDashboardCache();
+            return $result;
+        }
+        catch (\PDOException $error)
+        {
+            if ($error->getCode() === '23000' && ($error->errorInfo[1] ?? null) === 1062) return $this->error('Ce manga existe déjà', 409);
+            throw $error;
+        }
+        finally
+        {
+            if (!$committed) $this->thumbnailManager->rollback($upload);
+        }
+    }
+
     public function update(string $slug, int $numero, MangaUpdateData $dto): ServiceResult
     {
         $result = $this->database->transaction(

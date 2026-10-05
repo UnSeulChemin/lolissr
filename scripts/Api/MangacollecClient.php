@@ -53,7 +53,7 @@ final class MangacollecClient
     private function windowsRequest(string $path, bool $session, array $headers, ?string $url = null): array
     {
         $process = proc_open(['curl.exe', '--silent', '--show-error', '--connect-timeout', '5', '--max-time', '20',
-            '--request', $session ? 'POST' : 'GET', '--config', '-', '--write-out', "\n%{http_code}",
+            '--request', $session ? 'POST' : 'GET', '--config', '-', '--write-out', "\n%{redirect_url}\n%{http_code}",
             $url ?? 'https://api.mangacollec.com' . $path], [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes,
             ROOT, null, ['bypass_shell' => true]);
         if (!is_resource($process)) throw new RuntimeException('Windows HTTPS client unavailable.');
@@ -67,26 +67,36 @@ final class MangacollecClient
         if ($exit !== 0 || !is_string($output)) throw new RuntimeException('Windows HTTPS request failed.');
         $separator = strrpos($output, "\n");
         if ($separator === false) throw new RuntimeException('Missing HTTPS response status.');
-        return [substr($output, 0, $separator), (int) substr($output, $separator + 1)];
+        $redirectSeparator = strrpos(substr($output, 0, $separator), "\n");
+        if ($redirectSeparator === false) throw new RuntimeException('Missing HTTPS redirect metadata.');
+        return [substr($output, 0, $redirectSeparator), (int) substr($output, $separator + 1), substr($output, $redirectSeparator + 1, $separator - $redirectSeparator - 1)];
     }
 
     public function cover(string $id, ?string $url): void
     {
         if ($url === null || preg_match('/^[a-f0-9-]{36}$/D', $id) !== 1) return;
-        if (parse_url($url, PHP_URL_SCHEME) !== 'https' || parse_url($url, PHP_URL_HOST) !== 'm.media-amazon.com') return;
+        if (!self::allowedCoverUrl($url)) return;
         $directory = ROOT . '/public/images/manga/upcoming';
         if (!is_dir($directory) && !mkdir($directory, 0755, true) && !is_dir($directory)) throw new RuntimeException('Cannot create cover directory.');
         $path = $directory . '/' . $id . '.jpg';
         if (is_file($path)) return;
-        if (PHP_OS_FAMILY === 'Windows')
-            [$body, $status] = $this->windowsRequest('', false, [], $url);
-        else
+        for ($hop = 0; $hop < 4; $hop++)
         {
-            $handle = curl_init($url);
-            curl_setopt_array($handle, [CURLOPT_RETURNTRANSFER => true, CURLOPT_CONNECTTIMEOUT => 5, CURLOPT_TIMEOUT => 15]);
-            $body = curl_exec($handle);
-            $status = curl_getinfo($handle, CURLINFO_RESPONSE_CODE);
-            curl_close($handle);
+            if (!self::allowedCoverUrl($url)) return;
+            if (PHP_OS_FAMILY === 'Windows')
+                [$body, $status, $redirect] = $this->windowsRequest('', false, [], $url);
+            else
+            {
+                $handle = curl_init($url);
+                curl_setopt_array($handle, [CURLOPT_RETURNTRANSFER => true, CURLOPT_CONNECTTIMEOUT => 5, CURLOPT_TIMEOUT => 15]);
+                $body = curl_exec($handle);
+                $status = curl_getinfo($handle, CURLINFO_RESPONSE_CODE);
+                $redirect = curl_getinfo($handle, CURLINFO_REDIRECT_URL);
+                curl_close($handle);
+            }
+            if (!in_array($status, [301, 302, 303, 307, 308], true)) break;
+            if (!is_string($redirect) || $redirect === '') return;
+            $url = $redirect;
         }
         if ($status !== 200 || !is_string($body) || strlen($body) > 5 * 1024 * 1024) return;
         $size = @getimagesizefromstring($body);
@@ -102,5 +112,14 @@ final class MangacollecClient
         $jpeg = ob_get_clean();
         imagedestroy($resized);
         if (is_string($jpeg)) AtomicFile::writeIfChanged($path, $jpeg);
+    }
+
+    public static function allowedCoverUrl(string $url): bool
+    {
+        $parts = parse_url($url);
+        return is_array($parts) && ($parts['scheme'] ?? '') === 'https'
+            && in_array($parts['host'] ?? '', ['m.media-amazon.com', 'api.mangacollec.com', 'mangacollec.s3.eu-west-3.amazonaws.com'], true)
+            && !isset($parts['user']) && !isset($parts['pass'])
+            && (!isset($parts['port']) || $parts['port'] === 443);
     }
 }
