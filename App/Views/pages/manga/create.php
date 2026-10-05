@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\DTO\Common\Responses\FormViewData;
 
 /** @var FormViewData $form */
+/** @var list<array{slug: string, livre: string, editeur: ?string, statut: string, next_numero: int}> $existingSeries */
 
 $errors = $form->errors;
 $old = $form->old;
@@ -40,7 +41,7 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
 
                 <?= csrf_field() ?>
 
-                <div class="form-group u-stack">
+                <div class="form-group manga-series-field u-stack">
 
                     <label
                         class="form-label u-text-center u-bold"
@@ -57,11 +58,30 @@ $statutOptions = ['en_cours' => 'En cours', 'termine' => 'Terminé'];
                         name="livre"
                         id="livre"
                         data-slug-source
+                        role="combobox"
+                        aria-autocomplete="list"
+                        aria-expanded="false"
+                        aria-controls="manga-series-suggestions"
+                        autocomplete="off"
                         placeholder="Ex : To Love Ru"
                         value="<?= e($livreValue) ?>"
                         autofocus
                         required
                     >
+
+                    <datalist id="manga-existing-series">
+                        <?php foreach ($existingSeries as $series): ?>
+                            <option
+                                value="<?= e($series['livre']) ?>"
+                                label="<?= e($series['editeur'] ?? '') ?>"
+                                data-slug="<?= e($series['slug']) ?>"
+                                data-editeur="<?= e($series['editeur'] ?? '') ?>"
+                                data-statut="<?= e($series['statut']) ?>"
+                                data-numero="<?= e($series['next_numero']) ?>"
+                            ></option>
+                        <?php endforeach; ?>
+                    </datalist>
+                    <div class="manga-series-suggestions" id="manga-series-suggestions" role="listbox" aria-label="Séries de ta collection" hidden></div>
 
                     <?php if (isset($errors['livre']) && $errors['livre'] !== ''): ?>
 

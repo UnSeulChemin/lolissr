@@ -13,6 +13,7 @@ import { debug, debugError } from '../../core/debug/debug.js';
 import { generateSlug } from '../../core/slug.js';
 
 import { invalidateMangaPages } from '../manga-cache.js';
+import { initSeriesSuggestions } from './series-suggestions.js';
 
 // =================================================
 // CONFIGURATION
@@ -81,6 +82,30 @@ export function initCreatePage()
 
     let slugEditedManually = false;
 
+    const seriesOptions = [...form.querySelectorAll('#manga-existing-series option')];
+    const seriesFields = ['editeur', 'statut', 'numero'].map((name) =>
+    {
+        const input = form.elements.namedItem(name);
+        let automaticValue = input?.value;
+        // Submitted values after validation must also be preserved.
+        let manuallyEdited = Boolean(input?.value && (name !== 'statut' || input.value !== 'en_cours'));
+        input?.addEventListener('input', () => { manuallyEdited = true; });
+        input?.addEventListener('change', () => { manuallyEdited = true; });
+        return {
+            fill(series)
+            {
+                if (!input || manuallyEdited || input.value !== automaticValue) return;
+                input.value = series ? series.dataset[name] : (name === 'statut' ? 'en_cours' : '');
+                automaticValue = input.value;
+            },
+            reset()
+            {
+                automaticValue = input?.value;
+                manuallyEdited = Boolean(input?.value && (name !== 'statut' || input.value !== 'en_cours'));
+            }
+        };
+    });
+
     // --------------------------------------------------------------------------
     // SLUG AUTOMATIQUE
     // --------------------------------------------------------------------------
@@ -100,18 +125,24 @@ export function initCreatePage()
     if (slugSourceInput instanceof HTMLInputElement && slugInput instanceof HTMLInputElement)
     {
 
-        slugSourceInput.addEventListener(
-            'input',
-            () =>
+        const fillFromSeries = () =>
             {
+                const title = slugSourceInput.value.trim().toLocaleLowerCase('fr');
+                const matches = seriesOptions.filter((option) =>
+                    option.value.trim().toLocaleLowerCase('fr') === title);
+                const series = matches.length === 1 ? matches[0] : null;
+                seriesFields.forEach((field) => field.fill(series));
                 if (slugEditedManually)
                 {
                     return;
                 }
 
-                slugInput.value = generateSlug(slugSourceInput.value);
-            }
-        );
+                slugInput.value = series?.dataset.slug ?? generateSlug(slugSourceInput.value);
+            };
+        slugSourceInput.addEventListener('input', fillFromSeries);
+        slugSourceInput.addEventListener('change', fillFromSeries);
+        if (slugSourceInput.value !== '') fillFromSeries();
+        initSeriesSuggestions(slugSourceInput, form.querySelector('#manga-series-suggestions'), seriesOptions);
     }
 
     // --------------------------------------------------------------------------
@@ -224,6 +255,7 @@ export function initCreatePage()
                 form.reset();
 
                 slugEditedManually = false;
+                seriesFields.forEach((field) => field.reset());
 
                 if (
                     typeSourceInput

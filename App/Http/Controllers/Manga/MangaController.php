@@ -169,7 +169,10 @@ final class MangaController extends Controller
     {
         $this->title = 'Manga | Ajouter un manga';
 
-        $this->render('pages/manga/create', ['form' => $this->formViewData('manga/ajouter/manga', 'manga')]);
+        $this->render('pages/manga/create', [
+            'form' => $this->formViewData('manga/ajouter/manga', 'manga'),
+            'existingSeries' => $this->mangaReadService->seriesForCreate()
+        ]);
     }
 
     // =================================================

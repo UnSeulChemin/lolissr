@@ -1,0 +1,7 @@
+# Revalidate source modules during development. The dist directory overrides
+# this policy for immutable files whose names contain their content hash.
+<IfModule mod_headers.c>
+    <FilesMatch "\.js$">
+        Header set Cache-Control "no-cache" "expr=%{REQUEST_STATUS} == 200 || %{REQUEST_STATUS} == 304"
+    </FilesMatch>
+</IfModule>

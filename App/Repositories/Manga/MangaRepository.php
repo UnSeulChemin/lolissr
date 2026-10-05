@@ -17,6 +17,23 @@ final class MangaRepository extends AbstractRepository
 
     protected string $table = 'manga';
 
+    /** @return list<array{slug: string, livre: string, editeur: ?string, statut: string, next_numero: int}> */
+    public function seriesForCreate(): array
+    {
+        $statement = $this->db->prepare("SELECT slug, livre, editeur, statut, next_numero FROM (
+            SELECT slug, livre, editeur, statut,
+                MAX(numero) OVER (PARTITION BY slug) + 1 AS next_numero,
+                ROW_NUMBER() OVER (PARTITION BY slug ORDER BY numero, id) AS position
+            FROM {$this->readTable()}
+        ) series WHERE position = 1 ORDER BY livre, slug");
+        $statement->execute();
+        /** @var list<array{slug: string, livre: string, editeur: ?string, statut: string, next_numero: int}> $rows */
+        $rows = $statement->fetchAll(\PDO::FETCH_ASSOC);
+        return $rows;
+    }
+
+
+
     /** @return list<array{slug: string, livre: string, numero: int}> */
     public function releaseCollection(): array
     {
