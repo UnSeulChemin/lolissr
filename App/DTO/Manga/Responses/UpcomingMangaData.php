@@ -11,7 +11,7 @@ final readonly class UpcomingMangaData
         public string $date,
         public string $dateLabel,
         public string $sourceUrl,
-        public ?string $imageUrl
+        public ?string $imageUrl, public bool $isUpcoming = true
     )
     {}
 }

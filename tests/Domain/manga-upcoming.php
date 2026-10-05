@@ -26,7 +26,15 @@ try
         $entry(18, $future), $entry(16, $future), $entry(17, $future),
         $entry(19, date('Y-m-d')), $entry(20, '2099-02-30'), $entry(0, $future)
     ]]], '2' => ['rave' => ['upcoming' => [$entry(99, $future)]]]]], JSON_THROW_ON_ERROR));
-    $assert(array_column($service->forSeries('rave'), 'number') === [17, 18], 'Owned, expired, invalid or foreign releases leaked; sorting failed');
+    $assert(array_column($service->forSeries('rave'), 'number') === [19, 18, 17], 'Owned, invalid or foreign releases leaked; sorting failed');
+    $assert($service->forSeries('rave')[0]->isUpcoming === false && $service->forSeries('rave')[1]->isUpcoming === true, 'Released/future status incorrect');
+    $db->exec("DELETE FROM manga WHERE user_id = 1");
+    $db->exec("INSERT INTO manga VALUES (1, 'rave', 14), (1, 'rave', 12), (1, 'rave', 10), (1, 'rave', 8)");
+    file_put_contents($path, json_encode(['users' => ['1' => ['rave' => ['upcoming' => array_map(static fn ($n) => $entry($n, $future), [19, 13, 11, 9, 7])]]]], JSON_THROW_ON_ERROR));
+    $assert(array_column($service->forSeries('rave', 1, 2), 'number') === [19, 13], 'First-page missing volumes incorrect');
+    $assert(array_column($service->forSeries('rave', 2, 2), 'number') === [11, 9, 7], 'Later missing volumes lost or duplicated');
+    $db->exec("INSERT INTO manga VALUES (1, 'rave', 13)");
+    $assert(!in_array(13, array_column($service->forSeries('rave'), 'number'), true), 'Purchased volume remained gray before next sync');
     $assert($service->forSeries('unknown') === [], 'Unknown series leaked');
     $GLOBALS['testCurrentUser'] = null;
     $assert($service->forSeries('rave') === [], 'Anonymous access leaked');
@@ -41,4 +49,4 @@ finally
     unset($GLOBALS['testCurrentUser']);
     if (is_file($path)) unlink($path);
 }
-echo "PASS: forthcoming releases isolate owners, filter owned/expired/invalid volumes, sort and tolerate missing/corrupt snapshots.\n";
+echo "PASS: unowned releases isolate owners, distinguish released/future dates, filter owned/invalid volumes, paginate and sort and tolerate missing/corrupt snapshots.\n";

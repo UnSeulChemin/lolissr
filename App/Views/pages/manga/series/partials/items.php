@@ -27,9 +27,14 @@ $upcoming ??= [];
 
     <section class="collection-grid u-grid u-justify-center">
 
-        <?php if ($isSerieView): ?>
+        <?php
+        $items = $isSerieView ? [...$upcoming, ...$mangas] : $mangas;
+        if ($isSerieView) usort($items, static fn ($a, $b): int => ($b instanceof \App\DTO\Manga\Responses\UpcomingMangaData ? $b->number : $b->numero) <=> ($a instanceof \App\DTO\Manga\Responses\UpcomingMangaData ? $a->number : $a->numero));
+        ?>
 
-            <?php foreach ($upcoming as $release): ?>
+        <?php foreach ($items as $manga): ?>
+            <?php if ($manga instanceof \App\DTO\Manga\Responses\UpcomingMangaData): ?>
+                <?php $release = $manga; ?>
 
                 <a
                     class="card collection-card collection-card-link collection-card-upcoming u-flex u-w-full"
@@ -38,7 +43,8 @@ $upcoming ??= [];
                     rel="noopener noreferrer"
                     aria-label="<?= e('Tome ' . $release->number . ' à paraître le ' . $release->dateLabel) ?>"
                 >
-                    <span class="collection-status-badge collection-status-upcoming">À paraître</span>
+                    <span class="collection-status-badge collection-status-upcoming"><?= $release->isUpcoming ? 'À paraître' : 'Non possédé' ?></span>
+                    <time class="collection-status-badge collection-release-date" datetime="<?= e($release->date) ?>"><?= e($release->dateLabel) ?></time>
                     <div class="card-image-box-portrait u-row-center u-clip">
                         <?php if ($release->imageUrl !== null): ?>
                             <img class="card-image-portrait u-block u-w-full" src="<?= e(image_url($release->imageUrl)) ?>" alt="<?= e('Tome ' . $release->number) ?>" loading="lazy" decoding="async">
@@ -47,15 +53,13 @@ $upcoming ??= [];
                         <?php endif; ?>
                     </div>
                     <p class="collection-card-title u-block u-relative u-text-center u-clip u-bold"><?= e($mangas[0]->livre) ?></p>
-                    <p class="collection-card-subtitle u-relative u-text-center">Tome <?= $release->number ?></p>
-                    <time class="collection-release-date" datetime="<?= e($release->date) ?>"><?= e($release->dateLabel) ?></time>
+                    <p class="collection-card-subtitle u-relative u-text-center">
+                        Tome <?= $release->number ?>
+                    </p>
                 </a>
 
-            <?php endforeach; ?>
-
-        <?php endif; ?>
-
-        <?php foreach ($mangas as $manga): ?>
+                <?php continue; ?>
+            <?php endif; ?>
 
             <?php
 

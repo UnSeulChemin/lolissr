@@ -1,7 +1,6 @@
 .collection-card-upcoming
 {
     background: var(--color-surface);
-    border: 1px dashed #a0a0a0;
     color: #666;
 }
 
@@ -25,11 +24,14 @@
     color: #555;
 }
 
-.collection-release-date
+.collection-status-badge.collection-release-date
 {
-    margin-top: 8px;
-    color: #666;
-    font-weight: 600;
+    top: var(--offset-card-corner);
+    right: var(--offset-card-corner);
+    left: auto;
+    background: #e5e5e5;
+    color: #555;
+    white-space: nowrap;
 }
 
 /* =================================================
@@ -38,6 +40,7 @@
 
 .collection-grid
 {
+    align-items: start;
     grid-template-columns: repeat( 4, minmax( 0, var(--width-collection-card) ) );
     gap: var(--gap-grid-collection);
     max-width: 1320px;
@@ -447,6 +450,11 @@
     transform: scale(1.08) rotate(-3deg);
 }
 
+.collection-card-link:focus-visible .collection-status-badge.collection-release-date
+{
+    transform: scale(1.08) rotate(3deg);
+}
+
 @media (hover: hover) and (pointer: fine)
 {
     .collection-card-link:hover
@@ -478,6 +486,11 @@
     .collection-card-link:hover .collection-status-badge
     {
         transform: scale(1.08) rotate(-3deg);
+    }
+
+    .collection-card-link:hover .collection-status-badge.collection-release-date
+    {
+        transform: scale(1.08) rotate(3deg);
     }
 
     .collection-card-link:hover .collection-read-badge

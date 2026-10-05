@@ -90,7 +90,7 @@ try
             {
                 $date = $volume['release_date'] ?? null;
                 $number = $volume['number'] ?? null;
-                if ($volume['edition_id'] !== $editionId || !is_string($date) || $date <= date('Y-m-d') ||
+                if ($volume['edition_id'] !== $editionId || !is_string($date) || $date === '' ||
                     !is_int($number) || $number < 1 || in_array($number, $collection['owned'], true)) continue;
                 $upcoming[] = ['id' => $volume['id'], 'number' => $number, 'release_date' => $date, 'isbn' => $volume['isbn'] ?? null];
                 try
@@ -100,7 +100,7 @@ try
             }
             $catalog['users'][$owner][$slug] = ['edition_id' => $editionId, 'edition_title' => $edition['title'] ?? null,
                 'checked_at' => date(DATE_ATOM), 'upcoming' => $upcoming];
-            echo $slug . ': ' . count($upcoming) . ' upcoming (' . ($edition['title'] ?? 'Standard') . ')' . PHP_EOL;
+            echo $slug . ': ' . count($upcoming) . ' unowned (' . ($edition['title'] ?? 'Standard') . ')' . PHP_EOL;
         }
         catch (Throwable $error)
         {

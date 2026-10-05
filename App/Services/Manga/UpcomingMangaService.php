@@ -14,7 +14,7 @@ final class UpcomingMangaService
     {}
 
     /** @return list<UpcomingMangaData> */
-    public function forSeries(string $slug): array
+    public function forSeries(string $slug, int $page = 1, ?int $perPage = null): array
     {
         $path = $this->catalogPath ?? base_path('storage/manga-releases.json');
         $owner = user();
@@ -30,25 +30,34 @@ final class UpcomingMangaService
         $entries = $series[$slug]['upcoming'] ?? [];
         if (!is_array($entries)) return [];
         $owned = $entries === [] ? [] : $this->repository->ownedNumbers($slug);
+        $upper = PHP_INT_MAX;
+        $lower = 0;
+        if ($perPage !== null && $perPage > 0)
+        {
+            rsort($owned, SORT_NUMERIC);
+            $offset = (max(1, $page) - 1) * $perPage;
+            $upper = $offset > 0 ? ($owned[$offset - 1] ?? 0) : PHP_INT_MAX;
+            $lower = count($owned) > $offset + $perPage ? ($owned[$offset + $perPage - 1] ?? 0) : 0;
+        }
         $result = [];
-        foreach (array_slice($entries, 0, 24) as $entry)
+        foreach (array_slice($entries, 0, 500) as $entry)
         {
             if (!is_array($entry)) continue;
             $number = $entry['number'] ?? null;
             $date = $entry['release_date'] ?? null;
             $id = $entry['id'] ?? null;
-            if (!is_int($number) || $number < 1 || in_array($number, $owned, true) || !is_string($date) || !is_string($id)) continue;
+            if (!is_int($number) || $number < 1 || $number >= $upper || $number < $lower || in_array($number, $owned, true) || !is_string($date) || !is_string($id)) continue;
             if (preg_match('/^[a-f0-9-]{36}$/D', $id) !== 1) continue;
             $parsed = \DateTimeImmutable::createFromFormat('!Y-m-d', $date);
-            if ($parsed === false || $parsed->format('Y-m-d') !== $date || $date <= date('Y-m-d')) continue;
+            if ($parsed === false || $parsed->format('Y-m-d') !== $date) continue;
             $image = 'images/manga/upcoming/' . $id . '.jpg';
             $result[] = new UpcomingMangaData(
                 $number, $date, $parsed->format('d/m/Y'),
                 'https://www.mangacollec.com/volumes/' . $id,
-                is_file(base_path('public/' . $image)) ? ApplicationConfig::baseUri() . $image : null
+                is_file(base_path('public/' . $image)) ? ApplicationConfig::baseUri() . $image : null, $date > date('Y-m-d')
             );
         }
-        usort($result, static fn (UpcomingMangaData $a, UpcomingMangaData $b): int => [$a->date, $a->number] <=> [$b->date, $b->number]);
+        usort($result, static fn (UpcomingMangaData $a, UpcomingMangaData $b): int => [$b->number, $b->date] <=> [$a->number, $a->date]);
         return $result;
     }
 }

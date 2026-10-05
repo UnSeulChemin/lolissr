@@ -130,7 +130,7 @@ final class MangaController extends Controller
                 'perPage' => $data->perPage,
                 'slugFilter' => $data->slugFilter,
                 'totalPages' => $data->totalPages,
-                'upcoming' => $page === 1 ? $this->upcomingMangaService->forSeries($slug) : []
+                'upcoming' => $this->upcomingMangaService->forSeries($slug, $page, $data->perPage)
             ]
         );
     }
