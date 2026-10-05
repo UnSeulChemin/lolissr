@@ -13,8 +13,34 @@ final class UpcomingMangaService
     /** @var array<string, list<int>> */
     private array $collectionNumbers = [];
 
+    /** @var array<string, mixed>|null */
+    private ?array $catalog = null;
+
     /** @return list<UpcomingMangaData> */
     public function all(): array
+    {
+        $result = iterator_to_array($this->collectionReleases(), false);
+        usort($result, static fn (UpcomingMangaData $a, UpcomingMangaData $b): int => [$a->date, $a->title, $a->number] <=> [$b->date, $b->title, $b->number]);
+        return $result;
+    }
+
+    /** @return array{upcomingCount: int, missingCount: int, nextRelease: ?UpcomingMangaData} */
+    public function summary(): array
+    {
+        $upcoming = 0;
+        $missing = 0;
+        $next = null;
+        foreach ($this->collectionReleases() as $release)
+        {
+            if (!$release->isUpcoming) { $missing++; continue; }
+            $upcoming++;
+            if ($next === null || [$release->date, $release->title, $release->number] < [$next->date, $next->title, $next->number]) $next = $release;
+        }
+        return ['upcomingCount' => $upcoming, 'missingCount' => $missing, 'nextRelease' => $next];
+    }
+
+    /** @return \Generator<int, UpcomingMangaData> */
+    private function collectionReleases(): \Generator
     {
         $titles = [];
         $this->collectionNumbers = [];
@@ -23,19 +49,32 @@ final class UpcomingMangaService
             $titles[$row['slug']] = $row['livre'];
             $this->collectionNumbers[$row['slug']][] = $row['numero'];
         }
-        $result = [];
-        foreach ($titles as $slug => $title)
-            foreach ($this->forSeries($slug) as $release)
-                $result[] = new UpcomingMangaData($release->number, $release->date, $release->dateLabel, $release->sourceUrl, $release->imageUrl, $release->isUpcoming, $slug, $title);
-        usort($result, static fn (UpcomingMangaData $a, UpcomingMangaData $b): int => [$a->date, $a->title, $a->number] <=> [$b->date, $b->title, $b->number]);
-        $this->collectionNumbers = [];
-        return $result;
+        $this->catalog = $this->loadCatalog();
+        try
+        {
+            foreach ($titles as $slug => $title)
+                foreach ($this->seriesEntries($slug) as $release)
+                    yield new UpcomingMangaData($release->number, $release->date, $release->dateLabel, $release->sourceUrl, $release->imageUrl, $release->isUpcoming, $slug, $title);
+        }
+        finally
+        {
+            $this->collectionNumbers = [];
+            $this->catalog = null;
+        }
     }
     public function __construct(private readonly \App\Repositories\Manga\MangaRepository $repository, private readonly ?string $catalogPath = null)
     {}
 
     /** @return list<UpcomingMangaData> */
     public function forSeries(string $slug, int $page = 1, ?int $perPage = null): array
+    {
+        $result = iterator_to_array($this->seriesEntries($slug, $page, $perPage), false);
+        usort($result, static fn (UpcomingMangaData $a, UpcomingMangaData $b): int => [$b->number, $b->date] <=> [$a->number, $a->date]);
+        return $result;
+    }
+
+    /** @return array<string, mixed> */
+    private function loadCatalog(): array
     {
         $path = $this->catalogPath ?? base_path('storage/manga-releases.json');
         $owner = user();
@@ -48,8 +87,15 @@ final class UpcomingMangaService
         if (!is_array($users)) return [];
         $series = $users[(string) $owner->id] ?? null;
         if (!is_array($series)) return [];
+        return $series;
+    }
+
+    /** @return \Generator<int, UpcomingMangaData> */
+    private function seriesEntries(string $slug, int $page = 1, ?int $perPage = null): \Generator
+    {
+        $series = $this->catalog ?? $this->loadCatalog();
         $entries = $series[$slug]['upcoming'] ?? [];
-        if (!is_array($entries)) return [];
+        if (!is_array($entries)) return;
         $owned = $entries === [] ? [] : ($this->collectionNumbers[$slug] ?? $this->repository->ownedNumbers($slug));
         $upper = PHP_INT_MAX;
         $lower = 0;
@@ -60,7 +106,6 @@ final class UpcomingMangaService
             $upper = $offset > 0 ? ($owned[$offset - 1] ?? 0) : PHP_INT_MAX;
             $lower = count($owned) > $offset + $perPage ? ($owned[$offset + $perPage - 1] ?? 0) : 0;
         }
-        $result = [];
         foreach (array_slice($entries, 0, 500) as $entry)
         {
             if (!is_array($entry)) continue;
@@ -72,13 +117,11 @@ final class UpcomingMangaService
             $parsed = \DateTimeImmutable::createFromFormat('!Y-m-d', $date);
             if ($parsed === false || $parsed->format('Y-m-d') !== $date) continue;
             $image = 'images/manga/upcoming/' . $id . '.jpg';
-            $result[] = new UpcomingMangaData(
+            yield new UpcomingMangaData(
                 $number, $date, $parsed->format('d/m/Y'),
                 'https://www.mangacollec.com/volumes/' . $id,
                 is_file(base_path('public/' . $image)) ? ApplicationConfig::baseUri() . $image : null, $date > date('Y-m-d')
             );
         }
-        usort($result, static fn (UpcomingMangaData $a, UpcomingMangaData $b): int => [$b->number, $b->date] <=> [$a->number, $a->date]);
-        return $result;
     }
 }

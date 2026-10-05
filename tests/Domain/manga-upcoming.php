@@ -29,6 +29,8 @@ try
     ]]], '2' => ['rave' => ['upcoming' => [$entry(99, $future)]]]]], JSON_THROW_ON_ERROR));
     $assert(array_column($service->forSeries('rave'), 'number') === [19, 18, 17], 'Owned, invalid or foreign releases leaked; sorting failed');
     $all = $service->all();
+    $summary = $service->summary();
+    $assert($summary['upcomingCount'] === 2 && $summary['missingCount'] === 1 && $summary['nextRelease'] == $all[1], 'Dashboard summary differs from sorted releases');
     $assert(count($all) === 3 && $all[0]->number === 19 && $all[0]->slug === 'rave' && $all[0]->title === 'Rave', 'Global release list lost title, ordering or owner isolation');
     $assert($service->forSeries('rave')[0]->isUpcoming === false && $service->forSeries('rave')[1]->isUpcoming === true, 'Released/future status incorrect');
     $db->exec("DELETE FROM manga WHERE user_id = 1");
@@ -39,11 +41,20 @@ try
     $db->exec("INSERT INTO manga (user_id, slug, numero) VALUES (1, 'rave', 13)");
     $assert(!in_array(13, array_column($service->forSeries('rave'), 'number'), true), 'Purchased volume remained gray before next sync');
     $assert($service->forSeries('unknown') === [], 'Unknown series leaked');
+    $db->exec("INSERT INTO manga (user_id, slug, numero, livre) VALUES (1, 'alpha', 1, 'Alpha')");
+    file_put_contents($path, json_encode(['users' => ['1' => [
+        'rave' => ['upcoming' => [$entry(18, $future), $entry(17, $future)]],
+        'alpha' => ['upcoming' => [$entry(3, $future), $entry(2, $future)]]
+    ]]], JSON_THROW_ON_ERROR));
+    $all = $service->all();
+    $summary = $service->summary();
+    $assert($summary['upcomingCount'] === 4 && $summary['missingCount'] === 0 && $summary['nextRelease'] == $all[0] && $summary['nextRelease']->number === 2 && $summary['nextRelease']->title === 'Alpha', 'Summary lost title/number tie-breaking or refreshed snapshot');
     $GLOBALS['testCurrentUser'] = null;
     $assert($service->forSeries('rave') === [], 'Anonymous access leaked');
     unset($GLOBALS['testCurrentUser']);
     file_put_contents($path, '{');
     $assert($service->forSeries('rave') === [], 'Corrupt snapshot broke the page');
+    $assert($service->summary() === ['upcomingCount' => 0, 'missingCount' => 0, 'nextRelease' => null], 'Corrupt snapshot broke dashboard summary');
     unlink($path);
     $assert($service->forSeries('rave') === [], 'Missing snapshot broke the page');
 }

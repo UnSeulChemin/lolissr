@@ -23,8 +23,7 @@ final class HomeController extends Controller
     {
         $this->title = 'Accueil';
 
-        $releases = $this->releases->all();
-        $future = array_values(array_filter($releases, static fn ($release): bool => $release->isUpcoming));
-        $this->render('pages/home/index', ['stats' => $this->dashboardCache->get(), 'releaseUpcomingCount' => count($future), 'releaseMissingCount' => count($releases) - count($future), 'nextRelease' => $future[0] ?? null]);
+        $releases = $this->releases->summary();
+        $this->render('pages/home/index', ['stats' => $this->dashboardCache->get(), 'releaseUpcomingCount' => $releases['upcomingCount'], 'releaseMissingCount' => $releases['missingCount'], 'nextRelease' => $releases['nextRelease']]);
     }
 }

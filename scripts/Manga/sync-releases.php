@@ -37,6 +37,14 @@ try
         $value = transliterator_transliterate('Any-Latin; Latin-ASCII', $value);
         return preg_replace('/[^a-z0-9]+/', '', $value);
     };
+    $seriesByTitle = [];
+    $normalizedSeries = [];
+    foreach ($index['series'] ?? [] as $series)
+    {
+        $normalizedTitle = $normalize($series['title']);
+        $seriesByTitle[$normalizedTitle][] = $series;
+        $normalizedSeries[] = ['title' => $normalizedTitle, 'series' => $series];
+    }
     $errors = 0;
     foreach ($collections as $collection)
     {
@@ -57,12 +65,12 @@ try
             else
             {
                 $title = $settings['aliases'][$slug] ?? $row['livre'];
-                $matches = array_values(array_filter($index['series'] ?? [], static fn ($series) => $normalize($series['title']) === $normalize($title)));
+                $matches = $seriesByTitle[$normalize($title)] ?? [];
                 if (count($matches) !== 1)
                 {
                     $words = explode(' ', $title);
                     $hint = $normalize(implode(' ', array_slice($words, 0, 2)));
-                    $near = array_values(array_filter($index['series'] ?? [], static fn ($series) => str_starts_with($normalize($series['title']), $hint)));
+                    $near = array_column(array_filter($normalizedSeries, static fn ($candidate) => str_starts_with($candidate['title'], $hint)), 'series');
                     throw new RuntimeException('Series match needs configuration [' . implode(', ', array_column($near, 'title')) . ']');
                 }
                 $detail = $client->get('/series/' . rawurlencode($matches[0]['id']));
