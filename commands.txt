@@ -60,38 +60,28 @@ composer check:all
 composer check
 
 
-
-
-
-
 =========================================
 IMAGES
 =========================================
 
-= Uploads par formulaire et scripts : empreintes actualisees automatiquement
+!! Uploads par formulaire : empreintes actualisees automatiquement
 
-= Optimiser les profils, migrer leurs extensions et actualiser les manifestes
+= Apres ajout, remplacement ou suppression manuelle d'images dans les dossiers
+= Optimise les profils et miniatures, migre les extensions des profils et genere les variantes .grid
+= Actualise le manifeste des profils et les empreintes de toutes les images
 composer images:build
 
-= Apres ajout, remplacement ou suppression MANUELLE d'une image de profil
-= Actualise la version globale et les empreintes individuelles de toutes les images
-composer images:manifest
+= Verifier les miniatures sans modifier les fichiers
+composer images:check
 
-= Apres remplacement MANUEL d'autres images, variantes .grid comprises
-= Reconstruction requise meme si la taille et les dates sont conservees
-composer images:fingerprints
 
-= Auditer les miniatures sans modification
-composer images:optimize
 
-= Optimiser avec sauvegarde et generer les variantes .grid
-composer images:optimize -- --apply
 
-= Generer uniquement les variantes .grid de 600 px
-composer images:variants -- --apply
 
-= Sauvegardes des originaux
-storage/backups/images/
+
+
+
+
 
 
 =========================================
