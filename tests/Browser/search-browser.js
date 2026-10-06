@@ -102,7 +102,32 @@ export async function runBrowserScenario()
         check(requests === 2, 'Mutation reused stale search');
         input.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown', bubbles: true, cancelable: true}));
         check(form.querySelector('.search-result-item').classList.contains('is-active'), 'Keyboard navigation failed');
-        return ['search cache reuse, expiry and bound', 'invalidated and aborted responses rejected', 'lazy renderer and single initialization', 'delegated hover and keyboard navigation', 'mutation invalidates search data and displayed results'];
+        const dropdown = form.querySelector('.js-header-search-dropdown');
+        window.fetch = async () =>
+        { throw new TypeError('Network unavailable'); };
+        input.value = 'failed-query';
+        form.dispatchEvent(new Event('submit', {cancelable: true}));
+        await until(() => !form.querySelector('.search-result-item'));
+        check(input.value === 'failed-query' && !dropdown.classList.contains('has-results'),
+            'Failed search left stale results or cleared the query');
+
+        let rejectOlder;
+        window.fetch = () => new Promise((resolve, reject) =>
+        { rejectOlder = reject; });
+        input.value = 'older-query';
+        form.dispatchEvent(new Event('submit', {cancelable: true}));
+        await until(() => rejectOlder);
+        window.fetch = async () => new Response(JSON.stringify({success: true, data: {
+            figurines: [{slug: 'newer-result', numero: 1, waifu: 'Newer', origin: 'Test'}]
+        }}), {headers: {'Content-Type': 'application/json'}});
+        input.value = 'failed-query';
+        form.dispatchEvent(new Event('submit', {cancelable: true}));
+        await until(() => form.querySelector('.search-result-item')?.href.includes('newer-result'));
+        rejectOlder(new TypeError('Late network failure'));
+        await new Promise(resolve => setTimeout(resolve, 50));
+        check(form.querySelector('.search-result-item')?.href.includes('newer-result')
+            && dropdown.classList.contains('has-results'), 'Older failure cleared newer results');
+        return ['search cache reuse, expiry and bound', 'invalidated and aborted responses rejected', 'lazy renderer and single initialization', 'delegated hover and keyboard navigation', 'mutation invalidates search data and displayed results', 'failure clears stale results and permits retry', 'late failure preserves newer results'];
     }
     finally
     {

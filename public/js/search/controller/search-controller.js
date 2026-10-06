@@ -198,12 +198,12 @@ async function handleSearch(search, searchInput, searchResults, searchDropdown)
 
     } catch (error)
     {
-        if (version === searchVersion) lastQuery = null;
+        if (version !== searchVersion || error?.name === 'AbortError') return;
 
-        if (error?.name === 'AbortError')
-        {
-            return;
-        }
+        lastQuery = null;
+        activeIndex = -1;
+        clearSearchResults(searchResults);
+        closeDropdown(searchDropdown);
     }
 }
 
