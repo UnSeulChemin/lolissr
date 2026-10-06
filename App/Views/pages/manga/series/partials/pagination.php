@@ -10,7 +10,8 @@ use App\DTO\Common\Responses\ViewData;
 /** @var string $paginationPath */
 
 ?>
-<?php if ($totalPages > 1): ?>
+<?php $showHiddenLink = isset($recommendationMode) && (in_array($paginationPath, ['manga/series/recommandations', 'manga/series/recommandations-auteurs'], true) || $recommendationMode === 'hidden'); ?>
+<?php if ($totalPages > 1 || $showHiddenLink): ?>
     <nav class="collection-pagination-wrapper u-row-center" aria-label="Pagination">
         <?php for ($i = 1; $i <= $totalPages; $i++): ?>
             <a
@@ -20,5 +21,8 @@ use App\DTO\Common\Responses\ViewData;
                 href="<?= e($view->baseUri . $paginationPath) ?>/page/<?= $i ?>"
             ><?= $i ?></a>
         <?php endfor; ?>
+        <?php if ($showHiddenLink): ?>
+            <a class="collection-pagination-link collection-pagination-icon" data-prefetch href="<?= e($view->baseUri . 'manga/series/' . ($recommendationMode === 'hidden' ? 'recommandations' : 'recommandations-masquees')) ?>" title="<?= $recommendationMode === 'hidden' ? 'Retour aux recommandations' : 'Suggestions masquées' ?>" aria-label="<?= $recommendationMode === 'hidden' ? 'Retour aux recommandations' : 'Suggestions masquées' ?>"><?= $recommendationMode === 'hidden' ? '↩' : '🙈' ?></a>
+        <?php endif; ?>
     </nav>
 <?php endif; ?>

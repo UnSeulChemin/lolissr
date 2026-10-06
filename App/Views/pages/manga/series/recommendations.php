@@ -11,7 +11,7 @@ declare(strict_types=1);
 ?>
 <section class="layout-container dashboard-page">
     <?php if ($recommendations === []): ?>
-        <?php if ($recommendationMode !== 'favorites'): ?>
+        <?php if (!in_array($recommendationMode, ['favorites', 'hidden'], true)): ?>
             <p class="collection-empty">Pas encore de suggestions disponibles pour ta collection.</p>
         <?php endif; ?>
     <?php else: ?>
@@ -40,6 +40,7 @@ declare(strict_types=1);
                         <?php endif; ?>
                     </div>
                     <p class="collection-card-title u-block u-relative u-text-center u-clip u-bold"><?= e($recommendation['title']) ?></p>
+                    <?php if ($recommendationMode !== 'hidden'): ?>
                     <p class="collection-card-subtitle u-relative u-text-center"><?= $recommendation['score'] ?> points<br>
                         <?php if ($recommendation['volumeCount'] !== null): ?>
                             <span title="<?= e('Édition : ' . ($recommendation['edition'] ?? 'Standard')) ?>"><?= $recommendation['volumeCount'] ?> tomes</span><br>
@@ -48,9 +49,16 @@ declare(strict_types=1);
                             Début : <?= e($recommendation['firstRelease']) ?>
                         <?php endif; ?>
                     </p>
+                    <?php endif; ?>
                     </a>
                 </div>
                 <?php $isFavorite = in_array($recommendation['id'], $favoriteIds, true); ?>
+                <?php if ($recommendationMode === 'hidden'): ?>
+                <form class="js-restore-recommendation" method="post" action="<?= e($view->baseUri . 'manga/series/recommandations/' . $recommendation['id'] . '/retablir') ?>">
+                    <?= csrf_field() ?>
+                    <button class="form-submit u-inline-center u-pointer u-semibold u-w-full" type="submit">Rétablir cette suggestion</button>
+                </form>
+                <?php else: ?>
                 <form class="js-favorite-recommendation" data-favorites-page="<?= $recommendationMode === 'favorites' ? 'true' : 'false' ?>" method="post" action="<?= e($view->baseUri . 'manga/series/recommandations/' . $recommendation['id'] . '/favoris' . ($isFavorite ? '/retirer' : '')) ?>">
                     <?= csrf_field() ?>
                     <button class="form-submit u-inline-center u-pointer u-semibold u-w-full" type="submit" aria-pressed="<?= $isFavorite ? 'true' : 'false' ?>"><?= $isFavorite ? '♥ Retirer des favoris' : '♡ Ajouter aux favoris' ?></button>
@@ -60,6 +68,7 @@ declare(strict_types=1);
                     <?= csrf_field() ?>
                     <button class="form-submit u-inline-center u-pointer u-semibold u-w-full" type="submit">Masquer cette suggestion</button>
                 </form>
+                <?php endif; ?>
                 <?php endif; ?>
                 </div>
             <?php endforeach; ?>

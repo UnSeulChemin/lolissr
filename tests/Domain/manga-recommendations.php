@@ -46,6 +46,9 @@ try
     $assert($service->hide($id(1))->success && $service->all() === [], 'Hidden suggestion remained visible');
     $assert(count($service->favorites()) === 1, 'Hiding a suggestion removed its favorite');
     $assert((new MangaRecommendationService(new MangaRepository($db), $path, $hidden))->hidden() === [$id(1)], 'Hidden preferences did not persist');
+    $assert($service->hiddenSuggestions()[0]['title'] === 'Suggestion', 'Hidden list lost its catalog title');
+    $assert($service->hide($id(1), false)->success && $service->hidden() === [] && count($service->all()) === 1, 'Restore did not return the suggestion to recommendations');
+    $assert(count($service->favorites()) === 1, 'Restore changed favorites');
     file_put_contents($hidden, '[]');
     $authorCatalog = ['series' => $series, 'kinds' => [], 'authors' => [
         ['title' => 'Auteur partagé', 'series_ids' => [$id(0), $id(1)]],

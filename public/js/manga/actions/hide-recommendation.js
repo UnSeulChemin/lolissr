@@ -11,19 +11,20 @@ export function initHideRecommendation()
     document.addEventListener('submit', async event =>
     {
         const form = event.target;
-        if (!(form instanceof HTMLFormElement) || !form.matches('.js-favorite-recommendation')) return;
+        if (!(form instanceof HTMLFormElement) || !form.matches('.js-favorite-recommendation, .js-restore-recommendation')) return;
         event.preventDefault();
         const button = form.querySelector('button[type="submit"]');
         if (!button || button.disabled) return;
         button.disabled = true;
         const removing = form.action.endsWith('/retirer');
+        const restoring = form.matches('.js-restore-recommendation');
         try
         {
             const response = await post(form.action, {}, { signal: controller.signal });
             if (response?.success !== true) throw new Error(response?.message || 'Impossible de modifier les favoris');
             invalidateMangaPages();
             if (controller.signal.aborted || !form.isConnected) return;
-            if (removing && form.dataset.favoritesPage === 'true')
+            if (restoring || (removing && form.dataset.favoritesPage === 'true'))
             {
                 const grid = form.closest('.collection-grid');
                 form.closest('.collection-release-item')?.remove();

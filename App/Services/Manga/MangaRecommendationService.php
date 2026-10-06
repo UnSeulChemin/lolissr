@@ -232,7 +232,34 @@ final class MangaRecommendationService
         return $result;
     }
 
-    public function hide(string $id): \App\DTO\Common\ServiceResult
+    /** @return list<array{id: string, title: string, reason: string, imageUrl: ?string, score: int, volumeCount: ?int, firstRelease: ?string, edition: ?string, categories: list<array{title: string, points: int}>}> */
+    public function hiddenSuggestions(): array
+    {
+        $ids = $this->hidden();
+        if ($ids === []) return [];
+        $path = $this->catalogPath ?? base_path('storage/manga-recommendations.json');
+        $contents = is_file($path) ? @file_get_contents($path) : false;
+        $catalog = $contents === false ? [] : json_decode($contents, true);
+        $catalog = is_array($catalog) ? $catalog : [];
+        $series = is_array($catalog['series'] ?? null) ? $catalog['series'] : [];
+        $titles = [];
+        foreach ($series as $entry)
+            if (is_array($entry) && is_string($entry['id'] ?? null) && is_string($entry['title'] ?? null)) $titles[$entry['id']] = $entry['title'];
+        $covers = is_array($catalog['covers'] ?? null) ? $catalog['covers'] : [];
+        $result = [];
+        foreach ($ids as $id)
+        {
+            if (preg_match('/^[a-f0-9-]{36}$/D', $id) !== 1) continue;
+            $cover = $covers[$id] ?? null;
+            $image = is_string($cover) && preg_match('/^[a-f0-9-]{36}$/D', $cover) === 1 ? 'images/manga/upcoming/' . $cover . '.jpg' : null;
+            $result[] = ['id' => $id, 'title' => $titles[$id] ?? 'Série indisponible dans le catalogue', 'reason' => 'Suggestion masquée',
+                'imageUrl' => $image !== null && is_file(base_path('public/' . $image)) ? \Framework\Config\ApplicationConfig::baseUri() . $image : null,
+                'score' => 0, 'volumeCount' => null, 'firstRelease' => null, 'edition' => null, 'categories' => []];
+        }
+        return $result;
+    }
+
+    public function hide(string $id, bool $hide = true): \App\DTO\Common\ServiceResult
     {
         $owner = user();
         if ($owner === null) return \App\DTO\Common\ServiceResult::error('Connexion requise', status: 401);
@@ -244,7 +271,7 @@ final class MangaRecommendationService
         try
         {
             if (!flock($lock, LOCK_EX)) throw new \RuntimeException('Cannot lock recommendations');
-            $ids = array_values(array_unique([...$this->hidden(), $id]));
+            $ids = $hide ? array_values(array_unique([...$this->hidden(), $id])) : array_values(array_diff($this->hidden(), [$id]));
             $temporary = tempnam(dirname($path), '.build-');
             if ($temporary === false) throw new \RuntimeException('Cannot stage recommendations');
             $json = json_encode($ids, JSON_THROW_ON_ERROR);
@@ -257,6 +284,6 @@ final class MangaRecommendationService
             flock($lock, LOCK_UN);
             fclose($lock);
         }
-        return \App\DTO\Common\ServiceResult::success('Suggestion masquée');
+        return \App\DTO\Common\ServiceResult::success($hide ? 'Suggestion masquée' : 'Suggestion rétablie');
     }
 }

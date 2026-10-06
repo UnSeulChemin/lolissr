@@ -351,6 +351,12 @@
         border-color var(--transition-fast);
 }
 
+.collection-pagination-icon
+{
+    width: 44px;
+    padding: 0;
+}
+
 .collection-pagination-link:not(.active):hover,
 .collection-pagination-link:not(.active):focus-visible
 {

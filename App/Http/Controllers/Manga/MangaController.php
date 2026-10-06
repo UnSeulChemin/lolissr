@@ -44,6 +44,17 @@ final class MangaController extends Controller
     public function favoriteRecommendations(int $page = 1): never
     { $this->recommendationPage('favorites', $page); }
 
+    public function hiddenRecommendations(int $page = 1): never
+    { $this->recommendationPage('hidden', $page); }
+
+    public function restoreRecommendation(string $id): never
+    {
+        $result = $this->recommendationService->hide($id, false);
+        if ($this->expectsJson()) $this->jsonResult($result);
+        if (!$result->success) $this->redirectWithError('manga/series/recommandations-masquees', $result->message, false);
+        $this->redirectWithSuccess('manga/series/recommandations-masquees', $result->message);
+    }
+
     public function saveFavoriteRecommendation(string $id): never
     { $this->favoriteResult($id, true); }
 
@@ -60,7 +71,12 @@ final class MangaController extends Controller
 
     private function recommendationPage(string $mode, int $page, string $author = ''): never
     {
-        $items = $mode === 'favorites' ? $this->recommendationService->favorites() : $this->recommendationService->all($mode);
+        $items = match ($mode)
+        {
+            'favorites' => $this->recommendationService->favorites(),
+            'hidden' => $this->recommendationService->hiddenSuggestions(),
+            default => $this->recommendationService->all($mode)
+        };
         if ($mode === 'categories') $author = mb_strtolower($author);
         else $author = \Framework\Support\Strings::asciiSlug($author);
         if ($author !== '')
@@ -71,11 +87,12 @@ final class MangaController extends Controller
         $offset = ($page - 1) * $perPage;
         $this->title = $mode === 'authors' ? 'Manga | Mêmes auteurs' : 'Manga | Recommandations';
         if ($mode === 'favorites') $this->title = 'Manga | Favoris';
+        if ($mode === 'hidden') $this->title = 'Manga | Suggestions masquées';
         $this->render('pages/manga/series/recommendations', ['recommendations' => array_slice($items, $offset, $perPage),
             'currentPage' => $page, 'totalPages' => $totalPages, 'rankOffset' => $offset,
             'recommendationMode' => $mode,
             'favoriteIds' => array_column($this->recommendationService->favorites(), 'id'),
-            'paginationPath' => 'manga/series/' . ($mode === 'favorites' ? 'favoris' : ($mode === 'authors' ? 'recommandations-auteurs' : 'recommandations')) . ($author !== '' ? ($mode === 'authors' ? '/auteur/' : '/categorie/') . rawurlencode($author) : '')]);
+            'paginationPath' => 'manga/series/' . ($mode === 'hidden' ? 'recommandations-masquees' : ($mode === 'favorites' ? 'favoris' : ($mode === 'authors' ? 'recommandations-auteurs' : 'recommandations'))) . ($author !== '' ? ($mode === 'authors' ? '/auteur/' : '/categorie/') . rawurlencode($author) : '')]);
     }
 
     public function forthcoming(int $page = 1): never

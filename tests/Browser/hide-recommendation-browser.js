@@ -54,9 +54,17 @@ export async function runBrowserScenario()
         complete(new Response(JSON.stringify({success: true, message: 'Removed'}), {headers: {'Content-Type': 'application/json'}}));
         await tick(); await tick();
         check(!grid.isConnected, 'Favorite removal did not empty wishlist');
+        document.body.append(grid);
+        grid.innerHTML = '<div class="collection-release-item"><form class="js-restore-recommendation"><button type="submit">Rétablir</button></form></div>';
+        const restore = grid.querySelector('form');
+        submit(restore); submit(restore);
+        check(requests === 5, 'Restore sent duplicate requests');
+        complete(new Response(JSON.stringify({success: true, message: 'Restored'}), {headers: {'Content-Type': 'application/json'}}));
+        await tick(); await tick();
+        check(!grid.isConnected, 'Restore did not remove the hidden card');
         runCleanup();
         submit(second);
-        check(requests === 4, 'SPA cleanup left a live submit handler');
+        check(requests === 5, 'SPA cleanup left a live submit handler');
         return ['one AJAX request', 'card removal and ranking', 'error preserves card', 'favorite add and duplicate prevention', 'favorite removal and empty wishlist', 'SPA cleanup'];
     }
     finally
