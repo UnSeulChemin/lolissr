@@ -31,11 +31,11 @@ composer install
 = Diagnostic de configuration, services et assets
 composer doctor
 
-
-
-
 = Compiler CSS / JavaScript et actualiser leurs versions
 composer assets:build
+
+
+
 
 = Appliquer le formatage PHP / JavaScript / CSS
 composer dx
