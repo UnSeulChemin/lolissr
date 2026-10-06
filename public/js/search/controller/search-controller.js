@@ -15,7 +15,15 @@ import { normalizeSearchQuery } from '../utils/search-utils.js';
 
 import { openSearchDropdown, closeSearchDropdown, clearSearchResults } from '../ui/search-dropdown.js';
 
-import { renderResults } from '../renderers/results-renderer.js';
+let rendererPromise;
+function loadRenderer()
+{
+    return rendererPromise ??= import('../renderers/results-renderer.js').catch(error =>
+    {
+        rendererPromise = undefined;
+        throw error;
+    });
+}
 
 import { updateActiveResult } from './search-keyboard.js';
 
@@ -60,6 +68,23 @@ export function initSearchController()
     }
 
     search.dataset.initialized = 'true';
+    document.addEventListener('search:invalidate', () => resetSearch(searchInput, searchResults, searchDropdown));
+    searchResults.addEventListener('mouseover', event =>
+    {
+        const item = event.target.closest('.search-result-item');
+        if (!item || !searchResults.contains(item) || item.contains(event.relatedTarget)) return;
+        activeIndex = Number(item.dataset.index);
+        updateActiveResult(searchResults, activeIndex);
+    });
+    searchResults.addEventListener('click', event =>
+    {
+        const item = event.target.closest('.search-result-item');
+        if (!item || !searchResults.contains(item) || event.button !== 0
+            || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        resetSearch(searchInput, searchResults, searchDropdown);
+        void navigateTo(item.href);
+    });
 
     searchInput.addEventListener(
         'input',
@@ -143,8 +168,11 @@ async function handleSearch(search, searchInput, searchResults, searchDropdown)
         const basePath = search.dataset.basePath
             ?? '/';
 
-        const {mangas = [], artbooks = [], chinois = [], figurines = [], nendoroids = [], peluches = []} =
-            await fetchSearchResults(`${basePath}recherche?q=${encodeURIComponent(query)}`, abortController.signal);
+        const [data, {renderResults}] = await Promise.all([
+            fetchSearchResults(`${basePath}recherche?q=${encodeURIComponent(query)}`, abortController.signal),
+            loadRenderer()
+        ]);
+        const {mangas = [], artbooks = [], chinois = [], figurines = [], nendoroids = [], peluches = []} = data;
         const shortcuts = findSearchShortcuts(query);
         if (version !== searchVersion || searchInput.value !== rawValue) return;
 
@@ -184,24 +212,6 @@ async function handleSearch(search, searchInput, searchResults, searchDropdown)
 function setupResultItem(item, index, searchInput, searchResults, searchDropdown)
 {
     item.dataset.index = index;
-
-    item.addEventListener(
-        'mouseenter',
-        () =>
-        {
-            activeIndex = index;
-
-            updateActiveResult(searchResults, activeIndex);
-        }
-    );
-
-    item.addEventListener(
-        'click',
-        () =>
-        {
-            resetSearch(searchInput, searchResults, searchDropdown);
-        }
-    );
 }
 
 // =================================================

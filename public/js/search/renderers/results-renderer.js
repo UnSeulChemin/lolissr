@@ -81,6 +81,9 @@ export function renderResults(
 )
 {
     clearSearchResults(searchResults);
+    const fragment = document.createDocumentFragment();
+    const container = searchResults;
+    searchResults = fragment;
 
     let index = 0;
 
@@ -189,6 +192,7 @@ export function renderResults(
             index
         });
 
+    container.appendChild(fragment);
     if (index === 0)
     {
         closeDropdown(searchDropdown);

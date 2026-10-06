@@ -3,6 +3,7 @@
 // =================================================
 
 import { get } from '../../core/http.js';
+import { cachedSearch } from '../cache.js';
 
 import { debugError } from '../../core/debug/debug.js';
 
@@ -17,6 +18,8 @@ export async function fetchSearchResults(url, signal)
     try
     {
 
+        return await cachedSearch(url, signal, async () =>
+        {
         const response = await get(
                 url,
                 {
@@ -29,6 +32,7 @@ export async function fetchSearchResults(url, signal)
             );
 
         return (response?.data ?? {});
+        });
 
     } catch (error)
     {
