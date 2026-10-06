@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 require dirname(__DIR__) . '/Support/bootstrap.php';
-require ROOT . '/scripts/Support/MigrationRunner.php';
+require ROOT . '/scripts/Database/Support/MigrationRunner.php';
 \Framework\Application\Bootstrap::loadEnvOnly();
 $db = new \Framework\Database\Database();
 $other = new \Framework\Database\Database();

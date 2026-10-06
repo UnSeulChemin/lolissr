@@ -61,7 +61,7 @@ foreach (['storage/cache', 'storage/logs', 'storage/sessions', 'storage/backups'
 }
 if (!\Framework\Config\ApplicationConfig::isProduction())
 {
-    require_once ROOT . '/scripts/Support/JavaScriptBuilder.php';
+    require_once ROOT . '/scripts/Assets/JavaScript/Support/JavaScriptBuilder.php';
     doctorCheck('esbuild', static fn () => doctorRequire(is_file(JavaScriptBuilder::binary(ROOT))), 'Executer composer js:install.');
     doctorCheck('Dependances de verification', static fn () => doctorRequire(extension_loaded('pdo_sqlite') && is_file(ROOT . '/vendor/phpstan/phpstan/phpstan.phar')), 'Executer composer install et activer pdo_sqlite.');
 }
@@ -77,7 +77,7 @@ if (!$beforeBuild)
     doctorCheck('Bundle JavaScript et sources', static function (): void
     {
         $manifest = require ROOT . '/Config/javascript.php';
-        $sources = require ROOT . '/scripts/Assets/javascript-sources.php';
+        $sources = require ROOT . '/scripts/Assets/JavaScript/javascript-sources.php';
         doctorRequire(isset($manifest['entry'], $manifest['preloads'], $manifest['files'], $sources['sources'], $sources['manifest_hash']));
         doctorRequire($manifest['files'] !== [] && hash('sha256', serialize($manifest)) === $sources['manifest_hash']);
         foreach ($manifest['files'] as $file) doctorRequire(is_file(ROOT . '/public/' . $file));
@@ -89,7 +89,7 @@ if ($configured)
 {
     doctorCheck('Connexion MySQL et migrations', static function (): void
     {
-        require_once ROOT . '/scripts/Support/MigrationRunner.php';
+        require_once ROOT . '/scripts/Database/Support/MigrationRunner.php';
         $database = new \Framework\Database\Database();
         $database->exec('SET SESSION TRANSACTION READ ONLY');
         ob_start();

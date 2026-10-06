@@ -7,7 +7,7 @@ if (PHP_SAPI !== 'cli')
 define('ROOT', dirname(__DIR__, 2));
 require ROOT . '/vendor/autoload.php';
 require ROOT . '/Framework/Support/Helpers.php';
-require ROOT . '/scripts/Support/MigrationRunner.php';
+require ROOT . '/scripts/Database/Support/MigrationRunner.php';
 
 try
 {

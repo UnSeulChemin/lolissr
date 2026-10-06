@@ -1,9 +1,9 @@
 <?php
 declare(strict_types=1);
 
-require_once __DIR__ . '/../Support/BuildLock.php';
-require_once __DIR__ . '/../Support/JavaScriptRetention.php';
-$root = dirname(__DIR__, 2);
+require_once __DIR__ . '/../../Support/BuildLock.php';
+require_once __DIR__ . '/Support/JavaScriptRetention.php';
+$root = dirname(__DIR__, 3);
 BuildLock::acquire($root);
 $manifest = require $root . '/Config/javascript.php';
 if (!isset($manifest['files']) || !is_array($manifest['files']) || $manifest['files'] === [])

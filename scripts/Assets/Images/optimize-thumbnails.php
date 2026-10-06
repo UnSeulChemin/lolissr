@@ -5,11 +5,11 @@ declare(strict_types=1);
 if (PHP_SAPI !== 'cli')
 { http_response_code(404); exit; }
 if (count($argv) > 2 || (isset($argv[1]) && $argv[1] !== '--apply'))
-    throw new InvalidArgumentException('Usage: php scripts/Assets/optimize-thumbnails.php [--apply]');
-require dirname(__DIR__, 2) . '/vendor/autoload.php';
-require __DIR__ . '/../Support/BuildLock.php';
-require __DIR__ . '/../Support/AtomicFile.php';
-$root = dirname(__DIR__, 2);
+    throw new InvalidArgumentException('Usage: php scripts/Assets/Images/optimize-thumbnails.php [--apply]');
+require dirname(__DIR__, 3) . '/vendor/autoload.php';
+require __DIR__ . '/../../Support/BuildLock.php';
+require __DIR__ . '/../../Support/AtomicFile.php';
+$root = dirname(__DIR__, 3);
 BuildLock::acquire($root);
 $apply = ($argv[1] ?? '') === '--apply';
 $directory = realpath($root . '/public/images');

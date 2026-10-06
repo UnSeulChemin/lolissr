@@ -8,7 +8,7 @@ if (PHP_SAPI !== 'cli')
     exit;
 }
 
-require_once dirname(__DIR__) . '/Support/DxFormatter.php';
+require_once __DIR__ . '/Support/DxFormatter.php';
 
 try
 {

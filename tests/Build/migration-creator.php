@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-require dirname(__DIR__, 2) . '/scripts/Support/MigrationCreator.php';
+require dirname(__DIR__, 2) . '/scripts/Database/Support/MigrationCreator.php';
 $directory = sys_get_temp_dir() . '/migration-creator-' . bin2hex(random_bytes(8));
 try
 {

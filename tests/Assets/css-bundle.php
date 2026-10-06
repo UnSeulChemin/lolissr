@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-require dirname(__DIR__, 2) . '/scripts/Support/CssBundleBuilder.php';
+require dirname(__DIR__, 2) . '/scripts/Assets/Css/Support/CssBundleBuilder.php';
 
 $directory = dirname(__DIR__, 2) . '/public/css';
 $bundle = CssBundleBuilder::compile($directory);
 if (! is_file($directory . '/app.bundle.css') || file_get_contents($directory . '/app.bundle.css') !== $bundle)
 {
-    throw new RuntimeException('CSS bundle is stale: run php scripts/Assets/build-css.php.');
+    throw new RuntimeException('CSS bundle is stale: run php scripts/Assets/Css/build-css.php.');
 }
 if (str_contains($bundle, '@import'))
 {

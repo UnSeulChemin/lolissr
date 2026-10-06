@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-require dirname(__DIR__, 2) . '/scripts/Support/JavaScriptRetention.php';
+require dirname(__DIR__, 2) . '/scripts/Assets/JavaScript/Support/JavaScriptRetention.php';
 $root = sys_get_temp_dir() . '/bundle-retention-' . bin2hex(random_bytes(8));
 mkdir($root . '/public/js/dist/chunks', 0755, true);
 mkdir($root . '/Config');

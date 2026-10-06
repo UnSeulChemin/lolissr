@@ -1,7 +1,7 @@
 <?php
 
 declare(strict_types=1);
-require dirname(__DIR__, 2) . '/scripts/Support/ProfileImageBuilder.php';
+require dirname(__DIR__, 2) . '/scripts/Assets/Images/Support/ProfileImageBuilder.php';
 $source = tempnam(sys_get_temp_dir(), 'profile-source-');
 $target = $source . '.webp';
 if ($source === false) throw new RuntimeException('Cannot create fixture');

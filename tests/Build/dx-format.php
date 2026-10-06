@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-require_once dirname(__DIR__, 2) . '/scripts/Support/DxFormatter.php';
+require_once dirname(__DIR__, 2) . '/scripts/Tools/Support/DxFormatter.php';
 
 $root = dirname(__DIR__, 2);
 $formatter = new DxFormatter($root, $root . '/scripts/Tools/dx.json');

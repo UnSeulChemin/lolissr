@@ -12,7 +12,7 @@ require ROOT . '/App/Support/Helpers.php';
 
 $root = dirname(__DIR__, 2);
 $manifest = require $root . '/Config/javascript.php';
-$metadata = require $root . '/scripts/Assets/javascript-sources.php';
+$metadata = require $root . '/scripts/Assets/JavaScript/javascript-sources.php';
 if (isset($manifest['sources']) || $metadata['sources'] === [])
     throw new RuntimeException('JavaScript source metadata must be separate and nonempty.');
 if (hash('sha256', serialize($manifest)) !== $metadata['manifest_hash'])

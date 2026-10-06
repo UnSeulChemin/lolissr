@@ -14,8 +14,8 @@ if (!extension_loaded('gd') || !function_exists('imagewebp') || !defined('IMG_WE
 {
     throw new RuntimeException('GD with lossless WebP support is required.');
 }
-require __DIR__ . '/../Support/ProfileImageBuilder.php';
-$root = dirname(__DIR__, 2) . '/public/images/profil';
+require __DIR__ . '/Support/ProfileImageBuilder.php';
+$root = dirname(__DIR__, 3) . '/public/images/profil';
 $before = 0;
 $after = 0;
 $count = 0;
@@ -44,9 +44,9 @@ foreach (['avatar' => 512, 'banner' => 2160, 'frame' => 512] as $type => $maxEdg
         $count++;
     }
 }
-require dirname(__DIR__, 2) . '/vendor/autoload.php';
-require dirname(__DIR__, 2) . '/Framework/Support/Helpers.php';
-if (!defined('ROOT')) define('ROOT', dirname(__DIR__, 2));
+require dirname(__DIR__, 3) . '/vendor/autoload.php';
+require dirname(__DIR__, 3) . '/Framework/Support/Helpers.php';
+if (!defined('ROOT')) define('ROOT', dirname(__DIR__, 3));
 \Framework\Application\Bootstrap::loadEnvOnly();
 $database = new \Framework\Database\Database();
 $database->transaction(static function () use ($database, $root): void

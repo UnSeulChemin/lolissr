@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/AtomicFile.php';
+require_once __DIR__ . '/../../../Support/AtomicFile.php';
 
 final class JavaScriptRetention
 {

@@ -103,7 +103,7 @@ foreach ($rootFiles as $file)
 
 AtomicFile::writeIfChanged($buildDirectory . '/.env.example', (string) $environmentTemplate);
 
-require_once __DIR__ . '/../Support/ProductionDependencies.php';
+require_once __DIR__ . '/Support/ProductionDependencies.php';
 ProductionDependencies::install($buildDirectory);
 
 $optionalFiles = ['.htaccess'];
@@ -308,7 +308,7 @@ function verifyRelease(string $buildDirectory): void
 
 function createArchive(string $buildDirectory, string $zipFile): void
 {
-    require_once __DIR__ . '/../Support/ReleaseArchive.php';
+    require_once __DIR__ . '/Support/ReleaseArchive.php';
     ReleaseArchive::create($buildDirectory, $zipFile);
 }
 function removeDirectory(string $directory): void
