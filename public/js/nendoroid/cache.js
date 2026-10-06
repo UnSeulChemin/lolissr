@@ -4,7 +4,7 @@
 
 import { appUrl } from '../core/url.js';
 
-import { invalidatePage } from '../router/pages/invalidation.js';
+import { invalidatePages } from '../router/pages/invalidation.js';
 
 // =================================================
 // INVALIDATION
@@ -12,11 +12,10 @@ import { invalidatePage } from '../router/pages/invalidation.js';
 
 export function invalidateNendoroidPages()
 {
-    invalidatePage(appUrl(), {descendants: false});
-
-    invalidatePage(appUrl('profil'));
-
-    invalidatePage(appUrl('nendoroid'));
-
-    invalidatePage(window.location.pathname, {descendants: false});
+    invalidatePages([
+        [appUrl(), {descendants: false}],
+        [appUrl('profil')],
+        [appUrl('nendoroid')],
+        [window.location.pathname, {descendants: false}]
+    ]);
 }

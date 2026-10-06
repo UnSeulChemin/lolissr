@@ -4,7 +4,7 @@
 
 import { appUrl } from '../core/url.js';
 
-import { invalidatePage } from '../router/pages/invalidation.js';
+import { invalidatePages } from '../router/pages/invalidation.js';
 
 // =================================================
 // GRAMMAIRE
@@ -12,19 +12,15 @@ import { invalidatePage } from '../router/pages/invalidation.js';
 
 export function invalidateGrammarPages()
 {
-    invalidatePage(appUrl(), {descendants: false});
-
-    invalidatePage(appUrl('profil'));
-
-    invalidatePage(appUrl('chinois/grammaire/hsk1'));
-
-    invalidatePage(appUrl('chinois/grammaire/hsk2'));
-
-    invalidatePage(appUrl('chinois/grammaire/hsk3'));
-
-    invalidatePage(appUrl('chinois/grammaire/hsk4'));
-
-    invalidatePage(appUrl('chinois/flashcards/grammaire'));
+    invalidatePages([
+        [appUrl(), {descendants: false}],
+        [appUrl('profil')],
+        [appUrl('chinois/grammaire/hsk1')],
+        [appUrl('chinois/grammaire/hsk2')],
+        [appUrl('chinois/grammaire/hsk3')],
+        [appUrl('chinois/grammaire/hsk4')],
+        [appUrl('chinois/flashcards/grammaire')]
+    ]);
 }
 
 // =================================================
@@ -33,13 +29,11 @@ export function invalidateGrammarPages()
 
 export function invalidateVocabularyPages()
 {
-    invalidatePage(appUrl(), {descendants: false});
-
-    invalidatePage(appUrl('profil'));
-
-    invalidatePage(appUrl('chinois/vocabulaire/mandarin'));
-
-    invalidatePage(appUrl('chinois/vocabulaire/jinyu'));
-
-    invalidatePage(appUrl('chinois/flashcards/vocabulaire'));
+    invalidatePages([
+        [appUrl(), {descendants: false}],
+        [appUrl('profil')],
+        [appUrl('chinois/vocabulaire/mandarin')],
+        [appUrl('chinois/vocabulaire/jinyu')],
+        [appUrl('chinois/flashcards/vocabulaire')]
+    ]);
 }

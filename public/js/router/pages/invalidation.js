@@ -13,8 +13,16 @@ import { invalidatePrefetch } from '../prefetch/prefetch-cache.js';
 
 export function invalidatePage(href, options = {})
 {
-    invalidateSearchCache();
-    invalidateRoute(href, options);
+    invalidatePages([[href, options]]);
+}
 
-    invalidatePrefetch(href, options);
+export function invalidatePages(pages)
+{
+    invalidateSearchCache();
+    for (const [href, options = {}] of pages)
+    {
+        invalidateRoute(href, options);
+
+        invalidatePrefetch(href, options);
+    }
 }

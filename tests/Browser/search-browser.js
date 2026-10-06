@@ -3,6 +3,24 @@ export async function runBrowserScenario()
     const {cachedSearch, invalidateSearchCache} = await import('./js/search/cache.js');
     const check = (ok, message) =>
     { if (!ok) throw new Error(message); };
+    const {highlightSearchTerm} = await import('./js/search/utils/search-utils.js');
+    const mark = value => `<mark class="search-highlight">${value}</mark>`;
+    check(highlightSearchTerm('Test test', 'test') === `${mark('Test')} ${mark('test')}`, 'Repeated highlighting changed');
+    check(highlightSearchTerm('TEST', 'test') === mark('TEST'), 'Reused pattern lost matches');
+    check(highlightSearchTerm('<a+b>', 'a+b') === `&lt;${mark('a+b')}&gt;`, 'Literal query or escaping changed');
+    check(highlightSearchTerm('<script>', '') === '&lt;script&gt;', 'Empty query bypassed escaping');
+    check(highlightSearchTerm('one TWO', 'one two') === `${mark('one')} ${mark('TWO')}`, 'Multiword query changed');
+    const {invalidateMangaPages} = await import('./js/manga/cache.js');
+    const {shouldRefreshRoute} = await import('./js/router/pages/route-invalidation.js');
+    const {appUrl} = await import('./js/core/url.js');
+    let invalidations = 0;
+    const countInvalidation = () => invalidations++;
+    document.addEventListener('search:invalidate', countInvalidation);
+    invalidateMangaPages();
+    document.removeEventListener('search:invalidate', countInvalidation);
+    check(invalidations === 1, 'Batch reset search more than once');
+    check(shouldRefreshRoute(appUrl('manga')) && shouldRefreshRoute(appUrl('profil'))
+        && shouldRefreshRoute(appUrl()), 'Batch lost route invalidations');
     const originalNow = Date.now;
     let now = originalNow();
     Date.now = () => now;
