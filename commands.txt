@@ -28,11 +28,11 @@ DEVELOPPEMENT
 = Installer les dependances
 composer install
 
-= Diagnostic de configuration, services et assets
-composer doctor
-
 = Compiler CSS / JavaScript et actualiser leurs versions
 composer assets:build
+
+= Diagnostic de configuration, services et assets
+composer doctor
 
 
 
