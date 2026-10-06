@@ -55,7 +55,7 @@
 # Config/assets/versions.php et Config/assets/javascript-manifest.php. Conserver composer.lock.
 
 # Notes personnelles et fichiers temporaires d'editeur
-/notes.txt
+/roadmap.txt
 /note.txt
 /AVANT-PRODUCTION.txt
 *.swp
