@@ -72,6 +72,7 @@
         "dx": "@php scripts/Tools/dx-format.php",
         "dx:check": "@php scripts/Tools/dx-format.php --check",
         "regression-tests": [
+            "@php tests/Build/migration-creator.php",
             "@php tests/Build/http-profile.php",
             "@php tests/Build/project-structure.php",
             "@php tests/Framework/configuration.php",
@@ -142,6 +143,7 @@
         "db:deduplicate-indexes": "@php scripts/Database/deduplicate-indexes.php",
         "db:check": "@php tests/Domain/database-schema.php",
         "db:migrate": "@php scripts/Database/migrate.php apply",
+        "db:migration": "@php scripts/Database/create-migration.php",
         "db:migrate:status": "@php scripts/Database/migrate.php status",
         "db:migrate:baseline": "@php scripts/Database/migrate.php baseline",
         "users:check": ["@php tests/Domain/user-ownership.php", "@php tests/Http/user-ownership.php"],
@@ -156,6 +158,7 @@
         "doctor": "[Diagnostic] Verifie PHP, configuration, stockage, MySQL, migrations, assets et acces HTTP local.",
         "preflight": "[Production] Avant publication : diagnostic, build, formatage et suite complete. Apache/MySQL/Edge et identifiants de test requis ; utilise des fixtures temporaires.",
         "db:migrate": "[Donnees] Applique les migrations SQL manquantes dans la base du .env.",
+        "db:migration": "[Donnees] NOM : cree un fichier SQL vide horodate (UTC), sans modifier la base.",
         "db:migrate:status": "[Donnees] Affiche les migrations sans modifier la base.",
         "db:migrate:baseline": "[Donnees] FILE.sql : enregistre une migration deja appliquee, sans executer son SQL.",
         "tests:manga": "[Tests] Tests de domaine manga : creation, sorties, XP et pagination.",

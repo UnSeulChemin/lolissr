@@ -197,6 +197,11 @@ composer bootstrap:clear
 BASE DE DONNÉES
 =========================================
 
+= Creer automatiquement un fichier SQL vide (nom en minuscules avec tirets)
+composer db:migration -- ajout-table
+= Ouvrir le fichier affiche, ecrire le SQL et sauvegarder ; ensuite composer db:migrate.
+= Ne pas executer le meme SQL dans /sql avant la migration ; ne pas modifier un fichier deja applique.
+
 = Voir les migrations et leur etat (base du .env, lecture seule)
 composer db:migrate:status
 
