@@ -5,7 +5,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../Support/BuildLock.php';
 BuildLock::acquire(dirname(__DIR__, 2));
 require __DIR__ . '/Css/build-css.php';
-require __DIR__ . '/JavaScript/build-js.php';
+require __DIR__ . '/JavaScript/build-javascript.php';
 
 $assetRoot = dirname(__DIR__, 2) . '/public/';
 $assetVersions = [];

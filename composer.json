@@ -123,7 +123,7 @@
         "assets:build": "@php scripts/Assets/build-assets.php",
         "css:build": "@php scripts/Assets/Css/build-css.php",
         "js:install": "@php scripts/Assets/JavaScript/install-esbuild.php",
-        "js:build": "@php scripts/Assets/JavaScript/build-js.php",
+        "js:build": "@php scripts/Assets/JavaScript/build-javascript.php",
         "js:prune": "@php scripts/Assets/JavaScript/prune-javascript.php",
         "images:build": "@php scripts/Assets/Images/build-profile-images.php",
         "images:optimize": "@php scripts/Assets/Images/optimize-thumbnails.php",
