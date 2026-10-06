@@ -50,8 +50,31 @@ final class AdminController extends Controller
     }
     public function images(): never
     { $this->maintenance('images'); }
+    public function doctor(): never
+    { $this->maintenance('doctor'); }
+    public function buildAssets(): never
+    { $this->maintenance('assets'); }
+    public function checkImages(): never
+    { $this->maintenance('images-check'); }
     public function clearCache(): never
     { $this->maintenance('cache'); }
+    public function resetDev(): never
+    {
+        set_time_limit(60);
+        try { MaintenanceJob::start('reset'); }
+        catch (RuntimeException $exception) { $this->commandError('admin/dev', $exception->getMessage()); }
+        \Framework\Http\Session::destroy();
+        // Do not create the login session while the worker is still clearing sessions.
+        $deadline = microtime(true) + 45;
+        do
+        {
+            usleep(100000);
+            $state = MaintenanceJob::status()['state'];
+        } while (in_array($state, ['queued', 'running'], true) && microtime(true) < $deadline);
+        if (in_array($state, ['queued', 'running'], true)) $this->commandError('connexion', 'Nettoyage encore en cours. Attends sa fin avant de te reconnecter.');
+        if ($this->expectsJson()) \Framework\Http\Responses\Response::json(['success' => true, 'message' => $state === 'done' ? 'Nettoyage terminé. Tu peux te reconnecter.' : 'Nettoyage en échec. Reconnecte-toi pour consulter le journal.', 'redirect' => \Framework\Config\ApplicationConfig::baseUri() . 'connexion']);
+        $this->redirect('connexion');
+    }
     private function maintenance(string $task): never
     {
         try

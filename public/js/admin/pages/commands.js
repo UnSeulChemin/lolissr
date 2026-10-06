@@ -2,6 +2,8 @@ import { delegate } from '../../core/dom.js';
 import { post } from '../../core/http.js';
 import { showToast } from '../../core/toast.js';
 import { registerCleanup } from '../../router/lifecycle/cleanup.js';
+import { navigateTo } from '../../router/navigation/navigation.js';
+import { invalidatePage } from '../../router/pages/invalidation.js';
 let stopPolling = () => {};
 const labels = { idle: 'Prêt', queued: 'En attente', running: 'En cours', done: 'Prêt', failed: 'Échec', interrupted: 'Interrompu' };
 const dismissed = new Map();
@@ -89,13 +91,20 @@ export function initAdminCommands()
         }
         try
         {
-            const response = await post(form.action, Object.fromEntries(new FormData(form)), { signal: controller.signal });
+            const response = await post(form.action, Object.fromEntries(new FormData(form)), { signal: controller.signal, timeout: form.action.endsWith('/reset') ? 60000 : 15000 });
             if (response?.success !== true) throw new Error(response?.message || 'Impossible de lancer la commande.');
             if (!root.isConnected || controller.signal.aborted) return;
             dismissed.delete(key);
             try
             { sessionStorage.removeItem(`admin-journal:${key}`); } catch { /* Storage is optional. */ }
             showToast(response.message, 'success');
+            if (response.redirect)
+            {
+                stopPolling();
+                invalidatePage(response.redirect);
+                await navigateTo(response.redirect, { force: true });
+                return;
+            }
         }
         catch (error)
         {

@@ -96,6 +96,9 @@ composer manga:recommendations
 
 
 
+
+
+
 = Apres modification manuelle du catalogue JSON : republier sa revision sans reseau
 composer manga:catalog-revision
 

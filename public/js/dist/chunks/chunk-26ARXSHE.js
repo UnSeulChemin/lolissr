@@ -1,0 +1,1 @@
+import{b as e}from"./chunk-TNB6FZLN.js";import{a}from"./chunk-GZNDPYT5.js";function o(){e([[a(),{descendants:!1}],[a("profil")],[a("figurine")],[window.location.pathname,{descendants:!1}]])}export{o as a};

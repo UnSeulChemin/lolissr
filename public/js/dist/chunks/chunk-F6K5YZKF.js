@@ -1,0 +1,1 @@
+import{b as a}from"./chunk-BWI4WDQT.js";import{a as e}from"./chunk-GZNDPYT5.js";function o(){a([[e(),{descendants:!1}],[e("profil")],[e("peluche")],[window.location.pathname,{descendants:!1}]])}export{o as a};
