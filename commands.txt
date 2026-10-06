@@ -43,22 +43,18 @@ composer assets:build
 composer doctor
 
 
-
-
-
-
-
-
-
 =========================================
 AVANT LIVRAISON
 =========================================
 
 = Compiler les assets, verifier le formatage et lancer tous les controles
+= Necessite Apache/MySQL/Edge, dependances de developpement et identifiants HTTP de test dans .env
 composer preflight
 
-= Necessite Apache/MySQL/Edge, dependances de developpement et identifiants HTTP de test dans .env
-= S'arrete au premier echec ; ne publie pas et n'applique aucune migration
+
+
+
+
 
 = Generer une archive avec images, assets actifs et dependances de production
 composer release:zip
