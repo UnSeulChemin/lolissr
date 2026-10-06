@@ -30,6 +30,9 @@ DX
 = Appliquer le formatage PHP / JavaScript / CSS
 composer dx
 
+= Verifier le formatage sans modifier les fichiers
+composer dx:check
+
 
 =========================================
 GIT
@@ -51,16 +54,12 @@ TESTS
 = check + (Tests navigateur Edge, schéma MySQL, isolation des comptes via HTTP, dépendances de production et cache HTTP des assets)
 composer check:all
 
-= Analyse PHP + tests HTTP / SPA + regressions
+= Analyse PHP + tests HTTP / SPA + regressions (mangas, recherche, assets, etc.)
 composer check
 
 
 
-= Scenarios Microsoft Edge seuls
-composer browser-tests
 
-= Verifier le formatage sans modifier les fichiers
-composer dx:check
 
 = Certains tests necessitent MySQL ; les donnees de test sont temporaires
 = Identifiants HTTP_TEST_USERNAME / HTTP_TEST_PASSWORD dans .env pour les tests HTTP
