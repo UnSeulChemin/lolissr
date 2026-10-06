@@ -12,14 +12,10 @@ export function updateActiveResult(searchResults, activeIndex)
 {
     const items = $$('.search-result-item', searchResults);
 
-    items.forEach(
-        (item) =>
-        {
-            item.classList.remove('is-active');
-        }
-    );
-
     const activeItem = items[activeIndex];
+    const previousItem = searchResults.querySelector('.search-result-item.is-active');
+    if (previousItem === activeItem) return;
+    previousItem?.classList.remove('is-active');
 
     if (! activeItem)
     {

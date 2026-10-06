@@ -25,7 +25,5 @@ export function initPrefetch()
 
     bindPrefetch();
 
-    document.addEventListener('router:loaded', bindPrefetch);
-
     debug('PREFETCH', 'ready');
 }

@@ -1,0 +1,1 @@
+import{b as t}from"./chunk-H2PN2WI6.js";var e=new Set;function u(r){return typeof r!="function"?()=>{}:(e.add(r),()=>{e.delete(r)})}function c(){for(let r of e)try{r()}catch(n){t("ROUTER-CLEANUP",n)}e.clear()}export{u as a,c as b};

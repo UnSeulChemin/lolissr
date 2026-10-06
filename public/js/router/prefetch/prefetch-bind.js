@@ -1,116 +1,43 @@
-// =================================================
-// PRÉCHARGEMENT ASSOCIATION
-// =================================================
-
 import { config } from '../../core/config.js';
-
 import { shouldIgnoreLink } from '../../core/navigation.js';
-
+import { NAVIGATION_START } from '../../core/navigation-protocol.js';
 import { prefetchPage } from './prefetch-request.js';
 
-// =================================================
-// ASSOCIATION LIEN
-// =================================================
-
-function bindLink(link)
+const timers = new Map();
+let initialized = false;
+function cancel(link)
 {
-    // --------------------------------------------------------------------------
-    // VALIDE LIEN
-    // --------------------------------------------------------------------------
-
-    if (!( link instanceof HTMLAnchorElement ))
-    {
-
-        return;
-    }
-
-    // --------------------------------------------------------------------------
-    // IGNORER LIEN
-    // --------------------------------------------------------------------------
-
-    if (shouldIgnoreLink( link ))
-    {
-
-        return;
-    }
-
-    // --------------------------------------------------------------------------
-    // SENSIBLES LIENS
-    // --------------------------------------------------------------------------
-
-    if (link.hasAttribute( 'data-confirm-logout' ) || link.pathname.endsWith( '/deconnexion' ))
-    {
-
-        return;
-    }
-
-    // --------------------------------------------------------------------------
-    // DÉJÀ ASSOCIÉ
-    // --------------------------------------------------------------------------
-
-    if (link.dataset.prefetchBound === 'true')
-    {
-
-        return;
-    }
-
-    // --------------------------------------------------------------------------
-    // MARQUAGE COMME ASSOCIÉ
-    // --------------------------------------------------------------------------
-
-    link.dataset.prefetchBound = 'true';
-
-    let hoverTimer = null;
-
-    // --------------------------------------------------------------------------
-    // SURVOL PRÉCHARGEMENT
-    // --------------------------------------------------------------------------
-
-    link.addEventListener(
-        'pointerenter',
-        () =>
-        {
-            clearTimeout(hoverTimer);
-
-            hoverTimer = window.setTimeout(
-                    () =>
-                    {
-                        void prefetchPage(link.href);
-                    },
-                    config.prefetch.hoverDelay
-                );
-        },
-        {
-            passive: true
-        }
-    );
-
-    // --------------------------------------------------------------------------
-    // ANNULATION PRÉCHARGEMENT
-    // --------------------------------------------------------------------------
-
-    link.addEventListener(
-        'pointerleave',
-        () =>
-        {
-            clearTimeout(hoverTimer);
-        },
-        {
-            passive: true
-        }
-    );
+    clearTimeout(timers.get(link));
+    timers.delete(link);
 }
-
-// =================================================
-// ASSOCIATION PRÉCHARGEMENT
-// =================================================
-
+function cancelAll()
+{
+    for (const link of timers.keys()) cancel(link);
+}
+function eligible(link)
+{
+    return link instanceof HTMLAnchorElement && link.hasAttribute('data-prefetch')
+        && !shouldIgnoreLink(link) && !link.hasAttribute('data-confirm-logout')
+        && !link.pathname.endsWith('/deconnexion');
+}
 export function bindPrefetch()
 {
-    const links = document.querySelectorAll('a[data-prefetch]');
-
-    for (const link of links)
+    if (initialized) return;
+    initialized = true;
+    // Capture handles non-bubbling events without scanning page links.
+    document.addEventListener('pointerenter', event =>
     {
-        bindLink(link);
-    }
+        const link = event.target;
+        if (!eligible(link)) return;
+        cancel(link);
+        timers.set(link, window.setTimeout(() =>
+        {
+            timers.delete(link);
+            if (link.isConnected && eligible(link)) void prefetchPage(link.href);
+        }, config.prefetch.hoverDelay));
+    }, {capture: true, passive: true});
+    document.addEventListener('pointerleave', event => cancel(event.target), {capture: true, passive: true});
+    document.addEventListener(NAVIGATION_START, cancelAll);
+    document.addEventListener('router:loaded', cancelAll);
+    window.addEventListener('pagehide', cancelAll);
 }
