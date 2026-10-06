@@ -67,6 +67,12 @@ $tests[] = ['category' => 'Manga', 'label' => 'Non possédés page 1', 'path' =>
 $tests[] = ['category' => 'Manga', 'label' => 'Sorties page hors limite', 'path' => '/manga/series/a-paraitre/page/999999', 'expected_status' => 404];
 
 // Recommendation reads: discover actual pages for the authenticated audit account.
+$tests[] = ['category' => 'Manga', 'label' => 'Filtre categorie', 'path' => '/manga/series/recommandations/categorie/Sh%C3%B4nen'];
+$tests[] = ['category' => 'Manga', 'label' => 'Filtre categorie SPA', 'path' => '/manga/series/recommandations/categorie/Sh%C3%B4nen/page/1', 'json' => true, 'headers' => ['Accept: application/json', 'X-Page-Format: fragment']];
+$tests[] = ['category' => 'Manga', 'label' => 'Filtre categorie hors limite', 'path' => '/manga/series/recommandations/categorie/Sh%C3%B4nen/page/999999', 'expected_status' => 404];
+$tests[] = ['category' => 'Manga', 'label' => 'Filtre auteur', 'path' => '/manga/series/recommandations-auteurs/auteur/Kei%20Sasuga'];
+$tests[] = ['category' => 'Manga', 'label' => 'Filtre auteur SPA', 'path' => '/manga/series/recommandations-auteurs/auteur/Kei%20Sasuga/page/1', 'json' => true, 'headers' => ['Accept: application/json', 'X-Page-Format: fragment']];
+$tests[] = ['category' => 'Manga', 'label' => 'Filtre auteur hors limite', 'path' => '/manga/series/recommandations-auteurs/auteur/Kei%20Sasuga/page/999999', 'expected_status' => 404];
 foreach (['recommandations' => 'Recommandations catégories', 'recommandations-auteurs' => 'Recommandations auteurs'] as $route => $label)
 {
     $path = '/manga/series/' . $route;

@@ -85,8 +85,12 @@ $router->prefix('manga')->group(function (Router $router): void
         $router->get('notes/page/{page:int}', [MangaController::class, 'notes']);
         $router->get('recommandations', [MangaController::class, 'recommendations']);
         $router->get('recommandations/page/{page:int}', [MangaController::class, 'recommendations']);
+        $router->get('recommandations/categorie/{category}', [MangaController::class, 'recommendations']);
+        $router->get('recommandations/categorie/{category}/page/{page:int}', [MangaController::class, 'recommendations']);
         $router->get('recommandations-auteurs', [MangaController::class, 'authorRecommendations']);
         $router->get('recommandations-auteurs/page/{page:int}', [MangaController::class, 'authorRecommendations']);
+        $router->get('recommandations-auteurs/auteur/{author}', [MangaController::class, 'authorRecommendations']);
+        $router->get('recommandations-auteurs/auteur/{author}/page/{page:int}', [MangaController::class, 'authorRecommendations']);
         $router->post('recommandations/{id}/masquer', [MangaController::class, 'hideRecommendation'], [CsrfMiddleware::class]);
         $router->get('a-paraitre', [MangaController::class, 'forthcoming']);
         $router->get('a-paraitre/page/{page:int}', [MangaController::class, 'forthcoming']);

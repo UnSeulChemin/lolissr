@@ -6,6 +6,7 @@ declare(strict_types=1);
 /** @var int $currentPage */
 /** @var int $totalPages */
 /** @var string $paginationPath */
+/** @var string $recommendationMode */
 ?>
 <section class="layout-container dashboard-page">
     <?php if ($recommendations === []): ?>
@@ -14,13 +15,18 @@ declare(strict_types=1);
         <section class="collection-grid u-grid u-justify-center" data-rank-offset="<?= $rankOffset ?>">
             <?php foreach ($recommendations as $rank => $recommendation): ?>
                 <div class="collection-release-item u-stack">
-                <a class="card collection-card collection-card-link collection-recommendation-card u-flex" href="<?= e('https://www.mangacollec.com/series/' . $recommendation['id']) ?>" target="_blank" rel="noopener noreferrer" title="<?= e($recommendation['reason']) ?>">
+                <div class="card collection-card collection-card-link collection-recommendation-card u-flex">
                     <span class="recommendation-rank" aria-label="<?= e('Rang ' . ($rankOffset + $rank + 1)) ?>"><?= $rankOffset + $rank + 1 ?></span>
                     <div class="recommendation-categories">
                         <?php foreach ($recommendation['categories'] as $category): ?>
-                            <span class="recommendation-category" title="<?= e($category['points'] . ' séries de ta collection : ' . $category['title']) ?>"><?= $category['points'] ?> <?= e($category['title']) ?></span>
+                            <?php if ($recommendationMode === 'authors'): ?>
+                                <a class="recommendation-category" href="<?= e($view->baseUri . 'manga/series/recommandations-auteurs/auteur/' . \Framework\Support\Strings::asciiSlug($category['title'])) ?>"><?= $category['points'] ?> <?= e($category['title']) ?></a>
+                            <?php else: ?>
+                            <a class="recommendation-category" href="<?= e($view->baseUri . 'manga/series/recommandations/categorie/' . rawurlencode(mb_strtolower($category['title']))) ?>" title="<?= e($category['points'] . ' séries de ta collection : ' . $category['title']) ?>"><?= $category['points'] ?> <?= e($category['title']) ?></a>
+                            <?php endif; ?>
                         <?php endforeach; ?>
                     </div>
+                    <a class="recommendation-series-link" href="<?= e('https://www.mangacollec.com/series/' . $recommendation['id']) ?>" target="_blank" rel="noopener noreferrer" title="<?= e($recommendation['reason']) ?>">
                     <div class="card-image-box-portrait u-row-center u-clip">
                         <?php if ($recommendation['imageUrl'] !== null): ?>
                             <img class="card-image-portrait u-block u-w-full" src="<?= e(image_url($recommendation['imageUrl'])) ?>" alt="<?= e($recommendation['title']) ?>" loading="lazy" decoding="async">
@@ -37,7 +43,8 @@ declare(strict_types=1);
                             Début : <?= e($recommendation['firstRelease']) ?>
                         <?php endif; ?>
                     </p>
-                </a>
+                    </a>
+                </div>
                 <form class="js-hide-recommendation" method="post" action="<?= e($view->baseUri . 'manga/series/recommandations/' . $recommendation['id'] . '/masquer') ?>">
                     <?= csrf_field() ?>
                     <button class="form-submit u-inline-center u-pointer u-semibold u-w-full" type="submit">Masquer cette suggestion</button>

@@ -35,15 +35,19 @@ final class MangaController extends Controller
         $this->redirectWithSuccess('manga/series/recommandations', $result->message);
     }
 
-    public function authorRecommendations(int $page = 1): never
-    { $this->recommendationPage('authors', $page); }
+    public function authorRecommendations(int $page = 1, string $author = ''): never
+    { $this->recommendationPage('authors', $page, $author); }
 
-    public function recommendations(int $page = 1): never
-    { $this->recommendationPage('categories', $page); }
+    public function recommendations(int $page = 1, string $category = ''): never
+    { $this->recommendationPage('categories', $page, $category); }
 
-    private function recommendationPage(string $mode, int $page): never
+    private function recommendationPage(string $mode, int $page, string $author = ''): never
     {
         $items = $this->recommendationService->all($mode);
+        if ($mode === 'categories') $author = mb_strtolower($author);
+        else $author = \Framework\Support\Strings::asciiSlug($author);
+        if ($author !== '')
+            $items = array_values(array_filter($items, static fn (array $item): bool => in_array($author, array_map($mode === 'categories' ? 'mb_strtolower' : [\Framework\Support\Strings::class, 'asciiSlug'], array_column($item['categories'], 'title')), true)));
         $perPage = max(1, \Framework\Config\ApplicationConfig::pagination());
         $totalPages = max(1, (int) ceil(count($items) / $perPage));
         if ($page < 1 || $page > $totalPages) throw new NotFoundException('Page introuvable');
@@ -51,7 +55,8 @@ final class MangaController extends Controller
         $this->title = $mode === 'authors' ? 'Manga | Mêmes auteurs' : 'Manga | Recommandations';
         $this->render('pages/manga/series/recommendations', ['recommendations' => array_slice($items, $offset, $perPage),
             'currentPage' => $page, 'totalPages' => $totalPages, 'rankOffset' => $offset,
-            'paginationPath' => 'manga/series/' . ($mode === 'authors' ? 'recommandations-auteurs' : 'recommandations')]);
+            'recommendationMode' => $mode,
+            'paginationPath' => 'manga/series/' . ($mode === 'authors' ? 'recommandations-auteurs' : 'recommandations') . ($author !== '' ? ($mode === 'authors' ? '/auteur/' : '/categorie/') . rawurlencode($author) : '')]);
     }
 
     public function forthcoming(int $page = 1): never

@@ -574,31 +574,58 @@
 
 .collection-recommendation-card
 {
-    padding-top: 104px;
+    padding-top: 18px;
 }
 
 .collection-recommendation-card .recommendation-categories
 {
-    position: absolute;
-    top: 18px;
-    left: 74px;
-    right: 12px;
+    position: relative;
+    align-self: stretch;
+    margin: 0 0 0 60px;
+    min-height: 42px;
     display: flex;
     flex-wrap: wrap;
     align-content: flex-start;
     align-items: center;
-    gap: 7px;
+    gap: 10px;
 }
 
 .recommendation-category
 {
-    padding: 3px 8px;
+    padding: 5px 10px;
     border-radius: 999px;
-    background: rgba(123, 44, 255, 0.10);
+    background: rgba(123, 44, 255, 0.16);
+    border: 1px solid rgba(123, 44, 255, 0.25);
+    box-shadow: 0 3px 8px rgba(123, 44, 255, 0.12);
+    text-decoration: none;
+    transition: background 160ms ease, box-shadow 160ms ease;
     color: var(--color-violet);
     font-size: 0.85rem;
     line-height: 1.4;
     font-weight: 600;
     max-width: 100%;
     overflow-wrap: anywhere;
+}
+
+.recommendation-category:hover,
+.recommendation-category:focus-visible
+{
+    background: rgba(123, 44, 255, 0.26);
+    box-shadow: 0 4px 12px rgba(123, 44, 255, 0.22);
+    outline: 2px solid var(--color-violet);
+    outline-offset: 3px;
+}
+
+.recommendation-series-link
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.collection-recommendation-card .card-image-box-portrait
+{
+    margin-top: 6px;
+    margin-bottom: 4px;
 }
