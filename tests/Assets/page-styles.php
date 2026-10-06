@@ -9,7 +9,7 @@ Framework\Application\Bootstrap::loadEnvOnly();
 
 use App\Support\Assets\PageStyles;
 
-$manifest = require ROOT . '/Config/styles.php';
+$manifest = require ROOT . '/Config/assets/page-styles.php';
 
 foreach ($manifest as $css => $patterns)
 {

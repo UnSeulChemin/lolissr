@@ -11,7 +11,7 @@ function csrf_token(): string
 require ROOT . '/App/Support/Helpers.php';
 
 $root = dirname(__DIR__, 2);
-$manifest = require $root . '/Config/javascript.php';
+$manifest = require $root . '/Config/assets/javascript-manifest.php';
 $metadata = require $root . '/scripts/Assets/JavaScript/source-manifest.php';
 if (isset($manifest['sources']) || $metadata['sources'] === [])
     throw new RuntimeException('JavaScript source metadata must be separate and nonempty.');

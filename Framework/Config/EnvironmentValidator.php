@@ -208,7 +208,7 @@ final class EnvironmentValidator
     {
         if (! Env::has($key))
         {
-            // Les formats de téléversement ont des valeurs par défaut explicites dans Config/upload.php.
+            // Les formats de téléversement ont des valeurs par défaut explicites dans Config/settings/uploads.php.
             return;
         }
 

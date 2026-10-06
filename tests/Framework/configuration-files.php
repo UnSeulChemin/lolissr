@@ -18,12 +18,13 @@ $check = static function (bool $condition, string $message): void
     if (! $condition) throw new RuntimeException($message);
 };
 mkdir($directory . '/Config');
+mkdir($directory . '/Config/routes');
 mkdir($directory . '/Framework');
 mkdir($directory . '/Framework/Config');
 try
 {
     copy($project . '/Framework/Config/EnvironmentValidator.php', $directory . '/Framework/Config/EnvironmentValidator.php');
-    file_put_contents($directory . '/Config/routes.php', '<?php return static function ($router): void {};');
+    file_put_contents($directory . '/Config/routes/web.php', '<?php return static function ($router): void {};');
     Env::load($project . '/.env.example');
     Env::set('DB_NAME', 'fixture');
     Env::set('DB_USER', 'fixture');
@@ -76,6 +77,8 @@ finally
     unlink($directory . '/Framework/Config/EnvironmentValidator.php');
     rmdir($directory . '/Framework/Config');
     rmdir($directory . '/Framework');
+    unlink($directory . '/Config/routes/web.php');
+    rmdir($directory . '/Config/routes');
     rmdir($directory . '/Config');
     rmdir($directory);
 }

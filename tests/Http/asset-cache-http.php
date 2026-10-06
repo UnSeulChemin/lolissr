@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 $base = rtrim($argv[1] ?? 'http://localhost/lolissr', '/');
-$manifest = require dirname(__DIR__, 2) . '/Config/javascript.php';
+$manifest = require dirname(__DIR__, 2) . '/Config/assets/javascript-manifest.php';
 $request = static function (string $path, array $headers = []) use ($base): array
 {
     $received = [];

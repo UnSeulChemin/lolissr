@@ -1,6 +1,6 @@
 {
     "paths": ["App", "Framework", "Config", "scripts", "tests", "public"],
     "extensions": ["php", "js", "css"],
-    "exclude": ["public/js/dist/", "public/css/app.bundle.css", "Config/assets.php", "Config/javascript.php", "scripts/Assets/JavaScript/source-manifest.php"],
+    "exclude": ["public/js/dist/", "public/css/app.bundle.css", "Config/assets/versions.php", "Config/assets/javascript-manifest.php", "scripts/Assets/JavaScript/source-manifest.php"],
     "line_length": 120
 }

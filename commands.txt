@@ -24,7 +24,7 @@ storage/logs/manga-releases-sync.log
 php scripts/Manga/sync-releases.php
 
 = Correspondances des editions / nouvelles series ambigues
-Config/manga-releases.php
+Config/settings/manga-releases.php
 
 = Exécuter depuis la racine du projet
 C:\wamp64\www\lolissr

@@ -32,6 +32,11 @@ try
     AtomicFile::writeIfChanged($path, BootstrapCache::compile(), 0600);
     $cached = BootstrapCache::load($path);
     $check($cached !== null, 'Compiled cache did not load.');
+    foreach (['app', 'cache', 'database', 'log', 'session', 'upload', 'manga-releases', 'assets', 'javascript', 'styles'] as $name)
+    {
+        $check(array_key_exists($name, $cached['config']), 'Grouped configuration missing from cache: ' . $name);
+        $check($cached['config'][$name] === Config::get($name), 'Cached configuration differs from source: ' . $name);
+    }
     Env::set('UPLOAD_MAX_PIXELS', 0);
     $check(BootstrapCache::load($path) === null, 'Validation-only input did not invalidate cache.');
     try
@@ -49,7 +54,7 @@ try
     Env::set('PROFILER_ENABLED', false);
     $check(BootstrapCache::load($path) !== null, 'Unchanged environment did not restore cache.');
     $expected = new RouteCollection();
-    $register = require ROOT . '/Config/routes.php';
+    $register = require ROOT . '/Config/routes/web.php';
     $register(new Router($expected, new Container()));
     $check(serialize($expected) === serialize($cached['routes']), 'Compiled routes changed order, patterns or middleware.');
     $check($cached['routes']->allowedMethodsFor('/sql') === [], 'SQL tool exposed in production.');
@@ -67,7 +72,7 @@ try
         {
             Config::clear();
             foreach ($names as $name) Config::get($name);
-            $register = require ROOT . '/Config/routes.php';
+            $register = require ROOT . '/Config/routes/web.php';
             $register(new Router(new RouteCollection(), new Container()));
         }
         $normal = (hrtime(true) - $normalStart) / $iterations / 1e6;
@@ -96,7 +101,7 @@ try
     $check($cached['routes']->allowedMethodsFor('/inscription') === ['GET', 'POST'], 'Local registration routes lost.');
     $payload = require $path;
     $originalPayload = $payload;
-    $payload['version'] = 2;
+    $payload['version'] = 3;
     AtomicFile::writeIfChanged($path, '<?php return ' . var_export($payload, true) . ';', 0600);
     $check(BootstrapCache::load($path) === null, 'Pre-migration controller namespaces reused from cache.');
     $payload = $originalPayload;

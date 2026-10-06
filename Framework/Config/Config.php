@@ -8,6 +8,38 @@ use RuntimeException;
 
 final class Config
 {
+    private const FILE_PATHS = [
+        'app' => 'settings/application.php',
+        'cache' => 'settings/cache.php',
+        'database' => 'settings/database.php',
+        'log' => 'settings/logging.php',
+        'session' => 'settings/session.php',
+        'upload' => 'settings/uploads.php',
+        'manga-releases' => 'settings/manga-releases.php',
+        'assets' => 'assets/versions.php',
+        'javascript' => 'assets/javascript-manifest.php',
+        'styles' => 'assets/page-styles.php'
+    ];
+
+    /** @return list<string> */
+    public static function names(): array
+    {
+        $names = [];
+        foreach (self::FILE_PATHS as $name => $path)
+        {
+            if (is_file(base_path('Config/' . $path))) $names[] = $name;
+        }
+        $files = glob(base_path('Config/*.php'));
+        if ($files === false) throw new RuntimeException('Cannot list configuration files.');
+        foreach ($files as $file)
+        {
+            $name = basename($file, '.php');
+            if (!isset(self::FILE_PATHS[$name])) $names[] = $name;
+        }
+        sort($names);
+        return $names;
+    }
+
     /**
      * @var array<string, array<string, mixed>|null>
      */
@@ -96,7 +128,7 @@ final class Config
      */
     private static function loadFile(string $file): ?array
     {
-        $path = base_path('Config/' . $file . '.php');
+        $path = base_path('Config/' . (self::FILE_PATHS[$file] ?? $file . '.php'));
 
         if (! is_file($path))
         {

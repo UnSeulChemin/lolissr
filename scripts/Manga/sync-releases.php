@@ -24,7 +24,7 @@ try
         $collections[$key]['row'] = $row;
         $collections[$key]['owned'][] = (int) $row['numero'];
     }
-    $settings = require ROOT . '/Config/manga-releases.php';
+    $settings = require ROOT . '/Config/settings/manga-releases.php';
     $path = ROOT . '/storage/manga-releases.json';
     $previous = is_file($path) ? json_decode((string) file_get_contents($path), true, 512, JSON_THROW_ON_ERROR) : [];
     $catalog = ['updated_at' => date(DATE_ATOM), 'users' => []];

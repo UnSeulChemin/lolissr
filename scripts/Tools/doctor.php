@@ -69,14 +69,14 @@ if (!$beforeBuild)
 {
     doctorCheck('Versions des assets', static function (): void
     {
-        $assets = require ROOT . '/Config/assets.php';
+        $assets = require ROOT . '/Config/assets/versions.php';
         doctorRequire(is_array($assets) && $assets !== []);
         foreach ($assets as $path => $hash)
             doctorRequire(is_file(ROOT . '/public/' . $path) && hash_file('sha256', ROOT . '/public/' . $path) === $hash);
     }, 'Executer composer assets:build avant de deployer tous les fichiers et manifestes.');
     doctorCheck('Bundle JavaScript et sources', static function (): void
     {
-        $manifest = require ROOT . '/Config/javascript.php';
+        $manifest = require ROOT . '/Config/assets/javascript-manifest.php';
         $sources = require ROOT . '/scripts/Assets/JavaScript/source-manifest.php';
         doctorRequire(isset($manifest['entry'], $manifest['preloads'], $manifest['files'], $sources['sources'], $sources['manifest_hash']));
         doctorRequire($manifest['files'] !== [] && hash('sha256', serialize($manifest)) === $sources['manifest_hash']);

@@ -30,4 +30,4 @@
 /* Placer les adaptations de l’en-tête en dernier pour remplacer l’ancien lien de style dupliqué. */
 @import url('./partials/header.css');
 
-/* Les dépendances des pages sont déclarées dans Config/styles.php. */
+/* Les dépendances des pages sont déclarées dans Config/assets/page-styles.php. */

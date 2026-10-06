@@ -139,11 +139,11 @@ final class Bootstrap
 
     private static function registerRoutes(Router $router): void
     {
-        $routes = require base_path('Config/routes.php');
+        $routes = require base_path('Config/routes/web.php');
 
         if (! is_callable($routes))
         {
-            throw new RuntimeException('Config/routes.php must return a callable.');
+            throw new RuntimeException('Config/routes/web.php must return a callable.');
         }
 
         $routes($router);

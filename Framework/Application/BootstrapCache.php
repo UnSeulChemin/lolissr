@@ -19,7 +19,7 @@ use Throwable;
 final class BootstrapCache
 {
     // Les espaces de noms des contrôleurs ont changé lors de la réorganisation du projet.
-    private const VERSION = 3;
+    private const VERSION = 4;
 
     public static function path(): string
     {
@@ -32,20 +32,16 @@ final class BootstrapCache
         EnvironmentValidator::validate();
         Config::clear();
         $config = [];
-        $files = glob(base_path('Config/*.php'));
-        if ($files === false) throw new RuntimeException('Cannot list configuration files.');
-        foreach ($files as $file)
+        foreach (Config::names() as $name)
         {
-            $name = basename($file, '.php');
-            if ($name === 'routes') continue;
             $value = Config::get($name);
             if (! is_array($value)) throw new RuntimeException('Configuration must return an array: ' . $name);
             $config[$name] = $value;
         }
 
         $routes = new RouteCollection();
-        $register = require base_path('Config/routes.php');
-        if (! is_callable($register)) throw new RuntimeException('Config/routes.php must return a callable.');
+        $register = require base_path('Config/routes/web.php');
+        if (! is_callable($register)) throw new RuntimeException('Config/routes/web.php must return a callable.');
         $register(new Router($routes, new Container()));
 
         // Les actions anonymes ne sont pas sérialisables : conserver l’amorçage habituel

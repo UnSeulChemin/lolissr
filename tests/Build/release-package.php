@@ -10,7 +10,7 @@ if ($zip->open($file, ZipArchive::CHECKCONS) !== true) throw new RuntimeExceptio
 try
 {
     foreach (['public/index.php', 'App/Support/Helpers.php', 'Framework/Application/Bootstrap.php',
-        'vendor/autoload.php', '.htaccess', '.env.example', 'Config/assets.php'] as $required)
+        'vendor/autoload.php', '.htaccess', '.env.example', 'Config/assets/versions.php'] as $required)
         if ($zip->locateName($required) === false) throw new RuntimeException('Missing: ' . $required);
     $files = [];
     for ($i = 0; $i < $zip->numFiles; $i++)
@@ -24,7 +24,7 @@ try
         if (str_starts_with($name, 'storage/') && !str_ends_with($name, '/') && !str_ends_with($name, '/.gitkeep'))
             throw new RuntimeException('Local runtime data included: ' . $name);
     }
-    $manifest = require $root . '/Config/javascript.php';
+    $manifest = require $root . '/Config/assets/javascript-manifest.php';
     $expected = $manifest['files'];
     sort($files); sort($expected);
     if ($files !== $expected) throw new RuntimeException('Inactive or missing JavaScript chunks.');
@@ -40,8 +40,8 @@ try
             throw new RuntimeException('Missing/modified image: ' . $name);
         if (!$withImages && $contents !== false) throw new RuntimeException('Images included in update ZIP.');
     }
-    $versions = (string) $zip->getFromName('Config/assets.php');
-    $assets = require $root . '/Config/assets.php';
+    $versions = (string) $zip->getFromName('Config/assets/versions.php');
+    $assets = require $root . '/Config/assets/versions.php';
     foreach ($assets as $path => $hash)
     {
         $contents = $zip->getFromName('public/' . $path);

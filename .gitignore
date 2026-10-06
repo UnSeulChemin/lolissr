@@ -43,7 +43,7 @@
 !/tests/Http/reports/.gitkeep
 
 # Fichiers temporaires laisses par un build interrompu
-/Config/.build-*
+/Config/**/.build-*
 /scripts/Assets/**/.build-*
 /public/css/.build-*
 /public/js/.build-*
@@ -52,7 +52,7 @@
 
 # Les sources scripts/ et tests/ restent suivies.
 # Les assets publies restent suivis : public/css/, public/js/dist/,
-# Config/assets.php et Config/javascript.php. Conserver composer.lock.
+# Config/assets/versions.php et Config/assets/javascript-manifest.php. Conserver composer.lock.
 
 # Notes personnelles et fichiers temporaires d'editeur
 /notes.txt

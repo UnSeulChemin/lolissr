@@ -15,7 +15,7 @@ return static function (Router $router): void
     // ROUTES PUBLIQUES
     // =================================================
 
-    require __DIR__ . '/routes/auth.php';
+    require __DIR__ . '/auth.php';
 
     // =================================================
     // ROUTES PROTÉGÉES
@@ -31,12 +31,12 @@ return static function (Router $router): void
 
             $router->post('deconnexion', [AuthController::class, 'logout'], [CsrfMiddleware::class]);
 
-            require __DIR__ . '/routes/profile.php';
-            require __DIR__ . '/routes/sql.php';
-            require __DIR__ . '/routes/manga.php';
-            require __DIR__ . '/routes/figurine.php';
-            require __DIR__ . '/routes/nendoroid.php';
-            require __DIR__ . '/routes/peluche.php';
-            require __DIR__ . '/routes/chinois.php';
+            require __DIR__ . '/profile.php';
+            require __DIR__ . '/sql.php';
+            require __DIR__ . '/manga.php';
+            require __DIR__ . '/figurine.php';
+            require __DIR__ . '/nendoroid.php';
+            require __DIR__ . '/peluche.php';
+            require __DIR__ . '/chinois.php';
         });
 };

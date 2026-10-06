@@ -6,7 +6,7 @@ require dirname(__DIR__, 2) . '/tests/Support/bootstrap.php';
 \Framework\Config\Env::set('APP_ENV', 'production');
 \Framework\Config\Config::clear();
 
-$manifest = require ROOT . '/Config/assets.php';
+$manifest = require ROOT . '/Config/assets/versions.php';
 foreach ($manifest as $path => $version)
 {
     if (! is_file(ROOT . '/public/' . $path) || hash_file('sha256', ROOT . '/public/' . $path) !== $version)

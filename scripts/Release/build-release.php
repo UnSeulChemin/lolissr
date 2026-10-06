@@ -83,12 +83,12 @@ foreach ($directories as $directory)
 copyPublicDirectory(ROOT . DIRECTORY_SEPARATOR . 'public', $buildDirectory . DIRECTORY_SEPARATOR . 'public', $includeImages);
 
 // Old bundles remain on the live server for open pages, but are not needed in a new delivery.
-$assets = require $buildDirectory . '/Config/assets.php';
+$assets = require $buildDirectory . '/Config/assets/versions.php';
 foreach (array_keys($assets) as $path)
 {
     if (!is_file($buildDirectory . '/public/' . $path)) unset($assets[$path]);
 }
-AtomicFile::writeIfChanged($buildDirectory . '/Config/assets.php', "<?php\n\ndeclare(strict_types=1);\n\nreturn " . var_export($assets, true) . ";\n");
+AtomicFile::writeIfChanged($buildDirectory . '/Config/assets/versions.php', "<?php\n\ndeclare(strict_types=1);\n\nreturn " . var_export($assets, true) . ";\n");
 
 $environmentTemplate = (string) file_get_contents(ROOT . '/.env.example');
 $environmentTemplate = preg_replace('/^(APP_ENV)=.*$/m', '$1=production', $environmentTemplate);
@@ -170,7 +170,7 @@ function copyPublicDirectory(string $source, string $destination, bool $includeI
     $excluded = [normalizePath($source . '/js/dist')];
     if (!$includeImages) $excluded[] = normalizePath($source . '/images');
     copyDirectory($source, $destination, $excluded);
-    $manifest = require ROOT . '/Config/javascript.php';
+    $manifest = require ROOT . '/Config/assets/javascript-manifest.php';
     foreach ($manifest['files'] as $file)
     {
         if (!str_starts_with($file, 'js/dist/') || str_contains($file, '..')) fail('Invalid JavaScript manifest path.');
