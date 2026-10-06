@@ -8,19 +8,19 @@ C:\wamp64\www\lolissr
 = Afficher toutes les commandes disponibles et leurs descriptions
 composer run-script --list
 
+= Installer les dependances
+composer install
+
 
 =========================================
 DEVELOPPEMENT
 =========================================
 
-= Installer les dependances
-composer install
+= Diagnostic de configuration, services et assets
+composer doctor
 
 = Compiler CSS / JavaScript et actualiser leurs versions
 composer assets:build
-
-= Diagnostic de configuration, services et assets
-composer doctor
 
 
 =========================================
