@@ -11,6 +11,21 @@ composer preflight
 = Diagnostic seul (aucune migration ni modification des donnees)
 composer doctor
 
+= Actualisation automatique Windows : sorties manga a 09:00, recommandations a 09:15.
+= Les deux taches tournent aussi a l'ouverture de session, en arriere-plan.
+= Le PC doit etre allume et Apache/MySQL disponibles ; aucune commande manuelle quotidienne necessaire.
+= Les horaires restent separes : aucune tache unique a 09:00 n'a ete mise en place.
+
+= Actualiser les recommandations (categories et auteurs), couvertures et editions du compte local 1
+composer manga:recommendations -- 1
+= Remplacer 1 par l'identifiant du compte local concerne.
+
+= Installer/reinstaller la tache recommandations (09:15 et ouverture de session)
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Manga/install-recommendations-schedule.ps1 -OwnerId 1
+
+= Journal des recommandations automatiques
+storage/logs/manga-recommendations-sync.log
+
 = Actualiser les tomes a venir (Mangacollec, invite)
 composer manga:sync
 

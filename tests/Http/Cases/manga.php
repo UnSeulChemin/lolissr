@@ -65,3 +65,22 @@ $tests[] = ['category' => 'Manga', 'label' => 'À paraître page 1', 'path' => '
 $tests[] = ['category' => 'Manga', 'label' => 'Non possédés', 'path' => '/manga/series/non-possedes'];
 $tests[] = ['category' => 'Manga', 'label' => 'Non possédés page 1', 'path' => '/manga/series/non-possedes/page/1'];
 $tests[] = ['category' => 'Manga', 'label' => 'Sorties page hors limite', 'path' => '/manga/series/a-paraitre/page/999999', 'expected_status' => 404];
+
+// Recommendation reads: discover actual pages for the authenticated audit account.
+foreach (['recommandations' => 'Recommandations catégories', 'recommandations-auteurs' => 'Recommandations auteurs'] as $route => $label)
+{
+    $path = '/manga/series/' . $route;
+    $tests[] = ['category' => 'Manga', 'label' => $label, 'path' => $path];
+    $response = http_get(http_base() . $path);
+    preg_match_all('~' . preg_quote($path, '~') . '/page/([1-9][0-9]*)~', $response['body'], $matches);
+    $pages = array_values(array_unique([1, ...array_map('intval', $matches[1])]));
+    sort($pages);
+    foreach (array_slice($pages, 0, 56) as $page)
+    {
+        $pagePath = $path . '/page/' . $page;
+        $tests[] = ['category' => 'Manga', 'label' => $label . ' page ' . $page, 'path' => $pagePath];
+        $tests[] = ['category' => 'Manga', 'label' => $label . ' SPA page ' . $page, 'path' => $pagePath,
+            'json' => true, 'headers' => ['Accept: application/json', 'X-Page-Format: fragment']];
+    }
+    $tests[] = ['category' => 'Manga', 'label' => $label . ' page hors limite', 'path' => $path . '/page/999999', 'expected_status' => 404];
+}
