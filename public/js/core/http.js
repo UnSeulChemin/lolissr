@@ -374,12 +374,3 @@ export function post(url, body = {}, options = {})
 {
     return createJsonRequest('POST', url, body, options);
 }
-
-// =================================================
-// MISE À JOUR
-// =================================================
-
-export function put(url, body = {}, options = {})
-{
-    return createJsonRequest('PUT', url, body, options);
-}

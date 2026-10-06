@@ -25,9 +25,7 @@ function appendSection(
         title,
         results,
         buildItem,
-        searchInput,
         searchResults,
-        searchDropdown,
         setupResultItem,
         index
     }
@@ -45,7 +43,7 @@ function appendSection(
         {
             const item = buildItem(result);
 
-            setupResultItem(item, index, searchInput, searchResults, searchDropdown);
+            setupResultItem(item, index);
 
             searchResults.appendChild(item);
 
@@ -71,7 +69,6 @@ export function renderResults(
         shortcuts,
         rawValue,
         basePath,
-        searchInput,
         searchResults,
         searchDropdown,
         setupResultItem,
@@ -94,10 +91,7 @@ export function renderResults(
 
             buildItem: (manga) =>
                     buildMangaResult(manga, rawValue, basePath),
-
-            searchInput,
             searchResults,
-            searchDropdown,
             setupResultItem,
             index
         });
@@ -109,10 +103,7 @@ export function renderResults(
 
             buildItem: (artbook) =>
                     buildArtbookResult(artbook, rawValue, basePath),
-
-            searchInput,
             searchResults,
-            searchDropdown,
             setupResultItem,
             index
         });
@@ -124,10 +115,7 @@ export function renderResults(
 
             buildItem: (item) =>
                     buildChineseResult(item, basePath),
-
-            searchInput,
             searchResults,
-            searchDropdown,
             setupResultItem,
             index
         });
@@ -139,10 +127,7 @@ export function renderResults(
 
             buildItem: (figurine) =>
                     buildFigurineResult(figurine, rawValue, basePath),
-
-            searchInput,
             searchResults,
-            searchDropdown,
             setupResultItem,
             index
         });
@@ -154,10 +139,7 @@ export function renderResults(
 
             buildItem: (nendoroid) =>
                     buildNendoroidResult(nendoroid, rawValue, basePath),
-
-            searchInput,
             searchResults,
-            searchDropdown,
             setupResultItem,
             index
         });
@@ -169,10 +151,7 @@ export function renderResults(
 
             buildItem: (peluche) =>
                     buildPelucheResult(peluche, rawValue, basePath),
-
-            searchInput,
             searchResults,
-            searchDropdown,
             setupResultItem,
             index
         });
@@ -184,10 +163,7 @@ export function renderResults(
 
             buildItem: (shortcut) =>
                     buildShortcutSearchResult(shortcut, basePath),
-
-            searchInput,
             searchResults,
-            searchDropdown,
             setupResultItem,
             index
         });

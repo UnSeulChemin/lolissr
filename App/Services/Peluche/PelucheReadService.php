@@ -13,12 +13,14 @@ use App\Models\Peluche\Peluche;
 use App\Repositories\Peluche\PelucheCollectionRepository;
 use App\Repositories\Peluche\PelucheRepository;
 use App\Repositories\Peluche\PelucheSearchRepository;
+use App\Services\Collections\Concerns\BuildsCollectionReadData;
 
-use Framework\Config\ApplicationConfig;
 use Framework\Support\Dates\DateFormatter;
 
 final readonly class PelucheReadService
 {
+    use BuildsCollectionReadData;
+
     public function __construct(
         private PelucheRepository $pelucheRepository,
         private PelucheCollectionRepository $collectionRepository,
@@ -33,33 +35,20 @@ final readonly class PelucheReadService
 
     public function waifus(int|string $page = 1): ?PelucheListData
     {
-        $page = max(1, (int) $page);
-
-        $perPage = ApplicationConfig::pagination();
-
-        $totalWaifus = $this->collectionRepository->countAll();
-
-        if ($totalWaifus === 0)
-        {
-            if ($page > 1) return null;
-            return new PelucheListData(peluches: [], currentPage: 1, totalWaifus: 0, perPage: $perPage, totalPages: 1);
-        }
-
-        $totalPages = (int) ceil($totalWaifus / $perPage);
-
-        if ($page > $totalPages)
-        {
-            return null;
-        }
-
-        $peluches = $this->collectionRepository->findPaginated($perPage, $page);
+        $data = $this->collectionPage(
+            $page,
+            $this->collectionRepository->countAll(),
+            $this->collectionRepository->findPaginated(...),
+            $this->mapListItem(...)
+        );
+        if ($data === null) return null;
 
         return new PelucheListData(
-            peluches: array_map($this->mapListItem(...), $peluches),
-            currentPage: $page,
-            totalWaifus: $totalWaifus,
-            perPage: $perPage,
-            totalPages: $totalPages
+            peluches: $data['items'],
+            currentPage: $data['currentPage'],
+            totalWaifus: $data['totalWaifus'],
+            perPage: $data['perPage'],
+            totalPages: $data['totalPages']
         );
     }
 
@@ -94,15 +83,7 @@ final readonly class PelucheReadService
 
     private function mapListItem(Peluche $peluche): PelucheListItemData
     {
-        $baseUri = ApplicationConfig::baseUri();
-
-        $thumbnail = $peluche->thumbnail !== ''
-            ? $peluche->thumbnail
-            : null;
-
-        $extension = $peluche->extension !== ''
-            ? $peluche->extension
-            : null;
+        $image = $this->collectionThumbnail('peluche', $peluche->thumbnail, $peluche->extension);
 
         return new PelucheListItemData(
             slug: $peluche->slug,
@@ -111,13 +92,10 @@ final readonly class PelucheReadService
             waifu: $peluche->waifu,
             origin: $peluche->origin,
 
-            thumbnail: $thumbnail,
-            extension: $extension,
+            thumbnail: $image['thumbnail'],
+            extension: $image['extension'],
 
-            thumbnailUrl:
-                $thumbnail !== null && $extension !== null
-                    ? "{$baseUri}images/peluche/thumbnail/{$thumbnail}.{$extension}"
-                    : null,
+            thumbnailUrl: $image['thumbnailUrl'],
 
             collect: $peluche->collect
         );
@@ -125,15 +103,7 @@ final readonly class PelucheReadService
 
     private function mapPeluche(Peluche $peluche): PelucheData
     {
-        $baseUri = ApplicationConfig::baseUri();
-
-        $thumbnail = $peluche->thumbnail !== ''
-            ? $peluche->thumbnail
-            : null;
-
-        $extension = $peluche->extension !== ''
-            ? $peluche->extension
-            : null;
+        $image = $this->collectionThumbnail('peluche', $peluche->thumbnail, $peluche->extension);
 
         return new PelucheData(
             id: $peluche->id,
@@ -149,13 +119,10 @@ final readonly class PelucheReadService
 
             release_date: DateFormatter::display($peluche->release_date),
 
-            thumbnail: $thumbnail,
-            extension: $extension,
+            thumbnail: $image['thumbnail'],
+            extension: $image['extension'],
 
-            thumbnailUrl:
-                $thumbnail !== null && $extension !== null
-                    ? "{$baseUri}images/peluche/thumbnail/{$thumbnail}.{$extension}"
-                    : null,
+            thumbnailUrl: $image['thumbnailUrl'],
 
             commentaire: $peluche->commentaire,
 
@@ -165,25 +132,19 @@ final readonly class PelucheReadService
 
     private function mapSearchItem(Peluche $peluche): PelucheSearchItemData
     {
-        $thumbnail = $peluche->thumbnail !== ''
-            ? $peluche->thumbnail
-            : null;
-
-        $extension = $peluche->extension !== ''
-            ? $peluche->extension
-            : null;
+        $image = $this->collectionThumbnail('peluche', $peluche->thumbnail, $peluche->extension, true);
 
         return new PelucheSearchItemData(
 
-            thumbnailUrl: $peluche->thumbnail !== '' && $peluche->extension !== '' ? \App\Support\Media\ImageAssets::url(view_base_uri() . 'images/peluche/thumbnail/' . $peluche->thumbnail . '.' . $peluche->extension, true) : null,
+            thumbnailUrl: $image['thumbnailUrl'],
             slug: $peluche->slug,
             numero: $peluche->numero,
 
             origin: $peluche->origin,
             waifu: $peluche->waifu,
 
-            thumbnail: $thumbnail,
-            extension: $extension
+            thumbnail: $image['thumbnail'],
+            extension: $image['extension']
         );
     }
 }

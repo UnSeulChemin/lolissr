@@ -189,7 +189,6 @@ async function handleSearch(search, searchInput, searchResults, searchDropdown)
             shortcuts,
             rawValue,
             basePath,
-            searchInput,
             searchResults,
             searchDropdown,
             setupResultItem,
@@ -212,7 +211,7 @@ async function handleSearch(search, searchInput, searchResults, searchDropdown)
 // PRÉPARATION ÉLÉMENT
 // =================================================
 
-function setupResultItem(item, index, searchInput, searchResults, searchDropdown)
+function setupResultItem(item, index)
 {
     item.dataset.index = index;
 }

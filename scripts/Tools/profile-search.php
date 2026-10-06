@@ -80,9 +80,6 @@ if ($withLists)
     $artbook = $container->get(\App\Repositories\Artbook\ArtbookCollectionRepository::class);
     $nendoroid = $container->get(\App\Repositories\Nendoroid\NendoroidCollectionRepository::class);
     $peluche = $container->get(\App\Repositories\Peluche\PelucheCollectionRepository::class);
-    $artbook = $container->get(\App\Repositories\Artbook\ArtbookCollectionRepository::class);
-    $nendoroid = $container->get(\App\Repositories\Nendoroid\NendoroidCollectionRepository::class);
-    $peluche = $container->get(\App\Repositories\Peluche\PelucheCollectionRepository::class);
     $vocabulary = $container->get(\App\Repositories\Chinois\ChinoisVocabulaireCollectionRepository::class);
     echo "Lists: $perPage items per page (empty pages still execute the pagination SQL).\n";
     foreach ($pages as $page)
@@ -90,9 +87,6 @@ if ($withLists)
         $offset = ($page - 1) * $perPage;
         profileOperation("Manga series page $page OFFSET $offset", static fn (): int => count($manga->findAllFirstTomes('id DESC', $perPage, $page)), $database);
         profileOperation("Figurines page $page OFFSET $offset", static fn (): int => count($figurine->findPaginated($perPage, $page)), $database);
-        profileOperation("Artbooks page $page OFFSET $offset", static fn (): int => count($artbook->findPaginated($perPage, $page)), $database);
-        profileOperation("Nendoroids page $page OFFSET $offset", static fn (): int => count($nendoroid->findPaginated($perPage, $page)), $database);
-        profileOperation("Peluches page $page OFFSET $offset", static fn (): int => count($peluche->findPaginated($perPage, $page)), $database);
         profileOperation("Artbooks page $page OFFSET $offset", static fn (): int => count($artbook->findPaginated($perPage, $page)), $database);
         profileOperation("Nendoroids page $page OFFSET $offset", static fn (): int => count($nendoroid->findPaginated($perPage, $page)), $database);
         profileOperation("Peluches page $page OFFSET $offset", static fn (): int => count($peluche->findPaginated($perPage, $page)), $database);

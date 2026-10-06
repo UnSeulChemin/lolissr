@@ -13,12 +13,14 @@ use App\Models\Nendoroid\Nendoroid;
 use App\Repositories\Nendoroid\NendoroidCollectionRepository;
 use App\Repositories\Nendoroid\NendoroidRepository;
 use App\Repositories\Nendoroid\NendoroidSearchRepository;
+use App\Services\Collections\Concerns\BuildsCollectionReadData;
 
-use Framework\Config\ApplicationConfig;
 use Framework\Support\Dates\DateFormatter;
 
 final readonly class NendoroidReadService
 {
+    use BuildsCollectionReadData;
+
     public function __construct(
         private NendoroidRepository $nendoroidRepository,
         private NendoroidCollectionRepository $collectionRepository,
@@ -33,39 +35,20 @@ final readonly class NendoroidReadService
 
     public function waifus(int|string $page = 1): ?NendoroidListData
     {
-        $page = max(1, (int) $page);
-
-        $perPage = ApplicationConfig::pagination();
-
-        $totalWaifus = $this->collectionRepository->countAll();
-
-        if ($totalWaifus === 0)
-        {
-            if ($page > 1) return null;
-            return new NendoroidListData(
-                nendoroids: [],
-                currentPage: 1,
-                totalWaifus: 0,
-                perPage: $perPage,
-                totalPages: 1
-            );
-        }
-
-        $totalPages = (int) ceil($totalWaifus / $perPage);
-
-        if ($page > $totalPages)
-        {
-            return null;
-        }
-
-        $nendoroids = $this->collectionRepository->findPaginated($perPage, $page);
+        $data = $this->collectionPage(
+            $page,
+            $this->collectionRepository->countAll(),
+            $this->collectionRepository->findPaginated(...),
+            $this->mapListItem(...)
+        );
+        if ($data === null) return null;
 
         return new NendoroidListData(
-            nendoroids: array_map($this->mapListItem(...), $nendoroids),
-            currentPage: $page,
-            totalWaifus: $totalWaifus,
-            perPage: $perPage,
-            totalPages: $totalPages
+            nendoroids: $data['items'],
+            currentPage: $data['currentPage'],
+            totalWaifus: $data['totalWaifus'],
+            perPage: $data['perPage'],
+            totalPages: $data['totalPages']
         );
     }
 
@@ -100,15 +83,7 @@ final readonly class NendoroidReadService
 
     private function mapListItem(Nendoroid $nendoroid): NendoroidListItemData
     {
-        $baseUri = ApplicationConfig::baseUri();
-
-        $thumbnail = $nendoroid->thumbnail !== ''
-            ? $nendoroid->thumbnail
-            : null;
-
-        $extension = $nendoroid->extension !== ''
-            ? $nendoroid->extension
-            : null;
+        $image = $this->collectionThumbnail('nendoroid', $nendoroid->thumbnail, $nendoroid->extension);
 
         return new NendoroidListItemData(
             slug: $nendoroid->slug,
@@ -117,13 +92,10 @@ final readonly class NendoroidReadService
             waifu: $nendoroid->waifu,
             origin: $nendoroid->origin,
 
-            thumbnail: $thumbnail,
-            extension: $extension,
+            thumbnail: $image['thumbnail'],
+            extension: $image['extension'],
 
-            thumbnailUrl:
-                $thumbnail !== null && $extension !== null
-                    ? "{$baseUri}images/nendoroid/thumbnail/{$thumbnail}.{$extension}"
-                    : null,
+            thumbnailUrl: $image['thumbnailUrl'],
 
             collect: $nendoroid->collect
         );
@@ -131,15 +103,7 @@ final readonly class NendoroidReadService
 
     private function mapNendoroid(Nendoroid $nendoroid): NendoroidData
     {
-        $baseUri = ApplicationConfig::baseUri();
-
-        $thumbnail = $nendoroid->thumbnail !== ''
-            ? $nendoroid->thumbnail
-            : null;
-
-        $extension = $nendoroid->extension !== ''
-            ? $nendoroid->extension
-            : null;
+        $image = $this->collectionThumbnail('nendoroid', $nendoroid->thumbnail, $nendoroid->extension);
 
         return new NendoroidData(
             id: $nendoroid->id,
@@ -155,13 +119,10 @@ final readonly class NendoroidReadService
 
             release_date: DateFormatter::display($nendoroid->release_date),
 
-            thumbnail: $thumbnail,
-            extension: $extension,
+            thumbnail: $image['thumbnail'],
+            extension: $image['extension'],
 
-            thumbnailUrl:
-                $thumbnail !== null && $extension !== null
-                    ? "{$baseUri}images/nendoroid/thumbnail/{$thumbnail}.{$extension}"
-                    : null,
+            thumbnailUrl: $image['thumbnailUrl'],
 
             commentaire: $nendoroid->commentaire,
 
@@ -171,25 +132,19 @@ final readonly class NendoroidReadService
 
     private function mapSearchItem(Nendoroid $nendoroid): NendoroidSearchItemData
     {
-        $thumbnail = $nendoroid->thumbnail !== ''
-            ? $nendoroid->thumbnail
-            : null;
-
-        $extension = $nendoroid->extension !== ''
-            ? $nendoroid->extension
-            : null;
+        $image = $this->collectionThumbnail('nendoroid', $nendoroid->thumbnail, $nendoroid->extension, true);
 
         return new NendoroidSearchItemData(
 
-            thumbnailUrl: $nendoroid->thumbnail !== '' && $nendoroid->extension !== '' ? \App\Support\Media\ImageAssets::url(view_base_uri() . 'images/nendoroid/thumbnail/' . $nendoroid->thumbnail . '.' . $nendoroid->extension, true) : null,
+            thumbnailUrl: $image['thumbnailUrl'],
             slug: $nendoroid->slug,
             numero: $nendoroid->numero,
 
             origin: $nendoroid->origin,
             waifu: $nendoroid->waifu,
 
-            thumbnail: $thumbnail,
-            extension: $extension
+            thumbnail: $image['thumbnail'],
+            extension: $image['extension']
         );
     }
 }

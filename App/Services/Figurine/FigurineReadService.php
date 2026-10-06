@@ -13,12 +13,14 @@ use App\Models\Figurine\Figurine;
 use App\Repositories\Figurine\FigurineCollectionRepository;
 use App\Repositories\Figurine\FigurineRepository;
 use App\Repositories\Figurine\FigurineSearchRepository;
+use App\Services\Collections\Concerns\BuildsCollectionReadData;
 
-use Framework\Config\ApplicationConfig;
 use Framework\Support\Dates\DateFormatter;
 
 final readonly class FigurineReadService
 {
+    use BuildsCollectionReadData;
+
     public function __construct(
         private FigurineRepository $figurineRepository,
         private FigurineCollectionRepository $collectionRepository,
@@ -33,33 +35,20 @@ final readonly class FigurineReadService
 
     public function waifus(int|string $page = 1): ?FigurineListData
     {
-        $page = max(1, (int) $page);
-
-        $perPage = ApplicationConfig::pagination();
-
-        $totalWaifus = $this->collectionRepository->countAll();
-
-        if ($totalWaifus === 0)
-        {
-            if ($page > 1) return null;
-            return new FigurineListData(figurines: [], currentPage: 1, totalWaifus: 0, perPage: $perPage, totalPages: 1);
-        }
-
-        $totalPages = (int) ceil($totalWaifus / $perPage);
-
-        if ($page > $totalPages)
-        {
-            return null;
-        }
-
-        $figurines = $this->collectionRepository->findPaginated($perPage, $page);
+        $data = $this->collectionPage(
+            $page,
+            $this->collectionRepository->countAll(),
+            $this->collectionRepository->findPaginated(...),
+            $this->mapSeriesItem(...)
+        );
+        if ($data === null) return null;
 
         return new FigurineListData(
-            figurines: array_map($this->mapSeriesItem(...), $figurines),
-            currentPage: $page,
-            totalWaifus: $totalWaifus,
-            perPage: $perPage,
-            totalPages: $totalPages
+            figurines: $data['items'],
+            currentPage: $data['currentPage'],
+            totalWaifus: $data['totalWaifus'],
+            perPage: $data['perPage'],
+            totalPages: $data['totalPages']
         );
     }
 
@@ -94,15 +83,7 @@ final readonly class FigurineReadService
 
     private function mapSeriesItem(Figurine $figurine): FigurineListItemData
     {
-        $baseUri = ApplicationConfig::baseUri();
-
-        $thumbnail = $figurine->thumbnail !== ''
-            ? $figurine->thumbnail
-            : null;
-
-        $extension = $figurine->extension !== ''
-            ? $figurine->extension
-            : null;
+        $image = $this->collectionThumbnail('figurine', $figurine->thumbnail, $figurine->extension);
 
         return new FigurineListItemData(
             slug: $figurine->slug,
@@ -111,13 +92,10 @@ final readonly class FigurineReadService
             waifu: $figurine->waifu,
             origin: $figurine->origin,
 
-            thumbnail: $thumbnail,
-            extension: $extension,
+            thumbnail: $image['thumbnail'],
+            extension: $image['extension'],
 
-            thumbnailUrl:
-                $thumbnail !== null && $extension !== null
-                    ? "{$baseUri}images/figurine/thumbnail/{$thumbnail}.{$extension}"
-                    : null,
+            thumbnailUrl: $image['thumbnailUrl'],
 
             collect: $figurine->collect
         );
@@ -125,15 +103,7 @@ final readonly class FigurineReadService
 
     private function mapFigurine(Figurine $figurine): FigurineData
     {
-        $baseUri = ApplicationConfig::baseUri();
-
-        $thumbnail = $figurine->thumbnail !== ''
-            ? $figurine->thumbnail
-            : null;
-
-        $extension = $figurine->extension !== ''
-            ? $figurine->extension
-            : null;
+        $image = $this->collectionThumbnail('figurine', $figurine->thumbnail, $figurine->extension);
 
         return new FigurineData(
             id: $figurine->id,
@@ -151,13 +121,10 @@ final readonly class FigurineReadService
 
             release_date: DateFormatter::display($figurine->release_date),
 
-            thumbnail: $thumbnail,
-            extension: $extension,
+            thumbnail: $image['thumbnail'],
+            extension: $image['extension'],
 
-            thumbnailUrl:
-                $thumbnail !== null && $extension !== null
-                    ? "{$baseUri}images/figurine/thumbnail/{$thumbnail}.{$extension}"
-                    : null,
+            thumbnailUrl: $image['thumbnailUrl'],
 
             commentaire: $figurine->commentaire,
 
@@ -167,25 +134,19 @@ final readonly class FigurineReadService
 
     private function mapSearchItem(Figurine $figurine): FigurineSearchItemData
     {
-        $thumbnail = $figurine->thumbnail !== ''
-            ? $figurine->thumbnail
-            : null;
-
-        $extension = $figurine->extension !== ''
-            ? $figurine->extension
-            : null;
+        $image = $this->collectionThumbnail('figurine', $figurine->thumbnail, $figurine->extension, true);
 
         return new FigurineSearchItemData(
 
-            thumbnailUrl: $figurine->thumbnail !== '' && $figurine->extension !== '' ? \App\Support\Media\ImageAssets::url(view_base_uri() . 'images/figurine/thumbnail/' . $figurine->thumbnail . '.' . $figurine->extension, true) : null,
+            thumbnailUrl: $image['thumbnailUrl'],
             slug: $figurine->slug,
             numero: $figurine->numero,
 
             origin: $figurine->origin,
             waifu: $figurine->waifu,
 
-            thumbnail: $thumbnail,
-            extension: $extension
+            thumbnail: $image['thumbnail'],
+            extension: $image['extension']
         );
     }
 }
