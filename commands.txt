@@ -28,6 +28,12 @@ DEVELOPPEMENT
 = Installer les dependances
 composer install
 
+= Diagnostic de configuration, services et assets
+composer doctor
+
+
+
+
 = Compiler CSS / JavaScript et actualiser leurs versions
 composer assets:build
 
@@ -36,9 +42,6 @@ composer dx
 
 = Analyse PHP + tests HTTP / SPA + regressions
 composer check
-
-= Diagnostic de configuration, services et assets
-composer doctor
 
 
 =========================================
